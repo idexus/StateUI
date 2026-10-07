@@ -39,16 +39,20 @@ struct ColoursPage: View {
         }
     }
 
-    /// The button choosing `accent`, drawn in it.
+    /// The button choosing `accent` for the bars and the windows in both
+    /// themes, drawn in it - marked where the theme in force wears it.
     private func choice(_ accent: AccentChoice) -> Button {
         let style = self.style
-        return Button(style.barColour == accent ? "✓  \(accent.name)" : accent.name)
+        let worn = style.look(dark: application.info.colorScheme == .dark).barColour
+        return Button(worn == accent ? "✓  \(accent.name)" : accent.name)
             .textColor(.white)
             .background(accent.color(system: application.info.accentColor))
             .shape(.roundedRectangle(8))
             .onClicked {
-                style.barColour = accent
-                style.windowColour = accent
+                for keys in [LookKeys.light, .dark] {
+                    style[keyPath: keys.barColour] = accent
+                    style[keyPath: keys.windowColour] = accent
+                }
             }
     }
 }

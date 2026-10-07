@@ -56,6 +56,16 @@ enum WindowLook: String, CaseIterable, PersistentValue {
         }
     }
 
+    /// Whether the look shows a material.
+    var showsMaterial: Bool {
+        self == .material || self == .tintedMaterial
+    }
+
+    /// Whether the look shows a colour.
+    var showsColour: Bool {
+        self == .tintedMaterial || self == .colour
+    }
+
     /// What the window shows behind everything it draws: the desktop through
     /// `material`, where the look is a material; nil else.
     func backdrop(_ material: Material) -> Backdrop? {
@@ -71,6 +81,40 @@ enum WindowLook: String, CaseIterable, PersistentValue {
         case .tintedMaterial: return accent.tint(system: system)
         case .colour: return accent.color(system: system)
         }
+    }
+}
+
+/// The look the gallery wears in one theme: its bars and what its windows
+/// show behind their pages, each in a colour of its own.
+struct ThemeLook: Equatable {
+    var bars: BarLook
+    var barColour: AccentChoice
+    var windows: WindowLook
+    var windowColour: AccentChoice
+    var material: Material
+}
+
+/// Where a theme's look stands in the session's style - one column of the
+/// Appearance sample.
+struct LookKeys {
+    let bars: ReferenceWritableKeyPath<SessionStyle, BarLook>
+    let barColour: ReferenceWritableKeyPath<SessionStyle, AccentChoice>
+    let windows: ReferenceWritableKeyPath<SessionStyle, WindowLook>
+    let windowColour: ReferenceWritableKeyPath<SessionStyle, AccentChoice>
+    let material: ReferenceWritableKeyPath<SessionStyle, Material>
+
+    /// The light theme's look.
+    static var light: LookKeys {
+        LookKeys(
+            bars: \.lightBars, barColour: \.lightBarColour, windows: \.lightWindows,
+            windowColour: \.lightWindowColour, material: \.lightMaterial)
+    }
+
+    /// The dark theme's look.
+    static var dark: LookKeys {
+        LookKeys(
+            bars: \.darkBars, barColour: \.darkBarColour, windows: \.darkWindows,
+            windowColour: \.darkWindowColour, material: \.darkMaterial)
     }
 }
 // listing: end

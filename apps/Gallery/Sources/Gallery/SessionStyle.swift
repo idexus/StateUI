@@ -23,17 +23,22 @@ extension SceneKey {
     /// The font the gallery's preview is set in.
     static let font = SceneKey("gallery.font", of: String.self)
 
-    /// The colour of the gallery's bars.
-    static let barColour = SceneKey("gallery.barColour", of: AccentChoice.self)
+    /// What the gallery's bars are, in the light theme and in the dark.
+    static let lightBars = SceneKey("gallery.light.bars", of: BarLook.self)
+    static let darkBars = SceneKey("gallery.dark.bars", of: BarLook.self)
 
-    /// The colour of what the gallery's windows show behind their pages.
-    static let windowColour = SceneKey("gallery.windowColour", of: AccentChoice.self)
+    /// The colour of the gallery's bars, in each theme.
+    static let lightBarColour = SceneKey("gallery.light.barColour", of: AccentChoice.self)
+    static let darkBarColour = SceneKey("gallery.dark.barColour", of: AccentChoice.self)
 
-    /// What the gallery's bars are.
-    static let bars = SceneKey("gallery.bars", of: BarLook.self)
+    /// What the gallery's windows show behind their pages, in each theme.
+    static let lightWindows = SceneKey("gallery.light.windows", of: WindowLook.self)
+    static let darkWindows = SceneKey("gallery.dark.windows", of: WindowLook.self)
 
-    /// What the gallery's windows show behind their pages.
-    static let windows = SceneKey("gallery.windows", of: WindowLook.self)
+    /// The colour of what the gallery's windows show behind their pages, in
+    /// each theme.
+    static let lightWindowColour = SceneKey("gallery.light.windowColour", of: AccentChoice.self)
+    static let darkWindowColour = SceneKey("gallery.dark.windowColour", of: AccentChoice.self)
 }
 // listing: end
 
@@ -98,23 +103,39 @@ final class SessionStyle {
     /// The font the preview is set in - empty for the platform's own.
     @State(sceneKey: .font) var font = ""
 
-    /// What the gallery's bars are: clear, what stands behind them showing,
-    /// until the Appearance sample chooses another look.
-    @State(sceneKey: .bars) var bars = BarLook.clear
+    /// What the gallery's bars are in the light theme, and in the dark: clear,
+    /// what stands behind them showing, until the Appearance sample chooses
+    /// another look.
+    @State(sceneKey: .lightBars) var lightBars = BarLook.clear
+    @State(sceneKey: .darkBars) var darkBars = BarLook.clear
 
-    /// The colour the bars are tinted or painted in.
-    @State(sceneKey: .barColour) var barColour = AccentChoice.violet
+    /// The colour the bars are tinted or painted in, in each theme.
+    @State(sceneKey: .lightBarColour) var lightBarColour = AccentChoice.violet
+    @State(sceneKey: .darkBarColour) var darkBarColour = AccentChoice.violet
 
-    /// What the gallery's windows show behind their pages: the platform's
-    /// own, until the Appearance sample chooses another look.
-    @State(sceneKey: .windows) var windows = WindowLook.platform
+    /// What the gallery's windows show behind their pages: the platform's own
+    /// in the light theme, the window's material in a light tint in the dark.
+    @State(sceneKey: .lightWindows) var lightWindows = WindowLook.platform
+    @State(sceneKey: .darkWindows) var darkWindows = WindowLook.tintedMaterial
 
-    /// The colour the windows are tinted or painted in.
-    @State(sceneKey: .windowColour) var windowColour = AccentChoice.violet
+    /// The colour the windows are tinted or painted in, in each theme.
+    @State(sceneKey: .lightWindowColour) var lightWindowColour = AccentChoice.violet
+    @State(sceneKey: .darkWindowColour) var darkWindowColour = AccentChoice.violet
 
-    /// The material the desktop shows through the windows in, where their look
-    /// is one: the thickest until the Appearance sample chooses another.
-    @State var material = Material.thick
+    /// The material the desktop shows through the windows in, in each theme,
+    /// where their look is one: the thickest until the Appearance sample
+    /// chooses another.
+    @State var lightMaterial = Material.thick
+    @State var darkMaterial = Material.thick
+
+    /// The look the gallery wears in a theme, `dark` or not.
+    func look(dark: Bool) -> ThemeLook {
+        let keys = dark ? LookKeys.dark : LookKeys.light
+        return ThemeLook(
+            bars: self[keyPath: keys.bars], barColour: self[keyPath: keys.barColour],
+            windows: self[keyPath: keys.windows], windowColour: self[keyPath: keys.windowColour],
+            material: self[keyPath: keys.material])
+    }
 
     /// Whether the Fonts and Colours windows hide while another scene is the
     /// one in front.

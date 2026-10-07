@@ -109,7 +109,7 @@ struct MainPage: View {
             .barIcon("stateui_mark.png")
             // listing: end
             // The bars of both panes, as the gallery's look says.
-            .bars(style.bars, in: style.barColour, system: application.info.accentColor)
+            .bars(look.bars, in: look.barColour, system: application.info.accentColor)
             // listing: MainPage.overlays
             // The window's notice, over every page while the gallery says so.
             .overlays {
@@ -147,9 +147,7 @@ struct MainPage: View {
                 log.note("created")
             }
             // The Appearance sample changes the look while the window stands.
-            .onChanged(style.windows) { dress(window) }
-            .onChanged(style.windowColour) { dress(window) }
-            .onChanged(style.material) { dress(window) }
+            .onChanged(look) { dress(window) }
             .onChanged(application.info.accentColor) { dress(window) }
             // listing: end
         // listing: MainPage.modal
@@ -225,7 +223,7 @@ struct MainPage: View {
 
         case .sample(let id):
             if let sample = catalog.sample(id: id) {
-                SamplePage.shown(sample, nav: nav, style: style, system: application.info.accentColor)
+                SamplePage.shown(sample, nav: nav, look: look, system: application.info.accentColor)
             } else {
                 MissingPage(id: id, nav: nav, path: path)
             }
@@ -272,10 +270,18 @@ struct MainPage: View {
 
     // MARK: - The window's own look
 
-    /// Dresses `window` as the gallery's look says: the material the desktop
-    /// shows through it in, and what it shows behind its pages.
+    /// The look the gallery wears in the theme in force: a change of theme,
+    /// the system's or the application's, builds the page again in the other.
+    private var look: ThemeLook {
+        style.look(dark: application.info.colorScheme == .dark)
+    }
+
+    /// Dresses `window` as the gallery's look says in the theme in force: the
+    /// material the desktop shows through it in, and what it shows behind its
+    /// pages.
     private func dress(_ window: WindowSession) {
-        window.backdrop = style.windows.backdrop(style.material)
-        window.background = style.windows.background(in: style.windowColour, system: application.info.accentColor)
+        let look = self.look
+        window.backdrop = look.windows.backdrop(look.material)
+        window.background = look.windows.background(in: look.windowColour, system: application.info.accentColor)
     }
 }

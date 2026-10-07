@@ -26,49 +26,23 @@ struct AppearanceSample: SampleContent, ExampleContent {
     ]
 
     var body: some View {
-        // Read here, so a choice made anywhere - this page, the Colours
-        // window - builds each picker again at its new place.
-        let style = self.style
+        // Read here, so a theme held anywhere builds the picker again at its
+        // new place.
         let application = self.application
-        let bars = BarLook.allCases
-        let windows = WindowLook.allCases
-        let accents = AccentChoice.allCases
         let themes = Self.themes
-        let bar = bars.firstIndex(of: style.bars) ?? 0
-        let window = windows.firstIndex(of: style.windows) ?? 0
-        let barColour = accents.firstIndex(of: style.barColour) ?? 0
-        let windowColour = accents.firstIndex(of: style.windowColour) ?? 0
-        let materials = Material.allCases
-        let material = materials.firstIndex(of: style.material) ?? 0
         let theme = themes.firstIndex { $0.scheme == application.colorScheme } ?? 0
 
         return VStack {
-            SectionTitle("The bars")
-            Picker(bars.map(\.name))
-                .accessibilityIdentifier("appearance.bars")
-                .accessibilityLabel("Bars")
-                .selectedIndex(Binding(get: { bar }, set: { style.bars = bars[$0] }))
-            Picker(accents.map(\.name))
-                .accessibilityIdentifier("appearance.barColour")
-                .accessibilityLabel("Bars' colour")
-                .isEnabled(style.bars == .tinted || style.bars == .colour)
-                .selectedIndex(Binding(get: { barColour }, set: { style.barColour = accents[$0] }))
-
-            SectionTitle("The window")
-            Picker(windows.map(\.name))
-                .accessibilityIdentifier("appearance.window")
-                .accessibilityLabel("Window")
-                .selectedIndex(Binding(get: { window }, set: { style.windows = windows[$0] }))
-            Picker(accents.map(\.name))
-                .accessibilityIdentifier("appearance.windowColour")
-                .accessibilityLabel("Window's colour")
-                .isEnabled(style.windows == .tintedMaterial || style.windows == .colour)
-                .selectedIndex(Binding(get: { windowColour }, set: { style.windowColour = accents[$0] }))
-            Picker(["Ultra thin", "Thin", "Regular", "Thick"])
-                .accessibilityIdentifier("appearance.material")
-                .accessibilityLabel("Window's material")
-                .isEnabled(style.windows == .material || style.windows == .tintedMaterial)
-                .selectedIndex(Binding(get: { material }, set: { style.material = materials[$0] }))
+            // A look for each theme, side by side: the gallery wears the one
+            // of the theme in force, and changes with it.
+            Grid {
+                LookColumn(title: "Light", style: style, keys: .light)
+                    .gridColumn(0)
+                LookColumn(title: "Dark", style: style, keys: .dark)
+                    .gridColumn(1)
+            }
+            .columns(.fill, .fill)
+            .columnSpacing(16)
 
             SectionTitle("The theme")
             Picker(themes.map(\.name))
@@ -82,9 +56,12 @@ struct AppearanceSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("\"The platform's own\" leaves a choice unwritten: each platform draws its "
-                + "own, in the user's accent, material and theme. A colour paints the bars "
-                + "alone; what the window shows behind the pages is its background.")
+            Text("Each theme has a look of its own: the gallery wears the one of the "
+                + "theme in force, and turns to the other when the system's theme turns, "
+                + "or the one the application holds. \"The platform's own\" leaves a choice "
+                + "unwritten: each platform draws its own, in the user's accent, material "
+                + "and theme. A colour paints the bars alone; what the window shows behind "
+                + "the pages is its background.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -101,3 +78,74 @@ struct AppearanceSample: SampleContent, ExampleContent {
         .spacing(8)
     }
 }
+
+// listing: AppearanceSample
+/// One theme's look: its bars and its window, each in a colour of its own,
+/// and the window's material - written where `keys` say.
+private struct LookColumn: View {
+    let title: String
+    let style: SessionStyle
+    let keys: LookKeys
+
+    var body: some View {
+        // Read here, so a choice made anywhere builds each picker again at its
+        // new place.
+        let style = self.style
+        let keys = self.keys
+        let look = ThemeLook(
+            bars: style[keyPath: keys.bars], barColour: style[keyPath: keys.barColour],
+            windows: style[keyPath: keys.windows], windowColour: style[keyPath: keys.windowColour],
+            material: style[keyPath: keys.material])
+        let bars = BarLook.allCases
+        let windows = WindowLook.allCases
+        let accents = AccentChoice.allCases
+        let materials = Material.allCases
+        let name = title.lowercased()
+
+        return VStack {
+            SectionTitle(title)
+
+            Text("The bars")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+            Picker(bars.map(\.name))
+                .accessibilityIdentifier("appearance.\(name).bars")
+                .accessibilityLabel("Bars, \(name)")
+                .selectedIndex(Binding(
+                    get: { bars.firstIndex(of: look.bars) ?? 0 }, set: { style[keyPath: keys.bars] = bars[$0] }))
+            Picker(accents.map(\.name))
+                .accessibilityIdentifier("appearance.\(name).barColour")
+                .accessibilityLabel("Bars' colour, \(name)")
+                .isEnabled(look.bars == .tinted || look.bars == .colour)
+                .selectedIndex(Binding(
+                    get: { accents.firstIndex(of: look.barColour) ?? 0 },
+                    set: { style[keyPath: keys.barColour] = accents[$0] }))
+
+            Text("The window")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+            Picker(windows.map(\.name))
+                .accessibilityIdentifier("appearance.\(name).window")
+                .accessibilityLabel("Window, \(name)")
+                .selectedIndex(Binding(
+                    get: { windows.firstIndex(of: look.windows) ?? 0 },
+                    set: { style[keyPath: keys.windows] = windows[$0] }))
+            Picker(accents.map(\.name))
+                .accessibilityIdentifier("appearance.\(name).windowColour")
+                .accessibilityLabel("Window's colour, \(name)")
+                .isEnabled(look.windows.showsColour)
+                .selectedIndex(Binding(
+                    get: { accents.firstIndex(of: look.windowColour) ?? 0 },
+                    set: { style[keyPath: keys.windowColour] = accents[$0] }))
+            Picker(["Ultra thin", "Thin", "Regular", "Thick"])
+                .accessibilityIdentifier("appearance.\(name).material")
+                .accessibilityLabel("Window's material, \(name)")
+                .isEnabled(look.windows.showsMaterial)
+                .selectedIndex(Binding(
+                    get: { materials.firstIndex(of: look.material) ?? 0 },
+                    set: { style[keyPath: keys.material] = materials[$0] }))
+        }
+        .spacing(10)
+    }
+}
+// listing: end

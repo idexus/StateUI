@@ -679,43 +679,80 @@ enum Listings {
         ]
 
         var body: some View {
-            // Read here, so a choice made anywhere - this page, the Colours
-            // window - builds each picker again at its new place.
-            let style = self.style
+            // Read here, so a theme held anywhere builds the picker again at its
+            // new place.
             let application = self.application
-            let bars = BarLook.allCases
-            let windows = WindowLook.allCases
-            let accents = AccentChoice.allCases
             let themes = Self.themes
-            let bar = bars.firstIndex(of: style.bars) ?? 0
-            let window = windows.firstIndex(of: style.windows) ?? 0
-            let barColour = accents.firstIndex(of: style.barColour) ?? 0
-            let windowColour = accents.firstIndex(of: style.windowColour) ?? 0
-            let materials = Material.allCases
-            let material = materials.firstIndex(of: style.material) ?? 0
             let theme = themes.firstIndex { $0.scheme == application.colorScheme } ?? 0
 
             return VStack {
-                SectionTitle("The bars")
-                Picker(bars.map(\.name))
-                    .selectedIndex(Binding(get: { bar }, set: { style.bars = bars[$0] }))
-                Picker(accents.map(\.name))
-                    .isEnabled(style.bars == .tinted || style.bars == .colour)
-                    .selectedIndex(Binding(get: { barColour }, set: { style.barColour = accents[$0] }))
-
-                SectionTitle("The window")
-                Picker(windows.map(\.name))
-                    .selectedIndex(Binding(get: { window }, set: { style.windows = windows[$0] }))
-                Picker(accents.map(\.name))
-                    .isEnabled(style.windows == .tintedMaterial || style.windows == .colour)
-                    .selectedIndex(Binding(get: { windowColour }, set: { style.windowColour = accents[$0] }))
-                Picker(["Ultra thin", "Thin", "Regular", "Thick"])
-                    .isEnabled(style.windows == .material || style.windows == .tintedMaterial)
-                    .selectedIndex(Binding(get: { material }, set: { style.material = materials[$0] }))
+                // A look for each theme, side by side: the gallery wears the one
+                // of the theme in force, and changes with it.
+                Grid {
+                    LookColumn(title: "Light", style: style, keys: .light)
+                        .gridColumn(0)
+                    LookColumn(title: "Dark", style: style, keys: .dark)
+                        .gridColumn(1)
+                }
+                .columns(.fill, .fill)
 
                 SectionTitle("The theme")
                 Picker(themes.map(\.name))
                     .selectedIndex(Binding(get: { theme }, set: { application.colorScheme = themes[$0].scheme }))
+            }
+        }
+
+        /// One theme's look: its bars and its window, each in a colour of its own,
+        /// and the window's material - written where `keys` say.
+        private struct LookColumn: View {
+            let title: String
+            let style: SessionStyle
+            let keys: LookKeys
+
+            var body: some View {
+                // Read here, so a choice made anywhere builds each picker again at its
+                // new place.
+                let style = self.style
+                let keys = self.keys
+                let look = ThemeLook(
+                    bars: style[keyPath: keys.bars], barColour: style[keyPath: keys.barColour],
+                    windows: style[keyPath: keys.windows], windowColour: style[keyPath: keys.windowColour],
+                    material: style[keyPath: keys.material])
+                let bars = BarLook.allCases
+                let windows = WindowLook.allCases
+                let accents = AccentChoice.allCases
+                let materials = Material.allCases
+                let name = title.lowercased()
+
+                return VStack {
+                    SectionTitle(title)
+
+                    Text("The bars")
+                    Picker(bars.map(\.name))
+                        .selectedIndex(Binding(
+                            get: { bars.firstIndex(of: look.bars) ?? 0 }, set: { style[keyPath: keys.bars] = bars[$0] }))
+                    Picker(accents.map(\.name))
+                        .isEnabled(look.bars == .tinted || look.bars == .colour)
+                        .selectedIndex(Binding(
+                            get: { accents.firstIndex(of: look.barColour) ?? 0 },
+                            set: { style[keyPath: keys.barColour] = accents[$0] }))
+
+                    Text("The window")
+                    Picker(windows.map(\.name))
+                        .selectedIndex(Binding(
+                            get: { windows.firstIndex(of: look.windows) ?? 0 },
+                            set: { style[keyPath: keys.windows] = windows[$0] }))
+                    Picker(accents.map(\.name))
+                        .isEnabled(look.windows.showsColour)
+                        .selectedIndex(Binding(
+                            get: { accents.firstIndex(of: look.windowColour) ?? 0 },
+                            set: { style[keyPath: keys.windowColour] = accents[$0] }))
+                    Picker(["Ultra thin", "Thin", "Regular", "Thick"])
+                        .isEnabled(look.windows.showsMaterial)
+                        .selectedIndex(Binding(
+                            get: { materials.firstIndex(of: look.material) ?? 0 },
+                            set: { style[keyPath: keys.material] = materials[$0] }))
+                }
             }
         }
         """#,
@@ -2631,6 +2668,16 @@ enum Listings {
                 }
             }
 
+            /// Whether the look shows a material.
+            var showsMaterial: Bool {
+                self == .material || self == .tintedMaterial
+            }
+
+            /// Whether the look shows a colour.
+            var showsColour: Bool {
+                self == .tintedMaterial || self == .colour
+            }
+
             /// What the window shows behind everything it draws: the desktop through
             /// `material`, where the look is a material; nil else.
             func backdrop(_ material: Material) -> Backdrop? {
@@ -2646,6 +2693,40 @@ enum Listings {
                 case .tintedMaterial: return accent.tint(system: system)
                 case .colour: return accent.color(system: system)
                 }
+            }
+        }
+
+        /// The look the gallery wears in one theme: its bars and what its windows
+        /// show behind their pages, each in a colour of its own.
+        struct ThemeLook: Equatable {
+            var bars: BarLook
+            var barColour: AccentChoice
+            var windows: WindowLook
+            var windowColour: AccentChoice
+            var material: Material
+        }
+
+        /// Where a theme's look stands in the session's style - one column of the
+        /// Appearance sample.
+        struct LookKeys {
+            let bars: ReferenceWritableKeyPath<SessionStyle, BarLook>
+            let barColour: ReferenceWritableKeyPath<SessionStyle, AccentChoice>
+            let windows: ReferenceWritableKeyPath<SessionStyle, WindowLook>
+            let windowColour: ReferenceWritableKeyPath<SessionStyle, AccentChoice>
+            let material: ReferenceWritableKeyPath<SessionStyle, Material>
+
+            /// The light theme's look.
+            static var light: LookKeys {
+                LookKeys(
+                    bars: \.lightBars, barColour: \.lightBarColour, windows: \.lightWindows,
+                    windowColour: \.lightWindowColour, material: \.lightMaterial)
+            }
+
+            /// The dark theme's look.
+            static var dark: LookKeys {
+                LookKeys(
+                    bars: \.darkBars, barColour: \.darkBarColour, windows: \.darkWindows,
+                    windowColour: \.darkWindowColour, material: \.darkMaterial)
             }
         }
         """#,
@@ -2671,17 +2752,22 @@ enum Listings {
             /// The font the gallery's preview is set in.
             static let font = SceneKey("gallery.font", of: String.self)
 
-            /// The colour of the gallery's bars.
-            static let barColour = SceneKey("gallery.barColour", of: AccentChoice.self)
+            /// What the gallery's bars are, in the light theme and in the dark.
+            static let lightBars = SceneKey("gallery.light.bars", of: BarLook.self)
+            static let darkBars = SceneKey("gallery.dark.bars", of: BarLook.self)
 
-            /// The colour of what the gallery's windows show behind their pages.
-            static let windowColour = SceneKey("gallery.windowColour", of: AccentChoice.self)
+            /// The colour of the gallery's bars, in each theme.
+            static let lightBarColour = SceneKey("gallery.light.barColour", of: AccentChoice.self)
+            static let darkBarColour = SceneKey("gallery.dark.barColour", of: AccentChoice.self)
 
-            /// What the gallery's bars are.
-            static let bars = SceneKey("gallery.bars", of: BarLook.self)
+            /// What the gallery's windows show behind their pages, in each theme.
+            static let lightWindows = SceneKey("gallery.light.windows", of: WindowLook.self)
+            static let darkWindows = SceneKey("gallery.dark.windows", of: WindowLook.self)
 
-            /// What the gallery's windows show behind their pages.
-            static let windows = SceneKey("gallery.windows", of: WindowLook.self)
+            /// The colour of what the gallery's windows show behind their pages, in
+            /// each theme.
+            static let lightWindowColour = SceneKey("gallery.light.windowColour", of: AccentChoice.self)
+            static let darkWindowColour = SceneKey("gallery.dark.windowColour", of: AccentChoice.self)
         }
 
         /// A colour a gallery wears - on its bars, or behind its pages, where its look
@@ -2742,23 +2828,39 @@ enum Listings {
             /// The font the preview is set in - empty for the platform's own.
             @State(sceneKey: .font) var font = ""
 
-            /// What the gallery's bars are: clear, what stands behind them showing,
-            /// until the Appearance sample chooses another look.
-            @State(sceneKey: .bars) var bars = BarLook.clear
+            /// What the gallery's bars are in the light theme, and in the dark: clear,
+            /// what stands behind them showing, until the Appearance sample chooses
+            /// another look.
+            @State(sceneKey: .lightBars) var lightBars = BarLook.clear
+            @State(sceneKey: .darkBars) var darkBars = BarLook.clear
 
-            /// The colour the bars are tinted or painted in.
-            @State(sceneKey: .barColour) var barColour = AccentChoice.violet
+            /// The colour the bars are tinted or painted in, in each theme.
+            @State(sceneKey: .lightBarColour) var lightBarColour = AccentChoice.violet
+            @State(sceneKey: .darkBarColour) var darkBarColour = AccentChoice.violet
 
-            /// What the gallery's windows show behind their pages: the platform's
-            /// own, until the Appearance sample chooses another look.
-            @State(sceneKey: .windows) var windows = WindowLook.platform
+            /// What the gallery's windows show behind their pages: the platform's own
+            /// in the light theme, the window's material in a light tint in the dark.
+            @State(sceneKey: .lightWindows) var lightWindows = WindowLook.platform
+            @State(sceneKey: .darkWindows) var darkWindows = WindowLook.tintedMaterial
 
-            /// The colour the windows are tinted or painted in.
-            @State(sceneKey: .windowColour) var windowColour = AccentChoice.violet
+            /// The colour the windows are tinted or painted in, in each theme.
+            @State(sceneKey: .lightWindowColour) var lightWindowColour = AccentChoice.violet
+            @State(sceneKey: .darkWindowColour) var darkWindowColour = AccentChoice.violet
 
-            /// The material the desktop shows through the windows in, where their look
-            /// is one: the thickest until the Appearance sample chooses another.
-            @State var material = Material.thick
+            /// The material the desktop shows through the windows in, in each theme,
+            /// where their look is one: the thickest until the Appearance sample
+            /// chooses another.
+            @State var lightMaterial = Material.thick
+            @State var darkMaterial = Material.thick
+
+            /// The look the gallery wears in a theme, `dark` or not.
+            func look(dark: Bool) -> ThemeLook {
+                let keys = dark ? LookKeys.dark : LookKeys.light
+                return ThemeLook(
+                    bars: self[keyPath: keys.bars], barColour: self[keyPath: keys.barColour],
+                    windows: self[keyPath: keys.windows], windowColour: self[keyPath: keys.windowColour],
+                    material: self[keyPath: keys.material])
+            }
 
             /// Whether the Fonts and Colours windows hide while another scene is the
             /// one in front.
@@ -4306,9 +4408,7 @@ enum Listings {
             log.note("created")
         }
         // The Appearance sample changes the look while the window stands.
-        .onChanged(style.windows) { dress(window) }
-        .onChanged(style.windowColour) { dress(window) }
-        .onChanged(style.material) { dress(window) }
+        .onChanged(look) { dress(window) }
         .onChanged(application.info.accentColor) { dress(window) }
         """#,
         "MainPage.detail": #"""
@@ -4866,7 +4966,7 @@ enum Listings {
         /// A line in the scene's font and accent - what its two windows change.
         private var preview: some View {
             let line = Text("The quick brown fox jumps over the lazy dog.")
-                .textColor(style.barColour.color(system: application.info.accentColor))
+                .textColor(style.look(dark: application.info.colorScheme == .dark).barColour.color(system: application.info.accentColor))
 
             return style.font.isEmpty ? line : line.fontFamily(style.font)
         }
