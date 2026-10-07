@@ -77,19 +77,23 @@ struct SurfaceLook: Equatable {
     /// The blurs offered, thinnest first.
     static let blurs: [Blur] = [.ultraThin, .thin, .regular, .thick, .ultraThick]
 
-    /// The platform's own surface - a thick violet blur, once one is chosen.
-    static let platform = SurfaceLook(material: .platform, colour: .violet, blur: .thick)
+    /// The platform's own surface - the gallery's own colour, or a thick
+    /// blur, once one is chosen.
+    static let platform = SurfaceLook(material: .platform, colour: .gallery, blur: .thick)
 
-    /// The material the surface is: its blur where it is one, tinted in its
+    /// The gallery's own colour for the part it paints.
+    static let galleryOwn = SurfaceLook(material: .colour, colour: .gallery, blur: .thick)
+
+    /// The material `surface` is: its blur where it is one, tinted in its
     /// colour - the system's accent being `system` - where it is tinted, the
     /// colour where it is one; nil for the platform's own.
-    func material(system: Color) -> Material? {
+    func material(system: Color, for surface: GallerySurface) -> Material? {
         switch material {
         case .platform: return nil
         case .clear: return .color(.transparent)
         case .blur: return .blur(blur)
-        case .tintedBlur: return .blur(blur.tint(colour.tint(system: system)))
-        case .colour: return .color(colour.color(system: system))
+        case .tintedBlur: return .blur(blur.tint(colour.tint(system: system, for: surface)))
+        case .colour: return .color(colour.color(system: system, for: surface))
         }
     }
 }
@@ -111,7 +115,7 @@ struct ThemeLook: Equatable, RawRepresentable, PersistentValue {
     /// The light theme's look the gallery opens in: clear bars, and the
     /// platform's own window and sidebar.
     static let light = ThemeLook(
-        bars: .clear, barColour: .violet, window: .platform, sidebar: .platform, flyout: .platform)
+        bars: .clear, barColour: .gallery, window: .platform, sidebar: .platform, flyout: .platform)
 
     /// The dark theme's look the gallery opens in, each platform's best: a
     /// window of the desktop blurred - in the gallery's violet on a Mac and on
@@ -131,8 +135,12 @@ struct ThemeLook: Equatable, RawRepresentable, PersistentValue {
         return ThemeLook(
             bars: .clear, barColour: .violet, window: violet(.ultraThick),
             sidebar: SurfaceLook(material: .platform, colour: .violet, blur: .ultraThick), flyout: .platform)
+        #elseif UIKIT
+        return ThemeLook(
+            bars: .clear, barColour: .gallery, window: violet(.thick), sidebar: .galleryOwn, flyout: .galleryOwn)
         #else
-        return ThemeLook(bars: .clear, barColour: .violet, window: violet(.thick), sidebar: .platform, flyout: .platform)
+        return ThemeLook(
+            bars: .clear, barColour: .gallery, window: violet(.thick), sidebar: .platform, flyout: .galleryOwn)
         #endif
     }
 

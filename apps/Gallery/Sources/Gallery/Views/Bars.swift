@@ -11,8 +11,11 @@ extension BarElement where Modified == Self {
         case .platform: return self
         case .clear: return barBackgroundColor(.transparent).barForegroundColor(Palette.text)
         case .tinted:
-            return barBackgroundColor(accent.translucentColor(system: system)).barForegroundColor(Palette.text)
-        case .colour: return barBackgroundColor(accent.color(system: system)).barForegroundColor(Palette.onBrand)
+            return barBackgroundColor(accent.translucentColor(system: system, for: .bar))
+                .barForegroundColor(Palette.text)
+        case .colour:
+            return barBackgroundColor(accent.color(system: system, for: .bar))
+                .barForegroundColor(accent.carriesThemesWords ? Palette.text : Palette.onBrand)
         }
     }
 }

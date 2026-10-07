@@ -25,8 +25,8 @@ extension SceneKey {
 
     /// The gallery's look in the light theme and in the dark: its bars, and
     /// what its window and its sidebar are made of.
-    static let lightLook = SceneKey("gallery.light.look", of: ThemeLook.self)
-    static let darkLook = SceneKey("gallery.dark.look", of: ThemeLook.self)
+    static let lightLook = SceneKey("gallery.look.light", of: ThemeLook.self)
+    static let darkLook = SceneKey("gallery.look.dark", of: ThemeLook.self)
 }
 // listing: end
 
@@ -34,6 +34,7 @@ extension SceneKey {
 /// A colour a gallery wears - on its bars, or behind its pages, where its look
 /// asks for one.
 enum AccentChoice: String, CaseIterable, PersistentValue {
+    case gallery
     case system
     case violet
     case teal
@@ -46,6 +47,7 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
     /// What the Colours window calls it.
     var name: String {
         switch self {
+        case .gallery: return "The gallery's own"
         case .system: return "The system's accent"
         case .violet: return "Violet"
         case .teal: return "Teal"
@@ -54,10 +56,12 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
         }
     }
 
-    /// The colour, the system's accent being `system` - one in both themes,
-    /// since everything on the bars it paints is white either way.
-    func color(system: Color) -> Color {
+    /// The colour on `surface`, the system's accent being `system` - one in
+    /// both themes but the gallery's own, which is made for each part and
+    /// theme.
+    func color(system: Color, for surface: GallerySurface) -> Color {
         switch self {
+        case .gallery: return surface.own
         case .system: return system
         case .violet: return AppColors.violet
         case .teal: return Color("#0F766E")
@@ -66,16 +70,20 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
         }
     }
 
+    /// Whether words on the colour are the theme's own rather than white: the
+    /// gallery's own colours are as light as the theme.
+    var carriesThemesWords: Bool { self == .gallery }
+
     /// The colour with three fifths let through - a bar tinted over the
     /// platform's material.
-    func translucentColor(system: Color) -> Color {
-        color(system: system).opacity(0.4)
+    func translucentColor(system: Color, for surface: GallerySurface) -> Color {
+        color(system: system, for: surface).opacity(0.4)
     }
 
-    /// The colour let through all but a seventh - a window's blur tinted
-    /// lightly, the blur showing through it.
-    func tint(system: Color) -> Color {
-        color(system: system).opacity(0.15)
+    /// The colour laid over a blur - a seventh of an accent, the blur showing
+    /// through it; most of the gallery's own, whose blur is its colour.
+    func tint(system: Color, for surface: GallerySurface) -> Color {
+        color(system: system, for: surface).opacity(self == .gallery ? 0.7 : 0.15)
     }
 }
 // listing: end

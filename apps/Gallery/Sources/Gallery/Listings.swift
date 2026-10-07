@@ -2722,19 +2722,23 @@ enum Listings {
             /// The blurs offered, thinnest first.
             static let blurs: [Blur] = [.ultraThin, .thin, .regular, .thick, .ultraThick]
 
-            /// The platform's own surface - a thick violet blur, once one is chosen.
-            static let platform = SurfaceLook(material: .platform, colour: .violet, blur: .thick)
+            /// The platform's own surface - the gallery's own colour, or a thick
+            /// blur, once one is chosen.
+            static let platform = SurfaceLook(material: .platform, colour: .gallery, blur: .thick)
 
-            /// The material the surface is: its blur where it is one, tinted in its
+            /// The gallery's own colour for the part it paints.
+            static let galleryOwn = SurfaceLook(material: .colour, colour: .gallery, blur: .thick)
+
+            /// The material `surface` is: its blur where it is one, tinted in its
             /// colour - the system's accent being `system` - where it is tinted, the
             /// colour where it is one; nil for the platform's own.
-            func material(system: Color) -> Material? {
+            func material(system: Color, for surface: GallerySurface) -> Material? {
                 switch material {
                 case .platform: return nil
                 case .clear: return .color(.transparent)
                 case .blur: return .blur(blur)
-                case .tintedBlur: return .blur(blur.tint(colour.tint(system: system)))
-                case .colour: return .color(colour.color(system: system))
+                case .tintedBlur: return .blur(blur.tint(colour.tint(system: system, for: surface)))
+                case .colour: return .color(colour.color(system: system, for: surface))
                 }
             }
         }
@@ -2756,7 +2760,7 @@ enum Listings {
             /// The light theme's look the gallery opens in: clear bars, and the
             /// platform's own window and sidebar.
             static let light = ThemeLook(
-                bars: .clear, barColour: .violet, window: .platform, sidebar: .platform, flyout: .platform)
+                bars: .clear, barColour: .gallery, window: .platform, sidebar: .platform, flyout: .platform)
 
             /// The dark theme's look the gallery opens in, each platform's best: a
             /// window of the desktop blurred - in the gallery's violet on a Mac and on
@@ -2776,8 +2780,12 @@ enum Listings {
                 return ThemeLook(
                     bars: .clear, barColour: .violet, window: violet(.ultraThick),
                     sidebar: SurfaceLook(material: .platform, colour: .violet, blur: .ultraThick), flyout: .platform)
+                #elseif UIKIT
+                return ThemeLook(
+                    bars: .clear, barColour: .gallery, window: violet(.thick), sidebar: .galleryOwn, flyout: .galleryOwn)
                 #else
-                return ThemeLook(bars: .clear, barColour: .violet, window: violet(.thick), sidebar: .platform, flyout: .platform)
+                return ThemeLook(
+                    bars: .clear, barColour: .gallery, window: violet(.thick), sidebar: .platform, flyout: .galleryOwn)
                 #endif
             }
 
@@ -2806,6 +2814,25 @@ enum Listings {
                 self.init(bars: bars, barColour: barColour, window: surfaces[0], sidebar: surfaces[1], flyout: surfaces[2])
             }
         }
+
+        // Sources/Styles/GalleryColours.swift
+        /// A part of the gallery a colour paints - each has a colour of the gallery's
+        /// own, made to sit with the platform's look.
+        enum GallerySurface {
+            case bar, window, sidebar, flyout
+
+            /// The gallery's own colour for this part, in each theme: the violet its
+            /// windows wear, lit or darkened a breath for each part, so the sidebar
+            /// and the menu over the page read as the window's own.
+            var own: Color {
+                switch self {
+                case .bar: Color(light: Color("#EFEBFA"), dark: Color("#251F3D"))
+                case .window: Color(light: Color("#F7F5FC"), dark: Color("#211C34"))
+                case .sidebar: Color(light: Color("#EEEBF6"), dark: Color("#1B1729"))
+                case .flyout: Color(light: Color("#F7F5FC"), dark: Color("#1E1A2E"))
+                }
+            }
+        }
         """#,
         "Gallery.SessionStyle": #"""
         // Sources/Gallery/SessionStyle.swift
@@ -2831,13 +2858,14 @@ enum Listings {
 
             /// The gallery's look in the light theme and in the dark: its bars, and
             /// what its window and its sidebar are made of.
-            static let lightLook = SceneKey("gallery.light.look", of: ThemeLook.self)
-            static let darkLook = SceneKey("gallery.dark.look", of: ThemeLook.self)
+            static let lightLook = SceneKey("gallery.look.light", of: ThemeLook.self)
+            static let darkLook = SceneKey("gallery.look.dark", of: ThemeLook.self)
         }
 
         /// A colour a gallery wears - on its bars, or behind its pages, where its look
         /// asks for one.
         enum AccentChoice: String, CaseIterable, PersistentValue {
+            case gallery
             case system
             case violet
             case teal
@@ -2850,6 +2878,7 @@ enum Listings {
             /// What the Colours window calls it.
             var name: String {
                 switch self {
+                case .gallery: return "The gallery's own"
                 case .system: return "The system's accent"
                 case .violet: return "Violet"
                 case .teal: return "Teal"
@@ -2858,10 +2887,12 @@ enum Listings {
                 }
             }
 
-            /// The colour, the system's accent being `system` - one in both themes,
-            /// since everything on the bars it paints is white either way.
-            func color(system: Color) -> Color {
+            /// The colour on `surface`, the system's accent being `system` - one in
+            /// both themes but the gallery's own, which is made for each part and
+            /// theme.
+            func color(system: Color, for surface: GallerySurface) -> Color {
                 switch self {
+                case .gallery: return surface.own
                 case .system: return system
                 case .violet: return AppColors.violet
                 case .teal: return Color("#0F766E")
@@ -2870,16 +2901,20 @@ enum Listings {
                 }
             }
 
+            /// Whether words on the colour are the theme's own rather than white: the
+            /// gallery's own colours are as light as the theme.
+            var carriesThemesWords: Bool { self == .gallery }
+
             /// The colour with three fifths let through - a bar tinted over the
             /// platform's material.
-            func translucentColor(system: Color) -> Color {
-                color(system: system).opacity(0.4)
+            func translucentColor(system: Color, for surface: GallerySurface) -> Color {
+                color(system: system, for: surface).opacity(0.4)
             }
 
-            /// The colour let through all but a seventh - a window's blur tinted
-            /// lightly, the blur showing through it.
-            func tint(system: Color) -> Color {
-                color(system: system).opacity(0.15)
+            /// The colour laid over a blur - a seventh of an accent, the blur showing
+            /// through it; most of the gallery's own, whose blur is its colour.
+            func tint(system: Color, for surface: GallerySurface) -> Color {
+                color(system: system, for: surface).opacity(self == .gallery ? 0.7 : 0.15)
             }
         }
 
@@ -4519,8 +4554,8 @@ enum Listings {
         }
         // What the sidebar stands on beside the page and sliding over it,
         // in each theme, as the gallery's looks say.
-        .sidebarBackground(surface(\.sidebar))
-        .flyoutBackground(surface(\.flyout))
+        .sidebarBackground(surface(\.sidebar, .sidebar))
+        .flyoutBackground(surface(\.flyout, .flyout))
         """#,
         "MainPage.tabs": #"""
         // Sources/Gallery/MainPage.swift
@@ -5106,7 +5141,7 @@ enum Listings {
         /// A line in the scene's font and accent - what its two windows change.
         private var preview: some View {
             let line = Text("The quick brown fox jumps over the lazy dog.")
-                .textColor(style.look(dark: application.info.colorScheme == .dark).barColour.color(system: application.info.accentColor))
+                .textColor(style.look(dark: application.info.colorScheme == .dark).barColour.color(system: application.info.accentColor, for: .bar))
 
             return style.font.isEmpty ? line : line.fontFamily(style.font)
         }

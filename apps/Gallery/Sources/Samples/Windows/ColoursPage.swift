@@ -45,8 +45,8 @@ struct ColoursPage: View {
         let style = self.style
         let worn = style.look(dark: application.info.colorScheme == .dark).barColour
         return Button(worn == accent ? "✓  \(accent.name)" : accent.name)
-            .textColor(.white)
-            .background(accent.color(system: application.info.accentColor))
+            .textColor(accent.carriesThemesWords ? Palette.text : .white)
+            .background(accent.color(system: application.info.accentColor, for: .bar))
             .shape(.roundedRectangle(8))
             .onClicked {
                 for look in [\SessionStyle.lightLook, \.darkLook] {

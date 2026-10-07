@@ -82,8 +82,8 @@ struct MainPage: View {
             }
             // What the sidebar stands on beside the page and sliding over it,
             // in each theme, as the gallery's looks say.
-            .sidebarBackground(surface(\.sidebar))
-            .flyoutBackground(surface(\.flyout))
+            .sidebarBackground(surface(\.sidebar, .sidebar))
+            .flyoutBackground(surface(\.flyout, .flyout))
             // listing: end
             // listing: MainPage.bar
             // The gallery's own actions, declared once around every page: a page's
@@ -283,11 +283,11 @@ struct MainPage: View {
 
     /// What a surface of the gallery is made of, a material for each theme as
     /// its looks say - the platform's own in a theme whose look leaves it.
-    private func surface(_ part: KeyPath<ThemeLook, SurfaceLook>) -> Material {
+    private func surface(_ part: KeyPath<ThemeLook, SurfaceLook>, _ painted: GallerySurface) -> Material {
         let system = application.info.accentColor
         return Material(
-            light: style.look(dark: false)[keyPath: part].material(system: system),
-            dark: style.look(dark: true)[keyPath: part].material(system: system))
+            light: style.look(dark: false)[keyPath: part].material(system: system, for: painted),
+            dark: style.look(dark: true)[keyPath: part].material(system: system, for: painted))
     }
 
     /// Dresses `window` as the gallery's looks say, one for each theme: what it
@@ -295,6 +295,6 @@ struct MainPage: View {
     private func dress(_ window: WindowSession) {
         let unsaid = style.look(dark: false).window.material == .platform
             && style.look(dark: true).window.material == .platform
-        window.background = unsaid ? nil : surface(\.window)
+        window.background = unsaid ? nil : surface(\.window, .window)
     }
 }
