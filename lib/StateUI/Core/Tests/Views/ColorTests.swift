@@ -120,4 +120,19 @@ final class ColorTests: XCTestCase {
         XCTAssertEqual(Color(light: .white, dark: .black).opacity(0), Color(light: Color("#00FFFFFF"), dark: Color("#00000000")))
         XCTAssertEqual(Color("#512BD4").opacity(2), Color("#512BD4"))
     }
+
+    /// The accent crosses as the system's colour, let through as it was asked, and the differ resolves it to the
+    /// accent in force - the host never meets it.
+    func testTheAccentIsTheOneInForce() {
+        let info = StandardEnvironment.application.info
+        let before = info.accentColor
+        defer { HostBoundary.setAccentColor(before) }
+        HostBoundary.setAccentColor(Color("#FF0A84FF"))
+
+        XCTAssertEqual(Color.accent.propValue, .systemColor(0, alpha: 255))
+        XCTAssertEqual(Color.accent.opacity(0.5).propValue, .systemColor(0, alpha: 128))
+        XCTAssertEqual(Color(propValue: .systemColor(0, alpha: 128)), Color.accent.opacity(0.5))
+        XCTAssertEqual(Color.accent.propValue.resolvingTheme(), Color("#FF0A84FF").propValue)
+        XCTAssertEqual(Color.accent.opacity(0.5).propValue.resolvingTheme(), Color("#800A84FF").propValue)
+    }
 }

@@ -31,6 +31,10 @@ public struct Color: Equatable, Sendable, HostRepresentable {
     /// Design: docs/design/types/colour-and-theme.md#a-pair-for-each-theme
     let dark: Rgba?
 
+    /// Whether this is the accent in force, whose alpha is `light`'s - the
+    /// differ reads it as the view wearing it is built.
+    let isAccent: Bool
+
     /// A colour from hex: "#RGB", "#ARGB", "#RRGGBB" or "#AARRGGBB", with or
     /// without the leading `#` - the alpha, when it is written, first.
     ///
@@ -46,6 +50,7 @@ public struct Color: Equatable, Sendable, HostRepresentable {
 
         self.light = parsed
         self.dark = nil
+        self.isAccent = false
     }
 
     /// The same color named twice, once for each theme.
@@ -59,13 +64,31 @@ public struct Color: Equatable, Sendable, HostRepresentable {
     public init(light: Color, dark: Color) {
         self.light = light.light
         self.dark = dark.light
+        self.isAccent = false
     }
 
     /// The channels themselves, and the ones for dark mode when there are any.
     init(_ light: Rgba, dark: Rgba? = nil) {
         self.light = light
         self.dark = dark
+        self.isAccent = false
     }
+
+    /// The accent in force, let through to `alpha`.
+    private init(accentAlpha alpha: UInt8) {
+        light = Rgba(red: 0, green: 0, blue: 0, alpha: alpha)
+        dark = nil
+        isAccent = true
+    }
+
+    /// The accent in force: the one the user chose for the system - or, on a
+    /// platform with none, the application's own tint - read as the view
+    /// wearing it is built, so a change in the system's settings builds again
+    /// exactly the views wearing it, in a style too.
+    ///
+    ///     Switch($on).tint(.accent)
+    ///     Text("Saved").textColor(.accent.opacity(0.7))
+    public static let accent = Color(accentAlpha: 255)
 
     /// A colour from its channels: red, green and blue, each 0-255, and an
     /// alpha from 0, invisible, to 255, opaque - the default.
@@ -94,11 +117,13 @@ public struct Color: Equatable, Sendable, HostRepresentable {
             Rgba(red: channels.red, green: channels.green, blue: channels.blue,
                  alpha: UInt8((Double(channels.alpha) * kept).rounded()))
         }
-        return Color(scaled(light), dark: dark.map(scaled))
+        return isAccent ? Color(accentAlpha: scaled(light).alpha) : Color(scaled(light), dark: dark.map(scaled))
     }
 
-    /// Four bytes under the colour kind, or both halves as a themed pair.
+    /// Four bytes under the colour kind, both halves as a themed pair, or the
+    /// accent in force as the system's colour the differ resolves.
     public var propValue: PropValue {
+        if isAccent { return .systemColor(0, alpha: light.alpha) }
         guard let dark else { return Color.tagged(light) }
 
         return .themed(light: Color.tagged(light), dark: Color.tagged(dark))
@@ -109,6 +134,8 @@ public struct Color: Equatable, Sendable, HostRepresentable {
     /// - Parameter propValue: what the host sent.
     public init?(propValue: PropValue) {
         switch propValue {
+        case .systemColor(0, let alpha):
+            self.init(accentAlpha: alpha)
         case .color(let red, let green, let blue, let alpha):
             self.init(Rgba(red: red, green: green, blue: blue, alpha: alpha))
 

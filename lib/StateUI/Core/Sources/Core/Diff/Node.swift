@@ -54,6 +54,12 @@ public enum PropValue: Equatable, Sendable {
     /// Design: docs/design/core/identity-and-diffing.md#themes
     indirect case themed(light: PropValue, dark: PropValue)
 
+    /// A colour of the system's - 0, the accent in force - let through to
+    /// `alpha`, resolved by the differ as the element is built. Never handed to
+    /// a host.
+    /// Design: docs/design/types/colour-and-theme.md#the-accent-in-force
+    case systemColor(Int32, alpha: UInt8)
+
     /// Whether this value has components a host may animate; a host snaps any pair
     /// it cannot interpolate.
     var moves: Bool {
@@ -71,10 +77,10 @@ public enum PropValue: Equatable, Sendable {
         }
     }
 
-    /// Whether this value has a half for each theme anywhere in it.
+    /// Whether this value has a half for each theme, or a colour of the system's, anywhere in it.
     var isThemed: Bool {
         switch self {
-        case .themed: true
+        case .themed, .systemColor: true
         case .values(let values): values.contains { $0.isThemed }
         default: false
         }
@@ -85,6 +91,8 @@ public enum PropValue: Equatable, Sendable {
         switch self {
         case .themed(let light, let dark):
             (StandardEnvironment.application.info.colorScheme == .dark ? dark : light).resolvingTheme()
+        case .systemColor(_, let alpha):
+            StandardEnvironment.application.info.accentColor.opacity(Double(alpha) / 255).propValue.resolvingTheme()
         case .values(let values):
             .values(values.map { $0.resolvingTheme() })
         default:

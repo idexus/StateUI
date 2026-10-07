@@ -90,3 +90,11 @@ one colour, while a second file keeps artwork of any colours as it was drawn.
 `Background` is one colour or one brush, and the two stay apart in the
 patch: a colour crosses as a colour and a brush as its kind and parts,
 so a host paints a plain colour as the plain colour it is.
+
+## The accent in force
+
+`Color.accent` crosses as the system's colour, its alpha with it, and the
+differ resolves it as the element is built from `info.accentColor` - which
+the host reports - so the element is the accent's reader, as a pair's is the
+theme's. A host never meets it. On a carried state it crosses as the accent in
+force, the pair's way.

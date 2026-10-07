@@ -132,9 +132,14 @@ extension Insets: LaneValue {
 
 extension Color: LaneValue {
     /// Red, green, blue and alpha, each from nought to one. A colour pair crosses as
-    /// the half in force (`State.Storage.wearThemedPair()`).
+    /// the half in force, the accent as the accent in force
+    /// (`State.Storage.wearThemedPair()`).
     public var carried: StateCarried {
-        let half = dark.flatMap { StandardEnvironment.application.info.$colorScheme.standing == .dark ? $0 : nil } ?? light
+        let shown = isAccent
+            ? StandardEnvironment.application.info.$accentColor.standing.opacity(Double(light.alpha) / 255) : self
+        let half = shown.dark.flatMap {
+            StandardEnvironment.application.info.$colorScheme.standing == .dark ? $0 : nil
+        } ?? shown.light
 
         return .lanes([
             Double(half.red) / 255,

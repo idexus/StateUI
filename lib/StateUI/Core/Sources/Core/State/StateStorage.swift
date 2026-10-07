@@ -67,8 +67,11 @@ extension State {
         /// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
         nonisolated(unsafe) var pair: Value?
 
-        /// Whether a value is a colour with a half for each theme.
-        static func isPair(_ value: Value) -> Bool { (value as? Color)?.dark != nil }
+        /// Whether a value is a colour with a half for each theme, or the accent in force.
+        static func isPair(_ value: Value) -> Bool {
+            guard let color = value as? Color else { return false }
+            return color.dark != nil || color.isAccent
+        }
 
         /// Whether the image is a journey's rather than the value's own lanes.
         /// Design: docs/design/core/state.md#a-state-has-one-shape
@@ -455,8 +458,9 @@ extension State.Storage where Value: StateValue {
     func wearThemedPair() {
         guard let pair, let hostRead, let hostWrite else { return }
 
-        // The read that makes this element the theme's reader.
+        // The reads that make this element the theme's reader, and the accent's.
         _ = StandardEnvironment.application.info.colorScheme
+        _ = StandardEnvironment.application.info.accentColor
 
         guard StateImage.bytes(of: pair.carried) != StateImage.bytes(of: hostRead().carried) else { return }
 

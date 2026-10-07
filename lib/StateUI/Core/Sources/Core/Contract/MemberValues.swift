@@ -156,6 +156,7 @@ extension PropValue {
         case .color: "color"
         case .values: "values"
         case .themed: "themed"
+        case .systemColor: "systemColor"
         }
     }
 }

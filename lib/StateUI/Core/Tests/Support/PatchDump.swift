@@ -171,6 +171,8 @@ enum PatchDump {
         // A node's own value; the differ picks one half before a host sees it.
         case .themed(let light, let dark):
             return "themed [" + line(for: light) + ", " + line(for: dark) + "]"
+        case .systemColor(let role, let alpha):
+            return "systemColor \(role) " + hex2(alpha)
         }
     }
 

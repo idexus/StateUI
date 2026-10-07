@@ -108,6 +108,15 @@ Read `app.info.colorScheme`, with `@Environment(\.application) private var
 app`, only when application logic needs the theme as a value. A themed color or image follows the theme without an
 application branch.
 
+`Color.accent` is the accent in force - the one the user chose for the
+system, or the platform's tint where it has none - resolved as the view
+wearing it is built, as a pair is, so a change in the system's settings
+builds again exactly the views wearing it, in a style too:
+
+```swift
+let marked = Color.accent.opacity(0.7)
+```
+
 ## Visual states
 
 A visual state is a set of values a control shows while it is in a state:
