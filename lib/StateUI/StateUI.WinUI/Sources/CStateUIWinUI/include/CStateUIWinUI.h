@@ -271,8 +271,10 @@ void stateui_winui_window_set_limits(StateUIObjectRef window, double const *limi
 void stateui_winui_window_set_traits(StateUIObjectRef window, bool maximizable, bool minimizable, bool floats);
 
 /// Shows the desktop through the window in the desktop acrylic where `blurred` - of the thin kind or the base one,
-/// its luminosity hiding `opacity` of the desktop - else in Mica, the desktop's tint.
-void stateui_winui_window_set_backdrop(StateUIObjectRef window, bool blurred, bool thin, float opacity);
+/// in the theme's colour `argb`, its luminosity hiding `opacity` of the desktop and its tint `tintOpacity` - else in
+/// Mica, the desktop's tint.
+void stateui_winui_window_set_backdrop(StateUIObjectRef window, bool blurred, bool thin, float opacity,
+                                       float tintOpacity, uint32_t argb);
 
 /// Whether the window shows the desktop acrylic, of the kind and at the luminosity's opacity it reads into `thin` and
 /// `opacity`; false where it shows Mica.

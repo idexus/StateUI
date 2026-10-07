@@ -81,13 +81,16 @@ final class WinUIWindow {
         stateui_winui_window_set_traits(
             handle, traits.isMaximizable ?? true, traits.isMinimizable ?? true, traits.floatsOnTop)
         let acrylic = traits.background.blur.map(Self.acrylic)
-        stateui_winui_window_set_backdrop(handle, acrylic != nil, acrylic?.thin ?? false, acrylic?.opacity ?? 0)
+        // The theme's colour of a blur, which the differ gives again as the theme turns.
+        let colour = traits.background.standIn.flatMap { HostBrush($0).firstColor }?.argb ?? 0
+        stateui_winui_window_set_backdrop(
+            handle, acrylic != nil, acrylic?.thin ?? false, acrylic?.opacity ?? 0, (acrylic?.opacity ?? 0) / 2, colour)
         let argb = traits.background.paint.flatMap { HostBrush($0).firstColor }.flatMap(\.argb)
         stateui_winui_window_set_background(handle, argb != nil, argb ?? 0)
     }
 
     /// The desktop acrylic a blur `thickness` thick is: the thin kind for the two thinnest, its luminosity hiding
-    /// as much of the desktop as the blur does.
+    /// as much of the desktop as the blur does - its tint half as much, in the theme's colour.
     /// Design: docs/design/platforms/winui/runtime.md#a-windows-backdrop
     static func acrylic(_ thickness: Blur.Thickness) -> (thin: Bool, opacity: Float) {
         (thickness.rawValue <= Blur.Thickness.thin.rawValue, Float(thickness.opacity))

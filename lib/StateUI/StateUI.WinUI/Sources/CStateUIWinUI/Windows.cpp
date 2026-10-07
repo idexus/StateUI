@@ -30,17 +30,24 @@ namespace backdrops = winrt::Microsoft::UI::Composition::SystemBackdrops;
 using winrt::Microsoft::UI::Composition::ICompositionSupportsSystemBackdrop;
 
 namespace {
-    /// The desktop acrylic of the thin kind or the base one, its luminosity hiding `opacity` of the desktop; XAML's
-    /// own configuration has it follow the window's activation and theme.
+    /// The desktop acrylic of the thin kind or the base one in the theme's colour, its luminosity hiding `opacity`
+    /// of the desktop and its tint `tintOpacity`; XAML's own configuration has it follow the window's activation.
     /// Design: docs/design/platforms/winui/runtime.md#a-windows-backdrop
     struct StateUIAcrylic : xaml::Media::SystemBackdropT<StateUIAcrylic> {
-        StateUIAcrylic(bool thin, float opacity) : thin(thin), opacity(opacity) {}
+        StateUIAcrylic(bool thin, float opacity, float tintOpacity, uint32_t argb)
+            : thin(thin), opacity(opacity), tintOpacity(tintOpacity), argb(argb) {}
 
         void OnTargetConnected(ICompositionSupportsSystemBackdrop const &target, xaml::XamlRoot const &root) {
             SystemBackdropT::OnTargetConnected(target, root);
             controller = backdrops::DesktopAcrylicController();
             controller.Kind(thin ? backdrops::DesktopAcrylicKind::Thin : backdrops::DesktopAcrylicKind::Base);
+            // Every colour written: a controller given one value keeps none of the theme's own.
+            auto colour = winrt::Windows::UI::Color{255, static_cast<uint8_t>(argb >> 16),
+                static_cast<uint8_t>(argb >> 8), static_cast<uint8_t>(argb)};
+            controller.TintColor(colour);
+            controller.TintOpacity(tintOpacity);
             controller.LuminosityOpacity(opacity);
+            controller.FallbackColor(colour);
             controller.SetSystemBackdropConfiguration(GetDefaultSystemBackdropConfiguration(target, root));
             controller.AddSystemBackdropTarget(target);
         }
@@ -55,6 +62,8 @@ namespace {
 
         bool const thin;
         float const opacity;
+        float const tintOpacity;
+        uint32_t const argb;
         backdrops::DesktopAcrylicController controller{nullptr};
     };
 
@@ -341,7 +350,9 @@ extern "C" void stateui_winui_window_set_traits(
     }
 }
 
-extern "C" void stateui_winui_window_set_backdrop(StateUIObjectRef handle, bool blurred, bool thin, float opacity) {
+extern "C" void stateui_winui_window_set_backdrop(
+    StateUIObjectRef handle, bool blurred, bool thin, float opacity, float tintOpacity, uint32_t argb
+) {
     try {
         auto window = borrow<xaml::Window>(handle);
         // The backdrop is made again only where it turns.
@@ -350,8 +361,9 @@ extern "C" void stateui_winui_window_set_backdrop(StateUIObjectRef handle, bool 
             if (shown || !window.SystemBackdrop()) window.SystemBackdrop(xaml::Media::MicaBackdrop());
             return;
         }
-        if (shown && shown->thin == thin && shown->opacity == opacity) return;
-        window.SystemBackdrop(winrt::make<StateUIAcrylic>(thin, opacity));
+        if (shown && shown->thin == thin && shown->opacity == opacity && shown->tintOpacity == tintOpacity &&
+            shown->argb == argb) return;
+        window.SystemBackdrop(winrt::make<StateUIAcrylic>(thin, opacity, tintOpacity, argb));
     } catch (...) {
         report("setting a window's backdrop");
     }

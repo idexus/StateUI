@@ -121,9 +121,13 @@ backdrop of the relay's own over WinUI's `DesktopAcrylicController`, since
 WinUI's ready one holds neither a kind nor an opacity: the two thinnest
 blurs are the thin kind, the rest the base one, and its luminosity hides as
 much of the desktop as the blur's thickness does
-(`Blur.Thickness.opacity`, the share a stand-in colour lets through). XAML's
-default configuration has the acrylic follow the window's activation and
-theme - an inactive window shows its solid fallback. The backdrop is made
+(`Blur.Thickness.opacity`, the share a stand-in colour lets through), its
+tint half as much. Its colour - tint, and the fallback an inactive window
+shows - is the blur's stand-in colour, the theme's: a controller given any
+one value keeps none of the theme's own (an ultra-thick blur came out
+white in the dark theme), so every colour is written, and the theme
+turning gives the window its traits again. XAML's default configuration has
+the acrylic follow the window's activation. The backdrop is made
 again only where it turns. A tint, and the colour a window is painted, lie
 over it on the window's root. Glass is the acrylic at its fallback
 thickness: WinUI has no glass.
