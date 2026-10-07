@@ -83,7 +83,18 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
     /// The colour laid over a blur - a seventh of an accent, the blur showing
     /// through it; most of the gallery's own, whose blur is its colour.
     func tint(system: Color, for surface: GallerySurface) -> Color {
-        color(system: system, for: surface).opacity(self == .gallery ? 0.7 : 0.15)
+        color(system: system, for: surface).opacity(self == .gallery ? Self.ownTint : 0.15)
+    }
+
+    /// How much of the gallery's own colour lies over a blur or glass: more on
+    /// the iPad and the iPhone, whose glass is greyer, so that their sidebar
+    /// wears the Mac's colour.
+    private static var ownTint: Double {
+        #if UIKIT
+        0.85
+        #else
+        0.7
+        #endif
     }
 }
 // listing: end

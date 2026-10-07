@@ -43,6 +43,12 @@ enum SurfaceMaterial: String, CaseIterable, PersistentValue {
     /// A blur in a light tint of the gallery's colour.
     case tintedBlur
 
+    /// The platform's glass: what stands behind bent and lit through it.
+    case glass
+
+    /// The platform's glass in a tint of the gallery's colour.
+    case tintedGlass
+
     /// The gallery's colour.
     case colour
 
@@ -53,6 +59,8 @@ enum SurfaceMaterial: String, CaseIterable, PersistentValue {
         case .clear: return "Clear"
         case .blur: return "Blur"
         case .tintedBlur: return "Blur, tinted"
+        case .glass: return "Glass"
+        case .tintedGlass: return "Glass, tinted"
         case .colour: return "Colour"
         }
     }
@@ -64,7 +72,7 @@ enum SurfaceMaterial: String, CaseIterable, PersistentValue {
 
     /// Whether the surface shows a colour.
     var showsColour: Bool {
-        self == .tintedBlur || self == .colour
+        self == .tintedBlur || self == .tintedGlass || self == .colour
     }
 }
 
@@ -93,6 +101,8 @@ struct SurfaceLook: Equatable {
         case .clear: return .color(.transparent)
         case .blur: return .blur(blur)
         case .tintedBlur: return .blur(blur.tint(colour.tint(system: system, for: surface)))
+        case .glass: return .glass(.regular)
+        case .tintedGlass: return .glass(.regular.tint(colour.tint(system: system, for: surface)))
         case .colour: return .color(colour.color(system: system, for: surface))
         }
     }
@@ -117,25 +127,27 @@ struct ThemeLook: Equatable, RawRepresentable, PersistentValue {
     static let light = ThemeLook(
         bars: .clear, barColour: .gallery, window: .platform, sidebar: .platform, flyout: .platform)
 
-    /// The dark theme's look the gallery opens in, each platform's best: a
-    /// window of the desktop blurred in the gallery's violet, its sidebar
-    /// letting it through.
+    /// The dark theme's look the gallery opens in: on Windows a window of the
+    /// desktop blurred in the gallery's violet, its sidebar letting it
+    /// through; on the Mac and GNOME a thin blur of the desktop in the
+    /// gallery's own colour, made from that window, its sidebar the
+    /// platform's glass in it; on the iPad and the iPhone those colours, the
+    /// sidebar the same glass; on the Web those colours.
     static var dark: ThemeLook {
         let violet = { (blur: Blur) in SurfaceLook(material: .tintedBlur, colour: .violet, blur: blur) }
-        #if APPKIT
-        return ThemeLook(
-            bars: .clear, barColour: .violet, window: violet(.thick),
-            sidebar: SurfaceLook(material: .clear, colour: .violet, blur: .thick), flyout: .platform)
-        #elseif WINUI
+        #if WINUI
         return ThemeLook(
             bars: .platform, barColour: .violet, window: violet(.thick), sidebar: .platform, flyout: .platform)
-        #elseif GTK
+        #elseif APPKIT || GTK
         return ThemeLook(
-            bars: .clear, barColour: .violet, window: violet(.ultraThick),
-            sidebar: SurfaceLook(material: .platform, colour: .violet, blur: .ultraThick), flyout: .platform)
-        #elseif UIKIT || WEB
+            bars: .clear, barColour: .gallery, window: SurfaceLook(material: .tintedBlur, colour: .gallery, blur: .regular),
+            sidebar: SurfaceLook(material: .tintedGlass, colour: .gallery, blur: .thick), flyout: .galleryOwn)
+        #elseif UIKIT
+        let glass = SurfaceLook(material: .tintedGlass, colour: .gallery, blur: .thick)
+        return ThemeLook(bars: .clear, barColour: .gallery, window: .galleryOwn, sidebar: glass, flyout: glass)
+        #elseif WEB
         return ThemeLook(
-            bars: .clear, barColour: .gallery, window: violet(.thick), sidebar: .galleryOwn, flyout: .galleryOwn)
+            bars: .clear, barColour: .gallery, window: .galleryOwn, sidebar: .galleryOwn, flyout: .galleryOwn)
         #else
         return ThemeLook(
             bars: .clear, barColour: .gallery, window: violet(.thick), sidebar: .platform, flyout: .galleryOwn)

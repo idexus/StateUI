@@ -72,7 +72,7 @@ enum Palette {
 
     /// The edge of a panel: a hairline holding it apart where the page behind
     /// is as light as the panel.
-    static let edge = Color(light: Color("#14000000"), dark: Color("#0FFFFFFF"))
+    static let edge = Color(light: Color("#14000000"), dark: Color("#15FFFFFF"))
 
     /// Behind a sample and its code: the page darkened a breath, all else let
     /// through.

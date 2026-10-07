@@ -2688,6 +2688,12 @@ enum Listings {
             /// A blur in a light tint of the gallery's colour.
             case tintedBlur
 
+            /// The platform's glass: what stands behind bent and lit through it.
+            case glass
+
+            /// The platform's glass in a tint of the gallery's colour.
+            case tintedGlass
+
             /// The gallery's colour.
             case colour
 
@@ -2698,6 +2704,8 @@ enum Listings {
                 case .clear: return "Clear"
                 case .blur: return "Blur"
                 case .tintedBlur: return "Blur, tinted"
+                case .glass: return "Glass"
+                case .tintedGlass: return "Glass, tinted"
                 case .colour: return "Colour"
                 }
             }
@@ -2709,7 +2717,7 @@ enum Listings {
 
             /// Whether the surface shows a colour.
             var showsColour: Bool {
-                self == .tintedBlur || self == .colour
+                self == .tintedBlur || self == .tintedGlass || self == .colour
             }
         }
 
@@ -2738,6 +2746,8 @@ enum Listings {
                 case .clear: return .color(.transparent)
                 case .blur: return .blur(blur)
                 case .tintedBlur: return .blur(blur.tint(colour.tint(system: system, for: surface)))
+                case .glass: return .glass(.regular)
+                case .tintedGlass: return .glass(.regular.tint(colour.tint(system: system, for: surface)))
                 case .colour: return .color(colour.color(system: system, for: surface))
                 }
             }
@@ -2762,25 +2772,27 @@ enum Listings {
             static let light = ThemeLook(
                 bars: .clear, barColour: .gallery, window: .platform, sidebar: .platform, flyout: .platform)
 
-            /// The dark theme's look the gallery opens in, each platform's best: a
-            /// window of the desktop blurred in the gallery's violet, its sidebar
-            /// letting it through.
+            /// The dark theme's look the gallery opens in: on Windows a window of the
+            /// desktop blurred in the gallery's violet, its sidebar letting it
+            /// through; on the Mac and GNOME a thin blur of the desktop in the
+            /// gallery's own colour, made from that window, its sidebar the
+            /// platform's glass in it; on the iPad and the iPhone those colours, the
+            /// sidebar the same glass; on the Web those colours.
             static var dark: ThemeLook {
                 let violet = { (blur: Blur) in SurfaceLook(material: .tintedBlur, colour: .violet, blur: blur) }
-                #if APPKIT
-                return ThemeLook(
-                    bars: .clear, barColour: .violet, window: violet(.thick),
-                    sidebar: SurfaceLook(material: .clear, colour: .violet, blur: .thick), flyout: .platform)
-                #elseif WINUI
+                #if WINUI
                 return ThemeLook(
                     bars: .platform, barColour: .violet, window: violet(.thick), sidebar: .platform, flyout: .platform)
-                #elseif GTK
+                #elseif APPKIT || GTK
                 return ThemeLook(
-                    bars: .clear, barColour: .violet, window: violet(.ultraThick),
-                    sidebar: SurfaceLook(material: .platform, colour: .violet, blur: .ultraThick), flyout: .platform)
-                #elseif UIKIT || WEB
+                    bars: .clear, barColour: .gallery, window: SurfaceLook(material: .tintedBlur, colour: .gallery, blur: .regular),
+                    sidebar: SurfaceLook(material: .tintedGlass, colour: .gallery, blur: .thick), flyout: .galleryOwn)
+                #elseif UIKIT
+                let glass = SurfaceLook(material: .tintedGlass, colour: .gallery, blur: .thick)
+                return ThemeLook(bars: .clear, barColour: .gallery, window: .galleryOwn, sidebar: glass, flyout: glass)
+                #elseif WEB
                 return ThemeLook(
-                    bars: .clear, barColour: .gallery, window: violet(.thick), sidebar: .galleryOwn, flyout: .galleryOwn)
+                    bars: .clear, barColour: .gallery, window: .galleryOwn, sidebar: .galleryOwn, flyout: .galleryOwn)
                 #else
                 return ThemeLook(
                     bars: .clear, barColour: .gallery, window: violet(.thick), sidebar: .platform, flyout: .galleryOwn)
@@ -2819,15 +2831,16 @@ enum Listings {
         enum GallerySurface {
             case bar, window, sidebar, flyout
 
-            /// The gallery's own colour for this part, in each theme: the violet its
-            /// windows wear, lit or darkened a breath for each part, so the sidebar
-            /// and the menu over the page read as the window's own.
+            /// The gallery's own colour for this part, in each theme: in the dark,
+            /// the colours its Windows window wears in the gallery's violet acrylic -
+            /// the window, the bar a breath lighter, the sidebar and the menu over the
+            /// page as dark as a list of samples on it.
             var own: Color {
                 switch self {
-                case .bar: Color(light: Color("#EFEBFA"), dark: Color("#251F3D"))
-                case .window: Color(light: Color("#F7F5FC"), dark: Color("#211C34"))
-                case .sidebar: Color(light: Color("#EEEBF6"), dark: Color("#1B1729"))
-                case .flyout: Color(light: Color("#F7F5FC"), dark: Color("#1E1A2E"))
+                case .bar: Color(light: Color("#EFEBFA"), dark: Color("#2E255A"))
+                case .window: Color(light: Color("#F7F5FC"), dark: Color("#2A2154"))
+                case .sidebar: Color(light: Color("#EEEBF6"), dark: Color("#251E4C"))
+                case .flyout: Color(light: Color("#F7F5FC"), dark: Color("#251E4C"))
                 }
             }
         }
@@ -2912,7 +2925,18 @@ enum Listings {
             /// The colour laid over a blur - a seventh of an accent, the blur showing
             /// through it; most of the gallery's own, whose blur is its colour.
             func tint(system: Color, for surface: GallerySurface) -> Color {
-                color(system: system, for: surface).opacity(self == .gallery ? 0.7 : 0.15)
+                color(system: system, for: surface).opacity(self == .gallery ? Self.ownTint : 0.15)
+            }
+
+            /// How much of the gallery's own colour lies over a blur or glass: more on
+            /// the iPad and the iPhone, whose glass is greyer, so that their sidebar
+            /// wears the Mac's colour.
+            private static var ownTint: Double {
+                #if UIKIT
+                0.85
+                #else
+                0.7
+                #endif
             }
         }
 
