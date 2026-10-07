@@ -23,6 +23,19 @@ final class WebLayoutViewTests: XCTestCase {
         layout.setItems([b, a].map { ($0, LayoutValues()) })
         XCTAssertEqual(WebPage.children(of: layout.node), [b.node, a.node], "a child no longer held leaves")
     }
+
+    /// A ZStack's child keeps its own opacity as the stack places its children again: a row's press light, hidden,
+    /// stays hidden as the row's look changes under the pointer.
+    func testAStackedChildKeepsItsOwnOpacityAsItIsPlacedAgain() {
+        let layout = WebLayoutView(arrangement: .layers)
+        let light = WebLayoutView(arrangement: .single)
+        defer { for view in [layout, light] { view.detach() } }
+        layout.setItems([(light, LayoutValues())])
+        light.setOpacity(0)
+
+        layout.setItems([(light, LayoutValues())])
+        XCTAssertEqual(WebPage.style(of: light.node, "opacity"), "0", "its own opacity, placed again")
+    }
 }
 
 /// A child let go of before its layout arranges again - a page popped off a stack - is left alone.

@@ -78,7 +78,10 @@ not only its turn: a run worked out before its room was measured - a card half
 a point wide - leaves nothing of itself behind once the next one sizes it. A ZStack draws its children back to front in the run's order
 (`ZStackArithmetic.drawingOrder`) - each child, placed or not, takes its
 z-index from it - so a child the run places never rises over a later one it
-places none of.
+places none of. A child placed in its area again, with no run, takes back
+its own opacity: the run's drawn opacity gives way to it, and a placing never
+clears it - a row's hidden press light, a ZStack child at opacity nought,
+stood fully lit after its row's look changed under the pointer.
 
 ## Scrolling
 

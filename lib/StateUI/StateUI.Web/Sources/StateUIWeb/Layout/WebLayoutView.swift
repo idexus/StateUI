@@ -228,7 +228,9 @@ class WebLayoutView: WebDOMView {
     /// A ZStack's child in its area - in points from the room's top left, or in fractions of the room - else in the
     /// whole room, the one cell every child shares.
     private func placeInArea(_ view: WebDOMView, _ area: Area?) {
-        view.style("opacity", nil)
+        // A run's drawn opacity gives way to the view's own, which a placing never touches.
+        // Design: docs/design/platforms/web/layout.md#a-placing-run
+        view.setOpacity(view.opacity)
         guard let area else {
             view.style("grid-area", "1 / 1 / 2 / 2")
             return view.style("position", "relative")
