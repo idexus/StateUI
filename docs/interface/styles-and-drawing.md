@@ -86,7 +86,12 @@ let sameTranslucent = Color(red: 91, green: 91, blue: 214, alpha: 128)
 Hex input accepts `#RGB`, `#ARGB`, `#RRGGBB`, or `#AARRGGBB`, the alpha first
 when it is written. Named colors are static members checked by the compiler.
 `Color(red:green:blue:alpha:)` takes whole-number channels from 0 through 255;
-the alpha is 255, opaque, unless it is given.
+the alpha is 255, opaque, unless it is given. `opacity(_:)` lets a colour
+through - its alpha scaled, in both halves of a pair:
+
+```swift
+let wash = Color("#5B5BD6").opacity(0.15)
+```
 
 `ImageSource` follows the same theme rule:
 

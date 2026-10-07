@@ -51,7 +51,8 @@ scene ([Scenes](#scenes)).
 | Member | Meaning |
 | --- | --- |
 | `phase` | active, inactive, or background |
-| `info` | what the host says the application is, an `AppInfo`: `name`, `packageName`, `versionString`, `buildString`, and `colorScheme`, the theme the system asks for, kept current as the user switches it ([What the library offers](../concepts/environment.md#what-the-library-offers)) |
+| `info` | what the host says the application is, an `AppInfo`: `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, the theme in force, and `accentColor`, the accent the user chose for the system, both kept current as the user switches them ([What the library offers](../concepts/environment.md#what-the-library-offers)) |
+| `colorScheme` | the theme the application holds: `.system` follows the user, `.light` and `.dark` hold it ([The application's theme](#the-applications-theme)) |
 | `scenes` | the scenes standing, in opening order |
 | `styles` | the application's `StyleSheet` |
 | `motion` | default motion law |
@@ -59,6 +60,27 @@ scene ([Scenes](#scenes)).
 | `openWindow()` | opens one more window of the `WindowGroup` with no name, as *File ▸ New Window* does |
 | `openWindow(_:)`, `openWindow(_:value:)` | opens a window of a kind, in the scene declaring it |
 | `closeWindow(_:)`, `closeWindow(_:value:)` | closes every window of a kind, or the one for a value |
+
+### The application's theme
+
+An application follows the theme the user chose until it holds one of its
+own. `application.colorScheme` is `.system` until it is written; `.light` or
+`.dark` shows every window in that theme with each platform's own call, and
+`.system` gives it back to the user's setting. `info.colorScheme` reports the
+theme in force, which every `Color(light:dark:)` resolves against.
+
+```swift quote
+Button("Dark") { application.colorScheme = .dark }
+Button("As the system") { application.colorScheme = .system }
+```
+
+`info.accentColor` is the accent the user chose for the system - on a
+platform with none, the application's own tint - reported live, so a view
+reading it is built again when the user changes it.
+
+```swift quote
+Switch($on).tint(app.info.accentColor)
+```
 
 Configuration needed before the first view is built belongs in the
 application's initializer:
