@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 SearchField.cursorPosition: not realized
 SearchField.inputPurpose: not realized
 SearchField.isEnabled: ✅

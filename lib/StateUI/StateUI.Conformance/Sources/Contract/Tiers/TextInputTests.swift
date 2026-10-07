@@ -15,7 +15,9 @@
                 typed(element), bounded(element), written(element), readOnly(element), closed(element),
                 Aspects.holds(TextInputContract.maximumLength, on: element, 10, then: 3),
                 Aspects.holds(TextInputContract.placeholder, on: element, "Name", then: "E-mail"),
-                Aspects.holds(TextInputContract.placeholderColor, on: element, .red, then: .blue),
+                Aspects.holds(
+                    TextInputContract.placeholderColor, on: element, .red, then: .blue,
+                    with: [Write(TextInputContract.placeholder, "Name")]),
                 Aspects.holds(TextInputContract.inputPurpose, on: element, .email, then: .url),
                 Aspects.holds(TextInputContract.isReadOnly, on: element, false, then: true),
                 Aspects.holds(TextInputContract.isSpellCheckEnabled, on: element, true, then: false),

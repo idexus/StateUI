@@ -108,6 +108,7 @@ extension UIKitDriver {
             ]
             return positions.first { $0.0 == configuration.imagePlacement }?.1.propValue
         case .iconSpacing: return Double(configuration.imagePadding).propValue
+        case .icon: return configuration.image?.accessibilityIdentifier.map { .string($0) }
         case .lineBreak: return lineBreak(configuration.titleLineBreakMode).propValue
         default: return nil
         }

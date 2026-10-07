@@ -1,4 +1,4 @@
-# revision 1.2
+# revision 2.2
 SearchField.cursorPosition: cannot read cursorPosition of SearchField - AppKit's driver has no path for it yet
 SearchField.inputPurpose: ✓ read inputPurpose of SearchField: the traits the host keeps; a Mac shows no keys a purpose picks
 SearchField.isEnabled: ✅
@@ -7,7 +7,7 @@ SearchField.isSpellCheckEnabled: cannot read isSpellCheckEnabled of SearchField 
 SearchField.isTextPredictionEnabled: cannot read isTextPredictionEnabled of SearchField - AppKit's driver has no path for it yet
 SearchField.maximumLength: ✅
 SearchField.placeholder: ✅
-SearchField.placeholderColor: cannot read placeholderColor of SearchField - AppKit's driver has no path for it yet
+SearchField.placeholderColor: ✅
 SearchField.selectionLength: cannot read selectionLength of SearchField - AppKit's driver has no path for it yet
 SearchField.text: ✅
 SearchField.textChanged: ✅
@@ -31,7 +31,7 @@ TextField.isSpellCheckEnabled: cannot read isSpellCheckEnabled of TextField - Ap
 TextField.isTextPredictionEnabled: cannot read isTextPredictionEnabled of TextField - AppKit's driver has no path for it yet
 TextField.maximumLength: ✅
 TextField.placeholder: ✅
-TextField.placeholderColor: cannot read placeholderColor of TextField - AppKit's driver has no path for it yet
+TextField.placeholderColor: ✅
 TextField.selectionLength: cannot read selectionLength of TextField - AppKit's driver has no path for it yet
 TextField.text: ✅
 TextField.textChanged: ✅

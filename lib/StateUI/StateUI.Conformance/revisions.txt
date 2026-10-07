@@ -38,3 +38,4 @@ View 4
 VisualElement 4
 Shape 3
 BorderElement 2
+TextInput 2

@@ -34,7 +34,7 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (88)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>42 ✅ · 2 ☑️ · 37 ✓ · 1 –</td><td><code>NSButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>44 ✅ · 1 ☑️ · 37 ✓ · 3 –</td><td><code>UIButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>45 ✅ · 1 ☑️ · 37 ✓ · 3 –</td><td><code>UIButton</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>60 ✅ · 2 ☑️ · 10 ✓ · 4 –</td><td><code>Button</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>74 ✅ · 12 ✓</td><td><code>Button</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>56 ✅ · 1 ☑️ · 28 ✓ · 1 –</td><td><code>GtkButton</code></td></tr></tbody>
@@ -48,8 +48,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ButtonContract
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>onClicked</code> (<code>clicked</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✓</td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit: cannot read icon of Button - AppKit's driver has no path for it yet<br>UIKit: cannot read icon of Button - UIKit's driver has no path for it yet<br>Android Views: cannot read icon of Button - Android's driver has no path for it yet<br>GTK 4: only through the host's own: read icon of Button: the file the host's own panel draws: GTK's snapshot holds no picture's name<br>Web: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✓</td><td align="center"></td></tr>
+<tr><td colspan="9">AppKit: cannot read icon of Button - AppKit's driver has no path for it yet<br>Android Views: cannot read icon of Button - Android's driver has no path for it yet<br>GTK 4: only through the host's own: read icon of Button: the file the host's own panel draws: GTK's snapshot holds no picture's name<br>Web: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>iconPosition</code></td><td>property</td><td><code>IconPosition</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td></tr>
 <tr><td colspan="9">Android Views: cannot read iconPosition of Button - Android's driver has no path for it yet<br>Web: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>iconSpacing</code></td><td>property</td><td><code>Double</code></td><td>adaptive</td><td align="center"></td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td></tr>

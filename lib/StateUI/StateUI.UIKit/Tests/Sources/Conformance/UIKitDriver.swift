@@ -362,6 +362,9 @@ final class UIKitDriver: HostDriver {
         case (.cursorPosition, let field as any UIKitTextInputView): return field.selection.start.propValue
         case (.selectionLength, let field as any UIKitTextInputView): return field.selection.length.propValue
         case (.placeholder, let field as UITextField): return field.attributedPlaceholder?.string.propValue
+        case (.placeholderColor, let field as UITextField):
+            guard let words = field.attributedPlaceholder, words.length > 0 else { return nil }
+            return (words.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? UIColor).map { Self.color($0).propValue }
         case (.placeholder, let editor as UIKitTextEditorView): return editor.placeholder.propValue
         case (.isSpellCheckEnabled, let field as UITextField): return (field.spellCheckingType != .no).propValue
         case (.isSpellCheckEnabled, let editor as UITextView): return (editor.spellCheckingType != .no).propValue
