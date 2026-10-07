@@ -48,6 +48,14 @@ extension AndroidDriver {
         case (.selectedTab, let tabs as AndroidTabView): return Self.selectedTab(of: tabs)?.propValue
         case (.progress, let bar as AndroidProgressBarView): return bar.progress.propValue
         case (.showsSidebar, let split as AndroidSplitView): return split.isPresented.propValue
+        case (.sidebarBackground, let split as AndroidSplitView):
+            return split.grounds.beside.map { Self.material(argb: Int64(UInt32(bitPattern: $0))) }
+        case (.flyoutBackground, let split as AndroidSplitView):
+            guard split.overlays, let drawer = split.heldViews().last else {
+                throw DriverCannot("read the drawer's surface", because: "the sidebar stands beside the detail")
+            }
+            let argb = Java.callStaticLong(JavaAPI.views, Self.sidebarColour, .object(drawer.reference))
+            return argb == Int64.min ? nil : Self.material(argb: argb)
         case (.selectedItems, let items as AndroidItemsView): return .strings(items.selectedForTesting)
         case (.selectionMode, let items as AndroidItemsView): return items.modeForTesting.propValue
         case (.isAnimating, let spinner as AndroidActivityIndicatorView):
@@ -173,6 +181,16 @@ extension AndroidDriver {
             red: Int(packed >> 16 & 255), green: Int(packed >> 8 & 255), blue: Int(packed & 255),
             alpha: Int(packed >> 24 & 255))).propValue
     }
+
+    /// The colour `argb` as a material.
+    static func material(argb: Int64) -> HostValue {
+        let packed = UInt32(truncatingIfNeeded: argb)
+        return Material.color(Color(
+            red: Int(packed >> 16 & 255), green: Int(packed >> 8 & 255), blue: Int(packed & 255),
+            alpha: Int(packed >> 24 & 255))).propValue
+    }
+
+    static let sidebarColour = Java.staticMethod(JavaAPI.views, "sidebarColour", "(Landroid/view/View;)J")
 
     static let readWindowBackground = Java.staticMethod(
         JavaAPI.environment, "windowBackground", "(Landroid/app/Activity;)J")

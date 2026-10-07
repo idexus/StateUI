@@ -183,7 +183,7 @@ enum JavaAPI {
         store, "write", "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V")
 
     static let focus = Java.staticMethod(views, "focus", "(Landroid/view/View;Z)Z")
-    static let groundOnWindow = Java.staticMethod(views, "groundOnWindow", "(Landroid/view/View;Z)V")
+    static let groundSidebar = Java.staticMethod(views, "groundSidebar", "(Landroid/view/View;ZZI)V")
     static let sheet = Java.staticMethod(
         views, "sheet", "(Landroid/content/Context;Landroid/view/View;)Landroid/widget/FrameLayout;")
     static let rise = Java.staticMethod(views, "rise", "(Landroid/view/ViewGroup;Landroid/view/View;ZJ)V")

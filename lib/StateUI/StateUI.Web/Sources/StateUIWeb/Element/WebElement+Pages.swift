@@ -49,6 +49,9 @@ extension WebElement {
         if changed.contains(.showsSidebar) {
             split.present(element.value(.showsSidebar)?.bool == true, moves: wasDescribed)
         }
+        if changed.contains(.sidebarBackground) || changed.contains(.flyoutBackground) {
+            split.ground(beside: element.sidebarMaterial(over: false), over: element.sidebarMaterial(over: true))
+        }
     }
 
     /// The user chose another tab: the host layer tells the pages and the state, and the chrome follows.

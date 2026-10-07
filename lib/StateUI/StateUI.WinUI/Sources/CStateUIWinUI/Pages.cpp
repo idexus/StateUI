@@ -337,15 +337,29 @@ extern "C" void stateui_winui_split_set(
     }
 }
 
-extern "C" void stateui_winui_split_set_pane_background(StateUIObjectRef handle, bool hasBackground, uint32_t background) {
+extern "C" void stateui_winui_split_set_pane_grounds(
+    StateUIObjectRef handle, int32_t besideKind, uint32_t besideArgb, float besideOpacity, float besideTintOpacity,
+    int32_t overKind, uint32_t overArgb, float overOpacity, float overTintOpacity
+) {
     try {
-        // The pane's own room - its margin, the rows beneath the page - takes the page's tone, not the window's backdrop.
+        // Each place's own brush - the whole pane's, around the page in it too; none is WinUI's own.
         // Design: docs/design/platforms/winui/pages.md#a-split-view
-        auto brush = hasBackground ? xaml::Media::Brush(media::SolidColorBrush(color(background))) : nullptr;
-        writeResources(borrow<controls::NavigationView>(handle),
-                       {{L"NavigationViewExpandedPaneBackground", brush}, {L"NavigationViewDefaultPaneBackground", brush}});
+        auto ground = [](int32_t kind, uint32_t argb, float opacity, float tintOpacity) -> xaml::Media::Brush {
+            if (kind == 1) return media::SolidColorBrush(color(argb));
+            if (kind != 2) return nullptr;
+            media::AcrylicBrush acrylic;
+            acrylic.TintColor(color(argb | 0xFF000000u));
+            acrylic.TintOpacity(tintOpacity);
+            acrylic.TintLuminosityOpacity(static_cast<double>(opacity));
+            acrylic.FallbackColor(color(argb | 0xFF000000u));
+            return acrylic;
+        };
+        writeResources(borrow<controls::NavigationView>(handle), {
+            {L"NavigationViewExpandedPaneBackground", ground(besideKind, besideArgb, besideOpacity, besideTintOpacity)},
+            {L"NavigationViewDefaultPaneBackground", ground(overKind, overArgb, overOpacity, overTintOpacity)},
+        });
     } catch (...) {
-        report("painting a split view's pane");
+        report("standing a split view's sidebar");
     }
 }
 

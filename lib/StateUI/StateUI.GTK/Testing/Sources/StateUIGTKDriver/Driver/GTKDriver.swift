@@ -83,6 +83,10 @@ final class GTKDriver: HostDriver {
     private static let recordedMembers = ["padding", "background", "stroke", "lineWidth", "shape", "placeholderColor"]
 
     private static let byHostReasons = [
+        "read sidebarBackground of SplitView":
+            "the class of the host's style sheet the sidebar wears: GTK reads back no background",
+        "read flyoutBackground of SplitView":
+            "the colour the split keeps for its sidebar over the detail, which a wide window never shows",
         "read source of Image": "the file the host's own panel draws: GTK's snapshot holds no picture's name",
         "read icon of Button": "the file the host's own panel draws: GTK's snapshot holds no picture's name",
         "read contentMode of Image": "how the host's own panel fills its room: GTK's snapshot holds no aspect",
@@ -243,6 +247,13 @@ final class GTKDriver: HostDriver {
         case (.contentMode, let image as GTKImageView): return image.aspect.propValue
         case (.text, let check as GTKCheckView): return check.text.propValue
         case (.showsSidebar, let split as GTKSplitView): return split.showsSidebar.propValue
+        case (.sidebarBackground, let split as GTKSplitView), (.flyoutBackground, let split as GTKSplitView):
+            // The sidebar's class in the place it stands; the other place's colour as the split keeps it.
+            guard split.isCollapsed == (property == .flyoutBackground) else {
+                return (property == .flyoutBackground ? split.grounds.over : split.grounds.beside)
+                    .map { Material.color(Self.color($0)).propValue }
+            }
+            return split.sidebarWidgetForTesting.flatMap(Self.fill).map { Material.color($0).propValue }
         case (.selectedIndex, let picker as GTKPickerView): return picker.chosen.map(\.propValue)
         case (.options, let picker as GTKPickerView):
             guard let model = gtk_drop_down_get_model(picker.widget.opaque) else { return [String]().propValue }

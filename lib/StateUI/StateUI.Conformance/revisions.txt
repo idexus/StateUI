@@ -13,7 +13,7 @@
 # change alone does. A change that proves nothing new raises nothing.
 
 TextEditor 2
-SplitView 2
+SplitView 3
 android TextAlignmentElement 2
 appkit TextInput 2
 android TextInput 2

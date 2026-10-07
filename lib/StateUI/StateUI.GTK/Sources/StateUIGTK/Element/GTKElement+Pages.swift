@@ -83,6 +83,11 @@ extension GTKElement {
             }
         case .splitView:
             guard let split = view as? GTKSplitView else { return }
+            // GTK blurs nothing inside a window: a blur stands as its colour.
+            let colour = { (over: Bool) in
+                self.element.sidebarMaterial(over: over).painted.flatMap { GTKBrush($0).firstColor }
+            }
+            split.grounds = (colour(false), colour(true))
             let shows = element.sidebarIsVisible
             let showing: (shows: Bool, toggle: () -> Void) = (shows, { [weak self] in
                 self?.changeSidebarVisibility(to: !shows)

@@ -89,6 +89,8 @@ enum UIKitRealization {
         .complete("TextSpan", "tracking"),
         .complete("SplitView", "showsSidebar"),
         .complete("SplitView", "showsSidebarChanged"),
+        .partial("SplitView", "sidebarBackground", missing: Self.paintsAColour),
+        .partial("SplitView", "flyoutBackground", missing: Self.paintsAColour),
         .complete("TabView", "selectedTab"),
         .complete("TabView", "selectedTabChanged"),
         .complete("ToolbarItem", "isDestructive"),
@@ -115,6 +117,9 @@ enum UIKitRealization {
         .notPlanned("Window", "x", reason: Self.placedBySystem),
         .notPlanned("Window", "y", reason: Self.placedBySystem),
     ] + pickerWords
+
+    /// What a sidebar's material leaves out on UIKit.
+    private static let paintsAColour = "UIKit paints a sidebar page's view in a colour: a blur or glass shows its colour."
 
     /// Why a window takes no size: the user's hand gives it, and a scene asks only for orientations.
     private static let sizedBySystem =

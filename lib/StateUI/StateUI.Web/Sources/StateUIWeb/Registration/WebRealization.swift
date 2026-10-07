@@ -59,6 +59,8 @@ enum WebRealization {
         .complete("RadioButton", "groupName"),
         .complete("SplitView", "showsSidebar"),
         .complete("SplitView", "showsSidebarChanged"),
+        .partial("SplitView", "sidebarBackground", missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
+        .partial("SplitView", "flyoutBackground", missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
         .notPlanned("Slider", "background", reason: "The browser draws its slider over the whole box and paints no "
             + "background under it."),
         .complete("TabView", "selectedTab"),

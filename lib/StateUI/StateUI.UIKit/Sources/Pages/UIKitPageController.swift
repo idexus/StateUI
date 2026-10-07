@@ -50,12 +50,26 @@ final class UIKitPageController: UIViewController {
     }
 
     /// The page's background behind the whole screen it stands on, the bars and the notch included; where the page
-    /// says none, the window's - what the window is made of under a page that paints nothing of its own - else the
-    /// system's.
+    /// says none, a sidebar's ground, else the window's - what the window is made of under a page that paints nothing
+    /// of its own - else the system's.
     /// Design: docs/design/platforms/uikit/pages.md#a-pages-background
     func showBackground() {
-        let background = HostMaterial(page?.element.value(.background)).painted.flatMap { HostBrush($0).firstColor }
-        view.backgroundColor = background.flatMap(UIColor.init(stateUI:)) ?? view.window?.backgroundColor ?? .systemBackground
+        let element = page?.element
+        let background = HostMaterial(element?.value(.background)).painted.flatMap { HostBrush($0).firstColor }
+        view.backgroundColor = background.flatMap(UIColor.init(stateUI:)) ?? sidebarGround(of: element)
+            ?? view.window?.backgroundColor ?? .systemBackground
+    }
+
+    /// What a split view's sidebar page stands on: the split view's material for the sidebar's place, else over the
+    /// detail the system's background, never the window's; nil for a page that is no sidebar, or one beside the
+    /// detail the split view says nothing of.
+    /// Design: docs/design/host/pages.md#a-sidebars-material
+    private func sidebarGround(of element: MountedElement?) -> UIColor? {
+        guard let element, let split = element.parent, split.type == .splitView, split.children.first === element,
+              let controller = splitViewController as? UIKitSplitViewController
+        else { return nil }
+        let painted = split.sidebarMaterial(over: controller.overlays).painted.flatMap { HostBrush($0).firstColor }
+        return painted.flatMap(UIColor.init(stateUI:)) ?? (controller.overlays ? .systemBackground : nil)
     }
 
     override func viewIsAppearing(_ animated: Bool) {
@@ -78,6 +92,15 @@ final class UIKitPageController: UIViewController {
             edges: page?.element.contentSafeArea)
         page?.placedFrame = room
         page?.view?.layoutIfNeeded()
+    }
+}
+
+extension UIViewController {
+    /// Has every page under this controller - its children, and what it presents - show its background again.
+    func showPageBackgrounds() {
+        (self as? UIKitPageController)?.showBackground()
+        for child in children { child.showPageBackgrounds() }
+        presentedViewController?.showPageBackgrounds()
     }
 }
 #endif

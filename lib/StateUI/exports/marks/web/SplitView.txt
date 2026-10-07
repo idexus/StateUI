@@ -1,5 +1,7 @@
-# revision 2.1
+# revision 3.1
 SplitView: ✅
+SplitView.flyoutBackground: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
 SplitView.showsSidebar: ✅
 SplitView.showsSidebarChanged: ✅
+SplitView.sidebarBackground: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
 Text.frameChanged: ✅

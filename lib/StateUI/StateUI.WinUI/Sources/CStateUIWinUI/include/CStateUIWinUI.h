@@ -818,9 +818,12 @@ StateUIObjectRef stateui_winui_split_make(int64_t view, double expandsAt);
 void stateui_winui_split_set(StateUIObjectRef split, StateUIObjectRef pane, StateUIObjectRef content,
                              StateUIObjectRef row, bool open);
 
-/// Paints a split view's pane, around the sidebar page in it, in that page's background; the platform's own where
-/// none is given.
-void stateui_winui_split_set_pane_background(StateUIObjectRef split, bool hasBackground, uint32_t background);
+/// Stands a split view's pane on a ground for each place: beside the detail (the expanded pane) and over it (the
+/// overlay pane). A ground's kind is 0 for WinUI's own, 1 for the colour `argb`, 2 for the in-app acrylic in the
+/// colour `argb`, its luminosity hiding `opacity` of what is behind it and its tint `tintOpacity`.
+void stateui_winui_split_set_pane_grounds(StateUIObjectRef split, int32_t besideKind, uint32_t besideArgb,
+                                          float besideOpacity, float besideTintOpacity, int32_t overKind,
+                                          uint32_t overArgb, float overOpacity, float overTintOpacity);
 
 /// Whether a window's content shows the keys it takes - the way back's, Escape's - in a tip over everything it
 /// holds: what a test reads.

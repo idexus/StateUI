@@ -23,6 +23,9 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
     /// Whether the room the split view stands in is narrow, as its presentation last took it; nil before a room.
     private var narrow: Bool?
 
+    /// Whether the sidebar slides over the detail rather than standing beside it.
+    var overlays: Bool { narrow == true }
+
     /// Whether the host is moving the columns itself, which UIKit's telling of it does not report back.
     private var movingItself = false
 
@@ -92,6 +95,8 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
         preferredSplitBehavior = narrow ? .overlay : .tile
         preferredDisplayMode = askedDisplayMode
         giveTheColumnsTheRoomsWidth()
+        // The sidebar stands on another ground over the detail than beside it.
+        showPageBackgrounds()
     }
 
     /// Each column is as narrow as the room: a tab bar, a sheet and a bar in it stand as the room's own.

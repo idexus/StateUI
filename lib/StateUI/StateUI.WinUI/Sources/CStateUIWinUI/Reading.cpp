@@ -388,8 +388,16 @@ namespace {
             auto own = ownBrush(bar.Resources(), L"MenuBarItemForeground");
             return own ? colour(own) : std::string();
         }
-        if (auto split = object.try_as<controls::NavigationView>(); split && what == "paneBackground") {
-            auto own = ownBrush(split.Resources(), L"NavigationViewExpandedPaneBackground");
+        // A pane's ground beside the detail and over it: a colour, or "acrylic" with its colour and luminosity.
+        if (auto split = object.try_as<controls::NavigationView>();
+            split && (what == "paneBackground" || what == "overlayPaneBackground")) {
+            auto own = ownBrush(split.Resources(), what == "paneBackground" ? L"NavigationViewExpandedPaneBackground"
+                                                                            : L"NavigationViewDefaultPaneBackground");
+            if (auto acrylic = own ? own.try_as<media::AcrylicBrush>() : nullptr) {
+                auto luminosity = acrylic.TintLuminosityOpacity();
+                return "acrylic " + colour(media::SolidColorBrush(acrylic.TintColor())) + " " +
+                       number(luminosity ? luminosity.Value() : 0);
+            }
             return own ? colour(own) : std::string();
         }
         if (auto element = object.try_as<xaml::FrameworkElement>(); element && what == "theme") {

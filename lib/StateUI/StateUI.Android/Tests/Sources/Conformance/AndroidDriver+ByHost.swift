@@ -26,6 +26,8 @@ extension AndroidDriver {
             return "the host's own range; the SeekBar holds only steps"
         case "read options of Picker", "read title of Picker": return "the rows the relay keeps, not the spinner's"
         case "read showsSidebar of SplitView": return "the split's own flag; the drawer slides on it"
+        case "read sidebarBackground of SplitView":
+            return "the colour the split keeps for its sidebar beside the detail, which a phone's room never shows"
         case "read selectionMode of ItemsView": return "the mode the relay keeps, which its cells tell TalkBack"
         case "read a question": return "what the relay keeps of the dialog it showed"
         case "read a file dialog": return "the picker the relay holds, which a test never hands the system"

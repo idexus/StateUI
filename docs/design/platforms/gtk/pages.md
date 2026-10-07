@@ -97,6 +97,13 @@ what it holds. While it is closed the sidebar takes no focus - GTK's
 hidden from assistive technology; both come back as it shows, so its slide
 stays libadwaita's own.
 
+The sidebar stands on the split view's material for its place ([a sidebar's
+material](../../host/pages.md#a-sidebars-material)) - over the detail where
+the split is collapsed, beside it otherwise - as a fill class of the host's
+style sheet on the sidebar's widget, moved as the split's `collapsed` turns;
+none leaves libadwaita's own sidebar, which over the detail is a pane of its
+own. GTK blurs nothing inside a window, so a blur stands as its colour.
+
 ## Tabs
 
 A tabbed view is a `GtkStack` of its tabs, each named by its page's title,

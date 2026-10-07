@@ -219,6 +219,7 @@ Slider
   valueChanged()
 SplitView
   showsSidebar
+  sidebarBackground
 Stepper
   maximum
   minimum

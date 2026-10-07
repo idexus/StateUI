@@ -43,6 +43,12 @@ extension AppKitDriver {
         }
     }
 
+    /// What a split view's sidebar pane stands on: its blur or glass, else its layer's colour.
+    static func ground(of split: AppKitSplitView) -> HostValue? {
+        if let surface = split.sidebarGroundForTesting.surface { return material(surface)?.propValue }
+        return split.sidebarLayerColorForTesting.flatMap { NSColor(cgColor: $0) }.map { Material.color(color($0)).propValue }
+    }
+
     /// The material a layout's box shows: its glass - how clear, its tint, whether it answers the user - or its
     /// blur, by the role standing for its thickness, in the colour laid over it.
     private static func material(_ surface: any AppKitBoxSurface) -> Material? {

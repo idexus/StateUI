@@ -30,6 +30,12 @@ extension AndroidElement {
             split.onScrimTapped = { [weak self] in self?.changeSidebarVisibility(to: false) }
             split.onAdapted = { [weak self] in self?.sidebarShown(true) }
             if changed.contains(.showsSidebar) { split.present(value(.showsSidebar)?.bool == true) }
+            // Android blurs nothing behind a view: a blur stands as its colour.
+            let colour = { (over: Bool) in
+                self.element.sidebarMaterial(over: over).painted.flatMap { HostBrush($0).firstColor }
+                    .flatMap(AndroidView.argb)
+            }
+            split.grounds = (colour(false), colour(true))
             // The detail's bars show the sidebar's button: they are told once the split holds both its pages.
             children.dropFirst().first?.refreshBars()
         default:

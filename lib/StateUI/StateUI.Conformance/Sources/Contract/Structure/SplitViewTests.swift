@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// `SplitViewContract` on a host: the sidebar beside the detail shows as the binding says; the user hiding or showing
-/// it is heard on the binding, the program's is shown.
+/// it is heard on the binding, the program's is shown; the sidebar stands on the material of its place.
 @_spi(Host) public enum SplitViewTests: ConformanceFamily {
     public static let name = "SplitView"
 
@@ -74,7 +74,39 @@
                 try s.settle { try s.held(SplitViewContract.showsSidebar, on: split) == false }
                 s.expect(try s.held(SplitViewContract.showsSidebar, on: split), false)
             },
+            standsOn(SplitViewContract.sidebarBackground, "theSidebarStandsOnItsMaterialBesideTheDetail") {
+                $0.sidebarBackground($1)
+            },
+            standsOn(SplitViewContract.flyoutBackground, "theSidebarStandsOnItsFlyoutsMaterialOverTheDetail") {
+                $0.flyoutBackground($1)
+            },
         ]
+    }
+
+    /// The sidebar stands on the material `member` says - the colour it starts with, then the one the tree changes
+    /// it to.
+    private static func standsOn(
+        _ member: ElementProperty<SplitViewContract, Material>, _ name: String,
+        _ write: @escaping @Sendable (SplitView, Material) -> SplitView.Modified
+    ) -> ConformanceCase {
+        ConformanceCase(name, proves: [Covered(member)], needs: [Covered(ButtonContract.clicked)]) { s in
+            let (first, changed) = (Material.color(Color("#0F766E")), Material.color(Color("#512BD4")))
+            let value = State(wrappedValue: first)
+            s.start {
+                write(SplitView(State(wrappedValue: true).projectedValue) {
+                    Text("Sidebar")
+                } detail: {
+                    WideDetail(VStack { Button("Change").onClicked { value.wrappedValue = changed }.id("change") })
+                }, value.wrappedValue)
+            }
+            let split = try s.element(ofType: SplitViewContract.nodeType)
+            try s.settle { try s.held(member, on: split) == first }
+            s.expect(try s.held(member, on: split), first, "the material it starts with")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.held(member, on: split) == changed }
+            s.expect(try s.held(member, on: split), changed, "the material the tree changed it to")
+        }
     }
 }
 

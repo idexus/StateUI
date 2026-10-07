@@ -58,6 +58,18 @@ final class WebSplitView: WebDOMView {
         if adaptation.room(width, breakpoint: Self.breakpoint, shown: isPresented) { userPresents(true, moves: false) }
     }
 
+    /// Stands the sidebar on what the split view says of each place - beside the detail, and over it - as variables
+    /// the style sheet reads in each: a colour, or a blur's filter under its colour; none for the page's own.
+    /// Design: docs/design/host/pages.md#a-sidebars-material
+    func ground(beside: HostMaterial, over: HostMaterial) {
+        for (place, material) in [("sidebar", beside), ("flyout", over)] {
+            let box = WebBox(fill: material.paint, material: material.blur == nil ? nil : material)
+            let styles = Dictionary(box.styles(size: .zero), uniquingKeysWith: { first, _ in first })
+            style("--stateui-\(place)-ground", material.isEmpty ? nil : styles["background"] ?? nil)
+            style("--stateui-\(place)-filter", styles["backdrop-filter"] ?? nil)
+        }
+    }
+
     /// Whether the sidebar stands over the detail, the page being narrow.
     var overlays: Bool {
         WebRelay.box(of: node).width < Self.breakpoint

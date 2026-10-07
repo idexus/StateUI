@@ -108,6 +108,8 @@ enum WinUIRealization {
         .complete("TextSpan", "textDecorations"),
         .complete("SplitView", "showsSidebar"),
         .complete("SplitView", "showsSidebarChanged"),
+        .partial("SplitView", "sidebarBackground", missing: Self.paneHasNoGlass),
+        .partial("SplitView", "flyoutBackground", missing: Self.paneHasNoGlass),
         .complete("TabView", "selectedTab"),
         .complete("TabView", "selectedTabChanged"),
         .partial("TextField", "isPassword", missing: "A PasswordBox has no read-only state, alignment, case, caret "
@@ -160,6 +162,9 @@ enum WinUIRealization {
     ]
 
     /// Why a figure takes no background on WinUI.
+    /// What a split view's pane leaves out of a material.
+    static let paneHasNoGlass = "WinUI has no glass: a pane of glass shows the in-app acrylic at its fallback thickness."
+
     static let figurePaintsNoGround = "A WinUI shape is its figure alone: it paints no ground around it."
 
     /// Why a drawing's press is not let through as the tree says.

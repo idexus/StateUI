@@ -119,6 +119,14 @@ tree's, else the user's, and the user's choice is heard by the host layer
 view is given decides once (`SidebarAdaptation`): at least the breakpoint
 wide, the sidebar shows, as the user's.
 
+The sidebar stands on the split view's material for each place ([a sidebar's
+material](../../host/pages.md#a-sidebars-material)): the split view sets a
+variable for each - `--stateui-sidebar-ground` and `-filter` beside the
+detail, `--stateui-flyout-ground` and `-filter` over it - which the style
+sheet reads in that place, so a page turning narrow moves the sidebar to the
+other with no word from the host. A blur is a backdrop filter under its
+colour; none leaves the page's raised surface.
+
 Beside the detail the sidebar moves in and out: its column opens or closes
 while the sidebar slides with the column's edge, both on one timing, and the
 bar's parts travel with them - the toggle to the bar's edge, the title to its

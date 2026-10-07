@@ -118,6 +118,26 @@ On a phone - iOS and Android alike - the sidebar slides over the detail from
 the leading edge, the detail shaded behind it, and a tap on the shade closes
 it; on an iPad or a wide tablet it stands beside the detail.
 
+What the sidebar stands on is the split view's to say, for each of the two
+places, as a `Material` - a colour, a gradient, a blur, glass:
+
+```swift quote
+SplitView($menuOpen, sidebar: {
+    MenuPage(showsSidebar: $menuOpen)
+}, detail: {
+    MainPage()
+})
+.sidebarBackground(.blur(.thin))     // beside the detail
+.flyoutBackground(.blur(.thick))     // sliding over it
+```
+
+Left unsaid, each is the platform's own: beside the detail the window shows
+through, as a desktop sidebar does; over it the sidebar stands on the
+platform's drawer or overlay surface - never on the window, so a clear window
+never leaves a flyout with nothing under its words. The sidebar page's own
+`.pageBackground` still paints the page on top. A platform that blurs nothing
+inside a window shows a blur as its colour.
+
 ## Modal pages
 
 Modal presentation is an arrangement of an application array, `ModalStack`,

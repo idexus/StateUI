@@ -39,6 +39,8 @@ extension UIKitDriver {
         case "read selectedIndex of Picker", "read options of Picker", "read title of Picker":
             return "the host's own choice, not the menu's"
         case "read the menu of Window": return "the host's menu bar entries, not UIKit's main menu"
+        case "read sidebarBackground of SplitView":
+            return "the split view's material for a sidebar beside the detail, which an iPhone's room never shows"
         case "read what the screen reader said": return "the host's own list of what it announced"
         case "read a question": return "the buttons' captions the host keeps"
         case "read a file dialog": return "the host's own record of the picker it presented"

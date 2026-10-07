@@ -94,6 +94,17 @@ extension WinUIDriver {
         return place < 8 ? .number(values[place].rounded()) : .bool(values[place] == 1)
     }
 
+    /// A pane's ground as the relay reads it: a colour, or an acrylic - the blur its luminosity stands for; nil for
+    /// WinUI's own.
+    private static func ground(_ read: String) -> HostValue? {
+        let words = read.split(separator: " ")
+        if words.first == "acrylic", words.count == 3, let opacity = Float(words[2]),
+           let thickness = Blur.Thickness.allCases.first(where: { abs(WinUIWindow.acrylic($0).opacity - opacity) < 0.005 }) {
+            return Material.blur(Blur(thickness)).propValue
+        }
+        return words.count == 1 ? Material.color(Color(String(words[0]))).propValue : nil
+    }
+
     /// The window `element` is, as the host keeps it for the next start.
     private func keptWindow(_ element: MountedElement) throws -> KeptScenes.Window {
         let scenes = element.enclosing(type: .application)?.children.filter { $0.type == .scene } ?? []
@@ -381,6 +392,9 @@ extension WinUIDriver {
             return words.isEmpty ? nil : .string(words)
         case ("barIcon", _): return Self.picture(try read(window().titleBar, "icon"), named: element, by: .barIcon)
         case ("showsSidebar", let split as WinUISplitView): return (try read(split.sidebar, "paneOpen") == "1").propValue
+        case ("sidebarBackground", let split as WinUISplitView): return Self.ground(try read(split.sidebar, "paneBackground"))
+        case ("flyoutBackground", let split as WinUISplitView):
+            return Self.ground(try read(split.sidebar, "overlayPaneBackground"))
         case ("background", let page?) where element.type == .page:
             return try Self.color(read(page, "box.fill")).map { $0.propValue }
         case ("selectedTab", let tabs as WinUITabView):

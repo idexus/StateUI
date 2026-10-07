@@ -17,6 +17,9 @@ extension AppKitRegistrations {
             split.property(SplitViewContract.showsSidebar) { view, visible in
                 view.apply(presented: visible ?? false)
             }
+            split.property(SplitViewContract.sidebarBackground) { view, material in
+                view.setSidebarGround(material?.propValue)
+            }
         }
     }
 }

@@ -78,6 +78,14 @@ extension UIKitDriver {
         case .showsSidebar:
             guard let split = controller as? UISplitViewController else { return nil }
             return (split.displayMode != .secondaryOnly).propValue
+        case .sidebarBackground, .flyoutBackground:
+            // The sidebar page's view in the place it stands; the other place's material as the split view says it.
+            guard let split = controller as? UIKitSplitViewController else { return nil }
+            guard split.overlays == (property == .flyoutBackground) else {
+                return element.sidebarMaterial(over: !split.overlays).paint
+            }
+            let sidebar = (element.children.first?.native as? UIKitElement)?.controller
+            return sidebar?.view.backgroundColor.map { Material.color(Self.color($0)).propValue }
         default:
             return nil
         }

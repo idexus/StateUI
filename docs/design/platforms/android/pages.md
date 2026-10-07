@@ -59,10 +59,13 @@ size, and a picture at its own size stood twice as tall as theirs.
 Where the room is narrower than 720 points - a phone, a tablet upright - the
 sidebar is a drawer sliding over the detail from the leading edge, the
 detail shaded behind it; a tap on the shade closes it. The drawer stands on
-the window's own surface - the theme's window background, or the colour the
-window was painted in - as a sheet does, so the detail does not show through a
-sidebar page that paints nothing of its own. Where the room is wider, the
-sidebar stands beside the detail while it shows, on nothing of its own. The
+the split view's flyout material, else on the theme's floating surface
+(`colorBackgroundFloating`), its end corners rounded as a modal drawer's -
+never on the window's, which a clear window would leave clear. Where the room
+is wider, the sidebar stands beside the detail while it shows, on the split
+view's sidebar material, else on nothing: the window shows through
+([a sidebar's material](../../host/pages.md#a-sidebars-material)). Android
+blurs nothing behind a view, so a blur stands as its colour. The
 slide is Android's own animation, so the system's "remove animations" setting takes
 it away. Opening the drawer lays the page out again - the bar changes - and a
 layout leaves a sliding drawer sliding: only a new room, the drawer wider or

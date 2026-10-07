@@ -28,6 +28,12 @@ final class AndroidSplitView: AndroidLayoutView {
     /// What the split does when its first room shows the sidebar, said as the user's.
     var onAdapted: (() -> Void)?
 
+    /// The colours the sidebar stands on beside the detail and over it, as the split view says them; nil for the
+    /// platform's own.
+    var grounds: (beside: Int32?, over: Int32?) = (nil, nil) {
+        didSet { if grounds != oldValue { ground() } }
+    }
+
     /// The split's one adaptation, by the host layer's rule.
     private var adaptation = SidebarAdaptation()
 
@@ -102,8 +108,7 @@ final class AndroidSplitView: AndroidLayoutView {
     /// Design: docs/design/platforms/android/pages.md#a-split-view
     private func showDrawer(animated: Bool) {
         let duration = animated ? Self.slide : 0
-        // Over the detail the drawer stands on the window's own surface; beside it, on nothing of its own.
-        Java.callStatic(JavaAPI.views, JavaAPI.groundOnWindow, .object(drawer.reference), .bool(overlays))
+        ground()
         let visibility = isPresented ? ViewConstants.visible : overlays ? ViewConstants.invisible : ViewConstants.gone
         slide(
             drawer, to: overlays && !isPresented ? -drawerWidth : 0, alpha: 1, visibility: visibility,
@@ -112,6 +117,15 @@ final class AndroidSplitView: AndroidLayoutView {
         let shaded = overlays && isPresented
         slide(scrim, to: 0, alpha: shaded ? 1 : 0, visibility: ViewConstants.visible, duration: duration)
         scrim.setTapped(shaded ? { [weak self] in self?.onScrimTapped?() } : nil)
+    }
+
+    /// Stands the sidebar on what the split view says of its place, or on the platform's own there.
+    /// Design: docs/design/host/pages.md#a-sidebars-material
+    private func ground() {
+        let colour = overlays ? grounds.over : grounds.beside
+        Java.callStatic(
+            JavaAPI.views, JavaAPI.groundSidebar, .object(drawer.reference), .bool(overlays), .bool(colour != nil),
+            .int(colour ?? 0))
     }
 
     private func slide(_ view: AndroidView, to points: Double, alpha: Float, visibility: Int32, duration: Int64) {

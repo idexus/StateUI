@@ -58,6 +58,15 @@ to its shape, always. AppKit repaints a scroller's layer as it displays it and
 clears its colour and outline, so the scroller puts them back each time it
 updates its layer. An oval scroller cuts and draws no outline.
 
+## A sidebar's material
+
+A split view's sidebar is AppKit's own sidebar item, on the system's sidebar
+material. The material its split view says for it beside the detail
+(`sidebarBackground`) stands in its pane as a layout's box does - a colour on
+the pane's layer, a blur or glass a view of its own under the page - over
+the system's. A Mac sidebar never slides over the detail: a window too narrow
+for both hides it, so the flyout's material is never shown.
+
 ## Scroll bars
 
 A ScrollView and an ItemsView lay their scroll bars over what they show,

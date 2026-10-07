@@ -91,6 +91,8 @@ enum AndroidRealization {
         .notPlanned("TextSpan", "tracking", reason: "Android spaces the letters of a whole text: no span spaces a run's own."),
         .complete("SplitView", "showsSidebar"),
         .complete("SplitView", "showsSidebarChanged"),
+        .partial("SplitView", "sidebarBackground", missing: Self.blursNothing),
+        .partial("SplitView", "flyoutBackground", missing: Self.blursNothing),
         .complete("TabView", "selectedTab"),
         .complete("TabView", "selectedTabChanged"),
         .notPlanned("ToolbarItem", "accessibilityIdentifier",
@@ -119,6 +121,9 @@ enum AndroidRealization {
     ] + windowRoom
 
     /// The window's place and size, which Android gives an activity itself.
+    /// What Android leaves out of a blur.
+    private static let blursNothing = "Android blurs nothing behind a view: a blur or glass shows its colour."
+
     private static let windowRoom: [HostRecord] = {
         let placed = "Android places an activity's window itself: an activity asks for no place."
         let sized = "Android sizes an activity's window itself - the user drags its edge: an activity asks for no size."

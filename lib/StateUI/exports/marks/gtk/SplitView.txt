@@ -1,5 +1,7 @@
-# revision 2.1
+# revision 3.1
 SplitView: ✅
+SplitView.flyoutBackground: ✓ read flyoutBackground of SplitView: the colour the split keeps for its sidebar over the detail, which a wide window never shows
 SplitView.showsSidebar: ✅
 SplitView.showsSidebarChanged: ✅
+SplitView.sidebarBackground: ✓ read sidebarBackground of SplitView: the class of the host's style sheet the sidebar wears: GTK reads back no background
 Text.frameChanged: ✅

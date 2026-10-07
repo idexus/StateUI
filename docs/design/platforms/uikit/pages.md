@@ -60,7 +60,12 @@ UIKit window shows only through its pages: each controller's view is opaque
 by convention - and with neither the system's background. The window's
 background is the window's `backgroundColor`, so a page reads it as it
 appears, and the window has every page under it paint again when its
-background changes. A blur or glass behind a window shows its colour
+background changes. A split view's sidebar page that paints nothing stands
+on the split view's material for its place instead ([a sidebar's
+material](../../host/pages.md#a-sidebars-material)) - over the detail, the
+system's background when the split view says none, never the window's - and
+the split view has its pages paint again as its room or its materials
+change. A blur or glass behind a window shows its colour
 (`HostMaterial.painted`): iPadOS draws an application's window opaque.
 
 ## A navigation stack

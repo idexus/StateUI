@@ -396,6 +396,19 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(root.first(id: .manual("tabs"))).children.count, 2, "two tabs, no third")
     }
 
+    /// A split view's sidebar stands on its flyout's material over the detail and on its own beside it; one it does
+    /// not say is empty - the platform's own.
+    func testASidebarStandsOnTheMaterialOfItsPlace() throws {
+        let flyout = Material.color(Color("#512BD4")).propValue
+        let runtime = runtime(node("window", .window, children: [
+            node("split", .splitView, [.flyoutBackground: flyout], children: [node("menu", .page), node("home", .page)]),
+        ])) { _ in }
+        let split = try XCTUnwrap(runtime.tree.root?.first(id: .manual("split")))
+
+        XCTAssertEqual(split.sidebarMaterial(over: true).paint, flyout)
+        XCTAssertTrue(split.sidebarMaterial(over: false).isEmpty, "beside the detail, the platform's own")
+    }
+
     /// A split view's sidebar starts a path of its own: what the split view and the arrangements around it declare
     /// stands on the detail's bar, never on the sidebar's.
     func testASidebarTakesNothingFromAroundItsSplitView() throws {

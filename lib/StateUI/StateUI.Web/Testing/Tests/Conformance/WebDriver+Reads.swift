@@ -66,6 +66,12 @@ extension WebDriver {
              (.contentMode, is WebButtonView), (.lineBreak, is WebButtonView):
             return try buttonHolds(property, e)
         case (.showsSidebar, is WebSplitView): return try WebBrowser.truth("e.dataset.sidebar === 'shown'", on: e).propValue
+        case (.sidebarBackground, is WebSplitView), (.flyoutBackground, is WebSplitView):
+            // The variable the style sheet reads in that place.
+            let place = property == .sidebarBackground ? "sidebar" : "flyout"
+            let painted = "getComputedStyle(e).getPropertyValue('--stateui-\(place)-ground').trim() || null"
+            guard try WebBrowser.evaluate(painted, on: e) != nil else { return nil }
+            return try color(painted, on: e).map { Material.color($0).propValue }
         case (.selectedTab, is WebTabView):
             let chosen = try WebBrowser.number(
                 "[...e.querySelectorAll(':scope > .stateui-tab-strip > [role=tab]')].findIndex((t) => t.ariaSelected === 'true')",

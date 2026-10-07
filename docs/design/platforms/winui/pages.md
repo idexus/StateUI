@@ -119,10 +119,16 @@ window's bar and the sidebar - so its own resources set both to none
 (`NavigationViewBorderThickness`, `NavigationViewPaneContentGridMargin`): the
 sidebar page fills its pane from the top. The rows of the pane's own items
 beneath the page still show the window's backdrop where nothing paints them,
-so the pane wears the sidebar page's background, written into the
-navigation view's own `NavigationViewExpandedPaneBackground` and
-`NavigationViewDefaultPaneBackground` and written again as that background
-changes; a page with none, or with a gradient, leaves the pane its own.
+so the pane stands on a ground of its own for each place ([a sidebar's
+material](../../host/pages.md#a-sidebars-material)), written into the
+navigation view's own resources: `NavigationViewExpandedPaneBackground`
+beside the detail, `NavigationViewDefaultPaneBackground` over it. The ground
+is the split view's material for that place - a colour, or a blur as WinUI's
+in-app acrylic in its colour, its luminosity and tint by its thickness as the
+window's acrylic ([a window's backdrop](runtime.md#a-windows-backdrop)) -
+else the sidebar page's background, else WinUI's own; it is written again as
+either changes. WinUI has no glass: glass is the acrylic at its fallback
+thickness.
 
 ## A native arrangement
 

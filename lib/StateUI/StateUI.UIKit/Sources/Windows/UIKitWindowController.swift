@@ -87,15 +87,6 @@ final class UIKitWindowController {
         self.frontWatch = nil
     }
 
-    /// Has every page under `controller` show its background again - the window's, where it paints none of its
-    /// own.
-    private static func showBackgrounds(under controller: UIViewController?) {
-        guard let controller else { return }
-        (controller as? UIKitPageController)?.showBackground()
-        for child in controller.children { showBackgrounds(under: child) }
-        showBackgrounds(under: controller.presentedViewController)
-    }
-
     /// Shows what the window holds now: the arrangement of pages it shows, and the title of the page the user
     /// sees.
     func present(_ element: MountedElement, in runtime: HostRuntime) {
@@ -122,7 +113,7 @@ final class UIKitWindowController {
         let title = presentation.arrangement?.titledPage?.value(.title)?.string
         window?.windowScene?.title = title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string
         // Every page shows the window's background where it paints none of its own, the arrangement in place.
-        if changes.traits != nil { Self.showBackgrounds(under: window?.rootViewController) }
+        if changes.traits != nil { window?.rootViewController?.showPageBackgrounds() }
     }
 
     /// The menus of the page the user sees - the top sheet's, else the arrangement's - as the host layer composes

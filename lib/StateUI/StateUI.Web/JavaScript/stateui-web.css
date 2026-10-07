@@ -328,7 +328,9 @@ body {
   min-height: 0;
   min-width: 0;
   overflow: hidden;
-  background: var(--stateui-raised);
+  background: var(--stateui-sidebar-ground, var(--stateui-raised));
+  backdrop-filter: var(--stateui-sidebar-filter, none);
+  -webkit-backdrop-filter: var(--stateui-sidebar-filter, none);
   border-inline-end: 1px solid var(--stateui-line);
 }
 .stateui-split[data-sidebar="hidden"] > .stateui-sidebar { transform: translateX(-100%); visibility: hidden; }
@@ -350,6 +352,9 @@ body {
     z-index: 30;
     width: min(86vw, var(--stateui-sidebar-width));
     visibility: visible;
+    background: var(--stateui-flyout-ground, var(--stateui-raised));
+    backdrop-filter: var(--stateui-flyout-filter, none);
+    -webkit-backdrop-filter: var(--stateui-flyout-filter, none);
     border-inline-end: 1px solid var(--stateui-line);
     box-shadow: var(--stateui-raised-shadow);
     transform: translateX(-104%);

@@ -19,7 +19,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testALayoutWhileTheDrawerSlidesLeavesItSliding", testALayoutWhileTheDrawerSlidesLeavesItSliding),
             ("testASidebarWithNoPictureOpensFromTheMenuGlyph", testASidebarWithNoPictureOpensFromTheMenuGlyph),
             ("testAClosedDrawerStandsInvisible", testAClosedDrawerStandsInvisible),
-            ("testADrawerOverTheDetailStandsOnTheWindowsColour", testADrawerOverTheDetailStandsOnTheWindowsColour),
+            ("testADrawerUnderAClearWindowStandsOnASurfaceOfItsOwn", testADrawerUnderAClearWindowStandsOnASurfaceOfItsOwn),
             ("testATabChosenShowsItsPageAndSaysSo", testATabChosenShowsItsPageAndSaysSo),
             ("testTheRowMarksTheTabShown", testTheRowMarksTheTabShown),
             ("testAPagesToolbarItemsAreTheBarsActions", testAPagesToolbarItemsAreTheBarsActions),
@@ -248,12 +248,12 @@ final class AndroidPagesTests: XCTestCase {
         }
     }
 
-    /// A drawer over the detail stands on the window's own surface - here the colour the window was painted in - so
-    /// the detail does not show through a sidebar page that paints nothing of its own.
-    func testADrawerOverTheDetailStandsOnTheWindowsColour() throws {
+    /// A drawer over the detail stands on a surface of its own - the theme's floating one - never on the window's: a
+    /// window painted clear leaves the drawer opaque, the detail hidden behind a sidebar page that paints nothing.
+    func testADrawerUnderAClearWindowStandsOnASurfaceOfItsOwn() throws {
         try onMainActor {
             stateUIUseApp(OneWindowApplication {
-                WindowPainted(colour: Color("#512BD4")) {
+                WindowPainted(colour: .transparent) {
                     drawerOverStack(sidebar: TitledPage(title: "Menu", icon: "test_dot.png"))
                 }
             })
@@ -269,10 +269,9 @@ final class AndroidPagesTests: XCTestCase {
             let drawer = try XCTUnwrap(split.heldViews().last)
             try XCTUnwrap(host.views(AndroidNavigationView.self).first).bar.clicked()
 
-            let colour = Java.frame {
-                Java.callObject(drawer.reference, TestJava.getBackground).map { Java.callInt($0, TestJava.getColor) }
-            }
-            XCTAssertEqual(colour.map { UInt32(bitPattern: $0) }, 0xFF51_2BD4, "the drawer stands on the window's colour")
+            let colour = Java.callStaticLong(JavaAPI.views, AndroidDriver.sidebarColour, .object(drawer.reference))
+            XCTAssertNotEqual(colour, Int64.min, "the drawer stands on a surface")
+            XCTAssertEqual(UInt32(truncatingIfNeeded: colour) >> 24, 0xFF, "an opaque one, whatever the window is")
         }
     }
 
