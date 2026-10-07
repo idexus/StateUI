@@ -49,6 +49,8 @@ body {
   text-rendering: optimizeLegibility;
 }
 *, *::before, *::after { box-sizing: border-box; }
+/* The width the layout gives a view is its own: a child does not take it. */
+@property --stateui-width { syntax: "*"; inherits: false; }
 [hidden] { display: none !important; }
 
 /* While the application loads: its name, a ring turning and a bar of how much has come, in the page's middle. */
@@ -486,8 +488,12 @@ body {
 .stateui-room textarea { min-height: 88px; line-height: 1.45; resize: vertical; }
 /* An editor growing with its words is as tall as they are, from one line. */
 .stateui-room textarea[data-grows] { min-height: 0; }
+/* A select's and a search field's padding - 12 and 34 points either side - yields to a narrower room the layout gives
+   it (--stateui-width), each side in its share, so the field stands as wide as its room. */
+.stateui-room :is(select, input[type="search"]) { --stateui-field-room: calc(var(--stateui-width, 100vw) - 2px); }
 .stateui-room input[type="search"] {
-  padding-inline-start: 34px;
+  padding-inline-start: min(34px, calc(var(--stateui-field-room) * 0.7391));
+  padding-inline-end: min(12px, calc(var(--stateui-field-room) * 0.2609));
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M16 16l4 4'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: 11px center;
@@ -535,7 +541,8 @@ body {
 .stateui-room select {
   appearance: none;
   -webkit-appearance: none;
-  padding-inline-end: 34px;
+  padding-inline-start: min(12px, calc(var(--stateui-field-room) * 0.2609));
+  padding-inline-end: min(34px, calc(var(--stateui-field-room) * 0.7391));
   cursor: pointer;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;

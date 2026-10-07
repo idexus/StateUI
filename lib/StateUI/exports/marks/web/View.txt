@@ -476,7 +476,7 @@ Path.tapCount: ✅
 Path.tapped: ✅
 Path.verticalAlignment: ✅
 Picker.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
-Picker.area: ❌ [10.0, 20.0, 30.0, 40.0] expected, [10.0, 20.0, 48.0, 40.0] came - in points
+Picker.area: ✅
 Picker.canDrag: ✓ dragAndDrop on Picker: the DOM's drag events dispatched by the driver, no drag the browser began
 Picker.dragEnded: ✓ dragAndDrop on Picker: the DOM's drag events dispatched by the driver, no drag the browser began
 Picker.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -486,7 +486,7 @@ Picker.dragText: ✓ dragAndDrop on Picker: the DOM's drag events dispatched by 
 Picker.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 Picker.droppedFileTypes: ✓ dropFiles on Picker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Picker.filesDropped: ✓ dropFiles on Picker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-Picker.frameChanged: ❌ [10.0, 20.0, 30.0, 40.0] expected, [10.0, 20.0, 48.0, 40.0] came - in points
+Picker.frameChanged: ✅
 Picker.gridColumn: ✅
 Picker.gridColumnSpan: ✅
 Picker.gridRow: ✅
@@ -714,7 +714,7 @@ ScrollView.tapCount: ✅
 ScrollView.tapped: ✅
 ScrollView.verticalAlignment: ✅
 SearchField.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
-SearchField.area: ❌ [10.0, 20.0, 30.0, 40.0] expected, [10.0, 20.0, 48.0, 40.0] came - in points
+SearchField.area: ✅
 SearchField.canDrag: ✓ dragAndDrop on SearchField: the DOM's drag events dispatched by the driver, no drag the browser began
 SearchField.dragEnded: ✓ dragAndDrop on SearchField: the DOM's drag events dispatched by the driver, no drag the browser began
 SearchField.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -724,7 +724,7 @@ SearchField.dragText: ✓ dragAndDrop on SearchField: the DOM's drag events disp
 SearchField.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 SearchField.droppedFileTypes: ✓ dropFiles on SearchField: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 SearchField.filesDropped: ✓ dropFiles on SearchField: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-SearchField.frameChanged: ❌ [10.0, 20.0, 30.0, 40.0] expected, [10.0, 20.0, 48.0, 40.0] came - in points
+SearchField.frameChanged: ✅
 SearchField.gridColumn: ✅
 SearchField.gridColumnSpan: ✅
 SearchField.gridRow: ✅

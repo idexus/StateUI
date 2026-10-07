@@ -22,6 +22,15 @@ where the keyboard's focus is; a checkbox, a radio button, a slider and a
 progress bar take the accent colour. Scroll bars are thin. A control the host
 makes no element for yet is named in red, in a dashed box, where it belongs.
 
+## A field's padding
+
+A select and a search field take 12 points of padding on one side and 34 on
+the other, where their arrow or glass stands, and a box of the browser's is
+never narrower than its padding and border. The width the layout writes for a
+view is also written as `--stateui-width`, and those two fields' padding is
+that width less the border, in the same shares, wherever it is less than 48:
+a field stands as wide as the room it is given.
+
 ## A view's background
 
 A view's background is the CSS background of its element, under its whole

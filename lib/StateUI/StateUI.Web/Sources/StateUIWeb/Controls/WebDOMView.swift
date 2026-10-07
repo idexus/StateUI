@@ -133,6 +133,9 @@ class WebDOMView {
         guard styles[name] != value else { return }
         styles[name] = value
         if !overridden.contains(name) { WebRelay.setStyle(node, name, value) }
+        // The width the layout gives the view, which a field's padding yields to.
+        // Design: docs/design/platforms/web/look.md#a-fields-padding
+        if name == "width" { WebRelay.setStyle(node, "--stateui-width", value) }
     }
 
     /// The value of a CSS property as the view's own say keeps it.
