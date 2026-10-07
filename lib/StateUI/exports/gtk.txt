@@ -17,6 +17,7 @@ Button
   text
   textCase
   textColor
+  tracking
   clicked()
   pressed()
   released()
