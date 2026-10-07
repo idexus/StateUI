@@ -2,4 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The StateUI release this library is, as its tag names it.
-public func stateUIVersion() -> String { "0.5.1" }
+public func stateUIVersion() -> String { "0.5.2" }
