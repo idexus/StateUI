@@ -16,7 +16,9 @@
                 filled(element), outlined(element), placedByItsAspect(element), movedByItsTransform(element),
                 Aspects.holds(ShapeContract.fill, on: element, .solidColor(.red), then: .solidColor(.blue), with: figure(element)),
                 Aspects.holds(ShapeContract.stroke, on: element, .solidColor(.red), then: .solidColor(.blue), with: figure(element)),
-                Aspects.holds(ShapeContract.lineWidth, on: element, 2, then: 6, with: figure(element)),
+                Aspects.holds(
+                    ShapeContract.lineWidth, on: element, 2, then: 6,
+                    with: figure(element) + [Write(ShapeContract.stroke, Brush.solidColor(.red))]),
                 Aspects.holds(ShapeContract.dash, on: element, [3, 2], then: [1, 1], with: stroked(element)),
                 Aspects.holds(ShapeContract.dashPhase, on: element, 0, then: 2.5, with: stroked(element)),
                 Aspects.holds(ShapeContract.lineCap, on: element, .flat, then: .round, with: stroked(element)),

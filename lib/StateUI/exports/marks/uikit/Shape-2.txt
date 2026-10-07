@@ -1,4 +1,4 @@
-# revision 2.1
+# revision 3.1
 Ellipse.dash: ✅
 Ellipse.fill: ✅
 Ellipse.geometryTransform: does not apply - read geometryTransform of Ellipse - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
@@ -11,7 +11,7 @@ Line.dashPhase: ✅
 Line.fill: ✅
 Line.geometryTransform: ✅
 Line.lineCap: ✅
-Line.lineWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Line.lineWidth: ✅
 Line.miterLimit: – a line has no corner its outline joins at
 Path.contentMode: ✅
 Path.dash: ✅
@@ -31,7 +31,7 @@ Polyline.dashPhase: ✅
 Polyline.fill: ✅
 Polyline.geometryTransform: ✅
 Polyline.lineCap: ✅
-Polyline.lineWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Polyline.lineWidth: ✅
 Polyline.miterLimit: ✅
 Rectangle.contentMode: ✅
 Rectangle.dash: ✅

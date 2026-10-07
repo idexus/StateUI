@@ -33,7 +33,7 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (80)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>40 ✅ · 2 ☑️ · 35 ✓ · 3 –</td><td><code>NSView</code> drawing <code>NSBezierPath</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>39 ✅ · 2 ☑️ · 35 ✓ · 3 –</td><td><code>UIView</code> drawing <code>UIBezierPath</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>40 ✅ · 2 ☑️ · 35 ✓ · 3 –</td><td><code>UIView</code> drawing <code>UIBezierPath</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>64 ✅ · 2 ☑️ · 10 ✓ · 3 –</td><td><code>View</code> drawing <code>Path</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>62 ✅ · 13 ✓ · 4 –</td><td><code>Microsoft.UI.Xaml.Shapes</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>53 ✅ · 1 ☑️ · 22 ✓ · 4 –</td><td><code>GskPath</code> in a snapshot</td></tr></tbody>
@@ -200,6 +200,5 @@ What every drawn shape has: what fills it, the line around it, how it fits its r
 <tbody><tr></tr><tr><td><code>lineCap</code></td><td>property</td><td><code>LineCap</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>lineJoin</code></td><td>property</td><td><code>LineJoin</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>miterLimit</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>lineWidth</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">◐</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>lineWidth</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>

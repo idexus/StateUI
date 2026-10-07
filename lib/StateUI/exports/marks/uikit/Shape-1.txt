@@ -1,10 +1,10 @@
-# revision 2.1
+# revision 3.1
 Ellipse.contentMode: does not apply - read contentMode of Ellipse - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
 Ellipse.dashPhase: ✅
 Ellipse.fill: ✅
 Ellipse.geometryTransform: ✅
 Ellipse.lineCap: ✅
-Ellipse.lineWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Ellipse.lineWidth: ✅
 Ellipse.miterLimit: – an ellipse has no corner its outline joins at
 Line.contentMode: ✅
 Line.dash: ✅
@@ -24,7 +24,7 @@ Polygon.dashPhase: ✅
 Polygon.fill: ✅
 Polygon.geometryTransform: ✅
 Polygon.lineCap: ✅
-Polygon.lineWidth: cannot read the line of a shape drawing no outline - UIKit draws no outline for a shape given no stroke, and holds none of its line
+Polygon.lineWidth: ✅
 Polygon.miterLimit: ✅
 Polyline.contentMode: ✅
 Polyline.dash: ✅

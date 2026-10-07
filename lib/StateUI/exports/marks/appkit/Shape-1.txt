@@ -1,4 +1,4 @@
-# revision 2.1
+# revision 3.1
 Ellipse.contentMode: does not apply - read contentMode of Ellipse - StateUI draws a shape in its view's draw(_:), which holds none of its contentMode; its drawing proves it
 Ellipse.dashPhase: ✅
 Ellipse.fill: ✅

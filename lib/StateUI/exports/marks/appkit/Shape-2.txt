@@ -1,4 +1,4 @@
-# revision 2.1
+# revision 3.1
 Ellipse.dash: does not apply - read dash of Ellipse - StateUI draws a shape in its view's draw(_:), which holds none of its dash; its drawing proves it
 Ellipse.fill: does not apply - read fill of Ellipse - StateUI draws a shape in its view's draw(_:), which holds none of its fill; its drawing proves it
 Ellipse.geometryTransform: does not apply - read geometryTransform of Ellipse - StateUI draws a shape in its view's draw(_:), which holds none of its geometryTransform; its drawing proves it
