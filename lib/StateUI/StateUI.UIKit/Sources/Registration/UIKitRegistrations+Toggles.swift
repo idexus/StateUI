@@ -8,7 +8,7 @@ import UIKit
 
 extension UIKitRegistrations {
     /// A Switch, a CheckBox and a RadioButton: whether it is on, whether it can be turned, and the turn the user makes;
-    /// a radio button's caption too.
+    /// a switch's and a box's colour, a radio button's caption.
     static func toggles(_ registry: Registry<UIView>) {
         registry.add(SwitchContract.self, create: { reports in
             let toggle = UIKitSwitchView()
@@ -17,6 +17,9 @@ extension UIKitRegistrations {
         }, members: { toggle in
             toggle.property(SwitchContract.isOn) { view, on in view.setOn(on ?? false, animated: false) }
             toggle.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
+            toggle.property(TintElementContract.tint) { view, tint in
+                view.onTintColor = tint.flatMap { UIColor(stateUI: $0.propValue) }
+            }
             toggle.raises(SwitchContract.toggled)
         })
         registry.add(CheckBoxContract.self, create: { reports in
@@ -26,6 +29,9 @@ extension UIKitRegistrations {
         }, members: { box in
             box.property(CheckBoxContract.isOn) { view, on in view.setOn(on ?? false) }
             box.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
+            box.property(TintElementContract.tint) { view, tint in
+                view.tintColor = tint.flatMap { UIColor(stateUI: $0.propValue) }
+            }
             box.raises(CheckBoxContract.toggled)
         })
         registry.add(RadioButtonContract.self, create: { reports in

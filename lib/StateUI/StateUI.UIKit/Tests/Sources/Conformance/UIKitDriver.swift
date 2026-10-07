@@ -390,6 +390,15 @@ final class UIKitDriver: HostDriver {
         case (.tint, let bar as UIKitProgressBarView): return bar.bar.progressTintColor.map { Self.color($0).propValue }
         case (.tint, let spinner as UIKitActivityIndicatorView): return spinner.color.map { Self.color($0).propValue }
         case (.tint, let slider as UIKitSliderView): return slider.minimumTrackTintColor.map { Self.color($0).propValue }
+        case (.tint, let toggle as UIKitSwitchView): return toggle.onTintColor.map { Self.color($0).propValue }
+        case (.tint, let box as UIKitCheckView): return Self.color(box.tintColor).propValue
+        case (.horizontalTextAlignment, let picker as UIKitPickerView):
+            let alignments: [(UIControl.ContentHorizontalAlignment, TextAlignment)] = [
+                (.leading, .start), (.center, .center), (.trailing, .end),
+            ]
+            return alignments.first { $0.0 == picker.contentHorizontalAlignment }?.1.propValue
+        case (.tint, let picker as UIKitPickerView):
+            return picker.configuration?.indicatorColorTransformer.map { Self.color($0(.label)).propValue }
         case (.selectedIndex, let picker as UIKitPickerView): return picker.chosen.map(\.propValue)
         case (.options, let picker as UIKitPickerView): return picker.choices.propValue
         case (.placeholder, let picker as UIKitPickerView): return picker.title.propValue

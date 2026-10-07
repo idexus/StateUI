@@ -34,7 +34,7 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (71)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>33 ✅ · 2 ☑️ · 35 ✓</td><td><code>NSSwitch</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>30 ✅ · 2 ☑️ · 35 ✓ · 3 –</td><td><code>UISwitch</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>31 ✅ · 2 ☑️ · 35 ✓ · 3 –</td><td><code>UISwitch</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>54 ✅ · 2 ☑️ · 10 ✓ · 3 –</td><td><code>Switch</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>59 ✅ · 12 ✓</td><td><code>ToggleSwitch</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>46 ✅ · 1 ☑️ · 22 ✓ · 2 –</td><td><code>GtkSwitch</code></td></tr></tbody>
@@ -191,6 +191,6 @@ A control's one accent colour.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>tint</code></td><td>property</td><td><code>Color</code></td><td>adaptive</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views: not realized<br>GTK 4: only through the host's own: read tint of Switch: the tint the host gave the track's node: GTK's style sheet tells no one</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>tint</code></td><td>property</td><td><code>Color</code></td><td>adaptive</td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit, Android Views: not realized<br>GTK 4: only through the host's own: read tint of Switch: the tint the host gave the track's node: GTK's style sheet tells no one</td></tr></tbody>
 </table>

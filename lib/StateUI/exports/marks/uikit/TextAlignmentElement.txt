@@ -1,5 +1,5 @@
 # revision 1.1
-Picker.horizontalTextAlignment: not realized
+Picker.horizontalTextAlignment: ✅
 Picker.verticalTextAlignment: not realized
 SearchField.horizontalTextAlignment: ✅
 SearchField.verticalTextAlignment: not realized

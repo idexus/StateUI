@@ -115,7 +115,7 @@ enum UIKitRealization {
         .notPlanned("Window", "width", reason: Self.sizedBySystem),
         .notPlanned("Window", "x", reason: Self.placedBySystem),
         .notPlanned("Window", "y", reason: Self.placedBySystem),
-    ]
+    ] + pickerWords
 
     /// Why a window takes no size: the user's hand gives it, and a scene asks only for orientations.
     private static let sizedBySystem =
@@ -123,6 +123,13 @@ enum UIKitRealization {
 
     /// Why a window takes no place.
     private static let placedBySystem = "iPadOS places its windows itself: a UIKit scene asks for no place."
+
+    /// The words of a day's and a time's picker, which UIKit draws in its own look.
+    private static let pickerWords: [HostRecord] = ["DatePicker", "TimePicker"].flatMap { picker in
+        ["fontAttributes", "fontFamily", "fontSize", "textColor"].map { member in
+            .notPlanned(picker, member, reason: "UIKit's date picker draws its words in its own font and colour: it takes neither.")
+        }
+    }
 
     /// What UIKit's registry says it realizes: the export's content.
     @MainActor static var declaration: HostDeclaration {

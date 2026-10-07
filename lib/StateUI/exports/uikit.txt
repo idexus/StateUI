@@ -28,6 +28,7 @@ Canvas
   released()
 CheckBox
   isOn
+  tint
   toggled()
 ColorBox
   color
@@ -125,9 +126,15 @@ Path
   miterLimit
   stroke
 Picker
+  fontAttributes
+  fontFamily
+  fontSize
+  horizontalTextAlignment
   options
   placeholder
   selectedIndex
+  textColor
+  tint
   closed()
   opened()
   selectedIndexChanged()
@@ -231,6 +238,7 @@ Stepper
   valueChanged()
 Switch
   isOn
+  tint
   toggled()
 Text
   background

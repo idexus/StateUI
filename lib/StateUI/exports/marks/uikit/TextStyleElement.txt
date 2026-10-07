@@ -1,9 +1,9 @@
 # revision 1.1
 Button.textColor: ✅
 Button.tracking: ✅
-DatePicker.textColor: not realized
+DatePicker.textColor: – UIKit's date picker draws its words in its own font and colour: it takes neither.
 DatePicker.tracking: not realized
-Picker.textColor: not realized
+Picker.textColor: ✅
 Picker.tracking: not realized
 RadioButton.textColor: ✅
 RadioButton.tracking: not realized
@@ -17,5 +17,5 @@ TextField.textColor: ✅
 TextField.tracking: not realized
 TextSpan.textColor: ✅
 TextSpan.tracking: ✅
-TimePicker.textColor: not realized
+TimePicker.textColor: – UIKit's date picker draws its words in its own font and colour: it takes neither.
 TimePicker.tracking: not realized
