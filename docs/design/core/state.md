@@ -31,6 +31,13 @@ The lock lives on the storage, not the box, because two boxes sharing a storage
 must share its lock. The storage is internal so tests can hold its invariants
 directly; no public signature names it.
 
+A read and a write of a value the host does not carry are `@inlinable`, down
+to the lock: the application's module, which knows `Value`, compiles them for
+its own type. Called unspecialized across the module boundary, a read pays for
+the generic machinery - the value's metadata, its copies - several times over
+what the lock costs; the storage's fields that path touches are
+`@usableFromInline` for that reason alone. A carried value's road stays a call.
+
 ## The initial value waits
 
 The expression beside a declaration is held as a closure until a storage nobody

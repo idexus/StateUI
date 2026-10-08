@@ -12,25 +12,26 @@ extension State {
     /// predecessor's storage, so every box that stood for this state shares it and
     /// its lock. Internal, so the tests can hold its invariants.
     /// Design: docs/design/core/state.md#storage-and-box
+    @usableFromInline
     final class Storage: @unchecked Sendable, NamedState, AnyStateStorage, FollowedState {
-        private let guarded = Lock()
+        @usableFromInline let guarded = Lock()
 
         /// How many times this side wrote the value while it lived here - read without
         /// the lock, through `stamp`.
         /// Design: docs/design/core/cycle.md#what-wakes-an-engine
-        private let written = Atomic<Int>(0)
+        @usableFromInline let written = Atomic<Int>(0)
 
         /// How many times the state was written, by this side or the host - what an
         /// engine following it compares.
-        var stamp: Int { written.load(ordering: .relaxed) &+ (image?.stamp ?? 0) }
+        @usableFromInline var stamp: Int { written.load(ordering: .relaxed) &+ (image?.stamp ?? 0) }
 
         /// The value, once anybody has wanted it; one optional deeper than `Value`, so a
         /// nil value is told from no value yet.
-        private var held: Value?
+        @usableFromInline var held: Value?
 
         /// What the value would be, until something asks.
         /// Design: docs/design/core/state.md#the-initial-value-waits
-        private var make: (() -> Value)?
+        @usableFromInline var make: (() -> Value)?
 
         /// What the author calls this state (Builds.swift). Outside the
         /// lock: every walk writes the same name.
@@ -51,8 +52,8 @@ extension State {
 
         /// How the value is read and written once carried, installed by `carry()` - only
         /// a `StateValue` has lanes.
-        private var hostRead: (() -> Value)?
-        private var hostWrite: ((Value) -> Void)?
+        @usableFromInline var hostRead: (() -> Value)?
+        @usableFromInline var hostWrite: ((Value) -> Void)?
 
         /// How a journey's value is put somewhere at once, standing still; nil where a
         /// write already is that.
@@ -65,9 +66,10 @@ extension State {
         /// The value wearing the theme last written into a carried state - a colour
         /// pair, the accent, a material holding either; the image holds its half in force.
         /// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
-        nonisolated(unsafe) var themed: Value?
+        @usableFromInline nonisolated(unsafe) var themed: Value?
 
         /// Whether a value turns with the theme or the accent (`ThemeWearing`).
+        @usableFromInline
         static func wearsTheTheme(_ value: Value) -> Bool {
             (value as? any ThemeWearing)?.wearsTheTheme == true
         }
@@ -97,7 +99,7 @@ extension State {
         /// Whether any build ever read this state - sticky, and what a write consults
         /// before asking for a render.
         /// Design: docs/design/core/invalidation.md#live-readers
-        nonisolated(unsafe) var readAtBuild = false
+        @usableFromInline nonisolated(unsafe) var readAtBuild = false
 
         /// The conversion this storage is the derived side of, held weakly to break a
         /// ring (Conversion.swift).
@@ -121,6 +123,7 @@ extension State {
         /// What every write ends with, this side's and the host's: the readers are asked,
         /// and nobody where no build read the state. A state has no cadence.
         /// Design: docs/design/core/journeys.md#readings
+        @usableFromInline
         func askForRender() {
             // No build ever read it: nobody to render for, and this costs one load.
             if readAtBuild {
@@ -146,7 +149,8 @@ extension State {
         }
 
         /// The value, worked out the first time; called under the lock only.
-        private func settled() -> Value {
+        @inlinable
+        func settled() -> Value {
             if let make {
                 held = make()
                 self.make = nil
@@ -157,6 +161,7 @@ extension State {
         }
 
         /// The value, read or written whole under the lock.
+        @inlinable
         var value: Value {
             get {
                 if let hostRead { return themed ?? hostRead() }
@@ -182,11 +187,12 @@ extension State {
         /// program, a binding, the host: marking its key for saving. Set once, as the
         /// state claims its key.
         /// Design: docs/design/core/state.md#kept-state
-        nonisolated(unsafe) var keep: ((Value) -> Void)?
+        @usableFromInline nonisolated(unsafe) var keep: ((Value) -> Void)?
 
         /// Writes the value and keeps it under one hold, so a kept state's save never
         /// comes apart from its write. `keep` runs under the lock.
         /// Design: docs/design/core/state.md#writes-from-any-thread
+        @inlinable
         func write(_ newValue: Value) {
             if let hostWrite {
                 // The board's hold serializes a carried write; the record comes after it.

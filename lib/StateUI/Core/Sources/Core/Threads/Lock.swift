@@ -5,10 +5,12 @@ import Synchronization
 
 /// The lock state several threads touch stands behind, the state beside it.
 /// Design: docs/design/core/concurrency.md#the-lock
+@usableFromInline
 struct Lock: ~Copyable, Sendable {
-    private let mutex = Mutex(())
+    @usableFromInline let mutex = Mutex(())
 
     /// Runs `body` holding the lock; not reentrant, so what it takes out runs after.
+    @inlinable
     borrowing func withLock<Result>(_ body: () -> Result) -> Result {
         mutex.withLock { _ in body() }
     }

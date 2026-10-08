@@ -20,7 +20,7 @@
 @propertyWrapper
 public final class State<Value>: @unchecked Sendable {
     /// Where the value lives, across every render.
-    private(set) var storage: Storage
+    @usableFromInline private(set) var storage: Storage
 
     /// What pairs this state with the scene it is built in - a `SceneKey` state only
     /// (SceneRecord.swift).
@@ -58,6 +58,7 @@ public final class State<Value>: @unchecked Sendable {
     ///
     /// Safe from any thread. `counter += 1` is a read and then a write; two tasks
     /// changing one state at once use `_counter.update { $0 + 1 }`.
+    @inlinable
     public var wrappedValue: Value {
         get {
             if Renderer.shared.stateRead(storage) { storage.readAtBuild = true }
@@ -65,7 +66,7 @@ public final class State<Value>: @unchecked Sendable {
         }
         set {
             storage.write(newValue)
-            askForRender()
+            storage.askForRender()
             wakeForSave()
         }
     }
@@ -73,14 +74,12 @@ public final class State<Value>: @unchecked Sendable {
     /// Wakes the host to take the save a kept state's write recorded, whether or not
     /// the write asked for a render.
     /// Design: docs/design/core/state.md#kept-state
-    private func wakeForSave() {
+    @usableFromInline
+    func wakeForSave() {
         if storage.keep != nil {
             UIThreadExecutor.shared.poke()
         }
     }
-
-    /// Every write ends here (`Storage.askForRender()`).
-    private func askForRender() { storage.askForRender() }
 
     /// What `$counter` gives: this state, for something else to borrow.
     ///
@@ -109,6 +108,7 @@ public final class State<Value>: @unchecked Sendable {
     ///   - model: the object the property belongs to.
     ///   - wrappedKeyPath: the property, as the author declared it.
     ///   - storageKeyPath: this state, behind it.
+    @inlinable
     public static subscript<Model: AnyObject>(
         _enclosingInstance model: Model,
         wrapped wrappedKeyPath: ReferenceWritableKeyPath<Model, Value>,
@@ -137,6 +137,7 @@ public final class State<Value>: @unchecked Sendable {
     /// For state held WITHOUT the wrapper - at file scope, where Swift allows
     /// no property wrapper at all. On `@State private var counter = 0` the
     /// plain name reads the same value, and that is the spelling to use.
+    @inlinable
     public func get() -> Value {
         if Renderer.shared.stateRead(storage) { storage.readAtBuild = true }
         return storage.value
@@ -154,7 +155,7 @@ public final class State<Value>: @unchecked Sendable {
     ///   under the lock, so it must not touch this state again.
     public func update(_ transform: (Value) -> Value) {
         storage.update(transform)
-        askForRender()
+        storage.askForRender()
         wakeForSave()
     }
 }
@@ -290,7 +291,8 @@ extension State {
     /// Names every state the model holds by its property, once per model, on the
     /// first touch of any of them.
     /// Design: docs/design/core/state.md#model-state
-    private func name(within model: AnyObject) {
+    @usableFromInline
+    func name(within model: AnyObject) {
         guard storage.origin == nil else { return }
 
         var mirror: Mirror? = Mirror(reflecting: model)
