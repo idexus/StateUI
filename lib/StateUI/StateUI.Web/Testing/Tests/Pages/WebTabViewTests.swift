@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
 @testable import StateUIWeb
 import XCTest
 
@@ -44,5 +45,20 @@ final class WebTabViewTests: XCTestCase {
         for page in pages {
             XCTAssertEqual(WebPage.style(of: page.node, "grid-area"), "1 / 1 / 2 / 2", "each page over the whole cell")
         }
+    }
+
+    /// The strip wears the colour of the bars on its path, with no blur under a clear one, and the bar's own look
+    /// where nothing is said.
+    func testTheStripWearsTheBarsColour() {
+        let tabs = WebTabView()
+        defer { tabs.detach() }
+
+        tabs.showColors(background: Color.transparent.propValue)
+        XCTAssertEqual(WebPage.style(of: tabs.strip.node, "--stateui-bar-background"), "rgb(255 255 255 / 0)")
+        XCTAssertEqual(WebPage.style(of: tabs.strip.node, "--stateui-bar-filter"), "none", "a clear bar blurs nothing")
+
+        tabs.showColors(background: nil)
+        XCTAssertEqual(WebPage.style(of: tabs.strip.node, "--stateui-bar-background"), "", "the bar's own look")
+        XCTAssertEqual(WebPage.style(of: tabs.strip.node, "--stateui-bar-filter"), "")
     }
 }

@@ -332,8 +332,11 @@ body {
 }
 .stateui-split[data-sidebar="hidden"] { grid-template-columns: 0px minmax(0, 1fr); }
 .stateui-split[data-moves] { transition: grid-template-columns var(--stateui-slide); }
-/* A sidebar beside the page stands apart from it by a divider, from the bar's top to the window's foot. */
+/* A sidebar beside the page stands apart from it by a divider, from the bar's top to the window's foot, and over
+   it: what the page draws past its own column - a run of cards fanned outward - passes under the sidebar. */
 .stateui-sidebar {
+  position: relative;
+  z-index: 1;
   display: grid;
   width: var(--stateui-sidebar-width);
   min-height: 0;
@@ -350,7 +353,8 @@ body {
 .stateui-split[data-moves][data-sidebar="hidden"] > .stateui-sidebar {
   transition: transform var(--stateui-slide), visibility 0s linear 0.32s;
 }
-.stateui-detail { display: grid; min-height: 0; min-width: 0; }
+/* The page holds its children's order to itself: no z-index within it reaches past it. */
+.stateui-detail { display: grid; min-height: 0; min-width: 0; isolation: isolate; }
 .stateui-scrim { display: none; }
 
 @media (max-width: 900px) {
@@ -423,7 +427,10 @@ body {
   touch-action: pan-x;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
-  background: var(--stateui-surface);
+  /* The strip wears the bars' colour on its path, the window bar's look where none is said. */
+  background: var(--stateui-bar-background, color-mix(in srgb, var(--stateui-surface) 82%, transparent));
+  backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
+  -webkit-backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
   box-shadow: inset 0 -1px 0 var(--stateui-line);
 }
 .stateui-room .stateui-tab-strip > button {

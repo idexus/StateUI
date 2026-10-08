@@ -114,7 +114,10 @@ a question nobody held would never answer.
 
 A split view stands its sidebar in an `<aside>` beside the detail, apart from
 it by a divider down its edge - from the bar's top, whose part over the
-sidebar carries the same line, to the window's foot. Where the
+sidebar carries the same line, to the window's foot - and over it: the detail
+holds its children's z-index to itself (`isolation`), so what a page draws
+past its column - a run of cards fanned outward - passes under the sidebar.
+Where the
 page is narrower than 900 pixels the sidebar stands over the detail as a
 drawer, with a shade over the rest that takes it away when tapped; the
 toggle in the bar shows and hides it either way. Shown or hidden is the
@@ -149,7 +152,10 @@ itself (`data-moves`). Where the user asks for less motion nothing moves.
 
 A tabbed view is a `<section>`: a strip of its tabs over one cell its pages
 share. The strip scrolls across alone, never down - its line drawn inside it,
-so no tab's underline reaches past it for a finger to drag it by. Each tab is a button with the role of a tab - its page's picture, where
+so no tab's underline reaches past it for a finger to drag it by. It wears
+the colour of the bars on its path (`barColors`), and no blur under a clear
+one - the window bar's own look where nothing is said - so under the window's
+bar it stands as one with it. Each tab is a button with the role of a tab - its page's picture, where
 it has one, beside its name - the chosen one selected; the chosen page shows and the others stand beside it covered, kept
 as they stood, scrolled where the user left them. A covered page is laid out
 unseen - it takes no touch, no keyboard and no assistive technology - so a
