@@ -1,4 +1,4 @@
-# revision 2.1
+# revision 3.1
 Application: ✅
 Application.alert: ✓ read a question: the captions the host keeps, not the alert's buttons
 Application.announce: ✓ read what the screen reader said: the host's own list of what it announced

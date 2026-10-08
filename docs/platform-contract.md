@@ -110,7 +110,7 @@ of its members each meets, and why a cell is empty.
 | [Menu](controls/Menu.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuBar](controls/MenuBar.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuItem](controls/MenuItem.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ModalStack](controls/ModalStack.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [ModalStack](controls/ModalStack.md) | adaptive | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
 | [NavigationStack](controls/NavigationStack.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Overlay](controls/Overlay.md) | structure | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
 | [Page](controls/Page.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -488,7 +488,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
 | [Page](controls/Page.md) | 11 | 8 ✅ | 11 ✅ | 10 ✅ · 1 – | 10 ✅ · 1 – | 8 ✅ · 2 – | 10 ✅ |
 | [Scene](controls/Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
-| [SplitView](controls/SplitView.md) | 12 | 9 ✅ · 1 ☑️ · 1 – | 8 ✅ · 1 ☑️ · 1 ✓ · 2 – | 5 ✅ · 2 ☑️ · 3 ✓ · 2 – | 10 ✅ · 2 ☑️ | 6 ✅ · 2 ✓ · 4 – | 9 ✅ · 2 ☑️ · 1 – |
+| [SplitView](controls/SplitView.md) | 12 | 9 ✅ · 1 ☑️ · 1 – | 9 ✅ · 1 ✓ · 2 – | 5 ✅ · 2 ☑️ · 3 ✓ · 2 – | 10 ✅ · 2 ☑️ | 6 ✅ · 2 ✓ · 4 – | 9 ✅ · 2 ☑️ · 1 – |
 | [TabView](controls/TabView.md) | 10 | 7 ✅ · 1 ☑️ · 1 ✓ | 8 ✅ · 2 – | 7 ✅ · 1 ☑️ · 2 – | 10 ✅ | 6 ✅ · 4 – | 9 ✅ · 1 – |
 | [TextSpan](controls/TextSpan.md) | 12 | 9 ✅ | 9 ✅ | 7 ✅ · 1 – | 9 ✅ | 9 ✅ | 9 ✅ |
 | [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -496,10 +496,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItem](controls/ToolbarItem.md) | 8 | 4 ✅ · 1 ✓ · 1 – | 7 ✅ · 1 – | 5 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – | 8 ✅ |
 | [ToolbarItemGroup](controls/ToolbarItemGroup.md) | 2 | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 89 | 81 | 63 | 114 | 77 | 88 |
+| ✅ |  | 89 | 82 | 63 | 114 | 77 | 88 |
 | ✓ |  | 20 | 18 | 16 | 2 | 15 | 9 |
 | – |  | 2 | 17 | 26 | 1 | 27 | 19 |
-| **Met** | 129 | **111** | **116** | **105** | **117** | **119** | **116** |
+| **Met** | 129 | **111** | **117** | **105** | **117** | **119** | **116** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -571,7 +571,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ScrollView](controls/ScrollView.md) | `horizontalScrollIndicator`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollIndicator` | 7 | 5 ✅ · 2 ✓ | 5 ✅ | 7 ✅ | 7 ✅ | 7 ✅ | 7 ✅ |
 | [SearchField](controls/SearchField.md) | `submitLabel`, `onSubmitted` (`submitted`) | 2 | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 1 ✅ · 1 – | 2 ✅ |
 | [Slider](controls/Slider.md) | `onReleased` (`released`), `onPressed` (`pressed`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 | 4 ✅ | 4 ✅ · 2 ✓ | 6 ✅ | 4 ✅ | 4 ✅ · 2 – | 6 ✅ |
-| [SplitView](controls/SplitView.md) | `showsSidebar`, `showsSidebarChanged`, `sidebarBackground`, `flyoutBackground` | 4 | 3 ✅ · 1 – | 2 ✅ · 1 ☑️ · 1 ✓ | 1 ☑️ · 3 ✓ | 2 ✅ · 2 ☑️ | 2 ✅ · 2 ✓ | 2 ✅ · 2 ☑️ |
+| [SplitView](controls/SplitView.md) | `showsSidebar`, `showsSidebarChanged`, `sidebarBackground`, `flyoutBackground` | 4 | 3 ✅ · 1 – | 3 ✅ · 1 ✓ | 1 ☑️ · 3 ✓ | 2 ✅ · 2 ☑️ | 2 ✅ · 2 ✓ | 2 ✅ · 2 ☑️ |
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ |
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [TabView](controls/TabView.md) | `selectedTab`, `selectedTabChanged` | 2 | 1 ✅ · 1 ✓ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |

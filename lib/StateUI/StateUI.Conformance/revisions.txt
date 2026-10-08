@@ -23,7 +23,7 @@ TitleView 2
 MenuBar 2
 Window 6
 Scene 2
-ModalStack 2
+ModalStack 3
 Overlay 2
 BarElement 4
 NavigationStack 2
@@ -39,5 +39,5 @@ VisualElement 7
 Shape 3
 BorderElement 5
 TextInput 2
-Application 2
+Application 3
 TextSpan 2
