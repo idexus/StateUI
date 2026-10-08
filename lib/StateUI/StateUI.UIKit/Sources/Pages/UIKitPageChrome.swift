@@ -51,7 +51,10 @@ struct UIKitPageChrome {
         }
         let appearance = UINavigationBarAppearance()
         appearance.configureWithDefaultBackground()
-        if let background = barBackground.flatMap(UIColor.init(stateUI:)) {
+        if HostBrush(barBackground).isClear {
+            // A clear bar shows what is behind it as it is: no ground, and no line under it.
+            appearance.configureWithTransparentBackground()
+        } else if let background = barBackground.flatMap(UIColor.init(stateUI:)) {
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = background
         }

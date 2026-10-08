@@ -190,6 +190,27 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(words() ?? -1, 0, accuracy: 0.01, "dark on yellow")
     }
 
+    /// A clear bar is UIKit's transparent bar: nothing under it, and no line between it and the page.
+    @MainActor
+    func testAClearBarDrawsNoLineUnderIt() throws {
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                TitledPage(title: "Root")
+            } destination: { _ in Text("Pushed") }
+                .barBackgroundColor(.transparent)
+        }
+        defer { host.finish() }
+        let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller }
+        host.settle { page()?.navigationItem.standardAppearance != nil }
+        let appearance = try XCTUnwrap(page()?.navigationItem.standardAppearance)
+
+        var alpha: CGFloat = 0
+        appearance.shadowColor?.getWhite(nil, alpha: &alpha)
+        XCTAssertEqual(alpha, 0, "no line under the bar")
+        appearance.backgroundColor?.getWhite(nil, alpha: &alpha)
+        XCTAssertEqual(alpha, 0, "nothing under it")
+    }
+
     /// A page's content stands clear of the bars and the notch, but where it lets itself under them it reaches the
     /// screen's edge; the page's background stands behind the bars either way.
     @MainActor

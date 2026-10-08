@@ -35,7 +35,9 @@ what it holds as it comes, and a layout again at every render; a control -
 a search field - keeps the width the bar gives it: fitted to its words at
 every render, it was cut as the user typed and widened again by the bar,
 letter by letter. An action that destroys something is marked
-destructive in the menu and tinted red on the bar. A tabbed view's bar is its
+destructive in the menu and tinted red on the bar. A clear bar is UIKit's
+transparent bar: nothing under it and no line - the opaque bar of a clear
+colour drew its line under nothing. A tabbed view's bar is its
 chosen tab's page's, but for its title: the page the window is named by
 ([the window's chrome](../../host/pages.md#the-windows-chrome)) - tabs pushed
 onto a stack by their own title, else by the page beneath - which names the
