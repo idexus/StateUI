@@ -32,37 +32,35 @@ test run.
 ## In Action
 
 <p>
-  <img src="docs/assets/winui.jpg" alt="The Gallery's home page on WinUI 3" width="76.3%"
-  ><img src="docs/assets/uikit.jpg" alt="The Gallery's home page on UIKit, on an iPhone" width="23.5%">
+  <img src="docs/assets/appkit.jpg" alt="The Gallery's home page on AppKit" width="66.1%"
+  ><img src="docs/assets/uikit-ipad.jpg" alt="The Gallery's home page on UIKit, on an iPad" width="33.7%">
 </p>
 <p>
-  <img src="docs/assets/gtk.jpg" alt="The Gallery's Grid sample on GTK 4 with libadwaita" width="75.0%"
-  ><img src="docs/assets/android.jpg" alt="The Gallery's Grid sample on Android Views" width="24.8%">
+  <img src="docs/assets/gtk.jpg" alt="The Gallery's OpenGL sample on GTK 4 with libadwaita" width="74.8%"
+  ><img src="docs/assets/android.jpg" alt="The Gallery's State and bindings sample on Android Views" width="25.0%">
+</p>
+<p>
+  <img src="docs/assets/web.jpg" alt="The Gallery's ItemsView sample on the Web host, in Safari" width="76.5%"
+  ><img src="docs/assets/uikit-iphone.jpg" alt="The Gallery's Metal sample on UIKit, on an iPhone" width="23.3%">
+</p>
+<p>
+  <img src="docs/assets/winui.jpg" alt="The Gallery's Transforms sample on WinUI 3" width="100%">
 </p>
 
-The same Gallery - one Swift module - on WinUI 3, UIKit, GTK 4 and Android
-Views: each host draws it with its own toolkit's controls, its window chrome
-and its navigation, while the pages, the state and the samples are the
+The same Gallery - one Swift module - on AppKit and on UIKit on an iPad, on
+GTK 4 and on Android Views, on the Web in Safari and on UIKit on an iPhone,
+and on WinUI 3: each host draws it with its own toolkit's controls, its window
+chrome and its navigation, while the pages, the state and the samples are the
 application's, written once.
 
-The AppKit host draws it with macOS controls, in the same process as the
-application module - here the Gallery's Metal sample: the cube
-is an `MTKView` the application registers with the host, and its size, colour
-and spin are described from StateUI. The edge is handed over as a state, so
-dragging the slider rebuilds nothing:
-
-<video src="https://github.com/user-attachments/assets/05ef0718-b3b5-4f67-8c66-7a9c9b1d2ba2" controls muted loop width="960" height="540" poster="docs/assets/appkit-poster.png">
-  <a href="https://github.com/idexus/StateUI/blob/main/docs/assets/appkit.mp4"><img src="docs/assets/appkit-poster.png" alt="The Gallery's Metal sample on the AppKit host" width="960" height="540"></a>
-</video>
-
-On the Web the same module, compiled to WebAssembly, runs in the page and
-draws it with the browser's own elements - here in Safari, the Gallery's WebGL
-sample: the cube is a custom element of the application's own JavaScript,
-`<gallery-cube3d>`, drawing with WebGL 2, which the application registers with
-the host, and its size, colour and spin are described from StateUI as on every
-other host. The same Gallery runs at [stateui.dev](https://stateui.dev).
-
-<img src="docs/assets/web.jpg" alt="The Gallery's WebGL sample on the Web host, in Safari" width="100%">
+The cubes are each platform's own GPU view, which the application registers
+with its host - a `GtkGLArea` drawing with OpenGL on GTK, an `MTKView`
+drawing with Metal on UIKit - their size, colour and spin described from
+StateUI. The edge is handed over as a state, so dragging the slider rebuilds
+nothing. On the Web the same module, compiled to WebAssembly, runs in the page
+and draws it with the browser's own elements - here a list of 120 tiles in
+as many columns as the width holds, of which only those on screen are built.
+The same Gallery runs at [stateui.dev](https://stateui.dev).
 
 ## In Code
 
