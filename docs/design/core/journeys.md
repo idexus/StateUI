@@ -84,10 +84,11 @@ every awaited act draws from, and the id is written into the completion lane;
 nothing is queued, and the host answers by that id when the animation finishes
 or is interrupted. The destination and completion lanes are forced dirty, so
 sending a value where it is already going is still a fresh journey with a fresh
-waiter. The write lands before the first suspension, so two moves started with
-`async let` from one handler are booked in the order written. A given law stays
-on the value: a plain assignment after `move(to: 0, .eased(2000))` animates for
-two seconds too.
+waiter. The write lands before the first suspension. Two moves started with
+`async let` from one handler run in child tasks at once, and are booked in
+whichever order their children reach the renderer, not the order written. A
+given law stays on the value: a plain assignment after
+`move(to: 0, .eased(2000))` animates for two seconds too.
 
 A state nothing wears lands at once and answers true: nobody would ever answer a
 waiter booked on it. Under `.custom` the destination is written and the answer
