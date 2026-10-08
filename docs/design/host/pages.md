@@ -75,7 +75,9 @@ platform's own there. Beside the detail the platform's own lets the window
 through, as a desktop sidebar does; over the detail it is the platform's
 drawer or overlay surface, never the window's - a clear window would leave a
 flyout with nothing under its words. The sidebar page's own background still
-paints the page on top.
+paints the page on top. A split view saying either material gives its
+sidebar to the application to paint (`paintsSidebar`): a host whose platform
+draws a sidebar's material of its own leaves it out then.
 
 ## The way back
 

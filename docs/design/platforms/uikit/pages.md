@@ -106,6 +106,12 @@ whatever the room (`traitOverrides`), so UIKit never folds it into one
 column, and each column says the room's own width, so the tabs, sheets and
 bars inside stand as a phone's.
 
+A sidebar the application paints ([a sidebar's
+material](../../host/pages.md#a-sidebars-material)) stands on UIKit's plain
+column (`primaryBackgroundStyle` `.none`), which UIKit parts from the detail
+by its own separator; on UIKit's sidebar material - the platform's own
+sidebar - the columns stand with none.
+
 Whether the sidebar shows is the display mode the host prefers: over or
 beside the detail while the tree asks for it, the detail alone while not.
 The tree's move is UIKit's own (`show`/`hide` of the sidebar's column), which

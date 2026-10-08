@@ -15,4 +15,11 @@ extension MountedElement {
     @MainActor public func sidebarMaterial(over: Bool) -> HostMaterial {
         HostMaterial(value(over ? .flyoutBackground : .sidebarBackground))
     }
+
+    /// Whether this split view gives its sidebar a material of its own, beside the detail or over it - the
+    /// sidebar is then the application's to paint, not the platform's.
+    /// Design: docs/design/host/pages.md#a-sidebars-material
+    @MainActor public var paintsSidebar: Bool {
+        !sidebarMaterial(over: false).isEmpty || !sidebarMaterial(over: true).isEmpty
+    }
 }

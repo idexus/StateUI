@@ -38,6 +38,29 @@ final class UIKitSplitViewTests: XCTestCase {
         XCTAssertTrue(menuOpen.wrappedValue, "the program's move is not told back as another")
     }
 
+    /// A sidebar the application paints stands on UIKit's plain column, which UIKit parts from the detail by its
+    /// own separator; the platform's own sidebar stays on UIKit's sidebar material.
+    @MainActor
+    func testASidebarTheApplicationPaintsStandsApartFromTheDetail() throws {
+        let painted = State(wrappedValue: true)
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            if painted.wrappedValue {
+                SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+                    .sidebarBackground(.color(Color("#251E4C")))
+            } else {
+                SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+            }
+        }
+        defer { host.finish() }
+        let split = { Self.controller(of: .splitView, in: host) as? UISplitViewController }
+        host.settle { split()?.view.window != nil }
+        XCTAssertEqual(split()?.primaryBackgroundStyle, UISplitViewController.BackgroundStyle.none, "the plain column")
+
+        painted.wrappedValue = false
+        host.settle { split()?.primaryBackgroundStyle == .sidebar }
+        XCTAssertEqual(split()?.primaryBackgroundStyle, .sidebar, "the platform's own sidebar")
+    }
+
     /// A page pushed as the sidebar goes - a group chosen from a menu - stands at once: it is laid out where it
     /// stands, never grown from nothing with the sidebar's slide.
     @MainActor

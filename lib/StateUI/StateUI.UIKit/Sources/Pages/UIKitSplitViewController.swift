@@ -29,6 +29,16 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
     /// Whether the host is moving the columns itself, which UIKit's telling of it does not report back.
     private var movingItself = false
 
+    /// Whether the application paints the sidebar: it then stands on UIKit's plain column, which UIKit parts from
+    /// the detail by its own separator, rather than on UIKit's sidebar material, which stands with none.
+    /// Design: docs/design/platforms/uikit/pages.md#a-split-view
+    var paintsSidebar = false {
+        didSet {
+            guard paintsSidebar != oldValue else { return }
+            primaryBackgroundStyle = paintsSidebar ? .none : .sidebar
+        }
+    }
+
     init() {
         super.init(style: .doubleColumn)
         delegate = self

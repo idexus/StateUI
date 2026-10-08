@@ -116,7 +116,10 @@ extension UIKitElement {
             split.show(sidebar: children.first?.controller, detail: children.dropFirst().first?.controller)
             split.onPresentationChanged = { [weak self] presented in self?.sidebarChanged(to: presented) }
             if changed.contains(.showsSidebar) { split.present(value(.showsSidebar)?.bool == true) }
-            if !changed.isDisjoint(with: MountedElement.sidebarMaterials) { split.showPageBackgrounds() }
+            if !changed.isDisjoint(with: MountedElement.sidebarMaterials) {
+                split.paintsSidebar = element.paintsSidebar
+                split.showPageBackgrounds()
+            }
         default:
             break
         }
