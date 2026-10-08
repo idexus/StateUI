@@ -204,7 +204,7 @@ extension Differ {
                     builds: builds,
                     read: rendered?.reads ?? [],
                     changed: self.changed,
-                    names: self.named,
+                    written: self.written,
                     everything: describeAll)
 
                 frame = built
@@ -571,7 +571,7 @@ extension Differ {
             builds: builds,
             read: rendered?.reads ?? [],
             changed: changed,
-            names: named,
+            written: written,
             everything: describeAll)
     }
 
@@ -630,7 +630,7 @@ extension Differ {
 
     /// States by the names their authors gave them, in name order.
     private func names(of states: Set<ObjectIdentifier>) -> String {
-        states.map { named[$0] ?? "state" }.sorted().joined(separator: ", ")
+        states.map { BuildScope.name(of: written[$0]) }.sorted().joined(separator: ", ")
     }
 
     /// Whether two writings say the same of their page.

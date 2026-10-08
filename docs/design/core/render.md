@@ -65,8 +65,8 @@ issues; a counter that wraps skips it.
 
 ## Taking the changes
 
-The changed states, their names and the untracked flag are taken and cleared
-in one locked step before anything is built, and `rendering` is set in the
+The written states and the untracked flag are taken and cleared in one locked
+step before anything is built, and `rendering` is set in the
 same step. A write that lands while the render runs then stays on the books
 and asks for the next render instead of being wiped by this one's clear. The
 cost is at most one clean walk that finds nothing; the other direction would

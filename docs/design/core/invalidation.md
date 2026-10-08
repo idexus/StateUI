@@ -97,7 +97,10 @@ reach and hands them to `BuildScope`:
 
 Nothing is computed until asked: the frame carries the two sets and the
 intersection is taken inside `debugInfo()`, so a render nobody watches pays
-for a counter and two assignments.
+for a counter and two assignments. A write names nothing either: the renderer
+holds the state it wrote until the render takes it, and its name - the
+property a walk named it by, else its type - is worked out only for
+`debugInfo()` or an inspector.
 
 A state is named by the path the reflection walk reached it by - the author's
 property name - which is the same path that pairs it with its predecessor. A

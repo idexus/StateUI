@@ -29,8 +29,8 @@ enum BuildScope {
         /// The state written since the tree on screen was built.
         let changed: Set<ObjectIdentifier>
 
-        /// What each of those is called, by storage identity.
-        let names: [ObjectIdentifier: String]
+        /// Those states themselves, by storage identity, to be named.
+        let written: [ObjectIdentifier: AnyObject]
 
         /// Whether this render describes the whole tree.
         let everything: Bool
@@ -69,12 +69,20 @@ enum BuildScope {
 
         if !causes.isEmpty {
             return "for " + causes
-                .map { frame.names[$0] ?? "state" }
+                .map { name(of: frame.written[$0]) }
                 .sorted()
                 .joined(separator: ", ")
         }
 
         return frame.everything ? "the whole tree" : "with its parent"
+    }
+
+    /// What the author calls a written state: the property a walk named it by,
+    /// else its type - worked out only when asked, never as it is written.
+    static func name(of state: AnyObject?) -> String {
+        guard let state else { return "state" }
+
+        return (state as? NamedState)?.origin ?? String(describing: type(of: state))
     }
 
     /// A type without its module, which is what an author calls it.

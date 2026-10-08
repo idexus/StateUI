@@ -36,8 +36,9 @@ final class Differ {
     /// The states written since the tree the host holds was built.
     private(set) var changed: Set<ObjectIdentifier> = []
 
-    /// What each changed state is called, for `debugInfo()` (Builds.swift).
-    var named: [ObjectIdentifier: String] = [:]
+    /// The changed states themselves, for `debugInfo()` and an inspector to name
+    /// (Builds.swift).
+    var written: [ObjectIdentifier: AnyObject] = [:]
 
     /// Whether the element described next is the view a page shows, whose page values the page takes.
     var describesPageRoot = false

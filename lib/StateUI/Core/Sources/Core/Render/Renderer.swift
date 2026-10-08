@@ -21,12 +21,11 @@ public final class Renderer: @unchecked Sendable {
     private var making: (() -> any Application)?
     private var dirty = true
 
-    /// The states written since the last render, by storage identity. Behind
-    /// `guarded`: a write may come from any thread.
-    private var changed: Set<ObjectIdentifier> = []
-
-    /// What each changed state is called, for `debugInfo()` and an inspector.
-    private var names: [ObjectIdentifier: String] = [:]
+    /// The states written since the last render, by storage identity, each held
+    /// until the render takes it - named only when `debugInfo()` or an inspector
+    /// asks (`BuildScope.name(of:)`). Behind `guarded`: a write may come from any
+    /// thread.
+    private var written: [ObjectIdentifier: AnyObject] = [:]
 
     /// Whether a render was asked for without naming a state, which makes the next
     /// render build the whole tree.
@@ -205,10 +204,6 @@ public final class Renderer: @unchecked Sendable {
     public func stateChanged(_ state: AnyObject) {
         let id = ObjectIdentifier(state)
 
-        // Named while the object is in hand: a `@State` knows its property, anything
-        // else is called by its type.
-        let name = (state as? NamedState)?.origin
-
         let asked: Bool = guarded.withLock {
             guard rendering || readers[id] != nil else {
                 refusedWrites += 1
@@ -216,14 +211,7 @@ public final class Renderer: @unchecked Sendable {
             }
 
             dirty = true
-            changed.insert(id)
-
-            if let name = name {
-                names[id] = name
-            } else if names[id] == nil {
-                names[id] = String(describing: type(of: state))
-            }
-
+            written[id] = state
             return true
         }
 
@@ -259,10 +247,10 @@ public final class Renderer: @unchecked Sendable {
     }
 
     /// What the next render will act on - for tests driving a differ of their own.
-    var pendingChanges: Set<ObjectIdentifier> { guarded.withLock { changed } }
+    var pendingChanges: Set<ObjectIdentifier> { Set(pendingWrites.keys) }
 
-    /// What those changes are called, for the same tests.
-    var pendingNames: [ObjectIdentifier: String] { guarded.withLock { names } }
+    /// The states those changes are, for the same tests to name.
+    var pendingWrites: [ObjectIdentifier: AnyObject] { guarded.withLock { written } }
 
     /// Whether a render was asked for without naming a state - for tests.
     var hasUntrackedCause: Bool { guarded.withLock { untracked } }
@@ -271,8 +259,7 @@ public final class Renderer: @unchecked Sendable {
     func clearInvalidation() {
         guarded.withLock {
             dirty = false
-            changed.removeAll()
-            names.removeAll()
+            written.removeAll()
             untracked = false
         }
     }
@@ -291,19 +278,20 @@ public final class Renderer: @unchecked Sendable {
         // Taken and cleared in one locked step, so a write landing during this render
         // asks for the next one.
         // Design: docs/design/core/render.md#taking-the-changes
-        let (changedNow, untrackedNow, namesNow):
-            (Set<ObjectIdentifier>, Bool, [ObjectIdentifier: String]) = guarded.withLock {
-            let taken = (changed, untracked, names)
-            changed.removeAll()
-            names.removeAll()
+        let (writtenNow, untrackedNow): ([ObjectIdentifier: AnyObject], Bool) = guarded.withLock {
+            let taken = (written, untracked)
+            written.removeAll()
             untracked = false
             dirty = false
             rendering = true
             return taken
         }
 
-        // Taken once: naming a build must never reach a lock.
-        differ.named = namesNow
+        let changedNow = Set(writtenNow.keys)
+
+        // Taken once: naming a build must never reach a lock. Held for this render alone.
+        differ.written = writtenNow
+        defer { differ.written = [:] }
 
         let walks = rendered != nil && !describeAll && !untrackedNow
             && rootReads.isDisjoint(with: changedNow)
@@ -313,7 +301,7 @@ public final class Renderer: @unchecked Sendable {
         let began: ContinuousClock.Instant? = inspecting ? .now : nil
 
         if inspecting {
-            var causes = Set(changedNow.map { namesNow[$0] ?? "state" }).sorted()
+            var causes = Set(writtenNow.values.map { BuildScope.name(of: $0) }).sorted()
 
             if untrackedNow {
                 causes.append("a render asked for without naming a state")
@@ -394,16 +382,16 @@ public final class Renderer: @unchecked Sendable {
                 run(handler)
             }
 
-            let (wrote, wroteUntracked, wroteNames):
-                (Set<ObjectIdentifier>, Bool, [ObjectIdentifier: String]) = guarded.withLock {
-                let taken = (changed, untracked, names)
-                changed.removeAll()
-                names.removeAll()
+            let (wroteNow, wroteUntracked): ([ObjectIdentifier: AnyObject], Bool) = guarded.withLock {
+                let taken = (written, untracked)
+                written.removeAll()
                 untracked = false
                 dirty = false
                 rendering = true
                 return taken
             }
+
+            let wrote = Set(wroteNow.keys)
 
             // Nothing they wrote is read anywhere.
             if wrote.isEmpty && !wroteUntracked {
@@ -411,7 +399,7 @@ public final class Renderer: @unchecked Sendable {
                 break
             }
 
-            differ.named = wroteNames
+            differ.written = wroteNow
 
             let settled: (node: RenderedNode, patch: HostPatch)
 

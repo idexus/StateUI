@@ -146,7 +146,7 @@ final class Renders {
         changed: Set<ObjectIdentifier> = []
     ) -> HostPatch {
         differ.motion = motion
-        differ.named = Renderer.shared.pendingNames
+        differ.written = Renderer.shared.pendingWrites
 
         let result = differ.reconcile(rendered, with: tree, styles: styles, changed: changed)
         rendered = result.node
@@ -170,7 +170,7 @@ final class Renders {
         changed: Set<ObjectIdentifier> = []
     ) -> HostPatch {
         differ.motion = .standard
-        differ.named = Renderer.shared.pendingNames
+        differ.written = Renderer.shared.pendingWrites
 
         let result = differ.settling(
             differ.reconcile(rendered, with: tree, styles: styles, changed: changed))
@@ -184,7 +184,7 @@ final class Renders {
     /// views whose recorded reads intersect `changed` are built again.
     @discardableResult
     func revisit(changed: Set<ObjectIdentifier>) -> HostPatch {
-        differ.named = Renderer.shared.pendingNames
+        differ.written = Renderer.shared.pendingWrites
         let result = differ.revisit(rendered!, changed: changed)
         rendered = result.node
         runFired()
