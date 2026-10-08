@@ -14,9 +14,10 @@
 #                 it under; none opens none; the system's own when not given
 #   --port        the port to serve on; 8460 when not given
 #
-# The page stands in <app-dir>/.build/web/site/<configuration>: index.html,
-# the relay stateui-web.js and its look stateui-web.css, the module <App>Web.wasm and the application's
-# pictures in Images. It is served on the same port from run to run, so its
+# The page stands in <app-dir>/.build/web/site/<configuration>, laid out by
+# page.sh: index.html with what the head's Page folder adds to it, the relay
+# stateui-web.js and its look stateui-web.css, the module <App>Web.wasm and the
+# application's pictures in Images. It is served on the same port from run to run, so its
 # address - and what the browser keeps for it - stays the same, on every
 # interface of this machine, so a tablet on its network opens it too; a server this
 # script started for the application before is stopped first. Once the server
@@ -26,7 +27,6 @@
 set -euo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-checkout="$(cd "$here/../.." && pwd)"
 
 app_dir=""
 configuration="debug"
@@ -66,27 +66,7 @@ products="$(STATEUI_HOST=web swift build --package-path "$app_dir" --scratch-pat
   --configuration "$configuration" --swift-sdk "$sdk" --show-bin-path)"
 
 # --- the page ----------------------------------------------------------------
-rm -rf "$site"
-mkdir -p "$site"
-cp "$products/$product.wasm" "$site/"
-cp "$checkout/lib/StateUI/StateUI.Web/JavaScript/stateui-web.js" "$checkout/lib/StateUI/StateUI.Web/JavaScript/stateui-web.css" "$site/"
-stamp="$(date +%s)"
-# The application's own scripts - the custom elements its controls show - beside the page, each loaded before it.
-scripts=""
-if [[ -d "$app_dir/Platforms/Web/Page" ]]; then
-  for script in "$app_dir/Platforms/Web/Page/"*.js; do
-    [[ -f "$script" ]] || continue
-    cp "$script" "$site/"
-    scripts+="<script type=\"module\" src=\"./$(basename "$script")?v=$stamp\"></script>"
-  done
-fi
-sed -e "s/{{application}}/$application/g" -e "s/{{module}}/$product.wasm/g" -e "s/{{stamp}}/$stamp/g" \
-  -e "s#{{scripts}}#$scripts#" \
-  "$checkout/lib/StateUI/StateUI.Web/JavaScript/index.html" > "$site/index.html"
-if [[ -d "$app_dir/Resources/Images" ]]; then
-  mkdir -p "$site/Images"
-  cp -R "$app_dir/Resources/Images/." "$site/Images/"
-fi
+bash "$here/page.sh" "$app_dir" "$products" "$site"
 if [[ "$build_only" == 1 ]]; then
   echo "built:      $site"
   exit 0

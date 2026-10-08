@@ -35,12 +35,14 @@ lib/StateUI/StateUI.Web/
                              Node it runs over, and what it runs in a browser
 .scripts/Web/
   run-app.sh                 builds an application's Web head, lays its page out, serves it and opens it
+  page.sh                    lays an application's page out beside its module
   serve.py                   serves the page on this machine
   browsers.sh                lists the browsers installed, and opens a page in one
   deploy.sh                  builds it for release and lays the page in a folder of its own
   test-web.sh                runs the host's suite, or what of it needs a browser
 apps/<App>/Platforms/Web/
   main.swift                 the application's Web head
+  Page/                      what the application adds to its page: its scripts, and head.html
 ```
 
 ## Requirements
@@ -80,6 +82,30 @@ links it with an 8 MB stack. Swift written for this host alone stands under
 
 A new application made in `apps/` - `.scripts/new-app.sh` - has a Web head,
 as HelloWorld does.
+
+## The page
+
+The page a head runs in is the library's `index.html`: it loads the relay and
+the module, and shows the application's name while the module loads. The
+head's `Page` folder - `apps/<App>/Platforms/Web/Page` - adds the
+application's own to it. Each script there is laid beside the page and loaded
+before the application starts ([Controls registered in
+Swift](#controls-registered-in-swift)). `head.html` is written into the page's
+head as it stands: what a search engine reads of the page and what a link to
+it shows - its description, the address it is found at, its preview.
+
+```html
+<title>Notes - Plain notes, kept</title>
+<meta name="description" content="Notes keeps what you write, on every device you use.">
+<link rel="canonical" href="https://notes.example/">
+<meta property="og:title" content="Notes - Plain notes, kept">
+<meta property="og:image" content="https://notes.example/preview.jpg">
+```
+
+A `<title>` there names the page until the application's window names it with
+the page it shows; without one the page is named after the application. The
+Gallery's describes StateUI at stateui.dev:
+`apps/Gallery/Platforms/Web/Page/head.html`.
 
 ## Controls registered in Swift
 

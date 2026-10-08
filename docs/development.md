@@ -248,9 +248,9 @@ it, with what it runs with, in a folder it makes anew:
   Swift and C++ runtimes of its architecture, its pictures - so the folder
   runs on a Windows machine with none of them installed;
 - GTK, the head, the StateUI libraries it links, and its pictures;
-- Web, the page: `index.html`, the relay and its style sheet, the module, the
-  application's own scripts and its pictures - a folder any web server serves
-  as it is.
+- Web, the page: `index.html` with the head the application gives it, the
+  relay and its style sheet, the module, the application's own scripts and its
+  pictures - a folder any web server serves as it is.
 
 In VS Code, **StateUI: Deploy** runs the chosen host's script for the chosen
 application and lays it in `artifacts/<application>/<platform>` beside the
