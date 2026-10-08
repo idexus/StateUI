@@ -215,7 +215,8 @@ request targets. Each badge above is one workflow.
 
 **Core macOS**, **Core Linux** and **Core Windows** run the core's suites on
 each machine - StateUI, the host layer and the conformance runner, and the
-Gallery's and HelloWorld's too. Each host has a workflow of its own
+Gallery's and HelloWorld's too; Core macOS runs the core's own once more
+under Thread Sanitizer. Each host has a workflow of its own
 that runs its suite with every verdict held: **AppKit**, **UIKit** on an
 iPhone and an iPad simulator, **Android** built on macOS and run on an
 emulator, **WinUI** on Windows and **GTK** on Linux. **Web** runs the host's

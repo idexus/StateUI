@@ -414,6 +414,7 @@ final class SceneTests: XCTestCase {
     // MARK: - A scene ends with its last window
 
     /// A scene ENDS WITH ITS LAST WINDOW, its state with it: the next window of it opens a fresh scene.
+    @MainActor
     func testASceneEndsWithItsLastWindow() async throws {
         let renders = Renders()
         let first = renders.render(tree())

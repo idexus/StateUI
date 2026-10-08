@@ -344,7 +344,10 @@ Windows** (`build-mac.yml`, `build-linux.yml`, `build-windows.yml` - the core,
 the host layer and the conformance runner, and the Gallery and HelloWorld), and one
 for each host - **AppKit**, **UIKit** (an iPhone and an iPad simulator),
 **Android** (the test APK built on macOS, run on a Linux emulator), **WinUI**
-and **GTK**.
+and **GTK**. **Core macOS** runs the core, the host layer and the conformance
+runner once more under Thread Sanitizer, where a race it sees fails the run -
+`swift test --sanitize=thread` on a Mac; on Linux the sanitizer cannot see
+through a `Mutex` and reports every guarded access.
 A host's workflow holds every conformance verdict to its marks and never
 writes them: a family whose verdicts changed fails there, and its marks are
 written again on that platform's machine.

@@ -645,6 +645,7 @@ final class GalleryViewTests: XCTestCase {
     /// cannot say it was pressed by itself - the gallery says it for it, on the
     /// face inside the placement rather than on the placement, which the host
     /// rewrites on its own frames.
+    @MainActor
     func testTheCardInFrontIsPressedWhileTheTapIsAnswered() async throws {
         let renders = Renders()
         let view = gallery(5).onItemTapped { _ in }

@@ -222,6 +222,8 @@ final class Renders {
     /// returns, exactly as it did when handlers could not suspend at all.
     @discardableResult
     func fire(_ id: Int, with payload: [PropValue] = []) -> Bool {
+        XCTAssertTrue(Thread.isMainThread, "A host fires an event on its UI thread; a test does too.")
+
         guard let handler = differ.handler(id) else { return false }
 
         // What HostBoundary.dispatch does before starting the handler: the
