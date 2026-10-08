@@ -35,7 +35,7 @@ program="$products/StateUIWebTests-test-runner.wasm"
 relay="$checkout/lib/StateUI/StateUI.Web/JavaScript/stateui-web.js"
 conformance="StateUIWebTests.WebConformanceTests"
 # The classes whose tests need a browser's own page: the host's own, and the conformance suite.
-hosts_in_browser="StateUIWebTests.WebDrawnChildrenTests,StateUIWebTests.WebFrameReportTests,StateUIWebTests.WebWindowClosingTests,StateUIWebTests.WebHistoryTests"
+hosts_in_browser="StateUIWebTests.WebDrawnChildrenTests,StateUIWebTests.WebShapeRoomTests,StateUIWebTests.WebKeyboardTests,StateUIWebTests.WebFrameReportTests,StateUIWebTests.WebWindowClosingTests,StateUIWebTests.WebHistoryTests"
 in_browser="$conformance,$hosts_in_browser"
 
 browser () {
@@ -53,7 +53,9 @@ browser () {
 
 if [[ "${1:-}" == "--browser" ]]; then
   shift
-  selected="$in_browser"
+  # Every family by name: each runs in a program of its own (run-in-browser.mjs says why).
+  families="$(node "$package/JavaScript/run.mjs" "$relay" "$program" --list-tests | grep -E "^$conformance/" | paste -sd, -)"
+  selected="$families,$hosts_in_browser"
   if [[ "${1:-}" == "--host" ]]; then
     selected="$hosts_in_browser"
   elif [[ $# -gt 0 ]]; then

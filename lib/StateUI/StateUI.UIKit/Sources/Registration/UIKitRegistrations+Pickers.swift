@@ -24,6 +24,17 @@ extension UIKitRegistrations {
                     values[PickerContract.options] ?? [], chosen: values[PickerContract.selectedIndex] ?? -1,
                     writeChosen: values.changed(PickerContract.selectedIndex), title: values[PickerContract.placeholder])
             }
+            picker.applies([
+                FontElementContract.fontSize, FontElementContract.fontFamily, FontElementContract.fontAttributes,
+                TextStyleElementContract.textColor, TextAlignmentElementContract.horizontalTextAlignment,
+            ]) { view, values in
+                view.setLook(
+                    TextMembers.look(of: values),
+                    alignment: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start)
+            }
+            picker.property(TintElementContract.tint) { view, tint in
+                view.setTint(tint.flatMap { UIColor(stateUI: $0.propValue) })
+            }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
             picker.raises(PickerContract.selectedIndexChanged)
             picker.raises(PickerContract.opened)

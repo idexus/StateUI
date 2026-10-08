@@ -1,10 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+// listing: Cube3DSample.WinUI.cpp
 // A cube drawn by Direct3D 11.1 into WinUI's SwapChainPanel - an element that knows nothing of StateUI. Its device
 // asks for feature level 11_1 alone; its swap chain is the panel's, sized in pixels for the panel's scale; it turns
 // on WinUI's frames only while it spins and stands on screen, so nothing turns behind a page the user has left, and
 // a value changed while it stands still draws the one frame it needs.
+// listing: end
 
 #include "Relay.h"
 
@@ -24,12 +26,19 @@ using namespace gallery;
 using winrt::com_ptr;
 using winrt::check_hresult;
 
+// listing: Cube3DSample.WinUI.cpp
 namespace {
+    // First what a cube draws with: its paints, its shaders, and its device, corners and swap chain - made once, and
+    // sized again with the panel by standChain. Then the drawing itself, and the frames it follows.
+// listing: end
     /// The colours a cube is painted: teal, amber, violet.
     constexpr float paints[3][3] = {{0.161f, 0.722f, 0.678f}, {0.961f, 0.710f, 0.275f}, {0.580f, 0.443f, 0.929f}};
 
     /// The shaders: each corner carries its face's brightness in w, and the colour is the frame's.
     constexpr char shaders[] = R"(
+        // listing: Cube3DSample.WinUI.hlsl
+        // Compiled by D3DCompile as the cube's device is made: `vertex` as vs_5_0, `pixel` as ps_5_0. A corner
+        // carries its face's brightness in w; the colour is the frame's.
         cbuffer Frame : register(b0) { float4x4 transform; float4 color; };
         struct Corner { float4 at : POSITION; };
         struct Painted { float4 position : SV_POSITION; float4 color : COLOR; };
@@ -40,6 +49,7 @@ namespace {
             return painted;
         }
         float4 pixel(Painted painted) : SV_TARGET { return painted.color; }
+        // listing: end
     )";
 
     struct Frame {
@@ -241,6 +251,7 @@ namespace {
         check_hresult(cube.device->CreateDepthStencilView(depthBuffer.get(), nullptr, cube.depth.put()));
     }
 
+    // listing: Cube3DSample.WinUI.cpp
     /// Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
     void draw(Cube &cube) {
         auto panel = cube.panel.get();
@@ -353,6 +364,7 @@ extern "C" void gallery_cube_set(GalleryObjectRef handle, double size, int32_t c
         report("setting the cube");
     }
 }
+// listing: end
 
 extern "C" void gallery_cube_close(GalleryObjectRef handle) {
     try {

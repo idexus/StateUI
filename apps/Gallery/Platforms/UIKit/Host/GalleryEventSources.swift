@@ -5,6 +5,7 @@ import GalleryUI
 import StateUIUIKit
 import UIKit
 
+// listing: InteropEventsSample.UIKit.swift
 /// The gallery's own pushes: what this host reports without being asked.
 ///
 /// `GalleryContract` declares each event with what it carries, and every
@@ -17,14 +18,18 @@ import UIKit
 /// notification centre once its monitoring is on.
 @MainActor
 enum GalleryEventSources {
+// listing: end
     /// What was last said, so an unchanged reading raises nothing.
     private static var lastSaid: (level: Double, charging: Bool)?
 
     private static var observers: [NSObjectProtocol] = []
 
+    // listing: InteropEventsSample.UIKit.swift
     /// Declares what the gallery raises and starts watching. Said once,
     /// before the application runs.
     static func start() {
+        // What the host raises, declared where its source is wired: a handler
+        // listening for an event nothing raises is told so.
         StateUIEvents.raises(GalleryContract.batteryChanged)
 
         UIDevice.current.isBatteryMonitoringEnabled = true
@@ -47,3 +52,4 @@ enum GalleryEventSources {
         StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
     }
 }
+// listing: end

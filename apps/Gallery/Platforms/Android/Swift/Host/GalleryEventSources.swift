@@ -4,6 +4,7 @@
 import GalleryUI
 import StateUIAndroid
 
+// listing: InteropEventsSample.Android.swift
 /// The gallery's own event on this head: the battery, which the gallery's activity watches while it lives and tells
 /// through GalleryNatives.
 enum GalleryEventSources {
@@ -26,3 +27,4 @@ enum GalleryEventSources {
         StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
     }
 }
+// listing: end

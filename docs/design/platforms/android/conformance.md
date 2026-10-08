@@ -16,6 +16,13 @@ lifecycle is told as the activity tells it: onResume as a window comes to the
 front, onPause as another application does, onPause and onStop as the user
 leaves it, and its finishing as it closes.
 
+A slider moves as TalkBack's user moves it: its own action setting its
+progress, which it reports as the user's. A stepper's step is a tap on its
+button, which a button turned off at an end does not take; the stepper is two
+buttons with no field, so words typed into it do not apply. A scroller is
+moved by Android's own `scrollTo`, outside a write of the program's, which the
+host hears as the user's movement. A tab is tapped on the row of tabs.
+
 A finger's and a mouse's input are motion events dispatched to the view, in
 its pixels, as the window hands them on: a tap put down and lifted in the
 view's middle, a run of taps each soon after the last; a pan put down in the
@@ -63,8 +70,16 @@ window as the user sees it, the render thread's clips and outlines included
 (`PixelCopy`, once the window has drawn): a software drawing of the view
 leaves an outline's cut out. The test window stands on a colour of its own,
 which reads as nothing. What Android does not hold
-stays unread, with why: a heading's level, where Android marks a heading, and
-a typeface's family, which keeps no name.
+stays unread, with why: a heading's level, where Android marks a heading, a
+typeface's family, which keeps no name, and a stepper's range, which its
+buttons do not hold.
+
+A run of a text's words is its text view's spans over the letters the host
+layer's runs place it at (`RunPlace`), the view's own look where none is.
+A window's title is the activity's. A tab's title is the words on its tab and
+its icon the picture the tab shows, told by its very pixels among the
+pictures the suite shows; the tab chosen is the one marked selected, as
+TalkBack tells it. A scroller's offset is where Android's scrollers stand.
 
 The rest a view holds is read through one reader, `TestRead`, by the name of
 what is asked, in the units Android keeps it in: a text view's lines,
@@ -101,9 +116,13 @@ none, and takes only theirs off the device.
 ## What goes past Android
 
 The driver hands the activity's lifecycle - the window's phases, its closing -
-to the host's own entry, as no activity moves in a test's window. A few reads
-are the host's or its relay's own: a slider's range, which the SeekBar keeps
-only as steps, a picker's rows, and what the relay keeps of a dialog. The
+to the host's own entry, as no activity moves in a test's window, a
+document picker's answer to the relay's result path, as no picker is shown,
+and a drag between views to the views' drag listeners' reports, as a test
+can make no drag event. A
+few reads are the host's or its relay's own: a slider's range, which the
+SeekBar keeps only as steps, a picker's rows, what the relay keeps of a
+dialog, the document picker it holds and what it launched. The
 driver names each (`byHost`), and a member a case proves only through them is
 the host's own - ✓ - never ✅. A frame report reads where Android holds the
 view, not where the host placed it last.

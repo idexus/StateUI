@@ -104,6 +104,16 @@ final class AppKitSplitView: AppKitHitTestView {
         detailSurface.barColor = color
     }
 
+    /// Stands the sidebar on the material its split view says for it beside the detail; nil for the system's
+    /// sidebar.
+    /// Design: docs/design/host/pages.md#a-sidebars-material
+    func setSidebarGround(_ background: HostValue?) {
+        sidebarSurface.showGround(background)
+    }
+
+    var sidebarGroundForTesting: AppKitDecoration { sidebarSurface.ground }
+    var sidebarLayerColorForTesting: CGColor? { sidebarSurface.layer?.backgroundColor }
+
     var detailBarColorForTesting: NSColor? { detailSurface.barColor }
     var sidebarBarColorForTesting: NSColor? { sidebarSurface.barColor }
 

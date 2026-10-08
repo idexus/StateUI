@@ -34,6 +34,7 @@ final class AppKitEnvironment {
         reportLocale()
         reportBattery()
         reportTheme()
+        reportAccent()
         reportChange = reportingChanges
         watch()
     }
@@ -71,14 +72,44 @@ final class AppKitEnvironment {
         network.start(queue: .main)
         self.network = network
 
+        watchTheme()
+    }
+
+    /// Reports the theme and the accent, then each change of them as it comes, through `reportingChanges` - alone,
+    /// where a host watches nothing else of its machine.
+    func startTheme(reportingChanges: @escaping (() -> Void) -> Void) {
+        reportTheme()
+        reportAccent()
+        reportChange = reportingChanges
+        watchTheme()
+    }
+
+    private func watchTheme() {
         appearanceWatch = NSApplication.shared.observe(\.effectiveAppearance) { [weak self] _, _ in
-            MainActor.assumeIsolated { self?.changed { $0.reportTheme() } }
+            MainActor.assumeIsolated { self?.changed { $0.reportTheme(); $0.reportAccent() } }
         }
+        observers.append(NotificationCenter.default.addObserver(
+            forName: NSColor.systemColorsDidChangeNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated { self?.changed { $0.reportAccent() } }
+        })
     }
 
     /// Reports a change through the runtime's step for it.
     private func changed(_ report: @escaping (AppKitEnvironment) -> Void) {
         reportChange { report(self) }
+    }
+
+    /// The accent the user chose, as the application's appearance draws it.
+    func reportAccent() {
+        var accent = NSColor.systemBlue
+        NSApplication.shared.effectiveAppearance.performAsCurrentDrawingAppearance {
+            accent = NSColor.controlAccentColor.usingColorSpace(.sRGB) ?? .systemBlue
+        }
+        func channel(_ value: CGFloat) -> Int { Int((value * 255).rounded()) }
+        core.setAccentColor(Color(
+            red: channel(accent.redComponent), green: channel(accent.greenComponent),
+            blue: channel(accent.blueComponent), alpha: channel(accent.alphaComponent)))
     }
 
     /// The system's appearance: dark or light.

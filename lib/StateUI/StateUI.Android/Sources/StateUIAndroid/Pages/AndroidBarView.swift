@@ -106,11 +106,15 @@ final class AndroidBarView: AndroidView {
         Java.release(local: words)
     }
 
-    /// The actions as the bar's menu, then the menus as its submenus behind the overflow, after a line where
-    /// actions stand there too; an item chosen reaches `onMenuChose` by its place among the items.
+    /// The actions as the bar's menu, each of the bar's groups a group of Android's menu, then the menus as its
+    /// submenus behind the overflow, after a line where actions stand there too; an item chosen reaches
+    /// `onMenuChose` by its place among the items.
     private func showActions(_ actions: [AndroidMenu.Item], menus: [AndroidMenu.Entry]) {
         let parted = !menus.isEmpty && actions.contains { !$0.onBar }
-        let entries = actions.map(AndroidMenu.Entry.item) + (parted ? [.separator] : []) + menus
+        let grouped = actions.enumerated().flatMap { place, action -> [AndroidMenu.Entry] in
+            place > 0 && action.group != actions[place - 1].group ? [.separator, .item(action)] : [.item(action)]
+        }
+        let entries = grouped + (parted ? [.separator] : []) + menus
         AndroidMenu.encoded(entries) { kinds, texts, pictures in
             Java.call(reference, JavaAPI.setBarActions, .object(kinds), .object(texts), .object(pictures))
         }

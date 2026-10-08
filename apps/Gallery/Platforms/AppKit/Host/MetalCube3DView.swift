@@ -7,6 +7,7 @@ import QuartzCore
 import GalleryUI
 import StateUIAppKit
 
+// listing: Cube3DSample.AppKit.swift
 /// A cube turning on the GPU - an ordinary `MTKView` that knows nothing of
 /// StateUI.
 ///
@@ -210,6 +211,7 @@ final class MetalCube3DView: MTKView {
 
         draw()
     }
+    // listing: end
 
     // MARK: - The shaders, and the arithmetic behind the matrix
 
@@ -222,6 +224,10 @@ final class MetalCube3DView: MTKView {
         on device: MTLDevice, colorFormat: MTLPixelFormat
     ) -> MTLRenderPipelineState? {
         let source = """
+            // listing: Cube3DSample.AppKit.metal
+            // Compiled as MetalCube3DView is made. A vertex is one float4 - the
+            // corner in xyz, the face's brightness in w - so there is no struct
+            // whose padding Swift and Metal could measure differently.
             #include <metal_stdlib>
             using namespace metal;
 
@@ -249,6 +255,7 @@ final class MetalCube3DView: MTKView {
             fragment float4 cube_fragment(Painted in [[stage_in]]) {
                 return in.color;
             }
+            // listing: end
             """
 
         guard let library = try? device.makeLibrary(source: source, options: nil) else { return nil }
@@ -303,6 +310,7 @@ final class MetalCube3DView: MTKView {
     private static func scaling(_ scale: Float) -> simd_float4x4 {
         simd_float4x4(diagonal: SIMD4(scale, scale, scale, 1))
     }
+    // listing: Cube3DSample.AppKit.swift
 }
 
 // MARK: - Registration
@@ -334,3 +342,4 @@ extension MetalCube3DView {
         }
     }
 }
+// listing: end

@@ -54,10 +54,24 @@ enum GTKRealization {
         .complete("PageElement", "title"),
         .notPlanned("PropertyContainer", "accessibilityIdentifier", reason: "GTK 4 gives an accessible the identifier "
             + "a GtkBuilder file names alone: none is set on a widget made in code."),
+        .partial("VisualElement", "accessibilityHeading", missing: "GTK fixes a widget's role once it is shown: a view "
+            + "becomes a heading, or stops being one, only as it is made; its level changes."),
+        .partial("VisualElement", "background", missing: "A brush fills the view with its first colour alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's colour standing in, its tint over it."),
         .complete("VisualElement", "layoutDirection"),
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
+        .notPlanned("Page", "backButtonTitle", reason: "GNOME's way back in the bar is an arrow, with no words."),
+        .notPlanned("SearchField", "submitLabel", reason: "GTK gives an entry no word for the return key of a keyboard on the screen."),
+        .notPlanned("TextField", "showsClearButton", reason: "GTK's entry has no button of its own that empties it."),
+        .notPlanned("TextField", "submitLabel", reason: "GTK gives an entry no word for the return key of a keyboard on the screen."),
+        .complete("Grid", "background"),
+        .complete("HStack", "background"),
+        .complete("ScrollView", "background"),
+        .notPlanned("Switch", "background", reason: "GTK's switch paints its own box as its track: a colour there would "
+            + "recolour the track, not lie under it."),
+        .complete("VStack", "background"),
+        .complete("ZStack", "background"),
         .partial("DatePicker", "format", missing: "GTK writes \"D\" and \"d\" in the user's own way, and any other pattern as \"d\"."),
         .partial("DatePicker", "maximumDate",
                  missing: "GtkCalendar offers every day: one the user picks past the range stands at its end."),
@@ -65,7 +79,6 @@ enum GTKRealization {
                  missing: "GtkCalendar offers every day: one the user picks past the range stands at its end."),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
-        .partial("Text", "background", missing: "A brush fills the box with its first colour alone."),
         .notPlanned("MenuItem", "icon", reason: "GNOME's menus show words alone, no picture beside them."),
         .notPlanned("MenuItem", "isDestructive", reason: "GNOME's menus mark no entry as destroying something."),
         .complete("ModalStack", "popped"),
@@ -73,6 +86,7 @@ enum GTKRealization {
         .complete("Page", "appearing"),
         .complete("Page", "background"),
         .complete("Page", "disappearing"),
+        .complete("Page", "showsBackButton"),
         .complete("Page", "showsNavigationBar"),
         .complete("Page", "navigatedFrom"),
         .complete("Page", "navigatedTo"),
@@ -104,6 +118,8 @@ enum GTKRealization {
         .complete("TextSpan", "textDecorations"),
         .complete("SplitView", "showsSidebar"),
         .complete("SplitView", "showsSidebarChanged"),
+        .partial("SplitView", "sidebarBackground", missing: "GTK blurs nothing inside a window: a blur or glass shows its colour."),
+        .partial("SplitView", "flyoutBackground", missing: "GTK blurs nothing inside a window: a blur or glass shows its colour."),
         .complete("TabView", "selectedTab"),
         .complete("TabView", "selectedTabChanged"),
         .partial("TextEditor", "layoutDirection",
@@ -125,7 +141,7 @@ enum GTKRealization {
         .notPlanned("Window", "isMaximizable",
                     reason: "The desktop fills the screen with any GTK 4 window it can resize: none forbids that alone."),
         .notPlanned("Window", "isMinimizable", reason: "GTK 4 asks the desktop to keep no window from being put away."),
-        .notPlanned("Window", "isTranslucent", reason: "GNOME draws its windows opaque: no material shows through one."),
+        .partial("Window", "background", missing: "GNOME draws its windows opaque: a blur or glass shows its colour."),
         .notPlanned("Window", "maximumHeight", reason: "GTK 4 bounds no window from above."),
         .notPlanned("Window", "maximumWidth", reason: "GTK 4 bounds no window from above."),
         .complete("Window", "minimumHeight"),

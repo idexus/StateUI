@@ -111,6 +111,9 @@ namespace {
         winrt::Windows::UI::ViewManagement::UISettings settings;
         auto background = settings.GetColorValue(winrt::Windows::UI::ViewManagement::UIColorType::Background);
         facts << (0.299 * background.R + 0.587 * background.G + 0.114 * background.B < 128);
+        // The accent the user chose, as ARGB in one whole number.
+        auto accent = settings.GetColorValue(winrt::Windows::UI::ViewManagement::UIColorType::Accent);
+        facts << std::to_string(uint32_t(accent.A) << 24 | uint32_t(accent.R) << 16 | uint32_t(accent.G) << 8 | accent.B);
     }
 
     void display(Facts &facts, StateUIObjectRef handle) {

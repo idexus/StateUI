@@ -17,7 +17,8 @@ enum AndroidMenu {
     }
 
     /// An item: its words and picture, whether it can be chosen, whether it cannot be undone, whether it stands on
-    /// the bar beside the title rather than in a menu, and whether it shows its words there beside its picture.
+    /// the bar beside the title rather than in a menu, whether it shows its words there beside its picture, and the
+    /// bar's group it stands in.
     struct Item: Equatable {
         var text: String
         var picture: String?
@@ -25,6 +26,7 @@ enum AndroidMenu {
         var isDestructive = false
         var onBar = false
         var withText = false
+        var group = 0
     }
 
     /// Writes `entries` into `menu`, an item chosen reported to `view` by its place among the items.

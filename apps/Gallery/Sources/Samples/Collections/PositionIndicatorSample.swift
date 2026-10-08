@@ -2,109 +2,22 @@ import StateUI
 
 /// Dots marking a place in a sequence: their shape, their cap and a lone one.
 struct PositionIndicatorSample: SampleContent, ExampleContent {
+    // listing: PositionIndicatorSample
     @State private var step = 0
     @State private var cap = 5.0
+    // listing: end
 
     static let id = "positionIndicator"
     static let title = "PositionIndicator"
     static let summary = "A place in a sequence, drawn as dots - with or without a run of cards."
 
-    static let code = """
-        @State private var step = 0
-        @State private var cap = 5.0
-
-        private static let steps = ["Describe", "Diff", "Send", "Render"]
-
-        VStack {
-            // The step is read here, so moving between pages builds this
-            // closure - one build a page, whatever the movement costs.
-            DebugInfoLabel()
-
-            Text(Self.steps[step])
-
-            PositionIndicator()
-                .count(Self.steps.count)
-                .position(step)
-                .indicatorColor(Palette.outline)
-                .currentIndicatorColor(Palette.accent)
-
-            PositionIndicator()
-                .count(Self.steps.count)
-                .position(step)
-                .indicatorShape(.square)
-                .indicatorSize(10)
-                .indicatorColor(Palette.outline)
-                .currentIndicatorColor(Palette.accent)
-
-            HStack {
-                Button("Back")
-                    .isEnabled(step > 0)
-                    .onClicked { step -= 1 }
-
-                Button("Next")
-                    .isEnabled(step < Self.steps.count - 1)
-                    .onClicked { step += 1 }
-            }
-
-            // Twelve items twice, at two caps. `maximumVisible` is a ceiling
-            // on the DOTS and not on the items: `count` is twelve in both
-            // rows, and the stepper takes the second row's dots away one at a
-            // time.
-            Text("Twelve items, maximumVisible(12)")
-
-            PositionIndicator()
-                .count(12)
-                .position(step)
-                .maximumVisible(12)
-                .indicatorColor(Palette.outline)
-                .currentIndicatorColor(Palette.accent)
-
-            Text("The same twelve, maximumVisible(\\(Int(cap)))")
-
-            PositionIndicator()
-                .count(12)
-                .position(step)
-                .maximumVisible(Int(cap))
-                .indicatorColor(Palette.outline)
-                .currentIndicatorColor(Palette.accent)
-
-            Stepper($cap)
-                .minimum(4)
-                .maximum(12)
-
-            // One item twice. `hidesForSinglePage` is true by default, so the
-            // left-hand one draws NOTHING at all - a lone dot says nothing
-            // about where the user is - and the right-hand one asks for it.
-            HStack {
-                VStack {
-                    Text("hidesForSinglePage(true)")
-
-                    PositionIndicator()
-                        .count(1)
-                        .position(0)
-                        .hidesForSinglePage(true)
-                        .indicatorColor(Palette.outline)
-                        .currentIndicatorColor(Palette.accent)
-                }
-
-                VStack {
-                    Text("hidesForSinglePage(false)")
-
-                    PositionIndicator()
-                        .count(1)
-                        .position(0)
-                        .hidesForSinglePage(false)
-                        .indicatorColor(Palette.outline)
-                        .currentIndicatorColor(Palette.accent)
-                }
-            }
-        }
-        """
-
+    // listing: PositionIndicatorSample
     private static let steps = ["Describe", "Diff", "Send", "Render"]
 
     var body: some View {
         VStack {
+            // `step` and `cap` are read here, so each press of Back, Next or
+            // the stepper builds this closure once.
             DebugInfoLabel()
 
             Text(Self.steps[step])
@@ -130,14 +43,10 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Back")
-                    .fontSize(13)
-                    .padding(horizontal: 16, vertical: 6)
                     .isEnabled(step > 0)
                     .onClicked { step -= 1 }
 
                 Button("Next")
-                    .fontSize(13)
-                    .padding(horizontal: 16, vertical: 6)
                     .isEnabled(step < Self.steps.count - 1)
                     .onClicked { step += 1 }
             }
@@ -181,9 +90,10 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .maximum(12)
                 .horizontalAlignment(.center)
 
-            // One item twice. `hidesForSinglePage` is true by default, so the
-            // left-hand one draws NOTHING at all - a lone dot says nothing
-            // about where the user is - and the right-hand one asks for it.
+            // One item twice. `hidesForSinglePage` is true by default: the
+            // left-hand one says so and draws NOTHING at all - a lone dot says
+            // nothing about where the user is - and the right-hand one turns
+            // it off and draws its dot.
             HStack {
                 VStack {
                     Text("hidesForSinglePage(true)")
@@ -222,6 +132,7 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

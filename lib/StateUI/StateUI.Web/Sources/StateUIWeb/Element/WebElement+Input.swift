@@ -14,7 +14,8 @@ extension WebElement {
         if hearing.contains(.taps), !listening.contains(.taps) {
             listening.insert(.taps)
             view.listen("click") { [weak self] in
-                guard let self, !press.wasDragged else { return }
+                // A label's click comes again as its control's: one tap.
+                guard let self, !press.wasDragged, !WebRelay.eventPassesToControl else { return }
                 heard(.taps, .tap(run: WebRelay.eventClicks))
             }
             view.listen("activate") { [weak self] in self?.heard(.taps, .tap(run: 0)) }
@@ -29,7 +30,15 @@ extension WebElement {
                 view.listen(event) { [weak self] in self?.heard(.pointer, .pointer(said, WebRelay.eventPoint)) }
             }
         }
+        if element.handler(.isFocusedChanged) != nil, !listensForFocus {
+            listensForFocus = true
+            view.listen("focus") { [weak self] in self?.send(.isFocusedChanged, [.bool(WebRelay.eventDetail != 0)]) }
+        }
         view.isTapped = hearing.contains(.taps) && !view.isControl
+        view.offerDrag(element.dragAndDrop) { [weak self] heard in
+            guard let self, let host else { return }
+            element.hear(heard, in: host.runtime)
+        }
     }
 
     /// The DOM's pointer events, and what each says to the element.

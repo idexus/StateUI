@@ -31,6 +31,8 @@ extension GTKDriver {
         case let tabs as GTKTabView where property == .selectedTab: return Self.shownTab(of: tabs).map(\.propValue)
         case _ where property == .showsNavigationBar && element.type == .page:
             return (try? frame(of: element)).map { (adw_toolbar_view_get_reveal_top_bars($0.widget.opaque) != 0).propValue }
+        case _ where property == .showsBackButton && element.type == .page:
+            return (try? frame(of: element)).map { (adw_header_bar_get_show_back_button($0.header.opaque) != 0).propValue }
         case let layout as GTKLayoutView: return layoutHolds(property, layout)
         default: return nil
         }
@@ -350,7 +352,7 @@ private struct PangoRun {
             if first(PANGO_ATTR_STYLE).map(Self.number) == Int32(PANGO_STYLE_ITALIC.rawValue) { attributes.insert(.italic) }
             return first(PANGO_ATTR_WEIGHT) == nil && first(PANGO_ATTR_STYLE) == nil ? nil : attributes.propValue
         case .textColor: return color(PANGO_ATTR_FOREGROUND, PANGO_ATTR_FOREGROUND_ALPHA)?.propValue
-        case .background: return color(PANGO_ATTR_BACKGROUND, PANGO_ATTR_BACKGROUND_ALPHA).map { Background.color($0).propValue }
+        case .background: return color(PANGO_ATTR_BACKGROUND, PANGO_ATTR_BACKGROUND_ALPHA).map { Material.color($0).propValue }
         case .tracking:
             return first(PANGO_ATTR_LETTER_SPACING).map { (Double(Self.number($0)) / Double(PANGO_SCALE)).propValue }
         case .lineHeight:

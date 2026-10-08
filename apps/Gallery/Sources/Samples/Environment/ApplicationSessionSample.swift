@@ -3,15 +3,18 @@ import StateUI
 /// The application's session, in every view's environment: the motion every
 /// value in the application takes when nothing nearer says another.
 struct ApplicationSessionSample: SampleContent, ExampleContent {
+    // listing: ApplicationSessionSample
     /// The application as it runs - one for the whole process.
     @Environment(\.application) var application
 
     @State private var wide = false
+    // listing: end
 
     static let id = "applicationSession"
     static let title = "Application session"
-    static let summary = "The application's own session, read and written like any state - here the motion every value takes."
+    static let summary = "The application's session, read and written like any state - here the motion values take by default."
 
+    // listing: ApplicationSessionSample
     static let laws = ["Standard", "Spring", "None"]
 
     static func law(_ index: Int) -> Motion {
@@ -22,56 +25,25 @@ struct ApplicationSessionSample: SampleContent, ExampleContent {
         }
     }
 
-    static let code = """
-        @Environment(\\.application) private var application
-        @State private var wide = false
-
-        static let laws = ["Standard", "Spring", "None"]
-
-        static func law(_ index: Int) -> Motion {
-            switch index {
-            case 1: .spring(response: 320, damping: 0.6)
-            case 2: .none
-            default: .standard
-            }
-        }
-
+    var body: some View {
         VStack {
             // `application.motion` and `wide` are read here, so a choice or a
             // press builds this closure.
             DebugInfoLabel()
 
-            // One write for the whole application: every value without a
-            // motion of its own travels so from now on.
-            Picker(Self.laws)
-                .onSelectedIndexChanged { application.motion = Self.law($0) }
-                .selectedIndex(Self.laws.indices.first { Self.law($0) == application.motion } ?? 0)
-
-            // No `.motion` here: the panel takes the application's.
-            ColorBox()
-                .color(wide ? Palette.accent : Palette.brand)
-                .width(wide ? 300 : 120)
-                .height(60)
-                .cornerRadius(8)
-
-            Button("Change").onClicked { wide.toggle() }
-        }
-        """
-
-    var body: some View {
-        VStack {
-            DebugInfoLabel()
-
-            Text("Pick None, then open another sample: nothing in the application travels.")
+            Text("Pick None, then open another sample: only what has a motion of its own still travels.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
 
+            // One write for the whole application: every value without a
+            // motion of its own takes it.
             Picker(Self.laws)
                 .onSelectedIndexChanged { application.motion = Self.law($0) }
                 .selectedIndex(Self.laws.indices.first { Self.law($0) == application.motion } ?? 0)
                 .horizontalAlignment(.center)
 
+            // No `.motion` here: the panel takes the application's.
             ColorBox()
                 .color(wide ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
@@ -85,6 +57,7 @@ struct ApplicationSessionSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

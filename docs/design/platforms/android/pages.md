@@ -29,8 +29,10 @@ where the host layer says the frame moved the window's chrome
 ([one frame](../../host/runtime.md#one-frame)), every bar the window and its
 sheets show is shown again. The bar carries the actions the page's path declares: the ones on the bar
 beside the title, as the host layer composes them - the leading groups
-first, the bar having no leading edge beside its navigation button - the rest
-behind the toolbar's overflow - each an entry of the toolbar's menu, written as
+first, the bar having no leading edge beside its navigation button, each group
+a group of the toolbar's menu, drawn in one row as Android's toolbar draws its
+actions - the rest behind the toolbar's overflow - each an entry of the
+toolbar's menu, written as
 [menus](menus.md) says, and the menus the path declares behind the overflow
 after them. Its navigation button is the way back on a pushed page
 whose back button is not taken away; at the root of a split view's detail,
@@ -56,9 +58,15 @@ size, and a picture at its own size stood twice as tall as theirs.
 
 Where the room is narrower than 720 points - a phone, a tablet upright - the
 sidebar is a drawer sliding over the detail from the leading edge, the
-detail shaded behind it; a tap on the shade closes it. Where the room is
-wider, the sidebar stands beside the detail while it shows. The slide is
-Android's own animation, so the system's "remove animations" setting takes
+detail shaded behind it; a tap on the shade closes it. The drawer stands on
+the split view's flyout material, else on the theme's floating surface
+(`colorBackgroundFloating`), its end corners rounded as a modal drawer's -
+never on the window's, which a clear window would leave clear. Where the room
+is wider, the sidebar stands beside the detail while it shows, on the split
+view's sidebar material, else on nothing: the window shows through
+([a sidebar's material](../../host/pages.md#a-sidebars-material)). Android
+blurs nothing behind a view, so a blur stands as its colour. The
+slide is Android's own animation, so the system's "remove animations" setting takes
 it away. Opening the drawer lays the page out again - the bar changes - and a
 layout leaves a sliding drawer sliding: only a new room, the drawer wider or
 beside the detail, puts it in place at once. A closed drawer holds nothing
@@ -74,8 +82,8 @@ room](../../host/pages.md#a-sidebar-on-the-first-room)).
 A tabbed view shows the chosen tab's page over a row of tabs along the
 bottom, one for each tab with its picture over its title. On a bar colour
 the tree writes, the words are white where the colour is dark and the
-text's own where it is light, the chosen tab full and the others dimmed. A
-tab the user chooses shows its page, and is reported into the selection; a
+text's own where it is light, the chosen tab full and the others dimmed; the
+chosen one is selected, so TalkBack says which it is. A tab the user chooses shows its page, and is reported into the selection; a
 value the tree writes chooses the tab, by the host layer's rule
 ([tabs](../../host/pages.md#tabs)); the row stands at the bottom edge
 (`RowEdge`).

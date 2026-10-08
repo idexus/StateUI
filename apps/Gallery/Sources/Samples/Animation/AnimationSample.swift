@@ -2,6 +2,7 @@ import StateUI
 
 /// A card's opacity, sideways translation, scale and rotation, each driven by a state.
 struct AnimationSample: SampleContent, ExampleContent {
+    // listing: AnimationSample
     @State private var curve = 0
 
     /// The four values the card is drawn from, one per thing a button moves.
@@ -14,99 +15,19 @@ struct AnimationSample: SampleContent, ExampleContent {
     @State private var shift = 0.0
     @State private var scale = 1.0
     @State private var angle = 0.0
+    // listing: end
 
     static let id = "animation"
     static let title = "Animations"
     static let summary = "Fade, move, scale and spin a view by sending the driven state behind it."
 
-    static let curves = ["Linear", "Cubic in-out", "Bounce out", "Spring out"]
-
-    static let code = """
-        @State private var curve = 0
-
-        @State private var fade = 1.0
-        @State private var shift = 0.0
-        @State private var scale = 1.0
-        @State private var angle = 0.0
-
-        static let curves = ["Linear", "Cubic in-out", "Bounce out", "Spring out"]
-
-        VStack {
-            // The picker is handed `$curve`, which reads nothing at build,
-            // and the four journeys are the host's - so this stands at one.
-            DebugInfoLabel()
-
-            ZStack {
-                Text("Animate me")
-            }
-            .style("Card")
-            // Four DRIVEN properties. Read off a state the host moves, so none
-            // of them is on any message after the registration.
-            .opacity($fade)
-            .translationX($shift)
-            .scale($scale)
-            .rotation($angle)
-            .background(Palette.brand)
-
-            Picker(Self.curves)
-                .selectedIndex($curve)
-                .placeholder("Easing")
-
-            HStack {
-                // A movement answers whether it ran to the END. Stop says
-                // false, and so does a second press taking this one's place -
-                // and the way back is not taken over whatever happened instead.
-                Button("Fade").onClicked {
-                    let landed = try await $fade.journey.move(to: 0.1, .eased(400, easing))
-                    if landed { try await $fade.journey.move(to: 1, .eased(400, easing)) }
-                }
-
-                // ONE movement, because the card only ever moves sideways. A
-                // diagonal would be a second state on translationY, started
-                // with `async let` so the two land together.
-                Button("Move").onClicked {
-                    let landed = try await $shift.journey.move(to: 60, .eased(400, easing))
-                    if landed { try await $shift.journey.move(to: 0, .eased(400, easing)) }
-                }
-
-                Button("Scale").onClicked {
-                    let landed = try await $scale.journey.move(to: 1.4, .eased(400, easing))
-                    if landed { try await $scale.journey.move(to: 1, .eased(400, easing)) }
-                }
-
-                // A movement goes TO a value, never BY one, so a full turn is
-                // the author's arithmetic. The state is where the last one
-                // was headed, which is what makes the next press carry on from
-                // there rather than start over.
-                Button("Spin").onClicked {
-                    try await $angle.journey.move(to: angle + 360, .eased(700, easing))
-                }
-            }
-
-            // Whichever of them is moving; a state standing still is
-            // unaffected. Each stop leaves the value where it had got to, so
-            // the card stays exactly where the user saw it stop.
-            Button("Stop").onClicked {
-                $fade.journey.stop()
-                $shift.journey.stop()
-                $scale.journey.stop()
-                $angle.journey.stop()
-            }
-        }
-
-        /// The curve the picker is on.
-        private var easing: Easing {
-            switch curve {
-            case 1: return .cubicInOut
-            case 2: return .bounceOut
-            case 3: return .backOut
-            default: return .linear
-            }
-        }
-        """
+    // listing: AnimationSample
+    static let curves = ["Linear", "Cubic in-out", "Bounce out", "Back out"]
 
     var body: some View {
         VStack {
+            // The picker is handed `$curve`, which reads nothing at build,
+            // and the four journeys are the host's - so this stands at one.
             DebugInfoLabel()
 
             ZStack {
@@ -116,8 +37,8 @@ struct AnimationSample: SampleContent, ExampleContent {
                     .padding(horizontal: 24, vertical: 16)
             }
             .style("Card")
-            // Four DRIVEN properties. Read off a state the host moves, so none
-            // of them is on any message after the registration.
+            // Four DRIVEN properties. The host reads each off the state it
+            // moves, so none is in a patch after the one that registers it.
             .opacity($fade)
             .translationX($shift)
             .scale($scale)
@@ -181,6 +102,7 @@ struct AnimationSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -192,11 +114,11 @@ struct AnimationSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("The state holds BOTH readings: `fade` is 0.1 from the "
-                + "line after the call, while `$fade.journey.value` is wherever the "
+            Text("The state holds BOTH readings: `fade` is 0.1 from the moment "
+                + "the movement is sent, while `$fade.journey.value` is wherever the "
                 + "host has got the card to. Nothing is described in between, so the "
-                + "whole 400ms costs no renders - and `$fade.journey.value = 0.5` "
-                + "instead of a movement simply snaps.")
+                + "whole 400ms costs no renders - and `$fade.journey.snap(to: 0.5)` "
+                + "puts the card there at once, with no movement.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -218,11 +140,10 @@ struct AnimationSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
+    // listing: AnimationSample
     /// One of the buttons, all of which look the same.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
-            .fontSize(13)
-            .padding(horizontal: 14, vertical: 6)
             .onClicked(act)
     }
 
@@ -235,4 +156,5 @@ struct AnimationSample: SampleContent, ExampleContent {
         default: return .linear
         }
     }
+    // listing: end
 }

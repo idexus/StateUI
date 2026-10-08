@@ -23,7 +23,7 @@
     /// The words' colour, as the tree gives it.
     public var color: HostValue?
 
-    /// What stands behind the words, as the tree gives it.
+    /// What stands behind the words: the run's background as a host that blurs nothing paints it.
     public var background: HostValue?
 
     /// The space between the letters, in points.
@@ -98,7 +98,7 @@ extension MountedElement {
         let labelCase = value(.textCase)
         return spans.children.filter { $0.type == .textSpan }.map { span in
             var look = span.textLook
-            look.background = span.value(.background)
+            look.background = HostMaterial(span.value(.background)).painted
             let textCase = (span.value(.textCase) ?? labelCase)?.enumeration.flatMap(TextCase.init(rawValue:))
             return TextRun(text: (textCase ?? .none).applied(to: span.string(.text) ?? ""), look: look)
         }

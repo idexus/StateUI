@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import stateui.android.StateUIActivity;
 
+// listing: InteropEventsSample.Android.java
 /** The gallery's activity: the host's own, and the battery watched while it lives, for the gallery's own event. */
 public final class GalleryActivity extends StateUIActivity {
     private BroadcastReceiver battery;
@@ -24,3 +25,4 @@ public final class GalleryActivity extends StateUIActivity {
         super.onDestroy();
     }
 }
+// listing: end

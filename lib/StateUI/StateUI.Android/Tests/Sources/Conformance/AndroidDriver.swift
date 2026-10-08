@@ -47,6 +47,12 @@ final class AndroidDriver: HostDriver {
             none["read padding of \(layout)"] =
                 "Android's view group places its children where StateUI's layout says; their frames prove it"
         }
+        for member in ["stroke", "lineWidth", "shape"] {
+            none["read \(member) of Button"] =
+                "StateUI draws a button's box in a drawable of its own, which holds none of its \(member); its drawing proves it"
+        }
+        none["read a background of no one colour"] =
+            "StateUI draws the box in a drawable of its own, which holds no one colour; its drawing proves it"
         for stack in ["HStack", "VStack"] {
             none["read spacing of \(stack)"] =
                 "Android's view group places its children where StateUI's layout says; their frames prove it"
@@ -66,6 +72,9 @@ final class AndroidDriver: HostDriver {
     /// What the hosts wrote to their log since the last one started.
     private let written = AndroidLogLines()
 
+    /// The address of the folder the files a case opens and saves stand in, a slash after it.
+    private(set) var filesFolder = ""
+
     var register: HostRegister { AndroidRealization.register }
 
     func start(
@@ -84,6 +93,8 @@ final class AndroidDriver: HostDriver {
         Java.call(window.reference, Self.setContentView, .object(root.reference))
         Java.callStatic(Self.testPixels, Self.paintNothing, .object(window.reference))
         AndroidPersistence.writeScenes("", context: window.reference)  // no scenes an earlier case kept
+        Java.callStatic(Self.files, Self.holdForTesting)
+        filesFolder = Java.frame { Java.text(Java.callStaticObject(Self.testFiles, Self.emptied, .object(window.reference))) }
         renderer.show()
         layOut()
         // The activity comes to the front: onResume.
@@ -165,6 +176,25 @@ final class AndroidDriver: HostDriver {
             field: words[2])
     }
 
+    /// The document picker the relay holds: one that opens or one that saves.
+    func fileDialog(over element: MountedElement) throws -> FileDialog? {
+        switch Java.callStaticInt(Self.files, Self.heldForTesting) {
+        case 0: .open
+        case 1: .save
+        default: nil
+        }
+    }
+
+    /// The night mode the activity's configuration stands in: the application's where it holds one.
+    func theme() throws -> ColorScheme {
+        Java.callStaticBool(JavaAPI.environment, Self.night, .object(TestContext.window.reference)) ? .dark : .light
+    }
+
+    /// What the relay handed the system to launch, in order: an address as written, a document by its name.
+    func launched() throws -> [String] {
+        Java.frame { Java.texts(Java.callStaticObject(Self.files, Self.launchedForTesting)) }
+    }
+
     /// The colour the window shows at `point` of the view, as the user sees it (`TestPixels.color`); nil where the
     /// view draws nothing there.
     func color(of element: MountedElement, at point: Point) throws -> Color? {
@@ -175,6 +205,38 @@ final class AndroidDriver: HostDriver {
             Self.testPixels, Self.pixel, .object(view.reference), .int(Int32(point.x * 2)), .int(Int32(point.y * 2))))
         guard argb >> 24 > 0x80 else { return nil }
         return Self.color(argb | 0xFF00_0000)
+    }
+
+    /// A heading is a view TalkBack meets as one (`isAccessibilityHeading`).
+    func isHeading(_ element: MountedElement) throws -> Bool {
+        guard let view = (element.native as? AndroidElement)?.view else {
+            throw DriverCannot("read whether \(element.type.name) is a heading")
+        }
+        return Java.callBool(view.reference, Self.isAccessibilityHeading)
+    }
+
+    /// The layout's children by where each one's view stands in the order its group draws them
+    /// (`TestDrawing.drawingOrder`), the last drawn last.
+    func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
+        let cannot = DriverCannot("read the drawing order of \(layout.type.name)")
+        guard let group = (layout.native as? AndroidElement)?.view else { throw cannot }
+        let places: [Int?] = Java.frame {
+            guard let order = Java.callStaticObject(Self.testDrawing, Self.drawingOrderOf, .object(group.reference))
+            else { return [] }
+            let drawn = Java.intsOf(order).compactMap { Java.callObject(group.reference, TestJava.getChildAt, .int($0)) }
+            return layout.children.map { (child: MountedElement) -> Int? in
+                guard let view = (child.native as? AndroidElement)?.view else { return nil }
+                return drawn.firstIndex { (holder: jobject) in
+                    Java.callStaticBool(Self.testDrawing, Self.isWithin, .object(view.reference), .object(holder))
+                }
+            }
+        }
+        guard places.count == layout.children.count else { throw cannot }
+        return try zip(layout.children, places).map { child, place in
+            guard let place else { throw cannot }
+            return (child, place)
+        }
+        .sorted { $0.1 < $1.1 }.map(\.0)
     }
 
     /// Where the element's view stands in its window, as Android placed it.
@@ -201,6 +263,19 @@ final class AndroidDriver: HostDriver {
     static let answer = Java.staticMethod(
         dialogs, "answer", "(Ljava/lang/String;Ljava/lang/String;)Z")
     static let dismissAll = Java.staticMethod(dialogs, "dismissAll", "()V")
+    static let files = Java.findClass("stateui/android/StateUIFiles")
+    static let holdForTesting = Java.staticMethod(files, "holdForTesting", "()V")
+    static let heldForTesting = Java.staticMethod(files, "heldForTesting", "()I")
+    static let answerForTesting = Java.staticMethod(
+        files, "answerForTesting", "(Landroid/content/Context;[Ljava/lang/String;)Z")
+    static let launchedForTesting = Java.staticMethod(files, "launchedForTesting", "()[Ljava/lang/String;")
+    static let testFiles = Java.findClass("stateui/android/test/TestFiles")
+    static let isAccessibilityHeading = Java.method(JavaAPI.view, "isAccessibilityHeading", "()Z")
+    static let testDrawing = Java.findClass("stateui/android/test/TestDrawing")
+    static let drawingOrderOf = Java.staticMethod(testDrawing, "drawingOrder", "(Landroid/view/ViewGroup;)[I")
+    static let isWithin = Java.staticMethod(
+        testDrawing, "isWithin", "(Landroid/view/View;Landroid/view/View;)Z")
+    static let emptied = Java.staticMethod(testFiles, "emptied", "(Landroid/content/Context;)Ljava/lang/String;")
     static let setContentView = Java.method(
         Java.findClass("android/app/Activity"), "setContentView", "(Landroid/view/View;)V")
     static let looper = Java.findClass("stateui/android/test/TestLooper")

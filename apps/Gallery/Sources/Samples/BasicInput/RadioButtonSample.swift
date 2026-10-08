@@ -2,39 +2,18 @@ import StateUI
 
 /// Three buttons in one group, with one state for what is chosen.
 struct RadioButtonSample: SampleContent, ExampleContent {
+    // listing: RadioButtonSample
     @State private var size = "Medium"
+    // listing: end
 
     static let id = "radioButton"
     static let title = "RadioButton"
     static let summary = "One choice out of several - the group is what makes it exclusive."
 
-    static let code = """
-        @State private var size = "Medium"
-
-        VStack {
-            // The chosen one is read here, so picking builds this closure.
-            DebugInfoLabel()
-
-            ForEach(["Small", "Medium", "Large"]) { name in
-                RadioButton(name)
-                    .groupName("size")
-                    .isOn(size == name)
-                    // Fires on the button that WAS chosen too, with false - so
-                    // the state is written only by the one that won.
-                    .onToggled { chosen in
-                        if chosen {
-                            size = name
-                        }
-                    }
-                    .id(name)
-            }
-
-            Text("Chosen: \\(size)")
-        }
-        """
-
+    // listing: RadioButtonSample
     var body: some View {
         VStack {
+            // The chosen one is read here, so picking builds this closure.
             DebugInfoLabel()
 
             ForEach(sizes) { name in
@@ -56,6 +35,7 @@ struct RadioButtonSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -74,5 +54,7 @@ struct RadioButtonSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
+    // listing: RadioButtonSample
     private var sizes: [String] { ["Small", "Medium", "Large"] }
+    // listing: end
 }

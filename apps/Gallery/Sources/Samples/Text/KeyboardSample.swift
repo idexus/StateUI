@@ -2,51 +2,17 @@ import StateUI
 
 /// Explicit native focus and soft-input actions.
 struct KeyboardSample: SampleContent, ExampleContent {
+    // listing: KeyboardSample
     @State private var name = ""
     @State private var note = ""
     @State private var said = ""
 
     @Aim(TextField.self) private var first
+    // listing: end
 
     static let id = "keyboard"
     static let title = "Keyboard"
     static let summary = "Aim at one field, or release whichever input is focused."
-
-    static let code = """
-        @State private var name = ""
-        @State private var note = ""
-        @State private var said = ""
-        @Aim(TextField.self) private var first
-
-        VStack {
-            // `said` is read here, so the answer below builds this closure.
-            DebugInfoLabel()
-
-            TextField($name)
-                .placeholder("Name")
-                .aim(first)
-
-            TextField($note)
-                .placeholder("Note")
-
-            HStack {
-                Button("Focus first")
-                    .onClicked { try await first.focus() }
-
-                Button("Unfocus first")
-                    .onClicked { try await first.unfocus() }
-            }
-
-            Button("Close keyboard")
-                .onClicked {
-                    said = try await OnScreenKeyboard.hide()
-                        ? "Focus released"
-                        : "Nothing was focused"
-                }
-
-            Text(said.isEmpty ? "Nothing said yet." : said)
-        }
-        """
 
     var notes: (any View)? {
         Text("`focus()` and `unfocus()` are acts aimed at one field with `@Aim`. "
@@ -56,8 +22,10 @@ struct KeyboardSample: SampleContent, ExampleContent {
             .textColor(Palette.subtle)
     }
 
+    // listing: KeyboardSample
     var body: some View {
         VStack {
+            // `said` is read here, so the answer below builds this closure.
             DebugInfoLabel()
 
             TextField($name)
@@ -95,4 +63,5 @@ struct KeyboardSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 }

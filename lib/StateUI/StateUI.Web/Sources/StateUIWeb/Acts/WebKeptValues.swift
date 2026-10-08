@@ -25,6 +25,20 @@ enum WebKeptValues {
         }
     }
 
+    /// The application's scenes as they stood when the page was left, for this start.
+    static func readScenes(_ application: String) -> KeptScenes {
+        KeptScenes(WebRelay.stored(scenesKey(application)))
+    }
+
+    /// Keeps the scenes' text whole in place of the one kept before.
+    static func writeScenes(_ text: String, application: String) {
+        if !WebRelay.store(text, under: scenesKey(application)) { WebRenderer.log.error("the kept scenes could not be written") }
+    }
+
+    private static func scenesKey(_ application: String) -> String {
+        "StateUI kept scenes: " + application
+    }
+
     private static func read(_ application: String) -> KeptValuesText {
         KeptValuesText(WebRelay.stored(key(application)))
     }

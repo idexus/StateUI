@@ -1,14 +1,14 @@
-# revision 1.1
-ActivityIndicator.accessibilityHeading: ✅
+# revision 7.1
+ActivityIndicator.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
 ActivityIndicator.automationExcludedWithChildren: ✅
-ActivityIndicator.background: not realized
+ActivityIndicator.background: ✓ read background of ActivityIndicator: the class of the host's style sheet the widget wears: GTK reads back no background
 ActivityIndicator.focus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.frame: ✅
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
-ActivityIndicator.ignoresInput: not realized
+ActivityIndicator.ignoresInput: ✅
 ActivityIndicator.isAccessibilityHidden: ✅
 ActivityIndicator.isEnabled: ✅
 ActivityIndicator.isFocusedChanged: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
@@ -32,8 +32,8 @@ ActivityIndicator.translationX: ✓ read translationX of ActivityIndicator: the 
 ActivityIndicator.translationY: ✓ read translationY of ActivityIndicator: the host's own transform: GTK reads back no part of one
 ActivityIndicator.unfocus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.width: ✅
-ActivityIndicator.zIndex: not realized
-Button.accessibilityHeading: ✅
+ActivityIndicator.zIndex: ✅
+Button.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
 Button.automationExcludedWithChildren: ✅
@@ -42,7 +42,7 @@ Button.focus: ✅
 Button.frame: ✅
 Button.frameChanged: ✅
 Button.height: ✅
-Button.ignoresInput: not realized
+Button.ignoresInput: ✅
 Button.isAccessibilityHidden: ✅
 Button.isEnabled: ✅
 Button.isFocusedChanged: ✅
@@ -66,17 +66,17 @@ Button.translationX: ✓ read translationX of Button: the host's own transform: 
 Button.translationY: ✓ read translationY of Button: the host's own transform: GTK reads back no part of one
 Button.unfocus: ✅
 Button.width: ✅
-Button.zIndex: not realized
-Canvas.accessibilityHeading: ✅
+Button.zIndex: ✅
+Canvas.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
 Canvas.automationExcludedWithChildren: ✅
-Canvas.background: not realized
+Canvas.background: ✓ read background of Canvas: the class of the host's style sheet the widget wears: GTK reads back no background
 Canvas.focus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.frame: ✅
 Canvas.frameChanged: ✅
 Canvas.height: ✅
-Canvas.ignoresInput: not realized
+Canvas.ignoresInput: ✅
 Canvas.isAccessibilityHidden: ✅
 Canvas.isEnabled: ✅
 Canvas.isFocusedChanged: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
@@ -100,17 +100,17 @@ Canvas.translationX: ✓ read translationX of Canvas: the host's own transform: 
 Canvas.translationY: ✓ read translationY of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.width: ✅
-Canvas.zIndex: not realized
-CheckBox.accessibilityHeading: ✅
+Canvas.zIndex: ✅
+CheckBox.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
 CheckBox.automationExcludedWithChildren: ✅
-CheckBox.background: not realized
+CheckBox.background: ✓ read background of CheckBox: the class of the host's style sheet the widget wears: GTK reads back no background
 CheckBox.focus: ✅
 CheckBox.frame: ✅
 CheckBox.frameChanged: ✅
 CheckBox.height: ✅
-CheckBox.ignoresInput: not realized
+CheckBox.ignoresInput: ✅
 CheckBox.isAccessibilityHidden: ✅
 CheckBox.isEnabled: ✅
 CheckBox.isFocusedChanged: ✅
@@ -134,17 +134,17 @@ CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transfo
 CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.unfocus: ✅
 CheckBox.width: ✅
-CheckBox.zIndex: not realized
-ColorBox.accessibilityHeading: ✅
+CheckBox.zIndex: ✅
+ColorBox.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ColorBox.accessibilityHint: ✅
 ColorBox.accessibilityLabel: ✅
 ColorBox.automationExcludedWithChildren: ✅
-ColorBox.background: not realized
+ColorBox.background: ✓ read background of ColorBox: the class of the host's style sheet the widget wears: GTK reads back no background
 ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.frame: ✅
 ColorBox.frameChanged: ✅
 ColorBox.height: ✅
-ColorBox.ignoresInput: not realized
+ColorBox.ignoresInput: ✅
 ColorBox.isAccessibilityHidden: ✅
 ColorBox.isEnabled: ✅
 ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
@@ -168,17 +168,17 @@ ColorBox.translationX: ✓ read translationX of ColorBox: the host's own transfo
 ColorBox.translationY: ✓ read translationY of ColorBox: the host's own transform: GTK reads back no part of one
 ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.width: ✅
-ColorBox.zIndex: not realized
-DatePicker.accessibilityHeading: ✅
+ColorBox.zIndex: ✅
+DatePicker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
 DatePicker.automationExcludedWithChildren: ✅
-DatePicker.background: not realized
+DatePicker.background: ✓ read background of DatePicker: the class of the host's style sheet the widget wears: GTK reads back no background
 DatePicker.focus: ✅
 DatePicker.frame: ✅
 DatePicker.frameChanged: ✅
 DatePicker.height: ✅
-DatePicker.ignoresInput: not realized
+DatePicker.ignoresInput: ✅
 DatePicker.isAccessibilityHidden: ✅
 DatePicker.isEnabled: ✅
 DatePicker.isFocusedChanged: ✅
@@ -202,17 +202,17 @@ DatePicker.translationX: ✓ read translationX of DatePicker: the host's own tra
 DatePicker.translationY: ✓ read translationY of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.unfocus: ✅
 DatePicker.width: ✅
-DatePicker.zIndex: not realized
-Ellipse.accessibilityHeading: ✅
+DatePicker.zIndex: ✅
+Ellipse.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
 Ellipse.automationExcludedWithChildren: ✅
-Ellipse.background: not realized
+Ellipse.background: ✓ read background of Ellipse: the class of the host's style sheet the widget wears: GTK reads back no background
 Ellipse.focus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.frame: ✅
 Ellipse.frameChanged: ✅
 Ellipse.height: ✅
-Ellipse.ignoresInput: not realized
+Ellipse.ignoresInput: ✅
 Ellipse.isAccessibilityHidden: ✅
 Ellipse.isEnabled: ✅
 Ellipse.isFocusedChanged: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
@@ -236,12 +236,12 @@ Ellipse.translationX: ✓ read translationX of Ellipse: the host's own transform
 Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.unfocus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.width: ✅
-Ellipse.zIndex: not realized
-Grid.accessibilityHeading: ✅
+Ellipse.zIndex: ✅
+Grid.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
 Grid.automationExcludedWithChildren: ✅
-Grid.background: cannot read background of Grid - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
+Grid.background: ✓ read background of Grid: the class of the host's style sheet the widget wears: GTK reads back no background
 Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.frame: ✅
 Grid.frameChanged: ✅
@@ -270,12 +270,12 @@ Grid.translationX: ✓ read translationX of Grid: the host's own transform: GTK 
 Grid.translationY: ✓ read translationY of Grid: the host's own transform: GTK reads back no part of one
 Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.width: ✅
-Grid.zIndex: not realized
-HStack.accessibilityHeading: ✅
+Grid.zIndex: ✅
+HStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
 HStack.automationExcludedWithChildren: ✅
-HStack.background: cannot read background of HStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
+HStack.background: ✓ read background of HStack: the class of the host's style sheet the widget wears: GTK reads back no background
 HStack.focus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.frame: ✅
 HStack.frameChanged: ✅
@@ -304,17 +304,17 @@ HStack.translationX: ✓ read translationX of HStack: the host's own transform: 
 HStack.translationY: ✓ read translationY of HStack: the host's own transform: GTK reads back no part of one
 HStack.unfocus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.width: ✅
-HStack.zIndex: not realized
-Image.accessibilityHeading: ✅
+HStack.zIndex: ✅
+Image.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
 Image.automationExcludedWithChildren: ✅
-Image.background: not realized
+Image.background: ✓ read background of Image: the class of the host's style sheet the widget wears: GTK reads back no background
 Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.frame: ✅
 Image.frameChanged: ✅
 Image.height: ✅
-Image.ignoresInput: not realized
+Image.ignoresInput: ✅
 Image.isAccessibilityHidden: ✅
 Image.isEnabled: ✅
 Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
@@ -338,17 +338,17 @@ Image.translationX: ✓ read translationX of Image: the host's own transform: GT
 Image.translationY: ✓ read translationY of Image: the host's own transform: GTK reads back no part of one
 Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.width: ✅
-Image.zIndex: not realized
-ItemsView.accessibilityHeading: ✅
+Image.zIndex: ✅
+ItemsView.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
 ItemsView.automationExcludedWithChildren: ✅
-ItemsView.background: not realized
+ItemsView.background: does not apply - read background of ItemsView - StateUI draws a list's box on GTK's snapshot, which holds none of its background; its drawing proves it
 ItemsView.focus: ✅
 ItemsView.frame: ✅
 ItemsView.frameChanged: ✅
 ItemsView.height: ✅
-ItemsView.ignoresInput: not realized
+ItemsView.ignoresInput: ✅
 ItemsView.isAccessibilityHidden: ✅
 ItemsView.isEnabled: ✅
 ItemsView.isFocusedChanged: ✅
@@ -372,17 +372,17 @@ ItemsView.translationX: ✓ read translationX of ItemsView: the host's own trans
 ItemsView.translationY: ✓ read translationY of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.unfocus: ✅
 ItemsView.width: ✅
-ItemsView.zIndex: not realized
-Line.accessibilityHeading: ✅
+ItemsView.zIndex: ✅
+Line.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
 Line.automationExcludedWithChildren: ✅
-Line.background: not realized
+Line.background: ✓ read background of Line: the class of the host's style sheet the widget wears: GTK reads back no background
 Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.frame: ✅
 Line.frameChanged: ✅
 Line.height: ✅
-Line.ignoresInput: not realized
+Line.ignoresInput: ✅
 Line.isAccessibilityHidden: ✅
 Line.isEnabled: ✅
 Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
@@ -406,7 +406,7 @@ Line.translationX: ✓ read translationX of Line: the host's own transform: GTK 
 Line.translationY: ✓ read translationY of Line: the host's own transform: GTK reads back no part of one
 Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.width: ✅
-Line.zIndex: not realized
+Line.zIndex: ✅
 Map.accessibilityHeading: 🧩
 Map.accessibilityHint: 🧩
 Map.accessibilityLabel: 🧩
@@ -441,16 +441,16 @@ Map.translationY: 🧩
 Map.unfocus: 🧩
 Map.width: 🧩
 Map.zIndex: 🧩
-Path.accessibilityHeading: ✅
+Path.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
 Path.automationExcludedWithChildren: ✅
-Path.background: not realized
+Path.background: ✓ read background of Path: the class of the host's style sheet the widget wears: GTK reads back no background
 Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.frame: ✅
 Path.frameChanged: ✅
 Path.height: ✅
-Path.ignoresInput: not realized
+Path.ignoresInput: ✅
 Path.isAccessibilityHidden: ✅
 Path.isEnabled: ✅
 Path.isFocusedChanged: – Path takes no keyboard focus here: it refuses it, and nothing is heard
@@ -474,17 +474,17 @@ Path.translationX: ✓ read translationX of Path: the host's own transform: GTK 
 Path.translationY: ✓ read translationY of Path: the host's own transform: GTK reads back no part of one
 Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.width: ✅
-Path.zIndex: not realized
-Picker.accessibilityHeading: ✅
+Path.zIndex: ✅
+Picker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
 Picker.automationExcludedWithChildren: ✅
-Picker.background: not realized
+Picker.background: ✓ read background of Picker: the class of the host's style sheet the widget wears: GTK reads back no background
 Picker.focus: ✅
 Picker.frame: ✅
 Picker.frameChanged: ✅
 Picker.height: ✅
-Picker.ignoresInput: not realized
+Picker.ignoresInput: ✅
 Picker.isAccessibilityHidden: ✅
 Picker.isEnabled: ✅
 Picker.isFocusedChanged: ✅
@@ -508,17 +508,17 @@ Picker.translationX: ✓ read translationX of Picker: the host's own transform: 
 Picker.translationY: ✓ read translationY of Picker: the host's own transform: GTK reads back no part of one
 Picker.unfocus: ✅
 Picker.width: ✅
-Picker.zIndex: not realized
-Polygon.accessibilityHeading: ✅
+Picker.zIndex: ✅
+Polygon.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
 Polygon.automationExcludedWithChildren: ✅
-Polygon.background: not realized
+Polygon.background: ✓ read background of Polygon: the class of the host's style sheet the widget wears: GTK reads back no background
 Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.frame: ✅
 Polygon.frameChanged: ✅
 Polygon.height: ✅
-Polygon.ignoresInput: not realized
+Polygon.ignoresInput: ✅
 Polygon.isAccessibilityHidden: ✅
 Polygon.isEnabled: ✅
 Polygon.isFocusedChanged: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
@@ -542,17 +542,17 @@ Polygon.translationX: ✓ read translationX of Polygon: the host's own transform
 Polygon.translationY: ✓ read translationY of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.width: ✅
-Polygon.zIndex: not realized
-Polyline.accessibilityHeading: ✅
+Polygon.zIndex: ✅
+Polyline.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
 Polyline.automationExcludedWithChildren: ✅
-Polyline.background: not realized
+Polyline.background: ✓ read background of Polyline: the class of the host's style sheet the widget wears: GTK reads back no background
 Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.frame: ✅
 Polyline.frameChanged: ✅
 Polyline.height: ✅
-Polyline.ignoresInput: not realized
+Polyline.ignoresInput: ✅
 Polyline.isAccessibilityHidden: ✅
 Polyline.isEnabled: ✅
 Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
@@ -576,17 +576,17 @@ Polyline.translationX: ✓ read translationX of Polyline: the host's own transfo
 Polyline.translationY: ✓ read translationY of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.width: ✅
-Polyline.zIndex: not realized
-ProgressBar.accessibilityHeading: ✅
+Polyline.zIndex: ✅
+ProgressBar.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
 ProgressBar.automationExcludedWithChildren: ✅
-ProgressBar.background: not realized
+ProgressBar.background: ✓ read background of ProgressBar: the class of the host's style sheet the widget wears: GTK reads back no background
 ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.frame: ✅
 ProgressBar.frameChanged: ✅
 ProgressBar.height: ✅
-ProgressBar.ignoresInput: not realized
+ProgressBar.ignoresInput: ✅
 ProgressBar.isAccessibilityHidden: ✅
 ProgressBar.isEnabled: ✅
 ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
@@ -610,17 +610,17 @@ ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own t
 ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.width: ✅
-ProgressBar.zIndex: not realized
-RadioButton.accessibilityHeading: ✅
+ProgressBar.zIndex: ✅
+RadioButton.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 RadioButton.accessibilityHint: ✅
 RadioButton.accessibilityLabel: ✅
 RadioButton.automationExcludedWithChildren: ✅
-RadioButton.background: not realized
+RadioButton.background: ✓ read background of RadioButton: the class of the host's style sheet the widget wears: GTK reads back no background
 RadioButton.focus: ✅
 RadioButton.frame: ✅
 RadioButton.frameChanged: ✅
 RadioButton.height: ✅
-RadioButton.ignoresInput: not realized
+RadioButton.ignoresInput: ✅
 RadioButton.isAccessibilityHidden: ✅
 RadioButton.isEnabled: ✅
 RadioButton.isFocusedChanged: ✅
@@ -644,17 +644,17 @@ RadioButton.translationX: ✓ read translationX of RadioButton: the host's own t
 RadioButton.translationY: ✓ read translationY of RadioButton: the host's own transform: GTK reads back no part of one
 RadioButton.unfocus: ✅
 RadioButton.width: ✅
-RadioButton.zIndex: not realized
-Rectangle.accessibilityHeading: ✅
+RadioButton.zIndex: ✅
+Rectangle.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
 Rectangle.automationExcludedWithChildren: ✅
-Rectangle.background: not realized
+Rectangle.background: ✓ read background of Rectangle: the class of the host's style sheet the widget wears: GTK reads back no background
 Rectangle.focus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.frame: ✅
 Rectangle.frameChanged: ✅
 Rectangle.height: ✅
-Rectangle.ignoresInput: not realized
+Rectangle.ignoresInput: ✅
 Rectangle.isAccessibilityHidden: ✅
 Rectangle.isEnabled: ✅
 Rectangle.isFocusedChanged: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
@@ -678,17 +678,17 @@ Rectangle.translationX: ✓ read translationX of Rectangle: the host's own trans
 Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.width: ✅
-Rectangle.zIndex: not realized
-ScrollView.accessibilityHeading: ✅
+Rectangle.zIndex: ✅
+ScrollView.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
 ScrollView.automationExcludedWithChildren: ✅
-ScrollView.background: cannot read background of ScrollView - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
+ScrollView.background: does not apply - read background of ScrollView - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
 ScrollView.focus: ✅
 ScrollView.frame: ✅
 ScrollView.frameChanged: ✅
 ScrollView.height: ✅
-ScrollView.ignoresInput: not realized
+ScrollView.ignoresInput: ✅
 ScrollView.isAccessibilityHidden: ✅
 ScrollView.isEnabled: ✅
 ScrollView.isFocusedChanged: ✅
@@ -712,17 +712,17 @@ ScrollView.translationX: ✓ read translationX of ScrollView: the host's own tra
 ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.unfocus: ✅
 ScrollView.width: ✅
-ScrollView.zIndex: not realized
-SearchField.accessibilityHeading: ✅
+ScrollView.zIndex: ✅
+SearchField.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
 SearchField.automationExcludedWithChildren: ✅
-SearchField.background: not realized
+SearchField.background: ✓ read background of SearchField: the class of the host's style sheet the widget wears: GTK reads back no background
 SearchField.focus: ✅
 SearchField.frame: ✅
 SearchField.frameChanged: ✅
 SearchField.height: ✅
-SearchField.ignoresInput: not realized
+SearchField.ignoresInput: ✅
 SearchField.isAccessibilityHidden: ✅
 SearchField.isEnabled: ✅
 SearchField.isFocusedChanged: ✅
@@ -746,17 +746,17 @@ SearchField.translationX: ✓ read translationX of SearchField: the host's own t
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.unfocus: ✅
 SearchField.width: ✅
-SearchField.zIndex: not realized
-Slider.accessibilityHeading: ✅
+SearchField.zIndex: ✅
+Slider.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
 Slider.automationExcludedWithChildren: ✅
-Slider.background: not realized
+Slider.background: ✓ read background of Slider: the class of the host's style sheet the widget wears: GTK reads back no background
 Slider.focus: ✅
 Slider.frame: ✅
 Slider.frameChanged: ✅
 Slider.height: ✅
-Slider.ignoresInput: not realized
+Slider.ignoresInput: ✅
 Slider.isAccessibilityHidden: ✅
 Slider.isEnabled: ✅
 Slider.isFocusedChanged: ✅
@@ -780,17 +780,17 @@ Slider.translationX: ✓ read translationX of Slider: the host's own transform: 
 Slider.translationY: ✓ read translationY of Slider: the host's own transform: GTK reads back no part of one
 Slider.unfocus: ✅
 Slider.width: ✅
-Slider.zIndex: not realized
-Stepper.accessibilityHeading: ✅
+Slider.zIndex: ✅
+Stepper.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
 Stepper.automationExcludedWithChildren: ✅
-Stepper.background: not realized
+Stepper.background: ✓ read background of Stepper: the class of the host's style sheet the widget wears: GTK reads back no background
 Stepper.focus: ✅
 Stepper.frame: ✅
 Stepper.frameChanged: ✅
 Stepper.height: ✅
-Stepper.ignoresInput: not realized
+Stepper.ignoresInput: ✅
 Stepper.isAccessibilityHidden: ✅
 Stepper.isEnabled: ✅
 Stepper.isFocusedChanged: ✅
@@ -814,17 +814,17 @@ Stepper.translationX: ✓ read translationX of Stepper: the host's own transform
 Stepper.translationY: ✓ read translationY of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.unfocus: ✅
 Stepper.width: ✅
-Stepper.zIndex: not realized
-Switch.accessibilityHeading: ✅
+Stepper.zIndex: ✅
+Switch.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
 Switch.automationExcludedWithChildren: ✅
-Switch.background: not realized
+Switch.background: – GTK's switch paints its own box as its track: a colour there would recolour the track, not lie under it.
 Switch.focus: ✅
 Switch.frame: ✅
 Switch.frameChanged: ✅
 Switch.height: ✅
-Switch.ignoresInput: not realized
+Switch.ignoresInput: ✅
 Switch.isAccessibilityHidden: ✅
 Switch.isEnabled: ✅
 Switch.isFocusedChanged: ✅
@@ -848,8 +848,8 @@ Switch.translationX: ✓ read translationX of Switch: the host's own transform: 
 Switch.translationY: ✓ read translationY of Switch: the host's own transform: GTK reads back no part of one
 Switch.unfocus: ✅
 Switch.width: ✅
-Switch.zIndex: not realized
-Text.accessibilityHeading: ✅
+Switch.zIndex: ✅
+Text.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
 Text.automationExcludedWithChildren: ✅
@@ -858,7 +858,7 @@ Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is
 Text.frame: ✅
 Text.frameChanged: ✅
 Text.height: ✅
-Text.ignoresInput: not realized
+Text.ignoresInput: ✅
 Text.isAccessibilityHidden: ✅
 Text.isEnabled: ✅
 Text.isFocusedChanged: – Text takes no keyboard focus here: it refuses it, and nothing is heard
@@ -882,17 +882,17 @@ Text.translationX: ✓ read translationX of Text: the host's own transform: GTK 
 Text.translationY: ✓ read translationY of Text: the host's own transform: GTK reads back no part of one
 Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
 Text.width: ✅
-Text.zIndex: not realized
-TextEditor.accessibilityHeading: ✅
+Text.zIndex: ✅
+TextEditor.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
 TextEditor.automationExcludedWithChildren: ✅
-TextEditor.background: not realized
+TextEditor.background: ✓ read background of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no background
 TextEditor.focus: ✅
 TextEditor.frame: ✅
 TextEditor.frameChanged: ✅
 TextEditor.height: ✅
-TextEditor.ignoresInput: not realized
+TextEditor.ignoresInput: ✅
 TextEditor.isAccessibilityHidden: ✅
 TextEditor.isEnabled: ✅
 TextEditor.isFocusedChanged: ✅
@@ -916,17 +916,17 @@ TextEditor.translationX: ✓ read translationX of TextEditor: the host's own tra
 TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.unfocus: ✅
 TextEditor.width: ✅
-TextEditor.zIndex: not realized
-TextField.accessibilityHeading: ✅
+TextEditor.zIndex: ✅
+TextField.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
 TextField.automationExcludedWithChildren: ✅
-TextField.background: not realized
+TextField.background: ✓ read background of TextField: the class of the host's style sheet the widget wears: GTK reads back no background
 TextField.focus: ✅
 TextField.frame: ✅
 TextField.frameChanged: ✅
 TextField.height: ✅
-TextField.ignoresInput: not realized
+TextField.ignoresInput: ✅
 TextField.isAccessibilityHidden: ✅
 TextField.isEnabled: ✅
 TextField.isFocusedChanged: ✅
@@ -950,17 +950,17 @@ TextField.translationX: ✓ read translationX of TextField: the host's own trans
 TextField.translationY: ✓ read translationY of TextField: the host's own transform: GTK reads back no part of one
 TextField.unfocus: ✅
 TextField.width: ✅
-TextField.zIndex: not realized
-TimePicker.accessibilityHeading: ✅
+TextField.zIndex: ✅
+TimePicker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
 TimePicker.automationExcludedWithChildren: ✅
-TimePicker.background: not realized
+TimePicker.background: ✓ read background of TimePicker: the class of the host's style sheet the widget wears: GTK reads back no background
 TimePicker.focus: ✅
 TimePicker.frame: ✅
 TimePicker.frameChanged: ✅
 TimePicker.height: ✅
-TimePicker.ignoresInput: not realized
+TimePicker.ignoresInput: ✅
 TimePicker.isAccessibilityHidden: ✅
 TimePicker.isEnabled: ✅
 TimePicker.isFocusedChanged: ✅
@@ -984,12 +984,12 @@ TimePicker.translationX: ✓ read translationX of TimePicker: the host's own tra
 TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.unfocus: ✅
 TimePicker.width: ✅
-TimePicker.zIndex: not realized
-VStack.accessibilityHeading: ✅
+TimePicker.zIndex: ✅
+VStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
 VStack.automationExcludedWithChildren: ✅
-VStack.background: cannot read background of VStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
+VStack.background: ✓ read background of VStack: the class of the host's style sheet the widget wears: GTK reads back no background
 VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.frame: ✅
 VStack.frameChanged: ✅
@@ -1018,17 +1018,17 @@ VStack.translationX: ✓ read translationX of VStack: the host's own transform: 
 VStack.translationY: ✓ read translationY of VStack: the host's own transform: GTK reads back no part of one
 VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.width: ✅
-VStack.zIndex: not realized
-WebView.accessibilityHeading: ✅
+VStack.zIndex: ✅
+WebView.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
 WebView.automationExcludedWithChildren: ✅
-WebView.background: not realized
+WebView.background: ✓ read background of WebView: the class of the host's style sheet the widget wears: GTK reads back no background
 WebView.focus: ✅
 WebView.frame: ✅
 WebView.frameChanged: ✅
 WebView.height: ✅
-WebView.ignoresInput: not realized
+WebView.ignoresInput: ✅
 WebView.isAccessibilityHidden: ✅
 WebView.isEnabled: ✅
 WebView.isFocusedChanged: ✅
@@ -1052,12 +1052,12 @@ WebView.translationX: ✓ read translationX of WebView: the host's own transform
 WebView.translationY: ✓ read translationY of WebView: the host's own transform: GTK reads back no part of one
 WebView.unfocus: ✅
 WebView.width: ✅
-WebView.zIndex: not realized
-ZStack.accessibilityHeading: ✅
+WebView.zIndex: ✅
+ZStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
 ZStack.automationExcludedWithChildren: ✅
-ZStack.background: cannot read background of ZStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
+ZStack.background: ✓ read background of ZStack: the class of the host's style sheet the widget wears: GTK reads back no background
 ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.frame: ✅
 ZStack.frameChanged: ✅
@@ -1086,4 +1086,4 @@ ZStack.translationX: ✓ read translationX of ZStack: the host's own transform: 
 ZStack.translationY: ✓ read translationY of ZStack: the host's own transform: GTK reads back no part of one
 ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.width: ✅
-ZStack.zIndex: not realized
+ZStack.zIndex: ✅

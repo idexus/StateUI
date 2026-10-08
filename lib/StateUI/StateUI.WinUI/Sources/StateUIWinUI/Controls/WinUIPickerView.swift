@@ -54,10 +54,6 @@ final class WinUIPickerView: WinUIView {
     /// The choice WinUI shows; -1 for none.
     var chosen: Int { Int(stateui_winui_picker_selected(handle)) }
 
-    func setEnabled(_ enabled: Bool) {
-        stateui_winui_set_enabled(handle, enabled)
-    }
-
     override func chose(_ index: Int) {
         onChosen?(index)
     }

@@ -1,10 +1,14 @@
 #if !WEB
 import StateUI
+// listing: FoundationProbeSample
 import Foundation
+// listing: end
 
+// listing: FoundationProbeSample
 #if canImport(Android)
 import Android
 #endif
+// listing: end
 
 // What Foundation answers on this platform, measured live rather than
 // remembered. The LIBRARY never imports Foundation - a date in it stays
@@ -14,109 +18,20 @@ import Android
 // zones. On Android the trap is the current zone, and the first two lines of
 // the handler are the fix; on Windows the host's rows are the answer.
 struct FoundationProbeSample: SampleContent, ExampleContent {
+    // listing: FoundationProbeSample
     @State private var rows: [(String, String)] = []
+    // listing: end
 
     static let id = "foundationProbe"
     static let title = "Foundation probe"
     static let summary = "Dates, zones and JSON from Foundation itself - and the one "
         + "line Android needs first."
 
-    static let code = """
-        import Foundation
-
-        #if canImport(Android)
-        import Android
-        #endif
-
-        @State private var rows: [(String, String)] = []
-
+    // listing: FoundationProbeSample
+    var body: some View {
         VStack {
             // The probe's answers are read here, so running it builds this
             // closure once.
-            DebugInfoLabel()
-
-            ForEach(rows, id: \\.0) { row in
-                VStack {
-                    Text(row.0)
-                    Text(row.1)
-                }
-            }
-        }
-        .onCreated {
-            let hostZone = try await TimeZoneInfo.local()
-
-            #if canImport(Android)
-            // Android's tz database is packed in a format Foundation cannot
-            // read, so the current zone comes up GMT. The TZ variable is read
-            // before any detection, and ICU's own tzdata answers for the named
-            // zone - the host says where the device is, once, before the first
-            // TimeZone use.
-            setenv("TZ", hostZone, 1)
-            #endif
-
-            var found: [(String, String)] = []
-            found.append(("Host TimeZoneInfo.local()", hostZone))
-
-            let now = Date()
-            let zone = TimeZone.current
-            found.append(("TimeZone.current",
-                "\\(zone.identifier), \\(offsetText(zone.secondsFromGMT(for: now)))"))
-
-            var calendar = Calendar(identifier: .gregorian)
-            calendar.timeZone = zone
-            let parts = calendar.dateComponents(
-                [.year, .month, .day, .hour, .minute, .second], from: now)
-            found.append(("Calendar, local time",
-                "\\(parts.year ?? 0)-\\(pad(parts.month))-\\(pad(parts.day)) "
-                + "\\(pad(parts.hour)):\\(pad(parts.minute)):\\(pad(parts.second))"))
-
-            let host = try await ClockTime.now()
-            found.append(("Host ClockTime.now()", host.text))
-
-            found.append(("ISO8601Format", now.ISO8601Format()))
-
-            if let tomorrow = calendar.date(byAdding: .day, value: 1, to: now) {
-                let t = calendar.dateComponents([.year, .month, .day], from: tomorrow)
-                found.append(("Calendar, +1 day",
-                    "\\(t.year ?? 0)-\\(pad(t.month))-\\(pad(t.day))"))
-            }
-
-            let january = calendar.date(from: DateComponents(year: 2026, month: 1, day: 15))
-            found.append(("Offset on 2026-01-15",
-                january.map { offsetText(zone.secondsFromGMT(for: $0)) } ?? "no date"))
-
-            if let named = TimeZone(identifier: hostZone) {
-                let winter = january.map { offsetText(named.secondsFromGMT(for: $0)) } ?? "no date"
-                found.append(("TimeZone(\\"\\(hostZone)\\")",
-                    "\\(offsetText(named.secondsFromGMT(for: now))) now, \\(winter) in January"))
-            } else {
-                found.append(("TimeZone(\\"\\(hostZone)\\")", "nil - the identifier is unknown here"))
-            }
-
-            found.append(("Locale.current", Locale.current.identifier))
-
-            let json = (try? JSONEncoder().encode(["probe": 1])) ?? Data()
-            found.append(("JSONEncoder", String(decoding: json, as: UTF8.self)))
-
-            for row in found { print("FOUNDATION-PROBE \\(row.0): \\(row.1)") }
-            rows = found
-        }
-
-        func pad(_ value: Int?) -> String {
-            let v = value ?? 0
-            return v < 10 && v >= 0 ? "0\\(v)" : "\\(v)"
-        }
-
-        func offsetText(_ seconds: Int) -> String {
-            let sign = seconds < 0 ? "-" : "+"
-            let h = abs(seconds) / 3600
-            let m = (abs(seconds) % 3600) / 60
-            return "GMT\\(sign)\\(pad(h)):\\(pad(m))"
-        }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             ForEach(rows, id: \.0) { row in
@@ -198,10 +113,12 @@ struct FoundationProbeSample: SampleContent, ExampleContent {
             rows = found
         }
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
-            Text("Each row is one question put to Foundation on this platform. The "
+            Text("Each row is one question put to Foundation on this platform, beside "
+                + "two put to the host. The "
                 + "library crosses the boundary with three-integer dates; Foundation here "
                 + "is the application's own import. On Apple it is the system's; on "
                 + "Android it is swift-foundation, whose zones come from an ICU it "
@@ -212,8 +129,8 @@ struct FoundationProbeSample: SampleContent, ExampleContent {
             Text("Android cannot detect the current zone - its tz database is packed "
                 + "in a format Foundation does not read, so TimeZone.current starts as "
                 + "GMT. The host knows the zone, so the handler asks it and sets TZ "
-                + "before Foundation first looks. Every row above depends on that one "
-                + "line.")
+                + "before Foundation first looks. Every row that reads the current zone "
+                + "depends on that one line.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -231,15 +148,19 @@ struct FoundationProbeSample: SampleContent, ExampleContent {
 
 // By hand, not String(format:) - the probe must not assume more of Foundation
 // than the question it asks.
+// listing: FoundationProbeSample
 private func pad(_ value: Int?) -> String {
     let v = value ?? 0
     return v < 10 && v >= 0 ? "0\(v)" : "\(v)"
 }
+// listing: end
 
+// listing: FoundationProbeSample
 private func offsetText(_ seconds: Int) -> String {
     let sign = seconds < 0 ? "-" : "+"
     let h = abs(seconds) / 3600
     let m = (abs(seconds) % 3600) / 60
     return "GMT\(sign)\(pad(h)):\(pad(m))"
 }
+// listing: end
 #endif

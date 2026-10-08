@@ -15,12 +15,15 @@ extension WinUIRegistrations {
             return button
         }, members: { button in
             button.applies(TextMembers.members) { view, values in applyText(view, values) }
+            button.applies([TextStyleElementContract.tracking, FontElementContract.fontSize]) { view, values in
+                view.setLetterSpacing(values[TextStyleElementContract.tracking] ?? 0, size: values[FontElementContract.fontSize])
+            }
             button.applies([
                 VisualElementContract.background,
                 BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
             ]) { view, values in
                 view.setLook(
-                    background: values[VisualElementContract.background]?.propValue,
+                    background: HostMaterial(values[VisualElementContract.background]?.propValue).painted,
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)

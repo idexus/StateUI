@@ -56,7 +56,7 @@ class GTKLayoutView: GTKPanelView {
     }
 
     /// What fills the box: a colour or a brush; nil for nothing.
-    func setBackground(_ value: HostValue?) {
+    override func setBackground(_ value: HostValue?) {
         box.fill = GTKBrush(value)
         gtk_widget_queue_draw(widget)
     }

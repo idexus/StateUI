@@ -137,6 +137,37 @@ public final class TestMenus {
         return words.toString();
     }
 
+    /**
+     * The bar's entries as it lays them out, a line each in its menu's order: its id, its group, whether it stands
+     * on the bar as an action, whether its words show there, and whether it can be chosen - numbers, spaces between.
+     */
+    public static String laidOut(ViewGroup bar, Menu menu) {
+        List<TextView> actions = new ArrayList<>();
+        for (int index = 0; index < bar.getChildCount(); index++) {
+            if (!(bar.getChildAt(index) instanceof ActionMenuView)) continue;
+            ActionMenuView row = (ActionMenuView) bar.getChildAt(index);
+            for (int place = 0; place < row.getChildCount(); place++) {
+                if (row.getChildAt(place) instanceof TextView) actions.add((TextView) row.getChildAt(place));
+            }
+        }
+        StringBuilder lines = new StringBuilder();
+        for (int index = 0; index < menu.size(); index++) {
+            MenuItem item = menu.getItem(index);
+            if (!item.isVisible()) continue;
+            String title = String.valueOf(item.getTitle());
+            TextView action = null;
+            for (TextView each : actions) {
+                if (title.equals(String.valueOf(each.getText())) || title.equals(String.valueOf(each.getContentDescription()))) {
+                    action = each;
+                }
+            }
+            lines.append(item.getItemId()).append(' ').append(item.getGroupId()).append(' ')
+                    .append(action != null ? 1 : 0).append(' ').append(action != null && action.getText().length() > 0 ? 1 : 0)
+                    .append(' ').append(item.isEnabled() ? 1 : 0).append('\n');
+        }
+        return lines.toString();
+    }
+
     /** The colour `picture` draws at its middle. */
     private static int middle(Drawable picture) {
         int width = Math.max(1, picture.getIntrinsicWidth());

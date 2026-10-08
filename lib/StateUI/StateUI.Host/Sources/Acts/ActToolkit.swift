@@ -16,8 +16,8 @@
     /// The name of the local time zone.
     func localZone() -> String
 
-    /// How far `zone` - the local one where nil - is from UTC on `day` - today where nil - in minutes; nil for a zone
-    /// the platform does not know.
+    /// How far `zone` - the local one where nil - is from UTC at `day`'s noon - now where nil - in minutes; nil for a
+    /// zone the platform does not know.
     func utcOffset(of zone: String?, on day: CalendarDate?) -> Int?
 
     /// Shows `question` to the user in the window they are looking at, and calls `answered` - whether they
@@ -26,6 +26,9 @@
 
     /// Tells the screen reader `words`, now.
     func announce(_ words: String)
+
+    /// Shows the whole application in `theme`: light, dark, or the system's again.
+    func useColorScheme(_ theme: ColorScheme)
 
     /// Takes the on-screen keyboard down; whether one was up.
     func hideOnScreenKeyboard() -> Bool

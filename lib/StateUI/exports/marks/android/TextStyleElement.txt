@@ -1,9 +1,9 @@
 # revision 1.1
 Button.textColor: ✅
-Button.tracking: not realized
+Button.tracking: ✅
 DatePicker.textColor: ✅
 DatePicker.tracking: not realized
-Picker.textColor: cannot read textColor of Picker - Android's driver has no path for it yet
+Picker.textColor: ✅
 Picker.tracking: not realized
 RadioButton.textColor: ✅
 RadioButton.tracking: not realized
@@ -15,7 +15,7 @@ TextEditor.textColor: ✅
 TextEditor.tracking: not realized
 TextField.textColor: ✅
 TextField.tracking: not realized
-TextSpan.textColor: cannot read textColor of TextSpan - Android's driver has no path for it yet
-TextSpan.tracking: not realized
+TextSpan.textColor: ✅
+TextSpan.tracking: – Android spaces the letters of a whole text: no span spaces a run's own.
 TimePicker.textColor: ✅
 TimePicker.tracking: not realized

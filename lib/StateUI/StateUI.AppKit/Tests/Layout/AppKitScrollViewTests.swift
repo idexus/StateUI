@@ -293,7 +293,7 @@ final class AppKitScrollViewTests: XCTestCase {
     func testARunThatAnswersATapIsAsLongAsItsReach() throws {
         let renderer = AppKitRenderer.running { TappedRun() }
         defer { renderer.closeForTesting() }
-        let scroller = try XCTUnwrap(renderer.nativeViews(AppKitScrollView.self).first)
+        let scroller = try XCTUnwrap(Self.readersScroller(in: renderer))
 
         // The room arrives with the first frame report, and the run is built
         // again with its length.
@@ -323,7 +323,7 @@ final class AppKitScrollViewTests: XCTestCase {
                 .onItemTapped { _ in }
         }
         defer { renderer.closeForTesting() }
-        let scroller = try XCTUnwrap(renderer.nativeViews(AppKitScrollView.self).first)
+        let scroller = try XCTUnwrap(Self.readersScroller(in: renderer))
 
         // The run is the room plus six turns long once the room has arrived.
         let deadline = Date(timeIntervalSinceNow: 2)
@@ -464,3 +464,18 @@ private struct BoundStrip: View {
 }
 
 #endif
+
+extension AppKitScrollViewTests {
+    /// The scroller a run's reader stands once it knows its room - which the first frame report tells it, so it
+    /// stands nothing before.
+    @MainActor
+    private static func readersScroller(in renderer: AppKitRenderer) -> AppKitScrollView? {
+        let deadline = Date(timeIntervalSinceNow: 2)
+        while renderer.nativeViews(AppKitScrollView.self).isEmpty, Date() < deadline {
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
+            renderer.runtime.pump.turn()
+            if renderer.frameClock.held { renderer.displayFrameForTesting() }
+        }
+        return renderer.nativeViews(AppKitScrollView.self).first
+    }
+}

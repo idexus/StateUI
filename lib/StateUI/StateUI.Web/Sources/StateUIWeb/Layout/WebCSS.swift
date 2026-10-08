@@ -55,10 +55,13 @@ enum WebCSS {
         }
     }
 
-    /// An inset's four sides: leading, top, trailing and bottom, as CSS's logical sides.
-    static func sides(_ insets: Insets?) -> [(side: String, length: String?)] {
+    /// An inset's four sides: leading, top, trailing and bottom, as CSS's logical sides - a margin's below nothing
+    /// where `signed`, as it shifts a view, a padding's never.
+    static func sides(_ insets: Insets?, signed: Bool = false) -> [(side: String, length: String?)] {
         [("inline-start", insets?.left), ("block-start", insets?.top), ("inline-end", insets?.right),
-         ("block-end", insets?.bottom)].map { ($0, $1.flatMap { $0 == 0 ? nil : pixels($0) }) }
+         ("block-end", insets?.bottom)].map {
+            ($0, $1.flatMap { $0 == 0 ? nil : signed ? signedPixels($0) : pixels($0) })
+        }
     }
 
     /// Words as a CSS string.
@@ -84,11 +87,31 @@ enum WebCSS {
          ("color", color(look.color))]
     }
 
+    /// How words break across lines and where they stop - at most `lines` of them, nil for any - as CSS says it.
+    static func lines(_ lineBreak: LineBreak, most lines: Int?) -> [(String, String?)] {
+        let clamped = lineBreak.wraps && lines != nil
+        return [
+            ("white-space", lineBreak.wraps ? "pre-wrap" : "pre"),
+            ("overflow-wrap", lineBreak.wraps ? "break-word" : nil),
+            ("word-break", lineBreak == .characterWrap ? "break-all" : nil),
+            ("text-overflow", lineBreak.truncates ? "ellipsis" : nil),
+            ("overflow", lineBreak.wraps && !clamped ? nil : "hidden"),
+            ("display", clamped ? "-webkit-box" : nil),
+            ("-webkit-box-orient", clamped ? "vertical" : nil),
+            ("-webkit-line-clamp", clamped ? String(lines!) : nil),
+        ]
+    }
+
+    /// The room between letters, in points, as CSS's `letter-spacing`; nil for none.
+    static func letterSpacing(_ points: Double) -> String? {
+        points == 0 ? nil : signedPixels(points)
+    }
+
     /// The rest of a look: the space between the letters, the lines' height and the lines under or through.
     static func spacing(_ look: TextLook) -> [(String, String?)] {
         let lines = [(TextDecorations.underline, "underline"), (.strikethrough, "line-through")]
             .filter { look.decorations.contains($0.0) }.map(\.1)
-        return [("letter-spacing", look.letterSpacing == 0 ? nil : signedPixels(look.letterSpacing)),
+        return [("letter-spacing", letterSpacing(look.letterSpacing)),
                 ("line-height", look.lineHeight.map(number)),
                 ("text-decoration-line", lines.isEmpty ? nil : lines.joined(separator: " "))]
     }
@@ -111,6 +134,16 @@ enum WebCSS {
 
     /// Where a child stands across a slot: its start, its middle, its end, or the whole of it. A filling child its
     /// own size stops short of the slot stands in the middle, as the host layer's arithmetic places it.
+    /// The most a child's length may be: `most` where it is stated, and no more than its slot where it is `bound`.
+    static func most(_ most: Double?, bound: Bool) -> String? {
+        switch (pixels(most), bound) {
+        case (let stated?, true): "min(\(stated), 100%)"
+        case (let stated?, false): stated
+        case (nil, true): "100%"
+        case (nil, false): nil
+        }
+    }
+
     static func alignment(_ option: Int32, stops stated: Bool) -> String {
         switch option {
         case 0: "start"

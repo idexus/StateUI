@@ -3,6 +3,7 @@ import StateUI
 /// `.onCreated` and `.onDestroying`: what runs as an element comes into the
 /// tree and as it leaves, once each.
 struct LifetimeSample: SampleContent, ExampleContent {
+    // listing: LifetimeSample
     /// Whether the card is in the tree at all.
     @State private var shown = true
 
@@ -15,72 +16,18 @@ struct LifetimeSample: SampleContent, ExampleContent {
 
     /// What the cards have said, oldest first.
     @State private var log: [String] = []
+    // listing: end
 
     static let id = "lifetime"
     static let title = "Element lifetime"
     static let summary = "What runs as a view comes into the tree and as it leaves - once each."
 
-    static let code = """
-        @State private var shown = true
-        @State private var identity = 1
-        @State private var builds = 0
-        @State private var log: [String] = []
-
-        VStack {
-            // Every button builds this closure again. Build this again changes
-            // nothing the card is built with, so it carries the card and
-            // creates nothing.
-            DebugInfoLabel()
-
-            SwitchRow("Show the card", $shown)
-
-            HStack {
-                Button("A new card").onClicked { identity += 1 }
-                Button("Build this again · \\(builds)").onClicked { builds += 1 }
-            }
-
-            if shown {
-                // A new identity is a new card: the one on screen is
-                // destroyed, and this one created.
-                LifetimeCard(number: identity, log: $log)
-                    .id(identity)
-            }
-
-            VStack {
-                if log.isEmpty {
-                    Text("nothing yet")
-                }
-
-                ForEach(Array(log.suffix(6))) { line in
-                    Text(line)
-                }
-            }
-        }
-
-        struct LifetimeCard: View {
-            let number: Int
-            @Binding var log: [String]
-            @State private var taps = 0
-
-            var body: some View {
-                Button("Card \\(number) · tapped \\(taps)")
-                    .onClicked { taps += 1 }
-                    // Once, after the render that brings the card in - its
-                    // state and its environment are there to use.
-                    .onCreated {
-                        log.append("\\(log.count + 1) · card \\(number) created")
-                    }
-                    // Once, after the render that leaves it out - and its
-                    // state still answers, which is what saving needs.
-                    .onDestroying {
-                        log.append("\\(log.count + 1) · card \\(number) destroying, tapped \\(taps)")
-                    }
-            }
-        }
-        """
-
+    // listing: LifetimeSample
     var body: some View {
         VStack {
+            // The switch and both buttons build this closure again. Build this
+            // again changes nothing the card is built with, so it carries the
+            // card and creates nothing.
             DebugInfoLabel()
 
             SwitchRow("Show the card", $shown)
@@ -99,6 +46,8 @@ struct LifetimeSample: SampleContent, ExampleContent {
             .spacing(10)
 
             if shown {
+                // A new identity is a new card: the one on screen is
+                // destroyed, and this one created.
                 LifetimeCard(number: identity, log: $log)
                     .id(identity)
             }
@@ -120,6 +69,7 @@ struct LifetimeSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -134,9 +84,8 @@ struct LifetimeSample: SampleContent, ExampleContent {
 
             Text("Tap the card before it goes: what it says as it is destroyed is its "
                 + "own count, because its state still answers - the place to save what it "
-                + "holds. Both are on every view and control and on the pages the library "
-                + "builds - a page of your own writes them on its content - and both run "
-                + "after the render that made the change.")
+                + "holds. Both are on every view and control, and both run after the "
+                + "render that made the change.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
@@ -144,6 +93,7 @@ struct LifetimeSample: SampleContent, ExampleContent {
     }
 }
 
+// listing: LifetimeSample
 /// A card that says when it comes and goes, counting its own taps.
 private struct LifetimeCard: View {
     let number: Int
@@ -162,11 +112,16 @@ private struct LifetimeCard: View {
             .padding(horizontal: 32, vertical: 36)
             .horizontalAlignment(.center)
             .onClicked { taps += 1 }
+            // Once, after the render that brings the card in - its
+            // state and its environment are there to use.
             .onCreated {
                 log.append("\(log.count + 1) · card \(number) created")
             }
+            // Once, after the render that leaves it out - and its
+            // state still answers, which is what saving needs.
             .onDestroying {
                 log.append("\(log.count + 1) · card \(number) destroying, tapped \(taps)")
             }
     }
 }
+// listing: end

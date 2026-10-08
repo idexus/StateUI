@@ -25,9 +25,10 @@ final class HostActsTests: XCTestCase {
 
     /// Every act the hosts perform is one the contracts declare, named once.
     func testEveryActTheHostsPerformIsDeclaredOnce() {
-        let names = HostActs.performed.map(\.name)
+        let names = (HostActs.performed + HostActs.files).map(\.name)
         XCTAssertEqual(Set(names).count, names.count)
         XCTAssertTrue(names.contains("utcOffset"))
+        XCTAssertTrue(names.contains("launchLink"))
     }
 
     /// An application's own act is handed the values its contract declares and answers its own; a call carrying

@@ -1,37 +1,55 @@
-# revision 1.1
-ActivityIndicator.pivotY: ✓ read pivotY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
-Button.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
-Canvas.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
-CheckBox.style: ✅
-ColorBox.ignoresInput: ✅
-DatePicker.isEnabled: ✅
-DatePicker.zIndex: not realized
-Ellipse.scaleY: ✓ read scaleY of Ellipse: the host's own transform, checked against the layer it composed itself
-Grid.rotationY: ✓ read rotationY of Grid: the host's own transform, checked against the layer it composed itself
-HStack.pivotY: ✓ read pivotY of HStack: the host's own transform, checked against the layer it composed itself
-Image.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
-ItemsView.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
-Line.ignoresInput: ✅
-Map.isEnabled: not realized
-Map.zIndex: not realized
-Path.scaleY: ✓ read scaleY of Path: the host's own transform, checked against the layer it composed itself
-Picker.rotationY: ✓ read rotationY of Picker: the host's own transform, checked against the layer it composed itself
-Polygon.pivotY: ✓ read pivotY of Polygon: the host's own transform, checked against the layer it composed itself
-Polyline.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
-ProgressBar.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
-RadioButton.style: ✅
-Rectangle.ignoresInput: ✅
-ScrollView.isEnabled: not realized
-ScrollView.zIndex: not realized
-SearchField.scaleY: ✓ read scaleY of SearchField: the host's own transform, checked against the layer it composed itself
-Slider.rotationY: ✓ read rotationY of Slider: the host's own transform, checked against the layer it composed itself
-Stepper.pivotY: ✓ read pivotY of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
-Text.style: ✅
-TextEditor.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
-TextField.style: ✅
-TimePicker.ignoresInput: ✅
-VStack.isEnabled: not realized
-VStack.zIndex: not realized
-WebView.scaleY: ✓ read scaleY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.rotationY: ✓ read rotationY of ZStack: the host's own transform, checked against the layer it composed itself
+# revision 7.1
+ActivityIndicator.layoutDirection: ✅
+Button.accessibilityHint: ✅
+Canvas.style: ✅
+CheckBox.frameChanged: ✅
+CheckBox.maximumHeight: ✅
+CheckBox.maximumWidth: ✅
+CheckBox.minimumHeight: ✅
+CheckBox.minimumWidth: ✅
+ColorBox.isVisible: ✅
+ColorBox.scaleX: ✓ read scaleX of ColorBox: the host's own transform, checked against the layer it composed itself
+DatePicker.pivotY: ✓ read pivotY of DatePicker: the host's own transform, checked against the layer it composed itself
+Ellipse.automationExcludedWithChildren: ✅
+Grid.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+HStack.frameChanged: ✅
+HStack.height: ✅
+HStack.translationY: ✓ read translationY of HStack: the host's own transform, checked against the layer it composed itself
+HStack.width: ✅
+Image.rotation: ✓ read rotation of Image: the host's own transform, checked against the layer it composed itself
+ItemsView.automationExcludedWithChildren: ✅
+Line.frame: ✅
+Map.opacity: ✅
+Map.scaleY: ✓ read scaleY of Map: the host's own transform, checked against the layer it composed itself
+Path.rotationX: ✓ read rotationX of Path: the host's own transform, checked against the layer it composed itself
+Picker.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+Polygon.accessibilityHint: ✅
+Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
+Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
+Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
+ProgressBar.isEnabled: ✅
+ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own transform, checked against the layer it composed itself
+RadioButton.rotationX: ✓ read rotationX of RadioButton: the host's own transform, checked against the layer it composed itself
+Rectangle.layoutDirection: ✅
+ScrollView.accessibilityHint: ✅
+SearchField.focus: ✅
+SearchField.isFocusedChanged: ✅
+SearchField.unfocus: ✅
+Slider.frameChanged: ✅
+Slider.height: ✅
+Slider.translationY: ✓ read translationY of Slider: the host's own transform, checked against the layer it composed itself
+Slider.width: ✅
+Stepper.scale: ✓ read scale of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.pivotY: ✓ read pivotY of Switch: the host's own transform, checked against the layer it composed itself
+Text.accessibilityLabel: ✅
+TextEditor.automationExcludedWithChildren: ✅
+TextField.accessibilityLabel: ✅
+TimePicker.focus: ✅
+TimePicker.isFocusedChanged: ✅
+TimePicker.unfocus: ✅
+VStack.frameChanged: ✅
+VStack.height: ✅
+VStack.translationY: ✓ read translationY of VStack: the host's own transform, checked against the layer it composed itself
+VStack.width: ✅
+WebView.pivotY: ✓ read pivotY of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.automationExcludedWithChildren: ✅

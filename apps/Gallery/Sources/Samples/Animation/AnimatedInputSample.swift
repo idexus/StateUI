@@ -3,12 +3,13 @@ import StateUI
 /// A slider's value and a stepper's - the two properties a USER can move,
 /// both carried by the host. Two sliders and a stepper, and what differs is who
 /// reads the value: the top caption PRINTS it in this body, the two below are
-/// CONVERSIONS the host works out on its own frames.
+/// CONVERSIONS worked out on the display's frames.
 struct AnimatedInputSample: SampleContent, ExampleContent {
+    // listing: AnimatedInputSample
     /// The TOP slider's value. The caption above the slider PRINTS it, which
     /// makes the closure it sits in a reader - so every report the thumb
     /// makes builds that closure again, and nothing around it.
-    @State private var volume = 0.2
+    @State private var volume = 0.2   // printed by this body: a reader
 
     /// The BOTTOM slider's value. Nothing here reads it: it is handed on as
     /// `$level` - to the slider, and to the caption's own conversion - and a
@@ -19,97 +20,31 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
     /// TO, so a caption converted off the journey counts its way along it
     /// where one converted from the state would jump to the destination at
     /// once.
-    @State private var level = 0.2
+    @State private var level = 0.2   // handed on: no reader
 
-    /// The stepper's value, declared the same way - and it needs it more than
-    /// the slider does: a Stepper draws two buttons and NO number, so the
-    /// caption beside it is the only thing that shows the value at all.
+    /// The stepper's value, declared the same way. Its caption matters more
+    /// than the slider's: on some platforms a Stepper draws two buttons and
+    /// no number, and there the caption above it is what shows the value.
     @State private var count = 3.0
+    // listing: end
 
     static let id = "animatedInput"
     static let title = "Animated inputs"
-    static let summary = "Two sliders over identical states - one read by the page, one handed on with `$`."
+    static let summary = "Two sliders over identical states - one also read by the page, one only handed on with `$`."
 
-    static let code = """
-        // Two IDENTICAL declarations. What differs is who reads them.
-        @State private var volume = 0.2     // printed by this body: a reader
-        @State private var level = 0.2   // handed on: no reader
-        @State private var count = 3.0
-
-        // Each half is a closure of its own and takes its own reading, which
-        // is the instrument the two are told apart by.
-        VStack {
-            VStack {
-                // A GET. This label prints `volume`, which makes THIS closure
-                // a reader of it - so every report the thumb makes builds it.
-                DebugInfoLabel()
-
-                Text("volume · \\(percent(volume))")
-
-                Slider($volume)
-                    .minimum(0)
-                    .maximum(1)
-
-                Button("Send the top one").onClicked {
-                    // An assignment sends the thumb there under the element's
-                    // law, and costs the one render this line asks for.
-                    volume = volume < 0.5 ? 1 : 0
-                }
-            }
-
-            VStack {
-                // A BINDING. `$level` is handed to the slider and to the
-                // caption's conversion, and nothing prints it - so a drag and
-                // a journey build nothing and this reading stays at one.
-                DebugInfoLabel()
-
-                // A CONVERTED TEXT. The host works it out from the same image
-                // the thumb is walking, on its own frames, so the words keep
-                // up with the movement and cost no render.
-                Text($level.journey.convert { "level · \\(Int(($0.value * 100).rounded()))%" })
-
-                Slider($level)
-                    .minimum(0)
-                    .maximum(1)
-
-                Button("Send the bottom one").onClicked {
-                    try await $level.journey.move(to: level < 0.5 ? 1 : 0,
-                                               .eased(900, .cubicInOut))
-                }
-            }
-
-            VStack {
-                DebugInfoLabel()
-
-                Text($count.journey.convert { "count · \\(Int($0.value.rounded()))" })
-
-                Stepper($count)
-                    .minimum(0)
-                    .maximum(20)
-                    .step(1)
-
-                Button("Send the stepper to 12").onClicked {
-                    try await $count.journey.move(to: 12, .eased(800, .cubicOut))
-                }
-            }
-        }
-        // Every report either control makes, with no render anywhere and no
-        // engine written by hand: a conversion IS an engine, one the differ
-        // writes.
-
-        /// Whole percent, written by hand - a formatter is Foundation.
-        func percent(_ value: Double) -> String {
-            "\\(Int((value * 100).rounded()))%"
-        }
-        """
-
+    // listing: AnimatedInputSample
     var body: some View {
+        // Each part is a closure of its own and takes its own build reading,
+        // which is what tells them apart.
         VStack {
             VStack {
                 Text("A get")
                     .fontSize(12)
                     .textColor(Palette.subtle)
 
+                // A GET. The label below prints `volume`, which makes THIS
+                // closure a reader of it - so every report the thumb makes
+                // builds it.
                 DebugInfoLabel()
 
                 Text("volume · \(percent(volume))")
@@ -123,6 +58,8 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
                     .tint(Palette.subtle)
 
                 button("Send the top one") {
+                    // An assignment sends the thumb there under the element's
+                    // law, and costs the one render this line asks for.
                     volume = volume < 0.5 ? 1 : 0
                 }
             }
@@ -135,9 +72,9 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
 
                 DebugInfoLabel()
 
-                // A CONVERTED TEXT: the host works it out from the same image
-                // the thumb is walking, on its own frames, so the words keep
-                // up with the movement and cost no render.
+                // A CONVERTED TEXT: an engine works it out from the same image
+                // the thumb is walking, on the display's frames, so the words
+                // keep up with the movement and cost no render.
                 Text()
                     .text($level.journey.convert { "level · \(Int(($0.value * 100).rounded()))%" })
                     .fontSize(15)
@@ -183,6 +120,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
         }
         .spacing(10)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -221,14 +159,15 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
                 + "writes for you: it runs on the display's own frames, from the same "
                 + "image the control is walking, so a drag and a journey both cost the "
                 + "arithmetic and no renders. The stepper needs its caption more than "
-                + "the slider does: a Stepper draws two buttons and NO number, so the "
-                + "caption is the only thing that shows the value at all.")
+                + "the slider does: on some platforms a Stepper draws two buttons and "
+                + "no number, and there the caption is what shows the value.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
         .spacing(12)
     }
 
+    // listing: AnimatedInputSample
     /// Whole percent, written by hand - a formatter is Foundation.
     private func percent(_ value: Double) -> String {
         "\(Int((value * 100).rounded()))%"
@@ -237,8 +176,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
     /// One of the buttons, all of which look the same.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
-            .fontSize(13)
-            .padding(horizontal: 14, vertical: 6)
             .onClicked(act)
     }
+    // listing: end
 }

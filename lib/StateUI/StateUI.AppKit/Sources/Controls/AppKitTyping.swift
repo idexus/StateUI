@@ -31,10 +31,37 @@ extension InputTraits {
     }
 }
 
+/// A field standing in a filled box drawn around it: the ring it draws while it holds the keyboard goes round the box,
+/// rounded as the box is.
+@MainActor
+protocol AppKitBoxedField: NSTextField {
+    /// The box the field stands in, in the field's own coordinates; nil for the field's own ring.
+    var ringBox: NSRect? { get set }
+}
+
+extension AppKitBoxedField {
+    /// The ring's outline round `box`: the box's corners.
+    func drawRing(round box: NSRect) {
+        NSBezierPath(roundedRect: box, xRadius: AppKitTextEditorView.cornerRadius, yRadius: AppKitTextEditorView.cornerRadius)
+            .fill()
+    }
+}
+
 /// A text field whose editor's text checking follows the field's traits - the field is its editor's delegate.
 @MainActor
-final class AppKitWordsField: NSTextField {
+final class AppKitWordsField: NSTextField, AppKitBoxedField {
     var traits = InputTraits(spellChecked: true, predicted: true, purpose: nil)
+
+    var ringBox: NSRect? {
+        didSet { if ringBox != oldValue { noteFocusRingMaskChanged() } }
+    }
+
+    override var focusRingMaskBounds: NSRect { ringBox ?? super.focusRingMaskBounds }
+
+    override func drawFocusRingMask() {
+        guard let ringBox else { return super.drawFocusRingMask() }
+        drawRing(round: ringBox)
+    }
 
     @objc(textView:willCheckTextInRange:options:types:)
     func textView(
@@ -42,6 +69,21 @@ final class AppKitWordsField: NSTextField {
         types: UnsafeMutablePointer<NSTextCheckingTypes>
     ) -> [NSSpellChecker.OptionKey: Any] {
         traits.checking(options)
+    }
+}
+
+/// A secure text field whose ring goes round the box it stands in.
+@MainActor
+final class AppKitSecureWordsField: NSSecureTextField, AppKitBoxedField {
+    var ringBox: NSRect? {
+        didSet { if ringBox != oldValue { noteFocusRingMaskChanged() } }
+    }
+
+    override var focusRingMaskBounds: NSRect { ringBox ?? super.focusRingMaskBounds }
+
+    override func drawFocusRingMask() {
+        guard let ringBox else { return super.drawFocusRingMask() }
+        drawRing(round: ringBox)
     }
 }
 #endif

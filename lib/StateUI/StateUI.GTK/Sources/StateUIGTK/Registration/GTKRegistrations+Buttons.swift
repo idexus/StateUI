@@ -15,12 +15,15 @@ extension GTKRegistrations {
             return button
         }, members: { button in
             button.applies(TextMembers.members) { view, values in applyText(view, values) }
+            button.property(TextStyleElementContract.tracking) { view, spacing in
+                view.setLook { $0.letterSpacing = spacing ?? 0 }
+            }
             button.applies([
                 VisualElementContract.background,
                 BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
             ]) { view, values in
                 view.setBox(
-                    fill: values[VisualElementContract.background]?.propValue,
+                    fill: HostMaterial(values[VisualElementContract.background]?.propValue).painted,
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)

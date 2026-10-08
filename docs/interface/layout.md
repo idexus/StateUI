@@ -388,8 +388,8 @@ because it does not alter the layout rectangle; an animated layout property
 reports the rectangles that the host actually settles.
 
 `GeometryReader` owns the measured rectangle as its own state and rebuilds only
-its content from that value. Its closure first receives a zero rectangle; the first
-native frame report supplies the measured rectangle:
+its content from that value. Its closure runs once the first native frame report
+supplies the measured rectangle; until then the reader holds nothing:
 
 ```swift
 GeometryReader { frame in

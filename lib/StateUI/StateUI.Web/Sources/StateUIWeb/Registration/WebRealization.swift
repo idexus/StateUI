@@ -37,8 +37,12 @@ enum WebRealization {
         .complete("MenuItemElement", "isDestructive"),
         .complete("MenuItemElement", "isEnabled"),
         .complete("MenuItemElement", "text"),
+        .complete("PageElement", "icon"),
         .complete("PageElement", "title"),
         .complete("VisualElement", "style"),
+        .partial("VisualElement", "background", missing: "A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in."),
+        .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
+            + "initializer that sets nothing, which a list of some items has not."),
 
         // MARK: Entries - a control's or a part's own
         .complete("ModalStack", "popped"),
@@ -52,8 +56,13 @@ enum WebRealization {
         .complete("Page", "navigatingFrom"),
         .complete("Page", "showsBackButton"),
         .complete("Page", "showsNavigationBar"),
+        .complete("RadioButton", "groupName"),
         .complete("SplitView", "showsSidebar"),
         .complete("SplitView", "showsSidebarChanged"),
+        .partial("SplitView", "sidebarBackground", missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
+        .partial("SplitView", "flyoutBackground", missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
+        .notPlanned("Slider", "background", reason: "The browser draws its slider over the whole box and paints no "
+            + "background under it."),
         .complete("TabView", "selectedTab"),
         .complete("TabView", "selectedTabChanged"),
         .complete("TextSpan", "background"),
@@ -69,14 +78,29 @@ enum WebRealization {
         .complete("ToolbarItem", "showsText"),
         .complete("ToolbarItemGroup", "order"),
         .complete("ToolbarItemGroup", "side"),
+        .complete("Scene", "activated"),
+        .complete("Scene", "deactivated"),
+        .complete("Scene", "stopped"),
+        .notPlanned("Scene", "windowClosed", reason: "A page's one window closes with its tab, which hears nothing after."),
+        .notPlanned("Window", "windowType", reason: "A page is one window: it opens none of a kind."),
+        .notPlanned("Window", "windowValue", reason: "A page is one window: it opens none for a value."),
+        .complete("Window", "activated"),
+        .complete("Window", "created"),
+        .complete("Window", "deactivated"),
+        .complete("Window", "destroying"),
+        .complete("Window", "resumed"),
+        .complete("Window", "stopped"),
         .notPlanned("Window", "floatsOnTop", reason: "A page keeps no browser window above the others: the system stacks them."),
         .notPlanned("Window", "height", reason: "A page sizes no browser window: the user does, and the page fills it."),
         .notPlanned("Window", "hidesWhenInactive",
                     reason: "The browser shows a page whenever its tab shows, whichever application the user is in."),
         .notPlanned("Window", "isMaximizable", reason: "A page asks nothing of how the browser's window is resized."),
         .notPlanned("Window", "isMinimizable", reason: "A page asks nothing of how the browser's window is put away."),
-        .notPlanned("Window", "isTranslucent",
-                    reason: "A page draws its window opaque: no material of the system shows through it."),
+        .partial("Grid", "background", missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
+        .partial("HStack", "background", missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
+        .partial("VStack", "background", missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
+        .partial("ZStack", "background", missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
+        .partial("Window", "background", missing: "A page draws its window opaque: a blur or glass shows its colour."),
         .notPlanned("Window", "maximumHeight", reason: "A page bounds no browser window: the user sizes it."),
         .notPlanned("Window", "maximumWidth", reason: "A page bounds no browser window: the user sizes it."),
         .notPlanned("Window", "minimumHeight", reason: "A page bounds no browser window: the user sizes it."),
@@ -85,11 +109,27 @@ enum WebRealization {
         .notPlanned("Window", "width", reason: "A page sizes no browser window: the user does, and the page fills it."),
         .notPlanned("Window", "x", reason: "A page places no browser window: the system does."),
         .notPlanned("Window", "y", reason: "A page places no browser window: the system does."),
-    ]
+    ] + pickerOpening + dayFields
 
-    /// The acts this host performs: every host's (`HostActs.performed`), a list scrolled to an item, and a web view's
-    /// steps and scripts.
-    static let acts: [any ContractMember] = HostActs.performed + [
+    /// A day's and a time's field: left to right, whatever the direction around them.
+    private static let dayFields: [HostRecord] = ["DatePicker", "TimePicker"].map { picker in
+        .notPlanned(picker, "layoutDirection", reason: "The browser lays a day's and a time's field out left to right "
+            + "in every direction, over any the page gives it.")
+    }
+
+    /// A picker's list, a day's calendar and a time's clock: the browser's own, opened at the user's press.
+    private static let pickerOpening: [HostRecord] = ["DatePicker", "Picker", "TimePicker"].flatMap { picker in
+        [
+            .notPlanned(picker, "isOpen", reason: "The browser opens a picker's list or calendar only at the user's "
+                + "press, and closes it at the user's hand alone."),
+            .notPlanned(picker, "opened", reason: "The browser says nothing as a picker's list or calendar opens."),
+            .notPlanned(picker, "closed", reason: "The browser says nothing as a picker's list or calendar closes."),
+        ] as [HostRecord]
+    }
+
+    /// The acts this host performs: every host's (`HostActs.performed`), the files (`HostActs.files`), a list
+    /// scrolled to an item, and a web view's steps and scripts.
+    static let acts: [any ContractMember] = HostActs.performed + HostActs.files + [
         ItemsViewContract.scrollTo, WebViewContract.goBack, WebViewContract.goForward, WebViewContract.reload,
         WebViewContract.evaluateJavaScript,
     ]

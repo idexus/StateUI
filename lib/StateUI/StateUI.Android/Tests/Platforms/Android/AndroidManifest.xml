@@ -8,9 +8,11 @@
         android:label="StateUI Android host tests"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">
-        <!-- The window the conformance families show their pages in, as an application's activity does. -->
+        <!-- The window the conformance families show their pages in, as an application's activity does. It takes
+             a change of the night mode itself: made again, it would leave the runner holding the window gone. -->
         <activity
             android:name="stateui.android.test.TestActivity"
+            android:configChanges="uiMode"
             android:exported="false" />
     </application>
 

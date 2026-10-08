@@ -83,6 +83,7 @@ extension GTKElement {
             }
         case .splitView:
             guard let split = view as? GTKSplitView else { return }
+            groundSidebar()
             let shows = element.sidebarIsVisible
             let showing: (shows: Bool, toggle: () -> Void) = (shows, { [weak self] in
                 self?.changeSidebarVisibility(to: !shows)
@@ -157,5 +158,15 @@ extension GTKElement {
     func sidebarChanged(to presented: Bool) {
         host?.runtime.sidebarShown(element, presented)
         host?.refreshChrome()
+    }
+
+    /// Stands a split view's sidebar on its materials - GTK blurs nothing inside a window, so a blur stands as its
+    /// colour.
+    func groundSidebar() {
+        guard let split = view as? GTKSplitView else { return }
+        let colour = { (over: Bool) in
+            self.element.sidebarMaterial(over: over).painted.flatMap { GTKBrush($0).firstColor }
+        }
+        split.grounds = (colour(false), colour(true))
     }
 }

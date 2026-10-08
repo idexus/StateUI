@@ -98,9 +98,15 @@ public struct TextSpan: ModifiableElement, TextualElement, FontElement,
         node.write(TextualElementContract.text, text)
     }
 
-    /// What is drawn behind this run - a highlight over part of a line.
-    public func background(_ value: Color) -> Self {
+    /// What is drawn behind this run - a highlight over part of a line; a blur
+    /// or glass behind a run shows its colour.
+    public func background(_ value: Material) -> Self {
         setValue(TextSpanContract.background, value)
+    }
+
+    /// What is drawn behind this run, in one colour.
+    public func background(_ value: Color) -> Self {
+        background(.color(value))
     }
 }
 

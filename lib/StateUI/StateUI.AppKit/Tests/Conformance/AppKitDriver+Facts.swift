@@ -75,7 +75,14 @@ extension AppKitDriver {
         case .maximumHeight: return Double(window.contentMaxSize.height - chrome).rounded().propValue
         case .isMaximizable: return (window.standardWindowButton(.zoomButton)?.isEnabled ?? false).propValue
         case .isMinimizable: return window.styleMask.contains(.miniaturizable).propValue
-        case .isTranslucent: return (!window.isOpaque).propValue
+        case .background:
+            // A blur the desktop shows through, in the colour laid over it; else the window's own colour.
+            let content = window.contentView as? AppKitWindowContentView
+            if let role = content?.materialForTesting?.material, let thickness = AppKitMaterialView.thickness(role) {
+                let blur = Blur(thickness)
+                return Material.blur(content?.materialTint.map { blur.tint(Self.color($0)) } ?? blur).propValue
+            }
+            return window.backgroundColor.map { Material.color(Self.color($0)).propValue }
         case .floatsOnTop: return (window.level == .floating).propValue
         case .windowType: return controller.restorationRecordForTesting.kind.map { .name($0) }
         case .windowValue: return controller.restorationRecordForTesting.value.map { .string($0) }
@@ -93,11 +100,38 @@ extension AppKitDriver {
         return words.isEmpty ? nil : words.propValue
     }
 
-    /// The colour the bar of the window `element` stands in is painted: the window's own background, which the title
-    /// bar lets show only while a colour is painted; nil on the system's material.
+    /// The colour the bar's words of the window `element` stands in are drawn in: its painted title's, which a band
+    /// painted in a bar colour shows; nil on the system's material, where the system draws the title.
+    func barWordsColor(_ element: MountedElement) throws -> HostValue? {
+        let controller = try controller(of: element)
+        guard controller.bandTitle.window != nil else { return nil }
+        return controller.bandTitle.textColor.map { Self.color($0).propValue }
+    }
+
+    /// The picture the title area of the window `element` stands in shows, told by the picture of a name the host
+    /// gave it; nil where it shows none.
+    func titleAreaIcon(_ element: MountedElement) throws -> HostValue? {
+        let controller = try controller(of: element)
+        guard controller.titleAccessoryForTesting != nil, let shown = controller.titleClusterForTesting.imageForTesting
+        else { return nil }
+        return pictureName(shown)
+    }
+
+    /// The name of the picture `shown` is, among the pictures the suite shows: the host gives a control the
+    /// picture it keeps for a name.
+    func pictureName(_ shown: NSImage?) -> HostValue? {
+        guard let shown else { return nil }
+        let names = ["test_dot.png", "test_wide.png", "photo.png"]
+        return names.first { renderer?.image(named: $0) === shown }.map { .string($0) }
+    }
+
+    /// The colour the bar of the window `element` stands in is painted: the band the title bar lets show only while
+    /// a colour is painted; nil on the system's material.
     func barHolds(_ element: MountedElement) throws -> HostValue? {
-        guard let window = try controller(of: element).window, window.titlebarAppearsTransparent else { return nil }
-        return Self.color(window.backgroundColor).propValue
+        guard let window = try controller(of: element).window, window.titlebarAppearsTransparent,
+              let band = (window.contentView as? AppKitWindowContentView)?.barColor
+        else { return nil }
+        return Self.color(band).propValue
     }
 
     /// What the host keeps under `key`, as the next launch reads it: a value every scene shares from the driver's
@@ -121,6 +155,23 @@ extension AppKitDriver {
     /// What the host told the screen reader, in order, as it posted it.
     func announced() throws -> [String] {
         renderer?.actToolkit.announcedForTesting ?? []
+    }
+
+    /// The application's effective appearance, which its windows show.
+    func theme() throws -> ColorScheme {
+        NSApplication.shared.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua ? .dark : .light
+    }
+
+    /// The file dialog AppKit's panel shows now: one that opens or one that saves.
+    func fileDialog(over element: MountedElement) throws -> FileDialog? {
+        renderer?.fileToolkit.showing.map { $0.dialog.kind == .save ? .save : .open }
+    }
+
+    /// What the host handed macOS to launch, in order: an address as written, a file by its name.
+    func launched() throws -> [String] {
+        (renderer?.fileToolkit.launchedForTesting ?? []).map { target in
+            target.contains("://") ? target : URL(fileURLWithPath: target).lastPathComponent
+        }
     }
 
     /// What the host wrote to its log since it started.
@@ -176,6 +227,27 @@ extension AppKitDriver {
         let local = NSPoint(x: point.x, y: view.isFlipped ? point.y : view.bounds.height - point.y)
         guard let hit = content.hitTest(frame.convert(view.convert(local, to: nil), from: nil)) else { return false }
         return hit === view || hit.isDescendant(of: view)
+    }
+
+    /// A heading is what assistive technology meets with AppKit's heading role.
+    func isHeading(_ element: MountedElement) throws -> Bool {
+        guard let native = element.native as? AppKitElement, let view = native.view else {
+            throw DriverCannot("read whether \(element.type.name) is a heading")
+        }
+        return native.accessibilityTarget(of: view).accessibilityRole()?.rawValue == "AXHeading"
+    }
+
+    /// The layout's children by where each one's view stands among its view's subviews, the last drawn last.
+    func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
+        let cannot = DriverCannot("read the drawing order of \(layout.type.name)")
+        guard let parent = (layout.native as? AppKitElement)?.view else { throw cannot }
+        return try layout.children.map { child in
+            guard var view = (child.native as? AppKitElement)?.view else { throw cannot }
+            while let above = view.superview, above !== parent { view = above }
+            guard let place = parent.subviews.firstIndex(where: { $0 === view }) else { throw cannot }
+            return (child, place)
+        }
+        .sorted { $0.1 < $1.1 }.map(\.0)
     }
 
     /// Menu items as the suite writes them: each by its caption, "!" before one that cannot be chosen, "-" a

@@ -92,16 +92,8 @@ final class UIKitButtonView: UIButton {
     }
 
     private func showLook() {
-        let attributes = look.attributes(standing: .preferredFont(forTextStyle: .body), color: tintColor)
-        // The configuration keeps the transformer: it holds the look's values, never the button that holds it.
-        let colored = look.color != nil
-        configuration?.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
-            var outgoing = incoming
-            outgoing.font = attributes[.font] as? UIFont
-            if colored { outgoing.foregroundColor = attributes[.foregroundColor] as? UIColor }
-            if let kern = attributes[.kern] as? Double { outgoing.uiKit.kern = kern }
-            return outgoing
-        }
+        configuration?.titleTextAttributesTransformer =
+            look.titleTransformer(standing: .preferredFont(forTextStyle: .body), color: tintColor)
     }
 }
 #endif

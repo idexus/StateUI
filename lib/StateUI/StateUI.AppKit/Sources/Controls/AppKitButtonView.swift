@@ -42,6 +42,7 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         imageScaling: NSImageScaling,
         font: NSFont,
         textColor: NSColor,
+        tracking: Double,
         backgroundColor: NSColor?,
         strokeColor: NSColor?,
         lineWidth: Double,
@@ -56,7 +57,7 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         cell?.lineBreakMode = lineBreakMode
         attributedTitle = NSAttributedString(
             string: text,
-            attributes: [.font: font, .foregroundColor: textColor])
+            attributes: [.font: font, .foregroundColor: textColor, .kern: tracking])
         self.imagePosition = image == nil ? .noImage : imagePosition
         self.imageScaling = imageScaling
 

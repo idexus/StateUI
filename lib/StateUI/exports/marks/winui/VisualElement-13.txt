@@ -1,81 +1,78 @@
-# revision 1.1
-ActivityIndicator.isAccessibilityHidden: ✅
-Button.frameChanged: ✅
-Button.height: ✅
-Button.scale: ✅
-Button.width: ✅
-Canvas.isAccessibilityHidden: ✅
-CheckBox.frameChanged: ✅
-CheckBox.height: ✅
-CheckBox.scale: ✅
-CheckBox.width: ✅
-ColorBox.isAccessibilityHidden: ✅
-DatePicker.frameChanged: ✅
-DatePicker.height: ✅
-DatePicker.scale: ✅
-DatePicker.width: ✅
-Ellipse.isAccessibilityHidden: ✅
-Grid.frameChanged: ✅
-Grid.height: ✅
-Grid.scale: ✅
-Grid.width: ✅
-HStack.isAccessibilityHidden: ✅
+# revision 7.1
+ActivityIndicator.accessibilityHint: ✅
+Button.opacity: ✅
+Button.pivotY: ✅
+Canvas.translationY: ✅
+Canvas.zIndex: ✅
+CheckBox.layoutDirection: ✅
+ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
+ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
+ColorBox.scaleY: ✅
+ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
+DatePicker.isAccessibilityHidden: ✅
+Ellipse.frameChanged: ✅
+Ellipse.maximumHeight: ✅
+Ellipse.maximumWidth: ✅
+Ellipse.minimumHeight: ✅
+Ellipse.minimumWidth: ✅
+Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own tip, checked against the projection it laid on the element
+Grid.accessibilityLabel: ✅
+Grid.isEnabled: ✅
+HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 Image.frameChanged: ✅
 Image.height: ✅
-Image.scale: ✅
+Image.rotationX: ✓ read rotationX of Image: the host's own tip, checked against the projection it laid on the element
 Image.width: ✅
-ItemsView.isAccessibilityHidden: ✅
-Line.isAccessibilityHidden: ✅
-Map.frameChanged: 🧩
-Map.height: 🧩
-Map.scale: 🧩
-Map.width: 🧩
-Path.isAccessibilityHidden: ✅
-Picker.frameChanged: ✅
-Picker.height: ✅
-Picker.scale: ✅
-Picker.width: ✅
-Polygon.isAccessibilityHidden: ✅
-Polyline.frameChanged: ✅
-Polyline.height: ✅
-Polyline.scale: ✅
-Polyline.width: ✅
-ProgressBar.isAccessibilityHidden: ✅
+ItemsView.accessibilityHeading: ✅
+Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Line.scaleY: ✅
+Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Map.isAccessibilityHidden: 🧩
+Path.frameChanged: ✅
+Path.maximumHeight: ✅
+Path.maximumWidth: ✅
+Path.minimumHeight: ✅
+Path.minimumWidth: ✅
+Path.rotationY: ✓ read rotationY of Path: the host's own tip, checked against the projection it laid on the element
+Picker.accessibilityLabel: ✅
+Polygon.opacity: ✅
+Polygon.pivotY: ✅
+Polyline.style: ✅
+Polyline.translationX: ✅
+ProgressBar.automationExcludedWithChildren: ✅
 RadioButton.frameChanged: ✅
-RadioButton.height: ✅
-RadioButton.scale: ✅
-RadioButton.width: ✅
-Rectangle.isAccessibilityHidden: ✅
-ScrollView.frameChanged: ✅
-ScrollView.height: ✅
-ScrollView.scale: ✅
-ScrollView.width: ✅
-SearchField.isAccessibilityHidden: ✅
-Slider.frameChanged: ✅
-Slider.height: ✅
-Slider.scale: ✅
-Slider.width: ✅
-Stepper.isAccessibilityHidden: ✅
-Switch.frameChanged: ✅
-Switch.height: ✅
-Switch.scale: ✅
-Switch.width: ✅
-Text.frameChanged: ✅
-Text.height: ✅
-Text.scale: ✅
-Text.width: ✅
-TextEditor.isAccessibilityHidden: ✅
-TextField.frameChanged: ✅
-TextField.height: ✅
-TextField.scale: ✅
-TextField.width: ✅
-TimePicker.isAccessibilityHidden: ✅
-VStack.frameChanged: ✅
-VStack.height: ✅
-VStack.scale: ✅
-VStack.width: ✅
+RadioButton.maximumHeight: ✅
+RadioButton.maximumWidth: ✅
+RadioButton.minimumHeight: ✅
+RadioButton.minimumWidth: ✅
+RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own tip, checked against the projection it laid on the element
+Rectangle.accessibilityHint: ✅
+ScrollView.opacity: ✅
+ScrollView.pivotY: ✅
+SearchField.style: ✅
+SearchField.translationX: ✅
+Slider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Stepper.frame: ✅
+Stepper.scaleX: ✅
+Switch.isAccessibilityHidden: ✅
+Text.isVisible: ✅
+Text.pivotX: ✅
+TextEditor.frameChanged: ✅
+TextEditor.maximumHeight: ✅
+TextEditor.maximumWidth: ✅
+TextEditor.minimumHeight: ✅
+TextEditor.minimumWidth: ✅
+TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own tip, checked against the projection it laid on the element
+TextField.accessibilityHint: ✅
+TimePicker.isEnabled: ✅
+TimePicker.rotation: ✅
+VStack.accessibilityHeading: ✅
+VStack.isEnabled: ✅
 WebView.isAccessibilityHidden: ✅
 ZStack.frameChanged: ✅
-ZStack.height: ✅
-ZStack.scale: ✅
-ZStack.width: ✅
+ZStack.maximumHeight: ✅
+ZStack.maximumWidth: ✅
+ZStack.minimumHeight: ✅
+ZStack.minimumWidth: ✅
+ZStack.rotationY: ✓ read rotationY of ZStack: the host's own tip, checked against the projection it laid on the element

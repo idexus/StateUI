@@ -22,6 +22,11 @@ struct AppKitBrush {
         if case .solid(let color) = brush { nsColor(color) } else { nil }
     }
 
+    /// Whether it paints anything.
+    var paints: Bool {
+        brush != .none
+    }
+
     /// Whether it is a gradient, which a layer's colour cannot paint.
     var isGradient: Bool {
         switch brush {
@@ -80,6 +85,13 @@ struct AppKitBrush {
     private static func point(_ fraction: Point, in bounds: NSRect) -> NSPoint {
         NSPoint(x: bounds.minX + bounds.width * fraction.x, y: bounds.minY + bounds.height * fraction.y)
     }
+}
+
+/// The colour a view that blurs nothing paints its background in: a colour, or a blur's or glass's tint over the
+/// colour standing in for it (`HostMaterial.painted`); nil for a gradient or nothing.
+@MainActor
+func paintedColor(_ material: HostValue?) -> NSColor? {
+    HostMaterial(material).painted.flatMap(nsColor)
 }
 
 /// A StateUI colour is four sRGB channels, drawn in sRGB exactly.

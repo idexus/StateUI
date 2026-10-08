@@ -44,7 +44,7 @@ extension UIKitRegistrations {
                 BorderElementContract.shape,
             ]) { view, values in
                 view.setBox(
-                    background: values[VisualElementContract.background]?.propValue,
+                    background: HostMaterial(values[VisualElementContract.background]?.propValue).painted,
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     width: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)

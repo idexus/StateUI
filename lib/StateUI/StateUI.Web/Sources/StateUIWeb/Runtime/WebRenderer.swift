@@ -31,10 +31,10 @@ final class WebRenderer {
         makeNative: { [unowned self] element in WebElement(element, host: self) }, log: { WebRenderer.log.error($0) },
         views: { WebDOMView.liveCount })
 
-    /// The Web's part of the acts, and what performs them and answers them by the host layer's rules.
+    /// The Web's part of the acts and of the files, and what performs them and answers them by the host layer's rules.
     private(set) lazy var actToolkit = WebActToolkit(renderer: self)
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
+        toolkit: actToolkit, files: WebFileToolkit(), answers: runtime.core, tree: { [unowned self] in runtime.tree },
         answered: { [unowned self] in runtime.pump.turn() })
 
     /// Whether the call ending reports what it laid out: a call the browser makes inside it reports nothing.
@@ -42,6 +42,9 @@ final class WebRenderer {
 
     /// The windows the tree holds, each with its controller, in the tree's order. The browser shows the first.
     let roster = WindowRoster<WebWindowController>()
+
+    /// What is kept of the scenes for the page's next start.
+    let scenes = SceneKeeper()
 
     /// A runtime of the application `applicationName`, on the page's clock or on `clock`, with the motion
     /// `reducesMotion` allows.
@@ -75,7 +78,11 @@ final class WebRenderer {
             self?.runtime.environmentChanged { WebEnvironment.reportChanging(to: core) }
         }
         WebRelay.afterEntry = { [weak self] in self?.entryEnded() }
-        runtime.connectWindow()
+        WebRelay.listenToPage(
+            changed: WebRelay.listener { [weak self] in self?.pageChanged(WebRelay.pageState) },
+            leaving: WebRelay.listener { [weak self] in self?.runtime.ending() })
+        // The scenes kept when the page was left come back; else the window launch opens.
+        scenes.restore(WebKeptValues.readScenes(applicationName), in: runtime)
         entryEnded()
     }
 
@@ -112,6 +119,14 @@ final class WebRenderer {
         runtime.frames.laidOut()
     }
 
+    /// The page's tab shows or not, and the page holds the keyboard or not: the window it shows is put away while
+    /// its tab hides - it stops - and is the one in front while the page holds the keyboard.
+    /// Design: docs/design/platforms/web/runtime.md#the-window
+    func pageChanged(_ state: (shown: Bool, focused: Bool)) {
+        guard let window = roster.windows.first?.element else { return }
+        runtime.windowStateChanged(window, minimized: !state.shown, activated: state.shown && state.focused)
+    }
+
     /// Writes the window's chrome again from what it shows now.
     func refreshChrome() {
         roster.controllers.first?.refreshChrome()
@@ -126,6 +141,7 @@ final class WebRenderer {
 extension WebRenderer: TurnPresenter {
     func presentRendered() {
         showWindows()
+        if let text = scenes.changed(root: runtime.tree.root) { WebKeptValues.writeScenes(text, application: applicationName) }
     }
 
     func perform(_ call: HostActCall) {
@@ -144,6 +160,8 @@ extension WebRenderer: FramePresenter {
 
     func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
         if runtime.tree.present(states: states, properties: properties).windowChrome { showWindows() }
+        // What a frame wrote may move a view without resizing it, which no observer of the page tells.
+        if !states.isEmpty || !properties.isEmpty { runtime.frames.laidOut() }
     }
 
     func renderIfNeeded() {

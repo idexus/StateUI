@@ -11,14 +11,12 @@ extension GTKRegistrations {
         registry.add(VStackContract.self, create: { _ in GTKStackView(axis: .vertical) }) { stack in
             stack.applies(stackMembers) { view, values in applyStack(view, values) }
             stack.applies(boxMembers) { view, values in applyBox(view, values) }
-            stack.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
             stack.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
         registry.add(HStackContract.self, create: { _ in GTKStackView(axis: .horizontal) }) { stack in
             stack.applies(stackMembers) { view, values in applyStack(view, values) }
             stack.applies(boxMembers) { view, values in applyBox(view, values) }
-            stack.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
             stack.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
@@ -35,14 +33,12 @@ extension GTKRegistrations {
                 view.padding = values[PaddingElementContract.padding] ?? Insets(0)
             }
             grid.applies(boxMembers) { view, values in applyBox(view, values) }
-            grid.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
             grid.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
         registry.add(ZStackContract.self, create: { _ in GTKZStackView() }) { layout in
             layout.property(PaddingElementContract.padding) { view, padding in view.padding = padding ?? Insets(0) }
             layout.applies(boxMembers) { view, values in applyBox(view, values) }
-            layout.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
             layout.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
@@ -66,7 +62,7 @@ extension GTKRegistrations {
                 BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
             ]) { view, values in
                 // A scroller cuts what it shows to its bounds; a shape cuts it to the shape.
-                view.setBackground(values[VisualElementContract.background]?.propValue)
+                view.setBackground(HostMaterial(values[VisualElementContract.background]?.propValue).painted)
                 view.setOutline(
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     width: values[BorderElementContract.lineWidth],
@@ -87,7 +83,8 @@ extension GTKRegistrations {
     ]
 
     private static func applyBox<Realized: ElementContract>(_ view: GTKLayoutView, _ values: ElementValues<Realized>) {
-        view.setBackground(values[VisualElementContract.background]?.propValue)
+        // GTK blurs nothing behind a widget: the material's colour stands in, under the fill.
+        view.setBackground(HostMaterial(values[VisualElementContract.background]?.propValue).painted)
         view.setOutline(
             stroke: values[BorderElementContract.stroke]?.propValue,
             width: values[BorderElementContract.lineWidth],

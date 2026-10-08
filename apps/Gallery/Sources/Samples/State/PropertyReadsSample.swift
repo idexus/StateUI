@@ -1,5 +1,6 @@
 import StateUI
 
+// listing: PropertyReadsSample
 /// Two properties of one model, read in two different closures.
 ///
 /// The point of the sample is which closure is built again: each property is
@@ -9,57 +10,19 @@ private final class Profile {
     @State var name = ""
     @State var visits = 0
 }
+// listing: end
 
 /// One model, two properties, two readers - and a write reaches one of them.
 struct PropertyReadsSample: SampleContent, ExampleContent {
+    // listing: PropertyReadsSample
     @State private var profile = Profile()
+    // listing: end
 
     static let id = "propertyReads"
     static let title = "One write, one property"
     static let summary = "Two properties of one model are two states: a write reaches only that property's readers."
 
-    static let code = """
-        final class Profile {
-            @State var name = ""
-            @State var visits = 0
-        }
-
-        @State private var profile = Profile()
-
-        // THE OUTER CLOSURE READS NEITHER PROPERTY, so no write builds it
-        // again and nothing below is carried along. Each block answers for
-        // itself.
-        VStack {
-            // Writes `visits`. A handler reads when it FIRES, not when it is
-            // written, so this closure reads nothing at all.
-            VStack {
-                Button("Another visit")
-                    .onClicked { profile.visits += 1 }
-            }
-
-            // Reads `visits`. Only a write to `visits` builds this again.
-            VStack {
-                DebugInfoLabel()
-
-                Text("visits: \\(profile.visits)")
-            }
-
-            // Writes `name` and reads nothing: `profile.$name` is the name's
-            // own state, handed to the host whole, so the field is no reader.
-            VStack {
-                TextField(profile.$name)
-                    .placeholder("Type a name")
-            }
-
-            // Reads `name`. Only a write to `name` builds this again.
-            VStack {
-                DebugInfoLabel()
-
-                Text("name: \\(profile.name)")
-            }
-        }
-        """
-
+    // listing: PropertyReadsSample
     var body: some View {
         // THE OUTER CLOSURE READS NEITHER PROPERTY, so no write builds it
         // again and nothing below is carried along. Each block answers for
@@ -68,11 +31,6 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
             VStack {
                 Button("Another visit")
                     .accessibilityIdentifier("propertyReads.visit")
-                    .fontSize(13)
-                    .background(Palette.accent)
-                    .textColor(.white)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 20, vertical: 10)
                     .horizontalAlignment(.center)
                     .onClicked { profile.visits += 1 }
             }
@@ -85,7 +43,7 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
             }
             .spacing(4)
             .padding(14)
-            .background(Palette.surface)
+            .background(Palette.well)
 
             VStack {
                 TextField(profile.$name)
@@ -103,10 +61,11 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
             }
             .spacing(4)
             .padding(14)
-            .background(Palette.surface)
+            .background(Palette.well)
         }
         .spacing(14)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

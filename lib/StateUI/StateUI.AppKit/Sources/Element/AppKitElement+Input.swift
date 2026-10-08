@@ -113,8 +113,8 @@ extension AppKitElement {
         }
     }
 
-    /// Installs the recognizers for what the element asks to hear (`MountedElement.hearing`), and takes away those
-    /// it no longer does.
+    /// Installs the recognizers for what the element asks to hear (`MountedElement.hearing`) and for a drag of it
+    /// between views (`MountedElement.dragAndDrop`), and takes away those it no longer does.
     /// Design: docs/design/platforms/appkit/input.md#what-the-user-does
     func configureGestures() {
         guard let view else { return }
@@ -129,6 +129,10 @@ extension AppKitElement {
         pinchRecognizer = installed(pinchRecognizer, hearing.contains(.pinches), on: view) {
             AppKitPinchRecognizer(hearing: heard)
         }
+
+        let offered = element.dragAndDrop
+        dragSource = installed(dragSource, offered.words != nil, on: view) { AppKitDragSource(hearing: heard) }
+        dragSource?.words = offered.words ?? ""
 
         if hearing.contains(.pointer) {
             let recognizer = pointerRecognizer ?? AppKitPointerRecognizer(hearing: heard)

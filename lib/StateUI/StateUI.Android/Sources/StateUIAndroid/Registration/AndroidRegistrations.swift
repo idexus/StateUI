@@ -31,10 +31,10 @@ enum AndroidRegistrations {
         return registry
     }()
 
-    /// The acts this host performs, whichever element each is aimed at: every host's (`HostActs.performed`) and its
-    /// own elements' acts; the host layer's performer (`HostActPerformer`) answers exactly these, and refuses every
-    /// other by name.
-    static let acts: [any ContractMember] = HostActs.performed + [
+    /// The acts this host performs, whichever element each is aimed at: every host's (`HostActs.performed`), the
+    /// files (`HostActs.files`) and its own elements' acts; the host layer's performer (`HostActPerformer`) answers
+    /// exactly these, and refuses every other by name.
+    static let acts: [any ContractMember] = HostActs.performed + HostActs.files + [
         WebViewContract.evaluateJavaScript, WebViewContract.goBack, WebViewContract.goForward, WebViewContract.reload,
         ItemsViewContract.scrollTo,
     ]
@@ -43,10 +43,13 @@ enum AndroidRegistrations {
     static func shared(_ registry: Registry<AndroidView>) {
         registry.everyElementMeetsAssistiveTechnology()
         registry.everyElementHearsTheUser()
+        registry.everyElementDragsAndDrops()
+        registry.everyElementTakesDroppedFiles()
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(VisualElementContract.isVisible)
+        registry.everyElementRealizes(VisualElementContract.isEnabled)
         registry.everyElementRealizes(VisualElementContract.background)
         registry.everyElementRaises(VisualElementContract.isFocusedChanged)
     }

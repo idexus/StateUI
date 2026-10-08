@@ -24,10 +24,15 @@ enum WinUIEnvironment {
         reportChanging(to: core)
     }
 
-    /// Tells `core` the theme, the user's locale, the battery and the network, as they stand now.
+    /// Tells `core` the theme and the accent, the user's locale, the battery and the network, as they stand now.
     static func reportChanging(to core: CoreLink) {
         let theme = facts(StateUIFactsTheme)
         core.setColorScheme(theme.first == "1" ? .dark : .light)
+        if theme.count == 2, let accent = UInt32(theme[1]) {
+            core.setAccentColor(Color(
+                red: Int(accent >> 16 & 255), green: Int(accent >> 8 & 255), blue: Int(accent & 255),
+                alpha: Int(accent >> 24 & 255)))
+        }
 
         if let locale = HostLocaleInfo(words: facts(StateUIFactsLocale)) { core.setLocaleInfo(locale) }
 

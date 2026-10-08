@@ -103,24 +103,3 @@ extern "C" void stateui_winui_toggle_press(StateUIObjectRef handle) {
     }
 }
 
-extern "C" void stateui_winui_toggle_set_background(StateUIObjectRef handle, StateUIBrush background) {
-    try {
-        auto control = as<controls::Control>(handle);
-        // The template paints its own backgrounds in each state, transparent until a control is given one.
-        std::vector<std::wstring> named;
-        if (control.try_as<controls::RadioButton>()) named = {L"RadioButtonBackground"};
-        else if (control.try_as<controls::CheckBox>())
-            named = {L"CheckBoxBackgroundUnchecked", L"CheckBoxBackgroundChecked", L"CheckBoxBackgroundIndeterminate"};
-        else if (control.try_as<controls::ToggleSwitch>()) named = {L"ToggleSwitchContainerBackground"};
-
-        auto fill = brush(background);
-        std::vector<std::pair<std::wstring, xaml::Media::Brush>> brushes;
-        for (auto const &name : named)
-            for (auto suffix : {L"", L"PointerOver", L"Pressed", L"Disabled"}) brushes.emplace_back(name + suffix, fill);
-        writeResources(control, brushes);
-        if (fill) control.Background(fill);
-        else control.ClearValue(controls::Control::BackgroundProperty());
-    } catch (...) {
-        report("painting a control that is on or off");
-    }
-}

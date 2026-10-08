@@ -25,14 +25,25 @@ extension View {
         pageSays { $0.setValue(PageElementContract.icon, value) }
     }
 
-    /// What is drawn behind the whole page, also where the view it shows does not reach.
-    public func pageBackground(_ value: Color) -> Modified {
+    /// What the whole page is made of behind what it shows, also where the view it shows does not reach.
+    public func pageBackground(_ value: Material) -> Modified {
         pageSays { $0.setValue(PageContract.background, value) }
     }
 
-    /// The page's background from a state, `$x`: the host animates it to each new value.
+    /// The page's background in one colour.
+    public func pageBackground(_ value: Color) -> Modified {
+        pageBackground(.color(value))
+    }
+
+    /// The page's background from a state, `$x`: the host animates its colour to each new value.
     public func pageBackground(_ state: Binding<Color>) -> Modified {
-        pageSays { $0.journey(PageContract.background, by: state) }
+        pageSays { $0.journey(PageContract.background.token, by: state) }
+    }
+
+    /// The page's background from a material state, `$x`: the host shows each
+    /// new material as it stands.
+    public func pageBackground(_ state: Binding<Material>) -> Modified {
+        pageSays { $0.plain(PageContract.background, by: state) }
     }
 
     /// Whether the navigation bar shows while the page is on top of its stack.

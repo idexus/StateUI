@@ -16,7 +16,8 @@
         Specimens.wearing(VisualElementContract.self).flatMap { element in
             [
                 shown(element), opacity(element), enabled(element), sized(element), bounded(element),
-                reachable(element), framed(element), focused(element), styled(element),
+                reachable(element), framed(element), focused(element), styled(element), layered(element),
+                headed(element),
                 Aspects.holds(VisualElementContract.accessibilityLabel, on: element, "Confirm", then: "Save"),
                 Aspects.holds(VisualElementContract.accessibilityHint, on: element, "Saves the form", then: "Saves it all"),
                 Aspects.holds(VisualElementContract.accessibilityHeading, on: element, .h2, then: .h3),
@@ -35,10 +36,74 @@
                 Aspects.holds(VisualElementContract.scaleY, on: element, 1, then: 0.5),
                 Aspects.holds(VisualElementContract.translationX, on: element, 0, then: 10),
                 Aspects.holds(VisualElementContract.translationY, on: element, 0, then: -10),
-                Aspects.holds(VisualElementContract.zIndex, on: element, 0, then: 3),
             ]
+                + (answeringByGestures.contains(element) ? [answering(element)] : [])
+                + (layouts.contains(element) ? [disablingItsBranch(element)] : [])
+                + (boxes.contains(element) ? [blurredOrGlass(element)] : [])
+                + (element == "VStack" ? [followsAMaterial] : [])
         }
     }
+
+    /// The views whose only answer to the hand is the View tier's gestures: what disabling one stops is what it hears
+    /// of them.
+    static let answeringByGestures: Set<String> = [
+        "ActivityIndicator", "ColorBox", "Ellipse", "Grid", "HStack", "Image", "Line", "Path", "Polygon", "Polyline",
+        "ProgressBar", "Rectangle", "Text", "VStack", "ZStack",
+    ]
+
+    /// The layouts drawing their own box, whose background may be a blur or glass.
+    static let boxes: Set<String> = ["Grid", "HStack", "VStack", "ZStack"]
+
+    /// A box's background is the blur the tree gives it and then the glass it changes it to - or what stands in for
+    /// the glass, the blur as clear as it is, whose colour a host that blurs nothing paints.
+    static func blurredOrGlass(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).background.showsABlurOrGlassOrWhatStandsInForIt", proves: [
+            Covered(VisualElementContract.background, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let value = State(wrappedValue: Material.blur(.thin))
+            let changed = Material.glass(.clear)
+            s.start {
+                Specimens.page(element, Words.on(element) + [Write(VisualElementContract.background, value.wrappedValue)],
+                               beside: [Button("Change").onClicked { value.wrappedValue = changed }.id("change")])
+            }
+            let specimen = try s.specimen(element)
+            @MainActor func shows(_ wanted: Material) throws -> Bool {
+                let held = try s.held(VisualElementContract.background, on: specimen)
+                return held == wanted || held == wanted.withoutGlass
+            }
+            s.expect(try shows(.blur(.thin)), true, "the blur the tree gave")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try shows(changed) }
+            s.expect(try shows(changed), true, "the glass the tree changed it to, or the blur standing in for it")
+        }
+    }
+
+    /// A box's background follows the material state handed to it as `$x` - a material's channel.
+    static var followsAMaterial: ConformanceCase {
+        ConformanceCase("VStack.background.followsAMaterialState", proves: [
+            Covered(VisualElementContract.background, on: "VStack"),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let (first, second) = (Material.color(Color("#0F766E")), Material.color(Color("#512BD4")))
+            let value = State(wrappedValue: first)
+            s.start {
+                VStack {
+                    Button("Change").onClicked { value.wrappedValue = second }.id("change")
+                    VStack { Text("Box") }.background(value.projectedValue).id("specimen")
+                }
+            }
+            let specimen = try s.element("specimen")
+            try s.settle { try s.held(VisualElementContract.background, on: specimen) == first }
+            s.expect(try s.held(VisualElementContract.background, on: specimen), first, "the material the state holds")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.held(VisualElementContract.background, on: specimen) == second }
+            s.expect(try s.held(VisualElementContract.background, on: specimen), second, "the material written into it")
+        }
+    }
+
+    /// The views holding others, whose `isEnabled` is their branch's.
+    static let layouts: Set<String> = ["Grid", "HStack", "ScrollView", "VStack", "ZStack"]
 
     /// A view is shown or not as the tree says, and hides when the tree says so.
     static func shown(_ element: String) -> ConformanceCase {
@@ -60,6 +125,32 @@
         }
     }
 
+    /// A view stands in front of a sibling it overlaps or behind it as its `zIndex` says, whatever the order they
+    /// were written in - as its toolkit draws them.
+    static func layered(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).standsInTheDepthTheTreeSays", proves: [
+            Covered(VisualElementContract.zIndex, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let depth = State(wrappedValue: 1)
+            s.start(reducesMotion: true) {
+                VStack {
+                    ZStack {
+                        Specimens.view(element, [Write(VisualElementContract.zIndex, depth.wrappedValue)])
+                        ColorBox(.blue).id("cover")
+                    }
+                    .width(120).height(80).id("layers")
+                    Button("Lower").onClicked { depth.wrappedValue = -1 }.id("change")
+                }
+            }
+            let (layers, specimen, cover) = (try s.element("layers"), try s.specimen(element), try s.element("cover"))
+            s.expect(try s.drawingOrder(of: layers), [cover.id, specimen.id], "in front of the box written after it")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.drawingOrder(of: layers) == [specimen.id, cover.id] }
+            s.expect(try s.drawingOrder(of: layers), [specimen.id, cover.id], "behind it, lowered")
+        }
+    }
+
     /// A view is as opaque as the tree says, and changes as the tree does.
     static func opacity(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isAsOpaqueAsTheTreeSays", proves: [
@@ -77,6 +168,79 @@
             try s.perform(.activate, on: s.element("change"))
             try s.settle { abs((try s.held(VisualElementContract.opacity, on: view) ?? 0) - 0.25) < 0.01 }
             s.expect(try s.held(VisualElementContract.opacity, on: view), 0.25, within: 0.01)
+        }
+    }
+
+    /// A view is a heading to assistive technology where the tree makes it one, whatever level it says, and is none
+    /// where the tree says none.
+    static func headed(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).isAHeadingWhereTheTreeSays", proves: [
+            Covered(VisualElementContract.accessibilityHeading, on: element),
+        ]) { s in
+            s.start {
+                VStack {
+                    Specimens.view(element, [Write(VisualElementContract.accessibilityHeading, .h2)], id: "heading")
+                    Specimens.view(element, [Write(VisualElementContract.accessibilityHeading, .none)], id: "plain")
+                }
+            }
+            s.expect(try s.isHeading(s.element("heading")), true, "made a heading")
+            s.expect(try s.isHeading(s.element("plain")), false, "made plain")
+        }
+    }
+
+    /// A view the tree disables answers no tap, and answers once the tree enables it.
+    static func answering(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).answersNoTapWhileDisabled", proves: [
+            Covered(VisualElementContract.isEnabled, on: element),
+        ], needs: [Covered(ButtonContract.clicked), Covered(ViewContract.tapped, on: element)]) { s in
+            let enabled = State(wrappedValue: false)
+            let heard = Received<String>()
+            s.start {
+                VStack {
+                    Specimens.view(element, [
+                        Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
+                        Write(VisualElementContract.isEnabled, enabled.wrappedValue),
+                        HearDone(ViewContract.tapped) { heard.values.append("tapped") },
+                    ])
+                    Button("Enable").onClicked { enabled.wrappedValue = true }.id("change")
+                }
+                .horizontalAlignment(.start)
+            }
+            let view = try s.element("specimen")
+
+            try s.perform(.tap(count: 1), on: view)
+            s.turn()
+            s.expect(heard.values, [], "disabled, it answers no tap")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle {
+                if heard.values.isEmpty { try s.perform(.tap(count: 1), on: view) }
+                return !heard.values.isEmpty
+            }
+            s.expect(heard.values, ["tapped"], "enabled, it answers")
+        }
+    }
+
+    /// A control in a layout the tree disables takes no input, and takes it again as the layout is enabled.
+    static func disablingItsBranch(_ layout: String) -> ConformanceCase {
+        ConformanceCase("\(layout).disablesTheControlsInIt", proves: [
+            Covered(VisualElementContract.isEnabled, on: layout),
+        ], needs: [Covered(ButtonContract.clicked), Covered(VisualElementContract.isEnabled, on: "Button")]) { s in
+            let enabled = State(wrappedValue: false)
+            s.start {
+                VStack {
+                    Specimens.holding(layout, Button("Inside").id("inside"), [
+                        Write(VisualElementContract.isEnabled, enabled.wrappedValue),
+                    ])
+                    Button("Enable").onClicked { enabled.wrappedValue = true }.id("change")
+                }
+            }
+            let inside = try s.element("inside")
+            s.expect(try s.held(VisualElementContract.isEnabled, on: inside), false, "disabled with its layout")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.held(VisualElementContract.isEnabled, on: inside) == true }
+            s.expect(try s.held(VisualElementContract.isEnabled, on: inside), true, "enabled with it")
         }
     }
 
@@ -179,9 +343,9 @@
             let ignores = State(wrappedValue: false)
             s.start {
                 VStack {
-                    Specimens.view(element, [
+                    Specimens.view(element, painted(element) + [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
-                        Write(VisualElementContract.background, Background.color(.red)),
+                        Write(VisualElementContract.background, Material.color(.red)),
                         Write(VisualElementContract.ignoresInput, ignores.wrappedValue),
                     ])
                     Button("Ignore").onClicked { ignores.wrappedValue = true }.id("change")
@@ -190,11 +354,33 @@
                 .verticalAlignment(.start)
             }
             let view = try s.element("specimen")
+            try s.settle { try s.reaches(view, at: Point(40, 20)) }
             s.expect(try s.reaches(view, at: Point(40, 20)), true, "a press reaches it")
 
             try s.perform(.activate, on: s.element("change"))
             try s.settle { try s.reaches(view, at: Point(40, 20)) == false }
             s.expect(try s.reaches(view, at: Point(40, 20)), false, "and goes through it once it ignores input")
+        }
+    }
+
+    /// What `element` paints at the middle of a box of 80 by 40, where a press is read: a host may hand a view
+    /// only the presses on what it paints - a figure filled across it, a line through it, a box's colour, a picture.
+    static func painted(_ element: String) -> [any Worn] {
+        let red = Brush.solidColor(.red)
+        let figure = [Point(20, 5), Point(60, 5), Point(60, 35), Point(20, 35)]
+        let atItsSize = Write(ShapeContract.contentMode, ContentMode.center)
+        return switch element {
+        case "Rectangle", "Ellipse": [Write(ShapeContract.fill, red)]
+        case "Line": [
+            Write(LineContract.x1, 0), Write(LineContract.y1, 20), Write(LineContract.x2, 80), Write(LineContract.y2, 20),
+            Write(ShapeContract.stroke, red), Write(ShapeContract.lineWidth, 8),
+        ]
+        case "Polygon": [Write(PolygonContract.points, figure), Write(ShapeContract.fill, red), atItsSize]
+        case "Polyline": [Write(PolylineContract.points, figure + [figure[0]]), Write(ShapeContract.fill, red), atItsSize]
+        case "Path": [Write(PathContract.data, "M 20 5 L 60 5 L 60 35 L 20 35 Z"), Write(ShapeContract.fill, red), atItsSize]
+        case "ColorBox": [Write(ColorBoxContract.color, Color.red)]
+        case "Image": [Write(ImageContract.source, ImageSource("test_dot.png"))]
+        default: []
         }
     }
 

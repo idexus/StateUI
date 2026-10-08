@@ -1,121 +1,31 @@
 import StateUI
 
-/// WHO IS THE READER: one state, written by a slider and a button, and seven
-/// places it is used - each wearing its own build count, so the rule is on the
-/// screen. A get makes the closure it sits in a reader; a binding makes none.
+/// WHO IS THE READER: seven ways to use a state - each wearing its own build
+/// count, so the rule is on the screen. A get makes the closure it sits in a
+/// reader; a binding makes none.
 struct ReaderSample: SampleContent, ExampleContent {
+    // listing: ReaderSample
     /// The one value this page is about. Nothing in this view's own braces
-    /// reads it: every get is inside a row, so a write builds that row alone.
-    @State private var value = 0.3
+    /// reads it: every get is inside a row, so a write builds the closures that
+    /// read it and nothing around them.
+    @State private var value = 0.3   // the one value
 
     /// A state no view reads, lent to a child as `$pulses`: written by a
     /// button, followed by the child's engine, and never rendered.
-    @State private var pulses = 0
+    @State private var pulses = 0   // read by no view, followed by an engine
+    // listing: end
 
     static let id = "reader"
     static let title = "Who is the reader"
-    static let summary = "One state used in seven places: a get makes a reader, a binding makes none."
+    static let summary = "Seven ways to use a state: a get makes a reader, a binding makes none."
 
-    static let code = """
-        @State private var value = 0.3          // the one value
-        @State private var pulses = 0           // read by no view, followed by an engine
-
+    // listing: ReaderSample
+    var body: some View {
+        // This stack reads nothing: each numbered row below is a closure of
+        // its own, with its own reading.
         VStack {
             // THE WRITERS. A slider handed $value reads nothing at build; a
             // handler reads when it fires, not at build. Neither is a reader.
-            Slider($value)
-            Button("+10%").onClicked { value = min(1, value + 0.1) }
-            Button("Pulse").onClicked { pulses += 1 }
-
-            // 1. A STATE BY BINDING: the child's engine follows `pulses` through
-            //    the binding it was handed. Pulse wakes the engine, which writes
-            //    a driven text - no render on either side.
-            Pulsed(pulses: $pulses)
-
-            // 2. A GET in a container's braces: THIS stack is the reader.
-            //    Every write builds its content again - and nothing outside.
-            VStack {
-                Text("a get: \\(percent(value))")
-                DebugInfoLabel()                    // climbs: "N builds, for value"
-            }
-
-            // 3. A BINDING alone: a second slider on the same state. The host
-            //    moves both thumbs, and this stack is never built again.
-            VStack {
-                Slider($value)
-                DebugInfoLabel()                    // stays: "1 build, first time"
-            }
-
-            // 4. A CONVERTED TEXT: the words are the host's own arithmetic
-            //    over the state, so this stack shows the value and reads
-            //    nothing - a conversion handed on makes no reader.
-            VStack {
-                Text($value.convert { percent($0) })
-                DebugInfoLabel()                    // stays at one
-            }
-
-            // 5. A GET in a NESTED container: the inner stack is the reader,
-            //    the outer one is not - the count outside the braces stands.
-            VStack {
-                Text("outside the braces: " + debugInfo())     // stays at one
-                VStack {
-                    Text("inside: \\(percent(value))")
-                    DebugInfoLabel()                            // climbs
-                }
-            }
-
-            // 6. A CHILD that reads the value it borrowed: the child is the
-            //    reader, its count climbs, and this view's does not.
-            Reading(value: $value)
-
-            // 7. A CHILD that only hands the binding on: never built again.
-            Holding(value: $value)
-        }
-        private struct Reading: View {
-            @Binding var value: Double
-
-            var body: some View {
-                VStack {
-                    Text("a child that reads: \\(percent(value))")
-                    DebugInfoLabel()                            // climbs
-                }
-            }
-        }
-
-        private struct Holding: View {
-            @Binding var value: Double
-
-            var body: some View {
-                VStack {
-                    Slider($value)
-                    DebugInfoLabel()                            // stays at one
-                }
-            }
-        }
-
-        private struct Pulsed: View {
-            @Binding var pulses: Int
-            @State private var said = "pulses · 0"
-
-            var body: some View {
-                VStack {
-                    Text($said)
-                    DebugInfoLabel()                            // stays at one
-                }
-                .engine(following: $pulses) { _ in
-                    said = "pulses · \\(pulses)"
-                }
-            }
-        }
-
-        /// Whole percent, written by hand - a formatter is Foundation.
-        private func percent(_ value: Double) -> String {
-            "\\(Int((value * 100).rounded()))%"
-        }
-        """
-
-    var body: some View {
-        VStack {
             Slider($value)
                 .accessibilityIdentifier("reader.value")
                 .accessibilityLabel("Value")
@@ -130,12 +40,15 @@ struct ReaderSample: SampleContent, ExampleContent {
             .spacing(8)
             .horizontalAlignment(.center)
 
+            // 1. A STATE BY BINDING: the child's engine follows `pulses` through
+            //    the binding it was handed. Pulse wakes the engine, which writes
+            //    a driven text - no render on either side.
             Pulsed(pulses: $pulses)
 
             row("2 · a get in this row's braces") {
                 Text("value · \(percent(value))")
                     .fontSize(15)
-                DebugInfoLabel()
+                DebugInfoLabel()   // climbs: "N builds, for value"
             }
 
             row("3 · a binding alone") {
@@ -145,7 +58,7 @@ struct ReaderSample: SampleContent, ExampleContent {
                     .minimum(0)
                     .maximum(1)
                     .tint(Palette.subtle)
-                DebugInfoLabel()
+                DebugInfoLabel()   // stays: "1 build, first time"
             }
 
             row("4 · a converted text") {
@@ -173,12 +86,16 @@ struct ReaderSample: SampleContent, ExampleContent {
                 .stroke(Palette.outline)
             }
 
+            // 6. A CHILD that reads the value it borrowed: the child is the
+            //    reader, its count climbs, and this view's does not.
             Reading(value: $value)
 
+            // 7. A CHILD that only hands the binding on: never built again.
             Holding(value: $value)
         }
         .spacing(10)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -197,11 +114,12 @@ struct ReaderSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("A binding makes no reader. Handed to a control, a child or an engine, "
-                + "the host carries the value on its own frames and renders nobody for it. "
-                + "Row 3 is a second slider on `$value`, and the host moves both thumbs; "
-                + "row 4 shows the value through a conversion without reading it; the "
-                + "child in row 7 only hands the binding on. None of them is built again.")
+            Text("A binding makes no reader: handing `$value` to a control, a child or an "
+                + "engine reads nothing, and the host carries a control's value on its own "
+                + "frames with nobody built for it. Row 3 is a second slider on `$value`, "
+                + "and the host moves both thumbs; row 4 shows the value through a "
+                + "conversion without reading it; the child in row 7 only hands the "
+                + "binding on. None of them is built again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -216,6 +134,7 @@ struct ReaderSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
+    // listing: ReaderSample
     /// One row: a caption, then the content in a stack of its own - so the
     /// reading taken inside the content is that stack's and nobody else's,
     /// and the caption around it is never built again.
@@ -245,12 +164,12 @@ struct ReaderSample: SampleContent, ExampleContent {
     /// One of the buttons, all of which look the same.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
-            .fontSize(13)
-            .padding(horizontal: 14, vertical: 6)
             .onClicked(act)
     }
+    // listing: end
 }
 
+// listing: ReaderSample
 /// A child that READS the value it borrowed: a reader, built again on every
 /// write, and it says so.
 private struct Reading: View {
@@ -278,7 +197,9 @@ private struct Reading: View {
         "\(Int((value * 100).rounded()))%"
     }
 }
+// listing: end
 
+// listing: ReaderSample
 /// A child that only hands the binding on: no reader, never built again.
 private struct Holding: View {
     @Binding var value: Double
@@ -305,7 +226,9 @@ private struct Holding: View {
         .stroke(Palette.outline)
     }
 }
+// listing: end
 
+// listing: ReaderSample
 /// A child on the parent's state by BINDING: its engine follows the state it
 /// was handed, and shows what it read as a driven text.
 private struct Pulsed: View {
@@ -335,3 +258,4 @@ private struct Pulsed: View {
         }
     }
 }
+// listing: end

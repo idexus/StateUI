@@ -735,7 +735,7 @@ export async function run(): Promise<void> {
                     release === path.join(location, "ReleaseGroup")
                     && execSync("git describe --tags", { cwd: releaseDirectory(release) }).toString().trim() === newest
                     && same(checkoutNamedBy(releaseNotes), releaseDirectory(release)) && wired(releaseNotes)
-                    && fs.readFileSync(path.join(releaseNotes, "Package.swift"), "utf8").includes('.package(path: "../../StateUI")'));
+                    && fs.readFileSync(path.join(releaseNotes, "Package.swift"), "utf8").includes('path: "../../StateUI")'));
                 const more = await vscode.commands.executeCommand<string>("stateui.newApplicationInApps", { folder: release, name: "Tasks" });
                 check("New Application in apps/ in that group names its release", same(checkoutNamedBy(more), releaseDirectory(release!)));
                 check("the release group's application builds", builds(releaseNotes));

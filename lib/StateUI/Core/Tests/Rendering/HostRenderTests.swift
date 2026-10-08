@@ -29,7 +29,7 @@ final class HostRenderTests: XCTestCase {
             lanes: [.x, .height])
         patch.transitions[.opacity] = HostTransition(motion: .eased(120, .linear))
         patch.driven = .replace([
-            .opacity: HostStateBinding(state: 17, mode: .inOut, kind: .property),
+            .opacity: HostStateBinding(state: 17, mode: .inOut, kind: .property, laneKind: .number),
         ])
         patch.events = .replace([.clicked: 23])
         patch.children = .arranged([child])
@@ -242,6 +242,46 @@ final class HostRenderTests: XCTestCase {
 
         XCTAssertTrue(HostBoundary.report(frame, updating: .position, through: binding))
         XCTAssertEqual(fade.projectedValue.journey.destination, 0.9)
+    }
+
+    /// A landing the host reports in the frame after the program wrote a new
+    /// destination speaks of the destination before it: the program's write
+    /// stands, and crosses on the next cycle. A snap's value stands against a
+    /// frame the same way.
+    func testAJourneyReportLeavesWhatTheProgramWroteSinceTheHostRead() throws {
+        let fade = State(wrappedValue: 0.0, motion: .eased(400, .linear))
+        let renders = Renders()
+        let patch = renders.render(Text("moving").opacity(fade.projectedValue).node)
+
+        guard case .replace(let driven)? = patch.driven else {
+            return XCTFail("expected the opacity state attachment")
+        }
+
+        let binding = try XCTUnwrap(driven[.opacity])
+        let standing = try XCTUnwrap(HostBoundary.journey(from: XCTUnwrap(HostBoundary.value(for: binding))))
+        _ = HostBoundary.cycle(.display, now: 0, reducesMotion: false)
+
+        fade.wrappedValue = 0.9
+        let landing = HostJourney(
+            value: [0.4], destination: [0.4], velocity: [0],
+            motion: standing.motion, completion: standing.completion, stopped: standing.stopped)
+
+        XCTAssertTrue(HostBoundary.report(landing, updating: .position, through: binding))
+        XCTAssertEqual(fade.wrappedValue, 0.9, "the destination the program wrote")
+        XCTAssertEqual(fade.projectedValue.journey.value, 0.4, "where the host landed")
+
+        let crossed = HostBoundary.cycle(.display, now: 16, reducesMotion: false).changes.first { $0.state == binding.state }
+        let journey = try XCTUnwrap(crossed.flatMap { HostBoundary.journey(from: $0.value) })
+        XCTAssertEqual(journey.destination, [0.9], "the host hears it")
+
+        fade.projectedValue.journey.snap(to: 0.2)
+        let frame = HostJourney(
+            value: [0.5], destination: [0.9], velocity: [1],
+            motion: standing.motion, completion: standing.completion, stopped: standing.stopped)
+
+        XCTAssertTrue(HostBoundary.report(frame, updating: .frame, through: binding))
+        XCTAssertEqual(fade.projectedValue.journey.value, 0.2, "the value the program snapped to")
+        XCTAssertEqual(fade.wrappedValue, 0.2)
     }
 
     func testANativeHostCompletesAnAwaitedJourneyThroughTheTypedBoundary() {

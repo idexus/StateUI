@@ -111,4 +111,56 @@ final class ColorTests: XCTestCase {
                 ])]))
         }
     }
+
+    /// A colour let through keeps its channels and scales its alpha, in both
+    /// halves of a pair, held to the range a fraction has.
+    func testAColourLetThroughScalesItsAlpha() {
+        XCTAssertEqual(Color("#512BD4").opacity(0.15), Color("#26512BD4"))
+        XCTAssertEqual(Color("#80FFFFFF").opacity(0.5), Color("#40FFFFFF"))
+        XCTAssertEqual(Color(light: .white, dark: .black).opacity(0), Color(light: Color("#00FFFFFF"), dark: Color("#00000000")))
+        XCTAssertEqual(Color("#512BD4").opacity(2), Color("#512BD4"))
+    }
+
+    /// A material crosses as itself and comes back so: a colour as the colour - so a colour's channel writes a
+    /// material - a gradient as its brush, a blur and glass with what stands in for them, a pair as its halves.
+    func testAMaterialCrossesAsItselfWithWhatStandsInForIt() throws {
+        XCTAssertEqual(Material.color(.tomato).propValue, Color.tomato.propValue, "a colour's channel is a material's")
+        XCTAssertEqual(Material.gradient(.solidColor(.tomato)), .color(.tomato), "a brush of one colour is the colour")
+
+        let blur = Material.blur(.thin.tint(.indigo))
+        XCTAssertEqual(Material(propValue: blur.propValue), blur)
+        let parts = try XCTUnwrap(blur.propValue.values)
+        XCTAssertEqual(parts.first, .enumeration(4))
+        XCTAssertEqual(parts[3], Blur.Thickness.thin.standIn.propValue)
+        XCTAssertTrue(parts[3].isThemed, "the stand-in follows the theme")
+
+        let glass = Material.glass(.clear.tint(Color("#512BD4")).isInteractive(true))
+        XCTAssertEqual(Material(propValue: glass.propValue), glass)
+        let glassParts = try XCTUnwrap(glass.propValue.values)
+        XCTAssertEqual(glassParts[4], Blur.Thickness.ultraThin.propValue, "clear glass stands in as the thinnest blur")
+        XCTAssertEqual(try XCTUnwrap(Material.glass(.regular).propValue.values)[4], Blur.Thickness.regular.propValue)
+
+        let night = Material(light: nil, dark: .blur(.thick))
+        XCTAssertEqual(night.propValue, .themed(light: .nothing, dark: Material.blur(.thick).propValue))
+        XCTAssertEqual(Material(propValue: night.propValue), night)
+        XCTAssertEqual(
+            Material(light: .color(.white), dark: .color(.black)), .color(Color(light: .white, dark: .black)),
+            "a pair of colours is the colour pair")
+        XCTAssertNil(Material(propValue: .nothing))
+    }
+
+    /// The accent crosses as the system's colour, let through as it was asked, and the differ resolves it to the
+    /// accent in force - the host never meets it.
+    func testTheAccentIsTheOneInForce() {
+        let info = StandardEnvironment.application.info
+        let before = info.accentColor
+        defer { HostBoundary.setAccentColor(before) }
+        HostBoundary.setAccentColor(Color("#FF0A84FF"))
+
+        XCTAssertEqual(Color.accent.propValue, .systemColor(0, alpha: 255))
+        XCTAssertEqual(Color.accent.opacity(0.5).propValue, .systemColor(0, alpha: 128))
+        XCTAssertEqual(Color(propValue: .systemColor(0, alpha: 128)), Color.accent.opacity(0.5))
+        XCTAssertEqual(Color.accent.propValue.resolvingTheme(), Color("#FF0A84FF").propValue)
+        XCTAssertEqual(Color.accent.opacity(0.5).propValue.resolvingTheme(), Color("#800A84FF").propValue)
+    }
 }

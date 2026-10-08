@@ -5,6 +5,6 @@ Slider.maximum: ✅
 Slider.minimum: ✅
 Slider.pressed: ✅
 Slider.released: ✅
-Slider.value: ◐ cannot slide on Slider - Android's driver has no path for it yet
-Slider.valueChanged: ◐ cannot slide on Slider - Android's driver has no path for it yet
-Text.text: cannot slide on Slider - Android's driver has no path for it yet
+Slider.value: ✅
+Slider.valueChanged: ✅
+Text.text: ✅

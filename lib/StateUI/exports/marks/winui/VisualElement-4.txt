@@ -1,81 +1,62 @@
-# revision 1.1
+# revision 7.1
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
-ActivityIndicator.scale: ✅
+ActivityIndicator.rotationX: ✓ read rotationX of ActivityIndicator: the host's own tip, checked against the projection it laid on the element
 ActivityIndicator.width: ✅
-Button.isAccessibilityHidden: ✅
-Canvas.frameChanged: ✅
-Canvas.height: ✅
-Canvas.scale: ✅
-Canvas.width: ✅
-CheckBox.isAccessibilityHidden: ✅
-ColorBox.frameChanged: ✅
-ColorBox.height: ✅
-ColorBox.scale: ✅
-ColorBox.width: ✅
-DatePicker.isAccessibilityHidden: ✅
-Ellipse.frameChanged: ✅
-Ellipse.height: ✅
-Ellipse.scale: ✅
-Ellipse.width: ✅
-Grid.isAccessibilityHidden: ✅
-HStack.frameChanged: ✅
-HStack.height: ✅
-HStack.scale: ✅
-HStack.width: ✅
-Image.isAccessibilityHidden: ✅
-ItemsView.frameChanged: ✅
-ItemsView.height: ✅
-ItemsView.scale: ✅
-ItemsView.width: ✅
-Line.frameChanged: ✅
-Line.height: ✅
-Line.scale: ✅
-Line.width: ✅
-Map.isAccessibilityHidden: 🧩
-Path.frameChanged: ✅
-Path.height: ✅
-Path.scale: ✅
-Path.width: ✅
-Picker.isAccessibilityHidden: ✅
-Polygon.frameChanged: ✅
-Polygon.height: ✅
-Polygon.scale: ✅
-Polygon.width: ✅
-Polyline.isAccessibilityHidden: ✅
-ProgressBar.frameChanged: ✅
-ProgressBar.height: ✅
-ProgressBar.scale: ✅
-ProgressBar.width: ✅
-RadioButton.isAccessibilityHidden: ✅
+Button.accessibilityHeading: ✅
+Canvas.isVisible: ✅
+Canvas.pivotX: ✅
+CheckBox.style: ✅
+CheckBox.translationX: ✅
+ColorBox.background: – A WinUI shape is its figure alone: it paints no ground around it.
+DatePicker.ignoresInput: ✅
+DatePicker.scale: ✅
+Ellipse.accessibilityHeading: ✅
+Grid.isEnabled: does not apply - read isEnabled of Grid - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Grid.rotation: ✅
+HStack.focus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
+HStack.isFocusedChanged: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
+HStack.scaleY: ✅
+HStack.unfocus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
+Image.accessibilityHint: ✅
+ItemsView.opacity: ✅
+ItemsView.pivotY: ✅
+Line.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Map.ignoresInput: 🧩
+Map.scale: 🧩
+Path.accessibilityHeading: ✅
+Picker.isEnabled: ✅
+Picker.rotation: ✅
+Polygon.accessibilityHeading: ✅
+Polygon.isEnabled: ✅
+Polyline.layoutDirection: ✓ read layoutDirection of Polyline: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ProgressBar.frame: ✅
+ProgressBar.scaleX: ✅
+RadioButton.accessibilityHeading: ✅
 Rectangle.frameChanged: ✅
 Rectangle.height: ✅
-Rectangle.scale: ✅
+Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own tip, checked against the projection it laid on the element
 Rectangle.width: ✅
-ScrollView.isAccessibilityHidden: ✅
-SearchField.frameChanged: ✅
-SearchField.height: ✅
-SearchField.scale: ✅
-SearchField.width: ✅
-Slider.isAccessibilityHidden: ✅
-Stepper.frameChanged: ✅
-Stepper.height: ✅
-Stepper.scale: ✅
-Stepper.width: ✅
-Switch.isAccessibilityHidden: ✅
-Text.isAccessibilityHidden: ✅
-TextEditor.frameChanged: ✅
-TextEditor.height: ✅
-TextEditor.scale: ✅
-TextEditor.width: ✅
-TextField.isAccessibilityHidden: ✅
-TimePicker.frameChanged: ✅
-TimePicker.height: ✅
-TimePicker.scale: ✅
-TimePicker.width: ✅
-VStack.isAccessibilityHidden: ✅
-WebView.frameChanged: ✅
-WebView.height: ✅
+ScrollView.accessibilityHeading: ✅
+ScrollView.isEnabled: ✅
+SearchField.layoutDirection: ✅
+Slider.focus: ✅
+Slider.isFocusedChanged: ✅
+Slider.scaleY: ✅
+Slider.unfocus: ✅
+Stepper.automationExcludedWithChildren: ✅
+Switch.ignoresInput: ✅
+Switch.scale: ✅
+Text.translationY: ✅
+Text.zIndex: ✅
+TextEditor.accessibilityHeading: ✅
+TextField.frameChanged: ✅
+TextField.height: ✅
+TextField.rotationX: ✓ read rotationX of TextField: the host's own tip, checked against the projection it laid on the element
+TextField.width: ✅
+TimePicker.accessibilityLabel: ✅
+VStack.opacity: ✅
+VStack.pivotY: ✅
+WebView.ignoresInput: ✅
 WebView.scale: ✅
-WebView.width: ✅
-ZStack.isAccessibilityHidden: ✅
+ZStack.accessibilityHeading: ✅

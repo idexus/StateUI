@@ -233,6 +233,20 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
+    /// The theme the application holds, as its session sends it - a member of
+    /// a closed vocabulary, nobody waiting - and the system's again, once.
+    func testTheApplicationsThemeCrossesWithItsArgumentsInPlace() throws {
+        drain()
+        let application = ApplicationSession()
+        application.colorScheme = .dark
+        taken(drain(), "useColorScheme", [.enumeration(ColorScheme.dark.rawValue)], awaited: false)
+
+        application.colorScheme = .dark
+        XCTAssertTrue(drain().isEmpty, "the theme it holds already is sent no more")
+        application.colorScheme = .system
+        taken(drain(), "useColorScheme", [.enumeration(ColorScheme.system.rawValue)], awaited: false)
+    }
+
     func testAFailedHandlerCrossesWithItsArgumentsInPlace() throws {
         drain()
         Renderer.shared.report(StateUIError(message: "boom"))
@@ -255,6 +269,47 @@ final class ActCallShapeTests: XCTestCase {
         PersistentStore.shared.record(PersistentKey("com.example.theme", of: String.self), .string("dusk"))
 
         taken(drain(), "persistValue", [.name("com.example.theme"), .string("dusk")], awaited: false)
+    }
+
+    /// The kinds of file as ONE argument - each its caption and its extensions,
+    /// bare - then whether the dialog takes several: false for one, true for
+    /// several.
+    func testAFileToOpenCrossesWithItsArgumentsInPlace() async throws {
+        let page: PropValue = .values([.string("HTML page"), .strings(["html", "htm"])])
+        try await check("openFiles", [.values([page]), .bool(false)]) {
+            _ = try await Dialogs.openFile(types: [FileType("HTML page", extensions: [".html", "*.HTM"])])
+        }
+        try await check("openFiles", [.values([]), .bool(true)]) {
+            _ = try await Dialogs.openFiles()
+        }
+    }
+
+    /// The contents first, as ONE run of bytes, then the name it suggests as
+    /// written, then the kinds.
+    func testAFileToSaveCrossesWithItsArgumentsInPlace() async throws {
+        try await check("saveFile", [
+            .bytes([60, 112, 62]), .string("Report"), .values([.values([.string("Page"), .strings(["html"])])]),
+        ]) {
+            _ = try await Dialogs.saveFile(Array("<p>".utf8), name: "Report", types: [FileType("Page", extensions: ["html"])])
+        }
+    }
+
+    /// A file read or launched crosses as where it stands, then its name; a read then says the most bytes it
+    /// takes - nothing for the whole file, none below nought.
+    func testAChosenFileCrossesAsWhereItStandsAndItsName() async throws {
+        let file = ChosenFile(address: "C:\\Reports\\Report.html", name: "Report.html")
+        let crossed: PropValue = .strings(["C:\\Reports\\Report.html", "Report.html"])
+        try await check("readFile", [crossed, .nothing]) { _ = try await file.read() }
+        try await check("readFile", [crossed, .number(1025)]) { _ = try await file.read(atMost: 1025) }
+        try await check("readFile", [crossed, .number(0)]) { _ = try await file.read(atMost: -5) }
+        try await check("launchFile", [crossed]) { _ = try await file.launch() }
+    }
+
+    /// An address launched crosses as written.
+    func testALinkCrossesAsWritten() async throws {
+        try await check("launchLink", [.string("https://www.swift.org")]) {
+            _ = try await Links.launch("https://www.swift.org")
+        }
     }
 
     /// A scene's kept value on its way to the platform's record of that scene:

@@ -44,8 +44,9 @@ namespace {
             segment.Point(at(x, y));
             segments.Append(segment);
         };
+        // A square corner adds no segment: one of no length leaves the joins on either side of it no direction.
         auto corner = [&](double radius, double x, double y) {
-            if (radius <= 0) return line(x, y);
+            if (radius <= 0) return;
             media::ArcSegment segment;
             segment.Point(at(x, y));
             segment.Size({static_cast<float>(radius), static_cast<float>(radius)});
@@ -58,8 +59,11 @@ namespace {
         corner(r[2], x1 - r[2], y1);
         line(x0 + r[3], y1);
         corner(r[3], x0, y1 - r[3]);
-        line(x0, y0 + r[0]);
-        corner(r[0], x0 + r[0], y0);
+        // The figure closes back to its start; a square first corner is that closing's own.
+        if (r[0] > 0) {
+            line(x0, y0 + r[0]);
+            corner(r[0], x0 + r[0], y0);
+        }
 
         media::PathGeometry geometry;
         geometry.Figures().Append(figure);
@@ -147,8 +151,9 @@ extern "C" void stateui_winui_path_paint(
         path.StrokeEndLineCap(ends);
         path.StrokeDashCap(ends);
         path.StrokeLineJoin(join == 1 ? media::PenLineJoin::Bevel : join == 2 ? media::PenLineJoin::Round : media::PenLineJoin::Miter);
-        // WinUI measures a mitred corner against half the outline's width; StateUI against the whole.
-        path.StrokeMiterLimit(miter * 2);
+        // WinUI measures a mitre from its corner's point against half the outline's width, which is StateUI's
+        // ratio; past it WinUI cuts the mitre short where StateUI's other hosts bevel it.
+        path.StrokeMiterLimit(miter);
     } catch (...) {
         report("painting a shape");
     }

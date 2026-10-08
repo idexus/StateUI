@@ -2,6 +2,7 @@ import StateUI
 
 /// Several movements in the air at once, which is what `async let` buys.
 struct ConcurrentAnimationSample: SampleContent, ExampleContent {
+    // listing: ConcurrentAnimationSample
     @State private var playing = false
 
     /// One driven state per bar. FOUR of them rather than an array, because a
@@ -24,122 +25,13 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
     /// The four bars, in order - one place to write the list, read by both the
     /// view and the beat.
     private var bars: [Binding<Double>] { [$hop0, $hop1, $hop2, $hop3] }
+    // listing: end
 
     static let id = "concurrentAnimation"
     static let title = "At the same time"
     static let summary = "Movements of different lengths, overlapping rather than queueing."
 
-    static let code = """
-        @State private var playing = false
-
-        // One driven state per bar: a driven state is ONE image the host reads,
-        // so a binding into an array has nothing for it to read.
-        @State private var hop0 = 0.0
-        @State private var hop1 = 0.0
-        @State private var hop2 = 0.0
-        @State private var hop3 = 0.0
-
-        @State private var wash = Palette.accent
-        @State private var breath = 1.0
-
-        private var bars: [Binding<Double>] { [$hop0, $hop1, $hop2, $hop3] }
-
-        VStack {
-            ZStack {
-                VStack {
-                    HStack {
-                        ForEach(Array(bars.enumerated()), id: \\.offset) { bar in
-                            ColorBox(Palette.onAccent)
-                                .translationY(bar.element)
-                                .width(14)
-                                .height(46)
-                                .verticalAlignment(.end)
-                        }
-                    }
-                    .height(92)
-
-                    Text("in concert")
-                        .opacity($breath)
-                }
-            }
-            .style("Card")
-            .background($wash)
-
-            HStack {
-                Button("Play").onClicked {
-                    guard !playing else { return }
-                    playing = true
-
-                    var n = 0
-
-                    while playing {
-                        let finished = try await beat(n)
-                        n += 1
-
-                        // A beat that did not run to the end is what Stop
-                        // produces, and starting another over it would fight
-                        // whoever pressed it.
-                        if !finished { playing = false }
-                    }
-
-                    try await $breath.journey.move(to: 1, .eased(200))
-                }
-                .isEnabled(!playing)
-
-                Button("Stop").onClicked {
-                    playing = false
-
-                    // One stop per state, each leaving the value where it had
-                    // got to - which is what the bars then come home from.
-                    $wash.journey.stop()
-                    $breath.journey.stop()
-
-                    for bar in bars {
-                        bar.journey.stop()
-                        try await bar.journey.move(to: 0, .eased(120))
-                    }
-                }
-                .isEnabled(playing)
-            }
-        }
-        .onDestroying { playing = false }
-
-        /// One beat: two long movements spanning it, the bars hopping inside.
-        private func beat(_ n: Int) async throws -> Bool {
-            // `async let` starts a movement and does not wait for it, so both
-            // of these are running while the bars below hop. Each is its own
-            // value on its own state, and the host carries all three on the
-            // same frames.
-            async let washing: Bool = $wash.journey.move(to:
-                n.isMultiple(of: 2) ? Palette.brand : Palette.accent,
-                .eased(1200, .cubicInOut))
-
-            async let breathing: Bool = $breath.journey.move(to: 0.25, .eased(600, .cubicInOut))
-
-            // 4 bars x 300ms = the 1200ms the wash takes, so the wave crosses
-            // the stage exactly once per colour. A hop that did not run to the
-            // end is Stop, and the bars after it must not start: each would be
-            // a fresh movement over the one being stopped.
-            var hopped = true
-
-            for bar in bars where hopped {
-                hopped = try await bar.journey.move(to: -26, .eased(150, .cubicOut))
-
-                if hopped {
-                    hopped = try await bar.journey.move(to: 0, .eased(150, .cubicIn))
-                }
-            }
-
-            // Awaited at the BOTTOM: the beat is over when the longest thing
-            // in it is over, not when the last one started is.
-            let (washed, breathed) = try await (washing, breathing)
-
-            try await $breath.journey.move(to: 1, .eased(300, .cubicInOut))
-
-            return hopped && washed && breathed
-        }
-        """
-
+    // listing: ConcurrentAnimationSample
     var body: some View {
         VStack {
             ZStack {
@@ -182,6 +74,9 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                         let finished = try await beat(n)
                         n += 1
 
+                        // A beat that did not run to the end is what Stop
+                        // produces, and starting another over it would fight
+                        // whoever pressed it.
                         if !finished { playing = false }
                     }
 
@@ -213,6 +108,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -220,7 +116,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                 + "the wash across the stage, the caption breathing, and the bars "
                 + "hopping one after another inside both. Every one of them is a DRIVEN "
                 + "state: the host reads the value off the state on its own frames, so "
-                + "a beat of 1200ms costs no renders at all however many things are "
+                + "a whole beat costs no renders at all however many things are "
                 + "moving inside it. `async let` starts a movement without waiting for "
                 + "it, which is why the wash, the breath and the hop of the moment are "
                 + "three in the air together.")
@@ -234,8 +130,8 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("A state holds both readings at once: `breath` is 0.25 on the "
-                + "line after the movement starts, while `$breath.journey.value` is whatever is "
+            Text("A state holds both readings at once: `breath` is 0.25 from the "
+                + "moment the movement is sent, while `$breath.journey.value` is whatever is "
                 + "on the screen. That is what lets one movement follow another with "
                 + "nothing to put back afterwards.")
                 .fontSize(12)
@@ -252,6 +148,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
+    // listing: ConcurrentAnimationSample
     /// One beat: two long movements spanning it, the bars hopping inside them.
     ///
     /// - Parameter n: which beat this is, which decides the colour it washes to.
@@ -293,8 +190,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
     /// One of the buttons, both of which look the same.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
-            .fontSize(13)
-            .padding(horizontal: 14, vertical: 6)
             .onClicked(act)
     }
+    // listing: end
 }

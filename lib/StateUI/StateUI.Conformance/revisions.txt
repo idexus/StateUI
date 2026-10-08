@@ -13,7 +13,7 @@
 # change alone does. A change that proves nothing new raises nothing.
 
 TextEditor 2
-SplitView 2
+SplitView 4
 android TextAlignmentElement 2
 appkit TextInput 2
 android TextInput 2
@@ -21,17 +21,23 @@ ToolbarItem 3
 ToolbarItemGroup 2
 TitleView 2
 MenuBar 2
-Window 3
+Window 6
 Scene 2
-ModalStack 2
+ModalStack 3
 Overlay 2
-BarElement 2
+BarElement 4
 NavigationStack 2
 uikit WebView 2
 android WebView 3
 winui WebView 2
 DatePicker 2
 TimePicker 2
-Page 2
+Page 4
 PageElement 2
-View 3
+View 4
+VisualElement 7
+Shape 3
+BorderElement 5
+TextInput 2
+Application 3
+TextSpan 2

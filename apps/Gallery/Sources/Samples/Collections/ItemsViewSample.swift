@@ -2,39 +2,13 @@ import StateUI
 
 /// A thousand rows, of which only the ones on screen are built.
 private struct LongList: ExampleContent {
+    // listing: LongList
     @State private var chosen: Int?
-
-    static let code = """
-        @State private var chosen: Int?
-
-        Grid {
-            // One view per item, the item its identity - built as the
-            // platform's own list shows it, never before.
-            ItemsView(0..<1_000) { number in
-                HStack {
-                    Text("\\(number)").width(90)
-                    Text("\\(number * number)")
-                }
-                .padding(horizontal: 14, vertical: 10)
-            }
-            .header(Text("N and N², a thousand times"))
-            .footer(Text("That is all of them."))
-            .selection($chosen)
-            .gridRow(0)
-
-            // Built again only for the choice: scrolling builds rows, never
-            // the page.
-            DebugInfoLabel()
-                .gridRow(1)
-
-            Text(chosen.map { "Row \\($0) is chosen." } ?? "Tap a row.")
-                .gridRow(1)
-        }
-        .rows(.fill, .auto)
-        """
 
     var body: some View {
         Grid {
+            // One view per item, the item its identity - built as the
+            // platform's own list shows it, never before.
             ItemsView(0..<1_000) { number in
                 HStack {
                     Text("\(number)")
@@ -63,6 +37,8 @@ private struct LongList: ExampleContent {
             .selection($chosen)
             .gridRow(0)
 
+            // Built again only for the choice: scrolling builds rows, never
+            // the page.
             DebugInfoLabel()
                 .gridRow(1)
 
@@ -74,6 +50,7 @@ private struct LongList: ExampleContent {
         .rows(.fill, .auto)
         .rowSpacing(10)
     }
+    // listing: end
 
     var notes: (any View)? {
         Text("Scroll to the end, and tap a row to choose it.")
@@ -84,54 +61,30 @@ private struct LongList: ExampleContent {
 
 /// Two strips running across: cards of one width, and tags as wide as their words.
 private struct AcrossList: ExampleContent {
+    // listing: AcrossList
     static let tags = [
         "State", "Binding", "Journey", "Engine", "Motion", "Placement", "Environment", "Scene", "Window",
         "Page", "Aim", "Style", "Theme", "Gesture", "Frame", "Conversion", "Sample", "Identity", "Session",
         "Persistence",
     ]
 
-    static let code = """
-        VStack {
-            DebugInfoLabel()
-
-            // A row: one card beside another, each as wide as it says.
-            ItemsView(1...200) { number in
-                Text("Card \\(number)")
-                    .horizontalTextAlignment(.center)
-                    .verticalTextAlignment(.center)
-                    .width(120)
-                    .background(Palette.surface)
-            }
-            .itemsLayout(.row(spacing: 8))
-            .height(80)
-
-            // Each tag as wide as its word.
-            ItemsView(tags) { tag in
-                Text(tag)
-                    .padding(horizontal: 14, vertical: 0)
-                    .verticalTextAlignment(.center)
-                    .background(Palette.raised)
-            }
-            .itemsLayout(.row(spacing: 8))
-            .height(40)
-        }
-        """
-
     var body: some View {
         VStack {
             DebugInfoLabel()
 
+            // A row: one card beside another, each as wide as it says.
             ItemsView(1...200) { number in
                 Text("Card \(number)")
                     .fontSize(14)
                     .horizontalTextAlignment(.center)
                     .verticalTextAlignment(.center)
                     .width(120)
-                    .background(Palette.surface)
+                    .background(Palette.well)
             }
             .itemsLayout(.row(spacing: 8))
             .height(80)
 
+            // Each tag as wide as its word.
             ItemsView(Self.tags) { tag in
                 Text(tag)
                     .fontSize(13)
@@ -144,6 +97,7 @@ private struct AcrossList: ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         Text("Swipe both strips: the cards share one width, and every tag is as wide as its word.")
@@ -154,37 +108,14 @@ private struct AcrossList: ExampleContent {
 
 /// Tiles in as many columns as the width holds.
 private struct GridList: ExampleContent {
+    // listing: GridList
     @State private var opened: Int?
 
     static let hues: [Color] = [.tomato, .orange, .teal, .steelBlue, .purple, .firebrick]
 
-    static let code = """
-        @State private var opened: Int?
-
-        Grid {
-            // Columns at least 100 wide: as many as the width holds.
-            ItemsView(0..<120) { number in
-                Text("\\(number)")
-                    .horizontalTextAlignment(.center)
-                    .verticalTextAlignment(.center)
-                    .height(72)
-                    .background(hues[number % hues.count])
-            }
-            .itemsLayout(.grid(minimumItemWidth: 100, spacing: 8))
-            .onItemActivated { opened = $0 }
-            .gridRow(0)
-
-            DebugInfoLabel()
-                .gridRow(1)
-
-            Text(opened.map { "Tile \\($0) opened." } ?? "Tap a tile.")
-                .gridRow(1)
-        }
-        .rows(.fill, .auto)
-        """
-
     var body: some View {
         Grid {
+            // Columns at least 100 wide: as many as the width holds.
             ItemsView(0..<120) { number in
                 Text("\(number)")
                     .fontSize(15)
@@ -193,7 +124,7 @@ private struct GridList: ExampleContent {
                     .horizontalTextAlignment(.center)
                     .verticalTextAlignment(.center)
                     .height(72)
-                    .background(Self.hues[number % Self.hues.count])
+                    .background(Self.hues[number % Self.hues.count])   // listing: keep
             }
             .itemsLayout(.grid(minimumItemWidth: 100, spacing: 8))
             .onItemActivated { opened = $0 }
@@ -202,7 +133,7 @@ private struct GridList: ExampleContent {
             DebugInfoLabel()
                 .gridRow(1)
 
-            Text(opened.map { "Tile \($0) opened." } ?? "Tap a tile.")
+            Text(opened.map { "Tile \($0) opened." } ?? "Open a tile.")
                 .fontSize(13)
                 .textColor(Palette.accent)
                 .gridRow(1)
@@ -210,6 +141,7 @@ private struct GridList: ExampleContent {
         .rows(.fill, .auto)
         .rowSpacing(10)
     }
+    // listing: end
 
     var notes: (any View)? {
         Text("Turn the device or widen the window: the columns follow the width.")
@@ -220,6 +152,7 @@ private struct GridList: ExampleContent {
 
 /// Items under headings of their own, with a count under each group.
 private struct GroupedList: ExampleContent {
+    // listing: GroupedList
     @State private var counts = true
 
     struct Shelf {
@@ -236,33 +169,6 @@ private struct GroupedList: ExampleContent {
         Shelf(name: "Drinks", items: ["Water", "Tea", "Coffee", "Juice"]),
     ]
 
-    static let code = """
-        @State private var counts = true
-
-        Grid {
-            SwitchRow("Counts", $counts)
-                .gridRow(0)
-
-            DebugInfoLabel()
-                .gridRow(0)
-
-            // A group per shelf, named so two shelves may hold the same item.
-            ItemsView(groups: shelves.map { shelf in
-                let group = Section(shelf.items) { item in
-                    Text(item).padding(horizontal: 14, vertical: 10)
-                }
-                .id(shelf.name)
-                .header(Text(shelf.name).fontAttributes(.bold).padding(horizontal: 14, vertical: 8))
-
-                return counts
-                    ? group.footer(Text("\\(shelf.items.count) items").padding(horizontal: 14, vertical: 6))
-                    : group
-            })
-            .gridRow(1)
-        }
-        .rows(.auto, .fill)
-        """
-
     var body: some View {
         Grid {
             SwitchRow("Counts", $counts)
@@ -271,6 +177,7 @@ private struct GroupedList: ExampleContent {
             DebugInfoLabel()
                 .gridRow(0)
 
+            // A group per shelf, named so two shelves may hold the same item.
             ItemsView(groups: Self.shelves.map { (shelf: Shelf) -> Section<[String], String> in
                 let group = Section(shelf.items) { item in
                     Text(item)
@@ -297,6 +204,7 @@ private struct GroupedList: ExampleContent {
         .rows(.auto, .fill)
         .rowSpacing(10)
     }
+    // listing: end
 
     var notes: (any View)? {
         Text("Turn Counts off: the groups close up where their footers stood.")

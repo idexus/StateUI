@@ -2,6 +2,7 @@ import StateUI
 
 /// A countdown written by hand: a loop, a sleep and a flag.
 struct TaskSleepSample: SampleContent, ExampleContent {
+    // listing: TaskSleepSample
     /// Whole seconds left. The interface reads this, so writing it is the whole
     /// of "tick".
     @State private var remaining = 0
@@ -11,82 +12,21 @@ struct TaskSleepSample: SampleContent, ExampleContent {
 
     @State private var running = false
 
-    /// Which visit to this page the running loop belongs to. Leaving stops the
-    /// loop through `.onDestroying`; the token is what retires a loop still
-    /// asleep when the next one starts, so a return cannot end up with two
-    /// loops counting the same numbers down.
+    /// Which start the running loop belongs to. Leaving stops the loop
+    /// through `.onDestroying`; the token is what retires a loop still asleep
+    /// when the next one starts - Stop and Start within a second - so two
+    /// loops never count the same numbers down.
     @State private var visit = 0
+    // listing: end
 
     static let id = "taskSleep"
     static let title = "Task.sleep"
     static let summary = "A countdown written by hand - a loop that sleeps, and what it costs."
 
-    static let code = """
-        @State private var remaining = 0
-        @State private var total = 30
-        @State private var running = false
-        @State private var visit = 0
-
-        VStack {
-            // The countdown is read here, so every step builds this closure.
-            DebugInfoLabel()
-
-            Text("\\(remaining)")
-
-            ProgressBar(total == 0 ? 0 : Double(remaining) / Double(total))
-
-            HStack {
-                Button(running ? "Stop" : "Start")
-                    .onClicked {
-                        if running {
-                            running = false
-                            return
-                        }
-
-                        if remaining == 0 { remaining = total }
-
-                        visit += 1
-                        let mine = visit
-                        running = true
-
-                        // Plain Swift concurrency, on any platform: the host
-                        // parks a thread waiting for work and a resume
-                        // wakes it, so a sleep coming due reaches the handler
-                        // without a Timer or a RunLoop anywhere.
-                        while running && visit == mine && remaining > 0 {
-                            try await Task.sleep(for: .seconds(1))
-
-                            guard running, visit == mine else { return }
-
-                            remaining -= 1
-                        }
-
-                        running = false
-                    }
-
-                Button("Reset")
-                    .onClicked {
-                        running = false
-                        remaining = total
-                    }
-            }
-
-            HStack {
-                ForEach([10, 30, 60]) { length in
-                    Button("\\(length)s")
-                        .onClicked {
-                            running = false
-                            total = length
-                            remaining = length
-                        }
-                }
-            }
-        }
-        .onDestroying { running = false }
-        """
-
+    // listing: TaskSleepSample
     var body: some View {
         VStack {
+            // The countdown is read here, so every step builds this closure.
             DebugInfoLabel()
 
             Text("\(remaining)")
@@ -100,8 +40,6 @@ struct TaskSleepSample: SampleContent, ExampleContent {
 
             HStack {
                 Button(running ? "Stop" : "Start")
-                    .fontSize(13)
-                    .padding(horizontal: 20, vertical: 6)
                     .onClicked {
                         if running {
                             running = false
@@ -114,10 +52,10 @@ struct TaskSleepSample: SampleContent, ExampleContent {
                         let mine = visit
                         running = true
 
-                        // Plain Swift concurrency, on any platform: the host
-                        // parks a thread waiting for work and a resume
-                        // wakes it, so a sleep coming due reaches the handler
-                        // without a Timer or a RunLoop anywhere.
+                        // Plain Swift concurrency, on every platform: when the
+                        // sleep comes due, the handler resumes on `MainActor` -
+                        // the thread the host draws on - with no `Timer`
+                        // anywhere.
                         while running && visit == mine && remaining > 0 {
                             try await Task.sleep(for: .seconds(1))
 
@@ -130,8 +68,6 @@ struct TaskSleepSample: SampleContent, ExampleContent {
                     }
 
                 Button("Reset")
-                    .fontSize(13)
-                    .padding(horizontal: 20, vertical: 6)
                     .onClicked {
                         running = false
                         remaining = total
@@ -143,8 +79,6 @@ struct TaskSleepSample: SampleContent, ExampleContent {
             HStack {
                 ForEach([10, 30, 60]) { length in
                     Button("\(length)s")
-                        .fontSize(12)
-                        .padding(horizontal: 14, vertical: 4)
                         .onClicked {
                             running = false
                             total = length
@@ -158,6 +92,7 @@ struct TaskSleepSample: SampleContent, ExampleContent {
         .spacing(12)
         .onDestroying { running = false }
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -169,9 +104,9 @@ struct TaskSleepSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("Leaving the page stops it: .onDestroying clears the flag, and the visit "
-                + "token retires a loop still asleep when the next one starts. Without one, "
-                + "coming back would start a second loop counting the same number down "
-                + "twice as fast.")
+                + "token retires a loop still asleep when the next one starts. Without it, "
+                + "Stop and Start within a second would leave the sleeping loop to wake "
+                + "and count beside the new one, twice as fast.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

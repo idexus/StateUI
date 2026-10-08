@@ -60,7 +60,8 @@ slider's range, a field's words, a view's alpha, a control's font and its
 words' colour, the tint a checkbox, a picker or a slider shows, what its
 accessibility object tells assistive technology, the colour its layer paints
 behind it, a menu entry's NSMenuItem and a toolbar item's NSToolbarItem -
-never from what the host last wrote. A
+never from what the host last wrote. A run of a text's words is the label's
+attributes over the letters the host layer's runs place it at (`RunPlace`). A
 view's transform is the drawing's where the view's layer holds that drawing
 now, and none where AppKit holds another. A colour is read from the view
 displayed into a context of sRGB, which StateUI's colours are: a bitmap in
@@ -84,10 +85,12 @@ A window the driver never orders in takes no synthetic event, so the driver
 hands some acts to the host's own entry: the gestures and the pointer to the
 host's recognizers, a button's press and a canvas's to their handlers, a
 picker's menu, choice and date to the host's own change, a scroll to the
-host's movement, a question's answer, the toolbar's and a sheet's way back, and
-a window's phases as the notifications AppKit would post. A few reads are the
-host's own too: the tab it chose, a spinner's flag, a transform checked
-against the layer it composed, the restoration record, the menu bar's items as
-built at the read, the captions of a question and what it announced. The driver
+host's movement, a question's answer and a file dialog's, a drag between views
+to its source and the window's drop routing, the toolbar's and a sheet's way
+back, and a window's phases as the notifications AppKit would post.
+A few reads are the host's own too: the tab it chose, a spinner's flag, a
+transform checked against the layer it composed, the restoration record, the
+menu bar's items as built at the read, the captions of a question, the panel
+it holds, what it announced and what it launched. The driver
 names each (`byHost`), and a member a case proves only through them is the
 host's own - ✓ - never ✅.

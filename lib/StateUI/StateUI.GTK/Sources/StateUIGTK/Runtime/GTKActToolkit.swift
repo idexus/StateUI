@@ -34,20 +34,16 @@ final class GTKActToolkit: ActToolkit {
         return String(cString: g_time_zone_get_identifier(zone))
     }
 
-    /// Taken at the day's noon; nil for a zone GLib does not know, or no such day.
+    /// Taken at the day's noon, or now where no day is given; nil for a zone GLib does not know, or no such day.
     func utcOffset(of name: String?, on day: CalendarDate?) -> Int? {
         guard let zone = name.map({ g_time_zone_new_identifier($0) }) ?? g_time_zone_new_local() else { return nil }
         defer { g_time_zone_unref(zone) }
 
-        let today = g_date_time_new_now(zone)!
-        let noon = g_date_time_new(
-            zone, Int32(day?.year ?? Int(g_date_time_get_year(today))),
-            Int32(day?.month ?? Int(g_date_time_get_month(today))),
-            Int32(day?.day ?? Int(g_date_time_get_day_of_month(today))), 12, 0, 0)
-        g_date_time_unref(today)
-        guard let noon else { return nil }
-        defer { g_date_time_unref(noon) }
-        return Int(g_date_time_get_utc_offset(noon) / 60_000_000)
+        let moment = day.map { g_date_time_new(zone, Int32($0.year), Int32($0.month), Int32($0.day), 12, 0, 0) }
+            ?? g_date_time_new_now(zone)
+        guard let moment else { return nil }
+        defer { g_date_time_unref(moment) }
+        return Int(g_date_time_get_utc_offset(moment) / 60_000_000)
     }
 
     /// Design: docs/design/platforms/gtk/runtime.md#questions-for-the-user
@@ -61,6 +57,16 @@ final class GTKActToolkit: ActToolkit {
         Self.announced.append(words)
         guard let window = renderer.userWindow, Self.reachesAScreenReader(window.widget) else { return }
         gtk_accessible_announce(window.widget.opaque, words, GTK_ACCESSIBLE_ANNOUNCEMENT_PRIORITY_MEDIUM)
+    }
+
+    /// Shows the application in `theme`: libadwaita's colour scheme, the system's own for the system's.
+    func useColorScheme(_ theme: ColorScheme) {
+        let scheme: AdwColorScheme = switch theme {
+        case .light: ADW_COLOR_SCHEME_FORCE_LIGHT
+        case .dark: ADW_COLOR_SCHEME_FORCE_DARK
+        case .system: ADW_COLOR_SCHEME_DEFAULT
+        }
+        adw_style_manager_set_color_scheme(adw_style_manager_get_default(), scheme)
     }
 
     /// The keyboard GNOME shows on a touch screen stands for the field holding the focus: the field lets the focus

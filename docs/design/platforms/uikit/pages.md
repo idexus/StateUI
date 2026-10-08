@@ -35,7 +35,9 @@ what it holds as it comes, and a layout again at every render; a control -
 a search field - keeps the width the bar gives it: fitted to its words at
 every render, it was cut as the user typed and widened again by the bar,
 letter by letter. An action that destroys something is marked
-destructive in the menu and tinted red on the bar. A tabbed view's bar is its
+destructive in the menu and tinted red on the bar. A clear bar is UIKit's
+transparent bar: nothing under it and no line - the opaque bar of a clear
+colour drew its line under nothing. A tabbed view's bar is its
 chosen tab's page's, but for its title: the page the window is named by
 ([the window's chrome](../../host/pages.md#the-windows-chrome)) - tabs pushed
 onto a stack by their own title, else by the page beneath - which names the
@@ -44,12 +46,30 @@ always says what its page says now.
 
 ## Pictures on the bars
 
-A picture on a bar - an action's - stands 24 points tall and a tab's 25,
-UIKit's own icon sizes, each as wide as its shape makes it
+A picture on a bar - an action's - stands 20 points tall, as a symbol stands
+in the glass circle of a bar's button with room around it, and a tab's 25,
+UIKit's own tab icon size, each as wide as its shape makes it
 (`PictureArithmetic.glyph`); on a phone on its side, whose bars stand
 lower, both stand 18 points tall (`landscapeImagePhone`). The picture keeps
 its pixels and is drawn smaller: at its file's size it stands far taller
 than the system's own pictures beside it.
+
+## A page's background
+
+A page paints its background behind the whole screen it stands on, the bars
+and the notch included. A page that says none paints the window's - what the
+window is made of under a page that paints nothing of its own, which a
+UIKit window shows only through its pages: each controller's view is opaque
+by convention - and with neither the system's background. The window's
+background is the window's `backgroundColor`, so a page reads it as it
+appears, and the window has every page under it paint again when its
+background changes. A split view's sidebar page that paints nothing stands
+on the split view's material for its place instead ([a sidebar's
+material](../../host/pages.md#a-sidebars-material)) - over the detail, the
+system's background when the split view says none, never the window's - and
+the split view has its pages paint again as its room or its materials
+change. A blur or glass behind a window shows its colour
+(`HostMaterial.painted`): iPadOS draws an application's window opaque.
 
 ## A navigation stack
 
@@ -85,6 +105,15 @@ wide room it stands beside the detail. The split view says it is wide
 whatever the room (`traitOverrides`), so UIKit never folds it into one
 column, and each column says the room's own width, so the tabs, sheets and
 bars inside stand as a phone's.
+
+A sidebar the application paints ([a sidebar's
+material](../../host/pages.md#a-sidebars-material)) stands on UIKit's plain
+column (`primaryBackgroundStyle` `.none`), which UIKit parts from the detail
+by its own separator; on UIKit's sidebar material - the platform's own
+sidebar - the columns stand with none. A blur or glass for the sidebar's
+place is UIKit's own effect under what the sidebar page shows - a blur's tint
+washed over it, glass tinted in itself - beside the detail and over it alike;
+a colour is the page's own background.
 
 Whether the sidebar shows is the display mode the host prefers: over or
 beside the detail while the tree asks for it, the detail alone while not.

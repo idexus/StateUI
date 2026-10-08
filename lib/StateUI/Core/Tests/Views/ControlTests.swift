@@ -548,6 +548,7 @@ final class ControlTests: XCTestCase {
                 .draggable(text: "Alpha", canDrag: true) {}
                 .onDragEnded {}
                 .onDrop { _ in }
+                .onDrop(files: [FileType("Text", extensions: ["txt"])]) { _ in }
                 .onDragOver {}
                 .onDragLeave {}),
         ]
@@ -698,7 +699,7 @@ final class ControlTests: XCTestCase {
             // Named rather than valued.
             "style", "fontFamily", "groupName", "source", "userAgent", "data", "content", "format",
             // A value the host cannot be handed whole.
-            "background", "fill", "stroke", "icon", "icon",
+            "background", "pageBackground", "fill", "stroke", "icon", "icon",
             "icon", "maximumDate",
             "minimumDate", "dash", "points", "options", "columns",
             "rows", "shape", "geometryTransform", "transform", "motion", "id",

@@ -38,6 +38,28 @@ class AppKitHitTestView: NSView {
         (ignoresInput, transparencyReachesChildren)
     }
 
+    /// The window's drags between views, where this view is a window's root - a sheet's page.
+    /// Design: docs/design/platforms/appkit/input.md#a-drag-between-views
+    var drops: AppKitDrops? {
+        didSet { drops == nil ? unregisterDraggedTypes() : registerForDraggedTypes([.string, .fileURL]) }
+    }
+
+    override func draggingEntered(_ sender: any NSDraggingInfo) -> NSDragOperation {
+        drops?.entered(at: sender.draggingLocation, carrying: sender.carried, in: self) ?? []
+    }
+
+    override func draggingUpdated(_ sender: any NSDraggingInfo) -> NSDragOperation {
+        drops?.moved(to: sender.draggingLocation, carrying: sender.carried, in: self) ?? []
+    }
+
+    override func draggingExited(_ sender: (any NSDraggingInfo)?) {
+        drops?.exited()
+    }
+
+    override func performDragOperation(_ sender: any NSDraggingInfo) -> Bool {
+        drops?.dropped(sender.carried) ?? false
+    }
+
     override func hitTest(_ point: NSPoint) -> NSView? {
         guard ignoresInput else { return hitPassingIgnored(point) }
         guard !transparencyReachesChildren else { return nil }

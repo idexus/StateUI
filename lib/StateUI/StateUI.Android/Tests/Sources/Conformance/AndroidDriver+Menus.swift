@@ -34,8 +34,50 @@ extension AndroidDriver {
         _ = Java.callStaticBool(Self.testMenus, Self.chooseById, .object(menu.reference), .int(id))
     }
 
+    /// The bar `page` shows, as Android lays it out: its actions in its menu's order, each run of one group a
+    /// group, then the entries behind its overflow. Android's bar has no leading side.
+    func bar(of page: MountedElement) throws -> String {
+        var each: MountedElement? = page
+        while let found = each, found.type != .navigationStack { each = found.parent }
+        guard let bar = ((each?.native as? AndroidElement)?.view as? AndroidNavigationView)?.bar else {
+            throw DriverCannot("read the bar of \(page.type.name)")
+        }
+        var (groups, overflow, group): ([[String]], [String], Int32?) = ([], [], nil)
+        for entry in Self.laidOut(bar) {
+            guard let item = bar.items.first(where: { ($0.native as? AndroidElement)?.menuPlace == Int(entry.id) - 1 })
+            else { continue }
+            let word = BarWords.word(item, enabled: entry.enabled)
+            if !entry.onBar {
+                overflow.append(word)
+            } else if entry.group == group, !groups.isEmpty {
+                groups[groups.count - 1].append(word)
+            } else {
+                groups.append([word])
+                group = entry.group
+            }
+        }
+        return BarWords.said(leading: [], trailing: groups, overflow: overflow)
+    }
+
     /// What a menu's entry or a bar's action holds, as Android's item holds it.
     func itemHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
+        if property == .placement || property == .showsText {
+            var root = element
+            while let parent = root.parent { root = parent }
+            guard let bar = Self.bars(in: root).first(where: { $0.items.contains { $0 === element } }),
+                  let place = (element.native as? AndroidElement)?.menuPlace,
+                  let entry = Self.laidOut(bar).first(where: { $0.id == Int32(place + 1) })
+            else { throw DriverCannot(reading: property, of: element) }
+            if property == .showsText {
+                if !entry.words, element.value(.icon) != nil, Self.screenWidth() < 480 {
+                    throw DriverCannot(
+                        "read an action's words beside its picture",
+                        because: "Android shows them on a screen 480 points wide or more, and this one is narrower")
+                }
+                return entry.words.propValue
+            }
+            return (entry.onBar ? ToolbarItemPlacement.bar : .overflow).propValue
+        }
         let (menu, id) = try nativeItem(element)
         let held = Java.frame {
             Java.callStaticObject(
@@ -89,6 +131,36 @@ extension AndroidDriver {
         return own + (root.children + root.slots).flatMap(bars(in:))
     }
 
+    /// The bar's entries as Android lays them out (`TestMenus.laidOut`), in its menu's order.
+    private static func laidOut(_ bar: AndroidBarView) -> [(id: Int32, group: Int32, onBar: Bool, words: Bool, enabled: Bool)] {
+        let menu = menu(of: bar)
+        let said = withExtendedLifetime(menu) {
+            Java.frame {
+                Java.callStaticObject(testMenus, laidOutBar, .object(bar.reference), .object(menu.reference))
+                    .map { Java.text($0) }
+            }
+        } ?? ""
+        return said.split(separator: "\n").compactMap { line in
+            let numbers = line.split(separator: " ").compactMap { Int32($0) }
+            guard numbers.count == 5 else { return nil }
+            return (numbers[0], numbers[1], numbers[2] == 1, numbers[3] == 1, numbers[4] == 1)
+        }
+    }
+
+    /// The screen's width in points, as the configuration Android chooses resources by says it.
+    private static func screenWidth() -> Int32 {
+        Java.frame {
+            let resources = Java.callObject(TestContext.window.reference, JavaAPI.getResources)!
+            let configuration = Java.callObject(resources, getConfiguration)!
+            return Java.int(configuration, screenWidthDp)
+        }
+    }
+
+    private static let getConfiguration = Java.method(
+        JavaAPI.resources, "getConfiguration", "()Landroid/content/res/Configuration;")
+    private static let screenWidthDp = Java.field(
+        Java.findClass("android/content/res/Configuration"), "screenWidthDp", "I")
+
     /// The menu `bar` holds its items in.
     private static func menu(of bar: AndroidBarView) -> JavaObject {
         JavaObject(Java.callObject(bar.reference, TestMenus.getMenu)!)
@@ -103,6 +175,8 @@ extension AndroidDriver {
 
     private static let testMenus = Java.findClass("stateui/android/test/TestMenus")
     private static let saidMenu = Java.staticMethod(testMenus, "said", "(Landroid/view/Menu;Z)Ljava/lang/String;")
+    private static let laidOutBar = Java.staticMethod(
+        testMenus, "laidOut", "(Landroid/view/ViewGroup;Landroid/view/Menu;)Ljava/lang/String;")
     private static let chooseById = Java.staticMethod(testMenus, "choose", "(Landroid/view/Menu;I)Z")
     private static let heldById = Java.staticMethod(
         testMenus, "held", "(Landroid/content/Context;Landroid/view/Menu;I)Ljava/lang/String;")

@@ -2,6 +2,7 @@ import StateUI
 
 /// Single-line text fields, with focus, caret, selection and keyboard choices.
 struct TextFieldSample: SampleContent, ExampleContent {
+    // listing: TextFieldSample
     @State private var name = ""
     @State private var editing = false
     @State private var code = ""
@@ -9,85 +10,19 @@ struct TextFieldSample: SampleContent, ExampleContent {
     @State private var email = ""
     @State private var done = 0
     @State private var hidden = true
+    // listing: end
 
     static let id = "textField"
     static let title = "TextField"
     static let summary = "A single-line field. Given a binding it writes every edit back."
 
-    static let code = """
-        @State private var name = ""
-        @State private var editing = false
-        @State private var code = ""
-        @State private var selectAll = false
-        @State private var email = ""
-        @State private var done = 0
-        @State private var hidden = true
-
+    // listing: TextFieldSample
+    var body: some View {
         VStack {
             // The greeting below reads `name` and the caret below reads `code`,
             // so a keystroke in either builds this closure; the fields read
             // nothing - they are handed the state - and typing an address or a
             // password builds nothing at all.
-            DebugInfoLabel()
-
-            TextField($name)
-                .placeholder("Type your name")
-                .showsClearButton(true)
-                .isFocused($editing)
-
-            Text(name.isEmpty ? "Hello, stranger" : "Hello, \\(name)!")
-
-            Text(editing ? "the field has the focus" : "the field does not have the focus")
-
-            Text("return pressed \\(done)x")
-
-            // A field for something that is not prose: the platform's
-            // underline and its next-word guesses only get in the way, the
-            // caret can be put where the user did not, and every letter
-            // typed stands in capitals, as a serial number's do.
-            TextField($code)
-                .placeholder("a serial number")
-                .textCase(.uppercase)
-                .isSpellCheckEnabled(false)
-                .isTextPredictionEnabled(false)
-                .cursorPosition(selectAll ? 0 : code.count)
-                .selectionLength(selectAll ? code.count : 0)
-
-            // SELECTING IS SOMETHING THAT HAPPENS, so it is a button rather
-            // than a switch - and it says which of the two it will do next,
-            // because a press has to WRITE a value the field has not been
-            // given: an absent field means unchanged, so a press that asks
-            // for the selection the field already has says nothing at all.
-            Button(selectAll ? "Clear the selection" : "Select the lot")
-                .onClicked { selectAll.toggle() }
-
-            TextField("read only")
-                .isReadOnly(true)
-
-            TextField()
-                .placeholder("a password")
-                .isPassword(hidden)
-                .submitLabel(.done)
-
-            HStack {
-                Text("Hidden")
-                    .verticalAlignment(.center)
-
-                Switch($hidden)
-            }
-
-            // The keyboard the platform brings up, a cap on the length, and
-            // what the return key does when it is pressed.
-            TextField($email)
-                .placeholder("an address, capped at 20")
-                .inputPurpose(.email)
-                .maximumLength(20)
-                .onSubmitted { done += 1 }
-        }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             TextField($name)
@@ -128,11 +63,9 @@ struct TextFieldSample: SampleContent, ExampleContent {
             // SELECTING IS SOMETHING THAT HAPPENS, so it is a button rather
             // than a switch - and it says which of the two it will do next,
             // because a press has to WRITE a value the field has not been
-            // given: an absent field means unchanged, so a press that asks
-            // for the selection the field already has says nothing at all.
+            // given: a value the patch leaves out means unchanged, so a press
+            // that asks for the selection the field already has says nothing.
             Button(selectAll ? "Clear the selection" : "Select the lot")
-                .fontSize(13)
-                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked { selectAll.toggle() }
 
@@ -172,6 +105,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         Text("The binding IS the two-way part: `TextField($name)` hands the state to the "

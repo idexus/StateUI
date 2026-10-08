@@ -44,8 +44,10 @@ final class UIKitRenderer {
 
     /// UIKit's part of the acts every host performs, and the host layer's performer of them.
     private(set) lazy var actToolkit = UIKitActToolkit(renderer: self)
+    /// UIKit's part of the files the user opens and saves, and of what iOS launches.
+    private(set) lazy var fileToolkit = UIKitFileToolkit(renderer: self)
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
+        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
         answered: { [unowned self] in runtime.pump.turn() })
 
     /// The key a scene's session keeps its window's record under, for iOS to hand back as it restores the scene.
@@ -307,6 +309,14 @@ final class UIKitRenderer {
     /// The window the user is looking at: the key one, else the first.
     var userWindow: UIWindow? {
         roster.windows.first { $0.1.window?.isKeyWindow == true }?.1.window ?? roster.windows.first?.1.window
+    }
+
+    /// What the user's window shows on top now - its top sheet, else its pages - which a question or a dialog is
+    /// presented over.
+    var userPresenter: UIViewController? {
+        guard var presenter = userWindow?.rootViewController else { return nil }
+        while let top = presenter.presentedViewController, !top.isBeingDismissed { presenter = top }
+        return presenter
     }
 
     /// A picture the application ships, by its name: its own file, else its drawing (`PictureArithmetic.drawnFiles`),

@@ -33,19 +33,29 @@ extension VisualElementProperties {
     /// How opaque the view is, from 0 to 1.
     public func opacity(_ value: Double) -> Modified { setValue(VisualElementContract.opacity, value) }
 
-    /// What is drawn behind the view. A view's own background replaces its
-    /// style's, and a `Color(light:dark:)` follows the system theme.
-    public func background(_ value: Color) -> Modified { setValue(VisualElementContract.background, .color(value)) }
+    /// What the view's surface is made of, behind what it shows: a colour, a
+    /// gradient, a blur of what lies behind it, or the platform's glass - cut
+    /// to the view's shape.
+    ///
+    ///     VStack { … }.background(.blur(.thin))
+    ///     VStack { … }.background(.glass(.regular))
+    ///         .shape(.roundedRectangle(16))
+    ///
+    /// A view's own background replaces its style's; a
+    /// `Material(light:dark:)` follows the theme.
+    public func background(_ value: Material) -> Modified { setValue(VisualElementContract.background, value) }
 
-    /// What is drawn behind the view, when one colour will not do.
+    /// The view's background in one colour; a `Color(light:dark:)` follows the
+    /// theme.
+    public func background(_ value: Color) -> Modified { background(.color(value)) }
+
+    /// The view's background in a gradient.
     ///
     ///     VStack { … }.background(.linearGradient([
     ///         GradientStop(.cornflowerBlue, 0),
     ///         GradientStop(.indigo, 1),
     ///     ]))
-    ///
-    /// The same property as a colour background: the one written last wins.
-    public func background(_ value: Brush) -> Modified { setValue(VisualElementContract.background, .brush(value)) }
+    public func background(_ value: Brush) -> Modified { background(.gradient(value)) }
 
     /// How wide the view asks to be, in device units. A request: the layout has
     /// the last word.
@@ -152,6 +162,12 @@ extension VisualElement {
     /// new value, and no view is rebuilt for it.
     public func background(_ state: Binding<Color>) -> Modified {
         journey(VisualElementContract.background.token, by: state)
+    }
+
+    /// `background` from a material state, `$x`: the host shows each new
+    /// material as it stands, and no view is rebuilt for it.
+    public func background(_ state: Binding<Material>) -> Modified {
+        plain(VisualElementContract.background, by: state)
     }
 
     /// `layoutDirection` from a state, `$x`: the host sets each new value as it

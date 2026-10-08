@@ -1,5 +1,6 @@
 import StateUI
 
+// listing: WindowLog
 /// What a gallery window has said about its life, numbered, newest last -
 /// kept by the window (`GalleryWindow`), written by `MainPage` as the window
 /// is made and by `WindowPhaseLog` as its phase moves, and read by the
@@ -8,7 +9,7 @@ final class WindowLog {
     /// The last six moments, each numbered.
     @State var events: [String] = []
 
-    /// How many moments have come since the gallery opened - the number in
+    /// How many moments have come since the window opened - the number in
     /// front of each row, so a repeat plainly reads as a new one.
     @State private(set) var count = 0
 
@@ -19,9 +20,12 @@ final class WindowLog {
         events = Array((events + ["\(count) · \(name)"]).suffix(6))
     }
 }
+// listing: end
 
+// listing: WindowLog
 /// The window's phase, one line of the log per moment - a view of its own that
-/// draws nothing, so a phase change builds this and nothing else.
+/// draws nothing, so a phase change builds this rather than the menu holding
+/// it.
 ///
 /// The log's first line is `created`, which `MainPage` writes as the window
 /// is made: `.onChanged` hears a CHANGE, and the phase starts there. The
@@ -43,3 +47,4 @@ struct WindowPhaseLog: View {
             .onChanged(window.phase) { log.note("\(window.phase)") }
     }
 }
+// listing: end

@@ -31,7 +31,7 @@ extension UIKitDriver {
             return try words(property, view)
         case .background:
             if let held = try controlHolds(property, view) { return held }
-            return view.backgroundColor.map { Background.color(color($0)).propValue }
+            return view.backgroundColor.map { StandIns.material(painted: color($0)).propValue }
         default:
             return try controlHolds(property, view)
         }

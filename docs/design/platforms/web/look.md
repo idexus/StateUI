@@ -22,6 +22,28 @@ where the keyboard's focus is; a checkbox, a radio button, a slider and a
 progress bar take the accent colour. Scroll bars are thin. A control the host
 makes no element for yet is named in red, in a dashed box, where it belongs.
 
+## A field's padding
+
+A select and a search field take 12 points of padding on one side and 34 on
+the other, where their arrow or glass stands, and a box of the browser's is
+never narrower than its padding and border. The width the layout writes for a
+view is also written as `--stateui-width`, and those two fields' padding is
+that width less the border, in the same shares, wherever it is less than 48:
+a field stands as wide as the room it is given.
+
+## A view's background
+
+A view's background is the CSS background colour of its element, under its
+whole box: a colour, or a brush's first colour. A field, a picker's
+`<select>`, a date or a time is filled where the user writes, as the browser
+draws a field the page colours. The trap: written as the `background`
+shorthand, the colour cleared the picture the page's look draws in a field -
+a picker's chevron, a search field's glass. A ColorBox's colour is a swatch filling its box, so its
+background shows where rounded corners leave the box bare; a web view's
+background shows where the page it shows paints none, and stands white where
+the application gives none. The browser draws its slider over the slider's
+whole box and paints no background under it, so a slider has none.
+
 ## Motion
 
 The drawer slides, a pushed page rises into place, and the shade fades in -

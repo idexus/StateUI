@@ -5,6 +5,7 @@ import AppKit
 import GalleryUI
 import StateUIAppKit
 
+// listing: InteropControlSample.AppKit.swift
 /// Three lamps in a housing, one lit at a time - an ordinary `NSView` that
 /// knows nothing of StateUI.
 ///
@@ -55,6 +56,8 @@ final class TrafficLightView: NSView {
             lamps.append(lamp)
         }
 
+        // ONE recognizer on the housing, the lamp read from the click's
+        // position - nothing to keep in step with the layout.
         let click = NSClickGestureRecognizer(target: self, action: #selector(clicked(_:)))
         addGestureRecognizer(click)
         repaint()
@@ -128,3 +131,4 @@ extension TrafficLightView {
         }
     }
 }
+// listing: end

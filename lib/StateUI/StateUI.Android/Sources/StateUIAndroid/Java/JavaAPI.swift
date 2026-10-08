@@ -166,6 +166,16 @@ enum JavaAPI {
         dialogs, "prompt",
         "(Landroid/content/Context;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IILjava/lang/String;)V")
 
+    static let drags = Java.findClass("stateui/android/StateUIDrags")
+    static let offerDrag = Java.staticMethod(drags, "offer", "(Landroid/view/View;JLjava/lang/String;ZZ)V")
+
+    static let files = Java.findClass("stateui/android/StateUIFiles")
+    static let openFiles = Java.staticMethod(files, "open", "(Landroid/content/Context;J[Ljava/lang/String;Z)V")
+    static let saveFile = Java.staticMethod(
+        files, "save", "(Landroid/content/Context;JLjava/lang/String;Ljava/lang/String;[B)V")
+    static let readFile = Java.staticMethod(files, "read", "(Landroid/content/Context;JLjava/lang/String;J)V")
+    static let launch = Java.staticMethod(files, "launch", "(Landroid/content/Context;JLjava/lang/String;Z)V")
+
     static let store = Java.findClass("stateui/android/StateUIStore")
     static let readStore = Java.staticMethod(
         store, "read", "(Landroid/content/Context;[Ljava/lang/String;)[Ljava/lang/String;")
@@ -173,6 +183,7 @@ enum JavaAPI {
         store, "write", "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V")
 
     static let focus = Java.staticMethod(views, "focus", "(Landroid/view/View;Z)Z")
+    static let groundSidebar = Java.staticMethod(views, "groundSidebar", "(Landroid/view/View;ZZI)V")
     static let sheet = Java.staticMethod(
         views, "sheet", "(Landroid/content/Context;Landroid/view/View;)Landroid/widget/FrameLayout;")
     static let rise = Java.staticMethod(views, "rise", "(Landroid/view/ViewGroup;Landroid/view/View;ZJ)V")
@@ -325,6 +336,8 @@ enum JavaAPI {
     static let newSizeSpan = Java.method(sizeSpan, "<init>", "(IZ)V")
     static let styleSpan = Java.findClass("android/text/style/StyleSpan")
     static let newStyleSpan = Java.method(styleSpan, "<init>", "(I)V")
+    static let typefaceSpan = Java.findClass("android/text/style/TypefaceSpan")
+    static let newTypefaceSpan = Java.method(typefaceSpan, "<init>", "(Landroid/graphics/Typeface;)V")
     static let underlineSpan = Java.findClass("android/text/style/UnderlineSpan")
     static let newUnderlineSpan = Java.method(underlineSpan, "<init>", "()V")
     static let strikethroughSpan = Java.findClass("android/text/style/StrikethroughSpan")
@@ -336,10 +349,9 @@ enum JavaAPI {
     static let getResources = Java.method(contextClass, "getResources", "()Landroid/content/res/Resources;")
     static let getClassLoader = Java.method(contextClass, "getClassLoader", "()Ljava/lang/ClassLoader;")
     static let resources = Java.findClass("android/content/res/Resources")
-    static let getConfiguration = Java.method(
-        resources, "getConfiguration", "()Landroid/content/res/Configuration;")
-    static let configuration = Java.findClass("android/content/res/Configuration")
-    static let fontScale = Java.field(configuration, "fontScale", "F")
+    static let getDisplayMetrics = Java.method(resources, "getDisplayMetrics", "()Landroid/util/DisplayMetrics;")
+    static let typedValue = Java.findClass("android/util/TypedValue")
+    static let applyDimension = Java.staticMethod(typedValue, "applyDimension", "(IFLandroid/util/DisplayMetrics;)F")
     static let getAssets = Java.method(contextClass, "getAssets", "()Landroid/content/res/AssetManager;")
     static let assetManager = Java.findClass("android/content/res/AssetManager")
     static let openAsset = Java.method(assetManager, "open", "(Ljava/lang/String;)Ljava/io/InputStream;")
@@ -404,6 +416,10 @@ enum JavaAPI {
     static let zone = Java.staticMethod(environment, "zone", "()Ljava/lang/String;")
     static let utcOffset = Java.staticMethod(environment, "utcOffset", "(Ljava/lang/String;III)I")
     static let hideKeyboard = Java.staticMethod(environment, "hideKeyboard", "(Landroid/view/View;)Z")
+    static let useNightMode = Java.staticMethod(environment, "useNightMode", "(Landroid/content/Context;I)V")
+    static let accent = Java.staticMethod(environment, "accent", "(Landroid/content/Context;)I")
+    static let setWindowBackground = Java.staticMethod(
+        environment, "windowBackground", "(Landroid/content/Context;IZ)V")
     static let setWindowTitle = Java.staticMethod(
         environment, "title", "(Landroid/content/Context;Ljava/lang/String;)V")
     static let deviceFacts = Java.staticMethod(environment, "device", "(Landroid/content/Context;)[Ljava/lang/String;")

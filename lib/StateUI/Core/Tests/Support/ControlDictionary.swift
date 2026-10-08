@@ -117,6 +117,7 @@ struct ControlDictionary {
             case .byHost(let why)?: ("✓", "only through the host's own: \(why)")
             case .byApplication?: ("🧩", "the application registers its own control")
             case .cannot(let why)?: ("·", "cannot \(why)")
+            case .inapplicable(let why)?: ("·", "cannot \(why)")
             case .waiting(let gap)?: ("⏸", "waits on \(gap), not realized yet")
             case .notRealized?: ("", "not realized")
             case nil: ("", "")

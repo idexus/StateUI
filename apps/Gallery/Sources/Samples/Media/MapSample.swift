@@ -2,6 +2,7 @@ import StateUI
 
 /// The platform's own map, with markers, a region to move to, and what it draws.
 struct MapSample: SampleContent, ExampleContent {
+    // listing: MapSample
     @State private var said = "tap the map, a pin, or its details"
 
     @Aim(Map.self) private var map
@@ -9,6 +10,7 @@ struct MapSample: SampleContent, ExampleContent {
     @State private var traffic = false
     @State private var showsMe = false
     @State private var locked = false
+    // listing: end
 
     static let id = "map"
     static let title = "Map"
@@ -18,15 +20,8 @@ struct MapSample: SampleContent, ExampleContent {
     /// the rule every gesture sample follows.
     static let scrolls = false
 
-    static let code = """
-        @State private var said = "tap the map, a pin, or its details"
-
-        @Aim(Map.self) private var map
-        @State private var kind = MapType.standard
-        @State private var traffic = false
-        @State private var showsMe = false
-        @State private var locked = false
-
+    // listing: MapSample
+    var body: some View {
         VStack {
             // What the map last said is read here, so every tap on it builds
             // this closure.
@@ -48,22 +43,32 @@ struct MapSample: SampleContent, ExampleContent {
                 // What it DRAWS, cycled so all three can be seen.
                 Button(kind == .standard ? "Street" : kind == .satellite ? "Satellite" : "Hybrid")
                     .onClicked {
-                        kind = kind == .standard ? .satellite
+                        kind =
+                            kind == .standard
+                            ? .satellite
                             : kind == .satellite ? .hybrid : .standard
                     }
             }
+            .spacing(8)
+            .horizontalAlignment(.center)
 
             HStack {
                 SwitchRow("Traffic", $traffic)
 
                 SwitchRow("Show me", $showsMe)
             }
+            .spacing(16)
+            .horizontalAlignment(.center)
 
-            // Both at once, which is what "locked" means to a user.
+            // Zoom and drag both off at once, which is what "locked" means to
+            // a user.
             SwitchRow("Locked", $locked)
+                .horizontalAlignment(.center)
 
-            // Where it OPENS is the initializer's - kept until the platform's
-            // map has connected. Moving later is the act the buttons perform.
+            // The opening region is the INITIALIZER's, not an `.onCreated` act:
+            // written here it is kept until the platform's map has connected,
+            // while an act can land an instant too early and be overwritten
+            // by the map's own opening view.
             Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
                 .aim(map)
                 // What the map draws, and whether the user may move it.
@@ -89,83 +94,6 @@ struct MapSample: SampleContent, ExampleContent {
                         .onSelected { said = "pin: Main Market Square" }
                 }
                 .onMapClicked { location in
-                    said = "map: \\(location.latitude), \\(location.longitude)"
-                }
-                .height(300)
-
-            Text(said)
-        }
-        """
-
-    var body: some View {
-        VStack {
-            DebugInfoLabel()
-
-            HStack {
-                Button("Old Town")
-                    .padding(horizontal: 14, vertical: 8)
-                    .onClicked {
-                        try await map.moveToRegion(
-                            latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
-                    }
-
-                Button("Poland")
-                    .padding(horizontal: 14, vertical: 8)
-                    .onClicked {
-                        try await map.moveToRegion(
-                            latitude: 52.1, longitude: 19.4, radiusMeters: 350_000)
-                    }
-
-                Button(kind == .standard ? "Street" : kind == .satellite ? "Satellite" : "Hybrid")
-                    .padding(horizontal: 14, vertical: 8)
-                    .onClicked {
-                        kind =
-                            kind == .standard
-                            ? .satellite
-                            : kind == .satellite ? .hybrid : .standard
-                    }
-            }
-            .spacing(8)
-            .horizontalAlignment(.center)
-
-            HStack {
-                SwitchRow("Traffic", $traffic)
-
-                SwitchRow("Show me", $showsMe)
-            }
-            .spacing(16)
-            .horizontalAlignment(.center)
-
-            SwitchRow("Locked", $locked)
-                .horizontalAlignment(.center)
-
-            // The opening region is the INITIALIZER's, not an `.onCreated` act:
-            // written here it is kept until the platform's map has connected,
-            // while an act can land an instant too early and be overwritten
-            // by the map's own opening view.
-            Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
-                .aim(map)
-                // What the map draws, and whether the user may move it.
-                .mapType(kind)
-                .showsTraffic(traffic)
-                .showsUserLocation(showsMe)
-                .isZoomEnabled(!locked)
-                .isScrollEnabled(!locked)
-                .markers {
-                    Marker("Wawel Castle")
-                        .subtitle("Wawel 5")
-                        .type(.place)
-                        .location(latitude: 50.0540, longitude: 19.9354)
-                        .onSelected { said = "pin: Wawel Castle" }
-                        .onDetailsClicked { said = "details: Wawel Castle" }
-
-                    Marker("Main Market Square")
-                        .subtitle("Main Market Square 1/3")
-                        .type(.searchResult)
-                        .location(latitude: 50.0617, longitude: 19.9373)
-                        .onSelected { said = "pin: Main Market Square" }
-                }
-                .onMapClicked { location in
                     said = "map: \(rounded(location.latitude)), \(rounded(location.longitude))"
                 }
                 .height(300)
@@ -177,12 +105,13 @@ struct MapSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
             Text("`Map` is drawn by the platform's own map where there is one - "
-                + "`MKMapView` on Apple. Elsewhere the application registers its own map "
-                + "with the host, the pins as its children; the Web has no map element.")
+                + "`MKMapView` on Apple. Elsewhere, the Web included, the application "
+                + "registers its own map with the host, the pins as its children.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -197,9 +126,11 @@ struct MapSample: SampleContent, ExampleContent {
         .spacing(8)
     }
 
+    // listing: MapSample
     /// Four decimal places - about eleven meters - so a tapped point reads as
     /// a coordinate rather than a river of digits.
     private func rounded(_ degrees: Double) -> Double {
         (degrees * 10_000).rounded() / 10_000
     }
+    // listing: end
 }

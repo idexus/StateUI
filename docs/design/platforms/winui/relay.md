@@ -60,3 +60,10 @@ colour as #AARRGGBB, a number, 0 or 1, sides and corners as four numbers - or
 reads the dialog showing over a window and `stateui_winui_announced` what the
 relay told the screen reader, which WinUI keeps nowhere a test can ask. A test
 reads the control; it never asks the host what it wrote.
+
+A file dialog is Windows' own window, on a thread of its own:
+`stateui_winui_file_dialog` reads whether it opens or saves, and
+`stateui_winui_answer_file_dialog` types the paths in its field for a file's
+name and presses its button, as a user does. A test holds launches back
+(`stateui_winui_hold_launches`) - none reaches Windows - and reads what was
+handed over from `stateui_winui_launched`, the relay's own record.

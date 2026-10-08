@@ -27,7 +27,7 @@ final class DisplayCycleTests: XCTestCase {
         let travelling = HostJourney(
             value: [0], destination: [100], velocity: [0], motion: .eased(400), completion: nil, stopped: 0)
         _ = channels.presentedValue(
-            for: HostStateBinding(state: 9, mode: .out, kind: .property),
+            for: HostStateBinding(state: 9, mode: .out, kind: .property, laneKind: .number),
             from: HostBoundary.value(of: travelling),
             now: 0,
             reducesMotion: false)
@@ -81,6 +81,61 @@ final class DisplayCycleTests: XCTestCase {
         runtime.displayCycle.frame(now: 600)
         XCTAssertFalse(runtime.clock.held)
     }
+
+    /// A handler's write in the turn a state's travel lands sends the travel on: the frame lands the travel and
+    /// reports the destination before the write, which stands and crosses in the same frame.
+    @MainActor
+    func testAWriteInTheTurnATravelLandsSendsItOn() throws {
+        stateUIUseApp(TravelApplication())
+        let clock = WoundClock()
+        let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let slider = try XCTUnwrap(runtime.tree.root?.first(id: .manual("slider")))
+        let up = try XCTUnwrap(runtime.tree.root?.first(id: .manual("up"))?.handler(.clicked))
+        let down = try XCTUnwrap(runtime.tree.root?.first(id: .manual("down"))?.handler(.clicked))
+
+        runtime.pump.dispatch(up)
+        clock.time = 100
+        runtime.displayCycle.frame(now: 100)
+        XCTAssertEqual(slider.number(.value) ?? .nan, 0.5, accuracy: 1e-9, "half way up")
+
+        clock.time = 250
+        runtime.pump.dispatch(down)
+        XCTAssertTrue(runtime.clock.held, "the travel goes on to the new destination")
+
+        clock.time = 500
+        runtime.displayCycle.frame(now: 500)
+        XCTAssertEqual(slider.number(.value) ?? .nan, 0.25, accuracy: 1e-9, "where the handler sent it")
+    }
+}
+
+/// A slider travelling where two buttons send its state.
+private struct TravelApplication: Application {
+    var body: some Scene {
+        WindowGroup { TravelPage() }
+    }
+}
+
+private struct TravelPage: View {
+    @State(motion: .eased(200, .linear)) private var level = 0.0
+
+    var body: some View {
+        VStack {
+            Slider($level).id("slider")
+            Button("Up").onClicked { level = 1 }.id("up")
+            Button("Down").onClicked { level = 0.25 }.id("down")
+        }
+    }
+}
+
+/// A clock a test winds by hand.
+@MainActor
+private final class WoundClock: FrameClock {
+    var time = 0.0
+    var held = false
+    var onFrame: ((Double) -> Void)?
+    var now: () -> Double { { [unowned self] in time } }
 }
 
 /// A view that stands where it is placed.

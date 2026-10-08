@@ -70,6 +70,16 @@ final class ContractRoadsTests: XCTestCase {
                 _ = Beacon().setValue(BeaconContract.level, on: $level, mode: .inOut, kind: .property)
                 """),
         Road(
+            name: "text from a state through a door for numbers",
+            closed: """
+                @State var title = "Harbour"
+                _ = Beacon().setValue(BeaconContract.title, on: $title, mode: .out, kind: .plain)
+                """,
+            open: """
+                @State var title = "Harbour"
+                _ = Beacon().setValue(BeaconContract.title, on: $title, mode: .out)
+                """),
+        Road(
             name: "an event heard by its token",
             closed: #"_ = Beacon().onEvent(Event("tapped")) { payload in _ = payload }"#,
             open: "_ = Beacon().onEvent(BeaconContract.tapped) { index in _ = index }"),
@@ -194,7 +204,7 @@ final class ContractRoadsTests: XCTestCase {
             return file
         }
 
-        let outputs = Outputs(count: files.count)
+        let outputs = CompilerOutputs(count: files.count)
         DispatchQueue.concurrentPerform(iterations: files.count) { index in
             outputs.set(index, DocumentationExamplesTests.typecheck(files[index], module: module, sdk: sdk))
         }
@@ -219,27 +229,5 @@ final class ContractRoadsTests: XCTestCase {
             .joined(separator: "\n")
 
         return "import StateUI\n\n\(declarations)\n\nfunc road() async throws {\n\(body)\n}\n"
-    }
-
-    /// What the compiler said about each listing, written from the lanes.
-    private final class Outputs: @unchecked Sendable {
-        private let lock = NSLock()
-        private var items: [String?]
-
-        init(count: Int) {
-            items = Array(repeating: nil, count: count)
-        }
-
-        func set(_ index: Int, _ output: String?) {
-            lock.lock()
-            defer { lock.unlock() }
-            items[index] = output
-        }
-
-        func value(_ index: Int) -> String? {
-            lock.lock()
-            defer { lock.unlock() }
-            return items[index]
-        }
     }
 }

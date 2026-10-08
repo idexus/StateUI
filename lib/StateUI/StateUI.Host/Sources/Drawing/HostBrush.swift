@@ -69,6 +69,13 @@
         max(width, height) * radius
     }
 
+    /// Whether the brush is one colour nothing of which shows: a clear bar, which shows what is behind it as it is.
+    /// Design: docs/design/types/brushes.md#as-a-host-is-handed-it
+    public var isClear: Bool {
+        guard case .solid(let color) = self, let argb = color.argb else { return false }
+        return argb >> 24 == 0
+    }
+
     /// The brush's colour, or its first stop's: what a line of one colour draws with it.
     public var firstColor: HostValue? {
         switch self {

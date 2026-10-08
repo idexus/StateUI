@@ -116,7 +116,24 @@ ZStack { Text("Drop here") }
 
 The payload is declared before the native drag starts. A start handler may
 react to the drag but cannot asynchronously replace what the current drag
-carries.
+carries. On a touch screen the drag begins once the finger has held the view a
+moment, as the platform's own drags do.
+
+Files dragged from the system - from a file manager, another application, the
+desktop - land on a view through `onDrop(files:)`, as `ChosenFile`s of the
+kinds it lists:
+
+```swift quote
+ZStack { Text("Drop a report here") }
+    .onDrop(files: [FileType("Text", extensions: ["txt", "md"])]) { files in
+        report = String(decoding: try await files[0].read(), as: UTF8.self)
+    }
+```
+
+A view may take words and files both; `onDragOver` and `onDragLeave` serve
+either. Files of other kinds are not taken, and a drop holding none of the
+view's kinds is heard by nobody. A dropped file reads and launches as one the
+user opened ([Files and links](#files-and-links)).
 
 Gesture availability and host tests are tracked in
 [Platform contract](../platform-contract.md).
@@ -178,6 +195,73 @@ The host presents a dialog from the page currently visible, including the top
 modal page. `await` determines sequencing: two actions queued together start
 in queue order but may finish independently; awaiting the first before issuing
 the second makes the dependency explicit.
+
+## Files and links
+
+The dialogs that open and save files are dialogs too, awaited the same way:
+
+```swift
+struct ReportPage: View {
+    @State private var report = "<h1>Report</h1>"
+    @State private var opened = ""
+
+    var body: some View {
+        VStack {
+            Button("Save report…").onClicked {
+                let page = FileType("HTML page", extensions: ["html"])
+                let saved = try await Dialogs.saveFile(
+                    Array(report.utf8), name: "Report", types: [page])
+                if let saved { try await saved.launch() }
+            }
+            Button("Open…").onClicked {
+                guard let file = try await Dialogs.openFile() else { return }
+                opened = String(decoding: try await file.read(), as: UTF8.self)
+            }
+            Button("Help").onClicked {
+                try await Links.launch("https://www.swift.org")
+            }
+        }
+    }
+}
+```
+
+`Dialogs.openFile` answers the `ChosenFile` the user picked, or `nil` on
+cancellation; `Dialogs.openFiles` answers as many as they pick, none on
+cancellation. A `FileType` gives a kind of file its caption and extensions;
+the dialog that opens shows only those kinds, the one that saves offers them
+with the first chosen. No kind means any file.
+
+`Dialogs.saveFile` takes the contents first and writes them where the user
+says, answering the file saved or `nil`. Its name gains the first kind's
+extension where it ends in none of theirs. A browser with no save dialog
+downloads the file instead, and the call answers it at once.
+
+A `ChosenFile` shows only its `name`. Where it stands belongs to the platform -
+a path, a document's address, a browser's file - so the application reads it
+with `read()` and hands it to the system with `launch()`, which opens it in
+the application the system gives its kind. `Links.launch` does the same for an
+address. Both answer whether an application took it. A chosen file stays good
+while the application runs.
+
+`read(atMost:)` reads no more than so many bytes from the file's start, so a
+file longer than the application takes is never read whole - one byte past
+the limit is enough to tell it is too long:
+
+```swift
+struct NotePage: View {
+    @State private var note = ""
+
+    var body: some View {
+        Button("Open a note…").onClicked {
+            guard let file = try await Dialogs.openFile() else { return }
+            let start = try await file.read(atMost: 1025)
+            note = start.count > 1024
+                ? "\(file.name) is longer than 1 KB"
+                : String(decoding: start, as: UTF8.self)
+        }
+    }
+}
+```
 
 ## Host-extension actions
 

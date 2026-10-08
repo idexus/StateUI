@@ -1,7 +1,7 @@
 # revision 2.1
 TextEditor: ✅
 TextEditor.frameChanged: ✅
-TextEditor.growsWithText: ❌ true expected, false came - grown with its words
-TextEditor.maximumLength: ❌ ["one\nt"] expected, ["one\nt", "one\nt", "one\nt"] came - heard once, as the bound left the words
-TextEditor.text: ❌ ["one\nt"] expected, ["one\nt", "one\nt", "one\nt"] came - heard once, as the bound left the words
-TextEditor.textChanged: ❌ ["one\nt"] expected, ["one\nt", "one\nt", "one\nt"] came - heard once, as the bound left the words
+TextEditor.growsWithText: ✅
+TextEditor.maximumLength: ✅
+TextEditor.text: ✅
+TextEditor.textChanged: ✅

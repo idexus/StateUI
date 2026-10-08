@@ -27,11 +27,11 @@ var products: [Product] = [
 var targets: [Target] = [
     .target(
         name: "GalleryUI",
-        dependencies: ["StateUI"],
+        dependencies: [.product(name: "StateUI", package: "StateUIRoot")],
         path: "Sources", swiftSettings: settings),
     .testTarget(
         name: "GalleryTests",
-        dependencies: ["GalleryUI", .product(name: "StateUI", package: "StateUI")],
+        dependencies: ["GalleryUI", .product(name: "StateUI", package: "StateUIRoot")],
         path: "Tests/GalleryTests",
         swiftSettings: settings
     ),
@@ -104,7 +104,7 @@ let package = Package(
     ],
     products: products,
     // The StateUI checkout: the library at its root, and a head's host.
-    dependencies: [.package(path: "../..")]
+    dependencies: [.package(name: "StateUIRoot", path: "../..")]
         + (host == nil ? [] : [.package(name: "StateUIHead", path: "../../lib/StateUI.Head")])
         + (webBackend.isEmpty ? [] : host.map { host in
             [.package(name: "StateUIWebView\(host)", path: "../../lib/Backends/WebView.\(host)")]

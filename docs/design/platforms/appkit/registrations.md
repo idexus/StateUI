@@ -31,11 +31,19 @@ unless its registration takes the background itself
 (`drawOwnBackground`): a text field fills its own field, a button its own
 face, a colour box its own box. A text field given a colour stands on a line
 (`isBordered`) rather than AppKit's bezel, which on macOS 26 draws its own
-ground over any colour; one given none keeps the bezel. A search field takes
-no fill colour: AppKit
-draws its own rounded field and ignores `backgroundColor`, so a written
-colour is not shown there, and a square painted under it hid the field's
-shape.
+ground over any colour; one given none keeps the rounded bezel, with its
+own ground and its words set in from the edge. A border and a bezel exclude
+each other: `isBordered = false` said after `isBezeled = true` takes the
+bezel away, leaving bare words on whatever lies behind, so the border is
+said first. A search field given a colour stands in its bezel's capsule,
+filled with it: AppKit's bezel ignores `backgroundColor`, so the field
+drops the bezel and its cell sets the magnifier, the words and the cancel
+button in as the bezel does, across the middle of its height - and hands
+the editor that room, which AppKit lays over a bezel-less field's whole
+frame. Each field's
+ring, while it holds the keyboard, goes round the shape it stands in
+(`drawFocusRingMask`). A text editor has no bezel of its own: its scroller stands
+rounded as a field does, borderless, its words set in from the edge.
 
 ## What a declaration leaves out
 

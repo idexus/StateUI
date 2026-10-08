@@ -190,6 +190,27 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(words() ?? -1, 0, accuracy: 0.01, "dark on yellow")
     }
 
+    /// A clear bar is UIKit's transparent bar: nothing under it, and no line between it and the page.
+    @MainActor
+    func testAClearBarDrawsNoLineUnderIt() throws {
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                TitledPage(title: "Root")
+            } destination: { _ in Text("Pushed") }
+                .barBackgroundColor(.transparent)
+        }
+        defer { host.finish() }
+        let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller }
+        host.settle { page()?.navigationItem.standardAppearance != nil }
+        let appearance = try XCTUnwrap(page()?.navigationItem.standardAppearance)
+
+        var alpha: CGFloat = 0
+        appearance.shadowColor?.getWhite(nil, alpha: &alpha)
+        XCTAssertEqual(alpha, 0, "no line under the bar")
+        appearance.backgroundColor?.getWhite(nil, alpha: &alpha)
+        XCTAssertEqual(alpha, 0, "nothing under it")
+    }
+
     /// A page's content stands clear of the bars and the notch, but where it lets itself under them it reaches the
     /// screen's edge; the page's background stands behind the bars either way.
     @MainActor
@@ -211,6 +232,30 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(page()?.view).frame.minY, 0, "under it")
     }
 
+    /// A page's scroller let under the strip at its bottom scrolls under the home indicator and keeps the strip
+    /// clear at its end, so its last row scrolls out from under it; one standing clear of the strip keeps nothing.
+    @MainActor
+    func testAPagesScrollerUnderTheHomeIndicatorKeepsItClearAtItsEnd() throws {
+        let under = State(wrappedValue: true)
+        let host = UIKitRenderer.running {
+            Grid { ScrollView { Text("rows") } }
+                .avoidsSafeArea(.container, .container, .container, under.wrappedValue ? .none : .container)
+        }
+        defer { host.finish() }
+        let scroller = { host.views(UIKitScrollView.self).first?.scroller }
+        let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement) }
+        let controller = try XCTUnwrap(page()?.controller)
+        host.settle { controller.view.safeAreaInsets.bottom > 0 && (scroller()?.contentInset.bottom ?? 0) > 0 }
+        let strip = controller.view.safeAreaInsets.bottom
+        XCTAssertGreaterThan(strip, 0, "the phone has a home indicator")
+        XCTAssertEqual(try XCTUnwrap(scroller()).contentInset.bottom, strip, "the strip kept clear at its end")
+        XCTAssertEqual(try XCTUnwrap(scroller()).contentInset.top, 0, "its start as it is")
+
+        under.wrappedValue = false
+        host.settle { scroller()?.contentInset.bottom == 0 }
+        XCTAssertEqual(try XCTUnwrap(scroller()).contentInset.bottom, 0, "clear of the strip, nothing to keep")
+    }
+
     /// A page's background stands behind the whole screen, the strip under the home indicator and the bars
     /// included - never the system's white there.
     @MainActor
@@ -223,6 +268,20 @@ final class UIKitPagesTests: XCTestCase {
         var (red, green, blue): (CGFloat, CGFloat, CGFloat) = (0, 0, 0)
         controller.view.backgroundColor?.getRed(&red, green: &green, blue: &blue, alpha: nil)
         XCTAssertEqual([red, green, blue].map { Int(($0 * 255).rounded()) }, [247, 245, 252])
+    }
+
+    /// A page that paints no background of its own shows its window's: a UIKit window shows only through its
+    /// pages, each controller's view opaque.
+    @MainActor
+    func testAPageWithNoBackgroundShowsItsWindows() throws {
+        let host = UIKitRenderer.running { WindowPaintedPage() }
+        defer { host.finish() }
+        let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement) }
+        let controller = try XCTUnwrap(page()?.controller)
+        host.settle { controller.view.backgroundColor != .systemBackground }
+        var (red, green, blue): (CGFloat, CGFloat, CGFloat) = (0, 0, 0)
+        controller.view.backgroundColor?.getRed(&red, green: &green, blue: &blue, alpha: nil)
+        XCTAssertEqual([red, green, blue].map { Int(($0 * 255).rounded()) }, [81, 43, 212], "the window's colour")
     }
 
     /// The first tabbed view in `element`'s tree.
@@ -251,5 +310,13 @@ private struct TitledPage: View {
 private struct PaintedPage: View {
     var body: some View {
         Text("Painted").pageBackground(Color("#F7F5FC"))
+    }
+}
+
+private struct WindowPaintedPage: View {
+    @Environment(\.window) private var window
+
+    var body: some View {
+        Text("Plain").onCreated { window.background = .color(Color("#512BD4")) }
     }
 }

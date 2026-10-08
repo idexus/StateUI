@@ -18,7 +18,7 @@
 /// that closure.
 ///
 /// Design: docs/design/types/placement.md#one-picture-on-every-platform
-public struct Placement: StateValue {
+public struct Placement: LaneValue {
     /// Where the view goes, in device units from the layout's own top left.
     public var bounds: Rect
 

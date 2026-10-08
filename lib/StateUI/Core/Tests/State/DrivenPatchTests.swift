@@ -50,12 +50,13 @@ final class DrivenPatchTests: XCTestCase {
         page.at(path)?.driven?.bindings ?? [:]
     }
 
-    /// Each of `properties` tied to one state, one way, on one channel.
+    /// Each of `properties` tied to one state, one way, on one channel, its lanes read as `laneKind`.
     private func tied(
-        _ properties: [Prop], to state: Int32, _ mode: HostStateMode, _ kind: HostStateKind
+        _ properties: [Prop], to state: Int32, _ mode: HostStateMode, _ kind: HostStateKind,
+        _ laneKind: HostLaneKind?
     ) -> [Prop: HostStateBinding] {
         Dictionary(uniqueKeysWithValues: properties.map {
-            ($0, HostStateBinding(state: state, mode: mode, kind: kind))
+            ($0, HostStateBinding(state: state, mode: mode, kind: kind, laneKind: laneKind))
         })
     }
 
@@ -82,11 +83,11 @@ final class DrivenPatchTests: XCTestCase {
 
         let enabled = try card(enabled: true)
         XCTAssertEqual(enabled.card.props["opacity"], .number(0.5), "the stated value crosses as a value")
-        XCTAssertEqual(ties(enabled.patch, .auto(3)), tied(["opacity"], to: 1, .inOut, .property))
+        XCTAssertEqual(ties(enabled.patch, .auto(3)), tied(["opacity"], to: 1, .inOut, .property, .number))
 
         let disabled = try card(enabled: false)
         XCTAssertEqual(disabled.card.props["opacity"], .number(0.1), "and the state's in its place")
-        XCTAssertEqual(ties(disabled.patch, .auto(3)), tied(["opacity"], to: 1, .inOut, .property))
+        XCTAssertEqual(ties(disabled.patch, .auto(3)), tied(["opacity"], to: 1, .inOut, .property, .number))
     }
 
     /// THE FIVE SHAPES A BINDING TAKES ON A PROPERTY, as a host is handed them: a journey
@@ -121,12 +122,12 @@ final class DrivenPatchTests: XCTestCase {
         // Numbered in the walk, and within one element in the names' order.
         XCTAssertEqual(
             ties(page, .auto(3), .auto(4)),
-            tied(["fontSize"], to: 1, .inOut, .property)
-                .merging(tied(["horizontalAlignment"], to: 2, .out, .plain)) { $1 }
-                .merging(tied(["isVisible"], to: 3, .out, .plain)) { $1 })
-        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["placeholder"], to: 4, .out, .text))
-        XCTAssertEqual(ties(page, .auto(3), .auto(6)), tied(["selectedIndex"], to: 5, .inOut, .plain))
-        XCTAssertEqual(ties(page, .auto(3), .auto(7)), tied(["isOn"], to: 6, .inOut, .plain))
+            tied(["fontSize"], to: 1, .inOut, .property, .number)
+                .merging(tied(["horizontalAlignment"], to: 2, .out, .plain, .choice)) { $1 }
+                .merging(tied(["isVisible"], to: 3, .out, .plain, .boolean)) { $1 })
+        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["placeholder"], to: 4, .out, .text, nil))
+        XCTAssertEqual(ties(page, .auto(3), .auto(6)), tied(["selectedIndex"], to: 5, .inOut, .plain, .number))
+        XCTAssertEqual(ties(page, .auto(3), .auto(7)), tied(["isOn"], to: 6, .inOut, .plain, .boolean))
     }
 
     /// Every one of the thirty twins, on one element each of the tiers they
@@ -183,28 +184,28 @@ final class DrivenPatchTests: XCTestCase {
         let page = try page(VStack { card; shape; button; entry; box }.spacing(number.projectedValue).node)
 
         // The number is state 1, the colour 2 and the insets 3, in the walk.
-        XCTAssertEqual(ties(page, .auto(3)), tied(["spacing"], to: 1, .inOut, .property))
+        XCTAssertEqual(ties(page, .auto(3)), tied(["spacing"], to: 1, .inOut, .property, .number))
         XCTAssertEqual(
             ties(page, .auto(3), .auto(4)),
             tied([
                 "height", "maximumHeight", "maximumWidth", "minimumHeight", "minimumWidth", "opacity",
                 "pivotX", "pivotY", "rotation", "rotationX", "rotationY", "scale", "scaleX", "scaleY",
                 "lineWidth", "translationX", "translationY", "width",
-            ], to: 1, .inOut, .property)
-                .merging(tied(["background"], to: 2, .inOut, .property)) { $1 }
-                .merging(tied(["margin", "padding"], to: 3, .inOut, .property)) { $1 })
+            ], to: 1, .inOut, .property, .number)
+                .merging(tied(["background"], to: 2, .inOut, .property, .color)) { $1 }
+                .merging(tied(["margin", "padding"], to: 3, .inOut, .property, .number)) { $1 })
         XCTAssertEqual(
             ties(page, .auto(3), .auto(4), .auto(5)),
-            tied(["tracking", "fontSize"], to: 1, .inOut, .property)
-                .merging(tied(["textColor"], to: 2, .inOut, .property)) { $1 })
+            tied(["tracking", "fontSize"], to: 1, .inOut, .property, .number)
+                .merging(tied(["textColor"], to: 2, .inOut, .property, .color)) { $1 })
         XCTAssertEqual(
             ties(page, .auto(3), .auto(6)),
-            tied(["dashPhase", "miterLimit", "lineWidth"], to: 1, .inOut, .property))
+            tied(["dashPhase", "miterLimit", "lineWidth"], to: 1, .inOut, .property, .number))
         XCTAssertEqual(
             ties(page, .auto(3), .auto(7)),
-            tied(["lineWidth"], to: 1, .inOut, .property))
-        XCTAssertEqual(ties(page, .auto(3), .auto(8)), tied(["placeholderColor"], to: 2, .inOut, .property))
-        XCTAssertEqual(ties(page, .auto(3), .auto(9)), tied(["color"], to: 2, .inOut, .property))
+            tied(["lineWidth"], to: 1, .inOut, .property, .number))
+        XCTAssertEqual(ties(page, .auto(3), .auto(8)), tied(["placeholderColor"], to: 2, .inOut, .property, .color))
+        XCTAssertEqual(ties(page, .auto(3), .auto(9)), tied(["color"], to: 2, .inOut, .property, .color))
     }
 
     /// Text, which has no lanes and no journey: it is written when it changes
@@ -214,8 +215,8 @@ final class DrivenPatchTests: XCTestCase {
 
         let page = try page(VStack { Text().text(caption.projectedValue); Button().text(caption.projectedValue) }.node)
 
-        XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["text"], to: 1, .out, .text))
-        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["text"], to: 1, .out, .text))
+        XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["text"], to: 1, .out, .text, nil))
+        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["text"], to: 1, .out, .text, nil))
         XCTAssertNil(page.at(.auto(3), .auto(4))?.props["text"], "and no value beside it")
     }
 
@@ -232,7 +233,7 @@ final class DrivenPatchTests: XCTestCase {
         }.node)
 
         for field in [ElementID.auto(4), .auto(5), .auto(6)] {
-            XCTAssertEqual(ties(page, .auto(3), field), tied(["text"], to: 1, .inOut, .text))
+            XCTAssertEqual(ties(page, .auto(3), field), tied(["text"], to: 1, .inOut, .text, nil))
         }
         XCTAssertEqual(page.at(.auto(3), .auto(4))?.eventNames, ["textChanged"])
     }
@@ -247,9 +248,9 @@ final class DrivenPatchTests: XCTestCase {
             TimePicker(alarm.projectedValue)
         }.node)
 
-        XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["date"], to: 1, .inOut, .plain))
+        XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["date"], to: 1, .inOut, .plain, .number))
         XCTAssertEqual(page.at(.auto(3), .auto(4))?.eventNames, ["dateChanged"])
-        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["time"], to: 2, .inOut, .plain))
+        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["time"], to: 2, .inOut, .plain, .number))
     }
 
     /// The two-way inputs, whose value the user can move as well.
@@ -262,8 +263,8 @@ final class DrivenPatchTests: XCTestCase {
             Stepper().value(steps.projectedValue)
         }.node)
 
-        XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["value"], to: 1, .inOut, .property))
-        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["value"], to: 2, .inOut, .property))
+        XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["value"], to: 1, .inOut, .property, .number))
+        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["value"], to: 2, .inOut, .property, .number))
     }
 
     /// ONE STATE, TWO SINKS: a value the user drags and a size that rides the
@@ -280,8 +281,8 @@ final class DrivenPatchTests: XCTestCase {
             ColorBox().width(level.projectedValue)
         }.node)
 
-        XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["value"], to: 1, .inOut, .property))
-        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["width"], to: 1, .inOut, .property))
+        XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["value"], to: 1, .inOut, .property, .number))
+        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["width"], to: 1, .inOut, .property, .number))
     }
 
     /// A LAYOUT PLACED BY DRIVEN STATE, which says where its views go and nothing
@@ -305,8 +306,8 @@ final class DrivenPatchTests: XCTestCase {
 
         XCTAssertEqual(
             ties(page, .auto(3)),
-            tied(["area"], to: 1, .out, .placement)
-                .merging(tied(["frame"], to: 2, .in, .feed)) { $1 })
+            tied(["area"], to: 1, .out, .placement, .number)
+                .merging(tied(["frame"], to: 2, .in, .feed, .number)) { $1 })
         XCTAssertEqual(layout.arrangement, [.manual("a"), .manual("b")])
         XCTAssertEqual(layout.children.map(\.type), [.grid, .grid], "the library's wrapper around each face")
         XCTAssertEqual(layout.children.map(\.children.count), [2, 2], "the face, then its shade")

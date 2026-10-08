@@ -1,49 +1,62 @@
-# revision 1.1
-ActivityIndicator.pivotY: ✅
-Button.style: ✅
-Button.zIndex: not realized
-Canvas.pivotY: ✅
-CheckBox.style: ✅
-CheckBox.zIndex: not realized
-ColorBox.pivotY: ✅
-DatePicker.style: ✅
-DatePicker.zIndex: not realized
-Ellipse.pivotY: ✅
-Grid.style: ✅
-Grid.zIndex: not realized
-HStack.pivotY: ✅
+# revision 7.1
+ActivityIndicator.layoutDirection: ✓ read layoutDirection of ActivityIndicator: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Button.frame: ✅
+Button.scaleX: ✅
+Canvas.isAccessibilityHidden: ✅
+CheckBox.frameChanged: ✅
+CheckBox.maximumHeight: ✅
+CheckBox.maximumWidth: ✅
+CheckBox.minimumHeight: ✅
+CheckBox.minimumWidth: ✅
+CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own tip, checked against the projection it laid on the element
+ColorBox.accessibilityHint: ✅
+DatePicker.opacity: ✅
+DatePicker.pivotY: ✅
+Ellipse.translationY: ✅
+Ellipse.zIndex: ✅
+Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+HStack.frameChanged: ✅
+HStack.height: ✅
+HStack.rotationX: ✓ read rotationX of HStack: the host's own tip, checked against the projection it laid on the element
+HStack.width: ✅
 Image.style: ✅
-Image.zIndex: not realized
-ItemsView.pivotY: ✅
-Line.pivotY: ✅
-Map.style: 🧩
-Map.zIndex: 🧩
-Path.pivotY: ✅
-Picker.style: ✅
-Picker.zIndex: not realized
-Polygon.pivotY: ✅
-Polyline.style: ✅
-Polyline.zIndex: not realized
-ProgressBar.pivotY: ✅
-RadioButton.style: ✅
-RadioButton.zIndex: not realized
-Rectangle.pivotY: ✅
-ScrollView.style: ✅
-ScrollView.zIndex: not realized
-SearchField.pivotY: ✅
-Slider.style: ✅
-Slider.zIndex: not realized
-Stepper.pivotY: ✅
-Switch.style: ✅
-Switch.zIndex: not realized
-Text.style: ✅
-Text.zIndex: not realized
-TextEditor.pivotY: ✅
-TextField.style: ✅
-TextField.zIndex: not realized
-TimePicker.pivotY: ✅
-VStack.style: ✅
-VStack.zIndex: not realized
+Image.translationX: ✅
+ItemsView.automationExcludedWithChildren: ✅
+Line.accessibilityHint: ✅
+Map.opacity: 🧩
+Map.pivotY: 🧩
+Path.translationY: ✅
+Path.zIndex: ✅
+Picker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Polygon.frame: ✅
+Polygon.scaleX: ✅
+Polyline.accessibilityHeading: ✅
+ProgressBar.isEnabled: ✅
+ProgressBar.rotation: ✅
+RadioButton.translationY: ✅
+RadioButton.zIndex: ✅
+Rectangle.layoutDirection: ✓ read layoutDirection of Rectangle: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ScrollView.frame: ✅
+ScrollView.scaleX: ✅
+SearchField.accessibilityHeading: ✅
+Slider.frameChanged: ✅
+Slider.height: ✅
+Slider.rotationX: ✓ read rotationX of Slider: the host's own tip, checked against the projection it laid on the element
+Slider.width: ✅
+Stepper.accessibilityLabel: ✅
+Switch.opacity: ✅
+Switch.pivotY: ✅
+Text.ignoresInput: ✅
+Text.scale: ✅
+TextEditor.translationY: ✅
+TextEditor.zIndex: ✅
+TextField.layoutDirection: ✅
+TimePicker.focus: ✅
+TimePicker.isFocusedChanged: ✅
+TimePicker.scaleY: ✅
+TimePicker.unfocus: ✅
+VStack.automationExcludedWithChildren: ✅
+WebView.opacity: ✅
 WebView.pivotY: ✅
-ZStack.style: ✅
-ZStack.zIndex: not realized
+ZStack.translationY: ✅
+ZStack.zIndex: ✅

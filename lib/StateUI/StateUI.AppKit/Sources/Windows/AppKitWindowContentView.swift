@@ -23,53 +23,76 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
 
     /// The window's own material, under the page, while the window lets the
     /// desktop show through it.
-    private var material: NSVisualEffectView?
+    private var material: AppKitMaterialView?
 
-    /// What lies over the whole material, in `materialTint`.
-    private var materialTintView: NSView?
+    /// The band the title bar and toolbar cover, painted in `barColor` - over
+    /// the material, where the window has one.
+    private lazy var band: NSView = {
+        let band = NSView()
+        band.wantsLayer = true
+        band.isHidden = true
+        addSubview(band, positioned: .below, relativeTo: nil)
+        return band
+    }()
 
-    /// Whether the desktop shows through the window: its material lies under
-    /// the page, wherever the page leaves it uncovered or paints a colour it
-    /// shows through - in `materialTint`, where one is written.
-    var isTranslucent = false {
+    /// The window's drags between views, where this view is the window's root.
+    /// Design: docs/design/platforms/appkit/input.md#a-drag-between-views
+    var drops: AppKitDrops? {
+        didSet { drops == nil ? unregisterDraggedTypes() : registerForDraggedTypes([.string, .fileURL]) }
+    }
+
+    override func draggingEntered(_ sender: any NSDraggingInfo) -> NSDragOperation {
+        drops?.entered(at: sender.draggingLocation, carrying: sender.carried, in: self) ?? []
+    }
+
+    override func draggingUpdated(_ sender: any NSDraggingInfo) -> NSDragOperation {
+        drops?.moved(to: sender.draggingLocation, carrying: sender.carried, in: self) ?? []
+    }
+
+    override func draggingExited(_ sender: (any NSDraggingInfo)?) {
+        drops?.exited()
+    }
+
+    override func performDragOperation(_ sender: any NSDraggingInfo) -> Bool {
+        drops?.dropped(sender.carried) ?? false
+    }
+
+    /// The material the desktop shows through the window in: it lies under the page and the bars' band,
+    /// wherever they leave it uncovered or paint a colour it shows through; nil for an opaque window.
+    var backdrop: Blur.Thickness? {
         didSet {
-            guard isTranslucent != oldValue else { return }
-
-            if isTranslucent {
-                let material = NSVisualEffectView()
-                material.material = .underWindowBackground
-                material.blendingMode = .behindWindow
-                material.state = .followsWindowActiveState
-                let tint = NSView()
-                tint.wantsLayer = true
-                material.addSubview(tint)
-                addSubview(material, positioned: .below, relativeTo: nil)
-                self.material = material
-                materialTintView = tint
+            guard backdrop != oldValue else { return }
+            if let backdrop {
+                let material = self.material ?? {
+                    let made = AppKitMaterialView(backdrop, behindWindow: true)
+                    addSubview(made, positioned: .below, relativeTo: nil)
+                    self.material = made
+                    return made
+                }()
+                material.material = AppKitMaterialView.role(backdrop)
             } else {
                 material?.removeFromSuperview()
                 material = nil
-                materialTintView = nil
             }
             needsLayout = true
         }
     }
 
     var materialForTesting: NSVisualEffectView? { material }
-    /// The colour the window's bars are written in, over the material of a
-    /// translucent window: the band above the page, the margin around a
-    /// floating sidebar and what its glass shows all wear it, the desktop
-    /// through it. Nil leaves the material the system's.
+
+    /// The window's background over its material, where the desktop shows
+    /// through the window: a colour with an alpha tints the material and lets
+    /// it show. Nil leaves the material the system's.
     var materialTint: NSColor? {
         didSet { if materialTint != oldValue { needsLayout = true } }
     }
 
-    var materialTintForTesting: NSView? { materialTintView }
+    var materialTintForTesting: NSView? { material?.wash }
 
     /// The colour the window's bars are written in, painted over `barBand`.
     /// Nil leaves the title bar and toolbar the system's material.
     var barColor: NSColor? {
-        didSet { if barColor != oldValue { needsDisplay = true; needsLayout = true } }
+        didSet { if barColor != oldValue { needsLayout = true } }
     }
 
     /// The part of the window the title bar and toolbar cover.
@@ -78,13 +101,6 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     }
 
     override var isFlipped: Bool { true }
-
-    override func draw(_ dirtyRect: NSRect) {
-        super.draw(dirtyRect)
-        guard let barColor else { return }
-        barColor.setFill()
-        barBand.fill()
-    }
 
     func set(page: NSView?, overlays: [AppKitLayoutItem], spansTitleBar: Bool = false) {
         if pageSpansTitleBar != spansTitleBar {
@@ -96,7 +112,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
             self.page = page
             if let page {
                 page.translatesAutoresizingMaskIntoConstraints = true
-                addSubview(page, positioned: material == nil ? .below : .above, relativeTo: material)
+                addSubview(page, positioned: .above, relativeTo: band)
             }
         }
 
@@ -119,14 +135,15 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
         super.layout()
         if let material {
             material.frame = bounds
-            materialTintView?.frame = material.bounds
-            materialTintView?.layer?.backgroundColor = materialTint?.cgColor
-            materialTintView?.isHidden = materialTint == nil
+            material.wash.layer?.backgroundColor = materialTint?.cgColor
+            material.wash.isHidden = materialTint == nil
         }
+        band.frame = barBand
+        band.layer?.backgroundColor = barColor?.cgColor
+        band.isHidden = barColor == nil
         page?.frame = pageSpansTitleBar ? bounds : safeAreaRect
         overlaySurface.frame = safeAreaRect
         overlaySurface.layoutSubtreeIfNeeded()
-        if barColor != nil { needsDisplay = true }
     }
 }
 

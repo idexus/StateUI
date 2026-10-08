@@ -118,6 +118,7 @@ extension NodeType {
     static let data = PathContract.data.token
     static let date = DatePickerContract.date.token
     static let dragText = ViewContract.dragText.token
+    static let droppedFileTypes = ViewContract.droppedFileTypes.token
     static let drawing = CanvasContract.drawing.token
     static let fill = ShapeContract.fill.token
     static let fillRule = PolygonContract.fillRule.token
@@ -149,10 +150,11 @@ extension NodeType {
     static let isEnabled = VisualElementContract.isEnabled.token
     static let isMaximizable = WindowContract.isMaximizable.token
     static let isMinimizable = WindowContract.isMinimizable.token
-    static let isTranslucent = WindowContract.isTranslucent.token
     static let isOpen = DatePickerContract.isOpen.token
     static let isPassword = TextFieldContract.isPassword.token
     static let showsSidebar = SplitViewContract.showsSidebar.token
+    static let sidebarBackground = SplitViewContract.sidebarBackground.token
+    static let flyoutBackground = SplitViewContract.flyoutBackground.token
     static let isReadOnly = TextInputContract.isReadOnly.token
     static let isScrollEnabled = MapContract.isScrollEnabled.token
     static let showsUserLocation = MapContract.showsUserLocation.token
@@ -275,6 +277,7 @@ extension NodeType {
     static let dragOver = ViewContract.dragOver.token
     static let dragStarting = ViewContract.dragStarting.token
     static let drop = ViewContract.drop.token
+    static let filesDropped = ViewContract.filesDropped.token
     static let dragEnded = ViewContract.dragEnded.token
     static let frameChanged = ViewContract.frameChanged.token
     static let isFocusedChanged = VisualElementContract.isFocusedChanged.token
@@ -327,10 +330,16 @@ extension NodeType {
     static let chooseAction = ApplicationContract.chooseAction.token
     static let prompt = ApplicationContract.prompt.token
     static let announce = ApplicationContract.announce.token
+    static let useColorScheme = ApplicationContract.useColorScheme.token
     static let currentTime = ApplicationContract.currentTime.token
     static let currentTimeZone = ApplicationContract.currentTimeZone.token
     static let utcOffset = ApplicationContract.utcOffset.token
     static let persistValue = ApplicationContract.persistValue.token
     static let persistSceneValue = ApplicationContract.persistSceneValue.token
     static let handlerFailed = ApplicationContract.handlerFailed.token
+    static let openFiles = ApplicationContract.openFiles.token
+    static let saveFile = ApplicationContract.saveFile.token
+    static let readFile = ApplicationContract.readFile.token
+    static let launchFile = ApplicationContract.launchFile.token
+    static let launchLink = ApplicationContract.launchLink.token
 }

@@ -10,6 +10,7 @@ import StateUI
 /// clock that is running or stopped and the time it has counted, neither of
 /// which any conversion of any state could work out.
 struct EngineSample: SampleContent, ExampleContent {
+    // listing: EngineSample
     /// The reading as it stood when Lap was last pressed - ORDINARY state, so
     /// the same reading that costs nothing driven costs a render here.
     @State private var lap = "-"
@@ -23,70 +24,19 @@ struct EngineSample: SampleContent, ExampleContent {
     /// Whether the clock is running - ordinary state that no view reads, so
     /// a write to it renders nothing; the engine FOLLOWS it, so a write to it
     /// wakes the engine.
-    @State private var running = false
+    @State private var running = false   // followed by the engine, read by no view
 
     /// How long the clock has run, in milliseconds - the engine's own to
-    /// count up, read by nobody: the reading is worked out FROM it, so
+    /// count up, read by no view: the reading is worked out FROM it, so
     /// nothing outside this page ever needs the number itself.
-    @State private var elapsed = 0.0
+    @State private var elapsed = 0.0   // the engine's own count
+    // listing: end
 
     static let id = "engine"
     static let title = "Engine"
     static let summary = "An engine: arithmetic on the host's frames that remembers where it got to."
 
-    static let code = """
-        @State private var lap = "-"
-
-        @State private var reading = "0.0 s"
-        @State private var caption = "Start"
-
-        @State private var running = false      // followed by the engine, read by no view
-        @State private var elapsed = 0.0        // the engine's own count
-
-        VStack {
-            // Nothing here reads the running time, so this stands at one
-            // build while the digits change. Lap IS read, which is what says
-            // the reading can move at all.
-            DebugInfoLabel()
-
-            // Off a driven state: written ten times a second, never described.
-            Text($reading)
-
-            // Off state: the same reading, described every time it lands.
-            Text("Lap: \\(lap)")
-
-            HStack {
-                Button($caption).onClicked {
-                    running.toggle()
-                    caption = running ? "Stop" : "Start"
-                }
-
-                Button("Lap").onClicked { lap = reading }
-
-                Button("Reset").onClicked {
-                    running = false
-                    caption = "Start"
-                    elapsed = 0
-                    reading = "0.0 s"
-
-                    // The one write here that IS described, and the one that
-                    // costs this button its render.
-                    lap = "-"
-                }
-            }
-        }
-        .engine(following: $running) { cycle in
-            guard running else { return .wait }
-
-            elapsed += cycle.elapsed
-
-            let tenths = Int(elapsed / 100)
-            reading = "\\(tenths / 10).\\(tenths % 10) s"
-
-            return .again
-        }
-        """
-
+    // listing: EngineSample
     var body: some View {
         VStack {
             // What says the clock below ticks without a render: nothing in
@@ -96,6 +46,7 @@ struct EngineSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             ZStack {
+                // Off a driven state: written ten times a second, never described.
                 Text()
                     .text($reading)
                     .fontSize(44)
@@ -105,11 +56,12 @@ struct EngineSample: SampleContent, ExampleContent {
             }
             .style("Card")
             .padding(horizontal: 24, vertical: 16)
-            .background(Palette.surface)
+            .background(Palette.well)
             .stroke(.transparent)
             .shape(.roundedRectangle(12))
             .horizontalAlignment(.center)
 
+            // Off state: the same reading, described every time it lands.
             Text("Lap: \(lap)")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -118,8 +70,6 @@ struct EngineSample: SampleContent, ExampleContent {
             HStack {
                 Button()
                     .text($caption)
-                    .fontSize(13)
-                    .padding(horizontal: 14, vertical: 6)
                     .onClicked {
                         running.toggle()
                         caption = running ? "Stop" : "Start"
@@ -132,6 +82,8 @@ struct EngineSample: SampleContent, ExampleContent {
                     caption = "Start"
                     elapsed = 0
                     reading = "0.0 s"
+                    // The one write here that IS described, and the one that
+                    // costs this button its render.
                     lap = "-"
                 }
             }
@@ -150,6 +102,7 @@ struct EngineSample: SampleContent, ExampleContent {
             return .again
         }
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -171,7 +124,7 @@ struct EngineSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`Text($reading)` reads its words off a driven state the engine writes "
+            Text("`.text($reading)` takes its words off a driven state the engine writes "
                 + "on the display's own frame, and the button's caption is driven the same "
                 + "way by the handler that toggles the clock: one tap starts the clock and "
                 + "renames the button, and neither is a render. Driven text is written onto "
@@ -195,11 +148,11 @@ struct EngineSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
+    // listing: EngineSample
     /// The buttons whose caption is their own rather than a driven state's.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
-            .fontSize(13)
-            .padding(horizontal: 14, vertical: 6)
             .onClicked(act)
     }
+    // listing: end
 }

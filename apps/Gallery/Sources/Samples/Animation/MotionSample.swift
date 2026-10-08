@@ -1,12 +1,13 @@
 import StateUI
 
-/// A value that changes TRAVELS - the default, and the three laws it can travel
-/// under.
+/// A value that changes TRAVELS - under the default law, a spring or a long
+/// eased one - or, under `.none`, arrives at once.
 struct MotionSample: SampleContent, ExampleContent {
     static let id = "motion"
     static let title = "Motion"
     static let summary = "Assign the state and the control travels there - at a length, on a spring, or not at all."
 
+    // listing: MotionSample
     static let laws = ["Eased 200ms", "Spring", "Long and slow", "None"]
 
     static func law(_ index: Int) -> Motion {
@@ -22,66 +23,13 @@ struct MotionSample: SampleContent, ExampleContent {
     @State private var wide = false
     @State private var warm = false
 
-    static let code = """
-        @State private var law = 2
-        @State private var wide = false
-        @State private var warm = false
-
-        static let laws = ["Eased 200ms", "Spring", "Long and slow", "None"]
-
-        static func law(_ index: Int) -> Motion {
-            switch index {
-            case 1: .spring(response: 320)
-            case 2: .eased(900, .sineInOut)
-            case 3: .none
-            default: .standard
-            }
-        }
-
+    var body: some View {
         // NOTHING HERE SAYS "ANIMATE". A value that changes is a setpoint: the
         // tree says where the panel is going and the host carries it there.
         VStack {
             // The panels are described from `wide`, `warm` and `law`, read
             // here, so a press builds this closure once and the host walks
             // the rest.
-            DebugInfoLabel()
-
-            ColorBox()
-                .color(warm ? Palette.accent : Palette.brand)
-                .width(wide ? 300 : 120)
-                .height(wide ? 120 : 60)
-                .cornerRadius(wide ? 32 : 8)
-                .motion(Self.law(law))
-
-            // The same panel, told to stay still. `.motion` is per view.
-            ColorBox()
-                .color(warm ? Palette.accent : Palette.brand)
-                .width(wide ? 300 : 120)
-                .height(wide ? 120 : 60)
-                .cornerRadius(wide ? 32 : 8)
-                .motion(.none)
-
-            // And the same panel again, with a rule: everything travels
-            // EXCEPT how big it is, which arrives. The last rule that names a
-            // value is the one that answers for it.
-            ColorBox()
-                .color(warm ? Palette.accent : Palette.brand)
-                .width(wide ? 300 : 120)
-                .height(wide ? 120 : 60)
-                .cornerRadius(wide ? 32 : 8)
-                .motion(Self.law(law))
-                .motion(.none, .size)
-
-            HStack {
-                Button("Size").onClicked { wide.toggle() }
-                Button("Colour").onClicked { warm.toggle() }
-                Button(Self.laws[law]).onClicked { law = (law + 1) % Self.laws.count }
-            }
-        }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             Text("A change that travels")
@@ -117,6 +65,7 @@ struct MotionSample: SampleContent, ExampleContent {
 
     /// One panel, either travelling at the chosen law or arriving at once.
     private func panel(travels: Bool) -> some View {
+        // `.motion` is per view: the chosen law, or `.none` to arrive at once.
         ColorBox()
             .color(warm ? Palette.accent : Palette.brand)
             .width(wide ? 300 : 120)
@@ -126,7 +75,8 @@ struct MotionSample: SampleContent, ExampleContent {
             .motion(travels ? Self.law(law) : .none)
     }
 
-    /// The same panel with a RULE: everything travels except how big it is.
+    /// The same panel with a RULE: everything travels except its size, which
+    /// `.size` takes to be its width, its height and its corner radius.
     private func sized() -> some View {
         ColorBox()
             .color(warm ? Palette.accent : Palette.brand)
@@ -137,6 +87,7 @@ struct MotionSample: SampleContent, ExampleContent {
             .motion(Self.law(law))
             .motion(.none, .size)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

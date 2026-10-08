@@ -2,38 +2,19 @@ import StateUI
 
 /// A switch bound to a flag, reporting each flip as the value it now has.
 struct SwitchSample: SampleContent, ExampleContent {
+    // listing: SwitchSample
     @State private var soundOn = true
     @State private var said = "not thrown yet"
+    // listing: end
 
     static let id = "switch"
     static let title = "Switch"
     static let summary = "An on/off toggle, reported as the value it now has."
 
-    static let code = """
-        @State private var soundOn = true
-        @State private var said = "not thrown yet"
-
-        VStack {
-            // The flag is read here, so every flip builds this closure.
-            DebugInfoLabel()
-
-            HStack {
-                Text("Sound")
-                    .verticalAlignment(.center)
-
-                Switch($soundOn)
-                    // Runs beside the binding's write-back, carrying what the
-                    // switch NOW is rather than what this side guessed.
-                    .onToggled { on in said = on ? "thrown on" : "thrown off" }
-            }
-
-            Text(soundOn ? "on" : "off")
-            Text(said)
-        }
-        """
-
+    // listing: SwitchSample
     var body: some View {
         VStack {
+            // The flag is read here, so every flip builds this closure.
             DebugInfoLabel()
 
             HStack {
@@ -45,6 +26,8 @@ struct SwitchSample: SampleContent, ExampleContent {
                     .accessibilityIdentifier("switch.sound")
                     .accessibilityLabel("Sound on")
                     .tint(Palette.accent)
+                    // Runs beside the binding's write-back, carrying what the
+                    // switch NOW is rather than what this side guessed.
                     .onToggled { on in said = on ? "thrown on" : "thrown off" }
             }
             .spacing(12)
@@ -61,6 +44,7 @@ struct SwitchSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         Text("`.onToggled` carries the value the switch now has, and runs after the "

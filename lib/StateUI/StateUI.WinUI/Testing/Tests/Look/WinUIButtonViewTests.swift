@@ -105,6 +105,36 @@ final class WinUIButtonViewTests: XCTestCase {
         }
     }
 
+    /// A button's words spaced wider stand wider: the room between its letters reaches the words its template draws.
+    func testAButtonsLettersSpacedWiderMakeItWider() {
+        onUIThread {
+            let host = WinUIRenderer.running {
+                VStack {
+                    Button("Spaced").horizontalAlignment(.start)
+                    Button("Spaced").tracking(6).horizontalAlignment(.start)
+                }
+            }
+            let buttons = host.views(WinUIButtonView.self)
+            XCTAssertEqual(buttons.count, 2)
+            let (plain, spaced) = (buttons[0].measure(width: nil, height: nil), buttons[1].measure(width: nil, height: nil))
+            XCTAssertGreaterThanOrEqual(spaced.width - plain.width, 30, "six letters, each six wider")
+        }
+    }
+
+    /// An oval button is a capsule at its size: its corners round by half its shorter side, however wide it is.
+    func testAnOvalButtonRoundsItsCornersByHalfItsShorterSide() {
+        onUIThread {
+            let host = WinUIRenderer.running {
+                VStack {
+                    Button().shape(.ellipse).width(60).height(40).horizontalAlignment(.start)
+                }
+            }
+            let button = host.views(WinUIButtonView.self)[0]
+            host.settle { Self.read(button, "cornerRadius").hasPrefix("20") }
+            XCTAssertTrue(Self.read(button, "cornerRadius").hasPrefix("20"), Self.read(button, "cornerRadius"))
+        }
+    }
+
     @MainActor private static func read(_ view: WinUIView, _ what: String) -> String {
         WinUIStrings.read { stateui_winui_read(view.handle, what, $0, $1) }
     }

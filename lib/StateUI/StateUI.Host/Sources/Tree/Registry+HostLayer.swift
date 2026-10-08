@@ -8,7 +8,7 @@
 /// Design: docs/design/host/tree.md#what-every-element-realizes
 extension Registry {
     /// A view's place in its layout, by the layout arithmetic: its stated sizes and bounds, its margin, its
-    /// alignment, its grid cell and its area.
+    /// alignment, its grid cell, its area, and its depth among siblings it overlaps (`MountedElement.children`).
     public func everyElementTakesItsPlace() {
         everyElementRealizes(VisualElementContract.width)
         everyElementRealizes(VisualElementContract.height)
@@ -24,6 +24,7 @@ extension Registry {
         everyElementRealizes(ViewContract.gridRowSpan)
         everyElementRealizes(ViewContract.gridColumnSpan)
         everyElementRealizes(ViewContract.area)
+        everyElementRealizes(VisualElementContract.zIndex)
     }
 
     /// A view drawn moved, turned and scaled over its place (`MountedElement.drawingTransform`).
@@ -72,5 +73,26 @@ extension Registry {
         everyElementRaises(ViewContract.pointerMoved)
         everyElementRaises(ViewContract.pointerPressed)
         everyElementRaises(ViewContract.pointerReleased)
+    }
+
+    /// Every element's view is dragged between views and takes what is dropped on it, by the host layer's rules
+    /// (`DragAndDrop`, `DropTarget`).
+    /// Design: docs/design/host/runtime.md#a-drag-between-views
+    public func everyElementDragsAndDrops() {
+        everyElementRealizes(ViewContract.canDrag)
+        everyElementRealizes(ViewContract.dragText)
+        everyElementRealizes(ViewContract.allowsDrop)
+        everyElementRaises(ViewContract.dragStarting)
+        everyElementRaises(ViewContract.dragEnded)
+        everyElementRaises(ViewContract.dragOver)
+        everyElementRaises(ViewContract.dragLeave)
+        everyElementRaises(ViewContract.drop)
+    }
+
+    /// Every element's view takes files dropped on it from the system, of the kinds it lists (`DragAndDrop.taken`).
+    /// Design: docs/design/host/runtime.md#files-dropped-on-a-view
+    public func everyElementTakesDroppedFiles() {
+        everyElementRealizes(ViewContract.droppedFileTypes)
+        everyElementRaises(ViewContract.filesDropped)
     }
 }

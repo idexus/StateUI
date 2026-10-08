@@ -22,6 +22,8 @@ class WebDOMView {
 
     /// The listeners hung on the element, let go of with it.
     private var listeners: [Int32] = []
+    private var offered = DragAndDrop.none
+    private var dragListener: Int32?
 
     /// The CSS properties this view's element holds, by name, so a value is sent only when it changes.
     private var styles: [String: String] = [:]
@@ -31,6 +33,16 @@ class WebDOMView {
 
     /// Where the browser lays the view out in its layout, as last read; nil before, or where it lays it out nowhere.
     var slot: Rect?
+
+    /// How far past its frame the view's element reaches on each side - the box the browser lays out being the
+    /// frame and this much more; nothing but for a picture filling its room.
+    var reach: Double { 0 }
+
+    /// The view's frame in the box the browser laid its element out in.
+    func frame(laidOut box: Rect?) -> Rect? {
+        guard let box, reach != 0 else { return box }
+        return Rect(x: box.x + reach, y: box.y + reach, width: box.width - 2 * reach, height: box.height - 2 * reach)
+    }
 
     /// Where the view is drawn while its place travels; nil at its slot.
     var travelling: Rect?
@@ -88,6 +100,21 @@ class WebDOMView {
         Self.liveCount -= 1
     }
 
+    /// What the element's drag carries and whether it takes drops, as last told; `action` hears each drag.
+    /// Design: docs/design/platforms/web/input.md#a-drag-between-views
+    func offerDrag(_ offered: DragAndDrop, _ action: @escaping @MainActor (HeardInput) -> Void) {
+        guard offered != self.offered else { return }
+        self.offered = offered
+        if let told = dragListener {
+            WebRelay.forget(told)
+            listeners.removeAll { $0 == told }
+        }
+        let listener = WebRelay.listener { if let heard = WebRelay.dragHeard { action(heard) } }
+        dragListener = listener
+        listeners.append(listener)
+        WebRelay.offerDrag(node, offered, listener)
+    }
+
     /// Runs `action` whenever the element hears `event`.
     func listen(_ event: String, _ action: @escaping @MainActor () -> Void) {
         let listener = WebRelay.listener(action)
@@ -95,16 +122,42 @@ class WebDOMView {
         WebRelay.listen(node, event, listener)
     }
 
+    /// Says when a pointer takes hold of the element, and once when it lets go - lifted, called off, or gone off it.
+    func listenForHolding(pressed: @escaping @MainActor () -> Void, released: @escaping @MainActor () -> Void) {
+        var holding = false
+        listen("pointerdown") {
+            holding = true
+            pressed()
+        }
+        for event in ["pointerup", "pointercancel", "pointerleave"] {
+            listen(event) {
+                guard holding else { return }
+                holding = false
+                released()
+            }
+        }
+    }
+
     /// Sets a CSS property, or takes it away for nil; one written over while a place travels waits for it to land.
     func style(_ name: String, _ value: String?) {
         guard styles[name] != value else { return }
         styles[name] = value
         if !overridden.contains(name) { WebRelay.setStyle(node, name, value) }
+        // The width the layout gives the view, which a field's padding yields to.
+        // Design: docs/design/platforms/web/look.md#a-fields-padding
+        if name == "width" { WebRelay.setStyle(node, "--stateui-width", value) }
     }
 
     /// The value of a CSS property as the view's own say keeps it.
     func styled(_ name: String) -> String? {
         styles[name]
+    }
+
+    /// What the element is drawn over, under its whole box: a colour, or a brush's first colour; nil for the
+    /// browser's own. A field's box is its field, the picture the page's look draws in it kept.
+    /// Design: docs/design/platforms/web/look.md#a-views-background
+    func setBackground(_ value: HostValue?) {
+        style("background-color", WebCSS.fill(HostMaterial(value).painted))
     }
 
     /// Sets an attribute, or takes it away for nil.

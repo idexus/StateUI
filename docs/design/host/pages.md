@@ -64,6 +64,21 @@ said as the user's, where the room is at least the platform's own breakpoint
 and it was hidden. After that the user and the application decide. The
 breakpoint is each platform's, a host's parameter.
 
+## A sidebar's material
+
+A split view says two materials for its sidebar: what it stands on beside the
+detail (`sidebarBackground`) and what it stands on while it slides over the
+detail (`flyoutBackground`). Each host knows which place its sidebar stands
+in - a drawer, an overlay pane, a collapsed split - and asks the split view
+for that place's material (`sidebarMaterial(over:)`); an empty one is the
+platform's own there. Beside the detail the platform's own lets the window
+through, as a desktop sidebar does; over the detail it is the platform's
+drawer or overlay surface, never the window's - a clear window would leave a
+flyout with nothing under its words. The sidebar page's own background still
+paints the page on top. A split view saying either material gives its
+sidebar to the application to paint (`paintsSidebar`): a host whose platform
+draws a sidebar's material of its own leaves it out then.
+
 ## The way back
 
 A window's way back (`WindowPresentation.wayBack`) takes the top sheet first:

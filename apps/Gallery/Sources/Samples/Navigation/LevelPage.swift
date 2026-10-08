@@ -64,15 +64,10 @@ struct LevelPage: View {
                 .horizontalTextAlignment(.center)
 
             Button("Deeper")
-                .background(Palette.accent)
-                .textColor(.white)
-                .shape(.roundedRectangle(8))
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { path.append(.level(level + 1)) }
 
             Button("Back")
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { path.removeLast() }
 

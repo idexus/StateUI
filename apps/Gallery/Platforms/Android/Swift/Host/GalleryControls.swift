@@ -7,6 +7,7 @@ import StateUIAndroid
 /// The controls this head realizes for the gallery's own elements, and each one's number, which its Java view tells
 /// the Swift half by.
 enum GalleryControls {
+    // listing: InteropControlSample.Android.controls.swift
     /// Registers every control this host realizes. Said once, as the library loads.
     @MainActor
     static func register() {
@@ -14,6 +15,7 @@ enum GalleryControls {
         RatingBarView.register()
         GLESCube3DView.register()
     }
+    // listing: end
 
     /// Each control its Java view tells, by the number it was made with, held weakly.
     @MainActor private static var controls: [Int64: Weak] = [:]

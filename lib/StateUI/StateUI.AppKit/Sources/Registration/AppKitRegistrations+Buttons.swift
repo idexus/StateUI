@@ -31,7 +31,7 @@ extension AppKitRegistrations {
                 BorderElementContract.shape, BorderElementContract.stroke,
                 BorderElementContract.lineWidth, VisualElementContract.isEnabled,
                 FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes,
+                FontElementContract.fontAttributes, TextStyleElementContract.tracking,
             ]) { view, values in
                 // Each value is read into a name of its own: twelve arguments
                 // of `flatMap` and `??` in one call is more than the type
@@ -47,8 +47,7 @@ extension AppKitRegistrations {
                     values[ImageElementContract.contentMode] ?? .fit)
                 let textColor: NSColor = values[TextStyleElementContract.textColor]
                     .flatMap { nsColor($0.propValue) } ?? .controlTextColor
-                let background: NSColor? = values[VisualElementContract.background]
-                    .flatMap { nsColor($0.propValue) }
+                let background = paintedColor(values[VisualElementContract.background]?.propValue)
                 let stroke = values[BorderElementContract.stroke]?.propValue
                 let lineWidth = BoxArithmetic.outlineWidth(
                     stroke: stroke, width: values[BorderElementContract.lineWidth])
@@ -62,6 +61,7 @@ extension AppKitRegistrations {
                     imageScaling: scaling,
                     font: Self.font(values),
                     textColor: textColor,
+                    tracking: values[TextStyleElementContract.tracking] ?? 0,
                     backgroundColor: background,
                     strokeColor: strokeColor,
                     lineWidth: lineWidth,

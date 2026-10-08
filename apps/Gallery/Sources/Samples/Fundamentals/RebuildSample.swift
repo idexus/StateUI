@@ -6,50 +6,12 @@ struct RebuildSample: SampleContent, ExampleContent {
     static let title = "Why a view rebuilds"
     static let summary = "`debugInfo()` names each view and counts its builds: change one value and see who answers."
 
+    // listing: RebuildSample
     @State private var left = 0
     @State private var right = 0
 
-    static let code = """
-        @State private var left = 0
-        @State private var right = 0
-
-        VStack {
-            Button("Change left").onClicked { left += 1 }
-            Button("Change right").onClicked { right += 1 }
-
-            // Each panel BORROWS one of the two values, so each reads one
-            // piece of state and is described again when that one moves.
-            Panel(name: "left", value: $left)
-            Panel(name: "right", value: $right)
-        }
-
-        private struct Panel: View {
-            let name: String
-            @Binding var value: Int
-
-            var body: some View {
-                VStack {
-                    Text("\\(name) is \\(value)")
-
-                    // WHY THIS VIEW IS BEING DESCRIBED, on the screen it is
-                    // about: the view's name, how many times, and the state
-                    // this one is for.
-                    Text(debugInfo())
-
-                    Passenger()
-                }
-            }
-        }
-
-        private struct Passenger: View {
-            // Reads nothing and is built with nothing, so every rebuild of the
-            // panel carries it - it keeps saying `1 build, first time`.
-            var body: some View {
-                Text(debugInfo())
-            }
-        }
-        """
-
+    // Reads nothing - the buttons write in handlers, the panels are handed
+    // bindings - so this body is built once.
     var body: some View {
         VStack {
             HStack {
@@ -62,15 +24,16 @@ struct RebuildSample: SampleContent, ExampleContent {
             .spacing(8)
             .horizontalAlignment(.center)
 
-            // TWO OF THEM, side by side, because the reading is only worth
-            // anything against another: one panel answers and the other stands
-            // still, and the counts say which.
+            // TWO OF THEM, because the reading is only worth anything against
+            // another: one panel answers and the other stands still, and the
+            // counts say which.
             RebuildPanel(name: "left", value: $left)
 
             RebuildPanel(name: "right", value: $right)
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -102,6 +65,7 @@ struct RebuildSample: SampleContent, ExampleContent {
     }
 }
 
+// listing: RebuildSample
 /// One value, and the reading that says why this panel was described.
 private struct RebuildPanel: View {
     let name: String
@@ -116,6 +80,9 @@ private struct RebuildPanel: View {
                     .fontAttributes(.bold)
                     .textColor(Palette.text)
 
+                // WHY THIS VIEW IS BEING DESCRIBED, on the screen it is
+                // about: the view's name, how many times, and the state
+                // this one is for.
                 Text(debugInfo())
                     .fontSize(13)
                     .textColor(Palette.accent)
@@ -129,10 +96,11 @@ private struct RebuildPanel: View {
         .stroke(Palette.outline)
         .lineWidth(1)
         .shape(.roundedRectangle(10))
-        .background(Palette.raised)
     }
 }
+// listing: end
 
+// listing: RebuildSample
 /// A view that reads nothing and is built with nothing, so every rebuild of the
 /// panel above it carries it: its reading stays at the first build.
 private struct RebuildPassenger: View {
@@ -142,3 +110,4 @@ private struct RebuildPassenger: View {
             .textColor(Palette.subtle)
     }
 }
+// listing: end

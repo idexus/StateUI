@@ -46,8 +46,7 @@ final class UIKitActToolkit: ActToolkit {
 
     /// Asks in UIKit's alert over what the user's window shows now - its top sheet, else its pages.
     func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
-        guard var presenter = renderer.userWindow?.rootViewController else { return false }
-        while let top = presenter.presentedViewController, !top.isBeingDismissed { presenter = top }
+        guard let presenter = renderer.userPresenter else { return false }
         let asked = UIKitQuestion(question)
         showing = asked
         asked.ask(over: presenter) { [weak self] accepted, words in
@@ -60,6 +59,22 @@ final class UIKitActToolkit: ActToolkit {
     func announce(_ words: String) {
         announcedForTesting.append(words)
         UIAccessibility.post(notification: .announcement, argument: words)
+    }
+
+    /// Shows every window in `theme`: each window's own style, unspecified for the system's.
+    func useColorScheme(_ theme: ColorScheme) {
+        for (_, controller) in renderer.roster.windows {
+            controller.window?.overrideUserInterfaceStyle = Self.style(theme)
+        }
+    }
+
+    /// UIKit's style for `theme`.
+    static func style(_ theme: ColorScheme) -> UIUserInterfaceStyle {
+        switch theme {
+        case .light: .light
+        case .dark: .dark
+        case .system: .unspecified
+        }
     }
 
     /// Takes the keyboard down: whatever holds the focus in the user's window gives it up; whether anything did.

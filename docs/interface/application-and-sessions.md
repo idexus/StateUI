@@ -51,7 +51,8 @@ scene ([Scenes](#scenes)).
 | Member | Meaning |
 | --- | --- |
 | `phase` | active, inactive, or background |
-| `info` | what the host says the application is, an `AppInfo`: `name`, `packageName`, `versionString`, `buildString`, and `colorScheme`, the theme the system asks for, kept current as the user switches it ([What the library offers](../concepts/environment.md#what-the-library-offers)) |
+| `info` | what the host says the application is, an `AppInfo`: `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, the theme in force, and `accentColor`, the accent the user chose for the system, both kept current as the user switches them ([What the library offers](../concepts/environment.md#what-the-library-offers)) |
+| `colorScheme` | the theme the application holds: `.system` follows the user, `.light` and `.dark` hold it ([The application's theme](#the-applications-theme)) |
 | `scenes` | the scenes standing, in opening order |
 | `styles` | the application's `StyleSheet` |
 | `motion` | default motion law |
@@ -59,6 +60,27 @@ scene ([Scenes](#scenes)).
 | `openWindow()` | opens one more window of the `WindowGroup` with no name, as *File ▸ New Window* does |
 | `openWindow(_:)`, `openWindow(_:value:)` | opens a window of a kind, in the scene declaring it |
 | `closeWindow(_:)`, `closeWindow(_:value:)` | closes every window of a kind, or the one for a value |
+
+### The application's theme
+
+An application follows the theme the user chose until it holds one of its
+own. `application.colorScheme` is `.system` until it is written; `.light` or
+`.dark` shows every window in that theme with each platform's own call, and
+`.system` gives it back to the user's setting. `info.colorScheme` reports the
+theme in force, which every `Color(light:dark:)` resolves against.
+
+```swift quote
+Button("Dark") { application.colorScheme = .dark }
+Button("As the system") { application.colorScheme = .system }
+```
+
+`info.accentColor` is the accent the user chose for the system - on a
+platform with none, the application's own tint - reported live, so a view
+reading it is built again when the user changes it.
+
+```swift quote
+Switch($on).tint(app.info.accentColor)
+```
 
 Configuration needed before the first view is built belongs in the
 application's initializer:
@@ -348,7 +370,7 @@ sheets, its bar - is the view its `WindowGroup` or `Window` shows.
 | `minimumWidth`, `minimumHeight` | optional lower content-size bounds |
 | `maximumWidth`, `maximumHeight` | optional upper content-size bounds |
 | `isMaximizable`, `isMinimizable` | whether the corresponding native operation is permitted |
-| `isTranslucent` | whether the desktop shows through the window, where the platform can show it |
+| `background` | what the window is made of behind its pages: a colour, or a blur or glass the desktop shows through, where the platform can show it |
 | `close()` | closes this exact window; its scene ends with its last |
 
 Position and size are four independent optional requests:
@@ -393,17 +415,27 @@ the appearance of one button. A host blocks equivalent native commands while
 the corresponding value is `false`. `nil` preserves the platform's existing
 capability.
 
-`isTranslucent` asks for a window the desktop shows through, blurred, under
-whatever its pages leave uncovered or paint in a colour with an alpha - on
-AppKit the window's own material lies under the page, and the margin around a
-floating sidebar shows it. It is a desktop semantic: a host whose windows
-cannot show what is behind them keeps them opaque, and the application's
-colours read as written. Text belongs on a surface of its own rather than
-straight over the desktop. `nil` keeps the platform's opaque window.
+`background` is what the window is made of behind its pages - around a
+floating sidebar, under a page that paints no background of its own: a
+colour, or a blur the desktop shows through, from `.ultraThin`, which lets the
+most through, to `.ultraThick`, its tint lying over it. On AppKit the window's
+own blur lies under the page, and the margin around a floating sidebar shows
+it; on WinUI the desktop acrylic. It is a desktop semantic: a host whose
+windows cannot show what is behind them paints the blur's colour instead.
+Text belongs on a surface of its own rather than straight over the desktop.
+`nil` keeps the platform's own window, and so does a nil half of a pair:
 
 ```swift quote
-.pageBackground(Color("#CC0D0B14"))
-.onCreated { window.isTranslucent = true }
+.onCreated {
+    window.background = .blur(.thick.tint(Color("#26512BD4")))
+}
+```
+
+```swift quote
+.onCreated {
+    // The platform's own window in the light theme, a tinted blur in the dark.
+    window.background = Material(light: nil, dark: .blur(.thick.tint(Color("#26512BD4"))))
+}
 ```
 
 The host reports `WindowPhase` through the same session:

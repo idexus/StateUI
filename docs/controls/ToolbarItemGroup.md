@@ -43,12 +43,10 @@ See [the dictionary](README.md) for how a mark is given.
 <thead><tr><th>Host</th><th>Created</th><th>Members (2)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>2 ✅</td><td><code>NSToolbarItem</code>; <code>NSMenuToolbarItem</code> overflow</td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>2 ✅</td><td><code>UIBarButtonItem</code></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">◐</td><td>1 –</td><td><code>Toolbar</code> <code>MenuItem</code></td></tr>
-<tr><td colspan="3">cannot read the bar of Page - Android's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>1 ✅ · 1 –</td><td><code>Toolbar</code> <code>MenuItem</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>2 ✅</td><td><code>CommandBar</code> <code>AppBarButton</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>2 ✅</td><td><code>GtkButton</code> in <code>GtkHeaderBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">◐</td><td></td><td><code>&lt;button&gt;</code> in an ARIA <code>toolbar</code></td></tr>
-<tr><td colspan="3">cannot read the bar of Page - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>2 ✅</td><td><code>&lt;button&gt;</code> in an ARIA <code>toolbar</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarItemGroupContract.swift`.
@@ -57,8 +55,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarItemGroupC
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>order</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td></tr>
-<tr><td colspan="9">Android Views: cannot read the bar of Page - Android's driver has no path for it yet<br>Web: cannot read the bar of Page - the Web's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>side</code></td><td>property</td><td><code>ToolbarSide</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td></tr>
-<tr><td colspan="9">Android Views: Android's bar has no leading edge beside its navigation button: a leading group stands first among the actions.<br>Web: cannot read the bar of Page - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>order</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>side</code></td><td>property</td><td><code>ToolbarSide</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: Android's bar has no leading edge beside its navigation button: a leading group stands first among the actions.</td></tr></tbody>
 </table>

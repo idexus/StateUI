@@ -30,6 +30,7 @@ extension AndroidElement {
             split.onScrimTapped = { [weak self] in self?.changeSidebarVisibility(to: false) }
             split.onAdapted = { [weak self] in self?.sidebarShown(true) }
             if changed.contains(.showsSidebar) { split.present(value(.showsSidebar)?.bool == true) }
+            groundSidebar()
             // The detail's bars show the sidebar's button: they are told once the split holds both its pages.
             children.dropFirst().first?.refreshBars()
         default:
@@ -38,6 +39,16 @@ extension AndroidElement {
         // What an arrangement declares of the bar reaches every bar under it.
         // Design: docs/design/platforms/android/pages.md#the-bar
         if type != .page, NodeType.pageTypes.contains(type), !changed.isDisjoint(with: Self.barValues) { refreshBars() }
+    }
+
+    /// Stands a split view's sidebar on its materials - Android blurs nothing behind a view, so a blur stands as its
+    /// colour.
+    func groundSidebar() {
+        guard let split = view as? AndroidSplitView else { return }
+        let colour = { (over: Bool) in
+            self.element.sidebarMaterial(over: over).painted.flatMap { HostBrush($0).firstColor }.flatMap(AndroidView.argb)
+        }
+        split.grounds = (colour(false), colour(true))
     }
 
     /// What an arrangement declares of the bars under it.
@@ -127,7 +138,8 @@ extension AndroidElement {
         // No place at the leading edge beside the navigation button: those groups stand first.
         // Design: docs/design/platforms/android/pages.md#the-bar
         let actions = page?.chromeActions ?? ChromeActions()
-        let onBar = actions.leading.flatMap { $0 } + actions.primary
+        let groups = actions.leading + actions.trailing
+        let onBar = groups.flatMap { $0 }
         let shown = onBar + actions.overflow
         let colors = page?.barColors ?? element.barColors
 
@@ -141,6 +153,7 @@ extension AndroidElement {
             var action = item.android.menuItem
             action.onBar = onBar.contains { $0 === item }
             action.withText = action.onBar && item.showsActionWords
+            action.group = groups.firstIndex { $0.contains { $0 === item } } ?? groups.count
             return action
         }
         var items = shown

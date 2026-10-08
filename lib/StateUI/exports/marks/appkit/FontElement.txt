@@ -31,9 +31,9 @@ TextField.fontAttributes: ✅
 TextField.fontFamily: ✅
 TextField.fontSize: ✅
 TextField.isFontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
-TextSpan.fontAttributes: cannot read fontAttributes of TextSpan - AppKit's driver has no path for it yet
-TextSpan.fontFamily: not realized
-TextSpan.fontSize: not realized
+TextSpan.fontAttributes: ✅
+TextSpan.fontFamily: ✅
+TextSpan.fontSize: ✅
 TextSpan.isFontAutoScalingEnabled: not realized
 TimePicker.fontAttributes: ✅
 TimePicker.fontFamily: ✅

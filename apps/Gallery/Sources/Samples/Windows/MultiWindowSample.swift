@@ -3,6 +3,7 @@ import StateUI
 /// The galleries are a SCENE: as many gallery windows as the user opens, the
 /// windows beside them, and the look they share.
 struct MultiWindowSample: SampleContent, ExampleContent {
+    // listing: MultiWindowSample
     /// The look every gallery window wears, which the Fonts and Colours
     /// windows change.
     let style: SessionStyle
@@ -17,110 +18,18 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     /// What the last button answered: the window it opened or closed, or what
     /// it was refused with.
     @State private var said = "Nothing asked yet."
+    // listing: end
 
     static let id = "multi-window"
     static let title = "More than one window"
     static let summary = "Tools, a window per value, and more gallery windows sharing one scene."
 
+    static var code: String { Listings.joined("Gallery.SessionStyle", "GalleryScene", "GalleryWindow", "MultiWindowSample") }
+
     /// Devices whose host can present independent windows.
     static let formFactors: Set<FormFactor> = [.tablet, .desktop]
 
-    static let code = """
-        extension WindowType {
-            static let fonts = WindowType("gallery.fonts")
-            static let colours = WindowType("gallery.colours")
-            static let swatch = WindowType("gallery.swatch")
-        }
-
-        extension SceneKey {
-            static let font = SceneKey("gallery.font", of: String.self)
-            static let accent = SceneKey("gallery.accent", of: AccentChoice.self)
-        }
-
-        enum AccentChoice: String, CaseIterable, PersistentValue { case violet, teal, coral, graphite }
-
-        struct GalleryScene: Scene {                    // the galleries
-            @State private var style = SessionStyle()   // the look every window of it wears
-
-            var body: some Scene {
-                WindowGroup { GalleryWindow(style: style) }    // launch, File ▸ New: one more
-                Window(.fonts) { FontsPage() }                 // one of a kind
-                    .hidesWhenInactive(style.hidesTools)
-                    .floatsOnTop(style.floatsTools)
-                    .environment(style)
-                Window(.colours) { ColoursPage() }
-                    .hidesWhenInactive(style.hidesTools)
-                    .floatsOnTop(style.floatsTools)
-                    .environment(style)
-                Window(.debugInspector) { DebugInspector() }
-                WindowGroup(.swatch, for: Int.self) { number in    // one per value,
-                    SwatchPage(number: number)                     // its value lent
-                }
-            }
-        }
-
-        struct GalleryWindow: View {                    // ONE gallery window
-            let style: SessionStyle
-            @State private var nav = Navigation()       // where it is: its own
-
-            var body: some View { MainPage(nav: nav, style: style) }
-        }
-
-        final class SessionStyle {                      // kept WITH its scene
-            @State(sceneKey: .font) var font = ""
-            @State(sceneKey: .accent) var accent = AccentChoice.violet
-            @State var hidesTools = false
-            @State var floatsTools = false
-        }
-
-        // Opening and closing the scene's windows:
-
-        let style: SessionStyle
-        @Environment(\\.scene) private var scene            // the galleries
-        @Environment(\\.application) private var application
-        @State private var said = "Nothing asked yet."
-
-        Button("Fonts").onClicked {
-            do {
-                try await application.openWindow(.fonts)
-            } catch WindowError.alreadyOpen {
-                said = "It is open already."
-            }
-        }
-
-        Button("Close fonts").onClicked { try await application.closeWindow(.fonts) }
-
-        SwitchRow("Hide them behind another scene", style.$hidesTools)
-        SwitchRow("Keep them on top", style.$floatsTools)
-
-        // And a window closes itself, from a page in it:
-        //     @Environment(\\.window) private var window
-        //     Button("Done").onClicked { try await window.close() }
-
-        // A window per value:
-
-        Button("Swatch 2").onClicked { try await application.openWindow(.swatch, value: 2) }
-        Button("Close swatch 2").onClicked { try await application.closeWindow(.swatch, value: 2) }
-
-        // Each window is handed its number as a binding - writing it makes the
-        // SAME window about another swatch, in SwatchPage.swift:
-        //     Button("Next").onClicked { number += 1 }
-
-        // More gallery windows, and the whole scene:
-
-        Button("New gallery window").onClicked { try await application.openWindow() }   // as File ▸ New
-        Button("Close every gallery window").onClicked { try await scene.close() }     // and its tools
-
-        VStack {
-            // What the last button answered, and what is open - read here, so
-            // a window opening or closing builds this closure.
-            DebugInfoLabel()
-            Text(said)
-            Text("Windows in this scene: \\(scene.windows.count)")
-            Text(scene.windows.map { $0.title ?? "untitled" }.joined(separator: " · "))
-        }
-        """
-
+    // listing: MultiWindowSample
     var body: some View {
         VStack {
             preview
@@ -175,31 +84,24 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
 
             Button("Close swatch 2")
-                .fontSize(13)
-                .padding(horizontal: 14, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked { await closeSwatch(2) }
 
             SectionTitle("More gallery windows")
 
             Button("New gallery window")
-                .background(style.accent.color)
-                .textColor(.white)
-                .shape(.roundedRectangle(8))
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.open")
                 .onClicked { await openAnother() }
 
             Button("Close every gallery window")
-                .fontSize(13)
-                .padding(horizontal: 14, vertical: 6)
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.close")
                 .onClicked { await closeThis() }
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         Text("Fonts and Colours are windows of the galleries' scene: they change the "
@@ -210,11 +112,12 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             .textColor(Palette.subtle)
     }
 
+    // listing: MultiWindowSample
     /// A line in the scene's font and accent - what its two windows change.
     private var preview: some View {
         let line = Text("The quick brown fox jumps over the lazy dog.")
             .fontSize(20)
-            .textColor(style.accent.color)
+            .textColor(style.look(dark: application.info.colorScheme == .dark).barColour.color(system: application.info.accentColor, for: .bar))   // listing: keep
             .horizontalTextAlignment(.center)
 
         return style.font.isEmpty ? line : line.fontFamily(style.font)
@@ -223,10 +126,6 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     /// The button that opens one of the scene's windows.
     private func opens(_ caption: String, _ type: WindowType) -> some View {
         Button(caption)
-            .background(style.accent.color)
-            .textColor(.white)
-            .shape(.roundedRectangle(8))
-            .padding(horizontal: 20, vertical: 8)
             .accessibilityIdentifier(handle("window.open", caption))
             .onClicked { await open(type, caption) }
     }
@@ -234,8 +133,6 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     /// The button that closes it.
     private func closes(_ caption: String, _ type: WindowType) -> some View {
         Button(caption)
-            .fontSize(13)
-            .padding(horizontal: 14, vertical: 6)
             .accessibilityIdentifier(handle("window.close", caption))
             .onClicked { await close(type, caption) }
     }
@@ -280,7 +177,6 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             .background(SwatchPage.colour(of: number))
             .textColor(.white)
             .shape(.roundedRectangle(8))
-            .padding(horizontal: 16, vertical: 8)
             .accessibilityIdentifier("window.open.swatch.\(number)")
             .onClicked { await openSwatch(number) }
     }
@@ -317,5 +213,5 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             said = "The scene: \(error)"
         }
     }
-
+    // listing: end
 }

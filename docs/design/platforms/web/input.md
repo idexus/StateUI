@@ -7,13 +7,29 @@ turns the page's events into what the host layer hears (`hear`).
 
 ## Taps
 
-A tap is the element's `click`, the run of clicks its count. An element the
+A tap is the element's `click`, the run of clicks its count. A click on a
+`<label>` beside its control - a radio button's caption - is no tap of its
+own: the browser clicks the control next, and that click is the one tap. An
+element the
 user taps that is no control of the browser's own is a button for assistive
 technology and the keyboard: it takes the focus, and Return or Space pressed
 on it is a tap - a tap assistive technology makes, which the host layer
 answers at once whatever the count asked for. The pointer's events are the
 DOM's `pointerenter`, `pointerleave`, `pointermove`, `pointerdown` and
 `pointerup`, where the pointer is told from the element's top left corner.
+
+A button pressed leaves the keyboard with the field being typed in, as a
+native button takes no keyboard of a field: the page's press on a button is
+not let move the focus while a field holds it, so the program taking the
+on-screen keyboard down finds the field still holding it.
+
+The keyboard moves through a strip of tabs and a menu as a platform's own:
+the arrows go from one to the next - across a strip as its words run, right
+to left turning them about - Home and End to the first and the last, and the
+arrow towards a submenu opens it; a menu shown takes the keyboard, and an
+item that cannot be chosen is passed over. Only the chosen tab takes the
+keyboard's Tab (`tabindex` 0, the others -1), and a tab is chosen as the
+keyboard reaches it.
 
 A listener is hung once for each kind the element asks for, and what it hears
 reaches the element only while the element still asks.
@@ -42,8 +58,34 @@ points a step of e - or, in Safari, as its gesture, whose scale it carries;
 the page's own zoom is taken from it, and a wheel standing still a fifth of
 a second ends it.
 
-Dragging and dropping between views (`canDrag`, `onDrop`) waits on a rule
-the hosts share: no host realizes it yet.
+## A drag between views
+
+A view's drag between views is HTML's own drag and drop, set on the element
+by the relay (`offer_drag`). A view that can be dragged is `draggable`; its
+`dragstart` carries the view's words as plain text, and its `dragend` says
+the drag ended wherever it ended. A view that takes drops takes a drag of
+plain text: its `dragenter` and `dragleave`, which come again for each child
+the drag crosses, are counted, so it hears the drag come once and go once;
+its `dragover` lets the drop land, and its `drop` hands over the words. A
+drag event stops at the innermost view that answers it. The host layer's
+rule makes over once and no leave after a drop. A view taking files takes a
+drag holding `Files`; its drop keeps each `File` as the relay keeps a chosen
+one, under a number of its own.
+
+## A disabled view
+
+Every element takes the enablement `presented(_:)` gives it: a control the
+`disabled` attribute, any other element `aria-disabled`, a control in a
+disabled branch disabled with it; the host layer hears nothing of the hand in
+any element there.
+
+## The keyboard's focus
+
+An element hears the keyboard coming into it, or into anything in it, and
+leaving it all: `focusin` says it came, and `focusout` that it left unless
+the focus went on to something inside it (`relatedTarget`) - told once a
+change. The program's `focus` and `unfocus` are the element's own `focus()`
+and `blur()`.
 
 ## What takes no input
 

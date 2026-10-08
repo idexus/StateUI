@@ -20,47 +20,19 @@ struct TwoLayersSample: SampleContent {
 /// The two layers side by side, each in a closure of its own so its build
 /// count is its own.
 private struct LayerRows: ExampleContent {
+    // listing: LayerRows
     /// The one value both rows show - held here, where it is shown.
     @State private var counter = 0
 
-    static let code = """
-        @State private var counter = 0
-
-        VStack {
-            // Neither the button nor this closure reads the count: a handler
-            // reads when it FIRES, not at build. So this stands at one build.
-            DebugInfoLabel()
-
-            Button("+1").onClicked { counter += 1 }
-
-            // LAYER ONE - A GET. The value is read here, so this closure is
-            // its reader and every press builds it again.
-            VStack {
-                Text("Counter \\(counter)")
-                DebugInfoLabel()                    // climbs, "for counter"
-            }
-
-            // LAYER TWO - A CHANNEL. The state is handed on, the host writes
-            // the words as it changes, and this closure is never built again.
-            VStack {
-                Text($counter.convert { "Counter \\($0)" })
-                DebugInfoLabel()                    // stays at one
-            }
-        }
-        """
-
     var body: some View {
+        // Each layer stands in a row of its own below, so each takes its
+        // own reading.
         VStack {
             // Nothing here reads the count - a handler reads when it fires -
             // so this closure stands at one build however often you press.
             DebugInfoLabel()
 
             Button("+1")
-                .fontSize(14)
-                .background(Palette.accent)
-                .textColor(Palette.onAccent)
-                .shape(.roundedRectangle(8))
-                .padding(horizontal: 22, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { counter += 1 }
 
@@ -68,18 +40,19 @@ private struct LayerRows: ExampleContent {
                 Text("Counter \(counter)")
                     .fontSize(20)
                     .fontAttributes(.bold)
-                DebugInfoLabel()
+                DebugInfoLabel()   // climbs, "for counter"
             }
 
             boxed("Layer two · a channel") {
                 Text($counter.convert { "Counter \($0)" })
                     .fontSize(20)
                     .fontAttributes(.bold)
-                DebugInfoLabel()
+                DebugInfoLabel()   // stays: "1 build, first time"
             }
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -99,6 +72,7 @@ private struct LayerRows: ExampleContent {
         .spacing(10)
     }
 
+    // listing: LayerRows
     /// One captioned row, its content in a closure of its own - which is what
     /// makes the reading inside it that row's alone.
     private func boxed<Content: Views>(_ caption: String, @ViewBuilder _ content: @escaping () -> Content) -> some View {
@@ -118,105 +92,34 @@ private struct LayerRows: ExampleContent {
         .shape(.roundedRectangle(8))
         .stroke(Palette.outline)
     }
+    // listing: end
 }
 
 /// The same two layers over a subtree worth describing, each side timing its
 /// own describe - which is the comparison in microseconds.
 private struct LayerCost: ExampleContent {
+    // listing: LayerCost
     /// The value the two blocks show, one reading it and one handed it.
     @State private var counter = 0
 
     /// How many views stand in each block - the thing a rebuild describes.
     @State private var leaves = 100
 
-    static let code = """
-        @State private var counter = 0
-        @State private var leaves = 100
-
+    var body: some View {
         // The same two layers inside a subtree worth describing: `leaves`
         // little views, plus the counter. Each side times its OWN describe -
         // the clock is read at the top of the closure and again at the
-        // bottom - so the number is what that press cost in Swift.
+        // bottom - so the number is what describing it cost.
         VStack {
-            HStack {
-                Button("+1").onClicked { counter += 1 }
-
-                // A choice of more than two, so a button that cycles them.
-                Button("Views: \\(leaves)")
-                    .onClicked { leaves = leaves == 25 ? 100 : leaves == 100 ? 400 : 25 }
-            }
-
-            // LAYER ONE: the get is in the closure, so a press describes every
-            // leaf again and the reading below says how long that took.
-            HStack {
-                let began = ContinuousClock.now
-
-                ForEach(Array(0 ..< leaves), id: \\.self) { _ in
-                    ColorBox().width(7).height(7)
-                }
-
-                Text("Counter \\(counter)")
-
-                Text(took(began, leaves))
-                DebugInfoLabel()                    // climbs on every press
-            }
-
-            // LAYER TWO: the same subtree, the counter handed on as a channel.
-            // A press describes nothing here - the number below is what its ONE
-            // build cost, and it stands still however often you press.
-            HStack {
-                let began = ContinuousClock.now
-
-                ForEach(Array(0 ..< leaves), id: \\.self) { _ in
-                    ColorBox().width(7).height(7)
-                }
-
-                Text($counter.convert { "Counter \\($0)" })
-
-                Text(took(began, leaves))
-                DebugInfoLabel()                    // stays at one
-            }
-        }
-
-        /// How long describing a closure has taken so far, in microseconds -
-        /// read at its top and printed at its bottom.
-        private func took(_ began: ContinuousClock.Instant, _ views: Int) -> String {
-            let spent = ContinuousClock.now - began
-            let parts = spent.components
-            let nanoseconds = parts.seconds * 1_000_000_000 + parts.attoseconds / 1_000_000_000
-
-            return "\\(views) views described in \\(microseconds(nanoseconds)) µs, "
-        }
-
-        /// Nanoseconds as microseconds, to one decimal - written by hand, a
-        /// formatter being Foundation's.
-        private func microseconds(_ nanoseconds: Int64) -> String {
-            let tenths = (nanoseconds + 50) / 100
-
-            return "\\(tenths / 10).\\(tenths % 10)"
-        }
-        """
-
-    var body: some View {
-        VStack {
+            // In layer one the get is in the block's own closure, so a press
+            // describes every leaf in it again, and its reading says how long
+            // that took.
             HStack {
                 Button("+1")
-                    .fontSize(13)
-                    .background(Palette.accent)
-                    .textColor(Palette.onAccent)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 18, vertical: 8)
                     .onClicked { counter += 1 }
 
                 // A choice of more than two, so a button that cycles them.
                 Button("Views: \(leaves)")
-                    .fontSize(13)
-                    .stroke(Palette.outline)
-                    .lineWidth(1)
-                    .background(.transparent)
-                    .textColor(Palette.subtle)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 18, vertical: 8)
                     .onClicked { leaves = leaves == 25 ? 100 : leaves == 100 ? 400 : 25 }
             }
             .spacing(10)
@@ -236,6 +139,7 @@ private struct LayerCost: ExampleContent {
         }
         .spacing(8)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -245,10 +149,10 @@ private struct LayerCost: ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Press +1: the first block is described again - every view in it - and "
-                + "its build count and its microseconds climb. The second is not "
-                + "described at all, and its count stays at one. Raise the views to 400 "
-                + "and the difference grows with them.")
+            Text("Press +1: the first block is described again - every view in it - so "
+                + "its build count climbs and its microseconds are taken afresh. The "
+                + "second is not described at all, and its count stays at one. Raise the "
+                + "views to 400 and the difference grows with them.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -261,6 +165,7 @@ private struct LayerCost: ExampleContent {
     }
 }
 
+// listing: LayerCost
 /// The block wired to layer one: the number is read inside the closure, so a
 /// press describes every leaf again.
 private struct Described: View {
@@ -271,74 +176,96 @@ private struct Described: View {
     let leaves: Int
 
     var body: some View {
-        HStack {
+        VStack {
             let began = ContinuousClock.now
 
-            ForEach(Array(0 ..< leaves), id: \.self) { index in
-                ColorBox()
-                    .width(7)
-                    .height(14)
-                    .cornerRadius(2)
-                    .color(Palette.outline)
-                    .margin(1)
-                    .id(index)
+            // The leaves in rows of 25: a stack wraps nothing, so the rows do.
+            ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
+                HStack {
+                    ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
+                        ColorBox()
+                            .width(7)
+                            .height(14)
+                            .cornerRadius(2)
+                            .color(Palette.outline)
+                            .margin(1)
+                            .id(index)
+                    }
+                }
+                .spacing(2)
             }
 
-            Text("Counter \(counter)")
-                .fontSize(13)
-                .fontAttributes(.bold)
-                .margin(horizontal: 6, vertical: 0)
+            HStack {
+                Text("Counter \(counter)")
+                    .fontSize(13)
+                    .fontAttributes(.bold)
+                    .margin(horizontal: 6, vertical: 0)
 
-            Text(took(began, leaves))
-                .fontSize(12)
-                .textColor(Palette.accent)
-                .height(15)
+                Text(took(began, leaves))
+                    .fontSize(12)
+                    .textColor(Palette.accent)
+                    .height(15)
 
-            DebugInfoLabel()
-                .height(15)
+                DebugInfoLabel()   // climbs on every press
+                    .height(15)
+            }
+            .spacing(2)
         }
         .spacing(2)
     }
 }
+// listing: end
 
-/// The same block wired to layer two: the number rides a channel, so this
-/// closure is built once and its clock stands still.
+// listing: LayerCost
+/// The same block wired to layer two: the number rides a channel, so +1
+/// builds nothing here and its clock stands still.
 private struct Channelled: View {
     @Binding var counter: Int
 
     let leaves: Int
 
     var body: some View {
-        HStack {
+        VStack {
             let began = ContinuousClock.now
 
-            ForEach(Array(0 ..< leaves), id: \.self) { index in
-                ColorBox()
-                    .width(7)
-                    .height(14)
-                    .cornerRadius(2)
-                    .color(Palette.outline)
-                    .margin(1)
-                    .id(index)
+            // The leaves in rows of 25: a stack wraps nothing, so the rows do.
+            ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
+                HStack {
+                    ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
+                        ColorBox()
+                            .width(7)
+                            .height(14)
+                            .cornerRadius(2)
+                            .color(Palette.outline)
+                            .margin(1)
+                            .id(index)
+                    }
+                }
+                .spacing(2)
             }
 
-            Text($counter.convert { "Counter \($0)" })
-                .fontSize(13)
-                .fontAttributes(.bold)
-                .margin(horizontal: 6, vertical: 0)
+            HStack {
+                Text($counter.convert { "Counter \($0)" })
+                    .fontSize(13)
+                    .fontAttributes(.bold)
+                    .margin(horizontal: 6, vertical: 0)
 
-            Text(took(began, leaves))
-                .fontSize(12)
-                .textColor(Palette.accent)
-                .height(15)
+                Text(took(began, leaves))
+                    .fontSize(12)
+                    .textColor(Palette.accent)
+                    .height(15)
 
-            DebugInfoLabel()
-                .height(15)
+                DebugInfoLabel()   // stays at one on +1
+                    .height(15)
+            }
+            .spacing(2)
         }
         .spacing(2)
     }
 }
+// listing: end
 
+// listing: LayerCost
 /// How long describing this closure has taken so far, in microseconds.
 ///
 /// Read at the top of a closure and printed at the bottom of the same one, so
@@ -354,9 +281,11 @@ private func took(_ began: ContinuousClock.Instant, _ views: Int) -> String {
     let parts = spent.components
     let nanoseconds = parts.seconds * 1_000_000_000 + parts.attoseconds / 1_000_000_000
 
-    return "\(views) views described in \(microseconds(nanoseconds)) µs, "
+    return "\(views) views described in \(microseconds(nanoseconds)) µs"
 }
+// listing: end
 
+// listing: LayerCost
 /// Nanoseconds as microseconds, to one decimal - the unit a describe lands in.
 /// Written by hand, a formatter being Foundation's.
 ///
@@ -367,3 +296,4 @@ private func microseconds(_ nanoseconds: Int64) -> String {
 
     return "\(tenths / 10).\(tenths % 10)"
 }
+// listing: end

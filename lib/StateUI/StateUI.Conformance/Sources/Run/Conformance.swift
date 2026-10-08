@@ -49,7 +49,7 @@
         // The register is the host's whole registry read: once a run, not once a case.
         let register = driver.register
         var verdicts: [HostVerdict] = []
-        // What the cases that do not apply on this host say: each only of a member no other case judges.
+        // What the cases that do not apply on this host say: each gives way to any other case's word.
         var inapplicable: [HostVerdict] = []
         for (place, index) in held.enumerated() {
             let each = family.cases[index]
@@ -78,7 +78,7 @@
                 verdicts += each.proves.map { $0.verdict(.cannot(why)) }
             case .inapplicable(let why):
                 tell("\(title): does not apply - cannot \(why)")
-                inapplicable += each.proves.map { $0.verdict(.cannot(why)) }
+                inapplicable += each.proves.map { $0.verdict(.inapplicable(why)) }
             case .absent(let why):
                 tell("\(title): never here - \(why)")
                 verdicts += each.proves.map { $0.verdict(.notPlanned(reason: why)) }
@@ -87,8 +87,7 @@
                 verdicts += each.proves.map { $0.verdict(.failed(message)) }
             }
         }
-        let judged = Set(verdicts.map(\.subject))
-        return HostVerdict.merged(verdicts + inapplicable.filter { !judged.contains($0.subject) })
+        return HostVerdict.merged(verdicts + inapplicable)
     }
 
     /// Whole milliseconds since `instant`.

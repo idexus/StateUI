@@ -49,16 +49,7 @@ final class WebTextView: WebDOMView, WebWordsView {
     /// How the words break: onto more lines at words or anywhere, or on one line, cut short where they do not
     /// fit - at their end, the one cut the page draws - and on how many lines at most.
     func setLines(breaking lineBreak: LineBreak, maximum: Int?) {
-        let lines = lineBreak.lines(maximum: maximum)
-        style("white-space", lineBreak.wraps ? "pre-wrap" : "pre")
-        style("overflow-wrap", lineBreak.wraps ? "break-word" : nil)
-        style("word-break", lineBreak == .characterWrap ? "break-all" : nil)
-        style("text-overflow", lineBreak.truncates ? "ellipsis" : nil)
-        let clamped = lineBreak.wraps && lines != nil
-        style("overflow", lineBreak.wraps && !clamped ? nil : "hidden")
-        style("display", clamped ? "-webkit-box" : nil)
-        style("-webkit-box-orient", clamped ? "vertical" : nil)
-        style("-webkit-line-clamp", clamped ? String(lines!) : nil)
+        for (name, value) in WebCSS.lines(lineBreak, most: lineBreak.lines(maximum: maximum)) { style(name, value) }
     }
 
     func setAlignment(horizontal: TextAlignment) {
@@ -72,10 +63,6 @@ final class WebTextView: WebDOMView, WebWordsView {
 
     func setSpacing(_ look: TextLook) {
         for (name, value) in WebCSS.spacing(look) { style(name, value) }
-    }
-
-    func setBackground(_ value: HostValue?) {
-        style("background", WebCSS.fill(value))
     }
 
     override func detach() {

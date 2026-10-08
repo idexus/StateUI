@@ -109,7 +109,9 @@ back as the types `ApplicationContract.currentTime` declares.
 
 A state handed to a control as `$x` does not go through a body. Its value is a
 `StateValue`: it lies on the state image as numbers, one lane each, or as
-text, and the host's state channel moves it.
+text, and the host's state channel moves it. A value of numbers is a
+`LaneValue`, which says what the host reads its lanes as
+([what a host reads lanes as](../core/state.md#what-a-host-reads-lanes-as)).
 
 ```text
   @State var day = CalendarDate(year: 2026, month: 8, day: 2)

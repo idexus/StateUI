@@ -127,10 +127,10 @@ final class ContractTests: XCTestCase {
 
         let brush = Brush.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)])
 
-        XCTAssertEqual(Background.color(.tomato).propValue, Color.tomato.propValue)
-        XCTAssertEqual(Background.brush(brush).propValue, brush.propValue)
-        XCTAssertEqual(Background(propValue: Color.tomato.propValue), .color(.tomato))
-        XCTAssertEqual(Background(propValue: brush.propValue), .brush(brush))
+        XCTAssertEqual(Material.color(.tomato).propValue, Color.tomato.propValue)
+        XCTAssertEqual(Material.gradient(brush).propValue, brush.propValue)
+        XCTAssertEqual(Material(propValue: Color.tomato.propValue), .color(.tomato))
+        XCTAssertEqual(Material(propValue: brush.propValue), .gradient(brush))
 
         XCTAssertEqual(SafeAreaEdges.uniform(.none).propValue, .enumeration(0))
         XCTAssertEqual(
@@ -156,7 +156,9 @@ final class ContractTests: XCTestCase {
             Brush.solidColor(.gold),
             Brush.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)]),
             Brush.radialGradient([GradientStop(.white, 0), GradientStop(.steelBlue, 1)], radius: 0.8),
-            Background.color(.tomato), Background.brush(.linearGradient([GradientStop(.gold, 0)])),
+            Material.color(.tomato), Material.gradient(.linearGradient([GradientStop(.gold, 0)])),
+            Material.blur(.thin.tint(.indigo)), Material.glass(.clear.tint(.indigo).isInteractive(true)),
+            Material(light: nil, dark: .blur(.thick)), Blur.Thickness.ultraThick, Glass.Clarity.clear,
             Insets(left: 1, top: 2, right: 3, bottom: 4), Rect(1, 2, 3, 4), Point(5, 6),
             [Point(1, 2), Point(3, 4)] as [Point], [1, 2.5] as [Double], ["a", "b"] as [String],
             ImageSource("logo.png"), ImageSource(light: "logo.png", dark: "logo_dark.png"),
@@ -186,6 +188,9 @@ final class ContractTests: XCTestCase {
             ItemsLayout.list(), ItemsLayout.row(spacing: 8), ItemsLayout.grid(minimumItemWidth: 120, spacing: 4),
             SelectionMode.multiple, ScrollAnchor.center,
             ItemsEntries(header: "h", sections: [ItemsEntries.Section(footer: "f", items: ["1", "2"])]),
+            [0, 7, 255] as [UInt8], FileType("Page", extensions: ["html", "htm"]),
+            [FileType("Text", extensions: ["txt"]), FileType("Page", extensions: ["html"])] as [FileType],
+            ChosenFile(address: "C:\\Reports\\Report.html", name: "Report.html"),
         ]
 
         for sample in samples {
@@ -203,6 +208,16 @@ final class ContractTests: XCTestCase {
         }
 
         XCTAssertEqual(missing, [], "a property holds a type with no sample here")
+    }
+
+    /// A list of bytes crosses as one run of bytes, not a list of numbers; a
+    /// kind of file keeps each extension once, bare and in lowercase, however
+    /// it was written.
+    func testBytesCrossAsOneRunAndAKindOfFileKeepsBareExtensions() {
+        XCTAssertEqual(([0, 255] as [UInt8]).propValue, .bytes([0, 255]))
+        XCTAssertNil([UInt8](propValue: .values([.number(1)])))
+        XCTAssertNil(UInt8(propValue: .number(256)))
+        XCTAssertEqual(FileType("Page", extensions: [".HTML", "*.htm", "html", "", "*"]).extensions, ["html", "htm"])
     }
 
     /// An optional value left off the end of a payload reads as nothing; a

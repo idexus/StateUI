@@ -17,6 +17,11 @@ declares them.
   confirm                Dialogs.confirm            answers whether it was accepted
   chooseAction           Dialogs.chooseAction       answers the chosen caption, or nothing
   prompt                 Dialogs.prompt             answers the text, or nothing
+  openFiles              Dialogs.openFile(s)        answers the files chosen, none for a cancel
+  saveFile               Dialogs.saveFile           writes the contents, answers the file, or nothing
+  readFile               ChosenFile.read()          answers the file's bytes
+  launchFile             ChosenFile.launch()        answers whether an application took the file
+  launchLink             Links.launch               answers whether an application took the address
   announce               ScreenReader.announce      the screen reader says a text
   hideOnScreenKeyboard   OnScreenKeyboard.hide()    answers whether a view held the focus
   currentTime            ClockTime.now()            hour, minute, second, millisecond

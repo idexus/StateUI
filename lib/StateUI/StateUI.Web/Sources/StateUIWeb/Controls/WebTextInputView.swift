@@ -25,6 +25,10 @@ final class WebTextInputView: WebDOMView, WebWordsView {
     /// Whether an editor grows with its words rather than scrolling them.
     private var grows = false
 
+    /// The words the field said or was given last: the browser may say the same words again - a line typed in an
+    /// editor is several of its inputs - which change nothing.
+    private var said = ""
+
     init(_ kind: Kind) {
         self.kind = kind
         super.init(tag: kind == .editor ? "textarea" : "input")
@@ -34,8 +38,11 @@ final class WebTextInputView: WebDOMView, WebWordsView {
         }
         listen("input") { [weak self] in
             guard let self else { return }
+            let words = WebRelay.value(of: node)
+            guard words != said else { return }
+            said = words
             fit()
-            onTextChanged(WebRelay.value(of: node))
+            onTextChanged(words)
         }
         if kind != .editor { listen("enter") { [weak self] in self?.onSubmitted() } }
     }
@@ -46,6 +53,7 @@ final class WebTextInputView: WebDOMView, WebWordsView {
 
     /// The words the field holds; the relay leaves the user's caret where it stands when they are the same.
     func setText(_ text: String) {
+        said = text
         WebRelay.setValue(node, text)
         fit()
     }
@@ -128,6 +136,8 @@ final class WebTextInputView: WebDOMView, WebWordsView {
     /// Whether an editor grows with its words.
     func setGrowsWithText(_ grows: Bool) {
         self.grows = grows
+        attribute("data-grows", grows ? "" : nil)
+        attribute("rows", grows ? "1" : nil)
         style("overflow", grows ? "hidden" : nil)
         style("resize", grows ? "none" : nil)
         fit()

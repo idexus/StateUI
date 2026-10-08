@@ -16,8 +16,6 @@ final class AppKitDriver: HostDriver {
     let host = "AppKit"
     let cannot = [
         "read contentMode of Button": "AppKit's button has no covering scale, as the register records: a fill shows fitted",
-        "read shape of a box shorter than its radius":
-            "AppKit's layer holds the radius it draws, at most half the box's shorter side",
     ]
     let platformHasNone = AppKitDriver.none()
 
@@ -27,6 +25,8 @@ final class AppKitDriver: HostDriver {
         var none = [
             "read growsWithText of TextEditor":
                 "an editor's growing is StateUI's measuring, which no property of AppKit's holds; its frames prove it",
+            "read shape of a box shorter than its radius":
+                "AppKit's layer holds the radius it draws, at most half the box's shorter side; the box's drawing proves its shape",
         ]
         for field in ["TextField", "SearchField", "TextEditor"] {
             none["read maximumLength of \(field)"] =
@@ -114,6 +114,8 @@ final class AppKitDriver: HostDriver {
             resourceDirectory: Self.pictures, preferences: store, clock: clock.map { clock in { clock.now } },
             reducesMotion: { reducesMotion })
         self.renderer = renderer
+        Self.emptyFiles()
+        renderer.fileToolkit.holdsLaunchesForTesting = true
         AppKitRestorationBroker.shared.host = renderer
         for window in restorable { Self.restore(window) }
         renderer.startForTesting()
@@ -191,6 +193,8 @@ final class AppKitDriver: HostDriver {
         if element.type == .window { return try windowHolds(property, element) }
         if element.type == .menuItem || element.type == .toolbarItem { return try itemHolds(property, element) }
         if element.type == .marker { return try markerHolds(property, element) }
+        if element.type == .textSpan { return try spanHolds(property, on: element) }
+        if property == .title, let tabs = element.parent, tabs.type == .tabView { return try tabTitle(of: element, in: tabs) }
         if let map = (element.native as? AppKitElement)?.view as? AppKitMapView, let held = mapHolds(property, map) {
             return held
         }
@@ -199,6 +203,11 @@ final class AppKitDriver: HostDriver {
         }
         if property == .barTitle || property == .barSubtitle { return try titleAreaHolds(property, element) }
         if property == .barBackgroundColor { return try barHolds(element) }
+        if property == .barForegroundColor { return try barWordsColor(element) }
+        if property == .barIcon { return try titleAreaIcon(element) }
+        if property == .icon, let button = (element.native as? AppKitElement)?.view as? AppKitButtonView {
+            return pictureName(button.image)
+        }
         // Whether a page offers the way back: the window's toolbar holds its back item while the page shows.
         if property == .showsBackButton, element.type == .page {
             return (try controller(of: element).toolbarForTesting.itemForTesting(AppKitWindowToolbar.back) != nil).propValue
@@ -241,6 +250,7 @@ final class AppKitDriver: HostDriver {
         case (.time, let picker as AppKitTimePickerView): return picker.time.propValue
         case (.selectedTab, let tabs as AppKitTabView): return tabs.selectedIndexForTesting.propValue
         case (.showsSidebar, let split as AppKitSplitView): return split.isEffectivelyPresentedForTesting.propValue
+        case (.sidebarBackground, let split as AppKitSplitView): return Self.ground(of: split)
         // Shown: in a window, and neither it nor any view it stands in hidden.
         case (.isVisible, let view?): return (view.window != nil && !view.isHiddenOrHasHiddenAncestor).propValue
         case (.opacity, let view?): return Double(view.alphaValue).propValue
@@ -254,6 +264,8 @@ final class AppKitDriver: HostDriver {
             return (!editor.textView.isEditable && editor.textView.isSelectable).propValue
         case (.isEnabled, let control as NSControl): return control.isEnabled.propValue
         case (.isEnabled, let picker as AppKitPickerView): return picker.isEnabled.propValue
+        // A view that is no control holds whether it answers as assistive technology meets it.
+        case (.isEnabled, let view?): return view.isAccessibilityEnabled().propValue
         case (_, let view?):
             if let held = try Self.viewHolds(property, view, element.native as? AppKitElement) { return held }
             throw DriverCannot(reading: property, of: element)
@@ -266,5 +278,15 @@ final class AppKitDriver: HostDriver {
         .deletingLastPathComponent()    // Conformance
         .deletingLastPathComponent()    // Tests
         .appendingPathComponent("Resources/Images")
+
+    /// The folder the files a test opens and saves stand in, the process's own.
+    static let files = FileManager.default.temporaryDirectory
+        .appendingPathComponent("stateui-conformance-files-\(ProcessInfo.processInfo.processIdentifier)")
+
+    /// Leaves the files folder empty, so no case reads a file another saved.
+    private static func emptyFiles() {
+        try? FileManager.default.removeItem(at: files)
+        try? FileManager.default.createDirectory(at: files, withIntermediateDirectories: true)
+    }
 }
 #endif

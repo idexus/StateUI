@@ -30,14 +30,14 @@ public enum TimeZoneInfo {
     ///         on: CalendarDate(year: 2026, month: 1, day: 15))
     ///
     /// Read the answer with `.components.seconds`. Where summer time applies,
-    /// the day decides: the offset is that day's, or today's when no day is
-    /// given.
+    /// the day decides: the offset is that day's, or the one in effect now
+    /// when no day is given.
     ///
     /// Design: docs/design/types/dates-and-time.md#an-offset-on-a-day
     ///
     /// - Parameters:
     ///   - zone: an IANA identifier, or nil for the host's own zone.
-    ///   - date: the day to ask about, or nil for today.
+    ///   - date: the day to ask about, or nil for the offset in effect now.
     /// - Returns: the zone's distance from UTC, negative west of it.
     public static nonisolated(nonsending) func utcOffset(
         of zone: String? = nil,

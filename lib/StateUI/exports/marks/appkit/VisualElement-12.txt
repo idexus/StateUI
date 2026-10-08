@@ -1,37 +1,43 @@
-# revision 1.1
-ActivityIndicator.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
-Button.style: ✅
-Canvas.ignoresInput: ✅
-CheckBox.isEnabled: ✅
-CheckBox.zIndex: not realized
-ColorBox.scaleY: ✓ read scaleY of ColorBox: the host's own transform, checked against the layer it composed itself
-DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own transform, checked against the layer it composed itself
-Ellipse.pivotY: ✓ read pivotY of Ellipse: the host's own transform, checked against the layer it composed itself
-Grid.background: ✅
-HStack.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
-Image.style: ✅
-ItemsView.ignoresInput: ✅
-Line.scaleY: ✓ read scaleY of Line: the host's own transform, checked against the layer it composed itself
-Map.rotationY: ✓ read rotationY of Map: the host's own transform, checked against the layer it composed itself
-Path.pivotY: ✓ read pivotY of Path: the host's own transform, checked against the layer it composed itself
-Picker.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
-Polygon.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
-Polyline.style: ✅
-ProgressBar.ignoresInput: ✅
-RadioButton.isEnabled: ✅
-RadioButton.zIndex: not realized
-Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.pivotY: ✓ read pivotY of SearchField: the host's own transform, checked against the layer it composed itself
-Slider.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
-Stepper.accessibilityHeading: cannot read a heading's level - AppKit marks a heading, not its level
-Switch.style: ✅
-Text.isEnabled: not realized
-Text.zIndex: not realized
-TextEditor.ignoresInput: ✅
-TextField.isEnabled: ✅
-TextField.zIndex: not realized
+# revision 7.1
+ActivityIndicator.accessibilityLabel: ✅
+Button.frame: ✅
+Canvas.isEnabled: ✅
+Canvas.translationX: ✓ read translationX of Canvas: the host's own transform, checked against the layer it composed itself
+CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own transform, checked against the layer it composed itself
+ColorBox.pivotX: ✓ read pivotX of ColorBox: the host's own transform, checked against the layer it composed itself
+DatePicker.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+Ellipse.zIndex: ✅
+Grid.frameChanged: ✅
+Grid.isEnabled: ✓ tap on Grid: handed to the host's recognizer or handler, no NSEvent sent
+Grid.maximumHeight: ✅
+Grid.maximumWidth: ✅
+Grid.minimumHeight: ✅
+Grid.minimumWidth: ✅
+HStack.rotationX: ✓ read rotationX of HStack: the host's own transform, checked against the layer it composed itself
+Image.isAccessibilityHidden: ✅
+ItemsView.zIndex: ✅
+Line.isVisible: ✅
+Line.scaleX: ✓ read scaleX of Line: the host's own transform, checked against the layer it composed itself
+Map.pivotY: ✓ read pivotY of Map: the host's own transform, checked against the layer it composed itself
+Path.automationExcludedWithChildren: ✅
+Picker.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+Polygon.frame: ✅
+Polyline.opacity: ✅
+Polyline.scaleY: ✓ read scaleY of Polyline: the host's own transform, checked against the layer it composed itself
+ProgressBar.rotation: ✓ read rotation of ProgressBar: the host's own transform, checked against the layer it composed itself
+RadioButton.automationExcludedWithChildren: ✅
+Rectangle.accessibilityLabel: ✅
+ScrollView.frame: ✅
+SearchField.opacity: ✅
+SearchField.scaleY: ✓ read scaleY of SearchField: the host's own transform, checked against the layer it composed itself
+Slider.rotationX: ✓ read rotationX of Slider: the host's own transform, checked against the layer it composed itself
+Stepper.layoutDirection: ✅
+Switch.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+Text.ignoresInput: ✅
+TextEditor.zIndex: ✅
+TextField.ignoresInput: ✅
+TimePicker.opacity: ✅
 TimePicker.scaleY: ✓ read scaleY of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.rotationY: ✓ read rotationY of VStack: the host's own transform, checked against the layer it composed itself
-WebView.pivotY: ✓ read pivotY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.background: ✅
+VStack.rotationX: ✓ read rotationX of VStack: the host's own transform, checked against the layer it composed itself
+WebView.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+ZStack.zIndex: ✅

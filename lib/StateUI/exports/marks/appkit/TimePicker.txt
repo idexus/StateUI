@@ -1,9 +1,9 @@
 # revision 2.1
 TimePicker: ✅
-TimePicker.closed: not realized
-TimePicker.format: not realized
+TimePicker.closed: – AppKit's date picker opens no calendar for the program, nor says when the user opens one.
+TimePicker.format: – AppKit's date picker writes its day and time in the user's own way: it takes no pattern.
 TimePicker.frameChanged: ✅
-TimePicker.isOpen: not realized
-TimePicker.opened: not realized
+TimePicker.isOpen: – AppKit's date picker opens no calendar for the program, nor says when the user opens one.
+TimePicker.opened: – AppKit's date picker opens no calendar for the program, nor says when the user opens one.
 TimePicker.time: ✅
 TimePicker.timeChanged: ✓ pickTime on TimePicker: the host's change handler called, not the picker's action

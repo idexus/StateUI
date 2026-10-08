@@ -14,9 +14,12 @@
 #include <cstring>
 
 #include <winrt/Windows.System.h>
+#include <winrt/Microsoft.UI.Composition.h>
+#include <winrt/Microsoft.UI.Composition.SystemBackdrops.h>
 #include <winrt/Microsoft.UI.Input.h>
 #include <winrt/Microsoft.UI.Windowing.h>
 #include <winrt/Microsoft.UI.Xaml.Input.h>
+#include <winrt/Microsoft.UI.Xaml.Markup.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
 
 using namespace stateui;
@@ -24,8 +27,54 @@ using winrt::Windows::System::VirtualKey;
 using winrt::Windows::System::VirtualKeyModifiers;
 
 namespace windowing = winrt::Microsoft::UI::Windowing;
+namespace backdrops = winrt::Microsoft::UI::Composition::SystemBackdrops;
+using winrt::Microsoft::UI::Composition::ICompositionSupportsSystemBackdrop;
 
 namespace {
+    /// The desktop acrylic of the thin kind or the base one in the theme's colour, its luminosity hiding `opacity`
+    /// of the desktop and its tint `tintOpacity`; XAML's own configuration has it follow the window's activation.
+    /// Design: docs/design/platforms/winui/runtime.md#a-windows-backdrop
+    struct StateUIAcrylic : xaml::Media::SystemBackdropT<StateUIAcrylic> {
+        StateUIAcrylic(bool thin, float opacity, float tintOpacity, uint32_t argb)
+            : thin(thin), opacity(opacity), tintOpacity(tintOpacity), argb(argb) {}
+
+        void OnTargetConnected(ICompositionSupportsSystemBackdrop const &target, xaml::XamlRoot const &root) {
+            SystemBackdropT::OnTargetConnected(target, root);
+            controller = backdrops::DesktopAcrylicController();
+            controller.Kind(thin ? backdrops::DesktopAcrylicKind::Thin : backdrops::DesktopAcrylicKind::Base);
+            // Every colour written: a controller given one value keeps none of the theme's own.
+            auto colour = winrt::Windows::UI::Color{255, static_cast<uint8_t>(argb >> 16),
+                static_cast<uint8_t>(argb >> 8), static_cast<uint8_t>(argb)};
+            controller.TintColor(colour);
+            controller.TintOpacity(tintOpacity);
+            controller.LuminosityOpacity(opacity);
+            controller.FallbackColor(colour);
+            controller.SetSystemBackdropConfiguration(GetDefaultSystemBackdropConfiguration(target, root));
+            controller.AddSystemBackdropTarget(target);
+        }
+
+        void OnTargetDisconnected(ICompositionSupportsSystemBackdrop const &target) {
+            SystemBackdropT::OnTargetDisconnected(target);
+            if (!controller) return;
+            controller.RemoveSystemBackdropTarget(target);
+            controller.Close();
+            controller = nullptr;
+        }
+
+        bool const thin;
+        float const opacity;
+        float const tintOpacity;
+        uint32_t const argb;
+        backdrops::DesktopAcrylicController controller{nullptr};
+    };
+
+    /// The window's acrylic; nil where it shows Mica.
+    StateUIAcrylic *acrylic(xaml::Window const &window) {
+        auto backdrop = window.SystemBackdrop();
+        if (!backdrop || backdrop.try_as<xaml::Media::MicaBackdrop>()) return nullptr;
+        return winrt::get_self<StateUIAcrylic>(backdrop.as<xaml::Media::ISystemBackdropOverrides>());
+    }
+
     controls::Grid root(xaml::Window const &window) {
         return window.Content().as<controls::Grid>();
     }
@@ -158,12 +207,12 @@ extern "C" void stateui_winui_window_set_overlays(StateUIObjectRef handle, State
                 layer = grid;
         if (!layer && count == 0) return;
         if (!layer) {
-            // Where the page stands, over it and over its sheets; with no background, a click beside what it holds
-            // goes on to them.
+            // Where the page stands, over it and over its sheets' layer; with no background, a click beside what it
+            // holds goes on to them.
             layer = controls::Grid();
             layer.Tag(winrt::box_value(L"overlay"));
             controls::Grid::SetRow(layer, 3);
-            controls::Canvas::SetZIndex(layer, 1);
+            controls::Canvas::SetZIndex(layer, 2);
             children.Append(layer);
         }
         layer.Children().Clear();
@@ -288,7 +337,7 @@ extern "C" void stateui_winui_window_set_limits(StateUIObjectRef handle, double 
 }
 
 extern "C" void stateui_winui_window_set_traits(
-    StateUIObjectRef handle, bool maximizable, bool minimizable, bool translucent, bool floats
+    StateUIObjectRef handle, bool maximizable, bool minimizable, bool floats
 ) {
     try {
         auto window = borrow<xaml::Window>(handle);
@@ -297,13 +346,133 @@ extern "C" void stateui_winui_window_set_traits(
             presenter.IsMinimizable(minimizable);
             presenter.IsAlwaysOnTop(floats);
         }
-        // The backdrop is made again only where it turns.
-        auto acrylic = window.SystemBackdrop().try_as<xaml::Media::DesktopAcrylicBackdrop>();
-        if (translucent == static_cast<bool>(acrylic)) return;
-        if (translucent) window.SystemBackdrop(xaml::Media::DesktopAcrylicBackdrop());
-        else window.SystemBackdrop(xaml::Media::MicaBackdrop());
     } catch (...) {
         report("setting what a window is");
+    }
+}
+
+extern "C" void stateui_winui_window_set_backdrop(
+    StateUIObjectRef handle, bool blurred, bool thin, float opacity, float tintOpacity, uint32_t argb
+) {
+    try {
+        auto window = borrow<xaml::Window>(handle);
+        // The backdrop is made again only where it turns.
+        auto shown = acrylic(window);
+        if (!blurred) {
+            if (shown || !window.SystemBackdrop()) window.SystemBackdrop(xaml::Media::MicaBackdrop());
+            return;
+        }
+        if (shown && shown->thin == thin && shown->opacity == opacity && shown->tintOpacity == tintOpacity &&
+            shown->argb == argb) return;
+        window.SystemBackdrop(winrt::make<StateUIAcrylic>(thin, opacity, tintOpacity, argb));
+    } catch (...) {
+        report("setting a window's backdrop");
+    }
+}
+
+extern "C" bool stateui_winui_window_acrylic(StateUIObjectRef handle, bool *thin, float *opacity) {
+    try {
+        auto shown = acrylic(borrow<xaml::Window>(handle));
+        if (!shown) return false;
+        // What the desktop acrylic holds, once the window stands; what it was made for until then.
+        auto &controller = shown->controller;
+        *thin = controller ? controller.Kind() == backdrops::DesktopAcrylicKind::Thin : shown->thin;
+        *opacity = controller ? controller.LuminosityOpacity() : shown->opacity;
+        return true;
+    } catch (...) {
+        report("reading a window's acrylic");
+        return false;
+    }
+}
+
+extern "C" void stateui_winui_window_set_background(StateUIObjectRef handle, bool written, uint32_t argb) {
+    try {
+        auto root = borrow<xaml::Window>(handle).Content().try_as<xaml::Controls::Panel>();
+        if (!root) return;
+        if (!written) return root.Background(nullptr);
+        root.Background(xaml::Media::SolidColorBrush(winrt::Windows::UI::Color{static_cast<uint8_t>(argb >> 24),
+            static_cast<uint8_t>(argb >> 16), static_cast<uint8_t>(argb >> 8), static_cast<uint8_t>(argb)}));
+    } catch (...) {
+        report("painting a window's background");
+    }
+}
+
+namespace {
+    /// The card a navigation view lays over its detail, cleared: no fill, its edge the theme's divider - one
+    /// dictionary for each theme, so the edge follows the theme by itself.
+    xaml::ResourceDictionary clearedCard() {
+        std::wstring brushes = L"<SolidColorBrush x:Key=\"NavigationViewContentBackground\" Color=\"#00000000\"/>"
+                               L"<SolidColorBrush x:Key=\"NavigationViewContentGridBorderBrush\""
+                               L" Color=\"{ThemeResource DividerStrokeColorDefault}\"/>";
+        std::wstring written = L"<ResourceDictionary"
+                               L" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\""
+                               L" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">"
+                               L"<ResourceDictionary.ThemeDictionaries>";
+        for (auto theme : {L"Light", L"Dark"})
+            written += std::wstring(L"<ResourceDictionary x:Key=\"") + theme + L"\">" + brushes + L"</ResourceDictionary>";
+        written += L"</ResourceDictionary.ThemeDictionaries></ResourceDictionary>";
+        return xaml::Markup::XamlReader::Load(written).as<xaml::ResourceDictionary>();
+    }
+
+    /// Whether `merged` is the cleared card.
+    bool isClearedCard(xaml::ResourceDictionary const &merged) {
+        auto dark = merged.ThemeDictionaries().TryLookup(winrt::box_value(L"Dark")).try_as<xaml::ResourceDictionary>();
+        return dark && ownBrush(dark, L"NavigationViewContentBackground");
+    }
+}
+
+extern "C" void stateui_winui_window_clear_detail(StateUIObjectRef handle, bool clear) {
+    try {
+        // Written into the window's root, which every navigation view in the window reads on its way up.
+        // Design: docs/design/platforms/winui/runtime.md#a-windows-backdrop
+        auto grid = root(borrow<xaml::Window>(handle));
+        auto merged = grid.Resources().MergedDictionaries();
+        for (uint32_t at = 0; at < merged.Size(); ++at) {
+            if (!isClearedCard(merged.GetAt(at))) continue;
+            if (clear) return;
+            merged.RemoveAt(at);
+            return readThemeAgain(grid);
+        }
+        if (!clear) return;
+        merged.Append(clearedCard());
+        readThemeAgain(grid);
+    } catch (...) {
+        report("clearing the card over a window's detail");
+    }
+}
+
+extern "C" bool stateui_winui_window_background(StateUIObjectRef handle, uint32_t *argb) {
+    try {
+        auto root = borrow<xaml::Window>(handle).Content().try_as<xaml::Controls::Panel>();
+        auto brush = root ? root.Background().try_as<xaml::Media::SolidColorBrush>() : nullptr;
+        if (!brush) return false;
+        auto colour = brush.Color();
+        *argb = uint32_t(colour.A) << 24 | uint32_t(colour.R) << 16 | uint32_t(colour.G) << 8 | colour.B;
+        return true;
+    } catch (...) {
+        report("reading a window's background");
+        return false;
+    }
+}
+
+extern "C" void stateui_winui_window_set_theme(StateUIObjectRef handle, int32_t scheme) {
+    try {
+        auto root = borrow<xaml::Window>(handle).Content().try_as<xaml::FrameworkElement>();
+        if (!root) return;
+        root.RequestedTheme(scheme == 1 ? xaml::ElementTheme::Light
+                            : scheme == 2 ? xaml::ElementTheme::Dark : xaml::ElementTheme::Default);
+    } catch (...) {
+        report("showing a window in a theme");
+    }
+}
+
+extern "C" int32_t stateui_winui_window_actual_theme(StateUIObjectRef handle) {
+    try {
+        auto root = borrow<xaml::Window>(handle).Content().try_as<xaml::FrameworkElement>();
+        return root && root.ActualTheme() == xaml::ElementTheme::Dark ? 2 : 1;
+    } catch (...) {
+        report("reading a window's theme");
+        return 1;
     }
 }
 
@@ -329,7 +498,7 @@ extern "C" void stateui_winui_window_frame(StateUIObjectRef handle, double *valu
         values[7] = presenter ? dips(presenter.PreferredMaximumHeight()) : 0;
         values[8] = presenter && presenter.IsMaximizable() ? 1 : 0;
         values[9] = presenter && presenter.IsMinimizable() ? 1 : 0;
-        values[10] = window.SystemBackdrop().try_as<xaml::Media::DesktopAcrylicBackdrop>() ? 1 : 0;
+        values[10] = acrylic(window) ? 1 : 0;
         values[11] = presenter && presenter.IsAlwaysOnTop() ? 1 : 0;
         values[12] = app.IsVisible() ? 1 : 0;
     } catch (...) {

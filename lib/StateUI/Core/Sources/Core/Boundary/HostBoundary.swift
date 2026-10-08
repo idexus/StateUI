@@ -15,6 +15,11 @@
         update(StandardEnvironment.application.info, \.colorScheme, theme)
     }
 
+    /// Updates the accent the user chose for the system.
+    public static func setAccentColor(_ color: Color) {
+        update(StandardEnvironment.application.info, \.accentColor, color)
+    }
+
     /// Replaces the standard device report used by application builds.
     public static func setDeviceInfo(_ info: HostDeviceInfo) {
         let device = StandardEnvironment.device.info

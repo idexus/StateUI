@@ -1,5 +1,6 @@
 import StateUI
 
+// listing: ScratchpadPage
 /// A scratchpad window's page: the scratchpads' one text, kept with their scene, and a way to close the window - or
 /// every scratchpad window at once.
 struct ScratchpadPage: View {
@@ -31,14 +32,10 @@ struct ScratchpadPage: View {
 
             HStack {
                 Button("Close this window")
-                    .fontSize(13)
-                    .padding(horizontal: 14, vertical: 6)
                     .accessibilityIdentifier("scratchpad.close")
                     .onClicked { try await window.close() }
 
                 Button("Close every scratchpad")
-                    .fontSize(13)
-                    .padding(horizontal: 14, vertical: 6)
                     .accessibilityIdentifier("scratchpad.closeScene")
                     .onClicked { try await scene.close() }
             }
@@ -56,3 +53,4 @@ struct ScratchpadPage: View {
         }
     }
 }
+// listing: end

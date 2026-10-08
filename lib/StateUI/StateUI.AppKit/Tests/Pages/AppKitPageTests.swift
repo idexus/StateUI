@@ -96,8 +96,7 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertGreaterThan(content.barBand.height, 0)
         XCTAssertEqual(content.barBand, NSRect(
             x: 0, y: 0, width: content.bounds.width, height: content.safeAreaRect.minY))
-        XCTAssertEqual(window.backgroundColor, NSColor(
-            srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
+        XCTAssertEqual(window.backgroundColor, .windowBackgroundColor, "the bars' colour paints the bars alone")
 
         // On the band the page's title is the bar's: white on a dark band
         // when no foreground is written. The window keeps its name.
@@ -140,10 +139,11 @@ final class AppKitPageTests: XCTestCase {
             srgbRed: 51 / 255, green: 179 / 255, blue: 230 / 255, alpha: 1))
     }
 
-    /// In a split view the band is the detail's: the pane under the bars
-    /// paints it, and the sidebar keeps its own glass.
+    /// In a split view the bars' colour paints the window's band, under the
+    /// sidebar's glass, and the detail's, which the pane under the bars
+    /// paints; the sidebar keeps its own glass.
     @MainActor
-    func testAWrittenBarColourPaintsOnlyTheSplitDetailsBand() throws {
+    func testAWrittenBarColourPaintsTheBandsUnderTheSplitView() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -166,15 +166,15 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(split.detailBarColorForTesting, NSColor(
             srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
         XCTAssertNil(split.sidebarBarColorForTesting)
-        XCTAssertNil(content.barColor, "the split view covers the window's own band")
+        XCTAssertEqual(content.barColor, NSColor(
+            srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1), "the window's band, under the sidebar")
     }
 
-    /// A written bar colour is the window's background too: on a Mac the title
-    /// bar, the toolbar and the window's background around a floating sidebar
-    /// are one surface, so the sidebar stands framed in the bars' colour - and
-    /// the window takes the system's background back when the colour goes.
+    /// A written bar colour paints the bars alone: the window around a
+    /// floating sidebar keeps the system's background, with the colour written
+    /// and once it goes.
     @MainActor
-    func testAWrittenBarColourIsTheWindowsBackgroundToo() throws {
+    func testAWrittenBarColourLeavesTheWindowsBackground() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -189,8 +189,7 @@ final class AppKitPageTests: XCTestCase {
             detail: stack)))
 
         let painted = try XCTUnwrap(renderer.windowsForTesting.first?.window)
-        XCTAssertEqual(painted.backgroundColor, NSColor(
-            srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
+        XCTAssertEqual(painted.backgroundColor, .windowBackgroundColor)
 
         stack.properties[.barBackgroundColor] = .nothing
         renderer.applyForTesting(tree(flyout(
@@ -231,13 +230,13 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertNil(content.materialForTesting)
     }
 
-    /// On a translucent window a written bar colour tints the window's
-    /// material rather than painting a band: the window keeps no background,
-    /// the detail paints none, and the band over the page, the margin around
-    /// the floating sidebar and what its glass shows all wear the tint. An
-    /// opaque window again paints the band and frames the sidebar in the colour.
+    /// On a translucent window a colour written for the bars paints the bars
+    /// alone: the window's band, under the floating sidebar's glass, and the
+    /// detail's - over the material, which stays the system's; the window keeps
+    /// no background, so the desktop shows around the sidebar. An opaque window
+    /// keeps the system's background.
     @MainActor
-    func testATranslucentWindowsBarColourTintsItsMaterial() throws {
+    func testATranslucentWindowsBarColourPaintsTheBarsAlone() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -255,26 +254,33 @@ final class AppKitPageTests: XCTestCase {
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         let split = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
-        XCTAssertEqual(window.backgroundColor, .clear)
-        XCTAssertNil(split.detailBarColorForTesting, "the tinted material shows through the band")
         let colour = NSColor(srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1)
-        XCTAssertEqual(content.materialTint, colour)
+        XCTAssertEqual(window.backgroundColor, .clear, "the material shows around the sidebar")
+        XCTAssertEqual(split.detailBarColorForTesting, colour, "the detail's bar wears the colour")
+        XCTAssertEqual(content.barColor, colour, "the window's band stands under the sidebar's glass")
+        XCTAssertNil(split.sidebarBarColorForTesting, "the sidebar's glass shows the band beneath it")
+        XCTAssertNotNil(content.materialForTesting)
+        content.layoutSubtreeIfNeeded()
+        let order = content.subviews.map { String(describing: type(of: $0)) }
+        XCTAssertEqual(order.prefix(3), ["AppKitMaterialView", "NSView", "AppKitSplitView"],
+                       "the material, the band over it, the split view over both")
 
         renderer.applyForTesting(windowTree(flyout(
             presented: true,
             menu: page("menu", title: "Menu"),
             detail: stack), translucent: false))
-        XCTAssertEqual(window.backgroundColor, colour)
+        XCTAssertEqual(window.backgroundColor, .windowBackgroundColor)
         XCTAssertEqual(split.detailBarColorForTesting, colour)
-        XCTAssertNil(content.materialTint)
+        XCTAssertNil(split.sidebarBarColorForTesting, "the sidebar's glass shows the band behind it")
+        XCTAssertEqual(content.barColor, colour)
         XCTAssertNil(content.materialForTesting)
     }
 
-    /// On a translucent window the tint lies over the whole material, the band
-    /// the bars cover included, and the window draws no band beneath it - a
-    /// colour with an alpha shows the desktop through all of it.
+    /// On a translucent window the material lies under the whole window,
+    /// untinted, and a window with no split view paints its bars' band over
+    /// it.
     @MainActor
-    func testATranslucentWindowsTintCoversItsWholeMaterial() throws {
+    func testATranslucentWindowsMaterialStaysTheSystems() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -282,7 +288,7 @@ final class AppKitPageTests: XCTestCase {
 
         var stack = navigation([page("home", title: "Home")])
         stack.properties[.barBackgroundColor] = .color(
-            red: 81, green: 43, blue: 212, alpha: 153)
+            red: 81, green: 43, blue: 212, alpha: 255)
         renderer.applyForTesting(windowTree(stack, translucent: true))
 
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
@@ -290,11 +296,48 @@ final class AppKitPageTests: XCTestCase {
         content.layoutSubtreeIfNeeded()
         let material = try XCTUnwrap(content.materialForTesting)
         XCTAssertEqual(material.frame, content.bounds)
-        let tint = try XCTUnwrap(content.materialTintForTesting, "no tint over the material")
-        XCTAssertFalse(tint.isHidden)
-        XCTAssertEqual(tint.frame, material.bounds, "the tint covers the whole material")
-        XCTAssertEqual(tint.layer?.backgroundColor?.alpha ?? 0, 153.0 / 255.0, accuracy: 0.001)
-        XCTAssertNil(content.barColor, "no band drawn beneath the tint")
+        XCTAssertTrue(material.subviews.allSatisfy(\.isHidden), "nothing lies over the material")
+        XCTAssertEqual(content.barColor, NSColor(srgbRed: 81 / 255, green: 43 / 255, blue: 212 / 255, alpha: 1),
+                       "the bars' band is painted over the material")
+    }
+
+    /// A background written for a translucent window tints its whole material
+    /// - under the pages and around the floating sidebar - and lets it show;
+    /// another window wears it as its own background, and one that lets the
+    /// desktop through is no longer opaque.
+    @MainActor
+    func testAWindowsBackgroundTintsItsMaterial() throws {
+        let renderer = testRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        var stack = navigation([page("home", title: "Home")])
+        stack.properties[.barBackgroundColor] = .color(red: 81, green: 43, blue: 212, alpha: 255)
+        let tint = HostValue.color(red: 81, green: 43, blue: 212, alpha: 38)
+        renderer.applyForTesting(windowTree(flyout(
+            presented: true,
+            menu: page("menu", title: "Menu"),
+            detail: stack), translucent: true, background: tint))
+
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
+        content.layoutSubtreeIfNeeded()
+        let material = try XCTUnwrap(content.materialForTesting)
+        let over = try XCTUnwrap(content.materialTintForTesting, "no tint over the material")
+        XCTAssertFalse(over.isHidden)
+        XCTAssertEqual(over.frame, material.bounds, "the tint covers the whole material")
+        XCTAssertEqual(over.layer?.backgroundColor?.alpha ?? 0, 38.0 / 255.0, accuracy: 0.001)
+        XCTAssertEqual(window.backgroundColor, .clear)
+
+        renderer.applyForTesting(windowTree(flyout(
+            presented: true,
+            menu: page("menu", title: "Menu"),
+            detail: stack), translucent: false, background: tint))
+        XCTAssertEqual(window.backgroundColor, NSColor(srgbRed: 81 / 255, green: 43 / 255, blue: 212 / 255,
+                                                       alpha: 38 / 255), "the window's own background")
+        XCTAssertFalse(window.isOpaque, "the desktop shows through the colour's alpha")
+        XCTAssertNil(content.materialForTesting)
     }
 
     /// The detail meets a floating sidebar: its page and its band begin at the
@@ -1170,13 +1213,12 @@ private extension AppKitPageTests {
 
     /// One window holding `content`, asked - or, given nil, no longer asked -
     /// to let the desktop show through it.
-    func windowTree(_ content: HostPatch, translucent: Bool?) -> HostPatch {
+    func windowTree(_ content: HostPatch, translucent: Bool?, background: HostValue? = nil) -> HostPatch {
         var window = HostPatch(id: .manual("window"), type: .window)
-        if let translucent {
-            window.properties[.isTranslucent] = .bool(translucent)
-        } else {
-            window.properties[.isTranslucent] = .nothing
-        }
+        // A translucent window shows the desktop through a thick blur, the background its tint.
+        let tint = background.flatMap(Color.init(propValue:))
+        let blur = Material.blur(tint.map { Blur.thick.tint($0) } ?? .thick).propValue.resolvingTheme()
+        window.properties[.background] = translucent == true ? blur : (background ?? .nothing)
         window.children = .arranged([content])
 
         var scene = HostPatch(id: .manual("scene"), type: .scene)

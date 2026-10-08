@@ -1,11 +1,11 @@
 # revision 2.1
 DatePicker: ✅
-DatePicker.closed: not realized
-DatePicker.date: cannot read date of DatePicker - the Web's driver has no path for it yet
-DatePicker.dateChanged: cannot read date of DatePicker - the Web's driver has no path for it yet
+DatePicker.closed: – The browser says nothing as a picker's list or calendar closes.
+DatePicker.date: ✅
+DatePicker.dateChanged: ✅
 DatePicker.format: not realized
 DatePicker.frameChanged: ✅
-DatePicker.isOpen: not realized
-DatePicker.maximumDate: cannot read maximumDate of DatePicker - the Web's driver has no path for it yet
-DatePicker.minimumDate: cannot read minimumDate of DatePicker - the Web's driver has no path for it yet
-DatePicker.opened: not realized
+DatePicker.isOpen: – The browser opens a picker's list or calendar only at the user's press, and closes it at the user's hand alone.
+DatePicker.maximumDate: ✅
+DatePicker.minimumDate: ✅
+DatePicker.opened: – The browser says nothing as a picker's list or calendar opens.

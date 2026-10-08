@@ -16,6 +16,8 @@ final class WinUIItemsView: WinUILayoutView {
     /// WinUI's own list, which the relay's callbacks name.
     let list = WinUIItemsList()
 
+    override var answering: WinUIView { list }
+
     private var shape = ItemsLayout.list()
     private var choice: Choice?
 

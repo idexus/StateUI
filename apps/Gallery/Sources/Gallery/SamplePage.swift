@@ -19,11 +19,12 @@ struct SamplePage: View {
 
     /// The page a sample is shown on: this scrolling page, or - for a sample
     /// whose examples hold the page still - its tabs, which a window shows as
-    /// its own, on a bar in `bar`, the colour of the stack they are pushed onto.
+    /// its own, on bars as the gallery's `look` says - the system's accent
+    /// being `system` - as the stack they are pushed onto is.
     /// The tabs carry the sample's name, which names the window while they are
     /// the stack's last place; their pages name the tabs alone.
     @ViewBuilder
-    static func shown(_ sample: Sample, nav: Navigation, bar: Color) -> some View {
+    static func shown(_ sample: Sample, nav: Navigation, look: ThemeLook, system: Color) -> some View {
         if sample.scrolls {
             SamplePage(sample: sample, nav: nav)
         } else {
@@ -31,14 +32,17 @@ struct SamplePage: View {
                 SampleTabPage(sample: sample, tab: tab, nav: nav)
             }
             .title(sample.title)
-            .barBackgroundColor(bar)
+            .bars(look.bars, in: look.barColour, system: system)
         }
     }
 
     var body: some View {
         // Dressed as every page of the gallery is. What a sample adds to the
         // bar - its buttons, its title view - it declares on its own views.
-        scrolling.galleryPage(sample.title)
+        // Under a phone's home indicator, as the group's list runs.
+        Grid { scrolling }
+            .avoidsSafeArea(.container, .container, .container, .none)
+            .galleryPage(sample.title)
     }
 
     /// Everything in one scroller: the summary, then each example with its
@@ -109,7 +113,7 @@ struct SamplePage: View {
     }
 
     /// An example is a view like any other, so it is placed like any other -
-    /// inside a card that marks where it begins.
+    /// inside a panel that marks where it begins.
     ///
     /// An example that FILLS is wrapped in a Grid rather than a VStack: a stack
     /// gives each child the height it asks for, so a list inside one is
@@ -132,9 +136,6 @@ struct SamplePage: View {
                 .padding(16)
             }
         }
-        .style("Card")
-        .stroke(Palette.outline)
-        .lineWidth(1)
-        .shape(.roundedRectangle(10))
+        .style("Panel")
     }
 }

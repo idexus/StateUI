@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 TextSpan: ✅
-TextSpan.background: cannot read background of TextSpan - UIKit's driver has no path for it yet
+TextSpan.background: ✅
 TextSpan.text: ✅

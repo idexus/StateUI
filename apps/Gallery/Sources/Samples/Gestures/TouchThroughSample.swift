@@ -11,15 +11,13 @@ struct TouchThroughSample: SampleContent, ExampleContent {
     /// about it, so the page holds the example still.
     static let scrolls = false
 
+    // listing: TouchThroughSample
     @State private var below = 0
     @State private var child = 0
     @State private var childrenToo = false
+    @State private var disabled = false
 
-    static let code = """
-        @State private var below = 0
-        @State private var child = 0
-        @State private var childrenToo = false
-
+    var body: some View {
         VStack {
             // Both counts are read here, so a tap on either builds this closure.
             DebugInfoLabel()
@@ -31,42 +29,9 @@ struct TouchThroughSample: SampleContent, ExampleContent {
                     .onTapped { below += 1 }
 
                 // On top. Its own empty area lets taps through to the box below
-                // while the label inside still answers - or, with the switch on,
-                // the whole of it ignores input, the label included.
-                VStack {
-                    Text("tap the child")
-                        .textColor(Palette.onBrand)
-                        .background(Palette.brand)
-                        .padding(horizontal: 14, vertical: 8)
-                        .horizontalAlignment(.center)
-                        .verticalAlignment(.center)
-                        .onTapped { child += 1 }
-                }
-                .padding(16)
-                .letsInputThrough(!childrenToo)
-                .ignoresInput(childrenToo)
-            }
-
-            Text("below \\(below)   child \\(child)")
-
-            HStack {
-                SwitchRow("Children too", $childrenToo)
-
-                Button("Reset")
-                    .onClicked { below = 0; child = 0 }
-            }
-        }
-        """
-
-    var body: some View {
-        VStack {
-            DebugInfoLabel()
-
-            Grid {
-                ColorBox(Palette.accent)
-                    .height(120)
-                    .onTapped { below += 1 }
-
+                // while the label inside still answers - or, with "Children too",
+                // the whole of it ignores input, the label included; disabled,
+                // it takes every tap on it and answers none.
                 VStack {
                     // The child wears its own colour and its own padding, so
                     // what is the child and what is the empty area around it
@@ -82,6 +47,7 @@ struct TouchThroughSample: SampleContent, ExampleContent {
                 .padding(16)
                 .letsInputThrough(!childrenToo)
                 .ignoresInput(childrenToo)
+                .isEnabled(!disabled)
             }
 
             Text("below \(below)   child \(child)")
@@ -91,6 +57,8 @@ struct TouchThroughSample: SampleContent, ExampleContent {
             HStack {
                 SwitchRow("Children too", $childrenToo)
 
+                SwitchRow("Disabled", $disabled)
+
                 Button("Reset")
                     .onClicked { below = 0; child = 0 }
             }
@@ -99,6 +67,7 @@ struct TouchThroughSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -108,13 +77,13 @@ struct TouchThroughSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`ignoresInput(true)` takes the view and everything in it out - with the "
-                + "switch on, the label stops counting too and every tap reaches the box.")
+            Text("`ignoresInput(true)` takes the view and everything in it out - with "
+                + "Children too on, the label stops counting too and every tap reaches the box.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Neither is the same as disabled: a disabled view still takes the tap "
-                + "and does nothing with it, while these are not hit at all.")
+            Text("Neither is the same as disabled: with Disabled on, the label still takes "
+                + "the tap and does nothing with it, and nothing in the layout answers.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -1,5 +1,6 @@
 import StateUI
 
+// listing: WindowBarSample
 /// What the gallery's window says on its bar, written by the sample and declared by the window.
 final class WindowBarState {
     /// The line under the bar's title.
@@ -8,60 +9,25 @@ final class WindowBarState {
     /// Whether the window's bar carries "Surprise me" on every page.
     @State var showsSurprise = false
 }
+// listing: end
 
 /// The bar the window declares on its page: the application's name, a line under the title, and an action on every
 /// page.
 struct WindowBarSample: SampleContent, ExampleContent {
+    // listing: WindowBarSample
     /// The values shared with the gallery window the sample is in.
     let bar: WindowBarState
+    // listing: end
 
     static let id = "windowBar"
     static let title = "Window bar"
     static let summary = "Type a line for the bar, then turn on an action every page carries."
 
-    static let code = """
-        final class WindowBarState {
-            @State var subtitle = ""
-            @State var showsAction = false
-        }
-
-        struct MainPage: View {
-            let bar: WindowBarState
-            @State private var showsMenu = true
-
-            var body: some View {
-                SplitView($showsMenu) {
-                    MenuPage()
-                } detail: {
-                    HomePage()
-                }
-                .barTitle("StateUI")
-                .barSubtitle(bar.subtitle)
-                .barIcon("stateui_mark.png")
-                .toolbar {
-                    if bar.showsAction {
-                        ToolbarItem("Surprise me")
-                            .icon("surprise.png")
-                    }
-                }
-            }
-        }
-
-        struct WindowBarSample: View {
-            let bar: WindowBarState
-
-            var body: some View {
-                VStack {
-                    TextField(bar.$subtitle)
-                        .placeholder("Window subtitle")
-                    Switch(bar.$showsAction)
-                }
-            }
-        }
-        """
+    static var code: String { Listings.joined("WindowBarSample", "MainPage.bar") }
 
     var notes: (any View)? { nil }
 
+    // listing: WindowBarSample
     var body: some View {
         VStack {
             TextField(bar.$subtitle)
@@ -81,4 +47,5 @@ struct WindowBarSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 }

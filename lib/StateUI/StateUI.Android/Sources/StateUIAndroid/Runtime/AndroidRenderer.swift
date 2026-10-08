@@ -118,12 +118,33 @@ final class AndroidRenderer {
     private lazy var actToolkit = AndroidActToolkit(
         core: runtime.core, context: context, root: root, tree: { [unowned self] in runtime.tree },
         keepSceneValue: { [unowned self] in keepSceneValue($0) })
-    private lazy var acts = HostActPerformer(toolkit: actToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree })
+    /// Android's part of the files the user opens and saves, and of what the system launches.
+    private(set) lazy var fileToolkit = AndroidFileToolkit(context: context)
+    private lazy var acts = HostActPerformer(
+        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree })
 
     /// An act waiting under a ticket was answered - a dialog, a script: its caller resumes, and what that
     /// writes runs.
     func answered(ticket: Int64, accepted: Bool, words: String?) {
         actToolkit.answered(ticket: ticket, accepted: accepted, words: words)
+        runtime.pump.turn()
+    }
+
+    /// The document picker under `ticket` closed: its caller resumes with the documents chosen.
+    func filesChosen(ticket: Int64, addresses: [String], names: [String], failure: String?) {
+        fileToolkit.chose(ticket: ticket, addresses: addresses, names: names, failure: failure)
+        runtime.pump.turn()
+    }
+
+    /// The document read under `ticket`: its caller resumes with its bytes.
+    func fileRead(ticket: Int64, bytes: [UInt8], failure: String?) {
+        fileToolkit.read(ticket: ticket, bytes: bytes, failure: failure)
+        runtime.pump.turn()
+    }
+
+    /// What was launched under `ticket` was taken, or not: its caller resumes.
+    func launched(ticket: Int64, taken: Bool) {
+        fileToolkit.launched(ticket: ticket, taken: taken)
         runtime.pump.turn()
     }
 
@@ -185,9 +206,25 @@ final class AndroidRenderer {
         return Point(x: Double(pixels[0]) / density, y: Double(pixels[1]) / density)
     }
 
-    /// Names the activity after the first window.
+    /// The colour the activity's window was last painted in behind its pages; nil while it keeps its own.
+    private var paintedBackground: Int32?
+
+    /// Names the activity after the first window: the title its chrome shows, the visible page's that names it first.
+    /// Paints the activity's window behind its pages as the window's element says, and gives it the theme's own back
+    /// once it says none - a window never painted keeps whatever it shows.
+    private func showBackground(_ background: HostValue?) {
+        let argb = background.flatMap { HostBrush($0).firstColor }.flatMap(AndroidView.argb)
+        guard argb != paintedBackground else { return }
+        paintedBackground = argb
+        Java.frame {
+            Java.callStatic(
+                JavaAPI.environment, JavaAPI.setWindowBackground, .object(context.reference), .int(argb ?? 0),
+                .bool(argb != nil))
+        }
+    }
+
     private func showTitle(of window: MountedElement) {
-        let title = window.value(.title)?.string
+        let title = WindowChrome(window: window, arrangement: presentation.arrangement).title
         guard windowTitle != .some(title) else { return }
 
         windowTitle = .some(title)
@@ -204,9 +241,9 @@ final class AndroidRenderer {
     /// Design: docs/design/platforms/android/pages.md#the-windows-overlays
     private func showWindow() {
         guard let window = runtime.tree.root?.first(type: .window) else { return }
-        showTitle(of: window)
-
         let changes = presentation.show(window, in: runtime.lifecycle)
+        showTitle(of: window)
+        if let traits = changes.traits { showBackground(traits.background.painted) }
         if let (_, arrangement) = changes.arrangement {
             Java.call(root.reference, JavaAPI.removeAllViews)
             shownOverlays = []

@@ -40,11 +40,37 @@ side of the shape's edge, in a colour alone (AppKit's brush strokes no
 gradient). With `clipsContent` the layer cuts what the layout holds: to its
 bounds, its rounded corners, or an oval mask; without it nothing is cut.
 
+A blur or glass background is a view of its own under what the layout
+holds - an `NSGlassEffectView` in the glass's tint, or an
+`NSVisualEffectView` within the window of the role whose translucency stands
+in that thickness (`fullScreenUI`, `popover`, `menu`,
+`underWindowBackground`, measured, and `windowBackground` for the thickest) -
+cut to the box's shape and edged with its outline on its own layer, as the
+layout's own drawing lies under it. A blur's tint lies over it in a view of
+its own (`AppKitBoxWash`), the material's top view, hidden while it paints
+nothing. Laying out the children keeps the surface beneath them. Glass that
+answers the user takes the press, which rises to the layout; any other
+surface takes none. A window's blur carries the same wash for its tint.
+The trap: macOS draws an inactive window's glass without its tint - a violet
+sidebar went grey as its window lost the focus - but never what the glass
+holds. So glass wears its tint while its window stands key or main in the
+application in front, and in its content (the wash) otherwise, following the
+window's and the application's notices.
+
 A scroller's box is its layer's alone: a colour behind what it shows, a
 colour's outline on a rectangle or a rounded one, and the cut of what it shows
 to its shape, always. AppKit repaints a scroller's layer as it displays it and
 clears its colour and outline, so the scroller puts them back each time it
 updates its layer. An oval scroller cuts and draws no outline.
+
+## A sidebar's material
+
+A split view's sidebar is AppKit's own sidebar item, on the system's sidebar
+material. The material its split view says for it beside the detail
+(`sidebarBackground`) stands in its pane as a layout's box does - a colour on
+the pane's layer, a blur or glass a view of its own under the page - over
+the system's. A Mac sidebar never slides over the detail: a window too narrow
+for both hides it, so the flyout's material is never shown.
 
 ## Scroll bars
 
@@ -57,6 +83,19 @@ is set before the scroll view first lays out; set later, its clip keeps the
 narrower width until it lays out again. To see the runner's bars on a
 desktop, run the suite after `defaults write com.apple.dt.xctest.tool
 AppleShowScrollBars Always`, and delete that key afterwards.
+
+## A long text
+
+AppKit draws a layer-backed view only where it is visible, so a scroller
+uncovering a label a few points at a time draws it strip by strip - and an
+`NSTextField` label lays its whole text out again for every strip: a listing
+of 1275 characters cost 6.4 ms a strip, the Appearance sample's 756 by 3424
+point listing 200 ms, each frame of the first pass and every time the label
+drew again (a theme turned, the window resized). A label that wraps and shows
+every line therefore draws from a layout of its words it keeps in TextKit
+(`NSLayoutManager`), laid out again only when its words or its width change,
+drawing only the lines the strip shows; its lines stand where the cell's do,
+2 points in from each side. A truncated label draws as its cell does.
 
 ## A button's icon beside its words
 

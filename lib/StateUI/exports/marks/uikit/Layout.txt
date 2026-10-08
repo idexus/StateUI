@@ -1,13 +1,13 @@
 # revision 1.1
-Grid.avoidsSafeArea: cannot read avoidsSafeArea of Grid - UIKit's view places its children where StateUI's layout says; their frames prove it
+Grid.avoidsSafeArea: does not apply - read avoidsSafeArea of Grid - UIKit's view places its children where StateUI's layout says; their frames prove it
 Grid.clipsContent: ✅
 Grid.letsInputThrough: ◐ cannot read letsInputThrough of Grid - UIKit's driver has no path for it yet
-HStack.avoidsSafeArea: cannot read avoidsSafeArea of HStack - UIKit's view places its children where StateUI's layout says; their frames prove it
+HStack.avoidsSafeArea: does not apply - read avoidsSafeArea of HStack - UIKit's view places its children where StateUI's layout says; their frames prove it
 HStack.clipsContent: ✅
 HStack.letsInputThrough: ◐ cannot read letsInputThrough of HStack - UIKit's driver has no path for it yet
-VStack.avoidsSafeArea: cannot read avoidsSafeArea of VStack - UIKit's view places its children where StateUI's layout says; their frames prove it
+VStack.avoidsSafeArea: does not apply - read avoidsSafeArea of VStack - UIKit's view places its children where StateUI's layout says; their frames prove it
 VStack.clipsContent: ✅
 VStack.letsInputThrough: ◐ cannot read letsInputThrough of VStack - UIKit's driver has no path for it yet
-ZStack.avoidsSafeArea: cannot read avoidsSafeArea of ZStack - UIKit's view places its children where StateUI's layout says; their frames prove it
+ZStack.avoidsSafeArea: does not apply - read avoidsSafeArea of ZStack - UIKit's view places its children where StateUI's layout says; their frames prove it
 ZStack.clipsContent: ✅
 ZStack.letsInputThrough: ◐ cannot read letsInputThrough of ZStack - UIKit's driver has no path for it yet

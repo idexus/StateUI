@@ -2,7 +2,6 @@ ActivityIndicator
   isAnimating
   tint
 Button
-  background
   contentMode
   fontAttributes
   fontFamily
@@ -18,6 +17,7 @@ Button
   text
   textCase
   textColor
+  tracking
   clicked()
   pressed()
   released()
@@ -58,11 +58,9 @@ Ellipse
   miterLimit
   stroke
 Grid
-  background
   clipsContent
   columnSpacing
   columns
-  ignoresInput
   letsInputThrough
   lineWidth
   padding
@@ -71,9 +69,7 @@ Grid
   shape
   stroke
 HStack
-  background
   clipsContent
-  ignoresInput
   letsInputThrough
   lineWidth
   padding
@@ -180,7 +176,6 @@ Rectangle
   miterLimit
   stroke
 ScrollView
-  background
   horizontalScrollIndicator
   lineWidth
   orientation
@@ -228,7 +223,6 @@ Switch
   tint
   toggled()
 Text
-  background
   fontAttributes
   fontFamily
   fontSize
@@ -294,9 +288,7 @@ TimePicker
   opened()
   timeChanged()
 VStack
-  background
   clipsContent
-  ignoresInput
   letsInputThrough
   lineWidth
   padding
@@ -312,9 +304,7 @@ WebView
   navigating()
   processTerminated()
 ZStack
-  background
   clipsContent
-  ignoresInput
   letsInputThrough
   lineWidth
   padding
@@ -324,8 +314,13 @@ ZStack
   accessibilityHeading
   accessibilityHint
   accessibilityLabel
+  allowsDrop
   area
   automationExcludedWithChildren
+  background
+  canDrag
+  dragText
+  droppedFileTypes
   frame
   gridColumn
   gridColumnSpan
@@ -333,6 +328,7 @@ ZStack
   gridRowSpan
   height
   horizontalAlignment
+  ignoresInput
   isAccessibilityHidden
   isEnabled
   isVisible
@@ -360,6 +356,13 @@ ZStack
   translationY
   verticalAlignment
   width
+  zIndex
+  dragEnded()
+  dragLeave()
+  dragOver()
+  dragStarting()
+  drop()
+  filesDropped()
   frameChanged()
   isFocusedChanged()
   panUpdated()
@@ -381,9 +384,15 @@ ZStack
   focus()
   handlerFailed()
   hideOnScreenKeyboard()
+  launchFile()
+  launchLink()
+  openFiles()
   persistSceneValue()
   persistValue()
   prompt()
+  readFile()
+  saveFile()
   scrollTo()
   unfocus()
+  useColorScheme()
   utcOffset()

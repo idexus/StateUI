@@ -2,71 +2,26 @@ import StateUI
 
 /// Runs of text inside one Text, each with a look of its own.
 struct TextSpanSample: SampleContent, ExampleContent {
+    // listing: TextSpanSample
     @State private var highlighted = 1
 
-    /// The line the last example colours one word of.
+    /// The line one word of which is coloured - the word the button moves.
     private let words = ["A", "Text", "has", "one", "TextColor"]
+    // listing: end
 
     static let id = "textSpan"
     static let title = "TextSpan"
     static let summary = "Text in more than one colour: a Text's runs, each with a look of its own."
 
-    static let code = """
-        @State private var highlighted = 1
-
-        private let words = ["A", "Text", "has", "one", "TextColor"]
-
-        VStack {
-            // The chosen run is read here, so tapping one builds this closure.
-            DebugInfoLabel()
-
-            // Two colours in one line, which is what runs are FOR: a label
-            // has one `textColor`, so this is the only way.
-            Text()
-                .spans {
-                    TextSpan("let ").textColor(Palette.brand)
-                    TextSpan("counter").textColor(Palette.accent)
-                    TextSpan(" = 0")
-                }
-
-            // A run carries font properties of its own, and what an unset one
-            // falls back to is the platform's business.
-            Text()
-                .spans {
-                    TextSpan("Sold ")
-                    TextSpan("out")
-                        .fontAttributes(.bold)
-                        .textColor(Palette.onAccent)
-                        .background(Palette.accent)
-                }
-
-            // A list is the usual way - one run per token, which is how the
-            // code block on every page of this gallery is drawn.
-            Text()
-                .spans {
-                    words.enumerated().map { index, word in
-                        TextSpan(word + " ")
-                            .textColor(index == highlighted ? Palette.accent : Palette.text)
-                            .fontAttributes(index == highlighted ? .bold : .none)
-                    }
-                }
-
-            Button("Move the highlight")
-                .onClicked { highlighted = (highlighted + 1) % words.count }
-
-            // `text` and `spans` are MUTUALLY EXCLUSIVE: a label
-            // given both shows the runs.
-            Text("this text never appears")
-                .spans {
-                    TextSpan("the runs win")
-                }
-        }
-        """
-
+    // listing: TextSpanSample keep
     var body: some View {
         VStack {
+            // `highlighted` is read here, so moving the highlight builds this
+            // closure.
             DebugInfoLabel()
 
+            // Three colours in one line, which is what runs are FOR: a label
+            // has one `textColor`, so this is the only way.
             Text()
                 .spans {
                     TextSpan("let ").textColor(Palette.brand)
@@ -102,6 +57,8 @@ struct TextSpanSample: SampleContent, ExampleContent {
             Button("Move the highlight")
                 .onClicked { highlighted = (highlighted + 1) % words.count }
 
+            // `text` and `spans` are MUTUALLY EXCLUSIVE: a label
+            // given both shows the runs.
             Text("this text never appears")
                 .spans {
                     TextSpan("the runs win")
@@ -112,13 +69,14 @@ struct TextSpanSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
             Text("Two colours in one line is what runs are for: a label has one `textColor`, "
                 + "so text in two colours is two runs. A run carries font and text properties "
                 + "of its own - size, family, weight, a background behind those words alone. "
-                + "It is not a view, so there is no margin and no size on it.")
+                + "It is not a view, so it has no margin, width or height.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -134,8 +92,8 @@ struct TextSpanSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("The Swift type is `TextSpan`, not `TextSpan`: Swift's own standard library has "
-                + "a `TextSpan` in scope in every file, and it wins - `TextSpan(\"…\")` does not "
+            Text("The type is `TextSpan`, not `Span`: Swift's own standard library has "
+                + "a `Span` in scope in every file, and it wins - `Span(\"…\")` does not "
                 + "compile.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

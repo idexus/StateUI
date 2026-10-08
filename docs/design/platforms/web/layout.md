@@ -16,13 +16,18 @@ they need, as the host layer's stack does.
 
 ## A child's place
 
-A layout writes each child's place as the child's own CSS: its margin, its
+A layout writes each child's place as the child's own CSS: its margin - below
+nothing too, which shifts the child as it does on every host - its
 width and height, their least and most, and its alignment across its slot -
 in a grid's cell along both axes. Start, centre and end are CSS's start,
 center and end; a filling child stretches, unless a stated or a most size
 stops it short of its slot, when it stands in the middle, as the host layer
-places it. A hidden child is `hidden`, which takes it out of the layout: it
-takes no room and no spacing.
+places it. The least size a control's look gives it - a button's, a
+field's, a slider's - is its own size, and yields where the tree states a
+size or a most, where the child fills its slot and in an area: CSS's least
+wins over a stated size, so a button stated 30 high stood 36. A hidden child
+is `hidden`, which takes it out of the layout: it takes no room and no
+spacing.
 
 ## Children in order
 
@@ -66,7 +71,9 @@ resized - sets out from where it no longer is.
 ## A placing run
 
 A ZStack whose children a placing run stands - an engine's - stands each
-where the run says: absolutely, in its rectangle, drawn with the run's
+where the run says: absolutely, in its rectangle, unbounded by its slot - a
+room lower than a card makes the run scale the card, and a slot's
+`max-height` would squash it instead - drawn with the run's
 transform under the child's own (`HostDrawingTransform.under`) and the run's
 opacity. The matrix turns and scales the child about the middle of the place
 the run gives it, so it is written again whenever that place's size changes,
@@ -74,7 +81,14 @@ not only its turn: a run worked out before its room was measured - a card half
 a point wide - leaves nothing of itself behind once the next one sizes it. A ZStack draws its children back to front in the run's order
 (`ZStackArithmetic.drawingOrder`) - each child, placed or not, takes its
 z-index from it - so a child the run places never rises over a later one it
-places none of.
+places none of. A child placed in its area again, with no run, takes back
+its own opacity: the run's drawn opacity gives way to it, and a placing never
+clears it - a ZStack child at opacity nought, a row's hidden press light,
+would otherwise stand lit each time its row's look changes under the pointer.
+A card the run places - a grid of its face and its shade - wears the run's
+shade on its second layer, as every host does: drawn whole, the shade - a
+black card in its corners - shows at the face's edges, and the more as a
+press shrinks the face.
 
 ## Scrolling
 
@@ -86,11 +100,18 @@ only into room left over, so content wider than the view stands centred over
 both its edges. The view's defaults - down, with its bars - stand from its
 making, as an applier runs only for a member the tree states.
 
+Bars always shown are `overflow: scroll`, standing whether or not there is
+anything to scroll to; bars never shown are hidden by the page's style.
+
 The user's movement is the host layer's (`ScrollMovement`): each `scroll` the
 page raises moves it, a pointer down holds it, and the display's frames report
 where it went and that it came to rest. An offset the tree writes scrolls the
 element at once, and the `scroll` the element raises for it is no movement of
-the user's: it is taken where it stands, not reported back.
+the user's: it is taken where it stands, not reported back. Where it stands
+is read back once written - the browser stops an offset past the end at the
+end, and its `scroll` says that end, which waiting for the offset written
+heard as the user's; an offset that moved nothing raises no `scroll`, so
+nothing waits for one.
 
 A scroller keeps the user's scrolling to itself only along the ways it
 scrolls (`overscroll-behavior-x`, `-y`): reaching its end there, the page
@@ -105,12 +126,17 @@ same rule.
 A view the tree reads where it stands says so as soon as the page laid it
 out - at the end of the call from the page that changed it, the layout read
 then, and again when its `ResizeObserver` tells it moved, which the browser
-does before it draws - and after a scroll on the display's frame: its box in
-its layout parent's, its corner in the page, and that corner from the
-window's room - the page below the bar (`MountedElement.frameNumbers`). What
+does before it draws - and after a display frame that wrote a value or a
+scroll: its box in its layout parent's content - a parent that scrolls
+adding how far it scrolled, so a child's place there stays as it scrolls -
+its corner in the page, and that
+corner from the window's room - the page below the bar (`MountedElement.frameNumbers`). What
 the report changes is rendered in the same call, so a page sized by its own
 frame - the Gallery's tabs - never stands a frame at no width. A view the
-browser lays out nowhere - a covered page - says nothing.
+browser lays out nowhere - a covered page - says nothing. The trap: a
+padding, a spacing or a track on its way moves a child without resizing it,
+which no observer of the page tells - so every frame that wrote something
+counts as laid out.
 
 ## Values in CSS
 

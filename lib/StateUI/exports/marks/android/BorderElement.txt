@@ -1,22 +1,28 @@
-# revision 1.1
-Button.lineWidth: cannot read lineWidth of Button - Android's driver has no path for it yet
-Button.shape: cannot read shape of Button - Android's driver has no path for it yet
-Button.stroke: cannot read stroke of Button - Android's driver has no path for it yet
-Grid.lineWidth: cannot read lineWidth of Grid - StateUI draws a layout's box in a drawable of its own, which holds none of its lineWidth; its drawing proves it
-Grid.shape: cannot read shape of Grid - StateUI draws a layout's box in a drawable of its own, which holds none of its shape; its drawing proves it
-Grid.stroke: cannot read stroke of Grid - StateUI draws a layout's box in a drawable of its own, which holds none of its stroke; its drawing proves it
-HStack.lineWidth: cannot read lineWidth of HStack - StateUI draws a layout's box in a drawable of its own, which holds none of its lineWidth; its drawing proves it
-HStack.shape: cannot read shape of HStack - StateUI draws a layout's box in a drawable of its own, which holds none of its shape; its drawing proves it
-HStack.stroke: cannot read stroke of HStack - StateUI draws a layout's box in a drawable of its own, which holds none of its stroke; its drawing proves it
+# revision 5.1
+Button.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Button.lineWidth: ✅
+Button.shape: ✅
+Button.stroke: ✅
+Grid.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Grid.lineWidth: ✅
+Grid.shape: ✅
+Grid.stroke: ✅
+HStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+HStack.lineWidth: ✅
+HStack.shape: ✅
+HStack.stroke: ✅
 RadioButton.lineWidth: not realized
 RadioButton.shape: not realized
 RadioButton.stroke: not realized
-ScrollView.lineWidth: cannot read lineWidth of ScrollView - StateUI draws a layout's box in a drawable of its own, which holds none of its lineWidth; its drawing proves it
-ScrollView.shape: cannot read shape of ScrollView - StateUI draws a layout's box in a drawable of its own, which holds none of its shape; its drawing proves it
-ScrollView.stroke: cannot read stroke of ScrollView - StateUI draws a layout's box in a drawable of its own, which holds none of its stroke; its drawing proves it
-VStack.lineWidth: cannot read lineWidth of VStack - StateUI draws a layout's box in a drawable of its own, which holds none of its lineWidth; its drawing proves it
-VStack.shape: cannot read shape of VStack - StateUI draws a layout's box in a drawable of its own, which holds none of its shape; its drawing proves it
-VStack.stroke: cannot read stroke of VStack - StateUI draws a layout's box in a drawable of its own, which holds none of its stroke; its drawing proves it
-ZStack.lineWidth: cannot read lineWidth of ZStack - StateUI draws a layout's box in a drawable of its own, which holds none of its lineWidth; its drawing proves it
-ZStack.shape: cannot read shape of ZStack - StateUI draws a layout's box in a drawable of its own, which holds none of its shape; its drawing proves it
-ZStack.stroke: cannot read stroke of ZStack - StateUI draws a layout's box in a drawable of its own, which holds none of its stroke; its drawing proves it
+ScrollView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+ScrollView.lineWidth: ✅
+ScrollView.shape: ✅
+ScrollView.stroke: ✅
+VStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+VStack.lineWidth: ✅
+VStack.shape: ✅
+VStack.stroke: ✅
+ZStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+ZStack.lineWidth: ✅
+ZStack.shape: ✅
+ZStack.stroke: ✅

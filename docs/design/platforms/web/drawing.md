@@ -7,8 +7,12 @@ host.
 
 ## A shape
 
-A shape is an `<svg>` holding one `<path>` and the `<defs>` of its brushes,
-drawn again whenever its room changes size. A rectangle and an ellipse fill
+A shape is a box with no size of its own, as on every host - it takes the
+room its layout gives it, and none along a stack - and over that box an
+`<svg>` holding one `<path>` and the `<defs>` of its brushes, drawn again
+whenever its room changes size. The trap: an `<svg>` as the view itself,
+sized `100%`, took the stack's whole height, and what stood after it in the
+stack fell out of the window. A rectangle and an ellipse fill
 the room, set in by half their outline so the outline stays inside it, a
 rectangle's corners fitted as the host layer fits a box's
 (`BoxArithmetic.fitted`). A geometry of the shape's own is written from the
@@ -17,7 +21,8 @@ arithmetic (`ShapeArithmetic.placement`) from the bounds the browser measures
 for its path, as its content mode says; a transform the shape carries is six
 finite numbers or none (`ShapeArithmetic.transform`).
 
-An outline keeps its width however the path is placed or scaled
+Where the dashes start is written whether or not the outline is dashed, as
+the tree says it. An outline keeps its width however the path is placed or scaled
 (`vector-effect: non-scaling-stroke`), its dashes measured in its width as the
 host layer measures them (`ShapeArithmetic.dashLengths`). A gradient is an
 SVG gradient of the shape's own, in the page's units over the room and one
@@ -31,7 +36,9 @@ room is the one geometry every host draws a shape's brush over.
 ## A brush on a box
 
 A box's fill is its CSS `background`, its outline its `border` inside its
-edge, its shape its `border-radius`. A colour is the colour itself; a gradient
+edge, its shape its `border-radius` - a shape the tree states, square corners
+too, over the look's own; one unsaid leaves the look's. A colour is the colour
+itself; a gradient
 is a CSS gradient written for the box's size in pixels, so the box follows its
 own size with a size observer and writes it again as it changes.
 
@@ -47,6 +54,17 @@ two layers: the fill cut to the inside (`padding-box`), the outline's gradient
 to the whole box (`border-box`), which the border shows. A box with a look of
 its own and no outline loses the browser's border, so a button drawn by the
 application carries no frame of the browser's.
+
+
+## A blur
+
+A page has no blur and no glass of its own: a box's blur is a
+`backdrop-filter` of what lies behind it - 12, 18, 24, 32 or 40 pixels from
+ultra thin to ultra thick, saturated as the platforms' blurs are - under the
+blur's own colour, the theme's stand-in, with its tint laid over both as a
+second background layer. Glass is drawn as the blur as clear as it is, which
+the register records as missing (☑️). The driver reads the filter back to its
+blur.
 
 ## A canvas
 

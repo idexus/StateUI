@@ -5,22 +5,22 @@ Canvas.accessibilityIdentifier: ✅
 CheckBox.accessibilityIdentifier: ✅
 ColorBox.accessibilityIdentifier: ✅
 DatePicker.accessibilityIdentifier: ✅
-Ellipse.accessibilityIdentifier: ❌ conformance.second expected, conformance.first came - the value the tree changed it to
+Ellipse.accessibilityIdentifier: ✅
 Grid.accessibilityIdentifier: ✅
 HStack.accessibilityIdentifier: ✅
 Image.accessibilityIdentifier: ✅
 ItemsView.accessibilityIdentifier: ✅
-Line.accessibilityIdentifier: ❌ conformance.second expected, conformance.first came - the value the tree changed it to
+Line.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: 🧩
-MenuItem.accessibilityIdentifier: cannot read accessibilityIdentifier of MenuItem - the Web's driver has no path for it yet
+MenuItem.accessibilityIdentifier: ✅
 NavigationStack.accessibilityIdentifier: ✅
-Path.accessibilityIdentifier: ❌ conformance.second expected, conformance.first came - the value the tree changed it to
+Path.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅
-Polygon.accessibilityIdentifier: ❌ conformance.second expected, conformance.first came - the value the tree changed it to
-Polyline.accessibilityIdentifier: ❌ conformance.second expected, conformance.first came - the value the tree changed it to
+Polygon.accessibilityIdentifier: ✅
+Polyline.accessibilityIdentifier: ✅
 ProgressBar.accessibilityIdentifier: ✅
 RadioButton.accessibilityIdentifier: ✅
-Rectangle.accessibilityIdentifier: ❌ conformance.second expected, conformance.first came - the value the tree changed it to
+Rectangle.accessibilityIdentifier: ✅
 ScrollView.accessibilityIdentifier: ✅
 SearchField.accessibilityIdentifier: ✅
 Slider.accessibilityIdentifier: ✅
@@ -33,7 +33,7 @@ TextEditor.accessibilityIdentifier: ✅
 TextField.accessibilityIdentifier: ✅
 TextSpan.accessibilityIdentifier: not realized
 TimePicker.accessibilityIdentifier: ✅
-ToolbarItem.accessibilityIdentifier: cannot read accessibilityIdentifier of ToolbarItem - the Web's driver has no path for it yet
+ToolbarItem.accessibilityIdentifier: ✅
 VStack.accessibilityIdentifier: ✅
-WebView.accessibilityIdentifier: ❌ conformance.second expected, conformance.first came - the value the tree changed it to
+WebView.accessibilityIdentifier: ✅
 ZStack.accessibilityIdentifier: ✅

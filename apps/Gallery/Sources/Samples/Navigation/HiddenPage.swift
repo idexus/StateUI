@@ -28,10 +28,6 @@ struct HiddenPage: View {
                     .textColor(Palette.subtle)
 
                 Button("Back to the Navigation samples")
-                    .background(Palette.accent)
-                    .textColor(.white)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 20, vertical: 10)
                     .horizontalAlignment(.center)
                     .onClicked { nav.openGroup("navigation") }
             }

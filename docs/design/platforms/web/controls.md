@@ -53,7 +53,14 @@ wrap (`LineBreak.lines`).
 
 A Button is a `<button>`. With no fill, outline or shape of its own it is the
 browser's button; with one, its box is the application's - its background,
-its border, its corners - and the browser's look goes.
+its border, its corners - and the browser's look goes. It holds its words in
+a `<span>` and its picture in an `<img>` beside them, the two in its middle:
+the icon's position is the row's or column's direction, its spacing their
+gap - 8 points where the tree says none - and a picture with no words fills
+the button as its content mode says. Its words break as a label's do, on one
+line where the tree says nothing. A pointer taking hold of it is its press,
+and its release comes once - lifted, called off, or gone off the button; a
+slider's are heard the same.
 
 ## A field
 
@@ -94,10 +101,15 @@ itself, and the peers the host layer turns off are turned off on the page.
 ## Values in a range
 
 A Slider is the browser's range, which says each move of its thumb as it goes
-(`input`). A Stepper is a number field between a button taking a step down
-and one taking a step up; the field's own steps (`stepUp`, `stepDown`) keep
-the number inside its range, and a number typed past an end stands at it.
-Words that say no number leave the number where it was. The range, the step
+(`input`). A Stepper is a field of words with the role of a spin button
+between a button taking a step down and one taking a step up, the keyboard's
+arrows a step too. A step is a whole step from where the number stands, kept
+inside its range, and a number typed past an end stands at it. Words that are
+not wholly a number - `5x` - leave the number where it was, and a step or
+words that move nothing are heard by nobody. The trap: the browser's number
+field drops what it takes for no number as it is typed, so `5x` stood as 5,
+and its own steps snap to a grid counted from the minimum, so 1 stepped by
+2.5 stood at 2.5. The range, the step
 and the number of decimals are the host layer's (`ValueArithmetic`), and a
 value the tree writes reaches the control only where the tree changed it or
 its ends (`ElementValues.written`), so a hand on the thumb is never argued
@@ -105,11 +117,15 @@ with. The value standing on the page is where an animation of it starts.
 
 ## A picker
 
-A Picker is the browser's `<select>`, an `<option>` for each choice. The
-choices and the choice are written only where the tree changed them
-(`PickerChoices`), so the user's own choice is never argued with; no choice
-stands as no option selected. The choice the user makes is heard on
-`change`.
+A Picker is the browser's `<select>`: its title first, an `<option>` hidden
+and turned off - the field shows it while nothing is chosen, the open list
+leaves it out - then an `<option>` for each choice. The choices and the
+choice are written only where the tree changed them (`PickerChoices`), so the
+user's own choice is never argued with; no choice stands as the title
+selected. The choice the user makes is heard on `change`. The browser opens
+a picker's list - and a day's calendar, a time's clock - at the user's press,
+closes it at the user's hand and says nothing of either, so a picker's
+opening is not the program's.
 
 ## A day and a time
 
@@ -133,7 +149,8 @@ calendar opening and closing reach no event of the page's, so `isOpen`,
 
 A ProgressBar is the browser's `<progress>`, its share of the work done from 0
 to 1, drawn as a thin rounded bar in the accent colour or the application's
-tint. An ActivityIndicator is a ring turning while work goes on - the browser
+tint across the middle of a box that takes the view's frame - a cell taller
+than the bar leaves the bar thin and the frame the cell's. An ActivityIndicator is a ring turning while work goes on - the browser
 has no spinner of its own - with the role of a busy progress bar; stopped, it
 shows nothing and keeps its room, and it turns slower where the user asks for
 less motion. The ring stands at its own size in the middle of the view's
@@ -141,12 +158,18 @@ frame, so a frame wider than it is leaves it a circle where it belongs.
 
 ## A web view
 
-A WebView is the browser's own `<iframe>`: an address it loads, a document
-written in place its `srcdoc` - of the page's own site, a `<base>` before it
-where the document says where its links resolve - told by the same `data:`
-address every host tells such a document by (`WebDocument`). The page hears
+A WebView is the browser's own `<iframe>` over a box with no size of its
+own, as every host's web view: an address it loads, a document
+written in place shown at a `blob:` address of the page's own made for it -
+of the page's own site, a `<base>` before it where the document says where
+its links resolve - told by the same `data:` address every host tells such a
+document by (`WebDocument`). The trap: the browser takes a `srcdoc` written
+again in place of the one before, so a frame of documents written in place
+had no way back; a frame's own navigation is a step in its history. The page hears
 the frame's document load, and tells it navigated, for the reason the
-program asked where it asked one (`WebNavigationCause`).
+program asked where it asked one (`WebNavigationCause`); a step the frame
+takes - back, forward, the page again - tells its navigation began as it is
+taken, as showing an address does.
 
 The browser keeps a document of another site to itself: the page cannot
 read where its user went inside it, nor its history, nor run a script in
@@ -160,10 +183,35 @@ layer's reading of its JSON (`ScriptAnswer`). A frame has no agent of its
 own and no process the page could see end: `userAgent` and
 `processTerminated` stay unrealized.
 
+The user's pointer, clicks and wheel over a frame go to the frame's own
+document, not to the page. Over a document of the page's own site the view
+hears them there too - listened for again after every load, each told where
+it is in the view - so a tap, a press dragged and a pinch over it are the
+view's as on every host; coming and going the view hears itself. A document
+of another site keeps them to itself.
+
 ## Pictures
 
 An Image is an `<img>` showing one of the application's pictures, which
 `run-app.sh` lays beside the page in `Images/`. A name stands for its files in
 the host layer's order - a PNG, then the SVG of the same name - and the
 element shows the next when one is not found. Its content mode is
-`object-fit`.
+`object-fit`. An SVG keeps its own proportions inside any room it is given,
+so stretched it is shown through its view `#svgView(preserveAspectRatio(none))`
+and fills its room as a bitmap does. Its own size is the picture's, as every host's picture view
+has it, its proportions binding neither length: the element holds its size
+alone (`contain: size`), the picture's own given as it loads
+(`contain-intrinsic-size`) - a picture across a stack's width stands as tall
+as it is, where the browser's own would stand as tall as its proportions
+make it. The trap: an SVG picture keeps its own proportions under
+`object-fit: fill`, as the file's `preserveAspectRatio` says - stretched, it
+stands fitted. A picture filling its room (`object-fit: cover`) reaches two
+pixels past each edge - margins two pixels less, its bounds four more - under
+its parent's clip: WebKit draws a covering picture rounded inward at a
+fractional edge, by more than a pixel on a card turned and drawn small, so a band laid over its bottom - a card's caption in seventy
+per cent black - would paint the last row over the page, a black hairline.
+A transform cannot do it: a transformed picture is drawn over its later
+siblings. Its frame is its room still: the box the browser lays out reaches
+past it (`WebDOMView.reach`), and the place read back, as everything measured
+of the picture, is that box less its reach - read whole, the picture stood two
+pixels up and left of its room, its own top left corner clipped away.

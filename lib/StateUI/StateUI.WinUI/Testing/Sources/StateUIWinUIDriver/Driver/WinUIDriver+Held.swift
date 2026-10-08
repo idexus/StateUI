@@ -12,6 +12,10 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/conformance.md#what-the-driver-reads
 extension WinUIDriver {
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
+        // What WinUI holds nothing of is not read: the case does not apply here.
+        if platformHasNone["read \(property.name) of \(element.type.name)"] != nil {
+            throw DriverCannot(reading: property, of: element)
+        }
         if let value = backendHolds(property, on: element) { return value }
         let view = (element.native as? WinUIElement)?.view
         let cannot = DriverCannot(reading: property, of: element)
@@ -46,13 +50,32 @@ extension WinUIDriver {
         throw cannot
     }
 
-    /// A window's: the name the system shows, its place and size, their bounds, its buttons, its backdrop, whether it
+    /// A window's: the name the system shows, its place and size, their bounds, its buttons, its material, whether it
     /// floats and stands shown, and the kind and value the host keeps it by for the next start.
     private func windowHolds(_ name: String, _ element: MountedElement) throws -> HostValue? {
         let window = try window(of: element)
         if name == "windowType" || name == "windowValue" {
             let kept = try keptWindow(element)
             return name == "windowType" ? kept.kind.map { .name($0) } : kept.value.map { .string($0) }
+        }
+        if name == "background" {
+            // The desktop acrylic WinUI shows, at the thickness its kind and opacity are, its colour the tint; else
+            // the window's colour.
+            var (thin, opacity): (Bool, Float) = (false, 0)
+            let acrylic = stateui_winui_window_acrylic(window.handle, &thin, &opacity)
+            var argb: UInt32 = 0
+            let painted = stateui_winui_window_background(window.handle, &argb)
+                ? Color(red: Int(argb >> 16 & 255), green: Int(argb >> 8 & 255), blue: Int(argb & 255),
+                        alpha: Int(argb >> 24 & 255))
+                : nil
+            if acrylic {
+                guard let thickness = Blur.Thickness.allCases.first(where: {
+                    WinUIWindow.acrylic($0).thin == thin && abs(WinUIWindow.acrylic($0).opacity - opacity) < 0.005
+                }) else { return .string("an acrylic of no blur's thickness: \(thin ? "thin" : "base"), \(opacity)") }
+                let blur = Blur(thickness)
+                return Material.blur(painted.map(blur.tint) ?? blur).propValue
+            }
+            return painted.map { Material.color($0).propValue }
         }
         if name == "title" {
             let length = stateui_winui_window_system_title(window.handle, nil, 0)
@@ -62,13 +85,24 @@ extension WinUIDriver {
         }
         let names = [
             "x", "y", "width", "height", "minimumWidth", "minimumHeight", "maximumWidth", "maximumHeight",
-            "isMaximizable", "isMinimizable", "isTranslucent", "floatsOnTop", "isVisible",
+            "isMaximizable", "isMinimizable", "isAcrylic", "floatsOnTop", "isVisible",
         ]
         guard let place = names.firstIndex(of: name) else { return nil }
         var values = [Double](repeating: 0, count: names.count)
         stateui_winui_window_frame(window.handle, &values)
         // A size in pixels is a DIP's fraction off; a request is a whole number of DIPs.
         return place < 8 ? .number(values[place].rounded()) : .bool(values[place] == 1)
+    }
+
+    /// A pane's ground as the relay reads it: a colour, or an acrylic - the blur its luminosity stands for; nil for
+    /// WinUI's own.
+    private static func ground(_ read: String) -> HostValue? {
+        let words = read.split(separator: " ")
+        if words.first == "acrylic", words.count == 3, let opacity = Float(words[2]),
+           let thickness = Blur.Thickness.allCases.first(where: { abs(WinUIWindow.acrylic($0).opacity - opacity) < 0.005 }) {
+            return Material.blur(Blur(thickness)).propValue
+        }
+        return words.count == 1 ? Material.color(Color(String(words[0]))).propValue : nil
     }
 
     /// The window `element` is, as the host keeps it for the next start.
@@ -119,7 +153,7 @@ extension WinUIDriver {
         switch name {
         case "isVisible": return stateui_winui_is_shown(view.handle).propValue
         case "opacity": return stateui_winui_opacity(view.handle).propValue
-        case "isEnabled": return stateui_winui_is_enabled(view.handle).propValue
+        case "isEnabled": return stateui_winui_is_enabled(view.answering.handle).propValue
         case "accessibilityLabel" where view is WinUIActivityIndicatorView:
             // A running ring's peer says it is busy before the name its element holds.
             return .string(try read(view, "automationName"))
@@ -215,7 +249,8 @@ extension WinUIDriver {
     private func boxHolds(_ name: String, _ view: WinUIView) throws -> HostValue? {
         if view is WinUILayoutView {
             switch name {
-            case "background": return try Self.color(read(view, "box.fill")).map { Background.color($0).propValue }
+            // A colour stands in for a blur: the blur whose colour the box paints, else the colour.
+            case "background": return try Self.color(read(view, "box.fill")).map { StandIns.material(painted: $0).propValue }
             case "stroke": return try Self.color(read(view, "box.stroke")).map { Brush.solidColor($0).propValue }
             case "lineWidth": return Double(try read(view, "box.strokeThickness"))?.propValue
             case "shape":
@@ -227,7 +262,10 @@ extension WinUIDriver {
             }
         }
         switch name {
-        case "background": return try Self.color(read(view, "background")).map { Background.color($0).propValue }
+        case "background" where view is WinUICanvasView:
+            let ground = stateui_winui_canvas_ground(view.handle)
+            return ground == 0 ? nil : Material.color(Self.color(ground)).propValue
+        case "background": return try Self.color(read(view, "background")).map { StandIns.material(painted: $0).propValue }
         case "stroke" where view is WinUIButtonView:
             return try Self.color(read(view, "borderBrush")).map { Brush.solidColor($0).propValue }
         case "lineWidth" where view is WinUIButtonView:
@@ -254,7 +292,7 @@ extension WinUIDriver {
             let cap = Int(try read(view, "cap")) ?? 0
             return (cap == 2 ? LineCap.round : cap == 1 ? .square : .flat).propValue
         case "lineJoin": return LineJoin(rawValue: Int32(try read(view, "join")) ?? 0)?.propValue
-        case "miterLimit": return ((Double(try read(view, "miter")) ?? 0) / 2).propValue
+        case "miterLimit": return (Double(try read(view, "miter")) ?? 0).propValue
         default: return nil
         }
     }
@@ -270,8 +308,8 @@ extension WinUIDriver {
         }
         var facts = [Int32](repeating: 0, count: 9)
         stateui_winui_field_facts(view.handle, &facts)
-        // A search box's own text box takes no more than whether it is read only.
-        if view is WinUISearchFieldView { return name == "isReadOnly" ? (facts[0] != 0).propValue : nil }
+        // A search box keeps its caret in its template's text box, which offers none of its own.
+        if view is WinUISearchFieldView, name == "cursorPosition" || name == "selectionLength" { return nil }
         switch name {
         case "isReadOnly": return (facts[0] != 0).propValue
         case "isSpellCheckEnabled": return (facts[1] != 0).propValue
@@ -343,6 +381,8 @@ extension WinUIDriver {
             let back = try read(bar, "back") == "1"
             let actions = try read(bar, "actions") != "||"
             return (back || actions).propValue
+        // The window's title bar offers the way back of the page it shows.
+        case ("showsBackButton", _): return (try read(window().titleBar, "back") == "1").propValue
         case ("barBackgroundColor", _): return try Self.color(read(window().titleBar, "background")).map { $0.propValue }
         case ("barForegroundColor", _): return try Self.color(read(window().titleBar, "foreground")).map { $0.propValue }
         // The title area its path declares stands in the title's place.
@@ -352,6 +392,9 @@ extension WinUIDriver {
             return words.isEmpty ? nil : .string(words)
         case ("barIcon", _): return Self.picture(try read(window().titleBar, "icon"), named: element, by: .barIcon)
         case ("showsSidebar", let split as WinUISplitView): return (try read(split.sidebar, "paneOpen") == "1").propValue
+        case ("sidebarBackground", let split as WinUISplitView): return Self.ground(try read(split.sidebar, "paneBackground"))
+        case ("flyoutBackground", let split as WinUISplitView):
+            return Self.ground(try read(split.sidebar, "overlayPaneBackground"))
         case ("background", let page?) where element.type == .page:
             return try Self.color(read(page, "box.fill")).map { $0.propValue }
         case ("selectedTab", let tabs as WinUITabView):

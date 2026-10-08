@@ -327,6 +327,32 @@ extern "C" bool stateui_winui_reaches(StateUIObjectRef handle, double x, double 
     }
 }
 
+extern "C" bool stateui_winui_drawn_place(StateUIObjectRef panelHandle, StateUIObjectRef childHandle, int32_t *depth,
+                                          int32_t *place) {
+    try {
+        auto panel = as<xaml::DependencyObject>(panelHandle);
+        xaml::DependencyObject at = as<xaml::DependencyObject>(childHandle);
+        while (at) {
+            auto above = xaml::Media::VisualTreeHelper::GetParent(at);
+            if (above == panel) break;
+            at = above;
+        }
+        if (!at) return false;
+        auto count = xaml::Media::VisualTreeHelper::GetChildrenCount(panel);
+        for (int32_t index = 0; index < count; ++index) {
+            if (xaml::Media::VisualTreeHelper::GetChild(panel, index) != at) continue;
+            auto element = at.try_as<xaml::UIElement>();
+            *depth = element ? xaml::Controls::Canvas::GetZIndex(element) : 0;
+            *place = index;
+            return true;
+        }
+        return false;
+    } catch (...) {
+        report("reading where a child is drawn");
+        return false;
+    }
+}
+
 namespace {
     /// One view's focus heard: whether the keyboard is in it, and the handlers hung on its element.
     struct Focus {

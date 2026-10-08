@@ -72,11 +72,12 @@
             pushedHolds(PageContract.showsBackButton, false, then: true) { $0.showsBackButton($1) },
             pushedHolds(PageContract.backButtonTitle, "Notes", then: "All notes") { $0.backButtonTitle($1) },
             pushedHolds(PageContract.showsNavigationBar, false, then: true) { $0.showsNavigationBar($1) },
-            pushedHolds(PageContract.background, .red, then: .blue) { $0.pageBackground($1) },
+            pushedHolds(PageContract.background, .color(.red), then: .color(.blue)) { $0.pageBackground($1) },
             pushedFollows(PageContract.showsBackButton, false, then: true) { $0.showsBackButton($1) },
             pushedFollows(PageContract.backButtonTitle, "Notes", then: "All notes") { $0.backButtonTitle($1) },
             pushedFollows(PageContract.showsNavigationBar, false, then: true) { $0.showsNavigationBar($1) },
-            pushedFollows(PageContract.background, .red, then: .blue) { $0.pageBackground($1) },
+            pushedFollowsColour(PageContract.background, .red, then: .blue) { $0.pageBackground($1) },
+            followsAMaterial,
         ]
     }
 
@@ -119,6 +120,45 @@
                 }
             }
             try held(member, first, then: second, s)
+        }
+    }
+
+    /// `member` of a page pushed over the root holds the colour of the state its view says it from, and follows the
+    /// state as it is written, no view built again - a colour's channel writing a material.
+    static func pushedFollowsColour(
+        _ member: ElementProperty<PageContract, Material>, _ first: Color, then second: Color,
+        _ say: @escaping @Sendable (VStack, Binding<Color>) -> VStack
+    ) -> ConformanceCase {
+        ConformanceCase("Page.\(member.name).followsItsState", proves: [
+            Covered(member),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let value = State(wrappedValue: first)
+            s.start {
+                NavigationStack(State(wrappedValue: [1]).projectedValue) {
+                    Text("Root")
+                } destination: { _ in
+                    say(changing(value, to: second), value.projectedValue)
+                }
+            }
+            try held(member, .color(first), then: .color(second), s)
+        }
+    }
+
+    /// A pushed page's background follows the material state its view says it from - a material's channel.
+    static var followsAMaterial: ConformanceCase {
+        ConformanceCase("Page.background.followsAMaterialState", proves: [
+            Covered(PageContract.background),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            let (first, second) = (Material.color(Color("#0F766E")), Material.color(Color("#512BD4")))
+            let value = State(wrappedValue: first)
+            s.start {
+                NavigationStack(State(wrappedValue: [1]).projectedValue) {
+                    Text("Root")
+                } destination: { _ in
+                    changing(value, to: second).pageBackground(value.projectedValue)
+                }
+            }
+            try held(PageContract.background, first, then: second, s)
         }
     }
 

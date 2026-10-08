@@ -5,6 +5,7 @@ package com.stateui.gallery;
 
 import android.view.Surface;
 
+// listing: Cube3DSample.Android.java, InteropControlSample.Android.natives.java, InteropEventsSample.Android.java
 /**
  * What the gallery's own Android views tell its Swift half, each by the number
  * its control was made with. The Swift half answers each, in Host/GalleryNatives.swift.
@@ -30,3 +31,4 @@ final class GalleryNatives {
     /** The battery said its level, 0 to 1, and whether it charges. */
     static native void batteryChanged(double level, boolean charging);
 }
+// listing: end

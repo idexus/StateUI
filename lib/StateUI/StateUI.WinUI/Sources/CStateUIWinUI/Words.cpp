@@ -66,6 +66,20 @@ extern "C" void stateui_winui_set_font(StateUIObjectRef handle, double size, boo
     }
 }
 
+extern "C" void stateui_winui_set_character_spacing(StateUIObjectRef handle, int32_t thousandths) {
+    try {
+        either(handle,
+            [&](controls::TextBlock const &block) { block.CharacterSpacing(thousandths); },
+            [&](controls::Control const &control) {
+                control.CharacterSpacing(thousandths);
+                // A button's words are a caption of the host's, which spaces its own letters.
+                if (auto caption = captionOf(control)) caption.CharacterSpacing(thousandths);
+            });
+    } catch (...) {
+        report("spacing letters");
+    }
+}
+
 extern "C" void stateui_winui_set_foreground(StateUIObjectRef handle, bool has, uint32_t argb) {
     try {
         auto brush = has ? media::SolidColorBrush(color(argb)) : media::SolidColorBrush{nullptr};

@@ -2,39 +2,17 @@ import StateUI
 
 /// Whether the internet is reachable, and by what.
 struct ConnectivitySample: SampleContent, ExampleContent {
+    // listing: ConnectivitySample
     /// The network, as the host last reported it.
     @Environment(\.device) var device
+    // listing: end
 
     static let id = "connectivity"
     static let title = "Connectivity"
     static let summary = "Whether the internet is reachable and by what - "
         + "updated the moment it changes."
 
-    static let code = """
-        struct SaveButton: View {
-            @Environment(\\.device) var device
-
-            var body: some View {
-                VStack {
-                    // The connection is read here, so a change to it builds
-                    // this closure.
-                    DebugInfoLabel()
-
-                    Text(device.connectivity.networkAccess == .internet
-                        ? "online" : "offline · \\(device.connectivity.networkAccess)")
-
-                    // A host may report one entry per ADAPTER, so repeats
-                    // are collapsed for display.
-                    Text("via \\(Set(device.connectivity.connectionProfiles
-                        .map { "\\($0)" }).sorted().joined(separator: ", "))")
-
-                    Button("Save to the cloud")
-                        .isEnabled(device.connectivity.networkAccess == .internet)
-                }
-            }
-        }
-        """
-
+    // listing: ConnectivitySample
     var body: some View {
         // The list is the host's answer as given, and a host may report one
         // entry per adapter, so repeats are collapsed for display and the
@@ -45,6 +23,8 @@ struct ConnectivitySample: SampleContent, ExampleContent {
             .joined(separator: ", ")
 
         return VStack {
+            // The connection is read here, so a change to it builds this
+            // closure.
             DebugInfoLabel()
 
             Text(device.connectivity.networkAccess == .internet ? "online" : "offline")
@@ -59,29 +39,26 @@ struct ConnectivitySample: SampleContent, ExampleContent {
 
             Button("Save to the cloud")
                 .isEnabled(device.connectivity.networkAccess == .internet)
-                .background(Palette.accent)
-                .textColor(.white)
-                .shape(.roundedRectangle(8))
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
         }
         .spacing(10)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
             Text("The button above is enabled by a READ - "
                 + "`device.connectivity.networkAccess == .internet` - so it follows the "
-                + "network with no handler anywhere. On a phone, flip airplane "
-                + "mode and watch this page change twice; on Android that is "
-                + "`adb shell svc wifi disable`.")
+                + "network with no handler anywhere. On a phone, turn airplane "
+                + "mode on and off and watch this page follow; on Android, "
+                + "`adb shell svc wifi disable` takes the Wi-Fi away.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Text("A desktop wired to Ethernet may never CHANGE, but the "
-                + "values here are still the host's answer, pushed before "
-                + "the first render. A host that cannot observe reachability "
-                + "reports `.unknown` and no profiles.")
+                + "values here are still the host's answer. A host that "
+                + "cannot observe reachability reports `.unknown` and no "
+                + "profiles.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

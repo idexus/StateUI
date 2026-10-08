@@ -3,6 +3,7 @@ import StateUI
 /// An author holds a CONTROL as well as values, and declares it with `@Aim`:
 /// on a value you write, on a control you call.
 struct AimSample: SampleContent, ExampleContent {
+    // listing: AimSample
     @State private var text = ""
 
     /// The control an act is about. `.aim` puts the element's own identity in
@@ -13,69 +14,22 @@ struct AimSample: SampleContent, ExampleContent {
     /// act aims at exactly the view it was put on.
     @Aim(TextField.self) private var note
 
-    /// What the last act did. Written by the HANDLER rather than read in the
-    /// body: the differ fills an aim as it WALKS, which is after the body that
-    /// reads it was built.
+    /// What the last act did, written by the handler that reads the aim: the
+    /// differ fills an aim as it WALKS, which is after the body that would read
+    /// it was built.
     @State private var says = "Press a button, and it says which view it reached."
+    // listing: end
 
     static let id = "aim"
     static let title = "Aiming an act"
     static let summary = "A value you write, or a control you call - @State and @Aim."
 
-    static let code = """
-        // A VALUE: the modifier shows it, and writing it changes the control.
-        @State private var text = ""
-
-        // A CONTROL: .aim puts this view's identity in the aim, and the
-        // control's methods are called on the aim.
-        @Aim(TextField.self) private var field
-        @Aim(TextField.self) private var note
-        @State private var says = "Press a button, and it says which view it reached."
-
+    // listing: AimSample
+    var body: some View {
         VStack {
             // `says` is written by the handlers and read here, so this is the
             // closure a press rebuilds. The two fields are handed a binding
             // and an aim, neither of which reads anything.
-            DebugInfoLabel()
-
-            TextField($text)
-                .placeholder("The first field")
-                .aim(field)
-
-            TextField()
-                .placeholder("The second field")
-                .aim(note)
-
-            HStack {
-                // Printing an aim says where it is: the element identity the
-                // differ settled - "#12" - or the name an .id() gave it. Read
-                // in the HANDLER, because the walk fills it after the body
-                // that describes the view was built.
-                Button("Focus the first")
-                    .onClicked {
-                        try await field.focus()
-                        says = "focused \\(field)"
-                    }
-
-                Button("Focus the second")
-                    .onClicked {
-                        try await note.focus()
-                        says = "focused \\(note)"
-                    }
-
-                Button("Let go")
-                    .onClicked {
-                        try await field.unfocus()
-                        says = "let go of \\(field)"
-                    }
-            }
-
-            Text(says)
-        }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             TextField($text)
@@ -91,31 +45,23 @@ struct AimSample: SampleContent, ExampleContent {
                 .aim(note)
 
             HStack {
+                // Printing an aim says where it is: the element identity the
+                // differ settled - "#12" - or the name an .id() gave it. Read
+                // in the HANDLER, because the walk fills it after the body
+                // that describes the view was built.
                 Button("Focus the first")
-                    .background(Palette.accent)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 14, vertical: 8)
                     .onClicked {
                         try await field.focus()
                         says = "focused \(field)"
                     }
 
                 Button("Focus the second")
-                    .background(Palette.accent)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 14, vertical: 8)
                     .onClicked {
                         try await note.focus()
                         says = "focused \(note)"
                     }
 
                 Button("Let go")
-                    .stroke(Palette.outline)
-                    .lineWidth(1)
-                    .background(.transparent)
-                    .textColor(Palette.subtle)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 14, vertical: 8)
                     .onClicked {
                         try await field.unfocus()
                         says = "let go of \(field)"
@@ -130,6 +76,7 @@ struct AimSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -137,7 +84,7 @@ struct AimSample: SampleContent, ExampleContent {
                 + "@State, which the modifier that shows it also animates through its $ "
                 + "binding. A control is @Aim: `.aim(field)` puts the view's address into "
                 + "the aim, and on the aim you call the control's methods - `focus()`, "
-                + "`unfocus()`, a WebView's `goBack()`, a Map's `moveToRegion(_:)`.")
+                + "`unfocus()`, a WebView's `goBack()`, a Map's `moveToRegion(latitude:longitude:radiusMeters:)`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -156,9 +103,9 @@ struct AimSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Read an aim from a handler, not from a body: it is filled while the view "
-                + "is drawn, so a body sees what the last render left, and `nowhere` on the "
-                + "very first.")
+            Text("Read an aim from a handler, not from a body: it is filled as the view is "
+                + "walked, after its body is built, so a body sees what the last render "
+                + "left, and `nowhere` on the very first.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -76,6 +76,7 @@ final class UIKitDriver: HostDriver {
         written.listen()
         let renderer = UIKitRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         self.renderer = renderer
+        Self.holdFiles(of: renderer)
         return renderer.runtime.tree
     }
 
@@ -85,6 +86,7 @@ final class UIKitDriver: HostDriver {
         written.listen()
         let renderer = UIKitRenderer.running(clock: clock, application: application)
         self.renderer = renderer
+        Self.holdFiles(of: renderer)
         return renderer.runtime.tree
     }
 
@@ -128,8 +130,46 @@ final class UIKitDriver: HostDriver {
 
     /// Ends the host the driver started last.
     func finish() {
+        renderer?.fileToolkit.showing?.chooseForTesting([])
         renderer?.finish()
         renderer = nil
+    }
+
+    /// `element` dragged onto the view of id `target` - across the one of id `across` first - as UIKit's
+    /// interactions tell it: the drag starts, comes over the view crossed and goes, comes over the target and is let
+    /// go there, and ends.
+    func dragAndDrop(_ element: MountedElement, onto target: String, across: String?) throws {
+        let act = UserAct.dragAndDrop(onto: target, across: across)
+        func interactions(_ id: String) throws -> UIKitDragAndDrop {
+            let found = renderer?.runtime.tree.root?.first(id: .manual(id))?.native as? UIKitElement
+            guard let dragAndDrop = found?.dragAndDrop, dragAndDrop.offered.takesWords else {
+                throw DriverCannot(act, on: element)
+            }
+            return dragAndDrop
+        }
+        guard let source = (element.native as? UIKitElement)?.dragAndDrop, let words = source.offered.words else {
+            throw DriverCannot(act, on: element)
+        }
+        source.hearForTesting(.dragStarted)
+        if let across {
+            let crossed = try interactions(across)
+            crossed.hearForTesting(.dragOver)
+            crossed.hearForTesting(.dragLeft)
+        }
+        let landing = try interactions(target)
+        landing.hearForTesting(.dragOver)
+        landing.hearForTesting(.dropped(words))
+        source.hearForTesting(.dragEnded)
+    }
+
+    /// The folder the files a test opens and saves stand in, the process's own.
+    static let files = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-conformance-files")
+
+    /// Empties the files folder, so no case reads a file another saved, and holds `renderer`'s launches back.
+    private static func holdFiles(of renderer: UIKitRenderer) {
+        try? FileManager.default.removeItem(at: files)
+        try? FileManager.default.createDirectory(at: files, withIntermediateDirectories: true)
+        renderer.fileToolkit.holdsLaunchesForTesting = true
     }
 
     /// One pass of the main loop, 20 ms long: a case's 150 steps wait three seconds, which a page WebKit loads in a
@@ -206,6 +246,8 @@ final class UIKitDriver: HostDriver {
             guard stepped != stepper.value else { return }
             stepper.value = stepped
             stepper.sendActions(for: .valueChanged)
+        case (.enterWords, is UIKitStepperView):
+            throw DriverCannot("type words into a Stepper", because: "iOS's stepper is two buttons, with no field")
         case (.scroll(let target), let scroll as UIKitScrollView):
             // A finger takes the scroller, moves it there, and lets go without a throw.
             scroll.scrollViewWillBeginDragging(scroll.scroller)
@@ -224,6 +266,20 @@ final class UIKitDriver: HostDriver {
             guard renderer?.actToolkit.showing?.press(caption, typing: words) == true else {
                 throw DriverCannot("press \(caption): no question shows it")
             }
+        case (.dragAndDrop(let target, let across), _):
+            try dragAndDrop(element, onto: target, across: across)
+        case (.dropFiles(let names), _):
+            guard let dragAndDrop = (element.native as? UIKitElement)?.dragAndDrop, dragAndDrop.offered.takesFiles else {
+                throw DriverCannot(act, on: element)
+            }
+            let files = names.map { Self.files.appendingPathComponent($0) }
+            for file in files { try Data(file.lastPathComponent.utf8).write(to: file) }
+            dragAndDrop.hearForTesting(.filesDropped(files.map(ChosenFile.init)))
+        case (.answerFiles(let names), _):
+            guard let dialog = renderer?.fileToolkit.showing, dialog.picker != nil else {
+                throw DriverCannot("answer a file dialog: none shows")
+            }
+            dialog.chooseForTesting(names.map { Self.files.appendingPathComponent($0) })
         case (.switchAway, _) where element.type == .window: renderer?.window(element, movedTo: .inactive)
         case (.switchBack, _) where element.type == .window: renderer?.window(element, movedTo: .active)
         case (.minimize, _) where element.type == .window:
@@ -292,6 +348,7 @@ final class UIKitDriver: HostDriver {
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if element.type == .window { return try windowHolds(property, element) }
         if element.type == .marker { return try markerHolds(property, element) }
+        if element.type == .textSpan { return try spanHolds(property, on: element) }
         if let map = (element.native as? UIKitElement)?.view as? UIKitMapView, let held = mapHolds(property, map) {
             return held
         }
@@ -305,6 +362,9 @@ final class UIKitDriver: HostDriver {
         case (.cursorPosition, let field as any UIKitTextInputView): return field.selection.start.propValue
         case (.selectionLength, let field as any UIKitTextInputView): return field.selection.length.propValue
         case (.placeholder, let field as UITextField): return field.attributedPlaceholder?.string.propValue
+        case (.placeholderColor, let field as UITextField):
+            guard let words = field.attributedPlaceholder, words.length > 0 else { return nil }
+            return (words.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? UIColor).map { Self.color($0).propValue }
         case (.placeholder, let editor as UIKitTextEditorView): return editor.placeholder.propValue
         case (.isSpellCheckEnabled, let field as UITextField): return (field.spellCheckingType != .no).propValue
         case (.isSpellCheckEnabled, let editor as UITextView): return (editor.spellCheckingType != .no).propValue
@@ -330,6 +390,15 @@ final class UIKitDriver: HostDriver {
         case (.tint, let bar as UIKitProgressBarView): return bar.bar.progressTintColor.map { Self.color($0).propValue }
         case (.tint, let spinner as UIKitActivityIndicatorView): return spinner.color.map { Self.color($0).propValue }
         case (.tint, let slider as UIKitSliderView): return slider.minimumTrackTintColor.map { Self.color($0).propValue }
+        case (.tint, let toggle as UIKitSwitchView): return toggle.onTintColor.map { Self.color($0).propValue }
+        case (.tint, let box as UIKitCheckView): return Self.color(box.tintColor).propValue
+        case (.horizontalTextAlignment, let picker as UIKitPickerView):
+            let alignments: [(UIControl.ContentHorizontalAlignment, TextAlignment)] = [
+                (.leading, .start), (.center, .center), (.trailing, .end),
+            ]
+            return alignments.first { $0.0 == picker.contentHorizontalAlignment }?.1.propValue
+        case (.tint, let picker as UIKitPickerView):
+            return picker.configuration?.indicatorColorTransformer.map { Self.color($0(.label)).propValue }
         case (.selectedIndex, let picker as UIKitPickerView): return picker.chosen.map(\.propValue)
         case (.options, let picker as UIKitPickerView): return picker.choices.propValue
         case (.placeholder, let picker as UIKitPickerView): return picker.title.propValue
@@ -367,6 +436,8 @@ final class UIKitDriver: HostDriver {
                 .propValue
         case (.isEnabled, let label as UILabel): return label.isEnabled.propValue
         case (.isEnabled, let editor as UITextView): return (editor.isEditable || editor.isSelectable).propValue
+        // A view that is no control holds whether it answers as VoiceOver meets it.
+        case (.isEnabled, let view?): return (!view.accessibilityTraits.contains(.notEnabled)).propValue
         case (.padding, let button as UIButton):
             guard let insets = button.configuration?.contentInsets else { return nil }
             return Insets(left: insets.leading, top: insets.top, right: insets.trailing, bottom: insets.bottom).propValue

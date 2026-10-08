@@ -2,7 +2,6 @@ ActivityIndicator
   isAnimating
   tint
 Button
-  background
   contentMode
   fontAttributes
   fontFamily
@@ -10,7 +9,6 @@ Button
   icon
   iconPosition
   iconSpacing
-  isEnabled
   lineBreak
   lineWidth
   padding
@@ -19,6 +17,7 @@ Button
   text
   textCase
   textColor
+  tracking
   clicked()
   pressed()
   released()
@@ -28,8 +27,6 @@ Canvas
   pressed()
   released()
 CheckBox
-  background
-  isEnabled
   isOn
   tint
   toggled()
@@ -42,7 +39,6 @@ DatePicker
   fontFamily
   fontSize
   format
-  isEnabled
   isOpen
   maximumDate
   minimumDate
@@ -62,7 +58,6 @@ Ellipse
   miterLimit
   stroke
 Grid
-  background
   clipsContent
   columnSpacing
   columns
@@ -73,7 +68,6 @@ Grid
   shape
   stroke
 HStack
-  background
   clipsContent
   lineWidth
   padding
@@ -125,7 +119,6 @@ Picker
   fontFamily
   fontSize
   horizontalTextAlignment
-  isEnabled
   isOpen
   options
   placeholder
@@ -165,11 +158,9 @@ ProgressBar
   progress
   tint
 RadioButton
-  background
   fontAttributes
   fontFamily
   fontSize
-  isEnabled
   isOn
   padding
   text
@@ -189,7 +180,6 @@ Rectangle
   miterLimit
   stroke
 ScrollView
-  background
   horizontalScrollIndicator
   lineWidth
   orientation
@@ -206,8 +196,10 @@ SearchField
   fontFamily
   fontSize
   horizontalTextAlignment
-  isEnabled
+  inputPurpose
   isReadOnly
+  isSpellCheckEnabled
+  isTextPredictionEnabled
   maximumLength
   placeholder
   placeholderColor
@@ -217,27 +209,22 @@ SearchField
   submitted()
   textChanged()
 Slider
-  isEnabled
   maximum
   minimum
   tint
   value
   valueChanged()
 Stepper
-  isEnabled
   maximum
   minimum
   step
   value
   valueChanged()
 Switch
-  background
-  isEnabled
   isOn
   tint
   toggled()
 Text
-  background
   fontAttributes
   fontFamily
   fontSize
@@ -260,7 +247,6 @@ TextEditor
   growsWithText
   horizontalTextAlignment
   inputPurpose
-  isEnabled
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled
@@ -279,7 +265,6 @@ TextField
   fontSize
   horizontalTextAlignment
   inputPurpose
-  isEnabled
   isPassword
   isReadOnly
   isSpellCheckEnabled
@@ -298,12 +283,10 @@ TimePicker
   fontFamily
   fontSize
   format
-  isEnabled
   textColor
   time
   timeChanged()
 VStack
-  background
   clipsContent
   lineWidth
   padding
@@ -319,7 +302,6 @@ WebView
   navigating()
   processTerminated()
 ZStack
-  background
   clipsContent
   lineWidth
   padding
@@ -330,8 +312,13 @@ ZStack
   accessibilityHint
   accessibilityIdentifier
   accessibilityLabel
+  allowsDrop
   area
   automationExcludedWithChildren
+  background
+  canDrag
+  dragText
+  droppedFileTypes
   frame
   gridColumn
   gridColumnSpan
@@ -340,6 +327,7 @@ ZStack
   height
   horizontalAlignment
   isAccessibilityHidden
+  isEnabled
   isVisible
   margin
   maximumHeight
@@ -365,6 +353,13 @@ ZStack
   translationY
   verticalAlignment
   width
+  zIndex
+  dragEnded()
+  dragLeave()
+  dragOver()
+  dragStarting()
+  drop()
+  filesDropped()
   frameChanged()
   isFocusedChanged()
   panUpdated()
@@ -386,9 +381,15 @@ ZStack
   focus()
   handlerFailed()
   hideOnScreenKeyboard()
+  launchFile()
+  launchLink()
+  openFiles()
   persistSceneValue()
   persistValue()
   prompt()
+  readFile()
+  saveFile()
   scrollTo()
   unfocus()
+  useColorScheme()
   utcOffset()

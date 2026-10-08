@@ -23,6 +23,16 @@ public enum SplitViewContract: ElementContract {
     public static let showsSidebarChanged = ElementEvent<Self, Bool>(
         "showsSidebarChanged", layer: .adaptive)
 
+    /// What the sidebar stands on beside the detail; unwritten, the
+    /// platform's own there.
+    public static let sidebarBackground = ElementProperty<Self, Material>("sidebarBackground", layer: .adaptive)
+
+    /// What the sidebar stands on while it slides over the detail; unwritten,
+    /// the platform's own surface there, never the window's.
+    public static let flyoutBackground = ElementProperty<Self, Material>("flyoutBackground", layer: .adaptive)
+
     /// The element's own members.
-    public static let members: [any ContractMember] = [showsSidebar, showsSidebarChanged]
+    public static let members: [any ContractMember] = [
+        showsSidebar, showsSidebarChanged, sidebarBackground, flyoutBackground,
+    ]
 }

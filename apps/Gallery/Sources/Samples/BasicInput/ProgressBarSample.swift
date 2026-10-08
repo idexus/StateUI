@@ -2,51 +2,26 @@ import StateUI
 
 /// Two bars over one job: how much of it is done, and how much is left.
 struct ProgressBarSample: SampleContent, ExampleContent {
+    // listing: ProgressBarSample
     @State private var done = 3.0
+    // listing: end
 
     static let id = "progressBar"
     static let title = "ProgressBar"
     static let summary = "How far along something is, as a fraction from 0 to 1."
 
-    static let code = """
-        @State private var done = 3.0
-
-        /// How many steps the imaginary job has.
-        private var steps: Double { 5 }
-
-        VStack {
-            // How far along is read here, so every step builds this closure.
-            DebugInfoLabel()
-
-            Text("Step \\(Int(done)) of \\(Int(steps))")
-
-            // A FRACTION, not a count: the division happens here, in Swift,
-            // because that is where the numbers are.
-            ProgressBar(done / steps)
-                .height(8)
-
-            Stepper($done)
-                .minimum(0)
-                .maximum(steps)
-                .step(1)
-
-            // A bar built empty carries no value at all, so `.progress` is
-            // how one reaches it. This one shows what is LEFT, so the two
-            // move opposite ways.
-            ProgressBar()
-                .progress(1 - done / steps)
-                .height(8)
-        }
-        """
-
+    // listing: ProgressBarSample
     var body: some View {
         VStack {
+            // How far along is read here, so every step builds this closure.
             DebugInfoLabel()
 
             Text("Step \(Int(done)) of \(Int(steps))")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
+            // A FRACTION, not a count: the division happens here, in Swift,
+            // because that is where the numbers are.
             ProgressBar(done / steps)
                 .tint(Palette.accent)
                 .height(8)
@@ -61,6 +36,9 @@ struct ProgressBarSample: SampleContent, ExampleContent {
 
             SectionTitle("The same property, as a modifier")
 
+            // A bar built empty carries no value at all, so `.progress` is
+            // how one reaches it. This one shows what is LEFT, so the two
+            // move opposite ways.
             ProgressBar()
                 .progress(1 - done / steps)
                 .tint(Palette.subtle)
@@ -69,6 +47,7 @@ struct ProgressBarSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -98,6 +77,8 @@ struct ProgressBarSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
+    // listing: ProgressBarSample
     /// How many steps the imaginary job has.
     private var steps: Double { 5 }
+    // listing: end
 }

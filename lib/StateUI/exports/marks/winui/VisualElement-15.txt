@@ -1,49 +1,62 @@
-# revision 1.1
-ActivityIndicator.background: not realized
-Button.ignoresInput: ✅
-Button.scaleY: ✅
-Canvas.background: not realized
-CheckBox.ignoresInput: ✅
-CheckBox.scaleY: ✅
-ColorBox.background: not realized
-DatePicker.ignoresInput: ✅
-DatePicker.scaleY: ✅
-Ellipse.background: not realized
-Grid.ignoresInput: ✅
-Grid.scaleY: ✅
-HStack.background: ✅
-Image.ignoresInput: not realized
-Image.scaleY: ✅
-ItemsView.background: not realized
-Line.background: not realized
-Map.ignoresInput: 🧩
-Map.scaleY: 🧩
-Path.background: not realized
-Picker.ignoresInput: ✅
-Picker.scaleY: ✅
-Polygon.background: not realized
-Polyline.ignoresInput: not realized
-Polyline.scaleY: ✅
-ProgressBar.background: not realized
-RadioButton.ignoresInput: ✅
-RadioButton.scaleY: ✅
-Rectangle.background: not realized
-ScrollView.ignoresInput: ✅
-ScrollView.scaleY: ✅
-SearchField.background: not realized
-Slider.ignoresInput: ✅
-Slider.scaleY: ✅
-Stepper.background: not realized
-Switch.ignoresInput: ✅
-Switch.scaleY: ✅
-Text.ignoresInput: ✅
-Text.scaleY: ✅
-TextEditor.background: not realized
-TextField.ignoresInput: ✅
-TextField.scaleY: ✅
-TimePicker.background: not realized
-VStack.ignoresInput: ✅
-VStack.scaleY: ✅
+# revision 7.1
+ActivityIndicator.isAccessibilityHidden: ✅
+Button.frameChanged: ✅
+Button.height: ✅
+Button.rotationX: ✓ read rotationX of Button: the host's own tip, checked against the projection it laid on the element
+Button.width: ✅
+Canvas.accessibilityLabel: ✅
+CheckBox.opacity: ✅
+CheckBox.pivotY: ✅
+ColorBox.translationY: ✅
+ColorBox.zIndex: ✅
+DatePicker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Ellipse.frame: ✅
+Ellipse.scaleX: ✅
+Grid.accessibilityHeading: ✅
+HStack.isVisible: ✅
+HStack.pivotX: ✅
+Image.ignoresInput: ✅
+Image.scale: ✅
+ItemsView.accessibilityHint: ✅
+Line.translationY: ✅
+Line.zIndex: ✅
+Map.background: 🧩
+Path.frame: ✅
+Path.scaleX: ✅
+Picker.accessibilityHeading: ✅
+Polygon.frameChanged: ✅
+Polygon.height: ✅
+Polygon.rotationX: ✓ read rotationX of Polygon: the host's own tip, checked against the projection it laid on the element
+Polygon.width: ✅
+Polyline.accessibilityHeading: ✅
+Polyline.isEnabled: ✅
+ProgressBar.layoutDirection: ✅
+RadioButton.frame: ✅
+RadioButton.scaleX: ✅
+Rectangle.isAccessibilityHidden: ✅
+ScrollView.frameChanged: ✅
+ScrollView.height: ✅
+ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own tip, checked against the projection it laid on the element
+ScrollView.width: ✅
+SearchField.accessibilityHeading: ✅
+Slider.isVisible: ✅
+Slider.pivotX: ✅
+Stepper.style: ✅
+Stepper.translationX: ✅
+Switch.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Text.isEnabled: does not apply - read isEnabled of Text - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Text.rotation: ✅
+TextEditor.frame: ✅
+TextEditor.scaleX: ✅
+TextField.isAccessibilityHidden: ✅
+TimePicker.frameChanged: ✅
+TimePicker.maximumHeight: ✅
+TimePicker.maximumWidth: ✅
+TimePicker.minimumHeight: ✅
+TimePicker.minimumWidth: ✅
+TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own tip, checked against the projection it laid on the element
+VStack.accessibilityHint: ✅
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 WebView.background: not realized
-ZStack.ignoresInput: ✅
-ZStack.scaleY: ✅
+ZStack.frame: ✅
+ZStack.scaleX: ✅

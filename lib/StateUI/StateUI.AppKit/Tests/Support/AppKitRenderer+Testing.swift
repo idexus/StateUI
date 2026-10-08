@@ -9,7 +9,12 @@ import AppKit
 
 /// What the host suite reads and drives.
 extension AppKitRenderer {
-    func startForTesting() { startRuntime() }
+    /// Starts the runtime as a launch does, its theme reported and followed - the one fact of its machine a test
+    /// host tells the core.
+    func startForTesting() {
+        environment.startTheme(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
+        startRuntime()
+    }
 
     var sceneCountForTesting: Int { SceneValues.scenes(of: runtime.tree.root).count }
 

@@ -7,14 +7,14 @@ what its hosts need ([Getting started](getting-started.md#requirements)).
 
 ## A Mac: AppKit, UIKit, Android Views, Web
 
-Last verified 2026-10-05.
+Last verified 2026-10-08.
 
 | | |
 | --- | --- |
 | Machine | Apple M1 Max |
 | System | macOS 26.6.2 (25G83) |
 | Xcode | 27.0 (27A266a), with its Swift 6.4 (`swift-6.4-RELEASE`) |
-| Editor | VS Code 1.140.0; the StateUI extension 0.5.1, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.4.1 |
+| Editor | VS Code 1.140.0; the StateUI extension 0.5.2, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.4.1 |
 | Node.js | 26.10.0, for building and testing the extension |
 
 ### AppKit
@@ -62,6 +62,15 @@ suite in Node, and the conformance suite in a headless browser
 | Server | Python 3.14.4 |
 | Browser | Safari 26.6.2; Google Chrome 152.0.7977.84, headless, for the conformance suite |
 | Node.js | 26.10.0, for the host's own suite and the conformance run's controller |
+
+### GTK 4, in Docker
+
+The GTK host's own suite and every conformance family, as CI runs them,
+on the Mac (2026-10-06): Docker Desktop 29.8 (linux/arm64), swift.org's
+`swift:6.4.0-noble` with the packages `.github/workflows/gtk.yml` installs -
+GTK 4.14.5, libadwaita 1.5.0, WebKitGTK 2.52.6 (`webkitgtk-6.0`), GLib
+2.80.0 - drawn on Xvfb with a session bus, the build in a volume of its own.
+It stands for CI, not for a desktop: X11, no portals, no GNOME Shell.
 
 ## A Windows machine: WinUI 3
 

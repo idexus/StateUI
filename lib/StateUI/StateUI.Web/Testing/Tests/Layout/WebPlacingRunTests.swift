@@ -9,11 +9,11 @@ import XCTest
 /// A ZStack whose children a placing run stands draws each as the run says, about the middle of the place it gives.
 @MainActor
 final class WebPlacingRunTests: XCTestCase {
-    private func run(width: Double, height: Double) -> HostPlacementRun {
+    private func run(width: Double, height: Double, shade: Double = 0) -> HostPlacementRun {
         HostPlacementRun(placements: [
             HostPlacement(
                 bounds: Rect(x: 0, y: 0, width: width, height: height), translationX: 0, translationY: 0, rotation: 90,
-                scaleX: 1, scaleY: 1, opacity: 1, zIndex: 0, shade: 0),
+                scaleX: 1, scaleY: 1, opacity: 1, zIndex: 0, shade: shade),
         ], motion: .none)
     }
 
@@ -38,5 +38,37 @@ final class WebPlacingRunTests: XCTestCase {
         XCTAssertEqual(numbers.count, 16)
         XCTAssertEqual(numbers.count == 16 ? numbers[12] : 0, 150, accuracy: 1e-9, "turned about the middle of 100 x 200")
         XCTAssertEqual(numbers.count == 16 ? numbers[13] : 0, 50, accuracy: 1e-9, "turned about the middle of 100 x 200")
+    }
+
+    /// A card the run places wears the run's shade on its second layer - the dark over a far card - and none on its
+    /// face: the shade drawn whole would stand as a black card behind the face.
+    func testACardsSecondLayerWearsTheRunsShade() {
+        let layout = WebLayoutView(arrangement: .layers)
+        let card = WebLayoutView(arrangement: .grid)
+        let (face, shade) = (WebLayoutView(arrangement: .single), WebLayoutView(arrangement: .single))
+        defer { for view in [layout, card, face, shade] { view.detach() } }
+        card.setItems([(face, LayoutValues()), (shade, LayoutValues())])
+        layout.setItems([(card, LayoutValues())])
+
+        layout.setPlacement(run(width: 100, height: 140, shade: 0.4))
+        XCTAssertEqual(WebPage.style(of: shade.node, "opacity"), "0.4", "the far card's shade")
+        XCTAssertEqual(WebPage.style(of: face.node, "opacity"), "", "and its face whole")
+
+        layout.setPlacement(run(width: 100, height: 140, shade: 0))
+        XCTAssertEqual(WebPage.style(of: shade.node, "opacity"), "0", "the front card wears none")
+    }
+
+    /// A card the run places stands at the size the run gives it, in a room lower than the card: its slot bounds it
+    /// no more, so a shorter room makes the card smaller by the run's scale and never squashes it.
+    func testACardTheRunPlacesIsNotBoundByItsRoom() {
+        let layout = WebLayoutView(arrangement: .layers)
+        let card = WebLayoutView(arrangement: .single)
+        defer { for view in [layout, card] { view.detach() } }
+        layout.setItems([(card, LayoutValues())])
+        XCTAssertEqual(WebPage.style(of: card.node, "max-height"), "100%", "an unplaced child stays in its room")
+
+        layout.setPlacement(run(width: 176, height: 248))
+        XCTAssertEqual(WebPage.style(of: card.node, "max-height"), "none", "the run's height, whatever the room's")
+        XCTAssertEqual(WebPage.style(of: card.node, "max-width"), "none", "and its width")
     }
 }

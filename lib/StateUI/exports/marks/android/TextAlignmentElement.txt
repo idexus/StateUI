@@ -1,5 +1,5 @@
 # revision 1.2
-Picker.horizontalTextAlignment: cannot read horizontalTextAlignment of Picker - Android's driver has no path for it yet
+Picker.horizontalTextAlignment: ✅
 Picker.verticalTextAlignment: not realized
 SearchField.horizontalTextAlignment: ✅
 SearchField.verticalTextAlignment: not realized

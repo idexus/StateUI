@@ -10,6 +10,7 @@
 
 import StateUI
 
+// listing: TrafficLight
 /// What the light can show.
 ///
 /// A closed vocabulary, so it crosses as its member's number. The numbers are
@@ -24,7 +25,9 @@ public enum TrafficSignal: Int32, CaseIterable, HostRepresentable {
     /// Green.
     case go = 2
 }
+// listing: end
 
+// listing: TrafficLight
 /// The gallery's own traffic light, declared: its node type, the tier it
 /// wears, and its members, each with its value's type.
 public enum TrafficLightContract: ElementContract {
@@ -39,14 +42,16 @@ public enum TrafficLightContract: ElementContract {
 
     public static let members: [any ContractMember] = [signal, lampTapped]
 }
+// listing: end
 
+// listing: TrafficLight
 /// The Swift half of the traffic light: a view whose node its contract makes.
 /// `setValue` writes its property and `onEvent` hears its event; margins,
 /// alignment, opacity and gestures come with `View`.
 public struct TrafficLight: ElementView {
     public var node = Node(contract: TrafficLightContract.self)
 
-    /// A light showing nothing until `signal(_:)` says what.
+    /// A light; `signal(_:)` says which lamp is lit.
     public init() {}
 
     /// Which lamp is lit.
@@ -59,3 +64,4 @@ public struct TrafficLight: ElementView {
         onEvent(TrafficLightContract.lampTapped, handler)
     }
 }
+// listing: end

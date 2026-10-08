@@ -11,15 +11,36 @@ import UIKit
 /// scene, a page's bar and tab item, a tab bar's choice, a split view's sidebar - and through their own paths.
 /// Design: docs/design/platforms/uikit/conformance.md#what-the-driver-reads
 extension UIKitDriver {
-    /// A window's title, as its scene holds it.
+    /// A window's title, as its scene holds it, and its background.
     func windowHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
         guard let window = renderer?.roster.windows.first(where: { $0.0 === element })?.1.window else {
             throw DriverCannot(reading: property, of: element)
         }
         switch property {
         case .title: return (window.windowScene?.title ?? "").propValue
+        case .background: return window.backgroundColor.map { StandIns.material(painted: Self.color($0)).propValue }
         default: throw DriverCannot(reading: property, of: element)
         }
+    }
+
+    /// Where a bar's action stands: on the bar as an item of its own, or in the overflow's menu - read off the
+    /// navigation item of the page it stands on; nil where no page's bar holds it.
+    static func placement(of action: UIAction, under element: MountedElement) -> HostValue? {
+        var each = element.parent
+        while let page = each {
+            if let item = (page.native as? UIKitElement)?.controller?.navigationItem {
+                let items = (item.leadingItemGroups + item.trailingItemGroups).flatMap(\.barButtonItems)
+                if items.contains(where: { $0.primaryAction?.identifier == action.identifier }) {
+                    return ToolbarItemPlacement.bar.propValue
+                }
+                let overflow = items.filter { $0.primaryAction == nil }.flatMap { $0.menu?.children ?? [] }
+                if overflow.contains(where: { ($0 as? UIAction)?.identifier == action.identifier }) {
+                    return ToolbarItemPlacement.overflow.propValue
+                }
+            }
+            each = page.parent
+        }
+        return nil
     }
 
     /// What a page or an arrangement of pages holds: its tab's title and picture where it stands on a tab, its bar,
@@ -32,6 +53,7 @@ extension UIKitDriver {
             case .isEnabled: return (!action.attributes.contains(.disabled)).propValue
             case .isDestructive: return action.attributes.contains(.destructive).propValue
             case .accessibilityIdentifier: return action.accessibilityIdentifier.map { .string($0) }
+            case .placement: return Self.placement(of: action, under: element)
             default: break
             }
         }
@@ -56,6 +78,14 @@ extension UIKitDriver {
         case .showsSidebar:
             guard let split = controller as? UISplitViewController else { return nil }
             return (split.displayMode != .secondaryOnly).propValue
+        case .sidebarBackground, .flyoutBackground:
+            // The sidebar page's view in the place it stands; the other place's material as the split view says it.
+            guard let split = controller as? UIKitSplitViewController else { return nil }
+            guard split.overlays == (property == .flyoutBackground) else {
+                return element.sidebarMaterial(over: !split.overlays).paint
+            }
+            let sidebar = (element.children.first?.native as? UIKitElement)?.controller
+            return sidebar?.view.backgroundColor.map { Material.color(Self.color($0)).propValue }
         default:
             return nil
         }

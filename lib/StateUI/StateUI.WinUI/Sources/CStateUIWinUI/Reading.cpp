@@ -3,8 +3,9 @@
 
 // What a test reads of what WinUI holds, by the property's name: the relay's
 // one reader, so a test of the contract reads the native control rather than
-// what the host last wrote. And what the dialogs ask and the screen reader was
-// told, which WinUI keeps nowhere a test can ask.
+// what the host last wrote. And what the dialogs ask, the screen reader was
+// told and Windows was handed to launch, which WinUI keeps nowhere a test can
+// ask.
 // Design: docs/design/platforms/winui/relay.md#what-a-test-reads
 
 #include "Figure.h"
@@ -32,6 +33,9 @@ namespace shapes = winrt::Microsoft::UI::Xaml::Shapes;
 namespace {
     /// What the screen reader was told, in order.
     std::vector<std::string> announcements;
+
+    /// What was handed to Windows to launch, in order.
+    std::vector<std::string> launches;
 
     std::string number(double value) {
         char words[32];
@@ -315,10 +319,11 @@ namespace {
         return own ? colour(own) : std::string();
     }
 
-    /// A text box's input scope, as the relay numbers them (`WinUIInputScope`): its first name, found in the
-    /// relay's own table of them.
+    /// A text box's input scope - a search box's, its template's - as the relay numbers them (`WinUIInputScope`):
+    /// its first name, found in the relay's own table of them.
     std::optional<std::string> scope(IInspectable const &object) {
         auto box = object.try_as<controls::TextBox>();
+        if (auto search = object.try_as<controls::AutoSuggestBox>()) box = first<controls::TextBox>(search);
         if (!box) return std::nullopt;
         auto given = box.InputScope();
         if (!given || given.Names().Size() == 0) return "0";
@@ -383,8 +388,35 @@ namespace {
             auto own = ownBrush(bar.Resources(), L"MenuBarItemForeground");
             return own ? colour(own) : std::string();
         }
-        if (auto split = object.try_as<controls::NavigationView>(); split && what == "paneBackground") {
-            auto own = ownBrush(split.Resources(), L"NavigationViewExpandedPaneBackground");
+        // The card over a navigation view's detail - its fill, its edge - as the window's root writes it in the theme
+        // the root shows; empty for WinUI's own. The theme's divider, as the application's theme gives it.
+        if (auto window = object.try_as<xaml::Window>(); window && (what == "detailCard" || what == "detailEdge")) {
+            auto root = window.Content().try_as<xaml::FrameworkElement>();
+            if (!root) return std::string();
+            auto theme = root.ActualTheme() == xaml::ElementTheme::Light ? L"Light" : L"Dark";
+            auto name = what == "detailCard" ? L"NavigationViewContentBackground" : L"NavigationViewContentGridBorderBrush";
+            for (auto const &merged : root.Resources().MergedDictionaries()) {
+                auto themed = merged.ThemeDictionaries().TryLookup(winrt::box_value(theme));
+                auto dictionary = themed ? themed.try_as<xaml::ResourceDictionary>() : nullptr;
+                if (auto own = dictionary ? ownBrush(dictionary, name) : nullptr) return colour(own);
+            }
+            return std::string();
+        }
+        if (auto window = object.try_as<xaml::Window>(); window && what == "divider") {
+            auto divider = xaml::Application::Current().Resources().Lookup(
+                winrt::box_value(L"DividerStrokeColorDefaultBrush"));
+            return colour(divider.as<media::Brush>());
+        }
+        // A pane's ground beside the detail and over it: a colour, or "acrylic" with its colour and luminosity.
+        if (auto split = object.try_as<controls::NavigationView>();
+            split && (what == "paneBackground" || what == "overlayPaneBackground")) {
+            auto own = ownBrush(split.Resources(), what == "paneBackground" ? L"NavigationViewExpandedPaneBackground"
+                                                                            : L"NavigationViewDefaultPaneBackground");
+            if (auto acrylic = own ? own.try_as<media::AcrylicBrush>() : nullptr) {
+                auto luminosity = acrylic.TintLuminosityOpacity();
+                return "acrylic " + colour(media::SolidColorBrush(acrylic.TintColor())) + " " +
+                       number(luminosity ? luminosity.Value() : 0);
+            }
             return own ? colour(own) : std::string();
         }
         if (auto element = object.try_as<xaml::FrameworkElement>(); element && what == "theme") {
@@ -430,6 +462,9 @@ namespace {
         if (auto held = object.try_as<controls::Grid>(); held && what.rfind("box.", 0) != 0) {
             if (what == "background") return colour(held.Background());
             if (what == "cornerRadius") return corners(held.CornerRadius());
+        }
+        if (auto panel = object.try_as<controls::Panel>(); panel && what == "background") {
+            return colour(panel.Background());
         }
         if (auto element = object.try_as<xaml::FrameworkElement>()) {
             if (what == "automationName") return narrow(xaml::Automation::AutomationProperties::GetName(metOf(object)));
@@ -516,4 +551,32 @@ extern "C" int32_t stateui_winui_announced(char *utf8, int32_t capacity) {
 
 void stateui::announced(std::string const &words) {
     announcements.push_back(words);
+}
+
+extern "C" int32_t stateui_winui_launched(char *utf8, int32_t capacity) {
+    try {
+        std::string targets;
+        for (auto const &target : launches) targets += (targets.empty() ? "" : "\x1f") + target;
+        copy(targets, utf8, capacity);
+        return static_cast<int32_t>(targets.size());
+    } catch (...) {
+        report("reading what was launched");
+        return 0;
+    }
+}
+
+void stateui::launched(std::string const &target) {
+    launches.push_back(target);
+}
+
+extern "C" int32_t stateui_winui_file_dialog(void) {
+    try {
+        auto dialog = fileDialog();
+        if (!dialog) return -1;
+        // A dialog that opens types its file's name in a combo box of its own (cmb13, 1148); one that saves does not.
+        return GetDlgItem(dialog, 1148) ? 0 : 1;
+    } catch (...) {
+        report("reading a file dialog");
+        return -1;
+    }
 }

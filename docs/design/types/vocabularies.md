@@ -65,9 +65,9 @@ order left, top, right, bottom. The four cross as a list of four
 ## Choices a state can carry
 
 A vocabulary a property can take as `$x` conforms to `StateChoice`. It rides
-the state image as one lane holding its member's number, and the host
-resolves that number through the same table a described property goes
-through, so every member the tree can say, a state can say too. A choice has
+the state image as one lane holding its member's number, read as a choice
+(`LaneKind.choice`), and the host resolves that number through the same table
+a described property goes through, so every member the tree can say, a state can say too. A choice has
 no half-way: the host sets it as it stands, and writing the state rebuilds
 nothing. Each conformance is one line beside the type's other conformances.
 

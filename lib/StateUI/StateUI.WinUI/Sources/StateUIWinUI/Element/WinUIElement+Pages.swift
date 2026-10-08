@@ -33,6 +33,7 @@ extension WinUIElement {
                 WinUIDoorbell.afterPass { [weak self] in self?.sidebarShown(presented) }
             }
             if changed.contains(.showsSidebar) { split.present(value(.showsSidebar)?.bool == true) }
+            split.grounds = (element.sidebarMaterial(over: false), element.sidebarMaterial(over: true))
         default:
             break
         }

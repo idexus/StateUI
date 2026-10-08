@@ -2,6 +2,7 @@ import StateUI
 
 /// The three lifecycle scopes available to every view in a window.
 struct WindowPhaseSample: SampleContent, ExampleContent {
+    // listing: WindowPhaseSample
     /// The application as it runs.
     @Environment(\.application) var application
 
@@ -10,34 +11,22 @@ struct WindowPhaseSample: SampleContent, ExampleContent {
 
     /// The window this page is in.
     @Environment(\.window) var window
+    // listing: end
 
     static let id = "windowPhase"
     static let title = "Phases"
     static let summary = "Read application, scene, and window lifecycle as state."
 
-    static let code = """
-        @Environment(\\.application) private var application
-        @Environment(\\.scene) private var scene
-        @Environment(\\.window) private var window
-
-        VStack {
-            DebugInfoLabel()
-
-            Text("application · \\(application.phase)")   // active, inactive or background
-            Text("this gallery · \\(scene.phase)")        // active, inactive or background
-            Text("this window · \\(window.phase)")        // from created to destroying
-        }
-        """
-
     var notes: (any View)? { nil }
 
+    // listing: WindowPhaseSample
     var body: some View {
         VStack {
             DebugInfoLabel()
 
-            PhaseRow(name: "application", value: "\(application.phase)")
-            PhaseRow(name: "this gallery", value: "\(scene.phase)")
-            PhaseRow(name: "this window", value: "\(window.phase)")
+            PhaseRow(name: "application", value: "\(application.phase)")   // active, inactive or background
+            PhaseRow(name: "the galleries", value: "\(scene.phase)")   // active, inactive or background
+            PhaseRow(name: "this window", value: "\(window.phase)")   // from created to destroying
 
             Text(verdict)
                 .fontSize(14)
@@ -58,14 +47,15 @@ struct WindowPhaseSample: SampleContent, ExampleContent {
         }
 
         if scene.phase != .active {
-            return "Another gallery is in front of this one."
+            return "Another scene is in front of the galleries."
         }
 
-        return "This gallery is the one in front."
+        return "A gallery window is the one in front."
     }
-
+    // listing: end
 }
 
+// listing: WindowPhaseSample
 /// One phase: whose it is, and where it stands.
 private struct PhaseRow: View {
     let name: String
@@ -88,3 +78,4 @@ private struct PhaseRow: View {
         .horizontalAlignment(.center)
     }
 }
+// listing: end

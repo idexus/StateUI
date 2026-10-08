@@ -34,6 +34,20 @@ extension WinUIDriver {
         return view.reaches(point.x, point.y)
     }
 
+    /// The layout's children by where each one's view is drawn in its panel: by `Canvas.ZIndex`, then its place
+    /// among the panel's children - the last drawn last.
+    func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
+        let cannot = DriverCannot("read the drawing order of \(layout.type.name)")
+        guard let panel = (layout.native as? WinUIElement)?.view else { throw cannot }
+        return try layout.children.map { child in
+            guard let view = (child.native as? WinUIElement)?.view, let drawn = panel.drawnPlace(of: view) else {
+                throw cannot
+            }
+            return (child, drawn.depth, drawn.place)
+        }
+        .sorted { ($0.1, $0.2) < ($1.1, $1.2) }.map(\.0)
+    }
+
     func question(over element: MountedElement) throws -> Question? {
         guard let content = try window().content else { return nil }
         return asked(over: content.handle).map { asked in
@@ -44,12 +58,34 @@ extension WinUIDriver {
         }
     }
 
+    /// The theme the user's window shows in now.
+    func theme() throws -> ColorScheme {
+        guard let window = renderer?.userWindow else { throw DriverCannot("read the theme: no window shows") }
+        return stateui_winui_window_actual_theme(window.handle) == 2 ? .dark : .light
+    }
+
     func announced() throws -> [String] {
         let length = stateui_winui_announced(nil, 0)
         var bytes = [CChar](repeating: 0, count: Int(length) + 1)
         _ = stateui_winui_announced(&bytes, Int32(bytes.count))
         let words = String(decoding: bytes.prefix(Int(length)).map { UInt8(bitPattern: $0) }, as: UTF8.self)
         return words.isEmpty ? [] : words.split(separator: "\u{1F}", omittingEmptySubsequences: false).map(String.init)
+    }
+
+    func fileDialog(over element: MountedElement) throws -> FileDialog? {
+        switch stateui_winui_file_dialog() {
+        case 0: .open
+        case 1: .save
+        default: nil
+        }
+    }
+
+    func launched() throws -> [String] {
+        let targets = WinUIStrings.read { stateui_winui_launched($0, $1) }
+        // An address as written; a file - a path, no scheme - by its name.
+        return targets.isEmpty ? [] : targets.split(separator: "\u{1F}", omittingEmptySubsequences: false).map { target in
+            target.contains("://") ? String(target) : String(target.split { $0 == "\\" || $0 == "/" }.last ?? target)
+        }
     }
 
     func color(of element: MountedElement, at point: Point) throws -> Color? {

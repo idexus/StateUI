@@ -43,8 +43,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>1 ✅</td><td><code>PopupMenu</code> / <code>MenuItem</code>; no menu bar</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>1 ✅</td><td><code>MenuFlyout</code> / <code>MenuBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>1 ✅</td><td><code>GMenu</code> in <code>GtkPopoverMenu</code> / <code>GtkPopoverMenuBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">·</td><td></td><td>ARIA <code>menu</code> / <code>menubar</code> (?)</td></tr>
-<tr><td colspan="3">cannot activate on MenuItem - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>1 ✅</td><td>ARIA <code>menu</code> / <code>menubar</code> (?)</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/MenuBarContract.swift`.
@@ -53,6 +52,6 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/MenuBarContract.s
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>order</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: read the menu of Window: menu items built from the tree at the read, not the main menu<br>UIKit: only through the host's own: read the menu of Window: the host's menu bar entries, not UIKit's main menu<br>Web: cannot read the menu of Window - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>order</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read the menu of Window: menu items built from the tree at the read, not the main menu<br>UIKit: only through the host's own: read the menu of Window: the host's menu bar entries, not UIKit's main menu</td></tr></tbody>
 </table>

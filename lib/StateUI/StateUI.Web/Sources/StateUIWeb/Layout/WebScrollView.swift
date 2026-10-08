@@ -40,8 +40,11 @@ final class WebScrollView: WebLayoutView, FramedScroller {
     func apply(orientation: ScrollOrientation, bars: ScrollIndicatorVisibility, offset: Point?) {
         let across = orientation != .vertical
         let down = orientation != .horizontal
-        style("overflow-x", across ? "auto" : "hidden")
-        style("overflow-y", down ? "auto" : "hidden")
+        scrolls = (across, down)
+        // Bars always shown stand whether or not there is anything to scroll to.
+        let scrolls = bars == .visible ? "scroll" : "auto"
+        style("overflow-x", across ? scrolls : "hidden")
+        style("overflow-y", down ? scrolls : "hidden")
         // Its own ways it keeps to itself; across them the user's scrolling goes on to the scroller around it.
         style("overscroll-behavior-x", across ? "contain" : "auto")
         style("overscroll-behavior-y", down ? "contain" : "auto")
@@ -50,9 +53,12 @@ final class WebScrollView: WebLayoutView, FramedScroller {
         style("grid-template-rows", down ? "minmax(max-content, 1fr)" : "minmax(0, 1fr)")
         attribute("data-bars", bars == .never ? "never" : nil)
         if let offset, offset != self.offset {
-            self.offset = offset
-            written = offset
+            // The browser stops it at the document's end: its scroll event says where it stopped.
+            let before = WebRelay.scroll(of: node)
             WebRelay.scroll(node, to: offset)
+            let taken = WebRelay.scroll(of: node)
+            self.offset = taken
+            written = taken == before ? nil : taken
         }
     }
 

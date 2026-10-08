@@ -35,6 +35,7 @@ enum WinUIRealization {
     /// Every record, the tiers' first.
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
+        .partial("VisualElement", "background", missing: "An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it."),
         .complete("BarElement", "barBackgroundColor"),
         .complete("BarElement", "barForegroundColor"),
         .complete("BarElement", "barIcon"),
@@ -52,14 +53,30 @@ enum WinUIRealization {
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
+        .notPlanned("Page", "backButtonTitle", reason: "WinUI's way back is an arrow, with no words."),
+        .notPlanned("SearchField", "cursorPosition", reason: searchCaret),
+        .notPlanned("SearchField", "selectionLength", reason: searchCaret),
+        .notPlanned("SearchField", "submitLabel", reason: "WinUI gives a text box no word for the return key of the keyboard on the screen."),
+        .notPlanned("TextField", "submitLabel", reason: "WinUI gives a text box no word for the return key of the keyboard on the screen."),
+        .notPlanned("ActivityIndicator", "background", reason: "WinUI's progress ring paints its Background as its "
+            + "track, no ground under its frame."),
+        .partial("Canvas", "background", missing: "A brush fills the canvas with its first colour alone."),
+        .notPlanned("ColorBox", "background", reason: figurePaintsNoGround),
+        .notPlanned("Ellipse", "background", reason: figurePaintsNoGround),
+        .notPlanned("Image", "background", reason: "WinUI's picture paints the picture alone, no ground around it."),
+        .notPlanned("Line", "background", reason: figurePaintsNoGround),
+        .notPlanned("Path", "background", reason: figurePaintsNoGround),
+        .notPlanned("Polygon", "background", reason: figurePaintsNoGround),
+        .notPlanned("Polyline", "background", reason: figurePaintsNoGround),
+        .notPlanned("ProgressBar", "background", reason: "WinUI's progress bar paints its Background as its track, no "
+            + "ground under its frame."),
+        .notPlanned("Rectangle", "background", reason: figurePaintsNoGround),
+        .unrealized("WebView", "background", why: "WebView2 is no control and takes no Background: what shows "
+            + "where its page paints nothing is its DefaultBackgroundColor, which the backend does not set yet."),
         .unrealized("ActivityIndicator", "ignoresInput", why: hitOnlyWherePainted),
-        .unrealized("ColorBox", "ignoresInput", why: hitOnlyWherePainted),
         .partial("DatePicker", "format", missing: "WinUI writes \"D\" and \"d\" in the user's own way, and any other pattern as \"d\"."),
-        .unrealized("Ellipse", "ignoresInput", why: hitOnlyWherePainted),
-        .unrealized("Image", "ignoresInput", why: hitOnlyWherePainted),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
-        .unrealized("Line", "ignoresInput", why: hitOnlyWherePainted),
         .complete("Menu", "isEnabled"),
         .complete("Menu", "text"),
         .complete("MenuBar", "order"),
@@ -68,15 +85,12 @@ enum WinUIRealization {
         .complete("Page", "appearing"),
         .complete("Page", "background"),
         .complete("Page", "disappearing"),
+        .complete("Page", "showsBackButton"),
         .complete("Page", "showsNavigationBar"),
         .complete("Page", "navigatedFrom"),
         .complete("Page", "navigatedTo"),
         .complete("Page", "navigatingFrom"),
-        .unrealized("Path", "ignoresInput", why: hitOnlyWherePainted),
-        .unrealized("Polygon", "ignoresInput", why: hitOnlyWherePainted),
-        .unrealized("Polyline", "ignoresInput", why: hitOnlyWherePainted),
         .complete("RadioButton", "groupName"),
-        .unrealized("Rectangle", "ignoresInput", why: hitOnlyWherePainted),
         .partial("SearchField", "horizontalTextAlignment", missing: "The placeholder stands at the start: "
             + "AutoSuggestBox's text box template aligns only the words typed."),
         .complete("Scene", "activated"),
@@ -94,6 +108,8 @@ enum WinUIRealization {
         .complete("TextSpan", "textDecorations"),
         .complete("SplitView", "showsSidebar"),
         .complete("SplitView", "showsSidebarChanged"),
+        .partial("SplitView", "sidebarBackground", missing: Self.paneHasNoGlass),
+        .partial("SplitView", "flyoutBackground", missing: Self.paneHasNoGlass),
         .complete("TabView", "selectedTab"),
         .complete("TabView", "selectedTabChanged"),
         .partial("TextField", "isPassword", missing: "A PasswordBox has no read-only state, alignment, case, caret "
@@ -103,6 +119,8 @@ enum WinUIRealization {
         .complete("ToolbarItemGroup", "order"),
         .complete("ToolbarItemGroup", "side"),
         .complete("ToolbarItem", "showsText"),
+        .notPlanned("WebView", "isEnabled", reason: "WinUI's WebView2 is no control: it keeps no enabled state, and "
+            + "its page takes the user's hand whatever the tree says."),
         .notPlanned("WebView", "panTouchCount", reason: webViewTakesTheHand),
         .notPlanned("WebView", "panUpdated", reason: webViewTakesTheHand),
         .notPlanned("WebView", "panXChannel", reason: webViewTakesTheHand),
@@ -119,6 +137,8 @@ enum WinUIRealization {
         .notPlanned("WebView", "tapCount", reason: webViewTakesTheHand),
         .notPlanned("WebView", "tapped", reason: webViewTakesTheHand),
         .complete("Window", "activated"),
+        .partial("Window", "background", missing: "WinUI has no glass: a window of glass shows the desktop acrylic "
+            + "at the glass's fallback thickness."),
         .complete("Window", "created"),
         .complete("Window", "deactivated"),
         .complete("Window", "destroying"),
@@ -127,7 +147,6 @@ enum WinUIRealization {
         .complete("Window", "hidesWhenInactive"),
         .complete("Window", "isMaximizable"),
         .complete("Window", "isMinimizable"),
-        .complete("Window", "isTranslucent"),
         .complete("Window", "maximumHeight"),
         .complete("Window", "maximumWidth"),
         .complete("Window", "minimumHeight"),
@@ -142,9 +161,19 @@ enum WinUIRealization {
         .complete("Window", "y"),
     ]
 
+    /// Why a figure takes no background on WinUI.
+    /// What a split view's pane leaves out of a material.
+    static let paneHasNoGlass = "WinUI has no glass: a pane of glass shows the in-app acrylic at its fallback thickness."
+
+    static let figurePaintsNoGround = "A WinUI shape is its figure alone: it paints no ground around it."
+
     /// Why a drawing's press is not let through as the tree says.
-    static let hitOnlyWherePainted = "WinUI hands a figure, a picture, a colour box and the activity ring only the "
-        + "presses on what they paint: an empty one is never pressed, so there is nothing to let through."
+    static let hitOnlyWherePainted = "WinUI hands the activity ring only the presses on its turning arc: the "
+        + "ring's middle, where a press is read, is never pressed, so there is nothing to let through."
+
+    /// Why a search box's caret is not the program's.
+    static let searchCaret = "WinUI's search box keeps its caret in the text box of its template, and offers no "
+        + "caret or selection of its own."
 
     /// Why a web view hears none of the user's hand as a view does.
     static let webViewTakesTheHand = "WebView2 gives the user's hand to its page: listened to by WinUI, it ends the "
@@ -155,7 +184,7 @@ enum WinUIRealization {
         let registry = WinUIRegistrations.registry
         return HostDeclaration(
             realization: registry.realization, shared: registry.sharedNames,
-            acts: (HostActs.performed + [ItemsViewContract.scrollTo]).map(\.name))
+            acts: (HostActs.performed + HostActs.files + [ItemsViewContract.scrollTo]).map(\.name))
     }
 
     /// What WinUI realizes, member by member: these records before what its registry says.

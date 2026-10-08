@@ -44,6 +44,7 @@ final class AppKitElement: NSObject, NativeElement {
     var panRecognizer: AppKitPanRecognizer?
     var pinchRecognizer: AppKitPinchRecognizer?
     var pointerRecognizer: AppKitPointerRecognizer?
+    var dragSource: AppKitDragSource?
     var accessibilityDefaults: (
         isElement: Bool,
         role: NSAccessibility.Role?

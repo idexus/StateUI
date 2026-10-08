@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
 @testable import StateUIWeb
 import XCTest
 
@@ -15,13 +16,14 @@ final class WebTabViewTests: XCTestCase {
         tabs.onSelection = { told.append(($0, $1)) }
 
         tabs.setTabs([first, second])
-        tabs.show(["Example", "In Code"], requested: 0)
+        tabs.show(["Example", "In Code"], icons: [], requested: 0)
         XCTAssertNil(WebPage.attribute(of: first.node, "data-covered"))
         XCTAssertEqual(WebPage.attribute(of: second.node, "data-covered"), "")
 
         let strip = WebPage.children(of: tabs.node)[0]
         let names = WebPage.children(of: strip)
-        XCTAssertEqual(names.map(WebPage.text), ["Example", "In Code"])
+        // Each tab holds its picture, then its words.
+        XCTAssertEqual(names.map { WebPage.text(of: WebPage.children(of: $0)[1]) }, ["Example", "In Code"])
         WebPage.tap(names[1])
 
         XCTAssertEqual(told.map(\.0), [0])
@@ -43,5 +45,20 @@ final class WebTabViewTests: XCTestCase {
         for page in pages {
             XCTAssertEqual(WebPage.style(of: page.node, "grid-area"), "1 / 1 / 2 / 2", "each page over the whole cell")
         }
+    }
+
+    /// The strip wears the colour of the bars on its path, with no blur under a clear one, and the bar's own look
+    /// where nothing is said.
+    func testTheStripWearsTheBarsColour() {
+        let tabs = WebTabView()
+        defer { tabs.detach() }
+
+        tabs.showColors(background: Color.transparent.propValue)
+        XCTAssertEqual(WebPage.style(of: tabs.strip.node, "--stateui-bar-background"), "rgb(255 255 255 / 0)")
+        XCTAssertEqual(WebPage.style(of: tabs.strip.node, "--stateui-bar-filter"), "none", "a clear bar blurs nothing")
+
+        tabs.showColors(background: nil)
+        XCTAssertEqual(WebPage.style(of: tabs.strip.node, "--stateui-bar-background"), "", "the bar's own look")
+        XCTAssertEqual(WebPage.style(of: tabs.strip.node, "--stateui-bar-filter"), "")
     }
 }

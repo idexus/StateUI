@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// The window's one bar, over the page the user sees: the sidebar's toggle, the way back, the application's name,
-/// the page's title, the actions its path declares and a menu of those behind it and of its menus - the
+/// the page's title - or the view the page declares in its place - the actions its path declares and a menu of those behind it and of its menus - the
 /// host layer's `WindowChrome`. Beside a sidebar shown, the bar stands in two parts: the name and the toggle over the
 /// sidebar, the rest over the detail.
 /// Design: docs/design/platforms/web/pages.md#the-windows-bar
@@ -24,8 +24,14 @@ final class WebWindowBar: WebDOMView {
     private let leading = WebDOMView(tag: "div")
     private let trailing = WebDOMView(tag: "div")
 
+    /// The view standing in place of the title; nil while the title stands there.
+    private weak var titleView: WebDOMView?
+
     /// The button of each action shown, by the item it stands for.
     private(set) var buttons: [ObjectIdentifier: WebBarButton] = [:]
+
+    /// The groups of actions shown, each a run of buttons standing together.
+    private var groups: [WebDOMView] = []
 
     /// What the toggle and the way back do.
     var onToggle: () -> Void = {}
@@ -75,8 +81,10 @@ final class WebWindowBar: WebDOMView {
 
     /// Shows `chrome`: its parts where it has them, its actions in their groups, its colours; `sidebar` says whether
     /// the split view the toggle serves shows its sidebar, nil where there is none.
-    func show(_ chrome: WindowChrome, title shown: String, sidebar: Bool?) {
+    func show(_ chrome: WindowChrome, title shown: String, sidebar: Bool?, split: WebSplitView? = nil) {
         attribute("data-sidebar", sidebar.map { $0 ? "shown" : "hidden" })
+        // The part over a sidebar beside the page stands on the sidebar's own ground, as one column with it.
+        for name in ["--stateui-sidebar-ground", "--stateui-sidebar-filter"] { style(name, split?.styled(name)) }
         toggle.setShown(chrome.sidebarToggle != nil)
         back.setShown(chrome.back != nil)
         back.attribute("title", chrome.back?.title)
@@ -86,33 +94,57 @@ final class WebWindowBar: WebDOMView {
         WebRelay.setText(name.node, area?.title ?? "")
         WebRelay.setText(subtitle.node, area?.subtitle ?? "")
         subtitle.setShown(area?.subtitle?.isEmpty == false)
-        WebRelay.setText(title.node, shown)
-        title.setShown(!shown.isEmpty)
-        title.attribute("data-repeats", shown == area?.title ? "" : nil)
+        showTitle(shown, or: (chrome.center?.native as? WebElement)?.view, repeating: area?.title)
 
         style("--stateui-bar-background", WebCSS.fill(chrome.background))
+        // A clear bar shows what is behind it as it is: no blur, no deeper colour under it.
+        style("--stateui-bar-filter", HostBrush(chrome.background).isClear ? "none" : nil)
         style("--stateui-bar-foreground", WebCSS.color(chrome.foreground))
 
         var kept: [ObjectIdentifier: WebBarButton] = [:]
+        var made: [WebDOMView] = []
         let ending = chrome.actions.trailing
-        for (edge, groups) in [(leading, chrome.actions.leading), (trailing, ending)] {
-            let items = groups.flatMap { $0 }
-            for (index, item) in items.enumerated() {
-                let button = buttons[ObjectIdentifier(item)] ?? WebBarButton()
-                button.show(item)
-                WebRelay.insert(button.node, into: edge.node, at: index)
-                kept[ObjectIdentifier(item)] = button
+        for (edge, runs) in [(leading, chrome.actions.leading), (trailing, ending)] {
+            for (place, items) in runs.enumerated() {
+                let group = place < groups.count ? groups.removeFirst() : WebDOMView(tag: "div")
+                group.attribute("class", "stateui-bar-group")
+                group.attribute("role", "group")
+                WebRelay.insert(group.node, into: edge.node, at: place)
+                for (index, item) in items.enumerated() {
+                    let button = buttons[ObjectIdentifier(item)] ?? WebBarButton()
+                    button.show(item)
+                    WebRelay.insert(button.node, into: group.node, at: index)
+                    kept[ObjectIdentifier(item)] = button
+                }
+                made.append(group)
             }
         }
         for (key, button) in buttons where kept[key] == nil { button.detach() }
+        for gone in groups { gone.detach() }
         buttons = kept
+        groups = made
         // The bar ends with the actions behind it, then - a sheet's - the button closing it.
         behind = chrome.actions.overflow.map(MenuEntry.entry(of:))
         if !behind.isEmpty, !chrome.menus.menus.isEmpty { behind.append(.separator) }
         behind += chrome.menus.menus
         more.setShown(!behind.isEmpty)
-        WebRelay.insert(more.node, into: trailing.node, at: ending.joined().count)
-        WebRelay.insert(closer.node, into: trailing.node, at: ending.joined().count + 1)
+        WebRelay.insert(more.node, into: trailing.node, at: ending.count)
+        WebRelay.insert(closer.node, into: trailing.node, at: ending.count + 1)
+    }
+
+    /// The title's words, or `view` in their place where the page declares one.
+    private func showTitle(_ words: String, or view: WebDOMView?, repeating name: String?) {
+        if let titleView, titleView !== view, !titleView.isReleased { WebRelay.detach(titleView.node) }
+        titleView = view
+        if let view {
+            WebRelay.setText(title.node, "")
+            WebRelay.insert(view.node, into: title.node, at: 0)
+        } else {
+            WebRelay.setText(title.node, words)
+        }
+        title.setShown(view != nil || !words.isEmpty)
+        title.attribute("data-repeats", view == nil && words == name ? "" : nil)
+        title.attribute("data-holds-view", view == nil ? nil : "")
     }
 
     private func glyph(_ button: WebDOMView, _ glyph: String, label: String) {
@@ -127,6 +159,7 @@ final class WebWindowBar: WebDOMView {
 
     override func detach() {
         for button in buttons.values { button.detach() }
+        for group in groups { group.detach() }
         let parts = [
             toggle, back, closer, more, name, subtitle, heading, brand, title, leading, trailing, side, start, lead,
         ]

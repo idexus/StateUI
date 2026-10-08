@@ -502,11 +502,13 @@ extension Differ {
             state.inherited = mine
             state.inheritedBy = id
             state.door = registration.kind
+            state.laneKind = registration.laneKind
 
             driven[key] = StateEntry(
                 number: Renderer.shared.number(for: state),
                 mode: registration.mode,
-                kind: registration.kind)
+                kind: registration.kind,
+                laneKind: registration.laneKind)
         }
 
         let tiesChanged = describeAll || previous == nil

@@ -195,7 +195,7 @@ final class PlacedRunTests: XCTestCase {
 
         XCTAssertEqual(
             placed.driven?[.area],
-            HostStateBinding(state: run.number, mode: .out, kind: .placement))
+            HostStateBinding(state: run.number, mode: .out, kind: .placement, laneKind: .number))
 
         XCTAssertEqual(placed.children.count, 2)
 
@@ -250,7 +250,7 @@ final class PlacedRunTests: XCTestCase {
 
         XCTAssertEqual(
             patch.driven?[.frame],
-            HostStateBinding(state: room.number, mode: .in, kind: .feed))
+            HostStateBinding(state: room.number, mode: .in, kind: .feed, laneKind: .number))
     }
 
     /// A DRAWING ORDER IS WRITTEN AS AN ORDER, never as the number the

@@ -57,7 +57,7 @@ extension WebRegistrations {
             scroll.applies(scrollerBoxMembers) { view, values in
                 // A scroller cuts what it shows to its bounds always.
                 view.setBox(
-                    fill: values[VisualElementContract.background]?.propValue,
+                    background: values[VisualElementContract.background]?.propValue,
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue,
@@ -84,7 +84,7 @@ extension WebRegistrations {
 
     private static func applyBox<Realized: ElementContract>(_ view: WebLayoutView, _ values: ElementValues<Realized>) {
         view.setBox(
-            fill: values[VisualElementContract.background]?.propValue,
+            background: values[VisualElementContract.background]?.propValue,
             stroke: values[BorderElementContract.stroke]?.propValue,
             lineWidth: values[BorderElementContract.lineWidth],
             shape: values[BorderElementContract.shape]?.propValue,

@@ -6,6 +6,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
     static let title = "A state on a cadence"
     static let summary = "One walked value shown three ways - converted, read, and sampled ten times a second."
 
+    // listing: PacedStateSample
     /// What the host walks. A write puts the DESTINATION on it at once, and
     /// the host walks the control there on its own frames.
     @State private var fade = 1.0
@@ -14,55 +15,12 @@ struct PacedStateSample: SampleContent, ExampleContent {
     /// sample was taken. An ordinary state, so an ordinary get reads it.
     @State private var shown = 1.0
 
-    static let code = """
-        @State private var fade = 1.0
-        @State private var shown = 1.0
-
-        VStack {
-            // A CONVERTER - the host works the words out on its own frames.
-            // NO RENDER AT ALL, however long the walk.
-            VStack {
-                DebugInfoLabel()
-
-                Text($fade.convert { "going to \\(Int($0 * 100))%" })
-            }
-
-            // THE JOURNEY - this closure reads where the value IS, which the
-            // host writes every frame it moves. ONE RENDER A FRAME.
-            VStack {
-                DebugInfoLabel()
-
-                Text("at \\(Int($fade.journey.value * 100))%")
-            }
-
-            // A READING - taken ten times a second into an ordinary state,
-            // which this closure reads. ONE RENDER A WINDOW.
-            VStack {
-                DebugInfoLabel()
-
-                Text("at \\(Int(shown * 100))%")
-            }
-            .samples($fade, into: $shown, .every(100))
-
-            ColorBox()
-                .height(60)
-                .opacity($fade)
-
-            HStack {
-                Button("Fade")
-                    .onClicked { try await $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
-
-                Button("Back")
-                    .onClicked { try await $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
-            }
-        }
-        """
-
     var body: some View {
+        // One walked value, shown three ways.
         VStack {
-            // A CONVERTER. The host works the words out on its own frames and
-            // wears them, so nothing here is described again - this count
-            // stands still for the whole walk.
+            // A CONVERTER. The words are worked out on the display's frames
+            // and the host wears them, so nothing here is described again -
+            // this count stands still for the whole walk.
             VStack {
                 DebugInfoLabel()
 
@@ -71,7 +29,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             }
             .spacing(4)
             .padding(14)
-            .background(Palette.surface)
+            .background(Palette.well)
 
             // THE JOURNEY. This closure reads where the value IS, and the host
             // writes that lane every frame - so it is built again on every one
@@ -84,10 +42,10 @@ struct PacedStateSample: SampleContent, ExampleContent {
             }
             .spacing(4)
             .padding(14)
-            .background(Palette.surface)
+            .background(Palette.well)
 
             // A READING, ten times a second, into an ordinary state. Same
-            // number, a tenth of the builds.
+            // number, at most ten builds a second.
             VStack {
                 DebugInfoLabel()
 
@@ -96,7 +54,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             }
             .spacing(4)
             .padding(14)
-            .background(Palette.surface)
+            .background(Palette.well)
             .samples($fade, into: $shown, .every(100))
 
             ColorBox()
@@ -109,23 +67,11 @@ struct PacedStateSample: SampleContent, ExampleContent {
                 Button("Fade")
                     .accessibilityIdentifier("paced.fade")
                     .accessibilityLabel("Fade the box out")
-                    .fontSize(13)
-                    .background(Palette.accent)
-                    .textColor(.white)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 20, vertical: 10)
                     .onClicked { try await $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
 
                 Button("Back")
                     .accessibilityIdentifier("paced.back")
                     .accessibilityLabel("Bring the box back")
-                    .fontSize(13)
-                    .stroke(Palette.outline)
-                    .lineWidth(1)
-                    .background(.transparent)
-                    .textColor(Palette.subtle)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 20, vertical: 10)
                     .onClicked { try await $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
             }
             .spacing(12)
@@ -133,6 +79,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

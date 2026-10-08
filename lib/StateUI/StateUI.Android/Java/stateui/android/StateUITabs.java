@@ -15,8 +15,8 @@ import android.widget.TextView;
 
 /**
  * A tabbed view's tabs along the bottom: one button each, its picture over its
- * title, the chosen one in its own colour. A tap goes to the Swift view by its
- * number.
+ * title, the chosen one in its own colour and selected, as TalkBack tells it. A
+ * tap goes to the Swift view by its number.
  */
 final class StateUITabs extends LinearLayout implements View.OnClickListener {
     private final long view;
@@ -50,6 +50,7 @@ final class StateUITabs extends LinearLayout implements View.OnClickListener {
                 if (tint != 0) tab.setCompoundDrawableTintList(ColorStateList.valueOf(tint));
             }
             tab.setAlpha(index == chosen || tint != 0 ? 1f : 0.6f);
+            tab.setSelected(index == chosen);
             tab.setTag(index);
             tab.setOnClickListener(this);
             addView(tab, new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1));

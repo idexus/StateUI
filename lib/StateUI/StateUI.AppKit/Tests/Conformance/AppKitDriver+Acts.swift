@@ -45,6 +45,8 @@ extension AppKitDriver {
         case (.slide(let value), let slider as AppKitSliderView):
             slider.doubleValue = value
             slider.sendAction(slider.action, to: slider.target)
+        case (.enterWords, is AppKitStepperView):
+            throw DriverCannot("type words into a Stepper", because: "the Mac's stepper is two arrows, with no field")
         case (.step(let up), let stepper as AppKitStepperView):
             // What a click on either arrow does: the value one increment on, within the range, then the action.
             let stepped = stepper.doubleValue + (up ? stepper.increment : -stepper.increment)
@@ -96,6 +98,13 @@ extension AppKitDriver {
             guard renderer?.actToolkit.showing?.pressForTesting(caption, typing: words) == true else {
                 throw DriverCannot("press \(caption): no question shows it")
             }
+        case (.dragAndDrop(let target, let across), _):
+            try dragAndDrop(element, onto: target, across: across)
+        case (.dropFiles(let names), let view?):
+            try dropFiles(names, on: view, element)
+        case (.answerFiles(let names), _):
+            guard let dialog = renderer?.fileToolkit.showing else { throw DriverCannot("answer a file dialog: none shows") }
+            dialog.chooseForTesting(names.map { Self.files.appendingPathComponent($0) })
         case (.goBack, _) where element.type == .navigationStack: try controller(of: element).toolbarForTesting
             .performForTesting(AppKitWindowToolbar.back)
         case (.goBack, _) where element.type == .window:
@@ -245,6 +254,41 @@ extension AppKitDriver {
         else { throw DriverCannot("submit a field with no editor") }
         editor.insertNewline(nil)
     }
+    /// `element` dragged onto the view of id `target` - across the one of id `across` first - as AppKit's dragging
+    /// session tells it: its source starts, the window's root hears the drag over each view's middle and let go
+    /// there, and the source ends.
+    func dragAndDrop(_ element: MountedElement, onto target: String, across: String?) throws {
+        let act = UserAct.dragAndDrop(onto: target, across: across)
+        let native = element.native as? AppKitElement
+        guard let source = native?.dragSource, let root = native?.view?.window?.contentView,
+              let drops = (root as? AppKitWindowContentView)?.drops ?? (root as? AppKitHitTestView)?.drops
+        else { throw DriverCannot(act, on: element) }
+        func middle(_ id: String) throws -> NSPoint {
+            guard let view = (renderer?.runtime.tree.root?.first(id: .manual(id))?.native as? AppKitElement)?.view else {
+                throw DriverCannot(act, on: element)
+            }
+            return view.convert(NSPoint(x: view.bounds.midX, y: view.bounds.midY), to: nil)
+        }
+        let carried = AppKitDrops.Carried(words: source.words)
+        source.started()
+        _ = drops.entered(at: try middle(across ?? target), carrying: carried, in: root)
+        if across != nil { _ = drops.moved(to: try middle(target), carrying: carried, in: root) }
+        _ = drops.dropped(carried)
+        source.ended()
+    }
+
+    /// Files of `names`, written in the driver's folder, dragged from the system onto `view` and let go there, as
+    /// AppKit's dragging destination tells the window's root.
+    func dropFiles(_ names: [String], on view: NSView, _ element: MountedElement) throws {
+        guard let root = view.window?.contentView,
+              let drops = (root as? AppKitWindowContentView)?.drops ?? (root as? AppKitHitTestView)?.drops
+        else { throw DriverCannot(.dropFiles(names), on: element) }
+        let files = names.map { Self.files.appendingPathComponent($0) }
+        for file in files { try Data(file.lastPathComponent.utf8).write(to: file) }
+        let carried = AppKitDrops.Carried(files: files)
+        _ = drops.entered(at: view.convert(NSPoint(x: view.bounds.midX, y: view.bounds.midY), to: nil), carrying: carried, in: root)
+        _ = drops.dropped(carried)
+    }
 }
 
 extension NSPoint {
@@ -252,5 +296,6 @@ extension NSPoint {
     init(_ point: Point) {
         self.init(x: point.x, y: point.y)
     }
+
 }
 #endif

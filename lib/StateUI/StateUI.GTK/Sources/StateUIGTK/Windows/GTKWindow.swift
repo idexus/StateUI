@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 import CStateUIGTK
 
@@ -21,6 +22,18 @@ final class GTKWindow {
 
     /// The title last given; nil before the first.
     private var title: String??
+
+    /// The class painting the window behind its pages; nil for libadwaita's own.
+    private var backgroundClass: String?
+
+    /// Paints the window behind its pages in `value`'s colour; libadwaita's own where it is nil.
+    func setBackground(_ value: HostValue?) {
+        let wanted = GTKBrush(value).firstColor.map(GTKStyleSheet.fill)
+        guard wanted != backgroundClass else { return }
+        if let backgroundClass { gtk_widget_remove_css_class(widget, backgroundClass) }
+        if let wanted { gtk_widget_add_css_class(widget, wanted) }
+        backgroundClass = wanted
+    }
 
     /// The view the window shows: a page's, or an arrangement's.
     private(set) var content: GTKView?

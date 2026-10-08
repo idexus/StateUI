@@ -8,6 +8,7 @@
 
 import StateUI
 
+// listing: GalleryContract
 /// The gallery's own acts and events - the ones with no control behind them.
 ///
 /// A host registers a function or a raise under each name, and this declares
@@ -42,3 +43,4 @@ public enum GalleryContract: ApplicationTier {
         setClipboard, readClipboard, batteryLevel, nobody, batteryChanged, connectivityChanged,
     ]
 }
+// listing: end

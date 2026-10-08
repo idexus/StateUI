@@ -4,7 +4,7 @@ import StateUI
 
 extension View {
     /// Dresses the page this view stands on the way every page of the gallery
-    /// is dressed: its title and the tinted ground behind the content.
+    /// is dressed: its title, on the platform's own page.
     ///
     ///     VStack { … }
     ///         .galleryPage("Level 2")
@@ -23,8 +23,6 @@ extension View {
     ///
     /// - Parameter title: what the page is called.
     func galleryPage(_ title: String) -> some View {
-        // Tinted rather than white, which is what lets a card lift off it with
-        // a fill instead of a shadow - see `Palette.surface`.
-        self.title(title).pageBackground(Palette.surface)
+        self.title(title)
     }
 }

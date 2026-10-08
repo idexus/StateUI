@@ -1,8 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+// listing: InteropEventsSample.Android.swift
 // The native methods of the gallery's Java views, com.stateui.gallery.GalleryNatives - found by their JNI names, each
 // called on the UI thread, where Swift's main actor runs.
+// listing: end
 
 import Android
 import GalleryUI
@@ -40,9 +42,11 @@ public func galleryCubeFrame(_ env: UnsafeMutablePointer<JNIEnv?>?, _ owner: jcl
     MainActor.assumeIsolated { (GalleryControls.control(control) as? GLESCube3DView)?.frame(at: time) }
 }
 
+// listing: InteropEventsSample.Android.swift
 @_cdecl("Java_com_stateui_gallery_GalleryNatives_batteryChanged")
 public func galleryBatteryChanged(
     _ env: UnsafeMutablePointer<JNIEnv?>?, _ owner: jclass?, _ level: jdouble, _ charging: jboolean
 ) {
     MainActor.assumeIsolated { GalleryEventSources.report(level: level, charging: charging != 0) }
 }
+// listing: end

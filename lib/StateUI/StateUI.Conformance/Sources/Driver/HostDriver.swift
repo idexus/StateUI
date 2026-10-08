@@ -80,11 +80,27 @@
     /// everything its window shows over it.
     func reaches(_ element: MountedElement, at point: Point) throws -> Bool
 
+    /// The children of `layout` in the order its toolkit draws them, back to front, as its native view holds them.
+    func drawingOrder(of layout: MountedElement) throws -> [MountedElement]
+
+    /// Whether assistive technology meets `element`'s view as a heading, whatever level it says.
+    func isHeading(_ element: MountedElement) throws -> Bool
+
     /// The question the window of `element` shows now; nil where it shows none.
     func question(over element: MountedElement) throws -> Question?
 
     /// What the platform's screen reader was told to say, in order, since the host started.
     func announced() throws -> [String]
+
+    /// The theme the platform shows the application in now: light or dark.
+    func theme() throws -> ColorScheme
+
+    /// The file dialog the window of `element` shows now; nil where it shows none.
+    func fileDialog(over element: MountedElement) throws -> FileDialog?
+
+    /// What the host handed the system to launch, in order, since the host started: an address as written, a file
+    /// by its name.
+    func launched() throws -> [String]
 
     /// The colour `element` shows at `point`, in its own coordinates; nil where it shows nothing there. Asked only of
     /// what StateUI draws itself - a canvas, a shape, a box's fill - never of a native control's look.
@@ -144,12 +160,33 @@ extension HostDriver {
         throw DriverCannot("read what reaches \(element.type.name)")
     }
 
+    public func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
+        throw DriverCannot("read the drawing order of \(layout.type.name)")
+    }
+
+    /// A heading is a view whose level the toolkit holds above none.
+    public func isHeading(_ element: MountedElement) throws -> Bool {
+        (try held(.accessibilityHeading, on: element)?.enumeration ?? 0) > 0
+    }
+
     public func question(over element: MountedElement) throws -> Question? {
         throw DriverCannot("read a question")
     }
 
     public func announced() throws -> [String] {
         throw DriverCannot("read what the screen reader said")
+    }
+
+    public func theme() throws -> ColorScheme {
+        throw DriverCannot("read the theme the application shows in")
+    }
+
+    public func fileDialog(over element: MountedElement) throws -> FileDialog? {
+        throw DriverCannot("read a file dialog")
+    }
+
+    public func launched() throws -> [String] {
+        throw DriverCannot("read what was launched")
     }
 
     public func color(of element: MountedElement, at point: Point) throws -> Color? {
@@ -190,4 +227,12 @@ public struct Question: Equatable, Sendable {
         self.buttons = buttons.sorted()
         self.field = field
     }
+}
+
+/// A file dialog a window shows the user: one that opens files, or one that saves.
+public enum FileDialog: Equatable, Sendable {
+    /// It asks for files to open.
+    case open
+    /// It asks for a place to save.
+    case save
 }

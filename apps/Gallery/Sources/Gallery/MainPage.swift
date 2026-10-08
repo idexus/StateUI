@@ -32,8 +32,8 @@ struct MainPage: View {
     /// the tabs.
     let nav: Navigation
 
-    /// What the gallery looks like - its bars are painted in its accent, which
-    /// the Colours window chooses.
+    /// What the gallery looks like - its bars are the platform's own, or
+    /// painted in the accent the Colours window chooses.
     let style: SessionStyle
 
     /// The log of this window's lifecycle - kept by `GalleryWindow`.
@@ -50,16 +50,27 @@ struct MainPage: View {
     /// window is sure to be built.
     @Environment(\.window) private var window
 
+    /// The application - the accent the user chose for the system, which the
+    /// gallery's look may wear.
+    @Environment(\.application) private var application
+
     // MARK: - What the user is looking at
 
     /// THE ARRANGEMENT, and it is three ordinary values: a split view holding two
     /// pages, a stack holding an array, a set of tabs holding a selection.
     var body: some View {
+        // listing: MainPage.modal
         // What is over all of it: the pages presented over the split view, the
         // stack and the bars alike - empty almost always: presenting is
-        // `sheets.append`, and a sheet the user drags down shortens the array
+        // `sheets.append`, and a sheet the user dismisses shortens the array
         // itself.
         ModalStack(nav.$sheets) {
+        // listing: end
+            // listing: MainPage.modal
+            // The split view, its bars and its pages - what the sheets are
+            // presented over.
+            // listing: end
+            // listing: MainPage.split
             SplitView(nav.$menuOpen) {
                 MenuPage(
                     catalog: catalog,
@@ -69,14 +80,20 @@ struct MainPage: View {
             } detail: {
                 detail()
             }
+            // What the sidebar stands on beside the page and sliding over it,
+            // in each theme, as the gallery's looks say.
+            .sidebarBackground(surface(\.sidebar, .sidebar))
+            .flyoutBackground(surface(\.flyout, .flyout))
+            // listing: end
+            // listing: MainPage.bar
             // The gallery's own actions, declared once around every page: a page's
             // own stand nearer the title, and these keep their place at the edge.
-            // Icons give both a stable native footprint; their captions remain
-            // available to accessibility and to platforms that show text.
+            // Each wears an icon, which keeps its size on the bar steady; its
+            // caption stays for accessibility and for bars that show words.
             .toolbar(id: "gallery") {
                 ToolbarItem.inspector(window)
                     .text("Inspector")
-                    .icon("nav_inspect_dark.png")
+                    .icon(ImageSource(light: "nav_inspect.png", dark: "nav_inspect_dark.png"))
 
                 if !nav.showing(.home) {
                     ToolbarItem.home(nav)
@@ -84,41 +101,40 @@ struct MainPage: View {
 
                 if bar.showsSurprise {
                     ToolbarItem("Surprise me")
-                        .icon("nav_surprise_chrome.png")
+                        .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
                         .onClicked { nav.surprise(from: catalog, on: device.info.formFactor) }
                 }
             }
-            // What the window's bar says of the gallery: its name and mark, and
-            // the line the Window bar sample types - where the platform's
-            // chrome names the application.
+            // What the window's bar says of the gallery: its name and mark,
+            // where the platform's chrome names the application, and under the
+            // title the line the Window bar sample types.
             .barTitle("StateUI")
             .barSubtitle(bar.subtitle)
             .barIcon("stateui_mark.png")
-            // The bars of both panes, in the gallery's accent; their foreground
-            // stays white against it in both themes.
-            .barBackgroundColor(barColour)
-            .barForegroundColor(Palette.onBrand)
+            // listing: end
+            // The bars of both panes, as the gallery's look says.
+            .bars(look.bars, in: look.barColour, system: application.info.accentColor)
+            // listing: MainPage.overlays
             // The window's notice, over every page while the gallery says so.
             .overlays {
                 if nav.windowNotice {
                     WindowNotice(words: "Over every page", shown: nav.$windowNotice)
                 }
             }
-            // A size and a minimum: the size is the window's as it opens, the
-            // minimum how small the user may drag it before the layout stops
-            // making sense. A phone ignores both, an app there being the whole
-            // screen - and there is no `x` or `y` on purpose: pinning an app to
-            // the same corner of the screen at every launch is worse than letting
-            // the platform place it.
+            // listing: end
+            // listing: MainPage.created
+            // The window's name and its size: `width` and `height` are its size
+            // as it opens, the minimum how small the user may drag it before the
+            // layout stops making sense, the maximum how large. On a phone or a
+            // tablet the system sizes the window and these go unused - and the
+            // gallery writes no `x` or `y` on purpose: pinning an app to the same
+            // corner of the screen at every launch is worse than letting the
+            // platform place it.
             .onCreated {
                 window.title = "StateUI Gallery"
                 window.width = 1100
                 window.height = 800
-                #if APPKIT
-                // The AppKit window shows the desktop through it from the start, in
-                // the accent's tint.
-                window.isTranslucent = true
-                #endif
+                dress(window)
                 window.minimumWidth = 700
                 window.minimumHeight = 500
                 window.maximumWidth = 1600
@@ -126,18 +142,27 @@ struct MainPage: View {
                 window.isMaximizable = true
                 window.isMinimizable = true
 
-                // On a desktop the menu is a sidebar beside the page.
+                // On a desktop the menu stands beside the page, so choosing a
+                // row leaves it open.
                 if device.info.formFactor == .desktop {
                     nav.menuOverlays = false
                 }
 
                 log.note("created")
             }
+            // The Appearance sample changes the look while the window stands.
+            .onChanged(style.look(dark: false)) { dress(window) }
+            .onChanged(style.look(dark: true)) { dress(window) }
+            .onChanged(application.info.accentColor) { dress(window) }
+            // listing: end
+        // listing: MainPage.modal
         } destination: { _ in
             ModalPage(nav: nav)
         }
+        // listing: end
     }
 
+    // listing: MainPage.detail
     /// The other half of the split view: the section, arranged the way that section
     /// wants to be.
     ///
@@ -145,8 +170,7 @@ struct MainPage: View {
     /// section's own page underneath. The tabs demonstration is the exception,
     /// and it is the reason this is a function rather than one expression: a
     /// `TabView` is a page like any other, so a section may simply be one -
-    /// and a stack may sit inside a tab, because pages nest without a rule
-    /// about which may hold which.
+    /// and a stack may sit inside one of its tabs.
     @ViewBuilder
     func detail() -> some View {
         if case .tabs = nav.section {
@@ -159,6 +183,7 @@ struct MainPage: View {
             }
         }
     }
+    // listing: end
 
     /// The page under everything, for the section the menu chose.
     ///
@@ -203,7 +228,7 @@ struct MainPage: View {
 
         case .sample(let id):
             if let sample = catalog.sample(id: id) {
-                SamplePage.shown(sample, nav: nav, bar: barColour)
+                SamplePage.shown(sample, nav: nav, look: look, system: application.info.accentColor)
             } else {
                 MissingPage(id: id, nav: nav, path: path)
             }
@@ -219,8 +244,9 @@ struct MainPage: View {
         }
     }
 
-    /// The one section that is not a stack: a `TabView` over the author's own
-    /// enum, with a stack inside the first tab.
+    // listing: MainPage.tabs
+    /// The one section that is not a stack: a `TabView` over a list of the
+    /// author's own enum, with a stack inside its `.stack` tab.
     func tabs() -> some View {
         TabView(nav.tabs) { which in
             switch which {
@@ -230,10 +256,9 @@ struct MainPage: View {
                 } destination: { route in
                     page(for: route, path: nav.$tabsPath)
                 }
-                // A tab's caption and picture are the TAB PAGE's, and the tab
-                // page here is the stack rather than what is inside it -
-                // measured, and it is where the first live run showed no icons
-                // at all.
+                // A tab's caption and picture are what its page says, and this
+                // tab's page is the stack rather than the page inside it - so
+                // they are written on the stack.
                 .title("Stack")
                 .icon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
 
@@ -246,12 +271,30 @@ struct MainPage: View {
         }
         .selection(nav.$tab)
     }
+    // listing: end
 
-    // MARK: - The window's own chrome
+    // MARK: - The window's own look
 
-    /// What the bars are painted in: the gallery's accent, with three fifths
-    /// let through while the desktop shows through the window.
-    private var barColour: Color {
-        window.isTranslucent == true ? style.accent.translucentColor : style.accent.color
+    /// The look the gallery wears in the theme in force: a change of theme,
+    /// the system's or the application's, builds the page again in the other.
+    private var look: ThemeLook {
+        style.look(dark: application.info.colorScheme == .dark)
+    }
+
+    /// What a surface of the gallery is made of, a material for each theme as
+    /// its looks say - the platform's own in a theme whose look leaves it.
+    private func surface(_ part: KeyPath<ThemeLook, SurfaceLook>, _ painted: GallerySurface) -> Material {
+        let system = application.info.accentColor
+        return Material(
+            light: style.look(dark: false)[keyPath: part].material(system: system, for: painted),
+            dark: style.look(dark: true)[keyPath: part].material(system: system, for: painted))
+    }
+
+    /// Dresses `window` as the gallery's looks say, one for each theme: what it
+    /// is made of behind its pages - the platform's own where both leave it.
+    private func dress(_ window: WindowSession) {
+        let unsaid = style.look(dark: false).window.material == .platform
+            && style.look(dark: true).window.material == .platform
+        window.background = unsaid ? nil : surface(\.window, .window)
     }
 }

@@ -1,12 +1,15 @@
 import StateUI
 
+// listing: PersistentStateSample
 /// How dark the gallery's own demonstration paints - kept as the text it is
 /// spelled with, which is what makes conformance one line.
 enum Shade: String, PersistentValue {
     case quiet
     case bold
 }
+// listing: end
 
+// listing: PersistentStateSample
 extension PersistentKey {
     /// How many times the user has pressed the button, ever.
     static let visits = PersistentKey("dev.stateui.gallery.visits", of: Int.self)
@@ -17,74 +20,22 @@ extension PersistentKey {
     /// Whether the panel below paints loudly.
     static let shade = PersistentKey("dev.stateui.gallery.shade", of: Shade.self)
 }
+// listing: end
 
 /// `@State` under a key is state the application KEEPS - the value is there
 /// again the next time the app opens, with nothing to load and nothing to save.
 struct PersistentStateSample: SampleContent, ExampleContent {
+    // listing: PersistentStateSample
     @State(persistentKey: .visits) private var visits = 0
     @State(persistentKey: .who) private var who = ""
     @State(persistentKey: .shade) private var shade = Shade.quiet
+    // listing: end
 
     static let id = "persistent-state"
     static let title = "Persistent state"
     static let summary = "State under a key survives the app being closed."
 
-    static let code = """
-        // A key can hold what the platform's settings store holds - and an
-        // enum over one of those is one line, kept as the text it is spelled
-        // with.
-        enum Shade: String, PersistentValue {
-            case quiet
-            case bold
-        }
-
-        extension PersistentKey {
-            static let visits = PersistentKey("dev.stateui.gallery.visits", of: Int.self)
-            static let who = PersistentKey("dev.stateui.gallery.who", of: String.self)
-            static let shade = PersistentKey("dev.stateui.gallery.shade", of: Shade.self)
-        }
-
-        // Into the application's session as it is made, so the host knows
-        // what to read before the first view is built:
-        @Environment(\\.application) private var application
-
-        init() {
-            application.persistentKeys = [.visits, .who, .shade]
-        }
-
-        // And then it is ordinary state:
-        @State(persistentKey: .visits) private var visits = 0
-        @State(persistentKey: .who) private var who = ""
-        @State(persistentKey: .shade) private var shade = Shade.quiet
-
-        VStack {
-            // Every one of the three kept values is read here, so this is what
-            // a write rebuilds - and the reading names which one it was for.
-            DebugInfoLabel()
-
-            Text("Pressed \\(visits) times, ever")
-
-            HStack {
-                Button("Press")
-                    .onClicked { visits += 1 }
-
-                Button("Start over")
-                    .isEnabled(visits != 0)
-                    .onClicked { visits = 0 }
-            }
-
-            TextField($who)
-                .placeholder("Your name")
-
-            Text(who.isEmpty ? "Welcome back" : "Welcome back, \\(who)")
-
-            Button(shade == .quiet ? "quiet" : "bold")
-                .onClicked { shade = shade == .quiet ? .bold : .quiet }
-
-            ColorBox()
-                .color(shade == .bold ? Palette.accent : Palette.surface)
-        }
-        """
+    static var code: String { Listings.joined("PersistentStateSample", "GalleryApp") }
 
     var notes: (any View)? {
         VStack {
@@ -102,25 +53,28 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("The application LISTS its keys, in its session's persistentKeys. That is not "
-                + "ceremony: a settings store is read one key at a time and offers no "
-                + "list of what it holds, so naming them is what puts the values in "
-                + "memory before the first view asks for one.")
+                + "ceremony: the host reads the store key by key, each with its kind, so "
+                + "naming them is what puts the values in memory before the first view "
+                + "asks for one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("They are kept in the platform's own settings store - NSUserDefaults, "
-                + "SharedPreferences, ApplicationDataContainer - beside whatever else "
-                + "the app keeps there. So a key can hold only what such a store holds: "
-                + "a whole number, a number, true or false, or text. An enum over one of "
-                + "those is one line, as Shade is here.")
+            Text("They are kept in the platform's own settings store where it has one - "
+                + "UserDefaults, SharedPreferences - beside whatever else the app keeps "
+                + "there, and in a file of the host's where it has none. So a key holds "
+                + "only what such a store holds: a whole number, a number, true or false, "
+                + "or text. An enum over one of those is one line, as Shade is here.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
         .spacing(12)
     }
 
+    // listing: PersistentStateSample
     var body: some View {
         VStack {
+            // Every one of the three kept values is read here, so this is what
+            // a write rebuilds - and the reading names which one it was for.
             DebugInfoLabel()
 
             Text("Pressed \(visits) times, ever")
@@ -129,18 +83,9 @@ struct PersistentStateSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Press")
-                    .background(Palette.accent)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 20, vertical: 10)
                     .onClicked { visits += 1 }
 
                 Button("Start over")
-                    .stroke(Palette.outline)
-                    .lineWidth(1)
-                    .background(.transparent)
-                    .textColor(Palette.subtle)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 20, vertical: 10)
                     .isEnabled(visits != 0)
                     .onClicked { visits = 0 }
             }
@@ -163,21 +108,16 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                     .verticalAlignment(.center)
 
                 Button(shade == .quiet ? "quiet" : "bold")
-                    .stroke(Palette.outline)
-                    .lineWidth(1)
-                    .background(.transparent)
-                    .textColor(Palette.subtle)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 16, vertical: 8)
                     .onClicked { shade = shade == .quiet ? .bold : .quiet }
             }
             .spacing(12)
 
             ColorBox()
                 .height(48)
-                .color(shade == .bold ? Palette.accent : Palette.surface)
+                .color(shade == .bold ? Palette.accent : Palette.well)
                 .cornerRadius(8)
         }
         .spacing(14)
     }
+    // listing: end
 }

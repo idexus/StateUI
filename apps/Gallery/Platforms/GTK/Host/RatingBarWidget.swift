@@ -91,10 +91,12 @@ final class RatingBarWidget: GTKControl {
 
 // MARK: - Registration
 
+// listing: InteropActsSample.GTK.swift
 extension RatingBarWidget {
     /// Adds the bar for `RatingBarContract`, and the act aimed at one bar. Said once, before the application runs.
     @MainActor
     static func register() {
+        // listing: end
         StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarWidget in
             let bar = RatingBarWidget()
             // A tapped star is the USER's change: it lands on the state the value is carried in, and raises the event
@@ -110,9 +112,12 @@ extension RatingBarWidget {
             bar.raises(RatingBarContract.ratingChanged)
         }
 
+        // listing: InteropActsSample.GTK.swift
         // Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.
+        // The performer is handed that control, and flash() dims it and brings it back with libadwaita's animation.
         StateUIActs.add(RatingBarContract.flash, on: RatingBarWidget.self) { bar in
             bar.flash()
         }
     }
 }
+// listing: end

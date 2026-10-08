@@ -2,58 +2,24 @@ import StateUI
 
 /// A search box on the page, narrowing a list as the user types.
 struct SearchFieldSample: SampleContent, ExampleContent {
+    // listing: SearchFieldSample
     @State private var query = ""
     @State private var searched = ""
+    // listing: end
 
     static let id = "searchField"
     static let title = "SearchField"
     static let summary = "A TextField that says what it is for, on the page rather than in the navigation bar."
 
-    static let code = """
-        @State private var query = ""
-        @State private var searched = ""
-
-        VStack {
-            // The list below is filtered from `query`, so every keystroke builds
-            // this closure; the bar itself is handed the state.
-            DebugInfoLabel()
-
-            SearchField($query)
-                .placeholder("Search the list")
-                .onSubmitted { searched = query }
-
-            VStack {
-                ForEach(matches) { item in
-                    Text(item)
-                        .id(item)
-                }
-            }
-
-            Text(searched.isEmpty
-                ? "Type to narrow the list, then press the keyboard's search key."
-                : "Searched for: \\(searched)")
-
-            // The same query again, in the accent - where the platform lets
-            // an application tint a search field.
-            SearchField($query)
-                .placeholder("Search the list")
-                .tint(Palette.accent)
-        }
-
-        /// What the query matches, or everything when there is no query.
-        private var matches: [String] {
-            let items = ["Alpha", "Alma", "Beta", "Gamma", "Delta"]
-
-            return query.isEmpty
-                ? items
-                : items.filter { $0.lowercased().hasPrefix(query.lowercased()) }
-        }
-        """
-
+    // listing: SearchFieldSample
     var body: some View {
         VStack {
+            // The list below is filtered from `query`, so every keystroke builds
+            // this closure; the fields themselves are handed the state.
             DebugInfoLabel()
 
+            // Every keystroke lands on `query`; `.onSubmitted` hears the
+            // keyboard's search key.
             SearchField($query)
                 .accessibilityIdentifier("searchBar.query")
                 .accessibilityLabel("Search the list")
@@ -86,6 +52,7 @@ struct SearchFieldSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -95,16 +62,13 @@ struct SearchFieldSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("The same query, drawn twice: the first field is left as the platform "
-                + "draws it, and the second tints the two icons the platform puts in every "
-                + "search box. Type something to bring the clear button out - it only "
-                + "appears once there is text to clear.")
+            Text("The same query, drawn twice. Type something: where the platform draws "
+                + "a clear button, it appears once there is text to clear.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Those two colours are all a `SearchField` offers over the artwork: the "
-                + "icons themselves are the platform's, and there is no picture to put in "
-                + "their place.")
+            Text("The icons are the platform's, and a `SearchField` has no picture to put "
+                + "in their place.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -117,6 +81,7 @@ struct SearchFieldSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
+    // listing: SearchFieldSample
     /// What the query matches, or everything when there is no query - a search
     /// box that hides the list until something is typed says nothing about the
     /// list.
@@ -127,4 +92,5 @@ struct SearchFieldSample: SampleContent, ExampleContent {
             ? items
             : items.filter { $0.lowercased().hasPrefix(query.lowercased()) }
     }
+    // listing: end
 }

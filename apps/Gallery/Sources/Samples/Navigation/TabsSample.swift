@@ -6,107 +6,39 @@ import StateUI
 /// so the honest demonstration is for a section of the gallery to be one. What
 /// is here is the button that goes there, and the code that arranges it.
 struct TabsSample: SampleContent, ExampleContent {
+    // listing: TabsSample
     let nav: Navigation
+    // listing: end
 
     static let id = "tabs"
     static let title = "Tabs"
     static let summary = "A section arranged as tabs instead of a stack - the selection is a binding of your own type."
 
-    static let code = """
-        enum DemoTab: Hashable {
-            case stack
-            case second
+    static var code: String { Listings.joined("MainPage.tabs", "TabsSample") }
 
-            // A tab the user added, which is what makes the LIST something
-            // that changes rather than a fixed set.
-            case extra(Int)
-        }
-
-        // The tabs are STATE, so the list can change under a live selection.
-        @State private var tabs: [DemoTab] = [.stack, .second]
-        @State private var tab: DemoTab = .stack
-        @State private var tabsPath: [Route] = []
-
-        let nav: Navigation
-        let style: SessionStyle
-
-        // The tabs are a collection of YOUR type and the selection is a
-        // binding of it - not an index somebody has to keep in step. The
-        // choice is a modifier, the way every other choice here is.
-        TabView(tabs) { which in
-            switch which {
-            case .stack:
-                // A tab may hold a whole stack of its own. Its caption and
-                // its picture are the TAB PAGE's - the stack's here, not
-                // those of the page inside it.
-                NavigationStack($tabsPath) {
-                    TabsPage(nav: nav, path: $tabsPath)
-                } destination: { route in
-                    // The same closure the main stack uses, told which
-                    // array the page it builds will be a member of.
-                    page(for: route, path: $tabsPath)
-                }
-                .title("Stack")
-                .icon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
-
-            case .second:
-                SecondTabPage(nav: nav)
-
-            case .extra(let number):
-                TabsExtraPage(nav: nav, number: number)
-            }
-        }
-        .selection($tab)
-        .barBackgroundColor(style.accent.color)
-
-        // Changing the list is changing an array. The selection is untouched
-        // by any of it - it names a TAB, not a position.
-        func addTab() {
-            // One past the highest number in use, so no two tabs share one
-            // however many are closed in between.
-            let numbers = tabs.compactMap { which -> Int? in
-                if case .extra(let number) = which { return number }
-                return nil
-            }
-
-            tabs.append(.extra((numbers.max() ?? 0) + 1))
-        }
-
-        func reverseTabs() {
-            tabs.reverse()
-        }
-
-        // And from here, one move:
-        Button("Open the tabs")
-            .onClicked { nav.open(.tabs) }
-        """
-
+    // listing: TabsSample
     var body: some View {
         VStack {
             Button("Open the tabs")
-                .background(Palette.accent)
-                .textColor(.white)
-                .shape(.roundedRectangle(8))
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { nav.open(.tabs) }
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
             Text("A `TabView` is a page, so a section of this gallery is one: the "
                 + "button opens a section arranged as tabs rather than as a stack. The "
                 + "tabs are an array of your own type and the selection is a binding of "
-                + "it, so moving the tabs from code is an assignment.")
+                + "it, so moving between them from code is an assignment.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("The binding is two-way: tapping a tab writes it, and on Android so does "
-                + "swiping between them. Each tab keeps its own place because each stack "
-                + "is its own array - push a page on the first tab, change tabs and come "
-                + "back, and the page is still on top.")
+            Text("The binding is two-way: tapping a tab writes it. Each tab keeps its own "
+                + "place because each stack is its own array - push a page on the first "
+                + "tab, change tabs and come back, and the page is still on top.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -119,9 +51,9 @@ struct TabsSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("Closing the tab you are on is the one move with nothing left to keep "
-                + "showing: the first tab shows instead, and the binding follows it. The "
-                + "menu draws no row for this section, so every tab page carries a button "
-                + "back to the samples.")
+                + "showing: the tab that takes its place shows instead, or the last one "
+                + "where none does. The menu draws no row for this section, so every tab "
+                + "page carries a button back to the samples.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

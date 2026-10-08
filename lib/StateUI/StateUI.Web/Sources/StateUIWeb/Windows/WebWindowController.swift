@@ -68,6 +68,7 @@ final class WebWindowController {
     func present(_ element: MountedElement, in runtime: HostRuntime) {
         self.element = element
         let changes = presentation.show(element, in: runtime.lifecycle)
+        if let traits = changes.traits { window.frame.setBackground(traits.background.painted) }
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.web.view) }
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.web.view)) }
         if let pages = changes.sheets { showSheets(pages) }
@@ -118,7 +119,9 @@ final class WebWindowController {
         let chrome = WindowChrome(window: element, arrangement: presentation.arrangement)
         var title = chrome.title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string ?? ""
         let split = chrome.sidebarToggle?.web.view as? WebSplitView
-        window.bar.show(chrome, title: title, sidebar: split?.isPresented)
+        window.bar.show(chrome, title: title, sidebar: split?.isPresented, split: split)
+        // The page the user sees may stand with no bar over it.
+        window.bar.setShown(presentation.arrangement?.visiblePage?.value(.showsNavigationBar)?.bool != false)
         for (page, sheet) in sheets {
             let own = WindowChrome(window: element, arrangement: page)
             let named = own.title.flatMap { $0.isEmpty ? nil : $0 } ?? ""

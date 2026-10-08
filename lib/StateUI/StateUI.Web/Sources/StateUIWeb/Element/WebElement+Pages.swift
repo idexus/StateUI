@@ -40,13 +40,19 @@ extension WebElement {
     func followPages(changed: Set<Prop>, wasDescribed: Bool) {
         if let tabs = view as? WebTabView {
             tabs.show(element.children.map { $0.value(.title)?.string ?? "" },
+                      icons: element.children.map { $0.value(.icon)?.string ?? "" },
                       requested: element.value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
+            tabs.showColors(background: element.barColors.background)
         }
         guard let split = view as? WebSplitView else { return }
         split.onPresentationChanged = { [weak self] presented in self?.sidebarChanged(to: presented) }
         if changed.contains(.showsSidebar) {
             split.present(element.value(.showsSidebar)?.bool == true, moves: wasDescribed)
+        }
+        if !changed.isDisjoint(with: MountedElement.sidebarMaterials) {
+            split.ground(beside: element.sidebarMaterial(over: false), over: element.sidebarMaterial(over: true))
+            host?.refreshChrome()
         }
     }
 

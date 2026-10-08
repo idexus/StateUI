@@ -9,7 +9,6 @@ Button
   icon
   iconPosition
   iconSpacing
-  isEnabled
   lineBreak
   lineWidth
   padding
@@ -18,6 +17,7 @@ Button
   text
   textCase
   textColor
+  tracking
   clicked()
   pressed()
   released()
@@ -27,7 +27,6 @@ Canvas
   pressed()
   released()
 CheckBox
-  isEnabled
   isOn
   tint
   toggled()
@@ -40,7 +39,6 @@ DatePicker
   fontFamily
   fontSize
   format
-  isEnabled
   isOpen
   maximumDate
   minimumDate
@@ -123,7 +121,6 @@ Picker
   fontFamily
   fontSize
   horizontalTextAlignment
-  isEnabled
   isOpen
   options
   placeholder
@@ -166,7 +163,6 @@ RadioButton
   fontAttributes
   fontFamily
   fontSize
-  isEnabled
   isOn
   padding
   text
@@ -204,7 +200,6 @@ SearchField
   fontSize
   horizontalTextAlignment
   inputPurpose
-  isEnabled
   isReadOnly
   isTextPredictionEnabled
   maximumLength
@@ -218,7 +213,6 @@ SearchField
   submitted()
   textChanged()
 Slider
-  isEnabled
   maximum
   minimum
   tint
@@ -227,14 +221,12 @@ Slider
   released()
   valueChanged()
 Stepper
-  isEnabled
   maximum
   minimum
   step
   value
   valueChanged()
 Switch
-  isEnabled
   isOn
   toggled()
 Text
@@ -260,7 +252,6 @@ TextEditor
   growsWithText
   horizontalTextAlignment
   inputPurpose
-  isEnabled
   isReadOnly
   isTextPredictionEnabled
   maximumLength
@@ -278,7 +269,6 @@ TextField
   fontSize
   horizontalTextAlignment
   inputPurpose
-  isEnabled
   isPassword
   isReadOnly
   isTextPredictionEnabled
@@ -297,7 +287,6 @@ TimePicker
   fontFamily
   fontSize
   format
-  isEnabled
   isOpen
   textColor
   time
@@ -332,9 +321,13 @@ ZStack
   accessibilityHint
   accessibilityIdentifier
   accessibilityLabel
+  allowsDrop
   area
   automationExcludedWithChildren
   background
+  canDrag
+  dragText
+  droppedFileTypes
   frame
   gridColumn
   gridColumnSpan
@@ -343,6 +336,7 @@ ZStack
   height
   horizontalAlignment
   isAccessibilityHidden
+  isEnabled
   isVisible
   margin
   maximumHeight
@@ -368,6 +362,13 @@ ZStack
   translationY
   verticalAlignment
   width
+  zIndex
+  dragEnded()
+  dragLeave()
+  dragOver()
+  dragStarting()
+  drop()
+  filesDropped()
   frameChanged()
   isFocusedChanged()
   panUpdated()
@@ -392,10 +393,16 @@ ZStack
   goForward()
   handlerFailed()
   hideOnScreenKeyboard()
+  launchFile()
+  launchLink()
+  openFiles()
   persistSceneValue()
   persistValue()
   prompt()
+  readFile()
   reload()
+  saveFile()
   scrollTo()
   unfocus()
+  useColorScheme()
   utcOffset()

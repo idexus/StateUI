@@ -4,9 +4,10 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A box a view paints of its own - a layout's, a button's: what fills it, its outline inside its edge, and its
-/// shape - as CSS: a colour or a gradient behind it, a border, and its corners. An outline of a gradient is a
-/// border the box's background shows through, its two layers cut to the box and to its inside.
+/// A box a view paints of its own - a layout's, a button's: what fills it - a colour or a gradient, or a blur's or
+/// glass's tint - its outline inside its edge, and its shape - as CSS: a blur of what lies behind under its colour,
+/// the fill over it, a border, and its corners. An outline of a gradient is a border the box's
+/// background shows through, its two layers cut to the box and to its inside.
 /// Design: docs/design/platforms/web/drawing.md#a-brush-on-a-box
 struct WebBox: Equatable {
     var fill: HostValue?
@@ -14,11 +15,26 @@ struct WebBox: Equatable {
     var lineWidth: Double?
     var shape: HostValue?
 
+    /// The blur behind the box, where its background is a blur or glass - `fill` its tint; nil for none.
+    var material: HostMaterial?
+
     /// The border a box drawn with no outline stands with: nil for none of its own, "none" to lose the page's.
     var borderless: String?
 
     /// Whether the box says anything of its own.
-    var isDrawn: Bool { fill != nil || stroke != nil || shape != nil }
+    var isDrawn: Bool { fill != nil || stroke != nil || shape != nil || material != nil }
+
+    /// How far a blur blurs what lies behind it, in CSS pixels: a page has no blur of its own, so a filter as the
+    /// blur is thick, under its colour.
+    static func blur(_ thickness: Blur.Thickness) -> Double {
+        switch thickness {
+        case .ultraThin: 12
+        case .thin: 18
+        case .regular: 24
+        case .thick: 32
+        case .ultraThick: 40
+        }
+    }
 
     /// Whether the box paints a gradient, which follows its size.
     var followsSize: Bool { WebBrush.isGradient(fill) || WebBrush.isGradient(stroke) }
@@ -26,13 +42,23 @@ struct WebBox: Equatable {
     /// The box's CSS for a box `size` across.
     func styles(size: LayoutSize) -> [(String, String?)] {
         let width = BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth)
-        let corners = ("border-radius", WebCSS.corners(BoxArithmetic.outline(shape)))
+        // A shape the tree states wins over the look's corners - square ones too; one unsaid leaves them.
+        let corners = ("border-radius", shape == nil ? nil : WebCSS.corners(BoxArithmetic.outline(shape)) ?? "0")
         guard WebBrush.isGradient(stroke), width > 0 else {
             let border = width > 0
                 ? "\(WebCSS.pixels(width)!) solid \(WebCSS.color(HostBrush(stroke).firstColor) ?? "currentColor")"
                 : isDrawn ? borderless : nil
             let behind = WebBrush.isGradient(fill) ? WebBrush.image(fill, size: size) : WebCSS.fill(fill)
-            return [("background", behind), ("border", border), corners]
+            guard let material, let thickness = material.blur else {
+                return [("background", behind), ("border", border), corners]
+            }
+            // The tint lies over the blur's colour, and both over the blur of what lies behind.
+            let over = WebBrush.isGradient(fill) ? behind : behind.map { "linear-gradient(\($0), \($0))" }
+            let blur = "blur(\(WebCSS.pixels(Self.blur(thickness))!)) saturate(180%)"
+            return [
+                ("background", [over, material.standIn.flatMap(WebCSS.color)].compactMap { $0 }.joined(separator: ", ")),
+                ("backdrop-filter", blur), ("-webkit-backdrop-filter", blur), ("border", border), corners,
+            ]
         }
         let inside = WebBrush.image(fill, size: size) ?? "linear-gradient(transparent, transparent)"
         let outline = WebBrush.image(stroke, size: size) ?? "none"

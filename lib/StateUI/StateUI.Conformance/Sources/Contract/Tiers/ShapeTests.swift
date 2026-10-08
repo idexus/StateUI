@@ -16,15 +16,17 @@
                 filled(element), outlined(element), placedByItsAspect(element), movedByItsTransform(element),
                 Aspects.holds(ShapeContract.fill, on: element, .solidColor(.red), then: .solidColor(.blue), with: figure(element)),
                 Aspects.holds(ShapeContract.stroke, on: element, .solidColor(.red), then: .solidColor(.blue), with: figure(element)),
-                Aspects.holds(ShapeContract.lineWidth, on: element, 2, then: 6, with: figure(element)),
-                Aspects.holds(ShapeContract.dash, on: element, [3, 2], then: [1, 1], with: figure(element)),
-                Aspects.holds(ShapeContract.dashPhase, on: element, 0, then: 2.5, with: figure(element)),
-                Aspects.holds(ShapeContract.lineCap, on: element, .flat, then: .round, with: figure(element)),
-                Aspects.holds(ShapeContract.lineJoin, on: element, .miter, then: .bevel, with: figure(element)),
-                Aspects.holds(ShapeContract.miterLimit, on: element, 10, then: 4, with: figure(element)),
+                Aspects.holds(
+                    ShapeContract.lineWidth, on: element, 2, then: 6,
+                    with: figure(element) + [Write(ShapeContract.stroke, Brush.solidColor(.red))]),
+                Aspects.holds(ShapeContract.dash, on: element, [3, 2], then: [1, 1], with: stroked(element)),
+                Aspects.holds(ShapeContract.dashPhase, on: element, 0, then: 2.5, with: stroked(element)),
+                Aspects.holds(ShapeContract.lineCap, on: element, .flat, then: .round, with: stroked(element)),
+                Aspects.holds(ShapeContract.lineJoin, on: element, .miter, then: .bevel, with: stroked(element)),
+                Aspects.holds(ShapeContract.miterLimit, on: element, 10, then: 4, with: stroked(element)),
                 Aspects.holds(ShapeContract.contentMode, on: element, .fit, then: .stretch, with: figure(element)),
                 Aspects.holds(ShapeContract.geometryTransform, on: element, .identity, then: .rotate(45), with: figure(element)),
-            ]
+            ] + outlineCases(element)
         }
     }
 
@@ -160,6 +162,11 @@
         default:
             []
         }
+    }
+
+    /// `element`'s figure with an outline to hold its dashes, ends and joins: red, two wide.
+    static func stroked(_ element: String) -> [any Worn] {
+        figure(element) + [Write(ShapeContract.stroke, Brush.solidColor(.red)), Write(ShapeContract.lineWidth, 2.0)]
     }
 
     /// A point on `element`'s outline, eight wide.

@@ -3,13 +3,13 @@ Button.fontAttributes: ✅
 Button.fontFamily: ✅
 Button.fontSize: ✅
 Button.isFontAutoScalingEnabled: not realized
-DatePicker.fontAttributes: not realized
-DatePicker.fontFamily: not realized
-DatePicker.fontSize: not realized
+DatePicker.fontAttributes: – UIKit's date picker draws its words in its own font and colour: it takes neither.
+DatePicker.fontFamily: – UIKit's date picker draws its words in its own font and colour: it takes neither.
+DatePicker.fontSize: – UIKit's date picker draws its words in its own font and colour: it takes neither.
 DatePicker.isFontAutoScalingEnabled: not realized
-Picker.fontAttributes: not realized
-Picker.fontFamily: not realized
-Picker.fontSize: not realized
+Picker.fontAttributes: ✅
+Picker.fontFamily: ✅
+Picker.fontSize: ✅
 Picker.isFontAutoScalingEnabled: not realized
 RadioButton.fontAttributes: ✅
 RadioButton.fontFamily: ✅
@@ -31,11 +31,11 @@ TextField.fontAttributes: ✅
 TextField.fontFamily: ✅
 TextField.fontSize: ✅
 TextField.isFontAutoScalingEnabled: not realized
-TextSpan.fontAttributes: cannot read fontAttributes of TextSpan - UIKit's driver has no path for it yet
-TextSpan.fontFamily: cannot read fontFamily of TextSpan - UIKit's driver has no path for it yet
-TextSpan.fontSize: cannot read fontSize of TextSpan - UIKit's driver has no path for it yet
+TextSpan.fontAttributes: ✅
+TextSpan.fontFamily: ✅
+TextSpan.fontSize: ✅
 TextSpan.isFontAutoScalingEnabled: not realized
-TimePicker.fontAttributes: not realized
-TimePicker.fontFamily: not realized
-TimePicker.fontSize: not realized
+TimePicker.fontAttributes: – UIKit's date picker draws its words in its own font and colour: it takes neither.
+TimePicker.fontFamily: – UIKit's date picker draws its words in its own font and colour: it takes neither.
+TimePicker.fontSize: – UIKit's date picker draws its words in its own font and colour: it takes neither.
 TimePicker.isFontAutoScalingEnabled: not realized

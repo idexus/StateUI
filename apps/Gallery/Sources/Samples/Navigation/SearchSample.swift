@@ -2,6 +2,7 @@ import StateUI
 
 /// A `SearchField` on the navigation bar in place of the title, and the rows it filters.
 struct SearchSample: SampleContent, ExampleContent {
+    // listing: SearchSample
     /// Where the gallery is: choosing a suggestion pushes a page.
     let nav: Navigation
 
@@ -10,51 +11,17 @@ struct SearchSample: SampleContent, ExampleContent {
     private let items = ["Alpha", "Beta", "Gamma", "Delta"]
 
     @State private var query = ""
+    // listing: end
 
     static let id = "search"
     static let title = "Search"
     static let summary = "A view on the navigation bar in place of the title, and the matches under it."
 
-    static let code = """
-        let nav: Navigation
-        private let items = ["Alpha", "Beta", "Gamma", "Delta"]
-
-        @State private var query = ""
-
-        var body: some View {
-            VStack {
-                // The query and the matches are read here, so every keystroke
-                // in the bar builds this closure.
-                DebugInfoLabel()
-
-                ForEach(matches, id: \\.self) { item in
-                    MenuRow(item) { nav.push(.item(item)) }
-                }
-
-                Button("Clear the box")
-                    .isEnabled(!query.isEmpty)
-                    .onClicked { query = "" }
-            }
-            // The box stands in the bar in place of the page's title,
-            // declared here, handed the same state the rows read.
-            .titleView {
-                SearchField($query)
-                    .placeholder("Search the list")
-            }
-        }
-
-        /// What the query matches - everything when there is no query: these
-        /// rows are the page's content, and an empty page under an empty box
-        /// would read as a mistake.
-        private var matches: [String] {
-            query.isEmpty
-                ? items
-                : items.filter { $0.lowercased().hasPrefix(query.lowercased()) }
-        }
-        """
-
+    // listing: SearchSample
     var body: some View {
         VStack {
+            // The query and the matches are read here, so every keystroke
+            // in the bar builds this closure.
             DebugInfoLabel()
 
             Text("Type in the box on the navigation bar; these rows follow it.")
@@ -77,7 +44,6 @@ struct SearchSample: SampleContent, ExampleContent {
 
             Button("Clear the box")
                 .isEnabled(!query.isEmpty)
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { query = "" }
         }
@@ -94,6 +60,7 @@ struct SearchSample: SampleContent, ExampleContent {
                 .verticalAlignment(.center)
         }
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -118,6 +85,7 @@ struct SearchSample: SampleContent, ExampleContent {
         .spacing(8)
     }
 
+    // listing: SearchSample
     /// What the query matches - everything when there is no query: these rows
     /// are the page's content, and an empty page under an empty box would read
     /// as a mistake.
@@ -131,4 +99,5 @@ struct SearchSample: SampleContent, ExampleContent {
             ? items
             : items.filter { $0.lowercased().hasPrefix(query.lowercased()) }
     }
+    // listing: end
 }

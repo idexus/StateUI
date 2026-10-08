@@ -493,7 +493,7 @@ final class CarriedStateTests: XCTestCase {
 
         XCTAssertEqual(
             patch.driven?[.opacity],
-            HostStateBinding(state: fade.number, mode: .inOut, kind: .property))
+            HostStateBinding(state: fade.number, mode: .inOut, kind: .property, laneKind: .number))
     }
 
     /// A scroller handed its offset registers it as a JOURNEY both ways - one
@@ -511,7 +511,7 @@ final class CarriedStateTests: XCTestCase {
 
         XCTAssertEqual(
             patch.driven?[.scrollOffset],
-            HostStateBinding(state: offset.number, mode: .inOut, kind: .property))
+            HostStateBinding(state: offset.number, mode: .inOut, kind: .property, laneKind: .number))
         XCTAssertNil(patch.events?["scrollXChanged"])
         XCTAssertNil(patch.events?["scrollYChanged"])
     }
@@ -536,28 +536,34 @@ final class CarriedStateTests: XCTestCase {
         let across = State(wrappedValue: Point.zero)
         let renders = Renders()
 
-        let patch = renders.render(
+        func tree() -> Node {
             ScrollReader(across: 540) { Text("under") }
                 .scrollOffset(across.projectedValue)
                 .onScrollStopped {}
                 .id("reader")
-                .node)
+                .node
+        }
 
-        func scroller(_ patch: HostPatch) -> HostPatch? {
-            if patch.type == .scrollView { return patch }
+        func find(_ patch: HostPatch, _ match: (HostPatch) -> Bool) -> HostPatch? {
+            if match(patch) { return patch }
 
             for child in patch.children {
-                if let found = scroller(child) { return found }
+                if let found = find(child, match) { return found }
             }
 
             return nil
         }
 
-        let found = scroller(patch)
+        // The scroller stands once the reader knows its room.
+        let first = renders.render(tree())
+        let room = find(first) { $0.events?[.frameChanged] != nil }?.events?[.frameChanged] ?? -1
+        renders.fire(room, with: [.numbers([0, 0, 300, 200, 0, 0, 0, 0])])
+        let patch = renders.renderFromScratch(tree())
+        let found = find(patch) { $0.type == .scrollView }
 
         XCTAssertEqual(
             found?.driven?[.scrollOffset],
-            HostStateBinding(state: across.number, mode: .inOut, kind: .property))
+            HostStateBinding(state: across.number, mode: .inOut, kind: .property, laneKind: .number))
         XCTAssertNotNil(found?.events?[.scrollStopped], "the scroller hears itself come to rest")
         XCTAssertEqual(found?.props[.orientation]?.enumeration, ScrollOrientation.horizontal.rawValue)
     }

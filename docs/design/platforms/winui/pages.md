@@ -119,10 +119,16 @@ window's bar and the sidebar - so its own resources set both to none
 (`NavigationViewBorderThickness`, `NavigationViewPaneContentGridMargin`): the
 sidebar page fills its pane from the top. The rows of the pane's own items
 beneath the page still show the window's backdrop where nothing paints them,
-so the pane wears the sidebar page's background, written into the
-navigation view's own `NavigationViewExpandedPaneBackground` and
-`NavigationViewDefaultPaneBackground` and written again as that background
-changes; a page with none, or with a gradient, leaves the pane its own.
+so the pane stands on a ground of its own for each place ([a sidebar's
+material](../../host/pages.md#a-sidebars-material)), written into the
+navigation view's own resources: `NavigationViewExpandedPaneBackground`
+beside the detail, `NavigationViewDefaultPaneBackground` over it. The ground
+is the split view's material for that place - a colour, or a blur as WinUI's
+in-app acrylic in its colour, its luminosity and tint by its thickness as the
+window's acrylic ([a window's backdrop](runtime.md#a-windows-backdrop)) -
+else the sidebar page's background, else WinUI's own; it is written again as
+either changes. WinUI has no glass: glass is the acrylic at its fallback
+thickness.
 
 ## A native arrangement
 
@@ -173,6 +179,14 @@ dialog's own - its background, outline and corners, no wider than a dialog
 and clear of the window's edges - with the presented page's title above the
 page, and it enters as a dialog enters. The veil takes every click meant for
 what is beneath, and the keyboard goes round inside the top card.
+
+The sheets stand in one layer of the window's root over its rows by their own
+depth (`Canvas.ZIndex` 1, the overlays' 2), never by their place among the
+root's children. The trap: a page stood in a row is put on the end of them,
+so the window arranged anew after a first sheet - a sidebar beside a stack
+once signed in - stood over every sheet presented after it, the veil and
+the card under the page; it showed rarely, only where a sheet had come
+before the arrangement.
 
 What the user sees is the top sheet, else the window's arrangement: when that
 changes, the page that stops showing hears it and then the one that starts,

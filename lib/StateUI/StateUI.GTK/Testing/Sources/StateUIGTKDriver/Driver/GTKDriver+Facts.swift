@@ -17,7 +17,34 @@ extension GTKDriver {
         written.listen()
         let renderer = GTKRenderer.running(clock: clock, keeping: true, application: application)
         self.renderer = renderer
+        Self.holdFiles(of: renderer)
         return renderer.runtime.tree
+    }
+
+    /// The folder the files a test opens and saves stand in, the process's own.
+    static let files = String(cString: g_get_tmp_dir()) + "/stateui-conformance-files-\(getpid())"
+
+    /// Empties the files folder, so no case reads a file another saved, and holds `renderer`'s dialogs and launches
+    /// back.
+    static func holdFiles(of renderer: GTKRenderer) {
+        g_mkdir_with_parents(files, 0o700)
+        if let folder = g_dir_open(files, 0, nil) {
+            while let name = g_dir_read_name(folder) { unlink(files + "/" + String(cString: name)) }
+            g_dir_close(folder)
+        }
+        renderer.fileToolkit.holdsForTesting = true
+    }
+
+    /// The file dialog the host holds: one that opens or one that saves.
+    func fileDialog(over element: MountedElement) throws -> FileDialog? {
+        renderer?.fileToolkit.held.map { $0.dialog.kind == .save ? .save : .open }
+    }
+
+    /// What the host handed the desktop to launch, in order: an address as written, a file by its name.
+    func launched() throws -> [String] {
+        (renderer?.fileToolkit.launchedForTesting ?? []).map { target in
+            target.contains("://") ? target : String(target.split(separator: "/").last ?? Substring(target))
+        }
     }
 
     func forgetWhatIsKept() {
@@ -66,6 +93,11 @@ extension GTKDriver {
 
     func announced() throws -> [String] {
         GTKActToolkit.announced
+    }
+
+    /// Whether libadwaita shows the application dark now.
+    func theme() throws -> ColorScheme {
+        adw_style_manager_get_dark(adw_style_manager_get_default()) != 0 ? .dark : .light
     }
 
     func logged() throws -> [String] {

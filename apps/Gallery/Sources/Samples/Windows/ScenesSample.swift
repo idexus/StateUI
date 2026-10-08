@@ -3,88 +3,34 @@ import StateUI
 /// An application of several scenes: the galleries, the scratchpads, and About - one window for the whole
 /// application, in a scene of its own.
 struct ScenesSample: SampleContent, ExampleContent {
+    // listing: ScenesSample
     /// The application as it runs - which opens a window in the scene declaring it.
     @Environment(\.application) private var application
 
     /// What the last button answered.
     @State private var said = "Nothing asked yet."
+    // listing: end
 
     static let id = "scenes"
     static let title = "Scenes"
     static let summary = "Scratchpads are a scene of their own; About is a scene of one window."
 
+    static var code: String { Listings.joined("GalleryApp", "ScratchpadScene", "AboutScene", "ScratchpadPage", "ScenesSample") }
+
     /// Devices whose host can present independent windows.
     static let formFactors: Set<FormFactor> = [.tablet, .desktop]
 
-    static let code = """
-        extension WindowType {
-            static let scratchpad = WindowType("gallery.scratchpad")
-            static let about = WindowType("gallery.about")
-        }
-
-        struct GalleryApp: Application {
-            var body: some Scene {
-                GalleryScene()                          // launch and File ▸ New: one more gallery window
-                ScratchpadScene()
-                AboutScene()                            // one window for the whole application
-            }
-        }
-
-        struct ScratchpadScene: Scene {
-            var body: some Scene {
-                WindowGroup(.scratchpad) { ScratchpadPage() }   // as many as are opened
-            }
-        }
-
-        struct AboutScene: Scene {
-            var body: some Scene {
-                Window(.about) { AboutPage() }          // a scene of its own, in no gallery
-            }
-        }
-
-        struct ScratchpadPage: View {
-            @State(sceneKey: .scratch) private var text = ""   // the scene's: every scratchpad window shows it
-            @Environment(\\.window) private var window
-            @Environment(\\.scene) private var scene
-
-            var body: some View {
-                VStack {
-                    TextEditor($text)
-                    Button("Close this window").onClicked { try await window.close() }
-                    Button("Close every scratchpad").onClicked { try await scene.close() }
-                }
-            }
-        }
-
-        @Environment(\\.application) private var application
-
-        // A window opens in the scene declaring its kind, which opens with it where it does not stand.
-        Button("New scratchpad").onClicked { try await application.openWindow(.scratchpad) }
-        Button("About").onClicked { try await application.openWindow(.about) }   // alreadyOpen once open
-
-        VStack {
-            DebugInfoLabel()
-            Text(said)
-            Text("Scenes open: \\(application.scenes.count)")
-        }
-        """
-
     var notes: (any View)? { nil }
 
+    // listing: ScenesSample
     var body: some View {
         VStack {
             Button("New scratchpad")
-                .background(Palette.accent)
-                .textColor(.white)
-                .shape(.roundedRectangle(8))
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.scratchpad")
                 .onClicked { await open(.scratchpad, "New scratchpad") }
 
             Button("About")
-                .fontSize(13)
-                .padding(horizontal: 14, vertical: 6)
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.about")
                 .onClicked { await open(.about, "About") }
@@ -118,4 +64,5 @@ struct ScenesSample: SampleContent, ExampleContent {
             said = "\(caption): \(error)"
         }
     }
+    // listing: end
 }

@@ -89,9 +89,28 @@ extension UIKitDriver {
             field: field)
     }
 
+    /// The file dialog UIKit's document picker shows now: one that opens or one that exports.
+    func fileDialog(over element: MountedElement) throws -> FileDialog? {
+        guard let shown = renderer?.fileToolkit.showing, shown.picker != nil else { return nil }
+        return shown.dialog.kind == .save ? .save : .open
+    }
+
+    /// What the host handed iOS to launch, in order: an address as written, a file by its name.
+    func launched() throws -> [String] {
+        (renderer?.fileToolkit.launchedForTesting ?? []).map { target in
+            target.contains("://") ? target : URL(fileURLWithPath: target).lastPathComponent
+        }
+    }
+
     /// What the host told VoiceOver, in order.
     func announced() throws -> [String] {
         renderer?.actToolkit.announcedForTesting ?? []
+    }
+
+    /// The style the user's window stands in.
+    func theme() throws -> ColorScheme {
+        guard let window = renderer?.userWindow else { throw DriverCannot("read the theme: no window shows") }
+        return window.traitCollection.userInterfaceStyle == .dark ? .dark : .light
     }
 
     /// What the host keeps under `key` for the next launch, as it reads it back.
@@ -117,5 +136,27 @@ extension UIKitDriver {
         let touched = view.convert(CGPoint(x: point.x, y: point.y), to: window)
         guard let hit = window.hitTest(touched, with: nil) else { return false }
         return hit === view || hit.isDescendant(of: view)
+    }
+
+    /// A heading is a view VoiceOver meets with the header trait.
+    func isHeading(_ element: MountedElement) throws -> Bool {
+        guard let view = (element.native as? UIKitElement)?.view else {
+            throw DriverCannot("read whether \(element.type.name) is a heading")
+        }
+        return view.accessibilityTraits.contains(.header)
+    }
+
+    /// The layout's children by where each one's view stands among its view's subviews - a higher layer's
+    /// `zPosition` drawn later still - the last drawn last.
+    func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
+        let cannot = DriverCannot("read the drawing order of \(layout.type.name)")
+        guard let parent = (layout.native as? UIKitElement)?.view else { throw cannot }
+        return try layout.children.map { child in
+            guard var view = (child.native as? UIKitElement)?.view else { throw cannot }
+            while let above = view.superview, above !== parent { view = above }
+            guard let place = parent.subviews.firstIndex(where: { $0 === view }) else { throw cannot }
+            return (child, view.layer.zPosition, place)
+        }
+        .sorted { ($0.1, $0.2) < ($1.1, $1.2) }.map(\.0)
     }
 }

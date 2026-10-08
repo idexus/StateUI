@@ -4,6 +4,6 @@ TextField: ✅
 TextField.frameChanged: ✅
 TextField.isPassword: ✅
 TextField.showsClearButton: not realized
-TextField.submitLabel: cannot read submitLabel of TextField - the Web's driver has no path for it yet
+TextField.submitLabel: ✅
 TextField.submitted: ✅
 TextField.text: ✅

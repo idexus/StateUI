@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The application at the root of a StateUI tree, and what its host does for it
-/// with no control behind it: questions for the user, the clock and the time
-/// zone, the screen reader, what is kept.
+/// with no control behind it: questions for the user, the files they open and
+/// save, what the system launches, the clock and the time zone, the screen
+/// reader, what is kept.
 public enum ApplicationContract: ElementContract, ApplicationTier {
     /// The node type the contract declares.
     public static let nodeType: NodeType = "Application"
@@ -58,6 +59,31 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// See `OnScreenKeyboard.hide()`.
     public static let hideOnScreenKeyboard = ElementAct<Self, Void, Bool>("hideOnScreenKeyboard")
 
+    /// Opens a file the user chose in the application the system gives its
+    /// kind, answering whether one took it.
+    ///
+    /// See `ChosenFile.launch()`.
+    public static let launchFile = ElementAct<Self, ChosenFile, Bool>("launchFile")
+
+    /// Opens an address in the application the system gives it - a web page,
+    /// a mail address - answering whether one took it.
+    ///
+    /// See `Links.launch(_:)`.
+    public static let launchLink = ElementAct<Self, String, Bool>("launchLink")
+
+    /// Shows the whole application in a theme - light, dark, or the system's,
+    /// which follows the user's setting again.
+    ///
+    /// See `ApplicationSession.colorScheme`.
+    public static let useColorScheme = ElementAct<Self, ColorScheme, Void>("useColorScheme")
+
+    /// Asks the user for files to open in the dialog over the showing page -
+    /// the kinds it shows, none for any, and whether it takes several -
+    /// answering the files chosen, none where it was cancelled.
+    ///
+    /// See `Dialogs.openFile(types:)`.
+    public static let openFiles = ElementAct<Self, ([FileType], Bool), [ChosenFile]>("openFiles")
+
     /// A scene key's new value, on its way to the platform's record of that
     /// scene: the scene, the key, the value.
     public static let persistSceneValue = ElementAct<Self, (Name, Name, PropValue), Void>("persistSceneValue")
@@ -74,8 +100,22 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     public static let prompt = ElementAct<Self, (String, String, String, String, String?, Int?, InputPurpose, String), String?>(
         "prompt")
 
+    /// Reads a file the user chose: whole where nothing more is said, else at
+    /// most so many bytes from its start.
+    ///
+    /// See `ChosenFile.read()` and `ChosenFile.read(atMost:)`.
+    public static let readFile = ElementAct<Self, (ChosenFile, Int?), [UInt8]>("readFile")
+
+    /// Asks the user where to save in the dialog over the showing page, and
+    /// writes the contents there - the contents, the name it suggests and the
+    /// kinds it offers - answering the file saved, or nothing where it was
+    /// cancelled.
+    ///
+    /// See `Dialogs.saveFile(_:name:types:)`.
+    public static let saveFile = ElementAct<Self, ([UInt8], String, [FileType]), ChosenFile?>("saveFile")
+
     /// How far a zone is from UTC on a day, in minutes: the zone's identifier,
-    /// the local one where there is none, and the day, today where there is
+    /// the local one where there is none, and the day, now where there is
     /// none.
     ///
     /// See `TimeZoneInfo.utcOffset`.
@@ -84,6 +124,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// The element's own members.
     public static let members: [any ContractMember] = [
         alert, announce, chooseAction, confirm, currentTime, currentTimeZone, handlerFailed,
-        hideOnScreenKeyboard, persistSceneValue, persistValue, prompt, utcOffset,
+        hideOnScreenKeyboard, launchFile, launchLink, openFiles, persistSceneValue, persistValue, prompt,
+        readFile, saveFile, useColorScheme, utcOffset,
     ]
 }

@@ -1,6 +1,7 @@
-# revision 3.1
+# revision 6.1
 Window: ✅
 Window.activated: ✅
+Window.background: ☑️ A window's glass is drawn as the blur as clear as it is.
 Window.created: ✅
 Window.deactivated: ✓ switchAway on Window: the notification AppKit would post, posted by the driver; the window does not move
 Window.destroying: ✅
@@ -9,7 +10,6 @@ Window.height: ✅
 Window.hidesWhenInactive: cannot read isVisible of Window - AppKit's driver has no path for it yet
 Window.isMaximizable: ✅
 Window.isMinimizable: ✅
-Window.isTranslucent: ✅
 Window.maximumHeight: ✅
 Window.maximumWidth: ✅
 Window.minimumHeight: ✅

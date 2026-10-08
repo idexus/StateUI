@@ -33,6 +33,22 @@ rectangle, and a panel's own corner radius cuts none of its children.
 A ColorBox is a figure of the relay's, a `Grid` of one colour, its four
 corners rounded each as the element says; a `Rectangle` rounds all four alike.
 
+## A view's background
+
+A view's background is the ground under its whole frame, painted the way
+WinUI's own templates paint one (`stateui_winui_set_background`): a control's
+`Background` and the theme resources its template draws that ground from -
+the container of a switch or a slider (`ToggleSwitchContainerBackground`,
+`SliderContainerBackground`), the field of a text box, a search box or a
+number box (`TextControlBackground`), of a combo box (`ComboBoxBackground`)
+and of a date or time picker (`DatePickerButtonBackground`,
+`TimePickerButtonBackground`), each in every state - and a panel's
+`Background`, a canvas's included. A layout paints its box, a label its
+words' ground, a button its face. What paints no ground of its own takes
+none: a figure - a shape, a colour box - and a picture, and the progress bar
+and ring, whose `Background` is their track; their pages in the dictionary
+say so.
+
 ## A placed child
 
 A ZStack whose places a state drives stands each child where the run says, and
@@ -85,8 +101,11 @@ measured larger, so a figure a lean or a cap takes past its room would be
 cut there: the figure measures its `Path` with no bound, which tells how far
 it reaches, and puts it in a place from the room's corner as far as that -
 the frame StateUI reports stays the room. Dashes, gaps and their offset are outline widths in WinUI
-as in StateUI; a mitred corner's limit WinUI measures against half the
-outline's width and StateUI against the whole, so it is doubled.
+as in StateUI. A mitred corner's limit WinUI measures from the corner's
+point against half the outline's width - StateUI's own ratio - and past it
+cuts the mitre short where the other hosts bevel it; a square corner of a
+rectangle adds no segment of its own, as one of no length would leave the
+joins beside it no direction.
 
 
 ## A canvas

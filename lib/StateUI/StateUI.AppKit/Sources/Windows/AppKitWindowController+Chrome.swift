@@ -146,25 +146,24 @@ extension AppKitWindowController {
     }
 
     /// A colour written for the bars paints the band the title bar and
-    /// toolbar cover over the visible content - a split view's detail, else
-    /// the whole window - and the title bar lets it show. With none written,
-    /// the band is the system's material.
+    /// toolbar cover - the window's, under a floating sidebar's glass, and the
+    /// visible content's, a split view's detail - and the title bar lets it
+    /// show. With none written, the band is the system's material.
     ///
-    /// The colour is the window's background too: on a Mac the title bar, the
-    /// toolbar and the window's background around a floating sidebar are one
-    /// surface, so the sidebar stands framed in the bars' colour, its glass
-    /// taking a tint of it. With none written the window keeps the system's.
-    /// On a translucent window the colour tints the window's material instead:
-    /// the band over the page, the margin around the sidebar and what its
-    /// glass shows all wear it, the desktop through it, and no pane paints a
-    /// band of its own.
+    /// The window's background is the one written for the window alone - the
+    /// bars' colour paints the bars - else the system's. Where it is a blur,
+    /// the window keeps no colour: its material, the system's, shows around the
+    /// sidebar and under the page, tinted by the blur's tint.
     private func synchronizeBar(_ window: NSWindow, color: NSColor?, split: AppKitSplitView?) {
         window.titlebarAppearsTransparent = color != nil
-        let background = isTranslucent ? NSColor.clear : (color ?? .windowBackgroundColor)
+        let written = traits?.background.paint.flatMap(nsColor)
+        let background = backdrop != nil ? NSColor.clear : (written ?? .windowBackgroundColor)
+        // A background that lets the desktop through - clear, or a colour with an alpha - asks a window that is not opaque.
+        window.isOpaque = backdrop == nil && background.alphaComponent >= 1
         if window.backgroundColor != background { window.backgroundColor = background }
-        content.barColor = split == nil && !isTranslucent ? color : nil
-        content.materialTint = isTranslucent ? color : nil
-        split?.setDetailBarColor(isTranslucent ? nil : color)
+        content.materialTint = backdrop != nil ? written : nil
+        content.barColor = color
+        split?.setDetailBarColor(color)
     }
 
     /// The application's title area, at the trailing edge of the window's

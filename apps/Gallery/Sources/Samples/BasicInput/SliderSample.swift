@@ -2,46 +2,21 @@ import StateUI
 
 /// A native slider driven by one shared StateUI journey.
 struct SliderSample: SampleContent, ExampleContent {
+    // listing: SliderSample
     @State private var volume = 40.0
     @State private var soundOn = true
     @State private var dragging = false
+    // listing: end
 
     static let id = "slider"
     static let title = "Slider"
     static let summary = "A value dragged along a track, and a number that crosses the boundary intact."
 
-    static let code = """
-        @State private var volume = 40.0
-        @State private var soundOn = true
-        @State private var dragging = false
-
+    // listing: SliderSample
+    var body: some View {
         VStack {
             // The volume is READ here, so EVERY report the thumb makes builds
             // this closure - which is what a get on a dragged value costs.
-            DebugInfoLabel()
-
-            Text(soundOn ? "Volume: \\(Int(volume))" : "Muted")
-
-            Slider($volume)
-                .minimum(0)
-                .maximum(100)
-                .isEnabled(soundOn)
-                .onPressed { dragging = true }
-                .onReleased { dragging = false }
-
-            Text(dragging ? "Dragging..." : "At rest")
-
-            HStack {
-                Text("Sound")
-                    .verticalAlignment(.center)
-
-                Switch($soundOn)
-            }
-        }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             Text(soundOn ? "Volume: \(Int(volume))" : "Muted")
@@ -77,6 +52,7 @@ struct SliderSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

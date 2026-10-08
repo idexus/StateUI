@@ -50,7 +50,9 @@ and a stepper's value and range, a picker's choices, a view's hiding, alpha
 and a control's enabled state, a button's and a label's padding, its
 transform as its layer holds it, what VoiceOver meets, a control's font and
 colours, a menu entry's and a bar item's action - never from what the host
-last wrote. A text view takes input while the user can edit or select it,
+last wrote. A run of a text's words is the label's attributes over the
+letters the host layer's runs place it at (`RunPlace`). A text view takes
+input while the user can edit or select it,
 and is read only while they can select it and not edit it. A colour at a point is read from the screen: the view drawn as the
 screen shows it into a bitmap in sRGB. Whether a touch reaches a view is the
 window's own hit testing at that point.
@@ -68,10 +70,12 @@ measures - does not apply here, its effect proven by another case.
 
 UIKit lets a test send no touch and moves no scene, so the driver hands some
 acts to the host's own entry: the gestures and the pointer to the view's
-listening as the recognizers' states, a picker's choice and a question's answer
-to the host, a scene's phases to the renderer, and a web view's end of content
-to its delegate. A few reads are the host's own too: a check's and a picker's
-state, the menu bar's entries, a question's captions,
-what it announced, and a transform checked against the layer it composed. The
+listening as the recognizers' states, a drag between views to the
+interactions' handlers, a picker's choice, a question's answer and a file
+dialog's to the host, a scene's phases to the renderer, and a web
+view's end of content to its delegate. A few reads are the host's own too: a
+check's and a picker's state, the menu bar's entries, a question's captions,
+the document picker it presented, what it announced and launched, and a
+transform checked against the layer it composed. The
 driver names each (`byHost`), and a member a case proves only through them is
 the host's own - ✓ - never ✅.

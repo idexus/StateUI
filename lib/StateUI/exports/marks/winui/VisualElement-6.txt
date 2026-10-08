@@ -1,49 +1,72 @@
-# revision 1.1
+# revision 7.1
 ActivityIndicator.ignoresInput: not realized
-ActivityIndicator.scaleY: ✅
-Button.background: ✅
-Canvas.ignoresInput: ✅
-Canvas.scaleY: ✅
-CheckBox.background: ✅
-ColorBox.ignoresInput: not realized
-ColorBox.scaleY: ✅
-DatePicker.background: not realized
-Ellipse.ignoresInput: not realized
-Ellipse.scaleY: ✅
-Grid.background: ✅
-HStack.ignoresInput: ✅
-HStack.scaleY: ✅
-Image.background: not realized
-ItemsView.ignoresInput: ✅
-ItemsView.scaleY: ✅
-Line.ignoresInput: not realized
-Line.scaleY: ✅
-Map.background: 🧩
-Path.ignoresInput: not realized
-Path.scaleY: ✅
-Picker.background: not realized
-Polygon.ignoresInput: not realized
-Polygon.scaleY: ✅
-Polyline.background: not realized
-ProgressBar.ignoresInput: ✅
-ProgressBar.scaleY: ✅
-RadioButton.background: ✅
-Rectangle.ignoresInput: not realized
-Rectangle.scaleY: ✅
-ScrollView.background: ✅
-SearchField.ignoresInput: ✅
-SearchField.scaleY: ✅
-Slider.background: not realized
-Stepper.ignoresInput: ✅
-Stepper.scaleY: ✅
-Switch.background: ✅
-Text.background: ✅
-TextEditor.ignoresInput: ✅
-TextEditor.scaleY: ✅
-TextField.background: not realized
-TimePicker.ignoresInput: ✅
-TimePicker.scaleY: ✅
-VStack.background: ✅
-WebView.ignoresInput: ✅
+ActivityIndicator.scale: ✅
+Button.accessibilityHint: ✅
+Canvas.isEnabled: does not apply - read isEnabled of Canvas - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Canvas.rotation: ✅
+CheckBox.accessibilityHeading: ✅
+ColorBox.isVisible: ✅
+ColorBox.pivotX: ✅
+DatePicker.focus: ✅
+DatePicker.isFocusedChanged: ✅
+DatePicker.scaleY: ✅
+DatePicker.unfocus: ✅
+Ellipse.automationExcludedWithChildren: ✅
+Grid.frameChanged: ✅
+Grid.maximumHeight: ✅
+Grid.maximumWidth: ✅
+Grid.minimumHeight: ✅
+Grid.minimumWidth: ✅
+Grid.rotationY: ✓ read rotationY of Grid: the host's own tip, checked against the projection it laid on the element
+HStack.translationY: ✅
+HStack.zIndex: ✅
+Image.isAccessibilityHidden: ✅
+ItemsView.frameChanged: ✅
+ItemsView.height: ✅
+ItemsView.rotationX: ✓ read rotationX of ItemsView: the host's own tip, checked against the projection it laid on the element
+ItemsView.width: ✅
+Line.isVisible: ✅
+Line.pivotX: ✅
+Map.focus: 🧩
+Map.isFocusedChanged: 🧩
+Map.scaleY: 🧩
+Map.unfocus: 🧩
+Path.automationExcludedWithChildren: ✅
+Picker.frameChanged: ✅
+Picker.maximumHeight: ✅
+Picker.maximumWidth: ✅
+Picker.minimumHeight: ✅
+Picker.minimumWidth: ✅
+Picker.rotationY: ✓ read rotationY of Picker: the host's own tip, checked against the projection it laid on the element
+Polygon.accessibilityHint: ✅
+Polyline.opacity: ✅
+Polyline.pivotY: ✅
+ProgressBar.style: ✅
+ProgressBar.translationX: ✅
+RadioButton.automationExcludedWithChildren: ✅
+Rectangle.ignoresInput: ✅
+Rectangle.scale: ✅
+ScrollView.accessibilityHint: ✅
+SearchField.opacity: ✅
+SearchField.pivotY: ✅
+Slider.translationY: ✅
+Slider.zIndex: ✅
+Stepper.layoutDirection: ✅
+Switch.focus: ✅
+Switch.isFocusedChanged: ✅
+Switch.scaleY: ✅
+Switch.unfocus: ✅
+Text.accessibilityLabel: ✅
+TextEditor.automationExcludedWithChildren: ✅
+TextField.ignoresInput: ✅
+TextField.scale: ✅
+TimePicker.accessibilityHeading: ✅
+VStack.frameChanged: ✅
+VStack.height: ✅
+VStack.rotationX: ✓ read rotationX of VStack: the host's own tip, checked against the projection it laid on the element
+VStack.width: ✅
+WebView.focus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
+WebView.isFocusedChanged: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
 WebView.scaleY: ✅
-ZStack.background: ✅
+WebView.unfocus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
+ZStack.automationExcludedWithChildren: ✅

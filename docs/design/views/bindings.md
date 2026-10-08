@@ -29,6 +29,8 @@ What the host does with a carried state follows from the value:
 Each twin is one line over one of three helpers of `PropertyContainer` -
 `journey(_:by:)`, `plain(_:by:mode:)` and `words(_:by:mode:)` - and stands
 beside its value form, in the file of the tier or the control it belongs to.
+`plain` takes a `LaneValue` and `words` a `String`, so text cannot take the
+door for numbers ([what a host reads lanes as](../core/state.md#what-a-host-reads-lanes-as)).
 `testEveryValueModifierHasABindingTwin` holds the two forms together: a value
 modifier added without its twin is named there. The few allowed out are listed
 with their reason - a value the host cannot be handed whole (a brush, a
@@ -76,7 +78,8 @@ where the layout put the view. A field's text is `.inOut` with nothing
 animating, what the user types landing on the state. An application
 registering a control of its own picks the mode on the public
 `setValue(_:on:mode:kind:)`, because only it knows whether its property is one
-the platform answers.
+the platform answers; its text form, `setValue(_:on:mode:)`, takes no door,
+since words have one.
 
 ## A stated value beside a driven one
 

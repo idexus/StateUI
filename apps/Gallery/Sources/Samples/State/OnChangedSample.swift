@@ -2,50 +2,21 @@ import StateUI
 
 /// Running something when a value is not what it was last render.
 struct OnChangedSample: SampleContent, ExampleContent {
+    // listing: OnChangedSample
     @State private var celsius = 20.0
     @State private var log: [String] = []
     @State private var fired = 0
+    // listing: end
 
     static let id = "onChanged"
     static let title = "Reacting to change"
     static let summary = "A handler that runs when a value moves - with the old value and the new one."
 
-    static let code = """
-        @State private var celsius = 20.0
-        @State private var log: [String] = []
-        @State private var fired = 0
-
+    // listing: OnChangedSample
+    var body: some View {
         VStack {
             // THIS closure reads `celsius`, so every report from the slider
             // builds it again - which is what a get on a dragged value costs.
-            DebugInfoLabel()
-
-            Text("\\(Int(celsius)) °C")
-
-            Slider($celsius)
-                .minimum(-10)
-                .maximum(40)
-
-            // Watches ROUNDED degrees, so dragging fires once per whole
-            // degree rather than once per pixel. It does not fire when the
-            // page appears - a view arriving is not a value changing.
-            VStack {
-                ForEach(log.reversed()) { line in
-                    Text(line).id(line)
-                }
-            }
-            .motion(.none)
-            .onChanged(Int(celsius)) { old, new in
-                fired += 1
-                let arrow = new > old ? "warmer" : "colder"
-                log.append("\\(old) -> \\(new) °C, \\(arrow) (#\\(fired))")
-                if log.count > 6 { log.removeFirst() }
-            }
-        }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             Text("\(Int(celsius)) °C")
@@ -59,7 +30,7 @@ struct OnChangedSample: SampleContent, ExampleContent {
                 .minimum(-10)
                 .maximum(40)
 
-            // Watches ROUNDED degrees, so dragging fires once per whole degree
+            // Watches WHOLE degrees, so dragging fires once per whole degree
             // rather than once per pixel. It does not fire when the page
             // appears - a view arriving is not a value changing.
             VStack {
@@ -81,6 +52,7 @@ struct OnChangedSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -91,7 +63,7 @@ struct OnChangedSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("It watches rounded degrees here, so dragging fires once per whole "
+            Text("It watches whole degrees here, so dragging fires once per whole "
                 + "degree rather than once per pixel. It does not fire when the page "
                 + "appears: a view arriving is not a value changing.")
                 .fontSize(12)

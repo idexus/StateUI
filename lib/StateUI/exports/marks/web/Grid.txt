@@ -1,7 +1,7 @@
 # revision 1.1
 Grid: ✅
-Grid.columnSpacing: ❌ [35.0, 45.0, 20.0, 20.0] expected, [25.0, 25.0, 20.0, 20.0] came
-Grid.columns: ❌ [60.0, 50.0, 20.0, 20.0] expected, [30.0, 10.0, 20.0, 20.0] came
+Grid.columnSpacing: ✅
+Grid.columns: ✅
 Grid.frameChanged: ✅
-Grid.rowSpacing: ❌ [35.0, 45.0, 20.0, 20.0] expected, [25.0, 25.0, 20.0, 20.0] came
-Grid.rows: ❌ [60.0, 50.0, 20.0, 20.0] expected, [30.0, 10.0, 20.0, 20.0] came
+Grid.rowSpacing: ✅
+Grid.rows: ✅

@@ -15,6 +15,12 @@ view's number, which forwards each call to Swift by the number
 ([JNI](jni.md)). A view hands the same listener to every setter it needs, so a
 field's typing and its Return reach the same Swift view.
 
+## A disabled view
+
+Every view takes the enablement `presented(_:)` gives it with Android's own
+`setEnabled`: a control in a disabled branch is off as a disabled one is, and
+the host layer hears nothing of the hand in any view there.
+
 ## Nothing the program writes is heard
 
 Every native write of an element - a patch applied, a display frame presented
@@ -22,6 +28,21 @@ Every native write of an element - a patch applied, a display frame presented
 field's listener while the value is being set, so the listener's call during
 that write is the write's echo, and the element reports nothing. A control
 does not keep a flag of its own.
+
+## A drag between views
+
+A view's drag between views is Android's own drag and drop, through one drag
+listener a view (`StateUIDrags`). A view that can be dragged starts a drag
+on a long press - Android's gesture for it - carrying the view's words as
+plain text, its shadow the view, the view's number its local state; a view
+that takes drops takes a drag of plain text as it starts. The listener tells
+the host the drag over the view at each of Android's entering and moving,
+its leaving, the drop with the clip's text, and - for the view whose own
+drag it is - its start and, wherever it ended, its end. The host layer's
+rule makes over once and no leave after a drop. A view taking files takes a
+drag of another application's documents - anything but plain text - and its
+drop asks the activity for leave to read them, kept while the application
+runs, and hands over each document's address and name.
 
 ## A slider in steps
 
@@ -123,11 +144,12 @@ behind it.
 
 A label's words are one text, or the runs its spans describe as the host
 layer reads them (`textRuns`), laid down as one spanned text: each run in its
-own colour, size, weight, background and decorations where it has its own.
+own colour, size, family, weight, background and decorations where it has
+its own.
 A run's size is in points the user's font scale applies to, as the label's
 is. The label's letter spacing is in points and Android counts it in the
 text's own size, so it is worked out again whenever the size changes; a
-run's own spacing is not drawn. A line that is
+run's own spacing is not drawn, as no span of Android's spaces letters. A line that is
 cut or truncated is one line and only a truncated one says so; otherwise the
 label wraps, to at most as many lines as it allows. A stated width is the
 width a view is measured at, so wrapped words are as tall as they will stand.
@@ -182,6 +204,8 @@ over, so the picker itself knows the row the program's choice stands on, and
 a report of that row, or of the title's, is no change. The picker is given
 its options where they changed and the choice only where the tree changed it
 or them (`PickerChoices`): a new title leaves the user's choice standing.
+Its rows' words are sized in points the user's font scale applies to, as a
+label's are.
 
 The list opens on the user's tap or on `isOpen`; the spinner tells every
 opening and closing, and the host layer's rule (`PickerOpening`) hears only

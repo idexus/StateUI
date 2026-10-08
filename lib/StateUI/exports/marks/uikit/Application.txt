@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 3.1
 Application: ✅
 Application.alert: ✓ read a question: the buttons' captions the host keeps
 Application.announce: ✓ read what the screen reader said: the host's own list of what it announced
@@ -8,7 +8,13 @@ Application.currentTime: ✅
 Application.currentTimeZone: ✅
 Application.handlerFailed: ✅
 Application.hideOnScreenKeyboard: ✅
+Application.launchFile: ✓ read a file dialog: the host's own record of the picker it presented
+Application.launchLink: ✓ read a file dialog: the host's own record of the picker it presented
+Application.openFiles: ✓ read a file dialog: the host's own record of the picker it presented
 Application.persistSceneValue: ✅
 Application.persistValue: ✅
 Application.prompt: ✓ read a question: the buttons' captions the host keeps
+Application.readFile: ✓ read a file dialog: the host's own record of the picker it presented
+Application.saveFile: ✓ read a file dialog: the host's own record of the picker it presented
+Application.useColorScheme: ✅
 Application.utcOffset: ✅

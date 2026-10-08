@@ -3,43 +3,24 @@ import StateUI
 /// The device's and the application's `info` - the facts that mostly stand
 /// still: what machine this is, and what app this is.
 struct DeviceInfoSample: SampleContent, ExampleContent {
-    /// The machine's facts - the formFactor is the one the gallery itself builds
-    /// by, listing desktop chrome only where it draws.
+    // listing: DeviceInfoSample
+    /// The machine's facts - the formFactor among them, which this gallery
+    /// itself builds by.
     @Environment(\.device) var device
 
     /// The app's facts, from its own manifest.
     @Environment(\.application) var app
+    // listing: end
 
     static let id = "deviceInfo"
     static let title = "Device and app facts"
     static let summary = "What machine this is and what app this is - the "
         + "facts a layout branches on."
 
-    static let code = """
-        struct AboutBox: View {
-            @Environment(\\.device) var device
-            @Environment(\\.application) var app
-
-            var body: some View {
-                VStack {
-                    // The device never changes, so this stands at one build.
-                    DebugInfoLabel()
-
-                    Text("\\(app.info.name) \\(app.info.versionString) "
-                        + "(\\(app.info.buildString))")
-                    Text(app.info.packageName)
-
-                    Text("\\(device.info.manufacturer) \\(device.info.model)")
-                    Text("\\(device.info.platform) \\(device.info.versionString) · "
-                        + "\\(device.info.formFactor) · \\(device.info.deviceType)")
-                    Text(device.info.name.isEmpty ? "not said" : device.info.name)
-                }
-            }
-        }
-        """
-
+    // listing: DeviceInfoSample
     var body: some View {
         VStack {
+            // These facts stand still, so this closure stands at one build.
             DebugInfoLabel()
 
             Text("\(app.info.name) \(app.info.versionString) (\(app.info.buildString))")
@@ -61,6 +42,7 @@ struct DeviceInfoSample: SampleContent, ExampleContent {
         }
         .spacing(10)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

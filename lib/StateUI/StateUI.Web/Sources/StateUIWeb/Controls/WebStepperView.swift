@@ -4,8 +4,9 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A Stepper: a number field between a button taking a step down and one taking a step up, the field's own steps
-/// kept inside its range. Words that say no number leave the number where it was.
+/// A Stepper: a field of words with the role of a spin button between a button taking a step down and one taking a
+/// step up, the keyboard's arrows a step too - each a whole step from where it stands, kept inside its range. Words
+/// that say no number, wholly, leave the number where it was; a step or words that move nothing are heard by nobody.
 /// Design: docs/design/platforms/web/controls.md#values-in-a-range
 @MainActor
 final class WebStepperView: WebDOMView {
@@ -19,13 +20,15 @@ final class WebStepperView: WebDOMView {
     /// The value as last written or moved, and the range and step it moves in.
     private(set) var value = 0.0
     private var range = (lower: 0.0, upper: 100.0)
+    private(set) var step = 1.0
     private var decimals = 0
 
     init() {
         super.init(tag: "div")
         attribute("class", "stateui-stepper")
         attribute("role", "group")
-        field.attribute("type", "number")
+        field.attribute("type", "text")
+        field.attribute("role", "spinbutton")
         field.attribute("inputmode", "decimal")
         for (button, words, sign) in [(down, "Decrease", "−"), (up, "Increase", "+")] {
             button.attribute("type", "button")
@@ -35,6 +38,7 @@ final class WebStepperView: WebDOMView {
         for (index, part) in [down, field, up].enumerated() { WebRelay.insert(part.node, into: node, at: index) }
         down.listen("click") { [weak self] in self?.stepped(by: -1) }
         up.listen("click") { [weak self] in self?.stepped(by: 1) }
+        field.listen("steps") { [weak self] in self?.stepped(by: WebRelay.eventDetail < 0 ? -1 : 1) }
         field.listen("change") { [weak self] in self?.typed() }
     }
 
@@ -45,35 +49,40 @@ final class WebStepperView: WebDOMView {
     /// The range and the step, then `value`, kept inside the range; written with as many decimals as they take.
     func apply(value: Double, minimum: Double, maximum: Double, step: Double) {
         range = ValueArithmetic.range(minimum, maximum)
-        let step = ValueArithmetic.step(step)
-        decimals = ValueArithmetic.decimals(of: [step, range.lower, range.upper, value])
-        field.attribute("min", WebCSS.number(range.lower))
-        field.attribute("max", WebCSS.number(range.upper))
-        field.attribute("step", WebCSS.number(step))
-        show(min(max(value, range.lower), range.upper))
+        self.step = ValueArithmetic.step(step)
+        decimals = ValueArithmetic.decimals(of: [self.step, range.lower, range.upper, value])
+        field.attribute("aria-valuemin", WebCSS.number(range.lower))
+        field.attribute("aria-valuemax", WebCSS.number(range.upper))
+        show(within(value))
     }
 
     private func show(_ value: Double) {
         self.value = value
-        WebRelay.setValue(field.node, WebCSS.number(value, decimals: decimals))
+        let words = WebCSS.number(value, decimals: decimals)
+        WebRelay.setValue(field.node, words)
+        field.attribute("aria-valuenow", words)
     }
 
-    private func stepped(by steps: Int32) {
-        WebRelay.step(field.node, by: steps)
-        moved(to: WebRelay.number(of: field.node, "valueAsNumber"))
+    private func within(_ number: Double) -> Double {
+        min(max(number, range.lower), range.upper)
     }
 
-    /// The user typed: a number stands inside the range, anything else gives way to the number before it.
+    private func stepped(by steps: Double) {
+        moved(to: within(value + steps * step))
+    }
+
+    /// The user typed: words wholly a number stand inside the range, anything else gives way to the number before.
     private func typed() {
-        let typed = WebRelay.number(of: field.node, "valueAsNumber")
-        guard typed.isFinite else { return show(value) }
-        moved(to: min(max(typed, range.lower), range.upper))
+        let words = WebRelay.value(of: field.node).drop(while: \.isWhitespace)
+        let number = words.dropLast(words.reversed().prefix(while: \.isWhitespace).count)
+        guard let typed = Double(number), typed.isFinite else { return show(value) }
+        moved(to: within(typed))
     }
 
     private func moved(to number: Double) {
-        guard number.isFinite else { return show(value) }
+        let changed = number != value
         show(number)
-        onValueChanged(number)
+        if changed { onValueChanged(number) }
     }
 
     override func setEnabled(_ enabled: Bool) {

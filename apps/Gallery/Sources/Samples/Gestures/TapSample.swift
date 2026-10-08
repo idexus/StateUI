@@ -2,7 +2,9 @@ import StateUI
 
 /// A tap and a double tap on a whole view.
 struct TapSample: SampleContent, ExampleContent {
+    // listing: TapSample
     @State private var taps = 0
+    // listing: end
 
     static let id = "tap"
     static let title = "Tap"
@@ -13,37 +15,10 @@ struct TapSample: SampleContent, ExampleContent {
     // still - see SampleContent.scrolls.
     static let scrolls = false
 
-    static let code = """
-        @State private var taps = 0
-
-        VStack {
-            // The count is read here, so every tap builds this closure.
-            DebugInfoLabel()
-
-            ZStack {
-                Text("Tap anywhere on this box")
-                    .padding(24)
-            }
-            .style("Card")
-            .stroke(Palette.accent)
-            .shape(.roundedRectangle(10))
-            .onTapped { taps += 1 }
-
-            ZStack {
-                Text("Double-tap this one to reset")
-                    .padding(24)
-            }
-            .style("Card")
-            .stroke(Palette.outline)
-            .shape(.roundedRectangle(10))
-            .onTapped(count: 2) { taps = 0 }
-
-            Text("Tapped \\(taps) time(s)")
-        }
-        """
-
+    // listing: TapSample
     var body: some View {
         VStack {
+            // The count is read here, so every tap builds this closure.
             DebugInfoLabel()
 
             ZStack {
@@ -53,7 +28,7 @@ struct TapSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
             }
             .style("Card")
-            .stroke(Palette.accent)
+            .stroke(Palette.outline)
             .lineWidth(1)
             .shape(.roundedRectangle(10))
             .onTapped { taps += 1 }
@@ -76,6 +51,7 @@ struct TapSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         Text("Any view answers a tap: every card on a group's page is a view with "

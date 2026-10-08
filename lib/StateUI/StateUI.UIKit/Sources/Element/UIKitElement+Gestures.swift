@@ -12,6 +12,7 @@ extension UIKitElement {
     func configureGestures() {
         guard let view else { return }
         let hearing = element.hearing
+        configureDragAndDrop(on: view)
         guard hearing != (listening?.hearing ?? []) else { return }
         let listening = listening ?? UIKitListening(view: view)
         listening.onHeard = { [weak self] heard in
@@ -20,6 +21,18 @@ extension UIKitElement {
         }
         listening.listen(for: hearing)
         self.listening = hearing.isEmpty ? nil : listening
+    }
+
+    /// The drag between views the view offers and takes (`MountedElement.dragAndDrop`).
+    private func configureDragAndDrop(on view: UIView) {
+        let offered = element.dragAndDrop
+        guard offered != (dragAndDrop?.offered ?? .none) else { return }
+        let dragAndDrop = dragAndDrop ?? UIKitDragAndDrop(view: view) { [weak self] heard in
+            guard let self, let host else { return }
+            element.hear(heard, in: host.runtime)
+        }
+        dragAndDrop.offer(offered)
+        self.dragAndDrop = offered == .none ? nil : dragAndDrop
     }
 }
 #endif

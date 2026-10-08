@@ -11,9 +11,11 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -193,6 +195,42 @@ final class StateUIViews {
             if (keyboard != null) keyboard.showSoftInput(view, 0);
         }
         return took;
+    }
+
+    /**
+     * Grounds a split view's sidebar: over the detail in `argb` where `painted`, else on the theme's floating
+     * surface - a drawer's, its end corners rounded; beside the detail in `argb` where `painted`, else on nothing,
+     * the window showing through.
+     */
+    static void groundSidebar(View view, boolean over, boolean painted, int argb) {
+        if (!over && !painted) {
+            view.setBackground(null);
+            view.setClipToOutline(false);
+            return;
+        }
+        int colour = argb;
+        if (!painted) {
+            TypedValue value = new TypedValue();
+            view.getContext().getTheme().resolveAttribute(android.R.attr.colorBackgroundFloating, value, true);
+            colour = value.resourceId != 0 ? view.getContext().getColor(value.resourceId) : value.data;
+        }
+        GradientDrawable ground = new GradientDrawable();
+        ground.setColor(colour);
+        if (over) {
+            float r = 16 * view.getResources().getDisplayMetrics().density;
+            boolean rtl = view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+            ground.setCornerRadii(rtl ? new float[] {r, r, 0, 0, 0, 0, r, r} : new float[] {0, 0, r, r, r, r, 0, 0});
+        }
+        view.setBackground(ground);
+        view.setClipToOutline(over);
+    }
+
+    /** The colour a split view's sidebar stands on, as ARGB; Long.MIN_VALUE where it stands on nothing. */
+    static long sidebarColour(View view) {
+        Drawable ground = view.getBackground();
+        if (!(ground instanceof GradientDrawable)) return Long.MIN_VALUE;
+        ColorStateList colour = ((GradientDrawable) ground).getColor();
+        return colour != null ? colour.getDefaultColor() & 0xFFFFFFFFL : Long.MIN_VALUE;
     }
 
     /** A holder for a page presented over the window's page: filling it, on the theme's window background. */

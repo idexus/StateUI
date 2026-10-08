@@ -166,14 +166,17 @@ final class Catalog {
                 route: "styles",
                 title: "Styles",
                 summary: "How a control looks - one style worn by every control of a "
-                    + "type, how it looks held down or disabled, and the theme it "
-                    + "answers light and dark.",
+                    + "type, how it looks held down or disabled, the theme it "
+                    + "answers light and dark, what a surface is made of, and the "
+                    + "look the gallery wears.",
                 icon: ImageSource(light: "nav_styles.png", dark: "nav_styles_dark.png"),
                 card: ImageSource("cat_styles.png"),
                 samples: [
                     Sample(StyleSample()),
                     Sample(VisualStateSample()),
                     Sample(AppThemeSample()),
+                    Sample(MaterialsSample()),
+                    Sample(AppearanceSample(style: style)),
                 ]),
 
             SampleGroup(
@@ -238,8 +241,8 @@ final class Catalog {
                 route: "navigation",
                 title: "Navigation",
                 summary: "Moving between pages - the stack, the tabs and the split view; a "
-                    + "modal, an alert, a toolbar and a menu over them; and a search "
-                    + "field in the navigation bar.",
+                    + "modal, an alert, a file dialog, a toolbar and a menu over them; and a "
+                    + "search field in the navigation bar.",
                 icon: ImageSource(light: "nav_shell.png", dark: "nav_shell_dark.png"),
                 card: ImageSource("cat_navigation.png"),
                 samples: [
@@ -248,6 +251,7 @@ final class Catalog {
                     Sample(SplitViewSample(nav: nav)),
                     Sample(ModalSample(nav: nav)),
                     Sample(DialogsSample()),
+                    Sample(FilesSample()),
                     Sample(ToolbarSample()),
                     Sample(ToolbarLayersSample(nav: nav)),
                     Sample(MenuBarSample()),

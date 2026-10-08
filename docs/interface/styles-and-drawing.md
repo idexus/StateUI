@@ -86,7 +86,12 @@ let sameTranslucent = Color(red: 91, green: 91, blue: 214, alpha: 128)
 Hex input accepts `#RGB`, `#ARGB`, `#RRGGBB`, or `#AARRGGBB`, the alpha first
 when it is written. Named colors are static members checked by the compiler.
 `Color(red:green:blue:alpha:)` takes whole-number channels from 0 through 255;
-the alpha is 255, opaque, unless it is given.
+the alpha is 255, opaque, unless it is given. `opacity(_:)` lets a colour
+through - its alpha scaled, in both halves of a pair:
+
+```swift
+let wash = Color("#5B5BD6").opacity(0.15)
+```
 
 `ImageSource` follows the same theme rule:
 
@@ -102,6 +107,54 @@ concrete color or resource name and needs no parallel theme binding model.
 Read `app.info.colorScheme`, with `@Environment(\.application) private var
 app`, only when application logic needs the theme as a value. A themed color or image follows the theme without an
 application branch.
+
+`Color.accent` is the accent in force - the one the user chose for the
+system, or the platform's tint where it has none - resolved as the view
+wearing it is built, as a pair is, so a change in the system's settings
+builds again exactly the views wearing it, in a style too:
+
+```swift
+let marked = Color.accent.opacity(0.7)
+```
+
+## Materials
+
+A background is a material: what the surface behind the view's content is
+made of. A colour and a gradient are materials; so is a blur of what lies
+behind the view, in the platform's own look - from `.ultraThin`, which lets
+the most through, to `.ultraThick` - and so is the platform's glass, regular
+or clear, tinted, answering the user's touch where it is interactive. Every
+kind is cut to the view's shape:
+
+```swift
+let washed = VStack { Text("Saved") }
+    .background(.blur(.thin.tint(.indigo.opacity(0.15))))
+    .shape(.roundedRectangle(12))
+
+let glass = VStack { Text("Saved") }
+    .background(.glass(.regular.tint(.indigo).isInteractive(true)))
+    .shape(.roundedRectangle(16))
+```
+
+A blur's tint lies over it, so a colour with an alpha tints the blur. A
+material may differ by theme - `Material(light:dark:)`, a nil half for no
+background - and one with no pair is the same choice in both themes, the blur
+and glass following the theme as the platform draws them:
+
+```swift
+let panel = VStack { Text("Saved") }
+    .background(Material(light: .color(.white), dark: .blur(.regular)))
+```
+
+A platform with no glass draws the blur as clear as the glass; one that blurs
+nothing, a colour of the theme let through as the blur is, the tint over it.
+A state holding a material is a channel: `.background($material)` -
+`.pageBackground($material)`, a split view's `.sidebarBackground($material)`
+and `.flyoutBackground($material)` alike - shows each material written into
+the state as it stands, and no body is built again for it; a pair in it
+follows the theme. A colour's channel walks the colour instead:
+`.background($color)` animates it as the state moves. A window's background
+is a material too (`window.background`, in *Application and sessions*).
 
 ## Visual states
 

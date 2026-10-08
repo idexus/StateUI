@@ -1,16 +1,16 @@
-# revision 1.1
-ActivityIndicator.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+# revision 7.1
+ActivityIndicator.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
 ActivityIndicator.automationExcludedWithChildren: ✅
-ActivityIndicator.background: ✅
+ActivityIndicator.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ActivityIndicator.focus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.frame: ✅
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
 ActivityIndicator.ignoresInput: not realized
 ActivityIndicator.isAccessibilityHidden: ✅
-ActivityIndicator.isEnabled: not realized
+ActivityIndicator.isEnabled: ✅
 ActivityIndicator.isFocusedChanged: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.isVisible: ✅
 ActivityIndicator.layoutDirection: ✅
@@ -32,12 +32,12 @@ ActivityIndicator.translationX: ✅
 ActivityIndicator.translationY: ✅
 ActivityIndicator.unfocus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.width: ✅
-ActivityIndicator.zIndex: not realized
-Button.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+ActivityIndicator.zIndex: ✅
+Button.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
 Button.automationExcludedWithChildren: ✅
-Button.background: cannot read a background of no one colour - Android's driver has no path for it yet
+Button.background: does not apply - read a background of no one colour - StateUI draws the box in a drawable of its own, which holds no one colour; its drawing proves it
 Button.focus: – Button takes no keyboard focus here: it refuses it, and nothing is heard
 Button.frame: ✅
 Button.frameChanged: ✅
@@ -66,19 +66,19 @@ Button.translationX: ✅
 Button.translationY: ✅
 Button.unfocus: – Button takes no keyboard focus here: it refuses it, and nothing is heard
 Button.width: ✅
-Button.zIndex: not realized
-Canvas.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Button.zIndex: – Android draws a raised button over the flat views beside it whatever their depth: its elevation is the native button's own.
+Canvas.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
 Canvas.automationExcludedWithChildren: ✅
-Canvas.background: ✅
+Canvas.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Canvas.focus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.frame: ✅
 Canvas.frameChanged: ✅
 Canvas.height: ✅
 Canvas.ignoresInput: not realized
 Canvas.isAccessibilityHidden: ✅
-Canvas.isEnabled: not realized
+Canvas.isEnabled: ✅
 Canvas.isFocusedChanged: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.isVisible: ✅
 Canvas.layoutDirection: ✅
@@ -100,12 +100,12 @@ Canvas.translationX: ✅
 Canvas.translationY: ✅
 Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.width: ✅
-Canvas.zIndex: not realized
-CheckBox.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Canvas.zIndex: ✅
+CheckBox.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
 CheckBox.automationExcludedWithChildren: ✅
-CheckBox.background: ✅
+CheckBox.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 CheckBox.focus: – CheckBox takes no keyboard focus here: it refuses it, and nothing is heard
 CheckBox.frame: ✅
 CheckBox.frameChanged: ✅
@@ -134,19 +134,19 @@ CheckBox.translationX: ✅
 CheckBox.translationY: ✅
 CheckBox.unfocus: – CheckBox takes no keyboard focus here: it refuses it, and nothing is heard
 CheckBox.width: ✅
-CheckBox.zIndex: not realized
-ColorBox.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+CheckBox.zIndex: ✅
+ColorBox.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ColorBox.accessibilityHint: ✅
 ColorBox.accessibilityLabel: ✅
 ColorBox.automationExcludedWithChildren: ✅
-ColorBox.background: ✅
+ColorBox.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.frame: ✅
 ColorBox.frameChanged: ✅
 ColorBox.height: ✅
 ColorBox.ignoresInput: not realized
 ColorBox.isAccessibilityHidden: ✅
-ColorBox.isEnabled: not realized
+ColorBox.isEnabled: ✅
 ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.isVisible: ✅
 ColorBox.layoutDirection: ✅
@@ -168,12 +168,12 @@ ColorBox.translationX: ✅
 ColorBox.translationY: ✅
 ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.width: ✅
-ColorBox.zIndex: not realized
-DatePicker.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+ColorBox.zIndex: ✅
+DatePicker.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
 DatePicker.automationExcludedWithChildren: ✅
-DatePicker.background: ✅
+DatePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 DatePicker.focus: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
 DatePicker.frame: ✅
 DatePicker.frameChanged: ✅
@@ -202,19 +202,19 @@ DatePicker.translationX: ✅
 DatePicker.translationY: ✅
 DatePicker.unfocus: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
 DatePicker.width: ✅
-DatePicker.zIndex: not realized
-Ellipse.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+DatePicker.zIndex: ✅
+Ellipse.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
 Ellipse.automationExcludedWithChildren: ✅
-Ellipse.background: ✅
+Ellipse.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Ellipse.focus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.frame: ✅
 Ellipse.frameChanged: ✅
 Ellipse.height: ✅
 Ellipse.ignoresInput: not realized
 Ellipse.isAccessibilityHidden: ✅
-Ellipse.isEnabled: not realized
+Ellipse.isEnabled: ✅
 Ellipse.isFocusedChanged: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.isVisible: ✅
 Ellipse.layoutDirection: ✅
@@ -236,19 +236,19 @@ Ellipse.translationX: ✅
 Ellipse.translationY: ✅
 Ellipse.unfocus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.width: ✅
-Ellipse.zIndex: not realized
-Grid.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Ellipse.zIndex: ✅
+Grid.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
 Grid.automationExcludedWithChildren: ✅
-Grid.background: ✅
+Grid.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.frame: ✅
 Grid.frameChanged: ✅
 Grid.height: ✅
 Grid.ignoresInput: cannot read what reaches Grid - Android's driver has no path for it yet
 Grid.isAccessibilityHidden: ✅
-Grid.isEnabled: not realized
+Grid.isEnabled: ✅
 Grid.isFocusedChanged: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.isVisible: ✅
 Grid.layoutDirection: ✅
@@ -270,19 +270,19 @@ Grid.translationX: ✅
 Grid.translationY: ✅
 Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.width: ✅
-Grid.zIndex: not realized
-HStack.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Grid.zIndex: ✅
+HStack.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
 HStack.automationExcludedWithChildren: ✅
-HStack.background: ✅
+HStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 HStack.focus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.frame: ✅
 HStack.frameChanged: ✅
 HStack.height: ✅
 HStack.ignoresInput: cannot read what reaches HStack - Android's driver has no path for it yet
 HStack.isAccessibilityHidden: ✅
-HStack.isEnabled: not realized
+HStack.isEnabled: ✅
 HStack.isFocusedChanged: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.isVisible: ✅
 HStack.layoutDirection: ✅
@@ -304,19 +304,19 @@ HStack.translationX: ✅
 HStack.translationY: ✅
 HStack.unfocus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.width: ✅
-HStack.zIndex: not realized
-Image.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+HStack.zIndex: ✅
+Image.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
 Image.automationExcludedWithChildren: ✅
-Image.background: ✅
+Image.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.frame: ✅
 Image.frameChanged: ✅
 Image.height: ✅
 Image.ignoresInput: not realized
 Image.isAccessibilityHidden: ✅
-Image.isEnabled: not realized
+Image.isEnabled: ✅
 Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.isVisible: ✅
 Image.layoutDirection: ✅
@@ -338,19 +338,19 @@ Image.translationX: ✅
 Image.translationY: ✅
 Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.width: ✅
-Image.zIndex: not realized
-ItemsView.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Image.zIndex: ✅
+ItemsView.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
 ItemsView.automationExcludedWithChildren: ✅
-ItemsView.background: ✅
+ItemsView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ItemsView.focus: ✅
 ItemsView.frame: ✅
 ItemsView.frameChanged: ✅
 ItemsView.height: ✅
 ItemsView.ignoresInput: not realized
 ItemsView.isAccessibilityHidden: ✅
-ItemsView.isEnabled: not realized
+ItemsView.isEnabled: ✅
 ItemsView.isFocusedChanged: ✅
 ItemsView.isVisible: ✅
 ItemsView.layoutDirection: ✅
@@ -372,19 +372,19 @@ ItemsView.translationX: ✅
 ItemsView.translationY: ✅
 ItemsView.unfocus: ✅
 ItemsView.width: ✅
-ItemsView.zIndex: not realized
-Line.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+ItemsView.zIndex: ✅
+Line.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
 Line.automationExcludedWithChildren: ✅
-Line.background: ✅
+Line.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.frame: ✅
 Line.frameChanged: ✅
 Line.height: ✅
 Line.ignoresInput: not realized
 Line.isAccessibilityHidden: ✅
-Line.isEnabled: not realized
+Line.isEnabled: ✅
 Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.isVisible: ✅
 Line.layoutDirection: ✅
@@ -406,7 +406,7 @@ Line.translationX: ✅
 Line.translationY: ✅
 Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.width: ✅
-Line.zIndex: not realized
+Line.zIndex: ✅
 Map.accessibilityHeading: 🧩
 Map.accessibilityHint: 🧩
 Map.accessibilityLabel: 🧩
@@ -441,18 +441,18 @@ Map.translationY: 🧩
 Map.unfocus: 🧩
 Map.width: 🧩
 Map.zIndex: 🧩
-Path.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Path.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
 Path.automationExcludedWithChildren: ✅
-Path.background: ✅
+Path.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.frame: ✅
 Path.frameChanged: ✅
 Path.height: ✅
 Path.ignoresInput: not realized
 Path.isAccessibilityHidden: ✅
-Path.isEnabled: not realized
+Path.isEnabled: ✅
 Path.isFocusedChanged: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.isVisible: ✅
 Path.layoutDirection: ✅
@@ -474,12 +474,12 @@ Path.translationX: ✅
 Path.translationY: ✅
 Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.width: ✅
-Path.zIndex: not realized
-Picker.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Path.zIndex: ✅
+Picker.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
 Picker.automationExcludedWithChildren: ✅
-Picker.background: ✅
+Picker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Picker.focus: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
 Picker.frame: ✅
 Picker.frameChanged: ✅
@@ -508,19 +508,19 @@ Picker.translationX: ✅
 Picker.translationY: ✅
 Picker.unfocus: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
 Picker.width: ✅
-Picker.zIndex: not realized
-Polygon.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Picker.zIndex: ✅
+Polygon.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
 Polygon.automationExcludedWithChildren: ✅
-Polygon.background: ✅
+Polygon.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.frame: ✅
 Polygon.frameChanged: ✅
 Polygon.height: ✅
 Polygon.ignoresInput: not realized
 Polygon.isAccessibilityHidden: ✅
-Polygon.isEnabled: not realized
+Polygon.isEnabled: ✅
 Polygon.isFocusedChanged: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.isVisible: ✅
 Polygon.layoutDirection: ✅
@@ -542,19 +542,19 @@ Polygon.translationX: ✅
 Polygon.translationY: ✅
 Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.width: ✅
-Polygon.zIndex: not realized
-Polyline.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Polygon.zIndex: ✅
+Polyline.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
 Polyline.automationExcludedWithChildren: ✅
-Polyline.background: ✅
+Polyline.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.frame: ✅
 Polyline.frameChanged: ✅
 Polyline.height: ✅
 Polyline.ignoresInput: not realized
 Polyline.isAccessibilityHidden: ✅
-Polyline.isEnabled: not realized
+Polyline.isEnabled: ✅
 Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.isVisible: ✅
 Polyline.layoutDirection: ✅
@@ -576,19 +576,19 @@ Polyline.translationX: ✅
 Polyline.translationY: ✅
 Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.width: ✅
-Polyline.zIndex: not realized
-ProgressBar.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Polyline.zIndex: ✅
+ProgressBar.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
 ProgressBar.automationExcludedWithChildren: ✅
-ProgressBar.background: ✅
+ProgressBar.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.frame: ✅
 ProgressBar.frameChanged: ✅
 ProgressBar.height: ✅
 ProgressBar.ignoresInput: not realized
 ProgressBar.isAccessibilityHidden: ✅
-ProgressBar.isEnabled: not realized
+ProgressBar.isEnabled: ✅
 ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.isVisible: ✅
 ProgressBar.layoutDirection: ✅
@@ -610,12 +610,12 @@ ProgressBar.translationX: ✅
 ProgressBar.translationY: ✅
 ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.width: ✅
-ProgressBar.zIndex: not realized
-RadioButton.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+ProgressBar.zIndex: ✅
+RadioButton.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 RadioButton.accessibilityHint: ✅
 RadioButton.accessibilityLabel: ✅
 RadioButton.automationExcludedWithChildren: ✅
-RadioButton.background: ✅
+RadioButton.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 RadioButton.focus: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
 RadioButton.frame: ✅
 RadioButton.frameChanged: ✅
@@ -644,19 +644,19 @@ RadioButton.translationX: ✅
 RadioButton.translationY: ✅
 RadioButton.unfocus: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
 RadioButton.width: ✅
-RadioButton.zIndex: not realized
-Rectangle.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+RadioButton.zIndex: ✅
+Rectangle.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
 Rectangle.automationExcludedWithChildren: ✅
-Rectangle.background: ✅
+Rectangle.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Rectangle.focus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.frame: ✅
 Rectangle.frameChanged: ✅
 Rectangle.height: ✅
 Rectangle.ignoresInput: not realized
 Rectangle.isAccessibilityHidden: ✅
-Rectangle.isEnabled: not realized
+Rectangle.isEnabled: ✅
 Rectangle.isFocusedChanged: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.isVisible: ✅
 Rectangle.layoutDirection: ✅
@@ -678,19 +678,19 @@ Rectangle.translationX: ✅
 Rectangle.translationY: ✅
 Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.width: ✅
-Rectangle.zIndex: not realized
-ScrollView.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Rectangle.zIndex: ✅
+ScrollView.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
 ScrollView.automationExcludedWithChildren: ✅
-ScrollView.background: ✅
+ScrollView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.frame: ✅
 ScrollView.frameChanged: ✅
 ScrollView.height: ✅
 ScrollView.ignoresInput: not realized
 ScrollView.isAccessibilityHidden: ✅
-ScrollView.isEnabled: not realized
+ScrollView.isEnabled: ✅
 ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.isVisible: ✅
 ScrollView.layoutDirection: ✅
@@ -712,12 +712,12 @@ ScrollView.translationX: ✅
 ScrollView.translationY: ✅
 ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.width: ✅
-ScrollView.zIndex: not realized
-SearchField.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+ScrollView.zIndex: ✅
+SearchField.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
 SearchField.automationExcludedWithChildren: ✅
-SearchField.background: ✅
+SearchField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 SearchField.focus: ✅
 SearchField.frame: ✅
 SearchField.frameChanged: ✅
@@ -746,12 +746,12 @@ SearchField.translationX: ✅
 SearchField.translationY: ✅
 SearchField.unfocus: ✅
 SearchField.width: ✅
-SearchField.zIndex: not realized
-Slider.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+SearchField.zIndex: ✅
+Slider.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
 Slider.automationExcludedWithChildren: ✅
-Slider.background: ✅
+Slider.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Slider.focus: – Slider takes no keyboard focus here: it refuses it, and nothing is heard
 Slider.frame: ✅
 Slider.frameChanged: ✅
@@ -780,12 +780,12 @@ Slider.translationX: ✅
 Slider.translationY: ✅
 Slider.unfocus: – Slider takes no keyboard focus here: it refuses it, and nothing is heard
 Slider.width: ✅
-Slider.zIndex: not realized
-Stepper.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Slider.zIndex: ✅
+Stepper.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
 Stepper.automationExcludedWithChildren: ✅
-Stepper.background: ✅
+Stepper.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Stepper.focus: – Stepper takes no keyboard focus here: it refuses it, and nothing is heard
 Stepper.frame: ✅
 Stepper.frameChanged: ✅
@@ -814,12 +814,12 @@ Stepper.translationX: ✅
 Stepper.translationY: ✅
 Stepper.unfocus: – Stepper takes no keyboard focus here: it refuses it, and nothing is heard
 Stepper.width: ✅
-Stepper.zIndex: not realized
-Switch.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Stepper.zIndex: ✅
+Switch.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
 Switch.automationExcludedWithChildren: ✅
-Switch.background: ✅
+Switch.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Switch.focus: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
 Switch.frame: ✅
 Switch.frameChanged: ✅
@@ -848,19 +848,19 @@ Switch.translationX: ✅
 Switch.translationY: ✅
 Switch.unfocus: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
 Switch.width: ✅
-Switch.zIndex: not realized
-Text.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Switch.zIndex: ✅
+Text.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
 Text.automationExcludedWithChildren: ✅
-Text.background: ✅
+Text.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
 Text.frame: ✅
 Text.frameChanged: ✅
 Text.height: ✅
 Text.ignoresInput: not realized
 Text.isAccessibilityHidden: ✅
-Text.isEnabled: not realized
+Text.isEnabled: ✅
 Text.isFocusedChanged: – Text takes no keyboard focus here: it refuses it, and nothing is heard
 Text.isVisible: ✅
 Text.layoutDirection: ✅
@@ -882,12 +882,12 @@ Text.translationX: ✅
 Text.translationY: ✅
 Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
 Text.width: ✅
-Text.zIndex: not realized
-TextEditor.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+Text.zIndex: ✅
+TextEditor.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
 TextEditor.automationExcludedWithChildren: ✅
-TextEditor.background: ✅
+TextEditor.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 TextEditor.focus: ✅
 TextEditor.frame: ✅
 TextEditor.frameChanged: ✅
@@ -916,12 +916,12 @@ TextEditor.translationX: ✅
 TextEditor.translationY: ✅
 TextEditor.unfocus: ✅
 TextEditor.width: ✅
-TextEditor.zIndex: not realized
-TextField.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+TextEditor.zIndex: ✅
+TextField.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
 TextField.automationExcludedWithChildren: ✅
-TextField.background: ✅
+TextField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 TextField.focus: ✅
 TextField.frame: ✅
 TextField.frameChanged: ✅
@@ -950,12 +950,12 @@ TextField.translationX: ✅
 TextField.translationY: ✅
 TextField.unfocus: ✅
 TextField.width: ✅
-TextField.zIndex: not realized
-TimePicker.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+TextField.zIndex: ✅
+TimePicker.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
 TimePicker.automationExcludedWithChildren: ✅
-TimePicker.background: ✅
+TimePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 TimePicker.focus: – TimePicker takes no keyboard focus here: it refuses it, and nothing is heard
 TimePicker.frame: ✅
 TimePicker.frameChanged: ✅
@@ -984,19 +984,19 @@ TimePicker.translationX: ✅
 TimePicker.translationY: ✅
 TimePicker.unfocus: – TimePicker takes no keyboard focus here: it refuses it, and nothing is heard
 TimePicker.width: ✅
-TimePicker.zIndex: not realized
-VStack.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+TimePicker.zIndex: ✅
+VStack.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
 VStack.automationExcludedWithChildren: ✅
-VStack.background: ✅
+VStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.frame: ✅
 VStack.frameChanged: ✅
 VStack.height: ✅
 VStack.ignoresInput: cannot read what reaches VStack - Android's driver has no path for it yet
 VStack.isAccessibilityHidden: ✅
-VStack.isEnabled: not realized
+VStack.isEnabled: ✅
 VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.isVisible: ✅
 VStack.layoutDirection: ✅
@@ -1018,19 +1018,19 @@ VStack.translationX: ✅
 VStack.translationY: ✅
 VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.width: ✅
-VStack.zIndex: not realized
-WebView.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+VStack.zIndex: ✅
+WebView.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
 WebView.automationExcludedWithChildren: ✅
-WebView.background: ✅
+WebView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 WebView.focus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
 WebView.frame: ✅
 WebView.frameChanged: ✅
 WebView.height: ✅
 WebView.ignoresInput: not realized
 WebView.isAccessibilityHidden: ✅
-WebView.isEnabled: not realized
+WebView.isEnabled: ✅
 WebView.isFocusedChanged: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
 WebView.isVisible: ✅
 WebView.layoutDirection: ✅
@@ -1052,19 +1052,19 @@ WebView.translationX: ✅
 WebView.translationY: ✅
 WebView.unfocus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
 WebView.width: ✅
-WebView.zIndex: not realized
-ZStack.accessibilityHeading: cannot read a heading's level - Android marks a heading, not its level
+WebView.zIndex: ✅
+ZStack.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
 ZStack.automationExcludedWithChildren: ✅
-ZStack.background: ✅
+ZStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.frame: ✅
 ZStack.frameChanged: ✅
 ZStack.height: ✅
 ZStack.ignoresInput: cannot read what reaches ZStack - Android's driver has no path for it yet
 ZStack.isAccessibilityHidden: ✅
-ZStack.isEnabled: not realized
+ZStack.isEnabled: ✅
 ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.isVisible: ✅
 ZStack.layoutDirection: ✅
@@ -1086,4 +1086,4 @@ ZStack.translationX: ✅
 ZStack.translationY: ✅
 ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.width: ✅
-ZStack.zIndex: not realized
+ZStack.zIndex: ✅

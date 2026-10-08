@@ -18,6 +18,14 @@ pointer is a hover's entering, moving and leaving, and a press - put down,
 held however far it moves, lifted - told as it goes down and as it is let
 go.
 
+## A disabled view
+
+A control the tree disables, or one in a disabled branch, is a `UIControl`
+with `isEnabled` off, as `presented(_:)` gives it. A view that is no control
+keeps its place and takes the touch, but the host layer hears nothing of the
+hand in it; it carries the `.notEnabled` trait for VoiceOver, what the driver
+reads back.
+
 ## A press dragged
 
 UIKit recognizes a pan past its own distance; the host puts its press back
@@ -33,3 +41,17 @@ user swipe back from anywhere in its page, and that swipe would take a drag
 meant for the view - the page went back as the user moved a square. A view
 listening for drags comes first: the stack's swipe waits for its drag to
 fail, and the two never recognize together.
+
+## A drag between views
+
+A view's drag between views is UIKit's own pair of interactions on the view
+itself, which asks no subclass and survives its layout. A view that can be
+dragged holds a drag interaction - turned on, as an iPhone leaves it off -
+whose item carries the view's words as a string; the session tells it the
+drag began and, wherever it ended, that it ended. A view that takes drops
+holds a drop interaction that takes a session carrying words: each update
+says the drag is over it, an exit that it went, and a drop loads the words
+and hands them over. The host layer's rule makes over once and no leave
+after a drop. A view taking files takes a session of items that are no plain
+words; each item's file, which UIKit lends only while it hands it over, is
+copied to a folder of the application's own under the name the user knows.

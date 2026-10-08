@@ -1,24 +1,24 @@
-# revision 3.1
+# revision 6.1
 Window: ✅
 Window.activated: ✅
+Window.background: ☑️ An activity is opaque by the theme it starts in: a blur or glass shows its colour.
 Window.created: ✅
 Window.deactivated: ✓ switchAway on Window: the host told the activity's phase, no activity moved
 Window.destroying: ✓ close on Window: the host told the activity's phase, no activity moved
-Window.floatsOnTop: not realized
-Window.height: not realized
-Window.hidesWhenInactive: not realized
-Window.isMaximizable: not realized
-Window.isMinimizable: not realized
-Window.isTranslucent: not realized
-Window.maximumHeight: not realized
-Window.maximumWidth: not realized
-Window.minimumHeight: not realized
-Window.minimumWidth: not realized
+Window.floatsOnTop: – Android stacks windows itself: an activity keeps none above the others.
+Window.height: – Android sizes an activity's window itself - the user drags its edge: an activity asks for no size.
+Window.hidesWhenInactive: – Android shows an activity itself: it hides none while another application is in front.
+Window.isMaximizable: – Any Android window may fill the screen: an activity keeps none from it.
+Window.isMinimizable: – Any Android window may be put away: an activity keeps none from it.
+Window.maximumHeight: – Android bounds an activity's window itself: an activity sets it no bound at run time.
+Window.maximumWidth: – Android bounds an activity's window itself: an activity sets it no bound at run time.
+Window.minimumHeight: – Android bounds an activity's window itself: an activity sets it no bound at run time.
+Window.minimumWidth: – Android bounds an activity's window itself: an activity sets it no bound at run time.
 Window.resumed: ✓ minimize on Window: the host told the activity's phase, no activity moved
 Window.stopped: ✓ minimize on Window: the host told the activity's phase, no activity moved
-Window.title: cannot read title of Window - Android's driver has no path for it yet
-Window.width: not realized
+Window.title: ✅
+Window.width: – Android sizes an activity's window itself - the user drags its edge: an activity asks for no size.
 Window.windowType: not realized
 Window.windowValue: not realized
-Window.x: not realized
-Window.y: not realized
+Window.x: – Android places an activity's window itself: an activity asks for no place.
+Window.y: – Android places an activity's window itself: an activity asks for no place.

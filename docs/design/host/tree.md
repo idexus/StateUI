@@ -110,7 +110,8 @@ its measure: the run moves its children without the layout measuring again.
 ## What every element realizes
 
 What the host layer's own rules realize on every element - a view's place in
-its layout, its drawing over that place, where it stands as the tree reads it
+its layout and its depth among the siblings it overlaps, its drawing over that
+place, where it stands as the tree reads it
 and what the user does to it - is declared once, as groups a host's registry
 names (`everyElementTakesItsPlace`, `everyElementIsDrawnOverItsPlace`,
 `everyElementMeetsAssistiveTechnology`, `everyElementHearsTheUser`): a host

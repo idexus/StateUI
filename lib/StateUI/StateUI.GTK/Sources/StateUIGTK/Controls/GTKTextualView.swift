@@ -15,7 +15,6 @@ class GTKTextualView: GTKView {
     /// The label's own words, and the runs shown in their place; nil while none are.
     private var ownText = ""
     private var runs: [TextRun]?
-    private var fillClass: String?
 
     /// Where the label's place travels: its words stand at that size meanwhile.
     /// Design: docs/design/host/motion.md#words-at-their-destination
@@ -119,9 +118,4 @@ class GTKTextualView: GTKView {
     }
 
     override var wordsRoom: Rect? { bound }
-
-    /// What fills the label's box: a colour, or a brush's first colour; nil for nothing.
-    func setBackground(_ value: HostValue?) {
-        swapClass(&fillClass, to: GTKBrush(value).firstColor.map(GTKStyleSheet.fill))
-    }
 }

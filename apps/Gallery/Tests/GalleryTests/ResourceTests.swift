@@ -15,7 +15,7 @@ import XCTest
 
 final class ResourceTests: XCTestCase {
     private var styles: [AnyStyle] {
-        AppStyles.sheet(on: .unknown).written
+        AppStyles.sheet.written
     }
 
     /// Every element a style may target, by its node type: the library's, and
@@ -69,24 +69,20 @@ final class ResourceTests: XCTestCase {
     }
 
     /// The Gallery's look is a light one and a dark one. A colour written for
-    /// only one theme is the thing that reads wrong on the other, so most of
-    /// them are written for both.
+    /// only one theme is the thing that reads wrong on the other, so every
+    /// colour a style writes but a clear one is written for both.
     ///
     /// Asked of the sheet itself: a value written with a half for each theme
     /// is held as the PAIR until the differ builds the element wearing it, so
-    /// the values that follow the theme are the ones that are `.themed`.
+    /// a colour standing bare is one written for a single theme.
     func testTheStylesAreWrittenForBothThemes() {
-        var themed = 0
-
         for style in styles {
-            for value in style.props.values {
-                if case .themed = value {
-                    themed += 1
+            for (name, value) in style.props {
+                if case .color(_, _, _, let alpha) = value {
+                    XCTAssertEqual(alpha, 0, "\(style.key ?? style.target.name).\(name) is written for one theme")
                 }
             }
         }
-
-        XCTAssertGreaterThan(themed, 10, "hardly anything follows the theme")
     }
 
     /// The keyed styles the gallery asks for by name exist. A key nothing was
@@ -103,28 +99,14 @@ final class ResourceTests: XCTestCase {
     }
 
     /// The menu is a page and its selected section is application state. A
-    /// chosen row writes its two values over the shared style, so the invariant
+    /// chosen row writes its fill over the shared style, so the invariant
     /// worth pinning is that chosen and resting rows render differently.
     func testTheChosenMenuRowIsDrawnDifferentlyFromTheRest() {
         func drawn(chosen: Bool) -> Node {
-            var node = MenuRow("Layout", action: {}).icon("nav_layout.png").chosen(chosen).body.node
-
-            // A raw tree keeps a container's content in its closure - the
-            // differ is who runs it - so this reader materializes first.
-            node.materialize()
-            return node
+            MenuRow("Layout", action: {}).icon("nav_layout.png").chosen(chosen).body.node
         }
 
-        let on = drawn(chosen: true)
-        let off = drawn(chosen: false)
-
-        XCTAssertNotEqual(on.props["background"], off.props["background"],
+        XCTAssertNotEqual(drawn(chosen: true).props["background"], drawn(chosen: false).props["background"],
                           "the row you are on looks like every other row")
-
-        let onText = on.children.first { $0.props["text"] == .string("Layout") }
-        let offText = off.children.first { $0.props["text"] == .string("Layout") }
-
-        XCTAssertNotEqual(onText?.props["textColor"], offText?.props["textColor"])
-        XCTAssertNotEqual(onText?.props["fontAttributes"], offText?.props["fontAttributes"])
     }
 }

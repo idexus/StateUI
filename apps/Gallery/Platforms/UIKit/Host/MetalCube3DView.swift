@@ -6,6 +6,7 @@ import MetalKit
 import StateUIUIKit
 import UIKit
 
+// listing: Cube3DSample.UIKit.swift
 /// A cube turning on the GPU - an ordinary `MTKView` that knows nothing of
 /// StateUI.
 ///
@@ -20,6 +21,8 @@ import UIKit
 /// that draws itself needs no second object, and this way the drawing runs
 /// where every other `UIView` draws.
 final class MetalCube3DView: MTKView {
+// listing: end
+    // listing: Cube3DSample.UIKit.swift
     /// How long the cube's edge is, as a share of the room it is given: 1
     /// turns corner to corner inside the view.
     var cubeSize: Double = 0.6 {
@@ -43,6 +46,7 @@ final class MetalCube3DView: MTKView {
             resumeOrStop()
         }
     }
+    // listing: end
 
     private static let colors: [SIMD3<Float>] = [
         SIMD3(0.161, 0.722, 0.678),
@@ -85,6 +89,7 @@ final class MetalCube3DView: MTKView {
     private var angle: Double = 0
     private var lastTime: CFTimeInterval = CACurrentMediaTime()
 
+    // listing: Cube3DSample.UIKit.swift
     /// The view, its pipeline and its mesh, built once.
     ///
     /// A machine with no Metal device leaves the pipeline empty and the view
@@ -116,6 +121,7 @@ final class MetalCube3DView: MTKView {
 
         pipeline = Self.pipeline(on: device, colorFormat: colorPixelFormat)
     }
+    // listing: end
 
     @available(*, unavailable)
     required init(coder: NSCoder) {
@@ -127,6 +133,7 @@ final class MetalCube3DView: MTKView {
         CGSize(width: 240, height: 240)
     }
 
+    // listing: Cube3DSample.UIKit.swift
     /// Nothing turns while the view is off screen, and nothing is left turning
     /// behind it: the loop stops with the window it was shown in.
     override func didMoveToWindow() {
@@ -171,6 +178,7 @@ final class MetalCube3DView: MTKView {
         buffer.present(drawable)
         buffer.commit()
     }
+    // listing: end
 
     /// Where the cube stands, how big it is, and how it is turned - one matrix
     /// the vertex function multiplies each corner by.
@@ -195,11 +203,13 @@ final class MetalCube3DView: MTKView {
         return SIMD4(rgb, 1)
     }
 
+    // listing: Cube3DSample.UIKit.swift
     /// Turning, or stopped where it stands - and never running for a view no
     /// window shows.
     private func resumeOrStop() {
         isPaused = window == nil || !isSpinning
     }
+    // listing: end
 
     /// Draws the one frame a stopped cube needs to show a changed size or
     /// colour. A turning one is already drawing.
@@ -220,6 +230,9 @@ final class MetalCube3DView: MTKView {
         on device: MTLDevice, colorFormat: MTLPixelFormat
     ) -> MTLRenderPipelineState? {
         let source = """
+            // listing: Cube3DSample.UIKit.metal
+            // The cube's shaders, compiled from this source as the view is made. A
+            // corner is one float4: its position in xyz, its face's brightness in w.
             #include <metal_stdlib>
             using namespace metal;
 
@@ -247,6 +260,7 @@ final class MetalCube3DView: MTKView {
             fragment float4 cube_fragment(Painted in [[stage_in]]) {
                 return in.color;
             }
+            // listing: end
             """
 
         guard let library = try? device.makeLibrary(source: source, options: nil) else { return nil }
@@ -301,10 +315,13 @@ final class MetalCube3DView: MTKView {
     private static func scaling(_ scale: Float) -> simd_float4x4 {
         simd_float4x4(diagonal: SIMD4(scale, scale, scale, 1))
     }
+// listing: Cube3DSample.UIKit.swift
 }
+// listing: end
 
 // MARK: - Registration
 
+// listing: Cube3DSample.UIKit.swift
 extension MetalCube3DView {
     /// Adds the cube for `Cube3DContract`. Said once, before the application
     /// runs.
@@ -331,3 +348,4 @@ extension MetalCube3DView {
         }
     }
 }
+// listing: end

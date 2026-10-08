@@ -2,65 +2,22 @@ import StateUI
 
 /// `if`, `if/else` and `ForEach` inside a builder - and what stays put across them.
 struct BuilderSample: SampleContent, ExampleContent {
+    // listing: BuilderSample
     @State private var signedIn = false
     @State private var note = ""
     @State private var editing = false
     @State private var chosen = 2
+    // listing: end
 
     static let id = "builder"
     static let title = "Conditions and loops"
     static let summary = "if, if/else and ForEach inside a builder - and what keeps its control across them."
 
-    static let code = """
-        @State private var signedIn = false
-        @State private var note = ""
-        @State private var editing = false
-        @State private var chosen = 2
-
+    // listing: BuilderSample
+    var body: some View {
         VStack {
             // The conditions and the choice are all read here, so THIS is
             // the closure a flip or a pick builds again.
-            DebugInfoLabel()
-
-            Switch($signedIn)
-
-            // An `if` with no `else`. The TextField below it is child 2 in one
-            // state and child 3 in the other - and it is the same control
-            // either way, so what has been typed in it survives the toggle.
-            if signedIn {
-                Text("Signed in")
-            }
-
-            TextField($note)
-
-            // Two branches are two elements, even though both are Entries:
-            // switching REPLACES the control rather than editing it, which is
-            // what the author wrote.
-            if editing {
-                TextField("name")
-            } else {
-                TextField("nickname")
-            }
-
-            SwitchRow("Editing", $editing)
-
-            // A ForEach whose row changes its KIND with the choice. The
-            // row's identity is its ITEM, so moving the choice touches two
-            // rows - each replaced for its new kind - and leaves the other
-            // three alone.
-            ForEach(0..<5) { turn in
-                if turn == chosen {
-                    Text("turn \\(turn) - chosen")
-                } else {
-                    Button("turn \\(turn)")
-                        .onClicked { chosen = turn }
-                }
-            }
-        }
-        """
-
-    var body: some View {
-        VStack {
             DebugInfoLabel()
 
             HStack {
@@ -73,6 +30,9 @@ struct BuilderSample: SampleContent, ExampleContent {
             }
             .spacing(12)
 
+            // An `if` with no `else`. The TextField below it is child 2 in one
+            // state and child 3 in the other - and it is the same control
+            // either way, so what has been typed in it survives the toggle.
             if signedIn {
                 Text("Signed in")
                     .fontAttributes(.bold)
@@ -83,6 +43,9 @@ struct BuilderSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Note")
                 .placeholder("Type here, then flip the switch")
 
+            // Two branches are two elements, even though both are TextFields:
+            // switching REPLACES the control rather than editing it, which is
+            // what the author wrote.
             if editing {
                 TextField("name")
                     .accessibilityIdentifier("builder.name")
@@ -98,6 +61,10 @@ struct BuilderSample: SampleContent, ExampleContent {
             SwitchRow("Editing", $editing)
                 .horizontalAlignment(.start)
 
+            // A ForEach whose row changes its KIND with the choice. The
+            // row's identity is its ITEM, so moving the choice touches two
+            // rows - each replaced for its new kind - and leaves the other
+            // three alone.
             ForEach(0..<5) { turn in
                 if turn == chosen {
                     Text("turn \(turn) - chosen")
@@ -105,8 +72,6 @@ struct BuilderSample: SampleContent, ExampleContent {
                         .textColor(Palette.accent)
                 } else {
                     Button("turn \(turn)")
-                        .fontSize(13)
-                        .padding(horizontal: 16, vertical: 6)
                         .horizontalAlignment(.start)
                         .onClicked { chosen = turn }
                 }
@@ -115,12 +80,13 @@ struct BuilderSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
-            Text("An `if` above a view does not move it: type in the field, flip the "
-                + "switch, and the TextField keeps its control - and with it the text, the "
-                + "caret and the focus.")
+            Text("An `if` above a view does not replace it: type in the field, flip the "
+                + "switch, and the TextField keeps its control - and with it the text and "
+                + "the caret.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

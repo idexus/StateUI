@@ -15,12 +15,14 @@ struct ZStackSample: SampleContent {
 /// Two markers aligned in the whole room, and a panel in an area a switch
 /// states in fractions or in device units.
 private struct Areas: ExampleContent {
+    // listing: Areas
     @State private var proportional = true
 
-    static let code = """
-        @State private var proportional = true
-
+    var body: some View {
         VStack {
+            // NO BUILD READING HERE. `proportional` is read inside the stack's
+            // own braces, and a container describes its children when the
+            // differ asks, so the only closure this switch rebuilds is that one.
             ZStack {
                 // No area: the whole room, filled.
                 ColorBox(Palette.outline)
@@ -42,47 +44,11 @@ private struct Areas: ExampleContent {
             .height(180)
 
             SwitchRow("Proportional area", $proportional)
-        }
-
-        private struct Badge: View {
-            let text: String
-            let color: String
-
-            var body: some View {
-                Text(text)
-                    .textColor(.white)
-                    .background(Color(color))
-                    .padding(horizontal: 10, vertical: 6)
-            }
-        }
-        """
-
-    var body: some View {
-        VStack {
-            // NO BUILD READING HERE. `proportional` is read inside the stack's
-            // own braces, and a container describes its children when the
-            // differ asks, so the only closure this switch rebuilds is that one.
-            ZStack {
-                ColorBox(Palette.outline)
-
-                ColorBox(Color("#1E88E5"))
-                    .area(proportional ? .proportional(0.5, 0, 0.5, 1) : .absolute(16, 16, 120, 60))
-
-                Badge(text: "start", color: "#E53935")
-                    .horizontalAlignment(.start)
-                    .verticalAlignment(.start)
-
-                Badge(text: "end", color: "#00897B")
-                    .horizontalAlignment(.end)
-                    .verticalAlignment(.end)
-            }
-            .height(180)
-
-            SwitchRow("Proportional area", $proportional)
                 .horizontalAlignment(.center)
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         Text("Resize the window: a proportional area follows the room, an absolute one stays put.")
@@ -93,36 +59,13 @@ private struct Areas: ExampleContent {
 
 /// Two boxes overlapping in the middle, and which is drawn on top.
 private struct Layers: ExampleContent {
+    // listing: Layers
     @State private var redInFront = false
-
-    static let code = """
-        @State private var redInFront = false
-
-        VStack {
-            // Left alone, the child written last is drawn on top; the higher
-            // zIndex is nearer the front, and nothing moves.
-            ZStack {
-                ColorBox(Color("#E53935"))
-                    .width(150)
-                    .height(70)
-                    .horizontalAlignment(.start)
-                    .zIndex(redInFront ? 1 : 0)
-
-                ColorBox(Color("#1E88E5"))
-                    .width(150)
-                    .height(70)
-                    .horizontalAlignment(.end)
-                    .zIndex(redInFront ? 0 : 1)
-            }
-            .height(70)
-            .maximumWidth(240)
-
-            SwitchRow("Red in front", $redInFront)
-        }
-        """
 
     var body: some View {
         VStack {
+            // Left alone, the child written last is drawn on top; the higher
+            // zIndex is nearer the front, and nothing moves.
             ZStack {
                 ColorBox(Color("#E53935"))
                     .width(150)
@@ -145,10 +88,12 @@ private struct Layers: ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? { nil }
 }
 
+// listing: Areas
 /// One labelled badge, so the sample says what is being positioned rather than
 /// how it is drawn.
 private struct Badge: View {
@@ -163,3 +108,4 @@ private struct Badge: View {
             .padding(horizontal: 10, vertical: 6)
     }
 }
+// listing: end

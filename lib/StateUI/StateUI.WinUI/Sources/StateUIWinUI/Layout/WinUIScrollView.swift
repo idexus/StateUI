@@ -26,6 +26,8 @@ final class WinUIScrollView: WinUILayoutView {
     private let movement = ScrollMovement()
 
     let scroller = WinUIScrollerView()
+
+    override var answering: WinUIView { scroller }
     private let document = WinUIScrollDocument()
 
     /// Holds the content in a stack where the scroller was given more than one child.

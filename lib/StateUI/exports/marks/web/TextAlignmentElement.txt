@@ -4,7 +4,7 @@ Picker.verticalTextAlignment: not realized
 SearchField.horizontalTextAlignment: ✅
 SearchField.verticalTextAlignment: not realized
 Text.horizontalTextAlignment: ✅
-Text.verticalTextAlignment: cannot read verticalTextAlignment of Text - the Web's driver has no path for it yet
+Text.verticalTextAlignment: ✅
 TextEditor.horizontalTextAlignment: ✅
 TextEditor.verticalTextAlignment: not realized
 TextField.horizontalTextAlignment: ✅

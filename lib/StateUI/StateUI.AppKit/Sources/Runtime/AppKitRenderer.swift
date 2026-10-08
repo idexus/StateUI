@@ -32,8 +32,11 @@ final class AppKitRenderer: @unchecked Sendable {
     private(set) lazy var environment = AppKitEnvironment(core: runtime.core)
     /// AppKit's part of the acts every host performs, and the host layer's performer of them.
     lazy var actToolkit = AppKitActToolkit(renderer: self)
+    /// AppKit's part of the files the user opens and saves, and of what macOS launches.
+    lazy var fileToolkit = AppKitFileToolkit(renderer: self)
     lazy var acts = HostActPerformer(
-        toolkit: actToolkit, tree: { [unowned self] in runtime.tree }, answered: { [unowned self] in runtime.pump.turn() })
+        toolkit: actToolkit, files: fileToolkit, tree: { [unowned self] in runtime.tree },
+        answered: { [unowned self] in runtime.pump.turn() })
     var focusReportQueued = false
 
     /// The windows the tree holds, each with its controller, in the tree's order.

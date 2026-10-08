@@ -18,7 +18,7 @@
                               with: Words.on(element) + [Write(BorderElementContract.lineWidth, 2)]),
                 Aspects.holds(BorderElementContract.lineWidth, on: element, 2, then: 4,
                               with: Words.on(element) + [Write(BorderElementContract.stroke, Brush.solidColor(.red))]),
-            ]
+            ] + boxCases(element)
         }
     }
 

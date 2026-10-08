@@ -6,49 +6,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
     static let title = "Stack layouts"
     static let summary = "Children top to bottom or left to right."
 
-    static let code = """
-        VStack {
-            StackCell(text: "One")
-            StackCell(text: "Two")
-            StackCell(text: "Three")
-        }
-        .spacing(8)
-
-        HStack {
-            StackCell(text: "One")
-            StackCell(text: "Two")
-            StackCell(text: "Three")
-        }
-        .spacing(8)
-
-        // Where a child sits in the room its stack gives it.
-        VStack {
-            StackCell(text: "start")
-                .horizontalAlignment(.start)
-
-            StackCell(text: "center")
-                .horizontalAlignment(.center)
-
-            StackCell(text: "end")
-                .horizontalAlignment(.end)
-
-            StackCell(text: "fill")
-                .horizontalAlignment(.fill)
-        }
-        .spacing(8)
-
-        private struct StackCell: View {
-            let text: String
-
-            var body: some View {
-                Text(text)
-                    .textColor(.white)
-                    .background(Palette.accent)
-                    .padding(horizontal: 14, vertical: 8)
-            }
-        }
-        """
-
+    // listing: StackLayoutSample
     var body: some View {
         VStack {
             SectionTitle("Vertical")
@@ -71,6 +29,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
 
             SectionTitle("Alignment")
 
+            // Where a child sits in the room its stack gives it.
             VStack {
                 StackCell(text: "start")
                     .horizontalAlignment(.start)
@@ -88,6 +47,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         Text("`.horizontalAlignment` places a child across the room its stack gives it.")
@@ -96,6 +56,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
     }
 }
 
+// listing: StackLayoutSample
 /// One block of colour with a word in it, so an arrangement is visible.
 private struct StackCell: View {
     let text: String
@@ -109,3 +70,4 @@ private struct StackCell: View {
             .horizontalTextAlignment(.center)
     }
 }
+// listing: end

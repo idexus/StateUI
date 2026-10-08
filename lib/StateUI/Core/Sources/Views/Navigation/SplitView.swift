@@ -96,3 +96,36 @@ public struct SplitView: ElementView, Arrangement, BarElement {
         return copy
     }
 }
+
+extension SplitView {
+    /// What the sidebar stands on while it stands beside the detail.
+    ///
+    ///     SplitView($showsMenu) { MenuPage() } detail: { NotesPage() }
+    ///         .sidebarBackground(.blur(.thin))
+    ///         .flyoutBackground(.blur(.thick))
+    ///
+    /// Leave it unwritten for the platform's own: on the desktop the window
+    /// shows through a sidebar.
+    public func sidebarBackground(_ value: Material) -> Modified {
+        setValue(SplitViewContract.sidebarBackground, value)
+    }
+
+    /// What the sidebar stands on while it slides over the detail - a phone's
+    /// drawer, the sidebar of a narrow window. Leave it unwritten for the
+    /// platform's own surface there, which never lets the detail through.
+    public func flyoutBackground(_ value: Material) -> Modified {
+        setValue(SplitViewContract.flyoutBackground, value)
+    }
+
+    /// `sidebarBackground` from a state, `$x`: the host shows each new material
+    /// as it stands, and no view is rebuilt for it.
+    public func sidebarBackground(_ state: Binding<Material>) -> Modified {
+        plain(SplitViewContract.sidebarBackground, by: state)
+    }
+
+    /// `flyoutBackground` from a state, `$x`: the host shows each new material
+    /// as it stands, and no view is rebuilt for it.
+    public func flyoutBackground(_ state: Binding<Material>) -> Modified {
+        plain(SplitViewContract.flyoutBackground, by: state)
+    }
+}

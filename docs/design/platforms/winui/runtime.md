@@ -111,8 +111,39 @@ The bounds are the presenter's preferred least and greatest size. The
 traits ([a window's traits](../../host/tree.md#a-windows-traits)) are the
 presenter's too - its maximize and minimize buttons, a button left unsaid
 being WinUI's own, which lets the user press it, and its standing on top of
-other windows for one that floats - and the backdrop: a translucent window's
-is acrylic, and any other window's Mica, made again only where it turns.
+other windows for one that floats.
+
+## A window's backdrop
+
+A window made of a blur shows the desktop through it in the desktop acrylic;
+any other window shows Mica, the desktop's tint. The acrylic is a system
+backdrop of the relay's own over WinUI's `DesktopAcrylicController`, since
+WinUI's ready one holds neither a kind nor an opacity: the two thinnest
+blurs are the thin kind, the rest the base one, and its luminosity hides as
+much of the desktop as the blur's thickness does
+(`Blur.Thickness.opacity`, the share a stand-in colour lets through), and
+its tint grows from none on the thinnest blur to nine tenths on the
+thickest: the luminosity alone - from 0.45 to 0.95 - barely tells the five
+apart, an ultra-thick window still showing the desktop through. Its colour - tint, and the fallback an inactive window
+shows - is the blur's stand-in colour, the theme's: a controller given any
+one value keeps none of the theme's own (an ultra-thick blur came out
+white in the dark theme), so every colour is written, and the theme
+turning gives the window its traits again. XAML's default configuration has
+the acrylic follow the window's activation. The backdrop is made
+again only where it turns. A tint colours the acrylic itself - its colour is
+the tint laid over the theme's, which the acrylic's tint then carries as far
+as the thickness says - and lies over it on the window's root as well, as
+the colour a window is painted does. Glass is the acrylic at its fallback
+thickness: WinUI has no glass.
+
+A background the application writes shows behind the detail as it does
+beside the sidebar and under the bars: the card a navigation view lays over
+its detail - WinUI's layer fill, which turns a written colour grey - is
+clear (`NavigationViewContentBackground`, written into the window root's
+resources, which every navigation view in the window reads on its way up),
+and its edge - the line under the bar and beside the sidebar - is the
+theme's divider (`DividerStrokeColorDefault`), in a dictionary for each
+theme so it follows the theme by itself. A window left to the platform keeps WinUI's card.
 
 ## The application's phase
 
@@ -188,6 +219,23 @@ A dialog needs its window's `XamlRoot`, which a window opened a moment ago -
 a page asking as it is made - does not have until WinUI has loaded it. The
 question is made at once and shown on the content's `Loaded`; answering it
 "not chosen" there would lose it without the user ever seeing it.
+
+## Files
+
+A file dialog is Windows' own, from the Windows App SDK's pickers
+(`FileOpenPicker`, `FileSavePicker`), over the window the user is in, and it
+waits its turn among the questions ([files](../../host/runtime.md#files)).
+A dialog that opens filters by every kind's extensions, as one list; one that
+saves offers each kind under its caption, the first as its default
+extension. Windows shows the dialog on a thread of its own and hands back a
+path: a save's contents are written to it beside the UI thread, and the file
+is handed over only once they stand written - or the act fails with
+Windows' reason. A file is read beside the UI thread too. A chosen file's
+address is its path.
+
+A file or an address is launched through `Launcher`, which answers whether
+an application took it. Every answer reaches the host on the UI thread, by
+the ticket the call was given.
 
 ## Kept values
 

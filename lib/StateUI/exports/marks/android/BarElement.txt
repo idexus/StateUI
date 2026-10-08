@@ -1,21 +1,21 @@
-# revision 2.1
+# revision 4.1
 ModalStack.barBackgroundColor: ✅
-ModalStack.barForegroundColor: cannot read barForegroundColor of ModalStack - Android's driver has no path for it yet
+ModalStack.barForegroundColor: ☑️ The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the colour itself - on a tab row, the chosen tab's words.
 ModalStack.barIcon: – An Android bar is its stack's own: it shows its page's title, and no application's mark.
 ModalStack.barSubtitle: ✅
 ModalStack.barTitle: – An Android bar is its stack's own and names its page; an application names itself in none.
 NavigationStack.barBackgroundColor: ✅
-NavigationStack.barForegroundColor: cannot read barForegroundColor of NavigationStack - Android's driver has no path for it yet
+NavigationStack.barForegroundColor: ☑️ The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the colour itself - on a tab row, the chosen tab's words.
 NavigationStack.barIcon: – An Android bar is its stack's own: it shows its page's title, and no application's mark.
 NavigationStack.barSubtitle: ✅
 NavigationStack.barTitle: – An Android bar is its stack's own and names its page; an application names itself in none.
 SplitView.barBackgroundColor: ✅
-SplitView.barForegroundColor: cannot read barForegroundColor of SplitView - Android's driver has no path for it yet
+SplitView.barForegroundColor: ☑️ The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the colour itself - on a tab row, the chosen tab's words.
 SplitView.barIcon: – An Android bar is its stack's own: it shows its page's title, and no application's mark.
 SplitView.barSubtitle: ✅
 SplitView.barTitle: – An Android bar is its stack's own and names its page; an application names itself in none.
 TabView.barBackgroundColor: ✅
-TabView.barForegroundColor: cannot read barForegroundColor of TabView - Android's driver has no path for it yet
+TabView.barForegroundColor: ☑️ The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the colour itself - on a tab row, the chosen tab's words.
 TabView.barIcon: – An Android bar is its stack's own: it shows its page's title, and no application's mark.
 TabView.barSubtitle: ✅
 TabView.barTitle: – An Android bar is its stack's own and names its page; an application names itself in none.

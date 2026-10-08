@@ -1,7 +1,7 @@
 # revision 1.1
 SearchField: ✅
 SearchField.frameChanged: ✅
-SearchField.submitLabel: not realized
+SearchField.submitLabel: – GTK gives an entry no word for the return key of a keyboard on the screen.
 SearchField.submitted: ✅
 SearchField.text: ✅
 SearchField.textChanged: ✅

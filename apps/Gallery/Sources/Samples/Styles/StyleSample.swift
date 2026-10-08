@@ -2,93 +2,24 @@ import StateUI
 
 /// Where the gallery's appearance actually comes from.
 struct StyleSample: SampleContent, ExampleContent {
+    // listing: StyleSample
     @State private var enabled = true
+    // listing: end
 
     static let id = "styles"
     static let title = "Styles"
     static let summary = "One description of what a control looks like, applied to every one of them."
 
-    static let code = """
-        // The colours, each written once for both themes:
-        enum Palette {
-            static let accent = Color(light: AppColors.swiftOrangeDeep,
-                                      dark: AppColors.swiftOrangeLight)
-            static let onAccent = Color(light: AppColors.white, dark: AppColors.white)
-            static let subtle = Color(light: AppColors.inkMuted,
-                                      dark: AppColors.inkMutedDark)
-            static let disabled = Color(light: AppColors.muted, dark: AppColors.mutedDark)
-            static let outline = Color(light: AppColors.line, dark: AppColors.lineDark)
-        }
+    static var code: String { Listings.joined("GalleryApp", "Palette.sample", "AppStyles.sample", "StyleSample") }
 
-        // Into the application's session as it is made:
-        application.styles = StyleSheet {
-            Style<Button>()
-                .textColor(Palette.onAccent)
-                .background(Palette.accent)
-                .shape(.roundedRectangle(10))
-                .padding(horizontal: 16, vertical: 11)
-                .visualState(.disabled) { $0
-                    .textColor(Palette.disabled)
-                    .background(Palette.outline)
-                }
-
-            Style<Text>("Headline")
-                .fontSize(32)
-                .horizontalTextAlignment(.center)
-
-            // One shape, stated once. The second style is the first plus
-            // a colour - and inherits everything it does not mention.
-            Style<Text>("Quote")
-                .textColor(Palette.subtle)
-                .fontSize(17)
-                .fontAttributes(.italic)
-                .tracking(0.3)
-                .horizontalTextAlignment(.center)
-
-            Style<Text>("QuoteLoud")
-                .basedOn("Quote")
-                .textColor(Palette.accent)
-        }
-
-        // And in the view, where nothing says how a button looks:
-        @State private var enabled = true
-
-        VStack {
-            // Nothing here is about styling: the switch is read in this
-            // closure, so flipping it builds the closure again.
-            DebugInfoLabel()
-
-            HStack {
-                Button("Save")
-                Button("Cancel")
-            }
-
-            Button(enabled ? "Enabled" : "Disabled")
-                .isEnabled(enabled)
-                .onClicked {}
-
-            Switch($enabled)
-
-            // The one style with a key, asked for by name.
-            Text("Headline")
-                .style("Headline")
-
-            // The same words twice: what matches is inherited.
-            Text("The same nine words, and one of these declares a colour.")
-                .style("Quote")
-
-            Text("The same nine words, and one of these declares a colour.")
-                .style("QuoteLoud")
-        }
-        """
-
+    // listing: StyleSample
     var body: some View {
         VStack {
             DebugInfoLabel()
 
-            // Neither of these says anything about its own appearance. The
-            // orange, the corners, the padding and the 44pt minimum all come
-            // from Style<Button> in Styles/AppStyles.swift.
+            // Neither of these says anything of its own look: the violet, the
+            // corners and the padding come from Style<Button> in AppStyles.swift,
+            // which every button wears.
             HStack {
                 Button("Save")
                 Button("Cancel")
@@ -106,7 +37,6 @@ struct StyleSample: SampleContent, ExampleContent {
 
             HStack {
                 Text("Enabled")
-                    .fontSize(14)
                     .verticalAlignment(.center)
 
                 Switch($enabled)
@@ -116,11 +46,28 @@ struct StyleSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalAlignment(.center)
 
+            SectionTitle("A style for every control of a type")
+
+            // None of these names a colour: a style with no key is implicit,
+            // and every ColorBox wears the one `Style<ColorBox>()` gives.
+            HStack {
+                ColorBox()
+                    .width(40)
+                    .height(40)
+                ColorBox()
+                    .width(40)
+                    .height(40)
+                ColorBox()
+                    .width(40)
+                    .height(40)
+            }
+            .spacing(12)
+            .horizontalAlignment(.center)
+
             SectionTitle("A style asked for by name")
 
-            // The others are implicit - they have no key, so every control of
-            // the type gets them. This one has one, and is asked for; a keyed
-            // style REPLACES the implicit one, so it says everything it needs.
+            // A keyed style is asked for; a keyed style REPLACES the implicit
+            // one, so it says everything it needs.
             Text("Headline")
                 .style("Headline")
 
@@ -130,25 +77,27 @@ struct StyleSample: SampleContent, ExampleContent {
             // `.basedOn("Quote")` plus one colour - so everything that matches
             // below is inherited, and the one thing that differs is the one
             // thing it declares.
-            Text("The same nine words, and one of these declares a colour.")
+            Text("The same eleven words, and one of these declares a colour.")
                 .style("Quote")
 
-            Text("The same nine words, and one of these declares a colour.")
+            Text("The same eleven words, and one of these declares a colour.")
                 .style("QuoteLoud")
         }
         .spacing(14)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
-            Text("Nothing in the example sets a colour, a size or a corner: every "
-                + "button takes all of it from the gallery's one `Style<Button>`.")
+            Text("\"Save\" and \"Cancel\" say nothing of their look: both wear the gallery's "
+                + "`Style<Button>()`, which every button wears.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("A style with no key is implicit: every control of its type wears it. "
-                + "`Headline` has a key and is asked for by name, and a keyed style "
-                + "REPLACES the implicit one, so it says everything it needs.")
+            Text("A style with no key is implicit: every control of its type wears it, "
+                + "as every ColorBox here wears `Style<ColorBox>()`. `Headline` has a key "
+                + "and is asked for by name, and a keyed style REPLACES the implicit one, "
+                + "so it says everything it needs.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -160,7 +109,7 @@ struct StyleSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Every colour the styles use is one `Color(light:dark:)`, a value "
+            Text("Every colour these styles use is one `Color(light:dark:)`, a value "
                 + "for each theme. None of this crosses the boundary: the styles are "
                 + "resolved in Swift, into the controls, so what the host receives is "
                 + "a button with its colours already on it.")

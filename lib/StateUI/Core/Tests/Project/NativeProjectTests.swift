@@ -565,10 +565,14 @@ final class NativeProjectTests: XCTestCase {
 
         var offenders: [String] = []
         for (word, conditioned) in [("app" + "kit", true), ("win" + "ui", true), ("gt" + "k", true), ("ma" + "ui", false)] {
-            // A block for this host: its condition alone, or joined with other hosts' by `||`.
+            // A block for this host: its condition alone, or joined with other hosts' by `||`, opened by `#if`
+            // or by the `#elseif` of another host's block.
             func opens(_ directive: String) -> Bool {
-                guard directive.hasPrefix("#if ") else { return false }
-                return directive.dropFirst(4).components(separatedBy: "||")
+                let condition: Substring
+                if directive.hasPrefix("#if ") { condition = directive.dropFirst(4) }
+                else if directive.hasPrefix("#elseif ") { condition = directive.dropFirst(8) }
+                else { return false }
+                return condition.components(separatedBy: "||")
                     .map { $0.trimmingCharacters(in: .whitespaces) }.contains(word.uppercased())
             }
             for root in roots {
@@ -589,8 +593,8 @@ final class NativeProjectTests: XCTestCase {
                             } else if directive.hasPrefix("#endif") {
                                 depth -= 1
                             } else if depth == 1 && directive.hasPrefix("#else") {
-                                // What follows is compiled for every other host.
-                                depth = 0
+                                // What follows is compiled for every other host - or for this one again.
+                                depth = conditioned && opens(directive) ? 1 : 0
                             }
                             continue
                         }

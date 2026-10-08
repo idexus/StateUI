@@ -63,13 +63,9 @@ struct SampleTabPage: View {
     let nav: Navigation
 
     var body: some View {
-        GeometryReader { frame in
-            held
-                .height(frame.height)
-                .width(frame.width)
-                .verticalAlignment(.start)
-                .horizontalAlignment(.start)
-        }
+        // The page's content fills the page: the example's cell takes the rest
+        // of the window's height, with no scroller around it.
+        held
         // Dressed as every page of the gallery is, and named and pictured for
         // its tab: the tab's caption and icon. The window takes the sample's
         // name from the tabs (`SamplePage.shown`).

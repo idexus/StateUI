@@ -152,9 +152,11 @@ extension PropValue {
         case .bool: "bool"
         case .numbers: "numbers"
         case .strings: "strings"
+        case .bytes: "bytes"
         case .color: "color"
         case .values: "values"
         case .themed: "themed"
+        case .systemColor: "systemColor"
         }
     }
 }

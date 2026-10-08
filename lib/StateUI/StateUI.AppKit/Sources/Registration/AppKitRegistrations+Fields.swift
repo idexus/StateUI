@@ -35,8 +35,7 @@ extension AppKitRegistrations {
                         .flatMap { nsColor($0.propValue) },
                     foregroundColor: values[TextStyleElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
-                    backgroundColor: values[VisualElementContract.background]
-                        .flatMap { nsColor($0.propValue) },
+                    backgroundColor: paintedColor(values[VisualElementContract.background]?.propValue),
                     font: Self.font(values),
                     horizontalAlignment: values[TextAlignmentElementContract.horizontalTextAlignment]?.rawValue,
                     enabled: values[VisualElementContract.isEnabled] ?? true,
@@ -72,8 +71,7 @@ extension AppKitRegistrations {
                         .flatMap { nsColor($0.propValue) },
                     foregroundColor: values[TextStyleElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
-                    backgroundColor: values[VisualElementContract.background]
-                        .flatMap { nsColor($0.propValue) },
+                    backgroundColor: paintedColor(values[VisualElementContract.background]?.propValue),
                     font: Self.font(values),
                     horizontalAlignment: values[TextAlignmentElementContract.horizontalTextAlignment]?.rawValue,
                     enabled: values[VisualElementContract.isEnabled] ?? true,
@@ -109,8 +107,7 @@ extension AppKitRegistrations {
                         .flatMap { nsColor($0.propValue) },
                     foregroundColor: values[TextStyleElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
-                    backgroundColor: values[VisualElementContract.background]
-                        .flatMap { nsColor($0.propValue) },
+                    backgroundColor: paintedColor(values[VisualElementContract.background]?.propValue),
                     font: Self.font(values),
                     horizontalAlignment: values[TextAlignmentElementContract.horizontalTextAlignment]?.rawValue,
                     enabled: values[VisualElementContract.isEnabled] ?? true,

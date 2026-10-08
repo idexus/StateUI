@@ -281,6 +281,31 @@ public enum Java {
         return array
     }
 
+    /// A Java byte array of `bytes`, as a local reference.
+    static func bytes(_ bytes: [UInt8]) -> jbyteArray? {
+        let array = jni.NewByteArray(env, jsize(bytes.count))
+        bytes.withUnsafeBufferPointer { buffer in
+            buffer.withMemoryRebound(to: jbyte.self) {
+                jni.SetByteArrayRegion(env, array, 0, jsize(bytes.count), $0.baseAddress)
+            }
+        }
+        return array
+    }
+
+    /// The bytes of a Java byte array.
+    static func bytesOf(_ array: jbyteArray?) -> [UInt8] {
+        guard let array else { return [] }
+
+        let count = Int(jni.GetArrayLength(env, array))
+        var bytes = [UInt8](repeating: 0, count: count)
+        bytes.withUnsafeMutableBufferPointer { buffer in
+            buffer.withMemoryRebound(to: jbyte.self) {
+                jni.GetByteArrayRegion(env, array, 0, jsize(count), $0.baseAddress)
+            }
+        }
+        return bytes
+    }
+
     /// A Java boolean array of `values`, as a local reference.
     static func booleans(_ values: [Bool]) -> jbooleanArray? {
         let array = jni.NewBooleanArray(env, jsize(values.count))

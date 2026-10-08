@@ -1,13 +1,15 @@
-# revision 3.1
-ActivityIndicator.allowsDrop: not realized
+# revision 4.1
+ActivityIndicator.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 ActivityIndicator.area: ✅
-ActivityIndicator.canDrag: not realized
-ActivityIndicator.dragEnded: not realized
-ActivityIndicator.dragLeave: not realized
-ActivityIndicator.dragOver: not realized
-ActivityIndicator.dragStarting: not realized
-ActivityIndicator.dragText: not realized
-ActivityIndicator.drop: not realized
+ActivityIndicator.canDrag: ✓ dragAndDrop on ActivityIndicator: the DOM's drag events dispatched by the driver, no drag the browser began
+ActivityIndicator.dragEnded: ✓ dragAndDrop on ActivityIndicator: the DOM's drag events dispatched by the driver, no drag the browser began
+ActivityIndicator.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ActivityIndicator.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ActivityIndicator.dragStarting: ✓ dragAndDrop on ActivityIndicator: the DOM's drag events dispatched by the driver, no drag the browser began
+ActivityIndicator.dragText: ✓ dragAndDrop on ActivityIndicator: the DOM's drag events dispatched by the driver, no drag the browser began
+ActivityIndicator.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ActivityIndicator.droppedFileTypes: ✓ dropFiles on ActivityIndicator: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+ActivityIndicator.filesDropped: ✓ dropFiles on ActivityIndicator: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.gridColumn: ✅
 ActivityIndicator.gridColumnSpan: ✅
@@ -19,7 +21,7 @@ ActivityIndicator.panTouchCount: ✅
 ActivityIndicator.panUpdated: ✅
 ActivityIndicator.panXChannel: ✅
 ActivityIndicator.panYChannel: ✅
-ActivityIndicator.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+ActivityIndicator.pinchUpdated: ✅
 ActivityIndicator.pointerEntered: ✅
 ActivityIndicator.pointerExited: ✅
 ActivityIndicator.pointerMoved: ✅
@@ -31,15 +33,17 @@ ActivityIndicator.swiped: ✅
 ActivityIndicator.tapCount: ✅
 ActivityIndicator.tapped: ✅
 ActivityIndicator.verticalAlignment: ✅
-Button.allowsDrop: not realized
+Button.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 Button.area: ✅
-Button.canDrag: not realized
-Button.dragEnded: not realized
-Button.dragLeave: not realized
-Button.dragOver: not realized
-Button.dragStarting: not realized
-Button.dragText: not realized
-Button.drop: not realized
+Button.canDrag: ✓ dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began
+Button.dragEnded: ✓ dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began
+Button.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Button.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Button.dragStarting: ✓ dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began
+Button.dragText: ✓ dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began
+Button.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Button.droppedFileTypes: ✓ dropFiles on Button: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Button.filesDropped: ✓ dropFiles on Button: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Button.frameChanged: ✅
 Button.gridColumn: ✅
 Button.gridColumnSpan: ✅
@@ -51,7 +55,7 @@ Button.panTouchCount: ✅
 Button.panUpdated: ✅
 Button.panXChannel: ✅
 Button.panYChannel: ✅
-Button.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Button.pinchUpdated: ✅
 Button.pointerEntered: ✅
 Button.pointerExited: ✅
 Button.pointerMoved: ✅
@@ -63,15 +67,17 @@ Button.swiped: ✅
 Button.tapCount: ✅
 Button.tapped: ✅
 Button.verticalAlignment: ✅
-Canvas.allowsDrop: not realized
+Canvas.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 Canvas.area: ✅
-Canvas.canDrag: not realized
-Canvas.dragEnded: not realized
-Canvas.dragLeave: not realized
-Canvas.dragOver: not realized
-Canvas.dragStarting: not realized
-Canvas.dragText: not realized
-Canvas.drop: not realized
+Canvas.canDrag: ✓ dragAndDrop on Canvas: the DOM's drag events dispatched by the driver, no drag the browser began
+Canvas.dragEnded: ✓ dragAndDrop on Canvas: the DOM's drag events dispatched by the driver, no drag the browser began
+Canvas.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Canvas.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Canvas.dragStarting: ✓ dragAndDrop on Canvas: the DOM's drag events dispatched by the driver, no drag the browser began
+Canvas.dragText: ✓ dragAndDrop on Canvas: the DOM's drag events dispatched by the driver, no drag the browser began
+Canvas.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Canvas.droppedFileTypes: ✓ dropFiles on Canvas: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Canvas.filesDropped: ✓ dropFiles on Canvas: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Canvas.frameChanged: ✅
 Canvas.gridColumn: ✅
 Canvas.gridColumnSpan: ✅
@@ -83,7 +89,7 @@ Canvas.panTouchCount: ✅
 Canvas.panUpdated: ✅
 Canvas.panXChannel: ✅
 Canvas.panYChannel: ✅
-Canvas.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Canvas.pinchUpdated: ✅
 Canvas.pointerEntered: ✅
 Canvas.pointerExited: ✅
 Canvas.pointerMoved: ✅
@@ -95,15 +101,17 @@ Canvas.swiped: ✅
 Canvas.tapCount: ✅
 Canvas.tapped: ✅
 Canvas.verticalAlignment: ✅
-CheckBox.allowsDrop: not realized
+CheckBox.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 CheckBox.area: ✅
-CheckBox.canDrag: not realized
-CheckBox.dragEnded: not realized
-CheckBox.dragLeave: not realized
-CheckBox.dragOver: not realized
-CheckBox.dragStarting: not realized
-CheckBox.dragText: not realized
-CheckBox.drop: not realized
+CheckBox.canDrag: ✓ dragAndDrop on CheckBox: the DOM's drag events dispatched by the driver, no drag the browser began
+CheckBox.dragEnded: ✓ dragAndDrop on CheckBox: the DOM's drag events dispatched by the driver, no drag the browser began
+CheckBox.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+CheckBox.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+CheckBox.dragStarting: ✓ dragAndDrop on CheckBox: the DOM's drag events dispatched by the driver, no drag the browser began
+CheckBox.dragText: ✓ dragAndDrop on CheckBox: the DOM's drag events dispatched by the driver, no drag the browser began
+CheckBox.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+CheckBox.droppedFileTypes: ✓ dropFiles on CheckBox: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+CheckBox.filesDropped: ✓ dropFiles on CheckBox: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 CheckBox.frameChanged: ✅
 CheckBox.gridColumn: ✅
 CheckBox.gridColumnSpan: ✅
@@ -115,7 +123,7 @@ CheckBox.panTouchCount: ✅
 CheckBox.panUpdated: ✅
 CheckBox.panXChannel: ✅
 CheckBox.panYChannel: ✅
-CheckBox.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+CheckBox.pinchUpdated: ✅
 CheckBox.pointerEntered: ✅
 CheckBox.pointerExited: ✅
 CheckBox.pointerMoved: ✅
@@ -127,16 +135,18 @@ CheckBox.swiped: ✅
 CheckBox.tapCount: ✅
 CheckBox.tapped: ✅
 CheckBox.verticalAlignment: ✅
-ColorBox.allowsDrop: not realized
+ColorBox.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 ColorBox.area: ✅
-ColorBox.canDrag: not realized
-ColorBox.dragEnded: not realized
-ColorBox.dragLeave: not realized
-ColorBox.dragOver: not realized
-ColorBox.dragStarting: not realized
-ColorBox.dragText: not realized
-ColorBox.drop: not realized
-ColorBox.frameChanged: ❌ [0.0, 0.0] expected, [0.0, 6.0] came - at the safe area's corner, under the bar
+ColorBox.canDrag: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorBox.dragEnded: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorBox.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorBox.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorBox.dragStarting: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorBox.dragText: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorBox.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorBox.droppedFileTypes: ✓ dropFiles on ColorBox: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+ColorBox.filesDropped: ✓ dropFiles on ColorBox: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+ColorBox.frameChanged: ✅
 ColorBox.gridColumn: ✅
 ColorBox.gridColumnSpan: ✅
 ColorBox.gridRow: ✅
@@ -147,7 +157,7 @@ ColorBox.panTouchCount: ✅
 ColorBox.panUpdated: ✅
 ColorBox.panXChannel: ✅
 ColorBox.panYChannel: ✅
-ColorBox.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+ColorBox.pinchUpdated: ✅
 ColorBox.pointerEntered: ✅
 ColorBox.pointerExited: ✅
 ColorBox.pointerMoved: ✅
@@ -159,15 +169,17 @@ ColorBox.swiped: ✅
 ColorBox.tapCount: ✅
 ColorBox.tapped: ✅
 ColorBox.verticalAlignment: ✅
-DatePicker.allowsDrop: not realized
+DatePicker.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 DatePicker.area: ✅
-DatePicker.canDrag: not realized
-DatePicker.dragEnded: not realized
-DatePicker.dragLeave: not realized
-DatePicker.dragOver: not realized
-DatePicker.dragStarting: not realized
-DatePicker.dragText: not realized
-DatePicker.drop: not realized
+DatePicker.canDrag: ✓ dragAndDrop on DatePicker: the DOM's drag events dispatched by the driver, no drag the browser began
+DatePicker.dragEnded: ✓ dragAndDrop on DatePicker: the DOM's drag events dispatched by the driver, no drag the browser began
+DatePicker.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+DatePicker.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+DatePicker.dragStarting: ✓ dragAndDrop on DatePicker: the DOM's drag events dispatched by the driver, no drag the browser began
+DatePicker.dragText: ✓ dragAndDrop on DatePicker: the DOM's drag events dispatched by the driver, no drag the browser began
+DatePicker.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+DatePicker.droppedFileTypes: ✓ dropFiles on DatePicker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+DatePicker.filesDropped: ✓ dropFiles on DatePicker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 DatePicker.frameChanged: ✅
 DatePicker.gridColumn: ✅
 DatePicker.gridColumnSpan: ✅
@@ -179,7 +191,7 @@ DatePicker.panTouchCount: ✅
 DatePicker.panUpdated: ✅
 DatePicker.panXChannel: ✅
 DatePicker.panYChannel: ✅
-DatePicker.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+DatePicker.pinchUpdated: ✅
 DatePicker.pointerEntered: ✅
 DatePicker.pointerExited: ✅
 DatePicker.pointerMoved: ✅
@@ -191,15 +203,17 @@ DatePicker.swiped: ✅
 DatePicker.tapCount: ✅
 DatePicker.tapped: ✅
 DatePicker.verticalAlignment: ✅
-Ellipse.allowsDrop: not realized
+Ellipse.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 Ellipse.area: ✅
-Ellipse.canDrag: not realized
-Ellipse.dragEnded: not realized
-Ellipse.dragLeave: not realized
-Ellipse.dragOver: not realized
-Ellipse.dragStarting: not realized
-Ellipse.dragText: not realized
-Ellipse.drop: not realized
+Ellipse.canDrag: ✓ dragAndDrop on Ellipse: the DOM's drag events dispatched by the driver, no drag the browser began
+Ellipse.dragEnded: ✓ dragAndDrop on Ellipse: the DOM's drag events dispatched by the driver, no drag the browser began
+Ellipse.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Ellipse.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Ellipse.dragStarting: ✓ dragAndDrop on Ellipse: the DOM's drag events dispatched by the driver, no drag the browser began
+Ellipse.dragText: ✓ dragAndDrop on Ellipse: the DOM's drag events dispatched by the driver, no drag the browser began
+Ellipse.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Ellipse.droppedFileTypes: ✓ dropFiles on Ellipse: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Ellipse.filesDropped: ✓ dropFiles on Ellipse: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Ellipse.frameChanged: ✅
 Ellipse.gridColumn: ✅
 Ellipse.gridColumnSpan: ✅
@@ -211,7 +225,7 @@ Ellipse.panTouchCount: ✅
 Ellipse.panUpdated: ✅
 Ellipse.panXChannel: ✅
 Ellipse.panYChannel: ✅
-Ellipse.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Ellipse.pinchUpdated: ✅
 Ellipse.pointerEntered: ✅
 Ellipse.pointerExited: ✅
 Ellipse.pointerMoved: ✅
@@ -223,15 +237,17 @@ Ellipse.swiped: ✅
 Ellipse.tapCount: ✅
 Ellipse.tapped: ✅
 Ellipse.verticalAlignment: ✅
-Grid.allowsDrop: not realized
+Grid.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 Grid.area: ✅
-Grid.canDrag: not realized
-Grid.dragEnded: not realized
-Grid.dragLeave: not realized
-Grid.dragOver: not realized
-Grid.dragStarting: not realized
-Grid.dragText: not realized
-Grid.drop: not realized
+Grid.canDrag: ✓ dragAndDrop on Grid: the DOM's drag events dispatched by the driver, no drag the browser began
+Grid.dragEnded: ✓ dragAndDrop on Grid: the DOM's drag events dispatched by the driver, no drag the browser began
+Grid.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Grid.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Grid.dragStarting: ✓ dragAndDrop on Grid: the DOM's drag events dispatched by the driver, no drag the browser began
+Grid.dragText: ✓ dragAndDrop on Grid: the DOM's drag events dispatched by the driver, no drag the browser began
+Grid.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Grid.droppedFileTypes: ✓ dropFiles on Grid: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Grid.filesDropped: ✓ dropFiles on Grid: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Grid.frameChanged: ✅
 Grid.gridColumn: ✅
 Grid.gridColumnSpan: ✅
@@ -243,7 +259,7 @@ Grid.panTouchCount: ✅
 Grid.panUpdated: ✅
 Grid.panXChannel: ✅
 Grid.panYChannel: ✅
-Grid.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Grid.pinchUpdated: ✅
 Grid.pointerEntered: ✅
 Grid.pointerExited: ✅
 Grid.pointerMoved: ✅
@@ -255,15 +271,17 @@ Grid.swiped: ✅
 Grid.tapCount: ✅
 Grid.tapped: ✅
 Grid.verticalAlignment: ✅
-HStack.allowsDrop: not realized
+HStack.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 HStack.area: ✅
-HStack.canDrag: not realized
-HStack.dragEnded: not realized
-HStack.dragLeave: not realized
-HStack.dragOver: not realized
-HStack.dragStarting: not realized
-HStack.dragText: not realized
-HStack.drop: not realized
+HStack.canDrag: ✓ dragAndDrop on HStack: the DOM's drag events dispatched by the driver, no drag the browser began
+HStack.dragEnded: ✓ dragAndDrop on HStack: the DOM's drag events dispatched by the driver, no drag the browser began
+HStack.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+HStack.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+HStack.dragStarting: ✓ dragAndDrop on HStack: the DOM's drag events dispatched by the driver, no drag the browser began
+HStack.dragText: ✓ dragAndDrop on HStack: the DOM's drag events dispatched by the driver, no drag the browser began
+HStack.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+HStack.droppedFileTypes: ✓ dropFiles on HStack: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+HStack.filesDropped: ✓ dropFiles on HStack: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 HStack.frameChanged: ✅
 HStack.gridColumn: ✅
 HStack.gridColumnSpan: ✅
@@ -275,7 +293,7 @@ HStack.panTouchCount: ✅
 HStack.panUpdated: ✅
 HStack.panXChannel: ✅
 HStack.panYChannel: ✅
-HStack.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+HStack.pinchUpdated: ✅
 HStack.pointerEntered: ✅
 HStack.pointerExited: ✅
 HStack.pointerMoved: ✅
@@ -287,15 +305,17 @@ HStack.swiped: ✅
 HStack.tapCount: ✅
 HStack.tapped: ✅
 HStack.verticalAlignment: ✅
-Image.allowsDrop: not realized
+Image.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 Image.area: ✅
-Image.canDrag: not realized
-Image.dragEnded: not realized
-Image.dragLeave: not realized
-Image.dragOver: not realized
-Image.dragStarting: not realized
-Image.dragText: not realized
-Image.drop: not realized
+Image.canDrag: ✓ dragAndDrop on Image: the DOM's drag events dispatched by the driver, no drag the browser began
+Image.dragEnded: ✓ dragAndDrop on Image: the DOM's drag events dispatched by the driver, no drag the browser began
+Image.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Image.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Image.dragStarting: ✓ dragAndDrop on Image: the DOM's drag events dispatched by the driver, no drag the browser began
+Image.dragText: ✓ dragAndDrop on Image: the DOM's drag events dispatched by the driver, no drag the browser began
+Image.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Image.droppedFileTypes: ✓ dropFiles on Image: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Image.filesDropped: ✓ dropFiles on Image: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Image.frameChanged: ✅
 Image.gridColumn: ✅
 Image.gridColumnSpan: ✅
@@ -307,7 +327,7 @@ Image.panTouchCount: ✅
 Image.panUpdated: ✅
 Image.panXChannel: ✅
 Image.panYChannel: ✅
-Image.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Image.pinchUpdated: ✅
 Image.pointerEntered: ✅
 Image.pointerExited: ✅
 Image.pointerMoved: ✅
@@ -319,27 +339,29 @@ Image.swiped: ✅
 Image.tapCount: ✅
 Image.tapped: ✅
 Image.verticalAlignment: ✅
-ItemsView.allowsDrop: not realized
+ItemsView.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 ItemsView.area: ✅
-ItemsView.canDrag: not realized
-ItemsView.dragEnded: not realized
-ItemsView.dragLeave: not realized
-ItemsView.dragOver: not realized
-ItemsView.dragStarting: not realized
-ItemsView.dragText: not realized
-ItemsView.drop: not realized
-ItemsView.frameChanged: ❌ [0.0, 0.0, 100.0, 80.0] expected, [-70.0, -40.0, 240.0, 160.0] came
-ItemsView.gridColumn: ❌ [40.0, 30.0, 60.0, 50.0] expected, [-50.0, -25.0, 240.0, 160.0] came
-ItemsView.gridColumnSpan: ❌ [0.0, 0.0, 100.0, 80.0] expected, [-70.0, -40.0, 240.0, 160.0] came
-ItemsView.gridRow: ❌ [40.0, 30.0, 60.0, 50.0] expected, [-50.0, -25.0, 240.0, 160.0] came
-ItemsView.gridRowSpan: ❌ [0.0, 0.0, 100.0, 80.0] expected, [-70.0, -40.0, 240.0, 160.0] came
+ItemsView.canDrag: ✓ dragAndDrop on ItemsView: the DOM's drag events dispatched by the driver, no drag the browser began
+ItemsView.dragEnded: ✓ dragAndDrop on ItemsView: the DOM's drag events dispatched by the driver, no drag the browser began
+ItemsView.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ItemsView.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ItemsView.dragStarting: ✓ dragAndDrop on ItemsView: the DOM's drag events dispatched by the driver, no drag the browser began
+ItemsView.dragText: ✓ dragAndDrop on ItemsView: the DOM's drag events dispatched by the driver, no drag the browser began
+ItemsView.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ItemsView.droppedFileTypes: ✓ dropFiles on ItemsView: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+ItemsView.filesDropped: ✓ dropFiles on ItemsView: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+ItemsView.frameChanged: ✅
+ItemsView.gridColumn: ✅
+ItemsView.gridColumnSpan: ✅
+ItemsView.gridRow: ✅
+ItemsView.gridRowSpan: ✅
 ItemsView.horizontalAlignment: ✅
 ItemsView.margin: ✅
 ItemsView.panTouchCount: ✅
 ItemsView.panUpdated: ✅
 ItemsView.panXChannel: ✅
 ItemsView.panYChannel: ✅
-ItemsView.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+ItemsView.pinchUpdated: ✅
 ItemsView.pointerEntered: ✅
 ItemsView.pointerExited: ✅
 ItemsView.pointerMoved: ✅
@@ -351,15 +373,17 @@ ItemsView.swiped: ✅
 ItemsView.tapCount: ✅
 ItemsView.tapped: ✅
 ItemsView.verticalAlignment: ✅
-Line.allowsDrop: not realized
+Line.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 Line.area: ✅
-Line.canDrag: not realized
-Line.dragEnded: not realized
-Line.dragLeave: not realized
-Line.dragOver: not realized
-Line.dragStarting: not realized
-Line.dragText: not realized
-Line.drop: not realized
+Line.canDrag: ✓ dragAndDrop on Line: the DOM's drag events dispatched by the driver, no drag the browser began
+Line.dragEnded: ✓ dragAndDrop on Line: the DOM's drag events dispatched by the driver, no drag the browser began
+Line.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Line.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Line.dragStarting: ✓ dragAndDrop on Line: the DOM's drag events dispatched by the driver, no drag the browser began
+Line.dragText: ✓ dragAndDrop on Line: the DOM's drag events dispatched by the driver, no drag the browser began
+Line.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Line.droppedFileTypes: ✓ dropFiles on Line: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Line.filesDropped: ✓ dropFiles on Line: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Line.frameChanged: ✅
 Line.gridColumn: ✅
 Line.gridColumnSpan: ✅
@@ -371,7 +395,7 @@ Line.panTouchCount: ✅
 Line.panUpdated: ✅
 Line.panXChannel: ✅
 Line.panYChannel: ✅
-Line.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Line.pinchUpdated: ✅
 Line.pointerEntered: ✅
 Line.pointerExited: ✅
 Line.pointerMoved: ✅
@@ -392,6 +416,8 @@ Map.dragOver: 🧩
 Map.dragStarting: 🧩
 Map.dragText: 🧩
 Map.drop: 🧩
+Map.droppedFileTypes: 🧩
+Map.filesDropped: 🧩
 Map.frameChanged: 🧩
 Map.gridColumn: 🧩
 Map.gridColumnSpan: 🧩
@@ -415,15 +441,17 @@ Map.swiped: 🧩
 Map.tapCount: 🧩
 Map.tapped: 🧩
 Map.verticalAlignment: 🧩
-Path.allowsDrop: not realized
+Path.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 Path.area: ✅
-Path.canDrag: not realized
-Path.dragEnded: not realized
-Path.dragLeave: not realized
-Path.dragOver: not realized
-Path.dragStarting: not realized
-Path.dragText: not realized
-Path.drop: not realized
+Path.canDrag: ✓ dragAndDrop on Path: the DOM's drag events dispatched by the driver, no drag the browser began
+Path.dragEnded: ✓ dragAndDrop on Path: the DOM's drag events dispatched by the driver, no drag the browser began
+Path.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Path.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Path.dragStarting: ✓ dragAndDrop on Path: the DOM's drag events dispatched by the driver, no drag the browser began
+Path.dragText: ✓ dragAndDrop on Path: the DOM's drag events dispatched by the driver, no drag the browser began
+Path.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Path.droppedFileTypes: ✓ dropFiles on Path: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Path.filesDropped: ✓ dropFiles on Path: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Path.frameChanged: ✅
 Path.gridColumn: ✅
 Path.gridColumnSpan: ✅
@@ -435,7 +463,7 @@ Path.panTouchCount: ✅
 Path.panUpdated: ✅
 Path.panXChannel: ✅
 Path.panYChannel: ✅
-Path.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Path.pinchUpdated: ✅
 Path.pointerEntered: ✅
 Path.pointerExited: ✅
 Path.pointerMoved: ✅
@@ -447,16 +475,18 @@ Path.swiped: ✅
 Path.tapCount: ✅
 Path.tapped: ✅
 Path.verticalAlignment: ✅
-Picker.allowsDrop: not realized
-Picker.area: ❌ [10.0, 20.0, 30.0, 40.0] expected, [10.0, 20.0, 48.0, 40.0] came - in points
-Picker.canDrag: not realized
-Picker.dragEnded: not realized
-Picker.dragLeave: not realized
-Picker.dragOver: not realized
-Picker.dragStarting: not realized
-Picker.dragText: not realized
-Picker.drop: not realized
-Picker.frameChanged: ❌ [10.0, 20.0, 30.0, 40.0] expected, [10.0, 20.0, 48.0, 40.0] came - in points
+Picker.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Picker.area: ✅
+Picker.canDrag: ✓ dragAndDrop on Picker: the DOM's drag events dispatched by the driver, no drag the browser began
+Picker.dragEnded: ✓ dragAndDrop on Picker: the DOM's drag events dispatched by the driver, no drag the browser began
+Picker.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Picker.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Picker.dragStarting: ✓ dragAndDrop on Picker: the DOM's drag events dispatched by the driver, no drag the browser began
+Picker.dragText: ✓ dragAndDrop on Picker: the DOM's drag events dispatched by the driver, no drag the browser began
+Picker.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Picker.droppedFileTypes: ✓ dropFiles on Picker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Picker.filesDropped: ✓ dropFiles on Picker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Picker.frameChanged: ✅
 Picker.gridColumn: ✅
 Picker.gridColumnSpan: ✅
 Picker.gridRow: ✅
@@ -467,7 +497,7 @@ Picker.panTouchCount: ✅
 Picker.panUpdated: ✅
 Picker.panXChannel: ✅
 Picker.panYChannel: ✅
-Picker.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Picker.pinchUpdated: ✅
 Picker.pointerEntered: ✅
 Picker.pointerExited: ✅
 Picker.pointerMoved: ✅
@@ -479,15 +509,17 @@ Picker.swiped: ✅
 Picker.tapCount: ✅
 Picker.tapped: ✅
 Picker.verticalAlignment: ✅
-Polygon.allowsDrop: not realized
+Polygon.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 Polygon.area: ✅
-Polygon.canDrag: not realized
-Polygon.dragEnded: not realized
-Polygon.dragLeave: not realized
-Polygon.dragOver: not realized
-Polygon.dragStarting: not realized
-Polygon.dragText: not realized
-Polygon.drop: not realized
+Polygon.canDrag: ✓ dragAndDrop on Polygon: the DOM's drag events dispatched by the driver, no drag the browser began
+Polygon.dragEnded: ✓ dragAndDrop on Polygon: the DOM's drag events dispatched by the driver, no drag the browser began
+Polygon.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Polygon.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Polygon.dragStarting: ✓ dragAndDrop on Polygon: the DOM's drag events dispatched by the driver, no drag the browser began
+Polygon.dragText: ✓ dragAndDrop on Polygon: the DOM's drag events dispatched by the driver, no drag the browser began
+Polygon.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Polygon.droppedFileTypes: ✓ dropFiles on Polygon: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Polygon.filesDropped: ✓ dropFiles on Polygon: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Polygon.frameChanged: ✅
 Polygon.gridColumn: ✅
 Polygon.gridColumnSpan: ✅
@@ -499,7 +531,7 @@ Polygon.panTouchCount: ✅
 Polygon.panUpdated: ✅
 Polygon.panXChannel: ✅
 Polygon.panYChannel: ✅
-Polygon.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Polygon.pinchUpdated: ✅
 Polygon.pointerEntered: ✅
 Polygon.pointerExited: ✅
 Polygon.pointerMoved: ✅
@@ -511,15 +543,17 @@ Polygon.swiped: ✅
 Polygon.tapCount: ✅
 Polygon.tapped: ✅
 Polygon.verticalAlignment: ✅
-Polyline.allowsDrop: not realized
+Polyline.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 Polyline.area: ✅
-Polyline.canDrag: not realized
-Polyline.dragEnded: not realized
-Polyline.dragLeave: not realized
-Polyline.dragOver: not realized
-Polyline.dragStarting: not realized
-Polyline.dragText: not realized
-Polyline.drop: not realized
+Polyline.canDrag: ✓ dragAndDrop on Polyline: the DOM's drag events dispatched by the driver, no drag the browser began
+Polyline.dragEnded: ✓ dragAndDrop on Polyline: the DOM's drag events dispatched by the driver, no drag the browser began
+Polyline.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Polyline.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Polyline.dragStarting: ✓ dragAndDrop on Polyline: the DOM's drag events dispatched by the driver, no drag the browser began
+Polyline.dragText: ✓ dragAndDrop on Polyline: the DOM's drag events dispatched by the driver, no drag the browser began
+Polyline.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Polyline.droppedFileTypes: ✓ dropFiles on Polyline: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Polyline.filesDropped: ✓ dropFiles on Polyline: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Polyline.frameChanged: ✅
 Polyline.gridColumn: ✅
 Polyline.gridColumnSpan: ✅
@@ -531,7 +565,7 @@ Polyline.panTouchCount: ✅
 Polyline.panUpdated: ✅
 Polyline.panXChannel: ✅
 Polyline.panYChannel: ✅
-Polyline.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Polyline.pinchUpdated: ✅
 Polyline.pointerEntered: ✅
 Polyline.pointerExited: ✅
 Polyline.pointerMoved: ✅
@@ -543,47 +577,51 @@ Polyline.swiped: ✅
 Polyline.tapCount: ✅
 Polyline.tapped: ✅
 Polyline.verticalAlignment: ✅
-ProgressBar.allowsDrop: not realized
-ProgressBar.area: ❌ [10.0, 20.0, 30.0, 40.0] expected, [10.0, 20.0, 80.0, 40.0] came - in points
-ProgressBar.canDrag: not realized
-ProgressBar.dragEnded: not realized
-ProgressBar.dragLeave: not realized
-ProgressBar.dragOver: not realized
-ProgressBar.dragStarting: not realized
-ProgressBar.dragText: not realized
-ProgressBar.drop: not realized
-ProgressBar.frameChanged: ❌ [0.0, 0.0, 100.0, 80.0] expected, [0.0, 0.0, 100.0, 6.0] came
-ProgressBar.gridColumn: ❌ [40.0, 30.0, 60.0, 50.0] expected, [40.0, 30.0, 80.0, 6.0] came
-ProgressBar.gridColumnSpan: ❌ [0.0, 0.0, 100.0, 80.0] expected, [0.0, 0.0, 100.0, 6.0] came
-ProgressBar.gridRow: ❌ [40.0, 30.0, 60.0, 50.0] expected, [40.0, 30.0, 80.0, 6.0] came
-ProgressBar.gridRowSpan: ❌ [0.0, 0.0, 100.0, 80.0] expected, [0.0, 0.0, 100.0, 6.0] came
+ProgressBar.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ProgressBar.area: ✅
+ProgressBar.canDrag: ✓ dragAndDrop on ProgressBar: the DOM's drag events dispatched by the driver, no drag the browser began
+ProgressBar.dragEnded: ✓ dragAndDrop on ProgressBar: the DOM's drag events dispatched by the driver, no drag the browser began
+ProgressBar.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ProgressBar.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ProgressBar.dragStarting: ✓ dragAndDrop on ProgressBar: the DOM's drag events dispatched by the driver, no drag the browser began
+ProgressBar.dragText: ✓ dragAndDrop on ProgressBar: the DOM's drag events dispatched by the driver, no drag the browser began
+ProgressBar.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ProgressBar.droppedFileTypes: ✓ dropFiles on ProgressBar: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+ProgressBar.filesDropped: ✓ dropFiles on ProgressBar: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+ProgressBar.frameChanged: ✅
+ProgressBar.gridColumn: ✅
+ProgressBar.gridColumnSpan: ✅
+ProgressBar.gridRow: ✅
+ProgressBar.gridRowSpan: ✅
 ProgressBar.horizontalAlignment: ✅
 ProgressBar.margin: ✅
 ProgressBar.panTouchCount: ✅
 ProgressBar.panUpdated: ✅
 ProgressBar.panXChannel: ✅
 ProgressBar.panYChannel: ✅
-ProgressBar.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
-ProgressBar.pointerEntered: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, [] came
-ProgressBar.pointerExited: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, [] came
-ProgressBar.pointerMoved: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, [] came
-ProgressBar.pointerPressed: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, [] came
-ProgressBar.pointerReleased: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, [] came
+ProgressBar.pinchUpdated: ✅
+ProgressBar.pointerEntered: ✅
+ProgressBar.pointerExited: ✅
+ProgressBar.pointerMoved: ✅
+ProgressBar.pointerPressed: ✅
+ProgressBar.pointerReleased: ✅
 ProgressBar.swipeDirection: ✅
 ProgressBar.swipeThreshold: ✅
 ProgressBar.swiped: ✅
 ProgressBar.tapCount: ✅
 ProgressBar.tapped: ✅
 ProgressBar.verticalAlignment: ✅
-RadioButton.allowsDrop: not realized
+RadioButton.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 RadioButton.area: ✅
-RadioButton.canDrag: not realized
-RadioButton.dragEnded: not realized
-RadioButton.dragLeave: not realized
-RadioButton.dragOver: not realized
-RadioButton.dragStarting: not realized
-RadioButton.dragText: not realized
-RadioButton.drop: not realized
+RadioButton.canDrag: ✓ dragAndDrop on RadioButton: the DOM's drag events dispatched by the driver, no drag the browser began
+RadioButton.dragEnded: ✓ dragAndDrop on RadioButton: the DOM's drag events dispatched by the driver, no drag the browser began
+RadioButton.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+RadioButton.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+RadioButton.dragStarting: ✓ dragAndDrop on RadioButton: the DOM's drag events dispatched by the driver, no drag the browser began
+RadioButton.dragText: ✓ dragAndDrop on RadioButton: the DOM's drag events dispatched by the driver, no drag the browser began
+RadioButton.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+RadioButton.droppedFileTypes: ✓ dropFiles on RadioButton: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+RadioButton.filesDropped: ✓ dropFiles on RadioButton: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 RadioButton.frameChanged: ✅
 RadioButton.gridColumn: ✅
 RadioButton.gridColumnSpan: ✅
@@ -595,7 +633,7 @@ RadioButton.panTouchCount: ✅
 RadioButton.panUpdated: ✅
 RadioButton.panXChannel: ✅
 RadioButton.panYChannel: ✅
-RadioButton.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+RadioButton.pinchUpdated: ✅
 RadioButton.pointerEntered: ✅
 RadioButton.pointerExited: ✅
 RadioButton.pointerMoved: ✅
@@ -604,18 +642,20 @@ RadioButton.pointerReleased: ✅
 RadioButton.swipeDirection: ✅
 RadioButton.swipeThreshold: ✅
 RadioButton.swiped: ✅
-RadioButton.tapCount: ❌ ["tapped"] expected, ["tapped", "tapped"] came - two are
-RadioButton.tapped: ❌ ["tapped"] expected, ["tapped", "tapped"] came - two are
+RadioButton.tapCount: ✅
+RadioButton.tapped: ✅
 RadioButton.verticalAlignment: ✅
-Rectangle.allowsDrop: not realized
+Rectangle.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 Rectangle.area: ✅
-Rectangle.canDrag: not realized
-Rectangle.dragEnded: not realized
-Rectangle.dragLeave: not realized
-Rectangle.dragOver: not realized
-Rectangle.dragStarting: not realized
-Rectangle.dragText: not realized
-Rectangle.drop: not realized
+Rectangle.canDrag: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Rectangle.dragEnded: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Rectangle.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Rectangle.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Rectangle.dragStarting: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Rectangle.dragText: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Rectangle.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Rectangle.droppedFileTypes: ✓ dropFiles on Rectangle: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Rectangle.filesDropped: ✓ dropFiles on Rectangle: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Rectangle.frameChanged: ✅
 Rectangle.gridColumn: ✅
 Rectangle.gridColumnSpan: ✅
@@ -627,7 +667,7 @@ Rectangle.panTouchCount: ✅
 Rectangle.panUpdated: ✅
 Rectangle.panXChannel: ✅
 Rectangle.panYChannel: ✅
-Rectangle.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Rectangle.pinchUpdated: ✅
 Rectangle.pointerEntered: ✅
 Rectangle.pointerExited: ✅
 Rectangle.pointerMoved: ✅
@@ -639,15 +679,17 @@ Rectangle.swiped: ✅
 Rectangle.tapCount: ✅
 Rectangle.tapped: ✅
 Rectangle.verticalAlignment: ✅
-ScrollView.allowsDrop: not realized
+ScrollView.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 ScrollView.area: ✅
-ScrollView.canDrag: not realized
-ScrollView.dragEnded: not realized
-ScrollView.dragLeave: not realized
-ScrollView.dragOver: not realized
-ScrollView.dragStarting: not realized
-ScrollView.dragText: not realized
-ScrollView.drop: not realized
+ScrollView.canDrag: ✓ dragAndDrop on ScrollView: the DOM's drag events dispatched by the driver, no drag the browser began
+ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the DOM's drag events dispatched by the driver, no drag the browser began
+ScrollView.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ScrollView.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ScrollView.dragStarting: ✓ dragAndDrop on ScrollView: the DOM's drag events dispatched by the driver, no drag the browser began
+ScrollView.dragText: ✓ dragAndDrop on ScrollView: the DOM's drag events dispatched by the driver, no drag the browser began
+ScrollView.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ScrollView.droppedFileTypes: ✓ dropFiles on ScrollView: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+ScrollView.filesDropped: ✓ dropFiles on ScrollView: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 ScrollView.frameChanged: ✅
 ScrollView.gridColumn: ✅
 ScrollView.gridColumnSpan: ✅
@@ -659,7 +701,7 @@ ScrollView.panTouchCount: ✅
 ScrollView.panUpdated: ✅
 ScrollView.panXChannel: ✅
 ScrollView.panYChannel: ✅
-ScrollView.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+ScrollView.pinchUpdated: ✅
 ScrollView.pointerEntered: ✅
 ScrollView.pointerExited: ✅
 ScrollView.pointerMoved: ✅
@@ -671,16 +713,18 @@ ScrollView.swiped: ✅
 ScrollView.tapCount: ✅
 ScrollView.tapped: ✅
 ScrollView.verticalAlignment: ✅
-SearchField.allowsDrop: not realized
-SearchField.area: ❌ [10.0, 20.0, 30.0, 40.0] expected, [10.0, 20.0, 48.0, 40.0] came - in points
-SearchField.canDrag: not realized
-SearchField.dragEnded: not realized
-SearchField.dragLeave: not realized
-SearchField.dragOver: not realized
-SearchField.dragStarting: not realized
-SearchField.dragText: not realized
-SearchField.drop: not realized
-SearchField.frameChanged: ❌ [10.0, 20.0, 30.0, 40.0] expected, [10.0, 20.0, 48.0, 40.0] came - in points
+SearchField.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+SearchField.area: ✅
+SearchField.canDrag: ✓ dragAndDrop on SearchField: the DOM's drag events dispatched by the driver, no drag the browser began
+SearchField.dragEnded: ✓ dragAndDrop on SearchField: the DOM's drag events dispatched by the driver, no drag the browser began
+SearchField.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+SearchField.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+SearchField.dragStarting: ✓ dragAndDrop on SearchField: the DOM's drag events dispatched by the driver, no drag the browser began
+SearchField.dragText: ✓ dragAndDrop on SearchField: the DOM's drag events dispatched by the driver, no drag the browser began
+SearchField.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+SearchField.droppedFileTypes: ✓ dropFiles on SearchField: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+SearchField.filesDropped: ✓ dropFiles on SearchField: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+SearchField.frameChanged: ✅
 SearchField.gridColumn: ✅
 SearchField.gridColumnSpan: ✅
 SearchField.gridRow: ✅
@@ -691,7 +735,7 @@ SearchField.panTouchCount: ✅
 SearchField.panUpdated: ✅
 SearchField.panXChannel: ✅
 SearchField.panYChannel: ✅
-SearchField.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+SearchField.pinchUpdated: ✅
 SearchField.pointerEntered: ✅
 SearchField.pointerExited: ✅
 SearchField.pointerMoved: ✅
@@ -703,27 +747,29 @@ SearchField.swiped: ✅
 SearchField.tapCount: ✅
 SearchField.tapped: ✅
 SearchField.verticalAlignment: ✅
-Slider.allowsDrop: not realized
-Slider.area: ❌ [10.0, 20.0, 30.0, 40.0] expected, [10.0, 20.0, 120.0, 40.0] came - in points
-Slider.canDrag: not realized
-Slider.dragEnded: not realized
-Slider.dragLeave: not realized
-Slider.dragOver: not realized
-Slider.dragStarting: not realized
-Slider.dragText: not realized
-Slider.drop: not realized
-Slider.frameChanged: ❌ 200.0 expected, 180.0 came - at the end of a room 300 wide
-Slider.gridColumn: ❌ [40.0, 30.0, 60.0, 50.0] expected, [40.0, 30.0, 120.0, 50.0] came
-Slider.gridColumnSpan: ❌ [0.0, 0.0, 100.0, 80.0] expected, [0.0, 0.0, 120.0, 80.0] came
-Slider.gridRow: ❌ [40.0, 30.0, 60.0, 50.0] expected, [40.0, 30.0, 120.0, 50.0] came
-Slider.gridRowSpan: ❌ [0.0, 0.0, 100.0, 80.0] expected, [0.0, 0.0, 120.0, 80.0] came
-Slider.horizontalAlignment: ❌ 200.0 expected, 180.0 came - at the end of a room 300 wide
+Slider.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Slider.area: ✅
+Slider.canDrag: ✓ dragAndDrop on Slider: the DOM's drag events dispatched by the driver, no drag the browser began
+Slider.dragEnded: ✓ dragAndDrop on Slider: the DOM's drag events dispatched by the driver, no drag the browser began
+Slider.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Slider.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Slider.dragStarting: ✓ dragAndDrop on Slider: the DOM's drag events dispatched by the driver, no drag the browser began
+Slider.dragText: ✓ dragAndDrop on Slider: the DOM's drag events dispatched by the driver, no drag the browser began
+Slider.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Slider.droppedFileTypes: ✓ dropFiles on Slider: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Slider.filesDropped: ✓ dropFiles on Slider: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Slider.frameChanged: ✅
+Slider.gridColumn: ✅
+Slider.gridColumnSpan: ✅
+Slider.gridRow: ✅
+Slider.gridRowSpan: ✅
+Slider.horizontalAlignment: ✅
 Slider.margin: ✅
 Slider.panTouchCount: ✅
 Slider.panUpdated: ✅
 Slider.panXChannel: ✅
 Slider.panYChannel: ✅
-Slider.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Slider.pinchUpdated: ✅
 Slider.pointerEntered: ✅
 Slider.pointerExited: ✅
 Slider.pointerMoved: ✅
@@ -734,16 +780,18 @@ Slider.swipeThreshold: ✅
 Slider.swiped: ✅
 Slider.tapCount: ✅
 Slider.tapped: ✅
-Slider.verticalAlignment: ❌ 200.0 expected, 180.0 came - at the end of a room 300 wide
-Stepper.allowsDrop: not realized
+Slider.verticalAlignment: ✅
+Stepper.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 Stepper.area: ✅
-Stepper.canDrag: not realized
-Stepper.dragEnded: not realized
-Stepper.dragLeave: not realized
-Stepper.dragOver: not realized
-Stepper.dragStarting: not realized
-Stepper.dragText: not realized
-Stepper.drop: not realized
+Stepper.canDrag: ✓ dragAndDrop on Stepper: the DOM's drag events dispatched by the driver, no drag the browser began
+Stepper.dragEnded: ✓ dragAndDrop on Stepper: the DOM's drag events dispatched by the driver, no drag the browser began
+Stepper.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Stepper.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Stepper.dragStarting: ✓ dragAndDrop on Stepper: the DOM's drag events dispatched by the driver, no drag the browser began
+Stepper.dragText: ✓ dragAndDrop on Stepper: the DOM's drag events dispatched by the driver, no drag the browser began
+Stepper.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Stepper.filesDropped: ✓ dropFiles on Stepper: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Stepper.frameChanged: ✅
 Stepper.gridColumn: ✅
 Stepper.gridColumnSpan: ✅
@@ -755,7 +803,7 @@ Stepper.panTouchCount: ✅
 Stepper.panUpdated: ✅
 Stepper.panXChannel: ✅
 Stepper.panYChannel: ✅
-Stepper.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Stepper.pinchUpdated: ✅
 Stepper.pointerEntered: ✅
 Stepper.pointerExited: ✅
 Stepper.pointerMoved: ✅
@@ -767,15 +815,17 @@ Stepper.swiped: ✅
 Stepper.tapCount: ✅
 Stepper.tapped: ✅
 Stepper.verticalAlignment: ✅
-Switch.allowsDrop: not realized
+Switch.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 Switch.area: ✅
-Switch.canDrag: not realized
-Switch.dragEnded: not realized
-Switch.dragLeave: not realized
-Switch.dragOver: not realized
-Switch.dragStarting: not realized
-Switch.dragText: not realized
-Switch.drop: not realized
+Switch.canDrag: ✓ dragAndDrop on Switch: the DOM's drag events dispatched by the driver, no drag the browser began
+Switch.dragEnded: ✓ dragAndDrop on Switch: the DOM's drag events dispatched by the driver, no drag the browser began
+Switch.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Switch.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Switch.dragStarting: ✓ dragAndDrop on Switch: the DOM's drag events dispatched by the driver, no drag the browser began
+Switch.dragText: ✓ dragAndDrop on Switch: the DOM's drag events dispatched by the driver, no drag the browser began
+Switch.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Switch.droppedFileTypes: ✓ dropFiles on Switch: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Switch.filesDropped: ✓ dropFiles on Switch: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Switch.frameChanged: ✅
 Switch.gridColumn: ✅
 Switch.gridColumnSpan: ✅
@@ -787,7 +837,7 @@ Switch.panTouchCount: ✅
 Switch.panUpdated: ✅
 Switch.panXChannel: ✅
 Switch.panYChannel: ✅
-Switch.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Switch.pinchUpdated: ✅
 Switch.pointerEntered: ✅
 Switch.pointerExited: ✅
 Switch.pointerMoved: ✅
@@ -799,15 +849,17 @@ Switch.swiped: ✅
 Switch.tapCount: ✅
 Switch.tapped: ✅
 Switch.verticalAlignment: ✅
-Text.allowsDrop: not realized
+Text.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 Text.area: ✅
-Text.canDrag: not realized
-Text.dragEnded: not realized
-Text.dragLeave: not realized
-Text.dragOver: not realized
-Text.dragStarting: not realized
-Text.dragText: not realized
-Text.drop: not realized
+Text.canDrag: ✓ dragAndDrop on Text: the DOM's drag events dispatched by the driver, no drag the browser began
+Text.dragEnded: ✓ dragAndDrop on Text: the DOM's drag events dispatched by the driver, no drag the browser began
+Text.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Text.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Text.dragStarting: ✓ dragAndDrop on Text: the DOM's drag events dispatched by the driver, no drag the browser began
+Text.dragText: ✓ dragAndDrop on Text: the DOM's drag events dispatched by the driver, no drag the browser began
+Text.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+Text.droppedFileTypes: ✓ dropFiles on Text: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Text.filesDropped: ✓ dropFiles on Text: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Text.frameChanged: ✅
 Text.gridColumn: ✅
 Text.gridColumnSpan: ✅
@@ -819,7 +871,7 @@ Text.panTouchCount: ✅
 Text.panUpdated: ✅
 Text.panXChannel: ✅
 Text.panYChannel: ✅
-Text.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+Text.pinchUpdated: ✅
 Text.pointerEntered: ✅
 Text.pointerExited: ✅
 Text.pointerMoved: ✅
@@ -831,27 +883,29 @@ Text.swiped: ✅
 Text.tapCount: ✅
 Text.tapped: ✅
 Text.verticalAlignment: ✅
-TextEditor.allowsDrop: not realized
-TextEditor.area: ❌ [10.0, 20.0, 30.0, 40.0] expected, [10.0, 20.0, 30.0, 88.0] came - in points
-TextEditor.canDrag: not realized
-TextEditor.dragEnded: not realized
-TextEditor.dragLeave: not realized
-TextEditor.dragOver: not realized
-TextEditor.dragStarting: not realized
-TextEditor.dragText: not realized
-TextEditor.drop: not realized
-TextEditor.frameChanged: ❌ 60.0 expected, 12.0 came - at the end of a room 100 high
-TextEditor.gridColumn: ❌ [40.0, 30.0, 60.0, 50.0] expected, [40.0, 30.0, 60.0, 88.0] came
-TextEditor.gridColumnSpan: ❌ [0.0, 0.0, 100.0, 80.0] expected, [0.0, 0.0, 100.0, 88.0] came
-TextEditor.gridRow: ❌ [40.0, 30.0, 60.0, 50.0] expected, [40.0, 30.0, 60.0, 88.0] came
-TextEditor.gridRowSpan: ❌ [0.0, 0.0, 100.0, 80.0] expected, [0.0, 0.0, 100.0, 88.0] came
-TextEditor.horizontalAlignment: ❌ 60.0 expected, 12.0 came - at the end of a room 100 high
-TextEditor.margin: ❌ [10.0, 6.0, 120.0, 40.0] expected, [10.0, 6.0, 120.0, 88.0] came - x, y, width, height in its parent
+TextEditor.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+TextEditor.area: ✅
+TextEditor.canDrag: ✓ dragAndDrop on TextEditor: the DOM's drag events dispatched by the driver, no drag the browser began
+TextEditor.dragEnded: ✓ dragAndDrop on TextEditor: the DOM's drag events dispatched by the driver, no drag the browser began
+TextEditor.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+TextEditor.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+TextEditor.dragStarting: ✓ dragAndDrop on TextEditor: the DOM's drag events dispatched by the driver, no drag the browser began
+TextEditor.dragText: ✓ dragAndDrop on TextEditor: the DOM's drag events dispatched by the driver, no drag the browser began
+TextEditor.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+TextEditor.droppedFileTypes: ✓ dropFiles on TextEditor: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+TextEditor.filesDropped: ✓ dropFiles on TextEditor: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+TextEditor.frameChanged: ✅
+TextEditor.gridColumn: ✅
+TextEditor.gridColumnSpan: ✅
+TextEditor.gridRow: ✅
+TextEditor.gridRowSpan: ✅
+TextEditor.horizontalAlignment: ✅
+TextEditor.margin: ✅
 TextEditor.panTouchCount: ✅
 TextEditor.panUpdated: ✅
 TextEditor.panXChannel: ✅
 TextEditor.panYChannel: ✅
-TextEditor.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+TextEditor.pinchUpdated: ✅
 TextEditor.pointerEntered: ✅
 TextEditor.pointerExited: ✅
 TextEditor.pointerMoved: ✅
@@ -862,16 +916,18 @@ TextEditor.swipeThreshold: ✅
 TextEditor.swiped: ✅
 TextEditor.tapCount: ✅
 TextEditor.tapped: ✅
-TextEditor.verticalAlignment: ❌ 60.0 expected, 12.0 came - at the end of a room 100 high
-TextField.allowsDrop: not realized
+TextEditor.verticalAlignment: ✅
+TextField.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 TextField.area: ✅
-TextField.canDrag: not realized
-TextField.dragEnded: not realized
-TextField.dragLeave: not realized
-TextField.dragOver: not realized
-TextField.dragStarting: not realized
-TextField.dragText: not realized
-TextField.drop: not realized
+TextField.canDrag: ✓ dragAndDrop on TextField: the DOM's drag events dispatched by the driver, no drag the browser began
+TextField.dragEnded: ✓ dragAndDrop on TextField: the DOM's drag events dispatched by the driver, no drag the browser began
+TextField.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+TextField.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+TextField.dragStarting: ✓ dragAndDrop on TextField: the DOM's drag events dispatched by the driver, no drag the browser began
+TextField.dragText: ✓ dragAndDrop on TextField: the DOM's drag events dispatched by the driver, no drag the browser began
+TextField.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+TextField.droppedFileTypes: ✓ dropFiles on TextField: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+TextField.filesDropped: ✓ dropFiles on TextField: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 TextField.frameChanged: ✅
 TextField.gridColumn: ✅
 TextField.gridColumnSpan: ✅
@@ -883,7 +939,7 @@ TextField.panTouchCount: ✅
 TextField.panUpdated: ✅
 TextField.panXChannel: ✅
 TextField.panYChannel: ✅
-TextField.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+TextField.pinchUpdated: ✅
 TextField.pointerEntered: ✅
 TextField.pointerExited: ✅
 TextField.pointerMoved: ✅
@@ -895,15 +951,17 @@ TextField.swiped: ✅
 TextField.tapCount: ✅
 TextField.tapped: ✅
 TextField.verticalAlignment: ✅
-TimePicker.allowsDrop: not realized
+TimePicker.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 TimePicker.area: ✅
-TimePicker.canDrag: not realized
-TimePicker.dragEnded: not realized
-TimePicker.dragLeave: not realized
-TimePicker.dragOver: not realized
-TimePicker.dragStarting: not realized
-TimePicker.dragText: not realized
-TimePicker.drop: not realized
+TimePicker.canDrag: ✓ dragAndDrop on TimePicker: the DOM's drag events dispatched by the driver, no drag the browser began
+TimePicker.dragEnded: ✓ dragAndDrop on TimePicker: the DOM's drag events dispatched by the driver, no drag the browser began
+TimePicker.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+TimePicker.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+TimePicker.dragStarting: ✓ dragAndDrop on TimePicker: the DOM's drag events dispatched by the driver, no drag the browser began
+TimePicker.dragText: ✓ dragAndDrop on TimePicker: the DOM's drag events dispatched by the driver, no drag the browser began
+TimePicker.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+TimePicker.droppedFileTypes: ✓ dropFiles on TimePicker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+TimePicker.filesDropped: ✓ dropFiles on TimePicker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 TimePicker.frameChanged: ✅
 TimePicker.gridColumn: ✅
 TimePicker.gridColumnSpan: ✅
@@ -915,7 +973,7 @@ TimePicker.panTouchCount: ✅
 TimePicker.panUpdated: ✅
 TimePicker.panXChannel: ✅
 TimePicker.panYChannel: ✅
-TimePicker.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+TimePicker.pinchUpdated: ✅
 TimePicker.pointerEntered: ✅
 TimePicker.pointerExited: ✅
 TimePicker.pointerMoved: ✅
@@ -927,15 +985,17 @@ TimePicker.swiped: ✅
 TimePicker.tapCount: ✅
 TimePicker.tapped: ✅
 TimePicker.verticalAlignment: ✅
-VStack.allowsDrop: not realized
+VStack.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 VStack.area: ✅
-VStack.canDrag: not realized
-VStack.dragEnded: not realized
-VStack.dragLeave: not realized
-VStack.dragOver: not realized
-VStack.dragStarting: not realized
-VStack.dragText: not realized
-VStack.drop: not realized
+VStack.canDrag: ✓ dragAndDrop on VStack: the DOM's drag events dispatched by the driver, no drag the browser began
+VStack.dragEnded: ✓ dragAndDrop on VStack: the DOM's drag events dispatched by the driver, no drag the browser began
+VStack.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+VStack.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+VStack.dragStarting: ✓ dragAndDrop on VStack: the DOM's drag events dispatched by the driver, no drag the browser began
+VStack.dragText: ✓ dragAndDrop on VStack: the DOM's drag events dispatched by the driver, no drag the browser began
+VStack.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+VStack.droppedFileTypes: ✓ dropFiles on VStack: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+VStack.filesDropped: ✓ dropFiles on VStack: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 VStack.frameChanged: ✅
 VStack.gridColumn: ✅
 VStack.gridColumnSpan: ✅
@@ -947,7 +1007,7 @@ VStack.panTouchCount: ✅
 VStack.panUpdated: ✅
 VStack.panXChannel: ✅
 VStack.panYChannel: ✅
-VStack.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+VStack.pinchUpdated: ✅
 VStack.pointerEntered: ✅
 VStack.pointerExited: ✅
 VStack.pointerMoved: ✅
@@ -959,15 +1019,17 @@ VStack.swiped: ✅
 VStack.tapCount: ✅
 VStack.tapped: ✅
 VStack.verticalAlignment: ✅
-WebView.allowsDrop: not realized
+WebView.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 WebView.area: ✅
-WebView.canDrag: not realized
-WebView.dragEnded: not realized
-WebView.dragLeave: not realized
-WebView.dragOver: not realized
-WebView.dragStarting: not realized
-WebView.dragText: not realized
-WebView.drop: not realized
+WebView.canDrag: ✓ dragAndDrop on WebView: the DOM's drag events dispatched by the driver, no drag the browser began
+WebView.dragEnded: ✓ dragAndDrop on WebView: the DOM's drag events dispatched by the driver, no drag the browser began
+WebView.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+WebView.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+WebView.dragStarting: ✓ dragAndDrop on WebView: the DOM's drag events dispatched by the driver, no drag the browser began
+WebView.dragText: ✓ dragAndDrop on WebView: the DOM's drag events dispatched by the driver, no drag the browser began
+WebView.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+WebView.droppedFileTypes: ✓ dropFiles on WebView: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+WebView.filesDropped: ✓ dropFiles on WebView: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 WebView.frameChanged: ✅
 WebView.gridColumn: ✅
 WebView.gridColumnSpan: ✅
@@ -975,31 +1037,33 @@ WebView.gridRow: ✅
 WebView.gridRowSpan: ✅
 WebView.horizontalAlignment: ✅
 WebView.margin: ✅
-WebView.panTouchCount: ❌ true expected, nothing came - heard as it begins
-WebView.panUpdated: ❌ true expected, nothing came - heard as it begins
-WebView.panXChannel: ❌ true expected, nothing came - heard as it begins
-WebView.panYChannel: ❌ 25.0 expected, 5.0 came - the state carried as far as the hand went down
-WebView.pinchUpdated: ❌ true expected, false came - its scale and its place, []
-WebView.pointerEntered: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, ["entered", "exited"] came
-WebView.pointerExited: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, ["entered", "exited"] came
-WebView.pointerMoved: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, ["entered", "exited"] came
-WebView.pointerPressed: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, ["entered", "exited"] came
-WebView.pointerReleased: ❌ ["entered", "moved 10,12", "pressed 10,12", "released 10,12", "exited"] expected, ["entered", "exited"] came
-WebView.swipeDirection: ❌ [StateUI.SwipeDirection(rawValue: 2)] expected, [] came
-WebView.swipeThreshold: ❌ [StateUI.SwipeDirection(rawValue: 2)] expected, [] came
-WebView.swiped: ❌ [StateUI.SwipeDirection(rawValue: 2)] expected, [] came
-WebView.tapCount: ❌ ["tapped"] expected, [] came - two are
-WebView.tapped: ❌ ["tapped"] expected, [] came - two are
+WebView.panTouchCount: ✅
+WebView.panUpdated: ✅
+WebView.panXChannel: ✅
+WebView.panYChannel: ✅
+WebView.pinchUpdated: ✅
+WebView.pointerEntered: ✅
+WebView.pointerExited: ✅
+WebView.pointerMoved: ✅
+WebView.pointerPressed: ✅
+WebView.pointerReleased: ✅
+WebView.swipeDirection: ✅
+WebView.swipeThreshold: ✅
+WebView.swiped: ✅
+WebView.tapCount: ✅
+WebView.tapped: ✅
 WebView.verticalAlignment: ✅
-ZStack.allowsDrop: not realized
+ZStack.allowsDrop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
 ZStack.area: ✅
-ZStack.canDrag: not realized
-ZStack.dragEnded: not realized
-ZStack.dragLeave: not realized
-ZStack.dragOver: not realized
-ZStack.dragStarting: not realized
-ZStack.dragText: not realized
-ZStack.drop: not realized
+ZStack.canDrag: ✓ dragAndDrop on ZStack: the DOM's drag events dispatched by the driver, no drag the browser began
+ZStack.dragEnded: ✓ dragAndDrop on ZStack: the DOM's drag events dispatched by the driver, no drag the browser began
+ZStack.dragLeave: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ZStack.dragOver: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ZStack.dragStarting: ✓ dragAndDrop on ZStack: the DOM's drag events dispatched by the driver, no drag the browser began
+ZStack.dragText: ✓ dragAndDrop on ZStack: the DOM's drag events dispatched by the driver, no drag the browser began
+ZStack.drop: ✓ dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began
+ZStack.droppedFileTypes: ✓ dropFiles on ZStack: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+ZStack.filesDropped: ✓ dropFiles on ZStack: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 ZStack.frameChanged: ✅
 ZStack.gridColumn: ✅
 ZStack.gridColumnSpan: ✅
@@ -1011,7 +1075,7 @@ ZStack.panTouchCount: ✅
 ZStack.panUpdated: ✅
 ZStack.panXChannel: ✅
 ZStack.panYChannel: ✅
-ZStack.pinchUpdated: ❌ true expected, false came - its scale and its place, ["1.0 at 0.25,0.75", "1.5000000268941502 at 0.25,0.75"]
+ZStack.pinchUpdated: ✅
 ZStack.pointerEntered: ✅
 ZStack.pointerExited: ✅
 ZStack.pointerMoved: ✅

@@ -17,6 +17,24 @@
 
     /// A pinch: its phase, its scale since the last step, and where, as shares of the view's size.
     case pinch(GesturePhase, scale: Double, at: Point)
+
+    /// A drag of the view between views started.
+    case dragStarted
+
+    /// A drag of the view between views ended, wherever it ended.
+    case dragEnded
+
+    /// A drag between views is over the view, however often the toolkit says so.
+    case dragOver
+
+    /// A drag between views went away from the view without being let go.
+    case dragLeft
+
+    /// A drag between views was let go over the view, carrying these words.
+    case dropped(String)
+
+    /// Files the user dragged from the system were let go over the view - every one of them, of whatever kind.
+    case filesDropped([ChosenFile])
 }
 
 /// What a view listens for of the user's input.

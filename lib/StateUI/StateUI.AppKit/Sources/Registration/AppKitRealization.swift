@@ -37,7 +37,7 @@ enum AppKitRealization {
         .complete("Layout", "clipsContent"),
         .partial("VisualElement", "accessibilityHeading", missing: "AppKit marks a heading, not its level: every level is a heading."),
         .partial("TextInput", "inputPurpose", missing: "A Mac has no keyboard on the screen: a purpose sets capitals, spell checking, correction and prediction, no keys."),
-        .partial("VisualElement", "background", missing: "AppKit paints a colour on this view; a brush is drawn only by a layout."),
+        .partial("VisualElement", "background", missing: "AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in."),
         .partial("View", "panTouchCount", missing: "The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off."),
         .complete("VisualElement", "layoutDirection"),
         .complete("VisualElement", "style"),
@@ -96,11 +96,18 @@ enum AppKitRealization {
         .complete("ScrollView", "scrollStopped"),
         .complete("ScrollView", "scrollXChanged"),
         .complete("ScrollView", "scrollYChanged"),
-        .notPlanned("SearchField", "background", reason: "AppKit draws its own rounded search field, which takes no fill colour."),
+        .complete("TextSpan", "background"),
         .complete("TextSpan", "fontAttributes"),
+        .complete("TextSpan", "fontFamily"),
+        .complete("TextSpan", "fontSize"),
         .complete("TextSpan", "text"),
         .complete("TextSpan", "textCase"),
+        .complete("TextSpan", "textColor"),
+        .complete("TextSpan", "textDecorations"),
+        .complete("TextSpan", "tracking"),
         .complete("SplitView", "showsSidebarChanged"),
+        .notPlanned("SplitView", "flyoutBackground",
+                    reason: "A Mac sidebar always stands beside the detail: a window too narrow for both hides it."),
         .complete("TabView", "accessibilityIdentifier"),
         .complete("TabView", "selectedTab"),
         .complete("TabView", "selectedTabChanged"),
@@ -111,6 +118,7 @@ enum AppKitRealization {
         .complete("ToolbarItemGroup", "order"),
         .complete("ToolbarItemGroup", "side"),
         .complete("Window", "activated"),
+        .partial("Window", "background", missing: "A window's glass is drawn as the blur as clear as it is."),
         .complete("Window", "created"),
         .complete("Window", "deactivated"),
         .complete("Window", "destroying"),
@@ -119,7 +127,6 @@ enum AppKitRealization {
         .complete("Window", "hidesWhenInactive"),
         .complete("Window", "isMaximizable"),
         .complete("Window", "isMinimizable"),
-        .complete("Window", "isTranslucent"),
         .complete("Window", "maximumHeight"),
         .complete("Window", "maximumWidth"),
         .complete("Window", "minimumHeight"),
@@ -135,20 +142,40 @@ enum AppKitRealization {
         .complete("Grid", "background"),
         .complete("Grid", "shape"),
         .complete("Grid", "lineWidth"),
+        .complete("Grid", "stroke"),
         .complete("HStack", "background"),
         .complete("HStack", "shape"),
         .complete("HStack", "lineWidth"),
+        .complete("HStack", "stroke"),
         .complete("VStack", "background"),
         .complete("VStack", "shape"),
         .complete("VStack", "lineWidth"),
+        .complete("VStack", "stroke"),
         .complete("ZStack", "background"),
         .complete("ZStack", "shape"),
         .complete("ZStack", "lineWidth"),
+        .complete("ZStack", "stroke"),
         .partial("ScrollView", "stroke", missing: "AppKit outlines a scroller in a colour on a rectangle or a rounded one; an oval, or a gradient, draws none."),
         .complete("ZStack", "accessibilityIdentifier"),
         .complete("ZStack", "ignoresInput"),
         .complete("ZStack", "padding"),
-    ]
+        .notPlanned("ActivityIndicator", "tint", reason: accentColoured),
+        .notPlanned("ProgressBar", "tint", reason: accentColoured),
+        .notPlanned("Switch", "tint", reason: accentColoured),
+        .notPlanned("Button", "iconSpacing",
+                    reason: "AppKit's button stands its picture at its own gap from the words: it takes no other."),
+    ] + dayPickers
+
+    /// Why a progress indicator and a switch take no colour of their own.
+    private static let accentColoured = "AppKit draws it in the accent colour the user chooses: it takes none of its own."
+
+    /// What a day's and a time's picker holds none of.
+    private static let dayPickers: [HostRecord] = ["DatePicker", "TimePicker"].flatMap { picker -> [HostRecord] in
+        let opens = "AppKit's date picker opens no calendar for the program, nor says when the user opens one."
+        return ["isOpen", "opened", "closed"].map { .notPlanned(picker, $0, reason: opens) } + [
+            .notPlanned(picker, "format", reason: "AppKit's date picker writes its day and time in the user's own way: it takes no pattern."),
+        ]
+    }
 
     /// What AppKit's registry says it realizes: the export's content.
     @MainActor static var declaration: HostDeclaration {

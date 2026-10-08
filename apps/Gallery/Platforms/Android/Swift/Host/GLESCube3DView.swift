@@ -6,6 +6,7 @@ import CGalleryGLES
 import GalleryUI
 import StateUIAndroid
 
+// listing: Cube3DSample.Android.swift
 /// A cube drawn with OpenGL ES 3.0 into the surface of the gallery's own Java view, com.stateui.gallery.Cube3DView -
 /// a TextureView that asks for the display's frames while the cube spins and stands in a window. The Swift half is
 /// Sources/Samples/Interop/Cube3D.swift.
@@ -74,6 +75,7 @@ final class GLESCube3DView: AndroidControl {
         lastFrame = time
         draw()
     }
+    // listing: end
 
     /// Draws the cube as it stands: turned, scaled and seen in perspective, over the housing's colour.
     private func draw() {
@@ -139,7 +141,9 @@ final class GLESCube3DView: AndroidControl {
             return (0..<4).reduce(Float(0)) { sum, step in sum + left[step * 4 + row] * right[column * 4 + step] }
         }
     }
+// listing: Cube3DSample.Android.swift
 }
+// listing: end
 
 extension GLESCube3DView {
     /// A window of the view's surface and what OpenGL ES draws into it: the display, the context, the surface over
@@ -176,6 +180,9 @@ extension GLESCube3DView {
 
         private static let vertexShader = """
             #version 300 es
+            // listing: Cube3DSample.Android.glsl
+            // The vertex shader, compiled for OpenGL ES 3.0: a corner carries its face's brightness in w, and the
+            // colour is the frame's.
             layout(location = 0) in vec4 corner;
             uniform mat4 transform;
             uniform vec4 color;
@@ -184,14 +191,18 @@ extension GLESCube3DView {
                 gl_Position = transform * vec4(corner.xyz, 1.0);
                 painted = vec4(color.rgb * corner.w, color.a);
             }
+            // listing: end
             """
 
         private static let fragmentShader = """
             #version 300 es
+            // listing: Cube3DSample.Android.glsl
+            // The fragment shader: every point of a face takes the colour its corners were painted.
             precision mediump float;
             in vec4 painted;
             out vec4 fragment;
             void main() { fragment = painted; }
+            // listing: end
             """
 
         /// An OpenGL ES 3.0 context with a depth buffer over `window`, the cube's program and corners made in it.
@@ -274,6 +285,7 @@ extension GLESCube3DView {
     }
 }
 
+// listing: Cube3DSample.Android.swift
 extension GLESCube3DView {
     /// Adds the cube for `Cube3DContract`. Said once, as the library loads.
     @MainActor
@@ -285,3 +297,4 @@ extension GLESCube3DView {
         }
     }
 }
+// listing: end

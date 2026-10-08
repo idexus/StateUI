@@ -15,6 +15,7 @@ final class AndroidGestureTests: XCTestCase {
             ("testASwipePastItsThresholdSaysItsDirection", testASwipePastItsThresholdSaysItsDirection),
             ("testAPinchSaysItsScaleAndWhereItIsCentred", testAPinchSaysItsScaleAndWhereItIsCentred),
             ("testThePointerPressesMovesReleasesAndHovers", testThePointerPressesMovesReleasesAndHovers),
+            ("testAPressOnAViewInFrontIsNotHeardBehindIt", testAPressOnAViewInFrontIsNotHeardBehindIt),
         ]
     }
 
@@ -126,6 +127,34 @@ final class AndroidGestureTests: XCTestCase {
             XCTAssertEqual(heard.values, [
                 "pressed 10 20", "moved 15 20", "released 15 20", "entered", "moved 15 20", "exited",
             ])
+        }
+    }
+
+    /// A press on a view in front is that view's, whether or not it answers: a view behind it hears no tap - a touch
+    /// handed down the window from its root, as Android hands a user's.
+    func testAPressOnAViewInFrontIsNotHeardBehindIt() {
+        onMainActor {
+            let heard = Received<String>()
+            let host = AndroidRenderer.running {
+                ZStack {
+                    ColorBox(.red).onTapped { heard.values.append("behind") }
+                    ColorBox(.blue)
+                }
+                .width(100).height(100).horizontalAlignment(.start).verticalAlignment(.start)
+            }
+            host.layOut()
+
+            for (action, time) in [(Int32(0), Int64(0)), (1, 50)] {
+                let event = Java.callStaticObject(
+                    TestJava.motionEvent, TestJava.obtain, .long(0), .long(time), .int(action), .float(100), .float(100),
+                    .int(0))
+                _ = Java.callBool(host.root.reference, TestJava.dispatchTouchEvent, .object(event))
+                Java.call(event!, TestJava.recycle)
+                Java.release(local: event)
+            }
+            host.settle { !heard.values.isEmpty }
+
+            XCTAssertEqual(heard.values, [], "the box in front took the press")
         }
     }
 

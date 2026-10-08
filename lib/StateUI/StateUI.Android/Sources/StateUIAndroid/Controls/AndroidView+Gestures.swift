@@ -55,6 +55,37 @@ extension AndroidView {
         if let input { onHeard?(input) }
     }
 
+    /// Tells the view's drag listener what a drag of it carries and whether it takes drops, `heard` hearing them.
+    /// Design: docs/design/platforms/android/controls.md#a-drag-between-views
+    func offer(_ offered: DragAndDrop, _ heard: @escaping (HeardInput) -> Void) {
+        onDragHeard = offered == .none ? nil : heard
+        guard offered != self.offered else { return }
+        self.offered = offered
+        Java.frame {
+            Java.callStatic(
+                JavaAPI.drags, JavaAPI.offerDrag, .object(reference), .long(number),
+                .object(offered.words.flatMap(Java.string)), .bool(offered.takesWords), .bool(offered.takesFiles))
+        }
+    }
+
+    /// What the drag listener says the view heard, by the kind `StateUIDrags` numbers.
+    func heardDrag(kind: Int32, words: String?) {
+        let input: HeardInput? = switch kind {
+        case 0: .dragStarted
+        case 1: .dragEnded
+        case 2: .dragOver
+        case 3: .dragLeft
+        case 4: .dropped(words ?? "")
+        default: nil
+        }
+        if let input { onDragHeard?(input) }
+    }
+
+    /// Documents another application dragged here were let go over the view, by their addresses and names.
+    func heardDroppedFiles(addresses: [String], names: [String]) {
+        onDragHeard?(.filesDropped(zip(addresses, names).map { ChosenFile(address: $0, name: $1) }))
+    }
+
     /// A press the listener tells - down, moved, let go or taken away, at `point` of the screen: a drag by the host
     /// layer's rule. Whether it is one now, which takes the rest of the touch.
     /// Design: docs/design/platforms/android/controls.md#gestures

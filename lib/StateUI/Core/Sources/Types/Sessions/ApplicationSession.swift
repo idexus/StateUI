@@ -35,6 +35,26 @@ public final class ApplicationSession {
     ///     Text("\(application.scenes.count) open")
     public var scenes: [SceneSession] { OpenScenes.shared.list.map(\.session) }
 
+    /// The theme the application shows in: `.system` - the default - follows
+    /// the user's setting, `.light` and `.dark` hold it whatever the system
+    /// asks.
+    ///
+    ///     application.colorScheme = .dark
+    ///
+    /// The host shows every window in it, natively, and reports the theme in
+    /// force as `info.colorScheme`, which colour pairs resolve against.
+    public var colorScheme: ColorScheme {
+        get { heldColorScheme }
+        set {
+            guard newValue != heldColorScheme else { return }
+            heldColorScheme = newValue
+            stateUISend(ApplicationContract.useColorScheme, newValue)
+        }
+    }
+
+    /// The theme the application asked for last.
+    @State private var heldColorScheme = ColorScheme.system
+
     /// The styles every control in the application can be given.
     ///
     ///     init() {

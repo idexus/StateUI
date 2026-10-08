@@ -210,11 +210,14 @@ extern "C" void stateui_winui_field_set_casing(StateUIObjectRef handle, int32_t 
     }
 }
 
-extern "C" void stateui_winui_search_set_box(StateUIObjectRef handle, bool readOnly, int32_t textCase, int32_t alignment) {
+extern "C" void stateui_winui_search_set_box(
+    StateUIObjectRef handle, bool readOnly, int32_t textCase, int32_t alignment, bool spellChecked, bool predicted,
+    int32_t scope
+) {
     try {
         // The box types in the text box its template holds, which takes the style the box gives it: WinUI's own,
-        // with the case typing takes, whether it is read only and the words typed across it - its template stands
-        // the placeholder at the start whatever the text box says.
+        // with the case typing takes, whether it is read only, the words typed across it - its template stands the
+        // placeholder at the start whatever the text box says - and how typing is checked, predicted and keyed.
         xaml::Style style{winrt::xaml_typename<controls::TextBox>()};
         auto own = xaml::Application::Current().Resources().TryLookup(winrt::box_value(L"AutoSuggestBoxTextBoxStyle"));
         if (own) style.BasedOn(own.as<xaml::Style>());
@@ -222,6 +225,9 @@ extern "C" void stateui_winui_search_set_box(StateUIObjectRef handle, bool readO
         setters.Append(xaml::Setter(controls::TextBox::CharacterCasingProperty(), winrt::box_value(casing(textCase))));
         setters.Append(xaml::Setter(controls::TextBox::IsReadOnlyProperty(), winrt::box_value(readOnly)));
         setters.Append(xaml::Setter(controls::TextBox::TextAlignmentProperty(), winrt::box_value(across(alignment))));
+        setters.Append(xaml::Setter(controls::TextBox::IsSpellCheckEnabledProperty(), winrt::box_value(spellChecked)));
+        setters.Append(xaml::Setter(controls::TextBox::IsTextPredictionEnabledProperty(), winrt::box_value(predicted)));
+        setters.Append(xaml::Setter(controls::TextBox::InputScopeProperty(), inputScope(scope)));
         borrow<controls::AutoSuggestBox>(handle).TextBoxStyle(style);
     } catch (...) {
         report("setting how a search box takes words");

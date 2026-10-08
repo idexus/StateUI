@@ -6,6 +6,7 @@ struct RemovingRowSample: SampleContent, ExampleContent {
     static let title = "Removing a row"
     static let summary = "A row fades where it stands, and the stack closes over it."
 
+    // listing: RemovingRowSample
     /// The rows, and which of them have gone.
     static let rows = ["Milk", "Bread", "Coffee", "Apples", "Butter", "Rice"]
 
@@ -13,58 +14,11 @@ struct RemovingRowSample: SampleContent, ExampleContent {
     @State private var atOnce: Set<String> = []
     @State private var slow = false
 
-    static let code = """
-        static let rows = ["Milk", "Bread", "Coffee", "Apples", "Butter", "Rice"]
-
-        @State private var gone: Set<String> = []
-        @State private var atOnce: Set<String> = []
-        @State private var slow = false
-
+    var body: some View {
         // A PLAIN VStack. Nothing here ASKS for animation: the row is HIDDEN,
         // which fades it where it stands, and the rows under it are then given
         // new places - which is somewhere they travel to. The one line about
         // motion is the switch turning it OFF.
-        VStack {
-            // INSIDE the stack's own braces, because that is where `gone` and
-            // `atOnce` are read: deleting a row builds this closure, and a
-            // reading taken outside it would be about a stack the delete never
-            // rebuilds.
-            DebugInfoLabel()
-
-            ForEach(Self.rows, id: \\.self) { row in
-                Grid {
-                    Text(row).gridColumn(0)
-
-                    Button("Delete")
-                        .gridColumn(1)
-                        .onClicked { remove(row) }
-                }
-                .columns(.fill, .auto)
-                .isVisible(!gone.contains(row) && !atOnce.contains(row))
-                // What the switch below chooses: a row told to travel at NO
-                // motion goes at once, and the stack still closes over it.
-                .motion(atOnce.contains(row) ? .none : .inherited)
-            }
-        }
-
-        SwitchRow("The row fades first", $slow)
-
-        Button("Bring them back").onClicked {
-            gone.removeAll()
-            atOnce.removeAll()
-        }
-
-        /// Takes a row away - fading it where it stands, or at once.
-        private func remove(_ row: String) {
-            if slow {
-                gone.insert(row)
-            } else {
-                atOnce.insert(row)
-            }
-        }
-        """
-
-    var body: some View {
         VStack {
             VStack {
                 // INSIDE the stack's own braces, because that is where `gone`
@@ -81,8 +35,6 @@ struct RemovingRowSample: SampleContent, ExampleContent {
                             .gridColumn(0)
 
                         Button("Delete")
-                            .fontSize(12)
-                            .padding(horizontal: 10, vertical: 4)
                             .gridColumn(1)
                             .onClicked { remove(row) }
                     }
@@ -116,6 +68,7 @@ struct RemovingRowSample: SampleContent, ExampleContent {
             atOnce.insert(row)
         }
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

@@ -34,6 +34,29 @@ final class GTKSplitViewTests: XCTestCase {
         }
     }
 
+    /// A sidebar beside the detail lets the window through its pane, shaded a breath where the split view says no
+    /// material; under a material of its own the pane is clear.
+    func testASidebarBesideTheDetailLetsTheWindowThrough() throws {
+        try onUIThread {
+            let material = State(wrappedValue: Material(light: nil, dark: nil))
+            let host = GTKRenderer.running {
+                SplitView(State(wrappedValue: true).projectedValue) {
+                    TitledPage(title: "Menu")
+                } detail: {
+                    TitledPage(title: "Detail")
+                }
+                .sidebarBackground(material.projectedValue)
+            }
+            let split = try XCTUnwrap(host.views(GTKSplitView.self).first)
+            XCTAssertFalse(split.isCollapsed)
+            XCTAssertNotEqual(gtk_widget_has_css_class(split.splitWidgetForTesting, "stateui-sidebar-shaded"), 0)
+
+            material.wrappedValue = .color(Color("#512BD4"))
+            host.settle { gtk_widget_has_css_class(split.splitWidgetForTesting, "stateui-sidebar-clear") != 0 }
+            XCTAssertNotEqual(gtk_widget_has_css_class(split.splitWidgetForTesting, "stateui-sidebar-clear"), 0)
+        }
+    }
+
     /// A split view's bar colours paint both panes' header bars, the sidebar's as the detail's.
     func testBothPanesHeaderBarsWearTheSplitViewsColours() throws {
         try onUIThread {

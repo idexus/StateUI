@@ -1,81 +1,66 @@
-# revision 1.1
+# revision 7.1
 ActivityIndicator.focus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.isFocusedChanged: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
-ActivityIndicator.translationY: ✅
+ActivityIndicator.scaleY: ✅
 ActivityIndicator.unfocus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
-Button.pivotX: ✅
-Canvas.focus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
-Canvas.isFocusedChanged: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
-Canvas.translationY: ✅
-Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
-CheckBox.pivotX: ✅
-ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
-ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
-ColorBox.translationY: ✅
-ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
-DatePicker.pivotX: ✅
-Ellipse.focus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
-Ellipse.isFocusedChanged: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
-Ellipse.translationY: ✅
-Ellipse.unfocus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
-Grid.pivotX: ✅
-HStack.focus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
-HStack.isFocusedChanged: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
-HStack.translationY: ✅
-HStack.unfocus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
-Image.pivotX: ✅
-ItemsView.focus: ✅
-ItemsView.isFocusedChanged: ✅
-ItemsView.translationY: ✅
-ItemsView.unfocus: ✅
-Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
-Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
-Line.translationY: ✅
-Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
-Map.pivotX: 🧩
-Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
-Path.isFocusedChanged: – Path takes no keyboard focus here: it refuses it, and nothing is heard
-Path.translationY: ✅
-Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
-Picker.pivotX: ✅
-Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
-Polygon.isFocusedChanged: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
-Polygon.translationY: ✅
-Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
-Polyline.pivotX: ✅
-ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
-ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
-ProgressBar.translationY: ✅
-ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
-RadioButton.pivotX: ✅
+Button.isAccessibilityHidden: ✅
+Canvas.frameChanged: ✅
+Canvas.maximumHeight: ✅
+Canvas.maximumWidth: ✅
+Canvas.minimumHeight: ✅
+Canvas.minimumWidth: ✅
+Canvas.rotationY: ✓ read rotationY of Canvas: the host's own tip, checked against the projection it laid on the element
+CheckBox.accessibilityHint: ✅
+ColorBox.isEnabled: does not apply - read isEnabled of ColorBox - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+ColorBox.rotation: ✅
+DatePicker.translationY: ✅
+DatePicker.zIndex: ✅
+Ellipse.layoutDirection: ✓ read layoutDirection of Ellipse: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Grid.frame: ✅
+Grid.scaleX: ✅
+HStack.accessibilityLabel: ✅
+HStack.isEnabled: ✅
+Image.background: – WinUI's picture paints the picture alone, no ground around it.
+ItemsView.ignoresInput: ✅
+ItemsView.scale: ✅
+Line.isEnabled: does not apply - read isEnabled of Line - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Line.rotation: ✅
+Map.translationY: 🧩
+Map.zIndex: 🧩
+Path.layoutDirection: ✓ read layoutDirection of Path: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Picker.frame: ✅
+Picker.scaleX: ✅
+Polygon.isAccessibilityHidden: ✅
+Polyline.frameChanged: ✅
+Polyline.height: ✅
+Polyline.rotationX: ✓ read rotationX of Polyline: the host's own tip, checked against the projection it laid on the element
+Polyline.width: ✅
+ProgressBar.accessibilityHeading: ✅
+ProgressBar.isEnabled: ✅
+RadioButton.layoutDirection: ✅
 Rectangle.focus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.isFocusedChanged: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
-Rectangle.translationY: ✅
+Rectangle.scaleY: ✅
 Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
-ScrollView.pivotX: ✅
-SearchField.focus: ✅
-SearchField.isFocusedChanged: ✅
-SearchField.translationY: ✅
-SearchField.unfocus: ✅
-Slider.pivotX: ✅
-Stepper.focus: ✅
-Stepper.isFocusedChanged: ✅
-Stepper.translationY: ✅
-Stepper.unfocus: ✅
-Switch.pivotX: ✅
-Text.pivotX: ✅
-TextEditor.focus: ✅
-TextEditor.isFocusedChanged: ✅
-TextEditor.translationY: ✅
-TextEditor.unfocus: ✅
-TextField.pivotX: ✅
-TimePicker.focus: ✅
-TimePicker.isFocusedChanged: ✅
-TimePicker.translationY: ✅
-TimePicker.unfocus: ✅
-VStack.pivotX: ✅
-WebView.focus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
-WebView.isFocusedChanged: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.isAccessibilityHidden: ✅
+SearchField.frameChanged: ✅
+SearchField.height: ✅
+SearchField.rotationX: ✓ read rotationX of SearchField: the host's own tip, checked against the projection it laid on the element
+SearchField.width: ✅
+Slider.accessibilityLabel: ✅
+Stepper.opacity: ✅
+Stepper.pivotY: ✅
+Switch.translationY: ✅
+Switch.zIndex: ✅
+Text.accessibilityHeading: ✅
+TextEditor.layoutDirection: ✅
+TextField.focus: ✅
+TextField.isFocusedChanged: ✅
+TextField.scaleY: ✅
+TextField.unfocus: ✅
+TimePicker.automationExcludedWithChildren: ✅
+VStack.ignoresInput: ✅
+VStack.scale: ✅
 WebView.translationY: ✅
-WebView.unfocus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
-ZStack.pivotX: ✅
+WebView.zIndex: ✅
+ZStack.layoutDirection: ✓ read layoutDirection of ZStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned

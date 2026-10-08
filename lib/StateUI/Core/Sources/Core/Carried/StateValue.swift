@@ -8,6 +8,7 @@
 /// A value that can ride a state - how it lies on the image, and back. This
 /// library's own. A type of the application's own joins by saying the same: a
 /// `Rect` is four lanes in the order it names its fields, a `String` its bytes.
+/// A value that lies as lanes is a `LaneValue`.
 public protocol StateValue: Equatable, Sendable {
     /// The value, as the image holds it.
     var carried: StateCarried { get }
@@ -36,7 +37,7 @@ enum StateValueLanes {
     static let own = -1
 }
 
-extension Double: StateValue {
+extension Double: LaneValue {
     /// One lane, which is the number itself.
     public var carried: StateCarried { .lanes([self]) }
 
@@ -51,7 +52,7 @@ extension Double: StateValue {
     public static var lanes: Int { 1 }
 }
 
-extension Int: StateValue {
+extension Int: LaneValue {
     /// A whole number takes one lane, as itself.
     public var carried: StateCarried { .lanes([Double(self)]) }
 
@@ -66,7 +67,7 @@ extension Int: StateValue {
     public static var lanes: Int { 1 }
 }
 
-extension Bool: StateValue {
+extension Bool: LaneValue {
     /// Nought or one.
     public var carried: StateCarried { .lanes([self ? 1 : 0]) }
 
@@ -79,9 +80,12 @@ extension Bool: StateValue {
 
     /// One.
     public static var lanes: Int { 1 }
+
+    /// A Boolean.
+    public static var laneKind: LaneKind { .boolean }
 }
 
-extension Point: StateValue {
+extension Point: LaneValue {
     /// Across, then down.
     public var carried: StateCarried { .lanes([x, y]) }
 
@@ -96,7 +100,7 @@ extension Point: StateValue {
     public static var lanes: Int { 2 }
 }
 
-extension Rect: StateValue {
+extension Rect: LaneValue {
     /// Left, top, width, height - the order the type names its own fields in.
     public var carried: StateCarried { .lanes([x, y, width, height]) }
 
@@ -111,7 +115,7 @@ extension Rect: StateValue {
     public static var lanes: Int { 4 }
 }
 
-extension Insets: StateValue {
+extension Insets: LaneValue {
     /// Left, top, right, bottom.
     public var carried: StateCarried { .lanes([left, top, right, bottom]) }
 
@@ -126,18 +130,23 @@ extension Insets: StateValue {
     public static var lanes: Int { 4 }
 }
 
-extension Color: StateValue {
+extension Color: LaneValue {
     /// Red, green, blue and alpha, each from nought to one. A colour pair crosses as
-    /// the half in force (`State.Storage.wearThemedPair()`).
+    /// the half in force, the accent as the accent in force
+    /// (`State.Storage.wearThemedPair()`).
     public var carried: StateCarried {
-        let half = dark.flatMap { StandardEnvironment.application.info.$colorScheme.standing == .dark ? $0 : nil } ?? light
+        .lanes(standingLanes)
+    }
 
-        return .lanes([
-            Double(half.red) / 255,
-            Double(half.green) / 255,
-            Double(half.blue) / 255,
-            Double(half.alpha) / 255,
-        ])
+    /// The colour as it stands - a pair's half in force, the accent in force - as four lanes.
+    var standingLanes: [Double] {
+        let shown = isAccent
+            ? StandardEnvironment.application.info.$accentColor.standing.opacity(Double(light.alpha) / 255) : self
+        let half = shown.dark.flatMap {
+            StandardEnvironment.application.info.$colorScheme.standing == .dark ? $0 : nil
+        } ?? shown.light
+
+        return [Double(half.red) / 255, Double(half.green) / 255, Double(half.blue) / 255, Double(half.alpha) / 255]
     }
 
     /// A colour from those four lanes, each held to the range a channel has
@@ -161,6 +170,9 @@ extension Color: StateValue {
 
     /// A colour, which is what only the value can say.
     public static var moving: MotionValues { .color }
+
+    /// A colour.
+    public static var laneKind: LaneKind { .color }
 }
 
 extension String: StateValue {
@@ -176,4 +188,17 @@ extension String: StateValue {
 
     /// None: text is dirty or it is not.
     public static var lanes: Int { 0 }
+}
+
+/// A value whose look turns with the theme or the accent: a carried state keeps it whole and lays the half in
+/// force.
+/// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
+protocol ThemeWearing {
+    /// Whether this value turns with the theme or the accent.
+    var wearsTheTheme: Bool { get }
+}
+
+extension Color: ThemeWearing {
+    /// A pair, or the accent.
+    var wearsTheTheme: Bool { dark != nil || isAccent }
 }

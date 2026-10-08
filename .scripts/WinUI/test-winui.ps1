@@ -18,12 +18,12 @@
 #
 #   .\test-winui.ps1 [-Filter <test>] [-Conformance | -Stale] [-ScratchPath <dir>]
 #
-# Alone it runs the host's own tests, in one process. -Conformance runs the
-# contract's families, whose verdicts are WinUI's column of the dictionary -
-# each test in a process of its own, as WinUI keeps GDI objects of every
-# window a test closes and a process holds only so many
-# (docs/design/platforms/winui/conformance.md): some fifteen minutes, so on
-# request. A filter runs the tests it names, each in a process of its own.
+# Alone it runs the host's own tests. -Conformance runs the contract's
+# families, whose verdicts are WinUI's column of the dictionary: some fifteen
+# minutes, so on request. A filter runs the tests it names. Every test runs in
+# a process of its own, as WinUI keeps GDI objects of every window a test
+# closes and a process holds only so many
+# (docs/design/platforms/winui/conformance.md).
 #
 # The tests are built, the Windows App SDK laid beside the runner, and the run
 # skips the build. A run with STATEUI_UPDATE_EXPORTS=1 writes each verdict file
@@ -58,6 +58,6 @@ Set-StateUISelfContained -Directory $bin -Executables (Join-Path $bin 'StateUIWi
 $apart = @('--parallel', '--num-workers', '1')
 $narrowing = if ($Filter) { @('--filter', $Filter) + $apart }
     elseif ($Conformance -or $Stale) { @('--filter', 'WinUIConformanceTests') + $apart }
-    else { @('--skip', 'WinUIConformanceTests') }
+    else { @('--skip', 'WinUIConformanceTests') + $apart }
 swift test --package-path $testing @scratch --skip-build @narrowing
 exit $LASTEXITCODE

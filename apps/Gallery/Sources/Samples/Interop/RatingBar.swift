@@ -92,6 +92,7 @@ public struct RatingBar: ElementView, RatingBarProperties {
     }
 }
 
+// listing: RatingBar.flash
 /// An act of the bar's contract, aimed at one bar.
 ///
 /// `call` puts the control's identity in argument 0, and the host half turns
@@ -103,6 +104,7 @@ extension Aim where Target == RatingBar {
         try await call(RatingBarContract.flash)
     }
 }
+// listing: end
 
 /// A style can target the bar: a style target is a control with an empty
 /// initializer, and a style resolves by the node type `RatingBar()` makes.

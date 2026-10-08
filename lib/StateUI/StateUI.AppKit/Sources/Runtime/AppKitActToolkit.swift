@@ -69,6 +69,15 @@ final class AppKitActToolkit: ActToolkit {
             userInfo: [.announcement: words, .priority: NSAccessibilityPriorityLevel.high.rawValue])
     }
 
+    /// Shows every window in `theme`: AppKit's application appearance, none for the system's.
+    func useColorScheme(_ theme: ColorScheme) {
+        NSApplication.shared.appearance = switch theme {
+        case .light: NSAppearance(named: .aqua)
+        case .dark: NSAppearance(named: .darkAqua)
+        case .system: nil
+        }
+    }
+
     /// Takes the focus off whatever holds it in the window the user is looking at; whether anything did.
     func hideOnScreenKeyboard() -> Bool {
         guard let window = renderer.userWindow,

@@ -224,6 +224,28 @@ extension View {
         }
     }
 
+    /// Accepts files the user drops on the view from the system - of
+    /// `types`, any file where none is given - with those dropped.
+    ///
+    ///     Text("Drop a report here")
+    ///         .onDrop(files: [FileType("Text", extensions: ["txt"])]) { files in
+    ///             notes = String(decoding: try await files[0].read(), as: UTF8.self)
+    ///         }
+    ///
+    /// A dropped file reads and launches as one the user opened
+    /// (`ChosenFile`); files of other kinds are not taken.
+    public func onDrop(files types: [FileType] = [], _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Modified {
+        modified {
+            $0.write(ViewContract.droppedFileTypes, types)
+            $0.addHandler(ViewContract.filesDropped.token) {
+                if let files = MemberValues.carried(
+                    EventBuffer.current, by: ViewContract.filesDropped.name, as: [ChosenFile].self) {
+                    try await handler(files)
+                }
+            }
+        }
+    }
+
     /// Runs while a drag is over the view, before it is let go.
     public func onDragOver(_ handler: @escaping EventHandler) -> Modified {
         onEvent(ViewContract.dragOver, handler)

@@ -2,17 +2,17 @@ import StateUI
 
 /// Native alerts, confirmations, choices of actions and prompts, asked as awaited StateUI acts.
 struct DialogsSample: SampleContent, ExampleContent {
+    // listing: DialogsSample
     @State private var answer = "nothing asked yet"
     @State private var name = "Draft 1"
+    // listing: end
 
     static let id = "dialogs"
     static let title = "Dialogs"
     static let summary = "An alert, a confirmation, a choice of actions and a prompt - asked, awaited, answered."
 
-    static let code = """
-        @State private var answer = "nothing asked yet"
-        @State private var name = "Draft 1"
-
+    // listing: DialogsSample
+    var body: some View {
         VStack {
             // The answer is read here, so every dialog that closes builds
             // this closure.
@@ -44,54 +44,12 @@ struct DialogsSample: SampleContent, ExampleContent {
                     let choice = try await Dialogs.chooseAction(
                         "Share via", cancel: "Cancel", destruction: "Delete",
                         buttons: ["Mail", "Message"])
-                    answer = choice.map { "\\($0) pressed" }
+                    answer = choice.map { "\($0) pressed" }
                         ?? "dismissed with nothing chosen"
                 }
 
             // nil is CANCELLED; an accepted prompt with nothing typed comes
             // back as "" - an empty answer, which is still an answer.
-            Button("Ask me to type")
-                .onClicked {
-                    let typed = try await Dialogs.prompt(
-                        "Rename", message: "A new name for the draft",
-                        placeholder: "Name", initialValue: name, maximumLength: 40)
-                    if let typed { name = typed }
-                    answer = typed.map { "renamed to '\\($0)'" } ?? "cancelled"
-                }
-
-            Text(answer)
-            Text("the draft is called '\\(name)'")
-        }
-        """
-
-    var body: some View {
-        VStack {
-            DebugInfoLabel()
-
-            Button("Tell me something")
-                .onClicked {
-                    try await Dialogs.alert(
-                        "Saved", message: "The draft is safe")
-                    answer = "the alert was dismissed"
-                }
-
-            Button("Ask me a question")
-                .onClicked {
-                    let ok = try await Dialogs.confirm(
-                        "Delete draft?", message: "This cannot be undone",
-                        accept: "Delete", cancel: "Keep")
-                    answer = ok ? "Delete pressed" : "Keep pressed"
-                }
-
-            Button("Offer me choices")
-                .onClicked {
-                    let choice = try await Dialogs.chooseAction(
-                        "Share via", cancel: "Cancel", destruction: "Delete",
-                        buttons: ["Mail", "Message"])
-                    answer = choice.map { "\($0) pressed" }
-                        ?? "dismissed with nothing chosen"
-                }
-
             Button("Ask me to type")
                 .onClicked {
                     let typed = try await Dialogs.prompt(
@@ -112,6 +70,7 @@ struct DialogsSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

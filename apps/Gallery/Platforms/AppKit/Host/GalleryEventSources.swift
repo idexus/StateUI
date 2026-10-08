@@ -6,6 +6,7 @@ import GalleryUI
 import IOKit.ps
 import StateUIAppKit
 
+// listing: InteropEventsSample.AppKit.swift
 /// The gallery's own pushes: what this host reports without being asked.
 ///
 /// `GalleryContract` declares each event with what it carries, and every
@@ -24,6 +25,8 @@ enum GalleryEventSources {
     /// before the application runs.
     @MainActor
     static func start() {
+        // Declared where the source is wired: a handler listening for an
+        // event nothing declared is told, once, that it will not hear it.
         StateUIEvents.raises(GalleryContract.batteryChanged)
 
         // Named in full: a C function pointer carries no context at all, and
@@ -48,3 +51,4 @@ enum GalleryEventSources {
         StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
     }
 }
+// listing: end

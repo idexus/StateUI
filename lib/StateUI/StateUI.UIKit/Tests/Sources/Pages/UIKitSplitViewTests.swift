@@ -38,6 +38,49 @@ final class UIKitSplitViewTests: XCTestCase {
         XCTAssertTrue(menuOpen.wrappedValue, "the program's move is not told back as another")
     }
 
+    /// A sidebar the application paints stands on UIKit's plain column, which UIKit parts from the detail by its
+    /// own separator; the platform's own sidebar stays on UIKit's sidebar material.
+    @MainActor
+    func testASidebarTheApplicationPaintsStandsApartFromTheDetail() throws {
+        let painted = State(wrappedValue: true)
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            if painted.wrappedValue {
+                SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+                    .sidebarBackground(.color(Color("#251E4C")))
+            } else {
+                SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+            }
+        }
+        defer { host.finish() }
+        let split = { Self.controller(of: .splitView, in: host) as? UISplitViewController }
+        host.settle { split()?.view.window != nil }
+        XCTAssertEqual(split()?.primaryBackgroundStyle, UISplitViewController.BackgroundStyle.none, "the plain column")
+
+        painted.wrappedValue = false
+        host.settle { split()?.primaryBackgroundStyle == .sidebar }
+        XCTAssertEqual(split()?.primaryBackgroundStyle, .sidebar, "the platform's own sidebar")
+    }
+
+    /// A blur or glass under the sidebar is UIKit's own effect under what the sidebar page shows - beside the
+    /// detail and over it alike - never a colour standing in for it.
+    @MainActor
+    func testASidebarOnGlassStandsOnUIKitsEffect() throws {
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+                .sidebarBackground(.glass(.regular))
+                .flyoutBackground(.glass(.regular))
+        }
+        defer { host.finish() }
+        let split = { Self.controller(of: .splitView, in: host) as? UISplitViewController }
+        func grounds(in view: UIView?) -> [UIKitBackdropView] {
+            guard let view else { return [] }
+            return (view as? UIKitBackdropView).map { [$0] } ?? view.subviews.flatMap { grounds(in: $0) }
+        }
+        host.settle { grounds(in: split()?.view).contains { $0.effect is UIGlassEffect } }
+
+        XCTAssertTrue(grounds(in: split()?.view).contains { $0.effect is UIGlassEffect }, "UIKit's glass under it")
+    }
+
     /// A page pushed as the sidebar goes - a group chosen from a menu - stands at once: it is laid out where it
     /// stands, never grown from nothing with the sidebar's slide.
     @MainActor

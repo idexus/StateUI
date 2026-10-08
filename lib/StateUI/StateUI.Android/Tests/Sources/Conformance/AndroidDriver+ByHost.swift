@@ -13,6 +13,12 @@ extension AndroidDriver {
             if Ability(ability).element == "Window" { return "the host told the activity's phase, no activity moved" }
         case "toggle" where Ability(ability).element == "SplitView":
             return "the host's own entry the scrim's tap and the bar's button call"
+        case "dragAndDrop":
+            return "the views' drag listeners' reports told by the driver, no drag started"
+        case "dropFiles":
+            return "the view's drag listener's report told the driver's documents, no drag started"
+        case "answerFiles":
+            return "the relay's result path handed the driver's documents, no picker shown"
         default: break
         }
         switch ability {
@@ -20,8 +26,13 @@ extension AndroidDriver {
             return "the host's own range; the SeekBar holds only steps"
         case "read options of Picker", "read title of Picker": return "the rows the relay keeps, not the spinner's"
         case "read showsSidebar of SplitView": return "the split's own flag; the drawer slides on it"
+        case "read sidebarBackground of SplitView":
+            return "the colour the split keeps for its sidebar beside the detail, which a phone's room never shows"
         case "read selectionMode of ItemsView": return "the mode the relay keeps, which its cells tell TalkBack"
         case "read a question": return "what the relay keeps of the dialog it showed"
+        case "read a file dialog": return "the picker the relay holds, which a test never hands the system"
+        case "read what was launched":
+            return "the relay's own record of what it handed the system, which a test holds back from launching"
         case "read minimumDate of DatePicker", "read maximumDate of DatePicker":
             return "the bounds the relay hands its calendar as it opens"
         case "read format of DatePicker", "read format of TimePicker": return "the pattern the relay writes the field in"

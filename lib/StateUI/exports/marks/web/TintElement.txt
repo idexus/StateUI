@@ -1,8 +1,8 @@
 # revision 1.1
-ActivityIndicator.tint: cannot read tint of ActivityIndicator - the Web's driver has no path for it yet
-CheckBox.tint: cannot read tint of CheckBox - the Web's driver has no path for it yet
+ActivityIndicator.tint: ✅
+CheckBox.tint: ✅
 Picker.tint: not realized
-ProgressBar.tint: cannot read tint of ProgressBar - the Web's driver has no path for it yet
+ProgressBar.tint: ✅
 SearchField.tint: not realized
-Slider.tint: cannot read tint of Slider - the Web's driver has no path for it yet
-Switch.tint: cannot read tint of Switch - the Web's driver has no path for it yet
+Slider.tint: ✅
+Switch.tint: ✅

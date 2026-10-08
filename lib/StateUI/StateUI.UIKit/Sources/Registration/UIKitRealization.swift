@@ -35,11 +35,22 @@ enum UIKitRealization {
         .complete("MenuItemElement", "text"),
         .complete("PageElement", "icon"),
         .complete("PageElement", "title"),
+        .partial("VisualElement", "accessibilityHeading", missing: "UIKit marks a heading, not its level: every level is a heading."),
+        .partial("VisualElement", "background", missing: "UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in."),
         .complete("VisualElement", "ignoresInput"),
         .complete("VisualElement", "layoutDirection"),
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
+        .complete("Button", "background"),
+        .notPlanned("DatePicker", "background", reason: "UIKit's date picker keeps no background colour: one written reads back as none."),
+        .complete("Grid", "background"),
+        .complete("HStack", "background"),
+        .complete("ScrollView", "background"),
+        .complete("Text", "background"),
+        .notPlanned("TimePicker", "background", reason: "UIKit's time picker keeps no background colour: one written reads back as none."),
+        .complete("VStack", "background"),
+        .complete("ZStack", "background"),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
         .partial("Menu", "isEnabled", missing: "UIKit holds no menu out of reach itself: each of its entries is."),
@@ -75,8 +86,11 @@ enum UIKitRealization {
         .complete("TextSpan", "textCase"),
         .complete("TextSpan", "textColor"),
         .complete("TextSpan", "textDecorations"),
+        .complete("TextSpan", "tracking"),
         .complete("SplitView", "showsSidebar"),
         .complete("SplitView", "showsSidebarChanged"),
+        .complete("SplitView", "sidebarBackground"),
+        .complete("SplitView", "flyoutBackground"),
         .complete("TabView", "selectedTab"),
         .complete("TabView", "selectedTabChanged"),
         .complete("ToolbarItem", "isDestructive"),
@@ -95,15 +109,14 @@ enum UIKitRealization {
         .notPlanned("Window", "isMaximizable",
                     reason: "Any iPadOS window may fill the screen: UIKit keeps none from it."),
         .notPlanned("Window", "isMinimizable", reason: "Any iPadOS window may be put away: UIKit keeps none from it."),
-        .notPlanned("Window", "isTranslucent",
-                    reason: "iPadOS draws an application's window opaque: no material shows through one."),
+        .partial("Window", "background", missing: "iPadOS draws an application's window opaque: a blur or glass shows its colour."),
         .complete("Window", "resumed"),
         .complete("Window", "stopped"),
         .complete("Window", "title"),
         .notPlanned("Window", "width", reason: Self.sizedBySystem),
         .notPlanned("Window", "x", reason: Self.placedBySystem),
         .notPlanned("Window", "y", reason: Self.placedBySystem),
-    ]
+    ] + pickerWords
 
     /// Why a window takes no size: the user's hand gives it, and a scene asks only for orientations.
     private static let sizedBySystem =
@@ -112,12 +125,20 @@ enum UIKitRealization {
     /// Why a window takes no place.
     private static let placedBySystem = "iPadOS places its windows itself: a UIKit scene asks for no place."
 
+    /// The words of a day's and a time's picker, which UIKit draws in its own look.
+    private static let pickerWords: [HostRecord] = ["DatePicker", "TimePicker"].flatMap { picker in
+        ["fontAttributes", "fontFamily", "fontSize", "textColor"].map { member in
+            .notPlanned(picker, member, reason: "UIKit's date picker draws its words in its own font and colour: it takes neither.")
+        }
+    }
+
     /// What UIKit's registry says it realizes: the export's content.
     @MainActor static var declaration: HostDeclaration {
         let registry = UIKitRegistrations.registry
         return HostDeclaration(
             realization: registry.realization, shared: registry.sharedNames,
-            acts: (HostActs.performed + UIKitRegistrations.webActs + UIKitRegistrations.itemsActs + [MapContract.moveToRegion]).map(\.name))
+            acts: (HostActs.performed + HostActs.files + UIKitRegistrations.webActs + UIKitRegistrations.itemsActs
+                + [MapContract.moveToRegion]).map(\.name))
     }
 
     /// What UIKit realizes, member by member: these records before what its registry says.

@@ -13,5 +13,8 @@
 /// Which native-host channel carries an attached state.
 @_spi(Host) public typealias HostStateKind = StateKind
 
+/// What an attached state's lanes are read as.
+@_spi(Host) public typealias HostLaneKind = LaneKind
+
 /// A state image delivered directly to, or reported by, a native Swift host.
 @_spi(Host) public typealias HostStateValue = StateCarried

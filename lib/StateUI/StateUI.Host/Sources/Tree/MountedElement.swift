@@ -57,6 +57,9 @@
     /// Where the states a press dragged carries stood as it began.
     var dragStart = Point(x: 0, y: 0)
 
+    /// A drag between views over the element's view, as the element tells it.
+    var dropTarget = DropTarget()
+
     /// The toolkit's half of the element.
     public private(set) var native: (any NativeElement)!
 
@@ -180,6 +183,7 @@
         }
 
         restack()
+        if changed.contains(.isEnabled), described { enablementTurned() }
         if changed.contains(.layoutDirection) {
             directionTurned(arrangingItself: false)
         } else if !described {
@@ -187,7 +191,9 @@
         }
         framesRead = driven[.frame] != nil || events[.frameChanged] != nil
             || held.contains { $0.framesRead }
-        native.applied(changed: changed, wasDescribed: described)
+        // Made in a disabled branch, it presents an `isEnabled` it never wrote.
+        let presenting = !described && parent?.isEffectivelyEnabled == false ? changed.union([.isEnabled]) : changed
+        native.applied(changed: presenting, wasDescribed: described)
         described = true
         reconcilePresentation(from: previouslyShown)
     }
@@ -507,14 +513,14 @@
             return .string(text)
 
         case (.plain, .lanes(let lanes)):
-            return Self.value(of: property, lanes: lanes)
+            return Self.value(of: lanes, as: binding.laneKind)
 
         case (.property, let carried):
             let presented = tree?.presentedValue(for: binding, from: carried) ?? carried
             guard let journey = HostBoundary.journey(from: presented) else {
                 return properties[property]
             }
-            return Self.value(of: property, lanes: journey.value)
+            return Self.value(of: journey.value, as: binding.laneKind)
 
         default:
             return properties[property]
@@ -566,54 +572,22 @@
         }
     }
 
-    /// A bound state's lanes as the value `property` carries.
-    static func value(of property: Prop, lanes: [Double]) -> HostValue? {
-        guard !lanes.isEmpty else { return nil }
+    /// A bound state's lanes as the value its type says they are, each type reading them as it laid them;
+    /// nothing for text, which has no lanes.
+    static func value(of lanes: [Double], as kind: HostLaneKind?) -> HostValue? {
+        guard !lanes.isEmpty, let kind else { return nil }
 
-        if Self.colorProperties.contains(property), lanes.count >= 4 {
-            func channel(_ value: Double) -> UInt8 {
-                UInt8(min(max((value * 255).rounded(), 0), 255))
-            }
-
-            return .color(
-                red: channel(lanes[0]),
-                green: channel(lanes[1]),
-                blue: channel(lanes[2]),
-                alpha: channel(lanes[3]))
-        }
-
-        if Self.booleanProperties.contains(property) {
-            return .bool(lanes[0] != 0)
-        }
-
-        if Self.enumerationProperties.contains(property) {
+        switch kind {
+        case .number:
+            return lanes.count == 1 ? .number(lanes[0]) : .numbers(lanes)
+        case .boolean:
+            return Bool(carried: .lanes(lanes))?.propValue
+        case .choice:
             return .enumeration(Int32(lanes[0].rounded()))
+        case .color:
+            return Color(carried: .lanes(lanes))?.propValue
+        case .material:
+            return Material.propValue(lanes: lanes)
         }
-
-        return lanes.count == 1 ? .number(lanes[0]) : .numbers(lanes)
     }
-
-    private static let colorProperties: Set<Prop> = [
-        .background, .barBackgroundColor, .barForegroundColor, .color, .placeholderColor, .textColor, .tint,
-    ]
-
-    private static let booleanProperties: Set<Prop> = [
-        .allowsDrop, .automationExcludedWithChildren, .hidesWhenInactive, .canDrag, .floatsOnTop, .growsWithText,
-        .ignoresInput, .isAccessibilityHidden, .isAnimating, .clipsContent, .isDestructive,
-        .isEnabled, .isFontAutoScalingEnabled, .isMaximizable, .isMinimizable, .isTranslucent,
-        .isOpen, .isPassword, .showsSidebar, .isReadOnly,
-        .isScrollEnabled,
-        .showsUserLocation, .isSpellCheckEnabled, .isTextPredictionEnabled,
-        .isOn, .showsTraffic, .isVisible, .isZoomEnabled, .letsInputThrough,
-        .showsBackButton, .showsClearButton, .showsNavigationBar, .showsText,
-    ]
-
-    private static let enumerationProperties: Set<Prop> = [
-        .accessibilityHeading, .contentMode, .layoutDirection, .fillRule, .fontAttributes,
-        .horizontalAlignment, .horizontalScrollIndicator,
-        .horizontalTextAlignment, .iconPosition, .inputPurpose,
-        .lineBreak, .lineCap, .lineJoin, .mapType, .orientation, .placement, .selectionMode, .side, .submitLabel,
-        .swipeDirection, .textDecorations, .textCase, .type,
-        .verticalAlignment, .verticalScrollIndicator, .verticalTextAlignment,
-    ]
 }

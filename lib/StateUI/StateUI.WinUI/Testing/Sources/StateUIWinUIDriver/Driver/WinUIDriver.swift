@@ -13,12 +13,30 @@ import Foundation
 /// Design: docs/design/host/conformance.md#the-driver
 @MainActor
 final class WinUIDriver: HostDriver {
+    /// Why a view that is no control holds no `isEnabled` on WinUI.
+    static let noEnabledState =
+        "WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it"
+
     let host = "WinUI 3"
     let cannot = [
         "submit on TextField":
             "WinUI raises a text box's KeyDown only from the keyboard; Enter is walked on HelloWorld's field",
     ]
     let platformHasNone = [
+        "read isEnabled of Canvas": WinUIDriver.noEnabledState,
+        "read isEnabled of ColorBox": WinUIDriver.noEnabledState,
+        "read isEnabled of Ellipse": WinUIDriver.noEnabledState,
+        "read isEnabled of Grid": WinUIDriver.noEnabledState,
+        "read isEnabled of HStack": WinUIDriver.noEnabledState,
+        "read isEnabled of Image": WinUIDriver.noEnabledState,
+        "read isEnabled of Line": WinUIDriver.noEnabledState,
+        "read isEnabled of Path": WinUIDriver.noEnabledState,
+        "read isEnabled of Polygon": WinUIDriver.noEnabledState,
+        "read isEnabled of Polyline": WinUIDriver.noEnabledState,
+        "read isEnabled of Rectangle": WinUIDriver.noEnabledState,
+        "read isEnabled of Text": WinUIDriver.noEnabledState,
+        "read isEnabled of VStack": WinUIDriver.noEnabledState,
+        "read isEnabled of ZStack": WinUIDriver.noEnabledState,
         "read growsWithText of TextEditor":
             "an editor's growing is StateUI's measuring, which no property of WinUI's holds; its frames prove it",
         "read contentMode of Rectangle": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
@@ -63,6 +81,9 @@ final class WinUIDriver: HostDriver {
     ) -> MountedTree {
         written.listen()
         Self.emptyStore()
+        Self.emptyFiles()
+        stateui_winui_hold_launches(true)
+        closeFileDialogs()
         let renderer = WinUIRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         self.renderer = renderer
         return renderer.runtime.tree
@@ -159,6 +180,12 @@ final class WinUIDriver: HostDriver {
             }
             try state(of: element, minimized: false, activated: true)
         case (.answer(let caption, let words), _): try answer(caption, typing: words)
+        case (.answerFiles(let names), _): try answerFiles(names)
+        case (.dragAndDrop(let target, let across), _): try dragAndDrop(element, onto: target, across: across)
+        case (.dropFiles(let names), let view?):
+            guard view.offered.takesFiles else { throw DriverCannot(act, on: element) }
+            for name in names { _ = FileManager.default.createFile(atPath: Self.files + "\\" + name, contents: Data(name.utf8)) }
+            view.heardDrag(.filesDropped(names.map { ChosenFile(address: Self.files + "\\" + $0, name: $0) }))
         default: throw DriverCannot(act, on: element)
         }
     }
@@ -272,6 +299,33 @@ final class WinUIDriver: HostDriver {
         throw DriverCannot("answer by \(caption)")
     }
 
+    /// Answers the file dialog showing as the user does, by the files of `names` in the driver's folder - none
+    /// cancels it: Windows shows its dialog a moment after it is asked for, and a dialog just shown may not take its
+    /// answer yet, so the answer is given again until the dialog is gone.
+    private func answerFiles(_ names: [String]) throws {
+        let paths = names.map { Self.files + "\\" + $0 }
+        var answering: Int64 = 0
+        for _ in 0..<150 {
+            let answered = WinUIStrings.withCStrings(paths) { pointers in
+                pointers.withUnsafeBufferPointer {
+                    stateui_winui_answer_file_dialog(answering, $0.baseAddress, Int32(paths.count))
+                }
+            }
+            if answered == 0, answering != 0 { return }
+            answering = answered
+            WinUITestHost.pump(0.1)
+        }
+        throw DriverCannot("answer a file dialog by \(names)")
+    }
+
+    /// Cancels a file dialog a case before left showing, so it stands over no other case.
+    private func closeFileDialogs() {
+        for _ in 0..<50 where stateui_winui_file_dialog() >= 0 {
+            _ = stateui_winui_answer_file_dialog(0, nil, 0)
+            WinUITestHost.pump(0.05)
+        }
+    }
+
     /// The place of the dialog's button of `caption`: its accept 0, its cancel 1, its choices from 2; nil for none.
     private static func button(of caption: String, in asked: WinUIAsked) -> Int32? {
         if caption == asked.accept { return 0 }
@@ -302,9 +356,49 @@ final class WinUIDriver: HostDriver {
         return folder
     }()
 
+    /// The folder the files a test opens and saves stand in, its own and empty at each start.
+    static let files: String = {
+        let folder = FileManager.default.temporaryDirectory
+            .appendingPathComponent("stateui-conformance-files-\(ProcessInfo.processInfo.processIdentifier)").path
+            .replacingOccurrences(of: "/", with: "\\")
+        try? FileManager.default.createDirectory(atPath: folder, withIntermediateDirectories: true)
+        stateui_winui_keep_test_files_in(folder)
+        return folder
+    }()
+
+    private static func emptyFiles() {
+        for name in (try? FileManager.default.contentsOfDirectory(atPath: files)) ?? [] {
+            try? FileManager.default.removeItem(atPath: files + "\\" + name)
+        }
+    }
+
     private static func emptyStore() {
         for file in [WinUIPersistence.valuesFile, WinUIPersistence.scenesFile] {
             try? FileManager.default.removeItem(atPath: store + "\\" + file)
         }
+    }
+
+    /// `element` dragged onto the view of id `target` - across the one of id `across` first - as the relay tells a
+    /// drag: it starts, comes over the view crossed and goes, comes over the target and is let go there, and ends.
+    func dragAndDrop(_ element: MountedElement, onto target: String, across: String?) throws {
+        let act = UserAct.dragAndDrop(onto: target, across: across)
+        func taking(_ id: String) throws -> WinUIView {
+            let found = (renderer?.runtime.tree.root?.first(id: .manual(id))?.native as? WinUIElement)?.view
+            guard let found, found.offered.takesWords else { throw DriverCannot(act, on: element) }
+            return found
+        }
+        guard let source = (element.native as? WinUIElement)?.view, let words = source.offered.words else {
+            throw DriverCannot(act, on: element)
+        }
+        source.heardDrag(.dragStarted)
+        if let across {
+            let crossed = try taking(across)
+            crossed.heardDrag(.dragOver)
+            crossed.heardDrag(.dragLeft)
+        }
+        let landing = try taking(target)
+        landing.heardDrag(.dragOver)
+        landing.heardDrag(.dropped(words))
+        source.heardDrag(.dragEnded)
     }
 }

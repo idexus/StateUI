@@ -23,6 +23,15 @@ extension ContainerShape {
         }
     }
 
+    /// The radius of the outline's corners within `rect`: none for a rectangle, half the shorter side for an oval.
+    func cornerRadius(in rect: NSRect) -> CGFloat {
+        switch self {
+        case .rectangle: 0
+        case .roundedRectangle(let radius): min(radius, min(rect.width, rect.height) / 2)
+        case .ellipse: min(rect.width, rect.height) / 2
+        }
+    }
+
     /// Cuts `layer` to the outline: its corners where they round, a mask where it is an oval.
     func cut(_ layer: CALayer) {
         let bounds = layer.bounds

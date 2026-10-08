@@ -40,6 +40,9 @@ class GTKView {
 
     /// The controllers the view listens through, and what hears them; nil while it listens for nothing.
     private(set) var listening: GTKListening?
+
+    /// The view's drags, once it offers or takes one.
+    private(set) var dragAndDrop: GTKDragAndDrop?
     private var onHeard: ((HeardInput) -> Void)?
 
     /// What hears the keyboard come into the view and leave it, and the controller telling it; nil while none does.
@@ -52,6 +55,9 @@ class GTKView {
     /// The colour the view's accent is drawn in, as the host last wrote it, and its class; nil for the platform's.
     private(set) var tint: GdkRGBA?
     private var tintClass: String?
+
+    /// The class of the host's style sheet that fills the view's box; nil for none.
+    private var fillClass: String?
 
     /// Where the view draws the platform's accent, as a selector after its own (`GTKStyleSheet.tint`); nil for its
     /// words and marks.
@@ -98,6 +104,12 @@ class GTKView {
     /// Connects `handler` to the widget's `notify::<property>`, handing it this view's number.
     func notify(_ property: String, _ handler: GTKArgumentHandler) {
         connectNotify(UnsafeMutableRawPointer(widget), property, number: number, handler)
+    }
+
+    /// What fills the view's box, under its whole frame: a colour, or a brush's first colour; nil for nothing.
+    /// Design: docs/design/platforms/gtk/drawing.md#a-views-background
+    func setBackground(_ value: HostValue?) {
+        swapClass(&fillClass, to: GTKBrush(value).firstColor.map(GTKStyleSheet.fill))
     }
 
     /// Takes class `current` off `target` - the view's widget where nil - and puts `wanted` on it, where they differ.
@@ -247,6 +259,16 @@ class GTKView {
         let listening = listening ?? GTKListening(widget: widget, number: number)
         listening.listen(for: hearing)
         self.listening = hearing.isEmpty ? nil : listening
+    }
+
+    /// Offers and takes what `offered` says of a drag, `heard` hearing it.
+    /// Design: docs/design/platforms/gtk/input.md#a-drag-between-views
+    func offer(_ offered: DragAndDrop, _ heard: @escaping (HeardInput) -> Void) {
+        guard offered != (dragAndDrop?.offered ?? .none) || dragAndDrop != nil else { return }
+        let dragAndDrop = dragAndDrop ?? GTKDragAndDrop(widget: widget, number: number)
+        dragAndDrop.heard = heard
+        dragAndDrop.offer(offered)
+        self.dragAndDrop = offered == .none ? nil : dragAndDrop
     }
 
     /// What the view heard, handed to what hears it.

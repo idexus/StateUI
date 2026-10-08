@@ -32,9 +32,13 @@ final class WinUISplitView: WinUILayoutView {
     private var asked = LayoutSize.zero
     private var adaptation = SidebarAdaptation()
 
-    /// The colour the pane was last painted in, once it was.
-    private var paneIsPainted = false
-    private var paneFill: UInt32?
+    /// The materials the split view says for its sidebar beside the detail and over it.
+    var grounds = (beside: HostMaterial(nil), over: HostMaterial(nil)) {
+        didSet { paintPane() }
+    }
+
+    /// The grounds the pane last stood on, once it stood on any.
+    private var painted: (beside: PaneGround, over: PaneGround)?
 
     override init() {
         super.init()
@@ -118,21 +122,45 @@ final class WinUISplitView: WinUILayoutView {
         paintPane()
     }
 
-    /// Paints the pane in the sidebar page's background, so the room WinUI keeps around the page in it shows no
-    /// window backdrop; said again whenever that page's background changes.
+    /// Stands the pane on the split view's material for each place, else on the sidebar page's background - so the
+    /// room WinUI keeps around the page shows no window backdrop - else on WinUI's own; said again whenever either
+    /// changes.
     /// Design: docs/design/platforms/winui/pages.md#a-split-view
     func paintPane() {
-        let fill = (pages.first?.view as? WinUILayoutView)?.box.fill?.argb
-        guard !paneIsPainted || fill != paneFill else { return }
+        let page = (pages.first?.view as? WinUILayoutView)?.box.fill?.argb
+        let grounds = (beside: PaneGround(grounds.beside, page: page), over: PaneGround(grounds.over, page: page))
+        guard painted.map({ $0 != grounds }) ?? true else { return }
 
-        paneIsPainted = true
-        paneFill = fill
-        stateui_winui_split_set_pane_background(sidebar.handle, fill != nil, fill ?? 0)
+        painted = grounds
+        let (beside, over) = grounds
+        stateui_winui_split_set_pane_grounds(
+            sidebar.handle, beside.kind, beside.argb, beside.opacity, beside.tintOpacity,
+            over.kind, over.argb, over.opacity, over.tintOpacity)
     }
 
     override func detach() {
         super.detach()
         onPresentationChanged = nil
         sidebar.detach()
+    }
+}
+
+/// A ground of WinUI's navigation pane, as the relay takes it: WinUI's own (0), a colour (1), or the in-app acrylic
+/// (2) - a blur at its thickness, in its colour, the tint over the theme's.
+/// Design: docs/design/platforms/winui/pages.md#a-split-view
+struct PaneGround: Equatable {
+    var kind: Int32 = 0
+    var argb: UInt32 = 0
+    var opacity: Float = 0
+    var tintOpacity: Float = 0
+
+    /// The ground `material` is, the sidebar page's `page` colour standing in for none.
+    @MainActor init(_ material: HostMaterial, page: UInt32?) {
+        if let thickness = material.blur, let colour = material.painted.flatMap({ HostBrush($0).firstColor })?.argb {
+            let acrylic = WinUIWindow.acrylic(thickness)
+            (kind, argb, opacity, tintOpacity) = (2, colour, acrylic.opacity, acrylic.tintOpacity)
+        } else if let colour = material.paint.flatMap({ HostBrush($0).firstColor })?.argb ?? page {
+            (kind, argb) = (1, colour)
+        }
     }
 }

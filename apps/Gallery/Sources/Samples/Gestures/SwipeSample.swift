@@ -2,9 +2,11 @@ import StateUI
 
 /// Which way a finger swiped, heard every way or narrowed to two.
 struct SwipeSample: SampleContent, ExampleContent {
+    // listing: SwipeSample
     @State private var swipe = ""
 
     @State private var narrowed = ""
+    // listing: end
 
     static let id = "swipe"
     static let title = "Swipe"
@@ -15,58 +17,10 @@ struct SwipeSample: SampleContent, ExampleContent {
     // still - see SampleContent.scrolls.
     static let scrolls = false
 
-    static let code = """
-        @State private var swipe = ""
-        @State private var narrowed = ""
-
-        VStack {
-            // What was swiped is read here, so every swipe builds this closure.
-            DebugInfoLabel()
-
-            ZStack {
-                Text("Swipe across this box")
-                    .padding(32)
-            }
-            .style("Card")
-            .stroke(Palette.accent)
-            .shape(.roundedRectangle(10))
-            // A recognizer that listens for nothing recognizes nothing, so
-            // `direction` defaults to every way.
-            .onSwiped { direction in
-                swipe = Self.name(of: direction)
-            }
-
-            Text(swipe.isEmpty ? "nothing yet" : "Swiped \\(swipe)")
-
-            ZStack {
-                Text("Left or right, and a long way")
-                    .padding(32)
-            }
-            .style("Card")
-            .stroke(Palette.accent)
-            .shape(.roundedRectangle(10))
-            // Narrowed: two of the four ways, and a finger that must travel
-            // 150 device units before anything fires.
-            .onSwiped(direction: [.left, .right], threshold: 150) { direction in
-                narrowed = Self.name(of: direction)
-            }
-
-            Text(narrowed.isEmpty ? "nothing yet" : "Swiped \\(narrowed)")
-        }
-
-        private static func name(of direction: SwipeDirection) -> String {
-            switch direction {
-            case .left: return "left"
-            case .right: return "right"
-            case .up: return "up"
-            case .down: return "down"
-            default: return "somewhere"
-            }
-        }
-        """
-
+    // listing: SwipeSample
     var body: some View {
         VStack {
+            // What was swiped is read here, so every swipe builds this closure.
             DebugInfoLabel()
 
             ZStack {
@@ -76,9 +30,11 @@ struct SwipeSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
             }
             .style("Card")
-            .stroke(Palette.accent)
+            .stroke(Palette.outline)
             .lineWidth(1)
             .shape(.roundedRectangle(10))
+            // A recognizer that listens for nothing recognizes nothing, so
+            // `direction` defaults to every way.
             .onSwiped { direction in
                 swipe = Self.name(of: direction)
             }
@@ -94,7 +50,7 @@ struct SwipeSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
             }
             .style("Card")
-            .stroke(Palette.accent)
+            .stroke(Palette.outline)
             .lineWidth(1)
             .shape(.roundedRectangle(10))
             // Narrowed: two of the four ways, and a finger that must travel
@@ -109,6 +65,7 @@ struct SwipeSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         Text("The first box says nothing about `direction`, and a recognizer that "
@@ -120,6 +77,7 @@ struct SwipeSample: SampleContent, ExampleContent {
             .textColor(Palette.subtle)
     }
 
+    // listing: SwipeSample
     private static func name(of direction: SwipeDirection) -> String {
         switch direction {
         case .left: return "left"
@@ -129,4 +87,5 @@ struct SwipeSample: SampleContent, ExampleContent {
         default: return "somewhere"
         }
     }
+    // listing: end
 }

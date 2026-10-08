@@ -30,6 +30,14 @@ offers a context menu, so a row answers a click past its words as well as on
 them; once it does neither, the clear paint goes, and an author's background
 is never touched.
 
+## A disabled view
+
+A view's enablement reaches the control it answers through - its own, or the
+scroller or the list a layout of it holds (`WinUIView.answering`) - as WinUI's
+`IsEnabled`, and a control in a disabled branch is off with it. A view that is
+no control - a figure, a picture, a panel, a block of words - keeps no enabled
+state on WinUI: the host layer hears nothing of the hand in it.
+
 ## Taps
 
 WinUI tells a tap, and a second tap soon after as a double tap in place of a
@@ -82,3 +90,17 @@ into it - to it, or to what stands in it, as a number box's own field - and
 when it leaves. WinUI's `GotFocus` and `LostFocus` bubble from inside the
 element, so as each arrives the relay asks where the keyboard is now, the
 act of moving the focus asking the same, and tells only a change.
+
+## A drag between views
+
+A view's drags are WinUI's own drag and drop, through the relay
+(`Drags.cpp`): what the view offers stands in a table by its number, and its
+handlers, hung once, ask it as they run. A view that can be dragged has
+`CanDrag`; its `DragStarting` puts the view's words on the drag's data as
+text, to be copied, and its `DropCompleted` says the drag ended wherever it
+ended. A view taking drops has `AllowDrop`; a drag whose data holds text
+where it takes words, or storage items where it takes files, is accepted
+over it - `DragEnter` and `DragOver` say it is over, `DragLeave` that it went
+- and its `Drop` reads the text, or each item's path and name, holding the
+drop's deferral until they are read. The host layer's rule makes over once
+and no leave after a drop.

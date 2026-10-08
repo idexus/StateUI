@@ -145,8 +145,14 @@ final class WinUIPagesTests: XCTestCase {
     /// What the relay reads of `view` as `what`.
     @MainActor
     private static func words(_ view: WinUIView, _ what: String) -> String {
+        words(view.handle, what)
+    }
+
+    /// What the relay reads of the object `handle` holds, as `what` names it; empty for nothing.
+    @MainActor
+    private static func words(_ handle: StateUIObjectRef, _ what: String) -> String {
         var bytes = [CChar](repeating: 0, count: 128)
-        let length = stateui_winui_read(view.handle, what, &bytes, Int32(bytes.count))
+        let length = stateui_winui_read(handle, what, &bytes, Int32(bytes.count))
         return String(decoding: bytes.prefix(Int(max(length, 0))).map { UInt8(bitPattern: $0) }, as: UTF8.self)
     }
 
@@ -225,6 +231,34 @@ final class WinUIPagesTests: XCTestCase {
             tone.wrappedValue = Color(red: 128, green: 0, blue: 0)
             host.settle { Self.words(split.sidebar, "paneBackground") == "#FF800000" }
             XCTAssertEqual(Self.words(split.sidebar, "paneBackground"), "#FF800000", "and follows it")
+        }
+    }
+
+    /// A window whose background the application writes shows it behind the detail as beside the sidebar and under
+    /// the bars: the card WinUI lays over the detail is clear, its edge the theme's divider. A window left to the
+    /// platform keeps WinUI's card.
+    func testTheDetailShowsTheWindowsWrittenBackground() throws {
+        try onUIThread {
+            let written = State(wrappedValue: Material?.some(.blur(.ultraThick)))
+            let host = WinUIRenderer.running {
+                SplitView(State(wrappedValue: true).projectedValue) {
+                    Text("sidebar")
+                } detail: {
+                    WindowSessionPage(key: "\(String(describing: written.wrappedValue))") {
+                        $0.background = written.wrappedValue
+                    }
+                }
+            }
+            let window = try XCTUnwrap(host.window)
+            host.settle { Self.words(window.handle, "detailCard") == "#00000000" }
+            XCTAssertEqual(Self.words(window.handle, "detailCard"), "#00000000")
+            XCTAssertNotEqual(Self.words(window.handle, "divider"), "")
+            XCTAssertEqual(Self.words(window.handle, "detailEdge"), Self.words(window.handle, "divider"), "its edge")
+
+            written.wrappedValue = nil
+            host.settle { Self.words(window.handle, "detailCard") == "" }
+            XCTAssertEqual(Self.words(window.handle, "detailCard"), "", "a window left to the platform keeps WinUI's")
+            XCTAssertEqual(Self.words(window.handle, "detailEdge"), "")
         }
     }
 

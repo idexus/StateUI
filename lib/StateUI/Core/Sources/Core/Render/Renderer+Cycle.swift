@@ -164,9 +164,9 @@ extension Renderer {
         if update.contains(.destination) { replace(journey.destination, at: width) }
         if update.contains(.velocity) { replace(journey.velocity, at: width * 2) }
 
-        let board = board(of: storage)
-        board.told(StateImage.bytes(of: .lanes(lanes)), mask: mask, to: storage)
-        storage.told?(mask)
+        // The report speaks of the journey the host last read: a lane written since stands.
+        let laid = board(of: storage).told(StateImage.bytes(of: .lanes(lanes)), mask: mask, to: storage, keepsUnread: true)
+        storage.told?(laid)
         storage.sampleTaken()
         return true
     }

@@ -7,7 +7,12 @@
 /// The DOM element: made, and given the element's properties.
 extension WebElement {
     func makeView() -> WebDOMView? {
-        if type == .itemsView, let host { return WebItemsView(cells: ItemsCells(element, in: host.runtime)) }
+        if type == .itemsView, let host {
+            let items = WebItemsView(cells: ItemsCells(element, in: host.runtime))
+            // Scrolled, every item moves in the window, which no observer of the page tells.
+            items.listen("scroll") { [weak host] in host?.runtime.frames.laidOut() }
+            return items
+        }
         if element.isDrawnByParent(in: WebRegistrations.registry) { return nil }
         if let registered = WebRegistrations.registry.makeView(
             for: type,
@@ -22,7 +27,11 @@ extension WebElement {
 
         switch type {
         case .page: return WebLayoutView(tag: "section", arrangement: .single)
-        case .navigationStack: return WebNavigationView()
+        case .navigationStack:
+            let stack = WebNavigationView()
+            // A page arriving moves on the browser's own animation, which nothing else tells has ended.
+            stack.listen("animationend") { [weak self] in self?.host?.runtime.frames.laidOut() }
+            return stack
         case .splitView: return WebSplitView()
         case .tabView: return WebTabView()
         case .overlay:
@@ -38,18 +47,15 @@ extension WebElement {
     func applyProperties(changed: Set<Prop>) {
         guard let view else { return }
 
-        let taken = WebRegistrations.registry.apply(
-            changed, to: view, of: type,
-            reading: { [element] in element.value($0) },
-            carriedIn: { [element] in element.driven[$0]?.mode == .in })
+        let taken = WebRegistrations.registry.apply(changed, to: view, presenting: element)
 
         let own = changed.subtracting(taken)
         for property in own {
             switch property {
             case .opacity: view.setOpacity(element.value(.opacity)?.number ?? 1)
-            case .isEnabled: view.setEnabled(element.value(.isEnabled)?.bool ?? true)
+            case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
             case .isVisible: view.setShown(element.standsShown)
-            case .background: (view as? WebLayoutView)?.setBackground(element.value(.background))
+            case .background: view.setBackground(element.value(.background))
             case .ignoresInput: view.style("pointer-events", element.value(.ignoresInput)?.bool == true ? "none" : nil)
             default: break
             }

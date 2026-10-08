@@ -38,10 +38,16 @@ final class UIKitEnvironment {
     /// theme is the whole application's, which every scene follows alike.
     func followTheme(of scene: UIWindowScene) {
         guard watchedScene == nil else { return }
-        reportChange { self.reportTheme(scene.traitCollection.userInterfaceStyle) }
+        reportChange {
+            self.reportTheme(scene.traitCollection.userInterfaceStyle)
+            self.reportAccent(scene.traitCollection)
+        }
         watchedScene = scene.registerForTraitChanges([UITraitUserInterfaceStyle.self]) {
             [weak self] (scene: UIWindowScene, _: UITraitCollection) in
-            self?.changed { $0.reportTheme(scene.traitCollection.userInterfaceStyle) }
+            self?.changed {
+                $0.reportTheme(scene.traitCollection.userInterfaceStyle)
+                $0.reportAccent(scene.traitCollection)
+            }
         }
     }
 
@@ -79,6 +85,15 @@ final class UIKitEnvironment {
     /// Reports a change through the runtime's step for it.
     private func changed(_ report: @escaping (UIKitEnvironment) -> Void) {
         reportChange { report(self) }
+    }
+
+    /// The application's tint as `traits` draw it: iOS has no accent of the user's, so an application's own stands
+    /// in its place.
+    func reportAccent(_ traits: UITraitCollection) {
+        var (red, green, blue, alpha): (CGFloat, CGFloat, CGFloat, CGFloat) = (0, 0, 0, 0)
+        UIColor.tintColor.resolvedColor(with: traits).getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        func channel(_ value: CGFloat) -> Int { Int((value * 255).rounded()) }
+        core.setAccentColor(Color(red: channel(red), green: channel(green), blue: channel(blue), alpha: channel(alpha)))
     }
 
     /// The theme a scene stands in: dark, else light.

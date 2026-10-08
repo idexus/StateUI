@@ -19,6 +19,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testALayoutWhileTheDrawerSlidesLeavesItSliding", testALayoutWhileTheDrawerSlidesLeavesItSliding),
             ("testASidebarWithNoPictureOpensFromTheMenuGlyph", testASidebarWithNoPictureOpensFromTheMenuGlyph),
             ("testAClosedDrawerStandsInvisible", testAClosedDrawerStandsInvisible),
+            ("testADrawerUnderAClearWindowStandsOnASurfaceOfItsOwn", testADrawerUnderAClearWindowStandsOnASurfaceOfItsOwn),
             ("testATabChosenShowsItsPageAndSaysSo", testATabChosenShowsItsPageAndSaysSo),
             ("testTheRowMarksTheTabShown", testTheRowMarksTheTabShown),
             ("testAPagesToolbarItemsAreTheBarsActions", testAPagesToolbarItemsAreTheBarsActions),
@@ -247,6 +248,33 @@ final class AndroidPagesTests: XCTestCase {
         }
     }
 
+    /// A drawer over the detail stands on a surface of its own - the theme's floating one - never on the window's: a
+    /// window painted clear leaves the drawer opaque, the detail hidden behind a sidebar page that paints nothing.
+    func testADrawerUnderAClearWindowStandsOnASurfaceOfItsOwn() throws {
+        try onMainActor {
+            stateUIUseApp(OneWindowApplication {
+                WindowPainted(colour: .transparent) {
+                    drawerOverStack(sidebar: TitledPage(title: "Menu", icon: "test_dot.png"))
+                }
+            })
+            // In the activity's window, which the window's colour paints; its theme's back comes back after.
+            let host = AndroidRenderer.start(context: TestContext.window, root: TestJava.root(), density: 2)
+            defer {
+                Java.callStatic(
+                    JavaAPI.environment, JavaAPI.setWindowBackground, .object(TestContext.window.reference), .int(0),
+                    .bool(false))
+            }
+            host.layOut()
+            let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
+            let drawer = try XCTUnwrap(split.heldViews().last)
+            try XCTUnwrap(host.views(AndroidNavigationView.self).first).bar.clicked()
+
+            let colour = Java.callStaticLong(JavaAPI.views, AndroidDriver.sidebarColour, .object(drawer.reference))
+            XCTAssertNotEqual(colour, Int64.min, "the drawer stands on a surface")
+            XCTAssertEqual(UInt32(truncatingIfNeeded: colour) >> 24, 0xFF, "an opaque one, whatever the window is")
+        }
+    }
+
     /// A closed drawer holds nothing the keyboard or assistive technology reaches: it stands invisible, shows as it
     /// slides open, and stands invisible again once it has slid away.
     func testAClosedDrawerStandsInvisible() throws {
@@ -313,7 +341,7 @@ final class AndroidPagesTests: XCTestCase {
         }
     }
 
-    /// What a page puts on the bar: its actions in their order, the overflow's last, each with its
+    /// What a page puts on the bar: its actions in their order, the overflow's last in a group of their own, each with its
     /// picture and whether it can be chosen - the picture of one that cannot be dimmed - a destructive one in
     /// the theme's error colour; choosing one runs its handler, and one that cannot be chosen runs nothing.
     func testAPagesToolbarItemsAreTheBarsActions() throws {
@@ -336,7 +364,7 @@ final class AndroidPagesTests: XCTestCase {
             XCTAssertEqual(navigation.bar.content.actions.map(\.onBar), [true, true, false])
 
             let menu = JavaObject(try XCTUnwrap(Java.callObject(navigation.bar.reference, TestMenus.getMenu)))
-            XCTAssertEqual(TestMenus.describe(menu), "Add (off) (dimmed picture), Save (picture), Delete (red)")
+            XCTAssertEqual(TestMenus.describe(menu), "Add (off) (dimmed picture), Save (picture) | Delete (red)")
             for words in ["Add", "Save", "Delete"] { TestMenus.choose(menu, words) }
             host.runtime.pump.turn()
             XCTAssertEqual(heard.values, ["save", "delete"])
@@ -703,6 +731,18 @@ private func drawerOverStack(sidebar: some View) -> some View {
         } destination: { _ in
             TitledPage(title: "Deeper")
         }
+    }
+}
+
+/// `content` in a window painted `colour`.
+private struct WindowPainted<Content: View>: View {
+    @Environment(\.window) private var window
+    let colour: Color
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        let (window, colour) = (self.window, self.colour)
+        return content().onCreated { window.background = .color(colour) }
     }
 }
 

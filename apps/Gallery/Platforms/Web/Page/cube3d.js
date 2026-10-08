@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+// listing: Cube3DSample.Web.javascript
 // <gallery-cube3d>: a cube drawn by WebGL 2 on a canvas of its own, turning on the browser's display frames while
 // it is in view - an element that knows nothing of StateUI. Its attributes say what it is: `size`, the edge as a
 // share of its room from 0 to 1; `color`, 0 teal, 1 amber, 2 violet; `spinning`, present while it turns. The Swift
@@ -148,6 +149,7 @@ class Cube3D extends HTMLElement {
     gl.drawArrays(gl.TRIANGLES, 0, corners.length / 4);
   }
 }
+// listing: end
 
 // The arithmetic behind the matrix, column by column - the same as every host's cube.
 function transform(aspect, turn, scale) {
@@ -201,4 +203,6 @@ function multiply(left, right) {
   return matrix;
 }
 
+// listing: Cube3DSample.Web.javascript
 customElements.define("gallery-cube3d", Cube3D);
+// listing: end

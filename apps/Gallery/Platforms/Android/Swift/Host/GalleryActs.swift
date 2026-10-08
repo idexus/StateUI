@@ -5,6 +5,7 @@ import Android
 import GalleryUI
 import StateUIAndroid
 
+// listing: InteropActsSample.Android.swift
 /// The acts the gallery performs on this head: its clipboard and its battery, asked of the device through the
 /// gallery's own Java, com.stateui.gallery.GalleryDevice.
 enum GalleryActs {
@@ -25,6 +26,7 @@ enum GalleryActs {
         }
 
         StateUIActs.add(GalleryContract.batteryLevel) {
+            // The sticky ACTION_BATTERY_CHANGED, read in GalleryDevice.java.
             battery()
         }
     }
@@ -49,3 +51,4 @@ enum GalleryActs {
         device, "paste", "(Landroid/content/Context;)Ljava/lang/String;")
     @MainActor private static let batteryNow = Java.staticMethod(device, "battery", "(Landroid/content/Context;)[D")
 }
+// listing: end

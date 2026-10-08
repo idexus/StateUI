@@ -2,6 +2,7 @@ import StateUI
 
 /// The accessible meaning and stable external identity of a StateUI view.
 struct SemanticsSample: SampleContent, ExampleContent {
+    // listing: SemanticsSample
     @State private var described = true
 
     @State private var taps = 0
@@ -10,100 +11,29 @@ struct SemanticsSample: SampleContent, ExampleContent {
     /// reader running shows nothing at all otherwise, and what was said is the
     /// whole point of the button.
     @State private var said = ""
+    // listing: end
 
     static let id = "semantics"
     static let title = "Semantics"
     static let summary = "What a view says about itself - to a screen reader, and to whatever drives the app."
 
+    // listing: SemanticsSample
     /// Said once, and both written onto the button and printed under it - so
     /// what the sample shows cannot drift from what the platform was handed.
     private static let says = "Add to favourites"
 
     private static let hint = "Puts this item on your list"
 
-    static let code = """
-        @State private var described = true
-        @State private var taps = 0
-        @State private var said = ""
-
+    var body: some View {
         // What a user is told is read here, so throwing the switch builds
         // this closure again.
         VStack {
             DebugInfoLabel()
 
             HStack {
-                // A picture and nothing else. To anybody not looking at it,
-                // this control has no name at all.
-                Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
-                    .style("IconButton")
-                    .accessibilityIdentifier("semantics.bare")
-                    .onClicked { taps += 1 }
-
-                // The same button, saying what it is and what using it does.
-                // Written as a value rather than in the chain, so throwing the
-                // switch CLEARS the property off the same control instead of
-                // building a different one.
-                describedButton
-            }
-
-            Text("Tapped \\(taps) time\\(taps == 1 ? "" : "s")")
-
-            SwitchRow("Describe the second button", $described)
-
-            // Read as a heading: somewhere a user jumping through the page
-            // can land.
-            Text("A heading, and drawn the same")
-                .accessibilityHeading(.h1)
-
-            // Said out loud, now, whatever the user was on. An ACT, because
-            // it is something that happens at a moment rather than a value a
-            // view can hold.
-            Button("Announce the count")
-                .onClicked {
-                    let words = "Tapped \\(taps) time\\(taps == 1 ? "" : "s")"
-                    try await ScreenReader.announce(words)
-                    said = words
-                }
-
-            // Shown as well as said: with no screen reader running there is
-            // nothing to see otherwise, and what was said is the point.
-            Text(said.isEmpty ? "nothing said yet" : "said: \\(said)")
-
-            // One word takes the panel AND everything in it out of what a
-            // screen reader walks; the rule below is a single view taken out.
-            ZStack {
                 VStack {
-                    Text("Skipped")
-                    Text("Neither line is read")
-                }
-            }
-            .style("Card")
-            .automationExcludedWithChildren(true)
-
-            ColorBox(Palette.outline)
-                .height(1)
-                .isAccessibilityHidden(true)
-        }
-
-        private var describedButton: some View {
-            let button = Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
-                .style("IconButton")
-                .accessibilityIdentifier("semantics.described")
-                .onClicked { taps += 1 }
-
-            return described
-                ? button.accessibilityLabel("Add to favourites")
-                    .accessibilityHint("Puts this item on your list")
-                : button
-        }
-        """
-
-    var body: some View {
-        VStack {
-            DebugInfoLabel()
-
-            HStack {
-                VStack {
+                    // A picture and nothing else. To anybody not looking at it,
+                    // this control has no name at all.
                     Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                         .style("IconButton")
                         .accessibilityIdentifier("semantics.bare")
@@ -130,6 +60,10 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 .width(150)
 
                 VStack {
+                    // The same button, saying what it is and what using it does.
+                    // One value, not two branches of an `if`, so throwing the
+                    // switch CLEARS the property off the same control instead of
+                    // building a different one.
                     describedButton
 
                     Text("A user hears")
@@ -165,6 +99,8 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     .fontSize(20)
                     .fontAttributes(.bold)
 
+                // Read as a heading: somewhere a user jumping through the page
+                // can land.
                 Text("A heading, and drawn the same")
                     .fontSize(20)
                     .fontAttributes(.bold)
@@ -174,10 +110,11 @@ struct SemanticsSample: SampleContent, ExampleContent {
 
             SectionTitle("Said out loud")
 
+            // Said out loud, now, whatever the user was on. An ACT, because
+            // it is something that happens at a moment rather than a value a
+            // view can hold.
             Button("Announce the count")
                 .accessibilityIdentifier("semantics.announce")
-                .fontSize(13)
-                .padding(horizontal: 16, vertical: 6)
                 .horizontalAlignment(.center)
                 .onClicked {
                     let words = "Tapped \(taps) time\(taps == 1 ? "" : "s")"
@@ -185,6 +122,8 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     said = words
                 }
 
+            // Shown as well as said: with no screen reader running there is
+            // nothing to see otherwise, and what was said is the point.
             Text(said.isEmpty ? "nothing said yet" : "said: \(said)")
                 .fontSize(12)
                 .textColor(said.isEmpty ? Palette.subtle : Palette.accent)
@@ -193,6 +132,8 @@ struct SemanticsSample: SampleContent, ExampleContent {
             SectionTitle("What a user walks past")
 
             HStack {
+                // One word takes the panel AND everything in it out of what a
+                // screen reader walks; the rule below is a single view taken out.
                 ZStack {
                     VStack {
                         Text("Walked")
@@ -258,6 +199,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             ? button.accessibilityLabel(Self.says).accessibilityHint(Self.hint)
             : button
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

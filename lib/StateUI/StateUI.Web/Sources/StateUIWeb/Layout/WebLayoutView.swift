@@ -49,6 +49,11 @@ class WebLayoutView: WebDOMView {
     /// A ZStack's placing run; nil while each child stands in its own area.
     private var placement: HostPlacementRun?
 
+    /// The ways the layout scrolls its child, which there is no larger than its room.
+    var scrolls = (across: false, down: false) {
+        didSet { if scrolls != oldValue { placeAll() } }
+    }
+
     init(tag: String = "div", arrangement: Arrangement) {
         self.arrangement = arrangement
         super.init(tag: tag)
@@ -89,8 +94,11 @@ class WebLayoutView: WebDOMView {
     }
 
     /// The layout's own box: what fills it, its outline inside its edge, its shape, and whether it cuts what it holds.
-    func setBox(fill: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?, clips: Bool) {
-        setBox(WebBox(fill: fill, stroke: stroke, lineWidth: lineWidth, shape: shape))
+    func setBox(background: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?, clips: Bool) {
+        let material = HostMaterial(background)
+        setBox(WebBox(
+            fill: material.paint, stroke: stroke, lineWidth: lineWidth, shape: shape,
+            material: material.blur == nil ? nil : material))
         style("overflow", clips ? "hidden" : nil)
     }
 
@@ -100,9 +108,11 @@ class WebLayoutView: WebDOMView {
     }
 
     /// What fills the layout's box.
-    func setBackground(_ value: HostValue?) {
+    override func setBackground(_ value: HostValue?) {
+        let material = HostMaterial(value)
         var box = paintedBox
-        box.fill = value
+        box.fill = material.paint
+        box.material = material.blur == nil ? nil : material
         setBox(box)
     }
 
@@ -173,16 +183,27 @@ class WebLayoutView: WebDOMView {
     /// Design: docs/design/platforms/web/layout.md#a-childs-place
     func place(_ view: WebDOMView, _ values: LayoutValues) {
         view.drawInRun(nil, size: nil)
-        for (side, length) in WebCSS.sides(values.margin) { view.style("margin-\(side)", length) }
+        for (side, length) in WebCSS.sides(values.margin, signed: true) { view.style("margin-\(side)", length) }
         view.style("width", WebCSS.pixels(values.width))
         view.style("height", WebCSS.pixels(values.height))
-        view.style("min-width", WebCSS.pixels(values.minimumWidth))
-        view.style("min-height", WebCSS.pixels(values.minimumHeight))
-        view.style("max-width", WebCSS.pixels(values.maximumWidth))
-        view.style("max-height", WebCSS.pixels(values.maximumHeight))
-
-        let across = WebCSS.alignment(values.horizontal, stops: values.width != nil || values.maximumWidth != nil)
-        let down = WebCSS.alignment(values.vertical, stops: values.height != nil || values.maximumHeight != nil)
+        // A child is no larger than its slot - across a stack, in a cell, an area or a room it does not scroll in.
+        let boundAcross = arrangement != .stack(.horizontal) && !scrolls.across
+        let boundDown = arrangement != .stack(.vertical) && !scrolls.down
+        view.style("max-width", WebCSS.most(values.maximumWidth, bound: boundAcross))
+        view.style("max-height", WebCSS.most(values.maximumHeight, bound: boundDown))
+        let stopsAcross = values.width != nil || values.maximumWidth != nil
+        let stopsDown = values.height != nil || values.maximumHeight != nil
+        let across = WebCSS.alignment(values.horizontal, stops: stopsAcross)
+        let down = WebCSS.alignment(values.vertical, stops: stopsDown)
+        // The least a control's look gives it is its own size, which a size or a most the tree states, a slot it
+        // fills and an area it stands in win over.
+        let sized = arrangement == .layers && values.area != nil
+        let fillsAcross = across == "stretch" && arrangement != .stack(.horizontal)
+        let fillsDown = down == "stretch" && arrangement != .stack(.vertical)
+        let yieldsAcross = stopsAcross || fillsAcross || sized
+        let yieldsDown = stopsDown || fillsDown || sized
+        view.style("min-width", WebCSS.pixels(values.minimumWidth) ?? (yieldsAcross ? "0" : nil))
+        view.style("min-height", WebCSS.pixels(values.minimumHeight) ?? (yieldsDown ? "0" : nil))
         switch arrangement {
         case .stack(let axis):
             view.style("flex", "none")
@@ -207,7 +228,9 @@ class WebLayoutView: WebDOMView {
     /// A ZStack's child in its area - in points from the room's top left, or in fractions of the room - else in the
     /// whole room, the one cell every child shares.
     private func placeInArea(_ view: WebDOMView, _ area: Area?) {
-        view.style("opacity", nil)
+        // A run's drawn opacity gives way to the view's own, which a placing never touches.
+        // Design: docs/design/platforms/web/layout.md#a-placing-run
+        view.setOpacity(view.opacity)
         guard let area else {
             view.style("grid-area", "1 / 1 / 2 / 2")
             return view.style("position", "relative")
@@ -241,8 +264,19 @@ class WebLayoutView: WebDOMView {
         view.style("top", WebCSS.signedPixels(place.y))
         view.style("width", WebCSS.pixels(place.width))
         view.style("height", WebCSS.pixels(place.height))
+        // The run's size, whatever the room's: a slot's bound would squash a card a short room scales down.
+        view.style("max-width", "none")
+        view.style("max-height", "none")
         view.style("opacity", placement.drawnOpacity >= 1 ? nil : WebCSS.number(placement.drawnOpacity))
         view.drawInRun(placement.drawing, size: LayoutSize(width: place.width, height: place.height))
+        (view as? WebLayoutView)?.setShadeOpacity(placement.drawnShade)
+    }
+
+    /// Draws a placed card's shade - its second layer, over its face - as opaque as the run says.
+    /// Design: docs/design/platforms/web/layout.md#a-placing-run
+    func setShadeOpacity(_ opacity: Double) {
+        guard arrangement == .grid, children.count > 1 else { return }
+        children[1].setOpacity(opacity)
     }
 
     /// The grid's tracks: those it defines, then one share for each further one its children reach.

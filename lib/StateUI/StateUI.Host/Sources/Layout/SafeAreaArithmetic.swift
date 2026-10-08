@@ -20,6 +20,13 @@
         return Rect(x: minX, y: minY, width: max(0, maxX - minX), height: max(0, maxY - minY))
     }
 
+    /// What a scroller filling a page's `room` keeps clear at its end, as its bars and notch take it: where the room
+    /// reaches past `safe` at its right or its bottom - under the bars there - the strip's depth, so its last content
+    /// scrolls out from under them; nothing where the room stands clear of them.
+    public static func endClearance(room: Rect, safe: Rect) -> (right: Double, bottom: Double) {
+        (max(0, room.x + room.width - (safe.x + safe.width)), max(0, room.y + room.height - (safe.y + safe.height)))
+    }
+
     /// Whether content standing so on an edge runs under the bars and the notch there.
     public static func underTheBars(_ area: SafeArea) -> Bool {
         area == .none || area == .keyboard
@@ -42,5 +49,16 @@ extension MountedElement {
     /// The edges a page's content lets it under the bars on: its own content's, which is the page's one child.
     public var contentSafeArea: SafeAreaEdges? {
         type == .page ? children.first?.avoidsSafeArea : avoidsSafeArea
+    }
+
+    /// The scroller a page's content is, or the one it holds alone, layout in layout; nil for none.
+    public var pageScroller: MountedElement? {
+        var held = type == .page ? children.first : self
+        while let element = held {
+            if element.type == .scrollView { return element }
+            guard element.children.count == 1 else { return nil }
+            held = element.children.first
+        }
+        return nil
     }
 }

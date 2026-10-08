@@ -110,12 +110,37 @@ A kept value stands in the browser's storage for the page's site, under the
 application's name, in the host layer's text (`KeptValuesText`): read before
 the first render, written whole as one changes. Where the browser keeps
 nothing - a private window, storage turned off - the value lives as long as
-the page.
+the page. A scene's kept values stand beside them in the host layer's text of
+the scenes (`SceneKeeper`, `KeptScenes`), written as they change and as the
+scenes do: the page's next start brings its scene back with them, where
+another host's next launch would.
 
 A question for the user is the browser's modal dialog
 ([pages](pages.md#questions-for-the-user)), held by the acts' part of the
 page until the user answers it: the host layer shows one at a time. An ItemsView's scroll to an item is
 its own ([items](items.md#scrolling-to-an-item)).
+
+## Files
+
+A file dialog is the browser's own, waiting its turn among the questions
+([files](../../host/runtime.md#files)). One that opens is a file input of
+every kind's extensions, clicked while the user's press lets the page ask -
+its `change` answers the files, its `cancel` none. A save takes its
+contents first: where the browser has a save dialog (`showSaveFilePicker`)
+it offers each kind under its caption with the act's name, writes the
+contents where the user said and answers the file - none where they
+cancelled; elsewhere the browser downloads the file under the act's name,
+which no dialog answers, and the act answers the file at once. A chosen
+file is kept by the relay under a number of its own - a `File`, or the
+handle of the one saved - which is its address; the page holds it while it
+runs, and reads it as the browser hands it.
+
+A file or an address is launched in a window of the browser's own, opened at
+once while the user's press lets the page open one - a file's sent there as
+it is read; each answers whether the browser opened it, and an address with
+no scheme opens nothing. On a page a test drives (`stateui.holdsFiles`) the
+relay shows no dialog and opens no window: it holds the dialog for the test
+to answer from its own files, by name, and records what it would open.
 
 ## Motion
 
@@ -132,6 +157,13 @@ The browser's window is one window: the first window element the tree holds is
 shown in the page's whole room, a grid of one cell that the page's arrangement
 fills, and the page the user sees names the browser's tab.
 
+The window's phases are the page's, told to the host layer's lifecycle
+(`ApplicationLifecycle`) as the browser tells them: the window is put away
+while the page's tab hides - it stops, and resumes as the tab shows - and it
+is in front while the page holds the keyboard; the browser leaving the page
+ends it. The page tells what it stands as once as it starts, in a task of its
+own, so the window hears it was made before it hears it is in front.
+
 ## The conformance run
 
 The conformance suite runs in a browser, headless: its cases need the
@@ -144,7 +176,12 @@ as one synchronous run sets itself aside while the browser goes on, its events
 reaching Swift as they do on any page. The controller drives the browser over
 its DevTools pipe: the user's input is the browser's own - the mouse, the keys,
 typed words - and it reads and writes the repository's files, the verdicts
-among them, which the page cannot reach.
+among them, which the page cannot reach. A file dialog is the relay's, held
+on the test's page and answered from the test's own files, what the page
+would launch is the relay's record, a drag between views is the DOM's drag
+events the driver dispatches, and a window's phases are the notices the
+driver gives - a member proven through them is the host's own, ✓, whatever
+element the act is done on.
 
 XCTest's own loop runs on Swift's cooperative executor and awaits MainActor
 between its tests. Once a host runs, MainActor's executor is the UI thread's,

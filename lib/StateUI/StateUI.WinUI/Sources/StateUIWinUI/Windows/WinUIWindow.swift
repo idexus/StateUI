@@ -75,11 +75,38 @@ final class WinUIWindow {
         stateui_winui_window_set_limits(handle, limits.map { $0 ?? 0 })
     }
 
-    /// Makes the window what `traits` says: a button it leaves unsaid is WinUI's own, which lets the user press it.
+    /// Makes the window what `traits` says: a button it leaves unsaid is WinUI's own, which lets the user press it;
+    /// a blur or glass is the desktop acrylic at its thickness, its tint the window's colour over it; none Mica. A
+    /// background written shows behind the detail too.
     func apply(_ traits: WindowTraits) {
         stateui_winui_window_set_traits(
-            handle, traits.isMaximizable ?? true, traits.isMinimizable ?? true, traits.isTranslucent,
-            traits.floatsOnTop)
+            handle, traits.isMaximizable ?? true, traits.isMinimizable ?? true, traits.floatsOnTop)
+        let acrylic = traits.background.blur.map(Self.acrylic)
+        // The acrylic's colour: the blur's tint over the theme's, so the tint colours the acrylic itself - the
+        // differ gives it again as the theme turns.
+        let painted = traits.background.painted ?? traits.background.standIn
+        let colour = painted.flatMap { HostBrush($0).firstColor }?.argb ?? 0
+        stateui_winui_window_set_backdrop(
+            handle, acrylic != nil, acrylic?.thin ?? false, acrylic?.opacity ?? 0, acrylic?.tintOpacity ?? 0, colour)
+        let argb = traits.background.paint.flatMap { HostBrush($0).firstColor }.flatMap(\.argb)
+        stateui_winui_window_set_background(handle, argb != nil, argb ?? 0)
+        stateui_winui_window_clear_detail(handle, !traits.background.isEmpty)
+    }
+
+    /// The desktop acrylic a blur `thickness` thick is: the thin kind for the two thinnest, its luminosity hiding
+    /// as much of the desktop as the blur does, and its tint in the theme's colour from none on the thinnest to
+    /// nine tenths on the thickest - the acrylic's luminosity alone barely tells the thicknesses apart.
+    /// Design: docs/design/platforms/winui/runtime.md#a-windows-backdrop
+    static func acrylic(_ thickness: Blur.Thickness) -> (thin: Bool, opacity: Float, tintOpacity: Float) {
+        let opacity = thickness.opacity
+        let thinnest = Blur.Thickness.ultraThin.opacity, thickest = Blur.Thickness.ultraThick.opacity
+        let tint = 0.9 * (opacity - thinnest) / (thickest - thinnest)
+        return (thickness.rawValue <= Blur.Thickness.thin.rawValue, Float(opacity), Float(tint))
+    }
+
+    /// Shows the window in `theme`, the system's for `.system`.
+    func useTheme(_ theme: ColorScheme) {
+        stateui_winui_window_set_theme(handle, theme.rawValue)
     }
 
     /// Shows `view` as the window's content - the first one activates the window, unless its scene hides it.

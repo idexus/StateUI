@@ -14,10 +14,18 @@ import CStateUIAndroid
 extension AndroidDriver {
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if element.type == .menuItem || element.type == .toolbarItem { return try itemHolds(property, element) }
-        if property == .barSubtitle || property == .barBackgroundColor { return Self.barHolds(property, of: element) }
+        if [.barSubtitle, .barBackgroundColor, .barForegroundColor].contains(property) {
+            return Self.barHolds(property, of: element)
+        }
         if element.type == .page, property == .showsBackButton || property == .showsNavigationBar {
             return Self.pageBarHolds(property, of: element)
         }
+        if property == .title || property == .icon, let tabs = element.parent, tabs.type == .tabView {
+            return try tabHolds(property, of: element, in: tabs)
+        }
+        if element.type == .window, property == .title { return Self.activityTitle() }
+        if element.type == .window, property == .background { return Self.windowBackground() }
+        if element.type == .textSpan { return try spanHolds(property, on: element) }
         let view = (element.native as? AndroidElement)?.view
         if let field = view as? AndroidDateFieldView, let held = try Self.dateFieldHolds(property, field) { return held }
         if let web = view as? AndroidWebView, let held = try Self.webHolds(property, web) { return held }
@@ -27,8 +35,27 @@ extension AndroidDriver {
         case (.minimum, let slider as AndroidSliderView): return slider.minimum.propValue
         case (.maximum, let slider as AndroidSliderView): return slider.maximum.propValue
         case (.value, let stepper as AndroidStepperView): return stepper.value.propValue
+        case (.minimum, is AndroidStepperView), (.maximum, is AndroidStepperView), (.step, is AndroidStepperView):
+            throw DriverCannot(
+                "read a stepper's range", because: "Android's stepper is two buttons, which hold none: an end turns one off")
+        case (.scrollOffset, let scroll as AndroidScrollView):
+            var offset = Point(x: 0, y: 0)
+            for (scroller, across) in zip(scroll.scrollers, Self.ways(of: scroll)) {
+                if across { offset.x = Double(Java.callInt(scroller.reference, JavaAPI.getScrollX)) / 2 }
+                else { offset.y = Double(Java.callInt(scroller.reference, JavaAPI.getScrollY)) / 2 }
+            }
+            return offset.propValue
+        case (.selectedTab, let tabs as AndroidTabView): return Self.selectedTab(of: tabs)?.propValue
         case (.progress, let bar as AndroidProgressBarView): return bar.progress.propValue
         case (.showsSidebar, let split as AndroidSplitView): return split.isPresented.propValue
+        case (.sidebarBackground, let split as AndroidSplitView):
+            return split.grounds.beside.map { Self.material(argb: Int64(UInt32(bitPattern: $0))) }
+        case (.flyoutBackground, let split as AndroidSplitView):
+            guard split.overlays, let drawer = split.heldViews().last else {
+                throw DriverCannot("read the drawer's surface", because: "the sidebar stands beside the detail")
+            }
+            let argb = Java.callStaticLong(JavaAPI.views, Self.sidebarColour, .object(drawer.reference))
+            return argb == Int64.min ? nil : Self.material(argb: argb)
         case (.selectedItems, let items as AndroidItemsView): return .strings(items.selectedForTesting)
         case (.selectionMode, let items as AndroidItemsView): return items.modeForTesting.propValue
         case (.isAnimating, let spinner as AndroidActivityIndicatorView):
@@ -60,7 +87,12 @@ extension AndroidDriver {
         case (.background, let view?):
             let held = Java.callStaticLong(Self.testPixels, Self.background, .object(view.reference))
             guard held >> 32 == 1 else { throw DriverCannot("read a background of no one colour") }
-            return Background.color(Self.color(UInt32(truncatingIfNeeded: held))).propValue
+            return StandIns.material(painted: Self.color(UInt32(truncatingIfNeeded: held))).propValue
+        case (.fontSize, let picker as AndroidPickerView), (.fontAttributes, let picker as AndroidPickerView),
+             (.textColor, let picker as AndroidPickerView), (.horizontalTextAlignment, let picker as AndroidPickerView):
+            return try Self.fieldHolds(property, of: picker)
+        case (.fontFamily, is AndroidPickerView):
+            throw DriverCannot("read a family", because: "Android's typeface keeps no family's name")
         case (.options, let picker as AndroidPickerView): return Array(Self.rows(of: picker).dropFirst()).propValue
         case (.placeholder, let picker as AndroidPickerView): return Self.rows(of: picker).first?.propValue
         case (.selectedIndex, let picker as AndroidPickerView):
@@ -73,6 +105,25 @@ extension AndroidDriver {
             throw DriverCannot(reading: property, of: element)
         default: throw DriverCannot(reading: property, of: element)
         }
+    }
+
+    /// The look of the words a picker's closed field shows: the row the spinner shows as chosen.
+    private static func fieldHolds(_ property: Prop, of picker: AndroidPickerView) throws -> HostValue? {
+        let held: HostValue?? = Java.frame {
+            guard let row = Java.callObject(picker.reference, getSelectedView) else { return .none }
+            switch property {
+            case .fontSize: return Double(Java.callStaticFloat(testText, points, .object(row))).rounded().propValue
+            case .fontAttributes:
+                return FontAttributes(rawValue: Java.callStaticInt(testText, style, .object(row)) & 3).propValue
+            case .textColor: return color(UInt32(bitPattern: Java.callInt(row, getCurrentTextColor))).propValue
+            default:
+                // Gravity's horizontal bits: centre 1, start or left 3, end or right 5.
+                guard let gravity = read(row, "gravity").flatMap(Int.init) else { return .some(nil) }
+                return (gravity & 7 == 1 ? TextAlignment.center : gravity & 7 == 5 ? .end : .start).propValue
+            }
+        }
+        guard let held else { throw DriverCannot("read the field of a Picker showing no row") }
+        return held
     }
 
     /// What every view holds: whether it shows, how opaque it is, whether it takes input, how it is moved, and what
@@ -120,6 +171,41 @@ extension AndroidDriver {
     }
 
 
+    /// The activity's title, as the system's recent tasks show it.
+    /// The plain colour the activity's window shows behind its pages; nil where it shows none.
+    static func windowBackground() -> HostValue? {
+        let argb = Java.callStaticLong(JavaAPI.environment, readWindowBackground, .object(TestContext.window.reference))
+        guard argb != Int64.min else { return nil }
+        let packed = UInt32(truncatingIfNeeded: argb)
+        return StandIns.material(painted: Color(
+            red: Int(packed >> 16 & 255), green: Int(packed >> 8 & 255), blue: Int(packed & 255),
+            alpha: Int(packed >> 24 & 255))).propValue
+    }
+
+    /// The colour `argb` as a material.
+    static func material(argb: Int64) -> HostValue {
+        let packed = UInt32(truncatingIfNeeded: argb)
+        return Material.color(Color(
+            red: Int(packed >> 16 & 255), green: Int(packed >> 8 & 255), blue: Int(packed & 255),
+            alpha: Int(packed >> 24 & 255))).propValue
+    }
+
+    static let sidebarColour = Java.staticMethod(JavaAPI.views, "sidebarColour", "(Landroid/view/View;)J")
+
+    static let readWindowBackground = Java.staticMethod(
+        JavaAPI.environment, "windowBackground", "(Landroid/app/Activity;)J")
+    static let night = Java.staticMethod(JavaAPI.environment, "night", "(Landroid/content/Context;)Z")
+
+    static func activityTitle() -> HostValue? {
+        Java.frame {
+            Java.callObject(TestContext.window.reference, getTitle).flatMap { Java.callObject($0, JavaAPI.toString) }
+                .map { .string(Java.text($0)) }
+        }
+    }
+
+    static let getSelectedView = Java.method(
+        Java.findClass("android/widget/AdapterView"), "getSelectedView", "()Landroid/view/View;")
+    static let getTitle = Java.method(Java.findClass("android/app/Activity"), "getTitle", "()Ljava/lang/CharSequence;")
     static let isShown = Java.method(JavaAPI.view, "isShown", "()Z")
     static let getLayoutDirection = Java.method(JavaAPI.view, "getLayoutDirection", "()I")
     static let onCheckIsTextEditor = Java.method(JavaAPI.view, "onCheckIsTextEditor", "()Z")

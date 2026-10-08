@@ -1,12 +1,15 @@
 import StateUI
 
+// listing: EnvironmentSample
 /// Who is signed in - the object a whole branch shares. Its properties are
 /// `@State`, so a write to one rebuilds exactly the views that READ it.
 private final class Session {
     @State var name = "guest"
     @State var visits = 0
 }
+// listing: end
 
+// listing: EnvironmentSample
 /// Reads the session - resolved by TYPE from the nearest `.environment` above,
 /// no initializer argument anywhere on the way down.
 private struct VisitBadge: View {
@@ -25,7 +28,9 @@ private struct VisitBadge: View {
         .spacing(2)
     }
 }
+// listing: end
 
+// listing: EnvironmentSample
 /// Writes through the environment: `session.$name` is the provided object's
 /// own state for the name, handed to the TextField whole - typing lands on it and
 /// rebuilds the badge, which reads `name`.
@@ -39,74 +44,22 @@ private struct NameEditor: View {
             .placeholder("Signed-in name")
     }
 }
+// listing: end
 
 /// An object provided above, resolved below - by type. The provider passes a
 /// reference and reads no property, so it is never rebuilt by changes IN the
 /// object; the readers are, each exactly when what it read moved.
 struct EnvironmentSample: SampleContent, ExampleContent {
+    // listing: EnvironmentSample
     @State private var session = Session()
     @State private var preview = Session()
+    // listing: end
 
     static let id = "environment"
     static let title = "Environment"
     static let summary = "An object provided above, resolved below by type - @Environment reads the nearest one."
 
-    static let code = """
-        final class Session {
-            @State var name = "guest"
-            @State var visits = 0
-        }
-
-        struct VisitBadge: View {
-            @Environment var session: Session
-
-            var body: some View {
-                VStack {
-                    // The session is read in THIS closure, so a write to it
-                    // builds this closure and nothing above it.
-                    DebugInfoLabel()
-
-                    Text("\\(session.name) - \\(session.visits) visit(s)")
-                }
-            }
-        }
-
-        struct NameEditor: View {
-            @Environment var session: Session
-
-            var body: some View {
-                TextField(session.$name)
-                    .placeholder("Signed-in name")
-            }
-        }
-
-        struct RootView: View {
-            @State private var session = Session()
-            @State private var preview = Session()
-
-            var body: some View {
-                VStack {
-                    // The provider hands a reference on and reads no property
-                    // of it, so a write in the object builds nothing here.
-                    DebugInfoLabel()
-
-                    VStack {
-                        VisitBadge()
-
-                        Button("Visit again")
-                            .onClicked { session.visits += 1 }
-
-                        NameEditor()
-                    }
-                    .environment(session)
-
-                    VisitBadge()
-                        .environment(preview)
-                }
-            }
-        }
-        """
-
+    // listing: EnvironmentSample
     var body: some View {
         VStack {
             // The provider hands a reference on and reads no property of it,
@@ -117,10 +70,6 @@ struct EnvironmentSample: SampleContent, ExampleContent {
                 VisitBadge()
 
                 Button("Visit again")
-                    .background(Palette.accent)
-                    .textColor(.white)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 20, vertical: 10)
                     .horizontalAlignment(.center)
                     .onClicked { session.visits += 1 }
 
@@ -134,6 +83,7 @@ struct EnvironmentSample: SampleContent, ExampleContent {
         }
         .spacing(14)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -152,8 +102,7 @@ struct EnvironmentSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("The last badge sits under its OWN `.environment` - a different "
-                + "Session, so its branch resolves that one: a nearer provider wins for "
-                + "its branch, and the button moves nothing there.")
+                + "Session, which its branch resolves, so the button moves nothing there.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

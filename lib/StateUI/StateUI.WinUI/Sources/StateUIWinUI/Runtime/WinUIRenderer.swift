@@ -33,9 +33,12 @@ final class WinUIRenderer {
     /// WinUI's part of the acts: the clock, the dialogs, Narrator, the focus, the store.
     private(set) lazy var actToolkit = WinUIActToolkit(renderer: self)
 
+    /// WinUI's part of the files the user opens and saves, and of what Windows launches.
+    private(set) lazy var fileToolkit = WinUIFileToolkit(renderer: self)
+
     /// What performs the acts the application calls, and answers them, by the host layer's rules.
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
+        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
         answered: { [unowned self] in runtime.pump.turn() })
 
     /// The windows the tree holds, each with its controller, in the tree's order.

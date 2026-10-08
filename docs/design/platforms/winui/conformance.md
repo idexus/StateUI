@@ -55,8 +55,10 @@ families run each in a process of its own (`test-winui.ps1 -Conformance`),
 the largest - a view's, a visual element's, a shape's - in parts, one test
 each. Each test holds its process below six thousand GDI objects on the
 runner as on a desk, and a family past that is run in more parts. The run
-takes some fifteen minutes, so it is asked for; the host's own tests, few
-windows in all, run in one process by default.
+takes some fifteen minutes, so it is asked for. The host's own tests run a
+process a test as well: together they show some three hundred windows, and
+in one process they stood at the quota's edge, ending it now and then in
+their last suite.
 
 ## What the driver reads
 

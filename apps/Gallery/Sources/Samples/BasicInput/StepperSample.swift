@@ -2,38 +2,18 @@ import StateUI
 
 /// A number stepped one at a time, and the same number stepped by five.
 struct StepperSample: SampleContent, ExampleContent {
+    // listing: StepperSample
     @State private var servings = 4.0
+    // listing: end
 
     static let id = "stepper"
     static let title = "Stepper"
     static let summary = "A number tapped one step at a time, where a slider is dragged to about right."
 
-    static let code = """
-        @State private var servings = 4.0
-
-        VStack {
-            // The count is read here, so every step builds this closure.
-            DebugInfoLabel()
-
-            Text("Servings: \\(Int(servings))")
-
-            Stepper($servings)
-                .minimum(1)
-                .maximum(12)
-                .step(1)
-
-            // The same value, stepped by five - and written back by hand,
-            // which is what the binding above does for you.
-            Stepper(servings)
-                .minimum(1)
-                .maximum(12)
-                .step(5)
-                .onValueChanged { value in servings = value }
-        }
-        """
-
+    // listing: StepperSample
     var body: some View {
         VStack {
+            // The count is read here, so every step builds this closure.
             DebugInfoLabel()
 
             Text("Servings: \(Int(servings))")
@@ -50,6 +30,8 @@ struct StepperSample: SampleContent, ExampleContent {
 
             SectionTitle("A bigger step")
 
+            // The same value, stepped by five - and written back by hand,
+            // which is what the binding above does for you.
             Stepper(servings)
                 .accessibilityIdentifier("stepper.servings.bigStep")
                 .accessibilityLabel("Servings, five at a time")
@@ -61,6 +43,7 @@ struct StepperSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

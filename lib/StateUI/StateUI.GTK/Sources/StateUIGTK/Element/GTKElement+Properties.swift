@@ -49,18 +49,17 @@ extension GTKElement {
             return
         }
 
-        let taken = GTKRegistrations.registry.apply(
-            changed, to: view, of: type,
-            reading: { [element] in element.value($0) },
-            carriedIn: { [element] in element.driven[$0]?.mode == .in })
+        let taken = GTKRegistrations.registry.apply(changed, to: view, presenting: element)
 
         let own = changed.subtracting(taken)
         for property in own {
             switch property {
             case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
-            case .isEnabled: view.setEnabled(value(.isEnabled)?.bool ?? true)
+            case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
+            case .ignoresInput: view.setIgnoresInput(value(.ignoresInput)?.bool ?? false)
             case .isVisible: view.setShown(isShown)
-            case .background: (view as? GTKLayoutView)?.setBackground(value(.background))
+            // GTK blurs nothing behind a widget: a blur's or glass's colour stands in, its tint over it.
+            case .background: view.setBackground(HostMaterial(value(.background)).painted)
             default: break
             }
         }

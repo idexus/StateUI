@@ -152,6 +152,9 @@ enum PatchDump {
         case .strings(let strings):
             guard !strings.isEmpty else { return "strings []" }
             return "strings " + strings.map { "\"\($0)\"" }.joined(separator: ",")
+        case .bytes(let bytes):
+            guard !bytes.isEmpty else { return "bytes []" }
+            return "bytes " + bytes.map(hex2).joined()
         case .name(let name):
             return "name \"\(name)\""
         case .enumeration(let member):
@@ -168,6 +171,8 @@ enum PatchDump {
         // A node's own value; the differ picks one half before a host sees it.
         case .themed(let light, let dark):
             return "themed [" + line(for: light) + ", " + line(for: dark) + "]"
+        case .systemColor(let role, let alpha):
+            return "systemColor \(role) " + hex2(alpha)
         }
     }
 

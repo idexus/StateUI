@@ -317,9 +317,53 @@ extern "C" bool stateui_winui_animations_enabled(void) {
 
 extern "C" void stateui_winui_set_enabled(StateUIObjectRef handle, bool enabled) {
     try {
-        as<controls::Control>(handle).IsEnabled(enabled);
+        // A view that is no control keeps no enabled state: the host layer holds the user's hand from it.
+        if (auto control = as<IInspectable>(handle).try_as<controls::Control>()) control.IsEnabled(enabled);
     } catch (...) {
         report("enabling");
+    }
+}
+
+namespace {
+    /// The theme resources a control's template paints the ground under its whole frame from - its container, or the
+    /// field or face it is - each followed by its states' names; none for a control whose own Background is that
+    /// ground.
+    std::vector<std::wstring> groundResources(IInspectable const &control) {
+        std::vector<std::wstring> named;
+        if (control.try_as<controls::RadioButton>()) named = {L"RadioButtonBackground"};
+        else if (control.try_as<controls::CheckBox>())
+            named = {L"CheckBoxBackgroundUnchecked", L"CheckBoxBackgroundChecked", L"CheckBoxBackgroundIndeterminate"};
+        else if (control.try_as<controls::ToggleSwitch>()) named = {L"ToggleSwitchContainerBackground"};
+        else if (control.try_as<controls::Slider>()) named = {L"SliderContainerBackground"};
+        else if (control.try_as<controls::ComboBox>()) named = {L"ComboBoxBackground"};
+        else if (control.try_as<controls::DatePicker>()) named = {L"DatePickerButtonBackground"};
+        else if (control.try_as<controls::TimePicker>()) named = {L"TimePickerButtonBackground"};
+        else if (control.try_as<controls::TextBox>() || control.try_as<controls::PasswordBox>() ||
+                 control.try_as<controls::AutoSuggestBox>() || control.try_as<controls::NumberBox>())
+            named = {L"TextControlBackground"};
+        std::vector<std::wstring> states;
+        for (auto const &name : named)
+            for (auto suffix : {L"", L"PointerOver", L"Pressed", L"Focused", L"Disabled"}) states.push_back(name + suffix);
+        return states;
+    }
+}
+
+extern "C" void stateui_winui_set_background(StateUIObjectRef handle, StateUIBrush background) {
+    try {
+        auto element = as<IInspectable>(handle);
+        auto fill = brush(background);
+        if (auto control = element.try_as<controls::Control>()) {
+            std::vector<std::pair<std::wstring, xaml::Media::Brush>> brushes;
+            for (auto const &name : groundResources(control)) brushes.emplace_back(name, fill);
+            writeResources(control, brushes);
+            if (fill) control.Background(fill);
+            else control.ClearValue(controls::Control::BackgroundProperty());
+        } else if (auto panel = element.try_as<controls::Panel>()) {
+            if (fill) panel.Background(fill);
+            else panel.ClearValue(controls::Panel::BackgroundProperty());
+        }
+    } catch (...) {
+        report("painting a view's background");
     }
 }
 

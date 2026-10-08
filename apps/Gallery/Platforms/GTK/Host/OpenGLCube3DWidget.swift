@@ -7,8 +7,12 @@ import CStateUIGTK
 import GalleryUI
 import StateUIGTK
 
+// listing: Cube3DSample.GTK.swift
 /// A cube drawn by OpenGL 3.3 core in a `GtkGLArea`, turning on the widget's frame clock - a widget that knows
 /// nothing of StateUI. The Swift half is Sources/Samples/Interop/Cube3D.swift.
+///
+/// Its GL calls go through libepoxy, the loader GTK itself draws with. A `GTKControl` is an object holding the widget
+/// it shows.
 @MainActor
 final class OpenGLCube3DWidget: GTKControl {
     let widget: UnsafeMutablePointer<GtkWidget>
@@ -27,6 +31,7 @@ final class OpenGLCube3DWidget: GTKControl {
     var isSpinning = true {
         didSet { if isSpinning != oldValue { followClock() } }
     }
+    // listing: end
 
     private static let colors: [(Float, Float, Float)] = [(0.161, 0.722, 0.678), (0.961, 0.710, 0.275), (0.580, 0.443, 0.929)]
 
@@ -47,6 +52,9 @@ final class OpenGLCube3DWidget: GTKControl {
 
     private static let vertexShader = """
         #version 330 core
+        // listing: Cube3DSample.GTK.glsl
+        // GLSL 3.30 core, compiled from source as the area is realized. A corner carries the brightness of its face
+        // in w; the colour comes with each frame.
         layout(location = 0) in vec4 corner;
         uniform mat4 transform;
         uniform vec4 color;
@@ -55,13 +63,16 @@ final class OpenGLCube3DWidget: GTKControl {
             gl_Position = transform * vec4(corner.xyz, 1.0);
             painted = vec4(color.rgb * corner.w, color.a);
         }
+        // listing: end
         """
 
     private static let fragmentShader = """
         #version 330 core
+        // listing: Cube3DSample.GTK.glsl
         in vec4 painted;
         out vec4 fragment;
         void main() { fragment = painted; }
+        // listing: end
         """
 
     private var area: UnsafeMutablePointer<GtkGLArea> { UnsafeMutablePointer<GtkGLArea>(OpaquePointer(widget)) }
@@ -76,6 +87,7 @@ final class OpenGLCube3DWidget: GTKControl {
     private var lastFrame = 0
     private var tick: guint = 0
 
+    // listing: Cube3DSample.GTK.swift
     /// An area asking GTK for OpenGL 3.3 core with a depth buffer, its GL made where the widget is realized.
     init() {
         widget = gtk_gl_area_new()
@@ -85,6 +97,8 @@ final class OpenGLCube3DWidget: GTKControl {
         gtk_gl_area_set_allowed_apis(area, GDK_GL_API_GL)
         gtk_gl_area_set_has_depth_buffer(area, 1)
 
+        // "realize" compiles the shaders and loads the corners, "render" draws a frame, "unrealize" lets them go,
+        // and "map" forgets the last frame, so the cube does not leap by the time it spent off screen.
         // Each a C callback, handed the control as its data: it lives as long as its widget.
         let me = Unmanaged.passUnretained(self).toOpaque()
         let realized: @convention(c) (OpaquePointer?, gpointer?) -> Void = { _, data in
@@ -109,6 +123,7 @@ final class OpenGLCube3DWidget: GTKControl {
         }
         followClock()
     }
+    // listing: end
 
     isolated deinit {
         if tick != 0 { gtk_widget_remove_tick_callback(widget, tick) }
@@ -122,6 +137,7 @@ final class OpenGLCube3DWidget: GTKControl {
         Unmanaged<OpenGLCube3DWidget>.fromOpaque(data!).takeUnretainedValue()
     }
 
+    // listing: Cube3DSample.GTK.swift
     /// Turns on the widget's frames while spinning: GTK ticks only a mapped widget, so the cube stops behind a page
     /// the user has left. A stopped cube still owes one frame to a value that changed.
     private func followClock() {
@@ -138,6 +154,7 @@ final class OpenGLCube3DWidget: GTKControl {
             tick = 0
         }
     }
+    // listing: end
 
     /// One frame of turning: the angle moves by the time since the last, in seconds.
     private func turn(at time: Int) -> gboolean {
@@ -186,6 +203,7 @@ final class OpenGLCube3DWidget: GTKControl {
         epoxy_glDeleteProgram(program)
     }
 
+    // listing: Cube3DSample.GTK.swift
     /// Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
     private func render() -> gboolean {
         epoxy_glClearColor(0.102, 0.090, 0.145, 1)
@@ -204,6 +222,7 @@ final class OpenGLCube3DWidget: GTKControl {
         epoxy_glDrawArrays(GLenum(GL_TRIANGLES), 0, GLsizei(Self.corners.count / 4))
         return 1
     }
+    // listing: end
 
     // MARK: - The arithmetic behind the matrix, column by column
 
@@ -264,6 +283,7 @@ final class OpenGLCube3DWidget: GTKControl {
 
 // MARK: - Registration
 
+// listing: Cube3DSample.GTK.swift
 extension OpenGLCube3DWidget {
     /// Adds the cube for `Cube3DContract`. Said once, before the application runs.
     @MainActor
@@ -275,3 +295,4 @@ extension OpenGLCube3DWidget {
         }
     }
 }
+// listing: end

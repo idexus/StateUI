@@ -51,12 +51,25 @@ extension UIKitDriver {
         switch property {
         case .clipsContent: return (layout.clipsToBounds || layout.layer.mask != nil).propValue
         case .background:
+            if let shown = layout.box.backdropView?.shown { return material(shown).propValue }
             let fill = layers.first { $0.zPosition == -2 && !($0 is CAGradientLayer) }
-            return fill?.backgroundColor.map { Background.color(color(UIColor(cgColor: $0))).propValue }
+            return fill?.backgroundColor.map { Material.color(color(UIColor(cgColor: $0))).propValue }
         case .stroke: return outline?.strokeColor.map { Brush.solidColor(color(UIColor(cgColor: $0))).propValue }
         case .lineWidth: return Double(outline?.lineWidth ?? 0).propValue
         default: return nil
         }
+    }
+
+    /// The material a layout's effect view was given: UIKit reads no blur's style back.
+    private static func material(_ shown: HostMaterial) -> Material {
+        let tint = shown.paint.flatMap(Color.init(propValue:))
+        guard let glass = shown.glass else {
+            let blur = Blur(shown.blur ?? .regular)
+            return .blur(tint.map(blur.tint) ?? blur)
+        }
+        var given: Glass = glass.isClear ? .clear : .regular
+        if let tint { given = given.tint(tint) }
+        return .glass(given.isInteractive(glass.isInteractive))
     }
 
     /// A shape's paint: the colour over its fill and its outline, and how its outline's mask draws the line.
@@ -95,7 +108,7 @@ extension UIKitDriver {
         guard let configuration = button.configuration else { return nil }
         let box = configuration.background
         switch property {
-        case .background: return box.backgroundColor.map { Background.color(color($0)).propValue }
+        case .background: return box.backgroundColor.map { Material.color(color($0)).propValue }
         case .stroke: return box.strokeColor.map { Brush.solidColor(color($0)).propValue }
         case .lineWidth: return Double(box.strokeWidth).propValue
         case .shape:
@@ -108,6 +121,7 @@ extension UIKitDriver {
             ]
             return positions.first { $0.0 == configuration.imagePlacement }?.1.propValue
         case .iconSpacing: return Double(configuration.imagePadding).propValue
+        case .icon: return configuration.image?.accessibilityIdentifier.map { .string($0) }
         case .lineBreak: return lineBreak(configuration.titleLineBreakMode).propValue
         default: return nil
         }

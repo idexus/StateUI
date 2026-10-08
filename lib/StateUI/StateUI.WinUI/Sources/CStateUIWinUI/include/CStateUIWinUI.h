@@ -81,6 +81,20 @@ typedef struct {
     char const *initial;
 } StateUIQuestion;
 
+/// A file dialog: `kind` 0 one file to open, 1 several, 2 a place to save; the kinds of file it offers, `typeCount`
+/// captions, each with the count of its extensions - bare, without the dot - in `extensions` in turn; a save's name
+/// and the `length` bytes it writes.
+typedef struct {
+    int32_t kind;
+    int32_t typeCount;
+    char const *const *captions;
+    int32_t const *extensionCounts;
+    char const *const *extensions;
+    char const *name;
+    uint8_t const *contents;
+    int64_t length;
+} StateUIFileDialog;
+
 /// What the relay calls on the UI thread. Every one is set: the relay calls them unchecked.
 typedef struct {
     /// WinUI stands on the thread: the host's first render.
@@ -135,6 +149,24 @@ typedef struct {
     /// The user answered the question asked under `ticket`: whether it was accepted, and the words chosen or
     /// typed, in UTF-8; null for none.
     void (*answered)(int64_t ticket, bool accepted, char const *utf8);
+
+    /// The file dialog shown under `ticket` closed: the `count` files chosen - a save's once its contents stand
+    /// written - their paths and names in UTF-8, none for a cancel; or why it failed, in UTF-8, null where it did not.
+    void (*filesChosen)(int64_t ticket, int32_t count, char const *const *paths, char const *const *names,
+                        char const *failure);
+
+    /// The file read under `ticket`: its `length` bytes; or why it could not be read, in UTF-8, null where it was.
+    void (*fileRead)(int64_t ticket, uint8_t const *bytes, int64_t length, char const *failure);
+
+    /// What was launched under `ticket`: whether an application took it.
+    void (*launchAnswered)(int64_t ticket, bool taken);
+
+    /// What a view heard of a drag: `kind` 0 its own drag started, 1 ended, 2 a drag over it, 3 gone, 4 dropped with
+    /// `words` in UTF-8.
+    void (*dragHeard)(int64_t view, int32_t kind, char const *words);
+
+    /// Files dropped on a view from the system: their `count` paths and names, in UTF-8.
+    void (*filesDragged)(int64_t view, int32_t count, char const *const *paths, char const *const *names);
 
     /// A press on a canvas, followed from down to up: `phase` 0 pressed, 1 dragged, 2 released, at (x, y) DIPs of it.
     void (*canvasPressed)(int64_t view, int32_t phase, double x, double y);
@@ -234,13 +266,40 @@ void stateui_winui_window_set_frame(StateUIObjectRef window, bool const *has, do
 /// greatest height, 0 for none.
 void stateui_winui_window_set_limits(StateUIObjectRef window, double const *limits);
 
-/// What the window is: whether the user may maximize and minimize it, whether its backdrop is translucent (acrylic)
-/// or of the desktop's tint (Mica), and whether it floats over the application's other windows.
-void stateui_winui_window_set_traits(StateUIObjectRef window, bool maximizable, bool minimizable, bool translucent,
-                                     bool floats);
+/// What the window is: whether the user may maximize and minimize it, and whether it floats over the application's
+/// other windows.
+void stateui_winui_window_set_traits(StateUIObjectRef window, bool maximizable, bool minimizable, bool floats);
+
+/// Shows the desktop through the window in the desktop acrylic where `blurred` - of the thin kind or the base one,
+/// in the theme's colour `argb`, its luminosity hiding `opacity` of the desktop and its tint `tintOpacity` - else in
+/// Mica, the desktop's tint.
+void stateui_winui_window_set_backdrop(StateUIObjectRef window, bool blurred, bool thin, float opacity,
+                                       float tintOpacity, uint32_t argb);
+
+/// Whether the window shows the desktop acrylic, of the kind and at the luminosity's opacity it reads into `thin` and
+/// `opacity`; false where it shows Mica.
+bool stateui_winui_window_acrylic(StateUIObjectRef window, bool *thin, float *opacity);
+
+/// Paints the window behind its pages in `argb` - the backdrop through it where the colour lets it - or leaves it
+/// WinUI's own where `written` is false.
+void stateui_winui_window_set_background(StateUIObjectRef window, bool written, uint32_t argb);
+
+/// Clears the card a navigation view lays over its detail in the window where `clear` is true, so the detail shows the
+/// window's background as the sidebar does, the card's edge the theme's divider; leaves WinUI's own card where it is
+/// false.
+void stateui_winui_window_clear_detail(StateUIObjectRef window, bool clear);
+
+/// The colour the window shows behind its pages, as ARGB; false where it shows WinUI's own.
+bool stateui_winui_window_background(StateUIObjectRef window, uint32_t *argb);
+
+/// Shows the window in a theme: 1 light, 2 dark, 0 the system's.
+void stateui_winui_window_set_theme(StateUIObjectRef window, int32_t scheme);
+
+/// The theme the window shows in now: 1 light, 2 dark.
+int32_t stateui_winui_window_actual_theme(StateUIObjectRef window);
 
 /// What a test reads of a window, into 13 values: x, y, width, height, the four limits in the order they are set,
-/// maximizable, minimizable, translucent, floating and shown as 1 or 0.
+/// maximizable, minimizable, acrylic, floating and shown as 1 or 0.
 void stateui_winui_window_frame(StateUIObjectRef window, double *values);
 
 /// The window's name the system shows - the taskbar's, Alt+Tab's - in UTF-8, as far as `capacity` goes; answers its
@@ -268,8 +327,12 @@ void stateui_winui_origin(StateUIObjectRef element, double *origin);
 /// Where WinUI laid the element out in its parent: x, y, width, height, in DIPs.
 void stateui_winui_frame(StateUIObjectRef element, double *frame);
 
-/// A control's IsEnabled.
+/// A control's IsEnabled; a view that is no control keeps none, and nothing is done.
 void stateui_winui_set_enabled(StateUIObjectRef control, bool enabled);
+
+/// What an element is drawn over, under its whole frame; none for WinUI's own: a control's Background and the theme
+/// resources its template paints its container, field or face from, a panel's Background; nothing for any other.
+void stateui_winui_set_background(StateUIObjectRef element, StateUIBrush background);
 
 /// Cuts what the element shows to `outline` over `width` by `height` DIPs; `cuts` false shows it whole.
 void stateui_winui_set_clip(StateUIObjectRef element, bool cuts, StateUIOutline outline, double radius,
@@ -330,6 +393,9 @@ void stateui_winui_panel_set_children(StateUIObjectRef panel, StateUIObjectRef c
 void stateui_winui_set_font(StateUIObjectRef element, double size, bool bold, bool italic, char const *family);
 void stateui_winui_set_foreground(StateUIObjectRef element, bool has, uint32_t argb);
 void stateui_winui_set_padding(StateUIObjectRef element, double left, double top, double right, double bottom);
+
+/// The room between the letters of a text block's or a control's words, in thousandths of an em.
+void stateui_winui_set_character_spacing(StateUIObjectRef element, int32_t thousandths);
 
 /// How words look, as WinUI holds it: the size, the weight, the most lines, the alignment and the colour as
 /// 0xAARRGGBB - five values; what a test reads back.
@@ -524,8 +590,6 @@ StateUIObjectRef stateui_winui_check_box_make(int64_t view);
 StateUIObjectRef stateui_winui_radio_make(int64_t view);
 void stateui_winui_toggle_set_on(StateUIObjectRef toggle, bool on);
 
-/// What a switch, a check box or a radio button is drawn over, in every state it can be in; none for WinUI's own.
-void stateui_winui_toggle_set_background(StateUIObjectRef toggle, StateUIBrush background);
 bool stateui_winui_toggle_is_on(StateUIObjectRef toggle);
 
 /// Turns a control as UI Automation does, which the user's turn is: a switch or a check box toggled, a radio
@@ -580,7 +644,8 @@ void stateui_winui_field_set_casing(StateUIObjectRef field, int32_t textCase);
 
 /// How a search box takes words: read only, the case its typing takes (StateUI's `TextCase`), and the words typed
 /// across it as `stateui_winui_field_set_look` has them.
-void stateui_winui_search_set_box(StateUIObjectRef search, bool readOnly, int32_t textCase, int32_t alignment);
+void stateui_winui_search_set_box(StateUIObjectRef search, bool readOnly, int32_t textCase, int32_t alignment,
+                                  bool spellChecked, bool predicted, int32_t scope);
 
 /// A search box's placeholder in `argb` where `colored`, else the theme's.
 void stateui_winui_search_set_placeholder_color(StateUIObjectRef search, uint32_t argb, bool colored);
@@ -639,6 +704,13 @@ StateUIObjectRef stateui_winui_canvas_make(int64_t view);
 /// `ints`, its numbers in `numbers`, and its text in `words`, `wordCount` UTF-8 runs of `lengths` bytes end to end.
 void stateui_winui_canvas_draw(StateUIObjectRef canvas, int32_t const *ints, int32_t intCount, double const *numbers,
                                int32_t numberCount, char const *words, int32_t const *lengths, int32_t wordCount);
+
+/// The colour, ARGB, the canvas is filled with under its drawing - its surface is its panel's own background, so a
+/// view's background is painted there; 0 for none.
+void stateui_winui_canvas_set_ground(StateUIObjectRef canvas, uint32_t argb);
+
+/// The colour the canvas is filled with under its drawing, ARGB; 0 for none - what a test reads.
+uint32_t stateui_winui_canvas_ground(StateUIObjectRef canvas);
 
 /// A ColorBox: a figure filled with one colour, its corners rounded in DIPs - top left, top right, bottom right,
 /// bottom left.
@@ -751,9 +823,12 @@ StateUIObjectRef stateui_winui_split_make(int64_t view, double expandsAt);
 void stateui_winui_split_set(StateUIObjectRef split, StateUIObjectRef pane, StateUIObjectRef content,
                              StateUIObjectRef row, bool open);
 
-/// Paints a split view's pane, around the sidebar page in it, in that page's background; the platform's own where
-/// none is given.
-void stateui_winui_split_set_pane_background(StateUIObjectRef split, bool hasBackground, uint32_t background);
+/// Stands a split view's pane on a ground for each place: beside the detail (the expanded pane) and over it (the
+/// overlay pane). A ground's kind is 0 for WinUI's own, 1 for the colour `argb`, 2 for the in-app acrylic in the
+/// colour `argb`, its luminosity hiding `opacity` of what is behind it and its tint `tintOpacity`.
+void stateui_winui_split_set_pane_grounds(StateUIObjectRef split, int32_t besideKind, uint32_t besideArgb,
+                                          float besideOpacity, float besideTintOpacity, int32_t overKind,
+                                          uint32_t overArgb, float overOpacity, float overTintOpacity);
 
 /// Whether a window's content shows the keys it takes - the way back's, Escape's - in a tip over everything it
 /// holds: what a test reads.
@@ -795,8 +870,19 @@ bool stateui_winui_hits(StateUIObjectRef element, double x, double y);
 /// shows over it - what a test reads.
 bool stateui_winui_reaches(StateUIObjectRef element, double x, double y);
 
+/// Where `child` - or the element it stands in among `panel`'s children - is drawn in `panel`: its `Canvas.ZIndex`
+/// in `depth`, its place among the panel's children in `place`, the higher of either drawn later; false where it
+/// stands in no child of the panel - what a test reads.
+bool stateui_winui_drawn_place(StateUIObjectRef panel, StateUIObjectRef child, int32_t *depth, int32_t *place);
+
 /// Tells `focused` whenever the keyboard comes into the element or leaves it, while `hearing`; false stops.
 void stateui_winui_hear_focus(StateUIObjectRef element, int64_t view, bool hearing);
+
+/// The element of the view `view` carries `words` in a drag of it - null where it cannot be dragged - and takes words
+/// dropped on it where `takesWords`, files where `takesFiles`; what it hears goes through `dragHeard` and
+/// `filesDragged`.
+void stateui_winui_offer_drag(
+    StateUIObjectRef element, int64_t view, char const *words, bool takesWords, bool takesFiles);
 
 
 /// How many views listen for the user's input - what a test counts to see every one stop.
@@ -862,6 +948,30 @@ void stateui_winui_ask(StateUIObjectRef element, int64_t ticket, StateUIQuestion
 /// was showing and had that button. What a test does.
 bool stateui_winui_answer(StateUIObjectRef element, int32_t button, char const *words);
 
+/// Shows `dialog` in Windows' own file dialog over `window` (a `Window`); a save writes its contents where the user
+/// said, beside the UI thread. The answer comes back through `filesChosen`, under `ticket`, on the UI thread.
+void stateui_winui_show_file_dialog(StateUIObjectRef window, int64_t ticket, StateUIFileDialog const *dialog);
+
+/// Reads the file at `path`, in UTF-8, beside the UI thread - whole for a `maximum` below nought, else its first
+/// `maximum` bytes, read no further; its bytes come back through `fileRead`, under `ticket`, on the UI thread.
+void stateui_winui_read_file(int64_t ticket, char const *path, int64_t maximum);
+
+/// Hands the file at the path `target`, or the address `target`, to Windows to open in the application it gives it;
+/// whether one took it comes back through `launchAnswered`, under `ticket`, on the UI thread.
+void stateui_winui_launch(int64_t ticket, char const *target, bool file);
+
+/// What a test does: while `held`, a launch is answered as taken and Windows is asked nothing.
+void stateui_winui_hold_launches(bool held);
+
+/// What a test does: a dialog that saves opens in `folder`, in UTF-8, so what a test saves stays there.
+void stateui_winui_keep_test_files_in(char const *folder);
+
+/// What a test does: answers the file dialog `dialog` - the one showing in the process where 0 - as the user would,
+/// by the `count` files of `paths`, in UTF-8: typed whole, several each in quotes, and taken once its field holds
+/// them; none cancels it. The dialog answered, 0 where it no longer shows: a dialog shown a moment ago may not take
+/// its answer yet, so a test answers it again until it is gone.
+int64_t stateui_winui_answer_file_dialog(int64_t dialog, char const *const *paths, int32_t count);
+
 /// The folder the host's stores stand in, in UTF-8; empty for the application's own in the user's local data.
 void stateui_winui_set_store(char const *utf8);
 
@@ -902,6 +1012,13 @@ int32_t stateui_winui_question(StateUIObjectRef element, char *utf8, int32_t cap
 /// What the screen reader was told since the relay started, in UTF-8, each ended by the unit separator (0x1F) but
 /// the last, as far as `capacity` goes; its whole length. What a test reads.
 int32_t stateui_winui_announced(char *utf8, int32_t capacity);
+
+/// The file dialog showing in the process: 0 one that opens, 1 one that saves, -1 none. What a test reads.
+int32_t stateui_winui_file_dialog(void);
+
+/// What was launched since the relay started - a file by its path, an address as written - in UTF-8, each ended by
+/// the unit separator (0x1F) but the last, as far as `capacity` goes; its whole length. What a test reads.
+int32_t stateui_winui_launched(char *utf8, int32_t capacity);
 
 #ifdef STATEUI_WINUI_RELAY
 #pragma clang attribute pop

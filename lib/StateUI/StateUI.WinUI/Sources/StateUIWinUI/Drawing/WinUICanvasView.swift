@@ -18,6 +18,13 @@ final class WinUICanvasView: WinUIView {
         super.init { number in stateui_winui_canvas_make(number) }
     }
 
+    /// What the canvas is filled with under its drawing: a colour, or a brush's first colour; nil for nothing. Its
+    /// panel's own background is the surface its drawing is replayed on, so the ground is painted there.
+    /// Design: docs/design/platforms/winui/drawing.md#a-views-background
+    override func setBackground(_ value: HostValue?) {
+        stateui_winui_canvas_set_ground(handle, WinUIBrush(value).colors.first ?? 0)
+    }
+
     /// The drawing, its instructions in the order they were written; nil draws nothing.
     func draw(_ drawing: [DrawCommand]?) {
         let flat = HostDrawing(drawing ?? [])

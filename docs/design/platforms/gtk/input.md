@@ -41,6 +41,19 @@ still a tap.
 The tap claims its press, and GTK denies it to every view around the one
 tapped: a tappable row inside another answers alone.
 
+## A view the press passes through
+
+A view that ignores input is one GTK picks for no click or touch:
+`gtk_widget_set_can_target` off, on whatever widget the element shows -
+GTK's own picking then goes on to what stands behind it, and a layout off so
+takes all in it out. One arm of the element puts it on every view.
+
+## A disabled view
+
+Every widget takes the enablement `presented(_:)` gives it as GTK's
+sensitivity (`gtk_widget_set_sensitive`), which GTK passes on to what stands
+in it as well; the host layer hears nothing of the hand in a disabled branch.
+
 ## Pressed by assistive technology
 
 A panel carries one action, `panel.click`, enabled only while it listens for
@@ -90,3 +103,14 @@ the keyboard moving between a control's own parts tells nothing. A widget
 GTK gives no keyboard focus - a label, a box, a picture - never takes it,
 whoever asks, so its element hears nothing; the act that puts the keyboard
 on it answers that it did not.
+
+## A drag between views
+
+A view's drags are GTK's own controllers. A view that can be dragged holds a
+`GtkDragSource` that copies, whose content - asked as the drag prepares - is
+the view's words as UTF-8 text; its `drag-begin` and `drag-end` say the drag
+started and, wherever it ended, ended. A view taking drops holds a
+`GtkDropTarget` of a string where it takes words and of GDK's list of files
+where it takes files: its `enter` and `motion` say the drag is over it, its
+`leave` that it went, and its `drop` hands over the words or each file's
+path. The host layer's rule makes over once and no leave after a drop.

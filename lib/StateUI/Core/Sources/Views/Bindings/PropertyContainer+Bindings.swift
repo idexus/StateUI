@@ -16,13 +16,29 @@ extension PropertyContainer {
     ///   - mode: which way the value crosses.
     ///   - kind: how the host applies the value; see `StateKind`.
     /// - Returns: the element, with the registration on it.
-    public func setValue<Owner: Contract, Value: HostRepresentable & StateValue>(
+    public func setValue<Owner: Contract, Value: HostRepresentable & LaneValue>(
         _ property: ElementProperty<Owner, Value>,
         on state: Binding<Value>,
         mode: StateMode,
         kind: StateKind
     ) -> Modified {
         setValue(property.token, on: state, mode: mode, kind: kind)
+    }
+
+    /// The same, for text: the host writes the words as the state changes,
+    /// and with `.inOut` lands what the user types on the state whole.
+    ///
+    /// - Parameters:
+    ///   - property: the member, written with its contract.
+    ///   - state: the whole state, `$x`.
+    ///   - mode: which way the words cross.
+    /// - Returns: the element, with the registration on it.
+    public func setValue<Owner: Contract>(
+        _ property: ElementProperty<Owner, String>,
+        on state: Binding<String>,
+        mode: StateMode
+    ) -> Modified {
+        setValue(property.token, on: state, mode: mode)
     }
 
     /// The same, for a value the host can animate - a number, a colour, a
@@ -65,12 +81,28 @@ extension PropertyContainer {
 
     /// Carries a property from a state by its token - what the typed
     /// `setValue(_:on:mode:kind:)` and every driven modifier are written over.
-    /// Design: docs/design/views/bindings.md#the-image-never-the-value
-    func setValue<Value: StateValue>(
+    func setValue<Value: LaneValue>(
         _ property: Prop,
         on state: Binding<Value>,
         mode: StateMode,
         kind: StateKind
+    ) -> Modified {
+        register(property, on: state, mode: mode, kind: kind, laneKind: Value.laneKind)
+    }
+
+    /// Carries a text property from a state by its token, through the host's one door for words.
+    func setValue(_ property: Prop, on state: Binding<String>, mode: StateMode) -> Modified {
+        register(property, on: state, mode: mode, kind: .text, laneKind: nil)
+    }
+
+    /// The registration both are written over.
+    /// Design: docs/design/views/bindings.md#the-image-never-the-value
+    private func register<Value: StateValue>(
+        _ property: Prop,
+        on state: Binding<Value>,
+        mode: StateMode,
+        kind: StateKind,
+        laneKind: LaneKind?
     ) -> Modified {
         // The image, never the value: nothing is read at build.
         guard let image = state.image else {
@@ -88,6 +120,7 @@ extension PropertyContainer {
                 conversion: state.conversion,
                 mode: mode,
                 kind: kind,
+                laneKind: laneKind,
                 values: property.facts.moves.union(Value.moving),
                 current: { state.wrappedValue.carried })
         }
@@ -112,7 +145,7 @@ extension PropertyContainer {
             state.described?.wearThemedPair()
 
             return setValue(property, onImage: image, mode: mode, kind: kind,
-                            moving: Value.moving, conversion: state.conversion)
+                            moving: Value.moving, laneKind: Value.laneKind, conversion: state.conversion)
         }
 
         guard let image = state.journeyImage else {
@@ -125,7 +158,7 @@ extension PropertyContainer {
         state.described?.wearThemedPair()
 
         return setValue(property, onImage: image, mode: mode, kind: kind,
-                        moving: JourneyLanes<Value>.moving, conversion: state.conversion)
+                        moving: JourneyLanes<Value>.moving, laneKind: Value.laneKind, conversion: state.conversion)
     }
 
     /// The same registration over an image already made; `moving` says which
@@ -136,6 +169,7 @@ extension PropertyContainer {
         mode: StateMode,
         kind: StateKind,
         moving: MotionValues,
+        laneKind: LaneKind,
         conversion: Conversion? = nil
     ) -> Modified {
         modified {
@@ -144,6 +178,7 @@ extension PropertyContainer {
                 conversion: conversion,
                 mode: mode,
                 kind: kind,
+                laneKind: laneKind,
                 values: property.facts.moves.union(moving))
         }
     }
@@ -164,19 +199,19 @@ extension PropertyContainer {
         state.described?.wearThemedPair()
 
         return setValue(property, onImage: image, mode: .inOut, kind: .property,
-                        moving: JourneyLanes<Value>.moving, conversion: state.conversion)
+                        moving: JourneyLanes<Value>.moving, laneKind: Value.laneKind, conversion: state.conversion)
     }
 
     /// A property the host sets as the state's value stands, with no animation;
     /// `.inOut` where the control reports it back, as a switch does.
-    func plain<Value: StateValue>(_ property: Prop, by state: Binding<Value>, mode: StateMode = .out) -> Modified {
+    func plain<Value: LaneValue>(_ property: Prop, by state: Binding<Value>, mode: StateMode = .out) -> Modified {
         setValue(property, on: state, mode: mode, kind: .plain)
     }
 
     /// Text the host writes into a property as the state changes; `.inOut`
     /// where the user types into it.
     func words(_ property: Prop, by state: Binding<String>, mode: StateMode = .out) -> Modified {
-        setValue(property, on: state, mode: mode, kind: .text)
+        setValue(property, on: state, mode: mode)
     }
 
     /// `journey(_:by:)` over a member of the type its contract declares.
@@ -188,7 +223,7 @@ extension PropertyContainer {
     }
 
     /// `plain(_:by:mode:)` over a member of the type its contract declares.
-    func plain<Owner: Contract, Value: StateValue & HostRepresentable>(
+    func plain<Owner: Contract, Value: LaneValue & HostRepresentable>(
         _ property: ElementProperty<Owner, Value>,
         by state: Binding<Value>,
         mode: StateMode = .out

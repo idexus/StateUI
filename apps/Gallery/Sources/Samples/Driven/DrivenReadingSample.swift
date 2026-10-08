@@ -4,66 +4,26 @@ import StateUI
 /// walked state holds both: the state itself is the destination from the first
 /// millisecond, and its journey's `value` is what is on the screen this frame.
 struct DrivenReadingSample: SampleContent, ExampleContent {
+    // listing: DrivenReadingSample
     /// The bar's width, driven - so both readings live here and neither costs
     /// a render.
     @State private var width = 60.0
-
+    // listing: end
 
     static let id = "driven-reading"
     static let title = "Reading a driven state"
     static let summary = "One state holds where the value is going and where it has got to."
 
-    static let code = """
-        @State private var width = 60.0
-
+    // listing: DrivenReadingSample
+    var body: some View {
         VStack {
             // NOTHING in this closure reads: the bar is a channel and both
             // readings are CONVERSIONS of it, worked out by the host on its own
-            // frames. So this stays at one build while the numbers move sixty
-            // times a second.
+            // frames. So this stays at one build while the numbers move on
+            // every frame.
             DebugInfoLabel()
 
             // The bar: one driven property, and the host moves it.
-            ZStack { }
-            .style("Card")
-                .width($width)
-                .height(28)
-
-            // The two readings, off ONE journey: `destination` is where the
-            // value is going and `value` where it has got to.
-            Text($width.journey.convert {
-                "going to \\(Int($0.destination)) — showing \\(Int($0.value))"
-            })
-
-            // The SAME arithmetic drawn: the distance between where the value
-            // is going and where it is - widest the moment a button is
-            // pressed, and nought when the bar arrives.
-            ZStack { }
-            .style("Card")
-                .width($width.journey.convert { abs($0.destination - $0.value) })
-                .height(10)
-
-            HStack {
-                Button("Grow").onClicked {
-                    try await $width.journey.move(to: 300, .eased(1600, .cubicOut))
-                }
-
-                Button("Shrink").onClicked {
-                    try await $width.journey.move(to: 60, .eased(1600, .cubicIn))
-                }
-
-                // Stopping leaves the value where it stands, and the
-                // destination is mirrored onto it - so both readings agree again.
-                Button("Stop").onClicked { $width.journey.stop() }
-            }
-        }
-
-        """
-
-    var body: some View {
-        VStack {
-            DebugInfoLabel()
-
             ZStack {
                 Text("")
             }
@@ -75,6 +35,8 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             .lineWidth(0)
             .horizontalAlignment(.start)
 
+            // The two readings, off ONE journey: `destination` is where the
+            // value is going and `value` where it has got to.
             Text()
                 .text($width.journey.convert {
                     "going to \(Int($0.destination)) — showing \(Int($0.value))"
@@ -101,34 +63,25 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Grow")
-                    .background(Palette.accent)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 16, vertical: 8)
                     .onClicked {
                         try await $width.journey.move(to: 300, .eased(1600, .cubicOut))
                     }
 
                 Button("Shrink")
-                    .background(Palette.accent)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 16, vertical: 8)
                     .onClicked {
                         try await $width.journey.move(to: 60, .eased(1600, .cubicIn))
                     }
 
+                // Stopping leaves the value where it stands, and the
+                // destination is mirrored onto it - so both readings agree again.
                 Button("Stop")
-                    .stroke(Palette.outline)
-                    .lineWidth(1)
-                    .background(.transparent)
-                    .textColor(Palette.subtle)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 16, vertical: 8)
                     .onClicked { $width.journey.stop() }
             }
             .spacing(10)
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -155,10 +108,9 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("There is no cadence to choose. A conversion is worked out once a "
-                + "frame, and what it answers is another driven state - so asking for "
-                + "a reading sixty times a second costs what asking for one twice a "
-                + "second would.")
+            Text("There is no cadence to choose. A conversion is worked out on every "
+                + "frame the value moves, and what it answers is another driven state - "
+                + "so however often the reading changes, it costs no render.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -117,6 +117,9 @@
     public func perform(_ act: UserAct, on element: MountedElement) throws {
         if element.parent?.type == .itemsView {
             note("\(act) on an item of ItemsView", element: NodeType.itemsView.name)
+        } else if case .dragAndDrop = act {
+            // A drag reaches the views it crosses and lands on, as well as the one dragged.
+            note("\(act) on \(element.type.name)")
         } else {
             note("\(act) on \(element.type.name)", element: element.type.name)
         }
@@ -151,6 +154,20 @@
         try driver.reaches(element, at: point)
     }
 
+    /// Whether assistive technology meets `element` as a heading, whatever its level.
+    public func isHeading(_ element: MountedElement) throws -> Bool {
+        note(
+            "read whether \(element.type.name) is a heading", element: element.type.name,
+            member: VisualElementContract.accessibilityHeading.name)
+        return try driver.isHeading(element)
+    }
+
+    /// The ids of the children of `layout`, in the order its toolkit draws them, back to front.
+    public func drawingOrder(of layout: MountedElement) throws -> [ElementID] {
+        note("read the drawing order of \(layout.type.name)")
+        return try driver.drawingOrder(of: layout).map(\.id)
+    }
+
     /// The question the window shows now; nil where it shows none.
     public func question() throws -> Question? {
         guard let root = tree?.root else { return nil }
@@ -162,6 +179,25 @@
     public func announced() throws -> [String] {
         note("read what the screen reader said")
         return try driver.announced()
+    }
+
+    /// The theme the platform shows the application in now.
+    public func theme() throws -> ColorScheme {
+        note("read the theme the application shows in")
+        return try driver.theme()
+    }
+
+    /// The file dialog the window shows now; nil where it shows none.
+    public func fileDialog() throws -> FileDialog? {
+        guard let root = tree?.root else { return nil }
+        note("read a file dialog")
+        return try driver.fileDialog(over: root)
+    }
+
+    /// What the host handed the system to launch, in order: an address as written, a file by its name.
+    public func launched() throws -> [String] {
+        note("read what was launched")
+        return try driver.launched()
     }
 
     /// The colour `element` shows at `point` of its own, where StateUI draws it; nil where it shows nothing.

@@ -5,6 +5,7 @@ import CGalleryWinUI
 import GalleryUI
 import StateUIWinUI
 
+// listing: InteropControlSample.WinUI.swift
 /// Three lamps in a housing, one lit at a time - a XAML Border of three Ellipses the gallery's relay makes, which
 /// knows nothing of StateUI.
 ///
@@ -12,6 +13,8 @@ import StateUIWinUI
 /// bridge. The Swift half is Sources/Samples/Interop/TrafficLight.swift.
 @MainActor
 final class TrafficLightControl: WinUIControl {
+    // The relay's Border, made by C++/WinRT behind C functions: a WinUIControl is the object holding the element it
+    // shows.
     let element: OpaquePointer
 
     /// A lamp was tapped; the argument is its index, top to bottom. The control does not switch itself: it reports,
@@ -26,6 +29,7 @@ final class TrafficLightControl: WinUIControl {
     private let number: Int64
 
     init() {
+        // The relay tells a tap by the number the control makes its element with.
         number = GalleryControls.reserve()
         element = gallery_traffic_light_make(number)!
         GalleryControls.hold(self, as: number)
@@ -54,6 +58,7 @@ extension TrafficLightControl {
             light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
             return light
         }) { light in
+            // Handed back typed - a TrafficSignal, not its number.
             light.property(TrafficLightContract.signal) { control, signal in
                 control.signal = signal ?? .stop
             }
@@ -61,3 +66,4 @@ extension TrafficLightControl {
         }
     }
 }
+// listing: end

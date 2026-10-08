@@ -447,6 +447,10 @@ host.
 - **`SwipeDirection.swiped`** tells a swipe from a press and how far it moved:
   the way it moved most, far enough, where the view listens for that way.
   ([A swipe](../design/host/runtime.md#a-swipe))
+- **`DragAndDrop`** and **`DropTarget`** are a drag between views: what a view
+  offers and takes, and a drag over a view told once as it comes, as it goes -
+  never after a drop - and as it is let go, whatever the toolkit repeats.
+  ([A drag between views](../design/host/runtime.md#a-drag-between-views))
 - **`ScrollMovement`** is one scroller's movement: where it went, frame by
   frame, and when it rests, timed on the frame clock. The host tells it the
   user's moves and holds; the scrolling itself is the toolkit's.
@@ -516,6 +520,10 @@ on every host.
   from its act - an alert, a confirmation, a choice, a prompt - and its answer;
   questions show one at a time, each under a ticket of its own.
   ([Questions for the user](../design/host/runtime.md#questions-for-the-user))
+- **`HostFileDialog`**, **`FileToolkit`** and **`HostActs.files`** read a file
+  dialog from its act and answer it, and are what a host performing files
+  hands its performer; a file dialog waits its turn among the questions.
+  ([Files](../design/host/runtime.md#files))
 - **`InteropActs`** performs the acts an application registers on its host,
   each handed the values its contract declares, an aimed one also the control
   of the element it names.

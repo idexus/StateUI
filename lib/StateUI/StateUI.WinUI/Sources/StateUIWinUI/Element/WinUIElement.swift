@@ -70,6 +70,9 @@ final class WinUIElement: NativeElement {
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
+        if !changed.isDisjoint(with: MountedElement.sidebarMaterials), let split = view as? WinUISplitView {
+            split.grounds = (element.sidebarMaterial(over: false), element.sidebarMaterial(over: true))
+        }
     }
 
     func leave() {

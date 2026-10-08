@@ -29,16 +29,38 @@ extension AppKitDriver {
         case .fontSize, .fontAttributes, .fontFamily, .textColor:
             return try words(property, view)
         case .background:
-            // A field and an editor fill their own; every other view is its layer's colour.
+            // A layout's blur or glass is a view of its own; a field and an editor fill their own; every other view
+            // is its layer's colour.
+            if let surface = (view as? AppKitTravellingLayout)?.decoration.surface { return material(surface)?.propValue }
             let fill: NSColor? = switch view {
-            case let field as AppKitTextFieldView: field.textField.backgroundColor
+            case let field as AppKitTextFieldView: field.fill
             case let editor as AppKitTextEditorView: editor.textView.backgroundColor
             default: view.layer?.backgroundColor.flatMap { NSColor(cgColor: $0) }
             }
-            return fill.map { Background.color(color($0)).propValue }
+            return fill.map { Material.color(color($0)).propValue }
         default:
             return try controlHolds(property, view)
         }
+    }
+
+    /// What a split view's sidebar pane stands on: its blur or glass, else its layer's colour.
+    static func ground(of split: AppKitSplitView) -> HostValue? {
+        if let surface = split.sidebarGroundForTesting.surface { return material(surface)?.propValue }
+        return split.sidebarLayerColorForTesting.flatMap { NSColor(cgColor: $0) }.map { Material.color(color($0)).propValue }
+    }
+
+    /// The material a layout's box shows: its glass - how clear, its tint, whether it answers the user - or its
+    /// blur, by the role standing for its thickness, in the colour laid over it.
+    private static func material(_ surface: any AppKitBoxSurface) -> Material? {
+        if let glass = surface as? AppKitGlassView {
+            var shown: Glass = glass.style == .clear ? .clear : .regular
+            if let tint = glass.tint { shown = shown.tint(color(tint)) }
+            return .glass(shown.isInteractive(glass.isInteractiveForTesting))
+        }
+        guard let view = surface as? AppKitMaterialView, let thickness = AppKitMaterialView.thickness(view.material)
+        else { return nil }
+        let blur = Blur(thickness)
+        return .blur(view.wash.fill.color.map { blur.tint(color($0)) } ?? blur)
     }
 
     private static func transform(_ property: Prop, _ drawn: HostDrawingTransform) -> HostValue? {
@@ -105,6 +127,15 @@ extension AppKitDriver {
         }
     }
 
+    /// The title of the tab the page or arrangement `element` stands on, as the window's row of tabs shows it.
+    func tabTitle(of element: MountedElement, in tabs: MountedElement) throws -> HostValue? {
+        let control = try controller(of: element).tabRowForTesting.controlForTesting
+        guard let place = tabs.children.firstIndex(where: { $0 === element }), place < control.segmentCount else {
+            throw DriverCannot(reading: .title, of: element)
+        }
+        return control.label(forSegment: place)?.propValue
+    }
+
     /// What a menu's entry or a toolbar's item holds, as its NSMenuItem or NSToolbarItem holds it.
     func itemHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
         if element.type == .menuItem, let item = (element.native as? AppKitElement)?.platformMenuItem {
@@ -112,8 +143,21 @@ extension AppKitDriver {
             case .text: return item.title.propValue
             case .isEnabled: return item.isEnabled.propValue
             case .accessibilityIdentifier: return item.accessibilityIdentifier().propValue
+            case .icon: return pictureName(item.image)
+            case .isDestructive:
+                let words = item.attributedTitle
+                let red = words.flatMap { $0.length > 0 ? $0.attribute(.foregroundColor, at: 0, effectiveRange: nil) : nil }
+                return ((red as? NSColor) == .systemRed).propValue
             default: break
             }
+        }
+        if element.type == .toolbarItem, property == .placement {
+            let toolbar = try controller(of: element).toolbarForTesting
+            let identifier = NSToolbarItem.Identifier("StateUI.action.\(element.mount)")
+            if toolbar.overflowForTesting.contains(where: { $0.identifier == identifier }) {
+                return ToolbarItemPlacement.overflow.propValue
+            }
+            if toolbar.identifiersForTesting.contains(identifier) { return ToolbarItemPlacement.bar.propValue }
         }
         if element.type == .toolbarItem,
            let item = try controller(of: element).toolbarForTesting
@@ -121,6 +165,7 @@ extension AppKitDriver {
             switch property {
             case .text: return item.label.propValue
             case .isEnabled: return item.isEnabled.propValue
+            case .icon: return pictureName(item.image)
             default: break
             }
         }

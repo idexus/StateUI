@@ -4,8 +4,10 @@
 import GalleryUI
 import StateUIWeb
 
+// listing: InteropControlSample.Web.swift
 /// Three lamps in a housing, one lit at a time: the gallery's own element, `<gallery-traffic-light>` of
 /// Page/traffic-light.js, which knows nothing of StateUI.
+/// Told what it is through its attributes, heard through the events it raises.
 ///
 /// `register()`, at the end of this file, adds it for `TrafficLightContract`, and that registration is the whole
 /// bridge. The Swift half is Sources/Samples/Interop/TrafficLight.swift.
@@ -27,9 +29,11 @@ final class TrafficLightElement: WebControl {
         element.listen("lamptap") { [weak self] (index: Double) in self?.onLampTapped?(Int(index)) }
     }
 }
+// listing: end
 
 // MARK: - Registration
 
+// listing: InteropControlSample.Web.swift
 extension TrafficLightElement {
     /// Adds the lamps for `TrafficLightContract`. Said once, before the application runs.
     static func register() {
@@ -38,6 +42,7 @@ extension TrafficLightElement {
             light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
             return light
         }) { light in
+            // The value arrives typed - a TrafficSignal, not its number.
             light.property(TrafficLightContract.signal) { control, signal in
                 control.signal = signal ?? .stop
             }
@@ -45,3 +50,4 @@ extension TrafficLightElement {
         }
     }
 }
+// listing: end

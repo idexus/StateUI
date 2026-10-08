@@ -177,6 +177,34 @@ a handler holds a description of a page, not the page, so the host shows the
 dialog on the page the user is looking at, the top of the modal stack
 included, which only the host can know.
 
+## Files
+
+The dialogs that open and save files are dialogs too, asked of the showing
+page and awaited. Every platform's dialog answers a place - a path, a
+document's address, a browser's file - and no place is portable: one has no
+path at all. So a `ChosenFile` shows only its name; where it stands crosses
+to the host and back unread, and the host reads and launches it while the
+application runs. A save takes its contents before the dialog shows, as
+some platforms hand a ready file over rather than ask for a place; the host
+writes them where the user said, and the caller hears the file once they
+stand written. Bytes cross as one run (`.bytes`), never a list of numbers.
+A read says the most bytes it takes, or nothing for the whole file: each host
+reads that much from the file's start and no further - a slice, a handle
+read up to a count, a stream left after so many - so a file longer than the
+application takes never reaches memory whole.
+
+A `FileType` keeps its extensions bare, lowercase and once each, whatever
+was written, so no host strips a dot or a star of its own. A dialog's title,
+its button's caption and its starting folder are not asked for: not every
+platform has them.
+
+## Launching
+
+`Links.launch` and `ChosenFile.launch` hand an address or a file to the
+system, which opens it in the application it gives it. The answer is
+whether one took it - false where nothing opens that scheme or kind - and
+not that it opened: the application starts on its own.
+
 ## Announcements
 
 `ScreenReader.announce` is an act for the same reason every act is one: it is

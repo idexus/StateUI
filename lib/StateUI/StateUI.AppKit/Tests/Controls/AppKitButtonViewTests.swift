@@ -21,6 +21,7 @@ final class AppKitButtonViewTests: XCTestCase {
             imageScaling: .scaleProportionallyUpOrDown,
             font: .systemFont(ofSize: 15),
             textColor: .systemPurple,
+            tracking: 2,
             backgroundColor: .systemYellow,
             strokeColor: .systemBlue,
             lineWidth: 2,
@@ -33,6 +34,7 @@ final class AppKitButtonViewTests: XCTestCase {
         XCTAssertEqual(button.imagePosition, .imageTrailing)
         XCTAssertEqual(button.imageScaling, .scaleProportionallyUpOrDown)
         XCTAssertEqual(button.font?.pointSize, 15)
+        XCTAssertEqual(button.attributedTitle.attribute(.kern, at: 0, effectiveRange: nil) as? Double, 2)
         XCTAssertFalse(button.isEnabled)
         XCTAssertEqual(button.layer?.cornerRadius, 6)
         XCTAssertEqual(button.layer?.borderWidth, 2)
@@ -47,7 +49,7 @@ final class AppKitButtonViewTests: XCTestCase {
             button.apply(
                 text: "Log out", image: NSImage(size: NSSize(width: 16, height: 16)), imagePosition: position,
                 imageScaling: .scaleProportionallyDown, font: .systemFont(ofSize: 13), textColor: .labelColor,
-                backgroundColor: nil, strokeColor: nil, lineWidth: 0, shape: .rectangle,
+                tracking: 0, backgroundColor: nil, strokeColor: nil, lineWidth: 0, shape: .rectangle,
                 lineBreakMode: .byTruncatingTail, enabled: true)
             let cell = try XCTUnwrap(button.cell as? NSButtonCell)
             let image = cell.imageRect(forBounds: button.bounds)
@@ -68,6 +70,7 @@ final class AppKitButtonViewTests: XCTestCase {
             imageScaling: .scaleNone,
             font: .systemFont(ofSize: 13),
             textColor: .controlTextColor,
+            tracking: 0,
             backgroundColor: nil,
             strokeColor: nil,
             lineWidth: 1,
@@ -99,7 +102,8 @@ final class AppKitButtonViewTests: XCTestCase {
         let button = AppKitButtonView()
         button.apply(
             text: "Save", image: nil, imagePosition: .noImage, imageScaling: .scaleNone,
-            font: .systemFont(ofSize: 13), textColor: .labelColor, backgroundColor: .systemBlue, strokeColor: nil,
+            font: .systemFont(ofSize: 13), textColor: .labelColor, tracking: 0, backgroundColor: .systemBlue,
+            strokeColor: nil,
             lineWidth: 0, shape: .rectangle, lineBreakMode: .byTruncatingTail, enabled: true)
         let alpha = { Double(button.layer?.backgroundColor?.alpha ?? 0) }
         let crossing = { (type: NSEvent.EventType) in

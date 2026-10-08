@@ -19,5 +19,6 @@ extension AndroidElement {
         }
         view.setTapped(hearing.contains(.taps) && count == 1 ? { heard(.tap(run: 1)) } : nil)
         view.hear(hearing, countsTaps: count > 1, heard)
+        view.offer(element.dragAndDrop, heard)
     }
 }

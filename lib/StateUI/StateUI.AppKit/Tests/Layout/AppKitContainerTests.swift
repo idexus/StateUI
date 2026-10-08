@@ -174,7 +174,7 @@ final class AppKitContainerTests: XCTestCase {
     func testAHostDrivenChildHeightRefreshesItsAncestorLayoutItem() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        let binding = HostStateBinding(state: 71, mode: .inOut, kind: .property)
+        let binding = HostStateBinding(state: 71, mode: .inOut, kind: .property, laneKind: .number)
 
         var frame = HostPatch(id: .manual("frame"), type: .zStack)
         frame.properties[.height] = .number(90)
@@ -425,7 +425,7 @@ final class AppKitContainerTests: XCTestCase {
     func testAZStacksSubviewsFollowTheDrawingOrder() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        let binding = HostStateBinding(state: 72, mode: .inOut, kind: .property)
+        let binding = HostStateBinding(state: 72, mode: .inOut, kind: .property, laneKind: .number)
         func layers(front: String) -> HostPatch {
             var layers = HostPatch(id: .manual("layers"), type: .zStack)
             layers.children = .arranged(["red", "blue", "bound"].map { id in

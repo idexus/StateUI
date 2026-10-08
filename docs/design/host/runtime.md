@@ -270,6 +270,19 @@ enough ([a swipe](#a-swipe)); a pinch says each step's scale since the last
 and where, as shares of the view (`PinchStep`). A host's toolkit hears the
 input and says it as `HeardInput`.
 
+
+## A disabled branch
+
+A view the tree disables keeps its place and still stands in the way of a
+press, but answers none; on a layout the whole branch in it answers none
+(`MountedElement.isEffectivelyEnabled`). The rule is the host layer's, once:
+`hear` drops what the user does to a view in a disabled branch - only a drag
+it began still ends there - and a view's `isEnabled` reaches its control as
+`presented(_:)` gives it, false wherever a view holding it is disabled. When
+a layout's `isEnabled` changes, every element in it presents its own again
+(`enablementTurned`), so a native control in the branch is disabled and
+enabled with it. A host reads its members through `presented`, never the
+element's own value, and needs no rule of its own.
 ## A press dragged
 
 A host whose toolkit tells a press and its moves, and no drag of its own,
@@ -292,6 +305,31 @@ that movement reaches the view's threshold and the view listens for that way.
 A way it does not listen for is no swipe, even where the press also moved far
 along the other axis: the dominant way decides, never a second one.
 
+## A drag between views
+
+A view offers a drag where `canDrag` holds, carrying its `dragText` - empty
+where it gives none - and takes one where `allowsDrop` holds
+(`DragAndDrop`): what travels is fixed before the drag starts, as a native
+drag needs its payload at once. A toolkit tells a drag over a view in its
+own way - again and again while it moves, a leave after a drop on some, a
+leave for each child on others - so the element hears it through one rule
+(`DropTarget`): over once as a drag comes, left as it goes without being
+let go and never after a drop, dropped with its words as it is let go. The
+view dragged hears its drag start, and end once wherever it ended. A host
+that realizes it declares `everyElementDragsAndDrops`.
+
+## Files dropped on a view
+
+A view takes files dragged from the system where `droppedFileTypes` is
+written: the kinds it lists, any file where it lists none (`DragAndDrop`).
+A toolkit seldom says a dragged file's name before the drop, so a drag of
+files is taken over any view taking files, and the drop decides
+(`DragAndDrop.taken`): the files of its kinds - by their names' extensions -
+are heard, in order; a drop holding none of them is heard by nobody. A
+dropped file is a `ChosenFile`, read and launched as one opened, its address
+the platform's own. A host that realizes it declares
+`everyElementTakesDroppedFiles`.
+
 ## The environment
 
 What a host reads of the machine it stands on is told to the core the same
@@ -305,6 +343,18 @@ turns with nothing. When any of it changes, one step
 follows on every host (`HostRuntime.environmentChanged`): the core is told
 what stands now, the tree follows the language's direction, and one turn
 renders what it all changed.
+
+## The theme in force
+
+An application may hold a theme of its own (`application.colorScheme`), and
+its act shows every window in it with the toolkit's own call. The theme the
+core resolves colour pairs against is then the theme in force, the same on
+every host (`HostThemes`): the application's while it holds one, the
+system's while it follows the system. A host reports the system's theme as
+its toolkit tells it, and the host layer passes on the theme in force - so a
+toolkit that tells the system's alone, a browser's media query, reports the
+application's all the same, and one that tells its own effective look agrees
+with it.
 
 ## The application's phase
 
@@ -391,6 +441,21 @@ not, an alert nothing. Questions show one at a
 time in the order asked, each under a ticket of its own across the process
 (`QuestionQueue`), so an answer after its runtime has gone answers nothing
 of another's.
+
+## Files
+
+A file dialog is read from its act alike on every host (`HostFileDialog`):
+one file to open, several, or a place to save, the kinds it offers, a
+save's contents and its name. A save's name ends in an extension of its
+kinds: where it ends in none, the first kind's first is added - unless it
+is empty, which the platform names. A dialog that filters by extension
+alone shows every kind's, in order, each once. A file dialog waits its turn
+among the questions, one showing at a time, so a question never stands
+over a dialog the user is still in, or under one. A host performing files
+hands its `FileToolkit` to its performer beside its `ActToolkit`, and
+declares `HostActs.files`; a host without one fails every act for files by
+name. A file read and a launch answer when the platform does, never in the
+turn that asked.
 
 ## Kept values
 

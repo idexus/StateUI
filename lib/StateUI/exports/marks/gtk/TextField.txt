@@ -3,7 +3,7 @@ Text.text: ✅
 TextField: ✅
 TextField.frameChanged: ✅
 TextField.isPassword: ✅
-TextField.showsClearButton: not realized
-TextField.submitLabel: not realized
+TextField.showsClearButton: – GTK's entry has no button of its own that empties it.
+TextField.submitLabel: – GTK gives an entry no word for the return key of a keyboard on the screen.
 TextField.submitted: ✅
 TextField.text: ✅

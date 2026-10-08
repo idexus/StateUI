@@ -60,6 +60,22 @@ final class UIKitPickerView: UIButton {
         onChosen?(place)
     }
 
+    /// The words' look - the button's own where it says nothing - and where they stand across it.
+    func setLook(_ look: TextLook, alignment: TextAlignment) {
+        configuration?.titleTextAttributesTransformer =
+            look.titleTransformer(standing: .preferredFont(forTextStyle: .body), color: tintColor)
+        contentHorizontalAlignment = switch alignment {
+        case .start: .leading
+        case .center: .center
+        case .end: .trailing
+        }
+    }
+
+    /// The colour of the arrow beside the words; nil for the button's own.
+    func setTint(_ tint: UIColor?) {
+        configuration?.indicatorColorTransformer = tint.map { tint in UIConfigurationColorTransformer { _ in tint } }
+    }
+
     private func showMenu() {
         menu = UIMenu(children: written.choices.enumerated().map { place, caption in
             UIAction(title: caption, state: place == chosen ? .on : .off) { [weak self] _ in self?.userChose(place) }

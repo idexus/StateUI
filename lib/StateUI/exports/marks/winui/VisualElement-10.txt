@@ -1,49 +1,66 @@
-# revision 1.1
-ActivityIndicator.accessibilityLabel: ✅
-Button.isVisible: ✅
-Button.rotation: ✅
-Canvas.accessibilityLabel: ✅
-CheckBox.isVisible: ✅
-CheckBox.rotation: ✅
-ColorBox.accessibilityLabel: ✅
-DatePicker.isVisible: ✅
-DatePicker.rotation: ✅
-Ellipse.accessibilityLabel: ✅
-Grid.isVisible: ✅
-Grid.rotation: ✅
-HStack.accessibilityLabel: ✅
+# revision 7.1
+ActivityIndicator.translationY: ✅
+ActivityIndicator.zIndex: ✅
+Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Canvas.frame: ✅
+Canvas.scaleX: ✅
+CheckBox.isAccessibilityHidden: ✅
+ColorBox.frameChanged: ✅
+ColorBox.maximumHeight: ✅
+ColorBox.maximumWidth: ✅
+ColorBox.minimumHeight: ✅
+ColorBox.minimumWidth: ✅
+ColorBox.rotationY: ✓ read rotationY of ColorBox: the host's own tip, checked against the projection it laid on the element
+DatePicker.accessibilityLabel: ✅
+Ellipse.opacity: ✅
+Ellipse.pivotY: ✅
+Grid.style: ✅
+Grid.translationX: ✅
+HStack.accessibilityHeading: ✅
 Image.isVisible: ✅
-Image.rotation: ✅
-ItemsView.accessibilityLabel: ✅
-Line.accessibilityLabel: ✅
-Map.isVisible: 🧩
-Map.rotation: 🧩
-Path.accessibilityLabel: ✅
-Picker.isVisible: ✅
-Picker.rotation: ✅
-Polygon.accessibilityLabel: ✅
-Polyline.isVisible: ✅
-Polyline.rotation: ✅
-ProgressBar.accessibilityLabel: ✅
-RadioButton.isVisible: ✅
-RadioButton.rotation: ✅
-Rectangle.accessibilityLabel: ✅
-ScrollView.isVisible: ✅
-ScrollView.rotation: ✅
-SearchField.accessibilityLabel: ✅
-Slider.isVisible: ✅
-Slider.rotation: ✅
-Stepper.accessibilityLabel: ✅
-Switch.isVisible: ✅
-Switch.rotation: ✅
-Text.isVisible: ✅
-Text.rotation: ✅
-TextEditor.accessibilityLabel: ✅
-TextField.isVisible: ✅
-TextField.rotation: ✅
-TimePicker.accessibilityLabel: ✅
-VStack.isVisible: ✅
-VStack.rotation: ✅
+Image.pivotX: ✅
+ItemsView.focus: ✅
+ItemsView.isFocusedChanged: ✅
+ItemsView.scaleY: ✅
+ItemsView.unfocus: ✅
+Line.frameChanged: ✅
+Line.maximumHeight: ✅
+Line.maximumWidth: ✅
+Line.minimumHeight: ✅
+Line.minimumWidth: ✅
+Line.rotationY: ✓ read rotationY of Line: the host's own tip, checked against the projection it laid on the element
+Map.accessibilityLabel: 🧩
+Path.opacity: ✅
+Path.pivotY: ✅
+Picker.style: ✅
+Picker.translationX: ✅
+Polygon.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Polyline.ignoresInput: ✅
+Polyline.scale: ✅
+ProgressBar.accessibilityHint: ✅
+RadioButton.opacity: ✅
+RadioButton.pivotY: ✅
+Rectangle.translationY: ✅
+Rectangle.zIndex: ✅
+ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+SearchField.ignoresInput: ✅
+SearchField.scale: ✅
+Slider.accessibilityHeading: ✅
+Stepper.frameChanged: ✅
+Stepper.height: ✅
+Stepper.rotationX: ✓ read rotationX of Stepper: the host's own tip, checked against the projection it laid on the element
+Stepper.width: ✅
+Switch.accessibilityLabel: ✅
+Text.automationExcludedWithChildren: ✅
+TextEditor.opacity: ✅
+TextEditor.pivotY: ✅
+TextField.translationY: ✅
+TextField.zIndex: ✅
+TimePicker.layoutDirection: ✅
+VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+VStack.scaleY: ✅
+VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 WebView.accessibilityLabel: ✅
-ZStack.isVisible: ✅
-ZStack.rotation: ✅
+ZStack.opacity: ✅
+ZStack.pivotY: ✅

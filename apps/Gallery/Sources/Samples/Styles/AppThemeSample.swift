@@ -2,39 +2,21 @@ import StateUI
 
 /// The theme as a value a view can branch on.
 struct AppThemeSample: SampleContent, ExampleContent {
+    // listing: AppThemeSample
     /// The application's information, where the theme is read.
     @Environment(\.application) var app
+    // listing: end
 
     static let id = "appTheme"
     static let title = "Theme"
     static let summary = "The theme as a value a view can branch on - "
         + "updated live when the system switches."
 
-    static let code = """
-        struct ThemeBadge: View {
-            @Environment(\\.application) var app
-
-            var body: some View {
-                VStack {
-                    // The theme is read here, so a change to it builds this
-                    // closure.
-                    DebugInfoLabel()
-
-                    Text("\\(app.info.colorScheme)")
-
-                    // LOGIC on the theme - a different WORD, not a colour.
-                    // A colour that differs by theme is Color(light:dark:),
-                    // which follows by itself.
-                    Text(app.info.colorScheme == .dark
-                        ? "lights off - a view can choose calmer artwork"
-                        : "lights on - a view can choose vivid artwork")
-                }
-            }
-        }
-        """
-
+    // listing: AppThemeSample
     var body: some View {
         VStack {
+            // The theme is read here, so a change to it builds this
+            // closure.
             DebugInfoLabel()
 
             Text("\(app.info.colorScheme)")
@@ -42,6 +24,9 @@ struct AppThemeSample: SampleContent, ExampleContent {
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
+            // LOGIC on the theme - a different WORD, not a colour.
+            // A colour that differs by theme is Color(light:dark:),
+            // which follows by itself.
             Text(app.info.colorScheme == .dark
                 ? "lights off - a view can choose calmer artwork"
                 : "lights on - a view can choose vivid artwork")
@@ -50,6 +35,7 @@ struct AppThemeSample: SampleContent, ExampleContent {
         }
         .spacing(10)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

@@ -12,11 +12,15 @@
     /// Which native-host channel carries the value.
     public let kind: HostStateKind
 
+    /// What the value's lanes are read as - its type says; nil for text, which has none.
+    public let laneKind: HostLaneKind?
+
     /// One attachment between a state channel and a native property.
-    public init(state: Int32, mode: HostStateMode, kind: HostStateKind) {
+    public init(state: Int32, mode: HostStateMode, kind: HostStateKind, laneKind: HostLaneKind?) {
         self.state = state
         self.mode = mode
         self.kind = kind
+        self.laneKind = laneKind
     }
 }
 
@@ -25,5 +29,6 @@ extension HostStateBinding {
         state = entry.number
         mode = entry.mode
         kind = entry.kind
+        laneKind = entry.laneKind
     }
 }

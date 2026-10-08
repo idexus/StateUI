@@ -1,49 +1,68 @@
-# revision 1.1
+# revision 7.1
 ActivityIndicator.style: ✅
-ActivityIndicator.zIndex: not realized
-Button.pivotY: ✅
-Canvas.style: ✅
-Canvas.zIndex: not realized
-CheckBox.pivotY: ✅
-ColorBox.style: ✅
-ColorBox.zIndex: not realized
-DatePicker.pivotY: ✅
-Ellipse.style: ✅
-Ellipse.zIndex: not realized
-Grid.pivotY: ✅
-HStack.style: ✅
-HStack.zIndex: not realized
-Image.pivotY: ✅
-ItemsView.style: not realized
-ItemsView.zIndex: not realized
-Line.style: ✅
-Line.zIndex: not realized
-Map.pivotY: 🧩
-Path.style: ✅
-Path.zIndex: not realized
-Picker.pivotY: ✅
-Polygon.style: ✅
-Polygon.zIndex: not realized
-Polyline.pivotY: ✅
-ProgressBar.style: ✅
-ProgressBar.zIndex: not realized
-RadioButton.pivotY: ✅
+ActivityIndicator.translationX: ✅
+Button.automationExcludedWithChildren: ✅
+Canvas.ignoresInput: ✅
+Canvas.scale: ✅
+CheckBox.accessibilityHeading: ✅
+ColorBox.frameChanged: ✅
+ColorBox.height: ✅
+ColorBox.rotationX: ✓ read rotationX of ColorBox: the host's own tip, checked against the projection it laid on the element
+ColorBox.width: ✅
+DatePicker.accessibilityHeading: ✅
+Ellipse.isVisible: ✅
+Ellipse.pivotX: ✅
+Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
+Grid.isFocusedChanged: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
+Grid.scaleY: ✅
+Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
+HStack.accessibilityHint: ✅
+HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Image.layoutDirection: ✓ read layoutDirection of Image: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ItemsView.frame: ✅
+ItemsView.scaleX: ✅
+Line.frameChanged: ✅
+Line.height: ✅
+Line.rotationX: ✓ read rotationX of Line: the host's own tip, checked against the projection it laid on the element
+Line.width: ✅
+Map.accessibilityHeading: 🧩
+Path.isVisible: ✅
+Path.pivotX: ✅
+Picker.focus: ✅
+Picker.isFocusedChanged: ✅
+Picker.scaleY: ✅
+Picker.unfocus: ✅
+Polygon.automationExcludedWithChildren: ✅
+Polyline.frameChanged: ✅
+Polyline.maximumHeight: ✅
+Polyline.maximumWidth: ✅
+Polyline.minimumHeight: ✅
+Polyline.minimumWidth: ✅
+Polyline.rotationY: ✓ read rotationY of Polyline: the host's own tip, checked against the projection it laid on the element
+ProgressBar.accessibilityLabel: ✅
+RadioButton.isVisible: ✅
+RadioButton.pivotX: ✅
 Rectangle.style: ✅
-Rectangle.zIndex: not realized
-ScrollView.pivotY: ✅
-SearchField.style: ✅
-SearchField.zIndex: not realized
-Slider.pivotY: ✅
-Stepper.style: ✅
-Stepper.zIndex: not realized
-Switch.pivotY: ✅
-Text.pivotY: ✅
-TextEditor.style: ✅
-TextEditor.zIndex: not realized
-TextField.pivotY: ✅
-TimePicker.style: ✅
-TimePicker.zIndex: not realized
-VStack.pivotY: ✅
-WebView.style: ✅
-WebView.zIndex: not realized
-ZStack.pivotY: ✅
+Rectangle.translationX: ✅
+ScrollView.automationExcludedWithChildren: ✅
+SearchField.frameChanged: ✅
+SearchField.maximumHeight: ✅
+SearchField.maximumWidth: ✅
+SearchField.minimumHeight: ✅
+SearchField.minimumWidth: ✅
+SearchField.rotationY: ✓ read rotationY of SearchField: the host's own tip, checked against the projection it laid on the element
+Slider.accessibilityHint: ✅
+Stepper.isEnabled: ✅
+Stepper.rotation: ✅
+Switch.accessibilityHeading: ✅
+Text.isAccessibilityHidden: ✅
+TextEditor.isVisible: ✅
+TextEditor.pivotX: ✅
+TextField.style: ✅
+TextField.translationX: ✅
+TimePicker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+VStack.frame: ✅
+VStack.scaleX: ✅
+WebView.accessibilityHeading: ✅
+ZStack.isVisible: ✅
+ZStack.pivotX: ✅

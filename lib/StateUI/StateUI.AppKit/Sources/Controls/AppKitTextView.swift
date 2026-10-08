@@ -17,7 +17,7 @@ enum AppKitVerticalTextAlignment: Int32, Equatable {
 @MainActor
 final class AppKitTextView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
     AppKitMeasurementCaching {
-    private let textField = NSTextField(labelWithString: "")
+    private let textField: NSTextField = AppKitLabel(labelWithString: "")
     let measurements = MeasurementCache()
 
     private(set) var padding = NSEdgeInsets()
@@ -166,4 +166,61 @@ final class AppKitTextView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
 
 }
 
+/// The label a Text draws in. One that wraps and shows every line draws from a layout of its words it keeps - laid
+/// out again only when its words or its width change - and draws only the lines a strip shows: AppKit draws a view
+/// strip by strip as a scroller uncovers it, and a label of its own lays the whole text out again for each strip.
+/// Design: docs/design/platforms/appkit/views.md#a-long-text
+@MainActor
+final class AppKitLabel: NSTextField {
+    private let words = NSTextStorage()
+    private let lines = NSLayoutManager()
+    private let room = NSTextContainer()
+
+    /// The words and the width the kept layout stands for; nil before the first.
+    private var laidOut: (text: NSAttributedString, width: CGFloat)?
+    private(set) var layoutsForTesting = 0
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        lines.addTextContainer(room)
+        words.addLayoutManager(lines)
+        // A label's cell sets its lines in this far from each side.
+        room.lineFragmentPadding = 2
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("AppKitLabel is made in code")
+    }
+
+    /// Whether the label draws from its kept layout: it wraps, and shows every line; a truncated one draws as its
+    /// cell does.
+    private var drawsKeptLayout: Bool {
+        maximumNumberOfLines == 0 && cell?.wraps == true
+            && (lineBreakMode == .byWordWrapping || lineBreakMode == .byCharWrapping)
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        guard drawsKeptLayout else { return super.draw(dirtyRect) }
+        keepLayout()
+        let shown = lines.glyphRange(forBoundingRect: dirtyRect, in: room)
+        lines.drawBackground(forGlyphRange: shown, at: .zero)
+        lines.drawGlyphs(forGlyphRange: shown, at: .zero)
+    }
+
+    /// Lays the words out for the label's width where they or the width changed since.
+    private func keepLayout() {
+        let text = attributedStringValue
+        if let laidOut, laidOut.width == bounds.width, laidOut.text.isEqual(to: text) { return }
+        laidOut = (text, bounds.width)
+        room.size = NSSize(width: bounds.width, height: .greatestFiniteMagnitude)
+        let coloured = NSMutableAttributedString(attributedString: text)
+        let whole = NSRange(location: 0, length: coloured.length)
+        coloured.enumerateAttribute(.foregroundColor, in: whole) { value, range, _ in
+            if value == nil { coloured.addAttribute(.foregroundColor, value: textColor ?? .labelColor, range: range) }
+        }
+        words.setAttributedString(coloured)
+        layoutsForTesting += 1
+    }
+}
 #endif

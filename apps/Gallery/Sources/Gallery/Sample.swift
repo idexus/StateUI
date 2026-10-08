@@ -93,7 +93,8 @@ extension SampleContent where Self: ExampleContent {
 /// at most one line saying what to try. Everything else is `notes`.
 protocol ExampleContent: View {
     /// The Swift that produced the example: its own code with the decoration
-    /// taken out, as a reader would write it.
+    /// taken out - the region of the running code marked
+    /// `// listing: <the example's name>`, unless the example says otherwise.
     static var code: String { get }
 
     /// The words about the example - what it shows and why - or `nil` where
@@ -130,11 +131,22 @@ protocol ExampleContent: View {
 }
 
 extension ExampleContent {
+    /// The listing marked with the example's own name (Listings.swift).
+    static var code: String { Listings.all[String(describing: Self.self)] ?? "" }
+
     /// Swift alone, which is what almost every example is.
     static var hostCode: HostCode { .nothing }
 
     /// What heads an example written in Swift alone.
     static var codeHeading: String { "In Swift" }
+}
+
+extension Listings {
+    /// The listings named, one after another - an example whose code stands in several files, or a part of a
+    /// file (a name with a dot) shown with the code around it.
+    static func joined(_ names: String...) -> String {
+        names.compactMap { all[$0] }.joined(separator: "\n\n")
+    }
 }
 
 /// What answers an example on the other side of the boundary: its host's
@@ -151,15 +163,32 @@ struct HostCode {
     /// Its listings, in the order the page shows them.
     let listings: [HostListing]
 
-    /// `host`'s half, written in `listings`.
-    init(in host: String, _ listings: HostListing...) {
+    /// `host`'s half, from the regions its sources mark - each name ending in its language,
+    /// `Cube3DSample.<Host>.metal`; names of one language one after another make one listing.
+    init(in host: String, marked names: String...) {
         self.host = host
+        var listings: [HostListing] = []
+        for name in names {
+            guard let language = CodeLanguage.allCases.first(where: { name.hasSuffix(".\($0)") }) else { continue }
+            let code = Listings.all[name] ?? ""
+            if let last = listings.last, last.language == language {
+                listings[listings.count - 1] = HostListing(language: language, code: last.code + "\n\n" + code)
+            } else {
+                listings.append(HostListing(language: language, code: code))
+            }
+        }
         self.listings = listings
     }
 
     /// No far side at all - what an example written in Swift alone has, and
     /// what the page draws nothing for.
-    static let nothing = HostCode(in: "")
+    static let nothing = HostCode(in: "", listings: [])
+
+    /// `host`'s half, in `listings` as they are.
+    init(in host: String, listings: [HostListing]) {
+        self.host = host
+        self.listings = listings
+    }
 
     /// The heading over `listing`: "In Android - Java".
     func heading(of listing: HostListing) -> String {
@@ -167,19 +196,11 @@ struct HostCode {
     }
 }
 
-/// One listing of a host's half: its language and its code, as its author
-/// wrote it.
+/// One listing of a host's half: its language and its code, cut from the
+/// host's own files.
 struct HostListing {
     let language: CodeLanguage
     let code: String
-
-    static func swift(_ code: String) -> Self { Self(language: .swift, code: code) }
-    static func java(_ code: String) -> Self { Self(language: .java, code: code) }
-    static func cpp(_ code: String) -> Self { Self(language: .cpp, code: code) }
-    static func metal(_ code: String) -> Self { Self(language: .metal, code: code) }
-    static func glsl(_ code: String) -> Self { Self(language: .glsl, code: code) }
-    static func javascript(_ code: String) -> Self { Self(language: .javascript, code: code) }
-    static func hlsl(_ code: String) -> Self { Self(language: .hlsl, code: code) }
 }
 
 /// One example as its page shows it: the view, the words about it, and its

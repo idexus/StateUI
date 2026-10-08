@@ -48,8 +48,11 @@ class UIKitLayoutView: UIView {
         for gone in self.items where gone.view.superview === self && !items.contains(where: { $0.view === gone.view }) {
             gone.view.removeFromSuperview()
         }
-        for (index, item) in items.enumerated() where item.view.superview !== self || subviews.firstIndex(of: item.view) != index {
-            insertSubview(item.view, at: index)
+        // The backdrop stands beneath the children.
+        let first = box.backdropView == nil ? 0 : 1
+        for (index, item) in items.enumerated()
+        where item.view.superview !== self || subviews.firstIndex(of: item.view) != first + index {
+            insertSubview(item.view, at: first + index)
         }
         self.items = items
         forgetMeasurements()
@@ -86,9 +89,10 @@ class UIKitLayoutView: UIView {
         laidOut?()
     }
 
-    /// The box's fill, its outline's stroke, its shape, and whether it cuts what the layout shows to that shape.
-    func setBox(fill: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?, clips: Bool) {
-        box.set(fill: fill, stroke: stroke, width: width, shape: shape, clips: clips)
+    /// The box's background, its outline's stroke, its shape, and whether it cuts what the layout shows to that
+    /// shape.
+    func setBox(background: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?, clips: Bool) {
+        box.set(background: background, stroke: stroke, width: width, shape: shape, clips: clips)
         box.paint(on: self)
     }
 

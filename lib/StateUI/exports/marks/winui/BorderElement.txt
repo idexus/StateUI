@@ -1,22 +1,28 @@
-# revision 1.1
+# revision 5.1
+Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
+Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 Grid.lineWidth: ✅
 Grid.shape: ✅
 Grid.stroke: ✅
+HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
 RadioButton.lineWidth: not realized
 RadioButton.shape: not realized
 RadioButton.stroke: not realized
+ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅
+ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 ZStack.lineWidth: ✅
 ZStack.shape: ✅
 ZStack.stroke: ✅

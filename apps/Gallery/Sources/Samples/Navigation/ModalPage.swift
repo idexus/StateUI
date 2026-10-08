@@ -1,5 +1,6 @@
 import StateUI
 
+// listing: ModalPage
 /// A page presented OVER everything - the bars, the menu and the stack alike.
 ///
 /// It carries its own way out because the modal presentation covers the page
@@ -24,15 +25,10 @@ struct ModalPage: View {
                 .horizontalTextAlignment(.center)
 
             Button("Close")
-                .background(Palette.accent)
-                .textColor(.white)
-                .shape(.roundedRectangle(8))
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { nav.dismiss() }
 
             Button("Present another")
-                .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { nav.present(.page) }
 
@@ -48,3 +44,4 @@ struct ModalPage: View {
         .galleryPage("Presented")
     }
 }
+// listing: end

@@ -29,8 +29,13 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
 
+        // Rounded as a field's bezel is, its words set in from the edge.
+        // Design: docs/design/platforms/appkit/registrations.md#a-background
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.borderType = .bezelBorder
+        scrollView.borderType = .noBorder
+        scrollView.wantsLayer = true
+        scrollView.layer?.cornerRadius = Self.cornerRadius
+        scrollView.layer?.masksToBounds = true
         scrollView.hasHorizontalScroller = false
         scrollView.hasVerticalScroller = true
         scrollView.autohidesScrollers = true
@@ -43,6 +48,7 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
         textView.isVerticallyResizable = true
         textView.autoresizingMask = [.width]
         textView.textContainer?.widthTracksTextView = true
+        textView.textContainerInset = Self.inset
         textView.textContainer?.containerSize = NSSize(
             width: 0,
             height: CGFloat.greatestFiniteMagnitude)
@@ -58,11 +64,17 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
             scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
             scrollView.topAnchor.constraint(equalTo: topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            placeholder.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
-            placeholder.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
-            placeholder.topAnchor.constraint(equalTo: topAnchor, constant: 7),
+            placeholder.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Self.inset.width + 3),
+            placeholder.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Self.inset.width - 3),
+            placeholder.topAnchor.constraint(equalTo: topAnchor, constant: Self.inset.height),
         ])
     }
+
+    /// The corners' radius, a rounded field's.
+    static let cornerRadius: CGFloat = 6
+
+    /// How far the words stand in from the editor's edge.
+    static let inset = NSSize(width: 4, height: 5)
 
     convenience init() {
         self.init(frame: .zero)
@@ -81,11 +93,11 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
     }
 
     /// The height of the words laid out at `width` - the editor's own where none is offered - a line at the least,
-    /// with the text's insets and the border around them.
+    /// with the text's insets around them.
     private func grownHeight(at width: CGFloat?) -> CGFloat {
         let font = textView.font ?? .systemFont(ofSize: NSFont.systemFontSize)
         let line = font.boundingRectForFont.height
-        let sides = (textView.textContainer?.lineFragmentPadding ?? 0) * 2 + textView.textContainerInset.width * 2 + 2
+        let sides = (textView.textContainer?.lineFragmentPadding ?? 0) * 2 + textView.textContainerInset.width * 2
         let room = (width ?? bounds.width) - sides
         let words = NSAttributedString(string: textView.string, attributes: [.font: font])
         let used = room > 0
@@ -93,7 +105,7 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
                 with: NSSize(width: room, height: .greatestFiniteMagnitude),
                 options: [.usesLineFragmentOrigin, .usesFontLeading]).height
             : line
-        return ceil(max(used, line) + textView.textContainerInset.height * 2 + 2)
+        return ceil(max(used, line) + textView.textContainerInset.height * 2)
     }
 
     func apply(
@@ -120,8 +132,10 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
         self.selectionLength = selectionLength
 
         textView.textColor = foregroundColor
+        // A colour with an alpha lets what lies behind the editor through.
         textView.backgroundColor = backgroundColor ?? .textBackgroundColor
         textView.drawsBackground = true
+        scrollView.drawsBackground = backgroundColor == nil
         textView.font = font
         textView.alignment = nativeAlignment(horizontalAlignment)
         textView.isEditable = enabled && !readOnly

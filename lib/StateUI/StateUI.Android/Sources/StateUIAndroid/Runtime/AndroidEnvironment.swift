@@ -11,9 +11,6 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/runtime.md#the-environment
 @MainActor
 enum AndroidEnvironment {
-    /// The smallest width, in density-independent pixels, from which a device is a tablet.
-    static let tabletWidth: Float = 600
-
     /// Tells `core` what the activity `activity` stands on, each group of facts read in one call; a context that
     /// is no activity - a test's - stands in the light theme alone.
     static func report(to core: CoreLink, activity: jobject) {
@@ -27,16 +24,11 @@ enum AndroidEnvironment {
             let display = floats(Java.callStaticObject(JavaAPI.environment, JavaAPI.displayFacts, .object(activity)))
             let application = Java.texts(
                 Java.callStaticObject(JavaAPI.environment, JavaAPI.applicationFacts, .object(activity)))
-            guard device.count == 5, display.count == 7, application.count == 4 else { return }
+            guard display.count == 7, application.count == 4, let device = HostDeviceInfo(
+                words: device, formFactor: .touchScreen(smallestWidth: Double(display[5])), platform: "Android")
+            else { return }
 
-            core.setDeviceInfo(HostDeviceInfo(
-                formFactor: display[5] >= tabletWidth ? .tablet : .phone,
-                platform: "Android",
-                model: device[0],
-                manufacturer: device[1],
-                name: device[2],
-                versionString: device[3],
-                deviceType: device[4] == "1" ? .virtual : .physical))
+            core.setDeviceInfo(device)
             core.setDisplayInfo(HostDisplayInfo(
                 width: Double(display[0]), height: Double(display[1]), density: Double(display[2]),
                 quarterTurns: Int(display[3]), refreshRate: Double(display[4])))
@@ -44,6 +36,10 @@ enum AndroidEnvironment {
                 name: application[0], packageName: application[1],
                 versionString: application[2], buildString: application[3]))
             core.setColorScheme(display[6] == 1 ? .dark : .light)
+            let accent = UInt32(bitPattern: Java.callStaticInt(JavaAPI.environment, JavaAPI.accent, .object(activity)))
+            core.setAccentColor(Color(
+                red: Int(accent >> 16 & 255), green: Int(accent >> 8 & 255), blue: Int(accent & 255),
+                alpha: Int(accent >> 24 & 255)))
         }
     }
 
@@ -51,14 +47,7 @@ enum AndroidEnvironment {
     static func reportChanging(to core: CoreLink, context: jobject) {
         Java.frame {
             let locale = Java.texts(Java.callStaticObject(JavaAPI.environment, JavaAPI.localeFacts, .object(context)))
-            if locale.count == 8 {
-                core.setLocaleInfo(HostLocaleInfo(
-                    language: locale[0], region: locale[1], name: locale[2], timeZone: locale[3],
-                    uses24HourClock: locale[4] == "1",
-                    firstDayOfWeek: Weekday(rawValue: (Int32(locale[5]) ?? 1) - 1) ?? .sunday,
-                    isMetric: locale[6] == "1",
-                    layoutDirection: locale[7] == "1" ? .rightToLeft : .leftToRight))
-            }
+            if let locale = HostLocaleInfo(words: locale) { core.setLocaleInfo(locale) }
 
             let battery = floats(Java.callStaticObject(JavaAPI.environment, JavaAPI.batteryFacts, .object(context)))
             if battery.count == 4 { core.setBatteryInfo(batteryInfo(battery)) }
@@ -66,18 +55,7 @@ enum AndroidEnvironment {
             let network = integers(
                 Java.callStaticObject(JavaAPI.environment, JavaAPI.connectivityFacts, .object(context)))
             if network.count == 2 {
-                let access: NetworkAccess = switch network[0] {
-                case 1: .none
-                case 2: .local
-                case 3: .constrainedInternet
-                case 4: .internet
-                default: .unknown
-                }
-                let kinds: [(bit: Int32, profile: ConnectionProfile)] = [
-                    (1, .bluetooth), (2, .cellular), (4, .ethernet), (8, .wifi),
-                ]
-                core.setConnectivityInfo(HostConnectivityInfo(
-                    networkAccess: access, connectionProfiles: kinds.filter { network[1] & $0.bit != 0 }.map(\.profile)))
+                core.setConnectivityInfo(HostConnectivityInfo(access: network[0], connections: network[1]))
             }
         }
     }

@@ -29,6 +29,16 @@ final class GTKSplitView: GTKLayoutView {
     private(set) var sidebarFrame: GTKPageFrame?
     private(set) var detailFrame: GTKPageFrame?
 
+    /// The colours the sidebar stands on beside the detail and over it, as the split view says them; nil for
+    /// libadwaita's own sidebar.
+    var grounds: (beside: GdkRGBA?, over: GdkRGBA?) = (nil, nil) {
+        didSet { ground() }
+    }
+
+    /// The fill class the sidebar's widget wears, and the class the split wears for its sidebar's pane.
+    private var groundClass: String?
+    private var paneClass: String?
+
     private let split = GTKWidgetView { adw_overlay_split_view_new() }
     private var panes: [GTKView] = []
     private var adapted = false
@@ -45,6 +55,9 @@ final class GTKSplitView: GTKLayoutView {
         connectNotify(UnsafeMutableRawPointer(split.widget), "show-sidebar", number: number) { _, _, data in
             MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKSplitView)?.sidebarMoved() }
         }
+        connectNotify(UnsafeMutableRawPointer(split.widget), "collapsed", number: number) { _, _, data in
+            MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKSplitView)?.ground() }
+        }
     }
 
     private var native: OpaquePointer { split.widget.opaque }
@@ -57,14 +70,40 @@ final class GTKSplitView: GTKLayoutView {
 
         panes = views
         for view in views { view.placingLayout = nil }
+        unground()
         sidebarFrame = frame(views.first, framed: framedPanes.first == true, keeping: sidebarFrame)
         detailFrame = frame(views.dropFirst().first, framed: framedPanes.dropFirst().first == true, keeping: detailFrame)
         adw_overlay_split_view_set_sidebar(native, sidebarFrame?.widget ?? views.first?.widget)
         adw_overlay_split_view_set_content(native, detailFrame?.widget ?? views.dropFirst().first?.widget)
+        ground()
         keepTheClosedSidebarOutOfReach()
         invalidateMeasurements()
         return true
     }
+
+    /// Stands the sidebar on the split view's colour for its place - over the detail where the split is collapsed,
+    /// beside it otherwise - or on libadwaita's own sidebar.
+    /// Design: docs/design/host/pages.md#a-sidebars-material
+    private func ground() {
+        // Beside the page the pane lets the window through, as a desktop sidebar does; over it, libadwaita's own.
+        swapClass(&paneClass, to: isCollapsed ? nil : GTKStyleSheet.sidebarBeside(shaded: grounds.beside == nil),
+                  on: split.widget)
+        guard let sidebar = adw_overlay_split_view_get_sidebar(native) else { return }
+        let colour = isCollapsed ? grounds.over : grounds.beside
+        swapClass(&groundClass, to: colour.map(GTKStyleSheet.fill), on: sidebar)
+    }
+
+    /// Takes the fill class off the sidebar's widget, while it still stands in the split.
+    private func unground() {
+        guard let sidebar = adw_overlay_split_view_get_sidebar(native) else { return }
+        swapClass(&groundClass, to: nil, on: sidebar)
+    }
+
+    /// The split's own widget, which wears its sidebar's pane.
+    var splitWidgetForTesting: GTKWidget { split.widget }
+
+    /// The sidebar's widget, which wears its ground.
+    var sidebarWidgetForTesting: GTKWidget? { adw_overlay_split_view_get_sidebar(native) }
 
     /// A closed sidebar takes no focus and is read by nobody: libadwaita slides it past the split's edge and keeps it
     /// shown there, where Tab and a screen reader would still reach what it holds.

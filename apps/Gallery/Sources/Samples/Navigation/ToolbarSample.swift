@@ -2,6 +2,7 @@ import StateUI
 
 /// Page-owned native toolbar and menu items.
 struct ToolbarSample: SampleContent, ExampleContent {
+    // listing: ToolbarSample
     @State private var saved = 0
     @State private var recent = ["notes.txt", "budget.csv"]
 
@@ -21,99 +22,17 @@ struct ToolbarSample: SampleContent, ExampleContent {
 
     /// Whether Add shows its words beside its picture on the bar.
     @State private var addWords = false
+    // listing: end
 
     static let id = "toolbar"
     static let title = "Toolbar and menus"
     static let summary = "Buttons in the navigation bar, and the desktop menu bar above it."
 
-    static let code = """
-        @State private var saved = 0
-        @State private var recent = ["notes.txt", "budget.csv"]
-        @State private var added = 0
-        @State private var afterGallery = false
-        @State private var inGallery = false
-        @State private var atLeading = false
-        @State private var addWords = false
-
-        var body: some View {
-            VStack {
-                // The counts are read here, so every toolbar item that acts
-                // builds this closure.
-                DebugInfoLabel()
-
-                Text("Saved \\(saved) time(s)")
-                Text(recent.isEmpty ? "No recent files" : recent.joined(separator: ", "))
-
-                HStack {
-                    Switch($afterGallery)
-                    Text("After the gallery's actions")
-                }
-                HStack {
-                    Switch($inGallery)
-                    Text("In the gallery's group")
-                }
-                HStack {
-                    Switch($atLeading)
-                    Text("At the leading edge")
-                }
-                HStack {
-                    Switch($addWords)
-                    Text("Add's words beside its picture")
-                }
-            }
-            // The page's actions, declared where their state lives: they
-            // follow it as the body builds, with nothing written by hand.
-            .toolbar(
-                atLeading ? .leading : .trailing,
-                id: inGallery ? "gallery" : "sample",
-                order: afterGallery ? 1 : 0
-            ) {
-                ToolbarItem("Save")
-                    .id("save")
-                    .onClicked { saved += 1 }
-
-                // A picture alone, unless it asks for its words beside it.
-                ToolbarItem("Add")
-                    .id("add")
-                    .icon("menu_duplicate_dark.png")
-                    .showsText(addWords)
-                    .onClicked {
-                        added += 1
-                        recent.append("file\\(added).txt")
-                    }
-
-                ToolbarItem("Clear")
-                    .id("clear")
-                    .placement(.overflow)
-                    .isDestructive(true)
-                    .isEnabled(saved > 0)
-                    .onClicked { saved = 0 }
-            }
-            // The desktop File menu: Save, and the recent files following the
-            // state they list.
-            .menuBar {
-                Menu("File") {
-                    MenuItem("Save")
-                        .id("save")
-                        .onClicked { saved += 1 }
-
-                    Menu("Recent") {
-                        recent.map { file in
-                            MenuItem(file)
-                                .id(file)
-                                .onClicked { recent.removeAll { $0 == file } }
-                        }
-                    }
-                    .id("recent")
-                    .isEnabled(!recent.isEmpty)
-                }
-                .id(StandardMenu.file)
-            }
-        }
-        """
-
+    // listing: ToolbarSample
     var body: some View {
         VStack {
+            // The counts are read here, so every toolbar item that acts
+            // builds this closure.
             DebugInfoLabel()
 
             Text("Saved \(saved) time(s)")
@@ -146,11 +65,10 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .id("save")
                 .onClicked { saved += 1 }
 
-            // A picture alone, unless it asks for its words beside it. The
-            // white one reads on the accent bar in both themes.
+            // A picture alone, unless it asks for its words beside it.
             ToolbarItem("Add")
                 .id("add")
-                .icon("menu_duplicate_dark.png")
+                .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
                 .showsText(addWords)
                 .onClicked {
                     added += 1
@@ -199,6 +117,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
         }
         .spacing(10)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -219,8 +138,8 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("Recent files live in the desktop File menu, after Save: "
-                + "Add puts one there, choosing one removes it, and an empty submenu disables "
-                + "itself.")
+                + "Add puts one there, choosing one removes it, and the submenu is disabled "
+                + "while it is empty.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

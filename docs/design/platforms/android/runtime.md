@@ -83,7 +83,10 @@ version - the name its user gave it in Settings, which tells one terminal of
 a model from another, else the model's code name; the display's
 size in pixels, its density, rotation and refresh rate; the application's
 name, package and version. A device whose smallest width is 600
-density-independent pixels or more is a tablet, any other a phone. The
+density-independent pixels or more is a tablet, any other a phone - the host
+layer's rule for every touch screen, the Web's too. The relay hands the
+device, the locale and the network as the words and numbers the host layer
+reads for every relay ([The environment](../../host/runtime.md#the-environment)). The
 system's dark or light theme is read with them, and the activity is made in
 the matching one: a change of theme makes Android create the activity again,
 and the new one takes the scene over, its controls drawn in the new theme.
@@ -106,8 +109,9 @@ rendered before the next is heard, and a window shown again after it stopped
 resumed on its way to active. The window hears it was made as the host layer
 shows it, once; and it is going, and its scene that it closed, only when the
 activity finishes, not when Android makes the activity again for a new
-configuration. The window's title is the activity's, and the label its task
-shows among the recent ones.
+configuration. The window's title - the visible page's that names it, else
+the window's own, as the host layer's chrome says it - is the activity's, and
+the label its task shows among the recent ones.
 
 ## Acts
 
@@ -123,6 +127,25 @@ dismissed any other way answers that it was not accepted. A script run in a
 web view waits the same way, until the page answers. A ticket is one number
 across the process, so an answer that arrives after its renderer has gone
 answers nothing of another's.
+
+## Files
+
+A file dialog is the system's document picker, started for its result over
+the activity and waiting its turn among the questions
+([files](../../host/runtime.md#files)); the activity hands its result to the
+relay by the request's code, and the picker answers under its ticket. One
+that opens asks for the MIME types of every kind's extensions - any document
+where none is known - and several only where asked; one that saves suggests
+the act's name and the type of its extension, and the contents are written
+to the document the user made, beside the UI thread, before it is answered.
+A document's address is its `content:` URI and its name the one its provider
+shows; the leave to read it lasts while the application runs. A document is
+read beside the UI thread; every answer comes back on it.
+
+A document is launched by a view intent with leave to read it, an address by
+a view intent of its own; each answers whether an application took it. A
+test holds the picker and the launches back in the relay, which records
+them.
 
 ## The application's own acts
 

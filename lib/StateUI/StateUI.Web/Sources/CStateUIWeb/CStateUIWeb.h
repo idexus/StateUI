@@ -59,9 +59,6 @@ STATEUI_WEB(read_number) double stateui_web_read_number(int32_t element, const c
 /// Selects `length` UTF-16 units of a field's words from `start`, its caret there where `length` is 0.
 STATEUI_WEB(select) void stateui_web_select(int32_t element, int32_t start, int32_t length);
 
-/// Steps a number field `by` steps, up or down, within its range - its own `stepUp`.
-STATEUI_WEB(step) void stateui_web_step(int32_t element, int32_t by);
-
 /// Reads what a field holds into the relay and answers its length; `copy_read` copies it out.
 STATEUI_WEB(read_value) int32_t stateui_web_read_value(int32_t element);
 
@@ -93,8 +90,9 @@ STATEUI_WEB(show_popover) void stateui_web_show_popover(
 STATEUI_WEB(hide_popover) void stateui_web_hide_popover(int32_t element);
 
 /// The `<iframe>` shows the address `words` for `kind` 0, or for 1 the document `words`, its links resolved against
-/// `base` where one is given.
-STATEUI_WEB(frame_show) void stateui_web_frame_show(
+/// `base` where one is given - at an address of the page's own made for it, read as `read_value` is: its length,
+/// then `copy_read`; 0 for an address shown.
+STATEUI_WEB(frame_show) int32_t stateui_web_frame_show(
     int32_t element, int32_t kind, const char *words, int32_t length, const char *base, int32_t baseLength);
 
 /// What the page can know of the frame's document: 1 it is of the page's own site, 2 it can go back, 4 forward.
@@ -115,6 +113,11 @@ STATEUI_WEB(frame_evaluate) int32_t stateui_web_frame_evaluate(int32_t element, 
 STATEUI_WEB(push_history) void stateui_web_push_history(void);
 STATEUI_WEB(back_history) int32_t stateui_web_back_history(void);
 STATEUI_WEB(listen_history) void stateui_web_listen_history(int32_t listener);
+
+/// What the page stands as: 1 its tab shows, 2 it holds the keyboard; `listen_page` calls `changed` once as the
+/// page starts and again as either changes, and `leaving` as the browser leaves the page.
+STATEUI_WEB(page_state) int32_t stateui_web_page_state(void);
+STATEUI_WEB(listen_page) void stateui_web_listen_page(int32_t changed, int32_t leaving);
 
 /// Calls the act `name` of the application's own scripts - `StateUI.acts` - with the words, and `listener` once its
 /// promise settles: the event's number 0 is 1 kept, 0 broken, and `script_words` reads what it gave, or why.
@@ -179,6 +182,8 @@ STATEUI_WEB(now) double stateui_web_now(void);
 
 /// Whether the user's system is in its dark appearance; `listen_appearance` calls `listener` when it turns.
 STATEUI_WEB(prefers_dark) int32_t stateui_web_prefers_dark(void);
+STATEUI_WEB(use_color_scheme) void stateui_web_use_color_scheme(int32_t scheme);
+STATEUI_WEB(accent_color) int32_t stateui_web_accent_color(void);
 STATEUI_WEB(listen_appearance) void stateui_web_listen_appearance(int32_t listener);
 
 /// The smallest width of the screen in CSS pixels where its user points by touch; 0 where by a mouse or a pen.
@@ -191,6 +196,37 @@ STATEUI_WEB(reduces_motion) int32_t stateui_web_reduces_motion(void);
 /// numbers of operations (WebCanvasStroke.swift), and the words they write, each ended by a zero byte.
 STATEUI_WEB(draw_canvas) void stateui_web_draw_canvas(
     int32_t element, const double *numbers, int32_t count, const char *words, int32_t length);
+
+/// One file to open, or several, of the extensions `accept` lists (".txt,.md"), any where it lists none; `listener`
+/// hears the answer once: event 1 kept, 0 broken, and `file_words` reads each file chosen - its number, then its
+/// name - or why it broke.
+STATEUI_WEB(open_files) void stateui_web_open_files(
+    int32_t several, const char *accept, int32_t length, int32_t listener);
+
+/// A place to save `contents` in, `name` suggested and the kinds offered - each its caption, then its extensions
+/// apart by spaces - answered as `open_files` answers: the file saved, none where the user cancelled.
+STATEUI_WEB(save_file) void stateui_web_save_file(
+    const char *name, int32_t nameLength, const char *kinds, int32_t kindsLength,
+    const uint8_t *contents, int32_t length, int32_t listener);
+
+/// Reads the file whole: `listener` hears event 1 and its length, its bytes read by `copy_read` - or 0 and why.
+STATEUI_WEB(read_file) void stateui_web_read_file(int32_t file, int32_t maximum, int32_t listener);
+
+/// What a file's act answered last, read by `copy_read`: its length.
+STATEUI_WEB(file_words) int32_t stateui_web_file_words(void);
+
+/// Opens the file, or the address, in a window of its own; `listener` hears event 1 where the browser opened one.
+STATEUI_WEB(launch_file) void stateui_web_launch_file(int32_t file, int32_t listener);
+STATEUI_WEB(launch_address) void stateui_web_launch_address(const char *address, int32_t length, int32_t listener);
+
+/// The element's drags: it carries the words as plain text where `draggable`, takes a drag of plain text where `takes`
+/// and of files from the system where `files`; `listener` hears event 0 started, 1 ended, 2 over, 3 left, 4 dropped
+/// words, 5 dropped files - the words, or the files as `file_words` says them, read by `drag_words`, their length,
+/// then `copy_read`.
+STATEUI_WEB(offer_drag) void stateui_web_offer_drag(
+    int32_t element, const char *words, int32_t length, int32_t draggable, int32_t takes, int32_t files,
+    int32_t listener);
+STATEUI_WEB(drag_words) int32_t stateui_web_drag_words(void);
 
 /// The local time of day into `into`: hour, minute, second, millisecond.
 STATEUI_WEB(local_time) void stateui_web_local_time(double *into);

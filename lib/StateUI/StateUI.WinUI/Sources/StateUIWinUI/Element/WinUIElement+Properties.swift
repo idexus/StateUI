@@ -58,10 +58,7 @@ extension WinUIElement {
             return
         }
 
-        let taken = WinUIRegistrations.registry.apply(
-            changed, to: view, of: type,
-            reading: { [element] in element.value($0) },
-            carriedIn: { [element] in element.driven[$0]?.mode == .in })
+        let taken = WinUIRegistrations.registry.apply(changed, to: view, presenting: element)
         if view.replacedNative {
             // Another native element stands in the view's place: it takes every value the element holds.
             view.replacedNative = false
@@ -74,10 +71,11 @@ extension WinUIElement {
             switch property {
             case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
             case .isVisible: view.setShown(isShown)
+            case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
             // Ignored, the view and all in it are passed over: a click goes to what is under it.
             case .ignoresInput: view.setIgnoresInput(element.bool(.ignoresInput) == true)
             case .background:
-                (view as? WinUILayoutView)?.setBackground(value(.background))
+                view.setBackground(HostMaterial(value(.background)).painted)
                 (parent?.view as? WinUISplitView)?.paintPane()
             default: break
             }

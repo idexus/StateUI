@@ -1,37 +1,37 @@
-# revision 1.1
+# revision 2.1
 SearchField.cursorPosition: ✅
-SearchField.inputPurpose: cannot read inputPurpose of SearchField - the Web's driver has no path for it yet
+SearchField.inputPurpose: ✅
 SearchField.isEnabled: ✅
 SearchField.isReadOnly: ✅
 SearchField.isSpellCheckEnabled: ✅
 SearchField.isTextPredictionEnabled: ✅
-SearchField.maximumLength: ◐ cannot read maximumLength of SearchField - the Web's driver has no path for it yet
+SearchField.maximumLength: ✅
 SearchField.placeholder: ✅
-SearchField.placeholderColor: ❌ Color(light: StateUI.Color.Rgba(red: 255, green: 0, blue: 0, alpha: 255), dark: nil) expected, Color(light: StateUI.Color.Rgba(red: 236, green: 238, blue: 242, alpha: 255), dark: nil) came - the value the tree gave
+SearchField.placeholderColor: ✅
 SearchField.selectionLength: ✅
 SearchField.text: ✅
 SearchField.textChanged: ✅
 TextEditor.cursorPosition: ✅
-TextEditor.inputPurpose: cannot read inputPurpose of TextEditor - the Web's driver has no path for it yet
+TextEditor.inputPurpose: ✅
 TextEditor.isEnabled: ✅
 TextEditor.isReadOnly: ✅
 TextEditor.isSpellCheckEnabled: ✅
 TextEditor.isTextPredictionEnabled: ✅
-TextEditor.maximumLength: ◐ cannot read maximumLength of TextEditor - the Web's driver has no path for it yet
+TextEditor.maximumLength: ✅
 TextEditor.placeholder: ✅
-TextEditor.placeholderColor: ❌ Color(light: StateUI.Color.Rgba(red: 255, green: 0, blue: 0, alpha: 255), dark: nil) expected, Color(light: StateUI.Color.Rgba(red: 236, green: 238, blue: 242, alpha: 255), dark: nil) came - the value the tree gave
+TextEditor.placeholderColor: ✅
 TextEditor.selectionLength: ✅
 TextEditor.text: ✅
 TextEditor.textChanged: ✅
 TextField.cursorPosition: ✅
-TextField.inputPurpose: cannot read inputPurpose of TextField - the Web's driver has no path for it yet
+TextField.inputPurpose: ✅
 TextField.isEnabled: ✅
 TextField.isReadOnly: ✅
 TextField.isSpellCheckEnabled: ✅
 TextField.isTextPredictionEnabled: ✅
-TextField.maximumLength: ◐ cannot read maximumLength of TextField - the Web's driver has no path for it yet
+TextField.maximumLength: ✅
 TextField.placeholder: ✅
-TextField.placeholderColor: ❌ Color(light: StateUI.Color.Rgba(red: 255, green: 0, blue: 0, alpha: 255), dark: nil) expected, Color(light: StateUI.Color.Rgba(red: 236, green: 238, blue: 242, alpha: 255), dark: nil) came - the value the tree gave
+TextField.placeholderColor: ✅
 TextField.selectionLength: ✅
 TextField.text: ✅
 TextField.textChanged: ✅

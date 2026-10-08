@@ -9,7 +9,6 @@ Button
   icon
   iconPosition
   iconSpacing
-  isEnabled
   lineBreak
   lineWidth
   padding
@@ -28,15 +27,14 @@ Canvas
   pressed()
   released()
 CheckBox
-  isEnabled
   isOn
+  tint
   toggled()
 ColorBox
   color
   cornerRadius
 DatePicker
   date
-  isEnabled
   maximumDate
   minimumDate
   dateChanged()
@@ -128,10 +126,15 @@ Path
   miterLimit
   stroke
 Picker
-  isEnabled
+  fontAttributes
+  fontFamily
+  fontSize
+  horizontalTextAlignment
   options
   placeholder
   selectedIndex
+  textColor
+  tint
   closed()
   opened()
   selectedIndexChanged()
@@ -168,7 +171,6 @@ RadioButton
   fontAttributes
   fontFamily
   fontSize
-  isEnabled
   isOn
   padding
   text
@@ -207,7 +209,6 @@ SearchField
   fontSize
   horizontalTextAlignment
   inputPurpose
-  isEnabled
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled
@@ -222,7 +223,6 @@ SearchField
   submitted()
   textChanged()
 Slider
-  isEnabled
   maximum
   minimum
   tint
@@ -231,15 +231,14 @@ Slider
   released()
   valueChanged()
 Stepper
-  isEnabled
   maximum
   minimum
   step
   value
   valueChanged()
 Switch
-  isEnabled
   isOn
+  tint
   toggled()
 Text
   background
@@ -247,7 +246,6 @@ Text
   fontFamily
   fontSize
   horizontalTextAlignment
-  isEnabled
   lineBreak
   lineHeight
   maximumLines
@@ -266,7 +264,6 @@ TextEditor
   growsWithText
   horizontalTextAlignment
   inputPurpose
-  isEnabled
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled
@@ -285,7 +282,6 @@ TextField
   fontSize
   horizontalTextAlignment
   inputPurpose
-  isEnabled
   isPassword
   isReadOnly
   isSpellCheckEnabled
@@ -302,7 +298,6 @@ TextField
   submitted()
   textChanged()
 TimePicker
-  isEnabled
   time
   timeChanged()
 VStack
@@ -335,8 +330,12 @@ ZStack
   accessibilityHint
   accessibilityIdentifier
   accessibilityLabel
+  allowsDrop
   area
   automationExcludedWithChildren
+  canDrag
+  dragText
+  droppedFileTypes
   frame
   gridColumn
   gridColumnSpan
@@ -345,6 +344,7 @@ ZStack
   height
   horizontalAlignment
   isAccessibilityHidden
+  isEnabled
   isVisible
   margin
   maximumHeight
@@ -370,6 +370,13 @@ ZStack
   translationY
   verticalAlignment
   width
+  zIndex
+  dragEnded()
+  dragLeave()
+  dragOver()
+  dragStarting()
+  drop()
+  filesDropped()
   frameChanged()
   isFocusedChanged()
   panUpdated()
@@ -394,11 +401,17 @@ ZStack
   goForward()
   handlerFailed()
   hideOnScreenKeyboard()
+  launchFile()
+  launchLink()
   moveToRegion()
+  openFiles()
   persistSceneValue()
   persistValue()
   prompt()
+  readFile()
   reload()
+  saveFile()
   scrollTo()
   unfocus()
+  useColorScheme()
   utcOffset()

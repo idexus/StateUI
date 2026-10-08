@@ -26,6 +26,21 @@ extension TextLook {
         }
         return attributes
     }
+
+    /// The look as a button's title takes it: its font, the space between its letters, and its colour where it says
+    /// one - the button's own where it says none.
+    func titleTransformer(standing font: UIFont, color standingColor: UIColor) -> UIConfigurationTextAttributesTransformer {
+        let attributes = attributes(standing: font, color: standingColor)
+        // The configuration keeps the transformer: it holds the look's values, never the button that holds it.
+        let colored = color != nil
+        return UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming
+            outgoing.font = attributes[.font] as? UIFont
+            if colored { outgoing.foregroundColor = attributes[.foregroundColor] as? UIColor }
+            if let kern = attributes[.kern] as? Double { outgoing.uiKit.kern = kern }
+            return outgoing
+        }
+    }
 }
 
 extension UIEdgeInsets {

@@ -18,7 +18,8 @@ extension GTKDriver {
         return controller.window
     }
 
-    /// What the window of `element` holds of `property`: its title, the size it asks of the desktop, its smallest.
+    /// What the window of `element` holds of `property`: its title, the size it asks of the desktop, its smallest,
+    /// what it shows behind its pages.
     func windowHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
         let window = try window(of: element)
         var size: (width: Int32, height: Int32) = (0, 0)
@@ -29,6 +30,7 @@ extension GTKDriver {
             gtk_window_get_default_size(window.widget.of(GtkWindow.self), &size.width, &size.height)
             return Double(property == .width ? size.width : size.height).propValue
         case .isVisible: return (gtk_widget_get_visible(window.widget) != 0).propValue
+        case .background: return Self.fill(of: window.widget).map { StandIns.material(painted: $0).propValue }
         case .windowType, .windowValue: return try recorded(property, on: element, view: nil) ?? nil
         case .minimumWidth, .minimumHeight:
             gtk_widget_get_size_request(window.widget, &size.width, &size.height)

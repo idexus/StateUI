@@ -24,6 +24,7 @@ final class UIKitElement: NativeElement {
 
     /// What the view listens for of the user's input, while it listens for anything.
     var listening: UIKitListening?
+    var dragAndDrop: UIKitDragAndDrop?
 
     /// Whether the view held the focus when the element last said so.
     var reportedFocus: Bool?
@@ -99,6 +100,10 @@ final class UIKitElement: NativeElement {
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
+        if !changed.isDisjoint(with: MountedElement.sidebarMaterials), let split = controller as? UIKitSplitViewController {
+            split.paintsSidebar = element.paintsSidebar
+            split.showPageBackgrounds()
+        }
         // A tab bar takes the bars' colours itself; the window's controller shows the rest of the chrome again.
         if !changed.isDisjoint(with: Self.barColors) {
             let colors = element.barColors
@@ -112,6 +117,8 @@ final class UIKitElement: NativeElement {
         host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: false)
         listening?.detach()
         listening = nil
+        dragAndDrop?.detach()
+        dragAndDrop = nil
         releasePages()
     }
 

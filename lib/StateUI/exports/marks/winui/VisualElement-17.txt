@@ -1,81 +1,60 @@
-# revision 1.1
-ActivityIndicator.pivotX: ✅
-Button.focus: ✅
-Button.isFocusedChanged: ✅
-Button.translationY: ✅
-Button.unfocus: ✅
-Canvas.pivotX: ✅
-CheckBox.focus: ✅
-CheckBox.isFocusedChanged: ✅
-CheckBox.translationY: ✅
-CheckBox.unfocus: ✅
-ColorBox.pivotX: ✅
-DatePicker.focus: ✅
-DatePicker.isFocusedChanged: ✅
-DatePicker.translationY: ✅
-DatePicker.unfocus: ✅
-Ellipse.pivotX: ✅
-Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
-Grid.isFocusedChanged: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
-Grid.translationY: ✅
-Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
-HStack.pivotX: ✅
+# revision 7.1
+ActivityIndicator.background: – WinUI's progress ring paints its Background as its track, no ground under its frame.
+Button.ignoresInput: ✅
+Button.scale: ✅
+Canvas.accessibilityHeading: ✅
+CheckBox.frameChanged: ✅
+CheckBox.height: ✅
+CheckBox.rotationX: ✓ read rotationX of CheckBox: the host's own tip, checked against the projection it laid on the element
+CheckBox.width: ✅
+ColorBox.accessibilityLabel: ✅
+DatePicker.isVisible: ✅
+DatePicker.pivotX: ✅
+Ellipse.style: ✅
+Ellipse.translationX: ✅
+Grid.automationExcludedWithChildren: ✅
+HStack.isEnabled: does not apply - read isEnabled of HStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+HStack.rotation: ✅
 Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
-Image.translationY: ✅
+Image.scaleY: ✅
 Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
-ItemsView.pivotX: ✅
-Line.pivotX: ✅
-Map.focus: 🧩
-Map.isFocusedChanged: 🧩
-Map.translationY: 🧩
-Map.unfocus: 🧩
-Path.pivotX: ✅
-Picker.focus: ✅
-Picker.isFocusedChanged: ✅
-Picker.translationY: ✅
-Picker.unfocus: ✅
-Polygon.pivotX: ✅
-Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-Polyline.translationY: ✅
-Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-ProgressBar.pivotX: ✅
-RadioButton.focus: ✅
-RadioButton.isFocusedChanged: ✅
-RadioButton.translationY: ✅
-RadioButton.unfocus: ✅
-Rectangle.pivotX: ✅
-ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-ScrollView.translationY: ✅
-ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-SearchField.pivotX: ✅
-Slider.focus: ✅
-Slider.isFocusedChanged: ✅
-Slider.translationY: ✅
-Slider.unfocus: ✅
-Stepper.pivotX: ✅
-Switch.focus: ✅
-Switch.isFocusedChanged: ✅
-Switch.translationY: ✅
-Switch.unfocus: ✅
-Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
-Text.isFocusedChanged: – Text takes no keyboard focus here: it refuses it, and nothing is heard
-Text.translationY: ✅
-Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
-TextEditor.pivotX: ✅
-TextField.focus: ✅
-TextField.isFocusedChanged: ✅
-TextField.translationY: ✅
-TextField.unfocus: ✅
-TimePicker.pivotX: ✅
-VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-VStack.translationY: ✅
-VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+ItemsView.isAccessibilityHidden: ✅
+Line.accessibilityLabel: ✅
+Map.isVisible: 🧩
+Map.pivotX: 🧩
+Path.style: ✅
+Path.translationX: ✅
+Picker.automationExcludedWithChildren: ✅
+Polygon.ignoresInput: ✅
+Polygon.scale: ✅
+Polyline.accessibilityHint: ✅
+ProgressBar.opacity: ✅
+ProgressBar.pivotY: ✅
+RadioButton.style: ✅
+RadioButton.translationX: ✅
+Rectangle.background: – A WinUI shape is its figure alone: it paints no ground around it.
+ScrollView.ignoresInput: ✅
+ScrollView.scale: ✅
+SearchField.accessibilityHint: ✅
+Slider.isEnabled: ✅
+Slider.rotation: ✅
+Stepper.accessibilityHeading: ✅
+Switch.isVisible: ✅
+Switch.pivotX: ✅
+Text.frameChanged: ✅
+Text.maximumHeight: ✅
+Text.maximumWidth: ✅
+Text.minimumHeight: ✅
+Text.minimumWidth: ✅
+Text.rotationY: ✓ read rotationY of Text: the host's own tip, checked against the projection it laid on the element
+TextEditor.style: ✅
+TextEditor.translationX: ✅
+TextField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+TimePicker.frame: ✅
+TimePicker.scaleX: ✅
+VStack.isAccessibilityHidden: ✅
+WebView.isVisible: ✅
 WebView.pivotX: ✅
-ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
-ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
-ZStack.translationY: ✅
-ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
+ZStack.style: ✅
+ZStack.translationX: ✅

@@ -6,71 +6,7 @@ struct ImageSample: SampleContent, ExampleContent {
     static let title = "Image"
     static let summary = "A picture from the app's resources, asked for by name."
 
-    static let code = """
-        VStack {
-            HStack {
-                Image(light: "nav_home.png", dark: "nav_home_dark.png")
-                    .width(48)
-                    .height(48)
-
-                Image(light: "nav_layout.png", dark: "nav_layout_dark.png")
-                    .width(48)
-                    .height(48)
-
-                Image(light: "nav_input.png", dark: "nav_input_dark.png")
-                    .width(48)
-                    .height(48)
-
-                Image(light: "nav_shell.png", dark: "nav_shell_dark.png")
-                    .width(48)
-                    .height(48)
-            }
-
-            // The same square picture in the same wide box, so the only thing
-            // between the two is the aspect: fit keeps the whole picture and
-            // leaves room, fill covers the box and crops.
-            HStack {
-                VStack {
-                    Image(light: "nav_media.png", dark: "nav_media_dark.png")
-                        .contentMode(.fit)
-                        .width(120)
-                        .height(60)
-
-                    Text(".contentMode(.fit)")
-                }
-
-                VStack {
-                    Image(light: "nav_media.png", dark: "nav_media_dark.png")
-                        .contentMode(.fill)
-                        .width(120)
-                        .height(60)
-
-                    Text(".contentMode(.fill)")
-                }
-            }
-
-            // The same shape drawn black, and drawn once per theme. An Image
-            // has no tint, so what changes is the SOURCE.
-            HStack {
-                Image("nav_gestures.png")
-                    .width(32)
-                    .height(32)
-
-                Text("black artwork, always")
-                    .verticalAlignment(.center)
-            }
-
-            HStack {
-                Image(light: "nav_gestures.png", dark: "nav_gestures_dark.png")
-                    .width(32)
-                    .height(32)
-
-                Text("one per theme - switch the system between light and dark")
-                    .verticalAlignment(.center)
-            }
-        }
-        """
-
+    // listing: ImageSample
     var body: some View {
         VStack {
             HStack {
@@ -93,17 +29,17 @@ struct ImageSample: SampleContent, ExampleContent {
             .spacing(16)
             .horizontalAlignment(.center)
 
-            SectionTitle("Fit or fill")
+            SectionTitle("Fit, fill or stretch")
 
-            // The same square picture in the same wide box, so the only thing
-            // between the two is the aspect.
+            // The same square picture in the same wide box, so the only
+            // difference between the three is the content mode.
             HStack {
                 VStack {
                     Image(light: "nav_media.png", dark: "nav_media_dark.png")
                         .contentMode(.fit)
-                        .width(120)
+                        .width(96)
                         .height(60)
-                        .background(Palette.surface)
+                        .background(Palette.well)
 
                     Text(".contentMode(.fit)")
                         .fontSize(11)
@@ -115,11 +51,25 @@ struct ImageSample: SampleContent, ExampleContent {
                 VStack {
                     Image(light: "nav_media.png", dark: "nav_media_dark.png")
                         .contentMode(.fill)
-                        .width(120)
+                        .width(96)
                         .height(60)
-                        .background(Palette.surface)
+                        .background(Palette.well)
 
                     Text(".contentMode(.fill)")
+                        .fontSize(11)
+                        .textColor(Palette.subtle)
+                        .horizontalTextAlignment(.center)
+                }
+                .spacing(4)
+
+                VStack {
+                    Image(light: "nav_media.png", dark: "nav_media_dark.png")
+                        .contentMode(.stretch)
+                        .width(96)
+                        .height(60)
+                        .background(Palette.well)
+
+                    Text(".contentMode(.stretch)")
                         .fontSize(11)
                         .textColor(Palette.subtle)
                         .horizontalTextAlignment(.center)
@@ -131,10 +81,10 @@ struct ImageSample: SampleContent, ExampleContent {
 
             SectionTitle("One per theme")
 
-            // The same shape drawn black and white. An Image has no tint, so
-            // what changes is the SOURCE - and the half in force is picked as
-            // the view is built, so switching the system theme builds this
-            // view again with the other file.
+            // The same shape twice: one black file, and one file per theme. An
+            // Image has no tint, so what changes is the SOURCE - the half in
+            // force is picked as the image is built, and switching the system
+            // theme builds that image again with the other file.
             HStack {
                 Image("nav_gestures.png")
                     .width(32)
@@ -159,6 +109,7 @@ struct ImageSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {
@@ -170,7 +121,8 @@ struct ImageSample: SampleContent, ExampleContent {
 
             Text("`.contentMode` is the choice between showing all of the picture and filling "
                 + "every corner: `.fit` keeps the whole picture and leaves room on "
-                + "two sides, `.fill` covers the box and crops what will not fit.")
+                + "two sides, `.fill` covers the box and crops what will not fit, `.stretch` "
+                + "covers it whole and gives up the picture's proportions.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

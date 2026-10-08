@@ -99,7 +99,9 @@ platform holds nothing of - a value no control of it keeps, its effect proven
 by another case - the driver lists apart (`platformHasNone`, or a read's
 `because:`): a case needing it does not apply there. Besides a
 member's value a driver reads a view's menu, whether it holds the keyboard,
-what a press at a point reaches, the question the window shows, what the
+what a press at a point reaches, the order a layout's children are drawn in
+as its native view holds them, whether assistive technology meets a view as a
+heading, the question the window shows, what the
 screen reader was told, the colour StateUI draws at a point - never a native
 control's look - the host's log and what it keeps; each read a host does not
 have yet is its driver's "cannot". A case's first start of an application is
@@ -113,6 +115,22 @@ register the host's backends, which depend on the host, so they stand beside
 the host's package rather than in it, and everything there links the host's
 one dynamic library. The driver reads the host's own views, so it is built
 where the host is built for testing: a debug build, `swift test`.
+
+## A drawing read by its colours
+
+What StateUI draws itself - a shape's outline, a canvas, a box's fill - holds
+no native value a driver could read, so its cases read the colours it shows:
+a dashed outline has gaps along a run of points where a solid one has none,
+dashes shifted by their phase stand where the gaps stood, squared ends cover
+more of a run of short dashes than flat ones, and a mitred corner reaches a
+point just inside its outer side that a bevel, or a mitre past its limit,
+leaves bare. A figure's points stand set in from its room, so a corner's
+outer side is drawn inside it; a rectangle and an ellipse are set in by half
+their outline on every host. A line and an ellipse have no corner: their
+joins are never had there. A layout's box and a button's are read the same
+way - filled inside, outlined at the edge, an oval leaving the corners bare -
+but a button's own face may stand inside its outline, so there "nothing
+inside" means nothing of the outline's colour.
 
 ## A session
 

@@ -94,6 +94,12 @@ class AndroidView {
     /// The press the view heard, on its way to a drag by the host layer's rule.
     var press = DragRecognition(distance: .radius(0))
 
+    /// What the view offers and takes of a drag between views, as last told to its drag listener.
+    var offered = DragAndDrop.none
+
+    /// What hears a drag between views the view heard.
+    var onDragHeard: ((HeardInput) -> Void)?
+
     /// What the view does when it takes the keyboard's focus or loses it; nil where nothing listens.
     private(set) var onFocusChanged: ((Bool) -> Void)?
     private var listensForFocus = false

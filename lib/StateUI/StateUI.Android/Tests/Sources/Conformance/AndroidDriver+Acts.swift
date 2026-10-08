@@ -47,9 +47,31 @@ extension AndroidDriver {
                     Self.dialogs, Self.answer, .object(Java.string(caption)), .object(words.flatMap(Java.string)))
             }
             guard answered else { throw DriverCannot("answer by \(caption)") }
+        case (.dragAndDrop(let target, let across), _):
+            try dragAndDrop(element, onto: target, across: across)
+        case (.dropFiles(let names), let view?):
+            guard view.offered.takesFiles else { throw DriverCannot(act, on: element) }
+            view.heardDroppedFiles(addresses: names.map { filesFolder + $0 }, names: names)
+        case (.answerFiles(let names), _):
+            let answered = Java.frame {
+                Java.callStaticBool(
+                    Self.files, Self.answerForTesting, .object(TestContext.window.reference),
+                    .object(Java.array(of: JavaAPI.string, names.map { Java.string(filesFolder + $0) })))
+            }
+            guard answered else { throw DriverCannot("answer a file dialog: none is held") }
         case (.choose(let place), let picker as AndroidPickerView):
             // The row after the title's, as the user's tap on it in the open list chooses it.
             Java.callStatic(Self.testPicker, Self.choosePicker, .object(picker.reference), .int(Int32(place + 1)))
+        case (.slide(let target), let slider as AndroidSliderView):
+            guard Self.slide(slider, to: target) else { throw DriverCannot(act, on: element) }
+        case (.step(let up), let stepper as AndroidStepperView):
+            // A tap on its button, which a button turned off at the range's end does not take.
+            Self.tap(up ? stepper.buttons.up : stepper.buttons.down, count: 1)
+        case (.enterWords, is AndroidStepperView):
+            throw DriverCannot("type words into a Stepper", because: "Android's stepper is two buttons, with no field")
+        case (.scroll(let target), let scroll as AndroidScrollView): Self.scroll(scroll, to: target)
+        case (.choose(let place), let tabs as AndroidTabView):
+            guard Self.tap(tab: place, of: tabs) else { throw DriverCannot(act, on: element) }
         case (.tap(let count), let view?): Self.tap(view, count: count)
         case (.pan(let offset), let view?): Self.pan(view, by: offset)
         case (.pinch(let scale, let point), let view?):
@@ -62,7 +84,7 @@ extension AndroidDriver {
             TestTouches.hover(view, action: Self.hoverEnter, x: Self.pixels(point.x), y: Self.pixels(point.y))
             TestTouches.hover(view, action: Self.hoverMove, x: Self.pixels(point.x), y: Self.pixels(point.y))
         case (.leave, let view?): TestTouches.hover(view, action: Self.hoverExit, x: 0, y: 0)
-        case (.goBack, _) where element.type == .window:
+        case (.goBack, _) where element.type == .window || element.type == .navigationStack:
             // The system's back, as the activity hands it on; what it reached, the case reads.
             _ = renderer?.goBack()
         case (.switchAway, _) where element.type == .window: renderer?.setPhase(.inactive)
@@ -98,11 +120,40 @@ extension AndroidDriver {
         view.touch(up, x: x + across, y: y + down, at: 60)
     }
 
+    /// The thumb moved to `value` as TalkBack's user moves it: the slider's own action setting its progress, which
+    /// it says came from the user.
+    private static func slide(_ slider: AndroidSliderView, to value: Double) -> Bool {
+        let span = slider.maximum - slider.minimum
+        let share = span > 0 ? (min(max(value, slider.minimum), slider.maximum) - slider.minimum) / span : 0
+        let progress = Int32((share * Double(AndroidSliderView.steps)).rounded())
+        return Java.callStaticBool(testSlider, slideTo, .object(slider.reference), .int(progress))
+    }
+
+    /// Android's scrollers moved to `target` as a finger leaves them, each along its own way: the view hears it as
+    /// the user's movement.
+    private static func scroll(_ scroll: AndroidScrollView, to target: Point) {
+        for (scroller, across) in zip(scroll.scrollers, ways(of: scroll)) {
+            let (x, y) = across ? (pixels(target.x), Float(0)) : (Float(0), pixels(target.y))
+            Java.call(scroller.reference, JavaAPI.scrollTo, .int(Int32(x.rounded())), .int(Int32(y.rounded())))
+        }
+    }
+
+    /// Whether each of the view's scrollers, the outermost first, moves across rather than down.
+    static func ways(of scroll: AndroidScrollView) -> [Bool] {
+        switch scroll.orientation {
+        case .horizontal: [true]
+        case .both: [false, true]
+        default: [false]
+        }
+    }
+
     /// `points` in the driver's pixels, two a point.
     private static func pixels(_ points: Double) -> Float {
         Float(points * 2)
     }
 
+    static let testSlider = Java.findClass("stateui/android/test/TestSlider")
+    static let slideTo = Java.staticMethod(testSlider, "slide", "(Landroid/widget/SeekBar;I)Z")
     static let testPicker = Java.findClass("stateui/android/test/TestPicker")
     static let choosePicker = Java.staticMethod(testPicker, "choose", "(Landroid/widget/Spinner;I)V")
     static let pickerRows = Java.staticMethod(testPicker, "rows", "(Landroid/widget/Spinner;)[Ljava/lang/String;")
@@ -136,4 +187,29 @@ extension AndroidDriver {
     static let setSelection = Java.method(inputConnection, "setSelection", "(II)Z")
     static let commitText = Java.method(inputConnection, "commitText", "(Ljava/lang/CharSequence;I)Z")
 
+
+    /// `element` dragged onto the view of id `target` - across the one of id `across` first - as the views' drag
+    /// listeners tell it (`StateUIDrags`): the drag starts, comes over the view crossed and goes, comes over the
+    /// target and is let go there, and ends.
+    func dragAndDrop(_ element: MountedElement, onto target: String, across: String?) throws {
+        let act = UserAct.dragAndDrop(onto: target, across: across)
+        func taking(_ id: String) throws -> AndroidView {
+            let found = (renderer?.runtime.tree.root?.first(id: .manual(id))?.native as? AndroidElement)?.view
+            guard let found, found.offered.takesWords else { throw DriverCannot(act, on: element) }
+            return found
+        }
+        guard let source = (element.native as? AndroidElement)?.view, let words = source.offered.words else {
+            throw DriverCannot(act, on: element)
+        }
+        source.heardDrag(kind: 0, words: nil)
+        if let across {
+            let crossed = try taking(across)
+            crossed.heardDrag(kind: 2, words: nil)
+            crossed.heardDrag(kind: 3, words: nil)
+        }
+        let landing = try taking(target)
+        landing.heardDrag(kind: 2, words: nil)
+        landing.heardDrag(kind: 4, words: words)
+        source.heardDrag(kind: 1, words: nil)
+    }
 }

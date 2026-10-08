@@ -1,14 +1,20 @@
-# revision 1.1
+# revision 3.1
 Application: ✅
-Application.alert: ❌ Second expected, nothing came - then the second
-Application.announce: ❌ ["announced"] expected, [] came
-Application.chooseAction: ❌ ["Mail", "Delete", "Cancel"] expected, [] came - a choice, the dangerous one, and the cancel
-Application.confirm: ❌ Second expected, nothing came - then the second
-Application.currentTime: ❌ true expected, nothing came - a time of day
-Application.currentTimeZone: ❌ ["true true"] expected, [] came - a zone named, and its distance the host's own
-Application.handlerFailed: cannot read the log - the Web's driver has no path for it yet
-Application.hideOnScreenKeyboard: ❌ [true] expected, [] came - a view held it
-Application.persistSceneValue: cannot read what a scene keeps - the Web's driver has no path for it yet
+Application.alert: ✅
+Application.announce: ✅
+Application.chooseAction: ✅
+Application.confirm: ✅
+Application.currentTime: ✅
+Application.currentTimeZone: ✅
+Application.handlerFailed: ✅
+Application.hideOnScreenKeyboard: ✅
+Application.launchFile: ✓ read a file dialog: the dialog the relay holds on a page a test drives, which the browser never shows
+Application.launchLink: ✓ read a file dialog: the dialog the relay holds on a page a test drives, which the browser never shows
+Application.openFiles: ✓ read a file dialog: the dialog the relay holds on a page a test drives, which the browser never shows
+Application.persistSceneValue: ✅
 Application.persistValue: ✅
-Application.prompt: ❌ ["Ada", "nothing"] expected, [] came - the words typed, then nothing for the cancel
-Application.utcOffset: ❌ ["refused"] expected, [] came
+Application.prompt: ✅
+Application.readFile: ✓ read a file dialog: the dialog the relay holds on a page a test drives, which the browser never shows
+Application.saveFile: ✓ read a file dialog: the dialog the relay holds on a page a test drives, which the browser never shows
+Application.useColorScheme: ✅
+Application.utcOffset: ✅

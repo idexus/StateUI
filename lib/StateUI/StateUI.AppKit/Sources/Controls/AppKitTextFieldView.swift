@@ -36,11 +36,31 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         fatalError("AppKitTextFieldView is created in code")
     }
 
-    override var intrinsicContentSize: NSSize { textField.intrinsicContentSize }
+    /// The colour the field stands on, in a rounded field's shape; nil for AppKit's own bezel.
+    private(set) var fill: NSColor?
+
+    /// How far a field standing on a colour sets its words in from its edge, as the rounded bezel does.
+    static let inset = NSSize(width: 6, height: 4)
+
+    override var intrinsicContentSize: NSSize {
+        let own = textField.intrinsicContentSize
+        guard fill != nil else { return own }
+        let width = own.width == NSView.noIntrinsicMetric ? own.width : own.width + Self.inset.width * 2
+        return NSSize(width: width, height: own.height + Self.inset.height * 2)
+    }
 
     override func layout() {
         super.layout()
-        textField.frame = bounds
+        guard fill != nil else {
+            textField.frame = bounds
+            (textField as? AppKitBoxedField)?.ringBox = nil
+            return
+        }
+        let height = textField.intrinsicContentSize.height
+        textField.frame = NSRect(
+            x: Self.inset.width, y: ((bounds.height - height) / 2).rounded(),
+            width: max(0, bounds.width - Self.inset.width * 2), height: height)
+        (textField as? AppKitBoxedField)?.ringBox = convert(bounds, to: textField)
     }
 
     /// Applies the StateUI properties that have direct AppKit semantics.
@@ -90,13 +110,19 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         textField.isAutomaticTextCompletionEnabled = traits.predicts
         textField.alignment = alignment(horizontalAlignment)
 
-        // AppKit's bezel draws its own ground over any colour: a field given one stands on a line, filled with it.
-        // Design: docs/design/platforms/appkit/registrations.md#a-background
+        // AppKit's rounded bezel draws its own ground over any colour: a field given one stands in the bezel's
+        // shape, filled with it. A border and a bezel exclude each other: the border is said first, so the bezel
+        // said after it stands. Design: docs/design/platforms/appkit/registrations.md#a-background
         let colored = backgroundColor.map { $0.alphaComponent > 0 } ?? false
+        fill = colored ? backgroundColor : nil
+        textField.isBordered = false
         textField.isBezeled = !colored
-        textField.isBordered = colored
-        textField.drawsBackground = true
-        textField.backgroundColor = colored ? backgroundColor : .textBackgroundColor
+        textField.bezelStyle = .roundedBezel
+        textField.drawsBackground = false
+        wantsLayer = true
+        layer?.backgroundColor = fill?.cgColor
+        layer?.cornerRadius = colored ? AppKitTextEditorView.cornerRadius : 0
+        needsLayout = true
 
         if writeText, let text {
             setText(text)
@@ -165,7 +191,7 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         let words = previous.stringValue
         let wasFirstResponder = window?.firstResponder === previous.currentEditor()
             || window?.firstResponder === previous
-        let replacement: NSTextField = secure ? NSSecureTextField() : AppKitWordsField()
+        let replacement: NSTextField = secure ? AppKitSecureWordsField() : AppKitWordsField()
 
         previous.removeFromSuperview()
         textField = replacement

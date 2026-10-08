@@ -112,15 +112,16 @@ class AndroidLayoutView: AndroidView {
     }
 
     private func paintBox() {
+        let painted = fill
         guard outline.stroke != nil || outline.shape != nil || outline.clips else {
             if box != nil { Java.call(reference, JavaAPI.setClipToOutline, .bool(false)) }
             box = nil
-            return super.setBackground(fill)
+            return super.setBackground(painted)
         }
 
         let box = self.box ?? AndroidShapeDrawable()
         self.box = box
-        box.setFill(fill)
+        box.setFill(painted)
         box.setStroke(outline.stroke, width: outline.width, density: density)
         box.setShape(AndroidShapeDrawable.Shape(container: outline.shape), density: density)
         if let size = placedSize { box.fit(width: size.width, height: size.height) }

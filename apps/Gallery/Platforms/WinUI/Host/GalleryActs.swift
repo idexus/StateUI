@@ -6,6 +6,7 @@ import GalleryUI
 import StateUIWinUI
 import WinSDK
 
+// listing: InteropActsSample.WinUI.swift
 /// The gallery's own acts, as this host answers them.
 ///
 /// `GalleryContract` declares each name with what it takes and answers - see
@@ -16,17 +17,20 @@ enum GalleryActs {
     /// Registers every act this host performs. Said once, before the application runs.
     @MainActor
     static func register() {
+        // The clipboard needs no relay: Swift calls Win32 itself - OpenClipboard, CF_UNICODETEXT.
         StateUIActs.add(GalleryContract.setClipboard) { text in
             Clipboard.write(text)
         }
         StateUIActs.add(GalleryContract.readClipboard) {
             Clipboard.read()
         }
+        // The power status, GetSystemPowerStatus, read by the gallery's relay.
         StateUIActs.add(GalleryContract.batteryLevel) {
             GalleryPower.battery()
         }
     }
 }
+// listing: end
 
 /// The system's clipboard, its words as UTF-16 - what every Windows application reads and writes.
 enum Clipboard {

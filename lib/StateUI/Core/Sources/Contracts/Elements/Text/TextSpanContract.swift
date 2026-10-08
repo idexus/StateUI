@@ -16,7 +16,7 @@ public enum TextSpanContract: ElementContract {
     ]
 
     /// What is drawn behind the run - a highlight over part of a line.
-    public static let background = ElementProperty<Self, Color>("background", layer: .native)
+    public static let background = ElementProperty<Self, Material>("background", layer: .adaptive)
 
     /// The element's own members.
     public static let members: [any ContractMember] = [background]

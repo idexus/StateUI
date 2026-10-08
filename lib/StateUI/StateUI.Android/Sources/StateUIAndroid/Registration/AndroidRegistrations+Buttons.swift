@@ -15,6 +15,7 @@ extension AndroidRegistrations {
             return button
         }, members: { button in
             button.applies(TextMembers.members) { view, values in applyText(view, values) }
+            button.property(TextStyleElementContract.tracking) { view, spacing in view.setLetterSpacing(spacing ?? 0) }
             button.applies([
                 ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
                 ImageElementContract.contentMode,

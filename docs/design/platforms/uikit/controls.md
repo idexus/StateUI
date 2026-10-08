@@ -11,7 +11,8 @@ while its work does not run. UIKit has no check box and no radio button, so
 each is a button of its own showing the system's symbol for a box or a
 circle, ticked or not, before a radio button's caption: a tap turns a box
 either way and a radio button only on, and the host layer takes the tick from
-the rest of its set. What the program writes is only shown - UIKit's controls
+the rest of its set. A switch's colour is its colour when on, a box's the
+colour of its symbol. What the program writes is only shown - UIKit's controls
 send no event for a value set in code - and what the user does is reported.
 
 ## Pickers
@@ -19,13 +20,15 @@ send no event for a value set in code - and what the user does is reported.
 A Picker is UIKit's pop-up button: its menu holds the choices, the chosen one
 ticked and its caption on the button, and the picker's title stands there
 while nothing is chosen, which UIKit's own selection-changing button cannot
-say, so the host keeps the tick itself. A menu cannot be opened from code, so
-a picker's `isOpen` is left unrealized; its opening and closing are heard.
+say, so the host keeps the tick itself. Its caption takes the font and colour
+the tree gives it, as a button's title does, and its tint colours the arrow
+beside it alone. A menu cannot be opened from code, so a picker's `isOpen` is
+left unrealized; its opening and closing are heard.
 
 A DatePicker and a TimePicker are UIKit's date picker, compact. A day of the
 calendar and a time of the clock belong to no zone, so the picker counts and
 shows them in the Gregorian calendar at UTC: the day the user picks is the day
-the tree reads.
+the tree reads. It draws its words in its own font and colour.
 
 ## A field and its words
 

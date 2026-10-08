@@ -29,41 +29,40 @@
 
 import StateUI
 
+// listing: GalleryApp
 /// The gallery application.
 ///
 /// An application is what every scene SHARES - its styles, and the settings
 /// it keeps between launches. The galleries are one scene, its windows as many
 /// as the user opens: see Gallery/GalleryScene.swift.
 struct GalleryApp: Application {
-    /// Which kind of device this is, from the standard environment - answered
-    /// by the host before the application is made, so the styles below already
-    /// know whether the SearchField wants a touch floor. An APPLICATION's
-    /// unfilled slot answers the standard provider directly.
-    @Environment(\.device) var device
-
     /// The application as it runs - where its styles and its kept keys go.
     @Environment(\.application) private var application
 
     /// What every gallery shares, written as the application is made.
     init() {
-        // The styles every control in the gallery is given. The formFactor goes in
-        // because one style reads
-        // it: the SearchField's touch floor is a touch screen's, not the
-        // desktop's - and the application is made at its first need, after the
-        // host says the device. A colour in a style follows the theme by itself.
-        // See Styles/AppStyles.swift.
-        application.styles = AppStyles.sheet(on: device.info.formFactor)
+        // The styles a control of the gallery asks for by name. A colour in a
+        // style follows the theme by itself. See Styles/AppStyles.swift.
+        application.styles = AppStyles.sheet
 
         // What the gallery KEEPS between launches - `PersistentStateSample`'s
         // three settings, and nothing else. Listed because a settings store
         // is read one key at a time and offers no list of what it holds, so
         // this is the only way the host can have the values in memory before
         // the first view asks for one - which is why it is written HERE, as
-        // the application is made. Kept in the platform's own settings store.
+        // the application is made. Each host keeps them in the platform's
+        // settings store, or in a file of its own where the platform offers an
+        // application none.
         application.persistentKeys = [.visits, .who, .shade]
+
+        // On GNOME the gallery opens in the dark theme, the look it wears
+        // best there; the Appearance sample turns it back.
+        #if GTK
+        application.colorScheme = .dark
+        #endif
     }
 
-    /// The galleries - launch and *File ▸ New Window* open one more gallery window; the scratchpads; and one
+    /// The galleries - launch opens a gallery window, and *File ▸ New Window* one more; the scratchpads; and one
     /// About window for the whole application, in a scene of its own. See `ScenesSample`.
     var body: some Scene {
         GalleryScene()
@@ -71,6 +70,7 @@ struct GalleryApp: Application {
         AboutScene()
     }
 }
+// listing: end
 
 /// The one thing this module exports.
 ///

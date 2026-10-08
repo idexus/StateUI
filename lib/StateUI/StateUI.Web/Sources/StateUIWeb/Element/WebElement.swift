@@ -25,6 +25,9 @@ final class WebElement: NativeElement {
     /// Whether the view listens for the user's asking for its context menu.
     var listensForMenu = false
 
+    /// Whether the view listens for the keyboard coming into it and leaving it.
+    var listensForFocus = false
+
     /// The pointers pressed on the view, for a drag or a pinch it hears, and how many times a wheel turned a pinch.
     var press = WebPress()
     var wheelTurns = 0
@@ -66,6 +69,10 @@ final class WebElement: NativeElement {
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
+        if !changed.isDisjoint(with: MountedElement.sidebarMaterials), let split = view as? WebSplitView {
+            split.ground(beside: element.sidebarMaterial(over: false), over: element.sidebarMaterial(over: true))
+            host?.refreshChrome()
+        }
     }
 
     func directionChanged() {

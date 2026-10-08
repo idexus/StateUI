@@ -43,6 +43,8 @@ final class GTKDriver: HostDriver {
         }
         none["read background of Page"] =
             "StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it"
+        none["read background of ItemsView"] =
+            "StateUI draws a list's box on GTK's snapshot, which holds none of its background; its drawing proves it"
         for layout in ["Grid", "HStack", "VStack", "ZStack", "ScrollView"] {
             for member in ["background", "stroke", "lineWidth", "shape"] {
                 none["read \(member) of \(layout)"] =
@@ -66,6 +68,9 @@ final class GTKDriver: HostDriver {
     /// What the driver reaches past GTK, through the host's own entry or record - ✓.
     func byHost(_ ability: String) -> String? {
         if Ability(ability).readsATransform { return "the host's own transform: GTK reads back no part of one" }
+        if ability.hasPrefix("read background of "), ["Grid", "HStack", "VStack", "ZStack"].contains(Ability(ability).element) {
+            return "the brush the host draws the box with: GTK reads back no drawing"
+        }
         // A span's look is its run's Pango attributes, which GTK reads back.
         if !ability.hasSuffix(" of TextSpan"), let member = Self.recordedMembers.first(where: { ability.hasPrefix("read \($0) of ") }) {
             return "the class of the host's style sheet the widget wears: GTK reads back no \(member)"
@@ -78,6 +83,10 @@ final class GTKDriver: HostDriver {
     private static let recordedMembers = ["padding", "background", "stroke", "lineWidth", "shape", "placeholderColor"]
 
     private static let byHostReasons = [
+        "read sidebarBackground of SplitView":
+            "the class of the host's style sheet the sidebar wears: GTK reads back no background",
+        "read flyoutBackground of SplitView":
+            "the colour the split keeps for its sidebar over the detail, which a wide window never shows",
         "read source of Image": "the file the host's own panel draws: GTK's snapshot holds no picture's name",
         "read icon of Button": "the file the host's own panel draws: GTK's snapshot holds no picture's name",
         "read contentMode of Image": "how the host's own panel fills its room: GTK's snapshot holds no aspect",
@@ -87,6 +96,11 @@ final class GTKDriver: HostDriver {
         "read tint of CheckBox": "the tint the host gave the box's node: GTK's style sheet tells no one",
         "read tint of Slider": "the tint the host gave the track's node: GTK's style sheet tells no one",
         "read what the screen reader said": "the host's own list of what it asked GTK to announce",
+        "read a file dialog": "the dialog the host holds, which a test never shows",
+        "read what was launched": "the host's own record of what it handed the desktop, which a test holds back",
+        "answerFiles": "the host's answer handed the driver's files, no dialog shown",
+        "dragAndDrop": "the drag source's and the drop targets' signals told by the driver, no drag GTK began",
+        "dropFiles": "the drop target's signal told the driver's files, no drag GTK began",
         "switchAway": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
         "switchBack": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
         "bringToFront": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
@@ -116,6 +130,7 @@ final class GTKDriver: HostDriver {
         written.listen()
         let renderer = GTKRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         self.renderer = renderer
+        Self.holdFiles(of: renderer)
         return renderer.runtime.tree
     }
 
@@ -132,6 +147,18 @@ final class GTKDriver: HostDriver {
     }
 
     func perform(_ act: UserAct, on element: MountedElement) throws {
+        if case .dragAndDrop(let target, let across) = act { return try dragAndDrop(element, onto: target, across: across) }
+        if case .dropFiles(let names) = act {
+            guard let drop = (element.native as? GTKElement)?.view?.dragAndDrop, drop.offered.takesFiles else {
+                throw DriverCannot(act, on: element)
+            }
+            for name in names { g_file_set_contents(Self.files + "/" + name, name, -1, nil) }
+            return drop.heard?(.filesDropped(names.map { ChosenFile(address: Self.files + "/" + $0, name: $0) })) ?? ()
+        }
+        if case .answerFiles(let names) = act {
+            guard let files = renderer?.fileToolkit, files.held != nil else { throw DriverCannot(act, on: element) }
+            return files.chooseForTesting(names.map { Self.files + "/" + $0 })
+        }
         if act == .activate, element.type == .toolbarItem { return try chooseAction(element) }
         if act == .activate, element.type == .menuItem { return try chooseMenuItem(element) }
         if act == .close, element.type == .window { return try close(element) }
@@ -220,6 +247,13 @@ final class GTKDriver: HostDriver {
         case (.contentMode, let image as GTKImageView): return image.aspect.propValue
         case (.text, let check as GTKCheckView): return check.text.propValue
         case (.showsSidebar, let split as GTKSplitView): return split.showsSidebar.propValue
+        case (.sidebarBackground, let split as GTKSplitView), (.flyoutBackground, let split as GTKSplitView):
+            // The sidebar's class in the place it stands; the other place's colour as the split keeps it.
+            guard split.isCollapsed == (property == .flyoutBackground) else {
+                return (property == .flyoutBackground ? split.grounds.over : split.grounds.beside)
+                    .map { Material.color(Self.color($0)).propValue }
+            }
+            return split.sidebarWidgetForTesting.flatMap(Self.fill).map { Material.color($0).propValue }
         case (.selectedIndex, let picker as GTKPickerView): return picker.chosen.map(\.propValue)
         case (.options, let picker as GTKPickerView):
             guard let model = gtk_drop_down_get_model(picker.widget.opaque) else { return [String]().propValue }
@@ -287,6 +321,26 @@ final class GTKDriver: HostDriver {
         return picked == view.widget || gtk_widget_is_ancestor(picked, view.widget) != 0
     }
 
+    /// The layout's children by where each one's widget stands among its widget's children - GTK snapshots them in
+    /// that order - the last drawn last.
+    func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
+        let cannot = DriverCannot("read the drawing order of \(layout.type.name)")
+        guard let parent = (layout.native as? GTKElement)?.view?.widget else { throw cannot }
+        var drawn: [UnsafeMutablePointer<GtkWidget>] = []
+        var child = gtk_widget_get_first_child(parent)
+        while let each = child {
+            drawn.append(each)
+            child = gtk_widget_get_next_sibling(each)
+        }
+        return try layout.children.map { child in
+            guard let widget = (child.native as? GTKElement)?.view?.widget,
+                  let place = drawn.firstIndex(where: { $0 == widget || gtk_widget_is_ancestor(widget, $0) != 0 })
+            else { throw cannot }
+            return (child, place)
+        }
+        .sorted { $0.1 < $1.1 }.map(\.0)
+    }
+
     /// Chooses the item at `place` as the user's click does, through the list's own `list.select-item`: alone where
     /// one may be chosen, beside those chosen - as a Ctrl click - where many may.
     private func choose(_ place: Int, in items: GTKItemsView, on element: MountedElement) throws {
@@ -340,5 +394,33 @@ extension GTKItemsView {
         guard let selection else { return [] }
         let count = g_list_model_get_n_items(selection)
         return (0..<count).filter { gtk_selection_model_is_selected(selection, $0) != 0 }.map { identity(at: $0) }
+    }
+}
+
+extension GTKDriver {
+
+    /// `element` dragged onto the view of id `target` - across the one of id `across` first - as GTK's controllers
+    /// tell it: the drag begins, comes over the view crossed and leaves it, comes over the target and drops there,
+    /// and ends.
+    func dragAndDrop(_ element: MountedElement, onto target: String, across: String?) throws {
+        let act = UserAct.dragAndDrop(onto: target, across: across)
+        func taking(_ id: String) throws -> GTKDragAndDrop {
+            let found = renderer?.runtime.tree.root?.first(id: .manual(id))?.native as? GTKElement
+            guard let drop = found?.view?.dragAndDrop, drop.offered.takesWords else { throw DriverCannot(act, on: element) }
+            return drop
+        }
+        guard let source = (element.native as? GTKElement)?.view?.dragAndDrop, let words = source.offered.words else {
+            throw DriverCannot(act, on: element)
+        }
+        source.heard?(.dragStarted)
+        if let across {
+            let crossed = try taking(across)
+            crossed.heard?(.dragOver)
+            crossed.heard?(.dragLeft)
+        }
+        let landing = try taking(target)
+        landing.heard?(.dragOver)
+        landing.heard?(.dropped(words))
+        source.heard?(.dragEnded)
     }
 }

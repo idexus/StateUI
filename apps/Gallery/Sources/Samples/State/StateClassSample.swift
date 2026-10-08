@@ -1,5 +1,6 @@
 import StateUI
 
+// listing: StateClassSample
 /// What a basket holds, as a class rather than a pile of `@State` in the view.
 ///
 /// The properties the interface draws are `@State` - the same word, the same
@@ -18,7 +19,9 @@ private final class Basket {
         items.isEmpty ? "The basket is empty" : items.joined(separator: ", ")
     }
 }
+// listing: end
 
+// listing: StateClassSample
 /// A child the basket was LENT to.
 ///
 /// `@Binding`, the same wrapper an Int is borrowed with - a model is a value
@@ -46,73 +49,21 @@ private struct NoteRow: View {
         .spacing(14)
     }
 }
+// listing: end
 
 /// A model in a class, edited in place - `@State` on its properties is what
 /// makes the writes visible, and `@State` on the view is what keeps the
 /// instance.
 struct StateClassSample: SampleContent, ExampleContent {
+    // listing: StateClassSample
     @State private var basket = Basket()
+    // listing: end
 
     static let id = "stateClass"
     static let title = "State in a class"
     static let summary = "A class whose properties are @State lives in @State and is edited property by property."
 
-    static let code = """
-        final class Basket {
-            @State var items: [String] = []
-            @State var note = ""
-
-            var plainTaps = 0
-
-            var summary: String {
-                items.isEmpty ? "The basket is empty" : items.joined(separator: ", ")
-            }
-        }
-
-        struct NoteRow: View {
-            @Binding var basket: Basket
-
-            var body: some View {
-                VStack {
-                    // The field is handed the note's own state and reads
-                    // nothing; the label READS `note`, so typing rebuilds this.
-                    DebugInfoLabel()
-
-                    TextField(basket.$note)
-                        .placeholder("A note on the basket")
-
-                    Text(basket.note.isEmpty ? "No note yet" : "Note: \\(basket.note)")
-                }
-            }
-        }
-
-        @State private var basket = Basket()
-
-        VStack {
-            // And this one reads the items, so adding and removing rebuild it
-            // - while typing a note leaves it standing.
-            DebugInfoLabel()
-
-            Text("\\(basket.items.count) item(s)")
-
-            Text(basket.summary)
-
-            HStack {
-                Button("Add")
-                    .onClicked { basket.items.append("Item \\(basket.items.count + 1)") }
-
-                Button("Remove")
-                    .isEnabled(!basket.items.isEmpty)
-                    .onClicked { basket.items.removeLast() }
-            }
-
-            NoteRow(basket: $basket)
-
-            Button("Tap a plain property (\\(basket.plainTaps))")
-                .onClicked { basket.plainTaps += 1 }
-        }
-        """
-
+    // listing: StateClassSample
     var body: some View {
         VStack {
             DebugInfoLabel()
@@ -128,19 +79,9 @@ struct StateClassSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Add")
-                    .background(Palette.accent)
-                    .textColor(.white)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 20, vertical: 10)
                     .onClicked { basket.items.append("Item \(basket.items.count + 1)") }
 
                 Button("Remove")
-                    .stroke(Palette.outline)
-                    .lineWidth(1)
-                    .background(.transparent)
-                    .textColor(Palette.subtle)
-                    .shape(.roundedRectangle(8))
-                    .padding(horizontal: 20, vertical: 10)
                     .isEnabled(!basket.items.isEmpty)
                     .onClicked { basket.items.removeLast() }
             }
@@ -150,17 +91,12 @@ struct StateClassSample: SampleContent, ExampleContent {
             NoteRow(basket: $basket)
 
             Button("Tap a plain property (\(basket.plainTaps))")
-                .stroke(Palette.outline)
-                .lineWidth(1)
-                .background(.transparent)
-                .textColor(Palette.subtle)
-                .shape(.roundedRectangle(8))
-                .padding(horizontal: 20, vertical: 10)
                 .onClicked { basket.plainTaps += 1 }
 
         }
         .spacing(14)
     }
+    // listing: end
 
     var notes: (any View)? {
         VStack {

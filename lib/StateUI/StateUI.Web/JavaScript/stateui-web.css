@@ -7,14 +7,18 @@
 
 :root {
   color-scheme: light dark;
-  --stateui-accent: #4f46e5;
-  --stateui-surface: #ffffff;
-  --stateui-raised: #f6f7f9;
-  --stateui-text: #17181c;
-  --stateui-muted: #5d6270;
-  --stateui-line: rgb(15 23 42 / 0.09);
-  --stateui-line-strong: rgb(15 23 42 / 0.18);
-  --stateui-shade: rgb(15 23 42 / 0.36);
+  --stateui-accent: light-dark(#4f46e5, #8b85ff);
+  --stateui-surface: light-dark(#ffffff, #111216);
+  --stateui-raised: light-dark(#f6f7f9, #191b21);
+  /* A sidebar beside the page lets the window through, a breath lighter or darker, as a desktop's does. */
+  --stateui-sidebar-own: light-dark(rgb(255 255 255 / 0.45), rgb(0 0 0 / 0.22));
+  --stateui-text: light-dark(#17181c, #eceef2);
+  --stateui-muted: light-dark(#5d6270, #9aa0ad);
+  --stateui-line: light-dark(rgb(15 23 42 / 0.09), rgb(255 255 255 / 0.08));
+  --stateui-line-strong: light-dark(rgb(15 23 42 / 0.18), rgb(255 255 255 / 0.16));
+  /* The divider between a sidebar and the page: let through to what stands under it, one device pixel thin. */
+  --stateui-separator: light-dark(rgb(0 0 0 / 0.08), rgb(255 255 255 / 0.08));
+  --stateui-shade: light-dark(rgb(15 23 42 / 0.36), rgb(0 0 0 / 0.55));
   --stateui-radius: 10px;
   --stateui-bar-height: 56px;
   --stateui-sidebar-width: 288px;
@@ -23,19 +27,6 @@
   --stateui-raised-shadow: 0 1px 2px rgb(15 23 42 / 0.06), 0 12px 32px rgb(15 23 42 / 0.14);
   --stateui-focus: 0 0 0 3px color-mix(in srgb, var(--stateui-accent) 38%, transparent);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --stateui-accent: #8b85ff;
-    --stateui-surface: #111216;
-    --stateui-raised: #191b21;
-    --stateui-text: #eceef2;
-    --stateui-muted: #9aa0ad;
-    --stateui-line: rgb(255 255 255 / 0.08);
-    --stateui-line-strong: rgb(255 255 255 / 0.16);
-    --stateui-shade: rgb(0 0 0 / 0.55);
-  }
 }
 
 /* The words stand at the sizes the page gives them: a phone's browser enlarges none it finds in a wide block. */
@@ -49,6 +40,8 @@ body {
   text-rendering: optimizeLegibility;
 }
 *, *::before, *::after { box-sizing: border-box; }
+/* The width the layout gives a view is its own: a child does not take it. */
+@property --stateui-width { syntax: "*"; inherits: false; }
 [hidden] { display: none !important; }
 
 /* While the application loads: its name, a ring turning and a bar of how much has come, in the page's middle. */
@@ -111,12 +104,13 @@ body {
   padding: 0 12px;
   background: var(--stateui-bar-background, color-mix(in srgb, var(--stateui-surface) 82%, transparent));
   color: var(--stateui-bar-foreground, var(--stateui-text));
-  border-bottom: 1px solid var(--stateui-line);
-  backdrop-filter: saturate(180%) blur(18px);
-  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
+  -webkit-backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
 }
 .stateui-bar-lead, .stateui-bar-side, .stateui-bar-start { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .stateui-bar:not([data-sidebar]) .stateui-bar-title[data-repeats] { display: none; }
+/* A view a page declares in place of its title stands where the title would, at its own size. */
+.stateui-bar-title[data-holds-view] { display: grid; justify-items: center; overflow: visible; font-weight: inherit; font-size: inherit; }
 .stateui-bar-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .stateui-bar-name { font-weight: 650; font-size: 17px; letter-spacing: -0.01em; white-space: nowrap; }
 .stateui-bar-subtitle { font-size: 12.5px; opacity: 0.72; white-space: nowrap; }
@@ -164,6 +158,13 @@ body {
     grid-template-columns: var(--stateui-sidebar-width) minmax(0, 1fr) auto minmax(0, 1fr) 0px;
   }
   .stateui-bar[data-sidebar="shown"] .stateui-bar-brand { opacity: 1; visibility: visible; transition: opacity 0.3s ease 0.1s; }
+  /* Over a sidebar beside the page the bar stands on the sidebar's ground: one column, the bar and the sidebar. */
+  .stateui-bar[data-sidebar="shown"] .stateui-bar-side {
+    background: var(--stateui-sidebar-ground, var(--stateui-sidebar-own));
+    border-inline-end: 0.5px solid var(--stateui-separator);
+    backdrop-filter: var(--stateui-sidebar-filter, none);
+    -webkit-backdrop-filter: var(--stateui-sidebar-filter, none);
+  }
   .stateui-bar[data-sidebar="shown"] .stateui-bar-start { padding-inline-start: 10px; }
   .stateui-bar[data-sidebar="shown"] .stateui-bar-title[data-repeats] { visibility: hidden; }
 }
@@ -193,7 +194,9 @@ body {
   --stateui-glass: color-mix(in srgb, currentColor 13%, transparent);
   --stateui-glass-edge: inset 0 0.5px 0 color-mix(in srgb, white 28%, transparent), 0 1px 4px rgb(0 0 0 / 0.08);
 }
-.stateui-bar-actions {
+/* The actions at an edge of the bar: each group of them together on a glass of its own, apart from the next. */
+.stateui-bar-actions { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.stateui-bar-group, .stateui-bar-actions > button {
   display: flex;
   align-items: center;
   min-width: 0;
@@ -202,7 +205,7 @@ body {
   box-shadow: var(--stateui-glass-edge);
 }
 .stateui-bar-actions:not(:has(> :not([hidden]))) { display: none; }
-.stateui-bar-actions button { background: transparent; box-shadow: none; }
+.stateui-bar-group button { background: transparent; box-shadow: none; }
 .stateui-bar button:hover { background: color-mix(in srgb, currentColor 20%, transparent); }
 .stateui-bar button:active { background: color-mix(in srgb, currentColor 27%, transparent); }
 .stateui-bar button:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
@@ -329,14 +332,20 @@ body {
 }
 .stateui-split[data-sidebar="hidden"] { grid-template-columns: 0px minmax(0, 1fr); }
 .stateui-split[data-moves] { transition: grid-template-columns var(--stateui-slide); }
+/* A sidebar beside the page stands apart from it by a divider, from the bar's top to the window's foot, and over
+   it: what the page draws past its own column - a run of cards fanned outward - passes under the sidebar. */
 .stateui-sidebar {
+  position: relative;
+  z-index: 1;
   display: grid;
   width: var(--stateui-sidebar-width);
   min-height: 0;
   min-width: 0;
   overflow: hidden;
-  background: var(--stateui-raised);
-  border-inline-end: 1px solid var(--stateui-line);
+  background: var(--stateui-sidebar-ground, var(--stateui-sidebar-own));
+  border-inline-end: 0.5px solid var(--stateui-separator);
+  backdrop-filter: var(--stateui-sidebar-filter, none);
+  -webkit-backdrop-filter: var(--stateui-sidebar-filter, none);
 }
 .stateui-split[data-sidebar="hidden"] > .stateui-sidebar { transform: translateX(-100%); visibility: hidden; }
 [dir="rtl"] .stateui-split[data-sidebar="hidden"] > .stateui-sidebar { transform: translateX(100%); }
@@ -344,7 +353,8 @@ body {
 .stateui-split[data-moves][data-sidebar="hidden"] > .stateui-sidebar {
   transition: transform var(--stateui-slide), visibility 0s linear 0.32s;
 }
-.stateui-detail { display: grid; min-height: 0; min-width: 0; }
+/* The page holds its children's order to itself: no z-index within it reaches past it. */
+.stateui-detail { display: grid; min-height: 0; min-width: 0; isolation: isolate; }
 .stateui-scrim { display: none; }
 
 @media (max-width: 900px) {
@@ -357,7 +367,10 @@ body {
     z-index: 30;
     width: min(86vw, var(--stateui-sidebar-width));
     visibility: visible;
-    border-inline-end: 1px solid var(--stateui-line);
+    background: var(--stateui-flyout-ground, var(--stateui-raised));
+    backdrop-filter: var(--stateui-flyout-filter, none);
+    -webkit-backdrop-filter: var(--stateui-flyout-filter, none);
+    border-inline-end: 1px solid var(--stateui-separator);
     box-shadow: var(--stateui-raised-shadow);
     transform: translateX(-104%);
     transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -393,8 +406,10 @@ body {
 .stateui-item[aria-selected] { cursor: pointer; border-radius: 8px; }
 .stateui-item[aria-selected="true"] { background: color-mix(in srgb, var(--stateui-accent) 16%, transparent); }
 
-/* A web view: the browser's own frame, filling the room its layout gives it. */
-.stateui-frame { display: block; width: 100%; height: 100%; min-width: 0; min-height: 0; border: 0; background: white; }
+/* A web view: the browser's own frame over the room its layout gives it, the box taking no room of its own. */
+.stateui-frame { position: relative; min-width: 0; min-height: 0; background: white; }
+.stateui-frame > iframe { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border: 0; }
+.stateui-color-box { display: grid; }
 
 /* A canvas: its drawing on a surface filling the room its layout gives it, the surface taking no room of its own. */
 .stateui-canvas { position: relative; min-width: 0; min-height: 0; overflow: hidden; touch-action: none; }
@@ -402,14 +417,21 @@ body {
 
 /* A tabbed view: the strip of its tabs' names over the one cell its pages share, the chosen one shown. */
 .stateui-tabs { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; min-width: 0; }
+/* The strip scrolls across alone: its line is drawn inside it, so nothing stands below to scroll down to. */
 .stateui-tabs > .stateui-tab-strip {
   display: flex;
   gap: 4px;
   padding: 0 16px;
   overflow-x: auto;
+  overflow-y: hidden;
+  touch-action: pan-x;
+  overscroll-behavior-x: contain;
   scrollbar-width: none;
-  background: var(--stateui-surface);
-  border-bottom: 1px solid var(--stateui-line);
+  /* The strip wears the bars' colour on its path, the window bar's look where none is said. */
+  background: var(--stateui-bar-background, color-mix(in srgb, var(--stateui-surface) 82%, transparent));
+  backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
+  -webkit-backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
+  box-shadow: inset 0 -1px 0 var(--stateui-line);
 }
 .stateui-room .stateui-tab-strip > button {
   min-height: 44px;
@@ -417,13 +439,14 @@ body {
   border: 0;
   border-bottom: 2px solid transparent;
   border-radius: 0;
-  margin-bottom: -1px;
   background: transparent;
   color: var(--stateui-muted);
   font-weight: 550;
   white-space: nowrap;
   filter: none;
 }
+.stateui-room .stateui-tab-strip > button { display: inline-flex; align-items: center; gap: 6px; }
+.stateui-room .stateui-tab-strip > button > img { width: 18px; height: 18px; contain: none; }
 .stateui-room .stateui-tab-strip > button:hover { color: var(--stateui-text); }
 .stateui-room .stateui-tab-strip > button[aria-selected="true"] { color: var(--stateui-accent); border-bottom-color: var(--stateui-accent); }
 /* A covered tab is laid out unseen, so a page sized by its own frame knows it before it shows. */
@@ -453,6 +476,12 @@ body {
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
+/* A button's picture stands beside its words, the two in its middle; alone, it fills the button. */
+.stateui-button { display: inline-flex; align-items: center; justify-content: center; }
+.stateui-button > span { min-width: 0; }
+.stateui-button > img { contain: none; }
+.stateui-button[data-alone] > span { display: none; }
+.stateui-button[data-alone] > img { width: 100%; height: 100%; }
 .stateui-room button:hover { filter: brightness(0.97); border-color: color-mix(in srgb, currentColor 30%, transparent); }
 .stateui-room button:active { filter: brightness(0.92); }
 .stateui-room button:disabled { opacity: 0.45; cursor: default; filter: none; }
@@ -470,8 +499,14 @@ body {
 .stateui-room input.stateui-field { field-sizing: content; }
 .stateui-room input::placeholder, .stateui-room textarea::placeholder { color: var(--stateui-placeholder, var(--stateui-muted)); }
 .stateui-room textarea { min-height: 88px; line-height: 1.45; resize: vertical; }
+/* An editor growing with its words is as tall as they are, from one line. */
+.stateui-room textarea[data-grows] { min-height: 0; }
+/* A select's and a search field's padding - 12 and 34 points either side - yields to a narrower room the layout gives
+   it (--stateui-width), each side in its share, so the field stands as wide as its room. */
+.stateui-room :is(select, input[type="search"]) { --stateui-field-room: calc(var(--stateui-width, 100vw) - 2px); }
 .stateui-room input[type="search"] {
-  padding-inline-start: 34px;
+  padding-inline-start: min(34px, calc(var(--stateui-field-room) * 0.7391));
+  padding-inline-end: min(12px, calc(var(--stateui-field-room) * 0.2609));
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M16 16l4 4'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: 11px center;
@@ -485,11 +520,11 @@ body {
 }
 .stateui-room :is(input[type="checkbox"], input[type="radio"], input[type="range"], progress) { accent-color: var(--stateui-accent); }
 /* A bar of work done, a ring while work goes on, a radio button with its caption, a choice from a list. */
+.stateui-progress { display: grid; align-items: center; min-width: 80px; }
 .stateui-room progress {
   appearance: none;
   -webkit-appearance: none;
   width: 100%;
-  min-width: 80px;
   height: 6px;
   border: 0;
   border-radius: 999px;
@@ -509,7 +544,8 @@ body {
   visibility: hidden;
 }
 .stateui-activity[data-running] { visibility: visible; animation: stateui-turn 0.8s linear infinite; }
-/* A toggle and a ring stand at their own size in the middle of the frame the layout gives their view. */
+/* A toggle and a ring stand at their own size in the middle of the frame the layout gives their view, a bar of work
+   done across its middle. */
 .stateui-toggle, .stateui-indicator { display: inline-grid; place-items: center; }
 .stateui-toggle { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .stateui-toggle[aria-disabled] { cursor: default; }
@@ -518,7 +554,8 @@ body {
 .stateui-room select {
   appearance: none;
   -webkit-appearance: none;
-  padding-inline-end: 34px;
+  padding-inline-start: min(12px, calc(var(--stateui-field-room) * 0.2609));
+  padding-inline-end: min(34px, calc(var(--stateui-field-room) * 0.7391));
   cursor: pointer;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -593,7 +630,12 @@ body {
 [data-lets-through] { pointer-events: none; }
 [data-lets-through] > :not([data-lets-through]) { pointer-events: auto; }
 
-.stateui-shape { display: block; overflow: visible; width: 100%; height: 100%; }
+/* A picture: as large as itself, its proportions binding neither length - as a native picture view's. */
+.stateui-picture { contain: size; }
+
+/* A shape: its drawing on a surface over the room its layout gives it, the surface taking no room of its own. */
+.stateui-shape { position: relative; min-width: 0; min-height: 0; }
+.stateui-shape > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
 
 .stateui-unsupported {
   align-self: start;

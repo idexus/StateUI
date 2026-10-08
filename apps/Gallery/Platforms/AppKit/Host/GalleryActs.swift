@@ -6,6 +6,7 @@ import GalleryUI
 import IOKit.ps
 import StateUIAppKit
 
+// listing: InteropActsSample.AppKit.swift
 /// The gallery's own acts, as this host answers them.
 ///
 /// `GalleryContract` declares each name with what it takes and answers - see
@@ -18,6 +19,8 @@ enum GalleryActs {
     /// application runs.
     @MainActor
     static func register() {
+        // A performer is handed the arguments its act declares and answers
+        // the values it declares.
         StateUIActs.add(GalleryContract.setClipboard) { text in
             NSPasteboard.general.clearContents()
             NSPasteboard.general.setString(text, forType: .string)
@@ -31,6 +34,7 @@ enum GalleryActs {
             battery()
         }
     }
+    // listing: end
 
     /// The battery's level, 0 through 1, and whether it is charging - both
     /// zero and false on a desktop that has no battery to report, which is an
@@ -54,4 +58,6 @@ enum GalleryActs {
 
         return (0, false)
     }
+    // listing: InteropActsSample.AppKit.swift
 }
+// listing: end

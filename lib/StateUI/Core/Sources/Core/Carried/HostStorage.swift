@@ -43,6 +43,9 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     /// Which of the host's doors the value goes through, which says where its law lies.
     var door: StateKind?
 
+    /// What the host is told the lanes are read as; nil for text.
+    var laneKind: LaneKind?
+
     /// The element's own law - what `.inherited` means here - resolved by the differ.
     /// Design: docs/design/core/identity-and-diffing.md#driven-properties
     var inherited: Motion = .inherited

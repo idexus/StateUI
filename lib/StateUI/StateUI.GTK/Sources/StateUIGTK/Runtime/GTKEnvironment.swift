@@ -27,11 +27,12 @@ enum GTKEnvironment {
         reportChanging(to: core)
     }
 
-    /// Tells `core` what may change as it stands now: the desktop's style, dark or light, the locale, the power and
-    /// the network.
+    /// Tells `core` what may change as it stands now: the desktop's style, dark or light, and its accent, the
+    /// locale, the power and the network.
     static func reportChanging(to core: CoreLink) {
         let style = adw_style_manager_get_default()
         core.setColorScheme(adw_style_manager_get_dark(style) != 0 ? .dark : .light)
+        core.setAccentColor(accent)
         core.setLocaleInfo(locale)
         core.setBatteryInfo(battery)
         core.setConnectivityInfo(connectivity)
@@ -50,6 +51,25 @@ enum GTKEnvironment {
     }
 
     private static var watching = false
+
+    /// A label of libadwaita's `accent` class, never shown, whose colour is the accent the desktop draws.
+    private static var accentProbe: UnsafeMutablePointer<GtkWidget>?
+
+    /// The accent the desktop draws in, as libadwaita's `accent` class colours words.
+    static var accent: Color {
+        let probe = accentProbe ?? {
+            let label = gtk_label_new(nil)!
+            g_object_ref_sink(label)
+            gtk_widget_add_css_class(label, "accent")
+            accentProbe = label
+            return label
+        }()
+        var rgba = GdkRGBA()
+        gtk_widget_get_color(probe, &rgba)
+        func channel(_ value: Float) -> Int { Int((value * 255).rounded()) }
+        return Color(red: channel(rgba.red), green: channel(rgba.green), blue: channel(rgba.blue),
+                     alpha: channel(rgba.alpha))
+    }
     private static var onChange: (@MainActor () -> Void)?
 
     /// Tells `core` the screen `window` stands on: its size in pixels, its scale, its refresh rate.
