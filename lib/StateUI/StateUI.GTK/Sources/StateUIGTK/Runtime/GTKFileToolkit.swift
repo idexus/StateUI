@@ -53,8 +53,8 @@ final class GTKFileToolkit: FileToolkit {
         Task { @MainActor in answered(await Self.write(dialog.contents, to: place.address).map { files }) }
     }
 
-    func read(_ file: ChosenFile, answered: @escaping (Result<[UInt8], ActFailure>) -> Void) {
-        Task { @MainActor in answered(await Self.contents(of: file.address)) }
+    func read(_ file: ChosenFile, atMost maximum: Int?, answered: @escaping (Result<[UInt8], ActFailure>) -> Void) {
+        Task { @MainActor in answered(await Self.contents(of: file.address, atMost: maximum)) }
     }
 
     func launch(_ file: ChosenFile, answered: @escaping (Bool) -> Void) {
@@ -107,12 +107,20 @@ final class GTKFileToolkit: FileToolkit {
     private final class Pending: @unchecked Sendable {
         let finished: (UnsafeMutablePointer<GObject>?, OpaquePointer?) -> Void
 
+        /// The most bytes a partial load reads on to.
+        var maximum = Int.max
+
         init(_ finished: @escaping (UnsafeMutablePointer<GObject>?, OpaquePointer?) -> Void) {
             self.finished = finished
         }
 
         static let finished: GAsyncReadyCallback = { source, result, data in
             Unmanaged<Pending>.fromOpaque(data!).takeRetainedValue().finished(source, result)
+        }
+
+        /// Whether a partial load reads another block: only while it holds fewer bytes than the most.
+        static let readsMore: GFileReadMoreCallback = { _, size, data in
+            Int(size) < Unmanaged<Pending>.fromOpaque(data!).takeUnretainedValue().maximum ? 1 : 0
         }
     }
 
@@ -223,25 +231,36 @@ final class GTKFileToolkit: FileToolkit {
     }
 
     /// The contents of the file at `path`, read beside the UI thread.
-    private static func contents(of path: String) async -> Result<[UInt8], ActFailure> {
+    /// The file's bytes, or its first `maximum`: GIO reads block by block and stops once it holds as many, the
+    /// last block's rest cut off.
+    private static func contents(of path: String, atMost maximum: Int?) async -> Result<[UInt8], ActFailure> {
         await withCheckedContinuation { done in
             let gfile = g_file_new_for_path(path)
             let pending = Pending { source, result in
                 var contents: UnsafeMutablePointer<CChar>?
                 var length: gsize = 0
                 var error: UnsafeMutablePointer<GError>?
-                let read = g_file_load_contents_finish(OpaquePointer(source), result, &contents, &length, nil, &error)
+                let read = maximum == nil
+                    ? g_file_load_contents_finish(OpaquePointer(source), result, &contents, &length, nil, &error)
+                    : g_file_load_partial_contents_finish(OpaquePointer(source), result, &contents, &length, nil, &error)
                 g_object_unref(UnsafeMutableRawPointer(source))
                 guard read != 0, let contents else {
                     let why = error.map { String(cString: $0.pointee.message) } ?? "the file could not be read"
                     if let error { g_error_free(error) }
                     return done.resume(returning: .failure(ActFailure(why)))
                 }
-                let bytes = Array(UnsafeRawBufferPointer(start: UnsafeRawPointer(contents), count: Int(length)))
+                let count = min(Int(length), maximum ?? Int.max)
+                let bytes = Array(UnsafeRawBufferPointer(start: UnsafeRawPointer(contents), count: count))
                 g_free(contents)
                 done.resume(returning: .success(bytes))
             }
-            g_file_load_contents_async(gfile, nil, Pending.finished, Unmanaged.passRetained(pending).toOpaque())
+            let data = Unmanaged.passRetained(pending).toOpaque()
+            if let maximum {
+                pending.maximum = maximum
+                g_file_load_partial_contents_async(gfile, nil, Pending.readsMore, Pending.finished, data)
+            } else {
+                g_file_load_contents_async(gfile, nil, Pending.finished, data)
+            }
         }
     }
 }

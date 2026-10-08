@@ -173,7 +173,7 @@ enum JavaAPI {
     static let openFiles = Java.staticMethod(files, "open", "(Landroid/content/Context;J[Ljava/lang/String;Z)V")
     static let saveFile = Java.staticMethod(
         files, "save", "(Landroid/content/Context;JLjava/lang/String;Ljava/lang/String;[B)V")
-    static let readFile = Java.staticMethod(files, "read", "(Landroid/content/Context;JLjava/lang/String;)V")
+    static let readFile = Java.staticMethod(files, "read", "(Landroid/content/Context;JLjava/lang/String;J)V")
     static let launch = Java.staticMethod(files, "launch", "(Landroid/content/Context;JLjava/lang/String;Z)V")
 
     static let store = Java.findClass("stateui/android/StateUIStore")

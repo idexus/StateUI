@@ -198,6 +198,45 @@
                 s.settle { said.values.count == 2 }
                 s.expect(said.values, ["note.txt", "note.txt: Kept words"], "saved, then opened and read back")
             },
+            ConformanceCase("aFileIsReadNoFurtherThanAsked", proves: [
+                Covered(ApplicationContract.readFile),
+            ], needs: [
+                Covered(ButtonContract.clicked), Covered(ApplicationContract.saveFile),
+                Covered(ApplicationContract.openFiles),
+            ]) { s in
+                let said = Received<String>()
+                let text = FileType("Text", extensions: ["txt"])
+                s.start {
+                    VStack {
+                        Button("Save").onClicked {
+                            let saved = try await Dialogs.saveFile(Array("Kept words".utf8), name: "start", types: [text])
+                            said.values.append(saved?.name ?? "nothing")
+                        }.id("save")
+                        Button("Open").onClicked {
+                            guard let file = try await Dialogs.openFile(types: [text]) else {
+                                return said.values.append("nothing")
+                            }
+                            let parts = [
+                                try await file.read(atMost: 4), try await file.read(atMost: 0),
+                                try await file.read(atMost: 100),
+                            ]
+                            said.values.append(parts.map { String(decoding: $0, as: UTF8.self) }.joined(separator: "|"))
+                        }.id("open")
+                    }
+                }
+                let window = try s.element(ofType: WindowContract.nodeType)
+
+                try s.perform(.activate, on: s.element("save"))
+                try s.settle { try s.fileDialog() != nil }
+                try s.perform(.answerFiles(["start.txt"]), on: window)
+                s.settle { said.values.count == 1 }
+
+                try s.perform(.activate, on: s.element("open"))
+                try s.settle { try s.fileDialog() != nil }
+                try s.perform(.answerFiles(["start.txt"]), on: window)
+                s.settle { said.values.count == 2 }
+                s.expect(said.values, ["start.txt", "Kept||Kept words"], "its first four bytes, then none, then all ten")
+            },
             ConformanceCase("severalFilesAreOpenedAtOnce", proves: [
                 Covered(ApplicationContract.openFiles),
             ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.saveFile)]) { s in

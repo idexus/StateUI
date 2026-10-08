@@ -210,7 +210,7 @@ STATEUI_WEB(save_file) void stateui_web_save_file(
     const uint8_t *contents, int32_t length, int32_t listener);
 
 /// Reads the file whole: `listener` hears event 1 and its length, its bytes read by `copy_read` - or 0 and why.
-STATEUI_WEB(read_file) void stateui_web_read_file(int32_t file, int32_t listener);
+STATEUI_WEB(read_file) void stateui_web_read_file(int32_t file, int32_t maximum, int32_t listener);
 
 /// What a file's act answered last, read by `copy_read`: its length.
 STATEUI_WEB(file_words) int32_t stateui_web_file_words(void);

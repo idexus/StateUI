@@ -161,8 +161,11 @@ final class StateUIFiles {
         ui.post(() -> StateUIHost.filesChosen(ticket, addresses, names, failure));
     }
 
-    /** Reads the document at `address` whole, beside the UI thread. */
-    static void read(Context context, long ticket, String address) {
+    /**
+     * Reads the document at `address` beside the UI thread: whole for a `maximum` below nought, else its first
+     * `maximum` bytes, reading no further.
+     */
+    static void read(Context context, long ticket, String address, long maximum) {
         ContentResolver resolver = context.getContentResolver();
         new Thread(() -> {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -170,7 +173,11 @@ final class StateUIFiles {
             try (InputStream stream = resolver.openInputStream(Uri.parse(address))) {
                 if (stream == null) throw new java.io.IOException("the document cannot be read");
                 byte[] run = new byte[64 * 1024];
-                for (int count; (count = stream.read(run)) > 0; ) bytes.write(run, 0, count);
+                long left = maximum < 0 ? Long.MAX_VALUE : maximum;
+                for (int count; left > 0 && (count = stream.read(run, 0, (int) Math.min(run.length, left))) > 0; ) {
+                    bytes.write(run, 0, count);
+                    left -= count;
+                }
             } catch (Exception failed) {
                 failure = String.valueOf(failed.getMessage());
             }

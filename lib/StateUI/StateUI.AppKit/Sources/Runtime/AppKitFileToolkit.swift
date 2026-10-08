@@ -37,14 +37,19 @@ final class AppKitFileToolkit: FileToolkit {
         return true
     }
 
-    func read(_ file: ChosenFile, answered: @escaping (Result<[UInt8], ActFailure>) -> Void) {
+    func read(_ file: ChosenFile, atMost maximum: Int?, answered: @escaping (Result<[UInt8], ActFailure>) -> Void) {
         let path = file.address
-        Task { @MainActor in answered(await Self.bytes(at: path)) }
+        Task { @MainActor in answered(await Self.bytes(at: path, atMost: maximum)) }
     }
 
-    @concurrent private static func bytes(at path: String) async -> Result<[UInt8], ActFailure> {
+    /// The file's bytes, or its first `maximum` of them, read no further.
+    @concurrent private static func bytes(at path: String, atMost maximum: Int?) async -> Result<[UInt8], ActFailure> {
         do {
-            return .success(Array(try Data(contentsOf: URL(fileURLWithPath: path))))
+            let url = URL(fileURLWithPath: path)
+            guard let maximum else { return .success(Array(try Data(contentsOf: url))) }
+            let handle = try FileHandle(forReadingFrom: url)
+            defer { try? handle.close() }
+            return .success(Array(try handle.read(upToCount: maximum) ?? Data()))
         } catch {
             return .failure(ActFailure(error.localizedDescription))
         }

@@ -29,9 +29,10 @@ extension WebRelay {
         }
     }
 
-    /// Reads the file `number` whole; its listener reads `fileBytes`.
-    static func readFile(_ number: Int32, _ listener: Int32) {
-        stateui_web_read_file(number, listener)
+    /// Reads the file `number` - whole for a nil `maximum`, else its first `maximum` bytes; its listener reads
+    /// `fileBytes`.
+    static func readFile(_ number: Int32, atMost maximum: Int?, _ listener: Int32) {
+        stateui_web_read_file(number, maximum.map { Int32(clamping: $0) } ?? -1, listener)
     }
 
     /// Opens the file `number` in a window of its own.

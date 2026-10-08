@@ -69,10 +69,10 @@ final class WinUIFileToolkit: FileToolkit {
         dialogs.removeValue(forKey: ticket)?(failure.map { .failure(ActFailure($0)) } ?? .success(files))
     }
 
-    func read(_ file: ChosenFile, answered: @escaping (Result<[UInt8], ActFailure>) -> Void) {
+    func read(_ file: ChosenFile, atMost maximum: Int?, answered: @escaping (Result<[UInt8], ActFailure>) -> Void) {
         let ticket = Self.ticket()
         reads[ticket] = answered
-        stateui_winui_read_file(ticket, file.address)
+        stateui_winui_read_file(ticket, file.address, Int64(maximum ?? -1))
     }
 
     /// The file read under `ticket`: its bytes, or why they could not be read.

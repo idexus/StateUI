@@ -63,13 +63,13 @@ final class AndroidFileToolkit: FileToolkit {
         dialogs.removeValue(forKey: ticket)?(failure.map { .failure(ActFailure($0)) } ?? .success(files))
     }
 
-    func read(_ file: ChosenFile, answered: @escaping (Result<[UInt8], ActFailure>) -> Void) {
+    func read(_ file: ChosenFile, atMost maximum: Int?, answered: @escaping (Result<[UInt8], ActFailure>) -> Void) {
         let ticket = Self.ticket()
         reads[ticket] = answered
         Java.frame {
             Java.callStatic(
                 JavaAPI.files, JavaAPI.readFile, .object(context.reference), .long(ticket),
-                .object(Java.string(file.address)))
+                .object(Java.string(file.address)), .long(Int64(maximum ?? -1)))
         }
     }
 

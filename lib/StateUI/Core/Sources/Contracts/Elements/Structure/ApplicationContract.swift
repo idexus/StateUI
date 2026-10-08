@@ -100,10 +100,11 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     public static let prompt = ElementAct<Self, (String, String, String, String, String?, Int?, InputPurpose, String), String?>(
         "prompt")
 
-    /// Reads a file the user chose, whole.
+    /// Reads a file the user chose: whole where nothing more is said, else at
+    /// most so many bytes from its start.
     ///
-    /// See `ChosenFile.read()`.
-    public static let readFile = ElementAct<Self, ChosenFile, [UInt8]>("readFile")
+    /// See `ChosenFile.read()` and `ChosenFile.read(atMost:)`.
+    public static let readFile = ElementAct<Self, (ChosenFile, Int?), [UInt8]>("readFile")
 
     /// Asks the user where to save in the dialog over the showing page, and
     /// writes the contents there - the contents, the name it suggests and the

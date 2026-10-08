@@ -188,6 +188,10 @@ application runs. A save takes its contents before the dialog shows, as
 some platforms hand a ready file over rather than ask for a place; the host
 writes them where the user said, and the caller hears the file once they
 stand written. Bytes cross as one run (`.bytes`), never a list of numbers.
+A read says the most bytes it takes, or nothing for the whole file: each host
+reads that much from the file's start and no further - a slice, a handle
+read up to a count, a stream left after so many - so a file longer than the
+application takes never reaches memory whole.
 
 A `FileType` keeps its extensions bare, lowercase and once each, whatever
 was written, so no host strips a dot or a star of its own. A dialog's title,

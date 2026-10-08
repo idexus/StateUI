@@ -45,7 +45,21 @@ public struct ChosenFile: Equatable, Hashable, Sendable, HostRepresentable {
     /// - Throws: `StateUIError` where the platform cannot read it - gone,
     ///   or no longer the application's to read.
     public nonisolated(nonsending) func read() async throws -> [UInt8] {
-        try await stateUICall(ApplicationContract.readFile, self)
+        try await stateUICall(ApplicationContract.readFile, self, nil)
+    }
+
+    /// Reads at most `maximum` bytes from the file's start - a file longer
+    /// than the application takes is never read whole.
+    ///
+    ///     let start = try await file.read(atMost: 1025)
+    ///     guard start.count <= 1024 else { return refuse(file) }
+    ///
+    /// - Parameter maximum: the most bytes it reads; none below nought.
+    /// - Returns: the file's first bytes, all of them where it holds no more.
+    /// - Throws: `StateUIError` where the platform cannot read it - gone,
+    ///   or no longer the application's to read.
+    public nonisolated(nonsending) func read(atMost maximum: Int) async throws -> [UInt8] {
+        try await stateUICall(ApplicationContract.readFile, self, max(0, maximum))
     }
 
     /// Opens the file in the application the system gives its kind - a page

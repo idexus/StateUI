@@ -12,8 +12,9 @@
     /// to show it over.
     func show(_ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void) -> Bool
 
-    /// Reads `file` whole, and calls `answered` with its bytes or why they could not be read.
-    func read(_ file: ChosenFile, answered: @escaping (Result<[UInt8], ActFailure>) -> Void)
+    /// Reads `file` - whole for a nil `maximum`, else its first `maximum` bytes at most, never the rest of a longer
+    /// one - and calls `answered` with its bytes or why they could not be read.
+    func read(_ file: ChosenFile, atMost maximum: Int?, answered: @escaping (Result<[UInt8], ActFailure>) -> Void)
 
     /// Hands `file` to the system to open in the application it gives its kind, and calls `answered` with whether
     /// one took it.

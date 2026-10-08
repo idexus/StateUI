@@ -952,9 +952,9 @@ bool stateui_winui_answer(StateUIObjectRef element, int32_t button, char const *
 /// said, beside the UI thread. The answer comes back through `filesChosen`, under `ticket`, on the UI thread.
 void stateui_winui_show_file_dialog(StateUIObjectRef window, int64_t ticket, StateUIFileDialog const *dialog);
 
-/// Reads the file at `path`, in UTF-8, whole, beside the UI thread; its bytes come back through `fileRead`, under
-/// `ticket`, on the UI thread.
-void stateui_winui_read_file(int64_t ticket, char const *path);
+/// Reads the file at `path`, in UTF-8, beside the UI thread - whole for a `maximum` below nought, else its first
+/// `maximum` bytes, read no further; its bytes come back through `fileRead`, under `ticket`, on the UI thread.
+void stateui_winui_read_file(int64_t ticket, char const *path, int64_t maximum);
 
 /// Hands the file at the path `target`, or the address `target`, to Windows to open in the application it gives it;
 /// whether one took it comes back through `launchAnswered`, under `ticket`, on the UI thread.

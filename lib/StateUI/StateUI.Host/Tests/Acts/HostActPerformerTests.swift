@@ -228,6 +228,23 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(answers.failures[5], "the act names no file")
     }
 
+    /// A read says the most bytes it takes, which reaches the toolkit as it is said - nothing for a whole file, and
+    /// none below nought.
+    func testAReadSaysTheMostBytesItTakes() {
+        let (files, answers) = (Files(), Answers())
+        let acts = HostActPerformer(toolkit: Toolkit(), files: files, answers: answers, tree: { nil })
+        files.contents = [report: [60, 104, 49, 62]]
+
+        acts.perform(HostActCall(act: .readFile, arguments: [report.propValue, .number(2)], completion: 1))
+        acts.perform(HostActCall(act: .readFile, arguments: [report.propValue, .nothing], completion: 2))
+        acts.perform(HostActCall(act: .readFile, arguments: [report.propValue, .number(-3)], completion: 3))
+
+        XCTAssertEqual(files.maxima, [2, nil, 0])
+        XCTAssertEqual(answers.replies[1], [.bytes([60, 104])], "the first two bytes")
+        XCTAssertEqual(answers.replies[2], [.bytes([60, 104, 49, 62])], "the whole file")
+        XCTAssertEqual(answers.replies[3], [.bytes([])], "none")
+    }
+
     /// A host with no toolkit for files fails every act for files by name and the host's.
     func testAHostWithNoFilesFailsTheirActsByName() {
         let answers = Answers()
@@ -252,8 +269,13 @@ private final class Files: FileToolkit {
         return true
     }
 
-    func read(_ file: ChosenFile, answered: @escaping (Result<[UInt8], ActFailure>) -> Void) {
-        answered(contents[file].map { .success($0) } ?? .failure(ActFailure("no file '\(file.name)'")))
+    /// The most bytes each read asked for, in turn; nil for a whole file.
+    var maxima: [Int?] = []
+
+    func read(_ file: ChosenFile, atMost maximum: Int?, answered: @escaping (Result<[UInt8], ActFailure>) -> Void) {
+        maxima.append(maximum)
+        let read = contents[file].map { bytes in maximum.map { Array(bytes.prefix($0)) } ?? bytes }
+        answered(read.map { .success($0) } ?? .failure(ActFailure("no file '\(file.name)'")))
     }
 
     func launch(_ file: ChosenFile, answered: @escaping (Bool) -> Void) {

@@ -152,7 +152,8 @@
         switch call.act {
         case .readFile:
             guard let file else { return fail(call, "the act names no file") }
-            files.read(file) { [weak self] read in self?.heard(call, read.map { [$0.propValue] }) }
+            let maximum = call.arguments.value(1)?.number.map { Int(min(max($0, 0), 0x1p52)) }
+            files.read(file, atMost: maximum) { [weak self] read in self?.heard(call, read.map { [$0.propValue] }) }
         case .launchFile:
             guard let file else { return fail(call, "the act names no file") }
             files.launch(file, answered: launched)

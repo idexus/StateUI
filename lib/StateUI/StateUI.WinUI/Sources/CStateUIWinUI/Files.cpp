@@ -108,13 +108,18 @@ namespace {
     }
 
     /// Reads the whole of the file at `path` into `bytes`: why not, empty where it was read.
-    std::string read(std::string const &path, std::vector<uint8_t> &bytes) {
+    /// The file at `path` into `bytes` - whole for a `maximum` below nought, else its first `maximum` bytes, read
+    /// no further; why it failed, or nothing.
+    std::string read(std::string const &path, int64_t maximum, std::vector<uint8_t> &bytes) {
         auto file = CreateFileW(winrt::to_hstring(path).c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
                                 FILE_ATTRIBUTE_NORMAL, nullptr);
         if (file == INVALID_HANDLE_VALUE) return failed("could not read", path);
         std::string why;
         LARGE_INTEGER size{};
-        if (GetFileSizeEx(file, &size)) bytes.resize(static_cast<size_t>(size.QuadPart));
+        if (GetFileSizeEx(file, &size)) {
+            auto whole = static_cast<uint64_t>(size.QuadPart);
+            bytes.resize(static_cast<size_t>(maximum < 0 ? whole : std::min<uint64_t>(whole, maximum)));
+        }
         else why = failed("could not read", path);
         size_t done = 0;
         while (done < bytes.size() && why.empty()) {
@@ -208,11 +213,11 @@ extern "C" void stateui_winui_show_file_dialog(StateUIObjectRef handle, int64_t 
     }
 }
 
-extern "C" void stateui_winui_read_file(int64_t ticket, char const *path) {
+extern "C" void stateui_winui_read_file(int64_t ticket, char const *path, int64_t maximum) {
     try {
-        std::thread([ticket, path = std::string(path ? path : "")] {
+        std::thread([ticket, maximum, path = std::string(path ? path : "")] {
             auto bytes = std::make_shared<std::vector<uint8_t>>();
-            auto why = read(path, *bytes);
+            auto why = read(path, maximum, *bytes);
             runOnUIThread([ticket, bytes, why] {
                 callbacks.fileRead(
                     ticket, bytes->data(), static_cast<int64_t>(bytes->size()), why.empty() ? nullptr : why.c_str());

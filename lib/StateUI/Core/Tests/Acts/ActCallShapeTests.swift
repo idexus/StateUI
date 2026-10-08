@@ -294,11 +294,14 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
-    /// A file read or launched crosses as where it stands, then its name.
+    /// A file read or launched crosses as where it stands, then its name; a read then says the most bytes it
+    /// takes - nothing for the whole file, none below nought.
     func testAChosenFileCrossesAsWhereItStandsAndItsName() async throws {
         let file = ChosenFile(address: "C:\\Reports\\Report.html", name: "Report.html")
         let crossed: PropValue = .strings(["C:\\Reports\\Report.html", "Report.html"])
-        try await check("readFile", [crossed]) { _ = try await file.read() }
+        try await check("readFile", [crossed, .nothing]) { _ = try await file.read() }
+        try await check("readFile", [crossed, .number(1025)]) { _ = try await file.read(atMost: 1025) }
+        try await check("readFile", [crossed, .number(0)]) { _ = try await file.read(atMost: -5) }
         try await check("launchFile", [crossed]) { _ = try await file.launch() }
     }
 

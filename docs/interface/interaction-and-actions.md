@@ -243,6 +243,26 @@ the application the system gives its kind. `Links.launch` does the same for an
 address. Both answer whether an application took it. A chosen file stays good
 while the application runs.
 
+`read(atMost:)` reads no more than so many bytes from the file's start, so a
+file longer than the application takes is never read whole - one byte past
+the limit is enough to tell it is too long:
+
+```swift
+struct NotePage: View {
+    @State private var note = ""
+
+    var body: some View {
+        Button("Open a note…").onClicked {
+            guard let file = try await Dialogs.openFile() else { return }
+            let start = try await file.read(atMost: 1025)
+            note = start.count > 1024
+                ? "\(file.name) is longer than 1 KB"
+                : String(decoding: start, as: UTF8.self)
+        }
+    }
+}
+```
+
 ## Host-extension actions
 
 An application reaches its own host code through acts it declares in a tier

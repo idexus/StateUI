@@ -24,11 +24,11 @@ final class WebFileToolkit: FileToolkit {
         return true
     }
 
-    func read(_ file: ChosenFile, answered: @escaping (Result<[UInt8], ActFailure>) -> Void) {
+    func read(_ file: ChosenFile, atMost maximum: Int?, answered: @escaping (Result<[UInt8], ActFailure>) -> Void) {
         let listener = WebRelay.once {
             answered(WebRelay.fileKept ? .success(WebRelay.fileBytes) : .failure(ActFailure(WebRelay.fileWords)))
         }
-        WebRelay.readFile(Int32(file.address) ?? 0, listener)
+        WebRelay.readFile(Int32(file.address) ?? 0, atMost: maximum, listener)
     }
 
     func launch(_ file: ChosenFile, answered: @escaping (Bool) -> Void) {
