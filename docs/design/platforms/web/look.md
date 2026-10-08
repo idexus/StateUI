@@ -33,10 +33,12 @@ a field stands as wide as the room it is given.
 
 ## A view's background
 
-A view's background is the CSS background of its element, under its whole
-box: a colour, or a brush's first colour. A field, a picker's `<select>`, a
-date or a time is filled where the user writes, as the browser draws a field
-the page colours. A ColorBox's colour is a swatch filling its box, so its
+A view's background is the CSS background colour of its element, under its
+whole box: a colour, or a brush's first colour. A field, a picker's
+`<select>`, a date or a time is filled where the user writes, as the browser
+draws a field the page colours. The trap: written as the `background`
+shorthand, the colour cleared the picture the page's look draws in a field -
+a picker's chevron, a search field's glass. A ColorBox's colour is a swatch filling its box, so its
 background shows where rounded corners leave the box bare; a web view's
 background shows where the page it shows paints none, and stands white where
 the application gives none. The browser draws its slider over the slider's

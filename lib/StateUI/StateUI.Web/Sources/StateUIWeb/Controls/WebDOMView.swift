@@ -154,10 +154,10 @@ class WebDOMView {
     }
 
     /// What the element is drawn over, under its whole box: a colour, or a brush's first colour; nil for the
-    /// browser's own. A field's box is its field.
+    /// browser's own. A field's box is its field, the picture the page's look draws in it kept.
     /// Design: docs/design/platforms/web/look.md#a-views-background
     func setBackground(_ value: HostValue?) {
-        style("background", WebCSS.fill(HostMaterial(value).painted))
+        style("background-color", WebCSS.fill(HostMaterial(value).painted))
     }
 
     /// Sets an attribute, or takes it away for nil.
