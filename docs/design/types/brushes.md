@@ -23,6 +23,8 @@ offset and a colour for each stop.
 ```
 
 The host builds its own toolkit's brush from these parts and parses nothing.
+A brush of one colour of which nothing shows is clear (`HostBrush.isClear`):
+a bar painted with it shows what lies behind it as it is.
 A gradient spelled as text would put the definition of a gradient inside
 whichever parser reads it, and one that read it only in part would draw
 nothing, or the wrong thing, without saying a word. The kinds number from 1;

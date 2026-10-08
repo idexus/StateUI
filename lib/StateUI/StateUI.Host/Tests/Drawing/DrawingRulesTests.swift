@@ -22,6 +22,18 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(gradient.firstColor, red)
     }
 
+    /// One colour of which nothing shows is clear - a clear bar; one that shows a breath of itself, a gradient
+    /// and nothing at all are not.
+    func testAColourNothingOfWhichShowsIsClear() {
+        XCTAssertTrue(HostBrush(Color.transparent.propValue).isClear)
+        XCTAssertFalse(HostBrush(Color(red: 0, green: 0, blue: 0, alpha: 5).propValue).isClear)
+        XCTAssertFalse(HostBrush(red).isClear)
+        XCTAssertFalse(HostBrush(nil).isClear, "nothing said is the platform's own, not clear")
+        let fading = HostBrush(.values([.enumeration(2), .numbers([]), .number(0), Color.transparent.propValue,
+                                        .number(1), blue]))
+        XCTAssertFalse(fading.isClear)
+    }
+
     /// A material is read as what paints it, the blur behind it, its glass and the colour standing in for the
     /// blur: a colour is its paint alone, a blur its tint over its thickness, glass the blur as clear as it is.
     @MainActor

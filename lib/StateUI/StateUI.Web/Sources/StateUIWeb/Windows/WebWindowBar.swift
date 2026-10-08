@@ -98,8 +98,7 @@ final class WebWindowBar: WebDOMView {
 
         style("--stateui-bar-background", WebCSS.fill(chrome.background))
         // A clear bar shows what is behind it as it is: no blur, no deeper colour under it.
-        let clear = chrome.background.flatMap { HostBrush($0).firstColor }.map { $0.argb.map { $0 >> 24 == 0 } ?? false }
-        style("--stateui-bar-filter", clear == true ? "none" : nil)
+        style("--stateui-bar-filter", HostBrush(chrome.background).isClear ? "none" : nil)
         style("--stateui-bar-foreground", WebCSS.color(chrome.foreground))
 
         var kept: [ObjectIdentifier: WebBarButton] = [:]
