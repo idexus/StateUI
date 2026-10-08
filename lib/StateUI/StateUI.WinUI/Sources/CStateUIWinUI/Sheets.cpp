@@ -34,6 +34,9 @@ namespace {
         controls::Grid sheets;
         sheets.Tag(winrt::box_value(L"sheets"));
         controls::Grid::SetRowSpan(sheets, 4);
+        // Over every row by its own depth, not by its place among the root's children: a page stood in a row since
+        // goes on the end, and stood over a sheet.
+        controls::Canvas::SetZIndex(sheets, 1);
         media::Animation::TransitionCollection transitions;
         transitions.Append(media::Animation::PopupThemeTransition());
         sheets.ChildrenTransitions(transitions);

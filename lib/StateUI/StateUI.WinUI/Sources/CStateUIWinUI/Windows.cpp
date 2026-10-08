@@ -207,12 +207,12 @@ extern "C" void stateui_winui_window_set_overlays(StateUIObjectRef handle, State
                 layer = grid;
         if (!layer && count == 0) return;
         if (!layer) {
-            // Where the page stands, over it and over its sheets; with no background, a click beside what it holds
-            // goes on to them.
+            // Where the page stands, over it and over its sheets' layer; with no background, a click beside what it
+            // holds goes on to them.
             layer = controls::Grid();
             layer.Tag(winrt::box_value(L"overlay"));
             controls::Grid::SetRow(layer, 3);
-            controls::Canvas::SetZIndex(layer, 1);
+            controls::Canvas::SetZIndex(layer, 2);
             children.Append(layer);
         }
         layer.Children().Clear();
