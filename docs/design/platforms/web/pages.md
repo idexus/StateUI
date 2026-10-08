@@ -23,7 +23,7 @@ as CSS variables the stylesheet paints it with; without them the bar is the
 page's surface, translucent over what scrolls beneath, blurred and deepened.
 A clear bar drops the blur: it shows what lies behind it as it is, the same
 colour as the page under it. No line stands under the bar. The same title
-names the browser's tab.
+names the browser's tab, beside the site's name ([The tab](#the-tab)).
 
 Beside a sidebar shown, the bar stands in two parts as wide as the split
 view's columns: over the sidebar the application's name and the line under
@@ -40,6 +40,19 @@ in words, and the browser's tab shows the site's own icon.
 
 The page is one window: an application's second window has no place of its
 own in it.
+
+## The tab
+
+The tab names the page the user sees beside the site's name the page's head
+gives - its `application-name`, which an application writes in its
+`Page/head.html` - as "Home - StateUI": the site's name tells one of the
+user's tabs from another, the page's which place of the site it shows. A page
+with no title, or one named as the site, names the tab as the site alone.
+Where the head gives no name, the tab is the page's title alone, so a page
+the library lays out by itself reads as its window's title. The head's
+`<title>` is the page's name before the module runs and what a crawler that
+runs no script reads; it is often a sentence, too long to stand beside every
+page's title.
 
 ## The browser's way back
 

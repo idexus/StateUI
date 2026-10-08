@@ -112,7 +112,7 @@ final class WebWindowController {
     }
 
     /// Writes the window's chrome on its bar and each sheet's on the sheet's, and names the tab after the page the
-    /// user sees.
+    /// user sees and the site.
     /// Design: docs/design/platforms/web/pages.md#the-windows-bar
     func refreshChrome() {
         guard let element else { return }
@@ -128,8 +128,17 @@ final class WebWindowController {
             sheet.bar.show(own, title: named, sidebar: nil)
             if !named.isEmpty { title = named }
         }
-        WebRelay.setTitle(title)
+        WebRelay.setTitle(Self.tab(page: title, site: WebRelay.siteName))
         followHistory()
+    }
+
+    /// What the tab says: the page's title beside the site's name, either alone where the other is none or the
+    /// same.
+    /// Design: docs/design/platforms/web/pages.md#the-tab
+    static func tab(page: String, site: String) -> String {
+        if site.isEmpty { return page }
+        if page.isEmpty || page == site { return site }
+        return "\(page) - \(site)"
     }
 
     /// Goes the way back the window offers: a stack's top page, or the top sheet.

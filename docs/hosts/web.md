@@ -96,15 +96,18 @@ it shows - its description, the address it is found at, its preview.
 
 ```html
 <title>Notes - Plain notes, kept</title>
+<meta name="application-name" content="Notes">
 <meta name="description" content="Notes keeps what you write, on every device you use.">
 <link rel="canonical" href="https://notes.example/">
 <meta property="og:title" content="Notes - Plain notes, kept">
 <meta property="og:image" content="https://notes.example/preview.jpg">
 ```
 
-A `<title>` there names the page until the application's window names it with
-the page it shows; without one the page is named after the application. The
-Gallery's describes StateUI at stateui.dev:
+A `<title>` there names the page while the module loads, and what a link to
+it shows; without one the page is named after the application. Once the
+application runs, the tab names the page it shows beside the site's name the
+head gives in `application-name` - "Home - Notes" - and the page alone where
+the head gives none. The Gallery's describes StateUI at stateui.dev:
 `apps/Gallery/Platforms/Web/Page/head.html`.
 
 ## Controls registered in Swift

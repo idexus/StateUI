@@ -371,6 +371,9 @@ enum WebRelay {
         utf8(title) { stateui_web_set_title($0, $1) }
     }
 
+    /// The site's name the page's head gives, its `application-name`; "" where it gives none.
+    static var siteName: String { copyRead(length: stateui_web_site_name()) }
+
     static func requestFrame() {
         stateui_web_request_frame()
     }
