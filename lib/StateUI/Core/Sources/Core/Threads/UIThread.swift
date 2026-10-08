@@ -28,7 +28,7 @@ import WASILibc
 #endif
 
 /// Which thread this is, as a number to compare - spelled per platform.
-private func currentThread() -> UInt64 {
+func currentThread() -> UInt64 {
     #if canImport(WinSDK)
     UInt64(GetCurrentThreadId())
     #elseif os(WASI)

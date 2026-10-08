@@ -64,23 +64,25 @@ final class CycleBoard: @unchecked Sendable {
         }
     }
 
-    /// What a value stands at: the running cycle's image inside a cycle, the newest
-    /// write or the last published picture outside one.
+    /// What a value stands at: the running cycle's image to the thread running it, the
+    /// newest write or the last published picture to any other.
     func read(_ storage: HostStorage, lanes: Int) -> StateCarried {
-        let bytes = book.withLock { $0.cycling ? storage.image : (storage.pending ?? storage.published) }
+        let thread = currentThread()
+        let bytes = book.withLock { $0.cyclist == thread ? storage.image : (storage.pending ?? storage.published) }
 
         return StateImage.carried(of: bytes, lanes: lanes)
     }
 
-    /// Writes a value into the image during a cycle, or into the pending slot between
-    /// cycles; the stamp moves either way. `forcing` marks lanes a write means even
-    /// where the bytes did not move.
+    /// Writes a value into the image from the thread running a cycle, or into the
+    /// pending slot from any other and between cycles; the stamp moves either way.
+    /// `forcing` marks lanes a write means even where the bytes did not move.
     /// Design: docs/design/core/cycle.md#where-a-write-lands
     func write(_ bytes: [UInt8], to storage: HostStorage, forcing forced: UInt64 = 0) {
+        let thread = currentThread()
         let waiting: Bool = book.withLock { book in
             storage.stamp &+= 1
 
-            if book.cycling {
+            if book.cyclist == thread {
                 storage.dirty |= HostStorage.lay(bytes, into: &storage.image) | forced
                 return false
             }
@@ -105,7 +107,9 @@ final class CycleBoard: @unchecked Sendable {
     /// Design: docs/design/core/cycle.md#what-the-host-reports
     @discardableResult
     func told(_ bytes: [UInt8], mask: UInt64, to storage: HostStorage, keepsUnread: Bool = false) -> UInt64 {
-        book.withLock { book in
+        let thread = currentThread()
+
+        return book.withLock { book in
             let laid = keepsUnread ? mask & ~(storage.dirty | storage.pendingMask) : mask
 
             func lay(into slot: inout [UInt8]) {
@@ -118,7 +122,7 @@ final class CycleBoard: @unchecked Sendable {
 
             storage.stamp &+= 1
 
-            if book.cycling {
+            if book.cyclist == thread {
                 lay(into: &storage.image)
                 storage.dirty &= ~laid
                 return laid
@@ -224,8 +228,9 @@ final class CycleBoard: @unchecked Sendable {
 
         count &+= 1
 
+        let thread = currentThread()
         let order: [Int] = book.withLock { book in
-            book.cycling = true
+            book.cyclist = thread
 
             for held in book.storages {
                 guard let storage = held.storage, let pending = storage.pending else { continue }
@@ -289,7 +294,7 @@ final class CycleBoard: @unchecked Sendable {
                 }
             }
 
-            book.cycling = false
+            book.cyclist = nil
             report.awake = book.stirring
         }
 
@@ -315,10 +320,11 @@ final class CycleBoard: @unchecked Sendable {
         /// The engines in running order: ascending priority, then registration.
         var engines: [EngineEntry] = []
 
-        /// Whether a cycle is between its latch and its publish - which decides where a
-        /// write lands and what a read answers.
+        /// The thread running a cycle between its latch and its publish, nil between
+        /// cycles - which decides where a write lands and what a read answers: the
+        /// image is that thread's alone.
         /// Design: docs/design/core/cycle.md#three-copies-of-a-value
-        var cycling = false
+        var cyclist: UInt64?
 
         /// Whether any engine has a reason to run. A latching cycle counts it too, so
         /// the clock is not let go with work piled up.

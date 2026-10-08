@@ -53,11 +53,12 @@ written, and the process would crash on a torn dictionary.
   pending     a write made while no cycle runs, waiting to be latched
 ```
 
-A read inside a cycle answers the image, so every engine in one cycle sees one
-picture. A read outside answers the newest thing this side knows - a pending
-write, or else the published copy - so a handler that writes a value and reads
-it back gets what it wrote, while the next cycle still runs over a picture that
-cannot change under it. Nothing outside ever sees a half-finished picture, and
+The image is the thread running the cycle's alone, from its latch to its
+publish. A read on that thread answers the image, so every engine in one cycle
+sees one picture. A read anywhere else, or between cycles, answers the newest
+thing this side knows - a pending write, or else the published copy - so a
+handler that writes a value and reads it back gets what it wrote, while the
+next cycle still runs over a picture that cannot change under it. Nothing outside ever sees a half-finished picture, and
 running the same cycle twice over the same image answers the same bytes.
 
 A state the host does not carry is read live, under its own lock. On the one
@@ -66,11 +67,14 @@ what makes following any state cost nothing extra.
 
 ## Where a write lands
 
-A write inside a cycle goes into the image and marks its changed lanes dirty. A
-write outside one goes into the pending slot, and wakes the host after it has
-landed, outside the hold: a write from the pool - a `Task.detached`, an
-`async let` child sending a movement - has no event, render or act after it to
-start a cycle, and nothing else would tell the host it is there.
+A write on the thread running a cycle - an engine's - goes into the image and
+marks its changed lanes dirty, so the engines after it see it. Any other write
+goes into the pending slot - between cycles, or from another thread while the
+engines run, which then waits for the next cycle as if made after this one -
+and wakes the host after it has landed, outside the hold: a write from the
+pool - a `Task.detached`, an `async let` child sending a movement - has no
+event, render or act after it to start a cycle, and nothing else would tell
+the host it is there.
 
 Each write bumps the value's stamp, even where the bytes are what they already
 were: an engine following a value a finger is holding still is entitled to hear

@@ -703,6 +703,43 @@ final class CycleTests: XCTestCase {
         XCTAssertFalse(board.cycle(now: 64, reducesMotion: false).awake, "nobody wrote, nobody runs")
     }
 
+    /// EVERY ENGINE IN ONE CYCLE SEES ONE PICTURE. A write from another thread
+    /// while the engines run - here between the first and the second - waits
+    /// for the next cycle, as a write between cycles does: the image the cycle
+    /// latched is the engines' alone until it is published.
+    func testAWriteFromAnotherThreadWaitsForTheNextCycle() {
+        let board = CycleBoard(sync: .display)
+        let storage = HostStorage(StateImage.bytes(of: 1.0.carried))
+        var seen: [Double] = []
+
+        func read() -> Double { Double(carried: board.read(storage, lanes: 1)) ?? .nan }
+
+        board.hold(storage)
+        board.arm(EngineEntry(id: 1, priority: 0, sync: .display, follows: []) { _ in
+            seen.append(read())
+
+            let written = DispatchSemaphore(value: 0)
+            Thread {
+                board.write(StateImage.bytes(of: 2.0.carried), to: storage)
+                written.signal()
+            }.start()
+            written.wait()
+
+            return .wait
+        })
+        board.arm(EngineEntry(id: 2, priority: 1, sync: .display, follows: []) { _ in
+            seen.append(read())
+            return .again
+        })
+
+        board.cycle(now: 0, reducesMotion: false)
+        board.cycle(now: 16, reducesMotion: false)
+        XCTAssertEqual(seen, [1, 1], "both engines saw the picture the cycle latched")
+
+        board.cycle(now: 32, reducesMotion: false)
+        XCTAssertEqual(seen, [1, 1, 2], "the next cycle latched the write")
+    }
+
     /// AN ENGINE FOLLOWS WHAT THE LATEST RENDER NAMED. `following:` is an
     /// expression the body evaluates, so a render may hand the engine other
     /// states than the one before did - and the entry takes them, forgetting
