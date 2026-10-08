@@ -99,33 +99,38 @@ final class CycleBoard: @unchecked Sendable {
         }
     }
 
-    /// Takes in what the host wrote: the named lanes only, their dirty bits cleared.
-    /// A report naming every lane may change the value's length.
+    /// Takes in what the host wrote: the named lanes only, their dirty bits cleared;
+    /// with `keepsUnread`, none written since the host last read it. Answers the
+    /// lanes laid. A report naming every lane may change the value's length.
     /// Design: docs/design/core/cycle.md#what-the-host-reports
-    func told(_ bytes: [UInt8], mask: UInt64, to storage: HostStorage) {
-        func lay(into slot: inout [UInt8]) {
-            if mask == ~0 {
-                _ = HostStorage.lay(bytes, into: &slot)
-            } else {
-                _ = HostStorage.lay(bytes, into: &slot, only: mask)
-            }
-        }
-
+    @discardableResult
+    func told(_ bytes: [UInt8], mask: UInt64, to storage: HostStorage, keepsUnread: Bool = false) -> UInt64 {
         book.withLock { book in
+            let laid = keepsUnread ? mask & ~(storage.dirty | storage.pendingMask) : mask
+
+            func lay(into slot: inout [UInt8]) {
+                if laid == ~0 {
+                    _ = HostStorage.lay(bytes, into: &slot)
+                } else {
+                    _ = HostStorage.lay(bytes, into: &slot, only: laid)
+                }
+            }
+
             storage.stamp &+= 1
 
             if book.cycling {
                 lay(into: &storage.image)
-                storage.dirty &= ~mask
-                return
+                storage.dirty &= ~laid
+                return laid
             }
 
             var slot = storage.pending ?? storage.image
 
             lay(into: &slot)
             storage.pending = slot
-            storage.pendingMask &= ~mask
-            storage.dirty &= ~mask
+            storage.pendingMask &= ~laid
+            storage.dirty &= ~laid
+            return laid
         }
     }
 

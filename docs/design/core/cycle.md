@@ -99,6 +99,16 @@ the value's length, as a text does.
 A Swift host reports a journey by its parts (`HostJourneyUpdate`): a frame is
 value and velocity; aiming, stopping and landing add the destination.
 
+A journey's report leaves every lane written since the host last read it. The
+host speaks of the journey it was handed: a travel landing in the frame after a
+handler sent the state elsewhere reports the old destination, and a frame
+reports a value the program has since snapped away from. Laid, the report would
+undo the write and clear its dirty bit, so the host would never hear it - the
+state would read the old destination while the control stood clamped at a new
+range's end. The write stands, the next cycle hands it over, and the travel
+goes on from where the host landed. A text, a plain value or a gesture lays
+what it reports.
+
 ## The per-frame read
 
 What crosses to the host is what a cycle finished, never the image a cycle is

@@ -589,9 +589,9 @@ final class GalleryViewTests: XCTestCase {
 
             XCTAssertTrue(renders.fire(stopped))
 
-            // And a cycle takes the write out to where the host reads it.
+            // And the host's next frame reads the write out.
             turned += 16
-            _ = board.cycle(now: turned, reducesMotion: false)
+            _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
 
             return try XCTUnwrap(standing(offset, as: JourneyLanes<Point>.self))
         }
