@@ -16,7 +16,7 @@
   --stateui-muted: light-dark(#5d6270, #9aa0ad);
   --stateui-line: light-dark(rgb(15 23 42 / 0.09), rgb(255 255 255 / 0.08));
   --stateui-line-strong: light-dark(rgb(15 23 42 / 0.18), rgb(255 255 255 / 0.16));
-  /* The hairline under the bar: a divider let through to the page under it, one device pixel thin. */
+  /* The divider between a sidebar and the page: let through to what stands under it, one device pixel thin. */
   --stateui-separator: light-dark(rgb(0 0 0 / 0.08), rgb(255 255 255 / 0.08));
   --stateui-shade: light-dark(rgb(15 23 42 / 0.36), rgb(0 0 0 / 0.55));
   --stateui-radius: 10px;
@@ -104,7 +104,6 @@ body {
   padding: 0 12px;
   background: var(--stateui-bar-background, color-mix(in srgb, var(--stateui-surface) 82%, transparent));
   color: var(--stateui-bar-foreground, var(--stateui-text));
-  border-bottom: 0.5px solid var(--stateui-separator);
   backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
   -webkit-backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
 }
@@ -162,6 +161,7 @@ body {
   /* Over a sidebar beside the page the bar stands on the sidebar's ground: one column, the bar and the sidebar. */
   .stateui-bar[data-sidebar="shown"] .stateui-bar-side {
     background: var(--stateui-sidebar-ground, var(--stateui-sidebar-own));
+    border-inline-end: 0.5px solid var(--stateui-separator);
     backdrop-filter: var(--stateui-sidebar-filter, none);
     -webkit-backdrop-filter: var(--stateui-sidebar-filter, none);
   }
@@ -332,6 +332,7 @@ body {
 }
 .stateui-split[data-sidebar="hidden"] { grid-template-columns: 0px minmax(0, 1fr); }
 .stateui-split[data-moves] { transition: grid-template-columns var(--stateui-slide); }
+/* A sidebar beside the page stands apart from it by a divider, from the bar's top to the window's foot. */
 .stateui-sidebar {
   display: grid;
   width: var(--stateui-sidebar-width);
@@ -339,6 +340,7 @@ body {
   min-width: 0;
   overflow: hidden;
   background: var(--stateui-sidebar-ground, var(--stateui-sidebar-own));
+  border-inline-end: 0.5px solid var(--stateui-separator);
   backdrop-filter: var(--stateui-sidebar-filter, none);
   -webkit-backdrop-filter: var(--stateui-sidebar-filter, none);
 }

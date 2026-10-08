@@ -22,7 +22,8 @@ technology and its tooltip. The bar's colours are the arrangement's, written
 as CSS variables the stylesheet paints it with; without them the bar is the
 page's surface, translucent over what scrolls beneath, blurred and deepened.
 A clear bar drops the blur: it shows what lies behind it as it is, the same
-colour as the page under it. The same title names the browser's tab.
+colour as the page under it. No line stands under the bar. The same title
+names the browser's tab.
 
 Beside a sidebar shown, the bar stands in two parts as wide as the split
 view's columns: over the sidebar the application's name and the line under
@@ -111,7 +112,9 @@ a question nobody held would never answer.
 
 ## A split view
 
-A split view stands its sidebar in an `<aside>` beside the detail. Where the
+A split view stands its sidebar in an `<aside>` beside the detail, apart from
+it by a divider down its edge - from the bar's top, whose part over the
+sidebar carries the same line, to the window's foot. Where the
 page is narrower than 900 pixels the sidebar stands over the detail as a
 drawer, with a shade over the rest that takes it away when tapped; the
 toggle in the bar shows and hides it either way. Shown or hidden is the
