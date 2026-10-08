@@ -59,7 +59,6 @@ final class AppKitDecoration {
         if let glass = material.glass {
             let shown = surface as? AppKitGlassView ?? place(AppKitGlassView(), in: view)
             shown.show(glass, tint: material.paint.flatMap(nsColor))
-            shown.wash.fill = AppKitBrush()
         } else if let thickness = material.blur {
             let shown = surface as? AppKitMaterialView ?? place(AppKitMaterialView(thickness, behindWindow: false), in: view)
             shown.material = AppKitMaterialView.role(thickness)

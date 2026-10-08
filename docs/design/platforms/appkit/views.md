@@ -51,6 +51,11 @@ its own (`AppKitBoxWash`), the material's top view, hidden while it paints
 nothing. Laying out the children keeps the surface beneath them. Glass that
 answers the user takes the press, which rises to the layout; any other
 surface takes none. A window's blur carries the same wash for its tint.
+The trap: macOS draws an inactive window's glass without its tint - a violet
+sidebar went grey as its window lost the focus - but never what the glass
+holds. So glass wears its tint while its window stands key or main in the
+application in front, and in its content (the wash) otherwise, following the
+window's and the application's notices.
 
 A scroller's box is its layer's alone: a colour behind what it shows, a
 colour's outline on a rectangle or a rounded one, and the cut of what it shows

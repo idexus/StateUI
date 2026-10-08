@@ -54,7 +54,7 @@ extension AppKitDriver {
     private static func material(_ surface: any AppKitBoxSurface) -> Material? {
         if let glass = surface as? AppKitGlassView {
             var shown: Glass = glass.style == .clear ? .clear : .regular
-            if let tint = glass.tintColor { shown = shown.tint(color(tint)) }
+            if let tint = glass.tint { shown = shown.tint(color(tint)) }
             return .glass(shown.isInteractive(glass.isInteractiveForTesting))
         }
         guard let view = surface as? AppKitMaterialView, let thickness = AppKitMaterialView.thickness(view.material)

@@ -100,6 +100,9 @@ final class AppKitGlassView: NSGlassEffectView, AppKitBoxSurface {
     private var isInteractive = false
     var isInteractiveForTesting: Bool { isInteractive }
 
+    /// The colour the glass is tinted with, active or not; nil for none.
+    private(set) var tint: NSColor?
+
     override init(frame: NSRect) {
         super.init(frame: frame)
         contentView = wash
@@ -114,9 +117,42 @@ final class AppKitGlassView: NSGlassEffectView, AppKitBoxSurface {
     /// from macOS 27.
     func show(_ glass: HostMaterial.Glass, tint: NSColor?) {
         style = glass.isClear ? .clear : .regular
-        tintColor = tint
+        self.tint = tint
+        showTint()
         isInteractive = glass.isInteractive
         if #available(macOS 27, *) { effectIsInteractive = glass.isInteractive }
+    }
+
+    /// The tint in the glass while its window stands active, else in what the glass holds: macOS draws an inactive
+    /// window's glass without its tint, never what the glass holds.
+    /// Design: docs/design/platforms/appkit/views.md#a-layouts-own-box
+    private func showTint() {
+        let active = NSApp.isActive && (window?.isKeyWindow == true || window?.isMainWindow == true)
+        tintColor = active ? tint : nil
+        wash.layer?.backgroundColor = active ? nil : tint?.cgColor
+        wash.isHidden = active || tint == nil
+    }
+
+    /// Follows its window's standing - key, main, its application in front - as the window and the application say.
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        let center = NotificationCenter.default
+        center.removeObserver(self)
+        let changed = #selector(standingChanged)
+        if let window {
+            for name in [NSWindow.didBecomeKeyNotification, NSWindow.didResignKeyNotification,
+                         NSWindow.didBecomeMainNotification, NSWindow.didResignMainNotification] {
+                center.addObserver(self, selector: changed, name: name, object: window)
+            }
+        }
+        for name in [NSApplication.didBecomeActiveNotification, NSApplication.didResignActiveNotification] {
+            center.addObserver(self, selector: changed, name: name, object: nil)
+        }
+        showTint()
+    }
+
+    @objc private func standingChanged() {
+        showTint()
     }
 
     /// Takes the click where it answers the user, which its view hears as it rises; else what is under it in the
