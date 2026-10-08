@@ -365,7 +365,7 @@ struct HomePage: View {
     ///
     /// ON THE WEB THE FOOT ALWAYS STANDS - it says whose the page is - and what
     /// stands under the cards is what the room gives up first instead: the
-    /// buttons stepping them, then the words.
+    /// buttons stepping them, then the words, both before the cards shrink.
     private enum Chrome {
         /// The heading, the cards, what stands under them and the two lines at
         /// the foot.
@@ -472,15 +472,15 @@ struct HomePage: View {
     }
 
     /// What the room holds on the Web, and how tall the run of cards stands in
-    /// it. The foot stands always; the buttons stepping the run stand only
-    /// beside a run at its ceiling, so they go first; the run then gives up its
-    /// height down to the least worth drawing, and only past that the words
-    /// under it go, and then the heading.
+    /// it. The foot stands always; the buttons stepping the run and then the
+    /// words under it stand only beside a run at its ceiling, so they go
+    /// first, in that order; only then does the run give up its height, down
+    /// to the least worth drawing, and past that the heading goes.
     private static func webFitted(in room: Rect, at most: Chrome, stepping: Bool) -> (chrome: Chrome, run: Double) {
         let usable = room.height - 2 * margin - gap - footer
         let spare = usable - heading - gap
         let heads = most.heads && spare >= least
-        let worded = heads && spare - words >= least
+        let worded = heads && spare - words >= gallery
         let stepped = worded && stepping && spare - words - gap - buttons >= gallery
         let run = !heads ? usable : stepped ? spare - words - gap - buttons : worded ? spare - words : spare
         return (stepped ? .full : worded ? .worded : heads ? .heading : .cards, max(min(run, gallery), least))

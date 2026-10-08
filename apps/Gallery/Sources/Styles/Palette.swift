@@ -74,9 +74,15 @@ enum Palette {
     /// is as light as the panel.
     static let edge = Color(light: Color("#14000000"), dark: Color("#15FFFFFF"))
 
-    /// Behind a sample and its code: the page darkened a breath, all else let
-    /// through.
+    /// Behind a sample and its code, and a list of samples: the page
+    /// darkened a breath, all else let through - in the dark a fifth, as dark
+    /// as the sidebar over the window, and an eighth on Windows, whose
+    /// acrylic is deeper.
+    #if WINUI
     static let shade = Color(light: Color("#0A000000"), dark: Color("#1F000000"))
+    #else
+    static let shade = Color(light: Color("#0A000000"), dark: Color("#33000000"))
+    #endif
 
     /// The ground words are typed on: what lies behind lit a breath, all else
     /// let through.

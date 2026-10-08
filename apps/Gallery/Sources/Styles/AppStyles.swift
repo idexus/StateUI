@@ -105,6 +105,14 @@ enum AppStyles {
             Style<SearchField>()
                 .background(Palette.field)
 
+            // On the Web a picker stands on the page's surface, opaque, where
+            // every platform's own lets what lies behind through: there it
+            // takes the fields' ground.
+            #if WEB
+            Style<Picker>()
+                .background(Palette.field)
+            #endif
+
             // MARK: The menu's rows
             //
             // A menu row is a view like any other, so it takes a style like any

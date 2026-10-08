@@ -123,34 +123,40 @@ struct ThemeLook: Equatable, RawRepresentable, PersistentValue {
     }
 
     /// The light theme's look the gallery opens in: clear bars, and the
-    /// platform's own window and sidebar.
-    static let light = ThemeLook(
-        bars: .clear, barColour: .gallery, window: .platform, sidebar: .platform, flyout: .platform)
+    /// platform's own window and sidebar - on the Mac the sidebar the
+    /// platform's glass.
+    static var light: ThemeLook {
+        #if APPKIT
+        let sidebar = SurfaceLook(material: .glass, colour: .gallery, blur: .thick)
+        #else
+        let sidebar = SurfaceLook.platform
+        #endif
+        return ThemeLook(bars: .clear, barColour: .gallery, window: .platform, sidebar: sidebar, flyout: .platform)
+    }
 
     /// The dark theme's look the gallery opens in: on Windows a window of the
     /// desktop blurred in the gallery's violet, its sidebar letting it
-    /// through; on the Mac and GNOME a thin blur of the desktop in the
-    /// gallery's own colour, made from that window, its sidebar the
-    /// platform's glass in it; on the iPad and the iPhone those colours, the
-    /// sidebar the same glass; on the Web those colours.
+    /// through; on the Mac a thick blur of the desktop in the gallery's own
+    /// colour, made from that window, its sidebar the platform's glass in
+    /// it; on the iPad and the iPhone those colours, the sidebar the same
+    /// glass beside the page and over it; on the Web, GNOME and Android -
+    /// which blur nothing behind a window - those colours, whole.
     static var dark: ThemeLook {
-        let violet = { (blur: Blur) in SurfaceLook(material: .tintedBlur, colour: .violet, blur: blur) }
         #if WINUI
+        let violet = SurfaceLook(material: .tintedBlur, colour: .violet, blur: .thick)
         return ThemeLook(
-            bars: .platform, barColour: .violet, window: violet(.thick), sidebar: .platform, flyout: .platform)
-        #elseif APPKIT || GTK
+            bars: .platform, barColour: .violet, window: violet, sidebar: .platform, flyout: .platform)
+        #elseif APPKIT
+        let glass = SurfaceLook(material: .tintedGlass, colour: .gallery, blur: .thick)
         return ThemeLook(
-            bars: .clear, barColour: .gallery, window: SurfaceLook(material: .tintedBlur, colour: .gallery, blur: .regular),
-            sidebar: SurfaceLook(material: .tintedGlass, colour: .gallery, blur: .thick), flyout: .galleryOwn)
+            bars: .clear, barColour: .gallery,
+            window: SurfaceLook(material: .tintedBlur, colour: .gallery, blur: .thick), sidebar: glass, flyout: glass)
         #elseif UIKIT
         let glass = SurfaceLook(material: .tintedGlass, colour: .gallery, blur: .thick)
         return ThemeLook(bars: .clear, barColour: .gallery, window: .galleryOwn, sidebar: glass, flyout: glass)
-        #elseif WEB
-        return ThemeLook(
-            bars: .clear, barColour: .gallery, window: .galleryOwn, sidebar: .galleryOwn, flyout: .galleryOwn)
         #else
         return ThemeLook(
-            bars: .clear, barColour: .gallery, window: violet(.thick), sidebar: .platform, flyout: .galleryOwn)
+            bars: .clear, barColour: .gallery, window: .galleryOwn, sidebar: .galleryOwn, flyout: .galleryOwn)
         #endif
     }
 

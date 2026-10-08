@@ -87,7 +87,12 @@ struct ListRow: View {
                     .verticalAlignment(.center)
 
                 VStack {
+                    // The name a breath larger than the line under it and in
+                    // the words' own colour, whatever size and colour a
+                    // platform's text starts in.
                     Text(title)
+                        .fontSize(15)
+                        .textColor(Palette.text)
 
                     Text(summary)
                         .fontSize(13)
