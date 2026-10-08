@@ -110,7 +110,10 @@ A sidebar the application paints ([a sidebar's
 material](../../host/pages.md#a-sidebars-material)) stands on UIKit's plain
 column (`primaryBackgroundStyle` `.none`), which UIKit parts from the detail
 by its own separator; on UIKit's sidebar material - the platform's own
-sidebar - the columns stand with none.
+sidebar - the columns stand with none. A blur or glass for the sidebar's
+place is UIKit's own effect under what the sidebar page shows - a blur's tint
+washed over it, glass tinted in itself - beside the detail and over it alike;
+a colour is the page's own background.
 
 Whether the sidebar shows is the display mode the host prefers: over or
 beside the detail while the tree asks for it, the detail alone while not.
