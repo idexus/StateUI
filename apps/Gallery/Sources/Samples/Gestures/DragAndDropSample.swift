@@ -83,9 +83,10 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             .background(over ? Palette.selected : .transparent)
             .onDragOver { over = true }
             .onDragLeave { over = false }
-            // A drop is not a leave, so the light comes down here too.
+            // A drop is not a leave, so the light comes down here too. Words
+            // longer than 1 KB are left out.
             .onDrop { text in
-                basket.append(text)
+                basket.append(text.utf8.count <= 1024 ? text : "left out: longer than 1 KB")
                 over = false
             }
 

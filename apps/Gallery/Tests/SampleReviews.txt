@@ -30,12 +30,12 @@ DatePickerSample.swift 98ec31b1e84de06c
 DeviceDisplaySample.swift eef85f0c297578c9
 DeviceInfoSample.swift de1665d54a9e259b
 DialogsSample.swift e6e4820d0a3b7914
-DragAndDropSample.swift 766ed1eb479b514f
+DragAndDropSample.swift 0e17f6fefc43ecb2
 DrivenReadingSample.swift 346a2670db6b5250
 DrivenSample.swift 2d70559b224f7e91
 EngineSample.swift 93222f15444728ae
 EnvironmentSample.swift 07426a19c1c7b6da
-FilesSample.swift e3b7716c2e8ba35a
+FilesSample.swift 3c3b647ac06d93c8
 FoundationProbeSample.swift 53fe7a3368cb73e8
 GalleryViewSample.swift dd523cffc1d09ec0
 GeometryReaderSample.swift e33366d200d8dc07

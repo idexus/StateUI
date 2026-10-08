@@ -2112,9 +2112,10 @@ enum Listings {
                 .lineWidth(over ? 2 : 1)
                 .onDragOver { over = true }
                 .onDragLeave { over = false }
-                // A drop is not a leave, so the light comes down here too.
+                // A drop is not a leave, so the light comes down here too. Words
+                // longer than 1 KB are left out.
                 .onDrop { text in
-                    basket.append(text)
+                    basket.append(text.utf8.count <= 1024 ? text : "left out: longer than 1 KB")
                     over = false
                 }
 
@@ -2443,13 +2444,16 @@ enum Listings {
                         answer = saved.map { "saved as \($0.name)" } ?? "cancelled"
                     }
 
+                // No file longer than 1 KB is read whole: one byte past it says it is longer.
                 Button("Open…")
                     .onClicked {
                         let text = FileType("Text", extensions: ["txt", "md"])
                         guard let file = try await Dialogs.openFile(types: [text]) else {
                             return answer = "cancelled"
                         }
-                        words = String(decoding: try await file.read(), as: UTF8.self)
+                        let start = try await file.read(atMost: 1025)
+                        guard start.count <= 1024 else { return answer = "\(file.name) is longer than 1 KB" }
+                        words = String(decoding: start, as: UTF8.self)
                         answer = "opened \(file.name)"
                     }
 
@@ -2473,7 +2477,9 @@ enum Listings {
                 .onDragLeave { dropping = false }
                 .onDrop(files: [FileType("Text", extensions: ["txt", "md"])]) { files in
                     dropping = false
-                    words = String(decoding: try await files[0].read(), as: UTF8.self)
+                    let start = try await files[0].read(atMost: 1025)
+                    guard start.count <= 1024 else { return answer = "\(files[0].name) is longer than 1 KB" }
+                    words = String(decoding: start, as: UTF8.self)
                     answer = "dropped \(files[0].name)"
                 }
 

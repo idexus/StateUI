@@ -27,13 +27,16 @@ struct FilesSample: SampleContent, ExampleContent {
                     answer = saved.map { "saved as \($0.name)" } ?? "cancelled"
                 }
 
+            // No file longer than 1 KB is read whole: one byte past it says it is longer.
             Button("Open…")
                 .onClicked {
                     let text = FileType("Text", extensions: ["txt", "md"])
                     guard let file = try await Dialogs.openFile(types: [text]) else {
                         return answer = "cancelled"
                     }
-                    words = String(decoding: try await file.read(), as: UTF8.self)
+                    let start = try await file.read(atMost: 1025)
+                    guard start.count <= 1024 else { return answer = "\(file.name) is longer than 1 KB" }
+                    words = String(decoding: start, as: UTF8.self)
                     answer = "opened \(file.name)"
                 }
 
@@ -61,7 +64,9 @@ struct FilesSample: SampleContent, ExampleContent {
             .onDragLeave { dropping = false }
             .onDrop(files: [FileType("Text", extensions: ["txt", "md"])]) { files in
                 dropping = false
-                words = String(decoding: try await files[0].read(), as: UTF8.self)
+                let start = try await files[0].read(atMost: 1025)
+                guard start.count <= 1024 else { return answer = "\(files[0].name) is longer than 1 KB" }
+                words = String(decoding: start, as: UTF8.self)
                 answer = "dropped \(files[0].name)"
             }
 
@@ -75,7 +80,8 @@ struct FilesSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         Text("A dialog or a drop answers a file whose name the application reads; where it stands is the "
-            + "platform's own, so the host reads it and launches it.")
+            + "platform's own, so the host reads it and launches it. A file of 1 KB at most is read: "
+            + "`read(atMost:)` takes one byte more and stops, so a longer one is never read whole.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
