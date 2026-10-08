@@ -32,16 +32,16 @@ test run.
 ## In Action
 
 <p>
-  <img src="docs/assets/appkit.jpg" alt="The Gallery's home page on AppKit" width="66.1%"
-  ><img src="docs/assets/uikit-ipad.jpg" alt="The Gallery's home page on UIKit, on an iPad" width="33.7%">
+  <img src="docs/assets/appkit.jpg" alt="The Gallery's home page on AppKit" width="67.0%"
+  ><img src="docs/assets/uikit-ipad.jpg" alt="The Gallery's home page on UIKit, on an iPad" width="32.8%">
 </p>
 <p>
-  <img src="docs/assets/gtk.jpg" alt="The Gallery's OpenGL sample on GTK 4 with libadwaita" width="74.8%"
-  ><img src="docs/assets/android.jpg" alt="The Gallery's State and bindings sample on Android Views" width="25.0%">
+  <img src="docs/assets/gtk.jpg" alt="The Gallery's OpenGL sample on GTK 4 with libadwaita" width="74.4%"
+  ><img src="docs/assets/android.jpg" alt="The Gallery's State and bindings sample on Android Views" width="25.4%">
 </p>
 <p>
-  <img src="docs/assets/web.jpg" alt="The Gallery's ItemsView sample on the Web host, in Safari" width="76.5%"
-  ><img src="docs/assets/uikit-iphone.jpg" alt="The Gallery's Metal sample on UIKit, on an iPhone" width="23.3%">
+  <img src="docs/assets/web.jpg" alt="The Gallery's ItemsView sample on the Web host, in Safari" width="77.0%"
+  ><img src="docs/assets/uikit-iphone.jpg" alt="The Gallery's Metal sample on UIKit, on an iPhone" width="22.8%">
 </p>
 <p>
   <img src="docs/assets/winui.jpg" alt="The Gallery's Transforms sample on WinUI 3" width="100%">
