@@ -121,8 +121,9 @@ suspend. There are three ways in, one path each:
 `begin` uses `Task.immediate`, which starts the task on the calling thread -
 the host's UI thread, which is `MainActor`'s - so a handler with no `await`
 finishes before the dispatch returns and the host renders what it wrote in
-the same turn. Where the runtime cannot start the task inline, it lands in
-the UI thread's queue and the drain that follows runs it.
+the same turn. A dispatch runs that handler and nothing else: a job already
+waiting on the UI thread's queue runs when the host drains it, at its turn -
+the same point on every platform, whichever executor `MainActor` is.
 
 `dispatch` answers whether a handler was found, not whether it finished. An
 unknown id is an event for an element that has already left the tree, or an

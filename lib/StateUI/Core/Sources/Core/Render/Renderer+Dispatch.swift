@@ -53,8 +53,6 @@ extension Renderer {
                 Renderer.shared.report(error)
             }
         }
-
-        stateUIRunJobs()
     }
 
     /// Starts a handler on `MainActor` in a later turn - for what a render found

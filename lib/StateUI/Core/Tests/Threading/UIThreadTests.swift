@@ -322,6 +322,32 @@ final class UIThreadTests: XCTestCase {
             """)
     }
 
+    /// A DISPATCH RUNS ITS HANDLER AND NOTHING ELSE: a job waiting on the UI
+    /// thread's queue runs when the host drains it, at its turn - on every
+    /// platform at the same point, whichever executor `MainActor` is.
+    func testADispatchRunsNoJobWaitingOnTheUIThread() throws {
+        let renders = Renders()
+        let queued = OnTheUIThreadsQueue()
+        var taps = 0
+
+        let patch = renders.render(Button("Tap").onClicked { taps += 1 }.node)
+        let id = try XCTUnwrap(patch.events?["clicked"])
+
+        Task.detached { await queued.touch() }
+
+        let deadline = Date().addingTimeInterval(2)
+        while UIThreadExecutor.shared.pendingCount == 0, Date() < deadline {
+            Thread.sleep(forTimeInterval: 0.002)
+        }
+
+        XCTAssertTrue(renders.fire(id))
+        XCTAssertEqual(taps, 1, "the handler ran inside the dispatch")
+        XCTAssertEqual(queued.touches, 0, "and nothing that waited for the host's drain")
+
+        while stateUIRunJobs() > 0 {}
+        XCTAssertEqual(queued.touches, 1, "the host's drain ran it")
+    }
+
     /// And the other half: a handler that awaits gives up the thread, which is
     /// the entire point and the entire risk.
     @MainActor
