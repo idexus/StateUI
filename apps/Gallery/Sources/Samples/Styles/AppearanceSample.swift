@@ -47,13 +47,13 @@ struct AppearanceSample: SampleContent, ExampleContent {
             // force, and changes with it. Side by side where there is room,
             // one under the other on a phone.
             if device.info.formFactor == .phone {
-                LookColumn(title: "Light", style: style, look: \.lightLook)
-                LookColumn(title: "Dark", style: style, look: \.darkLook)
+                LookColumn(title: "Light", style: style, look: \.lightLook, choice: \.lightChoice)
+                LookColumn(title: "Dark", style: style, look: \.darkLook, choice: \.darkChoice)
             } else {
                 Grid {
-                    LookColumn(title: "Light", style: style, look: \.lightLook)
+                    LookColumn(title: "Light", style: style, look: \.lightLook, choice: \.lightChoice)
                         .gridColumn(0)
-                    LookColumn(title: "Dark", style: style, look: \.darkLook)
+                    LookColumn(title: "Dark", style: style, look: \.darkLook, choice: \.darkChoice)
                         .gridColumn(1)
                 }
                 .columns(.fill, .fill)
@@ -68,7 +68,9 @@ struct AppearanceSample: SampleContent, ExampleContent {
         VStack {
             Text("Each theme has a look of its own: the gallery wears the one of the "
                 + "theme in force, and turns to the other when the system's theme turns, "
-                + "or the one the application holds. \"The platform's own\" leaves a choice "
+                + "or the one the application holds. \"The gallery's own\" keeps no look: it is "
+                + "the one this version of the gallery draws on this platform, at every start. "
+                + "\"The platform's own\" leaves a choice "
                 + "unwritten: each platform draws its own, in the user's accent, material "
                 + "and theme. A colour paints the bars alone; what the window shows behind "
                 + "the pages is its background. The sidebar stands on one material beside "
@@ -92,11 +94,13 @@ struct AppearanceSample: SampleContent, ExampleContent {
 
 // listing: AppearanceSample
 /// One theme's look: its bars, and what its window, its sidebar and its
-/// sidebar over the page are made of - written where `look` says.
+/// sidebar over the page are made of - written where `look` says, which makes
+/// it the user's own; the gallery's own again where `choice` says.
 private struct LookColumn: View {
     let title: String
     let style: SessionStyle
     let look: ReferenceWritableKeyPath<SessionStyle, ThemeLook>
+    let choice: ReferenceWritableKeyPath<SessionStyle, LookChoice>
 
     var body: some View {
         // Read here, so a choice made anywhere builds each picker again at its
@@ -112,8 +116,18 @@ private struct LookColumn: View {
             Binding(get: { style[keyPath: key][keyPath: part] }, set: { style[keyPath: key][keyPath: part] = $0 })
         }
 
+        let choice = self.choice
+        let composed = style[keyPath: choice] != .own
+
         return VStack {
             SectionTitle(title)
+
+            // Back to the look this gallery draws on this platform, whatever
+            // it was when the user composed another.
+            Button("The gallery's own")
+                .accessibilityIdentifier("appearance.\(name).own")
+                .isEnabled(composed)
+                .onClicked { style[keyPath: choice] = .own }
 
             Text("The bars")
                 .fontSize(12)

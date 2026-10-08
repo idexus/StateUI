@@ -179,4 +179,44 @@ struct ThemeLook: Equatable, RawRepresentable, PersistentValue {
         self.init(bars: bars, barColour: barColour, window: surfaces[0], sidebar: surfaces[1], flyout: surfaces[2])
     }
 }
+
+/// A theme's look as the user chose it: the gallery's own, or one composed in
+/// the Appearance sample. A scene keeps the CHOICE - the gallery's own is drawn
+/// afresh at every start, as this version of the gallery makes it, never kept
+/// as what it was when the scene was.
+enum LookChoice: Equatable, RawRepresentable, PersistentValue {
+    /// The look that suits the platform best: `ThemeLook.light` or `.dark`.
+    case own
+
+    /// A look the user put together.
+    case composed(ThemeLook)
+
+    /// The look the choice wears in a theme, `dark` or not.
+    func look(dark: Bool) -> ThemeLook {
+        switch self {
+        case .own: return dark ? .dark : .light
+        case .composed(let look): return look
+        }
+    }
+
+    /// "own", or "composed" and the look's words.
+    var rawValue: String {
+        switch self {
+        case .own: return "own"
+        case .composed(let look): return "composed " + look.rawValue
+        }
+    }
+
+    /// The choice its words say; nil for words another version wrote - a look
+    /// kept whole - so the gallery starts in its own.
+    init?(rawValue: String) {
+        if rawValue == "own" {
+            self = .own
+        } else if rawValue.hasPrefix("composed "), let look = ThemeLook(rawValue: String(rawValue.dropFirst(9))) {
+            self = .composed(look)
+        } else {
+            return nil
+        }
+    }
+}
 // listing: end

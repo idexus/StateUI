@@ -23,10 +23,10 @@ extension SceneKey {
     /// The font the gallery's preview is set in.
     static let font = SceneKey("gallery.font", of: String.self)
 
-    /// The gallery's look in the light theme and in the dark: its bars, and
-    /// what its window and its sidebar are made of.
-    static let lightLook = SceneKey("gallery.look.light", of: ThemeLook.self)
-    static let darkLook = SceneKey("gallery.look.dark", of: ThemeLook.self)
+    /// The look chosen for the light theme and for the dark: the gallery's own,
+    /// or one the user composed.
+    static let lightLook = SceneKey("gallery.look.light", of: LookChoice.self)
+    static let darkLook = SceneKey("gallery.look.dark", of: LookChoice.self)
 }
 // listing: end
 
@@ -110,10 +110,24 @@ final class SessionStyle {
     /// The font the preview is set in - empty for the platform's own.
     @State(sceneKey: .font) var font = ""
 
-    /// The gallery's look in each theme - the one that suits the platform best,
-    /// until the Appearance sample chooses another.
-    @State(sceneKey: .lightLook) var lightLook = ThemeLook.light
-    @State(sceneKey: .darkLook) var darkLook = ThemeLook.dark
+    /// The look chosen for each theme - the gallery's own, until the
+    /// Appearance sample composes another.
+    @State(sceneKey: .lightLook) var lightChoice = LookChoice.own
+    @State(sceneKey: .darkLook) var darkChoice = LookChoice.own
+
+    /// The look the gallery wears in the light theme; a look written here is
+    /// the user's own composition.
+    var lightLook: ThemeLook {
+        get { lightChoice.look(dark: false) }
+        set { lightChoice = .composed(newValue) }
+    }
+
+    /// The look the gallery wears in the dark theme; a look written here is
+    /// the user's own composition.
+    var darkLook: ThemeLook {
+        get { darkChoice.look(dark: true) }
+        set { darkChoice = .composed(newValue) }
+    }
 
     /// The look the gallery wears in a theme, `dark` or not.
     func look(dark: Bool) -> ThemeLook {

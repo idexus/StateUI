@@ -8,7 +8,7 @@ AnimatedInputSample.swift 0ee49c71eae4969e
 AnimatedPropertySample.swift baa7e4f5da025247
 AnimationSample.swift 0a6750953955941c
 AppThemeSample.swift e0a396a7923a982b
-AppearanceSample.swift b10c5cb53583850d
+AppearanceSample.swift 2282b5aab6924f33
 ApplicationSessionSample.swift ae08f3dbb8db9b0e
 BatterySample.swift ecb52b0b01a7945f
 BindingReaderSample.swift 22bbc364e59f8b8f
@@ -60,7 +60,7 @@ MaterialsSample.swift 8be8f5591201d543
 MenuBarSample.swift 300e8ad297028c06
 ModalSample.swift c642e9b1c3ba1c7e
 MotionSample.swift 68062187a8a77d82
-MultiWindowSample.swift 8916c13db2c9a45a
+MultiWindowSample.swift b7ed277d902e6bbf
 NavigationSample.swift 088d9cfd29692ce5
 OnChangedSample.swift 5fda6eb24ca8c3c2
 OutlineSample.swift 0b5cb8a5e6925246

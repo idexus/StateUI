@@ -697,13 +697,13 @@ enum Listings {
                 // force, and changes with it. Side by side where there is room,
                 // one under the other on a phone.
                 if device.info.formFactor == .phone {
-                    LookColumn(title: "Light", style: style, look: \.lightLook)
-                    LookColumn(title: "Dark", style: style, look: \.darkLook)
+                    LookColumn(title: "Light", style: style, look: \.lightLook, choice: \.lightChoice)
+                    LookColumn(title: "Dark", style: style, look: \.darkLook, choice: \.darkChoice)
                 } else {
                     Grid {
-                        LookColumn(title: "Light", style: style, look: \.lightLook)
+                        LookColumn(title: "Light", style: style, look: \.lightLook, choice: \.lightChoice)
                             .gridColumn(0)
-                        LookColumn(title: "Dark", style: style, look: \.darkLook)
+                        LookColumn(title: "Dark", style: style, look: \.darkLook, choice: \.darkChoice)
                             .gridColumn(1)
                     }
                     .columns(.fill, .fill)
@@ -712,11 +712,13 @@ enum Listings {
         }
 
         /// One theme's look: its bars, and what its window, its sidebar and its
-        /// sidebar over the page are made of - written where `look` says.
+        /// sidebar over the page are made of - written where `look` says, which makes
+        /// it the user's own; the gallery's own again where `choice` says.
         private struct LookColumn: View {
             let title: String
             let style: SessionStyle
             let look: ReferenceWritableKeyPath<SessionStyle, ThemeLook>
+            let choice: ReferenceWritableKeyPath<SessionStyle, LookChoice>
 
             var body: some View {
                 // Read here, so a choice made anywhere builds each picker again at its
@@ -732,8 +734,17 @@ enum Listings {
                     Binding(get: { style[keyPath: key][keyPath: part] }, set: { style[keyPath: key][keyPath: part] = $0 })
                 }
 
+                let choice = self.choice
+                let composed = style[keyPath: choice] != .own
+
                 return VStack {
                     SectionTitle(title)
+
+                    // Back to the look this gallery draws on this platform, whatever
+                    // it was when the user composed another.
+                    Button("The gallery's own")
+                        .isEnabled(composed)
+                        .onClicked { style[keyPath: choice] = .own }
 
                     Text("The bars")
                     Picker(bars.map(\.name))
@@ -2824,6 +2835,46 @@ enum Listings {
             }
         }
 
+        /// A theme's look as the user chose it: the gallery's own, or one composed in
+        /// the Appearance sample. A scene keeps the CHOICE - the gallery's own is drawn
+        /// afresh at every start, as this version of the gallery makes it, never kept
+        /// as what it was when the scene was.
+        enum LookChoice: Equatable, RawRepresentable, PersistentValue {
+            /// The look that suits the platform best: `ThemeLook.light` or `.dark`.
+            case own
+
+            /// A look the user put together.
+            case composed(ThemeLook)
+
+            /// The look the choice wears in a theme, `dark` or not.
+            func look(dark: Bool) -> ThemeLook {
+                switch self {
+                case .own: return dark ? .dark : .light
+                case .composed(let look): return look
+                }
+            }
+
+            /// "own", or "composed" and the look's words.
+            var rawValue: String {
+                switch self {
+                case .own: return "own"
+                case .composed(let look): return "composed " + look.rawValue
+                }
+            }
+
+            /// The choice its words say; nil for words another version wrote - a look
+            /// kept whole - so the gallery starts in its own.
+            init?(rawValue: String) {
+                if rawValue == "own" {
+                    self = .own
+                } else if rawValue.hasPrefix("composed "), let look = ThemeLook(rawValue: String(rawValue.dropFirst(9))) {
+                    self = .composed(look)
+                } else {
+                    return nil
+                }
+            }
+        }
+
         // Sources/Styles/GalleryColours.swift
         /// A part of the gallery a colour paints - each has a colour of the gallery's
         /// own, made to sit with the platform's look.
@@ -2866,10 +2917,10 @@ enum Listings {
             /// The font the gallery's preview is set in.
             static let font = SceneKey("gallery.font", of: String.self)
 
-            /// The gallery's look in the light theme and in the dark: its bars, and
-            /// what its window and its sidebar are made of.
-            static let lightLook = SceneKey("gallery.look.light", of: ThemeLook.self)
-            static let darkLook = SceneKey("gallery.look.dark", of: ThemeLook.self)
+            /// The look chosen for the light theme and for the dark: the gallery's own,
+            /// or one the user composed.
+            static let lightLook = SceneKey("gallery.look.light", of: LookChoice.self)
+            static let darkLook = SceneKey("gallery.look.dark", of: LookChoice.self)
         }
 
         /// A colour a gallery wears - on its bars, or behind its pages, where its look
@@ -2949,10 +3000,24 @@ enum Listings {
             /// The font the preview is set in - empty for the platform's own.
             @State(sceneKey: .font) var font = ""
 
-            /// The gallery's look in each theme - the one that suits the platform best,
-            /// until the Appearance sample chooses another.
-            @State(sceneKey: .lightLook) var lightLook = ThemeLook.light
-            @State(sceneKey: .darkLook) var darkLook = ThemeLook.dark
+            /// The look chosen for each theme - the gallery's own, until the
+            /// Appearance sample composes another.
+            @State(sceneKey: .lightLook) var lightChoice = LookChoice.own
+            @State(sceneKey: .darkLook) var darkChoice = LookChoice.own
+
+            /// The look the gallery wears in the light theme; a look written here is
+            /// the user's own composition.
+            var lightLook: ThemeLook {
+                get { lightChoice.look(dark: false) }
+                set { lightChoice = .composed(newValue) }
+            }
+
+            /// The look the gallery wears in the dark theme; a look written here is
+            /// the user's own composition.
+            var darkLook: ThemeLook {
+                get { darkChoice.look(dark: true) }
+                set { darkChoice = .composed(newValue) }
+            }
 
             /// The look the gallery wears in a theme, `dark` or not.
             func look(dark: Bool) -> ThemeLook {
