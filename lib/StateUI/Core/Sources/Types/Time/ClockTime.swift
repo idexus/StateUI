@@ -156,9 +156,11 @@ extension ClockTime: LaneValue {
     /// A time from those three lanes. Nil for any other count, so a report
     /// that does not read leaves the state alone.
     public init?(carried: StateCarried) {
-        guard case .lanes(let lanes) = carried, lanes.count == 3 else { return nil }
+        guard case .lanes(let lanes) = carried, lanes.count == 3,
+              let hour = Int(nearest: lanes[0]), let minute = Int(nearest: lanes[1]), let second = Int(nearest: lanes[2])
+        else { return nil }
 
-        self.init(hour: Int(lanes[0].rounded()), minute: Int(lanes[1].rounded()), second: Int(lanes[2].rounded()))
+        self.init(hour: hour, minute: minute, second: second)
     }
 
     /// Three.

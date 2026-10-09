@@ -74,12 +74,12 @@ extension Int: PersistentValue {
     /// here does.
     public var persistentValue: PropValue { .number(Double(self)) }
 
-    /// The value back from the host, or nil for anything that is not a number.
+    /// The value back from the host, or nil for anything that is not a number an `Int` holds.
     /// - Parameter persisted: what the host read out of the store.
     public init?(persisted: PropValue) {
-        guard case .number(let value) = persisted else { return nil }
+        guard case .number(let value) = persisted, let whole = Int(nearest: value) else { return nil }
 
-        self = Int(value)
+        self = whole
     }
 }
 

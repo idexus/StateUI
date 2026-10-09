@@ -134,8 +134,8 @@ public enum PropValue: Equatable, Sendable {
     /// or a position payload is read with. Rounds nothing: 2.0 answers 2, and
     /// text answers nil.
     public var int: Int? {
-        if case .number(let value) = self { return Int(value) }
-        return nil
+        guard case .number(let value) = self, value.isFinite else { return nil }
+        return Int(exactly: value.rounded(.towardZero))
     }
 
     /// True or false, when this value is one - nil for any other kind.

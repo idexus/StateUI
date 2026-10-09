@@ -112,7 +112,7 @@ public struct Color: Equatable, Sendable, HostRepresentable {
     ///
     ///     accent.opacity(0.15)   // a light wash of it
     public func opacity(_ fraction: Double) -> Color {
-        let kept = fraction < 0 ? 0 : (fraction > 1 ? 1 : fraction)
+        let kept = fraction.isNaN || fraction < 0 ? 0 : (fraction > 1 ? 1 : fraction)
         func scaled(_ channels: Rgba) -> Rgba {
             Rgba(red: channels.red, green: channels.green, blue: channels.blue,
                  alpha: UInt8((Double(channels.alpha) * kept).rounded()))

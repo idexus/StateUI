@@ -56,11 +56,11 @@ extension Int: LaneValue {
     /// A whole number takes one lane, as itself.
     public var carried: StateCarried { .lanes([Double(self)]) }
 
-    /// The nearest whole number to what the lane holds.
+    /// The nearest whole number to what the lane holds, or nil where no `Int` holds it.
     public init?(carried: StateCarried) {
-        guard case .lanes(let lanes) = carried, lanes.count == 1 else { return nil }
+        guard case .lanes(let lanes) = carried, lanes.count == 1, let whole = Int(nearest: lanes[0]) else { return nil }
 
-        self = Int(lanes[0].rounded())
+        self = whole
     }
 
     /// One.
@@ -153,7 +153,7 @@ extension Color: LaneValue {
         guard case .lanes(let lanes) = carried, lanes.count == 4 else { return nil }
 
         func channel(_ value: Double) -> UInt8 {
-            UInt8(min(max((value * 255).rounded(), 0), 255))
+            value.isNaN ? 0 : UInt8(min(max((value * 255).rounded(), 0), 255))
         }
 
         self.init(Rgba(

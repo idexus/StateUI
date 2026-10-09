@@ -134,7 +134,7 @@ extension Placement {
                 height: lanes[8]),
             opacity: lanes[9],
             shade: lanes[11],
-            zIndex: Int(lanes[10].rounded()))
+            zIndex: Int(nearest: lanes[10]) ?? 0)
     }
 
     /// Twelve, which is what the host reads by stride.
