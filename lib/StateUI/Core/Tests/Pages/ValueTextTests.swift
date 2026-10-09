@@ -27,6 +27,21 @@ final class ValueTextTests: XCTestCase {
         XCTAssertEqual(back.extra, "more")
     }
 
+    /// Equal values are written as one text: an object's members by their keys, whatever order its own
+    /// `encode(to:)` - a dictionary's, by its hash - hands them over in.
+    func testEqualValuesAreWrittenAsOneText() throws {
+        var few: [String: Int] = [:]
+        var many = [String: Int](minimumCapacity: 512)
+        for index in 0..<20 {
+            few["key\(index)"] = index
+            many["key\(19 - index)"] = 19 - index
+        }
+
+        XCTAssertEqual(few, many)
+        XCTAssertEqual(try ValueText.write(few), try ValueText.write(many))
+        XCTAssertEqual(try ValueText.write(["b": 1, "a": 2]), #"{"a":2,"b":1}"#)
+    }
+
     /// Words come back whole: a quote, a backslash, a line's end, a tab, a control with no letter, a letter past the
     /// first plane; and a pair of halves written by another hand reads as the one letter it stands for.
     func testEscapedWordsComeBackWhole() throws {

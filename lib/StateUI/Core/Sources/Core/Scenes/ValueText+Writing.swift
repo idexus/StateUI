@@ -43,7 +43,8 @@ extension ValueText {
             case .object(let members):
                 text += "{"
 
-                for (index, member) in members.enumerated() {
+                // By their keys, so equal values are one text whatever order they came in.
+                for (index, member) in members.sorted(by: { $0.key < $1.key }).enumerated() {
                     if index > 0 { text += "," }
                     Written.quote(member.key, into: &text)
                     text += ":"

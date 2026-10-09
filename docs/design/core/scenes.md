@@ -103,8 +103,8 @@ what the system restores; nothing of the library's decides it.
 
 A window's value is any `Codable` the author chose, and the platform keeps text,
 so `ValueText` writes a value as JSON and reads it back - by hand, with no
-Foundation, and with an object's members in the order the value encoded them, so
-one value is one text on every run.
+Foundation, and with an object's members by their keys, so one value is one text
+on every run: a dictionary hands its members over in its hash's order.
 
 ## Sessions
 
@@ -117,8 +117,8 @@ describe it.
 
 A scene record keeps the storage for each of its keys - one key, one piece of
 state, in a scene as in the application - what the platform kept for them, and
-the keys written since the host last took them. A scene key's write lands from
-under its state's lock, from whichever thread wrote it, so the record holds its
-own lock around those three tables. What the platform kept lands before the
+the keys written since the host last took them. A scene key's write lands on
+the UI thread, as every state's does, so the three tables need no lock. What
+the platform kept lands before the
 scene's first build. The waiting values go out as one act per key per take, scene
 by scene in the order they opened (state.md).
