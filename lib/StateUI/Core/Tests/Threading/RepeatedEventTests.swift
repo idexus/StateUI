@@ -171,6 +171,28 @@ final class RepeatedEventTests: XCTestCase {
         XCTAssertEqual(posted.wrappedValue, 2, "the first run's late post never landed")
     }
 
+    /// A post's job belongs to no run: what a live run posted lands, though the
+    /// run that booked the job was superseded before the job ran.
+    func testAPostLandsWhicheverRunBookedItsJob() async throws {
+        let gate = Gate()
+        var runs = 0
+        let posted = State(wrappedValue: 0)
+        let binding = posted.projectedValue
+        let (renders, id) = button(.cancelPrevious) {
+            runs += 1
+            binding.post(runs)
+            await gate.wait()
+        }
+
+        renders.fire(id)
+        renders.fire(id)
+        await settle()
+
+        XCTAssertEqual(posted.wrappedValue, 2, "the live run's post was refused as the superseded run's")
+        gate.open()
+        try await waitUntil { gate.waiting == 0 }
+    }
+
     /// Two handlers of one event keep their own runs, each by its own word.
     func testEachHandlerOfAnEventKeepsItsOwnRuns() async throws {
         let gate = Gate()

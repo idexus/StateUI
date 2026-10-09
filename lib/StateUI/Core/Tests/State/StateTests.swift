@@ -455,6 +455,22 @@ final class StateTests: XCTestCase {
         XCTAssertEqual(state.get(), 11, "doubled, then one more")
     }
 
+    /// A POST HOLDS NOTHING ALIVE once its job ran: a state posted to is freed
+    /// with whatever held it, as every state is.
+    func testAStatePostedToIsFreedOnceItsJobRan() async {
+        weak var storage: State<Int>.Storage?
+
+        do {
+            let state = State(0)
+            storage = state.storage
+            state.projectedValue.post(1)
+            await settle()
+            XCTAssertEqual(state.get(), 1, "the job wrote it")
+        }
+
+        XCTAssertNil(storage, "the post's slot holds the state it wrote, and the state holds the slot")
+    }
+
     /// A VALUE POSTED REPLACES THE CHANGES WAITING BEFORE IT; a change posted after
     /// it runs over it.
     func testAPostedValueReplacesTheChangesBeforeIt() async {

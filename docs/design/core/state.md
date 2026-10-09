@@ -75,6 +75,13 @@ lock the first time its part is posted to, and holds its waiting value and
 changes under a lock of its own. Coalescing is what makes a value posted ten
 thousand times from a loop cost one write and one render.
 
+The job holds the binding it writes through until it runs, and the slot holds
+none: a slot kept in the state's own mailroom and holding a binding to the state
+would be a ring, and the state would never be freed. The job is detached, so it
+belongs to no handler's run: what it writes may have been posted by several
+runs, and the run that booked it being superseded refuses none of it - a
+superseded run's own post is refused as it is posted.
+
 ## Bindings
 
 A `Binding` is two closures - read and write - plus who it borrows from: the

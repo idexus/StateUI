@@ -23,7 +23,7 @@ extension Binding where Value: Sendable {
     public nonisolated func post(_ value: Value) {
         guard HandlerRun.admits("a post") else { return }
 
-        slot.post(value)
+        slot.post(value, through: self)
     }
 
     /// Changes the state from any thread, in a job of `MainActor`'s soon after:
@@ -42,7 +42,7 @@ extension Binding where Value: Sendable {
     public nonisolated func post(_ transform: @escaping @Sendable (Value) -> Value) {
         guard HandlerRun.admits("a post") else { return }
 
-        slot.post(transform)
+        slot.post(transform, through: self)
     }
 
     /// Where this part of the state waits for its job.
@@ -65,7 +65,7 @@ final class Mailroom: Sendable {
 
             if let standing = slots[key] as? PostSlot<Value> { return standing }
 
-            let made = PostSlot(binding)
+            let made = PostSlot<Value>()
 
             slots[key] = made
             return made
@@ -84,28 +84,24 @@ final class PostSlot<Value: Sendable>: Sendable {
 
     private let waiting = Mutex(Waiting())
 
-    /// Where the job writes - any binding to this part, each the same road.
-    private let binding: Binding<Value>
-
-    init(_ binding: Binding<Value>) {
-        self.binding = binding
-    }
-
     /// Replaces whatever waits with a value.
-    func post(_ value: Value) {
-        book {
+    func post(_ value: Value, through binding: Binding<Value>) {
+        book(through: binding) {
             $0.value = value
             $0.transforms.removeAll()
         }
     }
 
     /// Queues a change after whatever waits.
-    func post(_ transform: @escaping @Sendable (Value) -> Value) {
-        book { $0.transforms.append(transform) }
+    func post(_ transform: @escaping @Sendable (Value) -> Value, through binding: Binding<Value>) {
+        book(through: binding) { $0.transforms.append(transform) }
     }
 
-    /// Records a post, and books the job where none is booked.
-    private func book(_ post: (inout Waiting) -> Void) {
+    /// Records a post, and books the job where none is booked. The job holds the
+    /// binding - any binding to this part, each the same road - until it runs, and
+    /// belongs to no handler's run: what it writes is every poster's.
+    /// Design: docs/design/core/state.md#posting
+    private func book(through binding: Binding<Value>, _ post: (inout Waiting) -> Void) {
         let first = waiting.withLock { waiting in
             post(&waiting)
             defer { waiting.booked = true }
@@ -113,13 +109,13 @@ final class PostSlot<Value: Sendable>: Sendable {
         }
 
         if first {
-            Task { @MainActor in self.write() }
+            Task.detached { @MainActor in self.write(through: binding) }
         }
     }
 
     /// The job: what waits, taken whole and written once.
     @MainActor
-    private func write() {
+    private func write(through binding: Binding<Value>) {
         let taken = waiting.withLock { waiting in
             defer { waiting = Waiting() }
             return waiting
