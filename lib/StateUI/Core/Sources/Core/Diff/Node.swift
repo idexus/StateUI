@@ -240,6 +240,18 @@ public struct Node {
     /// a collection's rows need one.
     public var id: String?
 
+    /// The value `id` was written from, compared as that value: what tells a repeated
+    /// identity from two that only describe themselves alike.
+    var identity: AnyHashable?
+
+    /// Writes `value` as who this element is: the value itself, and its name in the
+    /// patch, `String(describing:)`.
+    /// Design: docs/design/core/identity-and-diffing.md#repeated-ids
+    mutating func identify(_ value: some Hashable) {
+        identity = AnyHashable(value)
+        id = String(describing: value)
+    }
+
     /// The aim put on this view with `.aim(_:)`: a box the differ fills with the
     /// element's key. It takes no part in matching and never crosses.
     var aim: AimBox?

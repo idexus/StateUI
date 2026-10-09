@@ -113,7 +113,8 @@ An explicit id must be unique among siblings and stable while the element means
 the same thing. Its text representation is the boundary, so a custom
 `description` must remain just as distinct as the underlying value. Identify a
 class instance by a stable property it owns rather than by the class value
-itself.
+itself. Siblings sharing one identity, and two identities that describe
+themselves alike, are said once, naming which it is.
 
 ```swift
 struct FileRow: View {

@@ -99,17 +99,19 @@ an array of them stands for the loop, each matched by its `.id()`.
 
 ## ForEach keys are text
 
-`ForEach` writes each item's identity - `String(describing:)` of the item, or
-of the part `id:` names - into the view's `id`. Identity is text wherever a
-value names an element: `.id(_:)`, a navigation route, a tab, a modal sheet, a
-menu entry. One value therefore means one thing wherever it is given.
+`ForEach` writes each item's identity - the item, or the part `id:` names -
+into the view: the value itself, and its name in the patch,
+`String(describing:)`. A value names an element alike wherever it is given:
+`.id(_:)`, a tab, a menu entry, `ForEach`. One value therefore means one thing
+wherever it is given.
 
 The trap is a type that describes itself with less than it holds. A
 `CustomStringConvertible` printing one field of a compound key gives two values
-one identity, and the differ then tells those views apart by where they stand
-rather than by what they are. A synthesized description of an enum or a struct
-carries every field and is safe. A class prints its type's name for every
-instance, so a class is identified by something it holds.
+one name, and the differ then tells those views apart by where they stand
+rather than by what they are - which is said, as the element keeps the value
+its name came from. A synthesized description of an enum or a struct carries
+every field and is safe. A class prints its type's name for every instance, so
+a class is identified by something it holds.
 
 An author's own `.id()` on the view wins over the item's.
 

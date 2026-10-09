@@ -67,7 +67,7 @@ public struct TabView: ElementView, Arrangement, BarElement {
         node = Node(
             contract: TabViewContract.self,
             children: ordered.map { tab in
-                Self.identified(Node.page(destination(tab)), as: String(describing: tab))
+                Self.identified(Node.page(destination(tab)), as: tab)
             })
     }
 
@@ -108,9 +108,9 @@ public struct TabView: ElementView, Arrangement, BarElement {
     }
 
     /// A page node wearing the key its tab gives it.
-    private static func identified(_ node: Node, as identity: String) -> Node {
+    private static func identified(_ node: Node, as tab: some Hashable) -> Node {
         var copy = node
-        copy.id = identity
+        copy.identify(tab)
         return copy
     }
 }

@@ -70,14 +70,14 @@ extension VisualElement {
     ///
     /// An `.id()` written on the view wins over the one `ForEach` gives. Any
     /// `Hashable` is a key - a string, a number, a UUID, the author's own enum
-    /// or struct - compared as `String(describing:)`: a description that says
-    /// less than the value gives two values one key, and a class is keyed by
-    /// something it holds (`.id(file.path)`).
+    /// or struct - named in the patch by `String(describing:)`: two values
+    /// that describe themselves alike, and one written twice, are said; a
+    /// class is keyed by something it holds (`.id(file.path)`).
     ///
     /// - Parameter value: who this view is - distinct among its siblings and
     ///   the same across renders.
     public func id(_ value: some Hashable) -> Modified {
-        modified { $0.id = String(describing: value) }
+        modified { $0.identify(value) }
     }
 
     /// Puts an aim on this control, which is how an act reaches it.

@@ -104,7 +104,10 @@ host matches children by key and one control cannot stand in two places. A
 fresh automatic id every render would rebuild the repeat's control, handlers
 and state each time. The repeat takes a stable variant instead - the id, a NUL
 and its occurrence number - which is the same key every render and can never
-equal an id an author spelled.
+equal an id an author spelled. A repeat is said once: a node keeps the value
+its identity was written from (`Node.identify`), so one value written twice is
+told from two values that only describe themselves alike - a class printing
+its type's name - and the complaint names the cure for each.
 
 ## State survives a rebuild
 
