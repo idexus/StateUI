@@ -198,9 +198,8 @@ extension AndroidRenderer {
     ) -> AndroidRenderer {
         stateUIUseApp(OneWindowApplication(page: page))
         let renderer = bare(clock: clock, reducesMotion: reducesMotion)
-        AndroidEnvironment.report(to: renderer.runtime.core, activity: TestContext.context.reference)  // as start does
         AndroidPersistence.writeScenes("", context: TestContext.context.reference)  // no scenes an earlier test kept
-        renderer.show()
+        renderer.start()
         return renderer
     }
 

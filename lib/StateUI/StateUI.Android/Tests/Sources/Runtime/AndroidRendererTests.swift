@@ -156,7 +156,7 @@ final class AndroidRendererTests: XCTestCase {
 
             stateUIUseApp(OneWindowApplication { KeptSectionPage() })
             let next = AndroidRenderer.bare()
-            next.show()
+            next.start()
 
             XCTAssertEqual(next.views(AndroidTextView.self).map(\.text), ["section 2"])
         }

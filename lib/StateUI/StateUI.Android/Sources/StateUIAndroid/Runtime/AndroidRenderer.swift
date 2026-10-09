@@ -86,15 +86,8 @@ final class AndroidRenderer {
         let renderer = AndroidRenderer(context: context, root: root, density: density)
         shared = renderer
         renderer.watchLayout()
-        let core = renderer.runtime.core
-        core.setRealization(
-            AndroidRegistrations.registry.realization,
-            unrealized: AndroidRealization.unmade)
-        AndroidEnvironment.report(to: core, activity: context.reference)
-        if previous == nil { AndroidPersistence.restore(into: core, context: context.reference) }
         if let previous { renderer.scenes = previous.scenes }
-        renderer.show(restoringScenes: !sceneStands)
-        AndroidDoorbell.install()
+        renderer.start(restoringKept: previous == nil, restoringScenes: !sceneStands, turns: AndroidDoorbell.install)
         return renderer
     }
 
@@ -142,12 +135,20 @@ final class AndroidRenderer {
         fileToolkit.launched(ticket: ticket, taken: taken)
     }
 
-    /// Renders the application whole: where no activity shows a scene, the scenes kept for this start come back
-    /// first, else the window launch opens.
-    /// Design: docs/design/host/runtime.md#kept-scenes
-    func show(restoringScenes: Bool = true) {
-        if restoringScenes { scenes.restore(AndroidPersistence.readScenes(context: context.reference), in: runtime) }
-        runtime.pump.turn()
+    /// Starts the runtime in the host layer's order, told what the host stands on and, `restoringKept`, what it
+    /// kept; the application renders whole - where no activity shows a scene, the scenes kept for this start come
+    /// back first, else the window launch opens - and `turns` posts the turns after it.
+    /// Design: docs/design/host/runtime.md#starting
+    func start(restoringKept: Bool = false, restoringScenes: Bool = true, turns: () -> Void = {}) {
+        runtime.start(
+            realizing: AndroidRegistrations.registry.realization, unrealized: AndroidRealization.unmade,
+            environment: { AndroidEnvironment.report(to: runtime.core, activity: context.reference) },
+            kept: { if restoringKept { AndroidPersistence.restore(into: runtime.core, context: context.reference) } },
+            windows: {
+                if restoringScenes { scenes.restore(AndroidPersistence.readScenes(context: context.reference), in: runtime) }
+                runtime.pump.turn()
+            },
+            turns: turns)
     }
 
     /// A scene keeps a value, kept with the scenes for the next start.

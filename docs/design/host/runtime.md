@@ -473,6 +473,18 @@ declares `HostActs.files`; a host without one fails every act for files by
 name. A file read and a launch answer when the platform does, never in the
 turn that asked.
 
+## Starting
+
+Every host starts in one order (`HostRuntime.start`): what it realizes; the
+environment it stands on - the device, the display, the theme, the
+application's facts; the values the platform kept, read only once the device
+is told, as reading their keys makes the application, which is made knowing
+the device; the language's direction, so the tree stands in it from its first
+window; the windows - the scenes kept, or the platform's first window; then
+the turns - a doorbell, the run loop's, the page's entries. A host gives each
+step in its toolkit's terms, and a later start in the same process - Android's
+next activity, WinUI's next launch - reads no kept values again.
+
 ## Kept values
 
 Every host keeps a value as its words, by one rule (`KeptWord`): a value is

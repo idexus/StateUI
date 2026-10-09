@@ -100,12 +100,13 @@ final class UIKitRenderer {
     func start() {
         guard !started else { return }
         started = true
-        runtime.core.setRealization(UIKitRegistrations.registry.realization, unrealized: UIKitRealization.unrealized)
-        reportEnvironment()
-        environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
-        hydratePersistentState()
-        runtime.tree.followTheLanguagesDirection()
-        startTurns()
+        runtime.start(
+            realizing: UIKitRegistrations.registry.realization, unrealized: UIKitRealization.unrealized,
+            environment: {
+                reportEnvironment()
+                environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
+            },
+            kept: hydratePersistentState, turns: startTurns)
     }
 
     /// Takes a turn after every pass of the main run loop, where the core has work for one.

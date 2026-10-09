@@ -78,15 +78,16 @@ final class AppKitRenderer {
 
     func startRuntime() {
         started = true
-        runtime.core.setRealization(AppKitRegistrations.registry.realization, unrealized: AppKitRealization.unrealized)
-        configureEnvironment()
-        runtime.tree.followTheLanguagesDirection()
-        hydratePersistentState()
-        if !connectedFirstWindow {
-            runtime.connectWindow()
-            connectedFirstWindow = true
-        }
-        runtime.pump.turn()
+        runtime.start(
+            realizing: AppKitRegistrations.registry.realization, unrealized: AppKitRealization.unrealized,
+            environment: configureEnvironment, kept: hydratePersistentState,
+            windows: {
+                if !connectedFirstWindow {
+                    runtime.connectWindow()
+                    connectedFirstWindow = true
+                }
+                runtime.pump.turn()
+            })
     }
 
     func configureEnvironment() {

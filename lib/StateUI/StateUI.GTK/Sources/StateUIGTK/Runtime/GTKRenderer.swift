@@ -108,22 +108,23 @@ final class GTKRenderer {
 
         let renderer = GTKRenderer(application: application)
         shared = renderer
-        renderer.runtime.core.setRealization(
-            GTKRegistrations.registry.realization,
-            unrealized: GTKRealization.unmade)
-        renderer.show()
-        GTKDoorbell.install()
+        renderer.start(turns: GTKDoorbell.install)
         return renderer
     }
 
-    /// Renders the application whole, told what the host stands on: the scenes kept for this start come back, else
-    /// one new scene.
-    /// Design: docs/design/host/runtime.md#kept-scenes
-    func show() {
-        GTKEnvironment.report(to: runtime.core, applicationID: applicationID)
-        GTKKeptValues.restore(into: runtime.core, applicationID: applicationID)
-        GTKEnvironment.watch { [weak self] in self?.environmentChanged() }
-        scenes.restore(GTKKeptValues.readScenes(applicationID: applicationID), in: runtime)
+    /// Starts the runtime in the host layer's order, told what the host stands on and what it kept: the scenes kept
+    /// for this start come back, else one new scene; `turns` posts the turns after it.
+    /// Design: docs/design/host/runtime.md#starting
+    func start(turns: () -> Void = {}) {
+        runtime.start(
+            realizing: GTKRegistrations.registry.realization, unrealized: GTKRealization.unmade,
+            environment: {
+                GTKEnvironment.report(to: runtime.core, applicationID: applicationID)
+                GTKEnvironment.watch { [weak self] in self?.environmentChanged() }
+            },
+            kept: { GTKKeptValues.restore(into: runtime.core, applicationID: applicationID) },
+            windows: { scenes.restore(GTKKeptValues.readScenes(applicationID: applicationID), in: runtime) },
+            turns: turns)
     }
 
     /// The desktop's style, the power or the network changed: the core hears what stands now, the tree follows the

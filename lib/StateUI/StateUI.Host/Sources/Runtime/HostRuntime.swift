@@ -85,6 +85,22 @@
         tree.onAnimation = { [weak self] in self?.displayCycle.hold() }
     }
 
+    /// Starts the runtime in the one order every host keeps: what it realizes, the environment it reports, the
+    /// values the platform kept - read once the device is told, as reading their keys makes the application - the
+    /// language's direction, the windows, then the turns. Each step but the first and the direction is the host's.
+    /// Design: docs/design/host/runtime.md#starting
+    public func start(
+        realizing realization: HostRealization, unrealized: Set<String>, environment: () -> Void,
+        kept: () -> Void = {}, windows: () -> Void = {}, turns: () -> Void = {}
+    ) {
+        core.setRealization(realization, unrealized: unrealized)
+        environment()
+        kept()
+        tree.followTheLanguagesDirection()
+        windows()
+        turns()
+    }
+
     /// Reports a native event and runs its handler, then a turn; one raised while a patch applies, or inside a
     /// user's transaction, waits for it.
     public func dispatch(_ handler: Int32, payload: [HostValue] = []) {

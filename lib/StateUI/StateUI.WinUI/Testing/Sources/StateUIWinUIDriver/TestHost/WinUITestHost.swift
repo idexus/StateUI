@@ -74,7 +74,7 @@ extension WinUIRenderer {
     ) -> WinUIRenderer {
         Renderer.shared.setApplication(application())
         let renderer = replacing(clock: clock, reducesMotion: reducesMotion)
-        renderer.show()
+        renderer.start()
         for controller in renderer.windows {
             let asked = controller.element.map { WindowFrame(of: $0) } ?? WindowFrame()
             controller.window.request(WindowFrame(

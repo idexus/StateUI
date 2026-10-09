@@ -83,12 +83,7 @@ final class WinUIRenderer {
         let previous = shared
         let renderer = WinUIRenderer()
         shared = renderer
-        renderer.runtime.core.setRealization(
-            WinUIRegistrations.registry.realization,
-            unrealized: WinUIRealization.unmade)
-        if previous == nil { WinUIPersistence.restore(into: renderer.runtime.core) }
-        renderer.show()
-        WinUIDoorbell.install()
+        renderer.start(restoringKept: previous == nil, turns: WinUIDoorbell.install)
         stateui_winui_watch_environment()
         return renderer
     }
@@ -127,12 +122,16 @@ final class WinUIRenderer {
         if let element = controller.element { runtime.userClosed(element) }
     }
 
-    /// Renders the application whole: the scenes kept for this start come back, else one new scene.
-    /// Design: docs/design/host/runtime.md#kept-scenes
-    func show() {
-        WinUIEnvironment.report(to: runtime.core)
-        runtime.tree.followTheLanguagesDirection()
-        scenes.restore(WinUIPersistence.readScenes(), in: runtime)
+    /// Starts the runtime in the host layer's order, told what the host stands on and, `restoringKept`, what it
+    /// kept: the scenes kept for this start come back, else one new scene; `turns` posts the turns after it.
+    /// Design: docs/design/host/runtime.md#starting
+    func start(restoringKept: Bool = false, turns: () -> Void = {}) {
+        runtime.start(
+            realizing: WinUIRegistrations.registry.realization, unrealized: WinUIRealization.unmade,
+            environment: { WinUIEnvironment.report(to: runtime.core) },
+            kept: { if restoringKept { WinUIPersistence.restore(into: runtime.core) } },
+            windows: { scenes.restore(WinUIPersistence.readScenes(), in: runtime) },
+            turns: turns)
     }
 
     /// Shows every window element in a WinUI window of its own, in the tree's order - a window the tree no longer

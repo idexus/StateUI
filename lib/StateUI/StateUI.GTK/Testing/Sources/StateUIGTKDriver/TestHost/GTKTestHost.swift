@@ -134,7 +134,7 @@ extension GTKRenderer {
             unlink(GTKKeptValues.file(for: renderer.applicationID))
             unlink(GTKKeptValues.scenesFile(for: renderer.applicationID))
         }
-        renderer.show()
+        renderer.start()
         GTKTestHost.pump(0.02)
         renderer.layOut()
         return renderer

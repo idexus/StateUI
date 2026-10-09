@@ -95,7 +95,7 @@ final class AndroidDriver: HostDriver {
         AndroidPersistence.writeScenes("", context: window.reference)  // no scenes an earlier case kept
         Java.callStatic(Self.files, Self.holdForTesting)
         filesFolder = Java.frame { Java.text(Java.callStaticObject(Self.testFiles, Self.emptied, .object(window.reference))) }
-        renderer.show()
+        renderer.start()
         layOut()
         // The activity comes to the front: onResume.
         renderer.setPhase(.active)

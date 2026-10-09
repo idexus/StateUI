@@ -70,19 +70,22 @@ final class WebRenderer {
         WebRelay.start()
         Self.shared = self
         let core = runtime.core
-        core.setRealization(WebRegistrations.registry.realization, unrealized: WebRealization.unmade)
-        WebEnvironment.report(to: core, applicationName: applicationName)
-        WebKeptValues.restore(into: core, application: applicationName)
-        WebEnvironment.watch { [weak self] in
-            self?.runtime.environmentChanged { WebEnvironment.reportChanging(to: core) }
-        }
         WebRelay.afterEntry = { [weak self] in self?.entryEnded() }
         WebRelay.listenToPage(
             changed: WebRelay.listener { [weak self] in self?.pageChanged(WebRelay.pageState) },
             leaving: WebRelay.listener { [weak self] in self?.runtime.ending() })
-        // The scenes kept when the page was left come back; else the window launch opens.
-        scenes.restore(WebKeptValues.readScenes(applicationName), in: runtime)
-        entryEnded()
+        runtime.start(
+            realizing: WebRegistrations.registry.realization, unrealized: WebRealization.unmade,
+            environment: {
+                WebEnvironment.report(to: core, applicationName: applicationName)
+                WebEnvironment.watch { [weak self] in
+                    self?.runtime.environmentChanged { WebEnvironment.reportChanging(to: core) }
+                }
+            },
+            kept: { WebKeptValues.restore(into: core, application: applicationName) },
+            // The scenes kept when the page was left come back; else the window launch opens.
+            windows: { scenes.restore(WebKeptValues.readScenes(applicationName), in: runtime) },
+            turns: entryEnded)
     }
 
     /// Every call from the page ends with a turn, and asks the page to call again where work is left or a job kept
