@@ -65,8 +65,10 @@ final class Said: Sendable {
         }
         guard let words else { return }
 
-        // Outside the hold: what hears it is somebody else's.
-        if let hear { hear(words) } else { print("StateUI: \(words)") }
+        // Outside the hold, and outside every run: what hears it is somebody else's, and a run refused is not its.
+        HandlerRun.$current.withValue(nil) {
+            if let hear { hear(words) } else { print("StateUI: \(words)") }
+        }
     }
 
     func said(_ words: String) -> Bool {

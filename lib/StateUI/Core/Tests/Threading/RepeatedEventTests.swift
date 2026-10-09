@@ -322,6 +322,29 @@ final class RepeatedEventTests: XCTestCase {
         XCTAssertTrue(hasComplained("Task.detached"), "and says where the work belongs")
     }
 
+    /// A refusal reaches the application's route outside the run it refused: a route that posts what it heard to a
+    /// state is not refused with the run.
+    func testARefusalReachesTheRouteOutsideTheRunItRefused() async throws {
+        let gate = Gate()
+        let landed = State(wrappedValue: 0)
+        landed.storage.name(once: "routedRefusal")
+        let heard = State(wrappedValue: [String]())
+        let route = heard.projectedValue
+        Complaints.route { words in route.post { $0 + [words] } }
+        defer { Complaints.route(to: nil) }
+        let (renders, id) = button(.overlap) {
+            await gate.wait()
+            landed.wrappedValue = 1
+        }
+
+        renders.fire(id)
+        renders.render(Text("gone").node)
+        gate.open()
+        try await waitUntil { heard.wrappedValue.contains { $0.contains("`routedRefusal`") } }
+
+        XCTAssertTrue(heard.wrappedValue.contains { $0.contains("`routedRefusal`") }, "the route heard the refusal")
+    }
+
     /// A ticker started by a run keeps counting once that run is superseded: its
     /// loop is the library's, and belongs to no run.
     func testATickerStartedByASupersededRunKeepsCounting() async throws {

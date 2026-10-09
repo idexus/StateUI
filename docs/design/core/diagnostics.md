@@ -72,7 +72,9 @@ described. It goes to standard output, outside the lock: a terminal on macOS,
 the console on iOS, a shell on Windows and Linux, logcat on Android, whose host
 routes the process's output there. An application that wants them elsewhere -
 its own log, a crash reporter - routes them (`Complaints.route`), and each
-comes to it on the thread that complained. What was said is held to a
+comes to it on the thread that complained, outside every handler's run: a
+route posting what it heard to a state is not refused with a run that a
+refusal complained of. What was said is held to a
 thousand different things, so complaints naming ever new values cannot grow
 without end: past it, that is said once, and nothing after it. So a complaint
 is a development aid and may never be the only thing between an application
