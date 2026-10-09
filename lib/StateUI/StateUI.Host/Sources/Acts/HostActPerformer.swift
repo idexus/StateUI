@@ -16,7 +16,6 @@
     private let files: (any FileToolkit)?
     private let answers: any ActAnswering
     private let tree: () -> MountedTree?
-    private let answered: () -> Void
 
     /// What the user is asked, one showing at a time; each answers under its ticket.
     private let questions = QuestionQueue<(call: HostActCall, asked: Asked)>()
@@ -28,17 +27,16 @@
     }
 
     /// A performer for the acts called on the host whose toolkit `toolkit` is - `files` its toolkit for files, where
-    /// it has one - its answers through `answers`, its aimed acts found in `tree`; `answered` runs after the user
-    /// answered, as the caller's work then waits for its turn.
+    /// it has one - its answers through `answers`, its aimed acts found in `tree`. A caller an answer resumes runs
+    /// in a job of its own, which asks for its turn.
     public init(
         toolkit: any ActToolkit, files: (any FileToolkit)? = nil, answers: any ActAnswering = CoreLink(),
-        tree: @escaping () -> MountedTree?, answered: @escaping () -> Void = {}
+        tree: @escaping () -> MountedTree?
     ) {
         self.toolkit = toolkit
         self.files = files
         self.answers = answers
         self.tree = tree
-        self.answered = answered
     }
 
     /// Performs one act, and answers it.
@@ -125,15 +123,9 @@
         guard let (asked, next) = questions.answered(ticket) else { return }
         deliver(asked.call, answer)
         if next != nil { showFirst() }
-        answered()
     }
 
-    /// The toolkit answered `call` after it was performed: its caller hears the answer, and its work takes its turn.
-    private func heard(_ call: HostActCall, _ answer: Result<[HostValue], ActFailure>) {
-        deliver(call, answer)
-        answered()
-    }
-
+    /// Hands `call`'s caller its answer; the caller resumes in a job of its own, which asks for its turn.
     private func deliver(_ call: HostActCall, _ answer: Result<[HostValue], ActFailure>) {
         switch answer {
         case .success(let values): reply(call, values)
@@ -148,12 +140,12 @@
     private func perform(_ call: HostActCall, files: any FileToolkit) {
         if let dialog = HostFileDialog(call) { return ask(call, .files(dialog)) }
         let file = call.arguments.value(0).flatMap(ChosenFile.init(propValue:))
-        let launched: (Bool) -> Void = { [weak self] took in self?.heard(call, .success([.bool(took)])) }
+        let launched: (Bool) -> Void = { [weak self] took in self?.deliver(call, .success([.bool(took)])) }
         switch call.act {
         case .readFile:
             guard let file else { return fail(call, "the act names no file") }
             let maximum = call.arguments.value(1)?.number.map { Int(min(max($0, 0), 0x1p52)) }
-            files.read(file, atMost: maximum) { [weak self] read in self?.heard(call, read.map { [$0.propValue] }) }
+            files.read(file, atMost: maximum) { [weak self] read in self?.deliver(call, read.map { [$0.propValue] }) }
         case .launchFile:
             guard let file else { return fail(call, "the act names no file") }
             files.launch(file, answered: launched)

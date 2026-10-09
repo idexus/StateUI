@@ -47,12 +47,47 @@ final class AppKitTurnTests: XCTestCase {
 
         XCTAssertEqual(shown(), "posted", "the post waits for an event")
     }
+
+    /// A question the user answers resumes its caller as a job of the main queue, and the pass that ran it renders
+    /// what the caller wrote - the host takes no turn of its own after an answer.
+    func testAnAnsweredQuestionIsRenderedInThePassThatResumedItsCaller() throws {
+        let renderer = AppKitRenderer.running { AskingPage() }
+        defer { renderer.closeForTesting() }
+        renderer.startTurns()
+        let shown = { renderer.nativeViews(AppKitTextView.self).first?.textForTesting.string }
+
+        try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first).clickForTesting()
+        for _ in 0..<100 where renderer.actToolkit.showing == nil {
+            RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
+        }
+        XCTAssertTrue(try XCTUnwrap(renderer.actToolkit.showing).pressForTesting("Delete", typing: nil))
+        for _ in 0..<100 where shown() != "deleted" {
+            RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
+        }
+
+        XCTAssertEqual(shown(), "deleted", "the answer waits for an event")
+    }
 }
 
 /// What the page says, written from outside it.
 @MainActor
 private final class Said {
     @State var text = "before"
+}
+
+/// A page that asks the user, then says the answer.
+private struct AskingPage: View {
+    @State private var said = "asked"
+
+    var body: some View {
+        VStack {
+            Text(said)
+            Button("Confirm").onClicked(.ignoreWhileRunning) {
+                let deleting = try await Dialogs.confirm("Delete draft?", message: "", accept: "Delete", cancel: "Keep")
+                said = deleting ? "deleted" : "kept"
+            }
+        }
+    }
 }
 
 private struct SaidPage: View {

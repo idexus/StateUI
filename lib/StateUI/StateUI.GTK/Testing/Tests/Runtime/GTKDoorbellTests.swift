@@ -16,6 +16,21 @@ private struct SaidPage: View {
     }
 }
 
+/// A page that asks the user, then says the answer.
+private struct AskingPage: View {
+    @State private var said = "asked"
+
+    var body: some View {
+        VStack {
+            Text(said)
+            Button("Confirm").onClicked(.ignoreWhileRunning) {
+                let deleting = try await Dialogs.confirm("Delete draft?", message: "", accept: "Delete", cancel: "Keep")
+                said = deleting ? "deleted" : "kept"
+            }
+        }
+    }
+}
+
 /// The doorbell: a change no event of GTK's comes after is rendered by a turn the host posts to GLib's main loop -
 /// with nothing but that loop turning.
 final class GTKDoorbellTests: XCTestCase {
@@ -46,6 +61,22 @@ final class GTKDoorbellTests: XCTestCase {
             Task.detached { binding.post("posted") }
 
             XCTAssertTrue(Self.loopShows("posted", host), "the post waits for an event that never comes")
+        }
+    }
+
+    /// An answer the user gives resumes its caller as a job, whose queueing posts the turn: the host takes no turn
+    /// of its own after an answer.
+    func testAnAnsweredQuestionIsRendered() throws {
+        try onUIThread {
+            let host = GTKRenderer.running { AskingPage() }
+            GTKDoorbell.install()
+            defer { CoreLink().postTurns(with: nil) }
+
+            try XCTUnwrap(host.views(GTKButtonView.self).first { $0.text == "Confirm" }).click()
+            for _ in 0..<200 where host.dialog == nil { GTKTestHost.pump(0.01) }
+            try host.answer("Delete")
+
+            XCTAssertTrue(Self.loopShows("deleted", host), "the answer waits for an event that never comes")
         }
     }
 

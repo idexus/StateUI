@@ -131,9 +131,8 @@ final class AppKitActToolkit: ActToolkit {
             case (.goForward, let web as AppKitWebView): web.step(.forward)
             case (.reload, let web as AppKitWebView): web.step(.reload)
             case (.evaluateJavaScript, let web as AppKitWebView):
-                web.evaluate(call.arguments.value(1)?.string ?? "") { [weak renderer] answer in
+                web.evaluate(call.arguments.value(1)?.string ?? "") { answer in
                     core.reply(call, [answer.propValue])
-                    renderer?.runtime.pump.turn()
                 }
                 return true
             default:

@@ -38,8 +38,7 @@ final class WinUIRenderer {
 
     /// What performs the acts the application calls, and answers them, by the host layer's rules.
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
-        answered: { [unowned self] in runtime.pump.turn() })
+        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree })
 
     /// The windows the tree holds, each with its controller, in the tree's order.
     private let roster = WindowRoster<WinUIWindowController>()

@@ -47,8 +47,7 @@ final class UIKitRenderer {
     /// UIKit's part of the files the user opens and saves, and of what iOS launches.
     private(set) lazy var fileToolkit = UIKitFileToolkit(renderer: self)
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
-        answered: { [unowned self] in runtime.pump.turn() })
+        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree })
 
     /// The key a scene's session keeps its window's record under, for iOS to hand back as it restores the scene.
     static let recordKey = "StateUI.Window"

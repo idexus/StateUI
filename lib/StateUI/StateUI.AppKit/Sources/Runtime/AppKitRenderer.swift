@@ -34,8 +34,7 @@ final class AppKitRenderer {
     /// AppKit's part of the files the user opens and saves, and of what macOS launches.
     lazy var fileToolkit = AppKitFileToolkit(renderer: self)
     lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: fileToolkit, tree: { [unowned self] in runtime.tree },
-        answered: { [unowned self] in runtime.pump.turn() })
+        toolkit: actToolkit, files: fileToolkit, tree: { [unowned self] in runtime.tree })
     var focusReportQueued = false
 
     /// The windows the tree holds, each with its controller, in the tree's order.
