@@ -4,15 +4,14 @@
 @_spi(Host) import StateUI
 
 #if !os(WASI)
-/// The doorbell every host rings the same way: a thread of its own parked until the core has work.
+/// The doorbell every host rings the same way: a thread of its own parked until a job comes from another thread.
 /// Design: docs/design/host/runtime.md#one-turn
 extension CoreLink {
-    /// Parks this thread until the core has work, then hands `post` a turn to put on the UI thread's queue, for
-    /// as long as the process runs. Called on a thread of the host's own, never the UI thread.
-    public nonisolated func ringForever(_ post: () -> Void) -> Never {
+    /// Parks this thread until a job comes, then asks for a turn the way the host said (`postTurns`), for as long
+    /// as the process runs. Called on a thread of the host's own, never the UI thread.
+    public nonisolated func ringForever() -> Never {
         while true {
-            _ = waitForWork()
-            post()
+            if waitForWork() > 0 { askForTurn() }
         }
     }
 }

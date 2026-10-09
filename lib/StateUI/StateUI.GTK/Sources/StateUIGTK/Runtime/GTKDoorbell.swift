@@ -5,14 +5,16 @@
 @_spi(Host) import StateUIHost
 import CStateUIGTK
 
-/// The doorbell: a thread parked until the core has work, posting a turn to GLib's main loop.
+/// The doorbell: a thread parked until a job comes from another thread, posting a turn to GLib's main loop - the way
+/// the UI thread posts one for work of its own.
 /// Design: docs/design/platforms/gtk/runtime.md#the-doorbell
 enum GTKDoorbell {
     /// Whether the thread runs.
     @MainActor private static var installed = false
 
-    /// Starts the thread, once.
+    /// Gives the core the way to post a turn, and starts the thread, once.
     @MainActor static func install() {
+        CoreLink().postTurns(with: { GTKDoorbell.postTurn() })
         guard !installed else { return }
         installed = true
         startThread()
@@ -20,7 +22,7 @@ enum GTKDoorbell {
 
     /// Started from a nonisolated function: a closure written in a `@MainActor` one is MainActor's.
     private nonisolated static func startThread() {
-        _ = g_thread_new("stateui-doorbell", { _ in CoreLink().ringForever { GTKDoorbell.postTurn() } }, nil)
+        _ = g_thread_new("stateui-doorbell", { _ in CoreLink().ringForever() }, nil)
     }
 
     /// Posts one turn to the main loop, at input's priority, so it lands before the next paint.

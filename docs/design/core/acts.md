@@ -41,14 +41,14 @@ renderer keeps: a handler books its waiter there, and the host takes acts and
 dispatches completions there, one after another. A task off the UI thread
 sends an act by awaiting it, which runs it on `MainActor`.
 
-## Waking the host for an act
+## An act asks for a turn
 
-An act queued from a plain `Task` runs on the pool and lands no job on the UI
-thread's executor, so nothing else would tell the host it exists - it would sit
-in the queue until the next event, a pressed card never coming back up. So
-`send` wakes the host after queueing, outside the lock; the executor's armed
-flag folds a burst of sends into one wake. The doorbell counts queued acts and
-waiting saves as work (concurrency.md).
+An act is sent on the UI thread, and where no turn follows the code that sent
+it - an application's own callback - nothing else would tell the host it
+exists: it would sit in the queue until the next event, a pressed card never
+coming back up. So `send` asks the host for a turn after queueing; a burst of
+sends asks for one (concurrency.md#the-doorbell). A turn counts queued acts and
+waiting saves as work.
 
 ## Completion ids
 

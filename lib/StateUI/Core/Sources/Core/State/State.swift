@@ -74,13 +74,13 @@ public final class State<Value> {
         }
     }
 
-    /// Wakes the host to take the save a kept state's write recorded, whether or not
-    /// the write asked for a render.
+    /// Asks the host for a turn to take the save a kept state's write recorded,
+    /// whether or not the write asked for a render.
     /// Design: docs/design/core/state.md#kept-state
     @usableFromInline
     func wakeForSave() {
         if storage.keep != nil {
-            UIThreadExecutor.shared.poke()
+            UIThreadExecutor.shared.askForTurn()
         }
     }
 

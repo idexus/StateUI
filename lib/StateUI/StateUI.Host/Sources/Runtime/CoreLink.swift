@@ -112,6 +112,13 @@
     @discardableResult
     public nonisolated func runJobs() -> Int { HostBoundary.runJobs() }
 
+    /// Says how a turn is put on the UI thread's queue from any thread - for work the UI thread makes, and for a
+    /// job the doorbell saw come. A host whose loop turns by itself says nothing; nil posts no more.
+    public nonisolated func postTurns(with post: (@Sendable () -> Void)?) { HostBoundary.postTurns(with: post) }
+
+    /// Posts one turn the way the host said, unless one waits whose drain has not begun.
+    public nonisolated func askForTurn() { HostBoundary.askForTurn() }
+
     /// Whether a turn has anything to do.
     public var wantsTurn: Bool { HostBoundary.wantsTurn }
 
@@ -119,7 +126,7 @@
     /// When the page is to call again, in milliseconds; nil with nothing to come.
     public var nextWake: Double? { HostBoundary.nextWake }
     #else
-    /// Parks the doorbell's thread until work arrives.
+    /// Parks the doorbell's thread until a job comes.
     public nonisolated func waitForWork() -> Int { HostBoundary.waitForWork() }
     #endif
 

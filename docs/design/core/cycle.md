@@ -31,7 +31,7 @@ sync - one clock, one cycle - and the display's own frame is the only sync.
 The board is the UI thread's, as everything it serves is: a handler's write,
 the host's report and an engine's arithmetic come one after another on that
 thread, so none can tear another and nothing stands behind a lock. The host's
-doorbell, on a thread of its own, is only poked; it never reads the board.
+doorbell, on a thread of its own, wakes for jobs alone; it never reads the board.
 
 An engine is a value in the board's list, not an object the cycle holds beside
 it. The cycle takes the engine's closure and its last run out of the list,
@@ -63,10 +63,11 @@ following any state cost nothing extra.
 
 A write during a cycle - an engine's, as nothing else runs then - goes into
 the image and marks its changed lanes dirty, so the engines after it see it.
-Any other write lands between cycles, in the pending slot, and pokes the host:
-a write from a task that resumed on the UI thread - after a sleep, or a post
-from the pool (state.md#posting) - has no event, render or act after it to
-start a cycle, and nothing else would tell the host it is there.
+Any other write lands between cycles, in the pending slot, and asks the host for
+a turn: a write from a task that resumed on the UI thread - after a sleep, or a
+post from the pool (state.md#posting) - or from an application's own callback
+has no event, render or act after it to start a cycle, and nothing else would
+tell the host it is there.
 
 Each write bumps the value's stamp, even where the bytes are what they already
 were: an engine following a value a finger is holding still is entitled to hear

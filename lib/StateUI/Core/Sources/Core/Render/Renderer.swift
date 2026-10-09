@@ -169,11 +169,11 @@ public final class Renderer {
     }
 
     /// Asks for a render without naming what changed, so the next render builds
-    /// the whole tree. It wakes the host.
+    /// the whole tree. It asks the host for a turn.
     public func setNeedsRender() {
         dirty = true
         untracked = true
-        UIThreadExecutor.shared.poke()
+        UIThreadExecutor.shared.askForTurn()
     }
 
     /// Records that a state was read. While a view is built, the view becomes
@@ -190,7 +190,7 @@ public final class Renderer {
 
     /// Records that a state was written and asks for a render that rebuilds only
     /// the views that read it. A state no live element reads asks for nothing.
-    /// It wakes the host.
+    /// It asks the host for a turn.
     public func stateChanged(_ state: AnyObject) {
         let id = ObjectIdentifier(state)
 
@@ -201,7 +201,7 @@ public final class Renderer {
 
         dirty = true
         written[id] = state
-        UIThreadExecutor.shared.poke()
+        UIThreadExecutor.shared.askForTurn()
     }
 
     /// Counts one more live reader of each state - an element as it is made, or

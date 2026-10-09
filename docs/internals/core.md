@@ -459,8 +459,9 @@ type's extensions in its folder as `Type+Responsibility.swift`
 - **`UIThreadExecutor`** (`UIThread.swift`) is `MainActor`'s executor where
   nothing drains the platform's main queue, and the doorbell a host parks a
   thread on; `stateUIRunJobs` drains it on the calling thread, bounded.
-  *Internal*; a host claims the UI thread through `HostBoundary.claimUIThread`
-  and drains it through `HostBoundary.runJobs`.
+  *Internal*; a host claims the UI thread through `HostBoundary.claimUIThread`,
+  drains it through `HostBoundary.runJobs` and says how a turn is posted
+  through `HostBoundary.postTurns`.
   ([The doorbell](../design/core/concurrency.md#the-doorbell),
   [draining jobs](../design/core/concurrency.md#draining-jobs))
 
@@ -512,7 +513,9 @@ values ([core link](../design/host/runtime.md#core-link)). The
   fails it, so no caller waits on an act nobody performs.
   ([Acts](../design/core/acts.md))
 - **The UI thread.** `runJobs()` drains `MainActor`'s queued jobs on the
-  calling thread, and `waitForWork()` parks the doorbell until work arrives.
+  calling thread; `postTurns(with:)` takes the host's way to post a turn, which
+  `askForTurn()` uses at most once until the turn's drain begins; and
+  `waitForWork()` parks the doorbell until a job comes.
   ([The doorbell](../design/core/concurrency.md#the-doorbell))
 - **What the host knows.** `setColorScheme`, `setDeviceInfo`, `setDisplayInfo`,
   `setApplicationInfo`, `setBatteryInfo`, `setConnectivityInfo`,

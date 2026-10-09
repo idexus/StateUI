@@ -23,7 +23,7 @@ chrome shown after each render, and the acts performed.
 
 A view is let go of in the turn after its element left: its `deinit` is
 `MainActor`'s, and a release outside a task's context puts it in the UI
-executor's queue, which rings the doorbell. The WinUI element goes with it.
+executor's queue, which wakes the doorbell. The WinUI element goes with it.
 
 ## Starting
 
@@ -64,10 +64,12 @@ template only in a window of that thread once the thread's messages ran.
 
 ## The doorbell
 
-A handler that awaits resumes on `MainActor`, whose jobs wait in StateUI's UI
-executor until the host drains them. A thread of the host's own parks until
-the core has work, and posts one turn to the UI thread's `DispatcherQueue`
-through the relay; the turn runs on the UI thread among WinUI's own work.
+A turn is posted to the UI thread's `DispatcherQueue` through the relay, and
+runs on the UI thread among WinUI's own work. The host gives the core that
+post (`CoreLink.postTurns`), for work the UI thread makes - a state written,
+an act sent. A handler that awaits resumes on `MainActor`, whose jobs wait in
+StateUI's UI executor until the host drains them: a thread of the host's own
+parks until a job comes from another thread and posts a turn the same way.
 What a layout pass decides - a split view's first room - waits in the doorbell
 until the pass is over, and runs as the next turn it posts begins.
 

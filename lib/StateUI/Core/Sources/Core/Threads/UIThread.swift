@@ -71,6 +71,13 @@ final class UIThreadExecutor: SerialExecutor, Sendable {
         /// Whether a wake is signalled that the parked thread has not collected.
         var wakeArmed = false
 
+        /// How the host puts a turn on its UI thread's queue; nil where its loop turns by itself.
+        /// Design: docs/design/core/concurrency.md#the-doorbell
+        var postTurn: (@Sendable () -> Void)?
+
+        /// Whether a turn is posted and its drain has not begun.
+        var turnAsked = false
+
         /// Whether a drain is posted to the platform's main queue and has not run - for
         /// processes where something turns that queue.
         /// Design: docs/design/core/concurrency.md#draining-jobs
@@ -129,10 +136,26 @@ final class UIThreadExecutor: SerialExecutor, Sendable {
         #endif
     }
 
-    /// Wakes the host's parked thread for work this queue cannot see - an act sent,
-    /// a state written.
-    /// Design: docs/design/core/acts.md#waking-the-host-for-an-act
-    func poke() {
+    /// Says how the host puts a turn on its UI thread's queue, from any thread.
+    func postTurns(with post: (@Sendable () -> Void)?) {
+        queue.withLock { $0.postTurn = post }
+    }
+
+    /// Puts one turn on the host's UI thread's queue unless one is there whose drain has not begun - for work the
+    /// UI thread made, or a job the doorbell saw come.
+    /// Design: docs/design/core/concurrency.md#the-doorbell
+    func askForTurn() {
+        let post: (@Sendable () -> Void)? = queue.withLock { queue in
+            guard !queue.turnAsked, let post = queue.postTurn else { return nil }
+            queue.turnAsked = true
+            return post
+        }
+
+        post?()
+    }
+
+    /// Wakes the parked thread with no job queued - `stopTheLoop`'s wake.
+    private func wakeTheParkedThread() {
         #if !os(WASI)
         let signal: Bool = queue.withLock { queue in
             guard !queue.wakeArmed else { return false }
@@ -166,6 +189,7 @@ final class UIThreadExecutor: SerialExecutor, Sendable {
         let entered: Bool = queue.withLock { queue in
             guard !queue.draining else { return false }
             queue.draining = true
+            queue.turnAsked = false
             queue.uiThread = thread
             return true
         }
@@ -225,6 +249,13 @@ final class UIThreadExecutor: SerialExecutor, Sendable {
             "this is not the UI thread, whose jobs are MainActor's - see UIThread.swift")
     }
 
+    #if !os(WASI)
+    /// Whether a wake is signalled that the parked thread has not collected - a doorbell a test sees left asleep.
+    var isWakeSignalled: Bool {
+        queue.withLock { $0.wakeArmed }
+    }
+    #endif
+
     /// How many jobs are waiting, without running any - what a test waits on, beside
     /// `resumesPending`, for a queue gone quiet.
     var pendingCount: Int {
@@ -250,7 +281,7 @@ final class UIThreadExecutor: SerialExecutor, Sendable {
     /// Makes `runTheLoop()` return after the drain it is in.
     func stopTheLoop() {
         queue.withLock { $0.stopped = true }
-        poke()
+        wakeTheParkedThread()
     }
 }
 

@@ -18,7 +18,7 @@ and the display cycle's `FramePresenter`.
 
 A view is let go of in the turn after its element left: its `deinit` is
 `MainActor`'s, and a release outside a task's context puts it in the UI
-executor's queue, which rings the doorbell. The view takes its widget out of
+executor's queue, which wakes the doorbell. The view takes its widget out of
 its panel and drops the reference it held.
 
 ## Starting
@@ -41,11 +41,14 @@ makes - rather than by waiting for a frame.
 
 ## The doorbell
 
-A handler that awaits resumes on `MainActor`, whose jobs wait in StateUI's UI
-executor until the host drains them. A GLib thread of the host's own parks
-until the core has work, and posts one turn to the main loop with
-`g_idle_add_full` at `G_PRIORITY_DEFAULT` - input's priority, above GTK's
-redraw - so a turn's render lands before the next frame is drawn.
+A turn is posted to the main loop with `g_idle_add_full` at
+`G_PRIORITY_DEFAULT` - input's priority, above GTK's redraw - so a turn's
+render lands before the next frame is drawn. The host gives the core that post
+(`CoreLink.postTurns`), for work the UI thread makes - a state written, an act
+sent. A handler that awaits resumes on `MainActor`, whose jobs wait in
+StateUI's UI executor until the host drains them: a GLib thread of the host's
+own parks until a job comes from another thread and posts a turn the same
+way.
 
 The thread is started from a nonisolated function: a closure written inside a
 `MainActor` function is `MainActor`'s, and the runtime reports it as a data

@@ -48,8 +48,8 @@ extension Renderer {
 
         actCalls.append(make(id))
 
-        // Wakes the host: an act sent from a job lands nothing else that would tell it.
-        UIThreadExecutor.shared.poke()
+        // An act sent where no turn follows - an application's own callback - would wait for the next event.
+        UIThreadExecutor.shared.askForTurn()
     }
 
     /// Acts queued and not yet taken, waiting saves included - work to the doorbell.

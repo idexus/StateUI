@@ -360,6 +360,19 @@
     @discardableResult
     public nonisolated static func runJobs() -> Int { stateUIRunJobs() }
 
+    /// Says how a turn is put on the UI thread's queue from any thread: the core asks for one through `post` when
+    /// the UI thread makes work, and the doorbell when a job comes from another thread. A host whose loop turns by
+    /// itself says nothing; nil posts no more - between a host's tests.
+    /// Design: docs/design/core/concurrency.md#the-doorbell
+    public nonisolated static func postTurns(with post: (@Sendable () -> Void)?) {
+        UIThreadExecutor.shared.postTurns(with: post)
+    }
+
+    /// Puts one turn on the UI thread's queue unless one waits there - what the doorbell does for a job it saw come.
+    public nonisolated static func askForTurn() {
+        UIThreadExecutor.shared.askForTurn()
+    }
+
     /// Whether a turn has anything to do: jobs on the UI executor, acts or saves not taken, a render, a cycle
     /// awake.
     /// Design: docs/design/host/runtime.md#the-turn-on-apple
@@ -380,10 +393,9 @@
         return max(0, Double(due.components.seconds) * 1000 + Double(due.components.attoseconds) / 1e15)
     }
     #else
-    /// Parks the calling doorbell thread until work arrives for a turn, and
-    /// answers how many jobs wait - which can be 0, when another turn got there
-    /// first, or when what woke it was a write, an act or a value waiting for a
-    /// cycle, each of which rings as it lands.
+    /// Parks the calling doorbell thread until a job comes, and answers how many
+    /// wait - 0 when a turn took them first. Work the UI thread makes asks for a
+    /// turn itself and wakes no thread.
     public nonisolated static func waitForWork() -> Int {
         UIThreadExecutor.shared.waitForWork()
     }

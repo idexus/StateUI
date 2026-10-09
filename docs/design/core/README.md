@@ -86,8 +86,8 @@ host and never calls the core.
   no live reader and no render running? --> refused, counted in the tally
      |
      |  dirty = true; changed += storage; its name kept for debugInfo()
-     v  UIThreadExecutor.poke()
-  the host turns: as the pass of Apple's run loop ends, at the doorbell elsewhere
+     v  UIThreadExecutor.askForTurn()
+  the host turns: as the pass of Apple's run loop ends, at the turn posted elsewhere
      |
      v  host turn:  run jobs -> a pending cycle -> RENDER -> take acts
   Renderer.render(baseline: the generation the host holds)
@@ -146,7 +146,7 @@ host and never calls the core.
              await, inside the event                 v  the executor's lock
                                                doorbell thread (the host made it)
   turn    HostBoundary.runJobs: MainActor's jobs  parked in waitForWork
-          (Apple: the main queue's instead)      wakes, counts the work, posts
+          (Apple: the main queue's instead)      wakes, counts the jobs, posts
           a pending cycle, a render, the acts    ONE turn onto the UI thread
                                                  and parks again
   resume  a continuation's job lands on

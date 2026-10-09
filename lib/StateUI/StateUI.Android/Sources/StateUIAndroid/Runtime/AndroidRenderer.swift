@@ -95,7 +95,7 @@ final class AndroidRenderer {
         if previous == nil { AndroidPersistence.restore(into: core, context: context.reference) }
         if let previous { renderer.scenes = previous.scenes }
         renderer.show(restoringScenes: !sceneStands)
-        AndroidDoorbell.install { AndroidRenderer.shared?.runtime.pump.turn() }
+        AndroidDoorbell.install()
         return renderer
     }
 

@@ -93,8 +93,8 @@ final class CycleBoard {
         storage.pendingMask |= HostStorage.lay(bytes, into: &slot) | forced
         storage.pending = slot
 
-        // A write waiting for a cycle wakes the host.
-        UIThreadExecutor.shared.poke()
+        // A write waiting for a cycle asks for a turn.
+        UIThreadExecutor.shared.askForTurn()
     }
 
     /// Takes in what the host wrote: the named lanes only, their dirty bits cleared;

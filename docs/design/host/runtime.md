@@ -129,11 +129,13 @@ before what comes after it, and the turn goes round again; only then the acts.
 
 ## The doorbell
 
-The core rings when it has work a turn must take - a handler resumed off the
-UI thread, a state an engine wrote. Where the platform's loop is not Apple's,
-a host parks a thread of its own on the core (`CoreLink.ringForever`) and posts
-a turn onto its UI thread each time the core rings: WinUI through its relay,
-GTK through GLib, Android onto its looper. The turn itself is the `Pump`'s.
+Where the platform's loop is not Apple's, a host says how a turn is posted onto
+its UI thread from any thread (`CoreLink.postTurns`): WinUI through its relay,
+GTK through GLib, Android onto its looper. The core posts one through it when
+the UI thread makes work - a state written, an act sent - and the doorbell, a
+thread the host parks on the core (`CoreLink.ringForever`), when a job comes
+from another thread, a handler's resume or a post. One turn is posted until its
+drain begins. The turn itself is the `Pump`'s.
 
 ## The turn on Apple
 

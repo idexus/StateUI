@@ -96,9 +96,9 @@ frame, and never computes again what the core decides.
     runs jobs the core queues          main queue on Apple; UIThreadExecutor elsewhere,
                                        drained by the host (CoreLink.runJobs())
   doorbell thread                      Android, Windows, Linux: parked in
-                                       CoreLink.waitForWork(); wakes the UI
-                                       thread when work arrives - Apple turns
-                                       after each pass of its run loop instead
+                                       CoreLink.waitForWork(); posts a turn to
+                                       the UI thread when a job comes - Apple
+                                       turns after each pass of its run loop
   cooperative pool                     an application's own async work, off MainActor
 ```
 
@@ -106,7 +106,8 @@ A handler's `await` resumes on `MainActor`, whatever it awaited. The core uses
 no platform timer or run loop, and the main queue only for the one drain it
 posts where something turns that queue: time comes from the host's frame
 clock, and work reaches the UI thread through the host's turn: after each pass
-of the main run loop on Apple, at the doorbell's ring elsewhere.
+of the main run loop on Apple, posted elsewhere - by the UI thread for work it
+made, by the doorbell for a job from another thread.
 
 ## Where to read next
 

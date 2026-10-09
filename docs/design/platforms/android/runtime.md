@@ -46,10 +46,13 @@ for the first activity.
 
 ## The doorbell
 
-A handler that awaits resumes on `MainActor`, whose jobs wait in StateUI's UI
-executor until the host drains them. A thread of the host's own parks until
-the core has work, and writes an eventfd that the main looper watches; the
-looper's callback runs a turn. Nothing on that path enters the JVM.
+A turn is posted by writing an eventfd that the main looper watches; the
+looper's callback runs it. The host gives the core that write
+(`CoreLink.postTurns`), for work the UI thread makes - a state written, an act
+sent. A handler that awaits resumes on `MainActor`, whose jobs wait in
+StateUI's UI executor until the host drains them: a thread of the host's own
+parks until a job comes from another thread and posts a turn the same way.
+Nothing on either path enters the JVM.
 
 The thread is started from a nonisolated function: a closure written inside a
 `MainActor` function is `MainActor`'s, and the runtime reports it as a data

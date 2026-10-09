@@ -245,9 +245,9 @@ the storage itself, on every road a value comes in by, a moving value by where
 it is going. The saves go out as one act
 per key per take, sorted by name, holding the last value: a key written five
 times inside one handler is saved once. It is a collapse per drain, not a
-delay. A write to a kept state wakes the host itself, and waiting saves count
-as pending work, because a kept state nobody reads asks for no render and its
-save must not wait for the next event.
+delay. A write to a kept state asks the host for a turn itself, and waiting
+saves count as pending work, because a kept state nobody reads asks for no
+render and its save must not wait for the next event.
 
 One key is one piece of state: two views declaring a key share its storage, so
 a write in one rebuilds the readers in the other. The first state to claim a key

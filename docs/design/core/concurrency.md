@@ -98,28 +98,38 @@ through `HostBoundary.runJobs()`.
 ## The doorbell
 
 Work can arrive when no act is in flight at all: `Task.sleep` coming due, a task
-an author started finishing, a stream yielding. So the host parks a thread of
-its own in `HostBoundary.waitForWork()`, and that thread is
-the doorbell:
+an author started finishing, a stream yielding. Each is a job queued from
+another thread, so the host parks a thread of its own in
+`HostBoundary.waitForWork()`, and that thread is the doorbell:
 
 ```text
   doorbell thread (the host created it, so its runtime has always known it)
     |  parked in UIThreadExecutor.waitForWork()
-    |  woken by: a job enqueued, a state write, an act sent, a save recorded,
-    |            a value written to a board between cycles   (poke)
+    |  woken by a job enqueued, from any thread
     v
-  answers how much is waiting:
-    jobs queued + acts and saves not taken + a dirty tree + a board awake
-    |
-    v  posts ONE turn onto the UI thread, the toolkit's own thread-safe way
+  answers how many jobs wait; with any, asks for a turn (askForTurn)
+
+  UI thread: a state written, an act sent, a save recorded, a value written
+    |        to a board between cycles - work no other thread need hear of
+    v
+  asks for a turn (askForTurn)
+
+  askForTurn: ONE turn posted, the host's own thread-safe way (postTurns),
+              until that turn's drain begins
   host turn on the UI thread:  run jobs -> a pending cycle -> render -> acts
 ```
 
 Nothing runs on the doorbell thread; it only asks. A wake is signalled at most
-once per park - the armed flag folds a thousand wakes inside one drain into
-one - and the count may be zero when another turn got there first. Apple has
-no doorbell: `MainActor`'s jobs are the main queue's, and its hosts take a turn
-as each pass of the main run loop ends (host/runtime.md#the-turn-on-apple).
+once per park - the armed flag folds a thousand jobs inside one drain into one
+wake - and the count may be zero when a turn got there first. A turn is asked
+for at most once until its drain begins, so the doorbell and the UI thread
+asking together post one. What the UI thread makes it asks for itself, and
+wakes no thread: an application's own callback that writes a state is rendered
+as a handler's write is. Where the loop turns by itself the host says no way to
+post: Apple has no doorbell - `MainActor`'s jobs are the main queue's, and its
+hosts take a turn as each pass of the main run loop ends
+(host/runtime.md#the-turn-on-apple) - and the Web host turns as every call from
+the page ends.
 
 ## Draining jobs
 
@@ -158,7 +168,8 @@ the first job.
 A state is the UI thread's, and so is everything the renderer, a board, the
 stores and a storage keep: none of it stands behind a lock. What another
 thread does touch stands inside a `Mutex` of its own, as the value it holds:
-the executor's queue and doorbell flags, a binding's posts waiting for the UI
+the executor's queue, its doorbell and turn flags and the host's way to post a
+turn, a binding's posts waiting for the UI
 thread (state.md#posting) and the complaints already said.
 
 A `Mutex` is not reentrant: a body that asks for the same lock again
