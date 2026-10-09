@@ -210,6 +210,62 @@ final class RepeatedEventTests: XCTestCase {
         XCTAssertEqual(runs, 2)
     }
 
+    /// A write built on a value read before an `await`, which another wrote meanwhile, is said.
+    func testAWriteBuiltOnAValueGoneIsSaid() async throws {
+        let gate = Gate()
+        let count = State(wrappedValue: 0)
+        count.storage.origin = "countGone"
+        let (renders, id) = button(.overlap) {
+            let seen = count.wrappedValue
+            await gate.wait()
+            count.wrappedValue = seen + 1
+        }
+
+        renders.fire(id)
+        count.wrappedValue = 10
+        gate.open()
+        try await waitUntil { count.wrappedValue == 1 }
+
+        XCTAssertTrue(hasComplained("`countGone` was written by a handler that read it before an `await`"))
+    }
+
+    /// Reading the state again after the `await` builds on what it is: nothing is said.
+    func testAWriteAfterReadingAgainSaysNothing() async throws {
+        let gate = Gate()
+        let count = State(wrappedValue: 0)
+        count.storage.origin = "countReadAgain"
+        let (renders, id) = button(.overlap) {
+            _ = count.wrappedValue
+            await gate.wait()
+            count.wrappedValue += 1
+        }
+
+        renders.fire(id)
+        count.wrappedValue = 10
+        gate.open()
+        try await waitUntil { count.wrappedValue == 11 }
+
+        XCTAssertFalse(hasComplained("`countReadAgain`"))
+    }
+
+    /// A value read before an `await` that nobody wrote meanwhile is still what it was: nothing is said.
+    func testAWriteOnAValueNobodyChangedSaysNothing() async throws {
+        let gate = Gate()
+        let count = State(wrappedValue: 0)
+        count.storage.origin = "countKept"
+        let (renders, id) = button(.overlap) {
+            let seen = count.wrappedValue
+            await gate.wait()
+            count.wrappedValue = seen + 1
+        }
+
+        renders.fire(id)
+        gate.open()
+        try await waitUntil { count.wrappedValue == 1 }
+
+        XCTAssertFalse(hasComplained("`countKept`"))
+    }
+
     /// A button whose click runs `handler` under `repeated`, rendered, and its click's id.
     private func button(
         _ repeated: RepeatedEvent, _ handler: @escaping EventHandler

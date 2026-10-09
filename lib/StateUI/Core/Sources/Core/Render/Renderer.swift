@@ -182,7 +182,10 @@ public final class Renderer {
     /// - Returns: whether a build was open to record it.
     @discardableResult
     public func stateRead(_ state: AnyObject) -> Bool {
-        ReadScope.note(ObjectIdentifier(state))
+        #if DEBUG
+        HandlerRun.noteRead(of: state)
+        #endif
+        return ReadScope.note(ObjectIdentifier(state))
     }
 
     /// Records that a state was written and asks for a render that rebuilds only

@@ -12,6 +12,11 @@ func complain(_ message: String) {
     Complaints.shared.say(message)
 }
 
+/// Whether anything said so far holds `words` - what a test asks.
+func hasComplained(_ words: String) -> Bool {
+    Complaints.shared.said(words)
+}
+
 /// What has been said already, so nothing is said twice - from any thread.
 private final class Complaints: Sendable {
     static let shared = Complaints()
@@ -25,5 +30,9 @@ private final class Complaints: Sendable {
         if first {
             print("StateUI: \(message)")
         }
+    }
+
+    func said(_ words: String) -> Bool {
+        said.withLock { $0.contains { $0.contains(words) } }
     }
 }

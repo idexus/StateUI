@@ -15,6 +15,31 @@ final class HandlerRun: Sendable {
 
     private let isSuperseded = Atomic<Bool>(false)
 
+    #if DEBUG
+    /// The stamp of each state this run read, as it stood at the read.
+    private let read = Mutex<[ObjectIdentifier: Int]>([:])
+
+    /// Notes what `state` stood at as the current run read it.
+    @MainActor static func noteRead(of state: AnyObject) {
+        guard let run = current, let stamp = (state as? any FollowedState)?.stamp else { return }
+
+        run.read.withLock { $0[ObjectIdentifier(state)] = stamp }
+    }
+
+    /// Says where the current run writes `state` on what it read of it before another wrote it - across an
+    /// `await` - a write built on a value gone.
+    /// Design: docs/design/core/runs.md#a-write-built-on-a-value-gone
+    @MainActor static func noteWrite(of state: AnyObject, named name: @autoclosure () -> String) {
+        guard let run = current, let stamp = (state as? any FollowedState)?.stamp,
+              let stood = run.read.withLock({ $0.removeValue(forKey: ObjectIdentifier(state)) }),
+              stood != stamp
+        else { return }
+
+        complain("\(name()) was written by a handler that read it before an `await`, and it changed while the "
+            + "handler waited: the write is built on what it was. Read it again after the `await`.")
+    }
+    #endif
+
     var superseded: Bool { isSuperseded.load(ordering: .relaxed) }
 
     /// Marks the run superseded: from now on it changes nothing.

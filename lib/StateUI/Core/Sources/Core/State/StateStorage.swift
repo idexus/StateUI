@@ -182,7 +182,10 @@ extension State {
         /// Design: docs/design/core/runs.md#a-superseded-run
         @usableFromInline
         func admitsWrite() -> Bool {
-            HandlerRun.admits("a write of `\(origin ?? "a state")`")
+            #if DEBUG
+            HandlerRun.noteWrite(of: self, named: "`\(origin ?? "a state")`")
+            #endif
+            return HandlerRun.admits("a write of `\(origin ?? "a state")`")
         }
 
         /// What a kept state does with every value it takes, whoever writes it - the

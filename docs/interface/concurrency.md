@@ -57,6 +57,11 @@ TextField($query)
     }
 ```
 
+A handler that reads a state, awaits, and writes it from what it read loses
+what another wrote while it waited; a debug build says so the moment it
+happens. Read the state again after the `await`: `count += 1`, not `let old =
+count` before it and `count = old + 1` after.
+
 A run that a later event cancels, or whose element leaves the screen, changes
 nothing from then on: its task is cancelled, and its state writes, movements,
 posts and acts are refused - a slower, older search never overwrites a newer

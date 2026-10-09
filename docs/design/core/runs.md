@@ -52,6 +52,20 @@ under a run inherit. A write reads an atomic count of the superseded runs still
 under way first, and the task-local only while that count is not nought - a
 nanosecond a write in the ordinary case.
 
+## A write built on a value gone
+
+A run that reads a state, awaits, and writes it from what it read loses
+whatever another wrote while it waited - `let old = count`, an `await`, `count
+= old + 1`. Built for debugging, StateUI says so: a run keeps the stamp of each
+state it reads, and a write of that state by the run compares it with the
+stamp now. On the UI thread nothing else writes inside one synchronous stretch,
+so a stamp that moved means the run waited and another wrote meanwhile - the
+lost update itself, said once for that state, never a false alarm. A run that
+reads the state again after its `await` builds on what it is, and is silent.
+Every platform reads it alike: where a run suspends is invisible on Apple,
+whose main queue has no hook, so the detector asks what changed rather than
+where the run stopped.
+
 ## What a walk runs
 
 `.onChanged`, `.onVisualStateChanged` and `.onCreated` run what a render's walk
