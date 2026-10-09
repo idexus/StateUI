@@ -8,6 +8,7 @@
 
 /// Walks the authored tree against the rendered one and produces the message.
 /// Design: docs/design/core/identity-and-diffing.md#what-a-walk-keeps
+@MainActor
 final class Differ {
     /// The next element id. Never reset, not even by a resync.
     /// Design: docs/design/core/identity-and-diffing.md#ids-are-never-reused

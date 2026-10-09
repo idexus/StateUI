@@ -8,6 +8,7 @@ import CStateUIGTK
 @testable import StateUIGTKDriver
 import XCTest
 
+@MainActor
 final class GTKButtonViewTests: XCTestCase {
     /// A button's caption takes the font and colour the tree gives it, and its box the fill, the outline and the
     /// corners, drawn in the fill.

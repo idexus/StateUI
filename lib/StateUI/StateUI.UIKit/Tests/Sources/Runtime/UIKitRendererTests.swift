@@ -56,6 +56,7 @@ private final class Logged: @unchecked Sendable {
 
 /// The runtime over UIKit: a window stands in the scene iOS connected, and what the user does there reaches the
 /// application.
+@MainActor
 final class UIKitRendererTests: XCTestCase {
     /// The StateUI window is a window of the scene iOS connected, and the page the user sees names the scene.
     @MainActor

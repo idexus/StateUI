@@ -128,10 +128,10 @@ struct ListRow: View {
         // page's build holds the UI thread, which eats the frames beside it -
         // and goes out while the navigation runs.
         .onTapped {
-            try await lit.journey.move(to: 1, .eased(60, .cubicOut))
-            async let dark: Bool = lit.journey.move(to: 0, .eased(250, .cubicOut))
+            try await lit.journey.move(to: 1, .eased(60, .cubicOut)).arrived()
+            let dark = lit.journey.move(to: 0, .eased(250, .cubicOut))
             try await action()
-            _ = try await dark
+            try await dark.arrived()
         }
     }
 }

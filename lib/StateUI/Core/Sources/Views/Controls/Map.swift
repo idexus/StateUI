@@ -276,7 +276,7 @@ extension Aim where Target == Map {
     ///   a plain number, its unit in its name.
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.
-    public nonisolated(nonsending) func moveToRegion(
+    public func moveToRegion(
         latitude: Double,
         longitude: Double,
         radiusMeters: Double

@@ -13,7 +13,7 @@ import XCTest
 /// so the suite runs it in a browser (`test-web.sh --browser`).
 @MainActor
 final class WebFrameReportTests: XCTestCase {
-    override func setUp() {
+    override func setUp() async throws {
         WebTestLoop.started
     }
 

@@ -9,6 +9,7 @@ import AppKit
 import XCTest
 
 /// The bar an arrangement declares, in AppKit's window chrome: the application's title area and the bar's colours.
+@MainActor
 final class AppKitBarTests: XCTestCase {
     /// The title area is text at the trailing edge of the window's title bar, in the system's colours rather than a
     /// toolbar control's glass, while the visible page names the window. A foreground with no background declared

@@ -203,9 +203,9 @@ private struct Tabbed: View {
     }
 }
 
+@MainActor
 final class InvalidationTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
     }
 
@@ -956,6 +956,7 @@ final class InvalidationTests: XCTestCase {
 /// A class so the two tests can reach it; the state is a box of its own so a
 /// rebuilt page finds the same one. `@unchecked` for the reason every test
 /// double is: one test at a time touches it.
+@MainActor
 private final class WritingPage: @unchecked Sendable {
     static let shared = WritingPage()
 
@@ -983,6 +984,7 @@ private struct WritingApp: Application {
 
 /// A state NO body reads, written by a page's body as it builds - the shape a
 /// pool thread's write has when it lands mid-render.
+@MainActor
 private final class Aside: @unchecked Sendable {
     static let shared = Aside()
 
@@ -1009,6 +1011,7 @@ private struct AsideApp: Application {
 
 /// A window whose PAGE is chosen from a state - a read the window build makes
 /// outside every composed view.
+@MainActor
 private final class Chosen: @unchecked Sendable {
     static let shared = Chosen()
 

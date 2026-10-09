@@ -105,9 +105,9 @@ enum GTKTestHost {
 }
 
 extension XCTestCase {
-    /// Runs `body` as the main actor's on the test thread, which holds GTK: a drain makes it MainActor's first.
+    /// Runs `body` as the main actor's on the test thread, which holds GTK and is taken as the UI thread first.
     func onUIThread<Result: Sendable>(_ body: @MainActor () throws -> Result) rethrows -> Result {
-        _ = CoreLink().runJobs()
+        CoreLink().takeTheUIThread()
         return try MainActor.assumeIsolated(body)
     }
 }
@@ -116,7 +116,7 @@ extension GTKRenderer {
     /// A host showing `page` in a window of its own, laid out, on `clock` where one is given: a first launch, which
     /// finds nothing an earlier host kept.
     static func running(
-        clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @Sendable () -> any View
+        clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> GTKRenderer {
         let application = OneWindowApplication(page: page)
         return running(clock: clock, reducesMotion: reducesMotion, application: { application })
@@ -126,7 +126,7 @@ extension GTKRenderer {
     /// nothing an earlier host kept - or, `keeping`, a launch after the last, which finds what it kept.
     static func running(
         clock: TestClock? = nil, reducesMotion: Bool = false, keeping: Bool = false,
-        application: @escaping @Sendable () -> any Application
+        application: @escaping @MainActor () -> any Application
     ) -> GTKRenderer {
         Renderer.shared.setApplication(application())
         let renderer = replacing(clock: clock, reducesMotion: reducesMotion)

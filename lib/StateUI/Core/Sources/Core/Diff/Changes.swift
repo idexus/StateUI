@@ -12,10 +12,10 @@
 ///     }
 ///
 /// It runs on `@MainActor` like every handler, and may write `@State` and await.
-public typealias ChangeHandler<Value> = nonisolated(nonsending) (Value, Value) async throws -> Void
+public typealias ChangeHandler<Value> = (Value, Value) async throws -> Void
 
 /// The same with the value's type erased - what a node stores.
-typealias ErasedChangeHandler = nonisolated(nonsending) (Any, Any) async throws -> Void
+typealias ErasedChangeHandler = (Any, Any) async throws -> Void
 
 /// One value a view watches and what to run when it moves; the comparison is
 /// captured where the value's type was known.

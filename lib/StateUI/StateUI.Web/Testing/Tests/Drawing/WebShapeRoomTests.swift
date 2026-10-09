@@ -10,7 +10,7 @@ import XCTest
 /// browser lays out, so the suite runs it in a browser (`test-web.sh --browser`).
 @MainActor
 final class WebShapeRoomTests: XCTestCase {
-    override func setUp() {
+    override func setUp() async throws {
         WebTestLoop.started
     }
 

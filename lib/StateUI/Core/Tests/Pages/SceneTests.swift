@@ -21,6 +21,7 @@ private extension SceneKey {
 }
 
 /// What a scene shares with every window of it.
+@MainActor
 private final class Palette {
     @State var accent = "violet"
 }
@@ -207,16 +208,15 @@ private struct ListingApp: Application {
     }
 }
 
+@MainActor
 final class SceneTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         start(Studio())
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         OpenScenes.shared.reset()
-        super.tearDown()
     }
 
     /// Registers `application`, as a host's head does: its scenes are what its body declares.

@@ -8,6 +8,7 @@ import UIKit
 import XCTest
 
 /// A page under the numbered sheets one state lists.
+@MainActor
 private func sheetsOver(_ sheets: State<[Int]>) -> ModalStack {
     ModalStack(sheets.projectedValue) {
         Text("beneath")
@@ -17,6 +18,7 @@ private func sheetsOver(_ sheets: State<[Int]>) -> ModalStack {
 }
 
 /// Pages a window presents over its page, as UIKit presents them.
+@MainActor
 final class UIKitSheetsTests: XCTestCase {
     /// Sheets the window starts with stand each over the one before, as UIKit presents over a controller only once
     /// it stands.

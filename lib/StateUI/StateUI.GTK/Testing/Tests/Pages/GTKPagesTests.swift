@@ -9,6 +9,7 @@ import CStateUIGTK
 import StateUIConformance
 import XCTest
 
+@MainActor
 final class GTKPagesTests: XCTestCase {
     /// Each page of a stack stands in a frame with its own header bar, named as the page says; the top page names
     /// the window; the user's back takes the top page off the path.

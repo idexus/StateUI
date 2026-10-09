@@ -10,6 +10,7 @@
 /// What `Binding.multi(_:_:)` answers. `Sources` is the tuple of their types,
 /// which is what each `convert` overload is chosen by - so the closure's
 /// arguments arrive with the types the states were declared with.
+@MainActor
 public struct MultiBinding<Out: StateValue, Sources> {
     /// Every source's value, read afresh when the engine runs - off the storage, so
     /// nothing that reads it at build becomes the sources' reader.

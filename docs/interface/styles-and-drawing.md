@@ -7,9 +7,11 @@ properties it must apply; it does not run a second style cascade.
 ## Style sheets
 
 A `StyleSheet` contains typed styles. An unkeyed style applies implicitly to
-every control of its target type. A keyed style is selected with `.style(...)`:
+every control of its target type. A keyed style is selected with `.style(...)`.
+A sheet describes the interface, so it is built on `MainActor`, as a body is:
 
 ```swift
+@MainActor
 enum HandbookStyles {
     static var sheet: StyleSheet {
         StyleSheet {
@@ -227,7 +229,7 @@ Button("Hold")
     .onVisualStateChanged(.pressed, .normal) { state in
         try await $scale.journey.move(
             to: state == .pressed ? 0.96 : 1,
-            .eased(90))
+            .eased(90)).arrived()
 }
 ```
 

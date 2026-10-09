@@ -5,6 +5,7 @@
 /// two values here that CHANGE: the theme and the accent. Read it as the
 /// application's `info`: `@Environment(\.application) private var app`, then
 /// `app.info.name`.
+@MainActor
 public final class AppInfo {
     /// The application's display name.
     @State public var name = ""
@@ -28,7 +29,10 @@ public final class AppInfo {
     /// it. A view reading it is built again as it changes.
     ///
     ///     Switch($on).tint(app.info.accentColor)
-    @State public var accentColor = Color("#0A84FF")
+    @State public var accentColor = AppInfo.standardAccent
+
+    /// The accent before the host says the system's.
+    nonisolated static let standardAccent = Color("#0A84FF")
 
     /// A fresh instance, its values starting as a headless host's do.
     public init() {}

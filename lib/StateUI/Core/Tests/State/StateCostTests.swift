@@ -11,9 +11,10 @@ import XCTest
 /// hold the rule that makes that safe: the expression is run when the value is
 /// first WANTED, which for a box that adopts its predecessor's storage - every
 /// render after the first - is never.
+@MainActor
 final class StateCostTests: XCTestCase {
     /// How many times the initial value has been worked out.
-    nonisolated(unsafe) static var made = 0
+    static var made = 0
 
     /// An initial value that says when it was worked out.
     private static func counted(_ value: Int = 7) -> Int {
@@ -21,8 +22,7 @@ final class StateCostTests: XCTestCase {
         return value
     }
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Self.made = 0
     }
 
@@ -102,12 +102,14 @@ final class StateCostTests: XCTestCase {
         XCTAssertEqual(Self.made, 0, "still nothing to work out")
     }
 
-    /// Changing a value nobody has read works the initial one out first, so
-    /// the change is applied to what the author wrote rather than to nothing.
-    func testUpdatingWorksTheInitialValueOutFirst() {
+    /// A change posted to a value nobody has read works the initial one out
+    /// first, so the change is applied to what the author wrote rather than to
+    /// nothing.
+    func testAPostedChangeWorksTheInitialValueOutFirst() async {
         let state = State(Self.counted(10))
 
-        state.update { $0 + 1 }
+        state.projectedValue.post { $0 + 1 }
+        await settle()
 
         XCTAssertEqual(state.wrappedValue, 11, "the change landed on the default")
         XCTAssertEqual(Self.made, 1, "which had to be worked out to change it")
@@ -128,6 +130,7 @@ final class StateCostTests: XCTestCase {
     /// items that DO carry state and over items that do not must answer the
     /// same count, and does so only while the items are out of the walk.
     func testAViewOverARunHoldsItsItemsOutOfTheStateWalk() {
+        @MainActor
         struct Carrying {
             let name: String
             let held = State(0)

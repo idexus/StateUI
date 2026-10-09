@@ -25,6 +25,7 @@
 
     /// A scroll moves where a view stands in its window, though nothing lays it out anew: its place in its parent
     /// stays.
+    @MainActor
     static var scrolledInItsWindow: ConformanceCase {
         ConformanceCase("aScrollMovesWhereAViewStandsInItsWindow", proves: [
             Covered(ViewContract.frameChanged, on: "ColorBox"),
@@ -68,6 +69,7 @@
     }
 
     /// A list's scroll moves where an item's view stands in its window, the item's place in its cell kept.
+    @MainActor
     static var scrolledInAList: ConformanceCase {
         ConformanceCase("aScrollMovesWhereAnItemStandsInItsWindow", proves: [
             Covered(ViewContract.frameChanged, on: "ColorBox"),
@@ -108,6 +110,7 @@
 
     /// The safe area is where a page's content may stand: a view at its page's top corner, under the stack's bar,
     /// stands at the safe area's corner.
+    @MainActor
     static var atItsPagesCorner: ConformanceCase {
         ConformanceCase("aViewAtItsPagesCornerStandsAtTheSafeAreasCorner", proves: [
             Covered(ViewContract.frameChanged, on: "ColorBox"),
@@ -131,6 +134,7 @@
     }
 
     /// A view stands its margin in from its parent's corner.
+    @MainActor
     static func margined(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsInsideItsMargin", proves: [
             Covered(ViewContract.margin, on: element), Covered(ViewContract.frameChanged, on: element),
@@ -153,6 +157,7 @@
     }
 
     /// A view stands where its alignment puts it in the room its parent gives it.
+    @MainActor
     static func aligned(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsWhereItsAlignmentPutsIt", proves: [
             Covered(ViewContract.horizontalAlignment, on: element), Covered(ViewContract.verticalAlignment, on: element),
@@ -188,6 +193,7 @@
     }
 
     /// A view in a layered stack stands in its area: in points, then in shares of the room as the tree changes it.
+    @MainActor
     static func inArea(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsInItsArea", proves: [
             Covered(ViewContract.area, on: element), Covered(ViewContract.frameChanged, on: element),
@@ -218,6 +224,7 @@
     }
 
     /// A view in a grid stands in the cell its column and row name.
+    @MainActor
     static func inCell(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsInItsCell", proves: [
             Covered(ViewContract.gridColumn, on: element), Covered(ViewContract.gridRow, on: element),
@@ -242,6 +249,7 @@
     }
 
     /// A view in a grid spanning columns and rows stands across them.
+    @MainActor
     static func acrossCells(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsAcrossTheCellsItSpans", proves: [
             Covered(ViewContract.gridColumnSpan, on: element), Covered(ViewContract.gridRowSpan, on: element),
@@ -266,6 +274,7 @@
     }
 
     /// A quick run of taps is heard once it reaches the count the view asks for, and not before.
+    @MainActor
     static func tapped(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aRunOfTapsIsHeardAtItsCount", proves: [
             Covered(ViewContract.tapped, on: element), Covered(ViewContract.tapCount, on: element),
@@ -292,6 +301,7 @@
     }
 
     /// A press dragged across a view is heard as it starts, runs and ends, carrying the state its pan across moves.
+    @MainActor
     static func panned(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aPanIsHeardAndCarriesItsStateAcross", proves: [
             Covered(ViewContract.panUpdated, on: element), Covered(ViewContract.panTouchCount, on: element),
@@ -322,6 +332,7 @@
     }
 
     /// A press dragged down a view carries the state its pan down moves.
+    @MainActor
     static func pannedDown(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aPanCarriesItsStateDown", proves: [Covered(ViewContract.panYChannel, on: element)]) { s in
             let y = State(wrappedValue: 5.0)
@@ -341,6 +352,7 @@
     }
 
     /// A pan far enough a way the view listens for ends as a swipe that way; a short one, or one another way, is none.
+    @MainActor
     static func swiped(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aPanFarEnoughItsWayIsASwipe", proves: [
             Covered(ViewContract.swiped, on: element), Covered(ViewContract.swipeDirection, on: element),
@@ -370,6 +382,7 @@
     }
 
     /// Two fingers over a view are heard with their scale and where they are.
+    @MainActor
     static func pinched(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aPinchIsHeardWithItsScaleAndPlace", proves: [
             Covered(ViewContract.pinchUpdated, on: element),
@@ -394,6 +407,7 @@
     }
 
     /// The pointer coming over a view, moving, pressing, letting go and leaving is heard, where it is.
+    @MainActor
     static func pointed(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).thePointerIsHeardComingMovingPressingAndGoing", proves: [
             Covered(ViewContract.pointerEntered, on: element), Covered(ViewContract.pointerMoved, on: element),
@@ -427,6 +441,7 @@
 
     /// A view that can be dragged, dragged onto one that takes drops, carries its words there: its drag heard
     /// starting and ending, the one it landed on the words.
+    @MainActor
     static func dragged(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aDragFromItCarriesItsWords", proves: [
             Covered(ViewContract.canDrag, on: element), Covered(ViewContract.dragText, on: element),
@@ -454,6 +469,7 @@
     }
 
     /// A view that takes drops hears a drag come over it and go, and the words of one dropped on it.
+    @MainActor
     static func droppedOn(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aDropOnItIsHeardWithItsWords", proves: [
             Covered(ViewContract.allowsDrop, on: element), Covered(ViewContract.drop, on: element),
@@ -487,6 +503,7 @@
 
     /// A view that takes files hears those of its kinds the user drops on it from the system, by their names - a drop
     /// of none of its kinds heard by nobody.
+    @MainActor
     static func filesDroppedOn(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).filesDroppedOnItAreHeardByTheirKind", proves: [
             Covered(ViewContract.droppedFileTypes, on: element), Covered(ViewContract.filesDropped, on: element),
@@ -517,6 +534,7 @@
     }
 
     /// `element`'s specimen wearing `worn`, its frames heard by `frames`.
+    @MainActor
     static func reporting(
         _ element: String, _ frames: Received<[Double]>, _ worn: [any Worn], id: String = "specimen"
     ) -> ModifiedContent {

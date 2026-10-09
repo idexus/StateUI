@@ -8,6 +8,7 @@ import UIKit
 import XCTest
 
 /// What VoiceOver meets of UIKit's views.
+@MainActor
 final class UIKitAccessibilityTests: XCTestCase {
     /// A control holding no children of the tree's - a date picker, a spinner - hidden from assistive technology
     /// hides the parts UIKit offers inside it too; a hidden layout keeps its children met.

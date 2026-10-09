@@ -26,9 +26,9 @@ its panel and drops the reference it held.
 The head's `main` names the application and hands the thread to
 `StateUIGTK.run(applicationID:)`, which makes an `AdwApplication` under that
 name and runs GLib's main loop on the thread until the last window closes.
-The application's first activation calls the host, whose first act is to drain
-StateUI's UI executor on that thread: the drain is what makes the thread
-`MainActor`'s. The name is the one the desktop knows the application by, and
+The application's first activation calls the host, whose first act is to take
+that thread as the UI thread: `takeTheUIThread()` makes StateUI's UI executor
+`MainActor`'s and drains it there. The name is the one the desktop knows the application by, and
 GTK keeps one instance of it: a second launch activates the first, which
 brings its window forward.
 

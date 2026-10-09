@@ -7,6 +7,7 @@
 @testable import StateUIGTKDriver
 import XCTest
 
+@MainActor
 final class GTKGridViewTests: XCTestCase {
     /// A fixed and a proportional column, two automatic rows, the spacing, the padding and a span, in logical pixels.
     func testAGridStandsEachChildInItsCell() throws {

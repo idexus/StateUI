@@ -51,6 +51,7 @@ import WASILibc
     }
 
     /// One message applied, which began at `began` milliseconds on the runtime's clock.
+    @MainActor
     mutating func applied(_ tally: RenderTally, began: Double, core: CoreLink) {
         if inspects {
             let passes = core.takeInspectionLog()

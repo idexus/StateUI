@@ -126,7 +126,8 @@ public enum StateUIEvents {
 
     /// Raises `event` with the values its contract declares, from any thread; how many handlers heard it.
     @discardableResult
-    public nonisolated static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
+    @MainActor
+    public static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
     ) -> Int {

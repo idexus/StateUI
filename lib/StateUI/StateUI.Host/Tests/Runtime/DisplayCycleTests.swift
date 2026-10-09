@@ -6,6 +6,7 @@ import XCTest
 @_spi(Host) @testable import StateUIHost
 
 /// One frame of the display, in the order every runtime keeps.
+@MainActor
 final class DisplayCycleTests: XCTestCase {
     /// A state channel, a described property and the core's changes are presented in one walk.
     @MainActor

@@ -141,8 +141,8 @@ extension VisualElement {
                 // built does not become a reader of the value.
                 guard let now = from.journeyLanes?.value else { return }
 
-                guard StateImage.bytes(of: now.carried)
-                    != StateImage.bytes(of: into.value.carried) else { return }
+                guard StateImage.bytes(of: now.carried(in: .current))
+                    != StateImage.bytes(of: into.value.carried(in: .current)) else { return }
 
                 target.wrappedValue = now
             }))

@@ -10,6 +10,7 @@ import XCTest
 
 /// The conformance suite on UIKit: a family a contract, each one test, its verdicts UIKit's column of the control
 /// dictionary.
+@MainActor
 final class UIKitConformanceTests: XCTestCase {
     @MainActor func testActivityIndicator() { conform(ActivityIndicatorTests.self) }
     @MainActor func testButton() { conform(ButtonTests.self) }

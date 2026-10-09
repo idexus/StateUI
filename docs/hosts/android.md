@@ -49,7 +49,9 @@ The host builds on macOS, for Android 9 (API 28) or newer:
 ## The head
 
 An application's Android head is a library Android loads. Its `JNI_OnLoad`
-names the application and hands the virtual machine to the host:
+names the application and hands the virtual machine to the host. Android calls
+it on the UI thread from C, which no actor's type can say, so the head enters
+`MainActor` there once, with `MainActor.assumeIsolated`:
 
 ```swift quote
 import NotesUI
@@ -57,7 +59,7 @@ import StateUIAndroid
 
 @_cdecl("JNI_OnLoad")
 public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
-    stateui_app_register()
+    MainActor.assumeIsolated { stateui_app_register() }
     return StateUIAndroid.load(machine)
 }
 ```
@@ -199,7 +201,7 @@ an aim at nothing; an act nobody registered is refused by name.
 ### An event without a control
 
 `StateUIEvents.raise` pushes an event of the application's that belongs to no
-element, from any thread; `StateUIEvents.raises` declares it before the host
+element, on the UI thread; `StateUIEvents.raises` declares it before the host
 starts, so a handler listening for one no source raises is told so. Its
 source is often Android's own - the Gallery's activity registers a receiver
 for the battery while it lives:

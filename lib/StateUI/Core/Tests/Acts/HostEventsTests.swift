@@ -8,6 +8,7 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class HostEventsTests: XCTestCase {
     /// A place a handler writes - a plain class captured in a test method,
     /// which is the capture that stays on this library's executor.

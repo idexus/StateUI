@@ -6,6 +6,7 @@
 import XCTest
 
 /// A fill, a box's corners and outline, and a shape's lines, as every host reads what the tree sends.
+@MainActor
 final class DrawingRulesTests: XCTestCase {
     private let red = Color(red: 255, green: 0, blue: 0).propValue
     private let blue = Color(red: 0, green: 0, blue: 255).propValue

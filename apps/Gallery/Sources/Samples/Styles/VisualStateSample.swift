@@ -51,7 +51,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
                     // button follows it.
                     .onVisualStateChanged { state in
                         entered = state.name
-                        try await $press.journey.move(to: state == .pressed ? 0.94 : 1, .eased(90))
+                        try await $press.journey.move(to: state == .pressed ? 0.94 : 1, .eased(90)).arrived()
                     }
                     .onClicked { presses += 1 }
 

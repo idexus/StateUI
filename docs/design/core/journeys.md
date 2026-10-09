@@ -73,21 +73,20 @@ the host is told at the first crossing and cannot be told again.
 
 ## Moving and waiting
 
-`$x.journey.move(to:_:)` sends the value and suspends until it arrives. The
-answer is true when it got there and false when something else ended the
-journey: a newer destination, a value written over it, or a stop. Where there
-is nothing to animate - already there, or the user asked for less motion - it
-answers true at once.
+`$x.journey.move(to:_:)` sends the value and returns its `Arrival` at once;
+`arrived()` suspends until the value arrives. The answer is true when it got
+there and false when something else ended the journey: a newer destination, a
+value written over it, or a stop. Where there is nothing to animate - already
+there, or the user asked for less motion - it answers true at once.
 
 The waiter is booked with the renderer under a negative id from the counter
 every awaited act draws from, and the id is written into the completion lane;
 nothing is queued, and the host answers by that id when the animation finishes
 or is interrupted. The destination and completion lanes are forced dirty, so
 sending a value where it is already going is still a fresh journey with a fresh
-waiter. The write lands before the first suspension. Two moves started with
-`async let` from one handler run in child tasks at once, and are booked in
-whichever order their children reach the renderer, not the order written. A
-given law stays on the value: a plain assignment after
+waiter. The write and the booking land before `move` returns, so moves sent one after
+another and awaited after are in the air together, booked in the order
+written. A given law stays on the value: a plain assignment after
 `move(to: 0, .eased(2000))` animates for two seconds too.
 
 A state nothing wears lands at once and answers true: nobody would ever answer a

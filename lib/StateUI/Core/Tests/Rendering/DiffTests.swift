@@ -12,6 +12,7 @@ private final class Log: @unchecked Sendable {
     var lines: [String] = []
 }
 
+@MainActor
 final class DiffTests: XCTestCase {
     func testFirstRenderDescribesEverything() {
         let renders = Renders()

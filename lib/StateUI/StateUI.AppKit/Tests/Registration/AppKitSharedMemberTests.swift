@@ -10,6 +10,7 @@ import XCTest
 
 /// A member many controls share reaches, through the host, the native
 /// control of every entry that realizes it.
+@MainActor
 final class AppKitSharedMemberTests: XCTestCase {
     /// Every control a user operates is disabled by `isEnabled(false)` and
     /// enabled again by `isEnabled(true)`.

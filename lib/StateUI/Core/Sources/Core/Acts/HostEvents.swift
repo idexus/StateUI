@@ -10,7 +10,8 @@
 /// `.onDestroying` ends what `.onCreated` started. A subscription nobody cancels
 /// goes on hearing raises for as long as the process lives; cancelling twice
 /// is harmless.
-public final class HostEventSubscription: @unchecked Sendable {
+@MainActor
+public final class HostEventSubscription {
     /// Which event, and which entry in its list.
     private let event: Event
     private let id: Int
@@ -50,16 +51,14 @@ public final class HostEventSubscription: @unchecked Sendable {
 /// battery reports whether a page is watching or not. Prefix event names with
 /// the application's own (`"Gallery."`) so they can never meet an event this
 /// library adds later.
+@MainActor
 public enum HostEvents {
     /// The subscriptions in the order made, which is the order handlers run in.
-    nonisolated(unsafe) private static var subscriptions:
+    private static var subscriptions:
         [Event: [(id: Int, handler: ValueEventHandler<[PropValue]>)]] = [:]
 
     /// The next subscription's number - never reused.
-    nonisolated(unsafe) private static var nextId = 1
-
-    /// The lock: a subscription may be written while a raise arrives.
-    private static let guarded = Lock()
+    private static var nextId = 1
 
     /// Subscribes a handler to what the host raises under an event's name, the values
     /// as they crossed; an event the host says it does not raise is said once.
@@ -73,12 +72,9 @@ public enum HostEvents {
             complain(unraised)
         }
 
-        let id = guarded.withLock {
-            let id = nextId
-            nextId += 1
-            subscriptions[event, default: []].append((id: id, handler: handler))
-            return id
-        }
+        let id = nextId
+        nextId += 1
+        subscriptions[event, default: []].append((id: id, handler: handler))
 
         return HostEventSubscription(event: event, id: id)
     }
@@ -182,15 +178,13 @@ public enum HostEvents {
 
     /// Takes one subscription out - `HostEventSubscription.cancel`'s half.
     static func remove(_ event: Event, _ id: Int) {
-        guarded.withLock {
-            subscriptions[event]?.removeAll { $0.id == id }
-        }
+        subscriptions[event]?.removeAll { $0.id == id }
     }
 
     /// Runs every handler subscribed to a name and answers how many - taken under the
     /// lock, started outside it, each on `MainActor`.
     static func dispatch(_ name: String, _ payload: [PropValue]) -> Int {
-        let handlers = guarded.withLock { subscriptions[Event(name)] ?? [] }
+        let handlers = subscriptions[Event(name)] ?? []
 
         for entry in handlers {
             Renderer.shared.start { try await entry.handler(payload) }

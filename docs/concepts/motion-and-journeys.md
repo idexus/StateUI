@@ -113,7 +113,7 @@ exposes what the host is showing between writes:
 | `destination` | the state's ordinary value |
 | `velocity` | per-second velocity, lane by lane |
 | `motion` | law owned by this value wherever it is attached |
-| `move(to:_:)` | set a destination and await its outcome |
+| `move(to:_:)` | set a destination; `arrived()` awaits its outcome |
 | `stop()` | stop at the standing value |
 | `snap(to:)` | set standing value, destination, and zero velocity together |
 | `convert` | derive another host-driven value from live journey lanes |
@@ -123,12 +123,13 @@ The built-in `Walked` values are `Double`, `Point`, `Rect`, `Insets`, and
 made from get/set closures do not own the complete storage image a host needs
 to walk; move the complete state instead.
 
-An awaited move returns its outcome:
+A move starts as it is sent and returns at once; its `arrived()` awaits the
+outcome:
 
 ```swift quote
 let arrived = try await $opacity.journey.move(
     to: 0.2,
-    .eased(400, .cubicOut))
+    .eased(400, .cubicOut)).arrived()
 
 if !arrived {
     // A newer destination, another write, or stop() ended this animation.
@@ -141,7 +142,8 @@ animation that has nothing to cover completes with `true` immediately. A
 custom-engine state also answers immediately because the engine, rather than
 the host's animator, owns its completion.
 
-The destination write happens before the handler first suspends. An unrelated
+The destination is written as `move` is called, so moves sent one after
+another are in the air together, each awaited apart. An unrelated
 body rebuild does not restart or cancel a journey: the motion channel belongs
 to the state storage and continues from its standing value and velocity. A
 later motion passed to `move` is retained as that value's law, so subsequent

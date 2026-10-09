@@ -98,7 +98,7 @@ final class WinUIWebViewTests: XCTestCase {
 
     /// A page showing the web view `web` makes once it arrived, and what `script` answered in it.
     @MainActor private static func asking(
-        _ web: @escaping @Sendable () -> WebView, _ script: String
+        _ web: @escaping @MainActor () -> WebView, _ script: String
     ) throws -> (WinUIRenderer, Received<String>) {
         let aim = Aim(WebView.self)
         let arrived = Received<Bool>()

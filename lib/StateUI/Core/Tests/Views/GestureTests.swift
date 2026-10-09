@@ -12,6 +12,7 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class GestureTests: XCTestCase {
     func testAGestureArrivesAlreadyTyped() {
         let renders = Renders()

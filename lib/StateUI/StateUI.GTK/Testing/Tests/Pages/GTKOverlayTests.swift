@@ -40,6 +40,7 @@ private struct ScenePage: View {
     }
 }
 
+@MainActor
 final class GTKOverlayTests: XCTestCase {
     /// An overlay the page declares stands over it where its alignments put it; a click beside it reaches the page,
     /// and the tree taking it away takes it off the window.

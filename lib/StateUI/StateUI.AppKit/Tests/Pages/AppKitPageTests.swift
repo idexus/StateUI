@@ -8,6 +8,7 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
+@MainActor
 final class AppKitPageTests: XCTestCase {
     /// The top page names the window, and the way back is the system's
     /// navigational toolbar item, labelled by the page it returns to.

@@ -1,6 +1,7 @@
 import StateUI
 
 /// A driven rotation, moved to real time by a plain Swift loop.
+@MainActor
 struct AnalogClockSample: SampleContent, ExampleContent {
     // listing: AnalogClockSample
     @State private var ticking = false
@@ -116,8 +117,8 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                     // is where the hand belongs now, so the arithmetic starts
                     // from it - never from the journey's value, which is
                     // wherever the host had got to when this reading came
-                    // in. `async let` starts all three at once; each is
-                    // short, because the movement IS the tick.
+                    // in. All three start as they are sent, and are awaited
+                    // after; each is short, because the movement IS the tick.
                     let atSecond = sAngle
                     let atMinute = mAngle
                     let atHour = hAngle
@@ -126,13 +127,12 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                     let toMinute = atMinute + (minute - atMinute).forwardTurn
                     let toHour = atHour + (hour - atHour).forwardTurn
 
-                    async let s: Bool = $sAngle.journey.move(to:
-                        toSecond, .eased(260, .backOut))
-                    async let m: Bool = $mAngle.journey.move(to:
-                        toMinute, .eased(300, .cubicOut))
-                    async let h: Bool = $hAngle.journey.move(to:
-                        toHour, .eased(300, .cubicOut))
-                    _ = try await (s, m, h)
+                    let s = $sAngle.journey.move(to: toSecond, .eased(260, .backOut))
+                    let m = $mAngle.journey.move(to: toMinute, .eased(300, .cubicOut))
+                    let h = $hAngle.journey.move(to: toHour, .eased(300, .cubicOut))
+                    try await s.arrived()
+                    try await m.arrived()
+                    try await h.arrived()
                 } else {
                     // The first reading SETS the hands: `value` is written, and
                     // the state to match, so nothing travels and nothing is awaited.

@@ -10,6 +10,7 @@ import XCTest
 
 /// A layout's children travel to the places a patch gives them, under the
 /// layout's motion, and follow a room that moves with no patch behind it.
+@MainActor
 final class AppKitLayoutMotionTests: XCTestCase {
     /// A vertical stack of 100-wide boxes, 40 tall unless `heights` says
     /// otherwise, in `order`.

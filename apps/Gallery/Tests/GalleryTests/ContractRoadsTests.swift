@@ -16,6 +16,7 @@ import XCTest
 ///
 /// Compiled as an application compiles - a plain `import StateUI` - with the
 /// compiler and the module the handbook's examples are checked against.
+@MainActor
 final class ContractRoadsTests: XCTestCase {
     /// A road the API closes, and the road it offers to the same place.
     private struct Road {
@@ -228,6 +229,6 @@ final class ContractRoadsTests: XCTestCase {
             .map { $0.isEmpty ? "" : "    \($0)" }
             .joined(separator: "\n")
 
-        return "import StateUI\n\n\(declarations)\n\nfunc road() async throws {\n\(body)\n}\n"
+        return "import StateUI\n\n\(declarations)\n\n@MainActor func road() async throws {\n\(body)\n}\n"
     }
 }

@@ -348,8 +348,8 @@ instead. Use an application's events only for provider-owned notifications
 that genuinely have no element identity.
 
 The AppKit host raises such an event in Swift, typed by the same contract the
-subscription is written against, and from any thread - so a source is wired
-where the platform reports it:
+subscription is written against, on the main thread - where the platform
+reports it, so a source is wired there:
 
 ```swift quote
 StateUIEvents.raise(NotesContract.importFinished, location)

@@ -160,6 +160,7 @@ private struct Pulling: View {
 }
 
 /// What an APPLICATION registers with this host: its own controls, the acts it performs and the events it raises.
+@MainActor
 final class GTKInteropTests: XCTestCase {
     /// Registers the lamp: a registry keeps what it is told, so registering it again only replaces the same entry.
     @MainActor

@@ -35,13 +35,13 @@
     /// Shows `page` in a window of its own on a new host, its display frames at `clock`'s time where one is
     /// given; the tree it mounted.
     func start(
-        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @Sendable () -> any View
+        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> MountedTree
 
     /// Runs `application` on a new host, its display frames at `clock`'s time where one is given; the tree it
     /// mounted.
     /// - Throws: `DriverCannot` where this driver runs one page alone.
-    func start(clock: TestClock?, application: @escaping @Sendable () -> any Application) throws -> MountedTree
+    func start(clock: TestClock?, application: @escaping @MainActor () -> any Application) throws -> MountedTree
 
     /// Forgets what the host's stores keep - the values, the scenes - as an application's first launch finds them.
     func forgetWhatIsKept()
@@ -140,7 +140,7 @@ extension HostDriver {
         nil
     }
 
-    public func start(clock: TestClock?, application: @escaping @Sendable () -> any Application) throws -> MountedTree {
+    public func start(clock: TestClock?, application: @escaping @MainActor () -> any Application) throws -> MountedTree {
         throw DriverCannot("start an application")
     }
 

@@ -259,7 +259,7 @@ extension Aim where Target == WebView {
     ///
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.
-    public nonisolated(nonsending) func goBack() async throws {
+    public func goBack() async throws {
         try await call(WebViewContract.goBack)
     }
 
@@ -267,7 +267,7 @@ extension Aim where Target == WebView {
     ///
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.
-    public nonisolated(nonsending) func goForward() async throws {
+    public func goForward() async throws {
         try await call(WebViewContract.goForward)
     }
 
@@ -276,7 +276,7 @@ extension Aim where Target == WebView {
     ///
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.
-    public nonisolated(nonsending) func reload() async throws {
+    public func reload() async throws {
         try await call(WebViewContract.reload)
     }
 
@@ -289,7 +289,7 @@ extension Aim where Target == WebView {
     ///   JSON. Empty when the page answered nothing.
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.
-    public nonisolated(nonsending) func evaluateJavaScript(_ script: String) async throws -> String {
+    public func evaluateJavaScript(_ script: String) async throws -> String {
         let answer: String? = try await call(WebViewContract.evaluateJavaScript, script)
         return answer ?? ""
     }

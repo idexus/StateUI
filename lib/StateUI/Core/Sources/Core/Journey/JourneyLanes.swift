@@ -42,15 +42,9 @@ struct JourneyLanes<Value: Walked>: StateValue {
         Value(carried: .text(""))!
     }
 
-    /// Every lane: value, destination, velocity, law, waiter, stops.
-    var carried: StateCarried {
-        .lanes(
-            JourneyLanes.numbers(of: value)
-                + JourneyLanes.numbers(of: destination)
-                + JourneyLanes.numbers(of: velocity)
-                + StateLaw.lanes(of: motion)
-                + [completion, stopped])
-    }
+    /// Every lane: value, destination, velocity, law, waiter, stops - a value that
+    /// turns with the theme in the standard one.
+    var carried: StateCarried { carried(wearing: .standard) }
 
     /// And back, where the lane count is the one this type takes.
     init?(carried: StateCarried) {
@@ -79,9 +73,9 @@ struct JourneyLanes<Value: Walked>: StateValue {
     /// Whatever the value it carries is in - an animated colour is a colour.
     static var moving: MotionValues { Value.moving }
 
-    /// The numbers a value lies as - an animated value's lanes.
-    private static func numbers(of value: Value) -> [Double] {
-        guard case .lanes(let lanes) = value.carried else {
+    /// The numbers a value lies as in `theme` - an animated value's lanes.
+    private static func numbers(of value: Value, in theme: ThemeInForce) -> [Double] {
+        guard case .lanes(let lanes) = value.carried(in: theme) else {
             return Array(repeating: 0, count: Value.lanes)
         }
 
@@ -114,4 +108,19 @@ enum JourneyPart {
     case motion
     case completion
     case stopped
+}
+
+extension JourneyLanes: ThemeWearing {
+    /// Whether the value it carries turns with the theme - an animated colour pair.
+    var wearsTheTheme: Bool { (value as? any ThemeWearing)?.wearsTheTheme ?? false }
+
+    /// Every lane, the values laid in `theme`.
+    func carried(wearing theme: ThemeInForce) -> StateCarried {
+        .lanes(
+            JourneyLanes.numbers(of: value, in: theme)
+                + JourneyLanes.numbers(of: destination, in: theme)
+                + JourneyLanes.numbers(of: velocity, in: theme)
+                + StateLaw.lanes(of: motion)
+                + [completion, stopped])
+    }
 }

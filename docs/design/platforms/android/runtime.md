@@ -26,9 +26,10 @@ the system bars; the host shows the first window's page in it.
 The activity loads the head's library - named by the manifest's
 `stateui.library` - whose `JNI_OnLoad` names the application and registers
 the host's natives. Its `onCreate` then starts the host on the UI thread. The
-first thing the start does is drain StateUI's UI executor on that thread: the
-drain is what makes the thread `MainActor`'s, and every native call after it
-asserts that isolation rather than assuming a thread.
+first thing the start does is take that thread as the UI thread:
+`takeTheUIThread()` makes StateUI's UI executor `MainActor`'s and drains it
+there, and every native call after it asserts that isolation rather than
+assuming a thread.
 
 ## A later activity
 

@@ -117,6 +117,7 @@ enum Sheet: Hashable {
 /// Every move is a plain assignment. Navigation is state this side owns, so no
 /// handler waits for a parallel routing system; the next render moves the
 /// native surface.
+@MainActor
 final class Navigation {
     /// Which section the menu has chosen.
     @State var section: GallerySection = .home

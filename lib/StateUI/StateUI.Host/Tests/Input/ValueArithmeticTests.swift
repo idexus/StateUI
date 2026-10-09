@@ -6,6 +6,7 @@
 import XCTest
 
 /// A value inside a range, and words in a case, the same on every host.
+@MainActor
 final class ValueArithmeticTests: XCTestCase {
     /// A range's ends stand in order whichever the tree gave first; a step that does not move is 1.
     func testARangeStandsInOrderAndAStepMoves() {

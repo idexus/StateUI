@@ -86,6 +86,7 @@
 }
 
 /// `page` under the numbered sheets `sheets` lists, each able to present the next.
+@MainActor
 func sheetsOver(_ page: SheetsPage, _ sheets: State<[Int]>) -> ModalStack {
     ModalStack(sheets.projectedValue) {
         page

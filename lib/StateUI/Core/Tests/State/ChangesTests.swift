@@ -26,6 +26,7 @@ private final class Log: @unchecked Sendable {
     var lines: [String] = []
 }
 
+@MainActor
 final class ChangesTests: XCTestCase {
     // MARK: - When it fires
 

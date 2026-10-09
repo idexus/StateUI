@@ -36,13 +36,10 @@ member declares, checked on the way back: an answer of another shape throws.
 
 Acts wait in the renderer's queue until the host takes them, at the end of its
 turn, after the render - so an act lands on the interface its handler just
-changed. The queue and the completion registry are behind the renderer's lock
-because a child task reaches them, as it reaches the record of what changed:
-`async let` runs its child on the cooperative pool, so two animations started
-that way book their waiters from pool threads while the UI thread takes acts
-and dispatches completions.
-Unguarded, that race loses a continuation (a handler frozen at its `await`) on
-a good day and corrupts memory on a bad one.
+changed. The queue and the completion registry are the UI thread's, as everything the
+renderer keeps: a handler books its waiter there, and the host takes acts and
+dispatches completions there, one after another. A task off the UI thread
+sends an act by awaiting it, which runs it on `MainActor`.
 
 ## Waking the host for an act
 

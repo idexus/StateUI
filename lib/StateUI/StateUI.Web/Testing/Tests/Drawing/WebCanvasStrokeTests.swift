@@ -8,6 +8,7 @@ import XCTest
 
 /// A canvas's drawing as the relay replays it: what the pen holds reaches each operation, and a state put back
 /// with none saved does nothing.
+@MainActor
 final class WebCanvasStrokeTests: XCTestCase {
     private func stroke(_ instructions: [CanvasInstruction]) -> WebCanvasStroke {
         WebCanvasStroke(instructions)

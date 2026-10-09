@@ -119,6 +119,7 @@ private struct Calling: View {
 
 /// What an application registers with this host: the acts it performs, the events it raises, and its own elements,
 /// each realized by a view of its own.
+@MainActor
 final class UIKitInteropTests: XCTestCase {
     /// Registers the lamp - a registry keeps what it is told, each registration in place of the last.
     @MainActor

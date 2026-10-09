@@ -6,6 +6,7 @@
 ///
 /// A host that cannot observe reachability reports `.unknown` and an empty
 /// profile list.
+@MainActor
 public final class Connectivity {
     /// Whether the internet is reachable - `.internet` is the one worth
     /// gating a request on.

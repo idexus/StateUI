@@ -8,18 +8,16 @@ host per process.
 
 ## One renderer
 
-The renderer is entered only from the host's UI thread, synchronously, through
-the typed `HostBoundary` SPI. It is `@unchecked Sendable` rather than
-`@MainActor`: isolating it would add an `assumeIsolated` to every entry point
-for a promise the compiler cannot check across a relay's callbacks anyway. The part that can suspend - a handler - is what `@MainActor` names.
+The renderer is `@MainActor`, the UI thread's: the host enters it from that
+thread, synchronously, through the typed `HostBoundary` SPI, and a relay's
+callback says so once as it enters, with `MainActor.assumeIsolated`.
 
-What more than one thread touches stands behind the renderer's `guarded` lock:
-the change bookkeeping, the live reader counts, the act queue, the completion
-registry and the counters beside them. A write to a `@State` may come from a
-`Task.detached` or an `async let` child on the cooperative pool, and an act
-may be sent from one. Closures taken out of the registry are always invoked
-after the lock is released, because a resumed continuation can re-enter `send`
-and the lock is not reentrant.
+Everything it keeps - the change bookkeeping, the live reader counts, the act
+queue, the completion registry and the counters beside them - is touched on
+that thread alone, so none of it stands behind a lock. A task elsewhere
+reaches a state by posting to it (state.md#posting) and sends an act by
+awaiting it on `MainActor`. A completion is taken out of the registry before
+it runs, because what it resumes may book or answer another.
 
 ## Three roads
 
@@ -65,10 +63,10 @@ issues; a counter that wraps skips it.
 
 ## Taking the changes
 
-The written states and the untracked flag are taken and cleared in one locked
-step before anything is built, and `rendering` is set in the
-same step. A write that lands while the render runs then stays on the books
-and asks for the next render instead of being wiped by this one's clear. The
+The written states and the untracked flag are taken and cleared in one step
+before anything is built, and `rendering` is set in the same step. A write
+that a build makes while the render runs then stays on the books and asks for
+the next render instead of being wiped by this one's clear. The
 cost is at most one clean walk that finds nothing; the other direction would
 be a control left stale and a handler left waiting on an update nobody draws.
 
@@ -137,12 +135,6 @@ outcome reaches its continuation through `ReplyBuffer`. A side channel keeps
 event shape. `start` reads the payload before the task begins, so a handler
 that suspends keeps the payload it started with. The two buffers stay apart
 because an outcome is values or a failure and an event is only values.
-
-`CarriedHandler` hands a handler into its task. The handler lives in the
-differ's registry, which the compiler reads as shared state; the task is
-isolated to `MainActor` and the registry is only touched there, so the
-promise is made in this one place instead of making `EventHandler` `Sendable`
-and stopping authors from capturing their own state.
 
 ## A new application
 

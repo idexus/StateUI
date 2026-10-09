@@ -6,9 +6,9 @@ import XCTest
 @_spi(Host) @testable import StateUIHost
 
 /// One turn of a runtime, and the order the application's handlers run in, over a real application.
+@MainActor
 final class PumpTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         _ = HostBoundary.takeActCalls()
     }
 

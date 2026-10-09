@@ -5,6 +5,7 @@
 @_spi(Host) import StateUIHost
 import XCTest
 
+@MainActor
 final class MapFramingTests: XCTestCase {
     /// A region's shorter side spans the whole circle: twice the radius.
     func testTheShorterSideSpansTheCircle() {

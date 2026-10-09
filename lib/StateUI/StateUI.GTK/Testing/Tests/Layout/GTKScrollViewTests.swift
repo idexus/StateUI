@@ -8,6 +8,7 @@
 import StateUIConformance
 import XCTest
 
+@MainActor
 final class GTKScrollViewTests: XCTestCase {
     /// The content takes the scroller's width, and its own height, however tall.
     func testAScrollerDownHoldsItsContentToItsWidth() throws {

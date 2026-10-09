@@ -12,7 +12,7 @@ borrowed, carried, kept and provided.
   @State var count        a State box, rebuilt with its view every render
         |
         v  adopt(from:) - the differ hands a fresh box its predecessor's storage
-  State.Storage           the value, its lock, its name, its image; the one
+  State.Storage           the value, its name, its image, its posts; the one
                           object that means "this state" across renders
         |
         v  once a host carries it
@@ -27,16 +27,18 @@ captured last render's box then writes where this render reads. Copying the
 value instead of sharing the storage would lose the write of a handler
 suspended across a render.
 
-The lock lives on the storage, not the box, because two boxes sharing a storage
-must share its lock. The storage is internal so tests can hold its invariants
-directly; no public signature names it.
+The posts waiting for the UI thread live on the storage, not the box, because
+two boxes sharing a storage must share them: posts through either land in one
+order. The storage is internal so tests can hold its invariants directly; no
+public signature names it.
 
 A read and a write of a value the host does not carry are `@inlinable`, down
-to the lock: the application's module, which knows `Value`, compiles them for
-its own type. Called unspecialized across the module boundary, a read pays for
-the generic machinery - the value's metadata, its copies - several times over
-what the lock costs; the storage's fields that path touches are
-`@usableFromInline` for that reason alone. A carried value's road stays a call.
+to the storage's fields: the application's module, which knows `Value`,
+compiles them for its own type. Called unspecialized across the module
+boundary, a read pays for the generic machinery - the value's metadata, its
+copies - several times over the read itself; the storage's fields that path
+touches are `@usableFromInline` for that reason alone. A carried value's road
+stays a call.
 
 ## The initial value waits
 
@@ -46,24 +48,32 @@ view described and be thrown away by the adoption. The value is kept as an
 optional one level deeper than `Value`, so a state holding `nil` is told apart
 from a state with no value yet.
 
-## Writes from any thread
+## The UI thread's state
 
-A state may be read and written anywhere. The value sits behind the storage's
-lock, a write marks the tree and wakes the host from whatever thread made it,
-and a write that lands while a render runs is kept for the next one. A handler,
-a `Task.detached` and an `async let` child can all write without hopping first.
+A state belongs to the UI thread: `State`, `Binding`, `Journey` and everything
+that reads or writes them are `MainActor`'s, so a write from another thread
+does not compile. On the UI thread a handler's lines run with nothing between
+them - `counter += 1` is one step - and a write that lands while a render runs
+is kept for the next one. A write and the save it records happen together, so
+the newer value of a kept state is the one that reaches the store.
 
-What no two tasks may do is read a value, think, and write it back expecting
-both to count: `counter += 1` is a read and a write, two holds of the lock.
-That is right from a handler, where nothing runs between them, and wrong for
-two tasks at once; `update(_:)` holds the lock across all three steps. On a
-state the host carries, `update` is a read and then a write, because the host
-rewrites the image on its own frames and nothing here can bracket that.
+## Posting
 
-A write and the save it records happen under one hold. Two tasks writing a kept
-state at once could otherwise settle the value in one order and reach the
-store in the other, leaving the newer value in memory and the older one on
-disk for the next launch.
+`$x.post(v)` and `$x.post { … }` are the one door in from another thread. A
+post records itself in the state's mailroom, in the slot of the part posted
+to, and books one job on `MainActor` for that slot unless one is booked
+already; the job takes what waits and writes it once, through a binding to
+that part. A value posted replaces the changes waiting before it; a change
+runs over what the one before it left, so a hundred tasks counting with
+`post { $0 + 1 }` count every one. A post is deferred on every thread, the UI
+thread too: it is a message rather than a write, and nothing reads it before
+its job runs. Its value crosses threads, so it is `Sendable`.
+
+The mailroom is made on `MainActor` the first time the state is lent, and
+every binding to the state carries it; a slot is made under the mailroom's
+lock the first time its part is posted to, and holds its waiting value and
+changes under a lock of its own. Coalescing is what makes a value posted ten
+thousand times from a loop cost one write and one render.
 
 ## Bindings
 
@@ -183,7 +193,10 @@ the exception: its animator is an engine on this side.
 A colour pair (`Color(light:dark:)`) - or any value wearing the theme, a
 material holding one - written into a carried state keeps the
 pair on the storage, and the image holds the half in force: lanes are one
-colour. Every driven modifier that hands the state on reads the theme as it
+colour. The state lays the value in the theme in force (`ThemeInForce`),
+handed to the value rather than read by it, so a value's conversion depends
+on nothing but its arguments; a value's own `carried` is its lanes in the
+standard theme - the light half, the application's first accent. Every driven modifier that hands the state on reads the theme as it
 does, which makes that element the theme's reader; a theme change builds it
 again, and the host animates the colour to the other half. The pair is let go
 when the host moves the value somewhere else.
@@ -192,7 +205,7 @@ when the host moves the value somewhere else.
 
 A `Material` lies as lanes of its own width (`LaneKind.material`): its kind -
 none, a colour, a gradient, a blur, glass - then what that kind is made of,
-every colour four lanes as it stands. A pair lies as its half in force, a
+every colour four lanes in the theme it is laid in. A pair lies as its half in force, a
 half that is none as nothing; a blur and glass lay the stand-in colour of the
 theme in force too, so a theme turning changes the bytes and the host shows
 the other half. A material, a colour pair and the accent are each a value
@@ -237,13 +250,9 @@ save must not wait for the next event.
 
 One key is one piece of state: two views declaring a key share its storage, so
 a write in one rebuilds the readers in the other. The first state to claim a key
-decides the storage, under one hold of the store's lock; two holds would let two
-tasks each see nothing standing and adopt their own. A storage claimed before
-the host's read arrives - an application's own keyed state is built as the app
-registers - takes the stored value when `hydrate` runs, still ahead of the
-first view. The storage's lock comes before the store's everywhere: a save is
-recorded from under the storage's lock, so `hydrate` lands values after
-releasing its own.
+decides the storage. A storage claimed before the host's read arrives - an
+application's own keyed state is built as the app registers - takes the
+stored value when `hydrate` runs, still ahead of the first view.
 
 The key's kind must match the value's type, checked when the state is made. The
 label `persistentKey:` is the argument's own type, lowercased, as `motion:` and
@@ -305,13 +314,10 @@ in the application: read it inside `withObservationTracking` and call
 `Renderer.shared.setNeedsRender()` from its change handler, arming again after
 every change.
 
-## Sendable promises
+## Sendable
 
-`State` is `@unchecked Sendable`, kept by its storage's lock: a box may be
-written from a handler, read by a render and written by a detached task at
-once, and every write is whole. `@unchecked` because `Value` need not be
-`Sendable` - the lock guards the box's hold on the value, not the value's
-insides - and without it even `let counter = State(0)` at file scope would be
-rejected. `Binding` is `@unchecked Sendable` for the same reason, which is what
-lets a handler's `async let` child write through one. `Journey` is `Sendable`
-over the same storage.
+`State`, `Binding` and `Journey` are `MainActor`'s, which makes each
+`Sendable` by its type: a binding handed to a task can be posted to, and
+nothing else. Nothing promises more than the compiler checks: what other
+threads share - a mailroom's slots, the executor's queue - stands inside a
+`Mutex`.

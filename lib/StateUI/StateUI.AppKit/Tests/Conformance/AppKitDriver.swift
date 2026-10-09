@@ -80,14 +80,14 @@ final class AppKitDriver: HostDriver {
     private var restorable: [KeptWindow] = []
 
     func start(
-        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @Sendable () -> any View
+        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> MountedTree {
         forgetWhatIsKept()
         let application = OneWindowApplication(page: page)
         return run(clock: clock, reducesMotion: reducesMotion) { application }
     }
 
-    func start(clock: TestClock?, application: @escaping @Sendable () -> any Application) throws -> MountedTree {
+    func start(clock: TestClock?, application: @escaping @MainActor () -> any Application) throws -> MountedTree {
         run(clock: clock, reducesMotion: false, application)
     }
 
@@ -104,7 +104,7 @@ final class AppKitDriver: HostDriver {
     /// the tree it mounted.
     /// Design: docs/design/platforms/appkit/conformance.md#windows
     private func run(
-        clock: TestClock?, reducesMotion: Bool, _ application: @escaping @Sendable () -> any Application
+        clock: TestClock?, reducesMotion: Bool, _ application: @escaping @MainActor () -> any Application
     ) -> MountedTree {
         restorable = renderer.map { Self.encoded($0.windowsForTesting) } ?? []
         renderer?.closeForTesting()

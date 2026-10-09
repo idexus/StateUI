@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// `@State`, the one declaration of mutable state. A write asks the views that
-// read it for a render, from any thread.
+// `@State`, the one declaration of mutable state, the UI thread's. A write asks
+// the views that read it for a render.
 // Design: docs/design/core/state.md#storage-and-box
 
 /// A mutable piece of state, owned by whoever declares it.
@@ -15,10 +15,11 @@
 /// Writing asks the views that read it for a render, and a write nobody reads
 /// asks for nothing. A view's state survives the view being rebuilt for as long
 /// as the element keeps its key and its view type; leaving the tree ends it.
-/// State on the application lives as long as the app does. It may be read and
-/// written from any thread.
+/// State on the application lives as long as the app does. It belongs to the UI
+/// thread - `MainActor`; another thread writes it with `$state.post`.
 @propertyWrapper
-public final class State<Value>: @unchecked Sendable {
+@MainActor
+public final class State<Value> {
     /// Where the value lives, across every render.
     @usableFromInline private(set) var storage: Storage
 
@@ -56,8 +57,8 @@ public final class State<Value>: @unchecked Sendable {
     /// The value. Writing asks the views that read it for a render; reading records
     /// a dependency while a view is built and costs nearly nothing elsewhere.
     ///
-    /// Safe from any thread. `counter += 1` is a read and then a write; two tasks
-    /// changing one state at once use `_counter.update { $0 + 1 }`.
+    /// On `MainActor`, `counter += 1` is one step nothing else runs inside; from
+    /// another thread, `$counter.post { $0 + 1 }`.
     @inlinable
     public var wrappedValue: Value {
         get {
@@ -141,22 +142,6 @@ public final class State<Value>: @unchecked Sendable {
     public func get() -> Value {
         if Renderer.shared.stateRead(storage) { storage.readAtBuild = true }
         return storage.value
-    }
-
-    /// Writes the value computed from the one it holds, under one hold of the lock.
-    ///
-    ///     counter.update { $0 + 1 }
-    ///
-    /// For state held without the wrapper, and through the box (`_counter.update`)
-    /// for two tasks changing one state at the same moment, where a read and a
-    /// write from each would lose one of them.
-    ///
-    /// - Parameter transform: given the current value, answers the new one. It runs
-    ///   under the lock, so it must not touch this state again.
-    public func update(_ transform: (Value) -> Value) {
-        storage.update(transform)
-        storage.askForRender()
-        wakeForSave()
     }
 }
 
@@ -313,6 +298,7 @@ extension State {
 }
 
 /// A `@State` of any value, as a model's naming reflection meets it.
+@MainActor
 protocol AnyModelState: AnyObject {
     /// Names the storage where nothing has yet.
     func name(once name: String)

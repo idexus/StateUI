@@ -45,10 +45,10 @@ enum WinUITestHost {
 }
 
 extension XCTestCase {
-    /// Runs `body` as the main actor's on the test thread, which holds WinUI: a drain makes it MainActor's first.
+    /// Runs `body` as the main actor's on the test thread, which holds WinUI and is taken as the UI thread first.
     func onUIThread<Result: Sendable>(_ body: @MainActor () throws -> Result) rethrows -> Result {
         WinUITestHost.embed()
-        _ = CoreLink().runJobs()
+        CoreLink().takeTheUIThread()
         return try MainActor.assumeIsolated(body)
     }
 }
@@ -57,7 +57,7 @@ extension WinUIRenderer {
     /// A host showing `page` in a window of its own, laid out in `room`, on `clock` where one is given.
     static func running(
         clock: TestClock? = nil, reducesMotion: Bool = false, room: LayoutSize = WinUITestHost.room,
-        @ViewBuilder _ page: @escaping @Sendable () -> any View
+        @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> WinUIRenderer {
         let application = OneWindowApplication(page: page)
         return running(
@@ -70,7 +70,7 @@ extension WinUIRenderer {
     /// is given.
     static func running(
         clock: TestClock? = nil, reducesMotion: Bool = false, room: LayoutSize = WinUITestHost.room,
-        application: @escaping @Sendable () -> any Application
+        application: @escaping @MainActor () -> any Application
     ) -> WinUIRenderer {
         Renderer.shared.setApplication(application())
         let renderer = replacing(clock: clock, reducesMotion: reducesMotion)

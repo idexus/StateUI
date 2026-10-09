@@ -7,6 +7,7 @@ import Foundation
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 private struct Owner {
     @State var counter = 0
     @State var name = ""
@@ -20,6 +21,7 @@ private struct Profile {
     var age = 30
 }
 
+@MainActor
 private struct Settings {
     @State var profile = Profile()
 
@@ -27,6 +29,7 @@ private struct Settings {
     var name: Binding<String> { $profile.name }
 }
 
+@MainActor
 private struct Borrower {
     @Binding var counter: Int
     @Binding var name: String
@@ -126,6 +129,7 @@ private struct Shown: View {
     }
 }
 
+@MainActor
 final class StateTests: XCTestCase {
     func testAdoptingABoxSharesItsStorageBothWays() {
         let old = State(1)
@@ -437,94 +441,77 @@ final class StateTests: XCTestCase {
         XCTAssertTrue(Renderer.shared.pendingChanges.isEmpty, "and it is not even named")
     }
 
-    func testUpdateReadsAndWritesInOneStep() {
+    /// A POST WAITS FOR ITS JOB, on the UI thread too, and the changes posted run in
+    /// that job in the order posted, each over what the one before left.
+    func testPostedChangesRunInOrderInOneJob() async {
         let state = State(5)
-        state.update { $0 * 2 }
+        let binding = state.projectedValue
 
-        XCTAssertEqual(state.get(), 10)
+        binding.post { $0 * 2 }
+        binding.post { $0 + 1 }
+        XCTAssertEqual(state.get(), 5, "nothing changes before the job")
+
+        await settle()
+        XCTAssertEqual(state.get(), 11, "doubled, then one more")
+    }
+
+    /// A VALUE POSTED REPLACES THE CHANGES WAITING BEFORE IT; a change posted after
+    /// it runs over it.
+    func testAPostedValueReplacesTheChangesBeforeIt() async {
+        let state = State(1)
+        let binding = state.projectedValue
+
+        binding.post { $0 + 100 }
+        binding.post(10)
+        binding.post { $0 + 1 }
+
+        await settle()
+        XCTAssertEqual(state.get(), 11)
     }
 }
 
 
 extension StateTests {
-    /// State is written from ANY thread, whole: a hundred detached tasks each
-    /// counting a hundred times through `update` land every count, because
-    /// the read, the change and the write happen under one hold of the lock.
-    /// The wrapper's `+= 1` is a read and then a write and could not promise
-    /// this from two tasks at once - which is what `update` is for.
-    func testUpdateFromManyTasksAtOnceCountsEveryOne() async {
+    /// Posts from MANY THREADS at once all count: a hundred tasks of the pool each
+    /// post a hundred changes, and every one lands, each over the last - the read,
+    /// the change and the write happen in the one job on `MainActor`.
+    func testPostsFromManyTasksAtOnceCountEveryOne() async {
         let counter = State(0)
+        let binding = counter.projectedValue
         let reader = reading { _ = counter.get() }
 
         await withTaskGroup(of: Void.self) { group in
             for _ in 0 ..< 100 {
                 group.addTask {
-                    await Task.detached {
-                        for _ in 0 ..< 100 {
-                            counter.update { $0 + 1 }
-                        }
-                    }.value
+                    for _ in 0 ..< 100 {
+                        binding.post { $0 + 1 }
+                    }
                 }
             }
         }
 
+        await settle()
         XCTAssertEqual(counter.get(), 10_000)
-        XCTAssertTrue(Renderer.shared.needsRender, "and every one of them asked for a render")
+        XCTAssertTrue(Renderer.shared.needsRender, "and the job asked for a render")
         _ = reader
-    }
-
-    /// Reads and writes from many threads at once are whole values, never a
-    /// mix of two: a value wider than a word is written under the lock, so a
-    /// reader sees one write or the other and nothing in between.
-    func testAWideValueIsNeverReadTorn() async {
-        let wide = State((a: 0, b: 0, c: 0, d: 0))
-
-        await withTaskGroup(of: Bool.self) { group in
-            group.addTask {
-                await Task.detached {
-                    for n in 1 ... 2_000 { wide.wrappedValue = (n, n, n, n) }
-                }.value
-                return true
-            }
-
-            for _ in 0 ..< 4 {
-                group.addTask {
-                    await Task.detached {
-                        for _ in 0 ..< 2_000 {
-                            let read = wide.get()
-                            if read.a != read.b || read.b != read.c || read.c != read.d {
-                                return false
-                            }
-                        }
-                        return true
-                    }.value
-                }
-            }
-
-            for await whole in group {
-                XCTAssertTrue(whole, "a read saw two writes mixed")
-            }
-        }
     }
 
     // MARK: - Reading a value the host is moving
 
-    /// Drains the executor - the host's job, here done by hand - until `done`
-    /// answers true or `seconds` have passed. Answers whether it happened.
+    /// Takes turns of the UI thread - the host's job, here done by hand - until
+    /// `done` answers true or `seconds` have passed. Answers whether it happened.
     ///
     /// The one test here that involves real time needs it: a reading booked
-    /// for the end of a window is a sleeping Task, and nothing turns the
-    /// executor in a test.
+    /// for the end of a window is a sleeping task of `MainActor`'s, and nothing
+    /// turns the UI thread in a test.
     @discardableResult
     private func drain(until done: () -> Bool, within seconds: Double = 3) -> Bool {
         let deadline = Date().addingTimeInterval(seconds)
 
         while Date() < deadline {
-            stateUIRunJobs()
-
             if done() { return true }
 
-            Thread.sleep(forTimeInterval: 0.002)
+            turnTheUIThread()
         }
 
         return done()

@@ -271,8 +271,9 @@ NotificationCenter.default.addObserver(
 }
 ```
 
-`raise` is safe from any thread, so a source is wired where the platform
-reports it. It answers how many subscriptions heard it: a raise nobody hears is
+`raise` is `@MainActor`: a source the platform reports on the main thread
+calls it where it reports, and one reporting elsewhere hops there first. It
+answers how many subscriptions heard it: a raise nobody hears is
 an ordinary zero rather than a failure, so an application wires its sources
 unconditionally. The Swift side subscribes with `HostEvents.on`; see
 [Host-extension events](../interface/interaction-and-actions.md#host-extension-events).

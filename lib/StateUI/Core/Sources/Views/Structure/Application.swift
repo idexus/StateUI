@@ -30,6 +30,7 @@
 /// Write it in `init`: the application is made at its first need, before the
 /// first view is built, and the kept state's keys are read from it. The standard
 /// environment - the device, the display, the locale - is known there already.
+@MainActor
 public protocol Application {
     /// The scenes the application is made of.
     associatedtype Body: Scene
@@ -62,6 +63,7 @@ public protocol Application {
 ///   the host has told what the device is - with a fresh application session,
 ///   and kept for the life of the process, so `@State` declared on it
 ///   outlives every window.
+@MainActor
 public func stateUIUseApp<Declared: Application>(_ application: @escaping @autoclosure () -> Declared) {
     Renderer.shared.setApplication(application())
 }

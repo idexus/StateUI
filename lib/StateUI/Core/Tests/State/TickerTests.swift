@@ -13,6 +13,7 @@ import Foundation
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class TickerTests: XCTestCase {
     /// Takes turns of the UI thread - the host's job, here done by hand -
     /// until `done` answers true or `seconds` have passed. Answers whether it
@@ -272,44 +273,6 @@ final class TickerTests: XCTestCase {
     }
 
     // MARK: - From any thread
-
-    /// The whole reason the state is behind a lock: an `onTick` may hand its
-    /// work to another task, so `start`, `stop` and `reset` arrive from
-    /// wherever that work ended up.
-    func testTheControlsAreSafeFromManyThreadsAtOnce() {
-        let ticker = Ticker(every: .milliseconds(5))
-
-        DispatchQueue.concurrentPerform(iterations: 300) { turn in
-            switch turn % 4 {
-            case 0: ticker.start()
-            case 1: ticker.stop()
-            case 2: ticker.reset()
-            default: _ = ticker.ticks + (ticker.isRunning ? 1 : 0)
-            }
-        }
-
-        ticker.stop()
-        drain(until: { false }, within: 0.1)
-
-        XCTAssertFalse(ticker.isRunning, "a stop from this thread did not take")
-
-        let counted = ticker.ticks
-        drain(until: { false }, within: 0.1)
-
-        XCTAssertEqual(ticker.ticks, counted, "a loop survived the stop")
-    }
-
-    func testStartingFromAnotherThreadCounts() {
-        let ticker = Ticker(every: .milliseconds(10))
-
-        DispatchQueue.global().async { ticker.start() }
-
-        XCTAssertTrue(
-            drain(until: { ticker.ticks >= 2 }),
-            "a ticker started off the UI thread never counted")
-
-        ticker.stop()
-    }
 
     // MARK: - What the interface hears
 

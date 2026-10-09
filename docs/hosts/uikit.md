@@ -241,8 +241,9 @@ NotificationCenter.default.addObserver(
 }
 ```
 
-`raise` is safe from any thread and answers how many subscriptions heard it; a
-raise nobody hears is an ordinary zero. The Swift side subscribes with
+`raise` is `@MainActor`, called where the platform reports on the main thread,
+and answers how many subscriptions heard it; a raise nobody hears is an
+ordinary zero. The Swift side subscribes with
 `HostEvents.on`; see
 [Host-extension events](../interface/interaction-and-actions.md#host-extension-events).
 

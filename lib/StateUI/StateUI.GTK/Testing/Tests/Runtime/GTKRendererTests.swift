@@ -22,6 +22,7 @@ struct CounterPage: View {
     }
 }
 
+@MainActor
 final class GTKRendererTests: XCTestCase {
     /// A page's controls are GTK's, shown in a window: the words it describes are the words GTK holds.
     func testThePageShowsItsControlsInAWindow() {

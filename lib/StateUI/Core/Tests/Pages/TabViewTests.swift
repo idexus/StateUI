@@ -31,6 +31,7 @@ private struct TabPage: View {
 }
 
 /// The tab bar under test, over whatever selection is lent to it.
+@MainActor
 private func tabs(
     _ selection: Binding<Tab>,
     _ offered: [Tab] = Tab.allCases
@@ -41,6 +42,7 @@ private func tabs(
     .selection(selection.projectedValue)
 }
 
+@MainActor
 final class TabViewTests: XCTestCase {
     // MARK: - What goes out
 

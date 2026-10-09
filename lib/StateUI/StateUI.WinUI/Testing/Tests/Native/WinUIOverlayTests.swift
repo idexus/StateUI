@@ -28,6 +28,7 @@ private struct OverlaidPage: View {
 }
 
 /// The overlaid page under the window's sheets, each a label.
+@MainActor
 private func sheetsOver(_ sheets: State<[Int]>, menus: State<Bool>, windows: Received<WindowSession>) -> ModalStack {
     ModalStack(sheets.projectedValue) {
         OverlaidPage(menus: menus, windows: windows)

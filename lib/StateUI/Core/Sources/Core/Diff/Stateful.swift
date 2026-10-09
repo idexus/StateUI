@@ -7,6 +7,7 @@
 // Design: docs/design/core/identity-and-diffing.md#state-survives-a-rebuild
 
 /// What the differ needs of any state box without knowing its value's type.
+@MainActor
 protocol StateBox: AnyObject {
     /// Takes over `other`'s storage when it is a box of the same value type.
     func adopt(from other: AnyObject)
@@ -25,6 +26,7 @@ extension StateBox {
 
 /// Marks a wrapper whose state is owned elsewhere - `Binding`. The walk stops at
 /// one, so borrowed storage is never adopted as the borrower's own.
+@MainActor
 protocol BorrowedState {
     /// What the wrapper borrows from: the storage behind a whole `@State` and which
     /// part of it, or nothing for a binding made from closures.
@@ -34,6 +36,7 @@ protocol BorrowedState {
 /// One stored property of a composed view, as the differ can compare it - what
 /// decides, beside its reads, whether the view is built again or carried.
 /// Design: docs/design/core/identity-and-diffing.md#what-a-view-was-built-with
+@MainActor
 enum Input {
     /// A value that says whether it equals another.
     case value(any Equatable)
@@ -127,6 +130,7 @@ enum Input {
 /// walk. Each box comes back under the path the walk reached it by, which pairs
 /// it with its predecessor next render.
 /// Design: docs/design/core/identity-and-diffing.md#paths-pair-state
+@MainActor
 func stateParts(
     in value: Any
 ) -> (
@@ -141,6 +145,7 @@ func stateParts(
     return (boxes, slots, inputs)
 }
 
+@MainActor
 private func collectStateParts(
     in value: Any,
     at path: String,
@@ -227,6 +232,7 @@ private func storedViewType(of value: Any) -> String {
 
 extension Node {
     /// A subtree nobody has built yet, and what it takes to build it right.
+    @MainActor
     struct Stateful {
         /// The composed view's module-qualified type, which decides whose state it keeps.
         let viewType: String

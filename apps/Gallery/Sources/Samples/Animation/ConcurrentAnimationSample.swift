@@ -1,6 +1,8 @@
 import StateUI
 
-/// Several movements in the air at once, which is what `async let` buys.
+/// Several movements in the air at once: each starts as it is sent, and is
+/// awaited apart.
+@MainActor
 struct ConcurrentAnimationSample: SampleContent, ExampleContent {
     // listing: ConcurrentAnimationSample
     @State private var playing = false
@@ -80,7 +82,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                         if !finished { playing = false }
                     }
 
-                    try await $breath.journey.move(to: 1, .eased(200))
+                    try await $breath.journey.move(to: 1, .eased(200)).arrived()
                 }
                 .isEnabled(!playing)
 
@@ -95,7 +97,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
 
                     for bar in bars {
                         bar.journey.stop()
-                        try await bar.journey.move(to: 0, .eased(120))
+                        try await bar.journey.move(to: 0, .eased(120)).arrived()
                     }
                 }
                 .isEnabled(playing)
@@ -117,9 +119,10 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                 + "hopping one after another inside both. Every one of them is a DRIVEN "
                 + "state: the host reads the value off the state on its own frames, so "
                 + "a whole beat costs no renders at all however many things are "
-                + "moving inside it. `async let` starts a movement without waiting for "
-                + "it, which is why the wash, the breath and the hop of the moment are "
-                + "three in the air together.")
+                + "moving inside it. A movement starts the moment it is sent - "
+                + "`move(to:)` answers it, and its `arrived()` waits - which is why the "
+                + "wash, the breath and the hop of the moment are three in the air "
+                + "together.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -155,14 +158,14 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
     /// - Returns: whether everything in it ran to the end. False is what Stop
     ///   produces, through `stop()` on each of the states.
     private func beat(_ n: Int) async throws -> Bool {
-        // `async let` starts a movement and does not wait for it, so both of
-        // these are running while the bars below hop. Each is its own value on
-        // its own state, and the host carries all three on the same frames.
-        async let washing: Bool = $wash.journey.move(to:
+        // A movement starts as it is sent and is awaited apart, so both of these
+        // are running while the bars below hop. Each is its own value on its own
+        // state, and the host carries all three on the same frames.
+        let washing = $wash.journey.move(to:
             n.isMultiple(of: 2) ? Palette.brand : Palette.accent,
             .eased(1200, .cubicInOut))
 
-        async let breathing: Bool = $breath.journey.move(to: 0.25, .eased(600, .cubicInOut))
+        let breathing = $breath.journey.move(to: 0.25, .eased(600, .cubicInOut))
 
         // 4 bars x 300ms = the 1200ms the wash takes, so the wave crosses the
         // stage exactly once per colour. A hop that did not run to the end is
@@ -171,18 +174,19 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
         var hopped = true
 
         for bar in bars where hopped {
-            hopped = try await bar.journey.move(to: -26, .eased(150, .cubicOut))
+            hopped = try await bar.journey.move(to: -26, .eased(150, .cubicOut)).arrived()
 
             if hopped {
-                hopped = try await bar.journey.move(to: 0, .eased(150, .cubicIn))
+                hopped = try await bar.journey.move(to: 0, .eased(150, .cubicIn)).arrived()
             }
         }
 
         // Awaited at the BOTTOM: the beat is over when the longest thing in it
         // is over, not when the last one started is.
-        let (washed, breathed) = try await (washing, breathing)
+        let washed = try await washing.arrived()
+        let breathed = try await breathing.arrived()
 
-        try await $breath.journey.move(to: 1, .eased(300, .cubicInOut))
+        try await $breath.journey.move(to: 1, .eased(300, .cubicInOut)).arrived()
 
         return hopped && washed && breathed
     }

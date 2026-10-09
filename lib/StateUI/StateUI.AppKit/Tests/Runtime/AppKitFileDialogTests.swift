@@ -11,6 +11,7 @@ import XCTest
 
 /// A file dialog is AppKit's own panel, set as the act asks: a save panel offers its kinds under their captions with
 /// the name it suggests, an open panel the files of every kind, several where asked.
+@MainActor
 final class AppKitFileDialogTests: XCTestCase {
     @MainActor
     private func settle(_ renderer: AppKitRenderer, until done: () -> Bool) {

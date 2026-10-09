@@ -9,6 +9,7 @@
 ///         Window(.inspector) { Inspector() }
 ///     }
 @resultBuilder
+@MainActor
 public enum SceneBuilder {
     /// The windows declared so far.
     public struct Declared {

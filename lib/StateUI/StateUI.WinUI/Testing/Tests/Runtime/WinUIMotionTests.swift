@@ -121,7 +121,7 @@ final class WinUIMotionTests: XCTestCase {
                 VStack {
                     Slider(level.projectedValue)
                     Button("Go").onClicked {
-                        try await level.projectedValue.journey.move(to: 1, .eased(100, .linear))
+                        try await level.projectedValue.journey.move(to: 1, .eased(100, .linear)).arrived()
                         arrived.wrappedValue = true
                     }
                 }
@@ -152,7 +152,7 @@ final class WinUIMotionTests: XCTestCase {
                     Slider(level.projectedValue)
                     Slider(level.projectedValue)
                     Button("Go").onClicked {
-                        try await level.projectedValue.journey.move(to: 1, .eased(200, .linear))
+                        try await level.projectedValue.journey.move(to: 1, .eased(200, .linear)).arrived()
                         arrived.wrappedValue = true
                     }
                 }
@@ -210,7 +210,7 @@ final class WinUIMotionTests: XCTestCase {
                 VStack {
                     Text("moving").translationX(offset.projectedValue)
                     Button("Go").onClicked {
-                        try await offset.projectedValue.journey.move(to: 100, .eased(200, .linear))
+                        try await offset.projectedValue.journey.move(to: 100, .eased(200, .linear)).arrived()
                     }
                 }
             }

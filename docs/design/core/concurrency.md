@@ -24,10 +24,15 @@ platform. A handler runs on `MainActor` and may suspend; it resumes on
                                on its UI thread through HostBoundary.runJobs.
 ```
 
-The executor is installed as the renderer is made, before anything here starts a
-task: `MainActor`'s executor is chosen when it is first used. The factory is
-`@_spi(ExperimentalCustomExecutors)`; its shape is that of the one Swift release
-the project builds with.
+A host's start installs the executor: its first call, before anything starts a
+task, is `HostBoundary.takeTheUIThread()`, which installs it and drains once on
+that thread. A job running when `MainActor`'s executor is replaced was started
+by the one before, and `Task.immediate` from it no longer finds itself on
+`MainActor`. So nothing else installs it - not the renderer, which a test makes
+in the middle of its first `@MainActor` test. A process with no host, such as
+a test of the core, keeps the platform's main queue, which its run loop drains
+as on Apple. The factory is `@_spi(ExperimentalCustomExecutors)`; its shape is
+that of the one Swift release the project builds with.
 
 Nothing waits for the platform's main queue in shared code - nothing drains it
 on Android or Windows - and nothing uses a run-loop timer, which hangs off a run
@@ -72,11 +77,12 @@ no `await` finishes inside its event, and the host renders what it wrote in the
 same turn. Only a handler that really awaits comes back later, on the same
 thread (render.md).
 
-Every async function in the library is `nonisolated(nonsending)`, or names
-`@MainActor` outright: it runs on its caller's executor. A plain async function
-runs on Swift's cooperative pool whoever calls it, so a handler awaiting one
-would come back on a pool thread with the host drawing beside it. A test holds
-every async declaration in the library to one of the two spellings.
+Every async function in the library is `@MainActor`, or runs on its caller's
+executor: every manifest compiles its Swift with that as the default
+(`NonisolatedNonsendingByDefault`), so no declaration spells it. Without it, a
+plain async function runs on Swift's cooperative pool whoever calls it, and a
+handler awaiting one would come back on a pool thread with the host drawing
+beside it. A test holds every Swift target of every manifest to the setting.
 
 ## The host is never called back
 
@@ -147,50 +153,26 @@ queue has a thread of its own, the draining one rather than the host's. It is
 not the thread the executor was made on, which may be a pool thread enqueueing
 the first job.
 
-## The lock
+## What stands behind a lock
 
-`Lock` (Lock.swift) is what state more than one thread touches
-stands behind: a storage's value, the renderer's bookkeeping, a board's images,
-the act queue. It is a `Mutex` guarding nothing, with the state beside it
-rather than in it, because what it guards is often no value a mutex could hold:
-a `@State`'s value is whatever type its author declares, `Sendable` or not, and
-a value handed into a mutex has to be `sending`, which a property setter cannot
-promise. An uncontended hold costs a few nanoseconds.
+A state is the UI thread's, and so is everything the renderer, a board, the
+stores and a storage keep: none of it stands behind a lock. What another
+thread does touch stands inside a `Mutex` of its own, as the value it holds:
+the executor's queue and doorbell flags, a binding's posts waiting for the UI
+thread (state.md#posting) and the complaints already said.
 
-It is not reentrant: a body that asks for the same lock again deadlocks. So what
-a body takes out - a continuation to resume, a handler to call - runs after
-`withLock` returns, and a wake only signals outside every lock.
+A `Mutex` is not reentrant: a body that asks for the same lock again
+deadlocks. So what a body takes out - a job to run, a write to book - runs
+after `withLock` returns, and a wake only signals outside it. No body holds
+two: a post finds its slot in the binding's mailroom and lets the mailroom go
+before it takes the slot's own lock.
 
-Where the guarded state is the lock owner's own, it stands inside the lock:
-`Guarded` (Guarded.swift) holds a value that `withLock` alone reaches, as
-`inout`, so a read or a write without the lock does not compile. A board's
-book is one (cycle.md, The board): the doorbell reads it from its own thread.
+## What the compiler checks
 
-## Lock order
-
-```text
-  State.Storage's lock   before   the persistent store's and a scene record's
-                                  (a save is recorded from under the storage)
-  State.Storage's lock   before   a board's hold   (carry() makes the image)
-  a board's hold         never around an engine's run, nor around a wake
-  the renderer's lock    never around a wake - the executor's lock is never
-                         taken inside it
-```
-
-Where a lock would take two of these in the other order, the read goes without
-it: an engine's `due` reads a storage's write count as an atomic under the
-board's hold (cycle.md), and `hydrate` lands stored values after letting go of
-the store (state.md).
-
-## Unchecked sendability
-
-The renderer, a `State`, a `Binding`, a board, the stores and the executor are
-`@unchecked Sendable`. What makes each safe is either its lock or a fact the
-compiler cannot see: a host calls in from one thread, and the handler registry
-is touched only on `MainActor`. `@unchecked` is written where that promise is
-made, rather than by loosening a type for everyone - a `Sendable`
-`EventHandler` would stop authors capturing their own state in handlers.
-
-The pieces written only by the thread that renders - the build frame, the
-inspector's record, the event and reply buffers - are `nonisolated(unsafe)`
-statics for the same reason.
+The core makes no promise the compiler cannot check: it has no `@unchecked
+Sendable`, no `nonisolated(unsafe)` and no `assumeIsolated`, which
+`UIThreadTests` holds. The renderer, a `State`, a `Binding`, a board and the
+stores are `@MainActor`; what crosses threads is `Sendable` by what it holds -
+the executor, a mailroom and its slots, each over a `Mutex`. Where a platform
+calls in on its UI thread, a fact the compiler cannot see, the host says it
+once as the call enters, with `MainActor.assumeIsolated`.

@@ -74,7 +74,7 @@ final class WebDriver: HostDriver {
     var liveViews: Int? { WebDOMView.liveCount }
 
     func start(
-        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @Sendable () -> any View
+        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> MountedTree {
         written.listen()
         emptyFiles()
@@ -83,7 +83,7 @@ final class WebDriver: HostDriver {
         return renderer.runtime.tree
     }
 
-    func start(clock: TestClock?, application: @escaping @Sendable () -> any Application) throws -> MountedTree {
+    func start(clock: TestClock?, application: @escaping @MainActor () -> any Application) throws -> MountedTree {
         written.listen()
         emptyFiles()
         let renderer = WebRenderer.running(clock: clock, keeping: true, application: application)

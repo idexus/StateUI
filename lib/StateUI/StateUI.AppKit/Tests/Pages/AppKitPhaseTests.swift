@@ -11,6 +11,7 @@ import XCTest
 /// Every phase the platform reports runs the handler the page's view gave it,
 /// so a push that reports a page's arrival and its navigation in one native
 /// move runs both.
+@MainActor
 final class AppKitPhaseTests: XCTestCase {
     @MainActor
     func testAPushedPageSeesItsArrivalAndItsNavigation() {
@@ -28,6 +29,7 @@ final class AppKitPhaseTests: XCTestCase {
 }
 
 /// The stack the test pushes onto, and what its pushed page saw of its life.
+@MainActor
 private final class PhaseStack {
     @State var path: [Int] = []
     var seen: [String] = []

@@ -125,7 +125,7 @@ final class GTKDriver: HostDriver {
     var register: HostRegister { GTKRealization.register.and(backendRecords) }
 
     func start(
-        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @Sendable () -> any View
+        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> MountedTree {
         written.listen()
         let renderer = GTKRenderer.running(clock: clock, reducesMotion: reducesMotion, page)

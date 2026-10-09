@@ -44,7 +44,7 @@ public struct ChosenFile: Equatable, Hashable, Sendable, HostRepresentable {
     /// - Returns: its contents, as they stand.
     /// - Throws: `StateUIError` where the platform cannot read it - gone,
     ///   or no longer the application's to read.
-    public nonisolated(nonsending) func read() async throws -> [UInt8] {
+    public func read() async throws -> [UInt8] {
         try await stateUICall(ApplicationContract.readFile, self, nil)
     }
 
@@ -58,7 +58,7 @@ public struct ChosenFile: Equatable, Hashable, Sendable, HostRepresentable {
     /// - Returns: the file's first bytes, all of them where it holds no more.
     /// - Throws: `StateUIError` where the platform cannot read it - gone,
     ///   or no longer the application's to read.
-    public nonisolated(nonsending) func read(atMost maximum: Int) async throws -> [UInt8] {
+    public func read(atMost maximum: Int) async throws -> [UInt8] {
         try await stateUICall(ApplicationContract.readFile, self, max(0, maximum))
     }
 
@@ -70,7 +70,7 @@ public struct ChosenFile: Equatable, Hashable, Sendable, HostRepresentable {
     /// - Returns: whether an application took it; false where none opens its
     ///   kind.
     @discardableResult
-    public nonisolated(nonsending) func launch() async throws -> Bool {
+    public func launch() async throws -> Bool {
         try await stateUICall(ApplicationContract.launchFile, self)
     }
 }

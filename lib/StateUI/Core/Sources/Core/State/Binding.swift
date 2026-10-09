@@ -24,6 +24,7 @@
 /// `@Binding var basket: Basket`, with `basket.$note` the note's own state.
 @propertyWrapper
 @dynamicMemberLookup
+@MainActor
 public struct Binding<Value> {
     // Two closures: reading and writing is all a binding asks of what it borrows.
     private let read: () -> Value
@@ -33,7 +34,12 @@ public struct Binding<Value> {
     // of one state recognize each other. Only `described` reads it.
     // Design: docs/design/core/state.md#bindings
     let lender: AnyObject?
-    let lent: AnyHashable?
+    nonisolated let lent: (any Hashable & Sendable)?
+
+    /// Where a post to this waits for its job - the borrowed state's, shared by every
+    /// binding to it.
+    /// Design: docs/design/core/state.md#posting
+    nonisolated let mailroom: Mailroom
 
     /// A binding to state somebody else owns. `$counter` is the ordinary way to
     /// get one.
@@ -42,6 +48,7 @@ public struct Binding<Value> {
         write = { state.wrappedValue = $0 }
         lender = state.lender
         lent = nil
+        mailroom = state.storage.mailroom
     }
 
     /// A binding over a storage no box holds - a conversion's derived side: a read
@@ -69,6 +76,7 @@ public struct Binding<Value> {
         }
         lender = storage
         lent = nil
+        mailroom = storage.mailroom
     }
 
     /// The one the property subscripts use, with who the value came from.
@@ -76,12 +84,14 @@ public struct Binding<Value> {
         read: @escaping () -> Value,
         write: @escaping (Value) -> Void,
         lender: AnyObject?,
-        lent: AnyHashable?
+        lent: (any Hashable & Sendable)?,
+        mailroom: Mailroom
     ) {
         self.read = read
         self.write = write
         self.lender = lender
         self.lent = lent
+        self.mailroom = mailroom
     }
 
     /// A binding to something this library does not own: read it with `get`, write
@@ -96,6 +106,7 @@ public struct Binding<Value> {
         write = set
         lender = nil
         lent = nil
+        mailroom = Mailroom()
     }
 
     /// The value this borrows. Writing goes straight to the owner, and asks
@@ -127,7 +138,7 @@ public struct Binding<Value> {
     /// For a value: the whole is read, the property written, and the whole put back.
     /// A model takes the subscript below.
     public subscript<Subject>(
-        dynamicMember keyPath: WritableKeyPath<Value, Subject>
+        dynamicMember keyPath: WritableKeyPath<Value, Subject> & Sendable
     ) -> Binding<Subject> {
         Binding<Subject>(
             read: { wrappedValue[keyPath: keyPath] },
@@ -137,7 +148,8 @@ public struct Binding<Value> {
                 wrappedValue = whole
             },
             lender: lender,
-            lent: keyPath)
+            lent: keyPath,
+            mailroom: mailroom)
     }
 
     /// A binding to one property of a model, through the model - `$basket.note`.
@@ -148,17 +160,18 @@ public struct Binding<Value> {
     /// of the state holding the model; the property's own state is `basket.$note`,
     /// which is what a control the host carries is handed.
     public subscript<Subject>(
-        dynamicMember keyPath: ReferenceWritableKeyPath<Value, Subject>
+        dynamicMember keyPath: ReferenceWritableKeyPath<Value, Subject> & Sendable
     ) -> Binding<Subject> {
         Binding<Subject>(
             read: { wrappedValue[keyPath: keyPath] },
             write: { wrappedValue[keyPath: keyPath] = $0 },
             lender: lender,
-            lent: keyPath)
+            lent: keyPath,
+            mailroom: mailroom)
     }
 }
 
-extension Binding where Value: MutableCollection, Value.Index: Hashable {
+extension Binding where Value: MutableCollection, Value.Index: Hashable & Sendable {
     /// A binding to one element of what this borrows - `$hops[2]`.
     ///
     ///     ForEach(Array(hops.enumerated()), id: \.offset) { hop in
@@ -179,7 +192,8 @@ extension Binding where Value: MutableCollection, Value.Index: Hashable {
                 wrappedValue = whole
             },
             lender: lender,
-            lent: index)
+            lent: index,
+            mailroom: mailroom)
     }
 }
 
@@ -241,10 +255,6 @@ extension Binding {
 }
 
 extension Binding: BorrowedState {
-    var lends: (lender: AnyObject?, lent: AnyHashable?) { (lender, lent) }
+    var lends: (lender: AnyObject?, lent: AnyHashable?) { (lender, lent.map { AnyHashable($0) }) }
 }
 
-/// `@unchecked Sendable` for the reason `State` is: a handler's `async let` child
-/// writes through a binding from the pool.
-/// Design: docs/design/core/state.md#sendable-promises
-extension Binding: @unchecked Sendable {}

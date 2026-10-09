@@ -27,6 +27,7 @@
 /// and changing x does not restore an old y. A `nil` axis stays under native
 /// window management, including platform restoration and the user's resizing.
 /// Full-screen hosts may retain these values without presenting geometry.
+@MainActor
 public final class WindowSession {
     /// Where the window stands in its life right now. Starts `.created`.
     @State public internal(set) var phase: WindowPhase = .created
@@ -113,7 +114,7 @@ public final class WindowSession {
     ///   `WindowError.notOpen` for one already closed, and
     ///   `WindowError.unsupported` where the host cannot close this window
     ///   independently.
-    public nonisolated(nonsending) func close() async throws {
+    public func close() async throws {
         guard let record, OpenScenes.shared.record(id: record.id) === record else {
             throw WindowError.noScene
         }

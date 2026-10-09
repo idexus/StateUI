@@ -11,6 +11,7 @@
 ///
 /// A host that cannot observe a battery leaves `chargeLevel` at `-1` and the
 /// remaining values at `.unknown`. A test provides a fake, as above.
+@MainActor
 public final class Battery {
     /// How full the battery is, 0 to 1 - and -1 until the host has said,
     /// which a host without battery information may never do.

@@ -171,7 +171,7 @@ between destinations.
 | `destination` | target; the same value a plain state read returns |
 | `velocity` | per-second velocity, lane by lane |
 | `motion` | law used wherever this state is shown |
-| `move(to:_:)` | set a destination and await whether it was reached |
+| `move(to:_:)` | set a destination; `arrived()` awaits whether it was reached |
 | `stop()` | end the active animation where it currently stands |
 | `snap(to:)` | set current value, destination, and zero velocity together |
 | `convert` | derive a host-driven value from the live journey |
@@ -184,7 +184,7 @@ struct Fader: View {
         VStack {
             Text("Native motion").opacity($fade)
             Button("Fade").onClicked {
-                try await $fade.journey.move(to: 0.15, .eased(400, .cubicOut))
+                try await $fade.journey.move(to: 0.15, .eased(400, .cubicOut)).arrived()
             }
             Button("Restore").onClicked { $fade.journey.snap(to: 1) }
             Button("Stop").onClicked { $fade.journey.stop() }

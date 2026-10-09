@@ -4,6 +4,7 @@
 @_spi(Host) @testable import StateUI
 import XCTest
 
+@MainActor
 final class HostPathTests: XCTestCase {
     func testRelativeCommandsAndRepeatedMovePairsBecomeAbsoluteCommands() throws {
         let path = try XCTUnwrap(HostPath(svg: "M 10,20 30,40 l 5,-10 h 10 v 5 z"))

@@ -9,9 +9,9 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class AimTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
     }
 
@@ -409,6 +409,7 @@ private struct Choosing: View {
 /// A model holding the aim at the field it shows - the shape a page with a
 /// form has, where the handler that focuses a field lives beside the state
 /// that field shows.
+@MainActor
 private final class Form {
     @State var note = ""
 

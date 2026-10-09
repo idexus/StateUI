@@ -14,6 +14,7 @@
     }
 
     /// An element shows the words the tree gives it, and the words the tree changes them to.
+    @MainActor
     static func words(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).showsTheWordsTheTreeGives", proves: [
             Covered(TextualElementContract.text, on: element),
@@ -34,6 +35,7 @@
     }
 
     /// An element shows its words in the case the tree asks for.
+    @MainActor
     static func cased(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).showsItsWordsInTheirCase", proves: [
             Covered(TextualElementContract.text, on: element), Covered(TextualElementContract.textCase, on: element),

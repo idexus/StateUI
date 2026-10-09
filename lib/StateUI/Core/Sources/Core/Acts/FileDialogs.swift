@@ -15,7 +15,7 @@ extension Dialogs {
     /// - Parameter types: the kinds of file it shows; none for any file.
     /// - Returns: the file chosen, or nil where the dialog was cancelled.
     /// - Throws: `StateUIError` when there is no page on screen to show it.
-    public static nonisolated(nonsending) func openFile(types: [FileType] = []) async throws -> ChosenFile? {
+    public static func openFile(types: [FileType] = []) async throws -> ChosenFile? {
         try await stateUICall(ApplicationContract.openFiles, types, false).first
     }
 
@@ -29,7 +29,7 @@ extension Dialogs {
     /// - Returns: the files chosen, in the dialog's order; none where it was
     ///   cancelled.
     /// - Throws: `StateUIError` when there is no page on screen to show it.
-    public static nonisolated(nonsending) func openFiles(types: [FileType] = []) async throws -> [ChosenFile] {
+    public static func openFiles(types: [FileType] = []) async throws -> [ChosenFile] {
         try await stateUICall(ApplicationContract.openFiles, types, true)
     }
 
@@ -53,7 +53,7 @@ extension Dialogs {
     /// - Throws: `StateUIError` when there is no page on screen to show it,
     ///   or where the platform cannot write there.
     @discardableResult
-    public static nonisolated(nonsending) func saveFile(
+    public static func saveFile(
         _ contents: [UInt8], name: String, types: [FileType] = []
     ) async throws -> ChosenFile? {
         try await stateUICall(ApplicationContract.saveFile, contents, name, types)

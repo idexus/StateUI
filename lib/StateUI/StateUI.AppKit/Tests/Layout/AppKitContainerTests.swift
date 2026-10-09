@@ -8,6 +8,7 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
+@MainActor
 final class AppKitContainerTests: XCTestCase {
     /// A container handed the arrangement it already has asks nothing. A patch
     /// on its way to a descendant applies every ancestor again, and a split

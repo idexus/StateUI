@@ -9,11 +9,13 @@
 /// Design: docs/design/host/conformance.md#a-drawing-read-by-its-colours
 extension ShapeTests {
     /// The outline cases.
+    @MainActor
     static func outlineCases(_ element: String) -> [ConformanceCase] {
         [dashed(element), dashShifted(element), capped(element), joined(element), limited(element)]
     }
 
     /// A dashed outline leaves gaps along its run, which a solid one does not.
+    @MainActor
     static func dashed(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isDashedAsTheTreeSays", proves: [
             Covered(ShapeContract.dash, on: element),
@@ -31,6 +33,7 @@ extension ShapeTests {
 
     /// The dashes start as far along the pattern as their phase says: shifted by one dash, they stand where the gaps
     /// stood.
+    @MainActor
     static func dashShifted(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).startsItsDashesWhereThePhaseSays", proves: [
             Covered(ShapeContract.dashPhase, on: element),
@@ -53,6 +56,7 @@ extension ShapeTests {
 
     /// Short dashes - dashes and gaps are measured in the outline's widths - take more of the outline with squared
     /// ends than with flat ones: each end reaches half the line's width past where the dash stops.
+    @MainActor
     static func capped(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).endsItsLinesAsTheTreeSays", proves: [
             Covered(ShapeContract.lineCap, on: element),
@@ -75,6 +79,7 @@ extension ShapeTests {
     }
 
     /// A corner is mitred to a point, and cut across once the tree bevels it.
+    @MainActor
     static func joined(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).joinsItsCornersAsTheTreeSays", proves: [
             Covered(ShapeContract.lineJoin, on: element),
@@ -98,6 +103,7 @@ extension ShapeTests {
     }
 
     /// A mitred corner is cut across where its point would reach past the limit the tree sets.
+    @MainActor
     static func limited(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).limitsItsMitresAsTheTreeSays", proves: [
             Covered(ShapeContract.miterLimit, on: element),
@@ -122,6 +128,7 @@ extension ShapeTests {
 
     /// `element` outlined in red, `width` wide, filled with nothing, 40 by 40, a figure with a corner set in from its
     /// room where it has points of its own.
+    @MainActor
     static func outlined(_ element: String, width: Double) -> [any Worn] {
         inset(element) + [
             Write(ShapeContract.stroke, Brush.solidColor(.red)), Write(ShapeContract.lineWidth, width),
@@ -130,6 +137,7 @@ extension ShapeTests {
     }
 
     /// A figure of points set eight in from the room, so its corners' outer side stands inside it.
+    @MainActor
     static func inset(_ element: String) -> [any Worn] {
         let square = [Point(8, 8), Point(32, 8), Point(32, 32), Point(8, 32)]
         let atItsSize = Write(ShapeContract.contentMode, ContentMode.center)

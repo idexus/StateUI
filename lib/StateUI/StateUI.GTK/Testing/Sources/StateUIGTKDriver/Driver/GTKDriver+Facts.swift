@@ -13,7 +13,7 @@ import Glibc
 /// its desktop would tell it.
 /// Design: docs/design/host/conformance.md#the-driver
 extension GTKDriver {
-    func start(clock: TestClock?, application: @escaping @Sendable () -> any Application) throws -> MountedTree {
+    func start(clock: TestClock?, application: @escaping @MainActor () -> any Application) throws -> MountedTree {
         written.listen()
         let renderer = GTKRenderer.running(clock: clock, keeping: true, application: application)
         self.renderer = renderer

@@ -698,6 +698,7 @@ private struct SearchingPage: View {
 }
 
 /// A page under the sheets one state lists, telling its window - the window's page, a modal stack.
+@MainActor
 private func sheetsPage(
     _ sheets: State<[Int]>, log: Received<String> = Received(), windows: Received<WindowSession> = Received()
 ) -> ModalStack {
@@ -722,6 +723,7 @@ private struct ScenePage: View {
 }
 
 /// A split whose sidebar slides over a stack, as on a phone.
+@MainActor
 private func drawerOverStack(sidebar: some View) -> some View {
     SplitView(State(wrappedValue: false).projectedValue) {
         sidebar

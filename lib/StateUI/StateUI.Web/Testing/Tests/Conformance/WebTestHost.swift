@@ -29,7 +29,7 @@ extension WebRenderer {
     /// A host showing `page` in the browser's window, on `clock` where one is given: a first launch, which finds
     /// nothing an earlier host kept.
     static func running(
-        clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @Sendable () -> any View
+        clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> WebRenderer {
         let application = OneWindowApplication(page: page)
         return running(clock: clock, reducesMotion: reducesMotion, application: { application })
@@ -39,7 +39,7 @@ extension WebRenderer {
     /// host kept - or, `keeping`, a launch after the last, which finds what it kept.
     static func running(
         clock: TestClock? = nil, reducesMotion: Bool = false, keeping: Bool = false,
-        application: @escaping @Sendable () -> any Application
+        application: @escaping @MainActor () -> any Application
     ) -> WebRenderer {
         shared?.leave()
         if !keeping { forgetWhatIsKept() }

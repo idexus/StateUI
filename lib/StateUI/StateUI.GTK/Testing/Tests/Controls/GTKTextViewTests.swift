@@ -36,6 +36,7 @@ private struct SpannedPage: View {
     }
 }
 
+@MainActor
 final class GTKTextViewTests: XCTestCase {
     /// A label's words take the font, the colour, the spacing, the lines and the alignment the tree gives them.
     func testATextTakesItsFontColourLinesAndAlignment() throws {

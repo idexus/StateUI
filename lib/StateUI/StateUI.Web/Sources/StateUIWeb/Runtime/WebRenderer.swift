@@ -66,8 +66,9 @@ final class WebRenderer {
         WebRenderer(applicationName: applicationName).run()
     }
 
-    /// Runs this host in the page, in place of any before it.
+    /// Runs this host in the page, in place of any before it, on the page's thread taken as the UI thread.
     func run() {
+        runtime.core.takeTheUIThread()
         WebRelay.start()
         Self.shared = self
         let core = runtime.core

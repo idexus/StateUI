@@ -12,9 +12,9 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class DrivenPatchTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
 
         // The numbering starts over, so these patches are the same whichever

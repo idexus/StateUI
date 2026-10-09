@@ -99,6 +99,7 @@ private struct Pulling: View {
 /// An element of the APPLICATION'S OWN, realized on this host by a view of the
 /// application's own: made by its registration, taking the members its
 /// contract declares, raising its events, and answering an act aimed at it.
+@MainActor
 final class AppKitApplicationRegistrationTests: XCTestCase {
     /// Registers the lamp - a registry keeps what it is told, so each test's
     /// registration only replaces the same entry.

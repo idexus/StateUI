@@ -2,6 +2,7 @@ import StateUI
 
 // listing: WindowBarSample
 /// What the gallery's window says on its bar, written by the sample and declared by the window.
+@MainActor
 final class WindowBarState {
     /// The line under the bar's title.
     @State var subtitle = ""

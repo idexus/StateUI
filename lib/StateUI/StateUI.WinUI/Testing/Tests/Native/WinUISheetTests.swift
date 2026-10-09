@@ -29,6 +29,7 @@ private struct SheetsPage: View {
 }
 
 /// The window's sheets over a page saying where it stands.
+@MainActor
 private func sheetsOver(_ sheets: State<[Sheet]>, log: Received<String>) -> ModalStack {
     ModalStack(sheets.projectedValue) {
         SheetsPage(log: log, sheets: sheets.projectedValue)

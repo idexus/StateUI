@@ -67,7 +67,7 @@ public struct StateUIError: Error, CustomStringConvertible, Equatable {
 ///   - arguments: its arguments, in the order the contract declares them.
 /// - Returns: the answer, as the contract declares it.
 @discardableResult
-public nonisolated(nonsending) func stateUICall<
+public func stateUICall<
     Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable
 >(
     _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
@@ -91,6 +91,7 @@ public nonisolated(nonsending) func stateUICall<
 /// - Parameters:
 ///   - act: the member, written with its contract.
 ///   - arguments: its arguments, in the order the contract declares them.
+@MainActor
 public func stateUISend<Owner: ApplicationTier, each Argument: HostRepresentable, Answer>(
     _ act: ElementAct<Owner, (repeat each Argument), Answer>,
     _ arguments: repeat each Argument

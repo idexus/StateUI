@@ -8,6 +8,7 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
+@MainActor
 final class AppKitImageViewTests: XCTestCase {
     @MainActor
     func testFillCoversAndCentresWithoutDistortingTheImage() {

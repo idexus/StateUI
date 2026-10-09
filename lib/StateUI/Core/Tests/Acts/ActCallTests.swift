@@ -12,6 +12,7 @@ import Foundation
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class ActCallTests: XCTestCase {
     // MARK: - The name
 
@@ -84,7 +85,7 @@ final class ActCallTests: XCTestCase {
     ///
     /// Spelled as an alias because `nonisolated(nonsending)` cannot be written
     /// inline in a parameter type - the same reason EventHandler exists.
-    private typealias Act<Value> = nonisolated(nonsending) () async throws -> Value
+    private typealias Act<Value> = @MainActor () async throws -> Value
 
     /// Starts an act and lets it reach its suspension, the way an event does.
     ///
@@ -93,7 +94,7 @@ final class ActCallTests: XCTestCase {
     /// the time this returns the act is on the act queue. Deterministic, not a
     /// race.
     @MainActor
-    private static func begin<Value>(_ body: sending @escaping Act<Value>) -> Task<Value, Error> {
+    private static func begin<Value: Sendable>(_ body: @escaping Act<Value>) -> Task<Value, Error> {
         Task.immediate { @MainActor in try await body() }
     }
 
@@ -124,7 +125,7 @@ final class ActCallTests: XCTestCase {
     func testAnAlertQueuesItsActByName() async throws {
         drain()
 
-        let navigation = await Self.begin { try await Dialogs.alert("//list", message: "saved") }
+        let navigation = Self.begin { try await Dialogs.alert("//list", message: "saved") }
 
         let acts = drain()
         XCTAssertEqual(acts.first?.name, "alert")
@@ -141,7 +142,7 @@ final class ActCallTests: XCTestCase {
     func testAnnouncingQueuesTheWordsWithNoTarget() async throws {
         drain()
 
-        let said = await Self.begin { try await ScreenReader.announce("Row deleted") }
+        let said = Self.begin { try await ScreenReader.announce("Row deleted") }
 
         let acts = drain()
         XCTAssertEqual(acts.first?.name, "announce")
@@ -153,7 +154,7 @@ final class ActCallTests: XCTestCase {
 
     func testTakingTheActCallsEmptiesTheQueue() async throws {
         drain()
-        let navigation = await Self.begin { try await Dialogs.alert("//list", message: "saved") }
+        let navigation = Self.begin { try await Dialogs.alert("//list", message: "saved") }
 
         let acts = drain()
         XCTAssertFalse(acts.isEmpty)
@@ -205,7 +206,7 @@ final class ActCallTests: XCTestCase {
     func testASecondAwaitQueuesOnlyAfterTheFirstIsReported() async throws {
         drain()
 
-        let navigation = await Self.begin {
+        let navigation = Self.begin {
             try await Dialogs.alert("//first", message: "saved")
             try await Dialogs.alert("//second", message: "saved")
         }
@@ -228,7 +229,7 @@ final class ActCallTests: XCTestCase {
     func testTheResultOfAnActReachesTheCaller() async throws {
         drain()
 
-        let asked = await Self.begin { try await stateUICall(TestActs.choose, "Delete?") }
+        let asked = Self.begin { try await stateUICall(TestActs.choose, "Delete?") }
 
         await report(try completionId(in: drain()), .finished([.string("Delete")]))
 
@@ -244,19 +245,19 @@ final class ActCallTests: XCTestCase {
     func testADialogAnswerTellsNothingFromEmpty() async throws {
         drain()
 
-        let sheet = await Self.begin {
+        let sheet = Self.begin {
             try await Dialogs.chooseAction("Share via", buttons: ["Mail"])
         }
         await report(try completionId(in: drain()), .finished([.string("Mail")]))
         let choice = try await sheet.value
         XCTAssertEqual(choice, "Mail")
 
-        let accepted = await Self.begin { try await Dialogs.prompt("Rename") }
+        let accepted = Self.begin { try await Dialogs.prompt("Rename") }
         await report(try completionId(in: drain()), .finished([.string("")]))
         let typed = try await accepted.value
         XCTAssertEqual(typed, "", "accepted with nothing typed is an empty answer")
 
-        let cancelled = await Self.begin { try await Dialogs.prompt("Rename") }
+        let cancelled = Self.begin { try await Dialogs.prompt("Rename") }
         await report(try completionId(in: drain()), .finished([]))
         let nothing = try await cancelled.value
         XCTAssertNil(nothing, "cancelled is no answer at all")
@@ -266,7 +267,7 @@ final class ActCallTests: XCTestCase {
     func testAQuestionAlertAnswersWhatWasPressed() async throws {
         drain()
 
-        let asked = await Self.begin {
+        let asked = Self.begin {
             try await Dialogs.confirm(
                 "Delete?", message: "Sure?", accept: "Delete", cancel: "Keep")
         }
@@ -278,7 +279,7 @@ final class ActCallTests: XCTestCase {
     func testAFailureReportedByTheHostIsThrown() async throws {
         drain()
 
-        let navigation = await Self.begin { try await Dialogs.alert("//nowhere", message: "saved") }
+        let navigation = Self.begin { try await Dialogs.alert("//nowhere", message: "saved") }
 
         await report(try completionId(in: drain()), .failed("there is no page to show a dialog on"))
 
@@ -296,7 +297,7 @@ final class ActCallTests: XCTestCase {
     func testAnEmptyResultIsNotAFailure() async throws {
         drain()
 
-        let asked = await Self.begin { try await stateUICall(TestActs.nothing) }
+        let asked = Self.begin { try await stateUICall(TestActs.nothing) }
         await report(try completionId(in: drain()), .finished([]))
 
         try await asked.value
@@ -314,7 +315,7 @@ final class ActCallTests: XCTestCase {
         drain()
         let owed = Renderer.shared.resumesPending
 
-        let navigation = await Self.begin { try await Dialogs.alert("//list", message: "saved") }
+        let navigation = Self.begin { try await Dialogs.alert("//list", message: "saved") }
         let id = try completionId(in: drain())
 
         XCTAssertEqual(Renderer.shared.resumesPending, owed,
@@ -342,7 +343,7 @@ final class ActCallTests: XCTestCase {
     func testACompletionThatResumedNobodyOwesNothing() async throws {
         drain()
 
-        let navigation = await Self.begin { try await Dialogs.alert("//list", message: "saved") }
+        let navigation = Self.begin { try await Dialogs.alert("//list", message: "saved") }
         let id = try completionId(in: drain())
 
         await report(id, .finished([]))
@@ -356,7 +357,7 @@ final class ActCallTests: XCTestCase {
     func testAnActIsReportedOnce() async throws {
         drain()
 
-        let navigation = await Self.begin { try await Dialogs.alert("//list", message: "saved") }
+        let navigation = Self.begin { try await Dialogs.alert("//list", message: "saved") }
         let id = try completionId(in: drain())
 
         let ran = await report(id, .finished([]))
@@ -375,7 +376,7 @@ final class ActCallTests: XCTestCase {
     func testATypedReplyReachesTheCaller() async throws {
         drain()
 
-        let asked = await Self.begin { try await stateUICall(TestActs.choose, "Delete?") }
+        let asked = Self.begin { try await stateUICall(TestActs.choose, "Delete?") }
         let call = try XCTUnwrap(HostBoundary.takeActCalls().first)
         let id = try XCTUnwrap(call.completion)
 
@@ -394,7 +395,7 @@ final class ActCallTests: XCTestCase {
     func testATypedFailureIsThrownWithTheHostsReason() async throws {
         drain()
 
-        let navigation = await Self.begin { try await Dialogs.alert("//nowhere", message: "saved") }
+        let navigation = Self.begin { try await Dialogs.alert("//nowhere", message: "saved") }
         let id = try XCTUnwrap(HostBoundary.takeActCalls().first?.completion)
 
         XCTAssertTrue(HostBoundary.fail(id, reason: "there is no page to show a dialog on"))

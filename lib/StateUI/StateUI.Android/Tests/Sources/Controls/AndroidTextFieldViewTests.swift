@@ -8,6 +8,7 @@ import StateUIConformance
 import XCTest
 
 /// A greeting over a field, as HelloWorld's page has it.
+@MainActor
 func greeting(name: State<String>, submitted: Received<Int> = Received(), maximumLength: Int = 40) -> some View {
     VStack {
         Text(name.wrappedValue.isEmpty ? "Hello!" : "Hello, \(name.wrappedValue)!")

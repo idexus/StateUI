@@ -17,9 +17,9 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class JourneyTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         Renderer.shared.clearStates()
     }
@@ -224,25 +224,14 @@ final class JourneyTests: XCTestCase {
     /// A `move` awaited on a `.custom` value writes the destination and answers
     /// at once: the walk is the engine's, and the engine is the only one that
     /// knows when it is done.
-    func testAMoveUnderACustomLawAnswersAtOnce() async throws {
+    func testAMoveUnderACustomLawAnswersAtOnce() throws {
         let ball = State(wrappedValue: 0.0, motion: .custom)
         let binding = ball.projectedValue
         let renders = Renders()
 
         renders.render(ColorBox().translationY(binding).node)
 
-        let arrived = try await withThrowingTaskGroup(of: Bool?.self) { group in
-            group.addTask { try await binding.journey.move(to: 50) }
-            group.addTask {
-                try await Task.sleep(for: .seconds(2))
-                return nil
-            }
-            let first = try await group.next() ?? nil
-            group.cancelAll()
-            return first
-        }
-
-        XCTAssertEqual(arrived, true)
+        XCTAssertEqual(binding.journey.move(to: 50).ended, true, "it arrived as it was sent")
         XCTAssertEqual(ball.wrappedValue, 50, "the destination was written")
         XCTAssertEqual(binding.journey.value, 0, "and the value was left to the engine")
     }

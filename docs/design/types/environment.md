@@ -75,7 +75,7 @@ of its type.
 ## The UI thread
 
 Provider values are written by the host's reports and read by builds, both on the
-UI thread, which is why the instances can be `nonisolated(unsafe)`.
+UI thread, which is why the instances are `MainActor`'s.
 
 ## Open sets are text
 

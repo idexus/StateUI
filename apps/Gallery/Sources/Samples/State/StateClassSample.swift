@@ -8,6 +8,7 @@ import StateUI
 /// that property for another build, and no other. A plain `var` is stored and
 /// nothing more, and this one is here to be SEEN not working: pressing the
 /// button below raises it and the screen does not follow.
+@MainActor
 private final class Basket {
     @State var items: [String] = []
     @State var note = ""

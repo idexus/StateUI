@@ -91,6 +91,7 @@ private struct QuestionsPage: View {
     }
 }
 
+@MainActor
 final class GTKActsTests: XCTestCase {
     /// The host answers the time of day and its zone, and a zone's distance from UTC on the day asked - summer
     /// time included.

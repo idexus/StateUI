@@ -150,6 +150,7 @@
 
     /// The window is made of the blur its session writes and then of the one the tree changes it to - or of the
     /// colour a host whose windows show nothing behind them paints for each.
+    @MainActor
     static var blurred: ConformanceCase {
         ConformanceCase("Window.background.showsABlurOrWhatStandsInForIt", proves: [
             Covered(WindowContract.background),
@@ -171,9 +172,10 @@
     }
 
     /// `member` of the window holds what its session writes, and what the tree changes it to.
+    @MainActor
     static func holds<Value: HostRepresentable & Sendable & Equatable>(
         _ member: ElementProperty<WindowContract, Value>, _ first: Value, then second: Value,
-        _ write: @escaping @Sendable (WindowSession, Value) -> Void
+        _ write: @escaping @MainActor (WindowSession, Value) -> Void
     ) -> ConformanceCase {
         ConformanceCase("Window.\(member.name).holdsWhatItsSessionWritesAndChanges", proves: [
             Covered(member),

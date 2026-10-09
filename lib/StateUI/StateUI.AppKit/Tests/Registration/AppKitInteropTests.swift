@@ -79,6 +79,7 @@ private struct Calling: View {
 
 /// What an APPLICATION registers with this host: the acts it performs and the
 /// events it raises, neither of which any control stands behind.
+@MainActor
 final class AppKitInteropTests: XCTestCase {
     /// Pumps until `done` holds - an act's answer resumes its handler, and the
     /// handler's write renders on the next pump.

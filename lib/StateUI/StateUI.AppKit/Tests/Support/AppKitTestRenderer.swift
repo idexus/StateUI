@@ -37,6 +37,7 @@ func testRenderer(
 }
 
 /// The suite answers for the machine rather than reading it.
+@MainActor
 final class AppKitTestRendererTests: XCTestCase {
     /// EVERY TEST MAKES ITS RENDERER THROUGH `testRenderer`. The host's own
     /// initializer asks macOS whether it should reduce motion, and a machine

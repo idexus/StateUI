@@ -9,9 +9,8 @@ import XCTest
 /// each scene keeps.
 @MainActor
 final class RestoredWindowsTests: XCTestCase {
-    override func tearDown() {
+    override func tearDown() async throws {
         OpenScenes.shared.reset()
-        super.tearDown()
     }
 
     /// A record reads back from its text - with values of each kind and words holding a tab - and the same record

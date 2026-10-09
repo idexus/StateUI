@@ -51,12 +51,15 @@ box that adopts existing storage does not evaluate and discard its proposed
 initial value. State declared on the `Application` instead lives for the
 application process because the application value itself is retained.
 
-### Writes and concurrent updates
+### Writes from other threads
 
-A state read or write is protected as one operation and may be performed from
-any thread. A read followed by a write is still two operations. When concurrent
-tasks must derive a new value from the same old value, use `update` on the state
-box so the transform runs under one hold:
+A state belongs to the UI thread: a body reads it and a handler writes it on
+`MainActor`, and a write from any other thread does not compile. On the UI
+thread a handler's lines run with nothing between them, so `count += 1` is one
+step. A task off the UI thread posts instead - `$state.post(value)` to replace
+the value, `$state.post { … }` to change it - and each post lands in one job on
+the UI thread soon after, in the order posted, so tasks counting at once all
+count:
 
 ```swift
 struct DownloadCount: View {
@@ -65,10 +68,11 @@ struct DownloadCount: View {
     var body: some View {
         Text("Completed: \(completed)")
             .onCreated {
+                let completed = $completed
                 await withTaskGroup(of: Void.self) { group in
                     for _ in 0..<4 {
                         group.addTask {
-                            _completed.update { $0 + 1 }
+                            completed.post { $0 + 1 }
                         }
                     }
                 }
@@ -77,18 +81,20 @@ struct DownloadCount: View {
 }
 ```
 
-The transform must not read or write the same state again while it runs. In a
-single handler, ordinary operations such as `count += 1` remain the clear
-spelling.
+A post is never written at once, on the UI thread neither: it is a message,
+and nothing reads it before its job runs. What it carries crosses threads, so
+the value is `Sendable`.
 
 Swift does not allow a property wrapper at file scope. A value with that
-lifetime can use the box directly:
+lifetime can use the box directly, on the UI thread's actor:
 
 ```swift
-let launchCount = State(0)
+@MainActor let launchCount = State(0)
 
-launchCount.update { $0 + 1 }
-let current = launchCount.get()
+@MainActor func countLaunch() -> Int {
+    launchCount.wrappedValue += 1
+    return launchCount.get()
+}
 ```
 
 ## State in a class
@@ -241,6 +247,7 @@ followed state. Give independently carried values their own `@State` storage.
 Use `Binding(get:set:)` at an integration boundary that StateUI does not own:
 
 ```swift
+@MainActor
 final class ExternalSettings {
     var name = ""
 
@@ -464,7 +471,7 @@ state itself remains discrete and immediately holds the destination:
 | `journey.destination` | target; the same value as a plain state read |
 | `journey.velocity` | per-second velocity in the value's lanes |
 | `journey.motion` | law used wherever this state is carried |
-| `move(to:_:)` | set a destination and await whether it was reached |
+| `move(to:_:)` | set a destination; `arrived()` awaits whether it was reached |
 | `stop()` | settle an active animation at its current presentation |
 | `snap(to:)` | set presentation, destination, and zero velocity together |
 
@@ -487,7 +494,7 @@ struct SampledProgress: View {
             Button("Run").onClicked {
                 try await $progress.journey.move(
                     to: 1,
-                    .eased(1_000, .cubicOut))
+                    .eased(1_000, .cubicOut)).arrived()
             }
         }
         .samples($progress, into: $shown, .every(100))

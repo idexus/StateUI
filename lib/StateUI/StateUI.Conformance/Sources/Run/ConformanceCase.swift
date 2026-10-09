@@ -16,12 +16,13 @@
     public let needs: [Covered]
 
     /// The case, through a session on the host it runs on.
-    public let body: @MainActor @Sendable (Session) throws -> Void
+    public let body: @MainActor (Session) throws -> Void
 
     /// A case named `name`, proving `proves` with the help of `needs`.
+    @MainActor
     public init(
         _ name: String, proves: [Covered], needs: [Covered] = [],
-        _ body: @escaping @MainActor @Sendable (Session) throws -> Void
+        _ body: @escaping @MainActor (Session) throws -> Void
     ) {
         self.name = name
         self.proves = proves

@@ -87,6 +87,7 @@ public enum PropValue: Equatable, Sendable {
     }
 
     /// This value with the half in force picked - a read of the theme.
+    @MainActor
     func resolvingTheme() -> PropValue {
         switch self {
         case .themed(let light, let dark):
@@ -203,14 +204,14 @@ extension [PropValue] {
 /// It runs on `@MainActor`, the UI thread's actor: a handler that never awaits
 /// finishes before the event returns, and one that awaits resumes in a later
 /// turn. What it throws is reported to the host.
-public typealias EventHandler = nonisolated(nonsending) () async throws -> Void
+public typealias EventHandler = @MainActor () async throws -> Void
 
 /// What an event that carries values runs - one parameter for each, in the order
 /// the event declares them. An event with nothing to say takes an `EventHandler`.
 ///
 ///     TextField("").onTextChanged { text in query = text }
 ///     .onEvent(NotesContract.batteryChanged) { level, charging in … }
-public typealias ValueEventHandler<each Value> = nonisolated(nonsending) (repeat each Value) async throws -> Void
+public typealias ValueEventHandler<each Value> = @MainActor (repeat each Value) async throws -> Void
 
 /// One element of the UI tree: its type, properties, children and handlers.
 ///
@@ -228,6 +229,7 @@ public typealias ValueEventHandler<each Value> = nonisolated(nonsending) (repeat
 ///
 /// A type no host resolves draws the unknown-control marker rather than hiding
 /// the rest of the interface.
+@MainActor
 public struct Node {
     /// The element's StateUI type token, such as `.text`,
     /// `.vStack`, or an application's own registered type.
@@ -244,7 +246,7 @@ public struct Node {
 
     /// The readings asked for with `.samples(_:into:_:)`, for the differ to put on
     /// the values they read. Never crosses (Sampling.swift).
-    var samples: [(image: HostStorage, into: ObjectIdentifier, asks: Asks, take: @Sendable () -> Void)] = []
+    var samples: [(image: HostStorage, into: ObjectIdentifier, asks: Asks, take: @MainActor () -> Void)] = []
 
     /// The objects `.environment()` wrote here, in writing order, provided to this
     /// element and its subtree by type. Never crosses.
@@ -376,6 +378,7 @@ public struct Node {
 
 /// Anything that describes itself as a UI tree. A view is a value; StateUI reads
 /// `node` whenever it needs the element's description.
+@MainActor
 public protocol Element {
     /// This element as a node, read afresh on every render.
     var node: Node { get }

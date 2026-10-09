@@ -133,7 +133,8 @@ public enum StateUIEvents {
     }
 
     /// Raises an event of the application's - one no control raises - with the values its contract declares.
-    /// Every `HostEvents.on` subscription to the member hears it. Safe from any thread.
+    /// Every `HostEvents.on` subscription to the member hears it. Raised on the UI thread; a source reporting on
+    /// another raises inside `Task { @MainActor in … }`.
     ///
     ///     StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
     ///
@@ -142,7 +143,8 @@ public enum StateUIEvents {
     ///   - value: what it carries, in the order its contract declares.
     /// - Returns: how many subscriptions heard it - a raise nobody hears is an ordinary zero.
     @discardableResult
-    public nonisolated static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
+    @MainActor
+    public static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
     ) -> Int {

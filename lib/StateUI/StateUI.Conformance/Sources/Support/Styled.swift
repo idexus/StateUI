@@ -6,6 +6,7 @@
 
 /// A style sheet with one named style for each kind of view a style can be written for - "Conformance.Button" and
 /// the like - each dimming its view to half its opacity, and a page that gives the application that sheet.
+@MainActor
 enum Styled {
     /// The name of the style for `element`.
     static func key(_ element: String) -> String {

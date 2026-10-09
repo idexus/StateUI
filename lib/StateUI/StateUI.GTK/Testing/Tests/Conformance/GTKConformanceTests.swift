@@ -10,8 +10,9 @@ import XCTest
 
 /// The conformance suite on GTK: a family a contract, each one test, its verdicts GTK's column of the
 /// control dictionary.
+@MainActor
 final class GTKConformanceTests: XCTestCase {
-    override func setUp() {
+    override func setUp() async throws {
         onUIThread { GTKBackends.registered }
     }
 

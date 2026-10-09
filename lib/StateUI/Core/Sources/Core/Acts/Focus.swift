@@ -17,7 +17,7 @@ extension Aim {
     ///   has nothing to focus refuses it.
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its view is no longer shown.
     @discardableResult
-    public nonisolated(nonsending) func focus() async throws -> Bool {
+    public func focus() async throws -> Bool {
         try await call(VisualElementContract.focus)
     }
 
@@ -30,7 +30,7 @@ extension Aim {
     /// of several fields - use `OnScreenKeyboard.hide()`, which asks the page.
     ///
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its view is no longer shown.
-    public nonisolated(nonsending) func unfocus() async throws {
+    public func unfocus() async throws {
         try await call(VisualElementContract.unfocus)
     }
 }
@@ -51,7 +51,7 @@ public enum OnScreenKeyboard {
     /// - Returns: true when something was focused and is not any more. False
     ///   means the keyboard was already down - an answer, not a failure.
     @discardableResult
-    public static nonisolated(nonsending) func hide() async throws -> Bool {
+    public static func hide() async throws -> Bool {
         try await stateUICall(ApplicationContract.hideOnScreenKeyboard)
     }
 }

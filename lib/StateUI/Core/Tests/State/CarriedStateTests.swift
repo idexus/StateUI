@@ -85,9 +85,9 @@ private final class Builds {
     var count = 0
 }
 
+@MainActor
 final class CarriedStateTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         Renderer.shared.clearStates()
     }
@@ -457,22 +457,11 @@ final class CarriedStateTests: XCTestCase {
     /// to walk it - and a waiter booked on it would wait for good. It answers
     /// that it arrived, and the value is at the target for whichever view is
     /// described next.
-    func testAJourneyOnAStateNothingWearsAnswersAtOnce() async throws {
+    func testAJourneyOnAStateNothingWearsAnswersAtOnce() throws {
         let fade = State(wrappedValue: 1.0)
-        let binding = fade.projectedValue
+        let arrival = fade.projectedValue.journey.move(to: 0.1, .eased(400, .cubicOut))
 
-        let arrived = try await withThrowingTaskGroup(of: Bool?.self) { group in
-            group.addTask { try await binding.journey.move(to: 0.1, .eased(400, .cubicOut)) }
-            group.addTask {
-                try await Task.sleep(for: .seconds(2))
-                return nil
-            }
-            let first = try await group.next() ?? nil
-            group.cancelAll()
-            return first
-        }
-
-        XCTAssertEqual(arrived, true, "answered, and answered that it arrived")
+        XCTAssertEqual(arrival.ended, true, "it arrived as it was sent")
         XCTAssertEqual(fade.projectedValue.journey.value, 0.1, "the value is at the target")
         XCTAssertEqual(fade.wrappedValue, 0.1, "and going nowhere else")
     }
@@ -692,10 +681,11 @@ final class CarriedStateTests: XCTestCase {
     /// A carried state keeps one image and nothing else, so there is no second
     /// storage for a read-change-write to land in: what this writes is what the
     /// next read answers with.
-    func testUpdatingACarriedStateMovesTheValue() {
+    func testAChangePostedToACarriedStateMovesTheValue() async {
         let offset = State(wrappedValue: 12.0)
 
-        offset.update { $0 + 30 }
+        offset.projectedValue.post { $0 + 30 }
+        await settle()
 
         XCTAssertEqual(offset.wrappedValue, 42, "the write reached the image")
         XCTAssertEqual(offset.get(), 42, "and every road to it reads the same")

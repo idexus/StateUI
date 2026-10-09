@@ -122,7 +122,7 @@ extension PropertyContainer {
                 kind: kind,
                 laneKind: laneKind,
                 values: property.facts.moves.union(Value.moving),
-                current: { state.wrappedValue.carried })
+                current: { state.wrappedValue.carried(in: .current) })
         }
     }
 

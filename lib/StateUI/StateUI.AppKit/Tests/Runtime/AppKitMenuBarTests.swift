@@ -8,6 +8,7 @@ import AppKit
 import XCTest
 
 /// The menu bar an AppKit application stands with.
+@MainActor
 final class AppKitMenuBarTests: XCTestCase {
     /// Edit holds the text commands a field answers - AppKit routes ⌘C, ⌘V and ⌘Z through the menu bar's key
     /// equivalents, so without them a field copies, pastes and undoes nothing.

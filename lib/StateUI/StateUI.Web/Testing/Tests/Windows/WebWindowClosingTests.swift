@@ -10,7 +10,7 @@ import XCTest
 /// after it still. A host runs here, so the suite runs it in a browser (`test-web.sh --browser`).
 @MainActor
 final class WebWindowClosingTests: XCTestCase {
-    override func setUp() {
+    override func setUp() async throws {
         WebTestLoop.started
     }
 

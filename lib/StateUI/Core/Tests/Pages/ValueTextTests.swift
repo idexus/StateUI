@@ -6,6 +6,7 @@ import XCTest
 
 /// A window's value written down as text and read back: what a restored window is opened for. A value that does not
 /// read back loses its window on restoration.
+@MainActor
 final class ValueTextTests: XCTestCase {
     /// Every shape a `Codable` value takes comes back as it went: nested values, lists, maps, an absent and a present
     /// optional, whole numbers of every width, fractions, a raw-valued choice, and a subclass with its superclass's

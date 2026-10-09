@@ -6,6 +6,7 @@ import XCTest
 
 /// The native-host contract is closed over StateUI's built-in vocabulary even
 /// though applications remain free to declare their own contracts.
+@MainActor
 final class HostContractTests: XCTestCase {
     func testEveryBuiltInControlPropertyAndEventHasOneOwner() throws {
         let source = try SourceTree.text(in: "Tokens.swift")

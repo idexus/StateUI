@@ -4,17 +4,18 @@
 /// The one instance of what the library offers every view, read by name with `@Environment`, and the scope every
 /// render starts from; written by the host's reports and read by builds, both on the UI thread.
 /// Design: docs/design/types/environment.md#one-door-and-the-bottom-of-the-scope
+@MainActor
 enum StandardEnvironment {
-    nonisolated(unsafe) static let device = Device()
-    nonisolated(unsafe) static let locale = LocaleInfo()
-    nonisolated(unsafe) static let application = ApplicationSession()
+    static let device = Device()
+    static let locale = LocaleInfo()
+    static let application = ApplicationSession()
 
     // What a view outside every scene or window reads; each of those offers its own, nearer.
-    nonisolated(unsafe) static let scene = SceneSession()
-    nonisolated(unsafe) static let window = WindowSession()
+    static let scene = SceneSession()
+    static let window = WindowSession()
 
     /// What every render starts its scope with, keyed as `.environment()` keys.
-    nonisolated(unsafe) static let scope: [(key: ObjectIdentifier, object: AnyObject)] = [
+    static let scope: [(key: ObjectIdentifier, object: AnyObject)] = [
         (key: ObjectIdentifier(Device.self), object: device),
         (key: ObjectIdentifier(LocaleInfo.self), object: locale),
         (key: ObjectIdentifier(ApplicationSession.self), object: application),

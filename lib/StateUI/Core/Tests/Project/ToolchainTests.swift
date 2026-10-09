@@ -13,6 +13,7 @@ import XCTest
 /// and SDKs, the scripts, the handbook and the template. A release named in
 /// one of them and not the others is a platform building with a compiler the
 /// rest never saw. These read every one of them.
+@MainActor
 final class ToolchainTests: XCTestCase {
     /// Every text file the build, the continuous integration and the handbook
     /// are written in, as `(path, text)`, read once.

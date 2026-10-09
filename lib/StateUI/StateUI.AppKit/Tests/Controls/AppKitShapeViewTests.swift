@@ -8,6 +8,7 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
+@MainActor
 final class AppKitShapeViewTests: XCTestCase {
     @MainActor
     func testLineKeepsAuthoredPointsAndScalesItsDashUnitsByStrokeWidth() {

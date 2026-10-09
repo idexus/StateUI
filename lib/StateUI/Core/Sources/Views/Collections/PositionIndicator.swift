@@ -191,6 +191,7 @@ extension PositionIndicator {
 }
 
 /// A value the tree gives as it stands, or from a state the row reads.
+@MainActor
 private enum Given<Value> {
     case value(Value)
     case state(Binding<Value>)

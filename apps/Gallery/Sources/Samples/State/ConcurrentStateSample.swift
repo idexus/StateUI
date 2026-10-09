@@ -1,17 +1,16 @@
 import StateUI
 
-/// Where `@State` may be written from, and the one move that is forbidden.
+/// How a task reaches `@State`, and the one move that is forbidden.
 ///
 /// The headline the sample proves on screen: two hundred tasks counting at
-/// once all land, because a write to `@State` is whole from any thread. The
-/// notes carry the rule the screen cannot show - never post to
-/// `DispatchQueue.main`, and reach for `update` when two tasks change the same
-/// state at the same moment.
+/// once all land, because each posts its count to the state and every post
+/// runs over the last. The notes carry the rule the screen cannot show - never
+/// post to `DispatchQueue.main`.
+@MainActor
 struct ConcurrentStateSample: SampleContent, ExampleContent {
     // listing: ConcurrentStateSample
-    /// The shared count every task increments. `_total` - the box behind it -
-    /// is what the tasks capture; it is Sendable, so it crosses to the
-    /// cooperative pool safely.
+    /// The shared count every task adds to. `$total` - the binding - is what the
+    /// tasks capture: it crosses to the cooperative pool, and is posted to.
     @State private var total = 0
 
     /// How many landed last run, to say out loud that none were lost.
@@ -27,8 +26,8 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
     // listing: ConcurrentStateSample
     var body: some View {
         VStack {
-            // The 20,000 writes land here as renders: this closure reads
-            // `total`, and the reading says how many it was actually built for.
+            // The 200 posts land here as renders: this closure reads `total`, and
+            // the reading says how many it was actually built for.
             DebugInfoLabel()
 
             Text("\(total)")
@@ -55,17 +54,20 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
                     total = 0
                     expected = 200 * 100
 
-                    // The BOX, not the view: it is Sendable, so every task can
-                    // hold it. Two tasks doing `total += 1` would each read,
-                    // add and write, and lose one another's increments;
-                    // `update` runs the three steps under the state's own lock,
-                    // so every one of the 20,000 lands.
-                    let counter = _total
+                    // The BINDING: a task cannot write the state, which is the
+                    // UI thread's, so it posts to it. Each task counts on its
+                    // own and posts once; `post { $0 + counted }` runs every
+                    // change over the one before, so all 200 land. Their jobs
+                    // are queued before the group ends, so the line after it
+                    // finds the total whole.
+                    let counter = $total
 
                     await withTaskGroup(of: Void.self) { group in
                         for _ in 0 ..< 200 {
                             group.addTask {
-                                for _ in 0 ..< 100 { counter.update { $0 + 1 } }
+                                var counted = 0
+                                for _ in 0 ..< 100 { counted += 1 }
+                                counter.post { [counted] in $0 + counted }
                             }
                         }
                     }
@@ -80,20 +82,21 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
     //
     //     DispatchQueue.main.async { total = value }   // never runs on Android/Windows
     //
-    // RIGHT - just write it. A handler already runs on MainActor, the UI
-    // thread, and a plain @State write is safe from any thread anyway:
+    // RIGHT - in a handler, just write it: it runs on MainActor, the UI thread.
+    // From a task, post it:
     //
     //     total = value
+    //     $total.post(value)
     // listing: end
 
     var notes: (any View)? {
         VStack {
-            Text("A `@State` write is whole from ANY thread - a handler, a "
-                + "`Task.detached` that worked something out, an `async let` "
-                + "child. The value sits behind a lock and the write asks for a render "
-                + "from wherever it was made, and a write that "
-                + "lands mid-render is kept for the next one. So there is nothing "
-                + "to hop back to a UI thread for.")
+            Text("A `@State` is the UI thread's: a handler runs there, on "
+                + "`MainActor`, and writes it as it likes. A task off it - a "
+                + "`Task.detached` that worked something out, a child of a task "
+                + "group - cannot write it, and the compiler says so. It POSTS: "
+                + "`$total.post(value)` or `$total.post { $0 + n }` lands in one job "
+                + "on the UI thread soon after, whole.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -106,13 +109,11 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("The one thing to reach for: `update` when two tasks change the "
-                + "SAME state at the same moment. `count += 1` is a read and then "
-                + "a write, and two of them interleave and lose a count; "
-                + "`_count.update { $0 + 1 }` holds the state's lock across all "
-                + "three steps. This sample counts 20,000 that way and loses none "
-                + "- take the `update` out for `counter.wrappedValue += 1` from 200 tasks and "
-                + "the total comes up short.")
+            Text("The cheap way to count from many tasks: count on each, and post "
+                + "once. `post { $0 + counted }` runs every change over the one "
+                + "before, in the order posted, so none is lost - 20,000 counts in "
+                + "200 posts. Posting every count works too, and costs a hundred "
+                + "times the posts.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

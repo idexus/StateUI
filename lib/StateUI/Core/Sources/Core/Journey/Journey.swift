@@ -21,6 +21,7 @@
 /// animates one declared `@State(motion: .custom)`; a state nobody wears lands
 /// where it is sent. A part of a state and a binding made from closures stand at
 /// their value.
+@MainActor
 public struct Journey<Value: Walked> {
     /// The state this is the journey of.
     private let state: Binding<Value>
@@ -146,57 +147,57 @@ public struct Journey<Value: Walked> {
         state.land(value)
     }
 
-    /// Sends the value there under `motion`, and suspends until it arrives.
+    /// Sends the value there under `motion` - now, before the next line runs - and
+    /// answers the movement, whose `arrived()` waits for its end.
     ///
-    ///     try await $fade.journey.move(to: 0.1, .eased(400, .cubicOut))
+    ///     try await $fade.journey.move(to: 0.1, .eased(400, .cubicOut)).arrived()
     ///
-    /// True means it got there; false means something else ended the journey - a
-    /// newer destination, a value written over it, or `stop()`. With nothing to
-    /// animate - already there, the user asked for less motion, or nothing wears the
-    /// state yet - it answers true at once. A law given here stays on the value;
-    /// without one, the value's own law stands.
+    ///     let fading = $fade.journey.move(to: 0)       // both start now, in this order
+    ///     let sliding = $offset.journey.move(to: .zero)
+    ///     try await fading.arrived()
+    ///     try await sliding.arrived()
+    ///
+    /// With nothing to animate - already there, the user asked for less motion, or
+    /// nothing wears the state yet - it arrives at once. A law given here stays on
+    /// the value; without one, the value's own law stands.
     ///
     /// - Parameters:
     ///   - target: where to send it.
     ///   - motion: the law to animate under, or nothing for the value's own.
-    /// - Returns: whether it ran to the end.
-    /// - Throws: whatever the host answers when it cannot carry the value at all.
+    /// - Returns: the movement, to await its arrival or leave going.
     @discardableResult
-    public nonisolated(nonsending) func move(to target: Value, _ motion: Motion? = nil) async throws -> Bool {
+    public func move(to target: Value, _ motion: Motion? = nil) -> Arrival {
         guard let (storage, image, lanes) = walking() else {
             complain("`move` was called on a part of a state, a binding made from closures, "
                 + "or a state the host carries as the value itself, none of which it can "
                 + "walk. Move the whole state, handed to something that walks it.")
-            return false
+            return Arrival(at: false)
         }
 
         // Nothing animates it, or an engine does: the destination is written through the
-        // state and the answer is at once.
+        // state and it arrives at once.
         // Design: docs/design/core/journeys.md#moving-and-waiting
         if image.number == nil || lanes.motion.isCustom {
             state.wrappedValue = target
-            return true
+            return Arrival(at: true)
         }
 
-        let answer = try await Renderer.shared.answered { completion in
-            let waiter = Renderer.shared.book(completion)
-            var travelling = lanes
+        let arrival = Arrival()
+        var travelling = lanes
 
-            travelling.destination = target
-            travelling.completion = Double(waiter)
+        travelling.destination = target
+        travelling.completion = Double(Renderer.shared.book { arrival.land($0) })
 
-            if let motion { travelling.motion = motion }
+        if let motion { travelling.motion = motion }
 
-            // The waiter forces the destination: a fresh journey even to where it is going.
-            Renderer.shared.board(of: image).write(
-                StateImage.bytes(of: travelling.carried),
-                to: image,
-                forcing: JourneyLanes<Value>.mask(of: .destination) | JourneyLanes<Value>.mask(of: .completion))
+        // The waiter forces the destination: a fresh journey even to where it is going.
+        Renderer.shared.board(of: image).write(
+            StateImage.bytes(of: travelling.carried(in: .current)),
+            to: image,
+            forcing: JourneyLanes<Value>.mask(of: .destination) | JourneyLanes<Value>.mask(of: .completion))
 
-            storage.noteDestination(target)
-        }
-
-        return answer.first?.bool ?? true
+        storage.noteDestination(target)
+        return arrival
     }
 
     /// Stops an animation where it stands; whoever waits on it hears it did not run
@@ -214,12 +215,8 @@ public struct Journey<Value: Walked> {
         stopping.stopped += 1
 
         Renderer.shared.board(of: image).write(
-            StateImage.bytes(of: stopping.carried),
+            StateImage.bytes(of: stopping.carried(in: .current)),
             to: image,
             forcing: JourneyLanes<Value>.mask(of: .stopped))
     }
 }
-
-/// `Sendable` for the reason `Binding` is.
-/// Design: docs/design/core/state.md#sendable-promises
-extension Journey: Sendable {}

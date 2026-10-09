@@ -84,6 +84,7 @@ extension Node {
 }
 
 /// The queued acts, taken the way a host takes them.
+@MainActor
 func drainedActs() -> [HostActCall] {
     HostBoundary.takeActCalls()
 }
@@ -115,6 +116,7 @@ private struct Reading: View {
 ///     counter.wrappedValue = 1
 ///     XCTAssertTrue(Renderer.shared.needsRender)
 ///     _ = reader
+@MainActor
 func reading(_ read: @escaping () -> Void) -> Renders {
     let renders = Renders()
     renders.render(Reading(read: read).node)
@@ -123,6 +125,7 @@ func reading(_ read: @escaping () -> Void) -> Renders {
 
 /// A differ and the tree it last produced, so a test can render twice and look
 /// at what the second render had to say.
+@MainActor
 final class Renders {
     private let differ = Differ()
     private var rendered: RenderedNode?
@@ -294,6 +297,7 @@ extension Differ {
 /// without a render: what an act sends is the element's identity, and this
 /// is the named kind - what ActCallShapeTests checks. The differ's own
 /// filling of one is AimTests' business.
+@MainActor
 func named<Target>(_ name: String, _ type: Target.Type) -> Aim<Target> {
     let aim = Aim(type)
     aim.box.attach(.manual(name), walk: 1)
@@ -329,12 +333,14 @@ func turnTheUIThread(for seconds: TimeInterval = 0.002) {
 ///
 /// - Returns: how many turns it took.
 @discardableResult
+@MainActor
 func settle(timeout: TimeInterval = 2) async -> Int {
     let deadline = Date().addingTimeInterval(timeout)
     var turns = 0
 
     repeat {
-        await MainActor.run { _ = stateUIRunJobs() }
+        await Task.yield()
+        _ = stateUIRunJobs()
         turns += 1
     } while (Renderer.shared.resumesPending > 0 || UIThreadExecutor.shared.pendingCount > 0)
         && Date() < deadline
@@ -901,17 +907,20 @@ extension ElementID: CustomStringConvertible {
 }
 
 /// A label, as short as the tests need one.
+@MainActor
 func label(_ text: String, id: String? = nil) -> Node {
     Node(type: "Text", id: id, props: ["text": .string(text)])
 }
 
 /// A button with a click handler, for the tests about handler ids.
+@MainActor
 func button(_ text: String, id: String? = nil, onClicked: @escaping EventHandler) -> Node {
     var node = Node(type: "Button", id: id, props: ["text": .string(text)])
     node.events["clicked"] = onClicked
     return node
 }
 
+@MainActor
 func stack(_ children: [Node], id: String? = nil) -> Node {
     Node(type: "VStack", id: id, children: children)
 }
@@ -923,6 +932,7 @@ func stack(_ children: [Node], id: String? = nil) -> Node {
 /// - see Color.swift - so this is how a test asks for the other half.
 /// The provider is the one the host pushes into, which is exactly what a real
 /// theme change writes.
+@MainActor
 func withTheme(_ theme: ColorScheme, _ body: () -> Void) {
     let held = StandardEnvironment.application.info.colorScheme
     StandardEnvironment.application.info.colorScheme = theme
@@ -942,6 +952,7 @@ func withTheme(_ theme: ColorScheme, _ body: () -> Void) {
 ///     velocity in that order.
 ///   - mask: which of those lanes are being said. All of them, unless said; a
 ///     journey's are said a part at a time.
+@MainActor
 func moved(_ number: Int32, to lanes: [Double], mask: UInt64 = ~0) {
     guard let binding = hostBinding(of: number) else {
         return XCTFail("state \(number) rides no host channel")
@@ -998,6 +1009,7 @@ func moved(_ number: Int32, to lanes: [Double], mask: UInt64 = ~0) {
 /// - Parameters:
 ///   - number: which number, by the number it was issued.
 ///   - point: where the user left the offset.
+@MainActor
 func slid(_ number: Int32, to point: Point) {
     moved(number, to: [point.x, point.y, point.x, point.y, 0, 0], mask: 0b111111)
 }
@@ -1008,6 +1020,7 @@ func slid(_ number: Int32, to point: Point) {
 /// - Parameters:
 ///   - number: which number, by the number it was issued.
 ///   - text: what was typed.
+@MainActor
 func typed(_ number: Int32, _ text: String) {
     guard let binding = hostBinding(of: number) else {
         return XCTFail("state \(number) rides no host channel")
@@ -1020,6 +1033,7 @@ func typed(_ number: Int32, _ text: String) {
 
 /// The channel a host would be handed a state on, both ways, or nil where no
 /// host rides it.
+@MainActor
 private func hostBinding(of number: Int32) -> HostStateBinding? {
     guard let storage = Renderer.shared.storage(of: number), let kind = storage.door else { return nil }
 
@@ -1027,6 +1041,7 @@ private func hostBinding(of number: Int32) -> HostStateBinding? {
 }
 
 /// The same, for a value of one lane.
+@MainActor
 func moved(_ number: Int32, to value: Double) {
     moved(number, to: [value], mask: 1)
 }
@@ -1034,6 +1049,7 @@ func moved(_ number: Int32, to value: Double) {
 /// Says where a THUMB was dragged to, the way the host's tie says it for a
 /// value it walks as a journey: the value and its destination together, and a
 /// speed of nought - so nothing is left to travel.
+@MainActor
 func dragged(_ number: Int32, to value: Double) {
     moved(number, to: [value, value, 0], mask: 0b111)
 }
@@ -1045,6 +1061,7 @@ func dragged(_ number: Int32, to value: Double) {
 ///   - kind: what to read it as.
 /// - Returns: the value, or nothing where the state has gone, rides no host
 ///   channel, or does not make one.
+@MainActor
 func standing<Value: StateValue>(_ number: Int32, as kind: Value.Type) -> Value? {
     hostBinding(of: number)
         .flatMap(HostBoundary.value(for:))

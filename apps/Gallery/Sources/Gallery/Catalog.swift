@@ -21,6 +21,7 @@ import StateUI
 /// Gallery/Navigation.swift), what it looks like, what its window's chrome
 /// says, and its window's lifecycle log. The samples that move the gallery or
 /// change its look are handed the means to.
+@MainActor
 final class Catalog {
     let groups: [SampleGroup]
 
@@ -394,7 +395,8 @@ final class Catalog {
 /// living as long as its gallery does, rather than by a fresh copy of it
 /// adopting the older one's storage every render, and the page showing a
 /// sample drives the one it holds.
-final class KeptCatalog: @unchecked Sendable {
+@MainActor
+final class KeptCatalog {
     private var held: Catalog?
 
     /// The catalog, built by `make` the first time anybody asks and simply

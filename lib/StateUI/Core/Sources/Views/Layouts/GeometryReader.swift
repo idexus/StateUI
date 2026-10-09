@@ -61,7 +61,8 @@ extension View {
 
 /// What a frame handler last handed over, remembered across reports; a
 /// rebuilt view starts it afresh, costing one repeated report.
-private final class LastFrame: @unchecked Sendable {
+@MainActor
+private final class LastFrame {
     /// The rectangle the handler last ran with.
     var rect: Rect?
 }

@@ -6,9 +6,9 @@ import XCTest
 
 /// A material on a state the host carries: laid as lanes and read back whole, a pair as its half in force, and
 /// handed on as `$x` with no body made its reader.
+@MainActor
 final class MaterialChannelTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         Renderer.shared.clearStates()
     }
@@ -31,8 +31,8 @@ final class MaterialChannelTests: XCTestCase {
         }
     }
 
-    /// A pair lies as its half in force, and a half that is none as nothing; the host reads a blur with its
-    /// stand-in for the theme in force.
+    /// A pair lies, in the theme in force, as its half in force, and a half that is none as nothing; the host
+    /// reads a blur with its stand-in for the theme in force.
     func testAPairLiesAsTheHalfInForce() {
         let pair = Material(light: .color(Color("#512BD4")), dark: nil)
         withTheme(.light) {
@@ -63,8 +63,9 @@ final class MaterialChannelTests: XCTestCase {
         XCTAssertEqual(material.wrappedValue, .glass(.regular))
     }
 
+    /// The lanes a carrying state lays a material as - in the theme in force.
     private func lanes(of material: Material) -> [Double] {
-        guard case .lanes(let lanes) = material.carried else { return [] }
+        guard case .lanes(let lanes) = material.carried(in: .current) else { return [] }
         return lanes
     }
 }

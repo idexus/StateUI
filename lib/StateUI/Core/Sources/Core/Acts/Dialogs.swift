@@ -21,7 +21,7 @@ public enum Dialogs {
     ///   - message: the sentence under it.
     ///   - cancel: the one button's caption.
     /// - Throws: `StateUIError` when there is no page on screen to show it.
-    public static nonisolated(nonsending) func alert(
+    public static func alert(
         _ title: String,
         message: String,
         cancel: String = "OK"
@@ -43,7 +43,7 @@ public enum Dialogs {
     ///   - cancel: the caption of the button that answers no.
     /// - Returns: true when `accept` was pressed.
     /// - Throws: `StateUIError` when there is no page on screen to show it.
-    public static nonisolated(nonsending) func confirm(
+    public static func confirm(
         _ title: String,
         message: String,
         accept: String,
@@ -68,7 +68,7 @@ public enum Dialogs {
     /// - Returns: the pressed caption, or nil when the sheet was dismissed
     ///   without choosing - tapping beside it, where the platform allows that.
     /// - Throws: `StateUIError` when there is no page on screen to show it.
-    public static nonisolated(nonsending) func chooseAction(
+    public static func chooseAction(
         _ title: String,
         cancel: String? = nil,
         destruction: String? = nil,
@@ -97,7 +97,7 @@ public enum Dialogs {
     /// - Returns: what was typed when `accept` was pressed - empty included,
     ///   which is an answer - or nil when the prompt was cancelled.
     /// - Throws: `StateUIError` when there is no page on screen to show it.
-    public static nonisolated(nonsending) func prompt(
+    public static func prompt(
         _ title: String, message: String = "",
         accept: String = "OK", cancel: String = "Cancel",
         placeholder: String? = nil, initialValue: String = "",

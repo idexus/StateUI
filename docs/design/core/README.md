@@ -75,9 +75,9 @@ host and never calls the core.
 ## A state write from start to finish
 
 ```text
-  handler: count += 1                        on MainActor, or from any thread
-     |
-     v  State.wrappedValue.set -> Storage.write     under the storage's lock
+  handler: count += 1                        on MainActor, the UI thread; a
+     |                                       task elsewhere posts: $count.post
+     v  State.wrappedValue.set -> Storage.write
      |
      v  Storage.askForRender()
   never read at build? -------------------> nothing more: one load
@@ -91,7 +91,7 @@ host and never calls the core.
      |
      v  host turn:  run jobs -> a pending cycle -> RENDER -> take acts
   Renderer.render(baseline: the generation the host holds)
-     |  take and clear the changes in one locked step
+     |  take and clear the changes in one step
      |
      |  clean walk   every cause named its state, none read by the root
      |  build        the root built again and reconciled
@@ -139,11 +139,11 @@ host and never calls the core.
 ```text
   UI thread (the host's)                       any other thread
   -----------------------------------------    ----------------------------------
-  event   HostBoundary.dispatch(id, payload)    a Task.detached or async let child
-          Renderer.dispatch                      writes @State, sends an act,
-          Task.immediate on MainActor            writes a board between cycles
-          -> the handler runs to its first           |  poke(), outside every lock
-             await, inside the event                 v
+  event   HostBoundary.dispatch(id, payload)    a Task.detached or a group's child
+          Renderer.dispatch                      posts to a @State ($x.post):
+          Task.immediate on MainActor            one job booked on MainActor
+          -> the handler runs to its first           |  its enqueue wakes, outside
+             await, inside the event                 v  the executor's lock
                                                doorbell thread (the host made it)
   turn    HostBoundary.runJobs: MainActor's jobs  parked in waitForWork
           (Apple: the main queue's instead)      wakes, counts the work, posts

@@ -8,6 +8,7 @@ import ObjectiveC
 @testable import StateUIAppKit
 import XCTest
 
+@MainActor
 final class AppKitMapViewTests: XCTestCase {
     /// MapKit's map is the delegate of its own recognizers, so the host's map answers none of their questions: one
     /// it answered it would answer for all of them, and a click on a marker no longer chose its pin.

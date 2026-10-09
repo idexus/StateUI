@@ -9,6 +9,7 @@ import AppKit
 import StateUIConformance
 import XCTest
 
+@MainActor
 final class AppKitFrameTests: XCTestCase {
     /// Turns the host until `done` holds: its jobs, its pump, and a display frame each turn.
     @MainActor

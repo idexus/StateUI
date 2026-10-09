@@ -61,9 +61,9 @@ private struct Typed: View {
     }
 }
 
+@MainActor
 final class CarriedViewTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
     }
 

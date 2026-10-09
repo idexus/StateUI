@@ -8,6 +8,7 @@ import CStateUIGTK
 @testable import StateUIGTKDriver
 import XCTest
 
+@MainActor
 final class GTKImageViewTests: XCTestCase {
     /// The test's wide picture is an SVG, 40 by 20, of one colour.
     private static let wide: UInt32 = 0xFF33_6699

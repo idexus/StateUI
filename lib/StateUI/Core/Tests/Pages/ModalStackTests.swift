@@ -76,6 +76,7 @@ private struct MainPage: View {
     }
 }
 
+@MainActor
 final class ModalStackTests: XCTestCase {
     /// The session of the window under test, the same in each of its renders.
     private let session = WindowSession()

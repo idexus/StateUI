@@ -7,6 +7,7 @@ import XCTest
 
 /// A file dialog as every host reads the act asking it: what it asks for, the kinds it offers, the name a save
 /// suggests, and the answer it gives.
+@MainActor
 final class HostFileDialogTests: XCTestCase {
     private let page = FileType("Page", extensions: ["html", "htm"])
     private let text = FileType("Text", extensions: ["txt", "htm"])

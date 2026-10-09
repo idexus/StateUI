@@ -54,7 +54,7 @@
 }
 
 /// Where a host's answers to acts go: the core, which hands each to the caller waiting on it.
-@_spi(Host) public protocol ActAnswering {
+@_spi(Host) @MainActor public protocol ActAnswering {
     /// Answers `call` with `values`, where a caller waits on it.
     func reply(_ call: HostActCall, _ values: [HostValue])
 

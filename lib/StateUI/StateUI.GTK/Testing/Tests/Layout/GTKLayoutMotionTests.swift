@@ -26,6 +26,7 @@ private struct LengtheningPage: View {
 }
 
 /// A stack's children travel to the places a patch gives them; one that joins fades in, one hidden fades out first.
+@MainActor
 final class GTKLayoutMotionTests: XCTestCase {
     /// A label whose width travels lays its words out at the width it is bound for: they keep the one line they fit
     /// there, never breaking at the widths its place passes through.

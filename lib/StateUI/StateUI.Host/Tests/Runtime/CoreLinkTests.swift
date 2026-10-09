@@ -6,10 +6,10 @@
 import XCTest
 
 /// What a runtime tells the core through its one line.
+@MainActor
 final class CoreLinkTests: XCTestCase {
-    override func tearDown() {
+    override func tearDown() async throws {
         HostBoundary.setRealization(HostRealization())
-        super.tearDown()
     }
 
     /// A runtime says its registry and the library's elements it shows none of: every other element of the library's

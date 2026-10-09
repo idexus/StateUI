@@ -83,9 +83,10 @@
 
     /// `member` of a page pushed over the root holds what its view says, and what it says once its body - and
     /// nothing around it - is built again.
+    @MainActor
     static func pushedHolds<Value: HostRepresentable & Sendable & Equatable>(
         _ member: ElementProperty<PageContract, Value>, _ first: Value, then second: Value,
-        _ say: @escaping @Sendable (VStack, Value) -> VStack
+        _ say: @escaping @MainActor (VStack, Value) -> VStack
     ) -> ConformanceCase {
         ConformanceCase("Page.\(member.name).holdsWhatItsViewSaysAndChanges", proves: [
             Covered(member),
@@ -104,9 +105,10 @@
 
     /// `member` of a page pushed over the root holds the state its view says it from, and follows the state as it
     /// is written, no view built again.
+    @MainActor
     static func pushedFollows<Value: HostRepresentable & StateValue & Sendable & Equatable>(
         _ member: ElementProperty<PageContract, Value>, _ first: Value, then second: Value,
-        _ say: @escaping @Sendable (VStack, Binding<Value>) -> VStack
+        _ say: @escaping @MainActor (VStack, Binding<Value>) -> VStack
     ) -> ConformanceCase {
         ConformanceCase("Page.\(member.name).followsItsState", proves: [
             Covered(member),
@@ -125,9 +127,10 @@
 
     /// `member` of a page pushed over the root holds the colour of the state its view says it from, and follows the
     /// state as it is written, no view built again - a colour's channel writing a material.
+    @MainActor
     static func pushedFollowsColour(
         _ member: ElementProperty<PageContract, Material>, _ first: Color, then second: Color,
-        _ say: @escaping @Sendable (VStack, Binding<Color>) -> VStack
+        _ say: @escaping @MainActor (VStack, Binding<Color>) -> VStack
     ) -> ConformanceCase {
         ConformanceCase("Page.\(member.name).followsItsState", proves: [
             Covered(member),
@@ -145,6 +148,7 @@
     }
 
     /// A pushed page's background follows the material state its view says it from - a material's channel.
+    @MainActor
     static var followsAMaterial: ConformanceCase {
         ConformanceCase("Page.background.followsAMaterialState", proves: [
             Covered(PageContract.background),
@@ -163,6 +167,7 @@
     }
 
     /// Words and a button writing `second` into `value`.
+    @MainActor
     static func changing<Value>(_ value: State<Value>, to second: Value) -> VStack {
         VStack {
             Text("Page")
@@ -196,7 +201,7 @@
 struct Saying<Value: HostRepresentable & Sendable & Equatable>: View {
     let value: State<Value>
     let second: Value
-    let say: @Sendable (VStack, Value) -> VStack
+    let say: @MainActor (VStack, Value) -> VStack
 
     var body: some View {
         say(PageTests.changing(value, to: second), value.wrappedValue)

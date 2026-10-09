@@ -7,13 +7,13 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class VisualStateTests: XCTestCase {
     private let green = Color("#008000").propValue
     private let gray = Color("#808080").propValue
     private let blue = Color("#0000FF").propValue
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
     }
 

@@ -7,6 +7,7 @@
 @testable import StateUIAppKit
 import XCTest
 
+@MainActor
 final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testAPropertyTransitionBeginsAtItsStandingValueAndLandsExactly() throws {

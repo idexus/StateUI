@@ -7,6 +7,7 @@
 ///     @Environment(\.device) private var device
 ///
 ///     Text(device.info.formFactor == .phone ? "Phone" : "Larger screen")
+@MainActor
 public final class Device {
     /// What the device is: its form factor, platform, model and name.
     public let info = DeviceInfo()

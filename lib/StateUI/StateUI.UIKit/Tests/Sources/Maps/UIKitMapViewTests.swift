@@ -7,6 +7,7 @@ import ObjectiveC
 @testable import StateUIUIKit
 import XCTest
 
+@MainActor
 final class UIKitMapViewTests: XCTestCase {
     /// MapKit's map is the delegate of its own recognizers, so the host's map answers none of their questions: one
     /// it answered it would answer for all of them - a tap on a marker, a pinch, a pan.

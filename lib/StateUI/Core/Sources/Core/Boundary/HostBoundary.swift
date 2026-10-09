@@ -6,7 +6,7 @@
 // Design: docs/design/core/README.md#the-typed-boundary
 
 /// Operations a native Swift host performs on the StateUI runtime.
-@_spi(Host) public enum HostBoundary {
+@_spi(Host) @MainActor public enum HostBoundary {
     /// Whether state changed since the last render.
     public static var needsRender: Bool { Renderer.shared.needsRender }
 
@@ -307,6 +307,7 @@
     /// - Returns: how many subscriptions heard it - a raise nobody hears is
     ///   an ordinary zero.
     @discardableResult
+    @MainActor
     public static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
@@ -347,9 +348,17 @@
         HostRealizations.current.members.contains { $0.owner == Owner.name && $0.member == member.name }
     }
 
+    /// Takes the calling thread as the UI thread, whose jobs are `MainActor`'s, and runs what waits - what a host's
+    /// start does first, before anything starts a task.
+    /// Design: docs/design/core/concurrency.md#mainactor-on-every-platform
+    public nonisolated static func takeTheUIThread() {
+        UIThreadExecutor.install()
+        stateUIRunJobs()
+    }
+
     /// Runs jobs waiting on StateUI's UI executor on the calling thread.
     @discardableResult
-    public static func runJobs() -> Int { stateUIRunJobs() }
+    public nonisolated static func runJobs() -> Int { stateUIRunJobs() }
 
     #if os(WASI)
     /// When the page is to call again, in milliseconds - at once where jobs, acts or a render wait, else when a job
@@ -362,21 +371,12 @@
         return max(0, Double(due.components.seconds) * 1000 + Double(due.components.attoseconds) / 1e15)
     }
     #else
-    /// Parks the calling doorbell thread until asynchronous work arrives, and
-    /// answers how much is waiting - which can be 0, when another turn got
-    /// there first.
-    ///
-    /// Four kinds of work, each of which a handler resumed on the pool can
-    /// leave with nothing else to announce it: jobs in the executor's queue,
-    /// acts not yet taken, a tree a write left dirty, and a value waiting on
-    /// its board for a cycle - a driven write nobody reads, or a movement
-    /// `move(to:)` sent. Each wakes this thread after it lands, so the thread
-    /// cannot wake, count nothing and park again with the work behind it.
-    public static func waitForWork() -> Int {
+    /// Parks the calling doorbell thread until work arrives for a turn, and
+    /// answers how many jobs wait - which can be 0, when another turn got there
+    /// first, or when what woke it was a write, an act or a value waiting for a
+    /// cycle, each of which rings as it lands.
+    public nonisolated static func waitForWork() -> Int {
         UIThreadExecutor.shared.waitForWork()
-            + Renderer.shared.actCallsPending
-            + (Renderer.shared.needsRender ? 1 : 0)
-            + (Renderer.shared.cycleAwake() > 0 ? 1 : 0)
     }
     #endif
 

@@ -47,6 +47,7 @@ private struct PressCard: Element {
     }
 }
 
+@MainActor
 final class ConcurrencyTests: XCTestCase {
     /// Answers every act still queued and runs every job until nothing is
     /// left, so a test that stopped mid-handler leaves no suspended handler

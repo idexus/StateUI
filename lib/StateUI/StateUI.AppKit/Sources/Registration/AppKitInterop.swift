@@ -111,8 +111,8 @@ public enum StateUIEvents {
     /// values its contract declares.
     ///
     /// Every `HostEvents.on` subscription to the member hears it, each handler
-    /// queued on this library's executor. Safe from any thread, so an
-    /// application wires its sources where the platform reports them.
+    /// queued on this library's executor. Raised on the UI thread; a source
+    /// reporting on another raises inside `Task { @MainActor in … }`.
     ///
     ///     StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
     ///
@@ -122,7 +122,8 @@ public enum StateUIEvents {
     /// - Returns: how many subscriptions heard it - a raise nobody hears is an
     ///   ordinary zero.
     @discardableResult
-    public nonisolated static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
+    @MainActor
+    public static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
     ) -> Int {

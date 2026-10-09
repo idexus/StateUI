@@ -4,6 +4,7 @@
 /// The screen the interface is on, as the host last reported it. Read it as
 /// the device's `display`, `@Environment(\.device)`. Rotating a phone updates
 /// `orientation`, `rotation`, `width` and `height` in one host update.
+@MainActor
 public final class DeviceDisplay {
     /// The screen's width in PIXELS - divide by `density` for the points a
     /// layout speaks.

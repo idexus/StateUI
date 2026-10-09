@@ -13,6 +13,7 @@
 ///
 /// The formFactor distinguishes form factors that share an operating system. A
 /// headless host leaves values at their documented defaults.
+@MainActor
 public final class DeviceInfo {
     /// Phone, tablet, desktop, television, or watch.
     @State public var formFactor: FormFactor = .unknown

@@ -157,7 +157,8 @@ public enum StateUIEvents {
     ///
     ///     StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
     @discardableResult
-    public nonisolated static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
+    @MainActor
+    public static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
     ) -> Int {

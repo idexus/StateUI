@@ -22,6 +22,7 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 private final class Session {
     @State var name = "guest"
     @State var visits = 0
@@ -29,6 +30,7 @@ private final class Session {
 
 /// A second context type: types are independent domains, and a write to one
 /// must never rebuild the other's readers.
+@MainActor
 private final class Theme {
     @State var accent = "violet"
 }
@@ -113,9 +115,9 @@ private struct Holder: View {
     }
 }
 
+@MainActor
 final class EnvironmentTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
     }
 

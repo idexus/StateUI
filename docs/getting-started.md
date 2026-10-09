@@ -257,7 +257,9 @@ no toolkit imports          contains no application UI
 ```
 
 The UI module exports one stable registration function. Registration names the
-application type to the host; it does not build native controls itself.
+application type to the host; it does not build native controls itself. It
+runs on the UI thread, where every head calls it before the host starts - it is
+`@MainActor`, as everything that touches the interface is.
 
 ```swift
 struct RegisteredApp: Application {
@@ -271,6 +273,7 @@ struct RegisteredPage: View {
 }
 
 @_cdecl("stateui_app_register")
+@MainActor
 public func stateui_app_register() {
     stateUIUseApp(RegisteredApp())
 }

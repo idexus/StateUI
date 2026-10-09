@@ -5,7 +5,8 @@
 // Design: docs/design/core/scenes.md#the-scene-tree
 
 /// The application's scenes standing now - each at most once, from its first window to its last.
-final class OpenScenes: @unchecked Sendable {
+@MainActor
+final class OpenScenes {
     /// The one there is: a process runs one application.
     static let shared = OpenScenes()
 

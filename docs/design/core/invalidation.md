@@ -34,21 +34,18 @@ for it.
 The scopes are a stack, although builds do not nest across elements in a
 render, because a structural expansion in a test builds everything eagerly.
 
-## Reads from other threads
+## Reads outside a build
 
-`ReadScope.note` runs on every read of every state in the process, almost all
-of them from handlers with no scope open, so the empty check is a relaxed
-atomic load of the depth rather than a pass through the lock. The thread that
-opens and closes scopes is the thread that renders, so a read there always
-sees the truth. A pool thread may see a stale depth, and either way is
-harmless: noting a read over-records a dependency, and skipping one records
-nothing a pool-thread read was entitled to.
+`ReadScope.note` runs on every read of every state, almost all of them from
+handlers with no scope open, so its first step is the empty check on the
+stack of open scopes and nothing more. Every read is the UI thread's, as every
+build is, so the stack a read finds is the one the render opened.
 
 ## Erring toward rebuilding
 
 Every piece of the bookkeeping errs toward building too much, never toward
-skipping: a recycled `ObjectIdentifier`, a read recorded from a pool thread
-mid-render, a state read in a branch the body did not take this time. Each can
+skipping: a recycled `ObjectIdentifier`, a state read in a branch the body did
+not take this time. Each can
 only add a dependency or a change that was not strictly needed, and the cost is
 a subtree built and diffed for nothing. A dependency missed would be a frozen
 interface. Writes therefore always land, and anything that cannot name what

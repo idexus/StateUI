@@ -7,6 +7,7 @@ import XCTest
 
 /// Words as every host reads them: an element's words and their look, the lines a break allows, the space between
 /// letters, words typed past their bound, a selection in a toolkit's units, and a picker's choice.
+@MainActor
 final class TextRulesTests: XCTestCase {
     /// The words are given in their case where the words or the case changed, and the look where the font or the
     /// colour did; nothing where nothing of them changed - though the whole look is there to read.

@@ -39,9 +39,9 @@ private struct Held: View {
 /// An object a test provides to a subtree, or hands to a handler to capture.
 private final class Carried {}
 
+@MainActor
 final class ElementReleaseTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         Renderer.shared.clearStates()
     }

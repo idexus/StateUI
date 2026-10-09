@@ -106,6 +106,7 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
 /// Held by the galleries' scene and handed to its gallery windows and to its
 /// Fonts and Colours windows, so the Fonts and Colours windows change every
 /// gallery window at once, with nothing passed between them.
+@MainActor
 final class SessionStyle {
     /// The font the preview is set in - empty for the platform's own.
     @State(sceneKey: .font) var font = ""

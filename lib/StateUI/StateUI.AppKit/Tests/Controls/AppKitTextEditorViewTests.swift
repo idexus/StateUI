@@ -9,6 +9,7 @@ import AppKit
 import StateUIConformance
 import XCTest
 
+@MainActor
 final class AppKitTextEditorViewTests: XCTestCase {
     /// An editor's placeholder stands across it where the words would: centred where they are.
     @MainActor

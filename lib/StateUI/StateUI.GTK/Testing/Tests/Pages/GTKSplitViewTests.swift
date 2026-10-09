@@ -9,6 +9,7 @@ import CStateUIGTK
 import StateUIConformance
 import XCTest
 
+@MainActor
 final class GTKSplitViewTests: XCTestCase {
     /// Each pane is a page in a frame of its own; a window wide enough for both opens with the sidebar shown, and
     /// the binding hears it.
@@ -173,6 +174,7 @@ final class GTKSplitViewTests: XCTestCase {
     }
 }
 
+@MainActor
 final class GTKTabViewTests: XCTestCase {
     /// A tabbed view shown by the window stands in a frame whose switcher stands in a bar of its own beneath the
     /// header bar, which carries the chosen tab's title; the user's choice reaches the selection, the pages hear it,

@@ -19,6 +19,7 @@ private struct ChoosingPage: View {
     }
 }
 
+@MainActor
 final class AppKitItemsViewTests: XCTestCase {
     /// A chosen item lays the platform's accent over the page at a fifth of its strength, as every host's list shows
     /// the user's choice; an item at rest lays nothing.

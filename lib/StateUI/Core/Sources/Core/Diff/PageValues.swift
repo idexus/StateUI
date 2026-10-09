@@ -6,6 +6,7 @@
 /// page the view stands on takes them (Differ+Element.swift). Never changed once made, so a copied view shares
 /// nothing with the one it came from.
 /// Design: docs/design/views/pages.md#what-a-view-says-of-its-page
+@MainActor
 final class PageValues {
     /// The values: a `PageContract` node's properties, channels and handlers.
     let node: Node

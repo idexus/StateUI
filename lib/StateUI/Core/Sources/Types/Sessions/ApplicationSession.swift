@@ -18,6 +18,7 @@
 /// engine or a task alike.
 ///
 /// Design: docs/design/types/sessions.md#one-opening-of-something-declared
+@MainActor
 public final class ApplicationSession {
     /// Where the application stands: in front, behind another application, or
     /// out of sight, as the host maps its native application and window
@@ -102,7 +103,7 @@ public final class ApplicationSession {
     ///
     /// - Throws: `WindowError.unsupported` where the platform opens no second
     ///   window - a phone.
-    public nonisolated(nonsending) func openWindow() async throws {
+    public func openWindow() async throws {
         try OpenScenes.shared.open(nil)
     }
 
@@ -117,7 +118,7 @@ public final class ApplicationSession {
     ///   `WindowError.wrongValue(type)` where it opens one per value, and
     ///   `WindowError.unsupported` where the platform opens no second window - a
     ///   phone.
-    public nonisolated(nonsending) func openWindow(_ type: WindowType) async throws {
+    public func openWindow(_ type: WindowType) async throws {
         try OpenScenes.shared.open(type)
     }
 
@@ -128,7 +129,7 @@ public final class ApplicationSession {
     ///
     /// - Throws: `WindowError.alreadyOpen` where a window for that value is
     ///   open, and the rest of `WindowError` where it cannot open.
-    public nonisolated(nonsending) func openWindow<Value: Codable & Hashable>(
+    public func openWindow<Value: Codable & Hashable>(
         _ type: WindowType,
         value: Value
     ) async throws {
@@ -140,7 +141,7 @@ public final class ApplicationSession {
     ///
     /// - Throws: `WindowError.notOpen` where none is open, and
     ///   `WindowError.undeclared(type)` where no scene declares it.
-    public nonisolated(nonsending) func closeWindow(_ type: WindowType) async throws {
+    public func closeWindow(_ type: WindowType) async throws {
         try OpenScenes.shared.close(type)
     }
 
@@ -149,7 +150,7 @@ public final class ApplicationSession {
     ///
     /// - Throws: `WindowError.notOpen` where no window for that value is open,
     ///   and the rest of `WindowError` where it cannot close.
-    public nonisolated(nonsending) func closeWindow<Value: Codable & Hashable>(
+    public func closeWindow<Value: Codable & Hashable>(
         _ type: WindowType,
         value: Value
     ) async throws {

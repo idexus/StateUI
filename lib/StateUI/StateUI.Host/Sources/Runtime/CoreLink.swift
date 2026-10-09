@@ -5,9 +5,9 @@
 
 /// A runtime's one line to the running StateUI core; nothing else in a runtime calls it.
 /// Design: docs/design/host/runtime.md#core-link
-@_spi(Host) public struct CoreLink: Sendable {
+@_spi(Host) @MainActor public struct CoreLink {
     /// The line to the core running in this process.
-    public init() {}
+    public nonisolated init() {}
 
     // MARK: - Rendering
 
@@ -105,16 +105,19 @@
         HostBoundary.dispatch(handler, payload: payload)
     }
 
+    /// Takes the calling thread as the UI thread, whose jobs are `MainActor`'s - the host's start, before anything.
+    public nonisolated func takeTheUIThread() { HostBoundary.takeTheUIThread() }
+
     /// Runs the jobs waiting on StateUI's UI executor.
     @discardableResult
-    public func runJobs() -> Int { HostBoundary.runJobs() }
+    public nonisolated func runJobs() -> Int { HostBoundary.runJobs() }
 
     #if os(WASI)
     /// When the page is to call again, in milliseconds; nil with nothing to come.
     public var nextWake: Double? { HostBoundary.nextWake }
     #else
     /// Parks the doorbell's thread until work arrives.
-    public func waitForWork() -> Int { HostBoundary.waitForWork() }
+    public nonisolated func waitForWork() -> Int { HostBoundary.waitForWork() }
     #endif
 
     /// Takes the act calls queued since the previous pump.

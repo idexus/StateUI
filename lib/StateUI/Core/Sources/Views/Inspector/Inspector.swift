@@ -25,6 +25,7 @@
 ///     Window(.debugInspector) { DebugInspector() }
 ///
 /// Nothing is recorded while every inspector is closed or paused.
+@MainActor
 public enum Inspector {
     /// Where an inspector shows.
     public enum Place: Sendable, Equatable {

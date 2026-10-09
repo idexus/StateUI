@@ -5,7 +5,8 @@
 /// What a carried state's value is, across every render - the bytes both sides
 /// read, kept as three copies: the image the running cycle works on, the last
 /// completed cycle's, and a write waiting to be latched.
-public final class HostStorage: @unchecked Sendable, NamedState {
+@MainActor
+public final class HostStorage: NamedState {
     /// What the cycle running now is working on.
     var image: [UInt8]
 
@@ -38,7 +39,7 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     var board: Int = 0
 
     /// What the author calls it - the reflection walk's, as a state's is.
-    nonisolated(unsafe) var origin: String?
+    var origin: String?
 
     /// Which of the host's doors the value goes through, which says where its law lies.
     var door: StateKind?
@@ -55,11 +56,11 @@ public final class HostStorage: @unchecked Sendable, NamedState {
 
     /// What runs after the host wrote this value, handed the lanes it wrote - the
     /// state's own ask for a render.
-    nonisolated(unsafe) var told: ((UInt64) -> Void)?
+    var told: ((UInt64) -> Void)?
 
     /// Whether any build read the journey off this image.
     /// Design: docs/design/core/journeys.md#two-reader-sets
-    nonisolated(unsafe) var readAtBuild = false
+    var readAtBuild = false
 
     init(_ bytes: [UInt8]) {
         image = bytes
@@ -100,7 +101,7 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     /// Lays a value into a slot lane by lane, answering which lanes changed - bit for
     /// bit, so -0.0 and a NaN are what they are.
     /// Design: docs/design/core/cycle.md#where-a-write-lands
-    static func lay(_ bytes: [UInt8], into slot: inout [UInt8]) -> UInt64 {
+    nonisolated static func lay(_ bytes: [UInt8], into slot: inout [UInt8]) -> UInt64 {
         if slot.count != bytes.count {
             slot = bytes
             return ~0
@@ -126,7 +127,7 @@ public final class HostStorage: @unchecked Sendable, NamedState {
 
     /// Lays only the named lanes, answering which of them changed - what a host's
     /// report is.
-    static func lay(_ bytes: [UInt8], into slot: inout [UInt8], only mask: UInt64) -> UInt64 {
+    nonisolated static func lay(_ bytes: [UInt8], into slot: inout [UInt8], only mask: UInt64) -> UInt64 {
         // A report speaks about lanes, never about shape: what it does not name stands.
         // Design: docs/design/core/cycle.md#what-the-host-reports
         let reach = min(slot.count, bytes.count)
@@ -149,5 +150,5 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     }
 
     /// The dirty bit of one lane: its own, or the last for lanes past 63.
-    static func bit(of lane: Int) -> UInt64 { 1 << UInt64(min(lane, 63)) }
+    nonisolated static func bit(of lane: Int) -> UInt64 { 1 << UInt64(min(lane, 63)) }
 }

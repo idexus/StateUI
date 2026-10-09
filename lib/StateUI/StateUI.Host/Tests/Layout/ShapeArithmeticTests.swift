@@ -5,6 +5,7 @@
 @_spi(Host) @testable import StateUIHost
 import XCTest
 
+@MainActor
 final class ShapeArithmeticTests: XCTestCase {
     private let square = Rect(x: 0, y: 0, width: 10, height: 10)
     private let wide = LayoutSize(width: 80, height: 40)

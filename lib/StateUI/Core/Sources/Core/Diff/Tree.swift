@@ -31,6 +31,7 @@ public enum ElementID: Hashable, Sendable {
 
 /// One element as it stands on the host - a class, so unchanged parts of one
 /// tree are shared into the next.
+@MainActor
 final class RenderedNode {
     /// Who this element is. Fixed for as long as it stays in the tree.
     let id: ElementID
@@ -177,7 +178,7 @@ final class RenderedNode {
         Renderer.shared.nodeBorn()
     }
 
-    deinit {
+    isolated deinit {
         if !reads.isEmpty {
             Renderer.shared.unreading(reads)
         }

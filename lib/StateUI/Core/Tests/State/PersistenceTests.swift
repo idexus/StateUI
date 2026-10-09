@@ -22,14 +22,17 @@ extension PersistentKey {
 
 /// Two different views declaring the SAME key - which is the case that has to
 /// come out as one piece of state rather than two.
+@MainActor
 private struct Sidebar {
     @State(persistentKey: .count) var count = 0
 }
 
+@MainActor
 private struct Footer {
     @State(persistentKey: .count) var count = 0
 }
 
+@MainActor
 private struct Preferences {
     @State(persistentKey: .name) var name = "unnamed"
     @State(persistentKey: .loud) var loud = false
@@ -44,6 +47,7 @@ private struct KeepingPage: View {
 /// A MODEL that keeps two of its settings - the shape an application's own
 /// settings object has, where the value belongs to the app rather than to any
 /// one view.
+@MainActor
 private final class Settings {
     @State(persistentKey: .count) var count = 0
     @State(persistentKey: .appearance) var appearance = Appearance.light
@@ -69,9 +73,9 @@ private struct PlainApp: Application {
     var body: some Scene { WindowGroup { KeepingPage() } }
 }
 
+@MainActor
 final class PersistenceTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
 
         // The store is one per process and the keys name values that whole
         // process shares, so a test that inherited the last one's would be
@@ -80,10 +84,9 @@ final class PersistenceTests: XCTestCase {
         _ = drainedActs()
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         PersistentStore.shared.forgetAll()
         _ = drainedActs()
-        super.tearDown()
     }
 
     // MARK: - What a key is
@@ -235,46 +238,6 @@ final class PersistenceTests: XCTestCase {
         // Nothing is waiting on a save: the value is already in state, and the
         // store is only where it goes to survive the process.
         XCTAssertNil(acts.first?.completion)
-    }
-
-    /// A write and the record beside it happen under ONE hold, so no other
-    /// write can land between them.
-    ///
-    /// Both halves are separately thread-safe and that is NOT enough: two
-    /// tasks writing at once could settle the value in one order and reach the
-    /// store in the other, leaving the state holding the newer value and the
-    /// store holding the older - which is then what the next launch reads. The
-    /// window is a few instructions wide, so it would surface as a rare wrong
-    /// value after a restart, which is the kind of thing nobody reproduces.
-    ///
-    /// Held by construction rather than by hammering two tasks and hoping: the
-    /// second write is started from INSIDE the first one's record, where it
-    /// must not be able to land.
-    func testAWriteAndItsRecordCannotBeSplitByAnotherWrite() {
-        let storage = State<Int>.Storage { 0 }
-        let landed = DispatchSemaphore(value: 0)
-
-        storage.keep = { _ in
-            DispatchQueue.global().async {
-                storage.value = 2
-                landed.signal()
-            }
-
-            // Parked on the very hold this closure runs under. The timeout IS
-            // the assertion: with the value and the record apart, that write
-            // lands here, in between the two.
-            XCTAssertEqual(
-                landed.wait(timeout: .now() + 0.2), .timedOut,
-                "another write must not land between the value and its record")
-        }
-
-        storage.write(1)
-
-        XCTAssertEqual(
-            landed.wait(timeout: .now() + 2), .success,
-            "and lands as soon as the hold ends")
-
-        XCTAssertEqual(storage.value, 2)
     }
 
     /// A kept state is saved whoever writes it: a control through the state's binding...

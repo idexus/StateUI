@@ -9,6 +9,7 @@ import AppKit
 import StateUIConformance
 import XCTest
 
+@MainActor
 final class AppKitSearchFieldViewTests: XCTestCase {
     /// A coloured placeholder stands and is set as the search's words would be: centred where they are, at their
     /// size.

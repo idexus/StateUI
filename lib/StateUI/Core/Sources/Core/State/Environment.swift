@@ -6,6 +6,7 @@
 // Design: docs/design/core/state.md#the-environment
 
 /// One `@Environment` slot, which the differ fills as it walks.
+@MainActor
 protocol EnvironmentSlot: AnyObject {
     /// The type this slot resolves, as the identity the scope is keyed by.
     var wants: ObjectIdentifier { get }
@@ -39,7 +40,8 @@ protocol EnvironmentSlot: AnyObject {
 /// type no ancestor provided stops the program with its name, and so does
 /// reading one of the library's by its type.
 @propertyWrapper
-public final class Environment<Value: AnyObject>: @unchecked Sendable {
+@MainActor
+public final class Environment<Value: AnyObject> {
     /// What the differ resolved for this view's place in the tree - written and read
     /// on the UI thread.
     private var resolved: Value?

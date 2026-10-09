@@ -18,6 +18,7 @@
 import StateUI
 
 /// The application's styles, as the sheet the differ resolves against.
+@MainActor
 enum AppStyles {
     /// Built once, as the application is made, and never sent: the differ
     /// merges each style into the controls it applies to, so what crosses is a

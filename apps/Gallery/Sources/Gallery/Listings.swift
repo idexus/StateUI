@@ -242,8 +242,8 @@ enum Listings {
                         // is where the hand belongs now, so the arithmetic starts
                         // from it - never from the journey's value, which is
                         // wherever the host had got to when this reading came
-                        // in. `async let` starts all three at once; each is
-                        // short, because the movement IS the tick.
+                        // in. All three start as they are sent, and are awaited
+                        // after; each is short, because the movement IS the tick.
                         let atSecond = sAngle
                         let atMinute = mAngle
                         let atHour = hAngle
@@ -252,13 +252,12 @@ enum Listings {
                         let toMinute = atMinute + (minute - atMinute).forwardTurn
                         let toHour = atHour + (hour - atHour).forwardTurn
 
-                        async let s: Bool = $sAngle.journey.move(to:
-                            toSecond, .eased(260, .backOut))
-                        async let m: Bool = $mAngle.journey.move(to:
-                            toMinute, .eased(300, .cubicOut))
-                        async let h: Bool = $hAngle.journey.move(to:
-                            toHour, .eased(300, .cubicOut))
-                        _ = try await (s, m, h)
+                        let s = $sAngle.journey.move(to: toSecond, .eased(260, .backOut))
+                        let m = $mAngle.journey.move(to: toMinute, .eased(300, .cubicOut))
+                        let h = $hAngle.journey.move(to: toHour, .eased(300, .cubicOut))
+                        try await s.arrived()
+                        try await m.arrived()
+                        try await h.arrived()
                     } else {
                         // The first reading SETS the hands: `value` is written, and
                         // the state to match, so nothing travels and nothing is awaited.
@@ -382,7 +381,7 @@ enum Listings {
 
                     button("Send the bottom one") {
                         try await $level.journey.move(to: level < 0.5 ? 1 : 0,
-                                                   .eased(900, .cubicInOut))
+                                                   .eased(900, .cubicInOut)).arrived()
                     }
                 }
 
@@ -399,7 +398,7 @@ enum Listings {
                         .horizontalAlignment(.start)
 
                     button("Send the stepper to 12") {
-                        try await $count.journey.move(to: 12, .eased(800, .cubicOut))
+                        try await $count.journey.move(to: 12, .eased(800, .cubicOut)).arrived()
                     }
                 }
             }
@@ -446,31 +445,31 @@ enum Listings {
 
                 HStack {
                     button("Colour") {
-                        try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(500))
+                        try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(500)).arrived()
 
                         // The caption sits on the brand field inside the panel
                         // rather than on the panel itself, so what it goes to is
                         // the colour that reads on the brand.
-                        try await $captionColor.journey.move(to: AppColors.white, .eased(500))
+                        try await $captionColor.journey.move(to: AppColors.white, .eased(500)).arrived()
                     }
 
                     button("Size") {
                         wide.toggle()
                         try await $panelHeight.journey.move(to: wide ? 160 : 90,
-                                                         .eased(400, .cubicInOut))
+                                                         .eased(400, .cubicInOut)).arrived()
                     }
 
                     button("Padding") {
-                        try await $panelPadding.journey.move(to: Insets(48), .eased(400))
-                        try await $panelPadding.journey.move(to: Insets(16), .eased(400))
+                        try await $panelPadding.journey.move(to: Insets(48), .eased(400)).arrived()
+                        try await $panelPadding.journey.move(to: Insets(16), .eased(400)).arrived()
                     }
                 }
                 .horizontalAlignment(.center)
 
                 HStack {
                     button("Text size") {
-                        try await $captionSize.journey.move(to: 28, .eased(400, .cubicOut))
-                        try await $captionSize.journey.move(to: 17, .eased(400, .cubicIn))
+                        try await $captionSize.journey.move(to: 28, .eased(400, .cubicOut)).arrived()
+                        try await $captionSize.journey.move(to: 17, .eased(400, .cubicIn)).arrived()
                     }
 
                     button("Back") {
@@ -481,9 +480,9 @@ enum Listings {
                         // of Size would ask for the value it already has.
                         wide = false
 
-                        try await $panelHeight.journey.move(to: 90, .eased(400, .cubicInOut))
-                        try await $panelColor.journey.move(to: AppColors.lineDark, .eased(400))
-                        try await $captionColor.journey.move(to: AppColors.ink, .eased(400))
+                        try await $panelHeight.journey.move(to: 90, .eased(400, .cubicInOut)).arrived()
+                        try await $panelColor.journey.move(to: AppColors.lineDark, .eased(400)).arrived()
+                        try await $captionColor.journey.move(to: AppColors.ink, .eased(400)).arrived()
                     }
                 }
                 .horizontalAlignment(.center)
@@ -543,21 +542,22 @@ enum Listings {
                     // instead, which is what lets Stop leave the card where it
                     // stood.
                     button("Fade") {
-                        let landed = try await $fade.journey.move(to: 0.1, .eased(400, easing))
-                        if landed { try await $fade.journey.move(to: 1, .eased(400, easing)) }
+                        let landed = try await $fade.journey.move(to: 0.1, .eased(400, easing)).arrived()
+                        if landed { try await $fade.journey.move(to: 1, .eased(400, easing)).arrived() }
                     }
 
                     // ONE movement, because the card only ever moves sideways. A
-                    // diagonal would be a second state on translationY, started
-                    // with `async let` so the two land together.
+                    // diagonal would be a second state on translationY, sent
+                    // beside this one before either is awaited, so the two land
+                    // together.
                     button("Move") {
-                        let landed = try await $shift.journey.move(to: 60, .eased(400, easing))
-                        if landed { try await $shift.journey.move(to: 0, .eased(400, easing)) }
+                        let landed = try await $shift.journey.move(to: 60, .eased(400, easing)).arrived()
+                        if landed { try await $shift.journey.move(to: 0, .eased(400, easing)).arrived() }
                     }
 
                     button("Scale") {
-                        let landed = try await $scale.journey.move(to: 1.4, .eased(400, easing))
-                        if landed { try await $scale.journey.move(to: 1, .eased(400, easing)) }
+                        let landed = try await $scale.journey.move(to: 1.4, .eased(400, easing)).arrived()
+                        if landed { try await $scale.journey.move(to: 1, .eased(400, easing)).arrived() }
                     }
 
                     // A movement goes TO a value, never BY one, so a full turn is
@@ -565,7 +565,7 @@ enum Listings {
                     // headed, which is what makes the next press carry on from
                     // there rather than start over.
                     button("Spin") {
-                        try await $angle.journey.move(to: angle + 360, .eased(700, easing))
+                        try await $angle.journey.move(to: angle + 360, .eased(700, easing)).arrived()
                     }
                 }
                 .horizontalAlignment(.center)
@@ -1433,7 +1433,7 @@ enum Listings {
                             if !finished { playing = false }
                         }
 
-                        try await $breath.journey.move(to: 1, .eased(200))
+                        try await $breath.journey.move(to: 1, .eased(200)).arrived()
                     }
                     .isEnabled(!playing)
 
@@ -1448,7 +1448,7 @@ enum Listings {
 
                         for bar in bars {
                             bar.journey.stop()
-                            try await bar.journey.move(to: 0, .eased(120))
+                            try await bar.journey.move(to: 0, .eased(120)).arrived()
                         }
                     }
                     .isEnabled(playing)
@@ -1466,14 +1466,14 @@ enum Listings {
         /// - Returns: whether everything in it ran to the end. False is what Stop
         ///   produces, through `stop()` on each of the states.
         private func beat(_ n: Int) async throws -> Bool {
-            // `async let` starts a movement and does not wait for it, so both of
-            // these are running while the bars below hop. Each is its own value on
-            // its own state, and the host carries all three on the same frames.
-            async let washing: Bool = $wash.journey.move(to:
+            // A movement starts as it is sent and is awaited apart, so both of these
+            // are running while the bars below hop. Each is its own value on its own
+            // state, and the host carries all three on the same frames.
+            let washing = $wash.journey.move(to:
                 n.isMultiple(of: 2) ? Palette.brand : Palette.accent,
                 .eased(1200, .cubicInOut))
 
-            async let breathing: Bool = $breath.journey.move(to: 0.25, .eased(600, .cubicInOut))
+            let breathing = $breath.journey.move(to: 0.25, .eased(600, .cubicInOut))
 
             // 4 bars x 300ms = the 1200ms the wash takes, so the wave crosses the
             // stage exactly once per colour. A hop that did not run to the end is
@@ -1482,18 +1482,19 @@ enum Listings {
             var hopped = true
 
             for bar in bars where hopped {
-                hopped = try await bar.journey.move(to: -26, .eased(150, .cubicOut))
+                hopped = try await bar.journey.move(to: -26, .eased(150, .cubicOut)).arrived()
 
                 if hopped {
-                    hopped = try await bar.journey.move(to: 0, .eased(150, .cubicIn))
+                    hopped = try await bar.journey.move(to: 0, .eased(150, .cubicIn)).arrived()
                 }
             }
 
             // Awaited at the BOTTOM: the beat is over when the longest thing in it
             // is over, not when the last one started is.
-            let (washed, breathed) = try await (washing, breathing)
+            let washed = try await washing.arrived()
+            let breathed = try await breathing.arrived()
 
-            try await $breath.journey.move(to: 1, .eased(300, .cubicInOut))
+            try await $breath.journey.move(to: 1, .eased(300, .cubicInOut)).arrived()
 
             return hopped && washed && breathed
         }
@@ -1506,9 +1507,8 @@ enum Listings {
         """#,
         "ConcurrentStateSample": #"""
         // Sources/Samples/State/ConcurrentStateSample.swift
-        /// The shared count every task increments. `_total` - the box behind it -
-        /// is what the tasks capture; it is Sendable, so it crosses to the
-        /// cooperative pool safely.
+        /// The shared count every task adds to. `$total` - the binding - is what the
+        /// tasks capture: it crosses to the cooperative pool, and is posted to.
         @State private var total = 0
 
         /// How many landed last run, to say out loud that none were lost.
@@ -1518,8 +1518,8 @@ enum Listings {
 
         var body: some View {
             VStack {
-                // The 20,000 writes land here as renders: this closure reads
-                // `total`, and the reading says how many it was actually built for.
+                // The 200 posts land here as renders: this closure reads `total`, and
+                // the reading says how many it was actually built for.
                 DebugInfoLabel()
 
                 Text("\(total)")
@@ -1539,17 +1539,20 @@ enum Listings {
                         total = 0
                         expected = 200 * 100
 
-                        // The BOX, not the view: it is Sendable, so every task can
-                        // hold it. Two tasks doing `total += 1` would each read,
-                        // add and write, and lose one another's increments;
-                        // `update` runs the three steps under the state's own lock,
-                        // so every one of the 20,000 lands.
-                        let counter = _total
+                        // The BINDING: a task cannot write the state, which is the
+                        // UI thread's, so it posts to it. Each task counts on its
+                        // own and posts once; `post { $0 + counted }` runs every
+                        // change over the one before, so all 200 land. Their jobs
+                        // are queued before the group ends, so the line after it
+                        // finds the total whole.
+                        let counter = $total
 
                         await withTaskGroup(of: Void.self) { group in
                             for _ in 0 ..< 200 {
                                 group.addTask {
-                                    for _ in 0 ..< 100 { counter.update { $0 + 1 } }
+                                    var counted = 0
+                                    for _ in 0 ..< 100 { counted += 1 }
+                                    counter.post { [counted] in $0 + counted }
                                 }
                             }
                         }
@@ -1563,10 +1566,11 @@ enum Listings {
         //
         //     DispatchQueue.main.async { total = value }   // never runs on Android/Windows
         //
-        // RIGHT - just write it. A handler already runs on MainActor, the UI
-        // thread, and a plain @State write is safe from any thread anyway:
+        // RIGHT - in a handler, just write it: it runs on MainActor, the UI thread.
+        // From a task, post it:
         //
         //     total = value
+        //     $total.post(value)
         """#,
         "ConnectivitySample": #"""
         // Sources/Samples/Environment/ConnectivitySample.swift
@@ -2174,12 +2178,12 @@ enum Listings {
                 HStack {
                     Button("Grow")
                         .onClicked {
-                            try await $width.journey.move(to: 300, .eased(1600, .cubicOut))
+                            try await $width.journey.move(to: 300, .eased(1600, .cubicOut)).arrived()
                         }
 
                     Button("Shrink")
                         .onClicked {
-                            try await $width.journey.move(to: 60, .eased(1600, .cubicIn))
+                            try await $width.journey.move(to: 60, .eased(1600, .cubicIn)).arrived()
                         }
 
                     // Stopping leaves the value where it stands, and the
@@ -2366,6 +2370,7 @@ enum Listings {
         // Sources/Samples/Environment/EnvironmentSample.swift
         /// Who is signed in - the object a whole branch shares. Its properties are
         /// `@State`, so a write to one rebuilds exactly the views that READ it.
+        @MainActor
         private final class Session {
             @State var name = "guest"
             @State var visits = 0
@@ -3008,6 +3013,7 @@ enum Listings {
         /// Held by the galleries' scene and handed to its gallery windows and to its
         /// Fonts and Colours windows, so the Fonts and Colours windows change every
         /// gallery window at once, with nothing passed between them.
+        @MainActor
         final class SessionStyle {
             /// The font the preview is set in - empty for the platform's own.
             @State(sceneKey: .font) var font = ""
@@ -3431,7 +3437,7 @@ enum Listings {
                         // The width describes nothing: the host carries the width and
                         // the slider's thumb off the same state, and the frame reports
                         // say where the panel actually got to.
-                        try await $width.journey.move(to: $width.journey.value < 240 ? 340 : 140)
+                        try await $width.journey.move(to: $width.journey.value < 240 ? 340 : 140).arrived()
                     }
             }
         }
@@ -5417,6 +5423,7 @@ enum Listings {
         // Sources/Samples/Layout/ScrollViewSample.swift
         /// Forty numbered lines - the same strip in all three columns below, so the
         /// only difference on the screen is what the offset costs.
+        @MainActor
         private func numberedLines() -> ScrollView {
             ScrollView {
                 VStack {
@@ -5431,6 +5438,7 @@ enum Listings {
         ///
         /// - Parameter text: what this column is.
         /// - Returns: the words, styled.
+        @MainActor
         private func columnTitle(_ text: String) -> Text {
             Text(text)
         }
@@ -5439,6 +5447,7 @@ enum Listings {
         ///
         /// - Parameter text: the line of code this column is about.
         /// - Returns: the words, in the code face.
+        @MainActor
         private func spelling(_ text: String) -> Text {
             Text(text)
         }
@@ -5603,7 +5612,7 @@ enum Listings {
         /// - Parameter y: how far down each strip is sent.
         private func move(to y: Double) async throws {
             for strip in [$described, $paced, $driven] {
-                try await strip.journey.move(to: Point(0, y), .eased(300, .cubicOut))
+                try await strip.journey.move(to: Point(0, y), .eased(300, .cubicOut)).arrived()
             }
         }
         """#,
@@ -5732,10 +5741,10 @@ enum Listings {
 
                 HStack {
                     Button("Fade")
-                        .onClicked { try await $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
+                        .onClicked { try await $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)).arrived() }
 
                     Button("Back")
-                        .onClicked { try await $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
+                        .onClicked { try await $fade.journey.move(to: 1, .eased(2000, .cubicOut)).arrived() }
                 }
                 .horizontalAlignment(.center)
             }
@@ -6294,7 +6303,7 @@ enum Listings {
         private func move(_ by: Int) async throws {
             let slot = max(0, min(Double(Self.cards.count - 1), (at + Double(by)).rounded()))
 
-            try await $scrolled.journey.move(to: Point(slot * Self.reach, 0), .eased(300, .cubicOut))
+            try await $scrolled.journey.move(to: Point(slot * Self.reach, 0), .eased(300, .cubicOut)).arrived()
         }
 
         /// One card's face - a picture and its name, and nothing at all about where
@@ -6655,6 +6664,7 @@ enum Listings {
         /// The point of the sample is which closure is built again: each property is
         /// a `@State` of its own, so a write to `visits` reaches the closures that
         /// read `visits` and nobody else.
+        @MainActor
         private final class Profile {
             @State var name = ""
             @State var visits = 0
@@ -7022,6 +7032,7 @@ enum Listings {
         /// A strip of tiles a fixed distance apart - the shape both strips of the rest
         /// example are cut from. A tile is 140 wide with 20 between them, so one
         /// starts every 160, which is the interval the first strip is brought to rest on.
+        @MainActor
         private func tileStrip() -> ScrollView {
             ScrollView {
                 HStack {
@@ -7859,6 +7870,7 @@ enum Listings {
         /// that property for another build, and no other. A plain `var` is stored and
         /// nothing more, and this one is here to be SEEN not working: pressing the
         /// button below raises it and the screen does not follow.
+        @MainActor
         private final class Basket {
             @State var items: [String] = []
             @State var note = ""
@@ -9039,7 +9051,7 @@ enum Listings {
                         // button follows it.
                         .onVisualStateChanged { state in
                             entered = state.name
-                            try await $press.journey.move(to: state == .pressed ? 0.94 : 1, .eased(90))
+                            try await $press.journey.move(to: state == .pressed ? 0.94 : 1, .eased(90)).arrived()
                         }
                         .onClicked { presses += 1 }
 
@@ -9164,6 +9176,7 @@ enum Listings {
         "WindowBarSample": #"""
         // Sources/Samples/Windows/WindowBarSample.swift
         /// What the gallery's window says on its bar, written by the sample and declared by the window.
+        @MainActor
         final class WindowBarState {
             /// The line under the bar's title.
             @State var subtitle = ""
@@ -9195,6 +9208,7 @@ enum Listings {
         /// kept by the window (`GalleryWindow`), written by `MainPage` as the window
         /// is made and by `WindowPhaseLog` as its phase moves, and read by the
         /// Lifecycle sample.
+        @MainActor
         final class WindowLog {
             /// The last six moments, each numbered.
             @State var events: [String] = []
@@ -10693,8 +10707,8 @@ extension Listings {
         // each in Host/ beside this file - and the host registers the native methods its activity calls.
         @_cdecl("JNI_OnLoad")
         public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
-            stateui_app_register()
             MainActor.assumeIsolated {
+                stateui_app_register()
                 GalleryControls.register()
                 GalleryActs.register()
                 GalleryEventSources.register()
@@ -11928,14 +11942,14 @@ extension Listings {
         /// THE SPLIT IS THE PLATFORM'S: a desktop with no battery reports nothing at
         /// all, and the sample's own words say so. What is watched here is the power
         /// source, which macOS reports through a run-loop source of its own.
+        @MainActor
         enum GalleryEventSources {
             /// What was last said, so an unchanged reading raises nothing - a power
             /// source notifies on far more than a level change.
-            nonisolated(unsafe) private static var lastSaid: (level: Double, charging: Bool)?
+            private static var lastSaid: (level: Double, charging: Bool)?
 
             /// Declares what the gallery raises and starts watching. Said once,
             /// before the application runs.
-            @MainActor
             static func start() {
                 // Declared where the source is wired: a handler listening for an
                 // event nothing declared is told, once, that it will not hear it.
@@ -11943,7 +11957,11 @@ extension Listings {
 
                 // Named in full: a C function pointer carries no context at all, and
                 // an unqualified call to a static method captures the type implicitly.
-                let notify: IOPowerSourceCallbackType = { _ in GalleryEventSources.report() }
+                // The source stands on the main run loop, so the call comes on the
+                // main thread.
+                let notify: IOPowerSourceCallbackType = { _ in
+                    MainActor.assumeIsolated { GalleryEventSources.report() }
+                }
 
                 guard let source = IOPSNotificationCreateRunLoopSource(notify, nil)?.takeRetainedValue()
                 else { return }

@@ -30,6 +30,7 @@ struct HelloWorldApp: Application {
 /// library, and a host that loads the app as a separate native library finds it
 /// by this name.
 @_cdecl("stateui_app_register")
+@MainActor
 public func stateui_app_register() {
     stateUIUseApp(HelloWorldApp())
 }

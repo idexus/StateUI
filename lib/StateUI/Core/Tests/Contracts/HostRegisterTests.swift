@@ -6,6 +6,7 @@ import XCTest
 
 /// What a host's register says of a member: whether a test of it runs, and what the test's verdict says beside
 /// passing - what is missing, or why the host's family never has it.
+@MainActor
 final class HostRegisterTests: XCTestCase {
     /// A member the runtime realizes is judged whole, so a test of it runs; one realized nowhere runs nothing.
     func testWhatTheRuntimeRealizesRuns() {

@@ -9,6 +9,7 @@ import AppKit
 import StateUIConformance
 import XCTest
 
+@MainActor
 final class AppKitTextFieldViewTests: XCTestCase {
     /// The render that follows a keystroke carries the typed text back. It
     /// must not move the caret the user is typing at, even when the entry

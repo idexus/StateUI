@@ -5,7 +5,8 @@
 /// keyboard in it - kept by the element across its builds and read as a state: a change describes the element
 /// again, and nothing else.
 /// Design: docs/design/views/styles.md#what-the-user-does
-final class VisualInput: @unchecked Sendable {
+@MainActor
+final class VisualInput {
     // Written by the element's handlers and read by the walk, both on the UI thread.
     private var pressed = false
     private var pointerOver = false

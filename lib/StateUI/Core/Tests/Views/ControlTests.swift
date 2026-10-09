@@ -32,6 +32,7 @@ import XCTest
 @_spi(Host) @testable import StateUI
 
 /// One control, built with everything of its own that it can do.
+@MainActor
 private struct ControlCase {
     /// The StateUI node type, which is also what the case is called.
     let name: String
@@ -52,6 +53,7 @@ private struct ControlCase {
     }
 }
 
+@MainActor
 final class ControlTests: XCTestCase {
     /// A turn, a sizing, a lean and a move, STATED rather than computed: a
     /// chain like `.rotate(15).scaleX(1.5).skew(10, 5)` puts a libm result in

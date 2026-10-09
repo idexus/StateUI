@@ -187,6 +187,7 @@
     }
 
     /// A thousand numbered items, each words with room around them.
+    @MainActor
     static func numbers() -> ItemsView<Range<Int>, Int> {
         ItemsView(0..<1_000) { Text("Item \($0)").padding(12) }
     }

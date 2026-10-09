@@ -56,6 +56,7 @@
 
     /// A box's background is the blur the tree gives it and then the glass it changes it to - or what stands in for
     /// the glass, the blur as clear as it is, whose colour a host that blurs nothing paints.
+    @MainActor
     static func blurredOrGlass(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).background.showsABlurOrGlassOrWhatStandsInForIt", proves: [
             Covered(VisualElementContract.background, on: element),
@@ -80,6 +81,7 @@
     }
 
     /// A box's background follows the material state handed to it as `$x` - a material's channel.
+    @MainActor
     static var followsAMaterial: ConformanceCase {
         ConformanceCase("VStack.background.followsAMaterialState", proves: [
             Covered(VisualElementContract.background, on: "VStack"),
@@ -106,6 +108,7 @@
     static let layouts: Set<String> = ["Grid", "HStack", "ScrollView", "VStack", "ZStack"]
 
     /// A view is shown or not as the tree says, and hides when the tree says so.
+    @MainActor
     static func shown(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isShownAsTheTreeSays", proves: [
             Covered(VisualElementContract.isVisible, on: element),
@@ -127,6 +130,7 @@
 
     /// A view stands in front of a sibling it overlaps or behind it as its `zIndex` says, whatever the order they
     /// were written in - as its toolkit draws them.
+    @MainActor
     static func layered(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsInTheDepthTheTreeSays", proves: [
             Covered(VisualElementContract.zIndex, on: element),
@@ -152,6 +156,7 @@
     }
 
     /// A view is as opaque as the tree says, and changes as the tree does.
+    @MainActor
     static func opacity(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isAsOpaqueAsTheTreeSays", proves: [
             Covered(VisualElementContract.opacity, on: element),
@@ -173,6 +178,7 @@
 
     /// A view is a heading to assistive technology where the tree makes it one, whatever level it says, and is none
     /// where the tree says none.
+    @MainActor
     static func headed(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isAHeadingWhereTheTreeSays", proves: [
             Covered(VisualElementContract.accessibilityHeading, on: element),
@@ -189,6 +195,7 @@
     }
 
     /// A view the tree disables answers no tap, and answers once the tree enables it.
+    @MainActor
     static func answering(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).answersNoTapWhileDisabled", proves: [
             Covered(VisualElementContract.isEnabled, on: element),
@@ -222,6 +229,7 @@
     }
 
     /// A control in a layout the tree disables takes no input, and takes it again as the layout is enabled.
+    @MainActor
     static func disablingItsBranch(_ layout: String) -> ConformanceCase {
         ConformanceCase("\(layout).disablesTheControlsInIt", proves: [
             Covered(VisualElementContract.isEnabled, on: layout),
@@ -245,6 +253,7 @@
     }
 
     /// A view takes input or not as the tree says: made taking none, then taking it, then stopping again.
+    @MainActor
     static func enabled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).takesInputAsTheTreeSays", proves: [
             Covered(VisualElementContract.isEnabled, on: element),
@@ -269,6 +278,7 @@
     }
 
     /// A view stands at the size the tree states.
+    @MainActor
     static func sized(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsAtItsStatedSize", proves: [
             Covered(VisualElementContract.width, on: element), Covered(VisualElementContract.height, on: element),
@@ -291,6 +301,7 @@
     }
 
     /// A stated size is held to the bounds the tree sets it.
+    @MainActor
     static func bounded(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isHeldToTheBoundsTheTreeSets", proves: [
             Covered(VisualElementContract.maximumWidth, on: element),
@@ -325,17 +336,20 @@
 
     /// A view with something to say, which assistive technology meets unless the view is left out: a decoration
     /// with no name is met by no one either way.
+    @MainActor
     static var named: [any Worn] {
         [Write(VisualElementContract.accessibilityLabel, "Named")]
     }
 
     /// What a pivot is seen by: a view turned, with a size to take a part of.
+    @MainActor
     static var turned: [any Worn] {
         [Write(VisualElementContract.rotation, 30), Write(VisualElementContract.width, 40),
          Write(VisualElementContract.height, 20)]
     }
 
     /// A press reaches a view, and goes through it to what is beneath once the tree says it ignores input.
+    @MainActor
     static func reachable(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aPressReachesItUnlessItIgnoresInput", proves: [
             Covered(VisualElementContract.ignoresInput, on: element),
@@ -365,6 +379,7 @@
 
     /// What `element` paints at the middle of a box of 80 by 40, where a press is read: a host may hand a view
     /// only the presses on what it paints - a figure filled across it, a line through it, a box's colour, a picture.
+    @MainActor
     static func painted(_ element: String) -> [any Worn] {
         let red = Brush.solidColor(.red)
         let figure = [Point(20, 5), Point(60, 5), Point(60, 35), Point(20, 35)]
@@ -385,6 +400,7 @@
     }
 
     /// A view's frame lands in the state the tree gives it, and again as the tree widens it.
+    @MainActor
     static func framed(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).itsFrameLandsInItsState", proves: [
             Covered(VisualElementContract.frame, on: element),
@@ -413,6 +429,7 @@
 
     /// The keyboard put on a view that takes it is heard coming, and heard going as it is taken off. A view that
     /// refuses it says so and hears nothing - and never takes the focus on that host.
+    @MainActor
     static func focused(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).theKeyboardComingAndGoingIsHeard", proves: [
             Covered(VisualElementContract.focus, on: element), Covered(VisualElementContract.unfocus, on: element),
@@ -450,6 +467,7 @@
     }
 
     /// A view naming a style takes the values the style gives it.
+    @MainActor
     static func styled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).takesTheValuesOfTheStyleItNames", proves: [
             Covered(VisualElementContract.style, on: element),

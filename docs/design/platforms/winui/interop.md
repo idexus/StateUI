@@ -34,6 +34,6 @@ elements is handed that element's control, the aim's identity turned back
 into what is on screen. A performer may await, so it runs as a task on the
 main actor and the call is answered once it returns. What a performer throws
 fails the call with its reason; an act nobody registered is refused by name.
-An event of the application's is raised through the core, from any thread,
+An event of the application's is raised through the core, on the UI thread,
 and heard by every subscription; declaring it tells a handler listening for
 one no source raises that it will not hear it.

@@ -33,6 +33,7 @@ private struct Shows: View {
     }
 }
 
+@MainActor
 final class UIThreadTests: XCTestCase {
     // MARK: - The waker
 
@@ -92,100 +93,47 @@ final class UIThreadTests: XCTestCase {
         XCTAssertEqual(queued.touches, 1, "the job was in the queue the wake announced")
     }
 
-    /// An act queued from a plain `Task` - the pool, no handler suspended on
-    /// it, no job on the executor - still wakes the parked thread: `send`
-    /// pokes it, and the count `HostBoundary.waitForWork` returns includes the
-    /// queued ACTS, so the host drains and takes the act.
+    /// An ACT SENT wakes the parked thread: `send` pokes it, so the host drains
+    /// and takes the act.
     ///
     /// Without the poke this was the gallery's press animation frozen at its
-    /// dip: the return half was queued from the press Task at the moment the
-    /// dip completed, nothing announced it, and the card stayed pressed until
-    /// the next event reached the app - on Android, forever.
-    func testAnActQueuedFromAPlainTaskWakesTheParkedThread() throws {
+    /// dip: the return half was queued as the dip completed, nothing announced
+    /// it, and the card stayed pressed until the next event reached the app -
+    /// on Android, forever.
+    func testAnActSentWakesTheParkedThread() throws {
         _ = drainedActs()
 
-        let parked = DispatchSemaphore(value: 0)
-
-        DispatchQueue.global().async {
-            // WAITS FOR THE WORK, not for a wake - the shape the sleeping test
-            // above uses, and this one only claimed to. `HostBoundary.waitForWork`
-            // is fed by a counting semaphore, so a wake another test left
-            // behind returns from it at once with nothing queued; exiting on
-            // THAT signalled the main thread before the detached Task had
-            // sent, and the act was asserted for before it existed. Measured
-            // as roughly one full-suite run in two, and never alone.
-            //
-            // The wake is still what is being proved: with nothing poking it
-            // this blocks, and the five-second wait below is what fails.
-            while Renderer.shared.actCallsPending == 0 {
-                _ = HostBoundary.waitForWork()
-            }
-
-            parked.signal()
-        }
-
-        // The pool, as a plain `Task` in a handler is: only the act, no job.
-        Task.detached {
-            Renderer.shared.send(.focus, [.string("card")], completion: nil)
-        }
-
-        XCTAssertEqual(
-            parked.wait(timeout: .now() + 5), .success,
+        XCTAssertTrue(
+            woke { Renderer.shared.send(.focus, [.string("card")], completion: nil) },
             "the queued act woke nobody - the host would not perform it until the next event")
-
         XCTAssertTrue(
             drainedActs().contains { $0.name == "focus" },
             "the act the wake announced is there to take")
     }
 
-    /// A DIRTY TREE is work, and the WRITE ITSELF is what wakes the host to
-    /// count it.
-    ///
-    /// A write made inside something the host is driving is rendered by the
-    /// drain that follows; a write a `Task.detached` makes from the pool has
-    /// nothing following it - no job, no act. Two things keep that write
-    /// from waiting for the next touch: the dirty flag counts as work in
-    /// `HostBoundary.waitForWork`, and `stateChanged` pokes the parked thread AFTER
-    /// setting it, so the thread cannot wake, read a clean flag, and park
-    /// again with the write behind it. This asks the waker's question with
-    /// nothing but the write having happened - `waitForWork` BLOCKS until
-    /// something signals, so a write that did not signal would hang here.
-    func testAStateWriteAloneWakesTheHostAndReadsAsWork() async throws {
-        // Quiet first.
+    /// A STATE WRITE wakes the host: `stateChanged` pokes the parked thread after
+    /// marking the tree dirty, so the thread cannot wake, find nothing and park
+    /// again with the write behind it.
+    func testAStateWriteWakesTheHost() throws {
         _ = drainedActs()
         stateUIRunJobs()
         Renderer.shared.clearInvalidation()
 
         // A state SOMETHING READS: a write nobody reads asks for nothing and
-        // wakes nobody, by design - see `Renderer.stateChanged` - so the
-        // write below is made to a state a live element reads.
+        // wakes nobody, by design - see `Renderer.stateChanged`.
         let fade = State(1.0)
         let renders = Renders()
         renders.render(Shows(fade: fade).node)
 
-        // Leave the waker with NO signal pending: a poke is coalesced into
-        // one the flag already holds, and one wait collects exactly that one
-        // and disarms the flag. From here on, only a new signal can wake it.
-        UIThreadExecutor.shared.poke()
-        _ = UIThreadExecutor.shared.waitForWork()
-
-        await Task.detached { fade.wrappedValue = 0.5 }.value
-
+        XCTAssertTrue(woke { fade.wrappedValue = 0.5 }, "the write woke nobody")
         XCTAssertTrue(Renderer.shared.needsRender, "a write dirties the tree")
         XCTAssertEqual(Renderer.shared.actCallsPending, 0, "and queues no act")
-        XCTAssertEqual(UIThreadExecutor.shared.pendingCount, 0, "and lands no job")
-
-        XCTAssertGreaterThan(
-            HostBoundary.waitForWork(), 0,
-            "a dirty tree with no job and no act must read as work, and the "
-                + "write alone must have woken the thread that asks")
     }
 
     /// A KEPT state's write wakes the host even where nobody reads the state:
     /// the save it recorded is work the host must take, and a write to state
-    /// nobody reads asks for no render to carry it - so the write wakes the
-    /// thread itself, and what is waiting to be saved counts as pending work.
-    func testAKeptStateWriteNobodyReadsStillWakesTheHost() async throws {
+    /// nobody reads asks for no render to carry it.
+    func testAKeptStateWriteNobodyReadsStillWakesTheHost() throws {
         _ = drainedActs()
         stateUIRunJobs()
         Renderer.shared.clearInvalidation()
@@ -193,32 +141,18 @@ final class UIThreadTests: XCTestCase {
         let key = PersistentKey("mainThread.kept", of: Double.self)
         let kept = State(wrappedValue: 1.0, persistentKey: key)
 
-        UIThreadExecutor.shared.poke()
-        _ = UIThreadExecutor.shared.waitForWork()
-
-        await Task.detached { kept.wrappedValue = 0.5 }.value
-
+        XCTAssertTrue(woke { kept.wrappedValue = 0.5 }, "the write woke nobody")
         XCTAssertFalse(Renderer.shared.needsRender, "nobody reads it, so no render was asked for")
         XCTAssertGreaterThan(Renderer.shared.actCallsPending, 0, "but the save is pending work")
-        XCTAssertGreaterThan(
-            HostBoundary.waitForWork(), 0,
-            "and the write alone woke the thread that asks")
-
-        let acts = drainedActs()
-        XCTAssertEqual(acts.map { $0.name }, ["persistValue"], "which then takes the save")
+        XCTAssertEqual(drainedActs().map { $0.name }, ["persistValue"], "which then takes the save")
     }
 
-    /// A MOVEMENT started from the pool wakes the host, and what it wrote
-    /// reads as work.
-    ///
-    /// `move(to:)` books its waiter and writes the destination onto the
-    /// value's board: no job, no act, and no render where nobody reads the
-    /// value. The write waiting for a cycle is the work - counted by
-    /// `HostBoundary.waitForWork`, and announced after it lands, so the thread cannot
-    /// wake, count nothing and park again with the movement behind it - a
-    /// clock whose hands start from the pool would stand on its first second
-    /// until the next event reached the application.
-    func testAMovementStartedFromThePoolWakesTheHostAndReadsAsWork() async throws {
+    /// A MOVEMENT wakes the host: `move(to:)` books its waiter and writes the
+    /// destination onto the value's board - no job, no act, and no render where
+    /// nobody reads the value - and the write waiting for a cycle rings as it
+    /// lands. A clock whose hands start there would otherwise stand on its first
+    /// second until the next event reached the application.
+    func testAMovementWakesTheHost() throws {
         let fade = wornOnAQuietBoard()
 
         // The id the movement will book is the one after this one, answered
@@ -226,59 +160,72 @@ final class UIThreadTests: XCTestCase {
         let before = Renderer.shared.book { _ in }
         _ = Renderer.shared.dispatch(before)
 
-        let work = waitedFor {
-            _ = Task.detached {
-                try await fade.projectedValue.journey.move(to: 0.1, .eased(400, .cubicOut))
-            }
-        }
-
-        XCTAssertNotNil(work, "the movement woke nobody - the host would not start it until the next event")
-        XCTAssertGreaterThan(
-            work ?? 0, 0,
-            "a movement with no job, no act and no render must read as work")
+        XCTAssertTrue(
+            woke { fade.projectedValue.journey.move(to: 0.1, .eased(400, .cubicOut)) },
+            "the movement woke nobody - the host would not start it until the next event")
 
         ReplyBuffer.current = .finished([.bool(true)])
         XCTAssertTrue(Renderer.shared.dispatch(before - 1), "the movement booked the next waiter")
     }
 
-    /// A value the host carries, written from the pool where nobody reads it,
-    /// wakes the host - the write waits on its board for a cycle, which is
-    /// work even where no render is asked for.
-    func testACarriedWriteFromThePoolWakesTheHostAndReadsAsWork() async throws {
+    /// A value the host carries, written where nobody reads it, wakes the host -
+    /// the write waits on its board for a cycle, with no render asked for.
+    func testACarriedWriteWakesTheHost() throws {
         let fade = wornOnAQuietBoard()
 
-        let work = waitedFor {
-            Task.detached { fade.wrappedValue = 0.5 }
-        }
-
-        XCTAssertNotNil(work, "the write woke nobody - the host would not carry it until the next event")
+        XCTAssertTrue(woke { fade.wrappedValue = 0.5 }, "the write woke nobody")
         XCTAssertFalse(Renderer.shared.needsRender, "nobody reads it, so no render was asked for")
-        XCTAssertGreaterThan(work ?? 0, 0, "and what waits on its board is work")
+        XCTAssertGreaterThan(Renderer.shared.cycleAwake(), 0, "and what waits on its board is work")
     }
 
-    /// What the host's parked thread counts once `start` has run, or nil where
-    /// nothing woke it within five seconds.
-    ///
-    /// The waker is left with no signal pending first, so only what `start`
-    /// does can wake it; the thread is parked before `start` runs, as the
-    /// host's always is. A thread nothing woke stays parked when this returns
-    /// nil, and takes the next wake the suite makes - the failure is already
-    /// said by then.
-    private func waitedFor(_ start: () -> Void) -> Int? {
-        UIThreadExecutor.shared.poke()
-        _ = UIThreadExecutor.shared.waitForWork()
+    /// A POST FROM THE POOL wakes the host: its job lands on `MainActor`'s queue,
+    /// and the write it makes rings as any write does - a value worked out by a
+    /// detached task reaches the screen with no event after it.
+    func testAPostFromThePoolWakesTheHost() async throws {
+        _ = drainedActs()
+        stateUIRunJobs()
+        Renderer.shared.clearInvalidation()
 
-        let counted = DispatchSemaphore(value: 0)
-        nonisolated(unsafe) var work = 0
+        let fade = State(1.0)
+        let binding = fade.projectedValue
+        let renders = Renders()
+        renders.render(Shows(fade: fade).node)
 
-        DispatchQueue.global().async {
-            work = HostBoundary.waitForWork()
-            counted.signal()
-        }
+        let parked = parkedThread()
+
+        await Task.detached { binding.post(0.25) }.value
+        await settle()
+
+        XCTAssertEqual(parked.wait(timeout: .now() + 5), .success, "the post woke nobody")
+        XCTAssertEqual(fade.get(), 0.25, "and its job wrote the value")
+        XCTAssertTrue(Renderer.shared.needsRender, "which asks for a render")
+    }
+
+    /// Whether the host's parked thread woke once `start` ran, within five
+    /// seconds. The waker is left with no signal pending first, so only what
+    /// `start` does can wake it.
+    private func woke(by start: () -> Void) -> Bool {
+        let parked = parkedThread()
 
         start()
 
-        return counted.wait(timeout: .now() + 5) == .success ? work : nil
+        return parked.wait(timeout: .now() + 5) == .success
+    }
+
+    /// A thread parked as the host's is, with no signal pending: the semaphore
+    /// answers once something wakes it.
+    private func parkedThread() -> DispatchSemaphore {
+        UIThreadExecutor.shared.poke()
+        _ = UIThreadExecutor.shared.waitForWork()
+
+        let woken = DispatchSemaphore(value: 0)
+
+        DispatchQueue.global().async {
+            _ = HostBoundary.waitForWork()
+            woken.signal()
+        }
+
+        return woken
     }
 
     /// A state a rendered view wears as a driven property, on a board with
@@ -410,62 +357,28 @@ final class UIThreadTests: XCTestCase {
 
     // MARK: - The rule that keeps it true
 
-    /// Every async function here must SAY where it runs: on its caller's
-    /// executor, or on `@MainActor`.
-    ///
-    /// A plain `async` function is nonisolated, and a nonisolated async function
-    /// runs on Swift's cooperative pool whoever calls it - so a handler awaiting
-    /// one would come back on a pool thread with the host drawing beside it.
-    /// The spelling that prevents it is `nonisolated(nonsending)`. The other
-    /// spelling that does is `@MainActor`, which names the UI thread outright
-    /// and makes a caller from the pool hop there first.
-    ///
-    /// This is not hypothetical: an early act was written without it, and what
-    /// showed was not a crash but an act queue that filled up a moment late.
-    /// A regex over sources is acceptable here for the reason it is in
-    /// DocumentationTests - it is a test reading the library beside it, and a
-    /// signature it fails to recognize is one nobody is asked to annotate.
-    func testEveryAsyncFunctionRunsOnItsCallersExecutor() throws {
-        var unmarked: [String] = []
+    /// THE CORE MAKES NO PROMISE THE COMPILER CANNOT CHECK. Its state is the UI
+    /// thread's actor's, and what other threads share stands inside a `Mutex`:
+    /// no `@unchecked Sendable`, no `nonisolated(unsafe)`, no `assumeIsolated` -
+    /// each a promise that breaks quietly and far from where it was written -
+    /// and no `nonisolated(nonsending)`, which on a `MainActor` type takes a
+    /// member off the actor, and elsewhere says what the manifests' flag says.
+    func testTheCoreMakesNoPromiseTheCompilerCannotCheck() throws {
+        let promises = ["@unchecked", "nonisolated(unsafe)", "assumeIsolated", "nonisolated(nonsending)"]
+        var made: [String] = []
         var read = 0
 
-        for source in try SourceTree.allSources() {
-            let lines = source.text.components(separatedBy: "\n")
+        for source in try SourceTree.allSources() where !source.path.hasPrefix("StateUIHost/") {
+            read += 1
+            let code = UIThreadTests.withoutComments(source.text)
 
-            for (index, line) in lines.enumerated() {
-                guard declaresAnAsyncFunction(line) else { continue }
-
-                read += 1
-
-                // The marker may be on this line or on the `func` line above,
-                // when the signature is spread over several. Comments are left
-                // out on purpose: the doc comment above such a function often
-                // EXPLAINS the marker, and reading that as the marker itself is
-                // a false pass - which is exactly what this check did first
-                // time, and why it is verified by removing a real one.
-                let window = lines[max(0, index - 8)...index]
-                    .filter { !$0.trimmed.hasPrefix("//") }
-                    .joined(separator: " ")
-
-                if !window.contains("nonisolated(nonsending)") && !window.contains("@MainActor func") {
-                    unmarked.append("\(source.path):\(index + 1)  \(line.trimmed)")
-                }
+            for promise in promises where code.contains(promise) {
+                made.append("\(source.path): \(promise)")
             }
         }
 
-        XCTAssertGreaterThan(read, 19, "the scan read almost nothing")
-        XCTAssertEqual(unmarked, [], """
-            These are async and do not say where they run:
-
-            \(unmarked.joined(separator: "\n"))
-
-            Write `nonisolated(nonsending)` before `func` - or `@MainActor`, \
-            when the function must run on the rendering thread whoever calls \
-            it. Without either the function runs on Swift's cooperative pool, \
-            and a handler that awaits it resumes off the thread the host draws on \
-            - which corrupts state quietly rather than failing. See \
-            UIThread.swift.
-            """)
+        XCTAssertGreaterThan(read, 300, "the scan read almost nothing")
+        XCTAssertEqual(made, [], "the core promises what the compiler cannot check")
     }
 
     /// THE FOUR NON-NEGOTIABLES, checked instead of remembered - CONTRIBUTING.md
@@ -749,25 +662,6 @@ final class UIThreadTests: XCTestCase {
             }
         }
         return found
-    }
-
-    /// Whether a line declares - or finishes declaring - an async function.
-    ///
-    /// A closure TYPE is not one of these: a typealias says where the closure
-    /// runs at the point it is declared, and the controls all use those aliases.
-    private func declaresAnAsyncFunction(_ line: String) -> Bool {
-        let text = line.trimmed
-
-        guard text.contains(") async") else { return false }
-        guard !text.contains("typealias"), !text.hasPrefix("///"), !text.hasPrefix("//") else {
-            return false
-        }
-        // A function type isolated to the main actor says where it runs.
-        guard !text.contains("@MainActor (") else { return false }
-
-        // `(Value) async throws -> Void` in an alias continuation, not a
-        // signature of its own.
-        return !text.hasSuffix("-> Void")
     }
 
     /// A drain is BOUNDED, so a job that queues another for ever cannot take

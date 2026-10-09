@@ -23,6 +23,7 @@
     }
 
     /// An item chosen runs its handler; out of reach, it runs nothing.
+    @MainActor
     static func chosen(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).anItemChosenRunsItsHandlerUnlessOutOfReach", proves: [
             Covered(MenuItemElementContract.clicked, on: element), Covered(MenuItemElementContract.isEnabled, on: element),
@@ -30,7 +31,7 @@
             let heard = Received<String>()
             s.start {
                 Chosen.page(element) { enabled in
-                    (enabled ? "on" : "off", { heard.values.append(enabled ? "on" : "off") })
+                    (enabled ? "on" : "off", { @MainActor in heard.values.append(enabled ? "on" : "off") })
                 }
             }
 
@@ -44,10 +45,11 @@
 }
 
 /// Two items of one kind - one in reach, one out of it - each on the page where an application puts it.
+@MainActor
 enum Chosen {
     /// A page with an item of `element`'s kind in reach and one out of it, each named and heard as `item` says.
     static func page(
-        _ element: String, _ item: @escaping @Sendable (Bool) -> (String, @Sendable () -> Void)
+        _ element: String, _ item: @escaping @MainActor (Bool) -> (String, @MainActor () -> Void)
     ) -> ModifiedContent {
         // Chosen by name, so held as `any View` and handed on as its node.
         ModifiedContent(node: chosen(element, item).node)
@@ -55,7 +57,7 @@ enum Chosen {
 
     /// The page `page(_:_:)` shows, chosen by name.
     private static func chosen(
-        _ element: String, _ item: @escaping @Sendable (Bool) -> (String, @Sendable () -> Void)
+        _ element: String, _ item: @escaping @MainActor (Bool) -> (String, @MainActor () -> Void)
     ) -> any View {
         let (on, off) = (item(true), item(false))
         if element == "ToolbarItem" {

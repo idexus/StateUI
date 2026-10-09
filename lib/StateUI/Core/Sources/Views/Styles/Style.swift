@@ -22,6 +22,7 @@
 /// an event, a gesture, an `.id()` or another control's property does not
 /// compile. Write it as `Style<Button>`; `Context` keeps a visual state from
 /// holding another.
+@MainActor
 public struct StyleBag<Target: StyleTarget, Context> {
     /// The setters written so far, on a node of the target's type.
     public var node: Node
@@ -132,6 +133,7 @@ extension StyleBag where Context == StyleBase {
 
 /// A style whose target type has been forgotten - what a `StyleSheet`
 /// collects, made from a `Style<Text>()` and never by hand.
+@MainActor
 public struct AnyStyle {
     /// The node type this style is for - the target's own.
     let target: NodeType

@@ -471,6 +471,7 @@ final class WinUIPagesTests: XCTestCase {
 
     /// A sign-in's field on a stack, then a split view whose stack's page aims at its field.
     @ViewBuilder
+    @MainActor
     private static func signIn(_ signedIn: State<Bool>) -> some View {
         if signedIn.wrappedValue {
             SplitView(State(wrappedValue: false).projectedValue) {

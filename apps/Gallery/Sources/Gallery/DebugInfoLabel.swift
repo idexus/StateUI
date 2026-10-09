@@ -24,6 +24,7 @@ import StateUI
 ///
 /// - Returns: the count and the reason - `41 builds, for volume` - as a label
 ///   the caller may go on modifying, which is what a grid cell needs.
+@MainActor
 func DebugInfoLabel() -> Text {
     // ANY element can be asked. The sentence is about the description that is
     // running, never about the view it is asked through, which is what lets

@@ -25,7 +25,7 @@ Button("Load").onClicked {
 A handler without an `await` completes during the event dispatch that started
 it. After a suspension, continuation requires a later turn of the platform UI
 loop. The host wakes for MainActor's jobs even when the awaited work was not a
-host action, so `Task.sleep`, task values, streams, continuations, and
+host action, so `Task.sleep`, task values, streams, continuations, posts and
 `MainActor.run` from a task on the pool all resume promptly.
 
 An uncaught handler error is reported through the active host. Use `do` and
@@ -69,25 +69,21 @@ Linux: nothing drains it there. Work for the UI thread goes to `MainActor`.
 
 ## State across tasks
 
-Each `@State` value has synchronized storage. Independent reads and writes are
-safe from any thread. A read-modify-write operation must remain one operation;
-use the box's `update` method:
+A `@State` is the UI thread's: it is read and written on `MainActor`, where
+application handlers are serialized and `total += 1` is one step. A task
+elsewhere cannot touch it - the compiler refuses - and posts to it instead:
 
 ```swift
 @State var total = 0
 
-let counter = _total
-counter.update { value in value + 1 }
+let counter = $total
+counter.post { value in value + 1 }
 ```
 
-`total += 1` is appropriate on `MainActor`, where application handlers are
-serialized. Use `update` when several tasks may modify the same state
-concurrently.
-
-Thread safety does not turn a group of separate states into one transaction.
-If several fields must change as one invariant, place that invariant behind
-one synchronized owner or return the work to `MainActor` for the complete
-change.
+A posted change runs in a job on `MainActor` soon after, over the value as it
+stands then, in the order posted; a value posted replaces the changes waiting
+before it. Several states that must change as one invariant change together on
+`MainActor`: nothing runs between the lines of a handler until it awaits.
 
 A write requests a render; the renderer coalesces pending work. A task that
 reads state outside a description does not become a view reader. Read tracking
@@ -111,10 +107,10 @@ Button("Rename and confirm").onClicked {
 }
 ```
 
-An `async let` or child task may run work concurrently. Registry, state, and
-wake-up mechanics are safe for that route, but UI decisions still belong to
-the handler's `MainActor` continuation. Concurrency changes completion order;
-it does not weaken StateUI's identity or render ordering.
+An `async let` or child task may run work concurrently, off `MainActor`: it
+posts what it found to a state, or answers it to the handler, whose
+`MainActor` continuation makes the UI decision. Concurrency changes completion
+order; it does not weaken StateUI's identity or render ordering.
 
 ## Sleeping and deadlines
 

@@ -47,6 +47,7 @@ private struct PlacedOnAPage: View {
     }
 }
 
+@MainActor
 final class GTKFrameReportTests: XCTestCase {
     /// A view the tree reads says where it stands once laid out: its state, its handler and a reader's content.
     func testAReadViewSaysWhereItStands() {

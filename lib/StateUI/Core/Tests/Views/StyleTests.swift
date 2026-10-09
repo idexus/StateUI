@@ -31,6 +31,7 @@ private struct Home: View {
     var body: some View { ModifiedContent(node: label("home")) }
 }
 
+@MainActor
 final class StyleTests: XCTestCase {
     // MARK: - What a style is
 

@@ -11,6 +11,7 @@
 /// Every scene offers its own, so a view in one scene reads that scene - from a handler, an engine or a task alike,
 /// the session it holds saying which. Its windows open through the application's session
 /// (`ApplicationSession.openWindow`).
+@MainActor
 public final class SceneSession {
     /// Where the scene stands right now. Starts `.active`: a scene being
     /// described is one being brought up.
@@ -49,7 +50,7 @@ public final class SceneSession {
     ///
     /// - Throws: `WindowError.noScene` for a scene that has ended already, and `WindowError.unsupported` where the
     ///   platform opens no second window, a phone's one window being the application's.
-    public nonisolated(nonsending) func close() async throws {
+    public func close() async throws {
         let record = try standing()
         guard OpenScenes.opensWindows else { throw WindowError.unsupported }
 

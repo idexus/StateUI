@@ -6,6 +6,7 @@
 import XCTest
 
 /// A day and a time a picker holds, and who opened what it shows, the same on every host.
+@MainActor
 final class PickerRulesTests: XCTestCase {
     /// A day that is not in the calendar is refused; one past the range stands at its end; the ends stand in order.
     func testADayStandsInTheCalendarAndInItsRange() {

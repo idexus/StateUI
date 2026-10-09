@@ -8,6 +8,7 @@ import CStateUIGTK
 @testable import StateUIGTKDriver
 import XCTest
 
+@MainActor
 final class GTKCheckViewTests: XCTestCase {
     /// A check box is the box and nothing else: it takes no caption's room.
     func testACheckBoxTakesItsBoxsRoomAlone() throws {

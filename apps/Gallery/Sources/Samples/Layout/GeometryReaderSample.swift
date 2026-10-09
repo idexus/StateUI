@@ -88,7 +88,7 @@ struct GeometryReaderSample: SampleContent, ExampleContent {
                     // The width describes nothing: the host carries the width and
                     // the slider's thumb off the same state, and the frame reports
                     // say where the panel actually got to.
-                    try await $width.journey.move(to: $width.journey.value < 240 ? 340 : 140)
+                    try await $width.journey.move(to: $width.journey.value < 240 ? 340 : 140).arrived()
                 }
         }
         .spacing(12)

@@ -11,6 +11,7 @@ import XCTest
 /// A message means something only against the tree it was computed from: one
 /// about a tree the host is not holding is refused, and recovered with a
 /// complete render.
+@MainActor
 final class AppKitPatchIntakeTests: XCTestCase {
     private func stack(_ children: [String]) -> HostPatch {
         var stack = HostPatch(id: .manual("stack"), type: .vStack)

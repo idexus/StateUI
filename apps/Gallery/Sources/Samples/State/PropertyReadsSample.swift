@@ -6,6 +6,7 @@ import StateUI
 /// The point of the sample is which closure is built again: each property is
 /// a `@State` of its own, so a write to `visits` reaches the closures that
 /// read `visits` and nobody else.
+@MainActor
 private final class Profile {
     @State var name = ""
     @State var visits = 0

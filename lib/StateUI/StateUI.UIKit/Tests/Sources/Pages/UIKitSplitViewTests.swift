@@ -9,6 +9,7 @@ import XCTest
 
 /// A split view's columns as UIKit shows them: the sidebar over the detail in a narrow room, as on a phone, and
 /// beside it in a wide one, as on an iPad.
+@MainActor
 final class UIKitSplitViewTests: XCTestCase {
     /// In a narrow room the split view stays two columns - the sidebar sliding over the detail, never one column
     /// standing in for the other - and each column is as narrow as the room: its tabs and sheets are a phone's.

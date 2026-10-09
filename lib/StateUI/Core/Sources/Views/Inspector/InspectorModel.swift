@@ -4,7 +4,8 @@
 /// Everything the inspectors hold, in one place, so a render caused only by
 /// these states is known as an inspector drawing itself and is not kept.
 /// Design: docs/design/views/inspector.md#its-own-cost
-final class InspectorModel: @unchecked Sendable {
+@MainActor
+final class InspectorModel {
     /// The one there is.
     static let shared = InspectorModel()
 

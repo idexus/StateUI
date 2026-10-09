@@ -194,7 +194,7 @@ refused by name.
 ### An event without a control
 
 `StateUIEvents.raise` pushes an event of the application's that belongs to no
-element, from any thread; `StateUIEvents.raises` declares it before the host
+element, on the UI thread; `StateUIEvents.raises` declares it before the host
 runs, so a handler listening for one no source raises is told so.
 
 ```swift quote

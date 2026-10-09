@@ -53,6 +53,7 @@ public struct EngineCycle: Sendable {
 /// What an engine follows: a state's storage, asked how many times it was written.
 /// This library's own. Every write counts, this side's and the host's, equal
 /// bytes included.
+@MainActor
 public protocol FollowedState: AnyObject {
     /// How many times the state has been written.
     var stamp: Int { get }
@@ -60,6 +61,7 @@ public protocol FollowedState: AnyObject {
 
 /// An engine as the tree carries it, before the differ numbers it. Its closure
 /// captured the view by value.
+@MainActor
 struct EngineDeclaration {
     /// The states whose being written is a reason to run it.
     let follows: [any FollowedState]
@@ -71,13 +73,14 @@ struct EngineDeclaration {
     let priority: Double
 
     /// The arithmetic.
-    let run: (EngineCycle) -> EngineAnswer
+    let run: @MainActor (EngineCycle) -> EngineAnswer
 }
 
 /// One registered engine and everything the board remembers about it: a value in
 /// the board's book, so its reasons to run are read and written under the board's
 /// hold alone.
 /// Design: docs/design/core/cycle.md#the-board
+@MainActor
 struct EngineEntry {
     /// What the differ registered it under, which is also its tie-break.
     let id: Int
@@ -90,7 +93,7 @@ struct EngineEntry {
 
     /// The arithmetic - rewritten by each render that describes the view, with that
     /// render's captures.
-    var run: (EngineCycle) -> EngineAnswer
+    var run: @MainActor (EngineCycle) -> EngineAnswer
 
     /// The states it follows, as the last render that described the view named them.
     private(set) var follows: [any FollowedState]
@@ -112,7 +115,7 @@ struct EngineEntry {
         priority: Double,
         sync: Sync,
         follows: [any FollowedState],
-        run: @escaping (EngineCycle) -> EngineAnswer
+        run: @escaping @MainActor (EngineCycle) -> EngineAnswer
     ) {
 
         self.id = id
@@ -156,6 +159,7 @@ struct EngineEntry {
 // Design: docs/design/core/cycle.md#engine-order
 /// A state an engine can follow - `$x` on any `@State`, whatever it holds. This
 /// library's own.
+@MainActor
 public protocol Followable {
     /// The storage the state lives on, asked for its stamp alone; nothing for a part
     /// of a state or a binding made from closures.
@@ -197,7 +201,7 @@ extension ModifiableElement {
         _ more: any Followable...,
         sync: Sync = .display,
         priority: Double = 0,
-        _ run: @escaping (EngineCycle) -> Void
+        _ run: @escaping @MainActor (EngineCycle) -> Void
     ) -> Modified {
         let named = [first] + more
         let follows = named.compactMap(\.followed)
@@ -245,7 +249,7 @@ extension ModifiableElement {
         following: repeat Binding<each Value>,
         sync: Sync = .display,
         priority: Double = 0,
-        _ run: @escaping (EngineCycle) -> EngineAnswer
+        _ run: @escaping @MainActor (EngineCycle) -> EngineAnswer
     ) -> Modified {
         var follows: [any FollowedState] = []
         var named = 0

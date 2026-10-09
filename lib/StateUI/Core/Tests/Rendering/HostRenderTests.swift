@@ -7,9 +7,9 @@ import XCTest
 /// The typed host boundary carries every part of the sparse patch. A native
 /// host may ignore a capability it has not implemented yet, but the boundary
 /// must not make that capability impossible to add.
+@MainActor
 final class HostRenderTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         Renderer.shared.clearStates()
     }

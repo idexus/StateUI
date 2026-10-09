@@ -9,6 +9,7 @@ import AppKit
 import StateUIConformance
 import XCTest
 
+@MainActor
 final class AppKitSliderViewTests: XCTestCase {
     @MainActor
     func testASliderAppliesItsNativeRangeBeforeItsValue() {

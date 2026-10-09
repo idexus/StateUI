@@ -7,5 +7,5 @@
     static var name: String { get }
 
     /// Its cases, in order.
-    static var cases: [ConformanceCase] { get }
+    @MainActor static var cases: [ConformanceCase] { get }
 }

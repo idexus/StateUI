@@ -5,6 +5,7 @@
 import XCTest
 
 /// A verdict is the one line a host's run writes of a member, and the dictionary's mark is read from it alone.
+@MainActor
 final class HostVerdictTests: XCTestCase {
     /// Every verdict reads back as it was written, the element itself among them.
     func testAVerdictReadsBackAsItWasWritten() {

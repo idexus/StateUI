@@ -133,7 +133,7 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable, HostRepresen
     /// Design: docs/design/types/dates-and-time.md#the-clock-is-an-act
     ///
     /// - Returns: the host's local time of day.
-    public static nonisolated(nonsending) func now() async throws -> ClockTime {
+    public static func now() async throws -> ClockTime {
         let numbers = try await stateUICall(ApplicationContract.currentTime)
 
         guard numbers.count == 4 else {

@@ -40,6 +40,7 @@ private extension HostEventUpdate {
 /// This is the whole reason the navigation tests below are three lines each:
 /// `Navigation` is a class of `@State` properties, so a test makes one, hands
 /// it to what it builds, and reads each property's state through its `$`.
+@MainActor
 private struct Place {
     let nav = Navigation()
 
@@ -100,6 +101,7 @@ private extension Sample {
 
 /// The headings a tree shows, in order - what a user moving by heading
 /// lands on.
+@MainActor
 private func headings(in node: Node) -> [String] {
     var found: [String] = []
 
@@ -118,6 +120,7 @@ private func headings(in node: Node) -> [String] {
 }
 
 /// How large the heading that says `text` is drawn - zero where there is none.
+@MainActor
 private func headingSize(_ text: String, in node: Node) -> Double {
     func find(_ node: Node) -> Double? {
         let node = node.built
@@ -137,6 +140,7 @@ private func headingSize(_ text: String, in node: Node) -> Double {
 }
 
 /// How many scrollers in a tree move down rather than only across.
+@MainActor
 private func verticalScrollers(in node: Node) -> Int {
     var count = 0
 
@@ -159,6 +163,7 @@ private func verticalScrollers(in node: Node) -> Int {
 ///
 /// A `CodeBlock` colours its snippet with spans under one formatted label, so
 /// the visible text is what those runs spell together.
+@MainActor
 private func shownTexts(in node: Node) -> [String] {
     var said: [String] = []
 
@@ -182,6 +187,7 @@ private func shownTexts(in node: Node) -> [String] {
 }
 
 /// Every row of a menu, by what it says - a row being a view with a tap on it.
+@MainActor
 private func rowTitles(in node: Node) -> [String] {
     var titles: [String] = []
 
@@ -201,6 +207,7 @@ private func rowTitles(in node: Node) -> [String] {
 }
 
 /// The tap on the row that says `title`.
+@MainActor
 private func rowHandler(_ title: String, in node: Node) -> EventHandler? {
     func walk(_ node: Node) -> EventHandler? {
         let node = node.built
@@ -234,6 +241,7 @@ private func rowHandler(_ title: String, in node: Node) -> EventHandler? {
 /// answered acts would leave the handler suspended at its first `move(to:)`
 /// for ever.
 
+@MainActor
 private func settle(
     _ handler: @escaping EventHandler,
     rendering renders: Renders? = nil,
@@ -290,6 +298,7 @@ private func settle(
     }
 }
 
+@MainActor
 private func clicked(_ title: String, in node: Node) -> EventHandler? {
     func walk(_ node: Node) -> EventHandler? {
         let node = node.built
@@ -310,6 +319,7 @@ private func clicked(_ title: String, in node: Node) -> EventHandler? {
 
 /// A differ and the tree it last produced - the same harness StateUITests
 /// calls Renders, small enough to repeat rather than share across packages.
+@MainActor
 private final class Renders {
     private let differ = Differ()
     private var rendered: RenderedNode?
@@ -480,6 +490,7 @@ private func bareProjections(in code: String) -> Set<String> {
     return found
 }
 
+@MainActor
 final class CatalogTests: XCTestCase {
     /// A catalog the way the application makes one, over a test's own boxes.
     private func catalog(

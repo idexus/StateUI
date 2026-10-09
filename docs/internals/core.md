@@ -459,11 +459,10 @@ type's extensions in its folder as `Type+Responsibility.swift`
 - **`UIThreadExecutor`** (`UIThread.swift`) is `MainActor`'s executor where
   nothing drains the platform's main queue, and the doorbell a host parks a
   thread on; `stateUIRunJobs` drains it on the calling thread, bounded.
-  *Internal*; a host drains it through `HostBoundary.runJobs`.
+  *Internal*; a host takes the UI thread through `HostBoundary.takeTheUIThread`
+  and drains it through `HostBoundary.runJobs`.
   ([The doorbell](../design/core/concurrency.md#the-doorbell),
   [draining jobs](../design/core/concurrency.md#draining-jobs))
-- **`Lock`** is the lock that state several threads touch stands behind,
-  taken in one order. *Internal.* ([The lock](../design/core/concurrency.md#the-lock))
 
 ### Diagnostics
 
@@ -563,7 +562,7 @@ never against a stored copy
 | `Pages/` | scenes, windows, pages and their bars, the navigation stack, tabs, the split view, the modal stack, the environment a host writes |
 | `Acts/` | act calls and their shape, aims, host events |
 | `Views/` | controls, styles and visual states, colours and brushes, gestures, the frame reader, the gallery view, context menus, drawing transforms |
-| `Threading/` | the UI thread's executor and the doorbell, acts sent from many threads, the lock, every async function on its caller's executor, and the library's four rules: no Foundation, no `DispatchQueue.main` but the one drain, no `Timer` or `RunLoop`, no `strdup` |
+| `Threading/` | the UI thread's executor and the doorbell, acts sent from child tasks, no promise the compiler cannot check, every async function on its caller's executor, and the library's four rules: no Foundation, no `DispatchQueue.main` but the one drain, no `Timer` or `RunLoop`, no `strdup` |
 | `Project/` | the guards below |
 | `Support/` | what the tests share: a differ to talk to, a patch printed readably, the dictionary's rendering, the applications' sources as files |
 

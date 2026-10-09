@@ -27,6 +27,7 @@
 /// what a container holds and never one view. A value held as `any View` goes
 /// in as `ModifiedContent(node: view.node)`.
 @resultBuilder
+@MainActor
 public enum ViewBuilder {
     /// One statement: what it wrote, one view staying one view.
     public static func buildBlock<Content: Views>(_ content: Content) -> Content {

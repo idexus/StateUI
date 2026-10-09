@@ -3,6 +3,7 @@
 
 /// The user's language, region, zone and calendar habits, as the host
 /// reports them. Read it with `@Environment(\.locale) private var locale`.
+@MainActor
 public final class LocaleInfo {
     /// The two-letter language, such as "en" or "pl".
     @State public var language = ""

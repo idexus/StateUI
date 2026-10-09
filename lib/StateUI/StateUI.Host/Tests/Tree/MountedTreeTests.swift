@@ -9,6 +9,7 @@ import CRT
 #endif
 
 /// The mounted tree every Swift runtime shares: patches, drift, leaving and the frame walk.
+@MainActor
 final class MountedTreeTests: XCTestCase {
     /// An arranged patch mounts every child in order, each with its native half applied once.
     @MainActor

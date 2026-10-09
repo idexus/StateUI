@@ -8,6 +8,7 @@ import UIKit
 import XCTest
 
 /// A picture is read from the application's images and measured in points.
+@MainActor
 final class UIKitImageViewTests: XCTestCase {
     /// An SVG of 40 by 20 points, drawn three times over; a PNG of 6 by 4 pixels kept at a pixel a point; a name
     /// with no picture, which takes no room.

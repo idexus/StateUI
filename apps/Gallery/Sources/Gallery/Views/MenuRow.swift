@@ -59,10 +59,8 @@ struct MenuRow: View {
 
     /// A view, as everything placed in a stack is.
     var body: some View {
-        // Copies for the handler to capture, never `self` - see the note in
-        // Card.swift: a closure written in a body getter that captures the view
-        // is moved off this library's executor by the compiler, and the press
-        // then waits for the next event to arrive.
+        // Copies for the handler to capture, never `self`: it keeps the two
+        // values it needs, not the whole row.
         let action = self.action
         let chosen = self.isChosen
         // A finger takes the taller row a phone's own menus have; a pointer, a

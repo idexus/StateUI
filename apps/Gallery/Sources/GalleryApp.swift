@@ -82,6 +82,7 @@ struct GalleryApp: Application {
 /// The name is fixed by convention (`stateui_app_register`) so the host can
 /// find it whatever the module is called.
 @_cdecl("stateui_app_register")
+@MainActor
 public func stateui_app_register() {
     stateUIUseApp(GalleryApp())
 }

@@ -78,7 +78,7 @@ final class AndroidDriver: HostDriver {
     var register: HostRegister { AndroidRealization.register }
 
     func start(
-        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @Sendable () -> any View
+        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> MountedTree {
         finish()
         written.listen()

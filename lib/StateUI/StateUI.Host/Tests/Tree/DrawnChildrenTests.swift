@@ -7,6 +7,7 @@ import XCTest
 
 /// The children a registered view draws itself, handed to it alike on every host: whole, in order, the same child the
 /// same object, and only when the children changed.
+@MainActor
 final class DrawnChildrenTests: XCTestCase {
     /// A child the parent's view draws has no view of its own; another child, or the same type elsewhere, does.
     @MainActor

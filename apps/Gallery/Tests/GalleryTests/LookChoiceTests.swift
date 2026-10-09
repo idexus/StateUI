@@ -5,6 +5,7 @@ import XCTest
 
 /// A theme's look is kept as the user's choice: the gallery's own stands as that
 /// choice, never as what the gallery's own was when the scene was kept.
+@MainActor
 final class LookChoiceTests: XCTestCase {
     /// A look nobody chose is kept as "own", and wears this version's own look.
     func testAnUntouchedLookIsKeptAsTheGallerysOwn() {

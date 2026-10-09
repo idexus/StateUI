@@ -12,6 +12,7 @@ import XCTest
 /// frame or alpha moves. What StateUI draws over the frame must survive
 /// that, pivot where StateUI says, compose with a placement, and leave the
 /// layer AppKit's own.
+@MainActor
 final class AppKitViewDrawingTests: XCTestCase {
     @MainActor
     func testADrawingTransformSurvivesItsViewsFrameMoving() throws {

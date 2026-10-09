@@ -131,20 +131,18 @@ extension Insets: LaneValue {
 }
 
 extension Color: LaneValue {
-    /// Red, green, blue and alpha, each from nought to one. A colour pair crosses as
-    /// the half in force, the accent as the accent in force
-    /// (`State.Storage.wearThemedPair()`).
+    /// Red, green, blue and alpha, each from nought to one: a colour pair's light
+    /// half, the accent as the application's first. The state that carries a
+    /// colour lays it in the theme in force.
     public var carried: StateCarried {
-        .lanes(standingLanes)
+        .lanes(standingLanes(in: .standard))
     }
 
-    /// The colour as it stands - a pair's half in force, the accent in force - as four lanes.
-    var standingLanes: [Double] {
-        let shown = isAccent
-            ? StandardEnvironment.application.info.$accentColor.standing.opacity(Double(light.alpha) / 255) : self
-        let half = shown.dark.flatMap {
-            StandardEnvironment.application.info.$colorScheme.standing == .dark ? $0 : nil
-        } ?? shown.light
+    /// The colour in `theme` - a pair's half in force, the accent in force - as four
+    /// lanes.
+    func standingLanes(in theme: ThemeInForce) -> [Double] {
+        let shown = isAccent ? theme.accent.opacity(Double(light.alpha) / 255) : self
+        let half = shown.dark.flatMap { theme.scheme == .dark ? $0 : nil } ?? shown.light
 
         return [Double(half.red) / 255, Double(half.green) / 255, Double(half.blue) / 255, Double(half.alpha) / 255]
     }
@@ -190,15 +188,12 @@ extension String: StateValue {
     public static var lanes: Int { 0 }
 }
 
-/// A value whose look turns with the theme or the accent: a carried state keeps it whole and lays the half in
-/// force.
-/// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
-protocol ThemeWearing {
-    /// Whether this value turns with the theme or the accent.
-    var wearsTheTheme: Bool { get }
-}
-
 extension Color: ThemeWearing {
     /// A pair, or the accent.
     var wearsTheTheme: Bool { dark != nil || isAccent }
+
+    /// The half in force, the accent in force.
+    func carried(wearing theme: ThemeInForce) -> StateCarried {
+        .lanes(standingLanes(in: theme))
+    }
 }

@@ -30,7 +30,7 @@ extension UIKitRenderer {
     /// on `clock` where one is given.
     static func running(
         clock: TestClock? = nil, reducesMotion: Bool = false, preferences: UserDefaults = TestScene.preferences,
-        @ViewBuilder _ page: @escaping @Sendable () -> any View
+        @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> UIKitRenderer {
         let application = OneWindowApplication(page: page)
         return running(clock: clock, reducesMotion: reducesMotion, preferences: preferences) { application }
@@ -40,7 +40,7 @@ extension UIKitRenderer {
     /// as a launch reads them.
     static func running(
         clock: TestClock? = nil, reducesMotion: Bool = false, preferences: UserDefaults = TestScene.preferences,
-        application: @escaping @Sendable () -> any Application
+        application: @escaping @MainActor () -> any Application
     ) -> UIKitRenderer {
         Renderer.shared.setApplication(application())
         UIKitRenderer.resourceDirectory = Bundle.main.resourceURL?.appendingPathComponent("Images", isDirectory: true)
