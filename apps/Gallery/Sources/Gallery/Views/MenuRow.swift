@@ -79,12 +79,12 @@ struct MenuRow: View {
                 .verticalAlignment(.center)
 
             Text(title)
-                .style("MenuRowText")
+                .style(.menuRowText)
         }
         // The style says what a row is; the line under it says what the CHOSEN
         // one is. A control's own value wins over its style, per property,
         // which is what lets one style serve both.
-        .style("MenuRow")
+        .style(.menuRow)
         .spacing(touch ? 14 : 10)
         .padding(horizontal: touch ? 18 : 10, vertical: touch ? 13 : 8)
         .background(chosen ? Palette.selected : .transparent)

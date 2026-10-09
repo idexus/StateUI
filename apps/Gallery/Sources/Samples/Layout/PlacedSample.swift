@@ -315,7 +315,7 @@ struct PlacedSample: SampleContent, ExampleContent {
             // holding it - a layout, with edges to cut at - clips it.
             .clipsContent(true)
         }
-        .style("Card")
+        .style(.card)
         .lineWidth(0)
         .shape(.roundedRectangle(16))
     }

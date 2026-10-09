@@ -9,10 +9,10 @@ leaves.
 ```text
   application.styles = StyleSheet {             a value in the application session
       Style<Text>().fontSize(14)               implicit: every Text
-      Style<Text>("Headline").fontSize(32)     keyed: asked for with .style("Headline")
+      Style<Text>(.headline).fontSize(32)     keyed: asked for with .style(.headline)
   }
 
-  Text("Welcome").style("Headline")
+  Text("Welcome").style(.headline)
         │
         ▼  the differ, for every element it builds: styled(_:with:)
   Text with the style's values under its own, and the states of both
@@ -25,9 +25,11 @@ Nothing about a style crosses to a host: the differ merges it into the control
 it belongs to, so a host receives a control with every value already on it.
 There is no style object, no resource lookup, and nothing in a host that has to
 know what a style is, which keeps each host small enough to be written again
-for another platform. The key a view asks for, `.style("Headline")`, is a name
-- one spelling, one style - and the differ consumes it and takes it off the
-node, the host having no dictionary to look one up in.
+for another platform. The key a view asks for, `.style(.headline)`, is a
+`StyleKey` typed by its control and declared once - one spelling, one style,
+and a key of another control's or one misspelled does not compile - which
+crosses as its name; the differ consumes it and takes it off the node, the
+host having no dictionary to look one up in.
 
 ## A style wears the property half
 
@@ -157,7 +159,7 @@ view's inputs - states included, which are values like the rest.
 `styled(_:with:)` is the one place a style is applied, called by the differ for
 every element it builds: after a composed view is unwrapped, since the real
 node's type and key decide which style it wears, and before anything is sent.
-It runs even with no sheet, because `.style("…")` is consumed there whatever
+It runs even with no sheet, because `.style(…)` is consumed there whatever
 happens. It asks before it writes: assigning nil to a key a dictionary does not
 have still makes the storage unique, so an unguarded removal would copy the
 properties of every node in the tree, styled or not.

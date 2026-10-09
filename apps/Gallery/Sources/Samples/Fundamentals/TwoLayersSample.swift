@@ -87,7 +87,7 @@ private struct LayerRows: ExampleContent {
             }
             .spacing(6)
         }
-        .style("Card")
+        .style(.card)
         .padding(10)
         .shape(.roundedRectangle(8))
         .stroke(Palette.outline)

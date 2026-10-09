@@ -15,6 +15,21 @@ import XCTest
 
 /// An application with styles, which is where an application keeps them - written
 /// into the application's session as it is made.
+extension StyleKey where Target == Text {
+    fileprivate static let one = StyleKey("One")
+    fileprivate static let two = StyleKey("Two")
+    fileprivate static let big = StyleKey("Big")
+    fileprivate static let body = StyleKey("Body")
+    fileprivate static let headline = StyleKey("Headline")
+    fileprivate static let nothing = StyleKey("Nothing")
+    /// A Text's key under the name a Button's style is filed by.
+    fileprivate static let ctaOfAText = StyleKey("Cta")
+}
+
+extension StyleKey where Target == Button {
+    fileprivate static let cta = StyleKey("Cta")
+}
+
 private struct StyledApp: Application {
     @Environment(\.application) private var application
 
@@ -52,7 +67,7 @@ final class StyleTests: XCTestCase {
     /// The two namespaces, as everywhere else: a string identity is one somebody
     /// wrote, and here that is the key a style is asked for by.
     func testAKeyedStyleCarriesItsKeyAndAnImplicitOneCarriesNone() {
-        XCTAssertEqual(Style<Text>("Headline").fontSize(32).erased.key, "Headline")
+        XCTAssertEqual(Style<Text>(.headline).fontSize(32).erased.key, "Headline")
         XCTAssertNil(Style<Text>().fontSize(14).erased.key)
     }
 
@@ -81,27 +96,27 @@ final class StyleTests: XCTestCase {
         let sheet = StyleSheet {
             Style<Text>().fontSize(10)
             Style<Text>().fontSize(20)
-            Style<Text>("Big").fontSize(30)
-            Style<Text>("Big").fontSize(40)
+            Style<Text>(.big).fontSize(30)
+            Style<Text>(.big).fontSize(40)
         }
 
         XCTAssertEqual(sheet.written.count, 4, "what was written is kept, mistakes included")
         XCTAssertEqual(sheet.style(for: Text("x").node)?.props["fontSize"], .number(20))
         XCTAssertEqual(
-            sheet.style(for: Text("x").style("Big").node)?.props["fontSize"], .number(40))
+            sheet.style(for: Text("x").style(.big).node)?.props["fontSize"], .number(40))
     }
 
-    /// A key naming a style declared for ANOTHER control falls through to the
-    /// implicit style, exactly as a key naming nothing does: half of a
-    /// Button's values applied to a Text and half dropped unread is a
-    /// mismatch, and no style is the honest answer.
-    func testAKeyDeclaredForAnotherControlFallsThroughToTheImplicit() {
+    /// A name filed for ANOTHER control falls through to the implicit style,
+    /// exactly as a key naming nothing does: half of a Button's values applied
+    /// to a Text and half dropped unread is a mismatch, and no style is the
+    /// honest answer. A key typed for another control does not compile at all.
+    func testANameFiledForAnotherControlFallsThroughToTheImplicit() {
         let sheet = StyleSheet {
-            Style<Button>("Cta").fontSize(20)
+            Style<Button>(.cta).fontSize(20)
             Style<Text>().fontSize(14)
         }
 
-        let worn = sheet.style(for: Text("x").style("Cta").node)
+        let worn = sheet.style(for: Text("x").style(.ctaOfAText).node)
 
         XCTAssertEqual(worn?.props["fontSize"], .number(14),
                        "the implicit Text style answers, not the Button's")
@@ -113,11 +128,11 @@ final class StyleTests: XCTestCase {
     /// a chain.
     func testAStyleBasedOnAnotherCarriesItsValuesUnderneath() throws {
         let sheet = StyleSheet {
-            Style<Text>("Body").fontSize(16).textColor(.black)
-            Style<Text>("Headline").fontSize(32).basedOn("Body")
+            Style<Text>(.body).fontSize(16).textColor(.black)
+            Style<Text>(.headline).fontSize(32).basedOn(.body)
         }
 
-        let headline = try XCTUnwrap(sheet.style(for: Text("x").style("Headline").node))
+        let headline = try XCTUnwrap(sheet.style(for: Text("x").style(.headline).node))
 
         XCTAssertEqual(headline.props["fontSize"], .number(32), "its own wins")
         XCTAssertEqual(headline.props["textColor"], Color("#000000").propValue, "the rest comes from Body")
@@ -127,12 +142,12 @@ final class StyleTests: XCTestCase {
     /// it is flattened.
     func testAStyleMayBeBasedOnOneWrittenAfterIt() {
         let sheet = StyleSheet {
-            Style<Text>("Headline").fontSize(32).basedOn("Body")
-            Style<Text>("Body").textColor(.black)
+            Style<Text>(.headline).fontSize(32).basedOn(.body)
+            Style<Text>(.body).textColor(.black)
         }
 
         XCTAssertEqual(
-            sheet.style(for: Text("x").style("Headline").node)?.props["textColor"],
+            sheet.style(for: Text("x").style(.headline).node)?.props["textColor"],
             Color("#000000").propValue)
     }
 
@@ -141,11 +156,11 @@ final class StyleTests: XCTestCase {
     /// the worst way to find out about one.
     func testAChainOfStylesThatCirclesBackStops() {
         let sheet = StyleSheet {
-            Style<Text>("One").fontSize(10).basedOn("Two")
-            Style<Text>("Two").textColor(.black).basedOn("One")
+            Style<Text>(.one).fontSize(10).basedOn(.two)
+            Style<Text>(.two).textColor(.black).basedOn(.one)
         }
 
-        XCTAssertEqual(sheet.style(for: Text("x").style("One").node)?.props["fontSize"],
+        XCTAssertEqual(sheet.style(for: Text("x").style(.one).node)?.props["fontSize"],
                        .number(10))
     }
 
@@ -155,7 +170,7 @@ final class StyleTests: XCTestCase {
         let sheet = StyleSheet { Style<Text>().fontSize(14) }
 
         XCTAssertEqual(
-            sheet.style(for: Text("x").style("Nothing").node)?.props["fontSize"], .number(14))
+            sheet.style(for: Text("x").style(.nothing).node)?.props["fontSize"], .number(14))
     }
 
     // MARK: - Resolving one into a control
@@ -180,10 +195,10 @@ final class StyleTests: XCTestCase {
     func testAKeyedStyleReplacesTheImplicitOne() {
         let sheet = StyleSheet {
             Style<Text>().fontSize(14).textColor(.black)
-            Style<Text>("Headline").fontSize(32)
+            Style<Text>(.headline).fontSize(32)
         }
 
-        let patch = Renders().render(Text("Hi").style("Headline").node, styles: sheet)
+        let patch = Renders().render(Text("Hi").style(.headline).node, styles: sheet)
 
         XCTAssertEqual(patch.props["fontSize"], .number(32))
         XCTAssertNil(patch.props["textColor"], "nothing of the implicit one comes with it")
@@ -192,14 +207,14 @@ final class StyleTests: XCTestCase {
     /// And the key itself never travels: the host has no dictionary to look one
     /// up in, and nothing on that side knows what a style is.
     func testTheKeyIsConsumedRatherThanSent() {
-        let sheet = StyleSheet { Style<Text>("Headline").fontSize(32) }
+        let sheet = StyleSheet { Style<Text>(.headline).fontSize(32) }
         let renders = Renders()
 
-        XCTAssertNil(renders.render(Text("Hi").style("Headline").node, styles: sheet).props["style"])
+        XCTAssertNil(renders.render(Text("Hi").style(.headline).node, styles: sheet).props["style"])
 
         // And with no sheet at all, so an application that writes a key and no
         // styles sends a control rather than a name nobody can resolve.
-        XCTAssertNil(Renders().render(Text("Hi").style("Headline").node).props["style"])
+        XCTAssertNil(Renders().render(Text("Hi").style(.headline).node).props["style"])
     }
 
     /// A control with no style of its own sends what it always sent.
@@ -521,7 +536,7 @@ final class StyleTests: XCTestCase {
     // MARK: - Asking for one
 
     func testAControlAsksForAKeyedStyleByName() {
-        XCTAssertEqual(Text("Welcome").style("Headline").node.props["style"],
+        XCTAssertEqual(Text("Welcome").style(.headline).node.props["style"],
                        .name("Headline"))
     }
 
@@ -662,13 +677,13 @@ final class StyleTests: XCTestCase {
                 .textColor(Color(light: Color("#212121"), dark: .white))
                 .fontSize(14)
 
-            Style<Text>("Body").fontSize(16)
+            Style<Text>(.body).fontSize(16)
 
-            Style<Text>("Headline")
+            Style<Text>(.headline)
                 .fontSize(32)
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
-                .basedOn("Body")
+                .basedOn(.body)
 
             Style<Button>()
                 .textColor(.white)
@@ -691,7 +706,7 @@ final class StyleTests: XCTestCase {
         var launched = Node(type: "Window", children: [
             Node(type: "Page", children: [
                 VStack {
-                    Text("Welcome").style("Headline")
+                    Text("Welcome").style(.headline)
                     Text("Body text")
                     Button("Save").isEnabled(false)
                     ZStack { Text("in an outline") }

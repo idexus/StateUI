@@ -117,7 +117,7 @@ struct ListRow: View {
             .columns(.auto, .fill, .auto)
             .padding(horizontal: 16, vertical: 11)
         }
-        .style("ListRow")
+        .style(.listRow)
         // A ROW IS A ZSTACK WITH A TAP ON IT, which no platform reads as a
         // control: so the row says what it is and where it goes, and the
         // handle is worked out from the title - see Handle.swift.

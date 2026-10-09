@@ -8,7 +8,7 @@
 ///
 ///     application.styles = StyleSheet {
 ///         Style<Text>().textColor(AppColors.text)
-///         Style<Button>("Danger").background(.firebrick)
+///         Style<Button>(.danger).background(.firebrick)
 ///     }
 ///
 /// Writing a new sheet restyles every control.

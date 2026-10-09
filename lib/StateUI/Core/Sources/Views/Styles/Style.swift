@@ -67,18 +67,18 @@ extension StyleBag where Context == StyleBase {
         self.init(key: nil)
     }
 
-    /// A style asked for by name - `.style("Headline")` on a control.
-    public init(_ key: String) {
-        self.init(key: key)
+    /// A style asked for by its key - `.style(.headline)` on a control.
+    public init(_ key: StyleKey<Target>) {
+        self.init(key: key.name)
     }
 
     /// The style this one starts from, named by the key that style was given.
     ///
     /// The one it names must be in the same sheet. A key naming nothing is
     /// ignored, and a chain that comes back round to itself stops there.
-    public func basedOn(_ key: String) -> Self {
+    public func basedOn(_ key: StyleKey<Target>) -> Self {
         var copy = self
-        copy.basedOn = key
+        copy.basedOn = key.name
         return copy
     }
 

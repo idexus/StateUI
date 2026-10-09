@@ -29,7 +29,7 @@ struct SwipeSample: SampleContent, ExampleContent {
                     .padding(32)
                     .horizontalTextAlignment(.center)
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
             .lineWidth(1)
             .shape(.roundedRectangle(10))
@@ -49,7 +49,7 @@ struct SwipeSample: SampleContent, ExampleContent {
                     .padding(32)
                     .horizontalTextAlignment(.center)
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
             .lineWidth(1)
             .shape(.roundedRectangle(10))

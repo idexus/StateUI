@@ -60,7 +60,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                 .spacing(4)
                 .padding(16)
             }
-            .style("Card")
+            .style(.card)
             .background($wash)
             .stroke(.transparent)
             .shape(.roundedRectangle(12))

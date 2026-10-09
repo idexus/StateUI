@@ -17,6 +17,46 @@
 
 import StateUI
 
+extension StyleKey where Target == Text {
+    /// A page's own name for itself.
+    static let headline = StyleKey("Headline")
+    /// A quotation, set apart from the text around it.
+    static let quote = StyleKey("Quote")
+    /// The same quotation, louder.
+    static let quoteLoud = StyleKey("QuoteLoud")
+    /// The words of a row of the gallery's menu.
+    static let menuRowText = StyleKey("MenuRowText")
+}
+
+extension StyleKey where Target == ZStack {
+    /// A sample's working area.
+    static let card = StyleKey("Card")
+    /// A page's panel.
+    static let panel = StyleKey("Panel")
+    /// A row of a list.
+    static let listRow = StyleKey("ListRow")
+}
+
+extension StyleKey where Target == VStack {
+    /// A group of rows.
+    static let rowGroup = StyleKey("RowGroup")
+}
+
+extension StyleKey where Target == HStack {
+    /// A row of the gallery's menu.
+    static let menuRow = StyleKey("MenuRow")
+}
+
+extension StyleKey where Target == Button {
+    /// A button that is only its icon.
+    static let iconButton = StyleKey("IconButton")
+}
+
+extension StyleKey where Target == RatingBar {
+    /// A rating of four stars.
+    static let fourStars = StyleKey("FourStars")
+}
+
 /// The application's styles, as the sheet the differ resolves against.
 @MainActor
 enum AppStyles {
@@ -30,7 +70,7 @@ enum AppStyles {
             // listing: AppStyles.sample keep
             // A page's own name for itself. Tight tracking, because a large
             // size at the default spacing reads loose.
-            Style<Text>("Headline")
+            Style<Text>(.headline)
                 .fontSize(32)
                 .fontAttributes(.bold)
                 .tracking(-0.5)
@@ -41,15 +81,15 @@ enum AppStyles {
             // about the shape of a quotation is stated once here, and
             // "QuoteLoud" adds the one property that makes it loud. The Styles
             // sample draws both, one under the other.
-            Style<Text>("Quote")
+            Style<Text>(.quote)
                 .textColor(Palette.subtle)
                 .fontSize(17)
                 .fontAttributes(.italic)
                 .tracking(0.3)
                 .horizontalTextAlignment(.center)
 
-            Style<Text>("QuoteLoud")
-                .basedOn("Quote")
+            Style<Text>(.quoteLoud)
+                .basedOn(.quote)
                 .textColor(Palette.accent)
             // listing: end
 
@@ -61,7 +101,7 @@ enum AppStyles {
             // style both wear - so the host receives a control with the values
             // already on it. Keyed, so only the bar that asks wears it; the
             // control is Samples/Interop/RatingBar.swift.
-            Style<RatingBar>("FourStars")
+            Style<RatingBar>(.fourStars)
                 .rating(4)
                 .background(Palette.selected)
 
@@ -84,7 +124,7 @@ enum AppStyles {
                 .color(Palette.accent)
             // listing: end
 
-            Style<Button>("IconButton")
+            Style<Button>(.iconButton)
                 .opacity(1)
                 .stroke(.transparent)
                 .lineWidth(0)
@@ -123,25 +163,25 @@ enum AppStyles {
             // Gallery/Views/MenuRow.swift, and the rule that a control's own
             // value wins over its style, per property.
 
-            Style<HStack>("MenuRow")
+            Style<HStack>(.menuRow)
                 .shape(.roundedRectangle(8))
                 .background(.transparent)
 
-            Style<Text>("MenuRowText")
+            Style<Text>(.menuRowText)
                 .verticalAlignment(.center)
 
             // MARK: Lists
 
             // A list's rows stand in one rounded group, shaded and edged as a
             // sample's panel is; a row lights up under the pointer.
-            Style<VStack>("RowGroup")
+            Style<VStack>(.rowGroup)
                 .background(Palette.shade)
                 .stroke(Palette.edge)
                 .lineWidth(1)
                 .shape(.roundedRectangle(12))
                 .clipsContent(true)
 
-            Style<ZStack>("ListRow")
+            Style<ZStack>(.listRow)
                 .background(.transparent)
                 .visualState(.pointerOver) { $0
                     .background(Palette.hovered)
@@ -151,7 +191,7 @@ enum AppStyles {
 
             // The panel a sample stands in lets the window through, darkened a
             // breath and edged by a hairline, as its code does.
-            Style<ZStack>("Panel")
+            Style<ZStack>(.panel)
                 .background(Palette.shade)
                 .stroke(Palette.edge)
                 .lineWidth(1)
@@ -162,7 +202,7 @@ enum AppStyles {
             // it, and a card that sets a background of its own - a colour, or
             // a gradient like the home page's - shows it. What a card holds is
             // cut to its corners: a picture reaches them.
-            Style<ZStack>("Card")
+            Style<ZStack>(.card)
                 .stroke(Palette.outline)
                 .lineWidth(1)
                 .shape(.roundedRectangle(12))

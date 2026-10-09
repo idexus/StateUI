@@ -35,7 +35,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
                 }
                 .background(AppColors.violetLight)
             }
-            .style("Card")
+            .style(.card)
             .background($panelColor)
             .padding($panelPadding)
             .height($panelHeight)

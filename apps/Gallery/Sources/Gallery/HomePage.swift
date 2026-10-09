@@ -152,7 +152,7 @@ struct HomePage: View {
                     .spacing(10)
                     .padding(22)
                 }
-                .style("Card")
+                .style(.card)
                 .background(Palette.identity)
                 .stroke(.transparent)
                 .lineWidth(0)
@@ -658,7 +658,7 @@ private struct GroupFace: View {
             // grid holding it - a layout, with edges to cut at - clips it.
             .clipsContent(true)
         }
-        .style("Card")
+        .style(.card)
         // A CARD OF THE RUN IS A PICTURE WITH A CAPTION OVER IT, and the run
         // itself takes the touch - so nothing here is a control on any
         // platform. The card says which group it is, and what its summary

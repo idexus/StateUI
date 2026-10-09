@@ -136,6 +136,6 @@ struct SamplePage: View {
                 .padding(16)
             }
         }
-        .style("Panel")
+        .style(.panel)
     }
 }

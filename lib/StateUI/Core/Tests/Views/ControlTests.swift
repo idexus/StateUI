@@ -31,6 +31,10 @@ import Foundation
 import XCTest
 @_spi(Host) @testable import StateUI
 
+extension StyleKey where Target == VStack {
+    fileprivate static let card = StyleKey("Card")
+}
+
 /// One control, built with everything of its own that it can do.
 @MainActor
 private struct ControlCase {
@@ -507,7 +511,7 @@ final class ControlTests: XCTestCase {
                 .avoidsSafeArea(.none, .keyboard, .container, .all)
                 .clipsContent(true)
                 .letsInputThrough(true)
-                .style("Card")
+                .style(.card)
                 .padding(left: 24, top: 16, right: 24, bottom: 16)
                 .margin(left: 4, top: 8, right: 4, bottom: 8)
                 .horizontalAlignment(.center)

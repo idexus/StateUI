@@ -62,7 +62,7 @@ struct BrushSample: SampleContent, ExampleContent {
                     .fontSize(14)
                     .padding(horizontal: 16, vertical: 10)
             }
-            .style("Card")
+            .style(.card)
             .lineWidth(4)
             .shape(.roundedRectangle(10))
             .stroke(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 0)))

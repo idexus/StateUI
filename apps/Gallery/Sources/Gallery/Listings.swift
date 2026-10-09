@@ -181,7 +181,7 @@ enum Listings {
                 // at one build while the clock runs.
                 DebugInfoLabel()
 
-                ZStack().style("Card")
+                ZStack().style(.card)
                     .stroke(Palette.outline)
                     .lineWidth(2)
                     .width(220)
@@ -205,7 +205,7 @@ enum Listings {
                 hand($mAngle, length: 84, width: 4, color: Palette.text)
                 hand($sAngle, length: 96, width: 2, color: Palette.accent)
 
-                ZStack().style("Card")
+                ZStack().style(.card)
                     .stroke(.transparent)
                     .width(12)
                     .height(12)
@@ -439,7 +439,7 @@ enum Listings {
                             .verticalAlignment(.center)
                     }
                 }
-                .style("Card")
+                .style(.card)
                 .height($panelHeight)
                 .stroke(.transparent)
 
@@ -521,7 +521,7 @@ enum Listings {
                 ZStack {
                     Text("Animate me")
                 }
-                .style("Card")
+                .style(.card)
                 // Four DRIVEN properties. The host reads each off the state it
                 // moves, so none is in a patch after the one that registers it.
                 .opacity($fade)
@@ -603,7 +603,7 @@ enum Listings {
         // Sources/Styles/AppStyles.swift
         // A page's own name for itself. Tight tracking, because a large
         // size at the default spacing reads loose.
-        Style<Text>("Headline")
+        Style<Text>(.headline)
             .fontSize(32)
             .fontAttributes(.bold)
             .tracking(-0.5)
@@ -614,15 +614,15 @@ enum Listings {
         // about the shape of a quotation is stated once here, and
         // "QuoteLoud" adds the one property that makes it loud. The Styles
         // sample draws both, one under the other.
-        Style<Text>("Quote")
+        Style<Text>(.quote)
             .textColor(Palette.subtle)
             .fontSize(17)
             .fontAttributes(.italic)
             .tracking(0.3)
             .horizontalTextAlignment(.center)
 
-        Style<Text>("QuoteLoud")
-            .basedOn("Quote")
+        Style<Text>(.quoteLoud)
+            .basedOn(.quote)
             .textColor(Palette.accent)
 
         // Every button the gallery shows wears its violet - a style with no
@@ -1134,7 +1134,7 @@ enum Listings {
                     VStack(content: content)
                 }
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
         }
 
@@ -1196,7 +1196,7 @@ enum Listings {
                 ZStack {
                     Text("A stroke is a brush too")
                 }
-                .style("Card")
+                .style(.card)
                 .lineWidth(4)
                 .stroke(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 0)))
 
@@ -1457,7 +1457,7 @@ enum Listings {
                             .opacity($breath)
                     }
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(.transparent)
 
                 HStack {
@@ -1822,7 +1822,7 @@ enum Listings {
                     VStack(content: content)
                 }
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
         }
         """#,
@@ -2125,7 +2125,7 @@ enum Listings {
                         ZStack {
                             Text(item)
                         }
-                        .style("Card")
+                        .style(.card)
                         .stroke(Palette.outline)
                         .lineWidth(1)
                         // What travels is decided before the drag starts: a
@@ -2153,7 +2153,7 @@ enum Listings {
                         }
                     }
                 }
-                .style("Card")
+                .style(.card)
                 // Lit while something is over it and dark again once it leaves,
                 // which is what the two events are for.
                 .stroke(over ? Palette.accent : Palette.outline)
@@ -2192,7 +2192,7 @@ enum Listings {
                 ZStack {
                     Text("")
                 }
-                .style("Card")
+                .style(.card)
                 .width($width)
                 .height(28)
                 .lineWidth(0)
@@ -2213,7 +2213,7 @@ enum Listings {
                 ZStack {
                     Text("")
                 }
-                .style("Card")
+                .style(.card)
                 .width($width.journey.convert { abs($0.destination - $0.value) })
                 .height(10)
                 .lineWidth(0)
@@ -2282,7 +2282,7 @@ enum Listings {
                     .width(260)
                     .height(28)
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(.transparent)
                 .horizontalAlignment(.center)
 
@@ -2362,7 +2362,7 @@ enum Listings {
                         .text($reading)
                         .horizontalAlignment(.center)
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(.transparent)
                 .horizontalAlignment(.center)
 
@@ -3362,7 +3362,7 @@ enum Listings {
                 }
                 .clipsContent(true)
             }
-            .style("Card")
+            .style(.card)
             .lineWidth(0)
         }
         """#,
@@ -3703,7 +3703,7 @@ enum Listings {
 
                 HStack {
                     Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
-                        .style("IconButton")
+                        .style(.iconButton)
                         .contentMode(.fit)
                         .width(64)
                         .height(64)
@@ -3714,7 +3714,7 @@ enum Listings {
                         .onReleased { pressed = false }
 
                     Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
-                        .style("IconButton")
+                        .style(.iconButton)
                         .contentMode(.fit)
                         .width(64)
                         .height(64)
@@ -4236,7 +4236,7 @@ enum Listings {
                     VStack(content: content)
                 }
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
         }
         """#,
@@ -4433,7 +4433,7 @@ enum Listings {
                             Text(name)
                                 .verticalAlignment(.center)
                         }
-                        .style("Card")
+                        .style(.card)
                         .lineWidth(0)
                         .height(40)
                     }
@@ -4481,7 +4481,7 @@ enum Listings {
                     .horizontalAlignment(.center)
                     .verticalAlignment(.center)
             }
-            .style("Card")
+            .style(.card)
             .opacity(faded ? 0.55 : 1)
             .lineWidth(0)
             .gridColumn(column)
@@ -5855,7 +5855,7 @@ enum Listings {
                             }
                         }
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
                 .lineWidth(1)
                 .height(200)
@@ -6067,7 +6067,7 @@ enum Listings {
                         .verticalAlignment(.center)
                         .scale(pinch)
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
                 .lineWidth(1)
                 .height(220)
@@ -6379,7 +6379,7 @@ enum Listings {
                 // holding it - a layout, with edges to cut at - clips it.
                 .clipsContent(true)
             }
-            .style("Card")
+            .style(.card)
             .lineWidth(0)
         }
 
@@ -6470,7 +6470,7 @@ enum Listings {
                     Text("last: \(last)")
                 }
             }
-            .style("Card")
+            .style(.card)
             // The box reacts, so its look is part of what it says: the outline is
             // the hover, the fill is the button held down.
             .stroke(hovering ? Palette.accent : Palette.outline)
@@ -6851,7 +6851,7 @@ enum Listings {
                             DebugInfoLabel()
                         }
                     }
-                    .style("Card")
+                    .style(.card)
                     .stroke(Palette.outline)
                 }
 
@@ -6875,7 +6875,7 @@ enum Listings {
                     VStack(content: content)
                 }
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
         }
 
@@ -6903,7 +6903,7 @@ enum Listings {
                         DebugInfoLabel()
                     }
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
             }
 
@@ -6926,7 +6926,7 @@ enum Listings {
                         DebugInfoLabel()
                     }
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
             }
         }
@@ -6947,7 +6947,7 @@ enum Listings {
                         DebugInfoLabel()
                     }
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
                 .engine(following: $pulses) { _ in
                     said = "pulses · \(pulses)"
@@ -7001,7 +7001,7 @@ enum Listings {
                         RebuildPassenger()
                     }
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
                 .lineWidth(1)
             }
@@ -7513,7 +7513,7 @@ enum Listings {
                         // A picture and nothing else. To anybody not looking at it,
                         // this control has no name at all.
                         Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
-                            .style("IconButton")
+                            .style(.iconButton)
                             .contentMode(.fit)
                             .width(64)
                             .height(64)
@@ -7589,7 +7589,7 @@ enum Listings {
                             Text("Both lines are read")
                         }
                     }
-                    .style("Card")
+                    .style(.card)
 
                     // The whole panel, and everything in it, is not there at all
                     // to a screen reader - one word instead of one per view.
@@ -7600,7 +7600,7 @@ enum Listings {
                             Text("Neither line is read")
                         }
                     }
-                    .style("Card")
+                    .style(.card)
                     .automationExcludedWithChildren(true)
                 }
                 .horizontalAlignment(.center)
@@ -7619,7 +7619,7 @@ enum Listings {
         /// the control.
         private var describedButton: some View {
             let button = Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
-                .style("IconButton")
+                .style(.iconButton)
                 .contentMode(.fit)
                 .width(64)
                 .height(64)
@@ -8080,12 +8080,12 @@ enum Listings {
                             Text(name.isEmpty ? "Hello, stranger" : "Hello, \(name)!")
                         }
                     }
-                    .style("Card")
+                    .style(.card)
                     .stroke(Palette.outline)
                     .lineWidth(1)
                 }
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
             .lineWidth(1)
         }
@@ -8175,19 +8175,19 @@ enum Listings {
                 // A keyed style is asked for; a keyed style REPLACES the implicit
                 // one, so it says everything it needs.
                 Text("Headline")
-                    .style("Headline")
+                    .style(.headline)
 
                 SectionTitle("A style written from another")
 
                 // The same words twice. "Quote" states the shape; "QuoteLoud" is
-                // `.basedOn("Quote")` plus one colour - so everything that matches
+                // `.basedOn(.quote)` plus one colour - so everything that matches
                 // below is inherited, and the one thing that differs is the one
                 // thing it declares.
                 Text("The same eleven words, and one of these declares a colour.")
-                    .style("Quote")
+                    .style(.quote)
 
                 Text("The same eleven words, and one of these declares a colour.")
-                    .style("QuoteLoud")
+                    .style(.quoteLoud)
             }
         }
         """#,
@@ -8205,7 +8205,7 @@ enum Listings {
                 ZStack {
                     Text("Swipe across this box")
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
                 .lineWidth(1)
                 // A recognizer that listens for nothing recognizes nothing, so
@@ -8219,7 +8219,7 @@ enum Listings {
                 ZStack {
                     Text("Left or right, and a long way")
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
                 .lineWidth(1)
                 // Narrowed: two of the four ways, and a finger that must travel
@@ -8293,7 +8293,7 @@ enum Listings {
                 ZStack {
                     Text("Tap anywhere on this box")
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
                 .lineWidth(1)
                 .onTapped { taps += 1 }
@@ -8301,7 +8301,7 @@ enum Listings {
                 ZStack {
                     Text("Double-tap this one to reset")
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
                 .lineWidth(1)
                 .onTapped(count: 2) { taps = 0 }

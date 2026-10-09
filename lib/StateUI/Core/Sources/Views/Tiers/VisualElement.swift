@@ -165,13 +165,6 @@ extension VisualElement {
     public func environment<Value: AnyObject>(_ object: Value) -> Modified {
         modified { $0.environments.append((key: ObjectIdentifier(Value.self), object: object)) }
     }
-
-    /// The keyed style from the application's style sheet that this view wears.
-    ///
-    ///     Text("Welcome").style("Headline")
-    ///
-    /// A style without a key applies to every control of its type by itself.
-    public func style(_ key: String) -> Modified { setValue(VisualElementContract.style, Name(key)) }
 }
 
 extension VisualElement {

@@ -35,7 +35,7 @@ struct PinchSample: SampleContent, ExampleContent {
                     .verticalAlignment(.center)
                     .scale(pinch)
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
             .lineWidth(1)
             .shape(.roundedRectangle(10))

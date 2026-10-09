@@ -27,7 +27,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             ZStack {
                 Text("")
             }
-            .style("Card")
+            .style(.card)
             .width($width)
             .height(28)
             .background(.solidColor(Palette.accent))
@@ -53,7 +53,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             ZStack {
                 Text("")
             }
-            .style("Card")
+            .style(.card)
             .width($width.journey.convert { abs($0.destination - $0.value) })
             .height(10)
             .background(.solidColor(Palette.subtle))

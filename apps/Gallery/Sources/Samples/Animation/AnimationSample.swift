@@ -37,7 +37,7 @@ struct AnimationSample: SampleContent, ExampleContent {
                     .textColor(Palette.onBrand)
                     .padding(horizontal: 24, vertical: 16)
             }
-            .style("Card")
+            .style(.card)
             // Four DRIVEN properties. The host reads each off the state it
             // moves, so none is in a patch after the one that registers it.
             .opacity($fade)

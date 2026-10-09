@@ -35,7 +35,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     // A picture and nothing else. To anybody not looking at it,
                     // this control has no name at all.
                     Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
-                        .style("IconButton")
+                        .style(.iconButton)
                         .accessibilityIdentifier("semantics.bare")
                         .contentMode(.fit)
                         .width(64)
@@ -147,7 +147,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     .spacing(2)
                     .padding(12)
                 }
-                .style("Card")
+                .style(.card)
 
                 // The whole panel, and everything in it, is not there at all
                 // to a screen reader - one word instead of one per view.
@@ -164,7 +164,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     .spacing(2)
                     .padding(12)
                 }
-                .style("Card")
+                .style(.card)
                 .automationExcludedWithChildren(true)
             }
             .spacing(12)
@@ -185,7 +185,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
     /// the control.
     private var describedButton: some View {
         let button = Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
-            .style("IconButton")
+            .style(.iconButton)
             .accessibilityIdentifier("semantics.described")
             .contentMode(.fit)
             .width(64)

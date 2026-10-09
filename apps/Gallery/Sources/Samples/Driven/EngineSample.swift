@@ -54,7 +54,7 @@ struct EngineSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
                     .horizontalAlignment(.center)
             }
-            .style("Card")
+            .style(.card)
             .padding(horizontal: 24, vertical: 16)
             .background(Palette.well)
             .stroke(.transparent)

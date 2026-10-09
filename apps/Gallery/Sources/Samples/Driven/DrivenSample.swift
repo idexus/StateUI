@@ -54,7 +54,7 @@ struct DrivenSample: SampleContent, ExampleContent {
                 .width(260)
                 .height(28)
             }
-            .style("Card")
+            .style(.card)
             .padding(16)
             .background(Palette.well)
             .stroke(.transparent)

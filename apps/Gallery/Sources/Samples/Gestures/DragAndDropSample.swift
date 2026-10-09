@@ -34,7 +34,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                             .fontSize(14)
                             .padding(horizontal: 12, vertical: 8)
                     }
-                    .style("Card")
+                    .style(.card)
                     .stroke(Palette.outline)
                     .lineWidth(1)
                     .shape(.roundedRectangle(8))
@@ -74,7 +74,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                 .spacing(4)
                 .padding(24)
             }
-            .style("Card")
+            .style(.card)
             // Lit while something is over it and dark again once it leaves,
             // which is what the two events are for.
             .stroke(over ? Palette.accent : Palette.outline)

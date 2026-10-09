@@ -109,6 +109,14 @@ final class ContractRoadsTests: XCTestCase {
             closed: "Environment<ApplicationSession>().projectedValue.wrappedValue = ApplicationSession()",
             open: "_ = Environment<ApplicationSession>().projectedValue.motion"),
         Road(
+            name: "a style asked for by a name as words",
+            closed: #"_ = Text("x").style("Headline")"#,
+            open: #"_ = Text("x").style(StyleKey<Text>("Headline"))"#),
+        Road(
+            name: "a style key of another control",
+            closed: #"_ = Text("x").style(StyleKey<Button>("Cta"))"#,
+            open: #"_ = Button("x").style(StyleKey<Button>("Cta"))"#),
+        Road(
             name: "a node of a type named by hand",
             closed: #"_ = Node(type: "Maps.Beacon")"#,
             open: "_ = Node(contract: BeaconContract.self)"),

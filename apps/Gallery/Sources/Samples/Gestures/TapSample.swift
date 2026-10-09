@@ -27,7 +27,7 @@ struct TapSample: SampleContent, ExampleContent {
                     .padding(24)
                     .horizontalTextAlignment(.center)
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
             .lineWidth(1)
             .shape(.roundedRectangle(10))
@@ -39,7 +39,7 @@ struct TapSample: SampleContent, ExampleContent {
                     .padding(24)
                     .horizontalTextAlignment(.center)
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
             .lineWidth(1)
             .shape(.roundedRectangle(10))

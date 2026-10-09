@@ -51,7 +51,7 @@ struct GroupPage: View {
                         .separated(item.offset > 0)
                     }
                 }
-                .style("RowGroup")
+                .style(.rowGroup)
             }
             .spacing(16)
             .padding(24)

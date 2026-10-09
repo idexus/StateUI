@@ -51,7 +51,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             // at one build while the clock runs.
             DebugInfoLabel()
 
-            ZStack().style("Card")
+            ZStack().style(.card)
                 .background(Palette.raised)
                 .stroke(Palette.outline)
                 .lineWidth(2)
@@ -78,7 +78,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             hand($mAngle, length: 84, width: 4, color: Palette.text)
             hand($sAngle, length: 96, width: 2, color: Palette.accent)
 
-            ZStack().style("Card")
+            ZStack().style(.card)
                 .background(Palette.accent)
                 .stroke(.transparent)
                 .shape(.roundedRectangle(6))

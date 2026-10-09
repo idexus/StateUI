@@ -7,10 +7,17 @@ properties it must apply; it does not run a second style cascade.
 ## Style sheets
 
 A `StyleSheet` contains typed styles. An unkeyed style applies implicitly to
-every control of its target type. A keyed style is selected with `.style(...)`.
-A sheet describes the interface, so it is built on `MainActor`, as a body is:
+every control of its target type. A keyed style is selected with `.style(...)`
+and its key: a `StyleKey` typed by the control it is for and declared once, so
+a key misspelled, or asked of another kind of control, does not compile. A
+sheet describes the interface, so it is built on `MainActor`, as a body is:
 
 ```swift
+extension StyleKey where Target == Button {
+    static let primary = StyleKey("Primary")
+    static let danger = StyleKey("Danger")
+}
+
 @MainActor
 enum HandbookStyles {
     static var sheet: StyleSheet {
@@ -19,13 +26,13 @@ enum HandbookStyles {
                 .fontSize(15)
                 .textColor(Color(light: .black, dark: .white))
 
-            Style<Button>("Primary")
+            Style<Button>(.primary)
                 .textColor(.white)
                 .background(.cornflowerBlue)
                 .shape(.roundedRectangle(8))
 
-            Style<Button>("Danger")
-                .basedOn("Primary")
+            Style<Button>(.danger)
+                .basedOn(.primary)
                 .background(.firebrick)
         }
     }
@@ -46,11 +53,19 @@ struct NotesApp: Application {
 }
 ```
 
-Use a keyed style by name:
+Use a keyed style by its key:
 
 ```swift
-Button("Delete")
-    .style("Danger")
+extension StyleKey where Target == Button {
+    static let danger = StyleKey("Danger")
+}
+
+struct DeleteButton: View {
+    var body: some View {
+        Button("Delete")
+            .style(.danger)
+    }
+}
 ```
 
 `basedOn` is flattened when the sheet is resolved. A derived style inherits
