@@ -105,8 +105,8 @@
         HostBoundary.dispatch(handler, payload: payload)
     }
 
-    /// Takes the calling thread as the UI thread, whose jobs are `MainActor`'s - the host's start, before anything.
-    public nonisolated func takeTheUIThread() { HostBoundary.takeTheUIThread() }
+    /// Claims the calling thread as the UI thread, whose jobs are `MainActor`'s - the host's start, before anything.
+    public nonisolated func claimUIThread() { HostBoundary.claimUIThread() }
 
     /// Runs the jobs waiting on StateUI's UI executor.
     @discardableResult

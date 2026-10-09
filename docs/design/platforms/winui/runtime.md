@@ -31,7 +31,7 @@ The head's `main` names the application and hands the thread to
 `StateUIWinUI.run()`, which loads the Windows App SDK the application carries
 and starts WinUI's `Application` there; WinUI's loop runs that thread until
 the last window closes. Its `OnLaunched` calls the host, whose first act is to
-take that thread as the UI thread: `takeTheUIThread()` makes StateUI's UI
+claim that thread as the UI thread: `claimUIThread()` makes StateUI's UI
 executor `MainActor`'s and drains it there, and every native call after it
 asserts that isolation rather than assuming a thread.
 

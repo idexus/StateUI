@@ -69,10 +69,10 @@ final class WinUIRenderer {
         runtime.pump.presenter = self
     }
 
-    /// WinUI stands on this thread: the host takes it as the UI thread, then starts.
+    /// WinUI stands on this thread: the host claims it as the UI thread, then starts.
     /// Design: docs/design/platforms/winui/runtime.md#starting
     nonisolated static func launch() {
-        CoreLink().takeTheUIThread()
+        CoreLink().claimUIThread()
 
         MainActor.assumeIsolated { _ = start() }
     }

@@ -217,8 +217,9 @@ changing, the battery reporting - so the application declares it in an
 `HostEvents.on`. A raise reaches the subscriptions by the member's name, and
 the values arrive as the types the member declares; a raise of another shape
 is reported once and does not reach the handler. Handlers run in subscription
-order, each started on `MainActor` exactly as a control's handler is, taken
-under the lock and started outside it. Subscription ids are never reused, so a
+order, each started on `MainActor` exactly as a control's handler is, from
+the list as it stood when the raise came: a handler that cancels a
+subscription changes the next raise, not this one. Subscription ids are never reused, so a
 cancelled subscription cannot take a newer listener with it. A raise nobody
 subscribed to is an ordinary zero, and prefixing event names with the
 application's own keeps them from ever meeting one this library adds.

@@ -111,7 +111,7 @@ extension Renderer {
         let board = board(of: storage)
         board.told(StateImage.bytes(of: value), mask: mask, to: storage)
 
-        // After the board has let go: both callbacks may take this renderer's lock.
+        // After the board holds the reported value, which both callbacks read.
         storage.told?(mask)
         storage.sampleTaken()
         return true

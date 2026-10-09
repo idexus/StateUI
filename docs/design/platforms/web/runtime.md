@@ -21,7 +21,7 @@ fails at once, so a handler awaiting it goes on.
 
 The page loads the module and calls its `_start`, which runs the head's
 `main`: it names the application and calls `StateUIWeb.run(name:)`. The host
-takes the page's one thread as the UI thread, hands the relay the two functions the page calls it through, tells the core
+claims the page's one thread as the UI thread, hands the relay the two functions the page calls it through, tells the core
 what it realizes and what the page stands on, connects the one window and runs
 the first turn - and `main` returns. The module lives on with the page; from
 then on the browser calls it, as the user acts and as the display draws.

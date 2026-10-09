@@ -25,7 +25,7 @@ platform. A handler runs on `MainActor` and may suspend; it resumes on
 ```
 
 A host's start installs the executor: its first call, before anything starts a
-task, is `HostBoundary.takeTheUIThread()`, which installs it and drains once on
+task, is `HostBoundary.claimUIThread()`, which installs it and drains once on
 that thread. A job running when `MainActor`'s executor is replaced was started
 by the one before, and `Task.immediate` from it no longer finds itself on
 `MainActor`. So nothing else installs it - not the renderer, which a test makes

@@ -123,8 +123,8 @@ enum AndroidTestRunner {
     private static func begin(
         env: UnsafeMutablePointer<JNIEnv?>, context: jobject, window: jobject, filter: jstring?
     ) -> jobjectArray? {
-        // This thread is taken as the UI thread, as the activity's start does.
-        CoreLink().takeTheUIThread()
+        // This thread is claimed as the UI thread, as the activity's start does.
+        CoreLink().claimUIThread()
 
         nonisolated(unsafe) let env = env
         nonisolated(unsafe) let context = context

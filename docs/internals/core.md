@@ -459,7 +459,7 @@ type's extensions in its folder as `Type+Responsibility.swift`
 - **`UIThreadExecutor`** (`UIThread.swift`) is `MainActor`'s executor where
   nothing drains the platform's main queue, and the doorbell a host parks a
   thread on; `stateUIRunJobs` drains it on the calling thread, bounded.
-  *Internal*; a host takes the UI thread through `HostBoundary.takeTheUIThread`
+  *Internal*; a host claims the UI thread through `HostBoundary.claimUIThread`
   and drains it through `HostBoundary.runJobs`.
   ([The doorbell](../design/core/concurrency.md#the-doorbell),
   [draining jobs](../design/core/concurrency.md#draining-jobs))

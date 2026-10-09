@@ -86,12 +86,12 @@ final class GTKRenderer {
         runtime.pump.presenter = self
     }
 
-    /// The application was activated on GLib's thread: the first time, the host takes it as the UI thread and
+    /// The application was activated on GLib's thread: the first time, the host claims it as the UI thread and
     /// starts; after that, a second launch brings the window forward.
     /// Design: docs/design/platforms/gtk/runtime.md#starting
     nonisolated static func activated(_ application: UnsafeMutablePointer<GtkApplication>) {
         let core = CoreLink()
-        core.takeTheUIThread()
+        core.claimUIThread()
         nonisolated(unsafe) let application = application
 
         MainActor.assumeIsolated {

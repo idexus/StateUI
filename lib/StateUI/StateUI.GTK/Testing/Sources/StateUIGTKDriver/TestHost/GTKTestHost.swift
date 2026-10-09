@@ -105,9 +105,9 @@ enum GTKTestHost {
 }
 
 extension XCTestCase {
-    /// Runs `body` as the main actor's on the test thread, which holds GTK and is taken as the UI thread first.
+    /// Runs `body` as the main actor's on the test thread, which holds GTK and is claimed as the UI thread first.
     func onUIThread<Result: Sendable>(_ body: @MainActor () throws -> Result) rethrows -> Result {
-        CoreLink().takeTheUIThread()
+        CoreLink().claimUIThread()
         return try MainActor.assumeIsolated(body)
     }
 }

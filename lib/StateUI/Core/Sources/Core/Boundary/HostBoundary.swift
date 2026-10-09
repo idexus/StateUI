@@ -348,10 +348,10 @@
         HostRealizations.current.members.contains { $0.owner == Owner.name && $0.member == member.name }
     }
 
-    /// Takes the calling thread as the UI thread, whose jobs are `MainActor`'s, and runs what waits - what a host's
+    /// Claims the calling thread as the UI thread, whose jobs are `MainActor`'s, and runs what waits - what a host's
     /// start does first, before anything starts a task.
     /// Design: docs/design/core/concurrency.md#mainactor-on-every-platform
-    public nonisolated static func takeTheUIThread() {
+    public nonisolated static func claimUIThread() {
         UIThreadExecutor.install()
         stateUIRunJobs()
     }
