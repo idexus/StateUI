@@ -92,26 +92,31 @@ extension HostStorage {
         every window: Int,
         take: @escaping @MainActor () -> Void
     ) -> Sampling {
-        if let standing = samplings[target]?.sampling, standing.window == window {
+        let place = samplings.firstIndex { $0.target == target }
+
+        if let place, let standing = samplings[place].held.sampling, standing.window == window {
             standing.take = take
             return standing
         }
 
         let made = Sampling(window: window, take: take)
 
-        samplings[target] = WeakSampling(made)
+        if let place {
+            samplings[place].held = WeakSampling(made)
+        } else {
+            samplings.append((target, WeakSampling(made)))
+        }
         return made
     }
 
     /// Runs every reading asked for of this value, after the host wrote its lanes; a
     /// reading inside its window books one for the window's end.
     func sampleTaken() {
-        for (target, held) in samplings {
-            // A reading whose element has gone is swept; the walk is over a copy.
-            guard let sampling = held.sampling else {
-                samplings[target] = nil
-                continue
-            }
+        // A reading whose element has gone is swept.
+        samplings.removeAll { $0.held.sampling == nil }
+
+        for entry in samplings {
+            guard let sampling = entry.held.sampling else { continue }
 
             switch sampling.due() {
             case .now:

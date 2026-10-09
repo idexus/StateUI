@@ -23,10 +23,10 @@ public final class HostStorage: NamedState {
     /// every lane from 63 on.
     var dirty: UInt64 = 0
 
-    /// The readings asked for of this value, by the state each is read into - known
-    /// weakly, since a reading belongs to the element that asked for it.
+    /// The readings asked for of this value, in the order asked, each with the state it
+    /// is read into - known weakly, since a reading belongs to the element that asked for it.
     /// Design: docs/design/core/journeys.md#readings
-    var samplings: [ObjectIdentifier: WeakSampling] = [:]
+    var samplings: [(target: ObjectIdentifier, held: WeakSampling)] = []
 
     /// How many times the value was written, equal bytes included - what an engine
     /// following it compares.

@@ -143,7 +143,7 @@ to, which the host sends every cycle it moves. `.samples($fade, into: $shown,
 .every(100))` copies it into an ordinary state at most ten times a second; the
 body reads that state under the ordinary rules, and the source goes on costing
 nothing. The window belongs to the reading, not the state: one source may be
-read by two views into two states at two rates.
+read by two views into two states at two rates, taken in the order asked.
 
 ```text
   a frame lands   due():  now        -> take it, the window starts here

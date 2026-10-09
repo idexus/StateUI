@@ -633,6 +633,21 @@ extension StateTests {
             "and the next window runs from the reading that was taken")
     }
 
+    /// One value's readings are taken in the order they were asked for, every time - never by the hash of the
+    /// states they are read into.
+    func testAValuesReadingsAreTakenInTheOrderAsked() {
+        let storage = HostStorage(StateImage.bytes(of: JourneyLanes(0.0).carried))
+        let targets = (0..<8).map { _ in State(0.0) }
+        var taken: [Int] = []
+
+        let readings = targets.enumerated().map { index, target in
+            storage.sample(into: ObjectIdentifier(target.storage), every: 0) { taken.append(index) }
+        }
+        storage.sampleTaken()
+
+        withExtendedLifetime(readings) { XCTAssertEqual(taken, Array(0..<8)) }
+    }
+
     /// A READ OF THE JOURNEY IS A BUILD PER FRAME, AND A READ OF THE STATE IS
     /// NOT. Two readers over one value the host is walking: a body that prints
     /// `fade` reads the destination, which no frame of the walk moves; a body
