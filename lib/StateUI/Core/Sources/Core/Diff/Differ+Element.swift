@@ -118,6 +118,9 @@ extension Differ {
         // Everything the builds below read, recorded against this element.
         var reads: Set<ObjectIdentifier> = []
 
+        // The derived states its builds made or found, which it holds.
+        var derived: [AnyObject] = []
+
         // The frame the last body build ran under, for the container content below.
         var frame: BuildScope.Frame?
 
@@ -205,14 +208,17 @@ extension Differ {
                     read: rendered?.reads ?? [],
                     changed: self.changed,
                     written: self.written,
-                    everything: describeAll)
+                    everything: describeAll,
+                    element: id)
 
                 frame = built
                 bodies.append(stateful.viewType)
                 entered += 1
 
                 node = ReadScope.collect(into: &reads) {
-                    BuildScope.within(built) { stateful.expand(over: node) }
+                    DerivationScope.collect(into: &derived) {
+                        BuildScope.within(built) { stateful.expand(over: node) }
+                    }
                 }
                 views[step].branch = node.branch
                 pushed += node.environments.count
@@ -243,7 +249,7 @@ extension Differ {
         // The container's own content runs here, inside this element's read scope and
         // build frame: the reader of a state is the closure that read it.
         // Design: docs/design/core/identity-and-diffing.md#containers-run-their-own-content
-        let within = frame ?? bareFrame(for: rendered, builds: builds)
+        let within = frame ?? bareFrame(for: rendered, builds: builds, element: id)
 
         // A container built again for what its own closure read: an inspector names the
         // view and the container.
@@ -265,7 +271,7 @@ extension Differ {
 
             guard let within else { return shallow() }
 
-            return BuildScope.within(within, shallow)
+            return DerivationScope.collect(into: &derived) { BuildScope.within(within, shallow) }
         }
 
         // A page describes the view it shows first, and says what that view says of it; it reads all that view's
@@ -554,6 +560,7 @@ extension Differ {
             engines: engines,
             driven: driven,
             readings: readings,
+            derived: derived,
             children: children
         )
         result.sizesArrive = sizesArrive
@@ -572,7 +579,7 @@ extension Differ {
 
     /// The frame a bare container's content runs under: the view the walk is in,
     /// with this element's own count and reads.
-    private func bareFrame(for rendered: RenderedNode?, builds: Int) -> BuildScope.Frame? {
+    private func bareFrame(for rendered: RenderedNode?, builds: Int, element: ElementID) -> BuildScope.Frame? {
         guard let view = bodies.last ?? rendered?.view else { return nil }
 
         return BuildScope.Frame(
@@ -581,7 +588,8 @@ extension Differ {
             read: rendered?.reads ?? [],
             changed: changed,
             written: written,
-            everything: describeAll)
+            everything: describeAll,
+            element: element)
     }
 
     /// What an element is by its composed views: each one's type and the branch its content root stood in.

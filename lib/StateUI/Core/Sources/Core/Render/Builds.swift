@@ -36,6 +36,9 @@ enum BuildScope {
 
         /// Whether this render describes the whole tree.
         let everything: Bool
+
+        /// The element being built.
+        let element: ElementID
     }
 
     /// The build under way; written and read only by the thread that renders.

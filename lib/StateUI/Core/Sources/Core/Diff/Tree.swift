@@ -111,6 +111,10 @@ final class RenderedNode {
     /// Design: docs/design/core/journeys.md#readings
     let readings: [Sampling]
 
+    /// The derived states its builds made or found - its conversions' - which it holds while it stands.
+    /// Design: docs/design/core/journeys.md#conversions
+    let derived: [AnyObject]
+
     /// The elements under it, in the order the host has them.
     var children: [RenderedNode]
 
@@ -149,6 +153,7 @@ final class RenderedNode {
         engines: [Int] = [],
         driven: [Prop: StateEntry] = [:],
         readings: [Sampling] = [],
+        derived: [AnyObject] = [],
         children: [RenderedNode]
     ) {
         self.motion = motion
@@ -164,6 +169,7 @@ final class RenderedNode {
         self.engines = engines
         self.driven = driven
         self.readings = readings
+        self.derived = derived
         self.id = id
         self.type = type
         self.props = props
@@ -172,7 +178,7 @@ final class RenderedNode {
         self.children = children
 
         // A reader of what it read for as long as it lives; an element that read
-        // nothing skips the lock.
+        // nothing asks nothing.
         if !reads.isEmpty {
             Renderer.shared.reading(reads)
         }

@@ -102,17 +102,25 @@ extension State {
         /// Design: docs/design/core/journeys.md#conversions
         weak var conversion: Conversion?
 
-        /// The derived states worked out from this one, by the line that wrote each
-        /// conversion.
-        var derivations: [String: AnyObject] = [:]
+        /// The derived states worked out from this one, by the element and the line that
+        /// wrote each conversion - known weakly: the element holds them.
+        var derivations: [String: Derivation] = [:]
 
-        /// The derived state a conversion written at `key` keeps - made once, then kept.
-        func derived<Out>(_: Out.Type, at key: String, make: @escaping () -> Out) -> State<Out>.Storage {
-            if let kept = derivations[key] as? State<Out>.Storage { return kept }
+        /// The derived state a conversion written at `site` keeps - made once for the
+        /// element being built, then kept while the element holds it.
+        /// Design: docs/design/core/journeys.md#conversions
+        func derived<Out>(_: Out.Type, at site: String, make: @escaping () -> Out) -> State<Out>.Storage {
+            let key = DerivationScope.key(site)
+
+            if let kept = derivations[key]?.state as? State<Out>.Storage {
+                DerivationScope.hold(kept)
+                return kept
+            }
 
             let made = State<Out>(making: make).storage
 
-            derivations[key] = made
+            derivations = derivations.filter { $0.value.state != nil }
+            derivations[key] = Derivation(made, heldHere: !DerivationScope.hold(made))
             return made
         }
 

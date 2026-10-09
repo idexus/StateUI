@@ -179,9 +179,13 @@ where it is not exactly - a rounding, a clamp - the source settles once on the
 value the round trip lands on.
 
 ```text
-  derived state   kept on the first source's storage under "file:line:column",
-                  so a conversion written once is one state across renders
-                  and the host's tie keeps its number
+  derived state   known to the first source's storage under the element being
+                  built and "file:line:column", and held by that element as it
+                  holds its readings: one state per element and line across
+                  renders - the host's tie keeps its number - two views
+                  converting one source on one line keep two, and an element
+                  that leaves takes its own; made with no element being built,
+                  the source holds it
   sources         held WEAKLY by the conversion
   engines         back (priority -2) first, then forward (-1), both ahead of
                   every author's engine, on the element wearing the result
