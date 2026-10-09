@@ -16,11 +16,12 @@ The core's sources stand in one folder per topic, one element to a file, and
 | [render.md](render.md) | the renderer, the three roads of a render, generations, handlers in the message, starting a handler |
 | [invalidation.md](invalidation.md) | reads and changes, live readers, writes during a render, `debugInfo()` |
 | [identity-and-diffing.md](identity-and-diffing.md) | keys, state surviving a rebuild, carrying a view, the clean walk, what a patch carries |
-| [state.md](state.md) | storage and box, bindings, model state, carried state, kept and scene-kept state, the environment |
+| [state.md](state.md) | storage and box, bindings and their parts, posting, model state, carried state, kept and scene-kept state, the environment |
 | [journeys.md](journeys.md) | the journey lanes, the law on the image, moving and waiting, readings, conversions, motion laws |
 | [cycle.md](cycle.md) | the board, where a write lands, host reports, engines, state numbers, the ticker |
 | [acts.md](acts.md) | acts, completion ids, aims, focus, dialogs, host events |
-| [concurrency.md](concurrency.md) | `MainActor` on every platform, the doorbell, draining jobs, the lock and its order |
+| [runs.md](runs.md) | the runs of a handler, `RepeatedEvent`, a superseded run, the library's own tasks, a write built on a value gone, what a walk runs |
+| [concurrency.md](concurrency.md) | `MainActor` on every platform, the doorbell, draining jobs, what stands behind a lock |
 | [contracts.md](contracts.md) | contracts and tiers, member facts, values that cross, tokens, realizations |
 | [scenes.md](scenes.md) | the scene tree, sessions, what the platform keeps, connecting and ending scenes |
 | [diagnostics.md](diagnostics.md) | the tally, the inspector, complaints |
@@ -163,8 +164,9 @@ holds its reasons. A type's extensions stand in its folder, named
 `Type+Responsibility.swift`.
 
 ```text
-  Core/State        @State and its storage, Binding, kept state,          state
-                    @Environment, the @Observable warning
+  Core/State        @State and its storage, Binding and its parts,        state
+                    posting, kept state, @Environment, the @Observable
+                    warning
   Core/Carried      what a carried value is: StateValue and its image,    state, cycle
                     the attachments, HostStorage's three copies
   Core/Journey      Journey and its lanes, the law on the image, the two  journeys
@@ -176,7 +178,9 @@ holds its reasons. A type's extensions stand in its folder, named
                     inputs, .onChanged, .onCreated, .onDestroying
   Core/Acts         acts and replies, aims, focus, dialogs, the screen    acts
                     reader, host events
-  Core/Threads      the UI thread's executor, the doorbell, the lock      concurrency
+  Core/Runs         a handler's runs and its RepeatedEvent, the run a     runs
+                    task belongs to, a walk's runs
+  Core/Threads      the UI thread's executor, the doorbell                concurrency
   Core/Boundary     the typed SPI: HostBoundary, HostRender, HostPatch     (this note)
                     and the values it carries, SVG path data
   Core/Contract     contracts and tiers, members, their facts and         contracts

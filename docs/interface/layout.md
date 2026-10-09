@@ -381,8 +381,10 @@ no remembered rectangle and can therefore receive the standing value once
 again. A malformed frame payload is rejected rather than delivered as a
 partial rectangle.
 
-The handler runs as an ordinary asynchronous StateUI event after layout. It may
-await and may write state; such a write requests a later description. The
+The handler runs as an ordinary StateUI event after layout. It may write state;
+such a write requests a later description. A handler that awaits names what a
+newer rectangle does while it runs: `.onFrameChanged(.cancelPrevious) { frame
+in … }`. The
 report never changes layout by itself. A visual transform never reports,
 because it does not alter the layout rectangle; an animated layout property
 reports the rectangles that the host actually settles.

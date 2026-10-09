@@ -89,7 +89,7 @@ post is refused as it is posted.
 A `Binding` is two closures - read and write - plus who it borrows from: the
 storage behind a `@State` (`lender`) and which part of it (`lent`). A part is
 the whole road from the state (`StatePart`): `$rows[0].title` and
-`$rows[1].title` are two parts, so a post to one lands in its own slot, and a
+`$rows[1].title` are two parts, so a post to one lands in its own entry, and a
 child lent the second is described again rather than carried with the first.
 A binding to an element knows whether its collection still has it (`reaches`),
 and so does every binding to a property of it: a write, or a post's job, to an
@@ -336,5 +336,5 @@ every change.
 `State`, `Binding` and `Journey` are `MainActor`'s, which makes each
 `Sendable` by its type: a binding handed to a task can be posted to, and
 nothing else. Nothing promises more than the compiler checks: what other
-threads share - a mailroom's slots, the executor's queue - stands inside a
+threads share - a mailroom's waiting entries, the executor's queue - stands inside a
 `Mutex`.

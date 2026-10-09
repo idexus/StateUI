@@ -237,7 +237,9 @@ UIDevice.current.isBatteryMonitoringEnabled = true
 NotificationCenter.default.addObserver(
     forName: UIDevice.batteryLevelDidChangeNotification, object: nil, queue: .main
 ) { _ in
-    StateUIEvents.raise(NotesContract.batteryChanged, Double(UIDevice.current.batteryLevel))
+    MainActor.assumeIsolated {
+        StateUIEvents.raise(NotesContract.batteryChanged, Double(UIDevice.current.batteryLevel))
+    }
 }
 ```
 

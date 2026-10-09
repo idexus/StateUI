@@ -83,6 +83,11 @@ StateUI has one state declaration and two reactive paths:
 - handing a binding to a control or property lets the host update it without
   rebuilding that body.
 
+State belongs to the UI thread: a handler writes it on `MainActor`, a task
+elsewhere posts to it (`$count.post { $0 + 1 }`), and a handler that awaits
+says what its event does when it comes again
+([Concurrency](docs/interface/concurrency.md)).
+
 `Journey` belongs to the same state and carries its current value, destination,
 velocity, and motion. A host with verified motion support animates compatible
 property changes on the platform display clock; an unverified or unsupported

@@ -64,8 +64,9 @@ however long it outlives the body, whatever other runs are under way.
 ## The library's own tasks
 
 A task the library starts for itself - a ticker's loop, a sampling's late
-reading, a post's job, a handler a render queued, the inspector's pace - is
-detached, so it belongs to no run. Started inside a handler, it would inherit
+reading, a post's job, a handler a render queued, the inspector's pace - starts
+with no run around it (`libraryTask` clears `HandlerRun.current`), so it belongs
+to no run. Started inside a handler, it would inherit
 that run and be refused once the run is superseded: a ticker started by a run a
 second press cancelled would tick and change nothing.
 

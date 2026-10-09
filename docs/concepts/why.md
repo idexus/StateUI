@@ -184,6 +184,20 @@ view from other views by its type.
 **Deliberately rejected:** `any View` and type-erased wrappers in the public
 API, which would turn those compile errors into failures at run time.
 
+## A state belongs to the UI thread
+
+A `@State`, its bindings and its journey are read and written on `MainActor`,
+with no lock: a handler's lines run with nothing between them, and a write is
+what the next read sees. Another thread posts - `$x.post` - the one door in,
+landing on the UI thread in the order posted. A handler that awaits says what
+its event does when it comes again, and a run superseded changes nothing, so
+an older answer never overwrites a newer one.
+
+**Deliberately rejected:** state written from any thread under locks, where a
+write costs a lock, two writers interleave inside one change and an author
+reasons about threads in every handler; and a default for a repeated event,
+which would hide the one question an awaiting handler has to answer.
+
 ## The library never imports Foundation
 
 The StateUI library never imports Foundation; an application may. Handlers run

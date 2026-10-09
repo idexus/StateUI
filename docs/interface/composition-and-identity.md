@@ -216,6 +216,10 @@ inside-out before a replacement is created; creation runs outside-in.
 
 Rebuilding or carrying an existing element is neither creation nor destruction.
 
+Both come once, so neither names a `RepeatedEvent`, even when it awaits. An
+`onCreated` still awaiting when its element leaves is cancelled and changes
+nothing from then on; an `onDestroying` runs to its end.
+
 ## Reacting to a changed value
 
 `onChanged` compares one `Equatable` value with the value the same element
@@ -235,6 +239,20 @@ It does not run on the first description; use `onCreated` when arrival itself
 requires work. Multiple watchers are paired by modifier order. If their count
 or value type changes, that element starts watching afresh instead of matching
 unrelated slots.
+
+A handler that awaits names what a newer change does while it runs - a search
+cancels the one before it:
+
+```swift
+@State var query = ""
+@State var results: [String] = []
+
+Text(results.joined(separator: ", "))
+    .onChanged(query, .cancelPrevious) { _, new in
+        try await Task.sleep(for: .milliseconds(250))
+        results = ["\(new) 1", "\(new) 2"]
+    }
+```
 
 Handlers run after the tree walk. A write made by a handler can therefore be
 settled safely. A handler that unconditionally changes the value it watches

@@ -322,8 +322,9 @@ StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
 
 `HostEvents` represents a provider notification with no tree element. The
 application declares it in its contract with the types of the values it
-carries, and the subscription must be retained and cancelled when its owner
-leaves:
+carries. `HostEvents.on` answers the subscription, which is kept - dropping it
+is a compiler warning - and cancelled when its owner leaves; a view keeps it
+in its own state:
 
 ```swift
 enum NotesContract: ApplicationTier {
@@ -334,16 +335,30 @@ enum NotesContract: ApplicationTier {
     static let members: [any ContractMember] = [importFinished]
 }
 
-@State var imported = ""
-var subscription: HostEventSubscription?
+struct ImportStatus: View {
+    @State private var imported = ""
+    @State private var heard: [HostEventSubscription] = []
 
-subscription = HostEvents.on(NotesContract.importFinished) { location in
-    imported = location
+    var body: some View {
+        Text(imported)
+            .onCreated {
+                heard = [
+                    HostEvents.on(NotesContract.importFinished) { location in
+                        imported = location
+                    },
+                ]
+            }
+            .onDestroying {
+                heard.forEach { $0.cancel() }
+                heard = []
+            }
+    }
 }
-
-subscription?.cancel()
-subscription = nil
 ```
+
+A handler that awaits names what a raise does while it runs, as an element's
+event does: `HostEvents.on(NotesContract.importFinished, .waitForPrevious) {
+location in … }`.
 
 A raise carrying values of another shape is reported once and reaches no
 handler. An ordinary control or gesture event always belongs on its element

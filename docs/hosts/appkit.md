@@ -257,17 +257,20 @@ element, such as a power or network change:
 
 ```swift quote
 @discardableResult
-public nonisolated static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
+@MainActor
+public static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
     _ event: ElementEvent<Owner, (repeat each Value)>,
     _ value: repeat each Value) -> Int
 ```
 
 ```swift quote
 NotificationCenter.default.addObserver(
-    forName: .NSProcessInfoPowerStateDidChange, object: nil, queue: nil
+    forName: .NSProcessInfoPowerStateDidChange, object: nil, queue: .main
 ) { _ in
-    StateUIEvents.raise(
-        NotesContract.lowPowerChanged, ProcessInfo.processInfo.isLowPowerModeEnabled)
+    MainActor.assumeIsolated {
+        StateUIEvents.raise(
+            NotesContract.lowPowerChanged, ProcessInfo.processInfo.isLowPowerModeEnabled)
+    }
 }
 ```
 

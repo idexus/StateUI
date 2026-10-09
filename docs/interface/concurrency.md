@@ -26,8 +26,8 @@ Button("Load").onClicked(.ignoreWhileRunning) {
 A handler without an `await` completes during the event dispatch that started
 it. After a suspension, continuation requires a later turn of the platform UI
 loop. The host wakes for MainActor's jobs even when the awaited work was not a
-host action, so `Task.sleep`, task values, streams, continuations, posts and
-`MainActor.run` from a task on the pool all resume promptly.
+host action, so `Task.sleep`, task values, streams and continuations resume
+promptly, and a post made on another thread lands promptly.
 
 An uncaught handler error is reported through the active host. Use `do` and
 `catch` only when the application can recover or present a more useful state.
@@ -64,9 +64,11 @@ count` before it and `count = old + 1` after.
 
 A run that a later event cancels, or whose element leaves the screen, changes
 nothing from then on: its task is cancelled, and its state writes, movements,
-posts and acts are refused - a slower, older search never overwrites a newer
-one, and a page already left never navigates. A handler without an `await`
-runs whole inside its event and says nothing.
+posts and acts are refused, each refusal said once - a slower, older search
+never overwrites a newer one, and a page already left never navigates. A task
+the run started is refused with it. A handler without an `await` names no
+`RepeatedEvent`: it runs whole inside its event, so nothing supersedes it.
+`.onCreated` and `.onDestroying` name none either, as they come once.
 
 ## Application async functions
 
@@ -113,14 +115,24 @@ elsewhere cannot touch it - the compiler refuses - and posts to it instead:
 ```swift
 @State var total = 0
 
-let counter = $total
-counter.post { value in value + 1 }
+Button("Count").onClicked(.ignoreWhileRunning) {
+    let counter = $total
+    await withTaskGroup(of: Void.self) { group in
+        for _ in 0..<4 {
+            group.addTask { counter.post { value in value + 1 } }
+        }
+    }
+}
 ```
 
 A posted change runs in a job on `MainActor` soon after, over the value as it
 stands then, in the order posted; a value posted replaces the changes waiting
-before it. Several states that must change as one invariant change together on
-`MainActor`: nothing runs between the lines of a handler until it awaits.
+before it, so ten thousand values posted from a loop are one write and one
+render. A post is a message even on the UI thread: nothing reads it before its
+job runs. A write or a post to an element its collection no longer has - an
+index past the end - is dropped and said once. Several states that must change
+as one invariant change together on `MainActor`: nothing runs between the
+lines of a handler until it awaits.
 
 A write requests a render; the renderer coalesces pending work. A task that
 reads state outside a description does not become a view reader. Read tracking
@@ -184,7 +196,9 @@ count; `reset()` stops and sets it to zero. A ticker ends with whoever holds
 it: its loop holds it only through a tick, so one a view keeps in `@State`
 stops when the view goes. One that should keep counting is held by something
 that stays. A tick that reaches the view's state holds that state, the ticker
-among it, so such a ticker is stopped in `.onDestroying`, as the poll below.
+among it, so such a ticker is stopped in `.onDestroying`, as the poll below. A
+ticker a handler starts belongs to no run: it goes on after that run is
+superseded, until it is stopped or nobody holds it.
 
 Intervals shorter than one millisecond are clamped to one millisecond. The
 platform scheduler may have a coarser practical resolution.

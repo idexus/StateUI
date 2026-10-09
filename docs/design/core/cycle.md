@@ -66,7 +66,7 @@ A write during a cycle - an engine's, as nothing else runs then - goes into
 the image and marks its changed lanes dirty, so the engines after it see it.
 Any other write lands between cycles, in the pending slot, and asks the host for
 a turn: a write from a task that resumed on the UI thread - after a sleep, or a
-post from the pool (state.md#posting) - or from an application's own callback
+post's job (state.md#posting) - or from an application's own callback
 has no event, render or act after it to start a cycle, and nothing else would
 tell the host it is there.
 

@@ -82,8 +82,9 @@ struct DownloadCount: View {
 ```
 
 A post is never written at once, on the UI thread neither: it is a message,
-and nothing reads it before its job runs. What it carries crosses threads, so
-the value is `Sendable`.
+and nothing reads it before its job runs. A value posted replaces the changes
+waiting before it, so a loop posting ten thousand values costs one write and
+one render. What it carries crosses threads, so the value is `Sendable`.
 
 Swift does not allow a property wrapper at file scope. A value with that
 lifetime can use the box directly, on the UI thread's actor:
@@ -241,6 +242,10 @@ For a model held in state, the two useful spellings have different owners:
 A part has no independent state storage. It works for described values and
 write-back, but it cannot be a host motion channel, a journey, or an engine's
 followed state. Give independently carried values their own `@State` storage.
+
+A binding to an element knows whether its collection still has it: a write, or
+a post, to `$levels[1]` after the array shrank to one element is dropped and
+said once rather than reaching past the end.
 
 ### A custom binding
 
@@ -430,6 +435,9 @@ Text(.multi($name, $width, $height).convert { name, width, height in
     "\(name): \(Int(width)) × \(Int(height))"
 })
 ```
+
+Each view writing a conversion keeps its own derived state, even where two
+views convert one source on one line, and lets it go when it leaves.
 
 Conversions require whole StateUI states as sources to remain on the host-cycle
 path. A binding to a member or one made from closures is evaluated as described

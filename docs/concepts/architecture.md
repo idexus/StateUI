@@ -60,8 +60,9 @@ another owner. `@Environment` reads what the library offers by its name -
 `@Environment(\.window)` - and the nearest object an ancestor provided by its
 type; it is the route for session state and shared application models.
 
-A state's identity is its storage, not its current value. A write is serialized
-through that storage and is visible before the write returns.
+A state's identity is its storage, not its current value. A state is the UI
+thread's: it is read and written on `MainActor`, and a write is what the next
+read sees. Another thread posts to it with `$x.post`.
 
 ## Reactive path 1: description invalidation
 

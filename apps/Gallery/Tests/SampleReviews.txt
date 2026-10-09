@@ -46,7 +46,7 @@ IdentitySample.swift 3161e5c1e7445fbf
 ImageSample.swift b3c7367bd20e6353
 InteropActsSample.swift 25a19b68590a4999
 InteropControlSample.swift d9ee8e8afdae8f1f
-InteropEventsSample.swift bb2682f381f278c5
+InteropEventsSample.swift 7ddcaec4a9153c7f
 ItemsViewSample.swift 3dfe806e0cb5a447
 KeyboardSample.swift 45ec1b56ef082aa4
 LayoutDirectionSample.swift b24c2d83bfb165b2
