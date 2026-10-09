@@ -85,7 +85,10 @@ superseded run's own post is refused as it is posted.
 ## Bindings
 
 A `Binding` is two closures - read and write - plus who it borrows from: the
-storage behind a `@State` (`lender`) and which part of it (`lent`). `$counter`
+storage behind a `@State` (`lender`) and which part of it (`lent`). A part is
+the whole road from the state (`StatePart`): `$rows[0].title` and
+`$rows[1].title` are two parts, so a post to one lands in its own slot, and a
+child lent the second is described again rather than carried with the first. `$counter`
 builds a new binding every time it is written, so two spellings of one state
 are two values; the lender is how they recognize each other. `described`
 reads it and answers the storage behind a whole `@State` and nothing for a

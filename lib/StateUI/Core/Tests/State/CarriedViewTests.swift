@@ -61,6 +61,11 @@ private struct Typed: View {
     }
 }
 
+/// One element of a list a view is lent a property of.
+private struct Row: Equatable, Sendable {
+    var title: String
+}
+
 @MainActor
 final class CarriedViewTests: XCTestCase {
     override func setUp() async throws {
@@ -107,6 +112,26 @@ final class CarriedViewTests: XCTestCase {
         let patch = renders.render(tree(2))
         XCTAssertEqual(builds.count, 2, "a value it was built with moved")
         XCTAssertEqual(texts(in: patch).last, .string("caption 2"))
+    }
+
+    /// A view lent ANOTHER ELEMENT'S PROPERTY is described again: `$rows[0].title`
+    /// and `$rows[1].title` are two parts of one state, each the whole road from it.
+    func testAViewLentAnotherElementsPropertyIsDescribedAgain() {
+        let renders = Renders()
+        let builds = Builds()
+        let rows = State([Row(title: "a"), Row(title: "b")])
+
+        func tree(_ selected: Int) -> Node {
+            VStack {
+                Text("row \(selected)")
+                Shown(text: rows.projectedValue[selected].title, builds: builds)
+            }.node
+        }
+
+        renders.render(tree(0))
+        let patch = renders.render(tree(1))
+        XCTAssertEqual(builds.count, 2, "the view was carried with the first row's title, lent the second's")
+        XCTAssertEqual(texts(in: patch).last, .string("b"))
     }
 
     func testAClosureHandedToAComposedViewCountsAsChanged() {

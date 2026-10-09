@@ -455,6 +455,19 @@ final class StateTests: XCTestCase {
         XCTAssertEqual(state.get(), 11, "doubled, then one more")
     }
 
+    /// POSTS TO TWO ELEMENTS' PROPERTIES of one state land each in its own
+    /// element: a part is the whole road from the state.
+    func testPostsToTwoElementsOfOneStateLandInTheirOwn() async {
+        let rows = State([PostedRow(title: "a"), PostedRow(title: "b")])
+        let binding = rows.projectedValue
+
+        binding[0].title.post("A")
+        binding[1].title.post("B")
+        await settle()
+
+        XCTAssertEqual(rows.get().map(\.title), ["A", "B"], "the second row's post landed in the first")
+    }
+
     /// A POST HOLDS NOTHING ALIVE once its job ran: a state posted to is freed
     /// with whatever held it, as every state is.
     func testAStatePostedToIsFreedOnceItsJobRan() async {
@@ -812,4 +825,9 @@ extension StateTests {
         XCTAssertTrue(Renderer.shared.needsRender, "and the next one, at once as well")
         _ = reader
     }
+}
+
+/// One element of a list a post is aimed at a property of.
+private struct PostedRow: Equatable, Sendable {
+    var title: String
 }

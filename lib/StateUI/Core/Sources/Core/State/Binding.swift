@@ -34,7 +34,7 @@ public struct Binding<Value> {
     // of one state recognize each other. Only `described` reads it.
     // Design: docs/design/core/state.md#bindings
     let lender: AnyObject?
-    nonisolated let lent: (any Hashable & Sendable)?
+    nonisolated let lent: StatePart?
 
     /// Where a post to this waits for its job - the borrowed state's, shared by every
     /// binding to it.
@@ -86,7 +86,7 @@ public struct Binding<Value> {
         read: @escaping () -> Value,
         write: @escaping (Value) -> Void,
         lender: AnyObject?,
-        lent: (any Hashable & Sendable)?,
+        lent: StatePart?,
         mailroom: Mailroom
     ) {
         self.read = read
@@ -150,7 +150,7 @@ public struct Binding<Value> {
                 wrappedValue = whole
             },
             lender: lender,
-            lent: keyPath,
+            lent: .step(keyPath, from: lent),
             mailroom: mailroom)
     }
 
@@ -168,7 +168,7 @@ public struct Binding<Value> {
             read: { wrappedValue[keyPath: keyPath] },
             write: { wrappedValue[keyPath: keyPath] = $0 },
             lender: lender,
-            lent: keyPath,
+            lent: .step(keyPath, from: lent),
             mailroom: mailroom)
     }
 }
@@ -194,7 +194,7 @@ extension Binding where Value: MutableCollection, Value.Index: Hashable & Sendab
                 wrappedValue = whole
             },
             lender: lender,
-            lent: index,
+            lent: .step(index, from: lent),
             mailroom: mailroom)
     }
 }

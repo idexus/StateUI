@@ -55,19 +55,17 @@ extension Binding where Value: Sendable {
 /// it something was posted to.
 /// Design: docs/design/core/state.md#posting
 final class Mailroom: Sendable {
-    private let slots = Mutex<[AnyHashable?: AnyObject]>([:])
+    private let slots = Mutex<[StatePart?: AnyObject]>([:])
 
     /// The slot of one part of the state, made the first time anything is posted to
     /// it.
-    func slot<Value: Sendable>(_ part: (any Hashable & Sendable)?, of binding: Binding<Value>) -> PostSlot<Value> {
+    func slot<Value: Sendable>(_ part: StatePart?, of binding: Binding<Value>) -> PostSlot<Value> {
         slots.withLock { slots in
-            let key = part.map { AnyHashable($0) }
-
-            if let standing = slots[key] as? PostSlot<Value> { return standing }
+            if let standing = slots[part] as? PostSlot<Value> { return standing }
 
             let made = PostSlot<Value>()
 
-            slots[key] = made
+            slots[part] = made
             return made
         }
     }
