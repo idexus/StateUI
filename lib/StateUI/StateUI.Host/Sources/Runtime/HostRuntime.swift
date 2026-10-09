@@ -171,7 +171,7 @@
     }
 
     /// The user chose tab `selected` of `tabbed`, which showed `previous`: the pages hear it, then the state the
-    /// choice carries.
+    /// choice carries - in a turn taken here where nothing the choice carries takes one.
     /// Design: docs/design/host/pages.md#a-pages-phases
     public func tabChosen(_ tabbed: MountedElement, from previous: Int, to selected: Int) {
         let tabs = tabbed.children
@@ -182,12 +182,14 @@
             tabs[selected].setPagePresented(true, reason: .appearance)
         }
         tabbed.reportUserChange(.selectedTab, .selectedTabChanged, .number(Double(selected)), in: self) { _ in }
+        pump.turnIfWanted()
     }
 
     /// The sidebar of `split` showed or hid on screen: its page hears it, then the state its binding carries.
     public func sidebarShown(_ split: MountedElement, _ shown: Bool) {
         if split.isPagePresented { split.children.first?.setPagePresented(shown, reason: .appearance) }
         split.reportUserChange(.showsSidebar, .showsSidebarChanged, .bool(shown), in: self) { _ in }
+        pump.turnIfWanted()
     }
 
     /// Goes `way` back in `window`: a stack's top page goes, the path told it is one shorter, or the top sheet goes,

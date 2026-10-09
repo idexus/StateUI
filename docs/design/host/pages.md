@@ -39,7 +39,9 @@ sidebar shown or hidden - what stopped showing leaves first, then what started
 showing arrives (`reconcilePresentation`); on a stack it is a move. The tree
 does this itself after each patch of an arrangement shown, and the host layer
 after the user's own choices (`HostRuntime.tabChosen`, `sidebarShown`),
-before the state the choice carries hears it.
+before the state the choice carries hears it. A choice is an entry from the
+toolkit: it ends in a turn wherever the phases it queued wait, so a tab view
+with no selection bound tells its pages at once, on every host.
 
 A window's page - its top sheet, else its arrangement - hears it is shown as
 the window presents it, and the one before it that it is not: a move where a

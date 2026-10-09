@@ -132,6 +132,22 @@ final class PagesTests: XCTestCase {
     }
 
     /// A tab the tree asks for anew is chosen; the user's choice stands where it is another tab there is.
+    /// A tab the user chooses on a tab view with no selection bound tells its pages at once: the phases the choice
+    /// queues take a turn of their own, whatever else the choice carries.
+    func testATabChosenWithNothingBoundTellsItsPagesAtOnce() throws {
+        let runtime = HostRuntime.still()
+        runtime.tree.apply(node("window", .window, children: [node("tabs", .tabView, children: [
+            node("a", .page, events: [.appearing: 2, .disappearing: 3]),
+            node("b", .page, events: [.appearing: 4, .disappearing: 5]),
+        ])]), complete: true)
+        _ = WindowPresentation().show(try XCTUnwrap(runtime.tree.root), in: runtime.lifecycle)
+
+        let tabs = try XCTUnwrap(runtime.tree.root?.first(id: .manual("tabs")))
+        runtime.tabChosen(tabs, from: 0, to: 1)
+
+        XCTAssertFalse(runtime.pump.handlers.hasQueued, "the pages' phases wait for a turn nothing takes")
+    }
+
     func testATabChoiceFollowsTheTreeAndTheUser() {
         var choice = TabChoice()
         XCTAssertEqual(choice.shown, 0)
