@@ -315,6 +315,28 @@ shell that runs it to the application:
 STATEUI_TALLY=1 .scripts/Android/run-app.sh apps/Gallery debug emulator-5554
 ```
 
+### Complaints
+
+When an application hands the library something it cannot use - an opacity
+of 1.4, a write from a run its element outlived, a kept key the application
+did not list - the library carries on with what it can use and says so once
+per process, on the standard output. An application routes those complaints
+to its own log or crash reporter, each on the thread that complained:
+
+```swift
+struct LoggingApp: Application {
+    init() {
+        Complaints.route { words in
+            print("[StateUI] \(words)")
+        }
+    }
+
+    var body: some Scene { WindowGroup { Text("Hello") } }
+}
+```
+
+`Complaints.route(to: nil)` sends them back to the standard output.
+
 ## Recovery and resynchronization
 
 Normal renders are sparse: unchanged properties, handlers, driven bindings,

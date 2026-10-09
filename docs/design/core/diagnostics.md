@@ -69,6 +69,11 @@ Each message is said once per process, because the places that complain are
 modifiers, and a modifier runs on every render: an author who wrote 1.4 where a
 fraction belongs would otherwise be told so as fast as the interface is
 described. It goes to standard output, outside the lock: a terminal on macOS,
-the console on iOS, a shell on Windows and Linux, and nowhere on Android, whose
-process output is not routed. So a complaint is a development aid and may never
-be the only thing between an application and working.
+the console on iOS, a shell on Windows and Linux, logcat on Android, whose host
+routes the process's output there. An application that wants them elsewhere -
+its own log, a crash reporter - routes them (`Complaints.route`), and each
+comes to it on the thread that complained. What was said is held to a
+thousand different things, so complaints naming ever new values cannot grow
+without end: past it, that is said once, and nothing after it. So a complaint
+is a development aid and may never be the only thing between an application
+and working.
