@@ -53,7 +53,7 @@ enum Styled {
     /// The style for `Target`, dimming it to half its opacity.
     static func dimmed<Target: StyleTarget>(_ target: Target.Type) -> [AnyStyle] {
         StyleBuilder.buildExpression(
-            Style<Target>(key(Target().node.type.name)).setValue(VisualElementContract.opacity, 0.5))
+            Style(StyleKey<Target>(key(Target().node.type.name))).setValue(VisualElementContract.opacity, 0.5))
     }
 }
 
