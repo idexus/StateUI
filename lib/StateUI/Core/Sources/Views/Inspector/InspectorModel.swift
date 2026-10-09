@@ -27,6 +27,9 @@ final class InspectorModel {
     /// The render chosen, by its number.
     @State var selected: Int? = nil
 
+    /// Whether the inspectors show what the library complained of, rather than the renders.
+    @State var showingComplaints = false
+
     /// How many inspector windows the platform has up - counted by the
     /// inspector's page, as the tree creates and destroys it.
     var windows = 0
@@ -80,8 +83,11 @@ final class InspectorModel {
             $paused.described.map { ObjectIdentifier($0) },
             $revision.described.map { ObjectIdentifier($0) },
             $selected.described.map { ObjectIdentifier($0) },
+            $showingComplaints.described.map { ObjectIdentifier($0) },
         ].compactMap { $0 })
         Inspection.landed = { [unowned self] in self.landed() }
+        // A complaint comes on any thread; the inspectors hear of it on theirs.
+        Said.shared.onSaid { libraryTask { InspectorModel.shared.landed() } }
 
         if !Inspection.recording && !paused {
             Inspection.start()
@@ -93,12 +99,13 @@ final class InspectorModel {
         guard !showing else { return }
 
         selected = nil
+        Said.shared.onSaid(nil)
         Inspection.stop()
     }
 
-    /// A pass landed, or the host reported on one: asks for the views to be
-    /// built again, once for however many arrive in the pace.
-    private func landed() {
+    /// A pass landed, the host reported on one, or the library complained: asks
+    /// for the views to be built again, once for however many arrive in the pace.
+    func landed() {
         guard !asking else { return }
 
         asking = true

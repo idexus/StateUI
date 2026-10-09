@@ -20,6 +20,7 @@ CanvasSample.swift 52db70adead39b9b
 CheckBoxSample.swift a6e9da46d0ccfb97
 ChoosingItemsSample.swift b471333b083ff971
 ColorBoxSample.swift 8be208d26c18412f
+ComplaintsSample.swift a3ccbb2c9f352274
 ConcurrentAnimationSample.swift 50f232915c942a5d
 ConcurrentStateSample.swift d7aa8650b6b7ed21
 ConnectivitySample.swift 97d67e2f258c5f25

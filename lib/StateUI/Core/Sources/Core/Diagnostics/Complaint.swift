@@ -35,8 +35,10 @@ final class Said: Sendable {
 
     private struct Held {
         var said: Set<String> = []
+        var order: [String] = []
         var full = false
         var hear: (@Sendable (String) -> Void)?
+        var told: (@Sendable () -> Void)?
     }
 
     private let held = Mutex(Held())
@@ -51,24 +53,38 @@ final class Said: Sendable {
         held.withLock { $0.hear = hear }
     }
 
+    /// Tells `told` whenever something new is said - how an inspector learns of it.
+    func onSaid(_ told: (@Sendable () -> Void)?) {
+        held.withLock { $0.told = told }
+    }
+
+    /// Everything said, in the order it was.
+    var everySaid: [String] { held.withLock { $0.order } }
+
     func say(_ message: String) {
-        let (words, hear): (String?, (@Sendable (String) -> Void)?) = held.withLock { held in
-            guard !held.said.contains(message) else { return (nil, nil) }
+        typealias Said = (words: String, hear: (@Sendable (String) -> Void)?, told: (@Sendable () -> Void)?)
+        let said: Said? = held.withLock { held in
+            guard !held.said.contains(message) else { return nil }
+            let words: String
             if held.said.count < cap {
                 held.said.insert(message)
-                return (message, held.hear)
+                words = message
+            } else {
+                // Past the cap, the cap is said once and nothing after it.
+                guard !held.full else { return nil }
+                held.full = true
+                words = "more than \(cap) different complaints were said; the rest are not said"
             }
-            // Past the cap, the cap is said once and nothing after it.
-            guard !held.full else { return (nil, nil) }
-            held.full = true
-            return ("more than \(cap) different complaints were said; the rest are not said", held.hear)
+            held.order.append(words)
+            return (words, held.hear, held.told)
         }
-        guard let words else { return }
+        guard let said else { return }
 
         // Outside the hold, and outside every run: what hears it is somebody else's, and a run refused is not its.
         HandlerRun.$current.withValue(nil) {
-            if let hear { hear(words) } else { print("StateUI: \(words)") }
+            if let hear = said.hear { hear(said.words) } else { print("StateUI: \(said.words)") }
         }
+        said.told?()
     }
 
     func said(_ words: String) -> Bool {

@@ -299,7 +299,7 @@ struct EditorScene: Scene {
 
 The inspector shows what caused each pass, whether a composed view was built,
 carried, or walked, the Swift and host costs, and how many native controls were
-made or kept. It records nothing while closed, so applications that do not use
+made or kept; its Complaints list what the library said, newest first. It records nothing while closed, so applications that do not use
 it pay only disabled checks.
 
 Set `STATEUI_INSPECT=1` in the host process to emit the same render record as

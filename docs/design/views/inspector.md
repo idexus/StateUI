@@ -16,10 +16,13 @@ long describing it took in Swift and applying it took in the host, in
 microseconds, and how many composed views it built and carried. A chosen
 render shows its tree - every composed view it reached, built with the reason
 it could not be carried, carried whole, or walked past on the way to one below
-it - with each one's time, its own and with what is under it.
+it - with each one's time, its own and with what is under it. Its Complaints,
+one action away, list what the library said (core/diagnostics.md), newest
+first: a complaint comes on any thread, and tells the inspectors on theirs,
+as a landed render does.
 
 ```text
-  InspectorModel (one, shared)       places, folded, paused, revision, selected
+  InspectorModel (one, shared)       places, folded, paused, revision, selected, complaints shown
         │ revision moves at most once per pace
         ▼
   Node.overlay(inspector:of:) ──▶ InspectorPanel   docked in the window whose ⓘ was pressed
@@ -27,6 +30,7 @@ it - with each one's time, its own and with what is under it.
         │
         ▼
   InspectorView: head (actions) · summary line · list of renders · chosen render's tree
+                 · or the complaints said
 ```
 
 ## Each scene has its own

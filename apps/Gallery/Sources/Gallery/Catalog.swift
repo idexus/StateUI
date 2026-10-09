@@ -48,6 +48,7 @@ final class Catalog {
                     Sample(BuilderSample()),
                     Sample(IdentitySample()),
                     Sample(LifetimeSample()),
+                    Sample(ComplaintsSample()),
                     Sample(SameInputsSample()),
                 ]),
 
