@@ -18,6 +18,13 @@ extension PersistentKey {
     fileprivate static let loud = PersistentKey("test.loud", of: Bool.self)
     fileprivate static let level = PersistentKey("test.level", of: Double.self)
     fileprivate static let appearance = PersistentKey("test.appearance", of: Appearance.self)
+    fileprivate static let late = PersistentKey("test.late", of: Int.self)
+}
+
+/// A state kept under a key no application lists, made after the host read the list.
+@MainActor
+private struct LateComer {
+    @State(persistentKey: .late) var late = 0
 }
 
 /// Two different views declaring the SAME key - which is the case that has to
@@ -319,6 +326,29 @@ final class PersistenceTests: XCTestCase {
         Renderer.shared.setApplication(KeepingApp())
 
         XCTAssertEqual(HostBoundary.persistentKeys, [.count, .name])
+    }
+
+    /// A key a state keeps and the application does not list is said once the host reads the list: the host never
+    /// reads it at launch, so its value would come back a launch late, in silence.
+    func testAKeyKeptButNotListedIsSaidOnceTheHostReadsTheList() {
+        Renderer.shared.setApplication(KeepingApp())
+        let preferences = Preferences()
+
+        _ = HostBoundary.persistentKeys
+
+        XCTAssertTrue(hasComplained("'test.loud' keeps a state"), "an unlisted key said")
+        XCTAssertFalse(hasComplained("'test.name' keeps a state"), "a listed key says nothing")
+        _ = preferences
+    }
+
+    /// A key claimed after the host read the list is said as it is claimed.
+    func testAKeyClaimedAfterTheListIsReadIsSaidAsItIsClaimed() {
+        Renderer.shared.setApplication(KeepingApp())
+        _ = HostBoundary.persistentKeys
+
+        _ = LateComer()
+
+        XCTAssertTrue(hasComplained("'test.late' keeps a state"))
     }
 
     /// An application that keeps nothing names no key, and the host then reads

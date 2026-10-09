@@ -76,7 +76,9 @@ hands back what it found before the first render.
 
 A key left off the list is never read. State declared with it still saves,
 because a write knows its own key, so its value appears one launch late: the
-symptom is a setting that lags one run behind. The list is the one thing
+symptom is a setting that lags one run behind. So a key a state keeps and the
+list leaves out is said once: when the host reads the list, for a state that
+claimed it before, and as a state claims it after. The list is the one thing
 that cannot be worked out from the views, because the views that would name
 the keys do not exist yet when the store is read.
 

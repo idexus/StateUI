@@ -120,7 +120,9 @@
     /// need, lists them as it is made.
     public static var persistentKeys: [PersistentKey] {
         Renderer.shared.madeApplication()
-        return StandardEnvironment.application.persistentKeys
+        let keys = StandardEnvironment.application.persistentKeys
+        PersistentStore.shared.listed(keys)
+        return keys
     }
 
     /// Hydrates values found in the native store before the first render.

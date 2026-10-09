@@ -337,7 +337,7 @@ The declared value is the default when the store has no entry. The application
 must list every key in `ApplicationSession.persistentKeys` during its
 initialization; otherwise the host has no key to hydrate before the first
 build. A write still has its key, so omitting it can look like restoration is
-one launch late.
+one launch late; a key a state keeps and the list leaves out is said once.
 
 `Bool`, `Int`, `Double`, and `String` conform to `PersistentValue`. An enum
 whose raw value conforms gains the same representation. Larger records belong

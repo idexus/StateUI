@@ -186,6 +186,23 @@ final class PersistentStore {
     /// The keys written since the last take, each with its last value.
     private var waiting: [String: PropValue] = [:]
 
+    /// The names the application lists, once the host has read them.
+    private var listed: Set<String>?
+
+    /// The host read the keys the application lists: a key a state keeps and the list leaves out is said.
+    /// Design: docs/design/core/state.md#kept-state
+    func listed(_ keys: [PersistentKey]) {
+        listed = Set(keys.map(\.name))
+        for name in storages.keys.sorted() { sayUnlisted(name) }
+    }
+
+    /// Says once that the host never reads `name` at launch, where the list leaves it out.
+    private func sayUnlisted(_ name: String) {
+        guard let listed, !listed.contains(name) else { return }
+        complain("'\(name)' keeps a state but application.persistentKeys does not list it: the host never reads it "
+            + "at launch, so its value comes back one launch late. List it in the application's init.")
+    }
+
     /// Takes what the host read out of the store, before the first render; a storage
     /// claimed earlier takes its value now.
     func hydrate(_ values: [(name: String, value: PropValue)]) {
@@ -208,6 +225,7 @@ final class PersistentStore {
         }
 
         storages[key.name] = (storage, land)
+        sayUnlisted(key.name)
 
         if let held = hydrated[key.name] {
             land(held)
@@ -237,5 +255,6 @@ final class PersistentStore {
         hydrated.removeAll()
         storages.removeAll()
         waiting.removeAll()
+        listed = nil
     }
 }

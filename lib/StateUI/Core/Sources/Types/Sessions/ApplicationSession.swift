@@ -88,7 +88,8 @@ public final class ApplicationSession {
     ///     }
     ///
     /// **A key left off this list is never read.** State declared with it
-    /// still saves, so its value arrives one launch late.
+    /// still saves, so its value arrives one launch late - and the library
+    /// says so once.
     ///
     /// Design: docs/design/types/sessions.md#kept-keys-are-declared
     @State public var persistentKeys: [PersistentKey] = []
