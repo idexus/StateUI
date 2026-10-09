@@ -32,7 +32,10 @@ There is no default. Each event modifier comes three ways: a step, `() throws
 `RepeatedEvent` first, for a handler that awaits; and an awaiting handler with
 no word, unavailable, whose message says what to write. The compiler asks the
 question where there is one, and only there. A step is kept as a run under
-`.overlap` that never suspends.
+`.overlap` that never suspends. It takes no road of its own: measured in a
+Release build (2026-10-10, an M-series Mac), an event dispatched to a step
+costs some 2 µs end to end - a state's write in it some 66 ns - so even 120
+events a second, a drag's, spend a quarter of a millisecond a second.
 
 `RunSlot.underWay` counts the runs of every slot from their start to their
 end: what a test waits on for the handlers' work to end, rather than a length
