@@ -30,6 +30,10 @@ public struct Binding<Value> {
     private let read: () -> Value
     private let write: (Value) -> Void
 
+    /// Whether what this borrows still stands - false for an element a list no longer has.
+    /// Design: docs/design/core/state.md#bindings
+    let reaches: () -> Bool
+
     // Who this borrows from - the storage and which part of it - so two spellings
     // of one state recognize each other. Only `described` reads it.
     // Design: docs/design/core/state.md#bindings
@@ -46,6 +50,7 @@ public struct Binding<Value> {
     public init(_ state: State<Value>) {
         read = { state.get() }
         write = { state.wrappedValue = $0 }
+        reaches = { true }
         lender = state.lender
         lent = nil
         mailroom = state.storage.mailroom
@@ -76,6 +81,7 @@ public struct Binding<Value> {
             storage.write($0)
             storage.askForRender()
         }
+        reaches = { true }
         lender = storage
         lent = nil
         mailroom = storage.mailroom
@@ -85,12 +91,14 @@ public struct Binding<Value> {
     init(
         read: @escaping () -> Value,
         write: @escaping (Value) -> Void,
+        reaches: @escaping () -> Bool,
         lender: AnyObject?,
         lent: StatePart?,
         mailroom: Mailroom
     ) {
         self.read = read
         self.write = write
+        self.reaches = reaches
         self.lender = lender
         self.lent = lent
         self.mailroom = mailroom
@@ -106,6 +114,7 @@ public struct Binding<Value> {
     public init(get: @escaping () -> Value, set: @escaping (Value) -> Void) {
         read = get
         write = set
+        reaches = { true }
         lender = nil
         lent = nil
         mailroom = Mailroom()
@@ -117,7 +126,14 @@ public struct Binding<Value> {
         get { read() }
 
         // Nonmutating: what changes is what the owner holds.
-        nonmutating set { write(newValue) }
+        nonmutating set {
+            guard reaches() else {
+                return complain("A write through a binding to an element its collection no longer has - the list "
+                    + "shrank under it - was dropped. Hand the element's identity rather than its index.")
+            }
+
+            write(newValue)
+        }
     }
 
     /// So a borrowed value can be lent on again, unchanged.
@@ -149,6 +165,7 @@ public struct Binding<Value> {
                 whole[keyPath: keyPath] = newValue
                 wrappedValue = whole
             },
+            reaches: reaches,
             lender: lender,
             lent: .step(keyPath, from: lent),
             mailroom: mailroom)
@@ -167,6 +184,7 @@ public struct Binding<Value> {
         Binding<Subject>(
             read: { wrappedValue[keyPath: keyPath] },
             write: { wrappedValue[keyPath: keyPath] = $0 },
+            reaches: reaches,
             lender: lender,
             lent: .step(keyPath, from: lent),
             mailroom: mailroom)
@@ -193,6 +211,7 @@ extension Binding where Value: MutableCollection, Value.Index: Hashable & Sendab
                 whole[index] = newValue
                 wrappedValue = whole
             },
+            reaches: { [reaches] in reaches() && wrappedValue.indices.contains(index) },
             lender: lender,
             lent: .step(index, from: lent),
             mailroom: mailroom)

@@ -119,6 +119,11 @@ final class PostSlot<Value: Sendable>: Sendable {
             return waiting
         }
 
+        guard binding.reaches() else {
+            return complain("A post to an element its collection no longer has - the list shrank before the post's "
+                + "job ran - was dropped. Post by the element's identity rather than its index.")
+        }
+
         var value = taken.value ?? binding.standing
 
         for transform in taken.transforms {

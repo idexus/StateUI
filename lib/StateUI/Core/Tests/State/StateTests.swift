@@ -468,6 +468,34 @@ final class StateTests: XCTestCase {
         XCTAssertEqual(rows.get().map(\.title), ["A", "B"], "the second row's post landed in the first")
     }
 
+    /// A POST TO AN ELEMENT GONE lands nowhere: the list shrank under a binding
+    /// to one of its elements, and the job drops what waits, said once.
+    func testAPostToAnElementGoneLandsNowhere() async {
+        let items = State([1, 2, 3])
+        let third = items.projectedValue[2]
+
+        items.wrappedValue = [1]
+        third.post(30)
+        third.post { $0 + 1 }
+        await settle()
+
+        XCTAssertEqual(items.get(), [1], "the post wrote past the end")
+    }
+
+    /// A WRITE THROUGH A BINDING TO AN ELEMENT GONE is dropped, said once - its
+    /// property's binding too.
+    func testAWriteToAnElementGoneIsDropped() {
+        let rows = State([PostedRow(title: "a"), PostedRow(title: "b")])
+        let second = rows.projectedValue[1]
+        let secondTitle = rows.projectedValue[1].title
+
+        rows.wrappedValue = [PostedRow(title: "a")]
+        second.wrappedValue = PostedRow(title: "x")
+        secondTitle.wrappedValue = "y"
+
+        XCTAssertEqual(rows.get().map(\.title), ["a"], "the write landed past the end")
+    }
+
     /// A POST HOLDS NOTHING ALIVE once its job ran: a state posted to is freed
     /// with whatever held it, as every state is.
     func testAStatePostedToIsFreedOnceItsJobRan() async {

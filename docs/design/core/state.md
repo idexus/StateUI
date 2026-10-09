@@ -88,7 +88,11 @@ A `Binding` is two closures - read and write - plus who it borrows from: the
 storage behind a `@State` (`lender`) and which part of it (`lent`). A part is
 the whole road from the state (`StatePart`): `$rows[0].title` and
 `$rows[1].title` are two parts, so a post to one lands in its own slot, and a
-child lent the second is described again rather than carried with the first. `$counter`
+child lent the second is described again rather than carried with the first.
+A binding to an element knows whether its collection still has it (`reaches`),
+and so does every binding to a property of it: a write, or a post's job, to an
+element the list no longer has - it shrank under the binding - is dropped and
+said once, rather than writing past the end. `$counter`
 builds a new binding every time it is written, so two spellings of one state
 are two values; the lender is how they recognize each other. `described`
 reads it and answers the storage behind a whole `@State` and nothing for a
