@@ -12,6 +12,18 @@ import XCTest
 final class NumberDecodingTests: XCTestCase {
     private let unheld: [Double] = [.nan, .infinity, -.infinity, 1e30, Double(Int.max)]
 
+    /// A whole number past 2^53 crosses to the host rounded, a number holding every whole number exactly only up to
+    /// there: said once, where it crosses.
+    func testAWholeNumberPastTwoToTheFiftyThirdIsSaidAsItCrosses() {
+        _ = (1 << 53).carried
+        _ = (1 << 53).propValue
+        XCTAssertFalse(hasComplained("past 2^53"), "2^53 itself crosses whole")
+
+        _ = ((1 << 53) + 1).carried
+
+        XCTAssertTrue(hasComplained("past 2^53"))
+    }
+
     func testAKeptWholeNumberNoIntHoldsComesBackAsNothing() {
         for number in unheld {
             XCTAssertNil(Int(persisted: .number(number)), "\(number) kept on disk")

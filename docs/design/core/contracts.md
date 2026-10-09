@@ -76,7 +76,9 @@ animates, is cleared, and says nothing of motion.
 ## Values that cross
 
 `HostRepresentable` is a member's value and how it crosses and comes back:
-`Bool`, `Int` (a `Double`, read back as its whole part), `Double`, `String`, an
+`Bool`, `Int` (a `Double`, read back as its whole part - exact up to 2^53, and
+a whole number past it, which arrives rounded, said once; a carried `Int` lane
+alike), `Double`, `String`, an
 optional of any of them (nil crosses as `.nothing`), `PropValue` itself, and an
 `Int32` enum (its member's number). A list of numbers crosses as one run of
 numbers, a list of text as one list of text, and a list of bytes - a file's

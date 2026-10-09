@@ -54,7 +54,7 @@ extension Double: LaneValue {
 
 extension Int: LaneValue {
     /// A whole number takes one lane, as itself.
-    public var carried: StateCarried { .lanes([Double(self)]) }
+    public var carried: StateCarried { .lanes([crossing]) }
 
     /// The nearest whole number to what the lane holds, or nil where no `Int` holds it.
     public init?(carried: StateCarried) {
