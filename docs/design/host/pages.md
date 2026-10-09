@@ -90,6 +90,16 @@ one page and its top page shows its bar and its way back. Going back tells the
 stack it is one page shorter, or the window's modal stack how many sheets
 remain (`HostRuntime.goBack`).
 
+## Sheets
+
+A window's sheets follow its modal stack by one rule (`SheetChange`): the
+sheets shown that stand as asked, counted from the bottom, stay; the rest
+leave, the top first; and each page asked for after them comes over the one
+before. A sheet swapped beneath one that stays takes every sheet above it
+along, so the stack's last page is always the one on top. A host says only
+whether a sheet shown stands as asked - the same page, and on GTK and the Web
+the same native page - and presents and dismisses as its toolkit does.
+
 ## Slots
 
 A title view is a slot. What stands in it is the first element under the

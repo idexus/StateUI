@@ -195,13 +195,13 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
         view.setNeedsLayout()
     }
 
-    /// Presents `sheets` over the arrangement: those shown and still asked for stay, the rest go from the top, and
-    /// each new one comes over the one before once that one stands - UIKit presents over a controller only then.
+    /// Presents `sheets` over the arrangement by the host layer's rule (`SheetChange`): those shown and still asked
+    /// for stay, the rest go from the top, and each new one comes over the one before once that one stands - UIKit
+    /// presents over a controller only then.
     func present(_ sheets: [UIViewController], animated: Bool) {
         guard appeared, !moving else { return waiting = (sheets, animated) }
-        var common = 0
-        while common < self.sheets.count, common < sheets.count, self.sheets[common] === sheets[common] { common += 1 }
-        let coming = Array(sheets[common...])
+        let change = SheetChange(from: self.sheets, to: sheets) { $0 === $1 }
+        let (common, coming) = (change.kept, change.coming)
         guard common < self.sheets.count else { return presentEach(coming, animated: animated) }
         let presenter = common == 0 ? self : self.sheets[common - 1]
         self.sheets = Array(self.sheets.prefix(common))

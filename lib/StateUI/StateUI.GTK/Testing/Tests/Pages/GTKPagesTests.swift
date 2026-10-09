@@ -293,6 +293,31 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// A sheet swapped beneath one that stays stands beneath it: the sheets from the change up leave and come again,
+    /// so the modal stack's last is the one on top.
+    func testASheetSwappedBeneathAnotherStandsBeneathIt() throws {
+        try onUIThread {
+            let sheets = State(wrappedValue: [1, 2])
+            let host = GTKRenderer.running {
+                ModalStack(sheets.projectedValue) {
+                    TitledPage(title: "Beneath")
+                } destination: { number in
+                    TitledPage(title: "Sheet \(number)")
+                }
+            }
+            let controller = try XCTUnwrap(host.windows.first)
+            host.settle { controller.sheets.count == 2 }
+
+            sheets.wrappedValue = [3, 2]
+            host.settle { controller.sheets.map { $0.sheet.frame?.chrome.title } == ["Sheet 3", "Sheet 2"] }
+
+            XCTAssertEqual(controller.sheets.map { $0.sheet.frame?.chrome.title }, ["Sheet 3", "Sheet 2"])
+            let window = controller.window.widget.of(AdwApplicationWindow.self)
+            XCTAssertTrue(adw_application_window_get_visible_dialog(window) == controller.sheets[1].sheet.dialog,
+                          "the modal stack's last on top")
+        }
+    }
+
     /// A bar painted with no colour written for its words stands them light on a dark band and dark on a light one.
     func testABarsWordsFollowHowDarkItIs() throws {
         try onUIThread {

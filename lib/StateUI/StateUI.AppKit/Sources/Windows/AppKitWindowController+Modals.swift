@@ -8,24 +8,21 @@ import Foundation
 @_spi(Host) import StateUIHost
 
 extension AppKitWindowController {
+    /// Keeps a sheet for each page presented, in its order, by the host layer's rule (`SheetChange`).
     func synchronizeModals(_ target: [AppKitElement]) {
         guard let window else { return }
 
-        var common = 0
-        while common < modals.count, common < target.count,
-              modals[common].node === target[common] {
-            modals[common].synchronize(target[common])
-            common += 1
-        }
+        let change = SheetChange(from: modals, to: target) { $0.node === $1 }
+        for index in 0..<change.kept { modals[index].synchronize(target[index]) }
 
-        while modals.count > common {
+        for _ in change.leaving {
             let index = modals.count - 1
             let parent = index == 0 ? window : (modals[index - 1].window ?? window)
             modals.removeLast().dismiss(from: parent)
         }
 
-        for index in common..<target.count {
-            let modal = AppKitModalWindowController(node: target[index], owner: self)
+        for node in change.coming {
+            let modal = AppKitModalWindowController(node: node, owner: self)
             let parent = modals.last?.window ?? window
             modals.append(modal)
             modal.present(over: parent, actuallyPresent: presentsWindow)
