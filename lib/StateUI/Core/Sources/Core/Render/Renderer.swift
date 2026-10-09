@@ -271,7 +271,7 @@ public final class Renderer {
 
         let changedNow = Set(writtenNow.keys)
 
-        // Taken once: naming a build must never reach a lock. Held for this render alone.
+        // Taken once, and held for this render alone: naming a build reads it.
         differ.written = writtenNow
         defer { differ.written = [:] }
 

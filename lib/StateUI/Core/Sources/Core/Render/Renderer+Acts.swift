@@ -60,7 +60,7 @@ extension Renderer {
     }
 
     /// Queues an act and suspends until the host answers, running and resuming on
-    /// the caller's executor. Throws `StateUIError` with the host's reason.
+    /// the UI thread. Throws `StateUIError` with the host's reason.
     /// Design: docs/design/core/acts.md#awaiting-an-answer
     func call(
         _ act: Act,

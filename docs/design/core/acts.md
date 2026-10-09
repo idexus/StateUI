@@ -62,10 +62,9 @@ rebuilt.
 
 ## Awaiting an answer
 
-`Renderer.call` and every async API here are `nonisolated(nonsending)`: they
-run, and resume, on the executor of whoever called them, which for a handler is
-`MainActor`. A plain async function would run on the cooperative pool, and the
-caller would come back to life beside a render the host is running. The reply
+`Renderer.call` and every async API here belong to `MainActor`, as the
+handlers awaiting them do: they run, and resume, on the UI thread, between the
+host's turns, never beside a render the host is running. The reply
 crosses as tagged values, so nothing is parsed: `focus` reads one bool, the
 clock its numbers, and a failure throws `StateUIError` with the host's reason.
 

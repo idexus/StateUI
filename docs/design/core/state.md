@@ -53,8 +53,8 @@ from a state with no value yet.
 A state belongs to the UI thread: `State`, `Binding`, `Journey` and everything
 that reads or writes them are `MainActor`'s, so a write from another thread
 does not compile. On the UI thread a handler's lines run with nothing between
-them - `counter += 1` is one step - and a write that lands while a render runs
-is kept for the next one. A write and the save it records happen together, so
+them - `counter += 1` is one step - and a write made while a render runs, by
+what it builds, is kept for the next one. A write and the save it records happen together, so
 the newer value of a kept state is the one that reaches the store.
 
 ## Posting

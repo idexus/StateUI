@@ -139,7 +139,7 @@
         HostBoundary.fail(completion, reason: reason)
     }
 
-    /// Raises an application event no control raises; answers how many heard it. Any thread.
+    /// Raises an application event no control raises; answers how many heard it. On the UI thread.
     @discardableResult
     public func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,

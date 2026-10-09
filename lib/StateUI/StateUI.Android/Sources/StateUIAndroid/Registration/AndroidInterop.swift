@@ -124,7 +124,7 @@ public enum StateUIEvents {
         AndroidRegistrations.registry.raises(event)
     }
 
-    /// Raises `event` with the values its contract declares, from any thread; how many handlers heard it.
+    /// Raises `event` with the values its contract declares, on the UI thread; how many handlers heard it.
     @discardableResult
     @MainActor
     public static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(

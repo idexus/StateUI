@@ -7,7 +7,7 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 /// The UIKit host's runtime: the host layer's (`HostRuntime`) over UIKit's windows - each StateUI window in a
-/// window scene iOS connected - and the core woken on UIKit's main queue.
+/// window scene iOS connected - and the core turned after each pass of the main run loop.
 /// Design: docs/design/platforms/uikit/runtime.md
 @MainActor
 final class UIKitRenderer {

@@ -6,7 +6,7 @@ import CoreFoundation
 @_spi(Host) import StateUI
 
 /// The turn an Apple host takes after each pass of the main run loop - before it sleeps, or as a run of it returns -
-/// where every write, act and resumed task of the pass has landed; no thread of its own rings for it.
+/// where every write, act and resumed task of the pass has landed.
 /// Design: docs/design/host/runtime.md#the-turn-on-apple
 @_spi(Host) @MainActor public final class RunLoopTurns {
     private var observer: CFRunLoopObserver?

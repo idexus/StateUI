@@ -93,15 +93,13 @@ event.
 
 ## Self-dirtying renders
 
-A render that ends with the tree dirty again is, once, a write that crossed
-from another thread while it ran. A streak of `selfDirtyLimit` such renders is
-a body that writes the state it reads, which the bookkeeping would otherwise
-turn into a render loop. The streak is how that author error is told apart
-from a legitimate crossing without knowing which thread wrote: nothing that
-crosses legitimately does so on every consecutive render. The error is
-reported and the pending change dropped once, which ends the loop. The check
-runs before the settle passes, so a handler's write is never taken for a
-body's.
+Nothing else runs while a render does, so a render that ends with the tree
+dirty again had a state written by what it built. A streak of `selfDirtyLimit`
+such renders is a body that writes the state it reads, which the bookkeeping
+would otherwise turn into a render loop; a shorter one ends by itself and is
+let be. The error is reported and the pending change dropped once, which ends
+the loop. The check runs before the settle passes, so a handler's write is
+never taken for a body's.
 
 ## Starting a handler
 
