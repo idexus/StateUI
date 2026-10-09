@@ -525,23 +525,17 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
         let deck = Grid {
             reader
-                // After each layout the run is put where the position says,
-                // asking again until it lands: an unlaid scroller clamps.
-                .onFrameChanged(.overlap) { frame in
+                // After each layout the run is put where the position says; a
+                // scroller not laid out yet keeps the offset for its first layout.
+                // Design: docs/design/host/layout.md#an-offset-the-tree-writes
+                .onFrameChanged { frame in
                     let sendTo = Double(asked()) * step
                     let astray = abs(offset.projectedValue.journey.value.x - sendTo) > 1
 
                     guard astray || frame.width != measures.wrappedValue else { return }
 
                     measures.wrappedValue = frame.width
-
-                    var asks = 0
-
-                    while abs(offset.projectedValue.journey.value.x - sendTo) > 1, asks < 10 {
-                        offset.projectedValue.journey.snap(to: Point(sendTo, 0))
-                        try await Task.sleep(for: .milliseconds(100))
-                        asks += 1
-                    }
+                    if astray { offset.projectedValue.journey.snap(to: Point(sendTo, 0)) }
                 }
 
             turning
