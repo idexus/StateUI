@@ -2348,7 +2348,7 @@ enum Listings {
                 }
                 .horizontalAlignment(.center)
             }
-            .engine(following: $running) { cycle in
+            .engine(tracking: $running) { cycle in
                 guard running else { return .wait }
 
                 elapsed += cycle.elapsed

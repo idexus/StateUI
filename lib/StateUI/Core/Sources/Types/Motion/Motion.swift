@@ -69,7 +69,7 @@ public struct Motion: Equatable, Sendable {
     ///
     ///     ColorBox()
     ///         .translationY($ball)
-    ///         .engine(following: $ball) { cycle in
+    ///         .engine(tracking: $ball) { cycle in
     ///             let journey = $ball.journey
     ///             let pull = (journey.destination - journey.value) * 0.2
     ///             journey.velocity += pull

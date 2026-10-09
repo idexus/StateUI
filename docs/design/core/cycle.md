@@ -130,7 +130,8 @@ nothing was cycling is a reason to run.
 ## Engines
 
 An engine is the application's arithmetic run on the host's frames, written
-with `.engine(following:)`: the only code the display cycle runs. What it may
+with `.engine(following:)` or `.engine(tracking:)`: the only code the display
+cycle runs. What it may
 do is narrow on purpose - read states, write states, and say whether it has
 more to do. It may not await, ask the host for anything or touch a control,
 because it runs inside the frame the platform is drawing. The closure captures
@@ -151,7 +152,7 @@ changing spends battery on nothing.
 
 ## What wakes an engine
 
-A write to a state named in `following:` is the only reason to run, whoever
+A write to a state named in `following:` or `tracking:` is the only reason to run, whoever
 made it: a handler, a control reporting, the host's frames, another engine. A
 state read inside the run and named nowhere wakes nothing - the engine runs
 outside every render, so such a read is recorded nowhere, and writing that
@@ -188,11 +189,14 @@ an element is paired with its predecessor by the order the modifiers appear
 in, so an `.engine` under an `if` changes the count, and every engine of that
 element starts over (identity-and-diffing.md).
 
-`.engine(following:)` has two forms because Swift resolves one of each and not
-two of a kind: it cannot rank two parameter-pack overloads against each other
-for a multi-statement closure, nor two existential ones for a closure over two
-states. The form answering nothing takes `any Followable`; the form answering
-an `EngineAnswer` takes a pack. `Followable` exists for the first.
+An engine comes in two forms told apart by their label: `.engine(following:)`,
+which answers nothing and runs once for each write, and `.engine(tracking:)`,
+which answers an `EngineAnswer` and keeps tracking while it says `.again`.
+Swift cannot rank two parameter-pack overloads against each other for a
+multi-statement closure; two labels leave it nothing to rank, so both take a
+pack. The plain form asks for one state at least - an engine that never
+answers and follows nothing would never run again - and the tracking form may
+track none.
 
 ## State numbers
 

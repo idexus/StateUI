@@ -114,7 +114,7 @@ private struct Stepping: View {
     let ran: Ran
 
     var body: some View {
-        Text("stepping").engine(following: $step) { cycle in
+        Text("stepping").engine(tracking: $step) { cycle in
             ran.note("stepping \(step)", cycle)
 
             switch step {
@@ -554,10 +554,9 @@ final class CycleTests: XCTestCase {
         XCTAssertFalse(board.cycle(now: 96, reducesMotion: false).awake)
     }
 
-    /// The plain form takes any number of states of different values and a
-    /// closure of any length, and Swift resolves that only with the two forms
-    /// shaped as they are - `any Followable` here, a parameter pack on the
-    /// answering one (see `Followable`). Pinned so the shape stays.
+    /// The plain form takes states of different values and a closure of many
+    /// statements: its label alone tells it from the tracking form, so both
+    /// take packs. Pinned so the shape stays.
     func testAnEngineFollowsTwoStatesWithAClosureOfManyStatements() {
         let ran = Ran()
         let renders = Renders()

@@ -37,6 +37,7 @@ and this table maps the two.
 | binding twin | binding overload | the `Binding` form of a value modifier |
 | driven property | bound property | a control property that reads a state the host carries |
 | follow (`following:`) | depend on, subscribe to | what wakes an engine: a write to a state it follows |
+| track (`tracking:`) | follow continuously | an engine that follows and keeps running on the next cycles while it answers `.again` |
 | conversion (`convert`) | derived binding | a binding that reads and writes another state through a mapping |
 | lender, lent | source storage | what a `Binding` borrows its value from |
 | reading, sample (`.samples`) | throttled copy | an animated value copied into ordinary state at a pace |

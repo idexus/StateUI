@@ -265,7 +265,7 @@ struct FallingDot: View {
     var body: some View {
         ColorBox(.cornflowerBlue)
             .translationY($y)
-            .engine(following: $y) { cycle in
+            .engine(tracking: $y) { cycle in
                 let journey = $y.journey
                 let elapsed = cycle.elapsed / 1000
                 journey.velocity += 180 * elapsed
@@ -278,7 +278,8 @@ struct FallingDot: View {
 }
 ```
 
-Only a write to a state named in `following:` wakes a waiting engine. An
+Only a write to a state named in `following:` or `tracking:` wakes a waiting
+engine. An
 engine's own write does not wake itself; it explicitly returns `.again` when it
 has more work. Engines run by ascending priority and stable registration order.
 They do not await, call controls, or create another thread-bound UI model.

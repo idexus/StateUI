@@ -278,7 +278,7 @@ Use the consequence you need as the selection rule:
 | Change which views exist or how authored values are composed | read the state in a body | rebuild current readers, then diff |
 | Give a child access to the same value | pass `$value` to `@Binding` | determined by what the child does with it |
 | Keep a native property synchronized continuously | hand the whole state to a binding-taking control or modifier | host-cycle update, no body read |
-| Wake arithmetic on a display frame | name the state in `engine(following:)` | wake that engine |
+| Wake arithmetic on a display frame | name the state in `engine(following:)` or `engine(tracking:)` | wake that engine |
 | Turn one or more carried states into another carried value | `convert`, `convert(with:)`, or `multi` | conversion engine, no body read |
 | Let a continuous value make an occasional structural decision | `samples` into ordinary state, or an engine that writes only when a threshold changes | rebuild only for sampled or changed decisions |
 
@@ -516,7 +516,10 @@ differs, and delivers the final value. `.always` takes every changed frame.
 
 Write a custom engine for frame arithmetic that needs memory or sequencing and
 cannot be expressed as a pure conversion. An engine is attached to an element
-and runs inside the host's display cycle.
+and runs inside the host's display cycle. It comes two ways:
+`.engine(following:)` runs once for each write to a state it follows;
+`.engine(tracking:)` keeps tracking, answering on each cycle whether it has
+more to do - a spring, a stopwatch:
 
 ```swift
 struct SpringDot: View {
@@ -528,7 +531,7 @@ struct SpringDot: View {
                 .width(28)
                 .height(28)
                 .translationY($y)
-                .engine(following: $y) { cycle in
+                .engine(tracking: $y) { cycle in
                     let journey = $y.journey
 
                     if cycle.reducesMotion {
@@ -559,14 +562,14 @@ struct SpringDot: View {
 
 The engine contract is deliberately narrow:
 
-- `following:` names the writes that wake it; it does not limit which values
-  the closure may read;
-- a time-driven engine may omit `following:` when its answer controls whether
-  it receives another cycle;
+- `following:` and `tracking:` name the writes that wake it; they do not limit
+  which values the closure may read;
+- a time-driven engine may omit `tracking:`: its answer controls whether it
+  receives another cycle;
 - an engine runs once after the render that declares it;
 - a write made by the engine itself does not wake that same engine;
 - `.again` requests the next display cycle, while `.wait` sleeps until a
-  followed state is written or a render rearms the declaration;
+  tracked state is written or a render rearms the declaration;
 - `EngineCycle.elapsed` is milliseconds since this engine last ran, capped at
   `EngineCycle.mostElapsed`; `now`, `count`, `sync`, and `reducesMotion`
   describe the same display board;

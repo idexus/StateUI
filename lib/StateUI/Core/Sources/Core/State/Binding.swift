@@ -232,7 +232,7 @@ extension Binding {
 
     /// The storage an engine follows - the borrowed state's own; nothing for a part
     /// of a state or a binding made from closures.
-    public var followed: (any FollowedState)? { described }
+    var followed: (any FollowedState)? { described }
 
 }
 

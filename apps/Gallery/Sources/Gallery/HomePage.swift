@@ -15,7 +15,7 @@ import StateUI
 /// the page has been laid out - so the measurement is read TWICE, by two roads,
 /// because the two answers are different in kind. How TALL the run stands moves
 /// with every pass the layout settles through and is worn rather than drawn, so
-/// it is `.frame` into a driven state and `.engine(following:)` over it: no render, on
+/// it is `.frame` into a driven state and `.engine(tracking:)` over it: no render, on
 /// the host's own frames. WHICH ROWS THERE ARE is described, so it renders -
 /// but only when a user turns the device or drags the window past a
 /// threshold, which is a handful of times in a session rather than a handful of
@@ -279,7 +279,7 @@ struct HomePage: View {
         // the run's height then rode a render per settling pass, and everything
         // standing under it rode them too.
         .frame($room)
-        .engine(following: $room) { cycle in
+        .engine(tracking: $room) { cycle in
             // NOTHING IS DECIDED FROM A ROOM NOBODY HAS MEASURED. Every render
             // arms every engine, so this runs once over the room as DECLARED -
             // before any layout has happened - and the host writes a frame
@@ -322,7 +322,7 @@ struct HomePage: View {
 
             $shown.journey.motion = .eased(Self.entrance, .cubicOut)
             shown = 1
-            // `phase` is named in no `following:`, so writing it wakes
+            // `phase` is named in no `tracking:`, so writing it wakes
             // nothing and the entrance is over for good - the engine goes on
             // waking for `room`, sizing the run, and answering `.wait` at the
             // guard above.

@@ -263,10 +263,9 @@ public struct ScrollReader: View {
                     let tall = downward > 0 ? max(room.height, 1) + downward : down(room)
 
                     // The box follows the state and reads where the run is.
-                    let following: (any Followable)? = at
                     let reading: (() -> Point)? = at.map { held in { held.journey.value } }
 
-                    if let area, let carried = following, let where_ = reading {
+                    if let area, let carried = at, let where_ = reading {
                         // A tap on one part of the room: the host keeps the box at
                         // the room's place plus how far the run has scrolled.
                         let want = area(room)
