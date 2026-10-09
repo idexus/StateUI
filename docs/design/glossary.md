@@ -113,7 +113,7 @@ and this table maps the two.
 | the application's (`byApplication`, 🧩) | application-provided | an element a host leaves to a control the application registers itself - a map where the platform has none |
 | display cycle, cycle | frame update | the ordered work of one display frame |
 | frame clock | display link, vsync | what ticks once per display frame while something holds it |
-| doorbell | wake-up thread | a thread parked until a job comes from another thread, which then posts a turn to the UI thread |
+| doorbell | wake-up | how a turn is posted to the UI thread's queue from any thread, when a job is queued or the UI thread made work |
 | pump, turn | event-loop pass | one pass of the host's work: jobs, a cycle, a render, then acts |
 | program write | programmatic change | a write to a control made by the program, not the user |
 | act | imperative control call | a call the application makes on a control, such as `focus` |

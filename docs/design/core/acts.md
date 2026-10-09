@@ -71,8 +71,8 @@ clock its numbers, and a failure throws `StateUIError` with the host's reason.
 
 A resume is counted the moment the continuation is resumed and uncounted by the
 handler as the first thing after its `await`. The job a resume produces does not
-exist yet when the outcome is reported - it lands a moment later and wakes the
-doorbell - so a test waiting for a quiet queue reads this count to tell "the
+exist yet when the outcome is reported - it lands a moment later and posts a
+turn - so a test waiting for a quiet queue reads this count to tell "the
 resume has not landed yet" from "nothing to wait for". `dispatch` runs nothing
 for a completion, for the same reason.
 

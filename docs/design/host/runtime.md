@@ -101,11 +101,11 @@ back button's words said from a state, which no render follows.
 
 The UI thread takes a turn whenever the core has work: a job on `MainActor`, a
 cycle, a render or an act. On Apple it is taken after each pass of the main run
-loop; elsewhere a doorbell rings for it. The turn always runs in the same
+loop; elsewhere the doorbell posts it. The turn always runs in the same
 order.
 
 ```text
-  Apple: the pass of the main run loop ends     elsewhere: the doorbell rings
+  Apple: the pass of the main run loop ends     elsewhere: the doorbell
     |                                             |  posts one turn to the UI thread
     v                                             v
   pump:  run the jobs  ->  a pending cycle  ->  render  ->  acts
@@ -129,13 +129,13 @@ before what comes after it, and the turn goes round again; only then the acts.
 
 ## The doorbell
 
-Where the platform's loop is not Apple's, a host says how a turn is posted onto
-its UI thread from any thread (`CoreLink.postTurns`): WinUI through its relay,
-GTK through GLib, Android onto its looper. The core posts one through it when
-the UI thread makes work - a state written, an act sent - and the doorbell, a
-thread the host parks on the core (`CoreLink.ringForever`), when a job comes
-from another thread, a handler's resume or a post. One turn is posted until its
-drain begins. The turn itself is the `Pump`'s.
+Where the platform's loop is not Apple's, a host says at its start how a turn is
+posted onto its UI thread from any thread (`CoreLink.postTurns`): WinUI through
+its relay, GTK through GLib, Android onto its looper. The core posts one through
+it whenever work comes - a state written or an act sent on the UI thread, a job
+queued from any thread, a handler's resume or a post - on the thread the work
+came from; no thread of the host's waits. One turn is posted until its drain
+begins. The turn itself is the `Pump`'s.
 
 ## The turn on Apple
 
@@ -606,7 +606,7 @@ the lines there.
 
 A runtime calls the running core through `CoreLink` alone: a render, a cycle,
 an event, an act call and its answer, a user's report, the application's and
-the scene's reports, the kept values and the doorbell's wait. The line is the
+the scene's reports, the kept values and the way a turn is posted. The line is the
 typed `HostBoundary` SPI. The lane codecs - a journey read from its
 image and written back, a placement run - are arithmetic on values the runtime
 already holds, and stay the SPI's.

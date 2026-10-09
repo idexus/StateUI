@@ -37,6 +37,14 @@ private struct Shows: View {
 /// The turns a poster standing for the host's was asked for.
 private final class Posts: Sendable {
     let count = Atomic<Int>(0)
+
+    /// Signalled once a turn.
+    let asked = DispatchSemaphore(value: 0)
+
+    func post() {
+        count.add(1, ordering: .relaxed)
+        asked.signal()
+    }
 }
 
 @MainActor
@@ -67,35 +75,40 @@ final class UIThreadTests: XCTestCase {
         XCTAssertTrue(woke, "the sleep came due and the handler never came back")
     }
 
-    /// A job landing on the UI thread's queue wakes the thread the host keeps
-    /// parked in `HostBoundary.waitForWork` - which is how MainActor's jobs reach the
-    /// UI thread where the host alone drains it. Proved with an actor of this
-    /// test's own on that queue, so it holds on every platform, Apple's
-    /// included: the worker thread stands in for the host's, doing exactly what
-    /// the host's does - park, wake, ask for a drain.
-    func testAJobOnTheUIThreadsQueueWakesTheParkedThread() throws {
+    /// A job landing on the UI thread's queue from another thread asks the host
+    /// for a turn, on the thread that queued it - which is how MainActor's jobs
+    /// reach the UI thread where the host alone drains it. Proved with an actor
+    /// of this test's own on that queue, so it holds on every platform, Apple's
+    /// included.
+    func testAJobFromAnotherThreadAsksForATurn() throws {
         let queued = OnTheUIThreadsQueue()
-
-        let parked = DispatchSemaphore(value: 0)
-
-        // Each round PARKS - `HostBoundary.waitForWork` blocks until a job comes,
-        // and may answer 0 where another test's drain took it first.
-        DispatchQueue.global().async {
-            while UIThreadExecutor.shared.pendingCount == 0 {
-                _ = HostBoundary.waitForWork()
-            }
-
-            parked.signal()
-        }
+        let posts = postingTurns()
+        defer { stopPostingTurns() }
 
         Task.detached { await queued.touch() }
 
-        XCTAssertEqual(
-            parked.wait(timeout: .now() + 5), .success,
-            "a job landed on the UI thread's queue and nothing woke the parked thread")
+        XCTAssertEqual(posts.asked.wait(timeout: .now() + 5), .success, "a job came and the host was asked for no turn")
+        XCTAssertEqual(posts.count.load(ordering: .relaxed), 1, "one turn for one job")
 
         stateUIRunJobs()
-        XCTAssertEqual(queued.touches, 1, "the job was in the queue the wake announced")
+        XCTAssertEqual(queued.touches, 1, "the job was in the queue the turn was asked for")
+    }
+
+    /// A host that says how to post a turn gets one at once: a job queued before
+    /// it said - a task its first render started - is not left for an event.
+    func testAHostSayingHowToPostGetsATurnAtOnce() throws {
+        let queued = OnTheUIThreadsQueue()
+        stateUIRunJobs()
+        UIThreadExecutor.shared.postTurns(with: nil)
+        Task.detached { await queued.touch() }
+        let deadline = Date(timeIntervalSinceNow: 5)
+        while UIThreadExecutor.shared.pendingCount == 0, Date() < deadline { Thread.sleep(forTimeInterval: 0.001) }
+
+        let posts = Posts()
+        UIThreadExecutor.shared.postTurns(with: { posts.post() })
+        defer { stopPostingTurns() }
+
+        XCTAssertEqual(posts.count.load(ordering: .relaxed), 1, "the job queued before waits for an event")
     }
 
     /// AN ACT SENT asks the host for a turn, so the host takes it with no other
@@ -110,16 +123,14 @@ final class UIThreadTests: XCTestCase {
 
         let asked = asked { Renderer.shared.send(.focus, [.string("card")], completion: nil) }
 
-        XCTAssertEqual(asked.turns, 1, "the queued act asked for no turn - the host would not perform it until the next event")
-        XCTAssertFalse(asked.wokeTheDoorbell, "the doorbell wakes for a job from another thread alone")
+        XCTAssertEqual(asked, 1, "the queued act asked for no turn - the host would not perform it until the next event")
         XCTAssertTrue(
             drainedActs().contains { $0.name == "focus" },
             "the act the turn is asked for is there to take")
     }
 
     /// A STATE WRITE asks the host for a turn on the UI thread's own queue, after
-    /// marking the tree dirty - and wakes no thread: the doorbell's parked thread
-    /// is for jobs from other threads.
+    /// marking the tree dirty.
     func testAStateWriteAsksForATurn() throws {
         _ = drainedActs()
         stateUIRunJobs()
@@ -133,8 +144,7 @@ final class UIThreadTests: XCTestCase {
 
         let asked = asked { fade.wrappedValue = 0.5 }
 
-        XCTAssertEqual(asked.turns, 1, "the write asked for no turn")
-        XCTAssertFalse(asked.wokeTheDoorbell, "a write on the UI thread woke the doorbell")
+        XCTAssertEqual(asked, 1, "the write asked for no turn")
         XCTAssertTrue(Renderer.shared.needsRender, "a write dirties the tree")
         XCTAssertEqual(Renderer.shared.actCallsPending, 0, "and queues no act")
     }
@@ -154,16 +164,16 @@ final class UIThreadTests: XCTestCase {
         let burst = asked {
             fade.wrappedValue = 0.5
             fade.wrappedValue = 0.25
-            HostBoundary.askForTurn()
+            UIThreadExecutor.shared.askForTurn()
         }
-        XCTAssertEqual(burst.turns, 1, "a burst asked for a turn per change")
+        XCTAssertEqual(burst, 1, "a burst asked for a turn per change")
 
         let after = asked {
             fade.wrappedValue = 0.5
             stateUIRunJobs()
             fade.wrappedValue = 0.75
         }
-        XCTAssertEqual(after.turns, 2, "a change after the drain began asked for no turn of its own")
+        XCTAssertEqual(after, 2, "a change after the drain began asked for no turn of its own")
     }
 
     /// A KEPT state's write asks for a turn even where nobody reads the state:
@@ -177,7 +187,7 @@ final class UIThreadTests: XCTestCase {
         let key = PersistentKey("mainThread.kept", of: Double.self)
         let kept = State(wrappedValue: 1.0, persistentKey: key)
 
-        XCTAssertEqual(asked { kept.wrappedValue = 0.5 }.turns, 1, "the write asked for no turn")
+        XCTAssertEqual(asked { kept.wrappedValue = 0.5 }, 1, "the write asked for no turn")
         XCTAssertFalse(Renderer.shared.needsRender, "nobody reads it, so no render was asked for")
         XCTAssertGreaterThan(Renderer.shared.actCallsPending, 0, "but the save is pending work")
         XCTAssertEqual(drainedActs().map { $0.name }, ["persistValue"], "which then takes the save")
@@ -197,7 +207,7 @@ final class UIThreadTests: XCTestCase {
         _ = Renderer.shared.dispatch(before)
 
         XCTAssertEqual(
-            asked { fade.projectedValue.journey.move(to: 0.1, .eased(400, .cubicOut)) }.turns, 1,
+            asked { fade.projectedValue.journey.move(to: 0.1, .eased(400, .cubicOut)) }, 1,
             "the movement asked for no turn - the host would not start it until the next event")
 
         ReplyBuffer.current = .finished([.bool(true)])
@@ -209,13 +219,13 @@ final class UIThreadTests: XCTestCase {
     func testACarriedWriteAsksForATurn() throws {
         let fade = wornOnAQuietBoard()
 
-        XCTAssertEqual(asked { fade.wrappedValue = 0.5 }.turns, 1, "the write asked for no turn")
+        XCTAssertEqual(asked { fade.wrappedValue = 0.5 }, 1, "the write asked for no turn")
         XCTAssertFalse(Renderer.shared.needsRender, "nobody reads it, so no render was asked for")
         XCTAssertGreaterThan(Renderer.shared.cycleAwake(), 0, "and what waits on its board is work")
     }
 
     /// A POST FROM THE POOL reaches the host: its job is `MainActor`'s - where the
-    /// UI executor holds it, its coming wakes the doorbell - and the write it
+    /// UI executor holds it, its queueing posts a turn - and the write it
     /// makes asks for a turn as any write does: a value worked out by a detached
     /// task reaches the screen with no event after it.
     func testAPostFromThePoolAsksForATurn() async throws {
@@ -228,12 +238,8 @@ final class UIThreadTests: XCTestCase {
         let renders = Renders()
         renders.render(Shows(fade: fade).node)
 
-        let posts = Posts()
-        UIThreadExecutor.shared.postTurns(with: { posts.count.add(1, ordering: .relaxed) })
-        defer {
-            UIThreadExecutor.shared.postTurns(with: nil)
-            stateUIRunJobs()
-        }
+        let posts = postingTurns()
+        defer { stopPostingTurns() }
 
         await Task.detached { binding.post(0.25) }.value
         await settle()
@@ -243,23 +249,32 @@ final class UIThreadTests: XCTestCase {
         XCTAssertTrue(Renderer.shared.needsRender, "which asks for a render")
     }
 
-    /// What `change` asked of the host: the turns it put on the UI thread's queue
-    /// through a poster standing for the host's, and whether it woke the
-    /// doorbell's parked thread. No turn is asked and no wake signalled first.
-    private func asked(by change: () -> Void) -> (turns: Int, wokeTheDoorbell: Bool) {
-        let posts = Posts()
-        stateUIRunJobs()
-        if UIThreadExecutor.shared.isWakeSignalled { _ = UIThreadExecutor.shared.waitForWork() }
-
-        UIThreadExecutor.shared.postTurns(with: { posts.count.add(1, ordering: .relaxed) })
-        defer {
-            UIThreadExecutor.shared.postTurns(with: nil)
-            stateUIRunJobs()
-        }
+    /// How many turns `change` asked the host for, through a poster standing for
+    /// the host's, none asked first.
+    private func asked(by change: () -> Void) -> Int {
+        let posts = postingTurns()
+        defer { stopPostingTurns() }
 
         change()
 
-        return (posts.count.load(ordering: .relaxed), UIThreadExecutor.shared.isWakeSignalled)
+        return posts.count.load(ordering: .relaxed)
+    }
+
+    /// A poster standing for the host's, counting the turns asked from here on -
+    /// the one its registration posts at once already drained and uncounted.
+    private func postingTurns() -> Posts {
+        let posts = Posts()
+        UIThreadExecutor.shared.postTurns(with: { posts.post() })
+        _ = posts.asked.wait(timeout: .now())
+        stateUIRunJobs()
+        posts.count.store(0, ordering: .relaxed)
+        return posts
+    }
+
+    /// No poster any more, and no turn left asked.
+    private func stopPostingTurns() {
+        UIThreadExecutor.shared.postTurns(with: nil)
+        stateUIRunJobs()
     }
 
     /// A state a rendered view wears as a driven property, on a board with

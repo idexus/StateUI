@@ -57,7 +57,7 @@ only its toolkit has:
 | `makeNative` | a `NativeElement` for each `MountedElement`: its view and everything hung on it, and the tab the user chose or the sidebar shown on screen, where its toolkit knows them |
 | `TurnPresenter` | set as `pump.presenter`: shows what a render changed around the tree - the windows, their pages, their chrome - and performs an act |
 | `FramePresenter` | set as `displayCycle.presenter`: hands each step of a frame back to the layer - `frames.commit`, `tree.present`, `pump.turn` |
-| the doorbell | Android, WinUI, GTK: the way a `pump.turn()` is posted to the UI thread, given to the core (`CoreLink.postTurns`) for work the UI thread makes, and a thread of its own in `CoreLink.ringForever` posting one when a job comes from another thread; AppKit and UIKit hold a `RunLoopTurns`, a turn after every pass of the main run loop |
+| the doorbell | Android, WinUI, GTK: the way a `pump.turn()` is posted to the UI thread from any thread, given to the core at the start (`CoreLink.postTurns`) - for work the UI thread makes, and for a job queued from any thread; AppKit and UIKit hold a `RunLoopTurns`, a turn after every pass of the main run loop |
 | `reducesMotion` | whether the user asked the platform for less motion |
 | `log` | where a message the intake refused is said, through `HostLog` |
 | `LayoutChild` | each child a layout measures: its `LayoutValues`, whether it shows, its size for an offered width |
@@ -154,9 +154,9 @@ these that the text shows, and a type named for an engine or a channel
   ([The runtime's parts](../design/host/runtime.md#the-runtimes-parts))
 - **`CoreLink`** is the one line to the running core: a render, a cycle, an
   event, a user's report, an act's answer, the application's and the scene's
-  reports, the kept values, the way a turn is posted (`postTurns`) and the
-  doorbell's wait (`ringForever`). The host calls it for what it tells the
-  core; nothing else in a host calls the core.
+  reports, the kept values and the way a turn is posted (`postTurns`). The
+  host calls it for what it tells the core; nothing else in a host calls the
+  core.
   ([Core link](../design/host/runtime.md#core-link))
 - **`Pump`** is one turn, in one order: the jobs a resumed handler left, a
   pending cycle, a render when the core needs one, the handlers it raised,

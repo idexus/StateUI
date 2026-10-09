@@ -65,8 +65,8 @@ final class ActCallTests: XCTestCase {
         drainedActs()
     }
 
-    /// The acts a resumed handler sends next, taken the way a host's doorbell
-    /// counts them. A resume is counted down as it comes back, a moment before
+    /// The acts a resumed handler sends next, taken the way a host's turn
+    /// takes them. A resume is counted down as it comes back, a moment before
     /// the handler reaches its next act, so settling alone can end in between.
     private func queued(within seconds: Int = 2) async -> [HostActCall] {
         let deadline = ContinuousClock.now + .seconds(seconds)

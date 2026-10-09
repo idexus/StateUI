@@ -360,17 +360,13 @@
     @discardableResult
     public nonisolated static func runJobs() -> Int { stateUIRunJobs() }
 
-    /// Says how a turn is put on the UI thread's queue from any thread: the core asks for one through `post` when
-    /// the UI thread makes work, and the doorbell when a job comes from another thread. A host whose loop turns by
-    /// itself says nothing; nil posts no more - between a host's tests.
+    /// Says how a turn is put on the UI thread's queue from any thread: the core posts one through `post` when the
+    /// UI thread makes work, and when a job is queued from any thread, on that thread. A host whose loop turns by
+    /// itself says nothing; nil posts no more - between a host's tests. One turn is posted at once, for what came
+    /// before.
     /// Design: docs/design/core/concurrency.md#the-doorbell
     public nonisolated static func postTurns(with post: (@Sendable () -> Void)?) {
         UIThreadExecutor.shared.postTurns(with: post)
-    }
-
-    /// Puts one turn on the UI thread's queue unless one waits there - what the doorbell does for a job it saw come.
-    public nonisolated static func askForTurn() {
-        UIThreadExecutor.shared.askForTurn()
     }
 
     /// Whether a turn has anything to do: jobs on the UI executor, acts or saves not taken, a render, a cycle
@@ -391,13 +387,6 @@
         if UIThreadExecutor.shared.pendingCount > 0 || renderer.actCallsPending > 0 || renderer.needsRender { return 0 }
         guard let due = UIThreadExecutor.shared.nextDue else { return nil }
         return max(0, Double(due.components.seconds) * 1000 + Double(due.components.attoseconds) / 1e15)
-    }
-    #else
-    /// Parks the calling doorbell thread until a job comes, and answers how many
-    /// wait - 0 when a turn took them first. Work the UI thread makes asks for a
-    /// turn itself and wakes no thread.
-    public nonisolated static func waitForWork() -> Int {
-        UIThreadExecutor.shared.waitForWork()
     }
     #endif
 

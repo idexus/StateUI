@@ -326,7 +326,7 @@ func turnTheUIThread(for seconds: TimeInterval = 0.002) {
 /// `resume()` schedules the rest of a handler rather than continuing it, and the
 /// job it produces arrives a moment later - so a test that reports an act as
 /// finished takes turns of the UI thread until every handler told its act is
-/// over has run again, where a host's doorbell rings as the job lands. A turn
+/// over has run again, where a host's turn is posted as the job lands. A turn
 /// is a hop to MainActor: it lands behind every job already waiting there -
 /// the main queue's on Apple, the UI thread's queue elsewhere, which the host
 /// drains and a test's run loop drains too.

@@ -31,7 +31,8 @@ sync - one clock, one cycle - and the display's own frame is the only sync.
 The board is the UI thread's, as everything it serves is: a handler's write,
 the host's report and an engine's arithmetic come one after another on that
 thread, so none can tear another and nothing stands behind a lock. The host's
-doorbell, on a thread of its own, wakes for jobs alone; it never reads the board.
+doorbell posts a turn and reads nothing; the turn reads the board on the UI
+thread.
 
 An engine is a value in the board's list, not an object the cycle holds beside
 it. The cycle takes the engine's closure and its last run out of the list,

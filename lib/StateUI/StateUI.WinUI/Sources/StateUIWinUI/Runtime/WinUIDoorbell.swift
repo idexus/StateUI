@@ -4,31 +4,14 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
-import WinSDK
 
-/// The doorbell: a thread parked until a job comes from another thread, posting a turn to the UI thread's queue - the
-/// way the UI thread posts one for work of its own.
+/// The doorbell: a turn posted to the UI thread's queue from any thread - for a job queued, or work the UI thread
+/// made.
 /// Design: docs/design/platforms/winui/runtime.md#the-doorbell
 enum WinUIDoorbell {
-    /// Whether the thread runs.
-    @MainActor private static var installed = false
-
-    /// Gives the core the way to post a turn, and starts the thread, once; each turn posted reaches the host
-    /// through the relay's `turn`.
+    /// Gives the core the way to post a turn; each turn posted reaches the host through the relay's `turn`.
     @MainActor static func install() {
         CoreLink().postTurns(with: { stateui_winui_post_turn() })
-        guard !installed else { return }
-        installed = true
-        startThread()
-    }
-
-    /// Started from a nonisolated function: a closure written in a `@MainActor` one is MainActor's.
-    /// Design: docs/design/platforms/winui/runtime.md#the-doorbell
-    private nonisolated static func startThread() {
-        let thread = CreateThread(nil, 0, { _ in
-            CoreLink().ringForever()
-        }, nil, 0, nil)
-        if let thread { CloseHandle(thread) }
     }
 
     /// A turn the relay posted: the work a layout pass left, then the turn.

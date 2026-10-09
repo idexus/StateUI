@@ -40,7 +40,7 @@ final class AndroidDoorbellTests: XCTestCase {
         }
     }
 
-    /// A post from another thread lands as a job; the doorbell's thread wakes for it and rings the turn.
+    /// A post from another thread lands as a job, whose queueing rings the turn on that thread.
     func testAPostFromAnotherThreadIsRendered() {
         onMainActor {
             let said = State(wrappedValue: "before")

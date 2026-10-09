@@ -52,7 +52,7 @@ extension Renderer {
         UIThreadExecutor.shared.askForTurn()
     }
 
-    /// Acts queued and not yet taken, waiting saves included - work to the doorbell.
+    /// Acts queued and not yet taken, waiting saves included - work for a turn.
     var actCallsPending: Int {
         // A save waiting is an act the moment it is taken (Persistence.swift).
         actCalls.count + PersistentStore.shared.pending

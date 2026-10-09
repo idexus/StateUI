@@ -142,13 +142,12 @@ host and never calls the core.
   event   HostBoundary.dispatch(id, payload)    a Task.detached or a group's child
           Renderer.dispatch                      posts to a @State ($x.post):
           Task.immediate on MainActor            one job booked on MainActor
-          -> the handler runs to its first           |  its enqueue wakes, outside
+          -> the handler runs to its first           |  its enqueue posts, outside
              await, inside the event                 v  the executor's lock
-                                               doorbell thread (the host made it)
-  turn    HostBoundary.runJobs: MainActor's jobs  parked in waitForWork
-          (Apple: the main queue's instead)      wakes, counts the jobs, posts
-          a pending cycle, a render, the acts    ONE turn onto the UI thread
-                                                 and parks again
+                                               the host's way (postTurns):
+  turn    HostBoundary.runJobs: MainActor's jobs  ONE turn onto the UI thread,
+          (Apple: the main queue's instead)      none more until its drain
+          a pending cycle, a render, the acts    begins
   resume  a continuation's job lands on
           MainActor's executor -> next drain   nothing ever runs on it
 ```

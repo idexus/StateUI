@@ -34,7 +34,7 @@ final class WinUIDoorbellTests: XCTestCase {
         }
     }
 
-    /// A post from another thread lands as a job; the doorbell's thread wakes for it and posts the turn.
+    /// A post from another thread lands as a job, whose queueing posts the turn on that thread.
     func testAPostFromAnotherThreadIsRendered() {
         onUIThread {
             let said = State(wrappedValue: "before")
