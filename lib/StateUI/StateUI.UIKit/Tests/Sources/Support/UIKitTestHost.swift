@@ -104,6 +104,8 @@ extension UIKitRenderer {
         roster.update(root: nil, make: { _ in fatalError("no window comes while finishing") }, close: { $0.hide() })
         runtime.tree.root?.leave()
         frameClock.stop()
+        turns?.stop()
+        turns = nil
         TestScene.scene.map(environment.stopFollowingTheme(of:))
     }
 

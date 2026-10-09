@@ -65,7 +65,7 @@ final class UIKitRenderer {
     private var started = false
 
     /// The turn after every pass of the main run loop, once the host has started.
-    private var turns: RunLoopTurns?
+    var turns: RunLoopTurns?
 
     /// The menu bar as it was last built.
     private var menuBarSaid = ""
@@ -107,6 +107,13 @@ final class UIKitRenderer {
         environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
         hydratePersistentState()
         runtime.tree.followTheLanguagesDirection()
+        startTurns()
+    }
+
+    /// Takes a turn after every pass of the main run loop, where the core has work for one.
+    /// Design: docs/design/host/runtime.md#the-turn-on-apple
+    func startTurns() {
+        guard turns == nil else { return }
         turns = RunLoopTurns(runtime.pump)
     }
 

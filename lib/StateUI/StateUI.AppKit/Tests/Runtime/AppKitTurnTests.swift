@@ -29,6 +29,24 @@ final class AppKitTurnTests: XCTestCase {
 
         XCTAssertEqual(shown(), "after", "the pass that wrote it rendered it")
     }
+
+    /// A post from another thread lands as a job of the main queue, and its pass renders it.
+    func testAPostFromAnotherThreadIsRendered() throws {
+        let said = Said()
+        let renderer = AppKitRenderer.running { SaidPage(said: said) }
+        defer { renderer.closeForTesting() }
+        renderer.startTurns()
+        let shown = { renderer.nativeViews(AppKitTextView.self).first?.textForTesting.string }
+        let binding = said.$text
+
+        Task.detached { binding.post("posted") }
+
+        for _ in 0..<100 where shown() != "posted" {
+            RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
+        }
+
+        XCTAssertEqual(shown(), "posted", "the post waits for an event")
+    }
 }
 
 /// What the page says, written from outside it.
