@@ -122,6 +122,51 @@ final class RepeatedEventTests: XCTestCase {
         XCTAssertEqual(landed.wrappedValue, 0, "the run outlived its element")
     }
 
+    /// An element leaving cancels the runs of its events in their names' order, every time.
+    func testAnElementLeavingCancelsItsEventsRunsInNameOrder() async throws {
+        nonisolated(unsafe) var cancelled: [String] = []
+        let gate = Gate()
+        var chimes = Chimes()
+        for event in ChimesContract.events.reversed() {
+            chimes = chimes.onEvent(event, .overlap) {
+                await withTaskCancellationHandler { await gate.wait() } onCancel: { cancelled.append(event.name) }
+            }
+        }
+        let renders = Renders()
+        let patch = renders.render(chimes.node)
+        for event in ChimesContract.events.reversed() {
+            renders.fire(try XCTUnwrap(patch.events?[Event(event.name)]))
+        }
+        XCTAssertEqual(gate.waiting, ChimesContract.events.count)
+
+        renders.render(Text("gone").node)
+
+        XCTAssertEqual(cancelled, ChimesContract.events.map(\.name).sorted())
+        gate.open()
+        try await waitUntil { gate.waiting == 0 }
+    }
+
+    /// An element leaving cancels the runs its walk began - its `.onCreated` here - in the order they were written.
+    func testAnElementLeavingCancelsItsWalksRunsInTheOrderWritten() async throws {
+        nonisolated(unsafe) var cancelled: [Int] = []
+        let gate = Gate()
+        var made = Text("here")
+        for index in 0..<8 {
+            made = made.onCreated {
+                await withTaskCancellationHandler { await gate.wait() } onCancel: { cancelled.append(index) }
+            }
+        }
+        let renders = Renders()
+        renders.render(made.node)
+        XCTAssertEqual(gate.waiting, 8)
+
+        renders.render(Button("gone").node)
+
+        XCTAssertEqual(cancelled, Array(0..<8))
+        gate.open()
+        try await waitUntil { gate.waiting == 0 }
+    }
+
     /// A superseded run's act is refused before it reaches the host.
     func testASupersededRunSendsNoAct() async throws {
         let gate = Gate()
@@ -357,6 +402,20 @@ final class RepeatedEventTests: XCTestCase {
         }
         XCTAssertTrue(condition(), "never came")
     }
+}
+
+/// An element with events enough for an order among them to show.
+private enum ChimesContract: ElementContract {
+    static let nodeType: NodeType = "Test.Chimes"
+
+    static let events = (0..<8).map { ElementEvent<Self, Void>("chime\($0)") }
+
+    static let members: [any ContractMember] = events
+}
+
+/// The element `ChimesContract` declares.
+private struct Chimes: ElementView {
+    var node = Node(contract: ChimesContract.self)
 }
 
 /// Where a handler waits until the test lets it go.

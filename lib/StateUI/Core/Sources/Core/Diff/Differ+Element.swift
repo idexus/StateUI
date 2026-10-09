@@ -478,7 +478,7 @@ extension Differ {
 
         if let previous = previous {
             // An event this element no longer handles takes its id and its runs with it.
-            for (name, handlerId) in previous.events where events[name] == nil {
+            for (name, handlerId) in previous.events.sorted(by: { $0.key < $1.key }) where events[name] == nil {
                 handlers.removeValue(forKey: handlerId)?.orphan()
             }
         }

@@ -6,19 +6,19 @@
 /// Design: docs/design/core/runs.md#what-a-walk-runs
 @MainActor
 final class RunSlots {
-    private var slots: [String: RunSlot] = [:]
+    private var slots: [(key: String, slot: RunSlot)] = []
 
     /// The runs kept under `key`, begun now if none are.
     func slot(_ key: String) -> RunSlot {
-        if let slot = slots[key] { return slot }
+        if let kept = slots.first(where: { $0.key == key }) { return kept.slot }
 
         let slot = RunSlot()
-        slots[key] = slot
+        slots.append((key, slot))
         return slot
     }
 
-    /// The element left: every run of it is superseded.
+    /// The element left: every run of it is superseded, in the order its key was first asked for.
     func orphan() {
-        for slot in slots.values { slot.orphan() }
+        for entry in slots { entry.slot.orphan() }
     }
 }

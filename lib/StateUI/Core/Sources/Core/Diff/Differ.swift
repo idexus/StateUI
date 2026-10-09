@@ -180,7 +180,7 @@ final class Differ {
     /// Drops the handlers and engines of an element that left the tree, and of
     /// everything under it, and books its `.onDestroying`.
     func forget(_ node: RenderedNode) {
-        for id in node.events.values {
+        for (_, id) in node.events.sorted(by: { $0.key < $1.key }) {
             handlers.removeValue(forKey: id)?.orphan()
         }
         node.runs.orphan()

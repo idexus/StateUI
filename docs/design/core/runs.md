@@ -39,7 +39,10 @@ question where there is one, and only there. A step is kept as a run under
 A run is superseded by `.cancelPrevious`, and orphaned - superseded the same
 way - when its element stops handling the event or leaves the tree. Its task
 is cancelled, so `Task.sleep` and whatever else checks cancellation ends it,
-and a superseded run ending in `CancellationError` is not reported.
+and a superseded run ending in `CancellationError` is not reported. An element
+leaving cancels in one order every time - its events' runs by the events'
+names, then what its walk runs in the order begun - so what a cancellation
+handler does comes in that order too.
 
 From then on it changes nothing. Every write of a state, every part of a
 journey (`move`, `stop`, `snap`, its value, velocity and law), every post and
