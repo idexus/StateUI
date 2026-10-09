@@ -57,7 +57,7 @@ only its toolkit has:
 | `makeNative` | a `NativeElement` for each `MountedElement`: its view and everything hung on it, and the tab the user chose or the sidebar shown on screen, where its toolkit knows them |
 | `TurnPresenter` | set as `pump.presenter`: shows what a render changed around the tree - the windows, their pages, their chrome - and performs an act |
 | `FramePresenter` | set as `displayCycle.presenter`: hands each step of a frame back to the layer - `frames.commit`, `tree.present`, `pump.turn` |
-| the doorbell | a thread of its own in `CoreLink.ringForever`, posting one `pump.turn()` to the UI thread whenever the core has work |
+| the doorbell | Android, WinUI, GTK: a thread of its own in `CoreLink.ringForever`, posting one `pump.turn()` to the UI thread whenever the core has work; AppKit and UIKit hold a `RunLoopTurns`, a turn after every pass of the main run loop |
 | `reducesMotion` | whether the user asked the platform for less motion |
 | `log` | where a message the intake refused is said, through `HostLog` |
 | `LayoutChild` | each child a layout measures: its `LayoutValues`, whether it shows, its size for an offered width |

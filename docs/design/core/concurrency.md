@@ -117,9 +117,9 @@ the doorbell:
 
 Nothing runs on the doorbell thread; it only asks. A wake is signalled at most
 once per park - the armed flag folds a thousand wakes inside one drain into
-one - and the count may be zero when another turn got there first. On Apple
-the doorbell rings for the work the main queue does not carry; `MainActor`'s
-jobs are the main queue's.
+one - and the count may be zero when another turn got there first. Apple has
+no doorbell: `MainActor`'s jobs are the main queue's, and its hosts take a turn
+as each pass of the main run loop ends (host/runtime.md#the-turn-on-apple).
 
 ## Draining jobs
 

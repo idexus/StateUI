@@ -360,6 +360,15 @@
     @discardableResult
     public nonisolated static func runJobs() -> Int { stateUIRunJobs() }
 
+    /// Whether a turn has anything to do: jobs on the UI executor, acts or saves not taken, a render, a cycle
+    /// awake.
+    /// Design: docs/design/host/runtime.md#the-turn-on-apple
+    public static var wantsTurn: Bool {
+        let renderer = Renderer.shared
+        return UIThreadExecutor.shared.pendingCount > 0 || renderer.actCallsPending > 0 || renderer.needsRender
+            || renderer.cycleAwake() != 0
+    }
+
     #if os(WASI)
     /// When the page is to call again, in milliseconds - at once where jobs, acts or a render wait, else when a job
     /// kept for later comes due; nil with nothing to come. A display frame serves a cycle.

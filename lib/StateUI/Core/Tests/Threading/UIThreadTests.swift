@@ -434,6 +434,11 @@ final class UIThreadTests: XCTestCase {
                     continue
                 }
 
+                // The turn Apple's hosts take after each pass of Apple's own loop, compiled on Apple alone.
+                if rule.needle == "RunLoop", source.path.hasSuffix("/RunLoopTurns.swift") {
+                    continue
+                }
+
                 broken.append("\(source.path) uses \(rule.needle) - \(rule.why)")
             }
         }

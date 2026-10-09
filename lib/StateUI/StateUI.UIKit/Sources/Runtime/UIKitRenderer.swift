@@ -64,6 +64,9 @@ final class UIKitRenderer {
 
     private var started = false
 
+    /// The turn after every pass of the main run loop, once the host has started.
+    private var turns: RunLoopTurns?
+
     /// The menu bar as it was last built.
     private var menuBarSaid = ""
 
@@ -93,8 +96,9 @@ final class UIKitRenderer {
         runtime.tree.root?.uiKit.reportFocus()
     }
 
-    /// Starts the runtime as the application launches: what the host realizes and what the device is, then the core
-    /// woken on the main queue whenever it has work.
+    /// Starts the runtime as the application launches: what the host realizes and what the device is, then a turn
+    /// after every pass of the main run loop where the core has work.
+    /// Design: docs/design/host/runtime.md#the-turn-on-apple
     func start() {
         guard !started else { return }
         started = true
@@ -103,10 +107,7 @@ final class UIKitRenderer {
         environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
         hydratePersistentState()
         runtime.tree.followTheLanguagesDirection()
-        let core = runtime.core
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            core.ringForever { DispatchQueue.main.async { self?.runtime.pump.turn() } }
-        }
+        turns = RunLoopTurns(runtime.pump)
     }
 
     /// Asks iOS for a scene for a window the tree holds and no scene stands for - on an iPad another window.

@@ -74,6 +74,13 @@
         turning = false
     }
 
+    /// Runs a turn where the core or the waiting handlers have anything for one - what a turn after each pass of
+    /// the platform's loop asks.
+    /// Design: docs/design/host/runtime.md#the-turn-on-apple
+    public func turnIfWanted() {
+        if core.wantsTurn || handlers.hasQueued { turn() }
+    }
+
     /// Raises a native event's handler, then a turn; one raised while a patch applies, or inside the user's
     /// transaction, waits for it.
     public func dispatch(_ handler: Int32, payload: [HostValue] = []) {

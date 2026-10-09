@@ -99,14 +99,15 @@ back button's words said from a state, which no render follows.
 
 ## One turn
 
-A thread parked in `CoreLink.waitForWork()` wakes the UI thread whenever the
-core has work: a job on `MainActor`, a cycle, a render or an act. The turn
-always runs in the same order.
+The UI thread takes a turn whenever the core has work: a job on `MainActor`, a
+cycle, a render or an act. On Apple it is taken after each pass of the main run
+loop; elsewhere a doorbell rings for it. The turn always runs in the same
+order.
 
 ```text
-  doorbell thread: CoreLink.waitForWork() returns
-    |  posts one turn to the UI thread
-    v
+  Apple: the pass of the main run loop ends     elsewhere: the doorbell rings
+    |                                             |  posts one turn to the UI thread
+    v                                             v
   pump:  run the jobs  ->  a pending cycle  ->  render  ->  acts
                                                   |
                                                   v
@@ -129,10 +130,22 @@ before what comes after it, and the turn goes round again; only then the acts.
 ## The doorbell
 
 The core rings when it has work a turn must take - a handler resumed off the
-UI thread, a state an engine wrote. A host parks a thread of its own on the
-core (`CoreLink.ringForever`) and posts a turn onto its UI thread each time the
-core rings: AppKit and UIKit onto the main queue, WinUI through its relay,
+UI thread, a state an engine wrote. Where the platform's loop is not Apple's,
+a host parks a thread of its own on the core (`CoreLink.ringForever`) and posts
+a turn onto its UI thread each time the core rings: WinUI through its relay,
 GTK through GLib, Android onto its looper. The turn itself is the `Pump`'s.
+
+## The turn on Apple
+
+On Apple every source of work is a pass of the main run loop: a handler's
+event, a resumed task on the main queue, a post's job, a frame. So AppKit and
+UIKit ring nothing: `RunLoopTurns` watches the main run loop in every common
+mode and, as each pass ends - before the loop sleeps, or as a run of it returns
+- takes a turn where the core has work (`Pump.turnIfWanted`, the core's
+`wantsTurn` or a handler waiting). The turn renders what the pass wrote before
+the pass is over, ahead of Core Animation's commit, so a write is on the
+screen in the frame of the pass that made it, and no thread of the host's own
+ever waits on the core.
 
 ## The handlers' order
 

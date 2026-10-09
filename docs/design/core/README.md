@@ -87,7 +87,7 @@ host and never calls the core.
      |
      |  dirty = true; changed += storage; its name kept for debugInfo()
      v  UIThreadExecutor.poke()
-  doorbell thread wakes, posts one turn onto the UI thread
+  the host turns: as the pass of Apple's run loop ends, at the doorbell elsewhere
      |
      v  host turn:  run jobs -> a pending cycle -> RENDER -> take acts
   Renderer.render(baseline: the generation the host holds)

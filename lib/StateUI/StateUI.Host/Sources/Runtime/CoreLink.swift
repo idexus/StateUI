@@ -112,6 +112,9 @@
     @discardableResult
     public nonisolated func runJobs() -> Int { HostBoundary.runJobs() }
 
+    /// Whether a turn has anything to do.
+    public var wantsTurn: Bool { HostBoundary.wantsTurn }
+
     #if os(WASI)
     /// When the page is to call again, in milliseconds; nil with nothing to come.
     public var nextWake: Double? { HostBoundary.nextWake }

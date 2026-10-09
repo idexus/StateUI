@@ -86,6 +86,8 @@ extension AppKitRenderer {
         roster.update(root: nil, make: { _ in fatalError("no window comes while closing") }, close: { $0.closeFromTree() })
         runtime.tree.root?.leave()
         frameClock.stop()
+        turns?.stop()
+        turns = nil
     }
 }
 #endif

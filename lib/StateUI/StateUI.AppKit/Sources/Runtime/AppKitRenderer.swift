@@ -8,10 +8,9 @@ import QuartzCore
 @_spi(Host) import StateUIHost
 
 /// The AppKit runtime: the mounted tree over AppKit views, the scenes and windows around it, and the turn.
-/// Unchecked Sendable: every mutation is on MainActor; the doorbell only posts a turn to the main queue.
 /// Design: docs/design/platforms/appkit/runtime.md#the-appkit-runtime
 @MainActor
-final class AppKitRenderer: @unchecked Sendable {
+final class AppKitRenderer {
     /// What the host says for whoever reads its log: standard error, or wherever a test listens.
     static var log = HostLog(host: "AppKit")
 
@@ -44,7 +43,8 @@ final class AppKitRenderer: @unchecked Sendable {
 
     /// What each scene keeps for the system's window restoration, by the scene's key.
     var sceneValues = SceneValues()
-    var doorbellStarted = false
+    /// The turn after every pass of the main run loop, once the host has started.
+    var turns: RunLoopTurns?
     /// Whether the platform's first window came - one the system restored before the start.
     var connectedFirstWindow = false
     var started = false
@@ -75,7 +75,7 @@ final class AppKitRenderer: @unchecked Sendable {
     func start() {
         environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
         startRuntime()
-        startDoorbell()
+        startTurns()
     }
 
     func startRuntime() {
@@ -139,18 +139,11 @@ final class AppKitRenderer: @unchecked Sendable {
         runtime.pump.turn()
     }
 
-    /// Rings the core's doorbell from a thread of its own: each ring puts a turn on the main queue.
-    /// Design: docs/design/host/runtime.md#the-doorbell
-    func startDoorbell() {
-        guard !doorbellStarted else { return }
-        doorbellStarted = true
-
-        let core = runtime.core
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            core.ringForever {
-                DispatchQueue.main.async { self?.runtime.pump.turn() }
-            }
-        }
+    /// Takes a turn after every pass of the main run loop, where the core has work for one.
+    /// Design: docs/design/host/runtime.md#the-turn-on-apple
+    func startTurns() {
+        guard turns == nil else { return }
+        turns = RunLoopTurns(runtime.pump)
     }
 
     /// The native view of the element with `id`, as the tree stands.
