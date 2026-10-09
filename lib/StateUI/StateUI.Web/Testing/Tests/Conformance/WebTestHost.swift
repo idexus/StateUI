@@ -60,8 +60,7 @@ extension WebRenderer {
     /// The host leaves the page: what it was told late settles into no window of the next host's.
     func leave() {
         runtime.tree.root?.leave()
-        runtime.pump.presenter = nil
-        runtime.displayCycle.presenter = nil
+        runtime.presenter = nil
         for controller in roster.controllers { controller.close() }
     }
 

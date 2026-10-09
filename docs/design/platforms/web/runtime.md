@@ -13,8 +13,8 @@ frames, the DOM elements, the browser's layout, and the window.
 `WebRenderer` owns the runtime's elements, as every runtime does: the core
 link, the intake, the mounted tree whose native halves are `WebElement`s, the
 pump, the animator and what follows it, the display cycle, and the frame
-clock. It is the pump's `TurnPresenter` - after a render it shows the window -
-and the display cycle's `FramePresenter`. An act the host does not perform yet
+clock. It is the runtime's `HostPresenter` - after a render it shows the window,
+and after a frame's walk it says the page may have moved. An act the host does not perform yet
 fails at once, so a handler awaiting it goes on.
 
 ## Starting

@@ -156,8 +156,7 @@ extension GTKRenderer {
         // no window of the next test's.
         if let previous = shared {
             previous.runtime.tree.root?.leave()
-            previous.runtime.pump.presenter = nil
-            previous.runtime.displayCycle.presenter = nil
+            previous.runtime.presenter = nil
             previous.frameClock.widget = nil
             for controller in previous.windows { controller.window.close() }
         }

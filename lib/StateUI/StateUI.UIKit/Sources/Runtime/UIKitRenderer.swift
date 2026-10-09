@@ -76,8 +76,7 @@ final class UIKitRenderer {
         frameClock = clock.map { UIKitFrameClock(now: $0, ticksWithTheDisplay: false) } ?? UIKitFrameClock()
         self.preferences = preferences
         self.reducesMotion = reducesMotion
-        runtime.displayCycle.presenter = self
-        runtime.pump.presenter = self
+        runtime.presenter = self
         // Nothing renders before iOS connects the first scene: a window it kept opens its StateUI scene with what
         // that kept.
         runtime.pump.waitsForFirstWindow = true
@@ -360,32 +359,17 @@ final class UIKitRenderer {
     }
 }
 
-extension UIKitRenderer: TurnPresenter {
+extension UIKitRenderer: HostPresenter {
     func presentRendered() {
         synchronizeWindows()
     }
 
+    func presentFrame(movedChrome: Bool) {
+        if movedChrome { synchronizeWindows() }
+    }
+
     func perform(_ call: HostActCall) {
         acts.perform(call)
-    }
-}
-
-extension UIKitRenderer: FramePresenter {
-    var wantsFrames: Bool {
-        runtime.frames.wantsFrames
-    }
-
-    func commitUserReports(now: Double) {
-        runtime.frames.commit(now: now)
-    }
-
-    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        let impact = runtime.tree.present(states: states, properties: properties)
-        if impact.windowChrome { synchronizeWindows() }
-    }
-
-    func renderIfNeeded() {
-        if runtime.core.needsRender { runtime.pump.turn() }
     }
 }
 #endif

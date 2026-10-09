@@ -54,8 +54,7 @@ final class WebRenderer {
         self.applicationName = applicationName
         frameClock = clock.map { WebFrameClock(now: $0, ticksWithBrowser: false) } ?? WebFrameClock()
         self.reducesMotion = reducesMotion
-        runtime.displayCycle.presenter = self
-        runtime.pump.presenter = self
+        runtime.presenter = self
     }
 
     /// Starts the host in the page: told what the page stands on, the application rendered in one new scene, and a
@@ -138,33 +137,19 @@ final class WebRenderer {
     }
 }
 
-extension WebRenderer: TurnPresenter {
+extension WebRenderer: HostPresenter {
     func presentRendered() {
         showWindows()
         if let text = scenes.changed(root: runtime.tree.root) { WebKeptValues.writeScenes(text, application: applicationName) }
     }
 
+    func presentFrame(movedChrome: Bool) {
+        if movedChrome { showWindows() }
+        // What a frame wrote may move a view without resizing it, which no observer of the page tells.
+        runtime.frames.laidOut()
+    }
+
     func perform(_ call: HostActCall) {
         acts.perform(call)
-    }
-}
-
-extension WebRenderer: FramePresenter {
-    var wantsFrames: Bool {
-        runtime.frames.wantsFrames
-    }
-
-    func commitUserReports(now: Double) {
-        runtime.frames.commit(now: now)
-    }
-
-    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        if runtime.tree.present(states: states, properties: properties).windowChrome { showWindows() }
-        // What a frame wrote may move a view without resizing it, which no observer of the page tells.
-        if !states.isEmpty || !properties.isEmpty { runtime.frames.laidOut() }
-    }
-
-    func renderIfNeeded() {
-        if runtime.core.needsRender { runtime.pump.turn() }
     }
 }

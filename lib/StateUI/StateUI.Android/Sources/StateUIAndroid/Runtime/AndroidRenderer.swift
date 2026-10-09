@@ -64,8 +64,7 @@ final class AndroidRenderer {
         self.density = density
         frameClock = clock.map { AndroidFrameClock(now: $0, ticksWithTheDisplay: false) } ?? AndroidFrameClock()
         self.reducesMotion = reducesMotion
-        runtime.displayCycle.presenter = self
-        runtime.pump.presenter = self
+        runtime.presenter = self
     }
 
     /// Whether the user turned the system's animations off, which StateUI reads as asking for less motion.
@@ -318,7 +317,7 @@ final class AndroidRenderer {
     }
 }
 
-extension AndroidRenderer: TurnPresenter {
+extension AndroidRenderer: HostPresenter {
     /// Shows what a render changed: the activity's title, the window's pages, its sheets and its overlays, and
     /// whether there is a way back.
     func presentRendered() {
@@ -329,25 +328,11 @@ extension AndroidRenderer: TurnPresenter {
         }
     }
 
+    func presentFrame(movedChrome: Bool) {
+        if movedChrome { showChrome() }
+    }
+
     func perform(_ call: HostActCall) {
         acts.perform(call)
-    }
-}
-
-extension AndroidRenderer: FramePresenter {
-    var wantsFrames: Bool {
-        runtime.frames.wantsFrames
-    }
-
-    func commitUserReports(now: Double) {
-        runtime.frames.commit(now: now)
-    }
-
-    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        if runtime.tree.present(states: states, properties: properties).windowChrome { showChrome() }
-    }
-
-    func renderIfNeeded() {
-        if runtime.core.needsRender { runtime.pump.turn() }
     }
 }

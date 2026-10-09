@@ -48,6 +48,9 @@
     /// Where the application, its scenes and its windows stand, as the toolkit told it.
     public let lifecycle = ApplicationLifecycle()
 
+    /// What the runtime shows and performs through: the toolkit's windows and its acts.
+    public weak var presenter: (any HostPresenter)?
+
     /// Whether a settling of what the toolkit told waits for its turn.
     private var settling = false
 
@@ -74,6 +77,8 @@
             makeNative: makeNative)
         pump = Pump(core: core, intake: intake, tree: tree, displayCycle: displayCycle, now: clock.now, log: log)
 
+        pump.presenter = self
+        displayCycle.presenter = self
         tree.tellPhase = { [weak pump] handler in pump?.handlers.enqueuePhase(handler) }
         clock.onFrame = { [weak self] now in self?.displayCycle.frame(now: now) }
         layoutMotion.onStart = { [weak self] in self?.displayCycle.hold() }
@@ -151,7 +156,7 @@
         let moves = lifecycle.settle(windows: tree.root?.windows ?? [])
         if let phase = moves.phase { core.setApplicationPhase(phase) }
         tell(moves.told)
-        if moves.standing { pump.presenter?.presentRendered() }
+        if moves.standing { presenter?.presentRendered() }
     }
 
     /// Hands the core a window the platform made - its first, a new one of no kind, or one it kept, of `kind`, for
@@ -235,5 +240,31 @@
         guard !settling else { return }
         settling = true
         Task { @MainActor [weak self] in self?.settlePhases() }
+    }
+}
+
+extension HostRuntime: TurnPresenter {
+    func presentRendered() { presenter?.presentRendered() }
+
+    func perform(_ call: HostActCall) { presenter?.perform(call) }
+}
+
+/// A runtime with no presenter - its host gone, a test's host replaced - presents and renders nothing on its frames.
+extension HostRuntime: FramePresenter {
+    var wantsFrames: Bool { presenter != nil && frames.wantsFrames }
+
+    func commitUserReports(now: Double) {
+        guard presenter != nil else { return }
+        frames.commit(now: now)
+    }
+
+    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
+        guard let presenter else { return }
+        presenter.presentFrame(movedChrome: tree.present(states: states, properties: properties).windowChrome)
+    }
+
+    func renderIfNeeded() {
+        guard presenter != nil, core.needsRender else { return }
+        pump.turn()
     }
 }

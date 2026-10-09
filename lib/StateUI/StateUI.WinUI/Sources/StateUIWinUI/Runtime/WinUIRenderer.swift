@@ -64,8 +64,7 @@ final class WinUIRenderer {
     init(clock: (() -> Double)? = nil, reducesMotion: @escaping () -> Bool = { !stateui_winui_animations_enabled() }) {
         frameClock = clock.map { WinUIFrameClock(now: $0, ticksWithWinUI: false) } ?? WinUIFrameClock()
         self.reducesMotion = reducesMotion
-        runtime.displayCycle.presenter = self
-        runtime.pump.presenter = self
+        runtime.presenter = self
     }
 
     /// WinUI stands on this thread: the host claims it as the UI thread, then starts.
@@ -168,36 +167,20 @@ final class WinUIRenderer {
     }
 }
 
-extension WinUIRenderer: TurnPresenter {
+extension WinUIRenderer: HostPresenter {
     func presentRendered() {
         showWindows()
         refreshWindowChrome()
         if let text = scenes.changed(root: runtime.tree.root) { WinUIPersistence.writeScenes(text) }
     }
 
+    func presentFrame(movedChrome: Bool) {
+        guard movedChrome else { return }
+        showWindows()
+        refreshWindowChrome()
+    }
+
     func perform(_ call: HostActCall) {
         acts.perform(call)
-    }
-}
-
-extension WinUIRenderer: FramePresenter {
-    var wantsFrames: Bool {
-        runtime.frames.wantsFrames
-    }
-
-    func commitUserReports(now: Double) {
-        runtime.frames.commit(now: now)
-    }
-
-    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        let impact = runtime.tree.present(states: states, properties: properties)
-        if impact.windowChrome {
-            showWindows()
-            refreshWindowChrome()
-        }
-    }
-
-    func renderIfNeeded() {
-        if runtime.core.needsRender { runtime.pump.turn() }
     }
 }

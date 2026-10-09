@@ -55,8 +55,7 @@ only its toolkit has:
 | --- | --- |
 | `FrameClock` | the toolkit's display link: `now` in milliseconds on one monotonic clock, frames only while `held`, each calling `onFrame` with its time |
 | `makeNative` | a `NativeElement` for each `MountedElement`: its view and everything hung on it, and the tab the user chose or the sidebar shown on screen, where its toolkit knows them |
-| `TurnPresenter` | set as `pump.presenter`: shows what a render changed around the tree - the windows, their pages, their chrome - and performs an act |
-| `FramePresenter` | set as `displayCycle.presenter`: hands each step of a frame back to the layer - `frames.commit`, `tree.present`, `pump.turn` |
+| `HostPresenter` | set as `runtime.presenter`: shows what a render changed around the tree - the windows, their pages, their chrome - follows a frame that moved the chrome, and performs an act; the runtime keeps the rest of a turn and a frame |
 | the doorbell | Android, WinUI, GTK: the way a `pump.turn()` is posted to the UI thread from any thread, given to the core at the start (`CoreLink.postTurns`) - for work the UI thread makes, and for a job queued from any thread; AppKit and UIKit hold a `RunLoopTurns`, a turn after every pass of the main run loop |
 | `reducesMotion` | whether the user asked the platform for less motion |
 | `log` | where a message the intake refused is said, through `HostLog` |
@@ -161,8 +160,8 @@ these that the text shows, and a type named for an engine or a channel
 - **`Pump`** is one turn, in one order: the jobs a resumed handler left, a
   pending cycle, a render when the core needs one, the handlers it raised,
   then the acts, so an act lands on the interface its handler changed. A turn
-  asked for during another runs when that one ends. The host calls `turn()`
-  and presents through its `TurnPresenter`.
+  asked for during another runs when that one ends. The host calls `turn()`;
+  the runtime presents through the host's `HostPresenter`.
   ([One turn](../design/host/runtime.md#one-turn))
 - **`PatchIntake`** takes the core's message whole, against the generation of
   the last message applied in full; a drift - a sparse message about a tree
@@ -183,8 +182,8 @@ these that the text shows, and a type named for an engine or a channel
 - **`DisplayCycle`** is one display frame, in one order: the user's reports,
   the animations, the core's cycle, one walk of the tree, a render, and the
   clock's hold, which lets go only when nothing moves. The host's
-  `FrameClock` ticks it, and its `FramePresenter` hands each step back to the
-  layer. ([One frame](../design/host/runtime.md#one-frame))
+  `FrameClock` ticks it; the runtime keeps each step, and the host's
+  `HostPresenter` follows a frame that moved the chrome. ([One frame](../design/host/runtime.md#one-frame))
 - **`FrameFollowers`** keeps the frames coming while a scroller moves or a
   frame the tree reads may have moved, and on each frame lets the scrollers,
   then the elements, say where they stand, as one user's transaction. The
@@ -530,7 +529,7 @@ on every host.
   of the element it names.
   ([An application's own acts](../design/host/runtime.md#an-applications-own-acts))
 
-The host performs an act in its toolkit's terms in `TurnPresenter.perform`,
+The host performs an act in its toolkit's terms in `HostPresenter.perform`,
 and nothing more.
 
 ## Environment and kept values

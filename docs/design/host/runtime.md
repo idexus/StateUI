@@ -120,9 +120,10 @@ order.
 
 The acts come last, so an act lands on the interface its handler just changed.
 
-`Pump` is that turn, once for every runtime. A toolkit gives it a
-`TurnPresenter`: what a render changed around the tree - the windows, their
-pages, their chrome - and the performer of an act. A turn asked for while one
+`Pump` is that turn, once for every runtime. A toolkit gives the runtime one
+`HostPresenter`: what a render changed around the tree - the windows, their
+pages, their chrome - what a frame's walk moved of the chrome, and the
+performer of an act; the rest of a turn and a frame is the runtime's. A turn asked for while one
 runs runs when it ends; the handlers a render created run and the turn goes
 round again; the handlers waiting in `HandlerDispatch` run, a phase rendered
 before what comes after it, and the turn goes round again; only then the acts.
@@ -213,8 +214,8 @@ the windows, the pages, the layout, drawing, text and input rules, the acts
 and the environment's words, which [the host layer](../../internals/host-layer.md) maps
 part by part. A toolkit gives the layer
 each element's native half through `NativeElement`, its frame signal through
-`FrameClock`, presents a frame through `FramePresenter` and a turn through
-`TurnPresenter`, and hands
+`FrameClock`, presents a turn and a frame through one `HostPresenter`, and
+hands
 `LayoutMotion` the views it places as `PlacedView`. The host layer's own suite
 tests them on every platform it builds on, and `RuntimeArchitectureTests` holds
 every Swift runtime to them: only `Animator` samples a timing law, only

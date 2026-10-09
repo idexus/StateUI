@@ -3,8 +3,8 @@
 
 @_spi(Host) import StateUI
 
-/// What a frame presents through: the toolkit's mounted tree and the windows around it.
-@_spi(Host) @MainActor public protocol FramePresenter: AnyObject {
+/// What a frame presents through: the runtime, for the mounted tree and the windows around it.
+@MainActor protocol FramePresenter: AnyObject {
     /// Whether a scroller still moves or owes a report, or a frame read may have moved: it wants frames.
     var wantsFrames: Bool { get }
 
@@ -22,7 +22,7 @@
 /// Design: docs/design/host/runtime.md#one-frame
 @_spi(Host) @MainActor public final class DisplayCycle {
     /// What the frame presents through.
-    public weak var presenter: (any FramePresenter)?
+    weak var presenter: (any FramePresenter)?
 
     private let core: CoreLink
     private let clock: any FrameClock

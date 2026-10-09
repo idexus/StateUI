@@ -67,8 +67,7 @@ final class AppKitRenderer {
         self.preferences = preferences
         frameClock = clock.map { AppKitFrameClock(now: $0) } ?? AppKitFrameClock()
         self.reducesMotion = reducesMotion
-        runtime.displayCycle.presenter = self
-        runtime.pump.presenter = self
+        runtime.presenter = self
     }
 
     func start() {
@@ -208,32 +207,17 @@ extension AppKitElement: PlacedView {
     }
 }
 
-extension AppKitRenderer: TurnPresenter {
+extension AppKitRenderer: HostPresenter {
     func presentRendered() {
         synchronizeWindows()
     }
 
+    func presentFrame(movedChrome: Bool) {
+        if movedChrome { synchronizeWindows() }
+    }
+
     func perform(_ call: HostActCall) {
         acts.perform(call)
-    }
-}
-
-extension AppKitRenderer: FramePresenter {
-    var wantsFrames: Bool {
-        runtime.frames.wantsFrames
-    }
-
-    func commitUserReports(now: Double) {
-        runtime.frames.commit(now: now)
-    }
-
-    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        let impact = runtime.tree.present(states: states, properties: properties)
-        if impact.windowChrome { synchronizeWindows() }
-    }
-
-    func renderIfNeeded() {
-        if runtime.core.needsRender { runtime.pump.turn() }
     }
 }
 #endif

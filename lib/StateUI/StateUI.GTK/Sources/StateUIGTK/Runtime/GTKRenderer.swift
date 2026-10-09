@@ -81,8 +81,7 @@ final class GTKRenderer {
         let frameClock = clock.map { GTKFrameClock(now: $0, ticksWithGTK: false) } ?? GTKFrameClock()
         self.frameClock = frameClock
         self.reducesMotion = reducesMotion
-        runtime.displayCycle.presenter = self
-        runtime.pump.presenter = self
+        runtime.presenter = self
     }
 
     /// The application was activated on GLib's thread: the first time, the host claims it as the UI thread and
@@ -186,7 +185,7 @@ final class GTKRenderer {
     }
 }
 
-extension GTKRenderer: TurnPresenter {
+extension GTKRenderer: HostPresenter {
     func presentRendered() {
         showWindows()
         if let text = scenes.changed(root: runtime.tree.root) {
@@ -194,26 +193,12 @@ extension GTKRenderer: TurnPresenter {
         }
     }
 
+    /// A frame that moves what the chrome shows - a bar's colour, the window's frame - shows the window again.
+    func presentFrame(movedChrome: Bool) {
+        if movedChrome { showWindows() }
+    }
+
     func perform(_ call: HostActCall) {
         acts.perform(call)
-    }
-}
-
-extension GTKRenderer: FramePresenter {
-    var wantsFrames: Bool {
-        runtime.frames.wantsFrames
-    }
-
-    func commitUserReports(now: Double) {
-        runtime.frames.commit(now: now)
-    }
-
-    /// A frame that moves what the chrome shows - a bar's colour, the window's frame - shows the window again.
-    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        if runtime.tree.present(states: states, properties: properties).windowChrome { showWindows() }
-    }
-
-    func renderIfNeeded() {
-        if runtime.core.needsRender { runtime.pump.turn() }
     }
 }

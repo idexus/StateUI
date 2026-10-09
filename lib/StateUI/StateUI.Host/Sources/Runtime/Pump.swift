@@ -3,8 +3,8 @@
 
 @_spi(Host) import StateUI
 
-/// What a turn shows and performs through: the toolkit's windows and its acts.
-@_spi(Host) @MainActor public protocol TurnPresenter: AnyObject {
+/// What a turn shows and performs through: the runtime, for the toolkit's windows and its acts.
+@MainActor protocol TurnPresenter: AnyObject {
     /// Shows what a render changed around the mounted tree: the windows, their pages and their chrome.
     func presentRendered()
 
@@ -17,7 +17,7 @@
 /// Design: docs/design/host/runtime.md#one-turn
 @_spi(Host) @MainActor public final class Pump {
     /// What a turn shows and performs through.
-    public weak var presenter: (any TurnPresenter)?
+    weak var presenter: (any TurnPresenter)?
 
     /// The handlers a turn raises, in their order.
     public let handlers: HandlerDispatch
