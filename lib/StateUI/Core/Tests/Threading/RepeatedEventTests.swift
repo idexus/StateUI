@@ -278,6 +278,50 @@ final class RepeatedEventTests: XCTestCase {
         XCTAssertEqual(status.wrappedValue, "late 2", "the superseded run's task wrote once no other run was superseded")
     }
 
+    /// Work that must outlive its run - a save after the sheet closed - is given a task of its own, detached: it
+    /// belongs to no run, so the run being superseded refuses nothing it writes. The pattern the refusal teaches.
+    func testWorkGivenADetachedTaskOutlivesItsRun() async throws {
+        let gate = Gate()
+        let saved = State(wrappedValue: "")
+        let (renders, id) = button(.overlap) {
+            Task.detached { await Self.save(into: saved, after: gate) }
+        }
+
+        renders.fire(id)
+        try await waitUntil { gate.waiting == 1 }
+        renders.render(Text("gone").node)
+        gate.open()
+        try await waitUntil { saved.wrappedValue == "saved" }
+
+        XCTAssertEqual(saved.wrappedValue, "saved", "the detached work's write landed after its element left")
+    }
+
+    /// The save a detached task runs: the model's own work, on `MainActor`.
+    private static func save(into saved: State<String>, after gate: Gate) async {
+        await gate.wait()
+        saved.wrappedValue = "saved"
+    }
+
+    /// A refused write says what to do: give the work that must outlive its element a task of its own.
+    func testARefusedWriteSaysWhereTheWorkBelongs() async throws {
+        let gate = Gate()
+        let landed = State(wrappedValue: 0)
+        landed.storage.name(once: "refusalTeaches")
+        let (renders, id) = button(.overlap) {
+            await gate.wait()
+            landed.wrappedValue = 1
+        }
+
+        renders.fire(id)
+        renders.render(Text("gone").node)
+        gate.open()
+        try await waitUntil { gate.waiting == 0 }
+        await settle()
+
+        XCTAssertTrue(hasComplained("`refusalTeaches`"), "the refusal names the state")
+        XCTAssertTrue(hasComplained("Task.detached"), "and says where the work belongs")
+    }
+
     /// A ticker started by a run keeps counting once that run is superseded: its
     /// loop is the library's, and belongs to no run.
     func testATickerStartedByASupersededRunKeepsCounting() async throws {

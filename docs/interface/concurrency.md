@@ -70,6 +70,42 @@ the run started is refused with it. A handler without an `await` names no
 `RepeatedEvent`: it runs whole inside its event, so nothing supersedes it.
 `.onCreated` and `.onDestroying` name none either, as they come once.
 
+### Work that outlives its element
+
+A superseded run changes nothing anywhere - a model the page does not own
+included - and says so, naming what it refused. Work that must outlive its
+element - a save the user asked for before the sheet closed - goes to a task
+of its own, detached from the run, which no run's end refuses:
+
+```swift
+@MainActor
+final class Notes {
+    @State var saved: [String] = []
+
+    func save(_ draft: String) async {
+        try? await Task.sleep(for: .milliseconds(200))
+        saved.append(draft)
+    }
+}
+
+struct DraftSheet: View {
+    let notes: Notes
+    @Binding var shown: Bool
+    @State private var draft = ""
+
+    var body: some View {
+        VStack {
+            TextField($draft)
+            Button("Save").onClicked {
+                let draft = draft
+                Task.detached { await notes.save(draft) }
+                shown = false
+            }
+        }
+    }
+}
+```
+
 ## Application async functions
 
 An asynchronous helper called by a handler must inherit its caller's executor

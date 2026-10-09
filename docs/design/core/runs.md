@@ -61,6 +61,12 @@ nanosecond a write in the ordinary case. A superseded run counts until it is
 freed, not until its body ends: a task it started holds it, and is refused
 however long it outlives the body, whatever other runs are under way.
 
+The refusal stands for every state, a model's the page does not own
+included: a page left never writes on through a model. What must outlive its
+element goes to a detached task, which inherits no run - the refusal says so,
+naming what it refused, and the handbook teaches it (interface/concurrency.md,
+Work that outlives its element).
+
 ## The library's own tasks
 
 A task the library starts for itself - a ticker's loop, a sampling's late

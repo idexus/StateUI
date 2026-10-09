@@ -60,7 +60,8 @@ final class HandlerRun: Sendable {
         guard supersededUnderWay.load(ordering: .relaxed) > 0, let run = current, run.superseded else { return true }
 
         complain("\(what()) came from a run of a handler that a later event, or its element leaving, superseded; "
-            + "it was refused. A run that awaits changes nothing once superseded.")
+            + "it was refused. A run that awaits changes nothing once superseded: work that must outlive its element "
+            + "- a save after the sheet closed - goes to a task of its own, `Task.detached { await model.save() }`.")
         return false
     }
 }
