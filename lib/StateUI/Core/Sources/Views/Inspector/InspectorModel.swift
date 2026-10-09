@@ -103,7 +103,7 @@ final class InspectorModel {
 
         asking = true
 
-        Task { @MainActor [self] in
+        libraryTask { [self] in
             try? await Task.sleep(for: .milliseconds(Inspector.pace))
             asking = false
             revision &+= 1

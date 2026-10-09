@@ -109,7 +109,7 @@ final class PostSlot<Value: Sendable>: Sendable {
         }
 
         if first {
-            Task.detached { @MainActor in self.write(through: binding) }
+            libraryTask { self.write(through: binding) }
         }
     }
 

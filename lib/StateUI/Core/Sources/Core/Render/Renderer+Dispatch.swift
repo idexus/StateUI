@@ -60,7 +60,7 @@ extension Renderer {
 
     /// Starts what a render found with no settle pass left, in a later turn of `MainActor`.
     func queue(_ fired: Fired) {
-        Task { @MainActor in
+        libraryTask {
             Renderer.shared.run(fired)
         }
     }

@@ -10,7 +10,7 @@ final class HandlerRun: Sendable {
     /// The run the calling task belongs to; nil outside every handler.
     @TaskLocal static var current: HandlerRun?
 
-    /// Superseded runs still under way: a write reads this alone while there are none.
+    /// Superseded runs still alive: a write reads this alone while there are none.
     private static let supersededUnderWay = Atomic<Int>(0)
 
     private let isSuperseded = Atomic<Bool>(false)
@@ -49,7 +49,8 @@ final class HandlerRun: Sendable {
         Self.supersededUnderWay.add(1, ordering: .relaxed)
     }
 
-    func ended() {
+    /// A superseded run counts until no task holds it: its body may end before a task it started.
+    deinit {
         if superseded { Self.supersededUnderWay.subtract(1, ordering: .relaxed) }
     }
 
@@ -61,5 +62,14 @@ final class HandlerRun: Sendable {
         complain("\(what()) came from a run of a handler that a later event, or its element leaving, superseded; "
             + "it was refused. A run that awaits changes nothing once superseded.")
         return false
+    }
+}
+
+/// Starts a task of the library's own on `MainActor` - a ticker's loop, a late reading, a post's job: it belongs to no
+/// handler's run, so no run being superseded refuses what it does.
+/// Design: docs/design/core/runs.md#the-librarys-own-tasks
+func libraryTask(_ operation: @escaping @MainActor @Sendable () async -> Void) {
+    HandlerRun.$current.withValue(nil) {
+        Task { @MainActor in await operation() }
     }
 }

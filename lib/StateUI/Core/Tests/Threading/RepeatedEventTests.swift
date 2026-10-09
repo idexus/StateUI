@@ -193,6 +193,56 @@ final class RepeatedEventTests: XCTestCase {
         try await waitUntil { gate.waiting == 0 }
     }
 
+    /// A task under a superseded run changes nothing, after the run's own body
+    /// ended too - whatever other runs are under way.
+    func testATaskUnderASupersededRunChangesNothingAfterTheRunEnds() async throws {
+        let (outer, inner) = (Gate(), [Gate(), Gate()])
+        var runs = 0
+        let status = State(wrappedValue: "")
+        let (renders, id) = button(.cancelPrevious) {
+            runs += 1
+            let run = runs
+            Task { await inner[run - 1].wait(); status.wrappedValue = "late \(run)" }
+            await outer.wait()
+        }
+
+        renders.fire(id)
+        renders.fire(id)
+        outer.open()
+        try await waitUntil { outer.waiting == 0 }
+        await settle()
+        inner[1].open()
+        try await waitUntil { status.wrappedValue == "late 2" }
+        inner[0].open()
+        try await waitUntil { inner[0].waiting == 0 }
+        await settle()
+
+        XCTAssertEqual(status.wrappedValue, "late 2", "the superseded run's task wrote once no other run was superseded")
+    }
+
+    /// A ticker started by a run keeps counting once that run is superseded: its
+    /// loop is the library's, and belongs to no run.
+    func testATickerStartedByASupersededRunKeepsCounting() async throws {
+        let gate = Gate()
+        let ticked = State(wrappedValue: 0)
+        let ticker = Ticker(every: .milliseconds(5)) { ticked.wrappedValue += 1 }
+        var runs = 0
+        let (renders, id) = button(.cancelPrevious) {
+            runs += 1
+            if runs == 1 { ticker.start() }
+            await gate.wait()
+        }
+
+        renders.fire(id)
+        renders.fire(id)
+        let before = ticked.wrappedValue
+        try await waitUntil { ticked.wrappedValue >= before + 3 }
+        ticker.stop()
+        gate.open()
+
+        XCTAssertGreaterThanOrEqual(ticked.wrappedValue, before + 3, "the ticks' writes were refused as the superseded run's")
+    }
+
     /// Two handlers of one event keep their own runs, each by its own word.
     func testEachHandlerOfAnEventKeepsItsOwnRuns() async throws {
         let gate = Gate()

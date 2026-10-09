@@ -73,7 +73,6 @@ final class RunSlot {
 
     /// A run came to its end: the next waiting event runs once none is under way.
     private func finished(_ run: HandlerRun) {
-        run.ended()
         running.removeAll { $0.run === run }
 
         if running.isEmpty, !waiting.isEmpty {

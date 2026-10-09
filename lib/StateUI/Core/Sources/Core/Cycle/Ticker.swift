@@ -182,7 +182,8 @@ public final class Ticker {
 
         Renderer.shared.stateChanged(self)
 
-        Task { @MainActor [self] in await loop(mine) }
+        // The loop is the ticker's own, whatever run started it.
+        libraryTask { [self] in await loop(mine) }
     }
 
     /// Stops counting, keeping the count. Starting again goes on from there.

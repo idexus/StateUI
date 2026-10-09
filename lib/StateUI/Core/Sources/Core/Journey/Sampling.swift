@@ -43,6 +43,17 @@ final class Sampling {
         return .waitUntil(next)
     }
 
+    /// Takes the reading booked for `deadline` when it comes - by `Task.sleep`, not a run-loop timer
+    /// (Ticker.swift), in a task of the library's own.
+    func takeLate(at deadline: ContinuousClock.Instant) {
+        libraryTask { [self] in
+            try? await Task.sleep(until: deadline)
+
+            took()
+            take()
+        }
+    }
+
     /// Records that the booked reading was taken, starting the next window.
     func took(at now: ContinuousClock.Instant = .now) {
         waiting = false
@@ -110,13 +121,7 @@ extension HostStorage {
                 break
 
             case .waitUntil(let deadline):
-                // `Task.sleep`, not a run-loop timer (Ticker.swift).
-                Task {
-                    try? await Task.sleep(until: deadline)
-
-                    sampling.took()
-                    sampling.take()
-                }
+                sampling.takeLate(at: deadline)
             }
         }
     }

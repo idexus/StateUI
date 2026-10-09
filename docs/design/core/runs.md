@@ -44,13 +44,23 @@ and a superseded run ending in `CancellationError` is not reported.
 From then on it changes nothing. Every write of a state, every part of a
 journey (`move`, `stop`, `snap`, its value, velocity and law), every post and
 every act made by the run, or by a task under it, is refused and said once; an
-act it awaits fails as `CancellationError`. A post's job runs as the run that
-posted it, so a post waiting when its run is superseded is refused too.
+act it awaits fails as `CancellationError`. A post is refused as it is posted;
+its job belongs to no run, so what was admitted lands whoever posted beside it.
 
 The run is read through a task-local, `HandlerRun.current`, which the tasks
 under a run inherit. A write reads an atomic count of the superseded runs still
-under way first, and the task-local only while that count is not nought - a
-nanosecond a write in the ordinary case.
+alive first, and the task-local only while that count is not nought - a
+nanosecond a write in the ordinary case. A superseded run counts until it is
+freed, not until its body ends: a task it started holds it, and is refused
+however long it outlives the body, whatever other runs are under way.
+
+## The library's own tasks
+
+A task the library starts for itself - a ticker's loop, a sampling's late
+reading, a post's job, a handler a render queued, the inspector's pace - is
+detached, so it belongs to no run. Started inside a handler, it would inherit
+that run and be refused once the run is superseded: a ticker started by a run a
+second press cancelled would tick and change nothing.
 
 ## A write built on a value gone
 
