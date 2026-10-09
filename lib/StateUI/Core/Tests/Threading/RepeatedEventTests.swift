@@ -122,6 +122,19 @@ final class RepeatedEventTests: XCTestCase {
         XCTAssertEqual(landed.wrappedValue, 0, "the run outlived its element")
     }
 
+    /// A run is counted under way until it ends - what a test waits on instead of a length of time.
+    func testARunIsCountedUnderWayUntilItEnds() async throws {
+        let gate = Gate()
+        let before = RunSlot.underWay
+        let (renders, id) = button(.overlap) { await gate.wait() }
+
+        renders.fire(id)
+        XCTAssertEqual(RunSlot.underWay, before + 1)
+
+        gate.open()
+        try await waitUntil { RunSlot.underWay == before }
+    }
+
     /// An element leaving cancels the runs of its events in their names' order, every time.
     func testAnElementLeavingCancelsItsEventsRunsInNameOrder() async throws {
         nonisolated(unsafe) var cancelled: [String] = []

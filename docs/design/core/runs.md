@@ -34,6 +34,10 @@ no word, unavailable, whose message says what to write. The compiler asks the
 question where there is one, and only there. A step is kept as a run under
 `.overlap` that never suspends.
 
+`RunSlot.underWay` counts the runs of every slot from their start to their
+end: what a test waits on for the handlers' work to end, rather than a length
+of time.
+
 ## A superseded run
 
 A run is superseded by `.cancelPrevious`, and orphaned - superseded the same

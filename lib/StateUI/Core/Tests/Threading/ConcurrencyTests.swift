@@ -54,28 +54,20 @@ final class ConcurrencyTests: XCTestCase {
     /// and no unanswered act for the NEXT test to trip over - a stray
     /// completion id was the first thing another test's `first` found.
     private func drainEverything() async {
-        var quiet = 0
         let deadline = Date().addingTimeInterval(5)
 
-        while quiet < 2 && Date() < deadline {
-            let ids = completionIds(in: drainedActs())
-
-            for completion in ids {
+        while RunSlot.underWay > 0 || UIThreadExecutor.shared.pendingCount > 0 || Renderer.shared.resumesPending > 0,
+              Date() < deadline {
+            for completion in completionIds(in: drainedActs()) {
                 ReplyBuffer.current = .finished([.bool(true)])
                 _ = Renderer.shared.dispatch(completion)
             }
 
-            let ran = stateUIRunJobs()
-
-            if ids.isEmpty && ran == 0 && UIThreadExecutor.shared.pendingCount == 0
-                && Renderer.shared.resumesPending == 0 {
-                quiet += 1
-            } else {
-                quiet = 0
-            }
-
+            stateUIRunJobs()
             try? await Task.sleep(nanoseconds: 100_000)
         }
+
+        XCTAssertEqual(RunSlot.underWay, 0, "a handler is still under way")
     }
 
     /// Every completion id in a batch of act calls, in order.

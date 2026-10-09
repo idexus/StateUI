@@ -844,23 +844,19 @@ final class GalleryViewTests: XCTestCase {
             and a write only the engine would have read moves nothing
             """)
 
-        // THE DEFERRAL SLEEPS BEFORE IT LETS GO, so it is waited out here
-        // rather than left for whichever test runs next: a job still suspended
-        // when this returns is a pass another test counts as its own. A
-        // suspended sleep is not PENDING until it wakes, so the wait is the
-        // crossing's own half-second and a little over it.
-        let deadline = Date().addingTimeInterval(0.7)
+        // THE DEFERRAL SLEEPS BEFORE IT LETS GO, so it is ended here rather
+        // than left for whichever test runs next: the gallery leaving cancels
+        // its sleep, and the run ends on the turn its cancellation wakes.
+        let before = RunSlot.underWay
+        _ = renders.render(Text("gone").node)
 
-        while Date() < deadline {
-            _ = stateUIRunJobs()
-            Thread.sleep(forTimeInterval: 0.02)
+        for _ in 0..<500 where RunSlot.underWay > 0 || UIThreadExecutor.shared.pendingCount > 0 {
+            turnTheUIThread()
         }
 
-        _ = stateUIRunJobs()
-
-        XCTAssertEqual(
-            UIThreadExecutor.shared.pendingCount, 0,
-            "the shape's deferral was left running")
+        XCTAssertGreaterThan(before, 0, "the shape's deferral never ran")
+        XCTAssertEqual(RunSlot.underWay, 0, "the shape's deferral was left running")
+        XCTAssertEqual(UIThreadExecutor.shared.pendingCount, 0)
     }
 
     /// Whether ANYTHING in this patch answers the event - a gesture lands on

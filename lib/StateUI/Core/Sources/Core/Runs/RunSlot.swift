@@ -12,6 +12,9 @@ final class RunSlot {
     /// Events that wait for the runs under way, in the order they came.
     private var waiting: [() -> Void] = []
 
+    /// How many runs of every slot are under way: what waits for the handlers' work to end.
+    private(set) static var underWay = 0
+
     /// Starts a run of `handler` for an event carrying `payload`, or lets the event go, or keeps it waiting - as
     /// `repeated` says, where a run is under way.
     func start(_ handler: @escaping EventHandler, _ repeated: RepeatedEvent, payload: [PropValue]?) {
@@ -49,6 +52,7 @@ final class RunSlot {
     private func launch(_ handler: @escaping EventHandler, payload: [PropValue]?) {
         let run = HandlerRun()
         running.append((run, nil))
+        RunSlot.underWay += 1
 
         let task = Task.immediate { @MainActor in
             await HandlerRun.$current.withValue(run) {
@@ -74,6 +78,7 @@ final class RunSlot {
     /// A run came to its end: the next waiting event runs once none is under way.
     private func finished(_ run: HandlerRun) {
         running.removeAll { $0.run === run }
+        RunSlot.underWay -= 1
 
         if running.isEmpty, !waiting.isEmpty {
             waiting.removeFirst()()
