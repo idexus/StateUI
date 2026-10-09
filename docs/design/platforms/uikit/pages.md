@@ -135,7 +135,11 @@ A modal stack standing as the window's page is UIKit's page sheets, each present
 before once that one stands - UIKit presents over a controller only then -
 and all of them only once the window stands on screen: a sheet presented
 before, UIKit takes away again at once and tells as the user's. Those still
-asked for stay, the rest go from the top. The user swiping the top sheet down
+asked for stay, the rest go from the top. Nor does UIKit present over a
+controller whose sheet is still coming or going: it drops the request and says
+nothing, and the window would hold a sheet never shown. So while a sheet the
+window presented or took away still moves, what is asked waits - the latest
+asking - and comes as that movement ends. The user swiping the top sheet down
 is the window's way back, told the stack as how many stay; a window that leaves tells
 nobody of its sheets, which leave with it.
 
