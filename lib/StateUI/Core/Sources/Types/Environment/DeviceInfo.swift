@@ -16,28 +16,39 @@
 @MainActor
 public final class DeviceInfo {
     /// Phone, tablet, desktop, television, or watch.
-    @State public var formFactor: FormFactor = .unknown
+    @State public internal(set) var formFactor: FormFactor = .unknown
 
     /// The host platform's name, such as "macOS", "iOS", "Android",
     /// "Windows", "Linux", or "Web" - text, since a host may name a platform
     /// this library does not know.
-    @State public var platform = ""
+    @State public internal(set) var platform = ""
 
     /// The hardware model, where the platform shares it.
-    @State public var model = ""
+    @State public internal(set) var model = ""
 
     /// Who made the device, where the platform shares it.
-    @State public var manufacturer = ""
+    @State public internal(set) var manufacturer = ""
 
     /// The device's own name, where the platform shares it.
-    @State public var name = ""
+    @State public internal(set) var name = ""
 
     /// The operating system version as displayable text.
-    @State public var versionString = ""
+    @State public internal(set) var versionString = ""
 
     /// Real hardware or an emulator.
-    @State public var deviceType: DeviceType = .unknown
+    @State public internal(set) var deviceType: DeviceType = .unknown
 
-    /// A fresh instance, its values starting as a headless host's do.
-    public init() {}
+    /// A device as a test or a preview fakes it; what is not said starts as a headless host's does.
+    public init(
+        formFactor: FormFactor = .unknown, platform: String = "", model: String = "", manufacturer: String = "",
+        name: String = "", versionString: String = "", deviceType: DeviceType = .unknown
+    ) {
+        self.formFactor = formFactor
+        self.platform = platform
+        self.model = model
+        self.manufacturer = manufacturer
+        self.name = name
+        self.versionString = versionString
+        self.deviceType = deviceType
+    }
 }

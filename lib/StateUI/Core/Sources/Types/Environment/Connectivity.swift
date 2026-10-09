@@ -10,12 +10,15 @@
 public final class Connectivity {
     /// Whether the internet is reachable - `.internet` is the one worth
     /// gating a request on.
-    @State public var networkAccess: NetworkAccess = .unknown
+    @State public internal(set) var networkAccess: NetworkAccess = .unknown
 
     /// Every way the device is connected right now - Wi-Fi and cellular at
     /// once is an ordinary answer on a phone.
-    @State public var connectionProfiles: [ConnectionProfile] = []
+    @State public internal(set) var connectionProfiles: [ConnectionProfile] = []
 
-    /// A fresh instance, its values starting as a headless host's do.
-    public init() {}
+    /// A network as a test or a preview fakes it; what is not said starts as a headless host's does.
+    public init(networkAccess: NetworkAccess = .unknown, connectionProfiles: [ConnectionProfile] = []) {
+        self.networkAccess = networkAccess
+        self.connectionProfiles = connectionProfiles
+    }
 }

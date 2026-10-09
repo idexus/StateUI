@@ -97,14 +97,14 @@ struct SavePanel: View {
     }
 }
 
-let offline = Device()
-offline.connectivity.networkAccess = .none
+let offline = Device(connectivity: Connectivity(networkAccess: .none))
 
 SavePanel().environment(offline)
 ```
 
 Only that branch sees the override. The process-wide provider remains the
-answer everywhere else.
+answer everywhere else. A fact is the host's to write: the application reads
+it, and a fake states its facts as it is made.
 
 ## What the library offers
 

@@ -10,18 +10,28 @@
 @MainActor
 public final class Device {
     /// What the device is: its form factor, platform, model and name.
-    public let info = DeviceInfo()
+    public let info: DeviceInfo
 
     /// Its display: its size, density, orientation and refresh rate.
-    public let display = DeviceDisplay()
+    public let display: DeviceDisplay
 
     /// Its battery: the charge, whether it charges, from what, and the energy saver.
-    public let battery = Battery()
+    public let battery: Battery
 
     /// Its network: whether there is access, and over what.
-    public let connectivity = Connectivity()
+    public let connectivity: Connectivity
 
-    /// A fresh device, for providing a fake to one branch with `.environment(...)`. Its facts start as a headless
-    /// host's do.
-    public init() {}
+    /// A device as a test or a preview fakes it, for one branch with `.environment(...)`; what is not said starts as
+    /// a headless host's does.
+    ///
+    ///     Device(connectivity: Connectivity(networkAccess: .none))
+    public init(
+        info: DeviceInfo = DeviceInfo(), display: DeviceDisplay = DeviceDisplay(), battery: Battery = Battery(),
+        connectivity: Connectivity = Connectivity()
+    ) {
+        self.info = info
+        self.display = display
+        self.battery = battery
+        self.connectivity = connectivity
+    }
 }
