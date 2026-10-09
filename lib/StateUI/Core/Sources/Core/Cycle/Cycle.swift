@@ -153,9 +153,6 @@ final class CycleBoard {
         storages.first { $0.storage?.number == number }?.storage?.crossing()
     }
 
-    /// What the last cycle did, for the trace.
-    private(set) var reported = CycleReport()
-
     /// Registers an engine, which runs from the next cycle.
     func arm(_ entry: EngineEntry) {
         engines.append(entry)
@@ -261,7 +258,6 @@ final class CycleBoard {
         report.awake = stirring
         report.written.sort()
         last = now
-        reported = report
 
         return report
     }

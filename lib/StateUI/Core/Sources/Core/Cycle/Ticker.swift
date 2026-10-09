@@ -22,7 +22,7 @@
 public final class Ticker {
     /// What a tick runs. It runs on `@MainActor`, so it may read and write `@State`;
     /// it may await, and the next tick is scheduled from where it ends.
-    public typealias Tick = @MainActor @Sendable () async -> Void
+    public typealias Tick = @MainActor () async -> Void
 
     private var storedInterval: Duration
     private var storedLimit: Int?

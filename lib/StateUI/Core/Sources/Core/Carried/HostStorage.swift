@@ -6,7 +6,7 @@
 /// read, kept as three copies: the image the running cycle works on, the last
 /// completed cycle's, and a write waiting to be latched.
 @MainActor
-public final class HostStorage: NamedState {
+final class HostStorage: NamedState {
     /// What the cycle running now is working on.
     var image: [UInt8]
 
@@ -19,17 +19,14 @@ public final class HostStorage: NamedState {
     /// Which of that write's lanes actually changed.
     var pendingMask: UInt64 = 0
 
-    /// Which lanes were written since they were last read - bit n is lane n, bit 63
-    /// every lane from 63 on.
+    /// Which lanes were written since they were last read; bit 63 is every lane from 63 on.
     var dirty: UInt64 = 0
 
-    /// The readings asked for of this value, in the order asked, each with the state it
-    /// is read into - known weakly, since a reading belongs to the element that asked for it.
+    /// The readings asked for of this value, in the order asked, each known weakly with its target.
     /// Design: docs/design/core/journeys.md#readings
     var samplings: [(target: ObjectIdentifier, held: WeakSampling)] = []
 
-    /// How many times the value was written, equal bytes included - what an engine
-    /// following it compares.
+    /// How many times the value was written, equal bytes included - what an engine compares.
     var stamp: Int = 0
 
     /// The number the host quotes it back by, once anything has asked.
@@ -54,8 +51,7 @@ public final class HostStorage: NamedState {
     /// Which element resolved that law, so a second answering differently is heard.
     var inheritedBy: ElementID?
 
-    /// What runs after the host wrote this value, handed the lanes it wrote - the
-    /// state's own ask for a render.
+    /// What runs after the host wrote this value, handed the lanes it wrote.
     var told: ((UInt64) -> Void)?
 
     /// Whether any build read the journey off this image.
@@ -125,8 +121,7 @@ public final class HostStorage: NamedState {
         return moved
     }
 
-    /// Lays only the named lanes, answering which of them changed - what a host's
-    /// report is.
+    /// Lays only the named lanes, answering which of them changed - a host's report.
     nonisolated static func lay(_ bytes: [UInt8], into slot: inout [UInt8], only mask: UInt64) -> UInt64 {
         // A report speaks about lanes, never about shape: what it does not name stands.
         // Design: docs/design/core/cycle.md#what-the-host-reports

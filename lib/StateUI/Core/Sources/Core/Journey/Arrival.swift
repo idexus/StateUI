@@ -43,7 +43,7 @@ public final class Arrival {
 
         // Counted as the host answered, lowered as the waiter runs again.
         // Design: docs/design/core/acts.md#awaiting-an-answer
-        Renderer.shared.resumes -= 1
+        Renderer.shared.resumesPending -= 1
         return end
     }
 
@@ -58,7 +58,7 @@ public final class Arrival {
 
         let resumed = waiting
         waiting.removeAll()
-        Renderer.shared.resumes += resumed.count
+        Renderer.shared.resumesPending += resumed.count
 
         for continuation in resumed {
             continuation.resume(with: outcome!)

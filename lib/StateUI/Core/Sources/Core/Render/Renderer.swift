@@ -96,13 +96,10 @@ public final class Renderer {
     var completions: [Int: (Reply) -> Void] = [:]
     var nextCompletionId = -1
 
-    /// Resumes reported by the host that have not come back yet.
-    var resumes = 0
-
     /// How many handlers were told their act is over and have not run a line since;
     /// a test waits on it for a queue gone quiet.
     /// Design: docs/design/core/acts.md#awaiting-an-answer
-    var resumesPending: Int { resumes }
+    var resumesPending = 0
 
     /// One board per sync; the display's frame is the only sync.
     /// Design: docs/design/core/cycle.md#the-board
@@ -121,7 +118,7 @@ public final class Renderer {
     /// - Parameter application: the application, made at its first need, once
     ///   what an earlier registration wrote into the application's session is
     ///   forgotten and the host has told what the device is.
-    public func setApplication(_ application: @escaping @autoclosure () -> any Application) {
+    @_spi(Host) public func setApplication(_ application: @escaping @autoclosure () -> any Application) {
         StandardEnvironment.application.forget()
 
         // A new application is a new tree: the old one is let go, and every element of
@@ -181,7 +178,7 @@ public final class Renderer {
     ///
     /// - Returns: whether a build was open to record it.
     @discardableResult
-    public func stateRead(_ state: AnyObject) -> Bool {
+    @usableFromInline func stateRead(_ state: AnyObject) -> Bool {
         #if DEBUG
         HandlerRun.noteRead(of: state)
         #endif
@@ -191,7 +188,7 @@ public final class Renderer {
     /// Records that a state was written and asks for a render that rebuilds only
     /// the views that read it. A state no live element reads asks for nothing.
     /// It asks the host for a turn.
-    public func stateChanged(_ state: AnyObject) {
+    func stateChanged(_ state: AnyObject) {
         let id = ObjectIdentifier(state)
 
         guard rendering || readers[id] != nil else {
@@ -244,7 +241,7 @@ public final class Renderer {
 
     /// Whether anything has changed since the last render. The host polls this
     /// rather than being called back, so nothing here calls into the host.
-    public var needsRender: Bool { dirty }
+    var needsRender: Bool { dirty }
 
     /// Takes what was written since the last take and starts a render, in one step,
     /// so a write landing during this render asks for the next one.

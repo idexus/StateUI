@@ -295,14 +295,12 @@ final class HostRenderTests: XCTestCase {
 
     /// The tally a host prints to count leaks is the renderer's own count: a
     /// render adds one, and `alive` is every rendered element standing now.
-    /// The cycle trace names each board's last cycle.
-    func testTheTallyAndTheTraceReadTheRenderersOwnCounts() {
+    func testTheTallyReadsTheRenderersOwnCounts() {
         let before = HostBoundary.tally
         _ = HostBoundary.render(baseline: 0)
         let after = HostBoundary.tally
 
         XCTAssertEqual(after.renders, before.renders + 1)
         XCTAssertEqual(after.alive, Renderer.shared.liveNodes)
-        XCTAssertTrue(HostBoundary.cycleTrace.hasPrefix("cycle 0 latched="), HostBoundary.cycleTrace)
     }
 }

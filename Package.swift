@@ -57,10 +57,10 @@ let package = Package(
         // swiftSettings, and it is set wherever Swift is compiled here - in every
         // manifest of the repository. Without it a plain `async`
         // function runs on Swift's cooperative pool whoever calls it, so a
-        // handler awaiting one resumes away from its caller's executor. The library
-        // says `nonisolated(nonsending)` on its own async functions regardless; the flag is
-        // what extends that to the functions an APPLICATION writes, which no
-        // annotation of ours can reach. It becomes the default in Swift 7.
+        // handler awaiting one resumes away from its caller's executor. The library's
+        // own async functions are MainActor's; the flag is what keeps on the caller's
+        // executor the functions an APPLICATION writes, which no annotation of ours
+        // can reach. It becomes the default in Swift 7.
         .target(
             name: "StateUI",
             path: "lib/StateUI/Core/Sources",

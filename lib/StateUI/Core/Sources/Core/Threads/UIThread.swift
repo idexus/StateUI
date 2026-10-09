@@ -90,8 +90,10 @@ final class UIThreadExecutor: SerialExecutor, Sendable {
         /// Whether a drain is running; a second one entered meanwhile returns at once.
         var draining = false
 
+        #if !canImport(Darwin)
         /// Whether `run()` has been told to return.
         var stopped = false
+        #endif
 
         /// The thread the last drain ran on - the UI thread, and this executor's
         /// isolation.
@@ -101,8 +103,8 @@ final class UIThreadExecutor: SerialExecutor, Sendable {
 
     private let queue = Mutex(Queue())
 
-    #if !os(WASI)
-    /// What `runTheLoop` waits on: the turn it posts itself.
+    #if !canImport(Darwin) && !os(WASI)
+    /// What `run()` waits on: the turn it posts itself.
     private let wake = DispatchSemaphore(value: 0)
     #endif
 
@@ -230,9 +232,13 @@ final class UIThreadExecutor: SerialExecutor, Sendable {
         queue.withLock { $0.pending.count }
     }
 
+}
+
+#if !canImport(Darwin)
+extension UIThreadExecutor: MainExecutor {
     /// Runs the UI thread's loop here until `stop()` - what an `async main` asks of
     /// `MainActor`'s executor; a host drains through `HostBoundary.runJobs` instead.
-    func runTheLoop() {
+    func run() throws {
         #if os(WASI)
         // No thread waits for work on WebAssembly: the browser's event loop is the loop.
         drain()
@@ -248,23 +254,12 @@ final class UIThreadExecutor: SerialExecutor, Sendable {
         #endif
     }
 
-    /// Makes `runTheLoop()` return after the drain it is in.
-    func stopTheLoop() {
+    /// Makes `run()` return after the drain it is in.
+    func stop() {
         queue.withLock { $0.stopped = true }
         #if !os(WASI)
         wake.signal()
         #endif
-    }
-}
-
-#if !canImport(Darwin)
-extension UIThreadExecutor: MainExecutor {
-    func run() throws {
-        runTheLoop()
-    }
-
-    func stop() {
-        stopTheLoop()
     }
 }
 

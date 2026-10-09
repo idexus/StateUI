@@ -240,7 +240,7 @@ extension Binding where Value: StateValue {
     /// The image the host carries the borrowed state on, made the first time anything
     /// asks and kept for good - what every driven modifier and feed takes from
     /// `$state`. Nothing for a part of a state or a binding made from closures.
-    public var image: HostStorage? { described?.carry() }
+    var image: HostStorage? { described?.carry() }
 }
 
 extension Binding where Value: StateValue {

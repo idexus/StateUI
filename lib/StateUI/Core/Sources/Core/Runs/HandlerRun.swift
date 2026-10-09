@@ -68,7 +68,7 @@ final class HandlerRun: Sendable {
 /// Starts a task of the library's own on `MainActor` - a ticker's loop, a late reading, a post's job: it belongs to no
 /// handler's run, so no run being superseded refuses what it does.
 /// Design: docs/design/core/runs.md#the-librarys-own-tasks
-func libraryTask(_ operation: @escaping @MainActor @Sendable () async -> Void) {
+func libraryTask(_ operation: @escaping @MainActor () async -> Void) {
     HandlerRun.$current.withValue(nil) {
         Task { @MainActor in await operation() }
     }

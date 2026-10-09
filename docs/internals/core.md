@@ -495,8 +495,8 @@ values ([core link](../design/host/runtime.md#core-link)). The
   [generations and recovery](host-contract.md#generations-and-recovery))
 - **The display cycle.** `cycle(_:now:reducesMotion:)` advances one clock and
   answers a `HostCycle` of `HostStateChange`s in ascending state numbers;
-  `cyclesPending` says whether anything waits for one, and `cycleTrace` gives
-  the last as a line. ([State cycles](host-contract.md#state-cycles))
+  `cyclesPending` says whether anything waits for one.
+  ([State cycles](host-contract.md#state-cycles))
 - **Carried states and journeys.** `value(for:)` reads the image a
   `HostStateBinding` carries out; `report(_:through:)` and
   `report(_:updating:through:)` bring a value or a journey's parts back;

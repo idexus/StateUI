@@ -273,10 +273,6 @@
     /// Whether any state or engine is waiting for a host cycle.
     public static var cyclesPending: Bool { Renderer.shared.cycleAwake() != 0 }
 
-    /// The last display cycle as one line - what it latched, ran, skipped and
-    /// wrote - for a host that traces its cycles.
-    public static var cycleTrace: String { Renderer.shared.cycleTrace() }
-
     /// What this process's renders came to, for a host that prints the tally.
     public static var tally: HostTally {
         let renderer = Renderer.shared
@@ -307,7 +303,6 @@
     /// - Returns: how many subscriptions heard it - a raise nobody hears is
     ///   an ordinary zero.
     @discardableResult
-    @MainActor
     public static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
@@ -365,7 +360,7 @@
     /// itself says nothing; nil posts no more - between a host's tests. One turn is posted at once, for what came
     /// before.
     /// Design: docs/design/core/concurrency.md#the-doorbell
-    public nonisolated static func postTurns(with post: (@Sendable () -> Void)?) {
+    public static func postTurns(with post: (@Sendable () -> Void)?) {
         UIThreadExecutor.shared.postTurns(with: post)
     }
 

@@ -95,7 +95,6 @@ final class GTKRenderer {
         nonisolated(unsafe) let application = application
 
         MainActor.assumeIsolated {
-            _ = core.needsRender
             if let window = shared?.window {
                 window.present()
             } else {

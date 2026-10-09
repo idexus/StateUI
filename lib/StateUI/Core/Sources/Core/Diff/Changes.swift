@@ -5,17 +5,8 @@
 // render. Nothing about it crosses to the host.
 // Design: docs/design/core/identity-and-diffing.md#watching-values
 
-/// What `.onChanged` runs, given the old value and the new one, in that order.
-///
-///     .onChanged(step) { old, new in
-///         direction = new > old ? "forward" : "back"
-///     }
-///
-/// It runs on `@MainActor` like every handler, and may write `@State` and await.
-public typealias ChangeHandler<Value> = (Value, Value) async throws -> Void
-
-/// The same with the value's type erased - what a node stores.
-typealias ErasedChangeHandler = (Any, Any) async throws -> Void
+/// What `.onChanged` runs, the value's type erased - what a node stores: the old value and the new one.
+typealias ErasedChangeHandler = @MainActor (Any, Any) async throws -> Void
 
 /// One value a view watches and what to run when it moves; the comparison is
 /// captured where the value's type was known.
@@ -130,7 +121,7 @@ extension ModifiableElement {
     public func onChanged<Value: Equatable>(
         _ value: Value,
         _ repeated: RepeatedEvent,
-        _ handler: @escaping ChangeHandler<Value>
+        _ handler: @escaping ValueEventHandler<Value, Value>
     ) -> Modified {
         modified {
             $0.watches.append(Watch(value, repeated) { old, new in
@@ -146,7 +137,7 @@ extension ModifiableElement {
     @available(*, unavailable, message: "a handler that awaits says what a change does while it runs: .onChanged(value, .cancelPrevious) { … } - or .ignoreWhileRunning, .waitForPrevious, .overlap")
     public func onChanged<Value: Equatable>(
         _ value: Value,
-        _ handler: @escaping ChangeHandler<Value>
+        _ handler: @escaping ValueEventHandler<Value, Value>
     ) -> Modified {
         fatalError("unavailable")
     }

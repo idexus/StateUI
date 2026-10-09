@@ -396,7 +396,6 @@ enum JavaNatives {
         nonisolated(unsafe) let root = root
 
         MainActor.assumeIsolated {
-            _ = core.needsRender
             AndroidStandardStreams.redirect()
             Java.env = env
             if Java.classLoader == nil, let loader = Java.callObject(activity, JavaAPI.getClassLoader) {

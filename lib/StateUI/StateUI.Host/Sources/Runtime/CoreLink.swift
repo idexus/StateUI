@@ -32,7 +32,6 @@
 
     /// Tells the inspector what applying the message of `generation` cost: every scene's part by its key, then the
     /// whole.
-    @MainActor
     func inspected(_ tally: RenderTally, generation: Int32) {
         var scenes: [String: Double] = [:]
         for (scene, spent) in tally.scenes {
@@ -47,9 +46,6 @@
 
     /// Whether any state or engine waits for a display cycle.
     public var cyclesPending: Bool { HostBoundary.cyclesPending }
-
-    /// The last display cycle as one line.
-    public var cycleTrace: String { HostBoundary.cycleTrace }
 
     /// What this process's renders came to - the tally a runtime prints to count leaks.
     public var tally: HostTally { HostBoundary.tally }
@@ -110,11 +106,11 @@
 
     /// Runs the jobs waiting on StateUI's UI executor.
     @discardableResult
-    public nonisolated func runJobs() -> Int { HostBoundary.runJobs() }
+    public func runJobs() -> Int { HostBoundary.runJobs() }
 
     /// Says how a turn is put on the UI thread's queue from any thread - for work the UI thread makes, and for a
     /// job queued from any thread. A host whose loop turns by itself says nothing; nil posts no more.
-    public nonisolated func postTurns(with post: (@Sendable () -> Void)?) { HostBoundary.postTurns(with: post) }
+    public func postTurns(with post: (@Sendable () -> Void)?) { HostBoundary.postTurns(with: post) }
 
     /// Whether a turn has anything to do.
     public var wantsTurn: Bool { HostBoundary.wantsTurn }
@@ -159,7 +155,7 @@
     // MARK: - The application, its scenes and its kept values
 
     /// Reports the theme the system asks for; themed values resolve against the theme in force (`HostThemes`).
-    @MainActor public func setColorScheme(_ theme: ColorScheme) {
+    public func setColorScheme(_ theme: ColorScheme) {
         HostBoundary.setColorScheme(HostThemes.report(system: theme))
     }
 
@@ -167,7 +163,7 @@
     public func setAccentColor(_ color: Color) { HostBoundary.setAccentColor(color) }
 
     /// Takes the theme the application holds; themed values resolve against the theme in force.
-    @MainActor public func holdColorScheme(_ theme: ColorScheme) {
+    public func holdColorScheme(_ theme: ColorScheme) {
         HostBoundary.setColorScheme(HostThemes.hold(theme))
     }
 

@@ -125,7 +125,8 @@ Where the loop turns by itself the host says no way to post: Apple has no
 doorbell - `MainActor`'s jobs are the main queue's, and its hosts take a turn as
 each pass of the main run loop ends (host/runtime.md#the-turn-on-apple) - and
 the Web host turns as every call from the page ends. An `async main` with no
-host runs `runTheLoop`, whose way to post is a signal it waits for itself.
+host runs the executor's own loop (`MainExecutor.run`, away from Apple), whose
+way to post is a signal it waits for itself.
 
 ## Draining jobs
 

@@ -77,8 +77,7 @@ struct EngineDeclaration {
 }
 
 /// One registered engine and everything the board remembers about it: a value in
-/// the board's book, so its reasons to run are read and written under the board's
-/// hold alone.
+/// the board's book, its reasons to run read and written by the board alone.
 /// Design: docs/design/core/cycle.md#the-board
 @MainActor
 struct EngineEntry {

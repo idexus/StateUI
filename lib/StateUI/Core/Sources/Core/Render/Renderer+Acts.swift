@@ -81,12 +81,12 @@ extension Renderer {
             send { outcome in
                 // Counted here and lowered first thing after the resume, so a host can tell a
                 // resume still landing from nothing to wait for.
-                Renderer.shared.resumes += 1
+                Renderer.shared.resumesPending += 1
                 continuation.resume(returning: outcome)
             }
         }
 
-        resumes -= 1
+        resumesPending -= 1
 
         switch reply {
         case .finished(let values):

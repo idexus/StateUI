@@ -201,17 +201,6 @@ extension Renderer {
         Int32(boards.filter { $0.awake }.count)
     }
 
-    /// The last cycle of every board as one line, built only when the host traces.
-    func cycleTrace() -> String {
-        boards.enumerated().map { index, board in
-            let report = board.reported
-
-            return "cycle \(index) latched=\(report.latched) ran=\(report.ran)"
-                + " skipped=\(report.skipped) wrote=\(report.written.count)"
-                + " awake=\(report.awake ? 1 : 0)"
-        }.joined(separator: " | ")
-    }
-
     /// A state by its number, or nil where none rides it any more.
     func storage(of number: Int32) -> HostStorage? {
         let found = states[number]

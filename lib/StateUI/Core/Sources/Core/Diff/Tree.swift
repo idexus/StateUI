@@ -11,7 +11,7 @@
 /// while the element is written in the same place in the source, or stands at
 /// the same position when put in by hand. A manual one survives anywhere, which
 /// is what a collection needs.
-public enum ElementID: Hashable, Sendable {
+@_spi(Host) public enum ElementID: Hashable, Sendable {
     /// Assigned by the differ, from a counter, never reused. Written as a
     /// number.
     case auto(Int)
