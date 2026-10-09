@@ -72,7 +72,7 @@ public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollView
     ///
     /// `offset` is where it is going and `$offset.journey.value` where it is. A
     /// write animates under the element's motion, `$offset.journey.snap(to:)`
-    /// jumps, and `try await $offset.journey.move(to:)` waits for the arrival.
+    /// jumps, and `$offset.journey.move(to:)` animates under a law of its own.
     /// Handing `$offset` over reads nothing: a body that reads `offset` renders
     /// on every report, and `.samples($offset, into:, .every(100))` holds a
     /// reading to ten a second.

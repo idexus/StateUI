@@ -58,7 +58,7 @@ public struct Slider: ElementView, TintElement, SliderProperties {
     ///
     /// An assignment (`volume = 1`) animates the thumb there under the
     /// element's motion; `$volume.journey` reads where the thumb is, and
-    /// `try await $volume.journey.move(to: 1)` waits for the arrival.
+    /// `try await $volume.journey.move(to: 1).arrived()` waits for the arrival.
     public init(_ value: Binding<Double>) {
         self = Slider().value(value)
     }

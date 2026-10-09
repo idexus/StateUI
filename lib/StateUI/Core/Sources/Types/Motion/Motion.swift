@@ -12,7 +12,7 @@
 ///
 ///     VStack { … }.motion(.spring(response: 260))
 ///
-///     try await $fade.journey.move(to: 0.1, .eased(400, .cubicOut))
+///     $fade.journey.move(to: 0.1, .eased(400, .cubicOut))
 ///
 /// `.none` applies a change at once. `.custom` hands the animation to an
 /// engine of your own. `.eased` and `.spring` name a timing law and its

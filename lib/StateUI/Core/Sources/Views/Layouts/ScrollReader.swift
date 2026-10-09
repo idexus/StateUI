@@ -211,8 +211,8 @@ public struct ScrollReader: View {
 
     /// Puts an aim on the scroller, for an act aimed at it. Moving the run is a
     /// write to the `.scrollOffset($:)` state instead:
-    /// `$across.journey.snap(to:)` at once, `try await
-    /// $across.journey.move(to:)` animated.
+    /// `$across.journey.snap(to:)` at once, `$across.journey.move(to:)`
+    /// animated.
     ///
     ///     ScrollReader(across: 540) { … }.scrollOffset($across).aim(scroller)
     ///

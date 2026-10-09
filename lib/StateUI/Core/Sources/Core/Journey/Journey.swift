@@ -10,7 +10,8 @@
 ///     ColorBox().opacity($fade)
 ///
 ///     fade = 0.2                                         // the destination: the box animates there
-///     try await $fade.journey.move(to: 0.2, .eased(400, .cubicOut))   // the same, awaited
+///     $fade.journey.move(to: 0.2, .eased(400))           // the same, under a law of its own
+///     try await $fade.journey.move(to: 1).arrived()      // back, waiting for the arrival
 ///     $fade.journey.value                                // where it has got to this frame
 ///     $fade.journey.velocity                             // and how fast
 ///     $fade.journey.stop()                               // leaves it where it is
