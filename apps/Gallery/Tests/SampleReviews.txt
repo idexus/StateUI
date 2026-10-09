@@ -71,7 +71,7 @@ PickerSample.swift f480681de24ebc68
 PinchSample.swift 9851233c0b4cd1f6
 PlacedSample.swift b651b832f4df941b
 PointerSample.swift 1d6cae768e2b2422
-PollSample.swift bd04c2ff6982b517
+PollSample.swift c29a9a718b686c79
 PositionIndicatorSample.swift ed91a1ec3ae0bad4
 ProgressBarSample.swift a6b7786eb494cd73
 PropertyReadsSample.swift e16e08fd0fa40d8a
@@ -104,7 +104,7 @@ TextEditorSample.swift 9cc806f939101a0a
 TextFieldSample.swift 9131fe99152d28e6
 TextSample.swift 34fab4cec512bc4c
 TextSpanSample.swift bdee76fb3bcc426a
-TickerSample.swift eb35488097adbf9f
+TickerSample.swift 516c9585f1eec098
 TimePickerSample.swift dd3594dfb194e764
 ToolbarLayersSample.swift 4d9cba60b628724a
 ToolbarSample.swift e92a63e93e6973c5

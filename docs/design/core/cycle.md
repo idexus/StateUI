@@ -236,6 +236,9 @@ that imports Foundation.
   the last tick stops first  before its closure runs, so the closure can start
                              the next round - start() on a running ticker does
                              nothing, and a stop written after would undo it
+  held only through a tick   the loop keeps the ticker weakly while it sleeps,
+                             so a ticker ends with whoever holds it - a view's
+                             `@State` - with no stop written for it
 ```
 
 Its values are not separate `@State`s because they change together: a tick

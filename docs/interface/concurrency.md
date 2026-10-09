@@ -169,7 +169,6 @@ struct Countdown: View {
                     ticker.isRunning ? ticker.stop() : ticker.start()
                 }
         }
-        .onDestroying { ticker.stop() }
     }
 }
 ```
@@ -181,8 +180,11 @@ configuration change request a render.
 
 `start()` returns immediately and does nothing while the same run is already
 active. A completed limited ticker starts again from zero. `stop()` keeps the
-count; `reset()` stops and sets it to zero. Stop a view-owned ticker from
-`onDestroying` so a removed element cannot keep doing work.
+count; `reset()` stops and sets it to zero. A ticker ends with whoever holds
+it: its loop holds it only through a tick, so one a view keeps in `@State`
+stops when the view goes. One that should keep counting is held by something
+that stays. A tick that reaches the view's state holds that state, the ticker
+among it, so such a ticker is stopped in `.onDestroying`, as the poll below.
 
 Intervals shorter than one millisecond are clamped to one millisecond. The
 platform scheduler may have a coarser practical resolution.

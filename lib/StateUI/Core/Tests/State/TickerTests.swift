@@ -86,6 +86,23 @@ final class TickerTests: XCTestCase {
             "more than one loop is counting: three starts produced three ticks a lap")
     }
 
+    /// A ticker ends with whoever held it: its loop holds it only through a tick, so a page's ticker goes with the
+    /// page's `@State`, no stop written for it.
+    func testATickerNobodyHoldsIsFreedAndTicksNoMore() {
+        nonisolated(unsafe) var ran = 0
+        weak var gone: Ticker?
+
+        do {
+            let ticker = Ticker(every: .milliseconds(10)) { ran += 1 }
+            ticker.start()
+            gone = ticker
+        }
+        drain(until: { false }, within: 0.1)
+
+        XCTAssertNil(gone, "the loop keeps a ticker nobody holds")
+        XCTAssertEqual(ran, 0, "a ticker nobody holds went on ticking")
+    }
+
     func testALimitedTickerStopsItself() {
         let ticker = Ticker(every: .milliseconds(10), limit: 3)
 

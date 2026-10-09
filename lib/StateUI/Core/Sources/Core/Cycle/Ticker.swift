@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A repeating timer as a loop that sleeps to a deadline, safe to drive from any
-// thread.
+// A repeating timer as a loop that sleeps to a deadline, on the UI thread.
 // Design: docs/design/core/cycle.md#the-ticker
 
 /// A repeating timer: something to read while it counts.
@@ -15,12 +14,10 @@
 ///         Button(ticker.isRunning ? "Stop" : "Start")
 ///             .onClicked { ticker.isRunning ? ticker.stop() : ticker.start() }
 ///     }
-///     .onDestroying { ticker.stop() }
 ///
 /// A tick asks for a render, so a view reading `ticks` follows it with nothing
-/// subscribed. Hold it in a `@State`, and stop it in `.onDestroying` when it
-/// should not outlive the view. It sleeps to a deadline, so a minute of seconds
-/// is a minute.
+/// subscribed. Hold it in a `@State`: it ends with whoever holds it. It sleeps
+/// to a deadline, so a minute of seconds is a minute.
 @MainActor
 public final class Ticker {
     /// What a tick runs. It runs on `@MainActor`, so it may read and write `@State`;
@@ -182,8 +179,16 @@ public final class Ticker {
 
         Renderer.shared.stateChanged(self)
 
-        // The loop is the ticker's own, whatever run started it.
-        libraryTask { [self] in await loop(mine) }
+        // The loop holds the ticker only through a tick, so a ticker nobody holds ends.
+        libraryTask { [weak self] in
+            var deadline = ContinuousClock.now
+
+            while let interval = self?.storedInterval {
+                deadline += interval
+                try? await Task.sleep(until: deadline)
+                guard await self?.lap(mine, after: &deadline) == true else { return }
+            }
+        }
     }
 
     /// Stops counting, keeping the count. Starting again goes on from there.
@@ -205,41 +210,32 @@ public final class Ticker {
         Renderer.shared.stateChanged(self)
     }
 
-    /// The loop, on the UI thread.
-    private func loop(_ mine: Int) async {
-        var deadline = ContinuousClock.now
+    /// One tick of run `mine`, on the UI thread; answers whether its loop goes on.
+    private func lap(_ mine: Int, after deadline: inout ContinuousClock.Instant) async -> Bool {
+        // A stop and a replaced run both end the loop. The last tick stops the ticker
+        // before it runs, so the tick itself can start the next round.
+        // Design: docs/design/core/cycle.md#the-ticker
+        guard running, run == mine else { return false }
 
-        while true {
-            deadline += storedInterval
+        count += 1
 
-            try? await Task.sleep(until: deadline)
+        let last = !storedRepeating || finished
+        if last { running = false }
 
-            // A stop and a replaced run both end the loop. The last tick stops the ticker
-            // before it runs, so the tick itself can start the next round.
-            // Design: docs/design/core/cycle.md#the-ticker
-            guard running, run == mine else { return }
+        let tick = storedTick ?? Ticker.nothing
 
-            count += 1
+        Renderer.shared.stateChanged(self)
 
-            let last = !storedRepeating || finished
-            if last { running = false }
+        await tick()
 
-            let tick = storedTick ?? Ticker.nothing
+        // The tick may have stopped the ticker, or started a new run.
+        guard !last, running, run == mine else { return false }
 
-            Renderer.shared.stateChanged(self)
-
-            await tick()
-
-            if last { return }
-
-            // The tick may have stopped the ticker, or started a new run.
-            guard running, run == mine else { return }
-
-            // A lap longer than a whole interval restarts the deadline from now, so missed
-            // laps do not all come due at once.
-            // Design: docs/design/core/cycle.md#the-ticker
-            if deadline + storedInterval < .now { deadline = .now }
-        }
+        // A lap longer than a whole interval restarts the deadline from now, so missed
+        // laps do not all come due at once.
+        // Design: docs/design/core/cycle.md#the-ticker
+        if deadline + storedInterval < .now { deadline = .now }
+        return true
     }
 
     /// Whether the count has reached the limit.

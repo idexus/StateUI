@@ -39,6 +39,14 @@ private struct Held: View {
 /// An object a test provides to a subtree, or hands to a handler to capture.
 private final class Carried {}
 
+/// A view counting with a ticker of its own, which it shows the test.
+private struct Counting: View {
+    @State private var ticker = Ticker(every: .milliseconds(10))
+    let seen: (Ticker) -> Void
+
+    var body: some View { seen(ticker); return Text("\(ticker.ticks)") }
+}
+
 @MainActor
 final class ElementReleaseTests: XCTestCase {
     override func setUp() async throws {
@@ -228,6 +236,21 @@ final class ElementReleaseTests: XCTestCase {
 
             renders.render(stack([Held { _ = seen }.node], id: "root"))
             return seen
+        })
+    }
+
+    /// A RUNNING TICKER a view declares: its loop holds it only through a tick, so it goes with the view's state
+    /// and stops, no stop written for it.
+    func testAViewsRunningTickerGoesWithIt() {
+        XCTAssertTrue(released { renders in
+            var made: Ticker?
+
+            renders.render(stack([Counting { made = $0 }.node], id: "root"))
+            guard let made else { XCTFail("the view made no ticker"); return Carried() }
+            made.start()
+            // The render the start asks for takes its write, as the renderer's next turn does.
+            Renderer.shared.clearInvalidation()
+            return made
         })
     }
 }

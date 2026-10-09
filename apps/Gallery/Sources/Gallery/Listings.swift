@@ -6512,6 +6512,8 @@ enum Listings {
                     poll.start()
                 }
             }
+            // The tick reaches this view's states, the ticker among them, so it holds
+            // them: leaving the page is stopping it.
             .onDestroying { poll.stop() }
         }
         """#,
@@ -8623,7 +8625,6 @@ enum Listings {
                 }
                 .horizontalAlignment(.center)
             }
-            .onDestroying { ticker.stop() }
         }
 
         /// How much of the countdown is left, as a fraction for the bar.

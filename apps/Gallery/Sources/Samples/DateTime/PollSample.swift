@@ -78,6 +78,8 @@ struct PollSample: SampleContent, ExampleContent {
                 poll.start()
             }
         }
+        // The tick reaches this view's states, the ticker among them, so it holds
+        // them: leaving the page is stopping it.
         .onDestroying { poll.stop() }
     }
     // listing: end
@@ -102,8 +104,7 @@ struct PollSample: SampleContent, ExampleContent {
 
             Text("The work runs on a detached task of its own. The tick is `@MainActor`, "
                 + "so it resumes on the thread the host draws on to write state and "
-                + "start the next round. `start`, `stop` and `reset` are safe "
-                + "from any thread all the same: `Ticker` keeps its state behind a lock.")
+                + "start the next round.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
