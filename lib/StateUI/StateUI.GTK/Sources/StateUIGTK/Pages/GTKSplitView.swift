@@ -161,7 +161,7 @@ final class GTKSplitView: GTKLayoutView {
     /// with its sidebar shown, and says so - once GTK has laid the frame out, not inside its allocation.
     private func adaptToFirstRoom(width: Double) {
         guard adaptation.room(width, breakpoint: Self.breakpoint, shown: isPresented) else { return }
-        GTKDoorbell.afterLayout { [weak self] in
+        GTKRenderer.afterLayout { [weak self] in
             guard let self, !isPresented else { return }
             present(true)
             onPresentationChanged?(true)

@@ -228,6 +228,19 @@ motion; [patches](patches.md) those of the patch intake and the program write;
 [the mounted tree](tree.md) those of the tree and its native halves;
 [layout](layout.md) those of the layout arithmetic.
 
+## After a layout pass
+
+What a host must do once the layout pass under way is over - a field's caret
+the toolkit's focus undid, a list's changes held while its rows bind, a split
+view's first room - waits in one queue (`HostRuntime.afterLayout`): it runs
+once the pass is over, in the order it came, and work that comes while it runs
+waits for the next. The host asks once to be told a pass is over and then
+takes a turn: GTK at the idle after its layout and paint, WinUI in the next
+turn it posts, as WinUI lays out before its queue's next message. A scroller's
+offset written before its first layout is not this queue's: it waits in the
+scroller (`WrittenScrollOffset`), which applies it in its own arrange, before
+it draws and only once it has a size.
+
 ## Where a view stands
 
 An element whose frame the tree reads - a state its frame drives, or a

@@ -82,6 +82,16 @@ final class GTKRenderer {
         self.frameClock = frameClock
         self.reducesMotion = reducesMotion
         runtime.presenter = self
+        // A pass is over at the priority after GTK's layout and paint.
+        runtime.afterLayout.askForPassEnd = {
+            g_idle_add_full(G_PRIORITY_DEFAULT_IDLE, { _ in
+                MainActor.assumeIsolated {
+                    guard let runtime = GTKRenderer.shared?.runtime, runtime.afterLayout.passEnded() else { return }
+                    runtime.pump.turn()
+                }
+                return 0
+            }, nil, nil)
+        }
     }
 
     /// The application was activated on GLib's thread: the first time, the host claims it as the UI thread and
@@ -201,5 +211,13 @@ extension GTKRenderer: HostPresenter {
 
     func perform(_ call: HostActCall) {
         acts.perform(call)
+    }
+}
+
+extension GTKRenderer {
+    /// Runs `work` once GTK has laid the frame out, then a turn.
+    /// Design: docs/design/host/runtime.md#after-a-layout-pass
+    static func afterLayout(_ work: @escaping @MainActor () -> Void) {
+        shared?.runtime.afterLayout.run(work)
     }
 }

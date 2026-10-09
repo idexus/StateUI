@@ -232,7 +232,7 @@ final class GTKItemsView: GTKLayoutView {
         guard binding > 0 || !waiting.isEmpty else { return apply() }
         waiting.append(apply)
         guard waiting.count == 1 else { return }
-        GTKDoorbell.afterLayout { [weak self] in
+        GTKRenderer.afterLayout { [weak self] in
             guard let self else { return }
             let waiting = self.waiting
             self.waiting = []
@@ -326,7 +326,7 @@ final class GTKItemsView: GTKLayoutView {
     private func tellShowing() {
         guard !tellsShowing else { return }
         tellsShowing = true
-        GTKDoorbell.afterLayout { [weak self] in
+        GTKRenderer.afterLayout { [weak self] in
             guard let self else { return }
             tellsShowing = false
             guard !released, let list else { return }

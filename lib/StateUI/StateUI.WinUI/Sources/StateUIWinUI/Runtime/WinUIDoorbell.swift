@@ -16,21 +16,8 @@ enum WinUIDoorbell {
 
     /// A turn the relay posted: the work a layout pass left, then the turn.
     @MainActor static func turn() {
-        let works = pending
-        pending = []
-        for work in works { work() }
-        WinUIRenderer.shared?.runtime.pump.turn()
+        guard let runtime = WinUIRenderer.shared?.runtime else { return }
+        runtime.afterLayout.passEnded()
+        runtime.pump.turn()
     }
-}
-
-extension WinUIDoorbell {
-    /// Runs `work` in the next turn posted, once the layout pass under way is over: what a pass decides - a split
-    /// view's first room - is said once WinUI has finished laying out.
-    @MainActor static func afterPass(_ work: @escaping @MainActor () -> Void) {
-        pending.append(work)
-        stateui_winui_post_turn()
-    }
-
-    /// Work waiting for the pass under way to end.
-    @MainActor private static var pending: [@MainActor () -> Void] = []
 }

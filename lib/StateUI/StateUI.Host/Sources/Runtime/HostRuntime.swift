@@ -51,6 +51,9 @@
     /// What the runtime shows and performs through: the toolkit's windows and its acts.
     public weak var presenter: (any HostPresenter)?
 
+    /// Work that waits for the layout pass under way to end.
+    public let afterLayout = AfterLayout()
+
     /// Whether a settling of what the toolkit told waits for its turn.
     private var settling = false
 

@@ -128,7 +128,7 @@ class GTKTextFieldView: GTKView, GTKTextInputView {
     /// Design: docs/design/platforms/gtk/controls.md#a-field-and-its-words
     private func focused() {
         guard programCaret != nil else { return }
-        GTKDoorbell.afterLayout { [weak self] in
+        GTKRenderer.afterLayout { [weak self] in
             guard let self, let caret = self.programCaret else { return }
             self.programCaret = nil
             ProgramWrite.perform { self.select(start: caret.start, length: caret.length) }

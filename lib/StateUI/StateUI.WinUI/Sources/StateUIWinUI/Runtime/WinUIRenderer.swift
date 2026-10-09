@@ -65,6 +65,8 @@ final class WinUIRenderer {
         frameClock = clock.map { WinUIFrameClock(now: $0, ticksWithWinUI: false) } ?? WinUIFrameClock()
         self.reducesMotion = reducesMotion
         runtime.presenter = self
+        // A pass is over in the next turn posted: WinUI lays out before the queue's next message.
+        runtime.afterLayout.askForPassEnd = { stateui_winui_post_turn() }
     }
 
     /// WinUI stands on this thread: the host claims it as the UI thread, then starts.
@@ -181,5 +183,14 @@ extension WinUIRenderer: HostPresenter {
 
     func perform(_ call: HostActCall) {
         acts.perform(call)
+    }
+}
+
+extension WinUIRenderer {
+    /// Runs `work` once the layout pass under way is over: what a pass decides - a split view's first room - is
+    /// said once WinUI has finished laying out.
+    /// Design: docs/design/host/runtime.md#after-a-layout-pass
+    static func afterLayout(_ work: @escaping @MainActor () -> Void) {
+        shared?.runtime.afterLayout.run(work)
     }
 }
