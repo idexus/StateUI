@@ -229,8 +229,8 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertTrue(written[1].hasSuffix(" ms total\n"), written[1])
     }
 
-    /// A host counting its own views alive has the count written beside the elements alive: a view outliving its
-    /// element shows there, where the elements' count stays.
+    /// A host counting its own views alive has the count written beside the elements alive and the runs under
+    /// way: a view outliving its element shows there, where the elements' count stays.
     @MainActor
     func testTheTallyWritesTheViewsAHostCountsAlive() {
         var written: [String] = []
@@ -240,7 +240,8 @@ final class MountedTreeTests: XCTestCase {
 
         tree.apply(Self.stack("stack", ["a", "b"]), complete: true)
 
-        XCTAssertTrue(written.first?.contains("  views 7  apply ") ?? false, written.joined())
+        let runs = HostBoundary.tally.runs
+        XCTAssertTrue(written.first?.contains("  runs \(runs)  views 7  apply ") ?? false, written.joined())
     }
 
     /// With the passes asked for, the tree starts the inspector's recording, and each message applied writes

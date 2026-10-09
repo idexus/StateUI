@@ -39,7 +39,7 @@ events a second, a drag's, spend a quarter of a millisecond a second.
 
 `RunSlot.underWay` counts the runs of every slot from their start to their
 end: what a test waits on for the handlers' work to end, rather than a length
-of time.
+of time, and the tally's `runs` (diagnostics.md).
 
 ## A superseded run
 

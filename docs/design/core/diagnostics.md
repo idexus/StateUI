@@ -13,6 +13,7 @@ explains a single build in the author's names, is in invalidation.md.
   refused    how many writes asked for nothing, because no live element read
              the state (invalidation.md)
   alive      how many rendered elements are alive now
+  runs       how many handler runs are under way now (runs.md)
 ```
 
 `empty` is how a write that should have asked for nothing is found; `refused`
@@ -20,7 +21,9 @@ is the other half, what counting live readers spared beside what got through.
 `alive` is counted in as each rendered element is made and out as it goes, so a
 page that was left and still stands in memory shows as a number that does not
 come back down. It tells a leaked page from memory the allocator has not handed
-back yet, which a process's resident size cannot. A host reads the tally
+back yet, which a process's resident size cannot. `runs` is the same count
+for work: a run that its element's leaving does not end - a loop that never
+looks at its cancellation - holds the number up after the page is gone. A host reads the tally
 through `HostBoundary.tally` - a Swift runtime writes it with its own totals
 under `STATEUI_TALLY=1` (host/patches.md): this side has no environment to
 read.

@@ -280,7 +280,7 @@
         let renderer = Renderer.shared
         return HostTally(
             renders: renderer.renders, empty: renderer.emptyRenders,
-            refused: renderer.refusedWrites, alive: renderer.liveNodes)
+            refused: renderer.refusedWrites, alive: renderer.liveNodes, runs: RunSlot.underWay)
     }
 
     /// Reports a native event and runs its handler on StateUI's UI executor.

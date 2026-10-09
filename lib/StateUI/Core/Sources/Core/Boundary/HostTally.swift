@@ -15,4 +15,7 @@
 
     /// How many rendered elements are alive now.
     public let alive: Int
+
+    /// How many handler runs are under way now.
+    public let runs: Int
 }
