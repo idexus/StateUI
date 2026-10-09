@@ -95,9 +95,11 @@ every StateUI layout WinUI arranges and every scroller's movement, and tells
 the host layer every change of an ItemsView's view, which says it - WinUI's
 compositor moves a list's rows and lays nothing out (host/items.md, `The
 view moving`); it asks only the views that are read, in the order they were
-made; a view that did not move says nothing. It speaks on a frame rather
-than inside WinUI's pass, so what a handler renders is laid out in a pass of
-its own.
+made; a view that did not move says nothing, and one no layout placed yet -
+StateUI's, or WinUI's giving it a size - says nothing either, as a display
+frame can come between its joining and the pass that places it. It speaks on
+a frame rather than inside WinUI's pass, so what a handler renders is laid
+out in a pass of its own.
 
 ## Right to left
 

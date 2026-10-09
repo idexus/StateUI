@@ -439,4 +439,11 @@ extension WinUIView: PlacedView {
         get { placed ?? laidOutFrame }
         set { layout(newValue) }
     }
+
+    /// Whether a layout has placed the view: StateUI's, or WinUI's giving it a size.
+    var isLaidOut: Bool {
+        guard placed == nil else { return true }
+        let frame = laidOutFrame
+        return frame.width > 0 || frame.height > 0
+    }
 }
