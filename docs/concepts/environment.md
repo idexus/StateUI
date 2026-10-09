@@ -78,9 +78,10 @@ the appropriate channel when a host carries that value:
 - `$account.name` reaches the member through the provided object;
 - `account.$name` borrows the `@State` declared on `Account.name` itself.
 
-Assigning a different object through `$account` is rejected. The ancestor owns
-which object it provides; descendants edit its properties or communicate a
-replacement through an explicit binding owned by that ancestor.
+`$account` lends members only: assigning a different object through it does
+not compile. The ancestor owns which object it provides; descendants edit its
+properties or communicate a replacement through an explicit binding owned by
+that ancestor.
 
 ## Overriding one branch
 

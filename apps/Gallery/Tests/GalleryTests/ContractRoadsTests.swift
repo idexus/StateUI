@@ -105,6 +105,10 @@ final class ContractRoadsTests: XCTestCase {
             closed: "Device().battery.chargeLevel = 1",
             open: "_ = Device(battery: Battery(chargeLevel: 1)).battery.chargeLevel"),
         Road(
+            name: "a provided object replaced from below",
+            closed: "Environment<ApplicationSession>().projectedValue.wrappedValue = ApplicationSession()",
+            open: "_ = Environment<ApplicationSession>().projectedValue.motion"),
+        Road(
             name: "a node of a type named by hand",
             closed: #"_ = Node(type: "Maps.Beacon")"#,
             open: "_ = Node(contract: BeaconContract.self)"),

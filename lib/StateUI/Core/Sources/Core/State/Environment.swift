@@ -82,20 +82,33 @@ public final class Environment<Value: AnyObject> {
             """)
     }
 
-    /// The provided object lent on as a `Binding`, so one property of it can
-    /// be handed to an input: `TextField($context.note)`. Assigning the WHOLE
-    /// binding a new object stops the program - the object is the ancestor's
-    /// to provide, and only its properties are writable from below.
-    public var projectedValue: Binding<Value> {
-        Binding(
-            get: { self.wrappedValue },
-            set: { _ in
-                preconditionFailure("""
-                    An environment \(Value.self) is provided by an ancestor \
-                    and cannot be replaced from below. Write its properties \
-                    instead - $context.someProperty lends one on.
-                    """)
-            })
+    /// The provided object, lent on a property at a time: `TextField($context.note)`.
+    /// The object itself is the ancestor's to provide, so nothing replaces it from below.
+    public var projectedValue: EnvironmentLender<Value> {
+        EnvironmentLender { self.wrappedValue }
+    }
+}
+
+/// An object an ancestor provided, lent on a property at a time - what `$context` is
+/// for an `@Environment var context`. It lends properties only: the object is the
+/// ancestor's, so there is no road to replace it.
+///
+///     TextField($context.note)
+@dynamicMemberLookup
+@MainActor
+public struct EnvironmentLender<Value: AnyObject> {
+    private let object: () -> Value
+
+    init(_ object: @escaping () -> Value) {
+        self.object = object
+    }
+
+    /// One property of the object, as a binding that writes through it.
+    public subscript<Subject>(
+        dynamicMember keyPath: ReferenceWritableKeyPath<Value, Subject> & Sendable
+    ) -> Binding<Subject> {
+        let object = object
+        return Binding(get: { object()[keyPath: keyPath] }, set: { object()[keyPath: keyPath] = $0 })
     }
 }
 

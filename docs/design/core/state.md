@@ -314,8 +314,10 @@ standard provider of its type, which is what lets the application itself
 declare `@Environment`, its `init` and `body` running outside the differ. A
 type neither provided nor standard stops the program with its name: an
 environment that silently answered nothing would be the failure this library
-refuses everywhere. The projected binding lends the object's properties and
-refuses to replace the object, which is the ancestor's to provide.
+refuses everywhere. `$context` is a lender (`EnvironmentLender`): it lends the
+object's properties, each a binding that writes through the object, and has no
+road to replace the object, which is the ancestor's to provide - replacing it
+from below does not compile.
 
 ## An observable model
 
