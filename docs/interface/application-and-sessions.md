@@ -188,8 +188,8 @@ struct NotesPage: View {
 
     var body: some View {
         VStack {
-            Button("New editor").onClicked { try await application.openWindow(.editor) }
-            Button("About").onClicked { try await application.openWindow(.about) }
+            Button("New editor").onClicked(.ignoreWhileRunning) { try await application.openWindow(.editor) }
+            Button("About").onClicked(.ignoreWhileRunning) { try await application.openWindow(.about) }
         }
     }
 }
@@ -200,8 +200,8 @@ struct EditorPage: View {
 
     var body: some View {
         VStack {
-            Button("Close").onClicked { try await window.close() }
-            Button("Close every editor").onClicked { try await scene.close() }
+            Button("Close").onClicked(.ignoreWhileRunning) { try await window.close() }
+            Button("Close every editor").onClicked(.ignoreWhileRunning) { try await scene.close() }
         }
     }
 }
@@ -455,7 +455,7 @@ report, so `.onChanged(window.phase)` sees every one. Repeating the phase
 already stored changes no state, and therefore triggers no extra reaction.
 
 ```swift quote
-.onChanged(window.phase) { oldPhase, newPhase in
+.onChanged(window.phase, .waitForPrevious) { oldPhase, newPhase in
     if newPhase == .stopped {
         try await saveDraft()
     }

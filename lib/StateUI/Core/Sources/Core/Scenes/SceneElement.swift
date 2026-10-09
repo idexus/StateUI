@@ -60,16 +60,16 @@ struct SceneElement: Element {
         var node = Node(contract: SceneContract.self, children: children)
 
         // The user closed a window of the scene - its key is the payload; the scene ends with its last.
-        node.addHandler(SceneContract.windowClosed.token) {
+        node.addHandler(SceneContract.windowClosed.token, .overlap) {
             if let key = EventBuffer.current.value()?.string {
                 record.closed(key: key)
             }
         }
 
         // Where the scene stands, as the host sees it.
-        node.addHandler(SceneContract.activated.token) { record.session.phase = .active }
-        node.addHandler(SceneContract.deactivated.token) { record.session.phase = .inactive }
-        node.addHandler(SceneContract.stopped.token) { record.session.phase = .background }
+        node.addHandler(SceneContract.activated.token, .overlap) { record.session.phase = .active }
+        node.addHandler(SceneContract.deactivated.token, .overlap) { record.session.phase = .inactive }
+        node.addHandler(SceneContract.stopped.token, .overlap) { record.session.phase = .background }
 
         return node
     }

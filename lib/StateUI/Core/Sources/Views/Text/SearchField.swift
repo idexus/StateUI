@@ -75,7 +75,19 @@ public struct SearchField: TextInput, TextualElement, FontElement, TextAlignment
 
     /// Fires when the search is submitted - the return key, or the magnifier
     /// where a platform draws a button.
-    public func onSubmitted(_ handler: @escaping EventHandler) -> Self {
+    public func onSubmitted(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(SearchFieldContract.submitted, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onSubmitted(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
+        onEvent(SearchFieldContract.submitted, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onSubmitted(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onSubmitted(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 }

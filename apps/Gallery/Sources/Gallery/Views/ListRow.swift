@@ -38,7 +38,8 @@ struct ListRow: View {
     ///   - title: What the row is called.
     ///   - summary: The line under it.
     ///   - action: Run when the row is tapped. May await - tapping a row
-    ///     navigates, and where it goes is what a row IS.
+    ///     navigates, and where it goes is what a row IS; a tap while it runs
+    ///     is let go.
     init(_ title: String, summary: String, action: @escaping EventHandler) {
         self.title = title
         self.summary = summary
@@ -127,7 +128,7 @@ struct ListRow: View {
         // up and goes out again. It lights before the action starts - a
         // page's build holds the UI thread, which eats the frames beside it -
         // and goes out while the navigation runs.
-        .onTapped {
+        .onTapped(.ignoreWhileRunning) {
             try await lit.journey.move(to: 1, .eased(60, .cubicOut)).arrived()
             let dark = lit.journey.move(to: 0, .eased(250, .cubicOut))
             try await action()

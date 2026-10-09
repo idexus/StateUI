@@ -28,12 +28,12 @@ struct ScenesSample: SampleContent, ExampleContent {
             Button("New scratchpad")
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.scratchpad")
-                .onClicked { await open(.scratchpad, "New scratchpad") }
+                .onClicked(.ignoreWhileRunning) { await open(.scratchpad, "New scratchpad") }
 
             Button("About")
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.about")
-                .onClicked { await open(.about, "About") }
+                .onClicked(.ignoreWhileRunning) { await open(.about, "About") }
 
             VStack {
                 DebugInfoLabel()

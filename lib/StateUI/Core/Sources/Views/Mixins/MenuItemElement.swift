@@ -40,7 +40,19 @@ extension MenuItemElement {
 extension MenuItemElement where Modified == Self {
     /// What it does - run when the item is chosen, clicked or tapped. A second
     /// `.onClicked` runs beside the first, like every typed event modifier.
+    public func onClicked(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+        onClicked(.overlap) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onClicked(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
+        modified { $0.addHandler(MenuItemElementContract.clicked.token, repeated, handler) }
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onClicked(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
     public func onClicked(_ handler: @escaping EventHandler) -> Self {
-        modified { $0.addHandler(MenuItemElementContract.clicked.token, handler) }
+        fatalError("unavailable")
     }
 }

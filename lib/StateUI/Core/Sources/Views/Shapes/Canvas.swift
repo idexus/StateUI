@@ -57,18 +57,54 @@ public struct Canvas: ElementView, CanvasProperties {
     ///
     /// The point is in the canvas's own coordinates - the same ones the drawing
     /// instructions use, so what arrives can be drawn where it happened.
-    public func onPressed(_ handler: @escaping ValueEventHandler<Point>) -> Self {
+    public func onPressed(_ handler: @escaping @MainActor (Point) throws -> Void) -> Self {
         onEvent(CanvasContract.pressed, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onPressed(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<Point>) -> Self {
+        onEvent(CanvasContract.pressed, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onPressed(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onPressed(_ handler: @escaping ValueEventHandler<Point>) -> Self {
+        fatalError("unavailable")
     }
 
     /// It moved while still down, with where it is now - the canvas's own
     /// coordinates again.
-    public func onDragged(_ handler: @escaping ValueEventHandler<Point>) -> Self {
+    public func onDragged(_ handler: @escaping @MainActor (Point) throws -> Void) -> Self {
         onEvent(CanvasContract.dragged, handler)
     }
 
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onDragged(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<Point>) -> Self {
+        onEvent(CanvasContract.dragged, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onDragged(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onDragged(_ handler: @escaping ValueEventHandler<Point>) -> Self {
+        fatalError("unavailable")
+    }
+
     /// It was lifted, with where it left off.
-    public func onReleased(_ handler: @escaping ValueEventHandler<Point>) -> Self {
+    public func onReleased(_ handler: @escaping @MainActor (Point) throws -> Void) -> Self {
         onEvent(CanvasContract.released, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onReleased(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<Point>) -> Self {
+        onEvent(CanvasContract.released, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onReleased(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onReleased(_ handler: @escaping ValueEventHandler<Point>) -> Self {
+        fatalError("unavailable")
     }
 }

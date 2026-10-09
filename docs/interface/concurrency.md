@@ -10,12 +10,13 @@ concurrency while the host remains the owner of its native event loop.
 
 Every StateUI event, change, lifetime, ticker, and host-event handler runs on
 `MainActor`. It can read and write state directly and may call an asynchronous
-function:
+function - and then it says what the event does if it comes again while the
+handler is still running:
 
 ```swift
 @State var status = "Idle"
 
-Button("Load").onClicked {
+Button("Load").onClicked(.ignoreWhileRunning) {
     status = "Loading"
     try await Task.sleep(for: .milliseconds(100))
     status = "Ready"
@@ -30,6 +31,37 @@ host action, so `Task.sleep`, task values, streams, continuations, posts and
 
 An uncaught handler error is reported through the active host. Use `do` and
 `catch` only when the application can recover or present a more useful state.
+
+## When the event comes again
+
+A handler that awaits can still be running when its event comes again - a
+second click on Save, a newer search query, another drop. It says what happens
+then, as a `RepeatedEvent` written before the handler; there is no default, and
+a handler that awaits without one does not compile:
+
+| Word | The event that comes while a run is under way |
+| --- | --- |
+| `.ignoreWhileRunning` | is let go - a save, an order, a dialog |
+| `.cancelPrevious` | cancels the run under way and starts its own - a search, a movement to a new place |
+| `.waitForPrevious` | waits, and runs after the runs before it, in the order they came |
+| `.overlap` | starts a run beside the ones under way |
+
+```swift
+@State var query = ""
+@State var results: [String] = []
+
+TextField($query)
+    .onChanged(query, .cancelPrevious) {
+        try await Task.sleep(for: .milliseconds(250))
+        results = ["\(query) 1", "\(query) 2"]
+    }
+```
+
+A run that a later event cancels, or whose element leaves the screen, changes
+nothing from then on: its task is cancelled, and its state writes, movements,
+posts and acts are refused - a slower, older search never overwrites a newer
+one, and a page already left never navigates. A handler without an `await`
+runs whole inside its event and says nothing.
 
 ## Application async functions
 
@@ -97,7 +129,7 @@ batch is not a transaction and their completions can arrive independently.
 Use `await` to express a dependency:
 
 ```swift quote
-Button("Rename and confirm").onClicked {
+Button("Rename and confirm").onClicked(.ignoreWhileRunning) {
     guard let name = try await Dialogs.prompt(
         "Rename", message: "New name", placeholder: "Name")
     else { return }

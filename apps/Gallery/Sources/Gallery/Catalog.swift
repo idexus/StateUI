@@ -73,7 +73,7 @@ final class Catalog {
                 title: "Using state",
                 summary: "The rest of what an author holds - a control you aim an "
                     + "act at, a class, a value kept across launches, a cadence, "
-                    + "and writes from many tasks at once.",
+                    + "writes from many tasks at once, and an event that comes again.",
                 icon: ImageSource(light: "nav_state.png", dark: "nav_state_dark.png"),
                 card: ImageSource("cat_state.png"),
                 samples: [
@@ -84,6 +84,7 @@ final class Catalog {
                     Sample(PersistentStateSample()),
                     Sample(PacedStateSample()),
                     Sample(ConcurrentStateSample()),
+                    Sample(RepeatedEventSample()),
                 ]),
 
             SampleGroup(

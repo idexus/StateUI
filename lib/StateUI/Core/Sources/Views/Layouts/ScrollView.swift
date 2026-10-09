@@ -93,8 +93,20 @@ public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollView
     /// runs once per movement the user makes - a drag let go, a throw that ran
     /// out, a wheel, a key - and not for one that leaves the offset where it
     /// was, nor for one the application wrote.
-    public func onScrollStopped(_ handler: @escaping EventHandler) -> Self {
+    public func onScrollStopped(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(ScrollViewContract.scrollStopped, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onScrollStopped(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
+        onEvent(ScrollViewContract.scrollStopped, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onScrollStopped(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onScrollStopped(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 }
 

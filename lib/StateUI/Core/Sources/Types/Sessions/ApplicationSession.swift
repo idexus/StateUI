@@ -7,8 +7,8 @@
 ///
 ///     @Environment(\.application) private var application
 ///
-///     Button("New window").onClicked { try await application.openWindow() }
-///     Button("Inspector").onClicked { try await application.openWindow(.inspector) }
+///     Button("New window").onClicked(.ignoreWhileRunning) { try await application.openWindow() }
+///     Button("Inspector").onClicked(.ignoreWhileRunning) { try await application.openWindow(.inspector) }
 ///
 /// A session is one opening of something declared: the application from its
 /// start to the end of its process, a scene from its first window opening to
@@ -111,7 +111,7 @@ public final class ApplicationSession {
     /// where it does not stand: the one window of a `Window(type)`, or one more
     /// of a `WindowGroup(type)`.
     ///
-    ///     Button("Inspector").onClicked { try await application.openWindow(.inspector) }
+    ///     Button("Inspector").onClicked(.ignoreWhileRunning) { try await application.openWindow(.inspector) }
     ///
     /// - Throws: `WindowError.alreadyOpen` where its one window is open,
     ///   `WindowError.undeclared(type)` where no scene declares it,
@@ -125,7 +125,7 @@ public final class ApplicationSession {
     /// Opens the window of `type` for `value` in the scene declaring it, which
     /// opens with it where it does not stand.
     ///
-    ///     Button("Open").onClicked { try await application.openWindow(.document, value: id) }
+    ///     Button("Open").onClicked(.ignoreWhileRunning) { try await application.openWindow(.document, value: id) }
     ///
     /// - Throws: `WindowError.alreadyOpen` where a window for that value is
     ///   open, and the rest of `WindowError` where it cannot open.

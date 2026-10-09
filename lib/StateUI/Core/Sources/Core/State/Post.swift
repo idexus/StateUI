@@ -21,6 +21,8 @@ extension Binding where Value: Sendable {
     ///
     /// - Parameter value: what the state holds once the job runs.
     public nonisolated func post(_ value: Value) {
+        guard HandlerRun.admits("a post") else { return }
+
         slot.post(value)
     }
 
@@ -38,6 +40,8 @@ extension Binding where Value: Sendable {
     ///
     /// - Parameter transform: given the value as it stands, answers the next.
     public nonisolated func post(_ transform: @escaping @Sendable (Value) -> Value) {
+        guard HandlerRun.admits("a post") else { return }
+
         slot.post(transform)
     }
 

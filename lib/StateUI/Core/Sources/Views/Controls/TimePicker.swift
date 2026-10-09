@@ -90,18 +90,54 @@ public struct TimePicker: ElementView, TextStyleElement, FontElement, TimePicker
 
     /// Fires when a time is chosen, with the new one. Runs after a binding's
     /// write.
-    public func onTimeChanged(_ handler: @escaping ValueEventHandler<ClockTime>) -> Self {
+    public func onTimeChanged(_ handler: @escaping @MainActor (ClockTime) throws -> Void) -> Self {
         onEvent(TimePickerContract.timeChanged, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onTimeChanged(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<ClockTime>) -> Self {
+        onEvent(TimePickerContract.timeChanged, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onTimeChanged(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onTimeChanged(_ handler: @escaping ValueEventHandler<ClockTime>) -> Self {
+        fatalError("unavailable")
     }
 
     /// The user has opened the clock face. Opening it with `isOpen(true)` raises
     /// nothing: the application already knows.
-    public func onOpened(_ handler: @escaping EventHandler) -> Self {
+    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(TimePickerContract.opened, handler)
     }
 
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onOpened(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
+        onEvent(TimePickerContract.opened, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onOpened(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onOpened(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
+    }
+
     /// It has closed - by a choice, by a tap outside, or by the platform.
-    public func onClosed(_ handler: @escaping EventHandler) -> Self {
+    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(TimePickerContract.closed, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onClosed(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
+        onEvent(TimePickerContract.closed, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onClosed(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onClosed(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 }

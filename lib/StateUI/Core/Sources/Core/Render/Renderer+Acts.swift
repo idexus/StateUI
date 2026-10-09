@@ -36,6 +36,8 @@ extension Renderer {
 
     /// Queues an act.
     private func enqueue(_ make: (Int?) -> ActCall, _ completion: ((Reply) -> Void)?) {
+        guard HandlerRun.admits("an act") else { return }
+
         var id: Int?
 
         if let completion = completion {
@@ -72,6 +74,9 @@ extension Renderer {
     func answered(
         _ send: (@escaping (Reply) -> Void) -> Void
     ) async throws -> [PropValue] {
+        // A superseded run's act never leaves: it fails as the run's cancellation.
+        guard HandlerRun.admits("an act") else { throw CancellationError() }
+
         let reply = await withCheckedContinuation { (continuation: CheckedContinuation<Reply, Never>) in
             send { outcome in
                 // Counted here and lowered first thing after the resume, so a host can tell a

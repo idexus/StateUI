@@ -83,20 +83,56 @@ public struct Slider: ElementView, TintElement, SliderProperties {
 
     /// Fires on every step of a drag, with the value dragged to, after a
     /// binding's write. Heavy work belongs in `.onReleased`.
-    public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
+    public func onValueChanged(_ handler: @escaping @MainActor (Double) throws -> Void) -> Self {
         onEvent(SliderContract.valueChanged, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onValueChanged(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<Double>) -> Self {
+        onEvent(SliderContract.valueChanged, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onValueChanged(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
+        fatalError("unavailable")
     }
 
     /// Runs when the thumb is grabbed - the start of a drag whose every step
     /// is an `onValueChanged`.
-    public func onPressed(_ handler: @escaping EventHandler) -> Self {
+    public func onPressed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(SliderContract.pressed, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onPressed(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
+        onEvent(SliderContract.pressed, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onPressed(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onPressed(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 
     /// Runs when the thumb is let go - where work too heavy for every step of
     /// the drag belongs.
-    public func onReleased(_ handler: @escaping EventHandler) -> Self {
+    public func onReleased(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(SliderContract.released, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onReleased(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
+        onEvent(SliderContract.released, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onReleased(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onReleased(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 }
 

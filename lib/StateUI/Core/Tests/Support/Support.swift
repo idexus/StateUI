@@ -227,12 +227,12 @@ final class Renders {
     func fire(_ id: Int, with payload: [PropValue] = []) -> Bool {
         XCTAssertTrue(Thread.isMainThread, "A host fires an event on its UI thread; a test does too.")
 
-        guard let handler = differ.handler(id) else { return false }
+        guard let registration = differ.handler(id) else { return false }
 
         // What HostBoundary.dispatch does before starting the handler: the
         // payload is left where the typed handlers read it from.
         EventBuffer.current = payload
-        Renderer.shared.start(handler)
+        Renderer.shared.start(registration)
         return true
     }
 
@@ -916,7 +916,7 @@ func label(_ text: String, id: String? = nil) -> Node {
 @MainActor
 func button(_ text: String, id: String? = nil, onClicked: @escaping EventHandler) -> Node {
     var node = Node(type: "Button", id: id, props: ["text": .string(text)])
-    node.events["clicked"] = onClicked
+    node.addHandler("clicked", .overlap, onClicked)
     return node
 }
 

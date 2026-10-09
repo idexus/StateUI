@@ -44,7 +44,7 @@ private struct Calling: View {
     var body: some View {
         VStack {
             Button("Ask")
-                .onClicked {
+                .onClicked(.ignoreWhileRunning) {
                     do {
                         let doubled = try await stateUICall(InteropTestContract.doubled, 21)
                         answer = "\(doubled)"
@@ -54,7 +54,7 @@ private struct Calling: View {
                 }
 
             Button("Ask nobody")
-                .onClicked {
+                .onClicked(.ignoreWhileRunning) {
                     do {
                         try await stateUICall(InteropTestContract.unregistered)
                         answer = "that should have thrown"

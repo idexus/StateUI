@@ -75,7 +75,7 @@ public struct SplitView: ElementView, Arrangement, BarElement {
         node.write(SplitViewContract.showsSidebar, showsSidebar.wrappedValue)
 
         // The user's ways in and out, once finished, written only when moved.
-        node.addHandler(SplitViewContract.showsSidebarChanged.token) {
+        node.addHandler(SplitViewContract.showsSidebarChanged.token, .overlap) {
             guard let visible = EventBuffer.current.value()?.bool,
                   visible != showsSidebar.wrappedValue else { return }
 

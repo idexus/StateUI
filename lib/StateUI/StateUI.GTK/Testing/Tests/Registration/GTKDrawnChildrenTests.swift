@@ -39,7 +39,7 @@ private struct Book: Element {
         node.write(BookContract.title, title)
     }
 
-    func onOpened(_ handler: @escaping EventHandler) -> Self {
+    func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         var copy = self
         copy.node.addHandler(BookContract.opened, handler)
         return copy

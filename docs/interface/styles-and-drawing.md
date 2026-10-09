@@ -227,10 +227,8 @@ hears every state the control declares, normal included:
 Button("Hold")
     .scale($scale)
     .onVisualStateChanged(.pressed, .normal) { state in
-        try await $scale.journey.move(
-            to: state == .pressed ? 0.96 : 1,
-            .eased(90)).arrived()
-}
+        $scale.journey.move(to: state == .pressed ? 0.96 : 1, .eased(90))
+    }
 ```
 
 Use the handler when entering a state starts or sequences another `Journey`,

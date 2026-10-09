@@ -235,10 +235,10 @@ private struct OffsetStrips: ExampleContent {
 
             HStack {
                 Button("Top")
-                    .onClicked { try await move(to: 0) }
+                    .onClicked(.cancelPrevious) { try await move(to: 0) }
 
                 Button("Line 9")
-                    .onClicked { try await move(to: 240) }
+                    .onClicked(.cancelPrevious) { try await move(to: 240) }
             }
             .spacing(16)
             .horizontalAlignment(.center)

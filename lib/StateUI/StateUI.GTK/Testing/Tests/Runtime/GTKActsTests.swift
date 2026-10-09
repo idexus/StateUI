@@ -16,7 +16,7 @@ private struct AskingPage: View {
     var body: some View {
         VStack {
             Text(said)
-            Button("Time").onClicked {
+            Button("Time").onClicked(.ignoreWhileRunning) {
                 let time = try await ClockTime.now()
                 let zone = try await TimeZoneInfo.local()
                 let tokyo = try await TimeZoneInfo.utcOffset(of: "Asia/Tokyo")
@@ -27,7 +27,7 @@ private struct AskingPage: View {
                 said = "\((0..<24).contains(time.hour)) \(zone.contains("/")) \(tokyo.components.seconds / 60) "
                     + "\(winter.components.seconds / 60) \(summer.components.seconds / 60)"
             }
-            Button("Nowhere").onClicked {
+            Button("Nowhere").onClicked(.ignoreWhileRunning) {
                 do {
                     _ = try await TimeZoneInfo.utcOffset(of: "Nowhere/Else")
                     said = "answered"
@@ -35,7 +35,7 @@ private struct AskingPage: View {
                     said = "refused"
                 }
             }
-            Button("Say").onClicked {
+            Button("Say").onClicked(.ignoreWhileRunning) {
                 try await ScreenReader.announce("done")
                 said = "announced"
             }
@@ -53,8 +53,8 @@ private struct FocusPage: View {
         VStack {
             Text(said)
             TextField($words).aim(field)
-            Button("Focus").onClicked { said = "took \(try await field.focus())" }
-            Button("Unfocus").onClicked {
+            Button("Focus").onClicked(.ignoreWhileRunning) { said = "took \(try await field.focus())" }
+            Button("Unfocus").onClicked(.ignoreWhileRunning) {
                 try await field.unfocus()
                 said = "let go"
             }
@@ -69,21 +69,21 @@ private struct QuestionsPage: View {
     var body: some View {
         VStack {
             Text(said)
-            Button("Alert").onClicked {
+            Button("Alert").onClicked(.ignoreWhileRunning) {
                 try await Dialogs.alert("Saved", message: "The draft is kept")
                 said += "alerted; "
             }
-            Button("Confirm").onClicked {
+            Button("Confirm").onClicked(.ignoreWhileRunning) {
                 let accepted = try await Dialogs.confirm(
                     "Delete draft?", message: "It goes for good", accept: "Delete", cancel: "Keep")
                 said += "confirmed \(accepted); "
             }
-            Button("Choose").onClicked {
+            Button("Choose").onClicked(.ignoreWhileRunning) {
                 let chosen = try await Dialogs.chooseAction(
                     "Share via", cancel: "Cancel", destruction: "Delete", buttons: ["Mail", "Message"])
                 said += "chose \(chosen ?? "nothing"); "
             }
-            Button("Prompt").onClicked {
+            Button("Prompt").onClicked(.ignoreWhileRunning) {
                 let typed = try await Dialogs.prompt("Rename", placeholder: "Name", initialValue: "Draft")
                 said += "typed \(typed ?? "nothing"); "
             }

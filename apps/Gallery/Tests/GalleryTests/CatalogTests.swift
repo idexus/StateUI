@@ -208,8 +208,8 @@ private func rowTitles(in node: Node) -> [String] {
 
 /// The tap on the row that says `title`.
 @MainActor
-private func rowHandler(_ title: String, in node: Node) -> EventHandler? {
-    func walk(_ node: Node) -> EventHandler? {
+private func rowHandler(_ title: String, in node: Node) -> [Handler]? {
+    func walk(_ node: Node) -> [Handler]? {
         let node = node.built
 
         if let tap = node.events["tapped"],
@@ -243,12 +243,12 @@ private func rowHandler(_ title: String, in node: Node) -> EventHandler? {
 
 @MainActor
 private func settle(
-    _ handler: @escaping EventHandler,
+    _ handlers: [Handler],
     rendering renders: Renders? = nil,
     _ tree: (() -> Node)? = nil
 ) async {
     _ = HostBoundary.takeActCalls()
-    Renderer.shared.start(handler)
+    Renderer.shared.start(EventRegistration(handlers))
 
     // Bounded rather than "until nothing is asked": a handler that asks for
     // ever should fail this test, not hang the suite.
@@ -299,8 +299,8 @@ private func settle(
 }
 
 @MainActor
-private func clicked(_ title: String, in node: Node) -> EventHandler? {
-    func walk(_ node: Node) -> EventHandler? {
+private func clicked(_ title: String, in node: Node) -> [Handler]? {
+    func walk(_ node: Node) -> [Handler]? {
         let node = node.built
 
         if node.props["text"]?.string == title, let click = node.events["clicked"] {
@@ -408,22 +408,22 @@ private final class Renders {
     /// the render filled. A closure walked off a freshly built tree is a
     /// different one: every build makes new values, and an aim is
     /// filled where the tree was rendered.
-    func handler(_ id: Int) -> EventHandler? {
+    func handler(_ id: Int) -> EventRegistration? {
         differ.handler(id)
     }
 
     /// Resolves a handler id carried by the typed host contract.
-    func handler(_ id: Int32) -> EventHandler? {
+    func handler(_ id: Int32) -> EventRegistration? {
         handler(Int(id))
     }
 
     /// Runs the closure an id refers to, the way a dispatched event does.
     @discardableResult
     func fire(_ id: Int, with payload: [PropValue] = []) -> Bool {
-        guard let handler = differ.handler(id) else { return false }
+        guard let registration = differ.handler(id) else { return false }
 
         EventBuffer.current = payload
-        Renderer.shared.start(handler)
+        Renderer.shared.start(registration)
         return true
     }
 
@@ -1173,7 +1173,7 @@ final class CatalogTests: XCTestCase {
         let menu = MenuPage(catalog: catalog(place.nav), nav: place.nav,
                             log: WindowLog(), listsHiddenRow: false)
 
-        Renderer.shared.start(try XCTUnwrap(rowHandler("Layout", in: menu.node)))
+        Renderer.shared.start(EventRegistration(try XCTUnwrap(rowHandler("Layout", in: menu.node))))
 
         XCTAssertEqual(place.section.wrappedValue, .home, "a group stands ON home")
         XCTAssertEqual(
@@ -1198,7 +1198,7 @@ final class CatalogTests: XCTestCase {
         let tapped = try XCTUnwrap(eventId("tapped", in: patch), "no card answers a tap")
 
         await settle(
-            try XCTUnwrap(renders.handler(tapped)),
+            try XCTUnwrap(renders.handler(tapped)).handlers,
             rendering: renders,
             { GroupPage(group: group, nav: place.nav).node })
 
@@ -1211,7 +1211,7 @@ final class CatalogTests: XCTestCase {
         place.path.wrappedValue = [.group("layout"), .sample("grid"), .level(1)]
 
         let home = try XCTUnwrap(ToolbarItem.home(place.nav).node.events["clicked"])
-        Renderer.shared.start(home)
+        Renderer.shared.start(EventRegistration(home))
 
         XCTAssertEqual(place.section.wrappedValue, .home)
         XCTAssertEqual(place.path.wrappedValue, [])
@@ -1312,7 +1312,7 @@ final class CatalogTests: XCTestCase {
         let stack = try XCTUnwrap(detail.children.first)
         let root = try XCTUnwrap(stack.children.first).built
 
-        Renderer.shared.start(try XCTUnwrap(clicked("Push a page onto this tab", in: root)))
+        Renderer.shared.start(EventRegistration(try XCTUnwrap(clicked("Push a page onto this tab", in: root))))
 
         XCTAssertEqual(tabsPath.wrappedValue, [.level(1)])
         XCTAssertEqual(place.path.wrappedValue, [], "the tab pushed onto the gallery's stack")
@@ -1339,7 +1339,7 @@ final class CatalogTests: XCTestCase {
                 clicked("Back to the Navigation samples", in: page),
                 "tab \(index) has no way back")
 
-            Renderer.shared.start(back)
+            Renderer.shared.start(EventRegistration(back))
 
             XCTAssertEqual(place.section.wrappedValue, .home)
             XCTAssertEqual(place.path.wrappedValue, [.group("navigation")])

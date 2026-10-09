@@ -170,7 +170,7 @@
                 let aim = Aim(ItemsViewContract.self)
                 s.start(reducesMotion: true) {
                     VStack {
-                        Button("To 80").onClicked { try await aim.scrollTo(80, anchor: .start) }.id("go")
+                        Button("To 80").onClicked(.ignoreWhileRunning) { try await aim.scrollTo(80, anchor: .start) }.id("go")
                         numbers().aim(aim).width(300).height(300).id("list")
                     }
                 }

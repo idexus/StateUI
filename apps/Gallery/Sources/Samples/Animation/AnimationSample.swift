@@ -57,10 +57,10 @@ struct AnimationSample: SampleContent, ExampleContent {
 
             HStack {
                 // A movement answers whether it ran to the END. Stop says
-                // false, and so does a second press taking this one's place -
-                // and the way back is not taken over whatever happened
-                // instead, which is what lets Stop leave the card where it
-                // stood.
+                // false - and a second press cancels this run, the buttons
+                // saying `.cancelPrevious` - so the way back is not taken over
+                // whatever happened instead, which is what lets Stop leave the
+                // card where it stood.
                 button("Fade") {
                     let landed = try await $fade.journey.move(to: 0.1, .eased(400, easing)).arrived()
                     if landed { try await $fade.journey.move(to: 1, .eased(400, easing)).arrived() }
@@ -110,8 +110,8 @@ struct AnimationSample: SampleContent, ExampleContent {
         VStack {
             Text("Each button moves STATE. `.opacity($fade)` DRIVES the property "
                 + "from the state behind it, and `$fade.journey.move(to: 0.1, …)` sends "
-                + "everything driven by `fade` to 0.1. `await` says the movement "
-                + "is over and the answer says whether it reached the end, which "
+                + "everything driven by `fade` to 0.1 at once. `arrived()` waits until "
+                + "the movement is over and answers whether it reached the end, which "
                 + "is what lets one follow another without a callback.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -146,7 +146,7 @@ struct AnimationSample: SampleContent, ExampleContent {
     /// One of the buttons, all of which look the same.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
-            .onClicked(act)
+            .onClicked(.cancelPrevious, act)
     }
 
     /// The curve the picker is on.

@@ -39,7 +39,8 @@ writes the new text back on every edit - and an `.onTextChanged` written after
 it has to run beside it, or the binding would go quietly dead. Every typed
 event modifier comes through here with its member's token. It lives on
 `ModifiableElement`, so nothing reachable from a `Style` can put a handler
-into a bag of values.
+into a bag of values. Each handler keeps runs of its own and its own word on a
+repeat, so the second never waits for the first (core/runs.md).
 
 ## An event payload that does not read
 

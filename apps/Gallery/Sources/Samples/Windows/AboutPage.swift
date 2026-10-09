@@ -26,7 +26,7 @@ struct AboutPage: View {
             Button("Close")
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("about.close")
-                .onClicked { try await window.close() }
+                .onClicked(.ignoreWhileRunning) { try await window.close() }
         }
         .spacing(12)
         .padding(20)

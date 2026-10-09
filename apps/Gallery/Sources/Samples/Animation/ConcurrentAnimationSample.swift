@@ -67,7 +67,6 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
 
             HStack {
                 button("Play") {
-                    guard !playing else { return }
                     playing = true
 
                     var n = 0
@@ -191,10 +190,11 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
         return hopped && washed && breathed
     }
 
-    /// One of the buttons, both of which look the same.
+    /// One of the buttons, both of which look the same: a press while its run
+    /// is under way is let go.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
-            .onClicked(act)
+            .onClicked(.ignoreWhileRunning, act)
     }
     // listing: end
 }

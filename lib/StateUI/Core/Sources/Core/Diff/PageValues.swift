@@ -21,8 +21,8 @@ final class PageValues {
         node.props.merge(written.node.props) { _, wrote in wrote }
         node.driven.merge(written.node.driven) { _, wrote in wrote }
 
-        for (name, handler) in written.node.events.sorted(by: { $0.key < $1.key }) {
-            node.addHandler(name, handler)
+        for (name, handlers) in written.node.events.sorted(by: { $0.key < $1.key }) {
+            node.addHandlers(name, handlers)
         }
 
         return PageValues(node)
@@ -35,8 +35,8 @@ extension Node {
         props.merge(values.node.props) { _, said in said }
         driven.merge(values.node.driven) { _, said in said }
 
-        for (name, handler) in values.node.events.sorted(by: { $0.key < $1.key }) {
-            addHandler(name, handler)
+        for (name, handlers) in values.node.events.sorted(by: { $0.key < $1.key }) {
+            addHandlers(name, handlers)
         }
     }
 

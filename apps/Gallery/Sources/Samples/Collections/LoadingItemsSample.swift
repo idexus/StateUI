@@ -29,9 +29,10 @@ private struct LoadingList: ExampleContent {
                     .fontSize(14)
                     .padding(horizontal: 14, vertical: 10)
             }
-            // Within five items of the end, thirty more - once each time.
-            .onEndReached(within: 5) {
-                guard !loading, count < 300 else { return }
+            // Within five items of the end, thirty more - one load at a time:
+            // reaching the end again while one runs lets that go.
+            .onEndReached(within: 5, .ignoreWhileRunning) {
+                guard count < 300 else { return }
 
                 loading = true
                 try await Task.sleep(for: .milliseconds(400))

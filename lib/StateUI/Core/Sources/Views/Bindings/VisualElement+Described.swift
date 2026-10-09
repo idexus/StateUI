@@ -9,7 +9,7 @@ extension VisualElement {
     func described(_ property: Prop, _ value: Binding<Bool>, on event: Event) -> Modified {
         modified {
             $0.props[property] = .bool(value.wrappedValue)
-            $0.addHandler(event) {
+            $0.addHandler(event, .overlap) {
                 if let moved = EventBuffer.current.value()?.bool {
                     value.wrappedValue = moved
                 }
@@ -21,7 +21,7 @@ extension VisualElement {
     func described(_ property: Prop, _ value: Binding<Int>, on event: Event) -> Modified {
         modified {
             $0.props[property] = .number(Double(value.wrappedValue))
-            $0.addHandler(event) {
+            $0.addHandler(event, .overlap) {
                 if let moved = EventBuffer.current.value()?.int {
                     value.wrappedValue = moved
                 }
@@ -33,7 +33,7 @@ extension VisualElement {
     func described(_ property: Prop, _ value: Binding<String>, on event: Event) -> Modified {
         modified {
             $0.props[property] = .string(value.wrappedValue)
-            $0.addHandler(event) {
+            $0.addHandler(event, .overlap) {
                 if let typed = EventBuffer.current.value()?.string {
                     value.wrappedValue = typed
                 }
@@ -45,7 +45,7 @@ extension VisualElement {
     func described(_ property: Prop, _ value: Binding<CalendarDate>, on event: Event) -> Modified {
         modified {
             $0.props[property] = value.wrappedValue.propValue
-            $0.addHandler(event) {
+            $0.addHandler(event, .overlap) {
                 if let chosen = CalendarDate(EventBuffer.current.value()) {
                     value.wrappedValue = chosen
                 }
@@ -57,7 +57,7 @@ extension VisualElement {
     func described(_ property: Prop, _ value: Binding<ClockTime>, on event: Event) -> Modified {
         modified {
             $0.props[property] = value.wrappedValue.propValue
-            $0.addHandler(event) {
+            $0.addHandler(event, .overlap) {
                 if let chosen = ClockTime(EventBuffer.current.value()) {
                     value.wrappedValue = chosen
                 }

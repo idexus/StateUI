@@ -11,7 +11,7 @@
 ///     @Aim(WebView.self) private var browser
 ///
 ///     WebView(address).aim(browser)
-///     Button("Back").onClicked { try await browser.goBack() }
+///     Button("Back").onClicked(.ignoreWhileRunning) { try await browser.goBack() }
 ///
 /// `.aim(_:)` puts it on a view, and the act reaches exactly that view: there is
 /// no name to spell, and two instances of one composed view each aim at their

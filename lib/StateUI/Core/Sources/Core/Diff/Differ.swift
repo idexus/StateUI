@@ -46,7 +46,7 @@ final class Differ {
 
     /// The handlers this walk found to run - `.onChanged`, `.onCreated` - in order.
     /// Design: docs/design/core/render.md#handlers-in-the-message
-    var fired: [EventHandler] = []
+    var fired: [Fired] = []
 
     /// The `.onDestroying` handlers of what this walk let go, innermost first.
     private var leaving: [EventHandler] = []
@@ -57,9 +57,9 @@ final class Differ {
     /// The composed views whose bodies the walk is inside, outermost first.
     var bodies: [String] = []
 
-    /// What every live element's events run, kept between renders.
+    /// What every live element's events run, and their runs, kept between renders.
     /// Design: docs/design/core/identity-and-diffing.md#handlers-and-their-ids
-    var handlers: [Int: EventHandler] = [:]
+    var handlers: [Int: EventRegistration] = [:]
 
     /// The scene the walk is inside; `OpenScenes.building` follows it.
     var sceneRecord: SceneRecord? {
@@ -164,14 +164,14 @@ final class Differ {
     }
 
     /// What an element's event runs, or nothing if the id is unknown.
-    func handler(_ id: Int) -> EventHandler? {
+    func handler(_ id: Int) -> EventRegistration? {
         handlers[id]
     }
 
     /// The handlers the last walk found - what left first, then the rest - taken so
     /// each runs once.
-    func takeFired() -> [EventHandler] {
-        let taken = leaving + fired
+    func takeFired() -> [Fired] {
+        let taken = leaving.map { Fired(run: $0, repeated: .overlap, slot: nil) } + fired
         leaving.removeAll(keepingCapacity: true)
         fired.removeAll(keepingCapacity: true)
         return taken
@@ -181,8 +181,9 @@ final class Differ {
     /// everything under it, and books its `.onDestroying`.
     func forget(_ node: RenderedNode) {
         for id in node.events.values {
-            handlers.removeValue(forKey: id)
+            handlers.removeValue(forKey: id)?.orphan()
         }
+        node.runs.orphan()
 
         // Its engines: nothing is left to ask for their frames.
         for id in node.engines {

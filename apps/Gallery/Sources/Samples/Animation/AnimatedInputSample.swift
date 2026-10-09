@@ -176,7 +176,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
     /// One of the buttons, all of which look the same.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
-            .onClicked(act)
+            .onClicked(.cancelPrevious, act)
     }
     // listing: end
 }

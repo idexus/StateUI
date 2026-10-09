@@ -78,19 +78,55 @@ public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentE
 
     /// Fires when the user changes the choice, with the new index - after the
     /// choice has landed on a state handed as `$size`.
-    public func onSelectedIndexChanged(_ handler: @escaping ValueEventHandler<Int>) -> Self {
+    public func onSelectedIndexChanged(_ handler: @escaping @MainActor (Int) throws -> Void) -> Self {
         onEvent(PickerContract.selectedIndexChanged, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onSelectedIndexChanged(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<Int>) -> Self {
+        onEvent(PickerContract.selectedIndexChanged, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onSelectedIndexChanged(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onSelectedIndexChanged(_ handler: @escaping ValueEventHandler<Int>) -> Self {
+        fatalError("unavailable")
     }
 
     /// The user has opened the list of choices. Opening it with `isOpen(true)`
     /// raises nothing: the application already knows.
-    public func onOpened(_ handler: @escaping EventHandler) -> Self {
+    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(PickerContract.opened, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onOpened(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
+        onEvent(PickerContract.opened, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onOpened(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onOpened(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 
     /// The user has closed it - by a choice, a click outside or the platform's
     /// own dismissal.
-    public func onClosed(_ handler: @escaping EventHandler) -> Self {
+    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(PickerContract.closed, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onClosed(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
+        onEvent(PickerContract.closed, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onClosed(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onClosed(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 }

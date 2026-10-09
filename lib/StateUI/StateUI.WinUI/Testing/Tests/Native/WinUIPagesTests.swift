@@ -499,7 +499,7 @@ private struct AimedFieldPage: View {
             TextField(State(wrappedValue: "").projectedValue).aim(field)
             Button("Below")
         }
-        .onAppearing { try await field.focus() }
+        .onAppearing(.ignoreWhileRunning) { try await field.focus() }
     }
 }
 

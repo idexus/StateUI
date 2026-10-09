@@ -183,9 +183,7 @@ struct Fader: View {
     var body: some View {
         VStack {
             Text("Native motion").opacity($fade)
-            Button("Fade").onClicked {
-                try await $fade.journey.move(to: 0.15, .eased(400, .cubicOut)).arrived()
-            }
+            Button("Fade").onClicked { $fade.journey.move(to: 0.15, .eased(400, .cubicOut)) }
             Button("Restore").onClicked { $fade.journey.snap(to: 1) }
             Button("Stop").onClicked { $fade.journey.stop() }
         }

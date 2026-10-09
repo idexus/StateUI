@@ -35,9 +35,12 @@ Handlers run in writing order. A control's two-way binding is committed before
 its handler starts, so the handler observes the new state. Programmatic writes
 do not dispatch user events.
 
-Handlers are `async throws`. They may suspend and continue on StateUI's UI
-isolation domain. An uncaught error is reported through the host rather than
-being discarded. [Concurrency](concurrency.md) defines the execution model.
+A handler may throw. One that awaits says what its event does when it comes
+again while it runs - `.onClicked(.ignoreWhileRunning) { … }` - and continues on
+StateUI's UI isolation domain after each suspension. An uncaught error is
+reported through the host rather than being discarded.
+[Concurrency](concurrency.md#when-the-event-comes-again) defines the execution
+model.
 
 ## Gestures
 
@@ -125,7 +128,7 @@ kinds it lists:
 
 ```swift quote
 ZStack { Text("Drop a report here") }
-    .onDrop(files: [FileType("Text", extensions: ["txt", "md"])]) { files in
+    .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], .waitForPrevious) { files in
         report = String(decoding: try await files[0].read(), as: UTF8.self)
     }
 ```
@@ -151,8 +154,8 @@ struct FocusForm: View {
     var body: some View {
         VStack {
             TextField($text).aim(field)
-            Button("Edit").onClicked { try await field.focus() }
-            Button("Done").onClicked { try await field.unfocus() }
+            Button("Edit").onClicked(.ignoreWhileRunning) { try await field.focus() }
+            Button("Done").onClicked(.ignoreWhileRunning) { try await field.unfocus() }
         }
     }
 }
@@ -176,7 +179,7 @@ keyboard when the application does not hold that control's aim.
 Dialogs are sequential host actions rather than tree nodes:
 
 ```swift quote
-Button("Delete").onClicked {
+Button("Delete").onClicked(.ignoreWhileRunning) {
     let confirmed = try await Dialogs.confirm(
         "Delete draft?",
         message: "This cannot be undone",
@@ -207,17 +210,17 @@ struct ReportPage: View {
 
     var body: some View {
         VStack {
-            Button("Save report…").onClicked {
+            Button("Save report…").onClicked(.ignoreWhileRunning) {
                 let page = FileType("HTML page", extensions: ["html"])
                 let saved = try await Dialogs.saveFile(
                     Array(report.utf8), name: "Report", types: [page])
                 if let saved { try await saved.launch() }
             }
-            Button("Open…").onClicked {
+            Button("Open…").onClicked(.ignoreWhileRunning) {
                 guard let file = try await Dialogs.openFile() else { return }
                 opened = String(decoding: try await file.read(), as: UTF8.self)
             }
-            Button("Help").onClicked {
+            Button("Help").onClicked(.ignoreWhileRunning) {
                 try await Links.launch("https://www.swift.org")
             }
         }
@@ -252,7 +255,7 @@ struct NotePage: View {
     @State private var note = ""
 
     var body: some View {
-        Button("Open a note…").onClicked {
+        Button("Open a note…").onClicked(.ignoreWhileRunning) {
             guard let file = try await Dialogs.openFile() else { return }
             let start = try await file.read(atMost: 1025)
             note = start.count > 1024
@@ -280,7 +283,7 @@ enum NotesContract: ApplicationTier {
 
 @State var location = ""
 
-Button("Export").onClicked {
+Button("Export").onClicked(.ignoreWhileRunning) {
     location = try await stateUICall(NotesContract.exportDocument, "draft-7")
 }
 ```

@@ -177,6 +177,14 @@ extension State {
             }
         }
 
+        /// Whether a write may land: not from a run a later event, or its element leaving,
+        /// superseded.
+        /// Design: docs/design/core/runs.md#a-superseded-run
+        @usableFromInline
+        func admitsWrite() -> Bool {
+            HandlerRun.admits("a write of `\(origin ?? "a state")`")
+        }
+
         /// What a kept state does with every value it takes, whoever writes it - the
         /// program, a binding, the host: marking its key for saving. Set once, as the
         /// state claims its key.

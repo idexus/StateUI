@@ -162,7 +162,7 @@ struct ReaderSample: SampleContent, ExampleContent {
     }
 
     /// One of the buttons, all of which look the same.
-    private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
+    private func button(_ caption: String, _ act: @escaping @MainActor () throws -> Void) -> Button {
         Button(caption)
             .onClicked(act)
     }

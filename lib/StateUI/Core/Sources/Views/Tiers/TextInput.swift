@@ -12,8 +12,20 @@ public protocol TextInput: ElementView, TextInputProperties {}
 extension TextInput {
     /// Fires on every edit, with the whole of the new text. Runs after a
     /// binding's write, so the state already holds it.
-    public func onTextChanged(_ handler: @escaping ValueEventHandler<String>) -> Modified {
+    public func onTextChanged(_ handler: @escaping @MainActor (String) throws -> Void) -> Modified {
         onEvent(TextInputContract.textChanged, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onTextChanged(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<String>) -> Modified {
+        onEvent(TextInputContract.textChanged, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onTextChanged(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onTextChanged(_ handler: @escaping ValueEventHandler<String>) -> Modified {
+        fatalError("unavailable")
     }
 }
 

@@ -45,7 +45,7 @@ extension VisualElement where Self: StyleTarget {
     ///     ZStack { Text("Open") }
     ///         .scale($lift)
     ///         .onVisualStateChanged(.pointerOver, .normal) { state in
-    ///             try await $lift.journey.move(to: state == .pointerOver ? 1.03 : 1, .eased(120, .cubicOut))
+    ///             $lift.journey.move(to: state == .pointerOver ? 1.03 : 1, .eased(120, .cubicOut))
     ///         }
     ///
     /// It runs after the render in which the control entered the state, never
@@ -56,7 +56,39 @@ extension VisualElement where Self: StyleTarget {
     /// - Parameter perform: what to run, given the state entered.
     public func onVisualStateChanged(
         _ states: VisualState<Self>...,
+        perform handler: @escaping @MainActor (VisualState<Self>) throws -> Void
+    ) -> Modified {
+        listening(states, .overlap) { try handler($0) }
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what entering a
+    /// state does while a run is under way.
+    ///
+    /// - Parameters:
+    ///   - repeated: what entering a state does while a run is under way.
+    ///   - perform: what to run, given the state entered.
+    public func onVisualStateChanged(
+        _ states: VisualState<Self>...,
+        repeated: RepeatedEvent,
         perform handler: @escaping ValueEventHandler<VisualState<Self>>
+    ) -> Modified {
+        listening(states, repeated, handler)
+    }
+
+    /// A handler that awaits says what entering a state does while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what entering a state does while it runs: .onVisualStateChanged(states, repeated: .cancelPrevious) { … } - or .ignoreWhileRunning, .waitForPrevious, .overlap")
+    public func onVisualStateChanged(
+        _ states: VisualState<Self>...,
+        perform handler: @escaping ValueEventHandler<VisualState<Self>>
+    ) -> Modified {
+        fatalError("unavailable")
+    }
+
+    /// Declares `states` and hears the control entering them.
+    private func listening(
+        _ states: [VisualState<Self>],
+        _ repeated: RepeatedEvent,
+        _ handler: @escaping ValueEventHandler<VisualState<Self>>
     ) -> Modified {
         modified { node in
             for state in states where !node.visualStates.contains(where: { $0.name == state.name }) {
@@ -65,6 +97,7 @@ extension VisualElement where Self: StyleTarget {
 
             node.visualStateListeners.append(VisualStateListener(
                 states: states.isEmpty ? nil : Set(states.map(\.name)),
+                repeated: repeated,
                 run: { name in try await handler(VisualState<Self>(name)) }))
         }
     }

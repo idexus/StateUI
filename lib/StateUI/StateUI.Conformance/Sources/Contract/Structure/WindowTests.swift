@@ -243,8 +243,8 @@ struct NotesPage: View {
     var body: some View {
         let application = self.application
         return VStack {
-            Button("Open").onClicked { try await application.openWindow(NotesApplication.note, value: 7) }.id("open")
-            Button("Another").onClicked { try await application.openWindow(NotesApplication.other) }.id("another")
+            Button("Open").onClicked(.ignoreWhileRunning) { try await application.openWindow(NotesApplication.note, value: 7) }.id("open")
+            Button("Another").onClicked(.ignoreWhileRunning) { try await application.openWindow(NotesApplication.other) }.id("another")
         }
     }
 }

@@ -141,7 +141,7 @@ private struct CountingPage: View {
             Button("Add")
                 .onClicked { count += 1 }
             Button("Add and hide")
-                .onClicked {
+                .onClicked(.overlap) {
                     count += 1
                     _ = try? await OnScreenKeyboard.hide()
                 }

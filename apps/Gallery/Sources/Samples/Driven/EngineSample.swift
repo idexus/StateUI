@@ -150,7 +150,7 @@ struct EngineSample: SampleContent, ExampleContent {
 
     // listing: EngineSample
     /// The buttons whose caption is their own rather than a driven state's.
-    private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
+    private func button(_ caption: String, _ act: @escaping @MainActor () throws -> Void) -> Button {
         Button(caption)
             .onClicked(act)
     }

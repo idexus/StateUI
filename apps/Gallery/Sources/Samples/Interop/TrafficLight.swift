@@ -60,7 +60,7 @@ public struct TrafficLight: ElementView {
     }
 
     /// A lamp was tapped, with its index from the top.
-    public func onLampTapped(_ handler: @escaping ValueEventHandler<Int>) -> Self {
+    public func onLampTapped(_ handler: @escaping @MainActor (Int) throws -> Void) -> Self {
         onEvent(TrafficLightContract.lampTapped, handler)
     }
 }

@@ -116,7 +116,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             Button("Announce the count")
                 .accessibilityIdentifier("semantics.announce")
                 .horizontalAlignment(.center)
-                .onClicked {
+                .onClicked(.ignoreWhileRunning) {
                     let words = "Tapped \(taps) time\(taps == 1 ? "" : "s")"
                     try await ScreenReader.announce(words)
                     said = words

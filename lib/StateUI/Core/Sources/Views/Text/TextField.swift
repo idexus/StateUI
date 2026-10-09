@@ -88,8 +88,20 @@ public struct TextField: TextInput, TextualElement, FontElement, TextAlignmentEl
 
     /// Fires when the return key is pressed - the moment to move to the next
     /// field or run the search.
-    public func onSubmitted(_ handler: @escaping EventHandler) -> Self {
+    public func onSubmitted(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(TextFieldContract.submitted, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onSubmitted(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
+        onEvent(TextFieldContract.submitted, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onSubmitted(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onSubmitted(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 }
 

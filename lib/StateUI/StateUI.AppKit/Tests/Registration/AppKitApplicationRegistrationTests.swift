@@ -56,7 +56,7 @@ private struct Lamp: ElementView {
         setValue(LampContract.lit, value)
     }
 
-    func onPulled(_ handler: @escaping ValueEventHandler<Int>) -> Self {
+    func onPulled(_ handler: @escaping @MainActor (Int) throws -> Void) -> Self {
         onEvent(LampContract.pulled, handler)
     }
 }
@@ -82,7 +82,7 @@ private struct Pulling: View {
                 .aim(lamp)
 
             Button("Flash")
-                .onClicked {
+                .onClicked(.ignoreWhileRunning) {
                     do {
                         try await lamp.flash()
                         said = "flashed"

@@ -21,7 +21,7 @@ struct FilesSample: SampleContent, ExampleContent {
 
             // The contents go first; nil is a cancel.
             Button("Save…")
-                .onClicked {
+                .onClicked(.ignoreWhileRunning) {
                     let text = FileType("Text", extensions: ["txt"])
                     saved = try await Dialogs.saveFile(Array(words.utf8), name: "Note", types: [text])
                     answer = saved.map { "saved as \($0.name)" } ?? "cancelled"
@@ -29,7 +29,7 @@ struct FilesSample: SampleContent, ExampleContent {
 
             // No file longer than 1 KB is read whole: one byte past it says it is longer.
             Button("Open…")
-                .onClicked {
+                .onClicked(.ignoreWhileRunning) {
                     let text = FileType("Text", extensions: ["txt", "md"])
                     guard let file = try await Dialogs.openFile(types: [text]) else {
                         return answer = "cancelled"
@@ -43,12 +43,12 @@ struct FilesSample: SampleContent, ExampleContent {
             // The system opens it in the application it gives its kind.
             Button("Launch the saved file")
                 .isEnabled(saved != nil)
-                .onClicked {
+                .onClicked(.ignoreWhileRunning) {
                     if let saved { try await saved.launch() }
                 }
 
             Button("Launch swift.org")
-                .onClicked { try await Links.launch("https://www.swift.org") }
+                .onClicked(.ignoreWhileRunning) { try await Links.launch("https://www.swift.org") }
 
             // A text file dragged from the system onto it is read into the editor.
             ZStack {
@@ -62,7 +62,7 @@ struct FilesSample: SampleContent, ExampleContent {
             .shape(.roundedRectangle(10))
             .onDragOver { dropping = true }
             .onDragLeave { dropping = false }
-            .onDrop(files: [FileType("Text", extensions: ["txt", "md"])]) { files in
+            .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], .waitForPrevious) { files in
                 dropping = false
                 let start = try await files[0].read(atMost: 1025)
                 guard start.count <= 1024 else { return answer = "\(files[0].name) is longer than 1 KB" }

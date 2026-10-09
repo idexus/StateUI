@@ -162,7 +162,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                     // content is laid out - asked earlier it clamps to the
                     // length it has so far - so this puts it there again
                     // until the card it was aimed at is where it was sent.
-                    .onFrameChanged { frame in
+                    .onFrameChanged(.cancelPrevious) { frame in
                         guard !opened, frame.width != length else { return }
 
                         length = frame.width
@@ -211,12 +211,12 @@ struct PlacedSample: SampleContent, ExampleContent {
                 Button("Back")
                     .margin(horizontal: 4, vertical: 0)
                     .isEnabled(!grabbing)
-                    .onClicked { try await move(-1) }
+                    .onClicked { move(-1) }
 
                 Button("Next")
                     .margin(horizontal: 4, vertical: 0)
                     .isEnabled(!grabbing)
-                    .onClicked { try await move(1) }
+                    .onClicked { move(1) }
             }
             .spacing(8)
             .horizontalAlignment(.center)
@@ -273,10 +273,10 @@ struct PlacedSample: SampleContent, ExampleContent {
 
     /// A card either way, from a button: the scroller is what moves, so this
     /// sends its offset gliding and the arithmetic follows it frame by frame.
-    private func move(_ by: Int) async throws {
+    private func move(_ by: Int) {
         let slot = max(0, min(Double(Self.cards.count - 1), (at + Double(by)).rounded()))
 
-        try await $scrolled.journey.move(to: Point(slot * Self.reach, 0), .eased(300, .cubicOut)).arrived()
+        $scrolled.journey.move(to: Point(slot * Self.reach, 0), .eased(300, .cubicOut))
     }
 
     /// One card's face - a picture and its name, and nothing at all about where

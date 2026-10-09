@@ -88,8 +88,20 @@ public struct Stepper: ElementView, StepperProperties {
 
     /// Fires on every tap of either button, with the value stepped to. Runs
     /// after a binding's write, if there is one.
-    public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
+    public func onValueChanged(_ handler: @escaping @MainActor (Double) throws -> Void) -> Self {
         onEvent(StepperContract.valueChanged, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onValueChanged(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<Double>) -> Self {
+        onEvent(StepperContract.valueChanged, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onValueChanged(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
+        fatalError("unavailable")
     }
 }
 

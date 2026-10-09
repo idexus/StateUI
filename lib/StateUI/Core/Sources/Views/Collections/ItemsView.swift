@@ -31,8 +31,8 @@ public struct ItemsView<Items: RandomAccessCollection, ID: Hashable>: View {
     private var footerView: (any View)?
     private var empty: (any View)?
     private var choice: Choice?
-    private var activated: ValueEventHandler<ID>?
-    private var endReached: (within: Int, handler: EventHandler)?
+    private var activated: (repeated: RepeatedEvent, handler: ValueEventHandler<ID>)?
+    private var endReached: (within: Int, repeated: RepeatedEvent, handler: EventHandler)?
     private var aimed: Aim<ItemsViewContract>?
 
     /// A list of `items`, each its own identity, each looking as `content` says.
@@ -70,7 +70,7 @@ public struct ItemsView<Items: RandomAccessCollection, ID: Hashable>: View {
         element.node.producer = { source.children(realized: realized) }
         element.node.aim = aimed?.box
 
-        element.node.addHandler(ItemsViewContract.realizedChanged.token) {
+        element.node.addHandler(ItemsViewContract.realizedChanged.token, .overlap) {
             guard let identities = MemberValues.carried(
                 EventBuffer.current, by: ItemsViewContract.realizedChanged.name, as: [String].self),
                 identities != held.wrappedValue
@@ -82,7 +82,7 @@ public struct ItemsView<Items: RandomAccessCollection, ID: Hashable>: View {
         if let choice {
             element.node.write(ItemsViewContract.selectionMode, choice.mode)
             element.node.write(ItemsViewContract.selectedItems, source.identities(of: choice.chosen))
-            element.node.addHandler(ItemsViewContract.selectedItemsChanged.token) {
+            element.node.addHandler(ItemsViewContract.selectedItemsChanged.token, .overlap) {
                 guard let identities = MemberValues.carried(
                     EventBuffer.current, by: ItemsViewContract.selectedItemsChanged.name, as: [String].self)
                 else { return }
@@ -96,19 +96,19 @@ public struct ItemsView<Items: RandomAccessCollection, ID: Hashable>: View {
         }
 
         if let activated {
-            element.node.addHandler(ItemsViewContract.itemActivated.token) {
+            element.node.addHandler(ItemsViewContract.itemActivated.token, activated.repeated) {
                 guard let identity = MemberValues.carried(
                     EventBuffer.current, by: ItemsViewContract.itemActivated.name, as: String.self),
                     let id = source.id(for: identity)
                 else { return }
 
-                try await activated(id)
+                try await activated.handler(id)
             }
         }
 
         if let endReached {
             element.node.write(ItemsViewContract.endReachedWithin, endReached.within)
-            element.node.addHandler(ItemsViewContract.endReached.token, endReached.handler)
+            element.node.addHandler(ItemsViewContract.endReached.token, endReached.repeated, endReached.handler)
         }
 
         return ModifiedContent(node: element.node)
@@ -157,19 +157,48 @@ extension ItemsView {
 
     /// Hears the user open an item - a tap on a phone, a double-click or Return
     /// on a desktop - handed its identity.
-    public func onItemActivated(_ handler: @escaping ValueEventHandler<ID>) -> Self {
+    public func onItemActivated(_ handler: @escaping @MainActor (ID) throws -> Void) -> Self {
+        onItemActivated(.overlap) { try handler($0) }
+    }
+
+    /// The same, with a handler that awaits - opening a page does: `repeated`
+    /// says what opening another item does while a run is under way.
+    public func onItemActivated(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.activated = handler
+        copy.activated = (repeated, handler)
         return copy
     }
 
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onItemActivated(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onItemActivated(_ handler: @escaping ValueEventHandler<ID>) -> Self {
+        fatalError("unavailable")
+    }
+
     /// Hears the user scroll within `within` items of the end - where more
-    /// items are loaded. It may be heard again before the items arrive, so a
-    /// handler that loads guards itself.
-    public func onEndReached(within: Int = 0, _ handler: @escaping EventHandler) -> Self {
+    /// items are loaded.
+    public func onEndReached(within: Int = 0, _ handler: @escaping @MainActor () throws -> Void) -> Self {
+        onEndReached(within: within, .overlap) { try handler() }
+    }
+
+    /// The same, with a handler that awaits - a load does. The end may be
+    /// reached again before the items arrive: `.ignoreWhileRunning` keeps one
+    /// load under way at a time.
+    ///
+    ///     ItemsView(rows) { … }
+    ///         .onEndReached(within: 5, .ignoreWhileRunning) { rows += try await nextPage() }
+    public func onEndReached(
+        within: Int = 0, _ repeated: RepeatedEvent, _ handler: @escaping EventHandler
+    ) -> Self {
         var copy = self
-        copy.endReached = (within: max(within, 0), handler: handler)
+        copy.endReached = (within: max(within, 0), repeated: repeated, handler: handler)
         return copy
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onEndReached(within: n, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onEndReached(within: Int = 0, _ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 
     /// A view standing before every item, scrolled with them.
@@ -198,7 +227,7 @@ extension ItemsView {
     ///     @Aim(ItemsViewContract.self) private var list
     ///
     ///     ItemsView(rows) { Row($0) }.aim(list)
-    ///     Button("Top").onClicked { try await list.scrollTo(rows[0], anchor: .start) }
+    ///     Button("Top").onClicked(.cancelPrevious) { try await list.scrollTo(rows[0], anchor: .start) }
     public func aim(_ aim: Aim<ItemsViewContract>) -> Self {
         var copy = self
         copy.aimed = aim

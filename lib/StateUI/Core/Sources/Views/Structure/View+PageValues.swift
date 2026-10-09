@@ -79,27 +79,87 @@ extension View {
     }
 
     /// Runs as the page comes on screen - on every arrival, coming back from a pushed page included.
+    public func onAppearing(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        onAppearing(.overlap) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onAppearing(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.appearing, repeated, handler) } }
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onAppearing(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
     public func onAppearing(_ handler: @escaping EventHandler) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageContract.appearing, handler) } }
+        fatalError("unavailable")
     }
 
     /// Runs as the page leaves the screen - covered, left, or another tab chosen.
+    public func onDisappearing(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        onDisappearing(.overlap) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onDisappearing(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.disappearing, repeated, handler) } }
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onDisappearing(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
     public func onDisappearing(_ handler: @escaping EventHandler) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageContract.disappearing, handler) } }
+        fatalError("unavailable")
     }
 
     /// Runs once navigation has arrived at the page. Only navigation says it; `onAppearing` answers any showing.
+    public func onNavigatedTo(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        onNavigatedTo(.overlap) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onNavigatedTo(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.navigatedTo, repeated, handler) } }
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onNavigatedTo(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
     public func onNavigatedTo(_ handler: @escaping EventHandler) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageContract.navigatedTo, handler) } }
+        fatalError("unavailable")
     }
 
     /// Runs as navigation is about to leave the page, while it is still on screen.
+    public func onNavigatingFrom(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        onNavigatingFrom(.overlap) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onNavigatingFrom(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.navigatingFrom, repeated, handler) } }
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onNavigatingFrom(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
     public func onNavigatingFrom(_ handler: @escaping EventHandler) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageContract.navigatingFrom, handler) } }
+        fatalError("unavailable")
     }
 
     /// Runs once navigation has left the page, its destination on screen.
+    public func onNavigatedFrom(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        onNavigatedFrom(.overlap) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onNavigatedFrom(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.navigatedFrom, repeated, handler) } }
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onNavigatedFrom(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
     public func onNavigatedFrom(_ handler: @escaping EventHandler) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageContract.navigatedFrom, handler) } }
+        fatalError("unavailable")
     }
 }

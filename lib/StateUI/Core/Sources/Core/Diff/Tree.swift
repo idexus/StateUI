@@ -90,6 +90,9 @@ final class RenderedNode {
     /// What `.onDestroying` runs as it leaves: its last build's closures.
     var destroying: [EventHandler] = []
 
+    /// The runs of what its walks found to run, kept while it is the same element.
+    var runs = RunSlots()
+
     /// The numbers its engines are registered under, in written order; the closures
     /// live on the board.
     var engines: [Int] = []

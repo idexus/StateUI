@@ -14,7 +14,7 @@ private struct Saving: View {
 
     var body: some View {
         VStack {
-            Button("Save").onClicked {
+            Button("Save").onClicked(.ignoreWhileRunning) {
                 let text = FileType("Text", extensions: ["txt"])
                 answer = try await Dialogs.saveFile(Array("Kept".utf8), name: "Note", types: [text])?.name ?? "nothing"
             }
@@ -26,7 +26,7 @@ private struct Saving: View {
 /// A button opening files of two kinds.
 private struct Opening: View {
     var body: some View {
-        Button("Open").onClicked {
+        Button("Open").onClicked(.ignoreWhileRunning) {
             _ = try await Dialogs.openFiles(types: [
                 FileType("Text", extensions: ["txt", "md"]), FileType("Web page", extensions: ["html"]),
             ])

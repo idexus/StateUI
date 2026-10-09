@@ -32,14 +32,14 @@ public struct ScrollReader: View {
     private var scroller: Aim<ScrollView>?
 
     /// What runs when the scroller comes to rest, if anything.
-    private var stopped: EventHandler?
-    private var tapped: EventHandler?
+    private var stopped: (repeated: RepeatedEvent, handler: EventHandler)?
+    private var tapped: (repeated: RepeatedEvent, handler: EventHandler)?
 
     /// Where in the room a tap is answered, given the room; nil for all of it.
     private var target: ((Rect) -> Rect)?
 
     /// What runs while a finger or a mouse drags the run, if anything.
-    private var dragged: ValueEventHandler<PanUpdate>?
+    private var dragged: (repeated: RepeatedEvent, handler: ValueEventHandler<PanUpdate>)?
 
     /// The two parts of the content where a tap has a place of its own: the
     /// run's length, and where a tap may land.
@@ -107,10 +107,22 @@ public struct ScrollReader: View {
     ///
     /// - Parameter handler: what to run once the scroller has stopped.
     /// - Returns: the reader, answering its scroller coming to rest.
-    public func onScrollStopped(_ handler: @escaping EventHandler) -> ScrollReader {
+    public func onScrollStopped(_ handler: @escaping @MainActor () throws -> Void) -> ScrollReader {
+        onScrollStopped(.overlap) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the scroller coming to rest does while a run
+    /// is under way.
+    public func onScrollStopped(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> ScrollReader {
         var copy = self
-        copy.stopped = handler
+        copy.stopped = (repeated, handler)
         return copy
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onScrollStopped(.cancelPrevious) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onScrollStopped(_ handler: @escaping EventHandler) -> ScrollReader {
+        fatalError("unavailable")
     }
 
     /// What runs when the user taps the run. The views under the scroller take
@@ -118,10 +130,21 @@ public struct ScrollReader: View {
     ///
     /// - Parameter handler: what to run when the run is tapped.
     /// - Returns: the reader, answering a tap.
-    public func onTapped(_ handler: @escaping EventHandler) -> ScrollReader {
+    public func onTapped(_ handler: @escaping @MainActor () throws -> Void) -> ScrollReader {
+        onTapped(.overlap) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what a tap does while a run is under way.
+    public func onTapped(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> ScrollReader {
         var copy = self
-        copy.tapped = handler
+        copy.tapped = (repeated, handler)
         return copy
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onTapped(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onTapped(_ handler: @escaping EventHandler) -> ScrollReader {
+        fatalError("unavailable")
     }
 
     /// What runs while the user drags the run, reported as `onPanUpdated`
@@ -130,10 +153,24 @@ public struct ScrollReader: View {
     ///
     /// - Parameter handler: what to run as the drag goes on.
     /// - Returns: the reader, answering a drag.
-    public func onPanUpdated(_ handler: @escaping ValueEventHandler<PanUpdate>) -> ScrollReader {
+    public func onPanUpdated(_ handler: @escaping @MainActor (PanUpdate) throws -> Void) -> ScrollReader {
+        onPanUpdated(.overlap) { try handler($0) }
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what a report of the drag does while a run is
+    /// under way.
+    public func onPanUpdated(
+        _ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<PanUpdate>
+    ) -> ScrollReader {
         var copy = self
-        copy.dragged = handler
+        copy.dragged = (repeated, handler)
         return copy
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onPanUpdated(.cancelPrevious) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onPanUpdated(_ handler: @escaping ValueEventHandler<PanUpdate>) -> ScrollReader {
+        fatalError("unavailable")
     }
 
     /// The same, answered on one part of the room rather than the whole run -
@@ -149,12 +186,27 @@ public struct ScrollReader: View {
     /// - Returns: the reader, answering a tap there and nowhere else.
     public func onTapped(
         within area: @escaping (Rect) -> Rect,
+        _ handler: @escaping @MainActor () throws -> Void
+    ) -> ScrollReader {
+        onTapped(within: area, .overlap) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what a tap does while a run is under way.
+    public func onTapped(
+        within area: @escaping (Rect) -> Rect,
+        _ repeated: RepeatedEvent,
         _ handler: @escaping EventHandler
     ) -> ScrollReader {
         var copy = self
-        copy.tapped = handler
+        copy.tapped = (repeated, handler)
         copy.target = area
         return copy
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onTapped(within: area, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onTapped(within area: @escaping (Rect) -> Rect, _ handler: @escaping EventHandler) -> ScrollReader {
+        fatalError("unavailable")
     }
 
     /// Puts an aim on the scroller, for an act aimed at it. Moving the run is a
@@ -281,8 +333,8 @@ extension ScrollView {
 
     /// The scroller answering its own rest, where asked: an unwanted handler is
     /// an event subscribed to on every platform.
-    func stopping(_ handler: EventHandler?) -> ScrollView {
-        handler.map { onScrollStopped($0) } ?? self
+    func stopping(_ handler: (repeated: RepeatedEvent, handler: EventHandler)?) -> ScrollView {
+        handler.map { onScrollStopped($0.repeated, $0.handler) } ?? self
     }
 
     /// The scroller carried on the offset state, where one was given: a
@@ -294,14 +346,14 @@ extension ScrollView {
 
 extension ColorBox {
     /// The box answering a drag, where one was asked for.
-    func dragging(_ handler: ValueEventHandler<PanUpdate>?) -> ColorBox {
+    func dragging(_ handler: (repeated: RepeatedEvent, handler: ValueEventHandler<PanUpdate>)?) -> ColorBox {
         guard let handler else { return self }
 
-        return onPanUpdated(handler)
+        return onPanUpdated(handler.repeated, handler.handler)
     }
 
     /// The box answering a tap, where one was asked for.
-    func tapping(_ handler: EventHandler?) -> ColorBox {
-        handler.map { onTapped($0) } ?? self
+    func tapping(_ handler: (repeated: RepeatedEvent, handler: EventHandler)?) -> ColorBox {
+        handler.map { onTapped($0.repeated, $0.handler) } ?? self
     }
 }

@@ -62,6 +62,7 @@ public struct Journey<Value: Walked> {
         get { lanes()?.value ?? state.wrappedValue }
 
         nonmutating set {
+            guard HandlerRun.admits("a journey's value") else { return }
             guard let (storage, _, standing) = walking() else {
                 state.wrappedValue = newValue
                 return
@@ -91,7 +92,7 @@ public struct Journey<Value: Walked> {
         get { lanes()?.velocity ?? JourneyLanes<Value>.still }
 
         nonmutating set {
-            guard let (storage, _, standing) = walking() else { return }
+            guard HandlerRun.admits("a journey's velocity"), let (storage, _, standing) = walking() else { return }
 
             var lanes = standing
 
@@ -112,7 +113,7 @@ public struct Journey<Value: Walked> {
         get { lanes()?.motion ?? storage?.law ?? .inherited }
 
         nonmutating set {
-            guard let storage else { return }
+            guard HandlerRun.admits("a journey's law"), let storage else { return }
 
             guard let (_, _, standing) = walking() else {
                 storage.law = newValue
@@ -144,6 +145,8 @@ public struct Journey<Value: Walked> {
     ///
     /// - Parameter value: where it now is, and stays.
     public func snap(to value: Value) {
+        guard HandlerRun.admits("a snap") else { return }
+
         state.land(value)
     }
 
@@ -167,6 +170,7 @@ public struct Journey<Value: Walked> {
     /// - Returns: the movement, to await its arrival or leave going.
     @discardableResult
     public func move(to target: Value, _ motion: Motion? = nil) -> Arrival {
+        guard HandlerRun.admits("a movement") else { return Arrival(at: false) }
         guard let (storage, image, lanes) = walking() else {
             complain("`move` was called on a part of a state, a binding made from closures, "
                 + "or a state the host carries as the value itself, none of which it can "
@@ -202,6 +206,7 @@ public struct Journey<Value: Walked> {
     /// Stops an animation where it stands; whoever waits on it hears it did not run
     /// to the end. A value that was not moving is unaffected.
     public func stop() {
+        guard HandlerRun.admits("a stop") else { return }
         guard let (storage, _, standing) = walking() else {
             complain("`stop` was called on a part of a state, a binding made from closures, "
                 + "or a state the host carries as the value itself, none of which it walks.")

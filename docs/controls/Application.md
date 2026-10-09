@@ -12,7 +12,7 @@ struct NotesApp: Application {
 struct NotesPage: View {
     var body: some View {
         Button("About")
-            .onClicked { try await Dialogs.alert("Notes", message: "Version 1.0") }
+            .onClicked(.ignoreWhileRunning) { try await Dialogs.alert("Notes", message: "Version 1.0") }
     }
 }
 ```

@@ -82,12 +82,12 @@ private struct Focusing: View {
     var body: some View {
         VStack {
             TextField($name).aim(field)
-            Button("Focus").onClicked { answer = try await field.focus() ? "took" : "refused" }
-            Button("Unfocus").onClicked {
+            Button("Focus").onClicked(.ignoreWhileRunning) { answer = try await field.focus() ? "took" : "refused" }
+            Button("Unfocus").onClicked(.ignoreWhileRunning) {
                 try await field.unfocus()
                 answer = "released"
             }
-            Button("Hide").onClicked {
+            Button("Hide").onClicked(.ignoreWhileRunning) {
                 answer = try await OnScreenKeyboard.hide() ? "hid" : "nothing"
             }
             Text(answer)
@@ -105,7 +105,7 @@ private struct EnablingAndFocusing: View {
     var body: some View {
         VStack {
             TextField($name).aim(field).isEnabled(enabled)
-            Button("Enable and focus").onClicked {
+            Button("Enable and focus").onClicked(.ignoreWhileRunning) {
                 enabled = true
                 answer = try await field.focus() ? "took" : "refused"
             }

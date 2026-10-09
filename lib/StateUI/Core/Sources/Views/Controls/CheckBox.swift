@@ -65,7 +65,19 @@ public struct CheckBox: ElementView, TintElement, CheckBoxProperties {
 
     /// Fires when it is ticked or unticked, with the new value. Runs after a
     /// binding's write, if there is one.
-    public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
+    public func onToggled(_ handler: @escaping @MainActor (Bool) throws -> Void) -> Self {
         onEvent(CheckBoxContract.toggled, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onToggled(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<Bool>) -> Self {
+        onEvent(CheckBoxContract.toggled, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onToggled(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
+        fatalError("unavailable")
     }
 }

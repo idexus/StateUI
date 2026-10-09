@@ -100,19 +100,55 @@ public struct DatePicker: ElementView, TextStyleElement, FontElement, DatePicker
 
     /// Fires when a date is chosen. Runs after a binding's write, if there is
     /// one.
-    public func onDateChanged(_ handler: @escaping ValueEventHandler<CalendarDate>) -> Self {
+    public func onDateChanged(_ handler: @escaping @MainActor (CalendarDate) throws -> Void) -> Self {
         onEvent(DatePickerContract.dateChanged, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onDateChanged(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<CalendarDate>) -> Self {
+        onEvent(DatePickerContract.dateChanged, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onDateChanged(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onDateChanged(_ handler: @escaping ValueEventHandler<CalendarDate>) -> Self {
+        fatalError("unavailable")
     }
 
     /// The user has opened the calendar. Opening it with `isOpen(true)` raises
     /// nothing: the application already knows.
-    public func onOpened(_ handler: @escaping EventHandler) -> Self {
+    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(DatePickerContract.opened, handler)
     }
 
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onOpened(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
+        onEvent(DatePickerContract.opened, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onOpened(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onOpened(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
+    }
+
     /// It has closed - by a choice, by a tap outside, or by the platform.
-    public func onClosed(_ handler: @escaping EventHandler) -> Self {
+    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(DatePickerContract.closed, handler)
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onClosed(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
+        onEvent(DatePickerContract.closed, repeated, handler)
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onClosed(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onClosed(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 }
 

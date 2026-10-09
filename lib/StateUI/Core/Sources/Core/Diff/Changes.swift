@@ -30,25 +30,29 @@ struct Watch {
     /// What to run, given the old value and the new one.
     let run: ErasedChangeHandler
 
+    /// What a change does while a run is under way.
+    let repeated: RepeatedEvent
+
     /// A watch on one value. Written by `.onChanged`, never by hand.
-    init<Value: Equatable>(_ value: Value, run: @escaping ErasedChangeHandler) {
+    init<Value: Equatable>(_ value: Value, _ repeated: RepeatedEvent, run: @escaping ErasedChangeHandler) {
         self.value = value
         self.matches = { stored in (stored as? Value).map { $0 == value } }
+        self.repeated = repeated
         self.run = run
     }
 }
 
 extension ModifiableElement {
-    /// Runs something when `value` is not what it was last render.
+    /// Runs something when `value` is not what it was last render - all of it,
+    /// inside the render's walk.
     ///
     ///     VStack { … }
-    ///         .onChanged(query) { try await search() }
+    ///         .onChanged(step) { visits += 1 }
     ///
     /// The value is compared with the one this view carried last render. It does
-    /// not fire when the view first appears - use `.onCreated` for that. The
-    /// handler runs once the render has walked the tree, and what it writes before
-    /// its first suspension is sent in the same render; a handler that moves the
-    /// value it watches every time is a loop.
+    /// not fire when the view first appears - use `.onCreated` for that. What the
+    /// handler writes is sent in the same render; a handler that moves the value
+    /// it watches every time is a loop.
     ///
     /// Each `.onChanged` is paired with its predecessor by the order the modifiers
     /// appear in, so one written under an `if` makes the view start watching afresh.
@@ -58,9 +62,40 @@ extension ModifiableElement {
     ///   - handler: What to run once the value has moved.
     public func onChanged<Value: Equatable>(
         _ value: Value,
+        _ handler: @escaping @MainActor () throws -> Void
+    ) -> Modified {
+        onChanged(value, .overlap) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what another change
+    /// does while a run is under way - a newer query cancelling the search for
+    /// the older one, say.
+    ///
+    ///     VStack { … }
+    ///         .onChanged(query, .cancelPrevious) { try await search() }
+    ///
+    /// What the handler writes before its first suspension is sent in the same
+    /// render.
+    ///
+    /// - Parameters:
+    ///   - value: What to watch. Anything `Equatable`.
+    ///   - repeated: what a change does while a run is under way.
+    ///   - handler: What to run once the value has moved.
+    public func onChanged<Value: Equatable>(
+        _ value: Value,
+        _ repeated: RepeatedEvent,
         _ handler: @escaping EventHandler
     ) -> Modified {
-        modified { $0.watches.append(Watch(value) { _, _ in try await handler() }) }
+        modified { $0.watches.append(Watch(value, repeated) { _, _ in try await handler() }) }
+    }
+
+    /// A handler that awaits says what a change does while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what a change does while it runs: .onChanged(value, .cancelPrevious) { … } - or .ignoreWhileRunning, .waitForPrevious, .overlap")
+    public func onChanged<Value: Equatable>(
+        _ value: Value,
+        _ handler: @escaping EventHandler
+    ) -> Modified {
+        fatalError("unavailable")
     }
 
     /// The same, handed the value it was and the value it now is.
@@ -79,15 +114,40 @@ extension ModifiableElement {
     ///   - handler: What to run, given the old value and the new one.
     public func onChanged<Value: Equatable>(
         _ value: Value,
+        _ handler: @escaping @MainActor (Value, Value) throws -> Void
+    ) -> Modified {
+        onChanged(value, .overlap) { old, new in try handler(old, new) }
+    }
+
+    /// The same, with a handler that awaits, handed the value it was and the
+    /// value it now is; `repeated` says what another change does while a run is
+    /// under way.
+    ///
+    /// - Parameters:
+    ///   - value: What to watch. Anything `Equatable`.
+    ///   - repeated: what a change does while a run is under way.
+    ///   - handler: What to run, given the old value and the new one.
+    public func onChanged<Value: Equatable>(
+        _ value: Value,
+        _ repeated: RepeatedEvent,
         _ handler: @escaping ChangeHandler<Value>
     ) -> Modified {
         modified {
-            $0.watches.append(Watch(value) { old, new in
+            $0.watches.append(Watch(value, repeated) { old, new in
                 // Both casts hold by construction: a slot is written by one modifier.
                 guard let old = old as? Value, let new = new as? Value else { return }
 
                 try await handler(old, new)
             })
         }
+    }
+
+    /// A handler that awaits says what a change does while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what a change does while it runs: .onChanged(value, .cancelPrevious) { … } - or .ignoreWhileRunning, .waitForPrevious, .overlap")
+    public func onChanged<Value: Equatable>(
+        _ value: Value,
+        _ handler: @escaping ChangeHandler<Value>
+    ) -> Modified {
+        fatalError("unavailable")
     }
 }

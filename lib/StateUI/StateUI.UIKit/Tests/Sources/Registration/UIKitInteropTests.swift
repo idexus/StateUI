@@ -62,7 +62,7 @@ private struct Lamp: ElementView {
         setValue(LampContract.lit, value)
     }
 
-    func onPulled(_ handler: @escaping ValueEventHandler<Int>) -> Self {
+    func onPulled(_ handler: @escaping @MainActor (Int) throws -> Void) -> Self {
         onEvent(LampContract.pulled, handler)
     }
 }
@@ -82,7 +82,7 @@ private struct Calling: View {
 
     var body: some View {
         VStack {
-            Button("Ask").onClicked {
+            Button("Ask").onClicked(.ignoreWhileRunning) {
                 do {
                     let doubled = try await stateUICall(InteropTestContract.doubled, 21)
                     said = "\(doubled)"
@@ -90,7 +90,7 @@ private struct Calling: View {
                     said = "thrown: \(error)"
                 }
             }
-            Button("Ask nobody").onClicked {
+            Button("Ask nobody").onClicked(.ignoreWhileRunning) {
                 do {
                     try await stateUICall(InteropTestContract.unregistered)
                     said = "that should have thrown"
@@ -98,7 +98,7 @@ private struct Calling: View {
                     said = "thrown: \(error)"
                 }
             }
-            Button("Flash").onClicked {
+            Button("Flash").onClicked(.ignoreWhileRunning) {
                 do {
                     try await lamp.flash()
                     said = "flashed"

@@ -45,11 +45,11 @@ private struct Home: View {
             Accent()
             Text(shade)
             Button("teal").onClicked { palette.accent = "teal" }
-            Button("new").onClicked { try await application.openWindow() }
-            Button("fonts").onClicked { try await application.openWindow(.fonts) }
-            Button("note").onClicked { try await application.openWindow(.note) }
-            Button("document").onClicked { try await application.openWindow(.document, value: 42) }
-            Button("about").onClicked { try await application.openWindow(.about) }
+            Button("new").onClicked(.ignoreWhileRunning) { try await application.openWindow() }
+            Button("fonts").onClicked(.ignoreWhileRunning) { try await application.openWindow(.fonts) }
+            Button("note").onClicked(.ignoreWhileRunning) { try await application.openWindow(.note) }
+            Button("document").onClicked(.ignoreWhileRunning) { try await application.openWindow(.document, value: 42) }
+            Button("about").onClicked(.ignoreWhileRunning) { try await application.openWindow(.about) }
             Button("dusk").onClicked { shade = "dusk" }
         }
     }

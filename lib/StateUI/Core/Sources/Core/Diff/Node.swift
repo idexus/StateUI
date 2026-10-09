@@ -287,8 +287,9 @@ public struct Node {
     var visualStates: [DeclaredState] = []
     var visualStateListeners: [VisualStateListener] = []
 
-    /// Each event's handler; the ids belong to the element, assigned by the differ.
-    var events: [Event: EventHandler]
+    /// Each event's handlers in written order, each with what a repeat of the event does while it runs; the ids
+    /// belong to the element, assigned by the differ.
+    var events: [Event: [Handler]]
 
     /// The properties driven by a state and how each crosses - what `.opacity($fade)`
     /// records instead of a value (StateAttachment.swift).
@@ -329,15 +330,16 @@ public struct Node {
     /// What the view says of the page it stands on, apart from its own values (PageValues.swift).
     var pageValues: PageValues?
 
-    /// Adds a handler beside any the event already has, never instead of it.
+    /// Adds a handler beside any the event already has, never instead of it; it keeps runs of its own.
     /// Design: docs/design/core/identity-and-diffing.md#handlers-and-their-ids
-    mutating func addHandler(_ event: Event, _ handler: @escaping EventHandler) {
-        let existing = events[event]
+    mutating func addHandler(_ event: Event, _ repeated: RepeatedEvent, _ handler: @escaping EventHandler) {
+        events[event, default: []].append(Handler(run: handler, repeated: repeated))
+    }
 
-        events[event] = {
-            try await existing?()
-            try await handler()
-        }
+    /// Takes `handlers` for `event` after any it already has - what is written on a composed view, moved onto
+    /// its body.
+    mutating func addHandlers(_ event: Event, _ handlers: [Handler]) {
+        events[event, default: []] += handlers
     }
 
     /// A node of a type with its parts already made - what `Node(contract:)` and the
@@ -353,7 +355,7 @@ public struct Node {
         self.id = id
         self.props = props
         self.children = children
-        self.events = events
+        self.events = events.mapValues { [Handler(run: $0, repeated: .overlap)] }
     }
 
     /// A node of an element's own type: how every element's view begins.

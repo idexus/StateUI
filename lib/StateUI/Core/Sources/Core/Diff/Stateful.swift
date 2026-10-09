@@ -280,8 +280,8 @@ extension Node {
             // And how it animates: `.motion(_:)` on a composed view is about the view.
             node.motion = MotionPlan.merged(node.motion, under: written.motion)
 
-            for (name, handler) in written.events.sorted(by: { $0.key < $1.key }) {
-                node.addHandler(name, handler)
+            for (name, handlers) in written.events.sorted(by: { $0.key < $1.key }) {
+                node.addHandlers(name, handlers)
             }
 
             // Its own watches first, then what was written on it - one order every render.

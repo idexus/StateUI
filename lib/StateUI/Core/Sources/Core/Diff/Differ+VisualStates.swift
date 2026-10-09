@@ -10,21 +10,22 @@ extension Differ {
         _ node: inout Node,
         input: VisualInput,
         previous: String?,
+        runs: RunSlots,
         reads: inout Set<ObjectIdentifier>
     ) -> String {
         let names = Set(node.visualStates.map(\.name))
 
         // The Watch rule: only what a declared state follows is heard.
         if names.contains("Pressed") {
-            node.addHandler(.pressed) { input.hold(true) }
-            node.addHandler(.released) { input.hold(false) }
+            node.addHandler(.pressed, .overlap) { input.hold(true) }
+            node.addHandler(.released, .overlap) { input.hold(false) }
         }
         if names.contains("PointerOver") {
-            node.addHandler(.pointerEntered) { input.hover(true) }
-            node.addHandler(.pointerExited) { input.hover(false) }
+            node.addHandler(.pointerEntered, .overlap) { input.hover(true) }
+            node.addHandler(.pointerExited, .overlap) { input.hover(false) }
         }
         if names.contains("Focused") {
-            node.addHandler(.isFocusedChanged) {
+            node.addHandler(.isFocusedChanged, .overlap) {
                 if let focused = EventBuffer.current.first?.bool { input.focus(focused) }
             }
         }
@@ -43,8 +44,9 @@ extension Differ {
 
         // Heard after the render that entered it, never for the state the control arrives in.
         if let previous, previous != state {
-            for listener in node.visualStateListeners where listener.hears(state) {
-                fired.append { try await listener.run(state) }
+            for (index, listener) in node.visualStateListeners.enumerated() where listener.hears(state) {
+                fired.append(Fired(
+                    run: { try await listener.run(state) }, repeated: listener.repeated, slot: runs.slot("state \(index)")))
             }
         }
 

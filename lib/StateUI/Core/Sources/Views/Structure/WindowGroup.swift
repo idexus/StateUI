@@ -32,7 +32,7 @@ public struct WindowGroup: Scene {
     ///
     ///     WindowGroup(.editor) { EditorPage() }
     ///
-    ///     Button("New editor").onClicked { try await application.openWindow(.editor) }
+    ///     Button("New editor").onClicked(.ignoreWhileRunning) { try await application.openWindow(.editor) }
     ///
     /// - Parameters:
     ///   - type: what `ApplicationSession.openWindow` opens one by, and what the platform restores one as.

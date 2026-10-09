@@ -41,13 +41,23 @@ extension View {
     ///   - handler: What to run with each settled frame.
     public func onFrameChanged(
         in space: CoordinateSpace = .parent,
+        _ handler: @escaping @MainActor (Rect) throws -> Void
+    ) -> Modified {
+        onFrameChanged(in: space, .overlap) { try handler($0) }
+    }
+
+    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// again while a run is under way.
+    public func onFrameChanged(
+        in space: CoordinateSpace = .parent,
+        _ repeated: RepeatedEvent,
         _ handler: @escaping ValueEventHandler<Rect>
     ) -> Modified {
         // One report serves every space; each handler stays quiet while its
         // own answer is unchanged.
         let last = LastFrame()
 
-        return onEvent(ViewContract.frameChanged) { numbers in
+        return onEvent(ViewContract.frameChanged, repeated) { numbers in
             guard let report = FrameReport(numbers) else { return }
 
             let frame = report.frame(in: space)
@@ -56,6 +66,15 @@ extension View {
             last.rect = frame
             try await handler(frame)
         }
+    }
+
+    /// A handler that awaits says what the event does when it comes again while it runs.
+    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onFrameChanged(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    public func onFrameChanged(
+        in space: CoordinateSpace = .parent,
+        _ handler: @escaping ValueEventHandler<Rect>
+    ) -> Modified {
+        fatalError("unavailable")
     }
 }
 

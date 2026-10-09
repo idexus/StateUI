@@ -20,12 +20,12 @@ extension Node {
 
             // One handler per lifecycle report, never iterated from a collection.
             // Design: docs/design/views/pages.md#lifecycle-reports-one-by-one
-            node.addHandler(WindowContract.created.token) { session.phase = .created }
-            node.addHandler(WindowContract.activated.token) { session.phase = .activated }
-            node.addHandler(WindowContract.deactivated.token) { session.phase = .deactivated }
-            node.addHandler(WindowContract.stopped.token) { session.phase = .stopped }
-            node.addHandler(WindowContract.resumed.token) { session.phase = .resumed }
-            node.addHandler(WindowContract.destroying.token) { session.phase = .destroying }
+            node.addHandler(WindowContract.created.token, .overlap) { session.phase = .created }
+            node.addHandler(WindowContract.activated.token, .overlap) { session.phase = .activated }
+            node.addHandler(WindowContract.deactivated.token, .overlap) { session.phase = .deactivated }
+            node.addHandler(WindowContract.stopped.token, .overlap) { session.phase = .stopped }
+            node.addHandler(WindowContract.resumed.token, .overlap) { session.phase = .resumed }
+            node.addHandler(WindowContract.destroying.token, .overlap) { session.phase = .destroying }
 
             return node
         }
