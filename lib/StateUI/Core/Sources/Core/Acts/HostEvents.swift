@@ -6,10 +6,10 @@
 
 /// One handler's subscription to a host event, made by `HostEvents.on`.
 ///
-/// Keep it and `cancel()` when the listener leaves, the way a view's
-/// `.onDestroying` ends what `.onCreated` started. A subscription nobody cancels
-/// goes on hearing raises for as long as the process lives; cancelling twice
-/// is harmless.
+/// Keep it - one not kept is a warning - and `cancel()` when the listener
+/// leaves, the way a view's `.onDestroying` ends what `.onCreated` started. A
+/// subscription nobody cancels goes on hearing raises for as long as the
+/// process lives; cancelling twice is harmless.
 @MainActor
 public final class HostEventSubscription {
     /// Which event, and which entry in its list.
@@ -92,7 +92,6 @@ public enum HostEvents {
     ///   - event: the member, written with its contract.
     ///   - handler: what runs.
     /// - Returns: the subscription, to `cancel()` when the listener leaves.
-    @discardableResult
     public static func on<Owner: ApplicationTier>(
         _ event: ElementEvent<Owner, Void>,
         _ handler: @escaping @MainActor () throws -> Void
@@ -101,7 +100,6 @@ public enum HostEvents {
     }
 
     /// The same, with a handler that awaits: `repeated` says what a raise does while a run is under way.
-    @discardableResult
     public static func on<Owner: ApplicationTier>(
         _ event: ElementEvent<Owner, Void>,
         _ repeated: RepeatedEvent,
@@ -116,7 +114,6 @@ public enum HostEvents {
 
     /// A handler that awaits says what a raise does while it runs.
     @available(*, unavailable, message: "a handler that awaits says what a raise does while it runs: HostEvents.on(event, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
-    @discardableResult
     public static func on<Owner: ApplicationTier>(
         _ event: ElementEvent<Owner, Void>,
         _ handler: @escaping EventHandler
@@ -136,7 +133,6 @@ public enum HostEvents {
     ///   - event: the member, written with its contract.
     ///   - handler: given the value.
     /// - Returns: the subscription, to `cancel()` when the listener leaves.
-    @discardableResult
     public static func on<Owner: ApplicationTier, Value: HostRepresentable>(
         _ event: ElementEvent<Owner, Value>,
         _ handler: @escaping @MainActor (Value) throws -> Void
@@ -145,7 +141,6 @@ public enum HostEvents {
     }
 
     /// The same, with a handler that awaits: `repeated` says what a raise does while a run is under way.
-    @discardableResult
     public static func on<Owner: ApplicationTier, Value: HostRepresentable>(
         _ event: ElementEvent<Owner, Value>,
         _ repeated: RepeatedEvent,
@@ -160,7 +155,6 @@ public enum HostEvents {
 
     /// A handler that awaits says what a raise does while it runs.
     @available(*, unavailable, message: "a handler that awaits says what a raise does while it runs: HostEvents.on(event, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
-    @discardableResult
     public static func on<Owner: ApplicationTier, Value: HostRepresentable>(
         _ event: ElementEvent<Owner, Value>,
         _ handler: @escaping ValueEventHandler<Value>
@@ -179,7 +173,6 @@ public enum HostEvents {
     ///   - event: the member, written with its contract.
     ///   - handler: given the values.
     /// - Returns: the subscription, to `cancel()` when the listener leaves.
-    @discardableResult
     public static func on<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
         _ event: ElementEvent<Owner, (First, Second)>,
         _ handler: @escaping @MainActor (First, Second) throws -> Void
@@ -188,7 +181,6 @@ public enum HostEvents {
     }
 
     /// The same, with a handler that awaits: `repeated` says what a raise does while a run is under way.
-    @discardableResult
     public static func on<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
         _ event: ElementEvent<Owner, (First, Second)>,
         _ repeated: RepeatedEvent,
@@ -205,7 +197,6 @@ public enum HostEvents {
 
     /// A handler that awaits says what a raise does while it runs.
     @available(*, unavailable, message: "a handler that awaits says what a raise does while it runs: HostEvents.on(event, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
-    @discardableResult
     public static func on<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
         _ event: ElementEvent<Owner, (First, Second)>,
         _ handler: @escaping ValueEventHandler<First, Second>
@@ -221,7 +212,6 @@ public enum HostEvents {
     ///   - event: the member, written with its contract.
     ///   - handler: given the values.
     /// - Returns: the subscription, to `cancel()` when the listener leaves.
-    @discardableResult
     public static func on<
         Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
     >(
@@ -232,7 +222,6 @@ public enum HostEvents {
     }
 
     /// The same, with a handler that awaits: `repeated` says what a raise does while a run is under way.
-    @discardableResult
     public static func on<
         Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
     >(
@@ -251,7 +240,6 @@ public enum HostEvents {
 
     /// A handler that awaits says what a raise does while it runs.
     @available(*, unavailable, message: "a handler that awaits says what a raise does while it runs: HostEvents.on(event, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
-    @discardableResult
     public static func on<
         Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
     >(
