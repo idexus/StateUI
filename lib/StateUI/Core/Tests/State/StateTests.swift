@@ -496,6 +496,25 @@ final class StateTests: XCTestCase {
         XCTAssertEqual(rows.get().map(\.title), ["a"], "the write landed past the end")
     }
 
+    /// POSTS TO A PART AND TO THE WHOLE land in the order posted - the last one
+    /// stands whenever the job runs: a part posted after the whole lands over it,
+    /// and the whole posted after a part replaces it.
+    func testPostsToAPartAndTheWholeLandInPostOrder() async {
+        let row = State(PostedRow(title: "a"))
+        let binding = row.projectedValue
+
+        binding.title.post("1")
+        binding.post(PostedRow(title: "W"))
+        binding.title.post("2")
+        await settle()
+        XCTAssertEqual(row.get().title, "2", "the part posted last was overwritten by the whole posted before it")
+
+        binding.title.post("3")
+        binding.post(PostedRow(title: "V"))
+        await settle()
+        XCTAssertEqual(row.get().title, "V", "the whole posted last did not replace the part before it")
+    }
+
     /// A POST HOLDS NOTHING ALIVE once its job ran: a state posted to is freed
     /// with whatever held it, as every state is.
     func testAStatePostedToIsFreedOnceItsJobRan() async {

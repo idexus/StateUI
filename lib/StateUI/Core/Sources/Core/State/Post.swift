@@ -23,7 +23,7 @@ extension Binding where Value: Sendable {
     public nonisolated func post(_ value: Value) {
         guard HandlerRun.admits("a post") else { return }
 
-        slot.post(value, through: self)
+        mailroom.post(value, through: self)
     }
 
     /// Changes the state from any thread, in a job of `MainActor`'s soon after:
@@ -42,94 +42,104 @@ extension Binding where Value: Sendable {
     public nonisolated func post(_ transform: @escaping @Sendable (Value) -> Value) {
         guard HandlerRun.admits("a post") else { return }
 
-        slot.post(transform, through: self)
-    }
-
-    /// Where this part of the state waits for its job.
-    private nonisolated var slot: PostSlot<Value> {
-        mailroom.slot(lent, of: self)
+        mailroom.post(transform, through: self)
     }
 }
 
-/// What has been posted to one state and not yet written: a slot for each part of
-/// it something was posted to.
+/// What has been posted to one state and not yet written, in the order posted - each entry a part of the state and
+/// what waits for it - written by one job of `MainActor`'s.
 /// Design: docs/design/core/state.md#posting
 final class Mailroom: Sendable {
-    private let slots = Mutex<[StatePart?: AnyObject]>([:])
-
-    /// The slot of one part of the state, made the first time anything is posted to
-    /// it.
-    func slot<Value: Sendable>(_ part: StatePart?, of binding: Binding<Value>) -> PostSlot<Value> {
-        slots.withLock { slots in
-            if let standing = slots[part] as? PostSlot<Value> { return standing }
-
-            let made = PostSlot<Value>()
-
-            slots[part] = made
-            return made
-        }
-    }
-}
-
-/// What waits for one part of one state: the last value posted, and the changes
-/// posted after it, in order - written by one job of `MainActor`'s.
-final class PostSlot<Value: Sendable>: Sendable {
     private struct Waiting {
-        var value: Value?
-        var transforms: [@Sendable (Value) -> Value] = []
+        var entries: [any PostEntry] = []
         var booked = false
     }
 
     private let waiting = Mutex(Waiting())
 
-    /// Replaces whatever waits with a value.
-    func post(_ value: Value, through binding: Binding<Value>) {
-        book(through: binding) {
-            $0.value = value
-            $0.transforms.removeAll()
+    /// Replaces whatever waits for this part, and for every part of it, with a value - posted last, it lands last.
+    func post<Value: Sendable>(_ value: Value, through binding: Binding<Value>) {
+        book { entries in
+            entries.removeAll { StatePart.covers(binding.lent, $0.part) }
+            entries.append(PartPost(binding: binding, value: value))
         }
     }
 
-    /// Queues a change after whatever waits.
-    func post(_ transform: @escaping @Sendable (Value) -> Value, through binding: Binding<Value>) {
-        book(through: binding) { $0.transforms.append(transform) }
+    /// Queues a change after whatever waits - on the last entry where it is this part's, so a loop's changes are one
+    /// write.
+    func post<Value: Sendable>(_ transform: @escaping @Sendable (Value) -> Value, through binding: Binding<Value>) {
+        book { entries in
+            if var last = entries.last as? PartPost<Value>, last.part == binding.lent {
+                last.transforms.append(transform)
+                entries[entries.count - 1] = last
+            } else {
+                entries.append(PartPost(binding: binding, transforms: [transform]))
+            }
+        }
     }
 
-    /// Records a post, and books the job where none is booked. The job holds the
-    /// binding - any binding to this part, each the same road - until it runs, and
-    /// belongs to no handler's run: what it writes is every poster's.
-    /// Design: docs/design/core/state.md#posting
-    private func book(through binding: Binding<Value>, _ post: (inout Waiting) -> Void) {
+    /// Records a post, and books the job where none is booked.
+    private func book(_ post: (inout [any PostEntry]) -> Void) {
         let first = waiting.withLock { waiting in
-            post(&waiting)
+            post(&waiting.entries)
             defer { waiting.booked = true }
             return !waiting.booked
         }
 
         if first {
-            libraryTask { self.write(through: binding) }
+            libraryTask { self.write() }
         }
     }
 
-    /// The job: what waits, taken whole and written once.
+    /// The job: what waits, taken whole and written entry by entry in the order posted.
     @MainActor
-    private func write(through binding: Binding<Value>) {
+    private func write() {
         let taken = waiting.withLock { waiting in
             defer { waiting = Waiting() }
-            return waiting
+            return waiting.entries
         }
 
+        for entry in taken { entry.land() }
+    }
+}
+
+/// One part's posts waiting in a mailroom.
+protocol PostEntry: Sendable {
+    /// Which part of the state it writes; nil for the whole.
+    var part: StatePart? { get }
+
+    /// Writes what waits.
+    @MainActor func land()
+}
+
+/// What waits for one part: the last value posted and the changes posted after it, in order, written through a
+/// binding to that part - held only until the job runs.
+struct PartPost<Value: Sendable>: PostEntry {
+    let binding: Binding<Value>
+    var value: Value?
+    var transforms: [@Sendable (Value) -> Value] = []
+
+    var part: StatePart? { binding.lent }
+
+    init(binding: Binding<Value>, value: Value? = nil, transforms: [@Sendable (Value) -> Value] = []) {
+        self.binding = binding
+        self.value = value
+        self.transforms = transforms
+    }
+
+    @MainActor
+    func land() {
         guard binding.reaches() else {
             return complain("A post to an element its collection no longer has - the list shrank before the post's "
                 + "job ran - was dropped. Post by the element's identity rather than its index.")
         }
 
-        var value = taken.value ?? binding.standing
+        var landing = value ?? binding.standing
 
-        for transform in taken.transforms {
-            value = transform(value)
+        for transform in transforms {
+            landing = transform(landing)
         }
 
-        binding.wrappedValue = value
+        binding.wrappedValue = landing
     }
 }

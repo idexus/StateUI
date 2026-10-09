@@ -60,27 +60,29 @@ the newer value of a kept state is the one that reaches the store.
 ## Posting
 
 `$x.post(v)` and `$x.post { … }` are the one door in from another thread. A
-post records itself in the state's mailroom, in the slot of the part posted
-to, and books one job on `MainActor` for that slot unless one is booked
-already; the job takes what waits and writes it once, through a binding to
-that part. A value posted replaces the changes waiting before it; a change
+post records itself in the state's mailroom and books one job on `MainActor`
+for the whole state unless one is booked already; the job takes what waits and
+writes it entry by entry, in the order posted, each through a binding to its
+part. A value posted to a part drops what waits for that part and for every
+part of it, and goes last: the last one posted stands, whenever the job runs -
+a title posted after the whole lands over it, the whole posted after a title
+replaces it. A change goes on the last entry when that is its own part's, and
 runs over what the one before it left, so a hundred tasks counting with
-`post { $0 + 1 }` count every one. A post is deferred on every thread, the UI
-thread too: it is a message rather than a write, and nothing reads it before
-its job runs. Its value crosses threads, so it is `Sendable`.
+`post { $0 + 1 }` count every one, in one write. A post is deferred on every
+thread, the UI thread too: it is a message rather than a write, and nothing
+reads it before its job runs. Its value crosses threads, so it is `Sendable`.
 
 The mailroom is made on `MainActor` the first time the state is lent, and
-every binding to the state carries it; a slot is made under the mailroom's
-lock the first time its part is posted to, and holds its waiting value and
-changes under a lock of its own. Coalescing is what makes a value posted ten
-thousand times from a loop cost one write and one render.
+every binding to the state carries it; its entries wait under its lock.
+Coalescing is what makes a value posted ten thousand times from a loop cost one
+write and one render.
 
-The job holds the binding it writes through until it runs, and the slot holds
-none: a slot kept in the state's own mailroom and holding a binding to the state
-would be a ring, and the state would never be freed. The job is detached, so it
-belongs to no handler's run: what it writes may have been posted by several
-runs, and the run that booked it being superseded refuses none of it - a
-superseded run's own post is refused as it is posted.
+An entry holds the binding it writes through until the job takes it: kept in
+the state's own mailroom, it is a ring only while it waits, and the state is
+freed once the job has run. The job is the library's own task, so it belongs to
+no handler's run: what it writes may have been posted by several runs, and the
+run that booked it being superseded refuses none of it - a superseded run's own
+post is refused as it is posted.
 
 ## Bindings
 

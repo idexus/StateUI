@@ -12,6 +12,15 @@ struct StatePart: Hashable, Sendable {
         StatePart(steps: (whole?.steps ?? []) + [step])
     }
 
+    /// Whether `other` is `part` or a part of it - the whole, nil, holds every part.
+    static func covers(_ part: StatePart?, _ other: StatePart?) -> Bool {
+        guard let part else { return true }
+        guard let other, other.steps.count >= part.steps.count else { return false }
+
+        for index in part.steps.indices where boxed(part.steps[index]) != boxed(other.steps[index]) { return false }
+        return true
+    }
+
     static func == (one: StatePart, other: StatePart) -> Bool {
         guard one.steps.count == other.steps.count else { return false }
 
