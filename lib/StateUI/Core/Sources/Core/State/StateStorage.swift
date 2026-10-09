@@ -253,10 +253,13 @@ extension State.Storage where Value: Walked {
                 if made.number == nil, !journey.motion.isCustom {
                     journey.value = target
                     journey.velocity = JourneyLanes<Value>.still
+                    known.destination = target
+                    Self.lay([.value, .destination, .velocity], of: journey, on: made)
+                    return
                 }
 
                 known.destination = target
-                Self.lay(journey, on: made)
+                Self.lay([.destination], of: journey, on: made)
             }
             hostSnap = { landed in
                 var journey = Self.journey(on: made)
@@ -266,7 +269,7 @@ extension State.Storage where Value: Walked {
                 journey.velocity = JourneyLanes<Value>.still
 
                 known.destination = landed
-                Self.lay(journey, on: made)
+                Self.lay([.value, .destination, .velocity], of: journey, on: made)
             }
             noted = { destination in known.destination = destination }
             made.told = { [weak self] mask in
@@ -314,17 +317,28 @@ extension State.Storage where Value: Walked {
         return Self.journey(on: image)
     }
 
-    /// Writes the journey's lanes whole; the board finds which moved.
-    func lay(_ lanes: JourneyLanes<Value>) {
+    /// Writes `parts` of the journey and leaves every other lane as it lies; the board
+    /// finds which moved, and `forcing` marks lanes a write means even unmoved.
+    /// Design: docs/design/core/journeys.md#writing-the-parts
+    func lay(_ parts: [JourneyPart], of lanes: JourneyLanes<Value>, forcing: UInt64 = 0) {
         guard journeyed, let image else { return }
 
-        Self.lay(lanes, on: image)
+        Self.lay(parts, of: lanes, on: image, forcing: forcing)
     }
 
     /// Tells the storage a destination sent by another road than a write, so the host
-    /// writing it back on landing asks for nothing.
+    /// writing it back on landing asks for nothing - and keeps the pair it wears, as a
+    /// write does, or lets go of the one it kept.
+    /// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
     func noteDestination(_ destination: Value) {
+        themed = Self.wearsTheTheme(destination) ? destination : nil
         noted?(destination)
+    }
+
+    /// Lets go of the pair a stopped value no longer stands for.
+    /// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
+    func stoppedWhereItStands() {
+        themed = nil
     }
 
     /// The destination this side last knew, shared by three closures.
@@ -347,9 +361,27 @@ extension State.Storage where Value: Walked {
             ?? JourneyLanes(nothing)
     }
 
-    /// Writes the journey into the lanes, whole.
-    private static func lay(_ journey: JourneyLanes<Value>, on image: HostStorage) {
-        Renderer.shared.board(of: image).write(StateImage.bytes(of: journey.carried(in: .current)), to: image)
+    /// Writes `parts` of the journey, each in the theme in force, over the lanes as they
+    /// lie: a value read back through its type - a colour's eight bits a channel - is not
+    /// always the lanes it was read from, and a lane rewritten so reads as moved.
+    /// Design: docs/design/core/journeys.md#writing-the-parts
+    private static func lay(
+        _ parts: [JourneyPart], of journey: JourneyLanes<Value>, on image: HostStorage, forcing: UInt64 = 0
+    ) {
+        let board = Renderer.shared.board(of: image)
+        guard case .lanes(let written) = journey.carried(in: .current) else { return }
+        guard case .lanes(var lanes) = board.read(image, lanes: JourneyLanes<Value>.lanes),
+              lanes.count == written.count
+        else {
+            board.write(StateImage.bytes(of: .lanes(written)), to: image, forcing: forcing)
+            return
+        }
+
+        for part in parts {
+            for lane in JourneyLanes<Value>.range(of: part) { lanes[lane] = written[lane] }
+        }
+
+        board.write(StateImage.bytes(of: .lanes(lanes)), to: image, forcing: forcing)
     }
 }
 

@@ -70,7 +70,7 @@ public struct Journey<Value: Walked> {
             var lanes = standing
 
             lanes.value = newValue
-            storage.lay(lanes)
+            storage.lay([.value], of: lanes)
             storage.askJourneyReaders()
         }
     }
@@ -96,7 +96,7 @@ public struct Journey<Value: Walked> {
             var lanes = standing
 
             lanes.velocity = newValue
-            storage.lay(lanes)
+            storage.lay([.velocity], of: lanes)
             storage.askJourneyReaders()
         }
     }
@@ -129,7 +129,7 @@ public struct Journey<Value: Walked> {
             }
 
             lanes.motion = newValue
-            storage.lay(lanes)
+            storage.lay([.motion], of: lanes)
             storage.askJourneyReaders()
         }
     }
@@ -191,9 +191,8 @@ public struct Journey<Value: Walked> {
         if let motion { travelling.motion = motion }
 
         // The waiter forces the destination: a fresh journey even to where it is going.
-        Renderer.shared.board(of: image).write(
-            StateImage.bytes(of: travelling.carried(in: .current)),
-            to: image,
+        storage.lay(
+            [.destination, .completion, .motion], of: travelling,
             forcing: JourneyLanes<Value>.mask(of: .destination) | JourneyLanes<Value>.mask(of: .completion))
 
         storage.noteDestination(target)
@@ -203,7 +202,7 @@ public struct Journey<Value: Walked> {
     /// Stops an animation where it stands; whoever waits on it hears it did not run
     /// to the end. A value that was not moving is unaffected.
     public func stop() {
-        guard let (_, image, standing) = walking() else {
+        guard let (storage, _, standing) = walking() else {
             complain("`stop` was called on a part of a state, a binding made from closures, "
                 + "or a state the host carries as the value itself, none of which it walks.")
             return
@@ -214,9 +213,7 @@ public struct Journey<Value: Walked> {
         // The waiter's id stays on the image: the host needs it to answer.
         stopping.stopped += 1
 
-        Renderer.shared.board(of: image).write(
-            StateImage.bytes(of: stopping.carried(in: .current)),
-            to: image,
-            forcing: JourneyLanes<Value>.mask(of: .stopped))
+        storage.lay([.stopped], of: stopping, forcing: JourneyLanes<Value>.mask(of: .stopped))
+        storage.stoppedWhereItStands()
     }
 }

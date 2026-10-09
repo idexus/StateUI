@@ -82,21 +82,23 @@ struct JourneyLanes<Value: Walked>: StateValue {
         return lanes
     }
 
-    /// Which lanes one part sits in - what a write that must be seen forces dirty.
-    static func mask(of part: JourneyPart) -> UInt64 {
+    /// The lanes one part sits in.
+    static func range(of part: JourneyPart) -> Range<Int> {
         let width = Value.lanes
-        let range: Range<Int>
 
         switch part {
-        case .value: range = 0..<width
-        case .destination: range = width..<(width * 2)
-        case .velocity: range = (width * 2)..<(width * 3)
-        case .motion: range = (width * 3)..<(width * 3 + StateLaw.lanes)
-        case .completion: range = (width * 3 + StateLaw.lanes)..<(width * 3 + StateLaw.lanes + 1)
-        case .stopped: range = (width * 3 + StateLaw.lanes + 1)..<(width * 3 + StateLaw.lanes + 2)
+        case .value: return 0..<width
+        case .destination: return width..<(width * 2)
+        case .velocity: return (width * 2)..<(width * 3)
+        case .motion: return (width * 3)..<(width * 3 + StateLaw.lanes)
+        case .completion: return (width * 3 + StateLaw.lanes)..<(width * 3 + StateLaw.lanes + 1)
+        case .stopped: return (width * 3 + StateLaw.lanes + 1)..<(width * 3 + StateLaw.lanes + 2)
         }
+    }
 
-        return range.reduce(into: UInt64(0)) { $0 |= HostStorage.bit(of: $1) }
+    /// Which lanes one part sits in - what a write that must be seen forces dirty.
+    static func mask(of part: JourneyPart) -> UInt64 {
+        range(of: part).reduce(into: UInt64(0)) { $0 |= HostStorage.bit(of: $1) }
     }
 }
 

@@ -97,7 +97,9 @@ is true at once, because the engine alone knows when it is done.
 
 `stop()` raises the stop counter, leaving the value where the animation stood;
 the host ends the animation and answers the waiter false. The waiter's id stays on
-the image, because the host needs it to answer.
+the image, because the host needs it to answer. The colour pair the state kept
+is let go: the value stands at a colour between two, which no pair names, and
+a render laying the pair again would send the host on to it.
 
 ## Writing the parts
 
@@ -115,6 +117,13 @@ the image, because the host needs it to answer.
 A value worked out from a measurement or a report is not a destination, and
 animated as one it crawls after the thing that decided it; `snap(to:)` is its
 write. It is synchronous: nothing is booked and nobody waits.
+
+Each write lays the lanes of its own parts and leaves every other lane as it
+lies, bit for bit. A value read back through its type is not always the lanes
+it came from - a colour is eight bits a channel, and the host reports the
+frames between them - so a stop or a move laying the whole journey again would
+say the value and its speed moved, and the host would start over from them
+(`JourneyTests.testAJourneyWriteLaysOnlyItsPart`).
 
 ## Two reader sets
 

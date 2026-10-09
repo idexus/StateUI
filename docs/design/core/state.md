@@ -198,8 +198,9 @@ handed to the value rather than read by it, so a value's conversion depends
 on nothing but its arguments; a value's own `carried` is its lanes in the
 standard theme - the light half, the application's first accent. Every driven modifier that hands the state on reads the theme as it
 does, which makes that element the theme's reader; a theme change builds it
-again, and the host animates the colour to the other half. The pair is let go
-when the host moves the value somewhere else.
+again, and the host animates the colour to the other half. A movement sent to
+a pair keeps that pair, as a write does; one sent to a single colour lets it
+go, and so do a stop and the host moving the value somewhere else.
 
 ## A material on a carried state
 
