@@ -237,15 +237,13 @@ UIDevice.current.isBatteryMonitoringEnabled = true
 NotificationCenter.default.addObserver(
     forName: UIDevice.batteryLevelDidChangeNotification, object: nil, queue: .main
 ) { _ in
-    MainActor.assumeIsolated {
-        StateUIEvents.raise(NotesContract.batteryChanged, Double(UIDevice.current.batteryLevel))
-    }
+    StateUIEvents.raise(NotesContract.batteryChanged, Double(UIDevice.current.batteryLevel))
 }
 ```
 
-`raise` is `@MainActor`, called where the platform reports on the main thread,
-and answers how many subscriptions heard it; a raise nobody hears is an
-ordinary zero. The Swift side subscribes with
+`raise` is one door in from any thread, as a post is: the subscriptions hear
+it on the UI thread soon after, in the order raised; a raise nobody hears is
+an ordinary one. The Swift side subscribes with
 `HostEvents.on`; see
 [Host-extension events](../interface/interaction-and-actions.md#host-extension-events).
 

@@ -17,8 +17,7 @@ final class HostEventsTests: XCTestCase {
     }
 
     /// A subscribed handler hears a raise, with the values the host handed it
-    /// as the types the event's contract declares - and the raise answers how
-    /// many heard it.
+    /// as the types the event's contract declares.
     func testASubscribedHandlerHearsARaiseWithItsValues() {
         let heard = Heard()
         let subscription = HostEvents.on(TestEvents.batteryChanged) { level, charging in
@@ -26,8 +25,8 @@ final class HostEventsTests: XCTestCase {
         }
         defer { subscription.cancel() }
 
-        XCTAssertEqual(HostBoundary.raise(TestEvents.batteryChanged, 0.87, true), 1)
-        stateUIRunJobs()
+        HostBoundary.raise(TestEvents.batteryChanged, 0.87, true)
+        deliver()
 
         XCTAssertEqual(heard.lines, ["0.87 true"])
     }
@@ -43,14 +42,14 @@ final class HostEventsTests: XCTestCase {
             second.cancel()
         }
 
-        XCTAssertEqual(HostBoundary.raise(TestEvents.ordered), 2)
-        stateUIRunJobs()
+        HostBoundary.raise(TestEvents.ordered)
+        deliver()
 
         XCTAssertEqual(heard.lines, ["first", "second"])
     }
 
     /// A cancelled subscription hears nothing further, cancelling twice is
-    /// harmless, and a raise nobody subscribed to is an ordinary zero - the
+    /// harmless, and a raise nobody subscribed to is an ordinary one - the
     /// battery reports whether a page is watching or not.
     func testACancelledSubscriptionHearsNothing() {
         let heard = Heard()
@@ -61,8 +60,8 @@ final class HostEventsTests: XCTestCase {
         subscription.cancel()
         subscription.cancel()
 
-        XCTAssertEqual(HostBoundary.raise(TestEvents.cancelled, true), 0)
-        stateUIRunJobs()
+        HostBoundary.raise(TestEvents.cancelled, true)
+        deliver()
 
         XCTAssertEqual(heard.lines, [])
     }
@@ -80,11 +79,35 @@ final class HostEventsTests: XCTestCase {
             none.cancel()
         }
 
-        XCTAssertEqual(HostBoundary.raise(TestEvents.connectivityChanged, true), 1)
-        XCTAssertEqual(HostBoundary.raise(TestEvents.ordered), 1)
-        stateUIRunJobs()
+        HostBoundary.raise(TestEvents.connectivityChanged, true)
+        HostBoundary.raise(TestEvents.ordered)
+        deliver()
 
         XCTAssertEqual(heard.lines, ["online true", "ordered"])
+    }
+
+    /// A raise is one door in from any thread, as a post is: raised on another thread, the events are heard on the UI
+    /// thread in the order raised.
+    func testRaisesFromAnotherThreadAreHeardInTheOrderRaised() async throws {
+        let heard = Heard()
+        let subscription = HostEvents.on(TestEvents.connectivityChanged) { online in
+            heard.lines.append("\(online)")
+        }
+        defer { subscription.cancel() }
+
+        await Task.detached {
+            HostBoundary.raise(TestEvents.connectivityChanged, true)
+            HostBoundary.raise(TestEvents.connectivityChanged, false)
+        }.value
+        for _ in 0..<200 where heard.lines.count < 2 { try await Task.sleep(for: .milliseconds(5)) }
+
+        XCTAssertEqual(heard.lines, ["true", "false"])
+    }
+
+    /// What was raised reaches its handlers now, as the job a raise books does, and the jobs the handlers started.
+    private func deliver() {
+        RaisedEvents.shared.deliver()
+        stateUIRunJobs()
     }
 }
 

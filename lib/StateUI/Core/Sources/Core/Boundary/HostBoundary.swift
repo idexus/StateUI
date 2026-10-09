@@ -291,25 +291,22 @@
     }
 
     /// Raises an event of the application's - one no control raises - with
-    /// the values its contract declares, as the platform reported them: every
-    /// `HostEvents.on` subscription to the member hears them, each handler
-    /// started on `MainActor` at once, up to its first suspension. Typed at the
+    /// the values its contract declares, as the platform reported them, from
+    /// any thread: every `HostEvents.on` subscription to the member hears them
+    /// in a job of the UI thread's soon after, in the order raised. Typed at the
     /// call: the values are the member's, so a raise of another shape does not
-    /// compile.
+    /// compile. A raise nobody hears is an ordinary one.
     ///
     ///     HostBoundary.raise(GalleryContract.batteryChanged, level, charging)
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
     ///   - value: what it carries, in the order its contract declares.
-    /// - Returns: how many subscriptions heard it - a raise nobody hears is
-    ///   an ordinary zero.
-    @discardableResult
-    public static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
+    public nonisolated static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
-    ) -> Int {
-        HostEvents.dispatch(event.token.name, MemberValues.encode(repeat each value))
+    ) {
+        RaisedEvents.shared.raise(event.token.name, MemberValues.encode(repeat each value))
     }
 
     /// Tells the core what this host realizes - its `Registry.realization` -

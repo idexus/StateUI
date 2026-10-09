@@ -189,10 +189,9 @@ final class UIKitInteropTests: XCTestCase {
         let host = running()
         defer { host.finish() }
 
-        let heard = StateUIEvents.raise(InteropTestContract.spoke, "hello")
+        StateUIEvents.raise(InteropTestContract.spoke, "hello")
         host.settle { said(host) != "-" }
 
-        XCTAssertEqual(heard, 1)
         XCTAssertEqual(said(host), "heard hello")
     }
 

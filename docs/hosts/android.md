@@ -201,7 +201,7 @@ an aim at nothing; an act nobody registered is refused by name.
 ### An event without a control
 
 `StateUIEvents.raise` pushes an event of the application's that belongs to no
-element, on the UI thread; `StateUIEvents.raises` declares it before the host
+element, from any thread; `StateUIEvents.raises` declares it before the host
 starts, so a handler listening for one no source raises is told so. Its
 source is often Android's own - the Gallery's activity registers a receiver
 for the battery while it lives:

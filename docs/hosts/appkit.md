@@ -256,29 +256,24 @@ The Swift half is under
 element, such as a power or network change:
 
 ```swift quote
-@discardableResult
-@MainActor
-public static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
+public nonisolated static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
     _ event: ElementEvent<Owner, (repeat each Value)>,
-    _ value: repeat each Value) -> Int
+    _ value: repeat each Value)
 ```
 
 ```swift quote
 NotificationCenter.default.addObserver(
-    forName: .NSProcessInfoPowerStateDidChange, object: nil, queue: .main
+    forName: .NSProcessInfoPowerStateDidChange, object: nil, queue: nil
 ) { _ in
-    MainActor.assumeIsolated {
-        StateUIEvents.raise(
-            NotesContract.lowPowerChanged, ProcessInfo.processInfo.isLowPowerModeEnabled)
-    }
+    StateUIEvents.raise(
+        NotesContract.lowPowerChanged, ProcessInfo.processInfo.isLowPowerModeEnabled)
 }
 ```
 
-`raise` is `@MainActor`: a source the platform reports on the main thread
-calls it where it reports, and one reporting elsewhere hops there first. It
-answers how many subscriptions heard it: a raise nobody hears is
-an ordinary zero rather than a failure, so an application wires its sources
-unconditionally. The Swift side subscribes with `HostEvents.on`; see
+`raise` is one door in from any thread, as a post is: a source calls it where
+the platform reports, and the subscriptions hear it on the UI thread soon
+after, in the order raised. A raise nobody hears is an ordinary one rather
+than a failure, so an application wires its sources unconditionally. The Swift side subscribes with `HostEvents.on`; see
 [Host-extension events](../interface/interaction-and-actions.md#host-extension-events).
 
 The head declares each event it raises where it wires the source, before

@@ -241,10 +241,9 @@ final class AndroidInteropTests: XCTestCase {
             StateUIEvents.raises(InteropTestContract.spoke)
             let host = AndroidRenderer.running { Calling() }
 
-            let heard = StateUIEvents.raise(InteropTestContract.spoke, "hello")
+            StateUIEvents.raise(InteropTestContract.spoke, "hello")
             host.settle { host.views(AndroidTextView.self).first?.text != "-" }
 
-            XCTAssertEqual(heard, 1)
             XCTAssertEqual(host.views(AndroidTextView.self).map(\.text), ["heard hello"])
         }
     }

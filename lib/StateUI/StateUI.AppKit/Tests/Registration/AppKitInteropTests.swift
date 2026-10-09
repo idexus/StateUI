@@ -145,10 +145,9 @@ final class AppKitInteropTests: XCTestCase {
         defer { renderer.closeForTesting() }
         XCTAssertEqual(said(renderer), "-")
 
-        let heard = StateUIEvents.raise(InteropTestContract.spoke, "hello")
+        StateUIEvents.raise(InteropTestContract.spoke, "hello")
         settle(renderer) { said(renderer) != "-" }
 
-        XCTAssertEqual(heard, 1, "the page subscribed while it is in the tree")
         XCTAssertEqual(said(renderer), "heard hello")
     }
 

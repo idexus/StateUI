@@ -257,6 +257,7 @@ public enum HostEvents {
 
     /// Runs every handler subscribed to a name, each by its word on a repeat, and answers how many - the list as
     /// it stood when the raise came.
+    @discardableResult
     static func dispatch(_ name: String, _ payload: [PropValue]) -> Int {
         let handlers = subscriptions[Event(name)] ?? []
 

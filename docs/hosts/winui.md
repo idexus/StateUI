@@ -220,7 +220,7 @@ may call Win32 itself through `WinSDK` - the Gallery's clipboard does.
 ### An event without a control
 
 `StateUIEvents.raise` pushes an event of the application's that belongs to no
-element, on the UI thread; `StateUIEvents.raises` declares it before the host
+element, from any thread; `StateUIEvents.raises` declares it before the host
 runs, so a handler listening for one no source raises is told so.
 
 ```swift quote

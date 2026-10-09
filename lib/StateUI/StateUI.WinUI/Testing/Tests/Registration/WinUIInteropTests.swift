@@ -235,10 +235,9 @@ final class WinUIInteropTests: XCTestCase {
             let host = WinUIRenderer.running { Calling() }
             XCTAssertEqual(host.said, "-")
 
-            let heard = StateUIEvents.raise(InteropTestContract.spoke, "hello")
+            StateUIEvents.raise(InteropTestContract.spoke, "hello")
             host.settle { host.said != "-" }
 
-            XCTAssertEqual(heard, 1, "the page subscribed while it is in the tree")
             XCTAssertEqual(host.said, "heard hello")
         }
     }
