@@ -146,11 +146,13 @@ extension WinUIRenderer {
         }
     }
 
-    /// One bounded step: the thread's messages a moment - WinUI's frames among them - the jobs, and a turn.
+    /// One bounded step: the thread's messages a moment - WinUI's frames among them - the jobs, a turn, and the
+    /// frame a held clock waits for.
     func step() {
         WinUITestHost.pump(0.01)
         _ = runtime.core.runJobs()
         runtime.pump.turn()
+        if frameClock.held { frame() }
     }
 
     /// Every view of `type` in the tree, in order.
