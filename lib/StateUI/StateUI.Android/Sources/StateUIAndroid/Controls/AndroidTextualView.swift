@@ -57,7 +57,9 @@ class AndroidTextualView: AndroidView {
     /// density-independent ones where not; nil puts back the platform's, said in the same unit. The space between
     /// the letters is worked out again for it.
     func setFontSize(_ size: Double?) {
-        let points = size ?? Double(madeWith.size) / Self.pixels(perPoint: true)
+        // The platform's own size is read before the first size written over it.
+        let made = madeWith
+        let points = size ?? Double(made.size) / Self.pixels(perPoint: true)
         let unit = scales ? ViewConstants.scaledPixels : ViewConstants.independentPixels
         Java.call(reference, JavaAPI.setTextSize, .int(unit), .float(Float(points)))
         setLetterSpacing(letterSpacing)
