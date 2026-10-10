@@ -356,11 +356,16 @@ stretched SVG at its room's size, where the SVG would keep its own and leave
 bands: the relay hands WinUI the picture from memory with its proportions
 let go (`preserveAspectRatio="none"`).
 
-Every other SVG is handed to WinUI by its file's address. An SVG read from
-memory costs WinUI far more once another window shows it: the Gallery's
-pictures, read so in a second gallery window, would hold some five gigabytes
-of surfaces shared between the windows, where read from their files they add
-megabytes.
+Every SVG is read from memory, once for each file, the pixels it is drawn at
+and whether its proportions are let go, and that one source is shared by
+every picture, button and icon showing it in every window: a picture drawn
+at a new size takes the source for that size. Read by its file's address,
+WinUI draws an SVG short and cut under a turn with an uneven scale - a
+wheel's side cards - and read from memory once for every picture, the
+Gallery's pictures in a second window held some five gigabytes of surfaces;
+shared, a second window adds megabytes. The relay keeps each source weakly,
+with its file, which is how a picture's file is read back. WinUI's renderer
+draws no SVG text: a picture's words are outlines.
 
 ## A web view
 
