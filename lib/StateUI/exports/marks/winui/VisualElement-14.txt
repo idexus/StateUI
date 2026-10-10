@@ -7,7 +7,7 @@ CheckBox.isVisible: ✅
 CheckBox.pivotX: ✅
 ColorBox.style: ✅
 ColorBox.translationX: ✅
-DatePicker.automationExcludedWithChildren: ✅
+DatePicker.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 Ellipse.ignoresInput: ✅
 Ellipse.scale: ✅
 Grid.accessibilityHint: ✅

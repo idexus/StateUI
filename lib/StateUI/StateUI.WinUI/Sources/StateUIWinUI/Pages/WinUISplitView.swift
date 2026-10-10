@@ -5,11 +5,11 @@
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
 
-/// A SplitView: the sidebar page in WinUI's own navigation pane - beside the detail page where the window is wide,
-/// over it and closed by a click beside it where it is narrow - which WinUI places, as it places any Windows app's.
-/// Whether the sidebar shows is StateUI's binding, which the window's chrome toggles and which follows what WinUI
-/// shows. The host's one adaptation is that a window wide enough for both panes opens with the sidebar shown; after
-/// that, the user and the application decide.
+/// A SplitView: the sidebar page in WinUI's own split pane - beside the detail page where the window is wide, over it
+/// and closed by a click beside it where it is narrow, by the host layer's rule (`SidebarAdaptation`). Whether the
+/// sidebar shows is StateUI's binding, which the window's chrome toggles and which follows what WinUI shows. The
+/// host's one adaptation is that a window wide enough for both panes opens with the sidebar shown; after that, the
+/// user and the application decide - but a sidebar beside the detail closes as the window narrows it over.
 /// Design: docs/design/platforms/winui/pages.md#a-split-view
 @MainActor
 final class WinUISplitView: WinUILayoutView {
@@ -20,14 +20,17 @@ final class WinUISplitView: WinUILayoutView {
     /// the window's room changing.
     var onPresentationChanged: ((Bool) -> Void)?
 
-    /// WinUI's navigation view, whose pane is the sidebar.
+    /// WinUI's split view, whose pane is the sidebar.
     let sidebar = WinUISidebarView()
+
+    /// Whether the sidebar stands beside the detail.
+    private var beside = false
 
     /// The sidebar page and the detail page, as the tree gives them, and the row across the detail.
     private var pages: [WinUILayoutItem] = []
     private(set) weak var detailRow: WinUIView?
 
-    /// The size WinUI's navigation view was last arranged at, which it is measured at too; and what it last asked.
+    /// The size WinUI's split view was last arranged at, which it is measured at too; and what it last asked.
     private var arranged: LayoutSize?
     private var asked = LayoutSize.zero
     private var adaptation = SidebarAdaptation()
@@ -51,7 +54,7 @@ final class WinUISplitView: WinUILayoutView {
         setChildren([sidebar])
     }
 
-    /// The pages go in WinUI's navigation view, which places them; the panel holds it alone.
+    /// The pages go in WinUI's split view, which places them; the panel holds it alone.
     @discardableResult
     override func setItems(_ items: [WinUILayoutItem]) -> Bool {
         guard items.count != pages.count || !zip(items, pages).allSatisfy({ $0.view === $1.view }) else { return false }
@@ -82,12 +85,12 @@ final class WinUISplitView: WinUILayoutView {
         configure()
     }
 
-    /// What WinUI's navigation view asked, never its pages' own sizes: WinUI measures them in the room it gives them.
+    /// What WinUI's split view asked, never its pages' own sizes: WinUI measures them in the room it gives them.
     override func contentSize(width: Double?) -> LayoutSize {
         asked
     }
 
-    /// Measures WinUI's navigation view at the size it was last arranged at, the one its pages are laid out in.
+    /// Measures WinUI's split view at the size it was last arranged at, the one its pages are laid out in.
     /// Design: docs/design/platforms/winui/pages.md#a-native-arrangement
     override func measure(width: Double, height: Double) -> LayoutSize {
         let size = arranged ?? LayoutSize(width: width.isFinite ? width : 0, height: height.isFinite ? height : 0)
@@ -101,23 +104,32 @@ final class WinUISplitView: WinUILayoutView {
             arranged = size
             asked = sidebar.measure(width: size.width, height: size.height)
         }
-        adaptToFirstRoom(width: bounds.width)
+        adaptToRoom(width: bounds.width)
         sidebar.layout(bounds)
     }
 
-    /// The host's one adaptation: a window wide enough for both panes opens with its sidebar shown, and says so.
-    private func adaptToFirstRoom(width: Double) {
-        guard adaptation.room(width, breakpoint: WinUISidebarView.expandsAt, shown: isPresented) else { return }
+    /// Places the sidebar for the room by the host layer's rule: beside the detail or over it - one beside it closing
+    /// as the window narrows it over, said as the user's - and a window wide enough for both panes first opening with
+    /// its sidebar shown.
+    private func adaptToRoom(width: Double) {
+        guard width > 0 else { return }
+        let place = adaptation.place(width, breakpoint: WinUISidebarView.expandsAt, shown: isPresented)
+        let opens = adaptation.room(width, breakpoint: WinUISidebarView.expandsAt, shown: isPresented)
+        guard place.beside != beside || place.closes || opens else { return }
 
-        present(true)
-        onPresentationChanged?(true)
+        beside = place.beside
+        if place.closes || opens {
+            isPresented = opens
+            onPresentationChanged?(opens)
+        }
+        configure()
     }
 
     private func configure() {
         ProgramWrite.perform {
             sidebar.set(
                 sidebar: pages.first?.view, detail: pages.dropFirst().first?.view, row: detailRow,
-                open: isPresented)
+                open: isPresented, beside: beside)
         }
         paintPane()
     }
@@ -145,7 +157,7 @@ final class WinUISplitView: WinUILayoutView {
     }
 }
 
-/// A ground of WinUI's navigation pane, as the relay takes it: WinUI's own (0), a colour (1), or the in-app acrylic
+/// A ground of WinUI's split pane, as the relay takes it: WinUI's own (0), a colour (1), or the in-app acrylic
 /// (2) - a blur at its thickness, in its colour, the tint over the theme's.
 /// Design: docs/design/platforms/winui/pages.md#a-split-view
 struct PaneGround: Equatable {

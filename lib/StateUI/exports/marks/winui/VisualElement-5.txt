@@ -45,7 +45,7 @@ Rectangle.isEnabled: does not apply - read isEnabled of Rectangle - WinUI keeps 
 Rectangle.rotation: ✅
 ScrollView.translationY: ✅
 ScrollView.zIndex: ✅
-SearchField.automationExcludedWithChildren: ✅
+SearchField.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 Slider.ignoresInput: ✅
 Slider.scale: ✅
 Stepper.accessibilityHeading: ✅

@@ -1,5 +1,5 @@
 # revision 8.1
-ActivityIndicator.automationExcludedWithChildren: ✅
+ActivityIndicator.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 Button.frameChanged: ✅
 Button.maximumHeight: ✅
 Button.maximumWidth: ✅

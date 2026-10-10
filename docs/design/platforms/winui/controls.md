@@ -203,9 +203,12 @@ Whether it is met at all is its accessibility view: an element hidden is
 it; an element that says it is not hidden is `Content`; one that says
 nothing keeps the view its control has. An element left out with its
 children is `Raw`, and a layout so left out answers assistive technology with
-no children at all, its panel's automation peer holding them back. A control
-needs nothing more: what its template draws - a button's words - WinUI
-already keeps out of what is read.
+no children at all, its panel's automation peer holding them back. WinUI has
+no property that leaves out a subtree, and the host reaches into no
+template's parts: a control left out is left out alone. What most templates
+draw - a button's words - WinUI already keeps out of what is read; the parts
+an activity ring, a stepper, a search box and a day's or a time's picker
+draw stay met, `☑️` in the matrix.
 
 Assistive technology meets an element only through its automation peer, and
 WinUI gives a shape, a colour box and a canvas none. A shape and a colour box
@@ -213,11 +216,7 @@ stand in a figure of the relay's, and a canvas is a panel of the relay's;
 each answers with the figure's peer - an image, pressed as a tap while the
 view listens for taps - met by itself only while it has a name or says it is
 met, so a decoration says nothing to a screen reader. A menu's item and a
-toolbar's carry the element's identifier as their automation id. A control
-left out with its children leaves out with it the parts its template draws -
-a thumb, a field, a button - now and as it draws them anew, and each comes
-back with the view it had; a layout holds its children back through its
-panel's peer.
+toolbar's carry the element's identifier as their automation id.
 
 ## A slider in steps
 

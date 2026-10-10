@@ -58,7 +58,7 @@ TextField.focus: ✅
 TextField.isFocusedChanged: ✅
 TextField.scaleY: ✅
 TextField.unfocus: ✅
-TimePicker.automationExcludedWithChildren: ✅
+TimePicker.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 VStack.ignoresInput: ✅
 VStack.scale: ✅
 WebView.style: ✅

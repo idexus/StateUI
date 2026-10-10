@@ -816,21 +816,20 @@ void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const
 int32_t stateui_winui_title_bar_words(StateUIObjectRef bar);
 
 /// What a test reads: the room a title bar keeps at its trailing edge, and the room the window's own buttons there
-/// take, both in DIPs; -1 kept where the bar stands in no window.
-void stateui_winui_title_bar_caption_room(StateUIObjectRef bar, double *kept, double *room);
+/// take, both in DIPs - -1 kept where the bar stands in no window - and how many of its two padding columns the
+/// relay found by name.
+void stateui_winui_title_bar_caption_room(StateUIObjectRef bar, double *kept, double *room, int32_t *columns);
 
 /// Stands `view` in the title bar's middle, in the title's place; null takes it away.
 void stateui_winui_title_bar_set_title_view(StateUIObjectRef bar, StateUIObjectRef view);
 
-/// A split view: WinUI's NavigationView, the sidebar in its pane as wide as WinUI opens it - beside the detail from
-/// `expandsAt` DIPs, over it and closed by a click beside it below - with none of the view's own buttons, which the
-/// window's chrome carries; `row` stands across the top of the detail.
-StateUIObjectRef stateui_winui_split_make(int64_t view, double expandsAt);
+/// A split view: WinUI's SplitView, the sidebar in its pane as wide as WinUI opens it - `beside` the detail, else
+/// over it and closed by a click beside it - the detail on a card; `row` stands across the top of the detail.
+StateUIObjectRef stateui_winui_split_make(int64_t view);
 void stateui_winui_split_set(StateUIObjectRef split, StateUIObjectRef pane, StateUIObjectRef content,
-                             StateUIObjectRef row, bool open);
+                             StateUIObjectRef row, bool open, bool beside);
 
-/// Stands a split view's pane on a ground for each place: beside the detail (the expanded pane) and over it (the
-/// overlay pane). A ground's kind is 0 for WinUI's own, 1 for the colour `argb`, 2 for the in-app acrylic in the
+/// Stands a split view's pane on a ground for each place: beside the detail and over it. A ground's kind is 0 for WinUI's own, 1 for the colour `argb`, 2 for the in-app acrylic in the
 /// colour `argb`, its luminosity hiding `opacity` of what is behind it and its tint `tintOpacity`.
 void stateui_winui_split_set_pane_grounds(StateUIObjectRef split, int32_t besideKind, uint32_t besideArgb,
                                           float besideOpacity, float besideTintOpacity, int32_t overKind,

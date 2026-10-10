@@ -65,7 +65,10 @@ DIPs (microsoft-ui-xaml #10344): at 200% the actions stand a caption's width
 short of the bar's end. The relay caps each column at the inset over the
 window's scale, whenever the bar is loaded or changes size; a column WinUI
 sizes right stays as it is. The drag column WinUI keeps beside the buttons
-stays too.
+stays too. It is the one template part the host reaches into, as a true
+defect earns: the columns are found by the names WinUI's template gives them
+(`LeftPaddingColumn`, `RightPaddingColumn`), a host test fails where they are
+not, and the cap goes once #10344 ships.
 
 The title view's place is a content control, which Tab stops at by default
 though it shows nothing of its own: it is no stop, so Tab walks the chrome's
@@ -87,64 +90,60 @@ pointer over everything the window shows.
 
 ## A split view
 
-A split view's sidebar stands in WinUI's `NavigationView` pane, the detail in
-its content: WinUI decides, as for any Windows application, whether the pane
-stands beside the detail - from 1008 DIPs, where its navigation pane expands -
-or opens over it, closed by a click beside it. The view shows none of its own
-buttons, which the window's chrome carries, and no compact rail: a sidebar is
-a page, with no icons to stand in one. The pane's own content stands, in
-WinUI's template, in a row sized to what it holds, however tall - a sidebar's
-scroller would hold all its rows and never scroll - so once the view is
-loaded that row takes the pane's room, and the row of the items the view
-holds none of takes only theirs. The row exists only once WinUI has measured
-the view, so the sidebar has been laid out in it by then; everything in the
-pane is measured again, or a layout inside keeps the places that first layout
-gave it. A closed pane
-beside the detail stands there at no width, where the keyboard's Tab and
-Narrator would still reach what it holds - a sign-out button among them - so
-the sidebar is collapsed while its pane is closed: shown as the pane starts to
-open, collapsed once a pane over the detail has closed, and at once beside
-it, where WinUI tells no closing.
+A split view's sidebar stands in WinUI's `SplitView` pane, the detail in its
+content: beside the detail from 1008 DIPs, where a Windows application's
+navigation pane expands (`Inline`), over it below, closed by a click beside
+it (`Overlay`). `SplitView` places by no width of itself, so the host places
+it by the host layer's rule (`SidebarAdaptation.place`), and a sidebar beside
+the detail closes as the window narrows it over, as WinUI's own navigation
+panes do. The pane holds the sidebar page at its whole height, so a sidebar's
+scroller scrolls and a footer stands at the pane's foot. The view shows none
+of its own buttons, which the window's chrome carries. A closed pane would
+keep what it holds where the keyboard's Tab and Narrator still reach it - a
+sign-out button among them - so the sidebar is collapsed while its pane is
+closed: shown as the pane starts to open, collapsed once it has closed, and
+at once beside the detail.
 
 Whether the sidebar shows is StateUI's binding, which follows what WinUI
-shows: the pane opening or closing of WinUI's accord - a click beside it, the
-window's room - reaches the binding. The host's one adaptation is that a
-window wide enough for both panes opens with the sidebar shown; after that,
-the user and the application decide. The window learns its room inside a
-layout pass, so the binding hears it in the turn after it.
+shows: the pane closing of WinUI's accord - a click beside it, the window's
+room - reaches the binding. The host's one adaptation is that a window wide
+enough for both panes opens with the sidebar shown; after that, the user and
+the application decide. The window learns its room inside a layout pass, so
+the binding hears it in the turn after it.
 
-The navigation view draws a border round itself and keeps a margin above and
-below the page in its pane - a line and a band of another tone between the
-window's bar and the sidebar - so its own resources take the border away and
-the margin above and below the page (`NavigationViewBorderThickness` 0,
-`NavigationViewPaneContentGridMargin` -1,0,0,0): the sidebar page fills its
-pane from the top. The rows of the pane's own items
-beneath the page still show the window's backdrop where nothing paints them,
-so the pane stands on a ground of its own for each place ([a sidebar's
-material](../../host/pages.md#a-sidebars-material)), written into the
-navigation view's own resources: `NavigationViewExpandedPaneBackground`
-beside the detail, `NavigationViewDefaultPaneBackground` over it. The ground
-is the split view's material for that place - a colour, or a blur as WinUI's
+The detail stands on a card, as a Windows application's content stands
+beside its navigation pane: WinUI's layer under it and its edge, by the
+theme resources that card is named by (`NavigationViewContentBackground`,
+`NavigationViewContentGridBorderBrush`), which a window writing its
+background clears ([a window's backdrop](runtime.md#a-windows-backdrop)). Beside the sidebar the edge runs
+along the top and the pane's side, its corner rounded where they meet; under
+a pane over the detail it runs along the top alone.
+
+The pane stands on a ground of its own for each place ([a sidebar's
+material](../../host/pages.md#a-sidebars-material)), its `PaneBackground`:
+the split view's material for that place - a colour, or a blur as WinUI's
 in-app acrylic in its colour, its luminosity and tint by its thickness as the
 window's acrylic ([a window's backdrop](runtime.md#a-windows-backdrop)) -
-else the sidebar page's background, else WinUI's own; it is written again as
-either changes. WinUI has no glass: glass is the acrylic at its fallback
-thickness.
+else the sidebar page's background, else the brush WinUI's theme gives a
+navigation pane there (`NavigationViewExpandedPaneBackground` beside,
+`NavigationViewDefaultPaneBackground` over), in the theme the split stands
+in and again as it turns. WinUI has no glass: glass is the acrylic at its
+fallback thickness.
 
 ## A native arrangement
 
-WinUI's navigation view lays its pages out in the room it is arranged in, and
-a page it places is measured by it at that room. So the host measures the
-navigation view at the size it last arranged it at - in the first pass at
-the room offered - and a new room measures it again at the new size before it
-is arranged there; the second pass then asks for what the first gave, and the
+WinUI's split view lays its pages out in the room it is arranged in, and a
+page it places is measured by it at that room. So the host measures the
+split view at the size it last arranged it at - in the first pass at the room
+offered - and a new room measures it again at the new size before it is
+arranged there; the second pass then asks for what the first gave, and the
 layout settles ([no room asked](layout.md#no-room-asked)).
 
-The split view answers WinUI with what the navigation view asked and never
-measures its pages itself. WinUI arranges an element at no less than it was
-last measured, so a detail page measured at the split's whole width would
-keep that width beside an open pane and run past the window's edge by the
-pane's width.
+The split view answers WinUI with what WinUI's view asked and never measures
+its pages itself. WinUI arranges an element at no less than it was last
+measured, so a detail page measured at the split's whole width would keep
+that width beside an open pane and run past the window's edge by the pane's
+width.
 
 ## Tabs
 
@@ -168,7 +167,7 @@ the chrome follows at once.
 
 A page hears its phases as the host layer tells them ([a page's
 phases](../../host/pages.md#a-pages-phases)); WinUI supplies the tab the user
-chose and whether the navigation view's pane shows, which the layer reads to
+chose and whether the split view's pane shows, which the layer reads to
 know what an arrangement shows.
 
 ## The modal stack

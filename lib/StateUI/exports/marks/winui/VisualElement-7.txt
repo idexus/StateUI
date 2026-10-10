@@ -48,7 +48,7 @@ Slider.focus: ✅
 Slider.isFocusedChanged: ✅
 Slider.scaleY: ✅
 Slider.unfocus: ✅
-Stepper.automationExcludedWithChildren: ✅
+Stepper.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 Switch.ignoresInput: ✅
 Switch.scale: ✅
 Text.accessibilityHeading: ✅

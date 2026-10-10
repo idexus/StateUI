@@ -213,6 +213,22 @@ final class PagesTests: XCTestCase {
         XCTAssertFalse(narrow.room(500, breakpoint: 700, shown: false))
     }
 
+    /// A sidebar stands beside the detail from the breakpoint and over it below; one shown beside the detail closes
+    /// as the window narrows it over, and nothing opens it as the window widens.
+    func testASidebarBesideTheDetailClosesAsTheWindowNarrowsItOver() {
+        var adaptation = SidebarAdaptation()
+        XCTAssertEqual(adaptation.place(900, breakpoint: 700, shown: true).beside, true)
+        let narrowed = adaptation.place(600, breakpoint: 700, shown: true)
+        XCTAssertFalse(narrowed.beside)
+        XCTAssertTrue(narrowed.closes, "beside, then over")
+        XCTAssertFalse(adaptation.place(500, breakpoint: 700, shown: true).closes, "over already: the user's to close")
+        XCTAssertFalse(adaptation.place(900, breakpoint: 700, shown: false).closes)
+        XCTAssertFalse(adaptation.place(600, breakpoint: 700, shown: false).closes, "a hidden one has nothing to close")
+
+        var first = SidebarAdaptation()
+        XCTAssertFalse(first.place(600, breakpoint: 700, shown: true).closes, "placed over from the start")
+    }
+
     /// An action's words stand on the bar beside its picture only where it says so, and always where it has none.
     func testAnActionShowsItsWordsBesideItsPictureWhereItSaysSo() throws {
         let runtime = runtime(node("page", .page, children: [
