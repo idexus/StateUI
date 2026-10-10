@@ -638,7 +638,7 @@ final class GateTests: XCTestCase {
         let before = HostBoundary.tally.runs
         var started = 0
         var token: Token? = Token()
-        weak var kept = token
+        weak let kept = token
         let (renders, id) = button(gate: .waitForPrevious) { [token] in
             _ = token
             started += 1
