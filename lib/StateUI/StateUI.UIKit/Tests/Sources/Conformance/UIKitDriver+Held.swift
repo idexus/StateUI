@@ -29,6 +29,8 @@ extension UIKitDriver {
             throw DriverCannot("read a heading's level", because: "UIKit marks a heading, not its level")
         case .fontSize, .fontAttributes, .fontFamily, .textColor, .tracking, .lineHeight, .textDecorations:
             return try words(property, view)
+        case .isFontAutoScalingEnabled:
+            return try scales(view) { try words(.fontSize, view)?.number ?? 0 }.propValue
         case .background:
             if let held = try controlHolds(property, view) { return held }
             return view.backgroundColor.map { StandIns.material(painted: color($0)).propValue }
@@ -93,6 +95,21 @@ extension UIKitDriver {
             return decorations.propValue
         default: return nil
         }
+    }
+
+    /// Whether words grow with the user's text size: the `size` they stand at under the largest the user can choose,
+    /// beside the one they stand at now - the view's own text size given back after.
+    static func scales(_ view: UIView, size: () throws -> Double) throws -> Bool {
+        let standing = try size()
+        view.traitOverrides.preferredContentSizeCategory = .accessibilityExtraExtraExtraLarge
+        defer {
+            view.traitOverrides.remove(UITraitPreferredContentSizeCategory.self)
+            view.updateTraitsIfNeeded()
+            view.layoutIfNeeded()
+        }
+        view.updateTraitsIfNeeded()
+        view.layoutIfNeeded()
+        return try size() > standing
     }
 
     /// A colour UIKit holds, in sRGB, as StateUI's.

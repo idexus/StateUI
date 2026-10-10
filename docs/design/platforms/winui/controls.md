@@ -31,6 +31,13 @@ four thirds of it. The lines a label's break allows are the host layer's
 short only at their end, so a label cut at its start or in its middle is cut
 at its end.
 
+## The user's text size
+
+Words follow Windows' text size (`isFontAutoScalingEnabled`, on unless said)
+through `IsTextScaleFactorEnabled` on the text block or the control - and on
+a button's caption, which the host makes. A run of a text has no scaling of
+its own in WinUI: it scales with its text, `–` in the matrix.
+
 ## A button
 
 A button's words are a `TextBlock` of its content, which takes the button's

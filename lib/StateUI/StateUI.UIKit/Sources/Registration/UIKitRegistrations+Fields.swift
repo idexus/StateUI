@@ -64,8 +64,8 @@ extension UIKitRegistrations {
         TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
         TextInputContract.maximumLength,
         VisualElementContract.isEnabled, TextInputContract.isReadOnly, TextInputContract.isSpellCheckEnabled,
-        TextInputContract.isTextPredictionEnabled, TextInputContract.inputPurpose, FontElementContract.fontSize,
-        FontElementContract.fontAttributes, FontElementContract.fontFamily, TextStyleElementContract.textColor,
+        TextInputContract.isTextPredictionEnabled, TextInputContract.inputPurpose,
+    ] + TextMembers.lookMembers + [
         TextInputContract.placeholderColor, TextAlignmentElementContract.horizontalTextAlignment,
         TextInputContract.cursorPosition, TextInputContract.selectionLength,
     ]

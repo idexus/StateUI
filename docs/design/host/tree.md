@@ -178,15 +178,18 @@ window alike.
 A label's spans are runs of its words, put together once
 (`MountedElement.textRuns`): each span's words in its own case, else the
 label's, and its own look - size, weight and slant, colour, what stands
-behind it, its lines - in the contract's terms (`TextLook`). A run's look
-stands over its label's: where the run says nothing, the label's says it.
-A host turns the finished look into its toolkit's attributes and nothing
-more.
+behind it, its lines, whether it follows the user's text size - in the
+contract's terms (`TextLook`). A run's look stands over its label's: where the
+run says nothing, the label's says it, and a run scales only where neither it
+nor its label says no. A host turns the finished look into its toolkit's
+attributes and nothing more.
 
 An element showing words - a label, a button, a radio button - reads the
 text tiers the same way on every host (`TextMembers`): its words in their
-case where the words or the case changed, and the look its font and colour
-give them where one of those did. A break keeps the words on one line unless
+case where the words or the case changed, and the look its font, its
+scaling and its colour give them where one of those did - the members a look
+is made of named once (`TextMembers.lookMembers`), so a host's own list of a
+field's or a picker's members takes them whole. A break keeps the words on one line unless
 it wraps - word and character wrapping do - and wrapped words stand on as
 many lines as the tree allows, any number where it allows none or fewer than
 one (`LineBreak.lines`); a truncating break cuts them with an ellipsis. A

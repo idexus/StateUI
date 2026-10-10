@@ -9,7 +9,7 @@ extension WebElement {
     /// Hands a text its runs, a collection its changed entries and a page structure its pages; else a layout its
     /// children's views in order, each with what its place reads.
     func arrangeChildren() {
-        if let text = view as? WebTextView { return text.setRuns(element.textRuns) }
+        if let text = view as? WebTextView { return text.setRuns(element.textRuns, over: element.textLook) }
         if let items = view as? WebItemsView { return items.childrenChanged() }
         if arrangePages() { return }
         guard let layout = view as? WebLayoutView else { return }

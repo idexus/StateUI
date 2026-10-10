@@ -28,12 +28,11 @@ final class UIKitTextView: UILabel {
         didSet { if verticalAlignment != oldValue { setNeedsDisplay() } }
     }
 
-    private let madeFont = UIFont.preferredFont(forTextStyle: .body)
-
     init() {
         super.init(frame: .zero)
-        font = madeFont
+        font = .stateUI(TextLook())
         numberOfLines = 0
+        registerForTraitChanges([UITraitPreferredContentSizeCategory.self]) { (label: Self, _) in label.show() }
     }
 
     @available(*, unavailable)
@@ -82,11 +81,11 @@ final class UIKitTextView: UILabel {
 
     /// Writes the words - or the runs - with their look, then how the whole stands and breaks.
     private func show() {
-        let standing = look.attributes(standing: madeFont, color: .label)
+        let standing = look.attributes(color: .label, in: traitCollection)
         let shown = NSMutableAttributedString()
         for run in runs ?? [TextRun(text: words, look: TextLook())] {
             shown.append(NSAttributedString(
-                string: run.text, attributes: run.look.over(look).attributes(standing: madeFont, color: .label)))
+                string: run.text, attributes: run.look.over(look).attributes(color: .label, in: traitCollection)))
         }
         attributedText = shown.length > 0 ? shown : NSAttributedString(string: "", attributes: standing)
         textAlignment = switch horizontal {

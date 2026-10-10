@@ -41,6 +41,7 @@ extension WinUIRegistrations {
             } else {
                 view.setFont(size: look.size, attributes: look.attributes, family: look.family)
             }
+            view.setTextScales(look.scales)
             view.setForeground(look.color)
         }
         if values.changed(PaddingElementContract.padding) {

@@ -32,6 +32,7 @@ android WebView 3
 winui WebView 2
 winui Button 2
 MenuItemElement 2
+FontElement 2
 winui MenuItemElement 2
 winui PageElement 2
 DatePicker 2

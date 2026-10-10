@@ -83,9 +83,10 @@ struct TextSample: SampleContent, ExampleContent {
 
             Text("The last two are both 16 until the system's text-size setting moves - "
                 + "iOS ▸ Settings ▸ Display & Brightness ▸ Text Size, Android ▸ Settings ▸ "
-                + "Display ▸ Font size. Then the first grows with it and the second stays "
-                + "where it is; where the platform offers no such setting, the two never "
-                + "differ.")
+                + "Display ▸ Font size, Windows ▸ Settings ▸ Accessibility ▸ Text size, "
+                + "GNOME ▸ Settings ▸ Accessibility ▸ Large Text, or the browser's font size. "
+                + "Then the first grows with it and the second stays where it is; a Mac "
+                + "offers no such setting, so there the two never differ.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

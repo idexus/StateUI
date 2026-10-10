@@ -113,6 +113,7 @@ enum GTKRealization {
         .complete("TextSpan", "fontAttributes"),
         .complete("TextSpan", "fontFamily"),
         .complete("TextSpan", "fontSize"),
+        .complete("TextSpan", "isFontAutoScalingEnabled"),
         .complete("TextSpan", "text"),
         .complete("TextSpan", "textCase"),
         .complete("TextSpan", "textColor"),

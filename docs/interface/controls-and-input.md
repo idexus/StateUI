@@ -153,7 +153,9 @@ and the tier pages it links list each with its mark per host:
   letters; those in a font take `fontSize`, `fontFamily` - the name the
   application registered the font under - `fontAttributes`, which is `.bold`,
   `.italic`, `[.bold, .italic]` or `.none`, and `isFontAutoScalingEnabled`,
-  on unless said, which makes the text follow the user's text-size setting;
+  on unless said, which makes the text follow the user's text-size setting -
+  iOS's text size, Android's font size, Windows' text size, GNOME's text
+  scaling and the browser's font size; a Mac has none to follow;
 - aligned controls take `horizontalTextAlignment` and
   `verticalTextAlignment`: `.start`, `.center` or `.end`;
 - a label and a span take `textDecorations` - `.underline`, `.strikethrough`,

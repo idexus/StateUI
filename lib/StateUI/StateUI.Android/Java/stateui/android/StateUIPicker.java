@@ -37,6 +37,7 @@ final class StateUIPicker extends Spinner implements AdapterView.OnItemSelectedL
     private boolean open;
 
     private float textSize;
+    private int textUnit = TypedValue.COMPLEX_UNIT_SP;
     private int textColor;
     private Typeface typeface;
     private int gravity = Gravity.START | Gravity.CENTER_VERTICAL;
@@ -63,11 +64,13 @@ final class StateUIPicker extends Spinner implements AdapterView.OnItemSelectedL
     }
 
     /**
-     * The words' size in the points the user's font scale applies to - 0 for the theme's - their colour - 0 for the
-     * theme's - their face, and where they stand.
+     * The words' size in points - 0 for the theme's - and their unit, `TypedValue`'s scaled pixels where the user's
+     * font scale applies to them and its density-independent ones where not; their colour - 0 for the theme's -
+     * their face, and where they stand.
      */
-    void setLook(float size, int color, Typeface face, int alignment) {
+    void setLook(float size, int unit, int color, Typeface face, int alignment) {
         textSize = size;
+        textUnit = unit;
         textColor = color;
         typeface = face;
         gravity = alignment | Gravity.CENTER_VERTICAL;
@@ -113,6 +116,9 @@ final class StateUIPicker extends Spinner implements AdapterView.OnItemSelectedL
     private final class Rows extends BaseAdapter {
         /** A row's words' colours and an open list's row height, as the theme made them. */
         private ColorStateList madeColors;
+
+        /** The theme's size of a row of each layout, in scaled points, read from the first one made. */
+        private final java.util.HashMap<Integer, Float> madeSizes = new java.util.HashMap<>();
         private int madeHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
 
         @Override
@@ -159,12 +165,17 @@ final class StateUIPicker extends Spinner implements AdapterView.OnItemSelectedL
             } else {
                 row = (TextView) LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
                 if (madeColors == null) madeColors = row.getTextColors();
+                if (!madeSizes.containsKey(layout)) {
+                    float one = TypedValue.applyDimension(
+                            TypedValue.COMPLEX_UNIT_SP, 1, row.getResources().getDisplayMetrics());
+                    madeSizes.put(layout, row.getTextSize() / one);
+                }
                 if (layout == android.R.layout.simple_spinner_dropdown_item && row.getLayoutParams() != null) {
                     madeHeight = row.getLayoutParams().height;
                 }
             }
             row.setText((String) getItem(position));
-            if (textSize > 0) row.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+            row.setTextSize(textUnit, textSize > 0 ? textSize : madeSizes.get(layout));
             row.setTextColor(textColor != 0 ? ColorStateList.valueOf(textColor) : madeColors);
             row.setTypeface(typeface);
             row.setGravity(gravity);

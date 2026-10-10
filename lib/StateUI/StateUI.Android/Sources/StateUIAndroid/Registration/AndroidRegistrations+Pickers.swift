@@ -26,10 +26,7 @@ extension AndroidRegistrations {
             picker.property(PickerContract.isOpen) { view, open in
                 if open == true { view.openList() }
             }
-            picker.applies([
-                FontElementContract.fontSize, FontElementContract.fontFamily, FontElementContract.fontAttributes,
-                TextStyleElementContract.textColor, TextAlignmentElementContract.horizontalTextAlignment,
-            ]) { view, values in
+            picker.applies(TextMembers.lookMembers + [TextAlignmentElementContract.horizontalTextAlignment]) { view, values in
                 view.setLook(
                     TextMembers.look(of: values),
                     alignment: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start)

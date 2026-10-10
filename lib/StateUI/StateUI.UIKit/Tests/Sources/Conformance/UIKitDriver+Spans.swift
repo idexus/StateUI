@@ -21,6 +21,12 @@ extension UIKitDriver {
         switch property {
         case .text: return (words.string as NSString).substring(with: range).propValue
         case .fontSize: return Double(font.pointSize).propValue
+        case .isFontAutoScalingEnabled:
+            return try Self.scales(label) {
+                let words = label.attributedText ?? NSAttributedString()
+                guard range.upperBound <= words.length else { throw DriverCannot(reading: property, of: span) }
+                return Double((words.attributes(at: range.location, effectiveRange: nil)[.font] as? UIFont ?? label.font!).pointSize)
+            }.propValue
         case .fontFamily: return Name(font.familyName).propValue
         case .fontAttributes:
             let traits = font.fontDescriptor.symbolicTraits

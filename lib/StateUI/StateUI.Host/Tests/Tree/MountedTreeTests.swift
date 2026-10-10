@@ -588,6 +588,7 @@ final class MountedTreeTests: XCTestCase {
         label.properties = [
             .fontSize: .number(15), .fontFamily: .name("Menlo"), .tracking: .number(2),
             .lineHeight: .number(1.2), .textDecorations: .enumeration(TextDecorations.underline.rawValue),
+            .isFontAutoScalingEnabled: .bool(false),
         ]
         tree.apply(label, complete: true)
 
@@ -597,6 +598,7 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(look?.letterSpacing, 2)
         XCTAssertEqual(look?.lineHeight, 1.2)
         XCTAssertEqual(look?.decorations, .underline)
+        XCTAssertEqual(look?.scales, false)
         XCTAssertEqual(tree.root?.textRuns, nil)
     }
 

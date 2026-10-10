@@ -43,6 +43,8 @@ enum AppKitRealization {
         .complete("VisualElement", "style"),
         .notPlanned("FontElement", "isFontAutoScalingEnabled",
                     reason: "macOS gives an application no text size of the user's to follow."),
+        .notPlanned("TextSpan", "isFontAutoScalingEnabled",
+                    reason: "macOS gives an application no text size of the user's to follow."),
 
         // MARK: Entries - a control's or a part's own, and where it differs from its tier
         .notPlanned("TextField", "submitLabel", reason: "A Mac has no keyboard on the screen whose return key says anything."),

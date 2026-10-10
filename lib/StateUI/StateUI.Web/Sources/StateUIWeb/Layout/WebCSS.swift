@@ -30,6 +30,11 @@ enum WebCSS {
     }
 
     /// A length in pixels; nil for none.
+    /// A size in points as the browser's text size counts it: a sixteenth of a rem each.
+    static func rems(_ value: Double) -> String {
+        number(max(0, value) / 16) + "rem"
+    }
+
     static func pixels(_ value: Double?) -> String? {
         value.map { number(max(0, $0)) + "px" }
     }
@@ -78,9 +83,11 @@ enum WebCSS {
         }
     }
 
-    /// A look's font and colour as CSS - what it leaves unsaid none, so the words take it from around them.
+    /// A look's font and colour as CSS - what it leaves unsaid none, so the words take it from around them. A size
+    /// stands in rems, which the browser's text size scales, where the words scale, and in pixels where not - the
+    /// page's own size held fixed where the look gives none.
     static func font(_ look: TextLook) -> [(String, String?)] {
-        [("font-size", pixels(look.size)),
+        [("font-size", look.scales ? look.size.map(rems) : pixels(look.size) ?? "var(--stateui-words-fixed)"),
          ("font-weight", look.attributesGiven ? (look.attributes.contains(.bold) ? "700" : "400") : nil),
          ("font-style", look.attributesGiven ? (look.attributes.contains(.italic) ? "italic" : "normal") : nil),
          ("font-family", look.family.map(string)),

@@ -24,14 +24,7 @@ extension WinUIRegistrations {
                     writeChosen: values.changed(PickerContract.selectedIndex), title: values[PickerContract.placeholder] ?? "")
             }
             picker.property(PickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
-            picker.applies([
-                FontElementContract.fontSize, FontElementContract.fontFamily, FontElementContract.fontAttributes,
-            ]) { view, values in
-                view.setFont(
-                    size: values[FontElementContract.fontSize], attributes: values[FontElementContract.fontAttributes],
-                    family: values[FontElementContract.fontFamily]?.text)
-            }
-            picker.property(TextStyleElementContract.textColor) { view, color in view.setForeground(color?.propValue) }
+            picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
             picker.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
                 view.setAlignment(alignment ?? .start)
             }

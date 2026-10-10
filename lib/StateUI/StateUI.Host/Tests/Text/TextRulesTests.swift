@@ -26,6 +26,11 @@ final class TextRulesTests: XCTestCase {
         XCTAssertNil(TextMembers.words(still))
         XCTAssertNil(TextMembers.look(still))
         XCTAssertEqual(TextMembers.look(of: still), look, "the whole look, changed or not")
+
+        let fixed = ElementValues<TextContract>(changed: [.isFontAutoScalingEnabled]) {
+            $0 == .isFontAutoScalingEnabled ? .bool(false) : held[$0]
+        }
+        XCTAssertEqual(TextMembers.look(fixed)?.scales, false, "the look where only its scaling changed")
     }
 
     /// A weight and a slant the tree gives - none of them included - are the tree's: a toolkit whose theme draws
@@ -43,6 +48,16 @@ final class TextRulesTests: XCTestCase {
         label.attributes = .bold
         XCTAssertEqual(run.over(label).attributes, .none, "a run given none stands regular over a bold label")
         XCTAssertEqual(TextLook().over(label).attributes, .bold, "a run given nothing takes its label's")
+    }
+
+    /// Words follow the user's text size unless the tree says not: a run scales only where neither it nor its label
+    /// says no.
+    func testWordsScaleWithTheUsersTextSizeUnlessTheTreeSaysNot() {
+        XCTAssertTrue(TextLook().scales, "on where nothing is said")
+        var fixed = TextLook()
+        fixed.scales = false
+        XCTAssertFalse(TextLook().over(fixed).scales, "a run over a label that does not scale")
+        XCTAssertFalse(fixed.over(TextLook()).scales, "a run that does not scale over a label that does")
     }
 
     /// A break that does not wrap keeps one line; wrapped words stand on the lines allowed, none where none are.

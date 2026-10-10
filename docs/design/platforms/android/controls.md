@@ -156,6 +156,17 @@ label wraps, to at most as many lines as it allows. A stated width, within
 the room its layout offers, is the width a view is measured at, so wrapped
 words are as tall as they will stand.
 
+## The user's text size
+
+Words follow the user's font scale (`isFontAutoScalingEnabled`, on unless
+said) in Android's own unit for it: a size stands in scaled pixels, and in
+density-independent ones where the words do not scale - the theme's own size
+said in the same unit where the tree gives none, so `getTextSizeUnit()` tells
+which. A run sized differently from its label is an `AbsoluteSizeSpan` in
+pixels where it scales and in density-independent points where not. A
+picker's rows take the unit too, at the theme's size of each row's layout
+where the tree gives none.
+
 ## A button's size
 
 A button is as big as its words and its padding. Android's theme gives every

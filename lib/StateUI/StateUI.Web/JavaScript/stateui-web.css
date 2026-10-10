@@ -7,6 +7,9 @@
 
 :root {
   color-scheme: light dark;
+  /* The words' own size: in rems, which the browser's text size scales, and the same held fixed. */
+  --stateui-words: 0.9375rem;
+  --stateui-words-fixed: 15px;
   --stateui-accent: light-dark(#4f46e5, #8b85ff);
   --stateui-surface: light-dark(#ffffff, #111216);
   --stateui-raised: light-dark(#f6f7f9, #191b21);
@@ -34,7 +37,7 @@ html, body { margin: 0; height: 100%; -webkit-text-size-adjust: 100%; text-size-
 body {
   background: var(--stateui-surface);
   color: var(--stateui-text);
-  font-size: 15px;
+  font-size: var(--stateui-words);
   line-height: 1.4;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;

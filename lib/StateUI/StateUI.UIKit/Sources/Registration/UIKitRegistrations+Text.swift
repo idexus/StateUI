@@ -15,8 +15,8 @@ extension UIKitRegistrations {
                 if let words = TextMembers.words(values) { view.setText(words) }
                 if let look = TextMembers.look(values) {
                     view.setLook { shown in
-                        (shown.size, shown.attributes, shown.family, shown.color) =
-                            (look.size, look.attributes, look.family, look.color)
+                        (shown.size, shown.attributes, shown.family, shown.color, shown.scales) =
+                            (look.size, look.attributes, look.family, look.color, look.scales)
                     }
                 }
                 if values.changed(PaddingElementContract.padding) {

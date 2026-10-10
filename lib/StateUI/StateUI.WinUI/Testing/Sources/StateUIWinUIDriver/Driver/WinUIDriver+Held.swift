@@ -208,6 +208,7 @@ extension WinUIDriver {
         case "textColor": return try Self.color(read(view, "foreground")).map { $0.propValue }
         case "fontSize": return Double(try read(view, "fontSize"))?.propValue
         case "fontFamily": return Name(try read(view, "fontFamily")).propValue
+        case "isFontAutoScalingEnabled": return (try read(view, "textScales") == "1").propValue
         case "fontAttributes":
             var attributes: FontAttributes = []
             if (Int(try read(view, "fontWeight")) ?? 400) >= 600 { attributes.insert(.bold) }

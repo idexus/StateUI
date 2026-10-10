@@ -28,6 +28,18 @@ class filling that box in its colour - a brush's first colour. A button's captio
 the `GtkLabel` the button shows it in, and takes the same look, font and
 colour, and the button its padding.
 
+## The user's text size
+
+Words follow GNOME's text scaling (`isFontAutoScalingEnabled`, on unless said),
+which writes the desktop's dots an inch (`gtk-xft-dpi`): a size stands in
+typographic points where the words scale - CSS `pt`, Pango's
+`pango_attr_size_new`, both measured against those dots - and in pixels where
+not, CSS `px` and `pango_attr_size_new_absolute`. A StateUI point is a pixel
+at 96 dots an inch, so 20 is 15 typographic points. Words that do not scale
+and are given no size stand at the desktop font's size before its scale
+(`GTKEnvironment.fontSize`). A CSS class setting `-gtk-dpi` on one widget
+changed nothing GTK 4.14 measures; the driver doubles `gtk-xft-dpi` itself.
+
 ## A button's box
 
 A button the tree gives a fill, an outline or a shape wears a class of the

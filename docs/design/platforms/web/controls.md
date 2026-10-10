@@ -34,6 +34,15 @@ line breaks. A font, a colour and the room around the words are CSS's
 `padding`; what the application leaves unsaid is the page's, and the page's
 font is the system's own.
 
+## The user's text size
+
+Words follow the browser's font size (`isFontAutoScalingEnabled`, on unless
+said) in rems: the page's own size is `--stateui-words` (0.9375rem), a size
+the tree gives a sixteenth of a rem a point, and words that do not scale
+stand in pixels - the page's size held fixed, `--stateui-words-fixed`, where
+the tree gives none. A run held fixed within words that scale holds its
+text's size.
+
 ## Runs of words
 
 A Text holding spans shows its runs in place of its own words, each a `<span>`

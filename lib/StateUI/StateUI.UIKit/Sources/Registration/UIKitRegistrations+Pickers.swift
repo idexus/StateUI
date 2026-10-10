@@ -24,10 +24,7 @@ extension UIKitRegistrations {
                     values[PickerContract.options] ?? [], chosen: values[PickerContract.selectedIndex] ?? -1,
                     writeChosen: values.changed(PickerContract.selectedIndex), title: values[PickerContract.placeholder])
             }
-            picker.applies([
-                FontElementContract.fontSize, FontElementContract.fontFamily, FontElementContract.fontAttributes,
-                TextStyleElementContract.textColor, TextAlignmentElementContract.horizontalTextAlignment,
-            ]) { view, values in
+            picker.applies(TextMembers.lookMembers + [TextAlignmentElementContract.horizontalTextAlignment]) { view, values in
                 view.setLook(
                     TextMembers.look(of: values),
                     alignment: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start)

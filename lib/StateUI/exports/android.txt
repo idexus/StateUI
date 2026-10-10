@@ -9,6 +9,7 @@ Button
   icon
   iconPosition
   iconSpacing
+  isFontAutoScalingEnabled
   lineBreak
   lineWidth
   padding
@@ -39,6 +40,7 @@ DatePicker
   fontFamily
   fontSize
   format
+  isFontAutoScalingEnabled
   isOpen
   maximumDate
   minimumDate
@@ -121,6 +123,7 @@ Picker
   fontFamily
   fontSize
   horizontalTextAlignment
+  isFontAutoScalingEnabled
   isOpen
   options
   placeholder
@@ -163,6 +166,7 @@ RadioButton
   fontAttributes
   fontFamily
   fontSize
+  isFontAutoScalingEnabled
   isOn
   padding
   text
@@ -200,6 +204,7 @@ SearchField
   fontSize
   horizontalTextAlignment
   inputPurpose
+  isFontAutoScalingEnabled
   isReadOnly
   isTextPredictionEnabled
   maximumLength
@@ -234,6 +239,7 @@ Text
   fontFamily
   fontSize
   horizontalTextAlignment
+  isFontAutoScalingEnabled
   lineBreak
   lineHeight
   maximumLines
@@ -252,6 +258,7 @@ TextEditor
   growsWithText
   horizontalTextAlignment
   inputPurpose
+  isFontAutoScalingEnabled
   isReadOnly
   isTextPredictionEnabled
   maximumLength
@@ -269,6 +276,7 @@ TextField
   fontSize
   horizontalTextAlignment
   inputPurpose
+  isFontAutoScalingEnabled
   isPassword
   isReadOnly
   isTextPredictionEnabled
@@ -287,6 +295,7 @@ TimePicker
   fontFamily
   fontSize
   format
+  isFontAutoScalingEnabled
   isOpen
   textColor
   time

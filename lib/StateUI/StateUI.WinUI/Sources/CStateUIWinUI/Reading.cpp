@@ -93,6 +93,9 @@ namespace {
         }
         if (what == "fontFamily") return narrow((text ? text.FontFamily() : control.FontFamily()).Source());
         if (what == "tracking") return number(text ? text.CharacterSpacing() : control.CharacterSpacing());
+        if (what == "textScales") {
+            return flag(text ? text.IsTextScaleFactorEnabled() : control.IsTextScaleFactorEnabled());
+        }
         if (what == "foreground") return colour(text ? text.Foreground() : control.Foreground());
         if (what == "padding") return sides(text ? text.Padding() : control.Padding());
         return std::nullopt;

@@ -60,10 +60,8 @@ extension WinUIRegistrations {
     /// many it holds, whether it takes them, and their font and colour.
     private static let wordMembers: [any ContractMember] = [
         TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
-        TextInputContract.maximumLength,
-        VisualElementContract.isEnabled, FontElementContract.fontSize, FontElementContract.fontAttributes,
-        FontElementContract.fontFamily, TextStyleElementContract.textColor,
-    ]
+        TextInputContract.maximumLength, VisualElementContract.isEnabled,
+    ] + TextMembers.lookMembers
 
     private static func applyWords<Realized: ElementContract>(_ view: WinUITextInputView, _ values: ElementValues<Realized>) {
         view.maximumLength = values[TextInputContract.maximumLength].flatMap { $0 > 0 ? $0 : nil }
@@ -76,15 +74,7 @@ extension WinUIRegistrations {
         if values.changed(VisualElementContract.isEnabled) {
             view.setEnabled(values[VisualElementContract.isEnabled] ?? true)
         }
-        if values.changed(FontElementContract.fontSize) || values.changed(FontElementContract.fontAttributes)
-            || values.changed(FontElementContract.fontFamily) {
-            view.setFont(
-                size: values[FontElementContract.fontSize], attributes: values[FontElementContract.fontAttributes],
-                family: values[FontElementContract.fontFamily]?.text)
-        }
-        if values.changed(TextStyleElementContract.textColor) {
-            view.setForeground(values[TextStyleElementContract.textColor]?.propValue)
-        }
+        if let look = TextMembers.look(values) { view.setLook(look) }
     }
 
     /// What a text box takes beyond: how it takes words, its words across it, its placeholder's colour, and the

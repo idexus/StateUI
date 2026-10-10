@@ -55,6 +55,17 @@ a colour or a brush - fills its whole box, that room included, painted
 before the words: they are the label's own drawing, which a layer laid over
 it would cover.
 
+## The user's text size
+
+Words follow the user's text size (`isFontAutoScalingEnabled`, on unless
+said) through `UIFontMetrics`: a size the tree gives, or the body's at the
+platform's own text size, is scaled for the view's traits, and a field and
+an editor carry `adjustsFontForContentSizeCategory`. A label builds its words
+again, and a button, a picker and a radio button update their configuration,
+as the user's text size changes. Words that do not scale stand at their size
+whatever the user chooses. A day's and a time's picker draws its words in
+UIKit's own font, which follows the user always - `–` in the matrix.
+
 ## A button
 
 A Button is UIKit's button, its configuration what the tree says: its words

@@ -103,7 +103,7 @@ TapSample.swift ecedf1892e5dde5c
 TaskSleepSample.swift d68048197213b7e5
 TextEditorSample.swift 9cc806f939101a0a
 TextFieldSample.swift 9131fe99152d28e6
-TextSample.swift 34fab4cec512bc4c
+TextSample.swift 7f0d37a451d538af
 TextSpanSample.swift bdee76fb3bcc426a
 TickerSample.swift 9db88d6499562fcf
 TimePickerSample.swift dd3594dfb194e764

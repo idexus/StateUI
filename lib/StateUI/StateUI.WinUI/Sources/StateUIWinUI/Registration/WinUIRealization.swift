@@ -102,6 +102,8 @@ enum WinUIRealization {
         .complete("TextSpan", "fontAttributes"),
         .complete("TextSpan", "fontFamily"),
         .complete("TextSpan", "fontSize"),
+        .notPlanned("TextSpan", "isFontAutoScalingEnabled",
+                    reason: "WinUI scales a text's runs with the text: a run has no text scaling of its own."),
         .complete("TextSpan", "text"),
         .complete("TextSpan", "textCase"),
         .complete("TextSpan", "textColor"),

@@ -19,10 +19,7 @@ extension WebRegistrations {
                     values[PickerContract.options] ?? [], chosen: values[PickerContract.selectedIndex] ?? -1,
                     writeChosen: values.changed(PickerContract.selectedIndex), title: values[PickerContract.placeholder])
             }
-            picker.applies([
-                FontElementContract.fontSize, FontElementContract.fontAttributes, FontElementContract.fontFamily,
-                TextStyleElementContract.textColor,
-            ]) { view, values in view.setLook(TextMembers.look(of: values)) }
+            picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.raises(PickerContract.selectedIndexChanged)
         })

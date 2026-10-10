@@ -82,6 +82,7 @@ enum UIKitRealization {
         .complete("TextSpan", "fontAttributes"),
         .complete("TextSpan", "fontFamily"),
         .complete("TextSpan", "fontSize"),
+        .complete("TextSpan", "isFontAutoScalingEnabled"),
         .complete("TextSpan", "text"),
         .complete("TextSpan", "textCase"),
         .complete("TextSpan", "textColor"),
@@ -129,7 +130,10 @@ enum UIKitRealization {
     private static let pickerWords: [HostRecord] = ["DatePicker", "TimePicker"].flatMap { picker in
         ["fontAttributes", "fontFamily", "fontSize", "textColor"].map { member in
             .notPlanned(picker, member, reason: "UIKit's date picker draws its words in its own font and colour: it takes neither.")
-        }
+        } + [
+            .notPlanned(picker, "isFontAutoScalingEnabled",
+                        reason: "UIKit's date picker draws its words in its own font, which follows the user's text size always."),
+        ]
     }
 
     /// What UIKit's registry says it realizes: the export's content.
