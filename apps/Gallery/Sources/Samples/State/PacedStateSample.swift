@@ -18,9 +18,9 @@ struct PacedStateSample: SampleContent, ExampleContent {
     var body: some View {
         // One walked value, shown three ways.
         VStack {
-            // A CONVERTER. The words are worked out on the display's frames
-            // and the host wears them, so nothing here is described again -
-            // this count stands still for the whole walk.
+            // A CONVERTER. The words are worked out from the destination as
+            // it is written, and the host wears them, so nothing here is
+            // described again - this count stands still for the whole walk.
             VStack {
                 DebugInfoLabel()
 

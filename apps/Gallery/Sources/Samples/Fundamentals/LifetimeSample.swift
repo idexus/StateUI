@@ -84,8 +84,9 @@ struct LifetimeSample: SampleContent, ExampleContent {
 
             Text("Tap the card before it goes: what it says as it is destroyed is its "
                 + "own count, because its state still answers - the place to save what it "
-                + "holds. Both are on every view and control, and both run after the "
-                + "render that made the change.")
+                + "holds. Both are on every view and control, and both run in the render "
+                + "that made the change, once it has walked the tree and before its message "
+                + "leaves - so what they write goes with it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
@@ -112,13 +113,13 @@ private struct LifetimeCard: View {
             .padding(horizontal: 32, vertical: 36)
             .horizontalAlignment(.center)
             .onClicked { taps += 1 }
-            // Once, after the render that brings the card in - its
-            // state and its environment are there to use.
+            // Once, as the render that brings the card in has walked the
+            // tree - its state and its environment are there to use.
             .onCreated {
                 log.append("\(log.count + 1) · card \(number) created")
             }
-            // Once, after the render that leaves it out - and its
-            // state still answers, which is what saving needs.
+            // Once, as the render that leaves it out has walked the tree -
+            // and its state still answers, which is what saving needs.
             .onDestroying {
                 log.append("\(log.count + 1) · card \(number) destroying, tapped \(taps)")
             }

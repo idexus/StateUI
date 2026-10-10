@@ -46,9 +46,9 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
                 button("Colour") {
                     try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(500)).arrived()
 
-                    // The caption sits on the brand field inside the panel
+                    // The caption sits on the violet field inside the panel
                     // rather than on the panel itself, so what it goes to is
-                    // the colour that reads on the brand.
+                    // white, the colour that reads on that field.
                     try await $captionColor.journey.move(to: AppColors.white, .eased(500)).arrived()
                 }
 

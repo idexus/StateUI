@@ -13,7 +13,7 @@ import WASILibc
 // listing: end
 import StateUI
 
-/// A layout of the author's own: one line of arithmetic says where each card
+/// A layout of the author's own: six lines of arithmetic say where each card
 /// goes and how it is turned, and the host puts every card there on its own
 /// frames.
 struct PlacedSample: SampleContent, ExampleContent {
@@ -55,15 +55,16 @@ struct PlacedSample: SampleContent, ExampleContent {
     /// both handed on, so neither describes anything when it moves. The
     /// arithmetic below reads both and the host runs it on its own frames.
     /// The offset is walked: a button's write glides, and `value` is where
-    /// the scroller IS, frame by frame. It starts on the middle card, where a
-    /// scroller - the first, or one built afresh - stands once laid out.
+    /// the scroller IS, frame by frame. It starts on the middle card; a
+    /// scroller - the first, or one built afresh - stands where this value
+    /// says once it is laid out.
     @State private var scrolled = Point(Double(PlacedSample.cards.count / 2) * PlacedSample.reach, 0)
 
     @State private var dragged = 0.0
 
-    /// WHERE EVERY CARD GOES, and where every dot under them goes - one run of
-    /// placements each, written by the engines below and worn by the host on
-    /// its own frames. Nothing about a card's place is described.
+    /// WHERE EVERY CARD GOES, and where every dot at the board's foot goes -
+    /// one run of placements each, written by the engines below and worn by
+    /// the host on its own frames. Nothing about a card's place is described.
     @State private var ring = PlacedRun()
 
     @State private var dots = PlacedRun()
@@ -272,8 +273,9 @@ struct PlacedSample: SampleContent, ExampleContent {
                 .verticalAlignment(.end)
             }
             // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL
-            // the card covers it and spills past its edges, so the grid
-            // holding it - a layout, with edges to cut at - clips it.
+            // the card is cut at its own room - the Web's reaches two points
+            // past it - so the grid holding it - a layout, with edges to cut
+            // at - cuts it there.
             .clipsContent(true)
         }
         .style(.card)
@@ -316,7 +318,7 @@ struct PlacedSample: SampleContent, ExampleContent {
             zIndex: 1000 - Int(min(abs(step), 99) * 100))
     }
 
-    /// One dot under the board, saying which card is at the front by a fade.
+    /// One dot at the board's foot, saying which card is at the front by a fade.
     private func dot(_ index: Int, _ count: Int) -> Placement {
         Placement(
             Rect(
@@ -371,16 +373,14 @@ struct PlacedSample: SampleContent, ExampleContent {
                 + "writing them describes nothing, and `.engine(following:)` says which of "
                 + "them moving runs the arithmetic again. It runs on the display's own "
                 + "frames and writes placements the host wears straight onto the cards, so "
-                + "the ring turns with no view built. The dots under the cards are a second "
-                + "layout and a second engine over the same two numbers.")
+                + "the ring turns with no view built. The dots at the board's foot are a "
+                + "second layout and a second engine over the same two numbers.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Text("The trap is a label written from a driven value: it is built again every "
                 + "time the value moves. A placement is not, which is why the cards shrink "
-                + "as they go round the back with no view rebuilt. The ring keeps its card "
-                + "through a change of geometry - turn the phone or resize the window, and "
-                + "the same card is back at the front once the room settles.")
+                + "as they go round the back with no view rebuilt.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

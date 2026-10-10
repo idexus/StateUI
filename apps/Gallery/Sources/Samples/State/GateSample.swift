@@ -112,7 +112,7 @@ private struct SaveAndDelete: ExampleContent {
 
     var body: some View {
         VStack {
-            Text("Press Save, then Delete while it saves.")
+            Text("Press Save, and watch Delete dim while it saves.")
                 .textColor(Palette.subtle)
 
             HStack {
@@ -181,7 +181,7 @@ private struct WorkFromCode: ExampleContent {
 
     var body: some View {
         VStack {
-            Text("Start the autosave, then press Save while it saves.")
+            Text("Start the autosave, and watch Save dim while it saves.")
                 .textColor(Palette.subtle)
 
             HStack {

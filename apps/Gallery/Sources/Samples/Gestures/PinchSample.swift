@@ -43,10 +43,8 @@ struct PinchSample: SampleContent, ExampleContent {
             .onPinchUpdated { update in
                 reports += 1
 
-                // Multiplying needs no scale captured at the start, and that
-                // is what makes it the version to write: .began is not
-                // guaranteed, and a trackpad magnification may send .changed
-                // and .ended and nothing else.
+                // Multiplying needs no scale captured at the start: each
+                // report carries its own step.
                 if update.phase == .changed {
                     pinch = max(0.5, min(3, pinch * update.scale))
                 }
@@ -80,10 +78,9 @@ struct PinchSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("The four statuses are not a promise. A trackpad magnification may "
-                + "arrive as .changed then .ended, and .began never comes at all. "
-                + "A pinch that only works when it has seen .began works on a phone and "
-                + "not on a laptop.")
+            Text("A pinch begins with .began, goes on with .changed and ends with .ended "
+                + "or .cancelled, on every host - a finger's pinch and a trackpad's alike - "
+                + "and each .changed carries its own step, so nothing is kept from the start.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

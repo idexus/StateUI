@@ -448,9 +448,9 @@ enum Listings {
                     button("Colour") {
                         try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(500)).arrived()
 
-                        // The caption sits on the brand field inside the panel
+                        // The caption sits on the violet field inside the panel
                         // rather than on the panel itself, so what it goes to is
-                        // the colour that reads on the brand.
+                        // white, the colour that reads on that field.
                         try await $captionColor.journey.move(to: AppColors.white, .eased(500)).arrived()
                     }
 
@@ -4421,13 +4421,13 @@ enum Listings {
                     .lineWidth(1.5)
                     .horizontalAlignment(.center)
                     .onClicked { taps += 1 }
-                    // Once, after the render that brings the card in - its
-                    // state and its environment are there to use.
+                    // Once, as the render that brings the card in has walked the
+                    // tree - its state and its environment are there to use.
                     .onCreated {
                         log.append("\(log.count + 1) · card \(number) created")
                     }
-                    // Once, after the render that leaves it out - and its
-                    // state still answers, which is what saving needs.
+                    // Once, as the render that leaves it out has walked the tree -
+                    // and its state still answers, which is what saving needs.
                     .onDestroying {
                         log.append("\(log.count + 1) · card \(number) destroying, tapped \(taps)")
                     }
@@ -4964,7 +4964,7 @@ enum Listings {
 
                 Text("Saved \(saved) time(s), exported \(exported)")
 
-                Text("Open the File menu - on Android, in the bar's overflow.")
+                Text("Open the File menu - on Android, in the bar's overflow; on GNOME, in its main menu.")
 
                 switchRow($pageSaves, "This page saves", id: "menubar.pageSaves")
                 switchRow($ownMenu, "A menu of its own", id: "menubar.ownMenu")
@@ -5838,9 +5838,9 @@ enum Listings {
         var body: some View {
             // One walked value, shown three ways.
             VStack {
-                // A CONVERTER. The words are worked out on the display's frames
-                // and the host wears them, so nothing here is described again -
-                // this count stands still for the whole walk.
+                // A CONVERTER. The words are worked out from the destination as
+                // it is written, and the host wears them, so nothing here is
+                // described again - this count stands still for the whole walk.
                 VStack {
                     DebugInfoLabel()
 
@@ -6160,10 +6160,8 @@ enum Listings {
                 .onPinchUpdated { update in
                     reports += 1
 
-                    // Multiplying needs no scale captured at the start, and that
-                    // is what makes it the version to write: .began is not
-                    // guaranteed, and a trackpad magnification may send .changed
-                    // and .ended and nothing else.
+                    // Multiplying needs no scale captured at the start: each
+                    // report carries its own step.
                     if update.phase == .changed {
                         pinch = max(0.5, min(3, pinch * update.scale))
                     }
@@ -6232,15 +6230,16 @@ enum Listings {
         /// both handed on, so neither describes anything when it moves. The
         /// arithmetic below reads both and the host runs it on its own frames.
         /// The offset is walked: a button's write glides, and `value` is where
-        /// the scroller IS, frame by frame. It starts on the middle card, where a
-        /// scroller - the first, or one built afresh - stands once laid out.
+        /// the scroller IS, frame by frame. It starts on the middle card; a
+        /// scroller - the first, or one built afresh - stands where this value
+        /// says once it is laid out.
         @State private var scrolled = Point(Double(PlacedSample.cards.count / 2) * PlacedSample.reach, 0)
 
         @State private var dragged = 0.0
 
-        /// WHERE EVERY CARD GOES, and where every dot under them goes - one run of
-        /// placements each, written by the engines below and worn by the host on
-        /// its own frames. Nothing about a card's place is described.
+        /// WHERE EVERY CARD GOES, and where every dot at the board's foot goes -
+        /// one run of placements each, written by the engines below and worn by
+        /// the host on its own frames. Nothing about a card's place is described.
         @State private var ring = PlacedRun()
 
         @State private var dots = PlacedRun()
@@ -6422,8 +6421,9 @@ enum Listings {
                     .verticalAlignment(.end)
                 }
                 // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL
-                // the card covers it and spills past its edges, so the grid
-                // holding it - a layout, with edges to cut at - clips it.
+                // the card is cut at its own room - the Web's reaches two points
+                // past it - so the grid holding it - a layout, with edges to cut
+                // at - cuts it there.
                 .clipsContent(true)
             }
             .style(.card)
@@ -6465,7 +6465,7 @@ enum Listings {
                 zIndex: 1000 - Int(min(abs(step), 99) * 100))
         }
 
-        /// One dot under the board, saying which card is at the front by a fade.
+        /// One dot at the board's foot, saying which card is at the front by a fade.
         private func dot(_ index: Int, _ count: Int) -> Placement {
             Placement(
                 Rect(
@@ -7280,7 +7280,7 @@ enum Listings {
 
         var body: some View {
             VStack {
-                Text("Press Save, then Delete while it saves.")
+                Text("Press Save, and watch Delete dim while it saves.")
 
                 HStack {
                     Button("Save")
@@ -8946,7 +8946,7 @@ enum Listings {
                     // On top. Its own empty area lets taps through to the box below
                     // while the label inside still answers - or, with "Children too",
                     // the whole of it ignores input, the label included; disabled,
-                    // it takes every tap on it and answers none.
+                    // the label still takes a tap and answers none.
                     VStack {
                         // The child wears its own colour and its own padding, so
                         // what is the child and what is the empty area around it
@@ -9618,7 +9618,7 @@ enum Listings {
 
         var body: some View {
             VStack {
-                Text("Start the autosave, then press Save while it saves.")
+                Text("Start the autosave, and watch Save dim while it saves.")
 
                 HStack {
                     // No await: the press asks the draft, whose own gate decides.

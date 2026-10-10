@@ -21,8 +21,9 @@ struct WindowSample: SampleContent, ExampleContent {
     static var code: String { Listings.joined("MainPage.created", "WindowSample") }
 
     var notes: (any View)? {
-        Text("On an iPad and a phone the system sizes and places a window - the user drags its corner - "
-            + "so the size, the place, maximizing, minimizing and translucency do nothing there.")
+        Text("On an iPad and a phone the system sizes and places a window, so the size, the place, the "
+            + "bound, maximizing, minimizing and translucency do nothing there. On GNOME the place, "
+            + "maximizing, minimizing and the bound do nothing, and translucency draws its colour.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
