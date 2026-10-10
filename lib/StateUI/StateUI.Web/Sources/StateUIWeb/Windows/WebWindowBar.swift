@@ -33,6 +33,9 @@ final class WebWindowBar: WebDOMView {
     /// The groups of actions shown, each a run of buttons standing together.
     private var groups: [WebDOMView] = []
 
+    /// The shape drawn on each button of the bar's own, let go of with the bar.
+    private var glyphs: [WebDOMView] = []
+
     /// What the toggle and the way back do.
     var onToggle: () -> Void = {}
     var onBack: () -> Void = {}
@@ -155,11 +158,13 @@ final class WebWindowBar: WebDOMView {
         shape.attribute("class", "stateui-glyph")
         shape.attribute("data-glyph", glyph)
         WebRelay.insert(shape.node, into: button.node, at: 0)
+        glyphs.append(shape)
     }
 
     override func detach() {
         for button in buttons.values { button.detach() }
         for group in groups { group.detach() }
+        for shape in glyphs { shape.detach() }
         let parts = [
             toggle, back, closer, more, name, subtitle, heading, brand, title, leading, trailing, side, start, lead,
         ]

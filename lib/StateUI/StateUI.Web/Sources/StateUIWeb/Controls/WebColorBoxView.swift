@@ -20,4 +20,9 @@ final class WebColorBoxView: WebDOMView {
         let radii = BoxArithmetic.clockwise(corners)
         swatch.style("border-radius", radii.allSatisfy({ $0 == 0 }) ? nil : radii.map { WebCSS.pixels($0)! }.joined(separator: " "))
     }
+
+    override func detach() {
+        swatch.detach()
+        super.detach()
+    }
 }
