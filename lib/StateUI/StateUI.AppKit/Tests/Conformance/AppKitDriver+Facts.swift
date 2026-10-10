@@ -65,7 +65,7 @@ extension AppKitDriver {
         let screen = window.screen ?? NSScreen.main
         switch property {
         case .title: return window.title.propValue
-        case .x: return Double(window.frame.minX).rounded().propValue
+        case .x: return screen.map { Double(window.frame.minX - $0.visibleFrame.minX).rounded().propValue }
         case .y: return screen.map { Double($0.visibleFrame.maxY - window.frame.maxY).rounded().propValue }
         case .width: return Double(window.contentLayoutRect.width).rounded().propValue
         case .height: return Double(window.contentLayoutRect.height).rounded().propValue
