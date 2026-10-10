@@ -661,7 +661,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .stateui-sidebar, .stateui-split, .stateui-bar, .stateui-bar *, .stateui-stack > [data-arriving], .stateui-scrim,
-  .stateui-loading-bar {
+  .stateui-loading-bar, .stateui-sheet, .stateui-sheet::backdrop, .stateui-question, .stateui-menu {
     transition: none !important;
     animation: none !important;
   }

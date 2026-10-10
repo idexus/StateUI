@@ -50,5 +50,6 @@ whole box and paints no background under it, so a slider has none.
 
 ## Motion
 
-The drawer slides, a pushed page rises into place, and the shade fades in -
-none of them where the user asks for less motion.
+The drawer slides, a pushed page rises into place, a sheet and a question
+rise, a menu and the shade fade in - none of them where the user asks for less
+motion.

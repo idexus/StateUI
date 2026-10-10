@@ -38,6 +38,38 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(try look(".stateui-overlays button", "touchAction"), "manipulation", "a tap at once")
     }
 
+    /// Where the user asks for less motion, nothing the stylesheet moves once - a sheet rising, its shade, a
+    /// question, a menu, a page arriving - moves: each part it animates stands in the less-motion rules.
+    func testLessMotionStillsEveryPartTheStylesheetMoves() throws {
+        _ = WebRenderer.running { Text("Still") }
+        let moving = try WebBrowser.evaluate("""
+            (() => {
+              const rules = [];
+              const walk = (list, still) => {
+                for (const r of list) {
+                  if (r.cssRules && r.media) walk(r.cssRules, still || r.media.mediaText.includes("prefers-reduced-motion"));
+                  else if (r.style) rules.push({ r, still });
+                }
+              };
+              for (const s of document.styleSheets) { try { walk(s.cssRules, false); } catch {} }
+              const last = (selector) => selector.split(/\\s*[>+~ ]\\s*/).pop();
+              const stilled = rules.filter(x => x.still && x.r.style.animationName === "none")
+                .flatMap(x => x.r.selectorText.split(",").map(t => last(t.trim())));
+              return rules.filter(x => !x.still && x.r.style.animationName && x.r.style.animationName !== "none"
+                  && x.r.style.animationIterationCount !== "infinite")
+                .flatMap(x => x.r.selectorText.split(",").map(t => last(t.trim())))
+                .filter(part => {
+                  const pseudo = part.includes("::") ? part.slice(part.indexOf("::")) : "";
+                  const named = part.match(/\\.stateui-[a-z-]+/g) ?? [];
+                  return !named.every(c => stilled.some(s => s.includes(c) && (pseudo === "" || s.includes(pseudo))));
+                })
+                .join(" | ");
+            })()
+            """, on: 0)
+
+        XCTAssertEqual(moving, "", "these move where the user asks for less motion")
+    }
+
     /// One computed style of the first element `selector` finds on the page.
     private func look(_ selector: String, _ property: String) throws -> String? {
         try WebBrowser.evaluate("getComputedStyle(document.querySelector('\(selector)')).\(property)", on: 0)
