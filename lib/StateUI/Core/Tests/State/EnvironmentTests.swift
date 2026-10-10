@@ -341,4 +341,13 @@ final class EnvironmentTests: XCTestCase {
         XCTAssertEqual(Environment<Device>.refusal?.contains("@Environment(\\.device)"), true)
         XCTAssertNil(Environment<Session>.refusal, "an application's own object is read by its type")
     }
+
+    /// Read by its type, the library's object is said once with the name it is read by - and is the object that
+    /// name reads: the program goes on.
+    func testALibraryObjectReadByItsTypeIsSaidOnceAndRead() {
+        let byType = Environment<LocaleInfo>()
+
+        XCTAssertTrue(hasComplained("LocaleInfo is the library's: read it by its name, @Environment(\\.locale)"))
+        XCTAssertTrue(byType.wrappedValue === Environment<LocaleInfo>(\.locale).wrappedValue)
+    }
 }

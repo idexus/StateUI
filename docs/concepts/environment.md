@@ -143,8 +143,8 @@ degrade to `.unknown`, a `Weekday` to `.sunday` and a `LayoutDirection` to
 `.leftToRight`, while open vocabulary, such as `device.info.platform`, stays
 authored text.
 
-Each of these is read by its name only: `@Environment var device: Device` stops
-the program as the view is made, naming `@Environment(\.device)`.
+Each of these is read by its name: `@Environment var device: Device` reads the
+same object, and says once that it is read as `@Environment(\.device)`.
 
 The closed vocabulary used by these fields is:
 

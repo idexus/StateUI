@@ -314,7 +314,9 @@ given with `.environment(model)`, by its type
 ([What the library offers](environment.md#what-the-library-offers)).
 
 **Deliberately rejected:** a second spelling for the library's objects. Each
-has one name, so a reader meets one spelling in every application.
+has one name, so a reader meets one spelling in every application; read by
+its type, the object is still the one its name reads, and the library says
+once which name that is - it carries on past what it can.
 
 ## Names say what a thing is
 

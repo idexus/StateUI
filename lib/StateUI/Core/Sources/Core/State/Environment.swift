@@ -37,8 +37,8 @@ protocol EnvironmentSlot: AnyObject {
 ///
 /// A body that reads one of the object's `@State` properties is rebuilt when it
 /// changes; the provider, which only passes the reference, is not. Reading a
-/// type no ancestor provided stops the program with its name, and so does
-/// reading one of the library's by its type.
+/// type no ancestor provided stops the program with its name; reading one of
+/// the library's by its type is said once, with the name it is read by.
 @propertyWrapper
 @MainActor
 public final class Environment<Value: AnyObject> {
@@ -52,7 +52,7 @@ public final class Environment<Value: AnyObject> {
     /// Reads an object an ancestor provided with `.environment()`, found by its
     /// type. The differ fills it before the view's body builds.
     public init() {
-        if let refusal = Self.refusal { preconditionFailure(refusal) }
+        if let refusal = Self.refusal { complain(refusal) }
     }
 
     /// Why the library's own object is not read by its type - the name it is read by; nil for any other type.
