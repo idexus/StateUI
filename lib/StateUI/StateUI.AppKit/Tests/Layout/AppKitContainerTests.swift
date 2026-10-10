@@ -16,6 +16,17 @@ final class AppKitContainerTests: XCTestCase {
     /// label reading the offset - held every scroll event of the Gallery
     /// ~110 ms.
     @MainActor
+    /// An oval scroller cuts what it shows to its oval and draws no outline: a rectangular border under an oval
+    /// mask would show only as slivers where the oval meets its bounds.
+    func testAnOvalScrollerDrawsNoOutline() {
+        let scroll = AppKitScrollView(frame: NSRect(x: 0, y: 0, width: 100, height: 60))
+        scroll.setBox(stroke: Color.red.propValue, lineWidth: 2, shape: ContainerShape.ellipse.propValue)
+        XCTAssertEqual(scroll.layer?.borderWidth ?? 0, 0, "an oval draws an outline")
+
+        scroll.setBox(stroke: Color.red.propValue, lineWidth: 2, shape: ContainerShape.rectangle.propValue)
+        XCTAssertEqual(scroll.layer?.borderWidth, 2, "a rectangle draws its outline")
+    }
+
     func testAContainerHandedTheArrangementItHasAsksNothing() {
         func item(_ view: NSView) -> AppKitLayoutItem { AppKitLayoutItem(view: view) }
         let room = NSRect(x: 0, y: 0, width: 400, height: 300)

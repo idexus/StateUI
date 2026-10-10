@@ -146,7 +146,9 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     func setBox(stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
         boxShape = BoxArithmetic.outline(shape)
         let width = BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth)
-        boxOutline = AppKitBrush(stroke).lineColor.flatMap { width > 0 ? ($0.cgColor, CGFloat(width)) : nil }
+        // An oval cuts by a mask, under which a layer's border would show only as slivers: it draws none.
+        boxOutline = boxShape == .ellipse
+            ? nil : AppKitBrush(stroke).lineColor.flatMap { width > 0 ? ($0.cgColor, CGFloat(width)) : nil }
         paintBox()
     }
 
