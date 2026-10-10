@@ -560,7 +560,7 @@ struct Contact: Hashable {
 
 struct ContactsPage: View {
     @State private var chosen: String?
-    @Aim(ItemsViewContract.self) private var list
+    @Aim(ItemsView<String>.self) private var list
 
     let contacts: [Contact]
 
@@ -594,7 +594,9 @@ holds it on screen. The binding given to `.selection` says how many the
 user may choose - an optional for one, a `Set` for many - and the user's
 choice lands on it, while a value the application writes is shown and
 reported to nobody. `.onItemActivated` hears an item opened: a tap on a
-phone, a double-click or Return on a desktop.
+phone, a double-click or Return on a desktop. An aim at the list,
+`Aim<ItemsView<ID>>`, scrolls it to an item by an identity of the list's
+own type.
 
 `.itemsLayout` lays the items `.list(spacing:)` one under another,
 `.row(spacing:)` one beside another, scrolled across, or

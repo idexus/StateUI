@@ -4,7 +4,7 @@ import StateUI
 private struct PickList: ExampleContent {
     // listing: PickList
     @State private var chosen: Set<Int> = []
-    @Aim(ItemsViewContract.self) private var list
+    @Aim(ItemsView<Int>.self) private var list
 
     var body: some View {
         Grid {

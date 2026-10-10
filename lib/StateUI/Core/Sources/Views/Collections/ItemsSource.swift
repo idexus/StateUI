@@ -14,17 +14,17 @@ protocol ItemsViews: AnyObject {
 /// from it is carried whole.
 /// Design: docs/design/views/items.md#a-source-a-build
 @MainActor
-final class ItemsSource<Items: RandomAccessCollection, ID: Hashable>: ItemsViews {
+final class ItemsSource<ID: Hashable>: ItemsViews {
     /// Where an identity stands.
     private enum Place {
         case header
         case footer
         case groupHeader(Int)
         case groupFooter(Int)
-        case item(Int, Items.Index)
+        case item(Int, Int)
     }
 
-    private let groups: [Section<Items, ID>]
+    private let groups: [Section<ID>]
     private let grouped: Bool
     private var header: (any View)?
     private var footer: (any View)?
@@ -38,7 +38,7 @@ final class ItemsSource<Items: RandomAccessCollection, ID: Hashable>: ItemsViews
     private var identities: [ID: [String]] = [:]
 
     /// The source of `groups`; a list with no groups is one group standing for none.
-    init(groups: [Section<Items, ID>], grouped: Bool) {
+    init(groups: [Section<ID>], grouped: Bool) {
         self.groups = groups
         self.grouped = grouped
     }
@@ -56,11 +56,11 @@ final class ItemsSource<Items: RandomAccessCollection, ID: Hashable>: ItemsViews
         for (number, group) in groups.enumerated() {
             let name = group.name ?? String(number)
             var items: [String] = []
-            for index in group.items.indices {
-                let id = group.identify(group.items[index])
+            for place in 0..<group.count {
+                let id = group.identify(place)
                 let written = grouped ? name + "\u{1F}" + String(describing: id) : String(describing: id)
                 let identity = unique(written)
-                places[identity] = .item(number, index)
+                places[identity] = .item(number, place)
                 identities[id, default: []].append(identity)
                 items.append(identity)
             }
@@ -102,15 +102,15 @@ final class ItemsSource<Items: RandomAccessCollection, ID: Hashable>: ItemsViews
         case .footer: footer
         case .groupHeader(let group): groups[group].header
         case .groupFooter(let group): groups[group].footer
-        case .item(let group, let index): groups[group].content(groups[group].items[index])
+        case .item(let group, let place): groups[group].content(place)
         case nil: nil
         }
     }
 
     /// The item an identity names; nil for a header, a footer or none.
     func id(for identity: String) -> ID? {
-        guard case .item(let group, let index) = places[identity] else { return nil }
-        return groups[group].identify(groups[group].items[index])
+        guard case .item(let group, let place) = places[identity] else { return nil }
+        return groups[group].identify(place)
     }
 
     /// Every identity holding one of `ids`, in the order they show.

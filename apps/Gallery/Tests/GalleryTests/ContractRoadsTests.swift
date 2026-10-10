@@ -101,6 +101,10 @@ final class ContractRoadsTests: XCTestCase {
             closed: "_ = try Aim(TextField.self).target",
             open: "try await Aim(TextField.self).call(VisualElementContract.unfocus)"),
         Road(
+            name: "a list scrolled to an identity of another type",
+            closed: #"try await Aim(ItemsView<Int>.self).scrollTo("500")"#,
+            open: "try await Aim(ItemsView<Int>.self).scrollTo(500)"),
+        Road(
             name: "a fact of the host's written by the application",
             closed: "Device().battery.chargeLevel = 1",
             open: "_ = Device(battery: Battery(chargeLevel: 1)).battery.chargeLevel"),

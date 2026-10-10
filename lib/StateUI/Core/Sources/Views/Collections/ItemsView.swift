@@ -19,9 +19,9 @@
 ///
 /// An item names itself by `String(describing:)` of its identity, so two items
 /// must describe differently.
-public struct ItemsView<Items: RandomAccessCollection, ID: Hashable>: View {
+public struct ItemsView<ID: Hashable>: View {
     /// The items, their identities and their views - one source a build.
-    private let source: ItemsSource<Items, ID>
+    private let source: ItemsSource<ID>
 
     /// The identities within reach of the host's cells, as it last said.
     @State private var realized: [String] = []
@@ -33,24 +33,25 @@ public struct ItemsView<Items: RandomAccessCollection, ID: Hashable>: View {
     private var choice: Choice?
     private var activated: (gate: any Gate, handler: ValueEventHandler<ID>)?
     private var endReached: (within: Int, gate: any Gate, handler: EventHandler)?
-    private var aimed: Aim<ItemsViewContract>?
+    private var aimed: Aim<Self>?
 
     /// A list of `items`, each its own identity, each looking as `content` says.
-    public init<Content: View>(_ items: Items, @ViewBuilder content: @escaping (Items.Element) -> Content)
-    where Items.Element: Hashable, ID == Items.Element {
+    public init<Items: RandomAccessCollection, Content: View>(
+        _ items: Items, @ViewBuilder content: @escaping (Items.Element) -> Content
+    ) where Items.Element == ID {
         source = ItemsSource(groups: [Section(items, content: content)], grouped: false)
     }
 
     /// A list of `items`, each named by the property `id`, each looking as
     /// `content` says.
-    public init<Content: View>(
+    public init<Items: RandomAccessCollection, Content: View>(
         _ items: Items, id: KeyPath<Items.Element, ID>, @ViewBuilder content: @escaping (Items.Element) -> Content
     ) {
         source = ItemsSource(groups: [Section(items, id: id, content: content)], grouped: false)
     }
 
     /// A list of groups, each under its header and over its footer.
-    public init(groups: [Section<Items, ID>]) {
+    public init(groups: [Section<ID>]) {
         source = ItemsSource(groups: groups, grouped: true)
     }
 
@@ -222,13 +223,14 @@ extension ItemsView {
         return copy
     }
 
-    /// Aims `aim` at this list, for `scrollTo`.
+    /// Aims `aim` at this list, for `scrollTo` - an item named by the list's
+    /// own identity type.
     ///
-    ///     @Aim(ItemsViewContract.self) private var list
+    ///     @Aim(ItemsView<Int>.self) private var list
     ///
-    ///     ItemsView(rows) { Row($0) }.aim(list)
-    ///     Button("Top").onClicked(gate: .cancelPrevious) { try await list.scrollTo(rows[0], anchor: .start) }
-    public func aim(_ aim: Aim<ItemsViewContract>) -> Self {
+    ///     ItemsView(0..<500) { Text("Row \($0)") }.aim(list)
+    ///     Button("Top").onClicked(gate: .cancelPrevious) { try await list.scrollTo(0, anchor: .start) }
+    public func aim(_ aim: Aim<Self>) -> Self {
         var copy = self
         copy.aimed = aim
         return copy

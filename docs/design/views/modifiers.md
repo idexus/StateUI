@@ -98,10 +98,11 @@ An aim (`@Aim`, `.aim(_:)`) is who a view is to an act; `.id(_:)` is who it is
 to the differ. The differ fills the aim with the element's own identity as it
 walks, so there is nothing to spell and nothing to collide. A view carrying
 only an aim is still matched by where it was written, so a collection's rows
-keep wanting `.id()`, and the two compose. The aim is typed - `Aim<Self>`, or
-the contract or control it reaches (`Aim<ItemsViewContract>`) - so the
-declaration and the view agree at compile time and the aim offers exactly the
-acts the control has.
+keep wanting `.id()`, and the two compose. The aim is typed by the control it
+reaches - `Aim<WebView>`, `Aim<ItemsView<Int>>` - so the declaration and the
+view agree at compile time and the aim offers exactly the acts the control
+has: a list scrolls to an item of its own identity type, and an identity of
+another type does not compile.
 
 ## Showing and hiding cross fades
 

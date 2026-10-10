@@ -178,7 +178,7 @@ private struct GroupedList: ExampleContent {
                 .gridRow(0)
 
             // A group per shelf, named so two shelves may hold the same item.
-            ItemsView(groups: Self.shelves.map { (shelf: Shelf) -> Section<[String], String> in
+            ItemsView(groups: Self.shelves.map { (shelf: Shelf) -> Section<String> in
                 let group = Section(shelf.items) { item in
                     Text(item)
                         .fontSize(14)

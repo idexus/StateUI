@@ -18,7 +18,7 @@ BuilderSample.swift 4e5175b72803442d
 ButtonSample.swift 00b23871b3f155eb
 CanvasSample.swift 52db70adead39b9b
 CheckBoxSample.swift a6e9da46d0ccfb97
-ChoosingItemsSample.swift 3d618f638fa6155d
+ChoosingItemsSample.swift 0bac861b74933e30
 ColorBoxSample.swift 8be208d26c18412f
 ComplaintsSample.swift ccb58f7f38490263
 ConcurrentAnimationSample.swift 48b6857de93233a8
@@ -49,7 +49,7 @@ ImageSample.swift b31a1a7de284fb82
 InteropActsSample.swift 498078bedb056915
 InteropControlSample.swift d9ee8e8afdae8f1f
 InteropEventsSample.swift 2b7359f44b689fdd
-ItemsViewSample.swift 3dfe806e0cb5a447
+ItemsViewSample.swift e5506411f3a34526
 KeyboardSample.swift 06a0fae1aeddb219
 LayoutDirectionSample.swift b24c2d83bfb165b2
 LifecycleSample.swift ab5665b8c62f549e

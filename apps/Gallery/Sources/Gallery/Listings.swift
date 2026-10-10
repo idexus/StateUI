@@ -3621,7 +3621,7 @@ enum Listings {
                     .gridRow(0)
 
                 // A group per shelf, named so two shelves may hold the same item.
-                ItemsView(groups: Self.shelves.map { (shelf: Shelf) -> Section<[String], String> in
+                ItemsView(groups: Self.shelves.map { (shelf: Shelf) -> Section<String> in
                     let group = Section(shelf.items) { item in
                         Text(item)
                     }
@@ -6096,7 +6096,7 @@ enum Listings {
         "PickList": #"""
         // Sources/Samples/Collections/ChoosingItemsSample.swift
         @State private var chosen: Set<Int> = []
-        @Aim(ItemsViewContract.self) private var list
+        @Aim(ItemsView<Int>.self) private var list
 
         var body: some View {
             Grid {
