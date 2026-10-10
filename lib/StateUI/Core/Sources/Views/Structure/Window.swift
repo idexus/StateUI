@@ -10,7 +10,7 @@
 ///
 ///     @Environment(\.application) private var application
 ///
-///     Button("Inspector").onClicked(.ignoreWhileRunning) { try await application.openWindow(.inspector) }
+///     Button("Inspector").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.inspector) }
 ///
 /// It opens once - `openWindow` answers `WindowError.alreadyOpen` while it is open - and the platform restores it
 /// with its scene. A host without independent windows refuses `openWindow` with `WindowError.unsupported`. Windows

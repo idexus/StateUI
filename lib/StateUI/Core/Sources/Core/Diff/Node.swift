@@ -299,8 +299,8 @@ public struct Node {
     var visualStates: [DeclaredState] = []
     var visualStateListeners: [VisualStateListener] = []
 
-    /// Each event's handlers in written order, each with what a repeat of the event does while it runs; the ids
-    /// belong to the element, assigned by the differ.
+    /// Each event's handlers in written order, each with the gate it passes through; the ids belong to the element,
+    /// assigned by the differ.
     var events: [Event: [Handler]]
 
     /// The properties driven by a state and how each crosses - what `.opacity($fade)`
@@ -342,10 +342,10 @@ public struct Node {
     /// What the view says of the page it stands on, apart from its own values (PageValues.swift).
     var pageValues: PageValues?
 
-    /// Adds a handler beside any the event already has, never instead of it; it keeps runs of its own.
+    /// Adds a handler beside any the event already has, never instead of it; it starts runs as an owner of its own.
     /// Design: docs/design/core/identity-and-diffing.md#handlers-and-their-ids
-    mutating func addHandler(_ event: Event, _ repeated: RepeatedEvent, _ handler: @escaping EventHandler) {
-        events[event, default: []].append(Handler(run: handler, repeated: repeated))
+    mutating func addHandler(_ event: Event, gate: some Gate, _ handler: @escaping EventHandler) {
+        events[event, default: []].append(Handler(run: handler, gate: gate))
     }
 
     /// Takes `handlers` for `event` after any it already has - what is written on a composed view, moved onto
@@ -367,7 +367,7 @@ public struct Node {
         self.id = id
         self.props = props
         self.children = children
-        self.events = events.mapValues { [Handler(run: $0, repeated: .overlap)] }
+        self.events = events.mapValues { [Handler(run: $0, gate: .none)] }
     }
 
     /// A node of an element's own type: how every element's view begins.

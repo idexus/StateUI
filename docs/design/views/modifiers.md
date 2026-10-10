@@ -40,8 +40,9 @@ it has to run beside it, or the binding would go quietly dead. Every typed
 event modifier comes through here with its member's token. The typed event
 modifiers live on `ModifiableElement`, so a style is offered none after the
 dot, and a style keeps only its values and states (`AnyStyle`), so nothing
-else written into its node reaches a control (tiers.md). Each handler keeps runs of its own and its own word on a
-repeat, so the second never waits for the first (core/runs.md).
+else written into its node reaches a control (tiers.md). Each handler passes through its own gate - a policy
+given as the gate is the handler's alone - so the second never waits for the first unless both are written with
+one `SharedGate` (core/runs.md).
 
 ## An event payload that does not read
 

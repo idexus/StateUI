@@ -14,7 +14,7 @@ is in invalidation.md.
   refused    how many writes asked for nothing, because no live element read
              the state (invalidation.md)
   alive      how many rendered elements are alive now
-  runs       how many handler runs are under way now (runs.md)
+  runs       how many runs are under way or wait their turn now (runs.md)
 ```
 
 `empty` is how a write that should have asked for nothing is found; `refused`

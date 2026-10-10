@@ -7,29 +7,30 @@
 @MainActor
 final class EventRegistration {
     private(set) var handlers: [Handler]
-    private var slots: [RunSlot]
+    private var owners: [RunOwner]
 
     init(_ handlers: [Handler]) {
         self.handlers = handlers
-        slots = handlers.map { _ in RunSlot() }
+        owners = handlers.map { _ in RunOwner() }
     }
 
     /// Takes the handlers a new render wrote; a handler no longer written has its runs superseded.
     func replace(_ written: [Handler]) {
-        for slot in slots.dropFirst(written.count) { slot.orphan() }
-        slots = Array(slots.prefix(written.count)) + (slots.count..<max(written.count, slots.count)).map { _ in RunSlot() }
+        for owner in owners.dropFirst(written.count) { owner.orphan() }
+        owners = Array(owners.prefix(written.count))
+            + (owners.count..<max(written.count, owners.count)).map { _ in RunOwner() }
         handlers = written
     }
 
-    /// Starts every handler for an event carrying `payload`, each by its own word.
+    /// Starts every handler for an event carrying `payload`, each through its gate.
     func start(payload: [PropValue]?) {
-        for (handler, slot) in zip(handlers, slots) {
-            slot.start(handler.run, handler.repeated, payload: payload)
+        for (handler, owner) in zip(handlers, owners) {
+            handler.gate.runs(for: owner).start(handler.run, handler.gate.policy, payload: payload, owner: owner)
         }
     }
 
     /// The element no longer handles the event: every run of it is superseded.
     func orphan() {
-        for slot in slots { slot.orphan() }
+        for owner in owners { owner.orphan() }
     }
 }

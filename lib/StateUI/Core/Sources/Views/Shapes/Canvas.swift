@@ -61,14 +61,14 @@ public struct Canvas: ElementView, CanvasProperties {
         onEvent(CanvasContract.pressed, handler)
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onPressed(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<Point>) -> Self {
-        onEvent(CanvasContract.pressed, repeated, handler)
+    public func onPressed(gate: some Gate, _ handler: @escaping ValueEventHandler<Point>) -> Self {
+        onEvent(CanvasContract.pressed, gate: gate, handler)
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onPressed(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPressed(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onPressed(_ handler: @escaping ValueEventHandler<Point>) -> Self {
         fatalError("unavailable")
     }
@@ -79,14 +79,14 @@ public struct Canvas: ElementView, CanvasProperties {
         onEvent(CanvasContract.dragged, handler)
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onDragged(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<Point>) -> Self {
-        onEvent(CanvasContract.dragged, repeated, handler)
+    public func onDragged(gate: some Gate, _ handler: @escaping ValueEventHandler<Point>) -> Self {
+        onEvent(CanvasContract.dragged, gate: gate, handler)
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onDragged(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDragged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onDragged(_ handler: @escaping ValueEventHandler<Point>) -> Self {
         fatalError("unavailable")
     }
@@ -96,14 +96,14 @@ public struct Canvas: ElementView, CanvasProperties {
         onEvent(CanvasContract.released, handler)
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onReleased(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<Point>) -> Self {
-        onEvent(CanvasContract.released, repeated, handler)
+    public func onReleased(gate: some Gate, _ handler: @escaping ValueEventHandler<Point>) -> Self {
+        onEvent(CanvasContract.released, gate: gate, handler)
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onReleased(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onReleased(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onReleased(_ handler: @escaping ValueEventHandler<Point>) -> Self {
         fatalError("unavailable")
     }

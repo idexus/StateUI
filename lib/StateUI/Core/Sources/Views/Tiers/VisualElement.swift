@@ -85,7 +85,7 @@ extension VisualElement {
     ///     @Aim(TextField.self) private var field
     ///
     ///     TextField($address).aim(field)
-    ///     Button("Edit").onClicked(.ignoreWhileRunning) { try await field.focus() }
+    ///     Button("Edit").onClicked(gate: .ignoreWhileRunning) { try await field.focus() }
     ///
     /// A model may declare its aims beside its state. An aim is not a key: a
     /// view carrying only an aim is still matched by where it was written, so

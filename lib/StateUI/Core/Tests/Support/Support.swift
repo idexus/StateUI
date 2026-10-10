@@ -916,7 +916,7 @@ func label(_ text: String, id: String? = nil) -> Node {
 @MainActor
 func button(_ text: String, id: String? = nil, onClicked: @escaping EventHandler) -> Node {
     var node = Node(type: "Button", id: id, props: ["text": .string(text)])
-    node.addHandler("clicked", .overlap, onClicked)
+    node.addHandler("clicked", gate: .none, onClicked)
     return node
 }
 

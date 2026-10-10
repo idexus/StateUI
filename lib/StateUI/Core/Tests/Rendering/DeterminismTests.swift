@@ -276,7 +276,7 @@ final class DeterminismTests: XCTestCase {
             }
 
             for event in handlers {
-                node.addHandler(event, .overlap) {}
+                node.addHandler(event, gate: .none) {}
             }
 
             return PatchDump.text(Differ().reconcile(nil, with: node).patch)

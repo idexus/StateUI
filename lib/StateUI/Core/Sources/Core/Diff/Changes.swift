@@ -22,20 +22,20 @@ struct Watch {
     let run: ErasedChangeHandler
 
     /// What a change does while a run is under way.
-    let repeated: RepeatedEvent
+    let gate: any Gate
 
     /// A watch on one value. Written by `.onChanged`, never by hand.
-    init<Value: Equatable>(_ value: Value, _ repeated: RepeatedEvent, run: @escaping ErasedChangeHandler) {
+    init<Value: Equatable>(_ value: Value, gate: some Gate, run: @escaping ErasedChangeHandler) {
         self.value = value
         self.matches = { stored in (stored as? Value).map { $0 == value } }
-        self.repeated = repeated
+        self.gate = gate
         self.run = run
     }
 }
 
 extension ModifiableElement {
     /// Runs something when `value` is not what it was last render - all of it,
-    /// inside the render's walk.
+    /// after the render's walk, in that render.
     ///
     ///     VStack { … }
     ///         .onChanged(step) { visits += 1 }
@@ -55,33 +55,33 @@ extension ModifiableElement {
         _ value: Value,
         _ handler: @escaping @MainActor () throws -> Void
     ) -> Modified {
-        onChanged(value, .overlap) { try handler() }
+        onChanged(value, gate: .none) { try handler() }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what another change
+    /// The same, with a handler that awaits: its `gate` says what another change
     /// does while a run is under way - a newer query cancelling the search for
     /// the older one, say.
     ///
     ///     VStack { … }
-    ///         .onChanged(query, .cancelPrevious) { try await search() }
+    ///         .onChanged(query, gate: .cancelPrevious) { try await search() }
     ///
     /// What the handler writes before its first suspension is sent in the same
     /// render.
     ///
     /// - Parameters:
     ///   - value: What to watch. Anything `Equatable`.
-    ///   - repeated: what a change does while a run is under way.
+    ///   - gate: what the handler passes through: what a change does while a run is under way.
     ///   - handler: What to run once the value has moved.
     public func onChanged<Value: Equatable>(
         _ value: Value,
-        _ repeated: RepeatedEvent,
+        gate: some Gate,
         _ handler: @escaping EventHandler
     ) -> Modified {
-        modified { $0.watches.append(Watch(value, repeated) { _, _ in try await handler() }) }
+        modified { $0.watches.append(Watch(value, gate: gate) { _, _ in try await handler() }) }
     }
 
     /// A handler that awaits says what a change does while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what a change does while it runs: .onChanged(value, .cancelPrevious) { … } - or .ignoreWhileRunning, .waitForPrevious, .overlap")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onChanged(value, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onChanged<Value: Equatable>(
         _ value: Value,
         _ handler: @escaping EventHandler
@@ -107,24 +107,24 @@ extension ModifiableElement {
         _ value: Value,
         _ handler: @escaping @MainActor (Value, Value) throws -> Void
     ) -> Modified {
-        onChanged(value, .overlap) { old, new in try handler(old, new) }
+        onChanged(value, gate: .none) { old, new in try handler(old, new) }
     }
 
     /// The same, with a handler that awaits, handed the value it was and the
-    /// value it now is; `repeated` says what another change does while a run is
+    /// value it now is; its `gate` says what another change does while a run is
     /// under way.
     ///
     /// - Parameters:
     ///   - value: What to watch. Anything `Equatable`.
-    ///   - repeated: what a change does while a run is under way.
+    ///   - gate: what the handler passes through: what a change does while a run is under way.
     ///   - handler: What to run, given the old value and the new one.
     public func onChanged<Value: Equatable>(
         _ value: Value,
-        _ repeated: RepeatedEvent,
+        gate: some Gate,
         _ handler: @escaping ValueEventHandler<Value, Value>
     ) -> Modified {
         modified {
-            $0.watches.append(Watch(value, repeated) { old, new in
+            $0.watches.append(Watch(value, gate: gate) { old, new in
                 // Both casts hold by construction: a slot is written by one modifier.
                 guard let old = old as? Value, let new = new as? Value else { return }
 
@@ -134,7 +134,7 @@ extension ModifiableElement {
     }
 
     /// A handler that awaits says what a change does while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what a change does while it runs: .onChanged(value, .cancelPrevious) { … } - or .ignoreWhileRunning, .waitForPrevious, .overlap")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onChanged(value, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onChanged<Value: Equatable>(
         _ value: Value,
         _ handler: @escaping ValueEventHandler<Value, Value>

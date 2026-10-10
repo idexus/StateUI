@@ -24,26 +24,26 @@ extension ModifiableElement {
         modified { $0.addHandler(event, handler) }
     }
 
-    /// Hears one of this element's events with a handler that awaits; `repeated`
+    /// Hears one of this element's events with a handler that awaits; its `gate`
     /// says what the event does when it comes again while a run is under way.
     ///
-    ///     onEvent(TrafficLightContract.closed, .ignoreWhileRunning) { try await save() }
+    ///     onEvent(TrafficLightContract.closed, gate: .ignoreWhileRunning) { try await save() }
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - repeated: what a repeat of the event does while a run is under way.
+    ///   - gate: what the handler passes through: what an event does while a run is under way.
     ///   - handler: what runs.
     /// - Returns: the element, with the handler on it.
     public func onEvent<Owner: Contract>(
         _ event: ElementEvent<Owner, Void>,
-        _ repeated: RepeatedEvent,
+        gate: some Gate,
         _ handler: @escaping EventHandler
     ) -> Modified {
-        modified { $0.addHandler(event, repeated, handler) }
+        modified { $0.addHandler(event, gate: gate, handler) }
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: onEvent(event, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: onEvent(event, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onEvent<Owner: Contract>(
         _ event: ElementEvent<Owner, Void>,
         _ handler: @escaping EventHandler
@@ -72,26 +72,26 @@ extension ModifiableElement {
         modified { $0.addHandler(event, handler) }
     }
 
-    /// Hears one of this element's events with a handler that awaits; `repeated`
+    /// Hears one of this element's events with a handler that awaits; its `gate`
     /// says what the event does when it comes again while a run is under way.
     ///
-    ///     onEvent(TrafficLightContract.closed, .ignoreWhileRunning) { try await save() }
+    ///     onEvent(TrafficLightContract.lampTapped, gate: .ignoreWhileRunning) { lamp in try await save(lamp) }
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - repeated: what a repeat of the event does while a run is under way.
+    ///   - gate: what the handler passes through: what an event does while a run is under way.
     ///   - handler: given the value.
     /// - Returns: the element, with the handler on it.
     public func onEvent<Owner: Contract, Value: HostRepresentable>(
         _ event: ElementEvent<Owner, Value>,
-        _ repeated: RepeatedEvent,
+        gate: some Gate,
         _ handler: @escaping ValueEventHandler<Value>
     ) -> Modified {
-        modified { $0.addHandler(event, repeated, handler) }
+        modified { $0.addHandler(event, gate: gate, handler) }
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: onEvent(event, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: onEvent(event, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onEvent<Owner: Contract, Value: HostRepresentable>(
         _ event: ElementEvent<Owner, Value>,
         _ handler: @escaping ValueEventHandler<Value>
@@ -116,26 +116,26 @@ extension ModifiableElement {
         modified { $0.addHandler(event, handler) }
     }
 
-    /// Hears one of this element's events with a handler that awaits; `repeated`
+    /// Hears one of this element's events with a handler that awaits; its `gate`
     /// says what the event does when it comes again while a run is under way.
     ///
-    ///     onEvent(TrafficLightContract.closed, .ignoreWhileRunning) { try await save() }
+    ///     onEvent(GaugeContract.dimmed, gate: .cancelPrevious) { level, lit in try await show(level, lit) }
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - repeated: what a repeat of the event does while a run is under way.
+    ///   - gate: what the handler passes through: what an event does while a run is under way.
     ///   - handler: given the values.
     /// - Returns: the element, with the handler on it.
     public func onEvent<Owner: Contract, First: HostRepresentable, Second: HostRepresentable>(
         _ event: ElementEvent<Owner, (First, Second)>,
-        _ repeated: RepeatedEvent,
+        gate: some Gate,
         _ handler: @escaping ValueEventHandler<First, Second>
     ) -> Modified {
-        modified { $0.addHandler(event, repeated, handler) }
+        modified { $0.addHandler(event, gate: gate, handler) }
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: onEvent(event, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: onEvent(event, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onEvent<Owner: Contract, First: HostRepresentable, Second: HostRepresentable>(
         _ event: ElementEvent<Owner, (First, Second)>,
         _ handler: @escaping ValueEventHandler<First, Second>
@@ -160,28 +160,28 @@ extension ModifiableElement {
         modified { $0.addHandler(event, handler) }
     }
 
-    /// Hears one of this element's events with a handler that awaits; `repeated`
+    /// Hears one of this element's events with a handler that awaits; its `gate`
     /// says what the event does when it comes again while a run is under way.
     ///
-    ///     onEvent(TrafficLightContract.closed, .ignoreWhileRunning) { try await save() }
+    ///     onEvent(event, gate: .waitForPrevious) { first, second, third in try await keep(first, second, third) }
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - repeated: what a repeat of the event does while a run is under way.
+    ///   - gate: what the handler passes through: what an event does while a run is under way.
     ///   - handler: given the values.
     /// - Returns: the element, with the handler on it.
     public func onEvent<
         Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
     >(
         _ event: ElementEvent<Owner, (First, Second, Third)>,
-        _ repeated: RepeatedEvent,
+        gate: some Gate,
         _ handler: @escaping ValueEventHandler<First, Second, Third>
     ) -> Modified {
-        modified { $0.addHandler(event, repeated, handler) }
+        modified { $0.addHandler(event, gate: gate, handler) }
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: onEvent(event, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: onEvent(event, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onEvent<
         Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
     >(
@@ -194,7 +194,7 @@ extension ModifiableElement {
     /// Adds a handler beside any already there, by token - on this tier, so
     /// nothing reachable from a `Style` can put one in a bag of values.
     /// Design: docs/design/views/modifiers.md#a-handler-runs-beside-the-one-before
-    func addHandler(_ event: Event, _ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Modified {
-        modified { $0.addHandler(event, repeated, handler) }
+    func addHandler(_ event: Event, gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+        modified { $0.addHandler(event, gate: gate, handler) }
     }
 }

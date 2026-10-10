@@ -64,7 +64,7 @@ public struct Hear<Owner: Contract, Value: HostRepresentable & Sendable>: Worn {
     @MainActor
     public func worn<Element: ModifiableElement>(by element: Element) -> Element where Element.Modified == Element {
         let handler = handler
-        return element.onEvent(event, .overlap) { value in try await handler(value) }
+        return element.onEvent(event, gate: .none) { value in try await handler(value) }
     }
 }
 
@@ -90,7 +90,7 @@ where First: HostRepresentable & Sendable, Second: HostRepresentable & Sendable,
     @MainActor
     public func worn<Element: ModifiableElement>(by element: Element) -> Element where Element.Modified == Element {
         let handler = handler
-        return element.onEvent(event, .overlap) { first, second, third in try await handler(first, second, third) }
+        return element.onEvent(event, gate: .none) { first, second, third in try await handler(first, second, third) }
     }
 }
 
@@ -111,7 +111,7 @@ public struct HearDone<Owner: Contract>: Worn {
 
     public func worn<Element: ModifiableElement>(by element: Element) -> Element where Element.Modified == Element {
         let handler = handler
-        return element.onEvent(event, .overlap) { try await handler() }
+        return element.onEvent(event, gate: .none) { try await handler() }
     }
 }
 

@@ -116,19 +116,19 @@ enum Listings {
                     // in the HANDLER, because the walk fills it after the body
                     // that describes the view was built.
                     Button("Focus the first")
-                        .onClicked(.ignoreWhileRunning) {
+                        .onClicked(gate: .ignoreWhileRunning) {
                             try await field.focus()
                             says = "focused \(field)"
                         }
 
                     Button("Focus the second")
-                        .onClicked(.ignoreWhileRunning) {
+                        .onClicked(gate: .ignoreWhileRunning) {
                             try await note.focus()
                             says = "focused \(note)"
                         }
 
                     Button("Let go")
-                        .onClicked(.ignoreWhileRunning) {
+                        .onClicked(gate: .ignoreWhileRunning) {
                             try await field.unfocus()
                             says = "let go of \(field)"
                         }
@@ -412,7 +412,7 @@ enum Listings {
         /// One of the buttons, all of which look the same.
         private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
             Button(caption)
-                .onClicked(.cancelPrevious, act)
+                .onClicked(gate: .cancelPrevious, act)
         }
         """#,
         "AnimatedPropertySample": #"""
@@ -492,7 +492,7 @@ enum Listings {
         /// One of the buttons, all of which look the same.
         private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
             Button(caption)
-                .onClicked(.cancelPrevious, act)
+                .onClicked(gate: .cancelPrevious, act)
         }
         """#,
         "AnimationSample": #"""
@@ -538,7 +538,7 @@ enum Listings {
                 HStack {
                     // A movement answers whether it ran to the END. Stop says
                     // false - and a second press cancels this run, the buttons
-                    // saying `.cancelPrevious` - so the way back is not taken over
+                    // passing through `.cancelPrevious` - so the way back is not taken over
                     // whatever happened instead, which is what lets Stop leave the
                     // card where it stood.
                     button("Fade") {
@@ -586,7 +586,7 @@ enum Listings {
         /// One of the buttons, all of which look the same.
         private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
             Button(caption)
-                .onClicked(.cancelPrevious, act)
+                .onClicked(gate: .cancelPrevious, act)
         }
 
         /// The curve the picker is on.
@@ -886,6 +886,38 @@ enum Listings {
 
             var body: some View {
                 Text(text)
+            }
+        }
+        """#,
+        "AwaitingEvents": #"""
+        // Sources/Samples/State/GateSample.swift
+        @State private var count = 0
+        @State private var query = ""
+        @State private var found = "Nothing searched yet."
+        @State private var logging = false
+        @State private var logged = 0
+
+        var body: some View {
+            VStack {
+                // No await: the handler runs whole inside the press and names no gate.
+                Button("+1 - \(count)")
+                    .onClicked { count += 1 }
+
+                // Every letter cancels the search under way: only the last one finishes.
+                SearchField($query)
+                    .onTextChanged(gate: .cancelPrevious) { text in
+                        try await Task.sleep(for: .milliseconds(600))
+                        found = text.isEmpty ? "Nothing searched yet." : "Found 3 for \"\(text)\"."
+                    }
+                Text(found)
+
+                SwitchRow("Log each change", $logging)
+                Text("Changes logged: \(logged)")
+                    // Each change logged beside the others: nothing held back.
+                    .onChanged(logging, gate: .none) {
+                        try await Task.sleep(for: .milliseconds(800))
+                        logged += 1
+                    }
             }
         }
         """#,
@@ -1392,7 +1424,7 @@ enum Listings {
                 // The second press supersedes the first, whose write is refused.
                 Button("Press twice, quickly")
                     .horizontalAlignment(.center)
-                    .onClicked(.cancelPrevious) {
+                    .onClicked(gate: .cancelPrevious) {
                         try? await Task.sleep(for: .seconds(1))
                         presses += 1
                     }
@@ -1546,7 +1578,7 @@ enum Listings {
         /// is under way is let go.
         private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
             Button(caption)
-                .onClicked(.ignoreWhileRunning, act)
+                .onClicked(gate: .ignoreWhileRunning, act)
         }
         """#,
         "ConcurrentStateSample": #"""
@@ -1578,7 +1610,7 @@ enum Listings {
                 Button(running ? "Counting…" : "Count from 200 tasks at once")
                     .isEnabled(!running)
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         running = true
                         total = 0
                         expected = 200 * 100
@@ -2061,7 +2093,7 @@ enum Listings {
                 // One button, nothing to answer: the handler resumes when it is
                 // dismissed, so the next line runs with the alert already gone.
                 Button("Tell me something")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         try await Dialogs.alert(
                             "Saved", message: "The draft is safe")
                         answer = "the alert was dismissed"
@@ -2069,7 +2101,7 @@ enum Listings {
 
                 // Ask, await, branch - in one place, which is what an act is for.
                 Button("Ask me a question")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         let ok = try await Dialogs.confirm(
                             "Delete draft?", message: "This cannot be undone",
                             accept: "Delete", cancel: "Keep")
@@ -2080,7 +2112,7 @@ enum Listings {
                 // included - nil only when the sheet was dismissed with nothing
                 // chosen, tapping beside it where the platform allows that.
                 Button("Offer me choices")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         let choice = try await Dialogs.chooseAction(
                             "Share via", cancel: "Cancel", destruction: "Delete",
                             buttons: ["Mail", "Message"])
@@ -2091,7 +2123,7 @@ enum Listings {
                 // nil is CANCELLED; an accepted prompt with nothing typed comes
                 // back as "" - an empty answer, which is still an answer.
                 Button("Ask me to type")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         let typed = try await Dialogs.prompt(
                             "Rename", message: "A new name for the draft",
                             placeholder: "Name", initialValue: name, maximumLength: 40)
@@ -2487,7 +2519,7 @@ enum Listings {
 
                 // The contents go first; nil is a cancel.
                 Button("Save…")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         let text = FileType("Text", extensions: ["txt"])
                         saved = try await Dialogs.saveFile(Array(words.utf8), name: "Note", types: [text])
                         answer = saved.map { "saved as \($0.name)" } ?? "cancelled"
@@ -2495,7 +2527,7 @@ enum Listings {
 
                 // No file longer than 1 KB is read whole: one byte past it says it is longer.
                 Button("Open…")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         let text = FileType("Text", extensions: ["txt", "md"])
                         guard let file = try await Dialogs.openFile(types: [text]) else {
                             return answer = "cancelled"
@@ -2509,12 +2541,12 @@ enum Listings {
                 // The system opens it in the application it gives its kind.
                 Button("Launch the saved file")
                     .isEnabled(saved != nil)
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         if let saved { try await saved.launch() }
                     }
 
                 Button("Launch swift.org")
-                    .onClicked(.ignoreWhileRunning) { try await Links.launch("https://www.swift.org") }
+                    .onClicked(gate: .ignoreWhileRunning) { try await Links.launch("https://www.swift.org") }
 
                 // A text file dragged from the system onto it is read into the editor.
                 ZStack {
@@ -2524,7 +2556,7 @@ enum Listings {
                 .lineWidth(dropping ? 2 : 1)
                 .onDragOver { dropping = true }
                 .onDragLeave { dropping = false }
-                .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], .waitForPrevious) { files in
+                .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], gate: .waitForPrevious) { files in
                     dropping = false
                     let start = try await files[0].read(atMost: 1025)
                     guard start.count <= 1024 else { return answer = "\(files[0].name) is longer than 1 KB" }
@@ -3639,7 +3671,7 @@ enum Listings {
 
                 Button("Read again")
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) { try await read() }
+                    .onClicked(gate: .ignoreWhileRunning) { try await read() }
             }
             .onCreated { try await read() }
         }
@@ -3910,20 +3942,20 @@ enum Listings {
                 TextField($draft)
 
                 Button("Copy to the clipboard")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         try await stateUICall(GalleryContract.setClipboard, draft)
                         status = "copied"
                     }
 
                 Button("Paste from the clipboard")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         let text = try await stateUICall(GalleryContract.readClipboard)
                         draft = text
                         status = text.isEmpty ? "the clipboard is empty" : "pasted"
                     }
 
                 Button("Ask about the battery")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         let (level, charging) = try await stateUICall(GalleryContract.batteryLevel)
 
                         // A desktop without a battery answers 0, so only a level
@@ -3934,7 +3966,7 @@ enum Listings {
                     }
 
                 Button("Call something nobody registered")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         do {
                             try await stateUICall(GalleryContract.nobody)
                             status = "that should have thrown"
@@ -3949,7 +3981,7 @@ enum Listings {
                     .aim(stars)
 
                 Button("Flash the bar")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         try await stars.flash()
                         status = "flashed \(stars)"
                     }
@@ -4037,15 +4069,15 @@ enum Listings {
                 HStack {
                     Button("Focus first")
                         .horizontalAlignment(.fill)
-                        .onClicked(.ignoreWhileRunning) { try await first.focus() }
+                        .onClicked(gate: .ignoreWhileRunning) { try await first.focus() }
 
                     Button("Unfocus first")
                         .horizontalAlignment(.fill)
-                        .onClicked(.ignoreWhileRunning) { try await first.unfocus() }
+                        .onClicked(gate: .ignoreWhileRunning) { try await first.unfocus() }
                 }
 
                 Button("Close keyboard")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         said = try await OnScreenKeyboard.hide()
                             ? "Focus released"
                             : "Nothing was focused"
@@ -4512,7 +4544,7 @@ enum Listings {
                 }
                 // Within five items of the end, thirty more - one load at a time:
                 // reaching the end again while one runs lets that go.
-                .onEndReached(within: 5, .ignoreWhileRunning) {
+                .onEndReached(within: 5, gate: .ignoreWhileRunning) {
                     guard count < 300 else { return }
 
                     loading = true
@@ -4752,13 +4784,13 @@ enum Listings {
 
                 HStack {
                     Button("Old Town")
-                        .onClicked(.cancelPrevious) {
+                        .onClicked(gate: .cancelPrevious) {
                             try await map.moveToRegion(
                                 latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
                         }
 
                     Button("Poland")
-                        .onClicked(.cancelPrevious) {
+                        .onClicked(gate: .cancelPrevious) {
                             try await map.moveToRegion(
                                 latitude: 52.1, longitude: 19.4, radiusMeters: 350_000)
                         }
@@ -5272,17 +5304,17 @@ enum Listings {
 
                 Button("Close swatch 2")
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) { await closeSwatch(2) }
+                    .onClicked(gate: .ignoreWhileRunning) { await closeSwatch(2) }
 
                 SectionTitle("More gallery windows")
 
                 Button("New gallery window")
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) { await openAnother() }
+                    .onClicked(gate: .ignoreWhileRunning) { await openAnother() }
 
                 Button("Close every gallery window")
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) { await closeThis() }
+                    .onClicked(gate: .ignoreWhileRunning) { await closeThis() }
             }
         }
 
@@ -5297,13 +5329,13 @@ enum Listings {
         /// The button that opens one of the scene's windows.
         private func opens(_ caption: String, _ type: WindowType) -> some View {
             Button(caption)
-                .onClicked(.ignoreWhileRunning) { await open(type, caption) }
+                .onClicked(gate: .ignoreWhileRunning) { await open(type, caption) }
         }
 
         /// The button that closes it.
         private func closes(_ caption: String, _ type: WindowType) -> some View {
             Button(caption)
-                .onClicked(.ignoreWhileRunning) { await close(type, caption) }
+                .onClicked(gate: .ignoreWhileRunning) { await close(type, caption) }
         }
 
         /// Opens a window of the scene, and says what came of it.
@@ -5343,7 +5375,7 @@ enum Listings {
         /// The button that opens one swatch's window.
         private func swatch(_ number: Int) -> some View {
             Button("Swatch \(number)")
-                .onClicked(.ignoreWhileRunning) { await openSwatch(number) }
+                .onClicked(gate: .ignoreWhileRunning) { await openSwatch(number) }
         }
 
         /// Opens a swatch's window, and says what came of it.
@@ -5636,10 +5668,10 @@ enum Listings {
 
                 HStack {
                     Button("Top")
-                        .onClicked(.cancelPrevious) { try await move(to: 0) }
+                        .onClicked(gate: .cancelPrevious) { try await move(to: 0) }
 
                     Button("Line 9")
-                        .onClicked(.cancelPrevious) { try await move(to: 240) }
+                        .onClicked(gate: .cancelPrevious) { try await move(to: 240) }
                 }
                 .horizontalAlignment(.center)
                 .gridRow(1)
@@ -5736,6 +5768,60 @@ enum Listings {
 
                 SwitchRow("Cut what it holds", $clips)
             }
+        }
+        """#,
+        "OwnGates": #"""
+        // Sources/Samples/State/GateSample.swift
+        /// How many runs began, and how many came to their end.
+        struct Tally: Equatable {
+            var started = 0
+            var finished = 0
+        }
+
+        @State private var ignored = Tally()
+        @State private var cancelled = Tally()
+        @State private var waited = Tally()
+        @State private var unheld = Tally()
+
+        var body: some View {
+            VStack {
+                Text("Press each button three times, quickly.")
+
+                row("Ignore while running", ignored)
+                    .onClicked(gate: .ignoreWhileRunning) {
+                        ignored.started += 1
+                        try await Task.sleep(for: .milliseconds(1500))
+                        ignored.finished += 1
+                    }
+
+                // The run a press cancels ends at its sleep: what it would write
+                // after is never written.
+                row("Cancel previous", cancelled)
+                    .onClicked(gate: .cancelPrevious) {
+                        cancelled.started += 1
+                        try await Task.sleep(for: .milliseconds(1500))
+                        cancelled.finished += 1
+                    }
+
+                row("Wait for previous", waited)
+                    .onClicked(gate: .waitForPrevious) {
+                        waited.started += 1
+                        try await Task.sleep(for: .milliseconds(1500))
+                        waited.finished += 1
+                    }
+
+                row("None", unheld)
+                    .onClicked(gate: .none) {
+                        unheld.started += 1
+                        try await Task.sleep(for: .milliseconds(1500))
+                        unheld.finished += 1
+                    }
+            }
+        }
+
+        /// One button, and what its runs did so far.
+        private func row(_ caption: String, _ tally: Tally) -> Button {
+            Button("\(caption) - started \(tally.started), finished \(tally.finished)")
         }
         """#,
         "PacedStateSample": #"""
@@ -5975,10 +6061,10 @@ enum Listings {
             Grid {
                 HStack {
                     Button("Top")
-                        .onClicked(.cancelPrevious) { try await list.scrollTo(0, anchor: .start) }
+                        .onClicked(gate: .cancelPrevious) { try await list.scrollTo(0, anchor: .start) }
 
                     Button("Row 500")
-                        .onClicked(.cancelPrevious) { try await list.scrollTo(500, anchor: .start) }
+                        .onClicked(gate: .cancelPrevious) { try await list.scrollTo(500, anchor: .start) }
 
                     Button("Clear")
                         .isEnabled(!chosen.isEmpty)
@@ -6239,7 +6325,7 @@ enum Listings {
                         // content is laid out - asked earlier it clamps to the
                         // length it has so far - so this puts it there again
                         // until the card it was aimed at is where it was sent.
-                        .onFrameChanged(.cancelPrevious) { frame in
+                        .onFrameChanged(gate: .cancelPrevious) { frame in
                             guard !opened, frame.width != length else { return }
 
                             length = frame.width
@@ -7073,60 +7159,6 @@ enum Listings {
             }
         }
         """#,
-        "RepeatedEventSample": #"""
-        // Sources/Samples/State/RepeatedEventSample.swift
-        /// How many runs began, and how many came to their end.
-        struct Tally: Equatable {
-            var started = 0
-            var finished = 0
-        }
-
-        @State private var ignored = Tally()
-        @State private var cancelled = Tally()
-        @State private var waited = Tally()
-        @State private var overlapped = Tally()
-
-        var body: some View {
-            VStack {
-                Text("Press each button three times, quickly.")
-
-                row("Ignore while running", ignored)
-                    .onClicked(.ignoreWhileRunning) {
-                        ignored.started += 1
-                        try await Task.sleep(for: .milliseconds(1500))
-                        ignored.finished += 1
-                    }
-
-                // The run a press cancels ends at its sleep: what it would write
-                // after is never written.
-                row("Cancel previous", cancelled)
-                    .onClicked(.cancelPrevious) {
-                        cancelled.started += 1
-                        try await Task.sleep(for: .milliseconds(1500))
-                        cancelled.finished += 1
-                    }
-
-                row("Wait for previous", waited)
-                    .onClicked(.waitForPrevious) {
-                        waited.started += 1
-                        try await Task.sleep(for: .milliseconds(1500))
-                        waited.finished += 1
-                    }
-
-                row("Overlap", overlapped)
-                    .onClicked(.overlap) {
-                        overlapped.started += 1
-                        try await Task.sleep(for: .milliseconds(1500))
-                        overlapped.finished += 1
-                    }
-            }
-        }
-
-        /// One button, and what its runs did so far.
-        private func row(_ caption: String, _ tally: Tally) -> Button {
-            Button("\(caption) - started \(tally.started), finished \(tally.finished)")
-        }
-        """#,
         "RestStrips": #"""
         // Sources/Samples/Layout/ScrollViewSample.swift
         /// A strip of tiles a fixed distance apart - the shape both strips of the rest
@@ -7272,6 +7304,43 @@ enum Listings {
             }
         }
         """#,
+        "SaveAndDelete": #"""
+        // Sources/Samples/State/GateSample.swift
+        /// One gate for both of the document's actions.
+        @State private var document = SharedGate(.ignoreWhileRunning)
+        @State private var said = "Saved nothing yet."
+
+        var body: some View {
+            VStack {
+                Text("Press Save, then Delete while it saves.")
+
+                HStack {
+                    Button("Save")
+                        .isEnabled(!document.isBusy)
+                        .onClicked(gate: document) {
+                            said = "Saving…"
+                            try await Task.sleep(for: .milliseconds(1500))
+                            said = "Saved."
+                        }
+
+                    Button("Delete")
+                        .isEnabled(!document.isBusy)
+                        .onClicked(gate: document) {
+                            said = "Deleting…"
+                            try await Task.sleep(for: .milliseconds(1500))
+                            said = "Deleted."
+                        }
+                }
+
+                HStack {
+                    if document.isBusy {
+                        ActivityIndicator(true)
+                    }
+                    Text(said)
+                }
+            }
+        }
+        """#,
         "ScenesSample": #"""
         // Sources/Samples/Windows/ScenesSample.swift
         /// The application as it runs - which opens a window in the scene declaring it.
@@ -7284,11 +7353,11 @@ enum Listings {
             VStack {
                 Button("New scratchpad")
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) { await open(.scratchpad, "New scratchpad") }
+                    .onClicked(gate: .ignoreWhileRunning) { await open(.scratchpad, "New scratchpad") }
 
                 Button("About")
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) { await open(.about, "About") }
+                    .onClicked(gate: .ignoreWhileRunning) { await open(.about, "About") }
 
                 VStack {
                     DebugInfoLabel()
@@ -7340,10 +7409,10 @@ enum Listings {
 
                     HStack {
                         Button("Close this window")
-                            .onClicked(.ignoreWhileRunning) { try await window.close() }
+                            .onClicked(gate: .ignoreWhileRunning) { try await window.close() }
 
                         Button("Close every scratchpad")
-                            .onClicked(.ignoreWhileRunning) { try await scene.close() }
+                            .onClicked(gate: .ignoreWhileRunning) { try await scene.close() }
                     }
                     .horizontalAlignment(.end)
                 }
@@ -7566,7 +7635,7 @@ enum Listings {
                 // view can hold.
                 Button("Announce the count")
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         let words = "Tapped \(taps) time\(taps == 1 ? "" : "s")"
                         try await ScreenReader.announce(words)
                         said = words
@@ -8333,7 +8402,7 @@ enum Listings {
                     // A press while the loop runs cancels it - Stop, or Start
                     // straight after Reset - so no two loops count together.
                     Button(running ? "Stop" : "Start")
-                        .onClicked(.cancelPrevious) {
+                        .onClicked(gate: .cancelPrevious) {
                             if running {
                                 running = false
                                 return
@@ -9101,6 +9170,30 @@ enum Listings {
             }
         }
         """#,
+        "Uploads": #"""
+        // Sources/Samples/State/GateSample.swift
+        /// Nothing held back, and busy while any upload runs.
+        @State private var uploads = SharedGate(.none)
+        @State private var sent: [String] = []
+
+        private let files = ["notes.txt", "photo.png", "song.mp3"]
+
+        var body: some View {
+            VStack {
+                Text("Send all three, quickly.")
+
+                ForEach(files) { file in
+                    Button("Send \(file)")
+                        .onClicked(gate: uploads) {
+                            try await Task.sleep(for: .milliseconds(1500))
+                            sent.append(file)
+                        }
+                }
+
+                Text(uploads.isBusy ? "Uploading…" : "Sent: \(sent.isEmpty ? "nothing" : sent.joined(separator: ", "))")
+            }
+        }
+        """#,
         "VisualStateSample": #"""
         // Sources/Samples/Styles/VisualStateSample.swift
         @State private var enabled = true
@@ -9214,14 +9307,14 @@ enum Listings {
                     HStack {
                         Button("Back")
                             .isEnabled(hasBack)
-                            .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
+                            .onClicked(gate: .ignoreWhileRunning) { try await browser.goBack() }
 
                         Button("Forward")
                             .isEnabled(hasForward)
-                            .onClicked(.ignoreWhileRunning) { try await browser.goForward() }
+                            .onClicked(gate: .ignoreWhileRunning) { try await browser.goForward() }
 
                         Button("Reload")
-                            .onClicked(.ignoreWhileRunning) { try await browser.reload() }
+                            .onClicked(gate: .ignoreWhileRunning) { try await browser.reload() }
                     }
                     .horizontalAlignment(.center)
                 }
@@ -9254,7 +9347,7 @@ enum Listings {
 
                 Button("Title?")
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         answer = try await browser.evaluateJavaScript("document.title")
                     }
                     .gridRow(3)
@@ -9536,6 +9629,46 @@ enum Listings {
                 Switch(value)
                 Text(title).verticalAlignment(.center)
             }
+        }
+        """#,
+        "WorkFromCode": #"""
+        // Sources/Samples/State/GateSample.swift
+        /// A draft that saves through its own gate, whoever asks.
+        @MainActor
+        final class Draft {
+            let saving = SharedGate(.ignoreWhileRunning)
+            @State var saves = 0
+
+            /// Saves, unless a save is under way: the gate lets this one go.
+            func save() {
+                Task(gate: saving) {
+                    try await Task.sleep(for: .milliseconds(1500))
+                    self.saves += 1
+                }
+            }
+        }
+
+        @State private var draft = Draft()
+        @State private var autosave = Ticker(every: .seconds(3))
+
+        var body: some View {
+            VStack {
+                Text("Start the autosave, then press Save while it saves.")
+
+                HStack {
+                    // No await: the press asks the draft, whose own gate decides.
+                    Button("Save")
+                        .isEnabled(!draft.saving.isBusy)
+                        .onClicked { draft.save() }
+
+                    Button(autosave.isRunning ? "Stop autosave" : "Start autosave")
+                        .onClicked { autosave.isRunning ? autosave.stop() : autosave.start() }
+                }
+
+                Text(draft.saving.isBusy ? "Saving…" : "Saves: \(draft.saves)")
+            }
+            .onCreated { autosave.onTick = { draft.save() } }
+            .onDestroying { autosave.stop() }
         }
         """#,
         "WrittenInPlacePart": #"""

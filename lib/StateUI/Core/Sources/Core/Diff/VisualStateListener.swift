@@ -5,7 +5,7 @@
 /// Design: docs/design/views/styles.md#hearing-a-state
 struct VisualStateListener {
     let states: Set<String>?
-    let repeated: RepeatedEvent
+    let gate: any Gate
     let run: ValueEventHandler<String>
 
     func hears(_ name: String) -> Bool {

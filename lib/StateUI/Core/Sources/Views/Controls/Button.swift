@@ -57,7 +57,7 @@ extension ButtonProperties where Self: View {
 ///         .onClicked { counter += 1 }
 ///
 /// A handler runs on the main actor. One that awaits says what a click does
-/// while it runs - `.onClicked(.ignoreWhileRunning) { items = try await load() }` -
+/// while it runs - `.onClicked(gate: .ignoreWhileRunning) { items = try await load() }` -
 /// and the interface goes on updating while it is suspended.
 public struct Button: ElementView, TextualElement, FontElement, PaddingElement, BorderElement, ImageElement,
     ButtonProperties {
@@ -105,14 +105,14 @@ public struct Button: ElementView, TextualElement, FontElement, PaddingElement, 
         onEvent(ButtonContract.clicked, handler)
     }
 
-    /// Runs when the button is clicked, awaiting as it goes; `repeated` says what a
+    /// Runs when the button is clicked, awaiting as it goes; its `gate` says what a
     /// click does while a run is under way.
-    public func onClicked(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
-        onEvent(ButtonContract.clicked, repeated, handler)
+    public func onClicked(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(ButtonContract.clicked, gate: gate, handler)
     }
 
     /// A handler that awaits says what a click does while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onClicked(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClicked(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onClicked(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }
@@ -122,14 +122,14 @@ public struct Button: ElementView, TextualElement, FontElement, PaddingElement, 
         onEvent(ButtonContract.pressed, handler)
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onPressed(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
-        onEvent(ButtonContract.pressed, repeated, handler)
+    public func onPressed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(ButtonContract.pressed, gate: gate, handler)
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onPressed(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPressed(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onPressed(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }
@@ -140,14 +140,14 @@ public struct Button: ElementView, TextualElement, FontElement, PaddingElement, 
         onEvent(ButtonContract.released, handler)
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onReleased(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
-        onEvent(ButtonContract.released, repeated, handler)
+    public func onReleased(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(ButtonContract.released, gate: gate, handler)
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onReleased(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onReleased(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onReleased(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

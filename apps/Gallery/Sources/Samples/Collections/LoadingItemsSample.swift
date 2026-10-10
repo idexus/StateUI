@@ -31,7 +31,7 @@ private struct LoadingList: ExampleContent {
             }
             // Within five items of the end, thirty more - one load at a time:
             // reaching the end again while one runs lets that go.
-            .onEndReached(within: 5, .ignoreWhileRunning) {
+            .onEndReached(within: 5, gate: .ignoreWhileRunning) {
                 guard count < 300 else { return }
 
                 loading = true

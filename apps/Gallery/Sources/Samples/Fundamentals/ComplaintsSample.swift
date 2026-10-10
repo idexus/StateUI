@@ -31,7 +31,7 @@ struct ComplaintsSample: SampleContent, ExampleContent {
             // The second press supersedes the first, whose write is refused.
             Button("Press twice, quickly")
                 .horizontalAlignment(.center)
-                .onClicked(.cancelPrevious) {
+                .onClicked(gate: .cancelPrevious) {
                     try? await Task.sleep(for: .seconds(1))
                     presses += 1
                 }

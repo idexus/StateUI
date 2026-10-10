@@ -97,14 +97,14 @@ public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollView
         onEvent(ScrollViewContract.scrollStopped, handler)
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onScrollStopped(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
-        onEvent(ScrollViewContract.scrollStopped, repeated, handler)
+    public func onScrollStopped(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(ScrollViewContract.scrollStopped, gate: gate, handler)
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onScrollStopped(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onScrollStopped(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onScrollStopped(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

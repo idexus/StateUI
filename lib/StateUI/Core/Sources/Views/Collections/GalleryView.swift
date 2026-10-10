@@ -75,8 +75,8 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// the drag is measured from.
     @State private var dragged = 0.0
 
-    /// The runs of what `onPositionChanged` asked for: each its own, by its word.
-    @State private var positionRuns = RunSlot()
+    /// Who starts the runs of what `onPositionChanged` asked for, ended with the gallery.
+    @State private var positionRuns = RunOwner()
 
     /// Every card's placement, written by the engine on the host's frames.
     @State private var placements = PlacedRun()
@@ -91,10 +91,10 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     private var pin: Binding<Int>?
 
     /// What runs when the middle card changes, beside any binding, by its word on a repeat.
-    private var moved: (repeated: RepeatedEvent, handler: ValueEventHandler<Int>)?
+    private var moved: (gate: any Gate, handler: ValueEventHandler<Int>)?
 
     /// What runs when the user taps the run, by its word on a repeat.
-    private var tapped: (repeated: RepeatedEvent, handler: ValueEventHandler<Items.Element>)?
+    private var tapped: (gate: any Gate, handler: ValueEventHandler<Items.Element>)?
 
     /// Which shape the cards stand in.
     private var look = GalleryArrangement.default
@@ -194,19 +194,19 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// - Parameter handler: what to run, given the card's index.
     /// - Returns: the gallery, telling that handler.
     public func onPositionChanged(_ handler: @escaping @MainActor (Int) throws -> Void) -> Self {
-        onPositionChanged(.overlap) { try handler($0) }
+        onPositionChanged(gate: .none) { try handler($0) }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what another card coming to the middle does while
+    /// The same, with a handler that awaits: its `gate` says what another card coming to the middle does while
     /// a run is under way.
-    public func onPositionChanged(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<Int>) -> Self {
+    public func onPositionChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<Int>) -> Self {
         var copy = self
-        copy.moved = (repeated, handler)
+        copy.moved = (gate, handler)
         return copy
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onPositionChanged(.cancelPrevious) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPositionChanged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onPositionChanged(_ handler: @escaping ValueEventHandler<Int>) -> Self {
         fatalError("unavailable")
     }
@@ -223,21 +223,21 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// - Parameter handler: what to run, given the middle item.
     /// - Returns: the gallery, answering a tap.
     public func onItemTapped(_ handler: @escaping @MainActor (Items.Element) throws -> Void) -> Self {
-        onItemTapped(.overlap) { try handler($0) }
+        onItemTapped(gate: .none) { try handler($0) }
     }
 
-    /// The same, with a handler that awaits - opening a page does: `repeated` says what a tap does while a run
+    /// The same, with a handler that awaits - opening a page does: its `gate` says what a tap does while a run
     /// is under way.
     public func onItemTapped(
-        _ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<Items.Element>
+        gate: some Gate, _ handler: @escaping ValueEventHandler<Items.Element>
     ) -> Self {
         var copy = self
-        copy.tapped = (repeated, handler)
+        copy.tapped = (gate, handler)
         return copy
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onItemTapped(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onItemTapped(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onItemTapped(_ handler: @escaping ValueEventHandler<Items.Element>) -> Self {
         fatalError("unavailable")
     }
@@ -461,7 +461,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
                 // A reported position is where the run already is: it moves
                 // nothing, but the handler still hears it.
                 guard position != reports.wrappedValue else {
-                    if let moved { positionRuns.start({ try await moved.handler(position) }, moved.repeated, payload: nil) }
+                    if let moved { moved.gate.runs(for: positionRuns).start({ try await moved.handler(position) }, moved.gate.policy, payload: nil, owner: positionRuns) }
                     return
                 }
 
@@ -480,7 +480,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
                     flies.wrappedValue = false
                 }
 
-                if let moved { positionRuns.start({ try await moved.handler(position) }, moved.repeated, payload: nil) }
+                if let moved { moved.gate.runs(for: positionRuns).start({ try await moved.handler(position) }, moved.gate.policy, payload: nil, owner: positionRuns) }
             },
             wore: {
                 // The shape is worn a render late, so the cards are told they
@@ -521,7 +521,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
                         ZStack {
                             ColorBox(Color("#00000000"))
                                 .area(.absolute(at.x, at.y, at.width, at.height))
-                                .onTapped(tapped.repeated, answer)
+                                .onTapped(gate: tapped.gate, answer)
                         }
                     }
                 }
@@ -574,7 +574,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
         if let tapped, let answer {
             // The tap is answered on the card in front, as its shape draws it.
-            reader = reader.onTapped(within: drawn, tapped.repeated, answer)
+            reader = reader.onTapped(within: drawn, gate: tapped.gate, answer)
         }
 
         let deck = Grid {
@@ -828,7 +828,7 @@ private struct Turning: View {
             .width(0)
             .height(0)
             .ignoresInput(true)
-            .onChanged(position, .overlap) { try await turned(position) }
-            .onChanged(look, .overlap) { try await wore() }
+            .onChanged(position, gate: .none) { try await turned(position) }
+            .onChanged(look, gate: .none) { try await wore() }
     }
 }

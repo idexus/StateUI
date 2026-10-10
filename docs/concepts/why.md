@@ -91,9 +91,9 @@ struct ProfileCard: View {
 - **One declaration, its role decided by where it is used.** A model's
   `@State` is a view's `@State`: read in a body, a write builds that body
   again; handed to a control as `profile.$name`, it is carried by the host;
-  named in an engine's `following:`, a write wakes the engine; and its journey
-  is part of it. A model needs no second kind of state, and an author learns
-  one.
+  named in an engine's `following:` or `tracking:`, a write wakes the engine;
+  and its journey is part of it. A model needs no second kind of state, and an
+  author learns one.
 - **Precision.** The core records which state each body read while it was
   built, so `profile.visits += 1` builds again the bodies that read `visits`
   and none that read only `name`.
@@ -114,8 +114,8 @@ old values. A model another package owns is bridged by the application
 A state is discrete: `fade` is where the value is going. Where it is now, how
 fast it moves and under what law is `$fade.journey`, the same state seen in
 motion ([Motion and journeys](motion-and-journeys.md)). A state named in an
-engine's `following:` wakes the engine when it is written, whoever writes it;
-reading a state wakes nothing.
+engine's `following:` or `tracking:` wakes the engine when it is written,
+whoever writes it; reading a state wakes nothing.
 
 **Deliberately rejected:** a second declaration for a value that moves, a
 declared journey type, and an engine woken by what it reads. Each would double
@@ -186,19 +186,102 @@ view from other views by its type.
 **Deliberately rejected:** `any View` and type-erased wrappers in the public
 API, which would turn those compile errors into failures at run time.
 
+## A mistake is refused by its type, or said once
+
+Where a type can tell a mistake, the compiler refuses it: an awaiting handler
+with no gate, a write to a fact the host owns, a style key of another control.
+Where only running can tell, the library carries on with what it can use and
+says so once, naming what and where - a repeated identity, a key a state keeps
+and a list leaves out, a whole number past 2^53, and in a debug build a write
+built on a value another wrote while the handler waited. An application routes
+what the library says to its own log
+([Complaints](../interface/composition-and-identity.md#complaints)).
+
+**Deliberately rejected:** a mistake that compiles, passes its tests and does
+nothing, with no word of it; and stopping a shipped application for one the
+library can carry on past.
+
 ## A state belongs to the UI thread
 
 A `@State`, its bindings and its journey are read and written on `MainActor`,
 with no lock: a handler's lines run with nothing between them, and a write is
 what the next read sees. Another thread posts - `$x.post` - the one door in,
-landing on the UI thread in the order posted. A handler that awaits says what
-its event does when it comes again, and a run superseded changes nothing, so
-an older answer never overwrites a newer one.
+landing on the UI thread in the order posted.
 
 **Deliberately rejected:** state written from any thread under locks, where a
 write costs a lock, two writers interleave inside one change and an author
-reasons about threads in every handler; and a default for a repeated event,
-which would hide the one question an awaiting handler has to answer.
+reasons about threads in every handler.
+
+## An awaiting handler passes through a gate
+
+A handler with no `await` runs whole inside its event and names nothing. A
+handler that awaits can still be running when its event comes again, so it
+names a gate, which says what happens then: the event is let go, cancels the
+run before it, waits, or runs beside it
+([When the event comes again](../interface/concurrency.md#when-the-event-comes-again)):
+
+```swift
+@MainActor
+final class Document {
+    let saving = SharedGate(.ignoreWhileRunning)
+
+    func save() async {}
+    func autosave() { Task(gate: saving) { await self.save() } }
+}
+
+struct Toolbar: View {
+    let document: Document
+    @State private var query = ""
+    @State private var found = ""
+
+    var body: some View {
+        HStack {
+            Button("Save")
+                .isEnabled(!document.saving.isBusy)
+                .onClicked(gate: document.saving) { await document.save() }
+            SearchField($query)
+                .onTextChanged(gate: .cancelPrevious) { text in
+                    try await Task.sleep(for: .milliseconds(250))
+                    found = text
+                }
+        }
+    }
+}
+```
+
+- **The compiler asks the question, and only where there is one.** An
+  awaiting handler without a gate does not compile, and the message says what
+  to write; a handler with no `await` takes none.
+- **One gate for everything that touches one thing.** A policy given as the
+  gate is the handler's own; a `SharedGate` is shared by every handler and
+  task written with it - two buttons, an autosave - and its `isBusy` is a
+  state a body reads. The type says which kind a gate is: only a shared gate
+  has `isBusy`, and only it takes a task.
+- **One spelling.** Work passes a gate written `gate:` wherever it starts, an
+  event or the application's code.
+
+**Deliberately rejected:** a default gate, which would hide the one question
+an awaiting handler has to answer; a policy on each event
+alone, which leaves a save and a delete of one document unable to hold each
+other back; flags the author keeps, which take the compiler's question away;
+one gate per policy shared by the whole application, where a save on one page
+would hold back an unrelated button; and a second spelling for work started
+from code.
+
+## A run no longer wanted changes nothing
+
+A run that a later event cancels, whose task is cancelled, or whose element
+leaves the screen changes nothing from then on: its writes, movements, posts
+and acts are refused - on every state, a model the page does not own included
+- and each refusal is said once, naming what it refused. A slower, older
+search never overwrites a newer one, and a page already left never navigates.
+Work that must outlive its element goes to a task of its own, which no run's
+end refuses
+([Work that outlives its element](../interface/concurrency.md#work-that-outlives-its-element)).
+
+**Deliberately rejected:** cancellation that only asks, where a run that never
+checks for it writes on; and refusing only the page's own state, which would
+let a page already left write through a shared model.
 
 ## The library never imports Foundation
 

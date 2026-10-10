@@ -93,7 +93,7 @@ public struct TabView: ElementView, Arrangement, BarElement {
         }
 
         // The user's choice, as that index, written only when it moved.
-        copy.node.addHandler(TabViewContract.selectedTabChanged.token, .overlap) {
+        copy.node.addHandler(TabViewContract.selectedTabChanged.token, gate: .none) {
             guard let index = EventBuffer.current.value()?.int,
                   index >= 0, index < ordered.count,
                   // A binding of another type than the tabs names nothing.

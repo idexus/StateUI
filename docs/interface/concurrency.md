@@ -11,13 +11,13 @@ event loop.
 
 Every StateUI event, change, lifetime, ticker, and host-event handler runs on
 `MainActor`. It can read and write state directly and may call an asynchronous
-function - and then it says what the event does if it comes again while the
-handler is still running:
+function; an event, change or host-event handler that does names a gate, which
+says what happens when its event comes again while it is still running:
 
 ```swift
 @State var status = "Idle"
 
-Button("Load").onClicked(.ignoreWhileRunning) {
+Button("Load").onClicked(gate: .ignoreWhileRunning) {
     status = "Loading"
     try await Task.sleep(for: .milliseconds(100))
     status = "Ready"
@@ -30,32 +30,60 @@ loop. The host wakes for MainActor's jobs even when the awaited work was not a
 host action, so `Task.sleep`, task values, streams and continuations resume
 promptly, and a post made on another thread lands promptly.
 
-An uncaught handler error is reported through the active host. Use `do` and
-`catch` only when the application can recover or present a more useful state.
+An uncaught error of a run still wanted is reported through the active host;
+a superseded run's is refused with the rest of what it asks of the host. Use
+`do` and `catch` only when the application can recover or present a more
+useful state.
 
 ## When the event comes again
 
-A handler that awaits can still be running when its event comes again - a
-second click on Save, a newer search query, another drop. It says what happens
-then, as a `RepeatedEvent` written before the handler; there is no default, and
-a handler that awaits without one does not compile:
+A handler that awaits can still be running when an event comes again - a
+second click on Save, a newer search query, another drop. It passes through a
+gate, which says what happens then; there is no default, and a handler that
+awaits without one does not compile:
 
-| Word | The event that comes while a run is under way |
+| Gate | The event that comes while a run is under way |
 | --- | --- |
 | `.ignoreWhileRunning` | is let go - a save, an order, a dialog |
 | `.cancelPrevious` | cancels the run under way and starts its own - a search, a movement to a new place |
 | `.waitForPrevious` | waits, and runs after the runs before it, in the order they came |
-| `.overlap` | starts a run beside the ones under way |
+| `.none` | starts a run beside the ones under way |
 
 ```swift
 @State var query = ""
 @State var results: [String] = []
 
 TextField($query)
-    .onChanged(query, .cancelPrevious) {
+    .onChanged(query, gate: .cancelPrevious) {
         try await Task.sleep(for: .milliseconds(250))
         results = ["\(query) 1", "\(query) 2"]
     }
+```
+
+A policy given as the gate is the handler's own: two buttons written with
+`.ignoreWhileRunning` never hold each other back. Where several actions
+touch one thing - a save and a delete of one document - they pass through one
+`SharedGate`, kept in a state or a model, and its `isBusy` says whether a run
+is under way through it:
+
+```swift
+@MainActor
+final class Document {
+    func save() async {}
+    func delete() async {}
+}
+
+struct DocumentActions: View {
+    let document: Document
+    @State private var busy = SharedGate(.ignoreWhileRunning)
+
+    var body: some View {
+        HStack {
+            Button("Save").isEnabled(!busy.isBusy).onClicked(gate: busy) { await document.save() }
+            Button("Delete").isEnabled(!busy.isBusy).onClicked(gate: busy) { await document.delete() }
+        }
+    }
+}
 ```
 
 A handler that reads a state, awaits, and writes it from what it read loses
@@ -66,17 +94,59 @@ count` before it and `count = old + 1` after.
 A run that a later event cancels, or whose element leaves the screen, changes
 nothing from then on: its task is cancelled, and its state writes, movements,
 posts and acts are refused, each refusal said once - a slower, older search
-never overwrites a newer one, and a page already left never navigates. A task
-the run started is refused with it. A handler without an `await` names no
-`RepeatedEvent`: it runs whole inside its event, so nothing supersedes it.
+never overwrites a newer one, and a page already left never navigates. A
+`Task { }` or a child task the run started is refused with it; one started
+with `Task(gate:)` or `Task.detached` is not. An element leaving ends its own runs
+alone: in a shared gate, the others' runs go on. A handler without an `await`
+names no gate: it runs whole inside its event, so nothing supersedes it.
 `.onCreated` and `.onDestroying` name none either, as they come once.
+
+### Work started from code
+
+Work a model starts from its own code - an autosave, a refresh a timer asks
+for - passes a shared gate with `Task(gate:)`, as a handler written with the
+gate would. A save the user asks for and an autosave never run at once, and
+the gate's `isBusy` covers both:
+
+```swift
+@MainActor
+final class Draft {
+    let saving = SharedGate(.ignoreWhileRunning)
+    @State var saves = 0
+
+    func save() {
+        Task(gate: saving) {
+            try await Task.sleep(for: .milliseconds(200))
+            self.saves += 1
+        }
+    }
+}
+
+struct DraftActions: View {
+    let draft: Draft
+
+    var body: some View {
+        Button("Save")
+            .isEnabled(!draft.saving.isBusy)
+            .onClicked { draft.save() }
+    }
+}
+```
+
+The task is the run: awaiting its `value` waits for the work's end, cancelling
+it ends the run as a later event would - one still waiting its turn leaves the
+queue at once - and a task the gate lets go ends at once, its work not run. It belongs to the gate - not to an element, nor to the
+handler that started it - so no element leaving ends it. A task takes a
+`SharedGate` only: a policy alone has no element to keep its runs.
 
 ### Work that outlives its element
 
 A superseded run changes nothing anywhere - a model the page does not own
 included - and says so, naming what it refused. Work that must outlive its
 element - a save the user asked for before the sheet closed - goes to a task
-of its own, detached from the run, which no run's end refuses:
+of its own, detached from the run, which no run's end refuses. Awaited in the
+handler instead, the save would be the run's, which the sheet's leaving
+supersedes, and its write would be refused:
 
 ```swift
 @MainActor
@@ -153,7 +223,7 @@ elsewhere cannot touch it - the compiler refuses - and posts to it instead:
 ```swift
 @State var total = 0
 
-Button("Count").onClicked(.ignoreWhileRunning) {
+Button("Count").onClicked(gate: .ignoreWhileRunning) {
     let counter = $total
     await withTaskGroup(of: Void.self) { group in
         for _ in 0..<4 {
@@ -184,7 +254,7 @@ batch is not a transaction and their completions can arrive independently.
 Use `await` to express a dependency:
 
 ```swift quote
-Button("Rename and confirm").onClicked(.ignoreWhileRunning) {
+Button("Rename and confirm").onClicked(gate: .ignoreWhileRunning) {
     guard let name = try await Dialogs.prompt(
         "Rename", message: "New name", placeholder: "Name")
     else { return }

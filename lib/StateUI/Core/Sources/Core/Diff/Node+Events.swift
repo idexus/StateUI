@@ -16,30 +16,30 @@ extension Node {
         _ event: ElementEvent<Owner, Void>,
         _ handler: @escaping @MainActor () throws -> Void
     ) {
-        addHandler(event, .overlap) { try handler() }
+        addHandler(event, gate: .none) { try handler() }
     }
 
-    /// Hears one of this node's events with a handler that awaits; `repeated` says what the event does when it
+    /// Hears one of this node's events with a handler that awaits; its `gate` says what the event does when it
     /// comes again while a run is under way.
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - repeated: what a repeat of the event does while a run is under way.
+    ///   - gate: what the handler passes through: what an event does while a run is under way.
     ///   - handler: what runs.
     public mutating func addHandler<Owner: Contract>(
         _ event: ElementEvent<Owner, Void>,
-        _ repeated: RepeatedEvent,
+        gate: some Gate,
         _ handler: @escaping EventHandler
     ) {
-        addHandler(event.token, repeated) {
+        addHandler(event.token, gate: gate) {
             guard MemberValues.carried(EventBuffer.current, by: event.name) != nil else { return }
 
             try await handler()
         }
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: node.addHandler(event, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: node.addHandler(event, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public mutating func addHandler<Owner: Contract>(
         _ event: ElementEvent<Owner, Void>,
         _ handler: @escaping EventHandler
@@ -59,30 +59,30 @@ extension Node {
         _ event: ElementEvent<Owner, Value>,
         _ handler: @escaping @MainActor (Value) throws -> Void
     ) {
-        addHandler(event, .overlap) { (value) in try handler(value) }
+        addHandler(event, gate: .none) { (value) in try handler(value) }
     }
 
-    /// Hears one of this node's events with a handler that awaits; `repeated` says what the event does when it
+    /// Hears one of this node's events with a handler that awaits; its `gate` says what the event does when it
     /// comes again while a run is under way.
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - repeated: what a repeat of the event does while a run is under way.
+    ///   - gate: what the handler passes through: what an event does while a run is under way.
     ///   - handler: what runs.
     public mutating func addHandler<Owner: Contract, Value: HostRepresentable>(
         _ event: ElementEvent<Owner, Value>,
-        _ repeated: RepeatedEvent,
+        gate: some Gate,
         _ handler: @escaping ValueEventHandler<Value>
     ) {
-        addHandler(event.token, repeated) {
+        addHandler(event.token, gate: gate) {
             guard let value = MemberValues.carried(EventBuffer.current, by: event.name, as: Value.self) else { return }
 
             try await handler(value)
         }
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: node.addHandler(event, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: node.addHandler(event, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public mutating func addHandler<Owner: Contract, Value: HostRepresentable>(
         _ event: ElementEvent<Owner, Value>,
         _ handler: @escaping ValueEventHandler<Value>
@@ -102,22 +102,22 @@ extension Node {
         _ event: ElementEvent<Owner, (First, Second)>,
         _ handler: @escaping @MainActor (First, Second) throws -> Void
     ) {
-        addHandler(event, .overlap) { (first, second) in try handler(first, second) }
+        addHandler(event, gate: .none) { (first, second) in try handler(first, second) }
     }
 
-    /// Hears one of this node's events with a handler that awaits; `repeated` says what the event does when it
+    /// Hears one of this node's events with a handler that awaits; its `gate` says what the event does when it
     /// comes again while a run is under way.
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - repeated: what a repeat of the event does while a run is under way.
+    ///   - gate: what the handler passes through: what an event does while a run is under way.
     ///   - handler: what runs.
     public mutating func addHandler<Owner: Contract, First: HostRepresentable, Second: HostRepresentable>(
         _ event: ElementEvent<Owner, (First, Second)>,
-        _ repeated: RepeatedEvent,
+        gate: some Gate,
         _ handler: @escaping ValueEventHandler<First, Second>
     ) {
-        addHandler(event.token, repeated) {
+        addHandler(event.token, gate: gate) {
             guard let (first, second) = MemberValues.carried(
                 EventBuffer.current, by: event.name, as: First.self, Second.self)
             else { return }
@@ -126,8 +126,8 @@ extension Node {
         }
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: node.addHandler(event, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: node.addHandler(event, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public mutating func addHandler<Owner: Contract, First: HostRepresentable, Second: HostRepresentable>(
         _ event: ElementEvent<Owner, (First, Second)>,
         _ handler: @escaping ValueEventHandler<First, Second>
@@ -149,24 +149,24 @@ extension Node {
         _ event: ElementEvent<Owner, (First, Second, Third)>,
         _ handler: @escaping @MainActor (First, Second, Third) throws -> Void
     ) {
-        addHandler(event, .overlap) { (first, second, third) in try handler(first, second, third) }
+        addHandler(event, gate: .none) { (first, second, third) in try handler(first, second, third) }
     }
 
-    /// Hears one of this node's events with a handler that awaits; `repeated` says what the event does when it
+    /// Hears one of this node's events with a handler that awaits; its `gate` says what the event does when it
     /// comes again while a run is under way.
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - repeated: what a repeat of the event does while a run is under way.
+    ///   - gate: what the handler passes through: what an event does while a run is under way.
     ///   - handler: what runs.
     public mutating func addHandler<
         Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
     >(
         _ event: ElementEvent<Owner, (First, Second, Third)>,
-        _ repeated: RepeatedEvent,
+        gate: some Gate,
         _ handler: @escaping ValueEventHandler<First, Second, Third>
     ) {
-        addHandler(event.token, repeated) {
+        addHandler(event.token, gate: gate) {
             guard let (first, second, third) = MemberValues.carried(
                 EventBuffer.current, by: event.name, as: First.self, Second.self, Third.self)
             else { return }
@@ -175,8 +175,8 @@ extension Node {
         }
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: node.addHandler(event, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: node.addHandler(event, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public mutating func addHandler<
         Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
     >(

@@ -94,14 +94,14 @@ public struct TimePicker: ElementView, TextStyleElement, FontElement, TimePicker
         onEvent(TimePickerContract.timeChanged, handler)
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onTimeChanged(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<ClockTime>) -> Self {
-        onEvent(TimePickerContract.timeChanged, repeated, handler)
+    public func onTimeChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<ClockTime>) -> Self {
+        onEvent(TimePickerContract.timeChanged, gate: gate, handler)
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onTimeChanged(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTimeChanged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onTimeChanged(_ handler: @escaping ValueEventHandler<ClockTime>) -> Self {
         fatalError("unavailable")
     }
@@ -112,14 +112,14 @@ public struct TimePicker: ElementView, TextStyleElement, FontElement, TimePicker
         onEvent(TimePickerContract.opened, handler)
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onOpened(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
-        onEvent(TimePickerContract.opened, repeated, handler)
+    public func onOpened(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(TimePickerContract.opened, gate: gate, handler)
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onOpened(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onOpened(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onOpened(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }
@@ -129,14 +129,14 @@ public struct TimePicker: ElementView, TextStyleElement, FontElement, TimePicker
         onEvent(TimePickerContract.closed, handler)
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onClosed(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
-        onEvent(TimePickerContract.closed, repeated, handler)
+    public func onClosed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(TimePickerContract.closed, gate: gate, handler)
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onClosed(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClosed(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onClosed(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

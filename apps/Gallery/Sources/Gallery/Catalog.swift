@@ -85,7 +85,7 @@ final class Catalog {
                     Sample(PersistentStateSample()),
                     Sample(PacedStateSample()),
                     Sample(ConcurrentStateSample()),
-                    Sample(RepeatedEventSample()),
+                    Sample(GateSample()),
                 ]),
 
             SampleGroup(

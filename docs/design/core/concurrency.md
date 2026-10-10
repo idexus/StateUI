@@ -71,7 +71,9 @@ call without end while an engine runs.
 ## Handlers run where their event arrives
 
 A handler starts with `Task.immediate`, which runs it on the UI thread up to its
-first suspension before the call that raised the event returns. A handler with
+first suspension before the call that raised the event returns - unless its
+gate holds it back: a run that waits starts when the run before it ends, and
+one let go never starts. A handler with
 no `await` finishes inside its event, and the host renders what it wrote in the
 same turn. Only a handler that really awaits comes back later, on the same
 thread (render.md).

@@ -566,7 +566,7 @@ never against a stored copy
 | `Pages/` | scenes, windows, pages and their bars, the navigation stack, tabs, the split view, the modal stack, the environment a host writes |
 | `Acts/` | act calls and their shape, aims, host events |
 | `Views/` | controls, styles and visual states, colours and brushes, gestures, the frame reader, the gallery view, context menus, drawing transforms |
-| `Threading/` | the UI thread's executor and the doorbell, posts, what an event repeated does to its runs and a run superseded changes, acts sent from child tasks, no promise the compiler cannot check, every async function on its caller's executor, and the library's four rules: no Foundation, no `DispatchQueue.main` but the one drain, no `Timer` or `RunLoop`, no `strdup` |
+| `Threading/` | the UI thread's executor and the doorbell, posts, the gates a handler or a task passes through and what a superseded run changes, acts sent from child tasks, no promise the compiler cannot check, every async function on its caller's executor, and the library's four rules: no Foundation, no `DispatchQueue.main` but the one drain, no `Timer` or `RunLoop`, no `strdup` |
 | `Project/` | the guards below |
 | `Support/` | what the tests share: a differ to talk to, a patch printed readably, the dictionary's rendering, the applications' sources as files |
 

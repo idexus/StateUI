@@ -478,7 +478,7 @@ The switches write what the runtime does as text to the standard error, which
 an Android application sends to logcat:
 
 - `STATEUI_TALLY=1` - the running totals: messages applied, controls made and
-  kept, renders, the elements alive, the handler runs under way and the host's
+  kept, renders, the elements alive, the runs under way or waiting and the host's
   own views alive, the numbers that tell a page left in memory from one let go;
 - `STATEUI_INSPECT=1` - every render the inspector records, from the first.
 

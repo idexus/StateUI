@@ -194,7 +194,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
     /// is under way is let go.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
-            .onClicked(.ignoreWhileRunning, act)
+            .onClicked(gate: .ignoreWhileRunning, act)
     }
     // listing: end
 }

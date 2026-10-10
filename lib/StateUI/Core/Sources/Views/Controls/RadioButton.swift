@@ -81,14 +81,14 @@ public struct RadioButton: ElementView, TextualElement, FontElement, PaddingElem
         onEvent(RadioButtonContract.toggled, handler)
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onToggled(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<Bool>) -> Self {
-        onEvent(RadioButtonContract.toggled, repeated, handler)
+    public func onToggled(gate: some Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Self {
+        onEvent(RadioButtonContract.toggled, gate: gate, handler)
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onToggled(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onToggled(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
         fatalError("unavailable")
     }

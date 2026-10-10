@@ -443,8 +443,8 @@
                     Opened.aimed(Specimens.view(element, [
                         Hear(VisualElementContract.isFocusedChanged) { heard.values.append($0) },
                     ]), by: aim)
-                    Button("Focus").onClicked(.ignoreWhileRunning) { took.values.append(try await aim.focus()) }.id("focus")
-                    Button("Unfocus").onClicked(.ignoreWhileRunning) { try await aim.unfocus() }.id("unfocus")
+                    Button("Focus").onClicked(gate: .ignoreWhileRunning) { took.values.append(try await aim.focus()) }.id("focus")
+                    Button("Unfocus").onClicked(gate: .ignoreWhileRunning) { try await aim.unfocus() }.id("unfocus")
                 }
             }
             let view = try s.element("specimen")

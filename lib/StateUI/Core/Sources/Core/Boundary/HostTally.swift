@@ -16,6 +16,6 @@
     /// How many rendered elements are alive now.
     public let alive: Int
 
-    /// How many handler runs are under way now.
+    /// How many runs are under way or wait their turn now - a handler's, or a task's through a gate.
     public let runs: Int
 }

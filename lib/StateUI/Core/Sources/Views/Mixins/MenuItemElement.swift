@@ -41,17 +41,17 @@ extension MenuItemElement where Modified == Self {
     /// What it does - run when the item is chosen, clicked or tapped. A second
     /// `.onClicked` runs beside the first, like every typed event modifier.
     public func onClicked(_ handler: @escaping @MainActor () throws -> Void) -> Self {
-        onClicked(.overlap) { try handler() }
+        onClicked(gate: .none) { try handler() }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onClicked(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
-        modified { $0.addHandler(MenuItemElementContract.clicked.token, repeated, handler) }
+    public func onClicked(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        modified { $0.addHandler(MenuItemElementContract.clicked.token, gate: gate, handler) }
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onClicked(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClicked(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onClicked(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

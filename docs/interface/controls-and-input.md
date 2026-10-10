@@ -262,7 +262,7 @@ answer and not a failure:
 @State var said = ""
 
 Button("Close keyboard")
-    .onClicked(.ignoreWhileRunning) {
+    .onClicked(gate: .ignoreWhileRunning) {
         said = try await OnScreenKeyboard.hide()
             ? "Focus released"
             : "Nothing was focused"
@@ -436,11 +436,11 @@ Grid {
     HStack {
         Button("Back")
             .isEnabled(canGoBack)
-            .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
+            .onClicked(gate: .ignoreWhileRunning) { try await browser.goBack() }
         Button("Reload")
-            .onClicked(.ignoreWhileRunning) { try await browser.reload() }
+            .onClicked(gate: .ignoreWhileRunning) { try await browser.reload() }
         Button("Title?")
-            .onClicked(.ignoreWhileRunning) { title = try await browser.evaluateJavaScript("document.title") }
+            .onClicked(gate: .ignoreWhileRunning) { title = try await browser.evaluateJavaScript("document.title") }
     }
     WebView("https://example.com")
         .canGoBack($canGoBack)
@@ -531,7 +531,7 @@ aim, which slides the map there:
 @Aim(Map.self) var map
 
 Button("Kraków")
-    .onClicked(.cancelPrevious) { try await map.moveToRegion(latitude: 50.06, longitude: 19.94, radiusMeters: 2000) }
+    .onClicked(gate: .cancelPrevious) { try await map.moveToRegion(latitude: 50.06, longitude: 19.94, radiusMeters: 2000) }
 ```
 
 `showsUserLocation(true)` draws the user's own position. The platform asks
@@ -574,7 +574,7 @@ struct ContactsPage: View {
             .gridRow(0)
 
             Button("Back to the top")
-                .onClicked(.cancelPrevious) { try await list.scrollTo(contacts[0].name, anchor: .start) }
+                .onClicked(gate: .cancelPrevious) { try await list.scrollTo(contacts[0].name, anchor: .start) }
                 .gridRow(1)
         }
         .rows(.fill, .auto)

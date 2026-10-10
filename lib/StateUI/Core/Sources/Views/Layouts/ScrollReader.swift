@@ -32,14 +32,14 @@ public struct ScrollReader: View {
     private var scroller: Aim<ScrollView>?
 
     /// What runs when the scroller comes to rest, if anything.
-    private var stopped: (repeated: RepeatedEvent, handler: EventHandler)?
-    private var tapped: (repeated: RepeatedEvent, handler: EventHandler)?
+    private var stopped: (gate: any Gate, handler: EventHandler)?
+    private var tapped: (gate: any Gate, handler: EventHandler)?
 
     /// Where in the room a tap is answered, given the room; nil for all of it.
     private var target: ((Rect) -> Rect)?
 
     /// What runs while a finger or a mouse drags the run, if anything.
-    private var dragged: (repeated: RepeatedEvent, handler: ValueEventHandler<PanUpdate>)?
+    private var dragged: (gate: any Gate, handler: ValueEventHandler<PanUpdate>)?
 
     /// Where the scroller's run is laid out, as the platform reports it, where a reader in this module asked.
     private var laid: Binding<Rect>?
@@ -111,19 +111,19 @@ public struct ScrollReader: View {
     /// - Parameter handler: what to run once the scroller has stopped.
     /// - Returns: the reader, answering its scroller coming to rest.
     public func onScrollStopped(_ handler: @escaping @MainActor () throws -> Void) -> ScrollReader {
-        onScrollStopped(.overlap) { try handler() }
+        onScrollStopped(gate: .none) { try handler() }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the scroller coming to rest does while a run
+    /// The same, with a handler that awaits: its `gate` says what the scroller coming to rest does while a run
     /// is under way.
-    public func onScrollStopped(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> ScrollReader {
+    public func onScrollStopped(gate: some Gate, _ handler: @escaping EventHandler) -> ScrollReader {
         var copy = self
-        copy.stopped = (repeated, handler)
+        copy.stopped = (gate, handler)
         return copy
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onScrollStopped(.cancelPrevious) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onScrollStopped(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onScrollStopped(_ handler: @escaping EventHandler) -> ScrollReader {
         fatalError("unavailable")
     }
@@ -134,18 +134,18 @@ public struct ScrollReader: View {
     /// - Parameter handler: what to run when the run is tapped.
     /// - Returns: the reader, answering a tap.
     public func onTapped(_ handler: @escaping @MainActor () throws -> Void) -> ScrollReader {
-        onTapped(.overlap) { try handler() }
+        onTapped(gate: .none) { try handler() }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what a tap does while a run is under way.
-    public func onTapped(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> ScrollReader {
+    /// The same, with a handler that awaits: its `gate` says what a tap does while a run is under way.
+    public func onTapped(gate: some Gate, _ handler: @escaping EventHandler) -> ScrollReader {
         var copy = self
-        copy.tapped = (repeated, handler)
+        copy.tapped = (gate, handler)
         return copy
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onTapped(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onTapped(_ handler: @escaping EventHandler) -> ScrollReader {
         fatalError("unavailable")
     }
@@ -157,21 +157,21 @@ public struct ScrollReader: View {
     /// - Parameter handler: what to run as the drag goes on.
     /// - Returns: the reader, answering a drag.
     public func onPanUpdated(_ handler: @escaping @MainActor (PanUpdate) throws -> Void) -> ScrollReader {
-        onPanUpdated(.overlap) { try handler($0) }
+        onPanUpdated(gate: .none) { try handler($0) }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what a report of the drag does while a run is
+    /// The same, with a handler that awaits: its `gate` says what a report of the drag does while a run is
     /// under way.
     public func onPanUpdated(
-        _ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<PanUpdate>
+        gate: some Gate, _ handler: @escaping ValueEventHandler<PanUpdate>
     ) -> ScrollReader {
         var copy = self
-        copy.dragged = (repeated, handler)
+        copy.dragged = (gate, handler)
         return copy
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onPanUpdated(.cancelPrevious) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPanUpdated(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onPanUpdated(_ handler: @escaping ValueEventHandler<PanUpdate>) -> ScrollReader {
         fatalError("unavailable")
     }
@@ -191,23 +191,23 @@ public struct ScrollReader: View {
         within area: @escaping (Rect) -> Rect,
         _ handler: @escaping @MainActor () throws -> Void
     ) -> ScrollReader {
-        onTapped(within: area, .overlap) { try handler() }
+        onTapped(within: area, gate: .none) { try handler() }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what a tap does while a run is under way.
+    /// The same, with a handler that awaits: its `gate` says what a tap does while a run is under way.
     public func onTapped(
         within area: @escaping (Rect) -> Rect,
-        _ repeated: RepeatedEvent,
+        gate: some Gate,
         _ handler: @escaping EventHandler
     ) -> ScrollReader {
         var copy = self
-        copy.tapped = (repeated, handler)
+        copy.tapped = (gate, handler)
         copy.target = area
         return copy
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onTapped(within: area, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(within: area, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onTapped(within area: @escaping (Rect) -> Rect, _ handler: @escaping EventHandler) -> ScrollReader {
         fatalError("unavailable")
     }
@@ -347,8 +347,10 @@ extension ScrollView {
 
     /// The scroller answering its own rest, where asked: an unwanted handler is
     /// an event subscribed to on every platform.
-    func stopping(_ handler: (repeated: RepeatedEvent, handler: EventHandler)?) -> ScrollView {
-        handler.map { onScrollStopped($0.repeated, $0.handler) } ?? self
+    func stopping(_ handler: (gate: any Gate, handler: EventHandler)?) -> ScrollView {
+        guard let handler else { return self }
+
+        return onScrollStopped(gate: handler.gate, handler.handler)
     }
 
     /// The scroller carried on the offset state, where one was given: a
@@ -367,14 +369,16 @@ extension VisualElement where Modified == Self {
 
 extension ColorBox {
     /// The box answering a drag, where one was asked for.
-    func dragging(_ handler: (repeated: RepeatedEvent, handler: ValueEventHandler<PanUpdate>)?) -> ColorBox {
+    func dragging(_ handler: (gate: any Gate, handler: ValueEventHandler<PanUpdate>)?) -> ColorBox {
         guard let handler else { return self }
 
-        return onPanUpdated(handler.repeated, handler.handler)
+        return onPanUpdated(gate: handler.gate, handler.handler)
     }
 
     /// The box answering a tap, where one was asked for.
-    func tapping(_ handler: (repeated: RepeatedEvent, handler: EventHandler)?) -> ColorBox {
-        handler.map { onTapped($0.repeated, $0.handler) } ?? self
+    func tapping(_ handler: (gate: any Gate, handler: EventHandler)?) -> ColorBox {
+        guard let handler else { return self }
+
+        return onTapped(gate: handler.gate, handler.handler)
     }
 }

@@ -58,7 +58,7 @@ design notes beside them.
   render diagnostics.
 - [Concurrency](interface/concurrency.md) defines handler isolation on
   `MainActor`, what an awaiting handler does when its event comes again
-  (`RepeatedEvent`), a run superseded, posting to state from other threads,
+  (`Gate`, `SharedGate`, `Task(gate:)`), a run superseded, posting to state from other threads,
   `Ticker`, and the application module's compiler setting.
 
 ## Internals

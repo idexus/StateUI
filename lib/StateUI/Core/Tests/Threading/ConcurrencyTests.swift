@@ -37,7 +37,7 @@ private struct PressCard: Element {
 
         return Button("Go")
             .aim(press)
-            .onClicked(.overlap) {
+            .onClicked(gate: .none) {
                 _ = try await press.focus()
                 async let restored: Bool = press.focus()
                 try await action()
@@ -88,7 +88,7 @@ final class ConcurrencyTests: XCTestCase {
         let laps = 40
         let patch = renders.render(
             Button("Play")
-                .onClicked(.overlap) {
+                .onClicked(gate: .none) {
                     for _ in 0..<laps {
                         // Two acts in flight at once, from two pool threads -
                         // the shape the gallery's concurrent sample has, and
@@ -144,7 +144,7 @@ final class ConcurrencyTests: XCTestCase {
 
         let patch = renders.render(
             Button("Go")
-                .onClicked(.overlap) {
+                .onClicked(gate: .none) {
                     _ = try await named("a", ColorBox.self).focus()
                     async let restored: Bool = named("a", ColorBox.self).focus()
                     _ = try await named("b", ColorBox.self).focus()
@@ -235,7 +235,7 @@ final class ConcurrencyTests: XCTestCase {
 
         let patch = renders.render(
             Button("Go")
-                .onClicked(.overlap) {
+                .onClicked(gate: .none) {
                     _ = try await named("a", ColorBox.self).focus()
                     async let restored: Bool = named("a", ColorBox.self).focus()
                     _ = try await named("b", ColorBox.self).focus()
@@ -277,7 +277,7 @@ final class ConcurrencyTests: XCTestCase {
 
         let patch = renders.render(
             Button("Go")
-                .onClicked(.overlap) {
+                .onClicked(gate: .none) {
                     _ = try await named("a", ColorBox.self).focus()
                     reached = true
                 }

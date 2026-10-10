@@ -78,7 +78,8 @@ window its size, and the platform acts on the message that makes the element:
 a page presented without its style is presented wrong.
 
 So after the walk, the handlers it found - `.onDestroying` of what left, then
-`.onCreated` and `.onChanged` in the order they were reached - run at once,
+`.onCreated`, `.onChanged` and `.onVisualStateChanged` in the order they were
+reached - run at once,
 each up to its first suspension. What they wrote is walked and merged into
 the same message, up to `settleLimit` passes. Three passes cover a handler
 that writes, a view that arrives with a handler of its own that writes, and
@@ -108,11 +109,12 @@ suspend. There are three ways in, one path each:
 
 ```text
   start(registration)  an event the host dispatched: the payload is read NOW,
-                       each of the event's handlers handed to its RunSlot,
-                       which starts a run as its RepeatedEvent says (runs.md)
-  run(fired)           a handler a render's walk found, run in a settle pass
-                       in its element's RunSlot; a farewell (.onDestroying)
-                       through begin, a plain Task.immediate with no run
+                       each of the event's handlers handed to its gate's
+                       RunSlot, which starts a run as the gate says (runs.md)
+  run(fired)           a handler a render's walk found, started in a settle
+                       pass through its gate, under an owner its element's
+                       RunSlots keep; a farewell (.onDestroying) through
+                       begin, a plain Task.immediate with no run
   queue(fired)         a handler found with no settle pass left: libraryTask,
                        a later turn of the UI thread
 ```

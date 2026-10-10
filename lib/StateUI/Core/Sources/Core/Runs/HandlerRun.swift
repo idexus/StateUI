@@ -3,8 +3,8 @@
 
 import Synchronization
 
-/// One run of a handler, which a later event or its element leaving can supersede; the run's task and every
-/// task under it read it as `HandlerRun.current`.
+/// One run - of a handler, or of a task through a gate - which a later event, its task's cancellation or its element
+/// leaving can supersede; the run's task and every task under it read it as `HandlerRun.current`.
 /// Design: docs/design/core/runs.md#a-superseded-run
 final class HandlerRun: Sendable {
     /// The run the calling task belongs to; nil outside every handler.
@@ -59,8 +59,8 @@ final class HandlerRun: Sendable {
     static func admits(_ what: @autoclosure () -> String) -> Bool {
         guard supersededUnderWay.load(ordering: .relaxed) > 0, let run = current, run.superseded else { return true }
 
-        complain("\(what()) came from a run of a handler that a later event, or its element leaving, superseded; "
-            + "it was refused. A run that awaits changes nothing once superseded: work that must outlive its element "
+        complain("\(what()) came from a run that a later event, its task's cancellation or its element leaving "
+            + "superseded; it was refused. A run changes nothing once superseded: work that must outlive its element "
             + "- a save after the sheet closed - goes to a task of its own, `Task.detached { await model.save() }`.")
         return false
     }

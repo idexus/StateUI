@@ -162,7 +162,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                     // content is laid out - asked earlier it clamps to the
                     // length it has so far - so this puts it there again
                     // until the card it was aimed at is where it was sent.
-                    .onFrameChanged(.cancelPrevious) { frame in
+                    .onFrameChanged(gate: .cancelPrevious) { frame in
                         guard !opened, frame.width != length else { return }
 
                         length = frame.width

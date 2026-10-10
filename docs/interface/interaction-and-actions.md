@@ -36,7 +36,7 @@ its handler starts, so the handler observes the new state. Programmatic writes
 do not dispatch user events.
 
 A handler may throw. One that awaits says what its event does when it comes
-again while it runs - `.onClicked(.ignoreWhileRunning) { … }` - and continues on
+again while it runs - `.onClicked(gate: .ignoreWhileRunning) { … }` - and continues on
 StateUI's UI isolation domain after each suspension. An uncaught error is
 reported through the host rather than being discarded.
 [Concurrency](concurrency.md#when-the-event-comes-again) defines the execution
@@ -128,7 +128,7 @@ kinds it lists:
 
 ```swift quote
 ZStack { Text("Drop a report here") }
-    .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], .waitForPrevious) { files in
+    .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], gate: .waitForPrevious) { files in
         report = String(decoding: try await files[0].read(), as: UTF8.self)
     }
 ```
@@ -154,8 +154,8 @@ struct FocusForm: View {
     var body: some View {
         VStack {
             TextField($text).aim(field)
-            Button("Edit").onClicked(.ignoreWhileRunning) { try await field.focus() }
-            Button("Done").onClicked(.ignoreWhileRunning) { try await field.unfocus() }
+            Button("Edit").onClicked(gate: .ignoreWhileRunning) { try await field.focus() }
+            Button("Done").onClicked(gate: .ignoreWhileRunning) { try await field.unfocus() }
         }
     }
 }
@@ -179,7 +179,7 @@ keyboard when the application does not hold that control's aim.
 Dialogs are sequential host actions rather than tree nodes:
 
 ```swift quote
-Button("Delete").onClicked(.ignoreWhileRunning) {
+Button("Delete").onClicked(gate: .ignoreWhileRunning) {
     let confirmed = try await Dialogs.confirm(
         "Delete draft?",
         message: "This cannot be undone",
@@ -209,17 +209,17 @@ struct ReportPage: View {
 
     var body: some View {
         VStack {
-            Button("Save report…").onClicked(.ignoreWhileRunning) {
+            Button("Save report…").onClicked(gate: .ignoreWhileRunning) {
                 let page = FileType("HTML page", extensions: ["html"])
                 let saved = try await Dialogs.saveFile(
                     Array(report.utf8), name: "Report", types: [page])
                 if let saved { try await saved.launch() }
             }
-            Button("Open…").onClicked(.ignoreWhileRunning) {
+            Button("Open…").onClicked(gate: .ignoreWhileRunning) {
                 guard let file = try await Dialogs.openFile() else { return }
                 opened = String(decoding: try await file.read(), as: UTF8.self)
             }
-            Button("Help").onClicked(.ignoreWhileRunning) {
+            Button("Help").onClicked(gate: .ignoreWhileRunning) {
                 try await Links.launch("https://www.swift.org")
             }
         }
@@ -254,7 +254,7 @@ struct NotePage: View {
     @State private var note = ""
 
     var body: some View {
-        Button("Open a note…").onClicked(.ignoreWhileRunning) {
+        Button("Open a note…").onClicked(gate: .ignoreWhileRunning) {
             guard let file = try await Dialogs.openFile() else { return }
             let start = try await file.read(atMost: 1025)
             note = start.count > 1024
@@ -282,7 +282,7 @@ enum NotesContract: ApplicationTier {
 
 @State var location = ""
 
-Button("Export").onClicked(.ignoreWhileRunning) {
+Button("Export").onClicked(gate: .ignoreWhileRunning) {
     location = try await stateUICall(NotesContract.exportDocument, "draft-7")
 }
 ```
@@ -356,7 +356,7 @@ struct ImportStatus: View {
 ```
 
 A handler that awaits names what a raise does while it runs, as an element's
-event does: `HostEvents.on(NotesContract.importFinished, .waitForPrevious) {
+event does: `HostEvents.on(NotesContract.importFinished, gate: .waitForPrevious) {
 location in … }`.
 
 A raise carrying values of another shape is reported once and reaches no

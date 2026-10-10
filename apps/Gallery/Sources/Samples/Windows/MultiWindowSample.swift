@@ -85,19 +85,19 @@ struct MultiWindowSample: SampleContent, ExampleContent {
 
             Button("Close swatch 2")
                 .horizontalAlignment(.center)
-                .onClicked(.ignoreWhileRunning) { await closeSwatch(2) }
+                .onClicked(gate: .ignoreWhileRunning) { await closeSwatch(2) }
 
             SectionTitle("More gallery windows")
 
             Button("New gallery window")
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.open")
-                .onClicked(.ignoreWhileRunning) { await openAnother() }
+                .onClicked(gate: .ignoreWhileRunning) { await openAnother() }
 
             Button("Close every gallery window")
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.close")
-                .onClicked(.ignoreWhileRunning) { await closeThis() }
+                .onClicked(gate: .ignoreWhileRunning) { await closeThis() }
         }
         .spacing(12)
     }
@@ -127,14 +127,14 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     private func opens(_ caption: String, _ type: WindowType) -> some View {
         Button(caption)
             .accessibilityIdentifier(handle("window.open", caption))
-            .onClicked(.ignoreWhileRunning) { await open(type, caption) }
+            .onClicked(gate: .ignoreWhileRunning) { await open(type, caption) }
     }
 
     /// The button that closes it.
     private func closes(_ caption: String, _ type: WindowType) -> some View {
         Button(caption)
             .accessibilityIdentifier(handle("window.close", caption))
-            .onClicked(.ignoreWhileRunning) { await close(type, caption) }
+            .onClicked(gate: .ignoreWhileRunning) { await close(type, caption) }
     }
 
     /// Opens a window of the scene, and says what came of it.
@@ -178,7 +178,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             .textColor(.white)
             .shape(.roundedRectangle(8))
             .accessibilityIdentifier("window.open.swatch.\(number)")
-            .onClicked(.ignoreWhileRunning) { await openSwatch(number) }
+            .onClicked(gate: .ignoreWhileRunning) { await openSwatch(number) }
     }
 
     /// Opens a swatch's window, and says what came of it.

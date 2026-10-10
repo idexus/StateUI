@@ -36,7 +36,7 @@ struct TaskSleepSample: SampleContent, ExampleContent {
                 // A press while the loop runs cancels it - Stop, or Start
                 // straight after Reset - so no two loops count together.
                 Button(running ? "Stop" : "Start")
-                    .onClicked(.cancelPrevious) {
+                    .onClicked(gate: .cancelPrevious) {
                         if running {
                             running = false
                             return
@@ -97,7 +97,7 @@ struct TaskSleepSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Start and Stop are one button whose handler says `.cancelPrevious`: a "
+            Text("Start and Stop are one button whose handler passes through `.cancelPrevious`: a "
                 + "press while the loop sleeps cancels it, so Stop and Start within a second "
                 + "never leave a sleeping loop to wake and count beside the new one, twice "
                 + "as fast. Leaving the page cancels it the same way, and .onDestroying "

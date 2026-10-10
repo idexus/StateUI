@@ -80,85 +80,85 @@ extension View {
 
     /// Runs as the page comes on screen - on every arrival, coming back from a pushed page included.
     public func onAppearing(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onAppearing(.overlap) { try handler() }
+        onAppearing(gate: .none) { try handler() }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onAppearing(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageContract.appearing, repeated, handler) } }
+    public func onAppearing(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.appearing, gate: gate, handler) } }
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onAppearing(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onAppearing(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onAppearing(_ handler: @escaping EventHandler) -> Modified {
         fatalError("unavailable")
     }
 
     /// Runs as the page leaves the screen - covered, left, or another tab chosen.
     public func onDisappearing(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onDisappearing(.overlap) { try handler() }
+        onDisappearing(gate: .none) { try handler() }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onDisappearing(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageContract.disappearing, repeated, handler) } }
+    public func onDisappearing(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.disappearing, gate: gate, handler) } }
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onDisappearing(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDisappearing(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onDisappearing(_ handler: @escaping EventHandler) -> Modified {
         fatalError("unavailable")
     }
 
     /// Runs once navigation has arrived at the page. Only navigation says it; `onAppearing` answers any showing.
     public func onNavigatedTo(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onNavigatedTo(.overlap) { try handler() }
+        onNavigatedTo(gate: .none) { try handler() }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigatedTo(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageContract.navigatedTo, repeated, handler) } }
+    public func onNavigatedTo(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.navigatedTo, gate: gate, handler) } }
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onNavigatedTo(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigatedTo(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onNavigatedTo(_ handler: @escaping EventHandler) -> Modified {
         fatalError("unavailable")
     }
 
     /// Runs as navigation is about to leave the page, while it is still on screen.
     public func onNavigatingFrom(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onNavigatingFrom(.overlap) { try handler() }
+        onNavigatingFrom(gate: .none) { try handler() }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigatingFrom(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageContract.navigatingFrom, repeated, handler) } }
+    public func onNavigatingFrom(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.navigatingFrom, gate: gate, handler) } }
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onNavigatingFrom(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigatingFrom(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onNavigatingFrom(_ handler: @escaping EventHandler) -> Modified {
         fatalError("unavailable")
     }
 
     /// Runs once navigation has left the page, its destination on screen.
     public func onNavigatedFrom(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onNavigatedFrom(.overlap) { try handler() }
+        onNavigatedFrom(gate: .none) { try handler() }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigatedFrom(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageContract.navigatedFrom, repeated, handler) } }
+    public func onNavigatedFrom(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.navigatedFrom, gate: gate, handler) } }
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onNavigatedFrom(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigatedFrom(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onNavigatedFrom(_ handler: @escaping EventHandler) -> Modified {
         fatalError("unavailable")
     }

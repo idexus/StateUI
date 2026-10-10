@@ -61,7 +61,7 @@ final class UIThreadTests: XCTestCase {
 
         let patch = renders.render(
             Button("Nap")
-                .onClicked(.overlap) {
+                .onClicked(gate: .none) {
                     try await Task.sleep(nanoseconds: 30_000_000)
                     woke = true
                 }
@@ -355,7 +355,7 @@ final class UIThreadTests: XCTestCase {
 
         let patch = renders.render(
             Button("Go")
-                .onClicked(.overlap) {
+                .onClicked(gate: .none) {
                     try await Dialogs.alert("//list", message: "saved")
                     reached = true
                 }

@@ -24,7 +24,7 @@ extension ControlDictionary {
             struct NotesPage: View {
                 var body: some View {
                     Button("About")
-                        .onClicked(.ignoreWhileRunning) { try await Dialogs.alert("Notes", message: "Version 1.0") }
+                        .onClicked(gate: .ignoreWhileRunning) { try await Dialogs.alert("Notes", message: "Version 1.0") }
                 }
             }
             """#),
@@ -511,7 +511,7 @@ extension ControlDictionary {
             Grid {
                 Button("Back")
                     .isEnabled(canGoBack)
-                    .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
+                    .onClicked(gate: .ignoreWhileRunning) { try await browser.goBack() }
                 WebView("https://example.com")
                     .canGoBack($canGoBack)
                     .aim(browser)

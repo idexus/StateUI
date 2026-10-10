@@ -31,8 +31,8 @@ public struct ItemsView<Items: RandomAccessCollection, ID: Hashable>: View {
     private var footerView: (any View)?
     private var empty: (any View)?
     private var choice: Choice?
-    private var activated: (repeated: RepeatedEvent, handler: ValueEventHandler<ID>)?
-    private var endReached: (within: Int, repeated: RepeatedEvent, handler: EventHandler)?
+    private var activated: (gate: any Gate, handler: ValueEventHandler<ID>)?
+    private var endReached: (within: Int, gate: any Gate, handler: EventHandler)?
     private var aimed: Aim<ItemsViewContract>?
 
     /// A list of `items`, each its own identity, each looking as `content` says.
@@ -70,7 +70,7 @@ public struct ItemsView<Items: RandomAccessCollection, ID: Hashable>: View {
         element.node.producer = { source.children(realized: realized) }
         element.node.aim = aimed?.box
 
-        element.node.addHandler(ItemsViewContract.realizedChanged.token, .overlap) {
+        element.node.addHandler(ItemsViewContract.realizedChanged.token, gate: .none) {
             guard let identities = MemberValues.carried(
                 EventBuffer.current, by: ItemsViewContract.realizedChanged.name, as: [String].self),
                 identities != held.wrappedValue
@@ -82,7 +82,7 @@ public struct ItemsView<Items: RandomAccessCollection, ID: Hashable>: View {
         if let choice {
             element.node.write(ItemsViewContract.selectionMode, choice.mode)
             element.node.write(ItemsViewContract.selectedItems, source.identities(of: choice.chosen))
-            element.node.addHandler(ItemsViewContract.selectedItemsChanged.token, .overlap) {
+            element.node.addHandler(ItemsViewContract.selectedItemsChanged.token, gate: .none) {
                 guard let identities = MemberValues.carried(
                     EventBuffer.current, by: ItemsViewContract.selectedItemsChanged.name, as: [String].self)
                 else { return }
@@ -96,7 +96,7 @@ public struct ItemsView<Items: RandomAccessCollection, ID: Hashable>: View {
         }
 
         if let activated {
-            element.node.addHandler(ItemsViewContract.itemActivated.token, activated.repeated) {
+            element.node.addHandler(ItemsViewContract.itemActivated.token, gate: activated.gate) {
                 guard let identity = MemberValues.carried(
                     EventBuffer.current, by: ItemsViewContract.itemActivated.name, as: String.self),
                     let id = source.id(for: identity)
@@ -108,7 +108,7 @@ public struct ItemsView<Items: RandomAccessCollection, ID: Hashable>: View {
 
         if let endReached {
             element.node.write(ItemsViewContract.endReachedWithin, endReached.within)
-            element.node.addHandler(ItemsViewContract.endReached.token, endReached.repeated, endReached.handler)
+            element.node.addHandler(ItemsViewContract.endReached.token, gate: endReached.gate, endReached.handler)
         }
 
         return ModifiedContent(node: element.node)
@@ -158,19 +158,19 @@ extension ItemsView {
     /// Hears the user open an item - a tap on a phone, a double-click or Return
     /// on a desktop - handed its identity.
     public func onItemActivated(_ handler: @escaping @MainActor (ID) throws -> Void) -> Self {
-        onItemActivated(.overlap) { try handler($0) }
+        onItemActivated(gate: .none) { try handler($0) }
     }
 
-    /// The same, with a handler that awaits - opening a page does: `repeated`
+    /// The same, with a handler that awaits - opening a page does: its `gate`
     /// says what opening another item does while a run is under way.
-    public func onItemActivated(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<ID>) -> Self {
+    public func onItemActivated(gate: some Gate, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.activated = (repeated, handler)
+        copy.activated = (gate, handler)
         return copy
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onItemActivated(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onItemActivated(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onItemActivated(_ handler: @escaping ValueEventHandler<ID>) -> Self {
         fatalError("unavailable")
     }
@@ -178,7 +178,7 @@ extension ItemsView {
     /// Hears the user scroll within `within` items of the end - where more
     /// items are loaded.
     public func onEndReached(within: Int = 0, _ handler: @escaping @MainActor () throws -> Void) -> Self {
-        onEndReached(within: within, .overlap) { try handler() }
+        onEndReached(within: within, gate: .none) { try handler() }
     }
 
     /// The same, with a handler that awaits - a load does. The end may be
@@ -186,17 +186,17 @@ extension ItemsView {
     /// load under way at a time.
     ///
     ///     ItemsView(rows) { … }
-    ///         .onEndReached(within: 5, .ignoreWhileRunning) { rows += try await nextPage() }
+    ///         .onEndReached(within: 5, gate: .ignoreWhileRunning) { rows += try await nextPage() }
     public func onEndReached(
-        within: Int = 0, _ repeated: RepeatedEvent, _ handler: @escaping EventHandler
+        within: Int = 0, gate: some Gate, _ handler: @escaping EventHandler
     ) -> Self {
         var copy = self
-        copy.endReached = (within: max(within, 0), repeated: repeated, handler: handler)
+        copy.endReached = (within: max(within, 0), gate: gate, handler: handler)
         return copy
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onEndReached(within: n, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onEndReached(within: n, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onEndReached(within: Int = 0, _ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }
@@ -227,7 +227,7 @@ extension ItemsView {
     ///     @Aim(ItemsViewContract.self) private var list
     ///
     ///     ItemsView(rows) { Row($0) }.aim(list)
-    ///     Button("Top").onClicked(.cancelPrevious) { try await list.scrollTo(rows[0], anchor: .start) }
+    ///     Button("Top").onClicked(gate: .cancelPrevious) { try await list.scrollTo(rows[0], anchor: .start) }
     public func aim(_ aim: Aim<ItemsViewContract>) -> Self {
         var copy = self
         copy.aimed = aim

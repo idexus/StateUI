@@ -55,7 +55,7 @@ public final class HostEventSubscription {
 public enum HostEvents {
     /// The subscriptions in the order made, which is the order handlers run in.
     private static var subscriptions:
-        [Event: [(id: Int, repeated: RepeatedEvent, runs: RunSlot, handler: ValueEventHandler<[PropValue]>)]] = [:]
+        [Event: [(id: Int, gate: any Gate, owner: RunOwner, handler: ValueEventHandler<[PropValue]>)]] = [:]
 
     /// The next subscription's number - never reused.
     private static var nextId = 1
@@ -66,7 +66,7 @@ public enum HostEvents {
         _ event: Event,
         owner: String,
         member: String,
-        _ repeated: RepeatedEvent,
+        gate: some Gate,
         _ handler: @escaping ValueEventHandler<[PropValue]>
     ) -> HostEventSubscription {
         if let unraised = HostRealizations.unraised(owner: owner, event: member) {
@@ -75,7 +75,7 @@ public enum HostEvents {
 
         let id = nextId
         nextId += 1
-        subscriptions[event, default: []].append((id: id, repeated: repeated, runs: RunSlot(), handler: handler))
+        subscriptions[event, default: []].append((id: id, gate: gate, owner: RunOwner(), handler: handler))
 
         return HostEventSubscription(event: event, id: id)
     }
@@ -96,24 +96,24 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, Void>,
         _ handler: @escaping @MainActor () throws -> Void
     ) -> HostEventSubscription {
-        on(event, .overlap) { try handler() }
+        on(event, gate: .none) { try handler() }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what a raise does while a run is under way.
+    /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
     public static func on<Owner: ApplicationTier>(
         _ event: ElementEvent<Owner, Void>,
-        _ repeated: RepeatedEvent,
+        gate: some Gate,
         _ handler: @escaping EventHandler
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, repeated) { payload in
+        subscribe(event.token, owner: Owner.name, member: event.name, gate: gate) { payload in
             guard MemberValues.carried(payload, by: event.name) != nil else { return }
 
             try await handler()
         }
     }
 
-    /// A handler that awaits says what a raise does while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what a raise does while it runs: HostEvents.on(event, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: HostEvents.on(event, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public static func on<Owner: ApplicationTier>(
         _ event: ElementEvent<Owner, Void>,
         _ handler: @escaping EventHandler
@@ -137,24 +137,24 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, Value>,
         _ handler: @escaping @MainActor (Value) throws -> Void
     ) -> HostEventSubscription {
-        on(event, .overlap) { try handler($0) }
+        on(event, gate: .none) { try handler($0) }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what a raise does while a run is under way.
+    /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
     public static func on<Owner: ApplicationTier, Value: HostRepresentable>(
         _ event: ElementEvent<Owner, Value>,
-        _ repeated: RepeatedEvent,
+        gate: some Gate,
         _ handler: @escaping ValueEventHandler<Value>
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, repeated) { payload in
+        subscribe(event.token, owner: Owner.name, member: event.name, gate: gate) { payload in
             guard let value = MemberValues.carried(payload, by: event.name, as: Value.self) else { return }
 
             try await handler(value)
         }
     }
 
-    /// A handler that awaits says what a raise does while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what a raise does while it runs: HostEvents.on(event, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: HostEvents.on(event, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public static func on<Owner: ApplicationTier, Value: HostRepresentable>(
         _ event: ElementEvent<Owner, Value>,
         _ handler: @escaping ValueEventHandler<Value>
@@ -177,16 +177,16 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, (First, Second)>,
         _ handler: @escaping @MainActor (First, Second) throws -> Void
     ) -> HostEventSubscription {
-        on(event, .overlap) { a, b in try handler(a, b) }
+        on(event, gate: .none) { a, b in try handler(a, b) }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what a raise does while a run is under way.
+    /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
     public static func on<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
         _ event: ElementEvent<Owner, (First, Second)>,
-        _ repeated: RepeatedEvent,
+        gate: some Gate,
         _ handler: @escaping ValueEventHandler<First, Second>
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, repeated) { payload in
+        subscribe(event.token, owner: Owner.name, member: event.name, gate: gate) { payload in
             guard let (first, second) = MemberValues.carried(
                 payload, by: event.name, as: First.self, Second.self)
             else { return }
@@ -195,8 +195,8 @@ public enum HostEvents {
         }
     }
 
-    /// A handler that awaits says what a raise does while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what a raise does while it runs: HostEvents.on(event, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: HostEvents.on(event, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public static func on<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
         _ event: ElementEvent<Owner, (First, Second)>,
         _ handler: @escaping ValueEventHandler<First, Second>
@@ -218,18 +218,18 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, (First, Second, Third)>,
         _ handler: @escaping @MainActor (First, Second, Third) throws -> Void
     ) -> HostEventSubscription {
-        on(event, .overlap) { a, b, c in try handler(a, b, c) }
+        on(event, gate: .none) { a, b, c in try handler(a, b, c) }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what a raise does while a run is under way.
+    /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
     public static func on<
         Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
     >(
         _ event: ElementEvent<Owner, (First, Second, Third)>,
-        _ repeated: RepeatedEvent,
+        gate: some Gate,
         _ handler: @escaping ValueEventHandler<First, Second, Third>
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, repeated) { payload in
+        subscribe(event.token, owner: Owner.name, member: event.name, gate: gate) { payload in
             guard let (first, second, third) = MemberValues.carried(
                 payload, by: event.name, as: First.self, Second.self, Third.self)
             else { return }
@@ -238,8 +238,8 @@ public enum HostEvents {
         }
     }
 
-    /// A handler that awaits says what a raise does while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what a raise does while it runs: HostEvents.on(event, .ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: HostEvents.on(event, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public static func on<
         Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
     >(
@@ -251,18 +251,18 @@ public enum HostEvents {
 
     /// Takes one subscription out - `HostEventSubscription.cancel`'s half.
     static func remove(_ event: Event, _ id: Int) {
-        subscriptions[event]?.first { $0.id == id }?.runs.orphan()
+        subscriptions[event]?.first { $0.id == id }?.owner.orphan()
         subscriptions[event]?.removeAll { $0.id == id }
     }
 
-    /// Runs every handler subscribed to a name, each by its word on a repeat, and answers how many - the list as
+    /// Runs every handler subscribed to a name, each through its gate, and answers how many - the list as
     /// it stood when the raise came.
     @discardableResult
     static func dispatch(_ name: String, _ payload: [PropValue]) -> Int {
         let handlers = subscriptions[Event(name)] ?? []
 
         for entry in handlers {
-            entry.runs.start({ try await entry.handler(payload) }, entry.repeated, payload: nil)
+            entry.gate.runs(for: entry.owner).start({ try await entry.handler(payload) }, entry.gate.policy, payload: nil, owner: entry.owner)
         }
 
         return handlers.count

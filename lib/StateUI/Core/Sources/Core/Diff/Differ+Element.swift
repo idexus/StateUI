@@ -422,8 +422,8 @@ extension Differ {
                 if watch.matches(old) == false {
                     let new = watch.value
                     fired.append(Fired(
-                        run: { try await watch.run(old, new) }, repeated: watch.repeated,
-                        slot: kept.slot("watch \(index)")))
+                        run: { try await watch.run(old, new) }, gate: watch.gate,
+                        owner: kept.owner("watch \(index)")))
                 }
             }
         }
@@ -432,7 +432,7 @@ extension Differ {
         // Design: docs/design/core/identity-and-diffing.md#created-and-destroying
         if previous == nil {
             for (index, created) in node.created.enumerated() {
-                fired.append(Fired(run: created, repeated: .overlap, slot: kept.slot("created \(index)")))
+                fired.append(Fired(run: created, gate: .none, owner: kept.owner("created \(index)")))
             }
 
             // A node type the host does not realize is said once, with near misses.

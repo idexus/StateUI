@@ -58,25 +58,25 @@ extension VisualElement where Self: StyleTarget {
         _ states: VisualState<Self>...,
         perform handler: @escaping @MainActor (VisualState<Self>) throws -> Void
     ) -> Modified {
-        listening(states, .overlap) { try handler($0) }
+        listening(states, gate: .none) { try handler($0) }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what entering a
+    /// The same, with a handler that awaits: its `gate` says what entering a
     /// state does while a run is under way.
     ///
     /// - Parameters:
-    ///   - repeated: what entering a state does while a run is under way.
+    ///   - gate: what the handler passes through: what entering a state does while a run is under way.
     ///   - perform: what to run, given the state entered.
     public func onVisualStateChanged(
         _ states: VisualState<Self>...,
-        repeated: RepeatedEvent,
+        gate: some Gate,
         perform handler: @escaping ValueEventHandler<VisualState<Self>>
     ) -> Modified {
-        listening(states, repeated, handler)
+        listening(states, gate: gate, handler)
     }
 
     /// A handler that awaits says what entering a state does while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what entering a state does while it runs: .onVisualStateChanged(states, repeated: .cancelPrevious) { … } - or .ignoreWhileRunning, .waitForPrevious, .overlap")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onVisualStateChanged(states, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onVisualStateChanged(
         _ states: VisualState<Self>...,
         perform handler: @escaping ValueEventHandler<VisualState<Self>>
@@ -87,7 +87,7 @@ extension VisualElement where Self: StyleTarget {
     /// Declares `states` and hears the control entering them.
     private func listening(
         _ states: [VisualState<Self>],
-        _ repeated: RepeatedEvent,
+        gate: some Gate,
         _ handler: @escaping ValueEventHandler<VisualState<Self>>
     ) -> Modified {
         modified { node in
@@ -97,7 +97,7 @@ extension VisualElement where Self: StyleTarget {
 
             node.visualStateListeners.append(VisualStateListener(
                 states: states.isEmpty ? nil : Set(states.map(\.name)),
-                repeated: repeated,
+                gate: gate,
                 run: { name in try await handler(VisualState<Self>(name)) }))
         }
     }

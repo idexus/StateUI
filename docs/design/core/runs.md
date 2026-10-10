@@ -8,15 +8,21 @@ nothing else may change once a run is no longer wanted.
 
 ## The runs of a handler
 
-Every handler an element writes for an event keeps its runs in a `RunSlot`,
-and an event's handlers keep theirs in an `EventRegistration` under the
-event's id. The id survives renders, so a run started by one render's closure
-is still the slot's when the next render writes the closure again. Two
-handlers of one event keep two slots: each runs by its own word, and neither
-waits for the other.
+An event's handlers keep their runs under the event's id in an
+`EventRegistration`, each handler its `RunOwner`: who started a run. The id
+survives renders, so a run started by one render's closure is still its
+owner's when the next render writes the closure again. A run is started in a
+`RunSlot` - a shared gate's, or the owner's own where the gate is a policy
+alone - which holds the runs under way and waiting, and decides, by the
+gate's policy, what an event that comes while one is under way does.
+`RunSlot.start` makes every run's task at once - one that starts, waits in the
+slot for its turn, or is let go - so a run that never starts still ends and
+nothing keeps its handler.
 
-An awaiting handler says, in a `RepeatedEvent`, what its event does when it
-comes again while a run is under way:
+## A gate
+
+An awaiting handler passes through a `Gate`, which says what an event does
+while a run is under way through it:
 
 ```text
   .ignoreWhileRunning   the event is let go - a save, an order, a sign-in
@@ -24,29 +30,65 @@ comes again while a run is under way:
                         starts - a search, a movement to a new place
   .waitForPrevious      the event waits; when no run is under way, the oldest
                         waiting one runs - one at a time, in the order they came
-  .overlap              this run starts beside the ones under way
+  .none                 nothing is held back: this run starts beside the ones
+                        under way
 ```
+
+A gate is a handler's own or shared, and its type says which. A
+`GatePolicy` - `gate: .ignoreWhileRunning` and the rest - is the handler's
+own gate: its runs stand in its owner's slot, so two buttons written with
+`.ignoreWhileRunning` never hold each other back, and a policy has no
+`isBusy` to read. A `SharedGate` kept in a state or a model is shared by every handler
+and task written with it, from one control or several - a save and a delete
+of one document - and its `isBusy`, a state, says whether a run is under way
+or waits through it. `Gate` is the protocol both meet, what `gate:` takes.
+The four policies are static members of that protocol alone, not cases of an
+enumeration of their own, so `.none` names one thing whether it is given as a
+gate or to `SharedGate(_:)`. An element leaving supersedes its owners' runs
+alone, so in a shared gate the others' runs stand.
 
 There is no default. Each event modifier comes three ways: a step, `() throws
 -> Void`, which Swift picks for a closure with no `await`; the same with a
-`RepeatedEvent` first, for a handler that awaits; and an awaiting handler with
-no word, unavailable, whose message says what to write. The compiler asks the
-question where there is one, and only there. A step is kept as a run under
-`.overlap` that never suspends. It takes no road of its own: measured in a
-Release build (2026-10-10, an M-series Mac), an event dispatched to a step
-costs some 2 µs end to end - a state's write in it some 66 ns - so even 120
-events a second, a drag's, spend a quarter of a millisecond a second.
+`gate:`, for a handler that awaits; and an awaiting handler with no gate,
+unavailable, whose message says what to write; `.onCreated` and
+`.onDestroying` take no gate, as each comes once, and
+`.draggable(text:onDragStarting:)` takes a step alone. The compiler asks the
+question where there is one, and only there. A step runs through a `.none` gate of its
+own and never suspends. It takes no road of its own: measured in a Release
+build (2026-10-10, an M-series Mac), an event dispatched to a step costs some
+2 µs end to end - a state's write in it some 66 ns - so even 120 events a
+second, a drag's, spend a quarter of a millisecond a second.
 
-`RunSlot.underWay` counts the runs of every slot from their start to their
-end: what a test waits on for the handlers' work to end, rather than a length
-of time, and the tally's `runs` (diagnostics.md).
+`RunSlot.underWay` counts the runs of every slot from the moment a slot takes
+one - started, or waiting its turn - to its end: what a test waits on for the
+handlers' work to end, rather than a length of time, and the tally's `runs`
+(diagnostics.md).
+
+## Work started from code
+
+Work a model starts from its own code - an autosave, a refresh a timer asks
+for - passes a shared gate through `Task(gate:)`, as a handler written with
+that gate would: the policy holds for it, it makes the gate busy, and it holds
+back, or is held back by, the events through the same gate. The task it
+returns is the run's own, the one `RunSlot.start` makes for every run:
+awaiting its `value` waits for the work's end, cancelling it supersedes the
+run as a later event would - a run still waiting its turn leaves the queue at
+once, through a job on the UI thread - and a task the gate lets go ends at
+once, its work not run. Its owner is the gate's own `RunOwner`, which nothing orphans, so no
+element leaving ends the run; started inside a handler, it runs under a
+`HandlerRun` of its own, not the handler's. A policy is no gate for a task -
+it has no element to keep its runs - so `Task(gate:)` takes a `SharedGate`
+alone.
 
 ## A superseded run
 
-A run is superseded by `.cancelPrevious`, and orphaned - superseded the same
-way - when its element stops handling the event or leaves the tree. Its task
+A run is superseded by `.cancelPrevious` or by its task's cancellation, and
+orphaned - superseded the same way - when its element stops handling the event
+or leaves the tree; an orphaned run still waiting its turn never starts, and
+its task ends. Its task
 is cancelled, so `Task.sleep` and whatever else checks cancellation ends it,
-and a superseded run ending in `CancellationError` is not reported. An element
+and a superseded run ending in `CancellationError` is not reported; another
+error it ends in is refused, as the rest of what it asks of the host is. An element
 leaving cancels in one order every time - its events' runs by the events'
 names, then what its walk runs in the order begun - so what a cancellation
 handler does comes in that order too.
@@ -97,14 +139,14 @@ where the run stopped.
 ## What a walk runs
 
 `.onChanged`, `.onVisualStateChanged` and `.onCreated` run what a render's walk
-found. Each keeps its runs in the element's `RunSlots`, under a key the element
-keeps from one render to the next - its watch's place, its listener's place,
-its handler's place - so a change says its `RepeatedEvent` as an event does,
-and an element leaving supersedes them all. `.onCreated` runs once; it keeps
+found. Each starts its runs under an owner the element's `RunSlots` keep, under
+a key the element keeps from one render to the next - its watch's place, its
+listener's place, its handler's place - so a change passes through its gate as
+an event does, and an element leaving supersedes them all. `.onCreated` runs once; it keeps
 runs only so that its element leaving ends them. `.onDestroying` runs as its
 element leaves, a farewell, with no runs of its own: it goes to its end.
 
-A subscription to a host event keeps its runs, and `cancel()` supersedes them.
-A control the library composes that hears an author's handler inside its own
-run - `GalleryView`'s position - starts that handler in a slot of its own, so
-the author's word holds there too.
+A subscription to a host event is an owner, and `cancel()` supersedes its
+runs. A control the library composes that hears an author's handler inside its
+own run - `GalleryView`'s position - starts that handler under an owner of its
+own, through the author's gate.

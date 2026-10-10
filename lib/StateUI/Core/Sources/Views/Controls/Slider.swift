@@ -87,14 +87,14 @@ public struct Slider: ElementView, TintElement, SliderProperties {
         onEvent(SliderContract.valueChanged, handler)
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onValueChanged(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<Double>) -> Self {
-        onEvent(SliderContract.valueChanged, repeated, handler)
+    public func onValueChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<Double>) -> Self {
+        onEvent(SliderContract.valueChanged, gate: gate, handler)
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onValueChanged(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onValueChanged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
         fatalError("unavailable")
     }
@@ -105,14 +105,14 @@ public struct Slider: ElementView, TintElement, SliderProperties {
         onEvent(SliderContract.pressed, handler)
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onPressed(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
-        onEvent(SliderContract.pressed, repeated, handler)
+    public func onPressed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(SliderContract.pressed, gate: gate, handler)
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onPressed(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPressed(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onPressed(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }
@@ -123,14 +123,14 @@ public struct Slider: ElementView, TintElement, SliderProperties {
         onEvent(SliderContract.released, handler)
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onReleased(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
-        onEvent(SliderContract.released, repeated, handler)
+    public func onReleased(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(SliderContract.released, gate: gate, handler)
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onReleased(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onReleased(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onReleased(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

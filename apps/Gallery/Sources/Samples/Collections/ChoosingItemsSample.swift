@@ -10,10 +10,10 @@ private struct PickList: ExampleContent {
         Grid {
             HStack {
                 Button("Top")
-                    .onClicked(.cancelPrevious) { try await list.scrollTo(0, anchor: .start) }
+                    .onClicked(gate: .cancelPrevious) { try await list.scrollTo(0, anchor: .start) }
 
                 Button("Row 500")
-                    .onClicked(.cancelPrevious) { try await list.scrollTo(500, anchor: .start) }
+                    .onClicked(gate: .cancelPrevious) { try await list.scrollTo(500, anchor: .start) }
 
                 Button("Clear")
                     .isEnabled(!chosen.isEmpty)

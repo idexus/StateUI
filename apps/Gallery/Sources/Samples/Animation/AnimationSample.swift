@@ -58,7 +58,7 @@ struct AnimationSample: SampleContent, ExampleContent {
             HStack {
                 // A movement answers whether it ran to the END. Stop says
                 // false - and a second press cancels this run, the buttons
-                // saying `.cancelPrevious` - so the way back is not taken over
+                // passing through `.cancelPrevious` - so the way back is not taken over
                 // whatever happened instead, which is what lets Stop leave the
                 // card where it stood.
                 button("Fade") {
@@ -146,7 +146,7 @@ struct AnimationSample: SampleContent, ExampleContent {
     /// One of the buttons, all of which look the same.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
-            .onClicked(.cancelPrevious, act)
+            .onClicked(gate: .cancelPrevious, act)
     }
 
     /// The curve the picker is on.

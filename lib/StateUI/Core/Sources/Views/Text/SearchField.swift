@@ -79,14 +79,14 @@ public struct SearchField: TextInput, TextualElement, FontElement, TextAlignment
         onEvent(SearchFieldContract.submitted, handler)
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onSubmitted(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
-        onEvent(SearchFieldContract.submitted, repeated, handler)
+    public func onSubmitted(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(SearchFieldContract.submitted, gate: gate, handler)
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onSubmitted(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSubmitted(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onSubmitted(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

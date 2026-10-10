@@ -17,15 +17,15 @@ extension Differ {
 
         // The Watch rule: only what a declared state follows is heard.
         if names.contains("Pressed") {
-            node.addHandler(.pressed, .overlap) { input.hold(true) }
-            node.addHandler(.released, .overlap) { input.hold(false) }
+            node.addHandler(.pressed, gate: .none) { input.hold(true) }
+            node.addHandler(.released, gate: .none) { input.hold(false) }
         }
         if names.contains("PointerOver") {
-            node.addHandler(.pointerEntered, .overlap) { input.hover(true) }
-            node.addHandler(.pointerExited, .overlap) { input.hover(false) }
+            node.addHandler(.pointerEntered, gate: .none) { input.hover(true) }
+            node.addHandler(.pointerExited, gate: .none) { input.hover(false) }
         }
         if names.contains("Focused") {
-            node.addHandler(.isFocusedChanged, .overlap) {
+            node.addHandler(.isFocusedChanged, gate: .none) {
                 if let focused = EventBuffer.current.first?.bool { input.focus(focused) }
             }
         }
@@ -46,7 +46,7 @@ extension Differ {
         if let previous, previous != state {
             for (index, listener) in node.visualStateListeners.enumerated() where listener.hears(state) {
                 fired.append(Fired(
-                    run: { try await listener.run(state) }, repeated: listener.repeated, slot: runs.slot("state \(index)")))
+                    run: { try await listener.run(state) }, gate: listener.gate, owner: runs.owner("state \(index)")))
             }
         }
 

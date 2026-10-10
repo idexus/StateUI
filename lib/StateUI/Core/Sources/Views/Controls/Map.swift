@@ -102,14 +102,14 @@ public struct Map: ElementView, MapProperties {
         onEvent(MapContract.mapClicked, handler)
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onMapClicked(_ repeated: RepeatedEvent, _ handler: @escaping ValueEventHandler<Location>) -> Self {
-        onEvent(MapContract.mapClicked, repeated, handler)
+    public func onMapClicked(gate: some Gate, _ handler: @escaping ValueEventHandler<Location>) -> Self {
+        onEvent(MapContract.mapClicked, gate: gate, handler)
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onMapClicked(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onMapClicked(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onMapClicked(_ handler: @escaping ValueEventHandler<Location>) -> Self {
         fatalError("unavailable")
     }
@@ -168,19 +168,19 @@ public struct Marker: Element {
     /// Fires when the marker is tapped. Observing only: it cannot keep the
     /// callout shut.
     public func onSelected(_ handler: @escaping @MainActor () throws -> Void) -> Self {
-        onSelected(.overlap) { try handler() }
+        onSelected(gate: .none) { try handler() }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onSelected(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
+    public func onSelected(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
         var copy = self
-        copy.node.addHandler(MarkerContract.selected, repeated, handler)
+        copy.node.addHandler(MarkerContract.selected, gate: gate, handler)
         return copy
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onSelected(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSelected(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onSelected(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }
@@ -188,19 +188,19 @@ public struct Marker: Element {
     /// Fires when the callout above the marker - its details - is tapped: the
     /// place a navigation usually goes.
     public func onDetailsClicked(_ handler: @escaping @MainActor () throws -> Void) -> Self {
-        onDetailsClicked(.overlap) { try handler() }
+        onDetailsClicked(gate: .none) { try handler() }
     }
 
-    /// The same, with a handler that awaits: `repeated` says what the event does when it comes
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
-    public func onDetailsClicked(_ repeated: RepeatedEvent, _ handler: @escaping EventHandler) -> Self {
+    public func onDetailsClicked(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
         var copy = self
-        copy.node.addHandler(MarkerContract.detailsClicked, repeated, handler)
+        copy.node.addHandler(MarkerContract.detailsClicked, gate: gate, handler)
         return copy
     }
 
-    /// A handler that awaits says what the event does when it comes again while it runs.
-    @available(*, unavailable, message: "a handler that awaits says what the event does when it comes again while it runs: .onDetailsClicked(.ignoreWhileRunning) { … } - or .cancelPrevious, .waitForPrevious, .overlap")
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDetailsClicked(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onDetailsClicked(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }
@@ -300,7 +300,7 @@ extension Aim where Target == Map {
     ///     Map(latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
     ///         .aim(map)
     ///
-    ///     Button("Old Town").onClicked(.cancelPrevious) {
+    ///     Button("Old Town").onClicked(gate: .cancelPrevious) {
     ///         try await map.moveToRegion(
     ///             latitude: 52.2497, longitude: 21.0135, radiusMeters: 800)
     ///     }

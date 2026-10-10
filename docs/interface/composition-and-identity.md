@@ -217,7 +217,7 @@ inside-out before a replacement is created; creation runs outside-in.
 
 Rebuilding or carrying an existing element is neither creation nor destruction.
 
-Both come once, so neither names a `RepeatedEvent`, even when it awaits. An
+Both come once, so neither names a `Gate`, even when it awaits. An
 `onCreated` still awaiting when its element leaves is cancelled and changes
 nothing from then on; an `onDestroying` runs to its end.
 
@@ -249,7 +249,7 @@ cancels the one before it:
 @State var results: [String] = []
 
 Text(results.joined(separator: ", "))
-    .onChanged(query, .cancelPrevious) { _, new in
+    .onChanged(query, gate: .cancelPrevious) { _, new in
         try await Task.sleep(for: .milliseconds(250))
         results = ["\(new) 1", "\(new) 2"]
     }
@@ -307,7 +307,7 @@ Set `STATEUI_INSPECT=1` in the host process to emit the same render record as
 diagnostic text from the first pass. Use this for automated runs or a problem
 that happens before the inspector can be opened. `STATEUI_TALLY=1` writes the
 running totals instead: messages applied, controls made and kept, renders, the
-elements alive, the handler runs under way and the host's native views alive -
+elements alive, the runs under way or waiting and the host's native views alive -
 the numbers that tell a page left in memory from one let go. Both go to the
 standard error, which an Android application sends to logcat;
 `.scripts/Android/run-app.sh` hands every `STATEUI_` variable of the shell

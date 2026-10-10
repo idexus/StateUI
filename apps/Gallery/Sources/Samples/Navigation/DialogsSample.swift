@@ -21,7 +21,7 @@ struct DialogsSample: SampleContent, ExampleContent {
             // One button, nothing to answer: the handler resumes when it is
             // dismissed, so the next line runs with the alert already gone.
             Button("Tell me something")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(gate: .ignoreWhileRunning) {
                     try await Dialogs.alert(
                         "Saved", message: "The draft is safe")
                     answer = "the alert was dismissed"
@@ -29,7 +29,7 @@ struct DialogsSample: SampleContent, ExampleContent {
 
             // Ask, await, branch - in one place, which is what an act is for.
             Button("Ask me a question")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(gate: .ignoreWhileRunning) {
                     let ok = try await Dialogs.confirm(
                         "Delete draft?", message: "This cannot be undone",
                         accept: "Delete", cancel: "Keep")
@@ -40,7 +40,7 @@ struct DialogsSample: SampleContent, ExampleContent {
             // included - nil only when the sheet was dismissed with nothing
             // chosen, tapping beside it where the platform allows that.
             Button("Offer me choices")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(gate: .ignoreWhileRunning) {
                     let choice = try await Dialogs.chooseAction(
                         "Share via", cancel: "Cancel", destruction: "Delete",
                         buttons: ["Mail", "Message"])
@@ -51,7 +51,7 @@ struct DialogsSample: SampleContent, ExampleContent {
             // nil is CANCELLED; an accepted prompt with nothing typed comes
             // back as "" - an empty answer, which is still an answer.
             Button("Ask me to type")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(gate: .ignoreWhileRunning) {
                     let typed = try await Dialogs.prompt(
                         "Rename", message: "A new name for the draft",
                         placeholder: "Name", initialValue: name, maximumLength: 40)
