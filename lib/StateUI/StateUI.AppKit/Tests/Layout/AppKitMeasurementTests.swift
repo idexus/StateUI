@@ -170,7 +170,7 @@ final class AppKitMeasurementTests: XCTestCase {
 
     @MainActor
     func testReapplyingAnUnchangedImageSourceKeepsTheNativeImage() throws {
-        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: TestPictures.directory, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var image = HostPatch(id: .manual("image"), type: .image)

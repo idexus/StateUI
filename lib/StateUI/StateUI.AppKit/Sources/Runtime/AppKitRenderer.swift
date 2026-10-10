@@ -139,13 +139,6 @@ final class AppKitRenderer {
         return String(decoding: bytes[..<end].map(UInt8.init(bitPattern:)), as: UTF8.self)
     }
 
-    /// Tells a window's or a scene's phase - or what the user settled on a native control, after the phases it
-    /// moved - in its turn: rendered before anything after it.
-    func tellPhase(_ handler: Int32?, payload: [HostValue] = []) {
-        if let handler { runtime.pump.handlers.enqueuePhase(handler, payload: payload) }
-        runtime.pump.turn()
-    }
-
     /// Takes a turn after every pass of the main run loop, where the core has work for one.
     /// Design: docs/design/host/runtime.md#the-turn-on-apple
     func startTurns() {
@@ -195,7 +188,7 @@ final class AppKitRenderer {
                 return image
             }
         }
-        return NSImage(systemSymbolName: "swift", accessibilityDescription: name)
+        return nil
     }
 }
 

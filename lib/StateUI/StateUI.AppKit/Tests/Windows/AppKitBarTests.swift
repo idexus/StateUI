@@ -16,7 +16,7 @@ final class AppKitBarTests: XCTestCase {
     /// keeps the system's colours: on the toolbar's material it could vanish.
     @MainActor
     func testTheTitleAreaStandsAtTheTrailingEdgeInSystemColours() throws {
-        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: TestPictures.directory, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(bar(background: nil), windowTitle: "Workspace"))

@@ -87,7 +87,7 @@ final class AppKitContextMenuTests: XCTestCase {
     /// disabled as a whole.
     @MainActor
     func testAnEntrysIconStateAndIdentifierReachItsNativeItem() throws {
-        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: TestPictures.directory, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var delete = HostPatch(id: .manual("delete"), type: .menuItem)
         delete.properties = [

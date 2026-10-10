@@ -635,7 +635,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testATabIsNamedByTheTitleAndIconOfWhatItShows() throws {
         let renderer = testRenderer(
-            resourceDirectory: nil,
+            resourceDirectory: TestPictures.directory,
             presentsWindows: false)
         defer { renderer.closeForTesting() }
 
@@ -930,7 +930,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testThePagesGroupsStandInTheToolbarByTheirOrder() throws {
         let renderer = testRenderer(
-            resourceDirectory: nil,
+            resourceDirectory: TestPictures.directory,
             presentsWindows: false)
         defer { renderer.closeForTesting() }
 
@@ -962,7 +962,7 @@ final class AppKitPageTests: XCTestCase {
         var details = page("details", title: "Details", events: 200)
         details.children = .arranged(details.children.arrangedForTesting + [
             group("later", order: 1, [
-                toolbarItem("save", title: "Save", enabled: false, icon: "save-symbol"),
+                toolbarItem("save", title: "Save", enabled: false, icon: "save.png"),
                 toolbarItem("delete", title: "Delete", placement: 2, destructive: true),
             ]),
             group("first", order: 0, [toolbarItem("earlier", title: "Earlier")]),
