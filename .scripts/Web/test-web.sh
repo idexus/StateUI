@@ -65,8 +65,10 @@ if [[ "${1:-}" == "--browser" ]]; then
   exec node "$package/JavaScript/run-in-browser.mjs" "$(browser)" "$program" "$selected"
 fi
 
-# The host's own tests, every one but those the browser runs where none is named.
+# The host's own tests, every one but those the browser runs where none is named; a class named alone is the
+# suite's, as its runner knows it.
 selected="${1:-}"
+[[ -n "$selected" && "$selected" != StateUIWebTests.* ]] && selected="StateUIWebTests.$selected"
 if [[ -z "$selected" ]]; then
   selected="$(node "$package/JavaScript/run.mjs" "$relay" "$program" --list-tests \
     | grep -E '^StateUIWebTests\.' | grep -v -E "^(${in_browser//,/|})/" | paste -sd, -)"
