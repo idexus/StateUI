@@ -138,6 +138,13 @@ padding, a spacing or a track on its way moves a child without resizing it,
 which no observer of the page tells - so every frame that wrote something
 counts as laid out.
 
+A view observes its size once (`WebDOMView.followSize`): its box drawn again
+where a gradient is in it, its drawing - a shape's, a canvas's - and its
+frame read all follow that one observer, for the page keeps one an element,
+and a second would take the first's place. The observer's listener is the
+view's, let go of as it leaves, as every listener a view hangs on the page
+is - its cells' nearness included.
+
 ## Values in CSS
 
 Lengths are pixels, which CSS measures in the logical units StateUI's points

@@ -14,7 +14,7 @@ extension WebElement: FrameReporter {
         host.runtime.frames.follow(self, order: view.serial, reads: reads)
         if reads, !observesSize {
             observesSize = true
-            WebRelay.observeSize(view.node, WebRelay.listener { [weak host] in host?.runtime.frames.laidOut() })
+            view.followSize { [weak host] in host?.runtime.frames.laidOut() }
         }
     }
 

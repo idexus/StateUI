@@ -27,12 +27,16 @@ final class WebWindowController {
     private var holdsHistory = false
     private var leavesHistory = false
 
+    /// What the window hears the browser's history move by, until it closes.
+    private var historyListener: Int32 = 0
+
     init(_ element: MountedElement, runtime: HostRuntime) {
         self.element = element
         self.runtime = runtime
         window.bar.onBack = { [weak self] in self?.goBack(in: runtime) }
         window.bar.onToggle = { [weak self] in self?.toggleSidebar() }
-        WebRelay.listenToHistory(WebRelay.listener { [weak self] in self?.historyMoved() })
+        historyListener = WebRelay.listener { [weak self] in self?.historyMoved() }
+        WebRelay.listenToHistory(historyListener)
     }
 
     /// Keeps the page's own entry on the browser's history while the window offers a way back, and none while not.
@@ -101,6 +105,7 @@ final class WebWindowController {
         for entry in sheets.reversed() { entry.sheet.close() }
         sheets = []
         window.close()
+        WebRelay.stopListeningToHistory(historyListener)
     }
 
     /// The user took the top sheet away: the modal stack is told how many remain.

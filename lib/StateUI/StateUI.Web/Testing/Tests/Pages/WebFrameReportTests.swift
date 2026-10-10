@@ -37,6 +37,38 @@ final class WebFrameReportTests: XCTestCase {
                        "a covered tab's view said it stood at no size: \(frames.values)")
     }
 
+    /// A shape whose frame the tree reads, its room growing, is drawn again at its new size and says its new frame:
+    /// one observer of the element carries both, never one in the other's place.
+    func testAShapeWhoseFrameIsReadIsDrawnAgainAtItsNewSize() throws {
+        let wide = State(wrappedValue: false)
+        let frames = Received<[Double]>()
+        let host = WebRenderer.running {
+            VStack {
+                VStack {
+                    Rectangle().fill(.red).height(20)
+                        .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+                }
+                .width(wide.wrappedValue ? 160 : 80)
+                Button("Wider").onClicked { wide.wrappedValue = true }
+            }
+            .horizontalAlignment(.start)
+        }
+        host.settle { frames.values.last.map(FrameReport.size)?.first == 80 }
+        let shape = try XCTUnwrap(host.views(WebShapeView.self).first)
+        try XCTUnwrap(host.views(WebButtonView.self).first).onClicked()
+        host.settle { frames.values.last.map(FrameReport.size)?.first == 160 }
+
+        let width = "e.querySelector('path').getBBox().width"
+        host.settle { ((try? WebBrowser.number(width, on: shape.node)) ?? 0).map { abs($0 - 160) < 0.5 } ?? false }
+
+        XCTAssertEqual(frames.values.last.map(FrameReport.size)?.first, 160, "the frame said the old width")
+        let drawn = try XCTUnwrap(WebBrowser.number(width, on: shape.node))
+        let box = try WebBrowser.evaluate(
+            "[e.clientWidth, e.getBoundingClientRect().width, e.querySelector('svg').getBoundingClientRect().width].join(' ')",
+            on: shape.node) ?? ""
+        XCTAssertEqual(drawn, 160, accuracy: 0.5, "the shape was not drawn again at its new width - its box: \(box)")
+    }
+
     func testAViewItsLayoutMovesOnTheWaySaysWhereItWent() throws {
         let wide = State(wrappedValue: false)
         let frames = Received<[Double]>()

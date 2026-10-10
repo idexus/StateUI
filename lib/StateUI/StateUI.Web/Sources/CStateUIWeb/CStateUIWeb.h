@@ -109,10 +109,11 @@ STATEUI_WEB(frame_evaluate) int32_t stateui_web_frame_evaluate(int32_t element, 
 
 /// Puts one entry of the page's own on the browser's history; `back_history` goes back over it where it stands on
 /// it, 1 where it went; `listen_history` calls `listener` whenever the browser's history moves - its way back, or
-/// forward.
+/// forward - until `unlisten_history` lets it go.
 STATEUI_WEB(push_history) void stateui_web_push_history(void);
 STATEUI_WEB(back_history) int32_t stateui_web_back_history(void);
 STATEUI_WEB(listen_history) void stateui_web_listen_history(int32_t listener);
+STATEUI_WEB(unlisten_history) void stateui_web_unlisten_history(int32_t listener);
 
 /// What the page stands as: 1 its tab shows, 2 it holds the keyboard; `listen_page` calls `changed` once as the
 /// page starts and again as either changes, and `leaving` as the browser leaves the page.

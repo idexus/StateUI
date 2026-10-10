@@ -25,6 +25,10 @@ final class WebRenderer {
     /// The application's name, which the core tells the application.
     let applicationName: String
 
+    /// What the host hears the page by - its focus and visibility, its leaving, the user's appearance - for as
+    /// long as it runs the page.
+    private(set) var pageListeners: [Int32] = []
+
     /// The parts every host holds alike, each element's Web half a `WebElement`.
     private(set) lazy var runtime = HostRuntime(
         clock: frameClock, reducesMotion: reducesMotion,
@@ -71,16 +75,18 @@ final class WebRenderer {
         Self.shared = self
         let core = runtime.core
         WebRelay.afterEntry = { [weak self] in self?.entryEnded() }
-        WebRelay.listenToPage(
-            changed: WebRelay.listener { [weak self] in self?.pageChanged(WebRelay.pageState) },
-            leaving: WebRelay.listener { [weak self] in self?.runtime.ending() })
+        pageListeners = [
+            WebRelay.listener { [weak self] in self?.pageChanged(WebRelay.pageState) },
+            WebRelay.listener { [weak self] in self?.runtime.ending() },
+        ]
+        WebRelay.listenToPage(changed: pageListeners[0], leaving: pageListeners[1])
         runtime.start(
             realizing: WebRegistrations.registry.realization, unrealized: WebRealization.unmade,
             environment: {
                 WebEnvironment.report(to: core, applicationName: applicationName)
-                WebEnvironment.watch { [weak self] in
+                pageListeners.append(WebEnvironment.watch { [weak self] in
                     self?.runtime.environmentChanged { WebEnvironment.reportChanging(to: core) }
-                }
+                })
             },
             kept: { WebKeptValues.restore(into: core, application: applicationName) },
             // The scenes kept when the page was left come back; else the window launch opens.

@@ -20,6 +20,28 @@ final class WebLeaveTests: XCTestCase {
         XCTAssertEqual(try Leaving.outlived(on: WebDriver()), [])
     }
 
+    /// A window closed lets go of every listener its views hung on the page - a box's size followed, a shape's and a
+    /// canvas's, a frame read, a list's cells watched for nearness.
+    func testAClosedWindowLetsGoOfEveryListenerItsViewsHung() throws {
+        WebRenderer.shared?.leave()
+        let before = WebRelay.listenerCount
+        let gradient = Brush.linearGradient([GradientStop(.red, 0), GradientStop(.blue, 1)])
+        let host = WebRenderer.running {
+            VStack {
+                ColorBox(.red).background(gradient).height(20)
+                Rectangle().fill(gradient).height(20).onFrameChanged { _ in }
+                Canvas().height(20)
+                ItemsView(["one", "two", "three"]) { Text($0) }.height(80)
+            }
+        }
+        host.step()
+        XCTAssertGreaterThan(WebRelay.listenerCount, before, "the views hang listeners")
+
+        host.leave()
+
+        XCTAssertEqual(WebRelay.listenerCount, before, "a listener outlived the window that hung it")
+    }
+
     /// A window closed lets go of every view it made, its bar's with the page's.
     func testAClosedWindowLetsGoOfEveryViewItMade() throws {
         WebRenderer.shared?.leave()

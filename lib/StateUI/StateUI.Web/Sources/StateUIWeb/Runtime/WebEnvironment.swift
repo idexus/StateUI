@@ -28,8 +28,10 @@ enum WebEnvironment {
             alpha: Int(accent >> 24 & 255)))
     }
 
-    /// Calls `changed` whenever the user's appearance turns dark or light.
-    static func watch(_ changed: @escaping () -> Void) {
-        WebRelay.listenToAppearance(WebRelay.listener(changed))
+    /// Calls `changed` whenever the user's appearance turns dark or light, under the listener it answers.
+    static func watch(_ changed: @escaping () -> Void) -> Int32 {
+        let listener = WebRelay.listener(changed)
+        WebRelay.listenToAppearance(listener)
+        return listener
     }
 }

@@ -25,6 +25,9 @@ class WebDOMView {
     private var offered = DragAndDrop.none
     private var dragListener: Int32?
 
+    /// What runs as the element's size changes, every one: its box drawn again, its drawing, its frame read.
+    private var sizeFollowers: [@MainActor () -> Void] = []
+
     /// The CSS properties this view's element holds, by name, so a value is sent only when it changes.
     private var styles: [String: String] = [:]
 
@@ -113,6 +116,24 @@ class WebDOMView {
         dragListener = listener
         listeners.append(listener)
         WebRelay.offerDrag(node, offered, listener)
+    }
+
+    /// Runs `action` whenever the element's size changes: one observer of the page's carries every follower, and
+    /// goes with the element.
+    /// Design: docs/design/platforms/web/layout.md#where-a-view-stands
+    func followSize(_ action: @escaping @MainActor () -> Void) {
+        if sizeFollowers.isEmpty {
+            WebRelay.observeSize(node, held(WebRelay.listener { [weak self] in
+                for follower in self?.sizeFollowers ?? [] { follower() }
+            }))
+        }
+        sizeFollowers.append(action)
+    }
+
+    /// A listener the element lets go of as it leaves.
+    func held(_ listener: Int32) -> Int32 {
+        listeners.append(listener)
+        return listener
     }
 
     /// Runs `action` whenever the element hears `event`.
@@ -271,7 +292,7 @@ class WebDOMView {
         self.box = box
         if box.followsSize, !followsSize {
             followsSize = true
-            WebRelay.observeSize(node, WebRelay.listener { [weak self] in self?.writeBox() })
+            followSize { [weak self] in self?.writeBox() }
         }
         writeBox()
     }

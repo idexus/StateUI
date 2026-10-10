@@ -50,6 +50,9 @@ enum WebRelay {
         return number
     }
 
+    /// How many listeners the page can call now: what a test counts to see nothing outlived its view.
+    static var listenerCount: Int { listeners.count }
+
     /// Lets go of the listener `number`.
     static func forget(_ number: Int32) {
         listeners[number] = nil
@@ -211,6 +214,12 @@ enum WebRelay {
     /// Calls `listener` whenever the browser's history moves.
     static func listenToHistory(_ listener: Int32) {
         stateui_web_listen_history(listener)
+    }
+
+    /// The history no longer calls `listener`, and it is let go of.
+    static func stopListeningToHistory(_ listener: Int32) {
+        stateui_web_unlisten_history(listener)
+        forget(listener)
     }
 
     /// Calls the act `name` of the application's scripts with `words`; `listener` hears its promise settle.

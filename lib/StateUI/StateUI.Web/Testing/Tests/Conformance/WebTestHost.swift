@@ -62,6 +62,7 @@ extension WebRenderer {
         runtime.tree.root?.leave()
         runtime.presenter = nil
         for controller in roster.controllers { controller.close() }
+        for listener in pageListeners { WebRelay.forget(listener) }
     }
 
     /// One step as the browser takes it: a frame of the page's - its tasks, its rendering, what its observers say -

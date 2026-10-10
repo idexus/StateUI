@@ -33,7 +33,7 @@ final class WebShapeView: WebDOMView {
         WebRelay.insert(surface.node, into: node, at: 0)
         WebRelay.insert(brushes.node, into: surface.node, at: 0)
         WebRelay.insert(path.node, into: surface.node, at: 1)
-        WebRelay.observeSize(node, WebRelay.listener { [weak self] in self?.redraw() })
+        followSize { [weak self] in self?.redraw() }
     }
 
     /// How the shape fills and outlines its path.

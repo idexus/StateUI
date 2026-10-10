@@ -68,6 +68,8 @@ user's - only where the browser stands on that entry, so the page never takes
 the user off the site from one it did not put there. One entry, never one a
 page: a page the application pushes is the
 tree's, and the browser could hand none of them back on its way forward.
+A window hears the history move until it closes, and closing lets that
+listener go on both sides of the relay.
 
 A window closing takes its sheets away first, the top one first: each is a
 modal dialog of the page's, which would hold every page after it still.
