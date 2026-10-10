@@ -73,7 +73,7 @@ PickerSample.swift f480681de24ebc68
 PinchSample.swift 4837a05b03c78fac
 PlacedSample.swift ef944a14e25412b3
 PointerSample.swift 3306b3b76379bc70
-PollSample.swift c29a9a718b686c79
+PollSample.swift 229b9cc66b80d9f7
 PositionIndicatorSample.swift ed91a1ec3ae0bad4
 ProgressBarSample.swift c53139c842822257
 PropertyReadsSample.swift e16e08fd0fa40d8a

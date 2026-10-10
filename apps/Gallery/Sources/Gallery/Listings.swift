@@ -6596,6 +6596,9 @@ enum Listings {
                         return "All good"
                     }.value
 
+                    // Stopped while it checked: the answer comes to nothing.
+                    guard checking else { return }
+
                     rounds += 1
                     checking = false
                     status = "\(answer) - next check in 2s"
@@ -6604,8 +6607,11 @@ enum Listings {
                 }
             }
             // The tick reaches this view's states, the ticker among them, so it holds
-            // them: leaving the page is stopping it.
-            .onDestroying { poll.stop() }
+            // them: leaving the page is stopping it, a check under way included.
+            .onDestroying {
+                poll.stop()
+                checking = false
+            }
         }
         """#,
         "PositionIndicatorSample": #"""
