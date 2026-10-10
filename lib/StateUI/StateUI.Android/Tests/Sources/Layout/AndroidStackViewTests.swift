@@ -29,6 +29,7 @@ struct TurningRow: View {
 final class AndroidStackViewTests: XCTestCase {
     static var allTests: [(String, (AndroidStackViewTests) -> () throws -> Void)] {
         [
+            ("testAStatedWidthIsMeasuredWithinItsRoom", testAStatedWidthIsMeasuredWithinItsRoom),
             ("testAStackPlacesItsChildrenWhereTheArithmeticSays", testAStackPlacesItsChildrenWhereTheArithmeticSays),
             ("testAStackWrapsItsChildrenWhereThePageCentresIt", testAStackWrapsItsChildrenWhereThePageCentresIt),
             ("testALayoutDoesNotCutItsChildrenOff", testALayoutDoesNotCutItsChildrenOff),
@@ -71,6 +72,28 @@ final class AndroidStackViewTests: XCTestCase {
 
             let stack = try XCTUnwrap(host.views(AndroidStackView.self).first)
             XCTAssertTrue(stack.frame == (0, (1920 - 80) / 2, 1080, 80), "\(stack.frame)")
+        }
+    }
+
+    /// A stated width wider than the room its layout gives is measured within that room, as the host layer's rule
+    /// says: its words wrap to the width it stands at, so it is as tall as the same words stated that width.
+    func testAStatedWidthIsMeasuredWithinItsRoom() throws {
+        try onMainActor {
+            let words = "Words enough to wrap onto more than one line at either of these widths, and some more."
+            let host = AndroidRenderer.running {
+                VStack {
+                    VStack { Text(words).width(400) }.width(200)
+                    VStack { Text(words).width(200) }.width(200)
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            host.layOut(width: 1080, height: 1920)
+
+            let texts = host.views(AndroidTextView.self)
+            XCTAssertEqual(texts.count, 2)
+            XCTAssertEqual(texts[0].frame.width, texts[1].frame.width, "placed within its room")
+            XCTAssertEqual(texts[0].frame.height, texts[1].frame.height, "measured at a width it does not stand at")
         }
     }
 
