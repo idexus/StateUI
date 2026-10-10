@@ -164,6 +164,19 @@ final class StyleTests: XCTestCase {
                        .number(10))
     }
 
+    /// A key is typed by its control: two controls' keys spelled alike are two keys, each filing its own style.
+    func testTwoControlsKeysSpelledAlikeAreTwoKeys() {
+        let sheet = StyleSheet {
+            Style<Button>(.cta).fontSize(20)
+            Style<Text>(.ctaOfAText).fontSize(12)
+            Style<Text>(.two).fontSize(30).basedOn(.ctaOfAText)
+        }
+
+        XCTAssertEqual(sheet.style(for: Button("Go").style(.cta).node)?.props["fontSize"], .number(20))
+        XCTAssertEqual(sheet.style(for: Text("x").style(.ctaOfAText).node)?.props["fontSize"], .number(12))
+        XCTAssertEqual(sheet.style(for: Text("x").style(.two).node)?.props["fontSize"], .number(30))
+    }
+
     /// A key naming nothing falls through to the implicit style: an unresolved
     /// style is no style, and no style is what makes an implicit one apply.
     func testAKeyNobodyFiledFallsThroughToTheImplicitStyle() {
