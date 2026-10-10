@@ -48,6 +48,17 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// happened, which is when an offset refused before can finally land.
     @State private var measured = 0.0
 
+    /// The card the run last stood on - where it was sent, or where the user
+    /// left it - which a change of room keeps in front.
+    @State private var standing: Int?
+
+    /// Whether a change of room left the run short of that card, until the
+    /// scroller is long enough to hold it.
+    @State private var regaining = false
+
+    /// Where the scroller's run is laid out, as the platform reports it.
+    @State private var length = Rect(0, 0, 0, 0)
+
     /// Which card is held down, by its identity: the scroller over the cards
     /// takes every touch, so the gallery shows the press itself.
     @State private var dipping: ID?
@@ -345,6 +356,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         let worn = _wearing
         let flies = _flying
         let measures = _measured
+        let standings = _standing
+        let regains = _regaining
+        let lengths = _length
         let offset = _scrolled
         let drags = _dragged
         let pin = pin
@@ -384,6 +398,16 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             }
         }
 
+        // The run sent back to the card it stood on once the scroller holds it.
+        let regain = {
+            let sendTo = Double(standings.wrappedValue ?? asked()) * step
+
+            guard lengths.wrappedValue.width - measures.wrappedValue >= sendTo - 1 else { return }
+
+            regains.wrappedValue = false
+            offset.projectedValue.journey.snap(to: Point(sendTo, 0))
+        }
+
         // The face in a wrapper of its own, so the press on it is not overwritten
         // by the placement written on the wrapper every frame. The wrapper is the
         // card's size: a card the run has not placed yet would fill the room.
@@ -408,7 +432,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             .placement($placements)
             .frame($room)
             // The arithmetic runs again whenever the hand or the room moves.
-            .engine(following: $scrolled, $room) { _ in
+            .engine(following: $scrolled, $room, $length) { _ in
                 // A room not yet measured places nothing: every card stands as it is until it is.
                 let measured = room.width > 0 && room.height > 0
                 placements = PlacedRun(
@@ -416,10 +440,15 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
                     // Following the hand, placements arrive; a shape change animates.
                     motion: travels ? .inherited : .none)
 
-                // The middle card is named as the run passes halfway: one render
-                // per card crossed, none per frame.
-                if swipes {
-                    name(Int((offset.projectedValue.journey.value.x / step).rounded()))
+                // The middle card is named as the hand passes halfway: one render
+                // per card crossed, none per frame - and none on a way the
+                // program sent the run, nor while a change of room is regained.
+                // Design: docs/design/views/measured-layouts.md#gallery-view
+                let journey = offset.projectedValue.journey
+                if swipes, regains.wrappedValue {
+                    regain()
+                } else if swipes, journey.value == journey.destination {
+                    name(Int((journey.value.x / step).rounded()))
                 }
             }
 
@@ -437,6 +466,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
                 }
 
                 reports.wrappedValue = position
+                standings.wrappedValue = position
 
                 if swipes {
                     offset.wrappedValue = Point(Double(position) * step, 0)
@@ -474,13 +504,19 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             .scrollOffset($scrolled)
             // The run comes to rest on the nearest card, by a write.
             .onScrollStopped {
+                // A rest a change of room caused is no card the user chose.
+                guard !regains.wrappedValue else { return }
+
                 let stood = offset.projectedValue.journey.value.x
-                let rest = Double(min(max(Int((stood / step).rounded()), 0), count - 1)) * step
+                let card = min(max(Int((stood / step).rounded()), 0), count - 1)
+                let rest = Double(card) * step
 
                 if abs(stood - rest) > Self.settled {
                     offset.wrappedValue = Point(rest, 0)
                 }
+                standings.wrappedValue = card
             }
+            .laidOut($length)
 
         // On a desktop a pointer drag turns the run: a scroller takes no drag
         // from a mouse, and a finger drags the scroller itself.
@@ -502,6 +538,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
                     // Snap the scroller to where the run is, then animate on.
                     offset.projectedValue.journey.snap(to: Point(stood, 0))
                     offset.wrappedValue = Point(Double(card) * step, 0)
+                    standings.wrappedValue = card
                 }
             }
         }
@@ -529,13 +566,21 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
                 // scroller not laid out yet keeps the offset for its first layout.
                 // Design: docs/design/host/layout.md#an-offset-the-tree-writes
                 .onFrameChanged { frame in
-                    let sendTo = Double(asked()) * step
+                    let card = standings.wrappedValue ?? asked()
+                    let sendTo = Double(card) * step
                     let astray = abs(offset.projectedValue.journey.value.x - sendTo) > 1
+                    let changed = measures.wrappedValue > 0 && frame.width != measures.wrappedValue
 
                     guard astray || frame.width != measures.wrappedValue else { return }
 
                     measures.wrappedValue = frame.width
+                    // A change of room keeps the card the run stood on: one a
+                    // clamped offset named is put back.
+                    name(card)
                     if astray { offset.projectedValue.journey.snap(to: Point(sendTo, 0)) }
+                    if changed, lengths.wrappedValue.width - frame.width < sendTo - 1 {
+                        regains.wrappedValue = true
+                    }
                 }
 
             turning

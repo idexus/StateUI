@@ -169,7 +169,9 @@ no more room than there already is - because a tap has to land on something: a
 run swiped at a point answers no tap at that point when the content there is
 one unit wide. The length is the content layout's own size, which the
 scroller measures, rather than an extent a host would have to find among its
-placements.
+placements. It is worked out from the room a render after the room changed,
+so a reader inside the module hears where the run is laid out (`laidOut(_:)`):
+that is when the scroller can hold what the new room asks.
 
 A tap on one part of the room - the card in front of the user - is answered by
 a box in the content, which slides under the room. The box belongs at the
@@ -199,10 +201,12 @@ run is written to animate. The rest of the time placements arrive, since a
 card a fifth of a second behind the hand is a card that lags.
 
 - The middle card is named as the run passes halfway between two cards - under
-  the hand, in the platform's throw, or on the way to a card - so a card
-  crossed is one render and a frame is none. A position the scroller reported
-  is where the run already is: it moves nothing, and the handler still hears
-  it as it hears an assignment.
+  the hand or in the platform's throw - so a card crossed is one render and a
+  frame is none. On a way the program sent the run - a position assigned, a
+  rest carried on - it names nothing: the card is the one it goes to, and
+  naming those it passes would turn the position back and forth. A position
+  the scroller reported is where the run already is: it moves nothing, and
+  the handler still hears it as it hears an assignment.
 - The asked position is a closure, not a read: read in the gallery's body it
   would make that body a reader, and every card crossed would describe the
   whole deck for a picture none of them changes. The watchers are a view of
@@ -224,11 +228,16 @@ card a fifth of a second behind the hand is a card that lags.
   began.
 - The run comes to rest on the nearest card: the scroller stops wherever the
   platform's throw leaves it, and a write to the offset carries it on under the
-  element's motion.
-- After each layout the run is put where the position says, asking again until
-  it lands: a scroller cannot be moved before its content is laid out, and
-  asked earlier it clamps to the length it has so far. That holds for every
-  showing, since a scroller built afresh by a resize stands at nothing.
+  element's motion. That card, or the one a position sent the run to, is the
+  card the run stands on.
+- After each layout the run is put on the card it stands on; a scroller not
+  laid out yet keeps the offset for its first layout (host/layout.md, an offset
+  the tree writes). A change of room keeps that card in front: a room grown
+  wider - a phone turned - stands the scroller in it before the run is as long
+  as the room asks, so the toolkit clamps the offset and reports a card short
+  of it. The gallery names its card again and, once the scroller says its run
+  is long enough to hold it, sends the run there; until then the hand names
+  nothing and a rest is no card the user chose.
 
 The sensitivity is one number, how far the hand travels to turn the run by one
 card: three fifths of a card's width, far enough that the coarsest step a

@@ -1480,10 +1480,11 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(heights.count, 1,
                        "the run's height is described rather than driven")
 
-        // TWO rooms: the page's own, which that height is arithmetic over, and
-        // the gallery's, which its cards are placed in.
-        XCTAssertEqual(rooms, ["Grid", "ZStack"],
-                       "the page and its run are measured onto numbers")
+        // THREE rooms: the page's own, which that height is arithmetic over,
+        // the gallery's, which its cards are placed in, and where its
+        // scroller's run is laid out, which a change of room waits for.
+        XCTAssertEqual(rooms, ["Grid", "ZStack", "ZStack"],
+                       "the page, its run and the scroller's run are measured onto numbers")
 
         // And the entrance is the third number - so the page waits for its room
         // to settle and then comes in, with nothing built for either.

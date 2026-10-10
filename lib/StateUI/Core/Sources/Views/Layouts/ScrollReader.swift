@@ -41,6 +41,9 @@ public struct ScrollReader: View {
     /// What runs while a finger or a mouse drags the run, if anything.
     private var dragged: (repeated: RepeatedEvent, handler: ValueEventHandler<PanUpdate>)?
 
+    /// Where the scroller's run is laid out, as the platform reports it, where a reader in this module asked.
+    private var laid: Binding<Rect>?
+
     /// The two parts of the content where a tap has a place of its own: the
     /// run's length, and where a tap may land.
     private static let parts = ["run", "tap"]
@@ -224,6 +227,15 @@ public struct ScrollReader: View {
         return copy
     }
 
+    /// The run laid out, reported onto `state`: the room the run is as long as is measured a render after it
+    /// changed, so a reader learns here when the scroller can hold what the new room asks.
+    /// Design: docs/design/views/measured-layouts.md#scroll-reader
+    func laidOut(_ state: Binding<Rect>) -> ScrollReader {
+        var copy = self
+        copy.laid = state
+        return copy
+    }
+
     /// How wide the scroller's content is where the run does not go sideways:
     /// nothing to speak of, or the room where a tap has to land on it.
     private func across(_ room: Rect) -> Double {
@@ -246,6 +258,7 @@ public struct ScrollReader: View {
         let tap = tapped
         let area = target
         let drag = dragged
+        let length = laid
 
         return Grid {
             // What is moved takes no touches: the scroller over it takes them.
@@ -283,6 +296,7 @@ public struct ScrollReader: View {
                         .width(long)
                         .height(tall)
                         .motion(.none, .size)
+                        .reporting(laid: length)
                         .engine(following: carried) { _ in
                             // Where the run is, not where it is going.
                             let stands = where_()
@@ -308,6 +322,7 @@ public struct ScrollReader: View {
                             .motion(.none)
                             .tapping(tap)
                             .dragging(drag)
+                            .reporting(laid: length)
                     }
                 }
                 .orientation(
@@ -340,6 +355,13 @@ extension ScrollView {
     /// modifier chain cannot leave a link out.
     func reporting(at: Binding<Point>?) -> ScrollView {
         at.map { self.scrollOffset($0) } ?? self
+    }
+}
+
+extension VisualElement where Modified == Self {
+    /// The element reporting where it is laid out onto `state`, where one was given.
+    func reporting(laid state: Binding<Rect>?) -> Self {
+        state.map { frame($0) } ?? self
     }
 }
 
