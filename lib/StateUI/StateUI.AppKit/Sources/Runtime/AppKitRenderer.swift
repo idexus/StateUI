@@ -71,16 +71,24 @@ final class AppKitRenderer {
     }
 
     func start() {
-        environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
-        startRuntime()
+        startRuntime {
+            environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
+        }
         startTurns()
     }
 
-    func startRuntime() {
+    /// Starts the runtime in the one order every host keeps (`HostRuntime.start`): `watching` begins what follows
+    /// the environment once its first facts are told - nothing in a test host.
+    /// Design: docs/design/host/runtime.md#starting
+    func startRuntime(watching: () -> Void = {}) {
         started = true
         runtime.start(
             realizing: AppKitRegistrations.registry.realization, unrealized: AppKitRealization.unrealized,
-            environment: configureEnvironment, kept: hydratePersistentState,
+            environment: {
+                configureEnvironment()
+                watching()
+            },
+            kept: hydratePersistentState,
             windows: {
                 if !connectedFirstWindow {
                     runtime.connectWindow()
