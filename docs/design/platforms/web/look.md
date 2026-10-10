@@ -3,7 +3,8 @@
 The Web host looks like a current web page, not like another platform's
 application: one stylesheet of the host's, `stateui-web.css`, gives the window
 its bar, the sidebar, the pages and the controls their look, light or dark as
-the user's system is. What an application says of an element's look - a
+the user's system is - a control in the window's room, on a sheet and over
+every page alike, as the rules for controls name all three. What an application says of an element's look - a
 colour, a font, a box, a shape - is that element's own style, which wins over
 every rule of the stylesheet, so the application's look is always the one
 shown.
