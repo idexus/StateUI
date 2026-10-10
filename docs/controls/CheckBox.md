@@ -14,7 +14,7 @@ HStack {
 .spacing(8)
 ```
 
-Layer: `stateUI`. StateUI composes it from smaller primitives before a host receives the tree.
+Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TintElement](tiers/TintElement.md)
 

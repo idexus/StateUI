@@ -10,8 +10,8 @@ public enum ElementLayer: Sendable {
     /// StateUI's state contract.
     case adaptive
 
-    /// StateUI composes it from smaller primitives before a host receives the
-    /// tree.
+    /// StateUI decides its geometry, its arrangement or its composition - in the
+    /// core or the shared host layer - and a host draws what was decided.
     case stateUI
 
     /// It carries structure or protocol data rather than configuring a visual

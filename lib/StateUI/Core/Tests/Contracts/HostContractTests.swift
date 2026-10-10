@@ -25,13 +25,16 @@ final class HostContractTests: XCTestCase {
             vocabulary: "Event")
     }
 
-    func testDerivedLayoutsAndControlsBelongToStateUI() {
+    func testWhatStateUIDecidesBelongsToStateUI() {
         for type in [
-            NodeType.checkBox, .ellipse, .grid,
-            .line, .path, .polygon, .polyline, .radioButton,
+            NodeType.ellipse, .grid,
+            .line, .path, .polygon, .polyline,
             .rectangle,
         ] {
             XCTAssertEqual(Self.layer(of: type), .stateUI)
+        }
+        for type in [NodeType.checkBox, .radioButton] {
+            XCTAssertEqual(Self.layer(of: type), .adaptive, "a toolkit's own box where it has one")
         }
 
         for property in [

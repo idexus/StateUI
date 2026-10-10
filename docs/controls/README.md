@@ -136,7 +136,7 @@ Which layer realizes an element or a member - the word each page and each row us
 <!-- layers:begin -->
 - `native` - Every base host presents it with its native toolkit.
 - `adaptive` - Every base host presents it by its platform's conventions, keeping StateUI's state contract.
-- `stateUI` - StateUI composes it from smaller primitives before a host receives the tree.
+- `stateUI` - StateUI decides its geometry, its arrangement or its composition - in the core or the shared host layer - and a host draws what was decided.
 - `structure` - It carries structure or protocol data rather than configuring a visual platform object.
 - `provider` - An optional provider supplies it: a package, or the application that registers it with its hosts.
 <!-- layers:end -->

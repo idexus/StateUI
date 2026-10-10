@@ -11,7 +11,7 @@ Ellipse()
     .height(48)
 ```
 
-Layer: `stateUI`. StateUI composes it from smaller primitives before a host receives the tree.
+Layer: `stateUI`. StateUI decides its geometry, its arrangement or its composition - in the core or the shared host layer - and a host draws what was decided.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Shape](tiers/Shape.md)
 
