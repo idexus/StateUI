@@ -21,4 +21,8 @@ final class WinUIProgressBarView: WinUIView {
 
     /// How far along WinUI shows it.
     var progress: Double { stateui_winui_progress_bar_value(handle) }
+
+    /// None: WinUI paints a progress bar's Background as its track, which a colour there would recolour - its
+    /// register's `notPlanned`.
+    override func setBackground(_ value: HostValue?) {}
 }

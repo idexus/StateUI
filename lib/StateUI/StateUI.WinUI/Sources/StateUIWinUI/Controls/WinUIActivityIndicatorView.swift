@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
 import CStateUIWinUI
 
 /// An ActivityIndicator: WinUI's `ProgressRing`, turning while its work runs.
@@ -17,4 +18,8 @@ final class WinUIActivityIndicatorView: WinUIView {
 
     /// Whether WinUI turns it.
     var isAnimating: Bool { stateui_winui_progress_ring_running(handle) }
+
+    /// None: WinUI paints a progress ring's Background as its track, which a colour there would recolour - its
+    /// register's `notPlanned`.
+    override func setBackground(_ value: HostValue?) {}
 }
