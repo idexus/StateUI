@@ -25,7 +25,7 @@ final class GTKPageFrame {
     /// The bar's start - the sidebar's toggle, then the leading groups - and its end - the trailing groups, then the
     /// overflow's menu.
     private let startBox: GTKWidget
-    private let endBox: GTKWidget
+    let endBox: GTKWidget
 
     /// The groups of actions at each edge, a box each.
     let leadingGroups: GTKWidget
@@ -218,7 +218,12 @@ final class GTKPageFrame {
         let menu = gtk_menu_button_new()!
         gtk_menu_button_set_icon_name(menu.opaque, "view-more-symbolic")
         gtk_menu_button_set_popover(menu.opaque, popover)
-        gtk_box_append(endBox.of(GtkBox.self), menu)
+        // Before the main menu, which stands at the very end whichever of them was made last.
+        if let mainMenu {
+            gtk_box_insert_child_after(endBox.of(GtkBox.self), menu, gtk_widget_get_prev_sibling(mainMenu.button))
+        } else {
+            gtk_box_append(endBox.of(GtkBox.self), menu)
+        }
         overflowButton = menu
     }
 }

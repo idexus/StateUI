@@ -112,6 +112,32 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// The overflow's menu stands before the main menu at the bar's end, whichever of them changed last.
+    func testTheOverflowStandsBeforeTheMainMenu() throws {
+        try onUIThread {
+            let more = State(wrappedValue: false)
+            let host = GTKRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    Text("Notes")
+                        .toolbar {
+                            ToolbarItem("Later").placement(.overflow)
+                            if more.wrappedValue { ToolbarItem("Sooner").placement(.overflow) }
+                        }
+                        .menuBar { Menu("File") { MenuItem("Open") } }
+                        .title("Notes")
+                } destination: { _ in
+                    Text("Note")
+                }
+            }
+            more.wrappedValue = true
+            host.runtime.pump.turn()
+
+            let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
+            XCTAssertEqual(frame.overflowButtons.count, 2)
+            XCTAssertEqual(gtk_widget_get_last_child(frame.endBox), frame.mainMenu?.button, "the main menu stands last")
+        }
+    }
+
     /// An action with a picture stands on the header bar as an icon named by its title; one whose picture the
     /// application does not hold shows its title, and the overflow's menu shows titles.
     func testAnActionWithAPictureStandsAsAnIcon() throws {
