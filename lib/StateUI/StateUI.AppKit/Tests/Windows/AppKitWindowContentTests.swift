@@ -57,6 +57,7 @@ final class AppKitWindowContentTests: XCTestCase {
 
         XCTAssertTrue(page.superview === content)
         XCTAssertTrue(panel.isDescendant(of: content))
+        XCTAssertNil(renderer.viewForTesting(id: .manual("overlay")), "the window places the overlay's child itself")
 
         renderer.applyForTesting(tree(withOverlay: false))
 
