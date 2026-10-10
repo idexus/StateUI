@@ -78,7 +78,7 @@ final class AndroidSplitView: AndroidLayoutView {
     }
 
     /// Lays the detail and the drawer out. A layout while the drawer slides leaves it sliding; only a new room -
-    /// the drawer wider, or beside the detail rather than over it - puts it in place at once.
+    /// the drawer of another width, or beside the detail rather than over it - puts it in place at once.
     override func arrange(in bounds: Rect) {
         // Design: docs/design/host/pages.md#a-sidebar-on-the-first-room
         if adaptation.room(bounds.width, breakpoint: Self.sideBySide, shown: isPresented) {

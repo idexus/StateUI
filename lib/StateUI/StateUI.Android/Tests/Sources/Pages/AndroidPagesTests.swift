@@ -172,8 +172,6 @@ final class AndroidPagesTests: XCTestCase {
         }
     }
 
-    /// On a phone the sidebar slides over the detail: the detail's bar shows the sidebar's picture, pressing it
-    /// opens the sidebar and says so, and back closes it.
     /// A sidebar in a language written right to left is a drawer at the right edge, the edge that language starts
     /// from.
     func testADrawerStandsAtTheEdgeTheLanguageStartsFrom() throws {
@@ -197,6 +195,8 @@ final class AndroidPagesTests: XCTestCase {
         }
     }
 
+    /// On a phone the sidebar slides over the detail: the detail's bar shows the sidebar's picture, pressing it
+    /// opens the sidebar and says so, and back closes it.
     func testTheBarOpensTheSidebarAndBackClosesIt() throws {
         try onMainActor {
             let open = State(wrappedValue: false)

@@ -42,7 +42,7 @@ final class AndroidCanvasViewTests: XCTestCase {
     }
 
     /// A drawing whose last record runs past the end of its lists draws what stands before it and stops there:
-    /// the relay reads no number its lists do not hold.
+    /// no exception leaves the relay.
     func testADrawingRunningPastItsListsStopsThere() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
@@ -60,7 +60,7 @@ final class AndroidCanvasViewTests: XCTestCase {
             }
             let raised = Java.exceptionsCleared
             XCTAssertEqual(canvas.pixels(at: [(5, 5)]), [Self.red], "what stands before the cut record is drawn")
-            XCTAssertEqual(Java.exceptionsCleared, raised, "the relay read past its lists")
+            XCTAssertEqual(Java.exceptionsCleared, raised, "an exception left the relay")
         }
     }
 

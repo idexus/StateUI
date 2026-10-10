@@ -33,7 +33,7 @@ public enum Java {
         return body()
     }
 
-    /// How many Java exceptions a call raised and the host cleared, in this process.
+    /// How many Java exceptions a checked call raised and the host cleared (`check`), in this process.
     private(set) static var exceptionsCleared = 0
 
     /// Says and clears a pending Java exception: one left pending aborts the next call.
