@@ -9571,8 +9571,8 @@ enum Listings {
                 width = frame.width
                 height = frame.height
             }
-            // The switch starts where the window stands - on, where the gallery's
-            // window opens translucent.
+            // The switch starts where the window stands: on while it stands on
+            // the blur the switch writes.
             .onCreated { translucent = window.background == .blur(.regular) }
         }
 
