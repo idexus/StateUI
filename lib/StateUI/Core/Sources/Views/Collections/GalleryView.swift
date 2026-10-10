@@ -211,14 +211,14 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         fatalError("unavailable")
     }
 
-    /// Runs when the user taps the run, with the item in the middle.
+    /// Runs when the user taps the card in front, with its item.
     ///
     ///     GalleryView(groups, id: \.route) { … }
     ///         .position($shown)
     ///         .onItemTapped { group in open(group) }
     ///
-    /// The tap is about the card the run has settled on, wherever the finger
-    /// landed.
+    /// The tap lands on the card in front as its shape draws it, whether the
+    /// user may swipe the run or not.
     ///
     /// - Parameter handler: what to run, given the middle item.
     /// - Returns: the gallery, answering a tap.
@@ -493,9 +493,38 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
                 flies.wrappedValue = false
             })
 
+        // The tap, answered on the card in front: the press shows, and the card is
+        // back at its size, before the tap's own work, which usually builds a page.
+        var answer: EventHandler?
+        if let tapped {
+            answer = {
+                let middle = items.index(items.startIndex, offsetBy: asked())
+
+                dips.wrappedValue = items[middle][keyPath: path]
+
+                try await Task.sleep(for: .milliseconds(Self.held))
+
+                dips.wrappedValue = nil
+
+                try await tapped.handler(items[middle])
+            }
+        }
+
         guard swipes else {
+            // Nothing scrolls: the card in front stands where its shape draws it.
             return ModifiedContent(node: Grid {
                 ModifiedContent(node: cards.node)
+                if let tapped, let answer {
+                    GeometryReader { room in
+                        let at = drawn(room)
+
+                        ZStack {
+                            ColorBox(Color("#00000000"))
+                                .area(.absolute(at.x, at.y, at.width, at.height))
+                                .onTapped(tapped.repeated, answer)
+                        }
+                    }
+                }
                 turning
             }.node)
         }
@@ -543,21 +572,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             }
         }
 
-        if let tapped {
+        if let tapped, let answer {
             // The tap is answered on the card in front, as its shape draws it.
-            reader = reader.onTapped(within: drawn, tapped.repeated) {
-                // The press shows, and the card is back at its size, before the
-                // tap's own work, which usually builds a page.
-                let middle = items.index(items.startIndex, offsetBy: asked())
-
-                dips.wrappedValue = items[middle][keyPath: path]
-
-                try await Task.sleep(for: .milliseconds(Self.held))
-
-                dips.wrappedValue = nil
-
-                try await tapped.handler(items[middle])
-            }
+            reader = reader.onTapped(within: drawn, tapped.repeated, answer)
         }
 
         let deck = Grid {
