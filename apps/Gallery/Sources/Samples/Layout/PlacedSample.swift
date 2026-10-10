@@ -51,28 +51,12 @@ struct PlacedSample: SampleContent, ExampleContent {
     /// to be taken hold of, so the two swap places.
     @State private var grabbing = false
 
-    /// Whether the run has been put on the card it opens on. A scroller
-    /// cannot be moved before its content is laid out - asked earlier it
-    /// clamps to the length it has so far - so the opening aim below keeps
-    /// asking until the card it was aimed at is where it was sent, and this
-    /// closes it.
-    @State private var opened = false
-
-    /// Where the aim sends a fresh scroller, in device units. The middle card
-    /// at the first opening, and the card the ring STOOD ON at a handover -
-    /// held apart from the driven state, whose value a scroller being built can
-    /// briefly stomp with the clamps of its first layout.
-    @State private var aim = Double(PlacedSample.cards.count / 2) * PlacedSample.reach
-
-    /// How long the scroller's content was when it last reported - the aim
-    /// runs when this changes, which is when a jump can finally land.
-    @State private var length = 0.0
-
     /// How far the run has been SCROLLED, and how far it has been DRAGGED -
     /// both handed on, so neither describes anything when it moves. The
     /// arithmetic below reads both and the host runs it on its own frames.
     /// The offset is walked: a button's write glides, and `value` is where
-    /// the scroller IS, frame by frame.
+    /// the scroller IS, frame by frame. It starts on the middle card, where a
+    /// scroller - the first, or one built afresh - stands once laid out.
     @State private var scrolled = Point(Double(PlacedSample.cards.count / 2) * PlacedSample.reach, 0)
 
     @State private var dragged = 0.0
@@ -158,26 +142,6 @@ struct PlacedSample: SampleContent, ExampleContent {
                         let card = min(max(($scrolled.journey.value.x / Self.reach).rounded(), 0), Double(Self.cards.count - 1))
                         scrolled = Point(card * Self.reach, 0)
                     }
-                    // THE OPENING AIM: a scroller cannot be moved before its
-                    // content is laid out - asked earlier it clamps to the
-                    // length it has so far - so this puts it there again
-                    // until the card it was aimed at is where it was sent.
-                    .onFrameChanged(gate: .cancelPrevious) { frame in
-                        guard !opened, frame.width != length else { return }
-
-                        length = frame.width
-
-                        let sendTo = aim
-                        var asks = 0
-
-                        repeat {
-                            $scrolled.journey.snap(to: Point(sendTo, 0))
-                            try await Task.sleep(for: .milliseconds(100))
-                            asks += 1
-                        } while abs($scrolled.journey.value.x - sendTo) > 1 && asks < 10
-
-                        opened = abs($scrolled.journey.value.x - sendTo) <= 1
-                    }
                 }
 
                 // WHICH CARD IS AT THE FRONT, said by a fade - a second layout
@@ -230,14 +194,11 @@ struct PlacedSample: SampleContent, ExampleContent {
                         // ONE NUMBER AT EACH HANDOVER: the two values are
                         // folded into the scroll alone, so whichever input
                         // comes next starts from where the ring stands -
-                        // and the scroller, built afresh by the swap,
-                        // is aimed at that card again by the opening aim.
+                        // the scroller, built afresh by the swap, included.
                         let standing = at.rounded() * Self.reach
 
                         dragged = 0
                         $scrolled.journey.snap(to: Point(standing, 0))
-                        aim = standing
-                        opened = taking
                         grabbing = taking
                     }))
             .horizontalAlignment(.center)
