@@ -112,8 +112,10 @@ by side. On AppKit the sidebar runs the window's full height
 beside the detail, shown and hidden by the system sidebar button in the
 window's toolbar; a window wide enough for both panes opens with the sidebar
 shown, and after that the user and the binding decide. On Windows the
-sidebar opens over the detail from the navigation button beside the back
-button in the title bar, and the same button or a click outside it closes it.
+sidebar stands beside the detail in a wide window, which opens with it shown;
+in a narrow one it opens over the detail from the navigation button beside the
+back button in the title bar, and the same button or a click outside it closes
+it.
 On a phone - iOS and Android alike - the sidebar slides over the detail from
 the leading edge, the detail shaded behind it, and a tap on the shade closes
 it; on an iPad or a wide tablet it stands beside the detail.
@@ -283,12 +285,12 @@ VStack { … }
         ToolbarItem("Save")
             .id("save")
             .isEnabled(hasChanges)
-            .onClicked { try await save() }
+            .onClicked(gate: .ignoreWhileRunning) { try await save() }
         ToolbarItem("Delete")
             .id("delete")
             .placement(.overflow)
             .isDestructive(true)
-            .onClicked { try await delete() }
+            .onClicked(gate: .ignoreWhileRunning) { try await delete() }
     }
 ```
 
@@ -347,7 +349,7 @@ names the window, the way back is the system's back item, the actions are
 toolbar items - a space between two groups, a leading group before the
 flexible space - and those placed in the overflow sit in the toolbar's
 overflow menu. Android's bar has no leading edge beside its navigation button,
-so a leading group stands first among its actions. A tabbed
+so a leading group stands first among its actions. On AppKit, a tabbed
 view on the window's page path shows its tabs in a row beneath the toolbar,
 beside any sidebar, the tabs sharing its width with each picture beside its
 title; one in a sidebar, a sheet or inside another tab is a tab view with its
@@ -356,7 +358,8 @@ tabs on the top edge of its content.
 Every arrangement accepts a flat `barBackgroundColor` and a `barForegroundColor`
 for its title and native action affordances; a page's bar takes each from the
 nearest arrangement around it that declares one, so a stack further in paints
-its own - a sidebar and a sheet take nothing from around them. The
+its own - a sidebar takes only what its own split view declares, and a sheet
+takes nothing from around it. The
 application's name, the line under the title and its mark are declared the same
 way ([The window's bar](application-and-sessions.md#the-windows-bar)). Native tab
 selectors keep their selected and unselected states, legible over a written
@@ -381,9 +384,9 @@ VStack { … }
             MenuItem("Save")
                 .id("save")
                 .isEnabled(hasChanges)
-                .onClicked { try await save() }
+                .onClicked(gate: .ignoreWhileRunning) { try await save() }
             Menu("Recent") {
-                ForEach(recent) { file in
+                recent.map { file in
                     MenuItem(file.name)
                         .id(file.id)
                         .onClicked { open(file) }
@@ -422,20 +425,21 @@ SplitView($sidebar) {
 The platform's own menus are joined by identity, never by caption:
 `.id(StandardMenu.file)` - `edit`, `view`, `window`, `help` - puts a menu's
 entries into AppKit's File menu and UIKit's `.file` menu after the platform's
-own, whatever the menu is called, so "Plik" joins it too. On WinUI and GTK it
-is an ordinary menu of the application's. Android keeps no menu bar: a page's
-menus stand behind its stack's bar's overflow, each a submenu after the
-actions. An iPhone shows no menu bar. `Menu`
-holds only `MenuItem`, `Menu` and `Divider`, and a menu bar only `Menu`:
-anything else does not compile.
+own, whatever the menu is called, so "Plik" joins it too. On WinUI it is an
+ordinary menu of the application's; on GTK, a submenu of the header bar's main
+menu. Android keeps no menu bar: a page's menus stand behind its stack's
+bar's overflow, each a submenu after the actions. An iPhone shows no menu
+bar. `Menu` holds only `MenuItem`, `Menu` and `Divider`, and a menu bar only
+`Menu`: anything else does not compile.
 
-A menu bar stands only while something declares a menu. On WinUI and GTK a
-window shows its menu bar while its page, or an arrangement around that page,
-declares one, and none at all otherwise; macOS and iPadOS always keep the
-platform's own menus, which a declared menu joins. So declare a menu where its
-entries act - File on the page that saves - and around every page only what
-every page offers: a menu declared on the window's page stands over every
-page, even where it holds nothing the page can do.
+A menu bar stands only while something declares a menu. On WinUI a window
+shows its menu bar, and on GTK its page's header bar its main menu, while that
+page, or an arrangement around it, declares a menu, and none at all otherwise;
+macOS and iPadOS always keep the platform's own menus, which a declared menu
+joins. So declare a menu where its entries act - File on the page that saves -
+and around every page only what every page offers: a menu declared on the
+window's page stands over every page, even where it holds nothing the page
+can do.
 
 The same item vocabulary can be attached to any view as a context menu:
 

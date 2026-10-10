@@ -4,8 +4,9 @@
 // Samples/<Group>/, name it here, and it appears on the home page, on its
 // group's page and behind its own route - nothing else knows it exists.
 //
-// A new GROUP is a `SampleGroup(…)` below plus an icon in Resources/Images. The
-// menu, the sections and the home page are all built from this list.
+// A new GROUP is a `SampleGroup(…)` below plus an icon and a card picture in
+// Resources/Images. The menu, the sections and the home page are all built
+// from this list.
 
 import StateUI
 
@@ -21,6 +22,7 @@ import StateUI
 /// Gallery/Navigation.swift), what it looks like, what its window's chrome
 /// says, and its window's lifecycle log. The samples that move the gallery or
 /// change its look are handed the means to.
+@MainActor
 final class Catalog {
     let groups: [SampleGroup]
 
@@ -47,6 +49,7 @@ final class Catalog {
                     Sample(BuilderSample()),
                     Sample(IdentitySample()),
                     Sample(LifetimeSample()),
+                    Sample(ComplaintsSample()),
                     Sample(SameInputsSample()),
                 ]),
 
@@ -72,7 +75,8 @@ final class Catalog {
                 title: "Using state",
                 summary: "The rest of what an author holds - a control you aim an "
                     + "act at, a class, a value kept across launches, a cadence, "
-                    + "and writes from many tasks at once.",
+                    + "writes from many tasks at once, and what a press does while the "
+                    + "last still runs.",
                 icon: ImageSource(light: "nav_state.png", dark: "nav_state_dark.png"),
                 card: ImageSource("cat_state.png"),
                 samples: [
@@ -83,6 +87,7 @@ final class Catalog {
                     Sample(PersistentStateSample()),
                     Sample(PacedStateSample()),
                     Sample(ConcurrentStateSample()),
+                    Sample(GateSample()),
                 ]),
 
             SampleGroup(
@@ -278,9 +283,9 @@ final class Catalog {
                 route: "environment",
                 title: "Environment",
                 summary: "What the host knows - the device, the screen, the locale, the "
-                    + "network and the battery - and the application's session, provided "
-                    + "above and resolved below by type; the theme is under Styles, the "
-                    + "scene's and the window's sessions under Scene.",
+                    + "network and the battery - the application's session, and an object "
+                    + "of your own provided above and resolved below by type; the theme is "
+                    + "under Styles, the scene's and the window's sessions under Scene.",
                 icon: ImageSource(light: "nav_environment.png", dark: "nav_environment_dark.png"),
                 card: ImageSource("cat_environment.png"),
                 samples: [
@@ -315,7 +320,6 @@ final class Catalog {
         #if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
         // Calling the host, hearing from it, and a control the application registers with it - each described like
         // the library's own: one contract, one `View`, and the host's half beside the head, in Platforms/<host>.
-        // The cube draws on the GPU, so it is declared only for the hosts that draw it, each in its own way.
         groups.append(
             SampleGroup(
                 route: InteropHost.key + "Interop",
@@ -353,7 +357,8 @@ final class Catalog {
         #endif
     }
 
-    /// The animation the host draws on the GPU, on the hosts that draw it.
+    /// The animation the host draws on the GPU. Every host draws it in its own way; a build for no host - the
+    /// gallery's own tests - has nothing to draw it with, so it declares no cube.
     private static var drawnByTheHost: [Sample] {
         #if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
         [Sample(Cube3DSample())]
@@ -394,7 +399,8 @@ final class Catalog {
 /// living as long as its gallery does, rather than by a fresh copy of it
 /// adopting the older one's storage every render, and the page showing a
 /// sample drives the one it holds.
-final class KeptCatalog: @unchecked Sendable {
+@MainActor
+final class KeptCatalog {
     private var held: Catalog?
 
     /// The catalog, built by `make` the first time anybody asks and simply

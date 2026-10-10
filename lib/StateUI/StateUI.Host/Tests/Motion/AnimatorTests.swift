@@ -6,6 +6,7 @@ import XCTest
 @_spi(Host) @testable import StateUIHost
 
 /// The runtime's one animator: every animation advanced together, in target order.
+@MainActor
 final class AnimatorTests: XCTestCase {
     /// One advance moves every animation, states first by number and then described
     /// properties by element and property - the order two runs of one frame

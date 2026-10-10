@@ -49,9 +49,9 @@ extension VisualElement {
     ///
     /// For arithmetic that lays views out; `GeometryReader` is for content built
     /// from the frame. Writing the state moves nothing: the frame is the
-    /// layout's answer. A layout reporting its frame gives its children their
-    /// new sizes at once, and a size worked out from the frame elsewhere wants
-    /// `.motion(.none)`.
+    /// layout's answer. A layout whose frame, or a frame under it, is read
+    /// places every child at once, size and place alike, and a size worked out
+    /// from the frame elsewhere wants `.motion(.none)`.
     ///
     /// - Parameter state: the state the frame is written into.
     /// - Returns: the element, reporting its frame there.

@@ -85,10 +85,10 @@ final class WebItemsView: WebDOMView {
             guard let self, let cell else { return }
             cells.userTapped(cell.entry)
         }
-        WebRelay.watchNearness(cell.node, of: node, WebRelay.listener { [weak self, weak cell] in
+        WebRelay.watchNearness(cell.node, of: node, cell.held(WebRelay.listener { [weak self, weak cell] in
             guard let self, let cell else { return }
             nearnessChanged(cell, isNear: WebRelay.eventNear)
-        })
+        }))
         return cell
     }
 

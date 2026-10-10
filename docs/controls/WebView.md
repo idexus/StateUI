@@ -11,7 +11,7 @@ A view showing web content - a page fetched by URL, or HTML written here.
 Grid {
     Button("Back")
         .isEnabled(canGoBack)
-        .onClicked { try await browser.goBack() }
+        .onClicked(gate: .ignoreWhileRunning) { try await browser.goBack() }
     WebView("https://example.com")
         .canGoBack($canGoBack)
         .aim(browser)
@@ -47,7 +47,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>62 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td><code>WebView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>46 ✅ · 13 ✓ · 19 –</td><td><code>WebView2</code>, a backend</td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>55 ✅ · 1 ☑️ · 22 ✓ · 1 –</td><td>WebKitGTK <code>WebKitWebView</code>, a backend</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>52 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;iframe&gt;</code> (?)</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>52 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;iframe&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/WebViewContract.swift`.
@@ -79,7 +79,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>accessibilityIdentifier</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
-<tr><td colspan="9">GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.</td></tr></tbody>
+<tr><td colspan="9">GTK 4: GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.</td></tr></tbody>
 </table>
 
 ## From [VisualElement](tiers/VisualElement.md)

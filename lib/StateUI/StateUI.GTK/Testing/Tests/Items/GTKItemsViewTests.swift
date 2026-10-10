@@ -8,6 +8,7 @@
 import CStateUIGTK
 import XCTest
 
+@MainActor
 final class GTKItemsViewTests: XCTestCase {
     /// A row stands as tall as its entry, so only the rows its view holds are shown: at their least, a StateUI
     /// panel's nothing, every row GTK binds would stand in view at once.

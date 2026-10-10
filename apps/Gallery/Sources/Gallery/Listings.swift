@@ -116,19 +116,19 @@ enum Listings {
                     // in the HANDLER, because the walk fills it after the body
                     // that describes the view was built.
                     Button("Focus the first")
-                        .onClicked {
+                        .onClicked(gate: .ignoreWhileRunning) {
                             try await field.focus()
                             says = "focused \(field)"
                         }
 
                     Button("Focus the second")
-                        .onClicked {
+                        .onClicked(gate: .ignoreWhileRunning) {
                             try await note.focus()
                             says = "focused \(note)"
                         }
 
                     Button("Let go")
-                        .onClicked {
+                        .onClicked(gate: .ignoreWhileRunning) {
                             try await field.unfocus()
                             says = "let go of \(field)"
                         }
@@ -147,9 +147,9 @@ enum Listings {
         /// sweep them round in a blur.
         @State private var started = false
 
-        /// Which visit to this page the running loop belongs to. Each visit begins
-        /// a loop of its own, and this is what tells any earlier one - even one
-        /// still asleep when the next began - that its page is gone.
+        /// Which visit to this page the running loop belongs to. The page leaving
+        /// ends its loop: its sleep throws. `visit` tells an earlier loop on a
+        /// covered copy of this page that a newer visit took over.
         @State private var visit = 0
 
         /// The angle each hand is GOING to. Each hand's rotation is DRIVEN by
@@ -181,7 +181,7 @@ enum Listings {
                 // at one build while the clock runs.
                 DebugInfoLabel()
 
-                ZStack().style("Card")
+                ZStack().style(.card)
                     .stroke(Palette.outline)
                     .lineWidth(2)
                     .width(220)
@@ -205,7 +205,7 @@ enum Listings {
                 hand($mAngle, length: 84, width: 4, color: Palette.text)
                 hand($sAngle, length: 96, width: 2, color: Palette.accent)
 
-                ZStack().style("Card")
+                ZStack().style(.card)
                     .stroke(.transparent)
                     .width(12)
                     .height(12)
@@ -214,10 +214,11 @@ enum Listings {
             }
             .horizontalAlignment(.fill)
             .onCreated {
-                // Each visit starts a loop of its own and retires the last. The
-                // hands come back at the angles the state kept, and the first
-                // reading below ASSIGNS the time rather than flying through
-                // everything that passed while the page was away.
+                // The page leaving ends its loop: its sleep throws. `visit` tells
+                // an earlier loop on a covered copy of this page that a newer
+                // visit took over. The hands come back at the angles the state
+                // kept, and the first reading below ASSIGNS the time rather than
+                // flying through everything that passed while the page was away.
                 visit += 1
                 let mine = visit
                 ticking = true
@@ -242,8 +243,8 @@ enum Listings {
                         // is where the hand belongs now, so the arithmetic starts
                         // from it - never from the journey's value, which is
                         // wherever the host had got to when this reading came
-                        // in. `async let` starts all three at once; each is
-                        // short, because the movement IS the tick.
+                        // in. All three start as they are sent, and are awaited
+                        // after; each is short, because the movement IS the tick.
                         let atSecond = sAngle
                         let atMinute = mAngle
                         let atHour = hAngle
@@ -252,13 +253,12 @@ enum Listings {
                         let toMinute = atMinute + (minute - atMinute).forwardTurn
                         let toHour = atHour + (hour - atHour).forwardTurn
 
-                        async let s: Bool = $sAngle.journey.move(to:
-                            toSecond, .eased(260, .backOut))
-                        async let m: Bool = $mAngle.journey.move(to:
-                            toMinute, .eased(300, .cubicOut))
-                        async let h: Bool = $hAngle.journey.move(to:
-                            toHour, .eased(300, .cubicOut))
-                        _ = try await (s, m, h)
+                        let s = $sAngle.journey.move(to: toSecond, .eased(260, .backOut))
+                        let m = $mAngle.journey.move(to: toMinute, .eased(300, .cubicOut))
+                        let h = $hAngle.journey.move(to: toHour, .eased(300, .cubicOut))
+                        try await s.arrived()
+                        try await m.arrived()
+                        try await h.arrived()
                     } else {
                         // The first reading SETS the hands: `value` is written, and
                         // the state to match, so nothing travels and nothing is awaited.
@@ -382,7 +382,7 @@ enum Listings {
 
                     button("Send the bottom one") {
                         try await $level.journey.move(to: level < 0.5 ? 1 : 0,
-                                                   .eased(900, .cubicInOut))
+                                                   .eased(900, .cubicInOut)).arrived()
                     }
                 }
 
@@ -399,7 +399,7 @@ enum Listings {
                         .horizontalAlignment(.start)
 
                     button("Send the stepper to 12") {
-                        try await $count.journey.move(to: 12, .eased(800, .cubicOut))
+                        try await $count.journey.move(to: 12, .eased(800, .cubicOut)).arrived()
                     }
                 }
             }
@@ -413,7 +413,7 @@ enum Listings {
         /// One of the buttons, all of which look the same.
         private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
             Button(caption)
-                .onClicked(act)
+                .onClicked(gate: .cancelPrevious, act)
         }
         """#,
         "AnimatedPropertySample": #"""
@@ -440,37 +440,37 @@ enum Listings {
                             .verticalAlignment(.center)
                     }
                 }
-                .style("Card")
+                .style(.card)
                 .height($panelHeight)
                 .stroke(.transparent)
 
                 HStack {
                     button("Colour") {
-                        try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(500))
+                        try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(500)).arrived()
 
-                        // The caption sits on the brand field inside the panel
+                        // The caption sits on the violet field inside the panel
                         // rather than on the panel itself, so what it goes to is
-                        // the colour that reads on the brand.
-                        try await $captionColor.journey.move(to: AppColors.white, .eased(500))
+                        // white, the colour that reads on that field.
+                        try await $captionColor.journey.move(to: AppColors.white, .eased(500)).arrived()
                     }
 
                     button("Size") {
                         wide.toggle()
                         try await $panelHeight.journey.move(to: wide ? 160 : 90,
-                                                         .eased(400, .cubicInOut))
+                                                         .eased(400, .cubicInOut)).arrived()
                     }
 
                     button("Padding") {
-                        try await $panelPadding.journey.move(to: Insets(48), .eased(400))
-                        try await $panelPadding.journey.move(to: Insets(16), .eased(400))
+                        try await $panelPadding.journey.move(to: Insets(48), .eased(400)).arrived()
+                        try await $panelPadding.journey.move(to: Insets(16), .eased(400)).arrived()
                     }
                 }
                 .horizontalAlignment(.center)
 
                 HStack {
                     button("Text size") {
-                        try await $captionSize.journey.move(to: 28, .eased(400, .cubicOut))
-                        try await $captionSize.journey.move(to: 17, .eased(400, .cubicIn))
+                        try await $captionSize.journey.move(to: 28, .eased(400, .cubicOut)).arrived()
+                        try await $captionSize.journey.move(to: 17, .eased(400, .cubicIn)).arrived()
                     }
 
                     button("Back") {
@@ -481,9 +481,9 @@ enum Listings {
                         // of Size would ask for the value it already has.
                         wide = false
 
-                        try await $panelHeight.journey.move(to: 90, .eased(400, .cubicInOut))
-                        try await $panelColor.journey.move(to: AppColors.lineDark, .eased(400))
-                        try await $captionColor.journey.move(to: AppColors.ink, .eased(400))
+                        try await $panelHeight.journey.move(to: 90, .eased(400, .cubicInOut)).arrived()
+                        try await $panelColor.journey.move(to: AppColors.lineDark, .eased(400)).arrived()
+                        try await $captionColor.journey.move(to: AppColors.ink, .eased(400)).arrived()
                     }
                 }
                 .horizontalAlignment(.center)
@@ -493,7 +493,7 @@ enum Listings {
         /// One of the buttons, all of which look the same.
         private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
             Button(caption)
-                .onClicked(act)
+                .onClicked(gate: .cancelPrevious, act)
         }
         """#,
         "AnimationSample": #"""
@@ -522,7 +522,7 @@ enum Listings {
                 ZStack {
                     Text("Animate me")
                 }
-                .style("Card")
+                .style(.card)
                 // Four DRIVEN properties. The host reads each off the state it
                 // moves, so none is in a patch after the one that registers it.
                 .opacity($fade)
@@ -538,26 +538,27 @@ enum Listings {
 
                 HStack {
                     // A movement answers whether it ran to the END. Stop says
-                    // false, and so does a second press taking this one's place -
-                    // and the way back is not taken over whatever happened
-                    // instead, which is what lets Stop leave the card where it
-                    // stood.
+                    // false - and a second press cancels this run, the buttons
+                    // passing through `.cancelPrevious` - so the way back is not taken over
+                    // whatever happened instead, which is what lets Stop leave the
+                    // card where it stood.
                     button("Fade") {
-                        let landed = try await $fade.journey.move(to: 0.1, .eased(400, easing))
-                        if landed { try await $fade.journey.move(to: 1, .eased(400, easing)) }
+                        let landed = try await $fade.journey.move(to: 0.1, .eased(400, easing)).arrived()
+                        if landed { try await $fade.journey.move(to: 1, .eased(400, easing)).arrived() }
                     }
 
                     // ONE movement, because the card only ever moves sideways. A
-                    // diagonal would be a second state on translationY, started
-                    // with `async let` so the two land together.
+                    // diagonal would be a second state on translationY, sent
+                    // beside this one before either is awaited, so the two land
+                    // together.
                     button("Move") {
-                        let landed = try await $shift.journey.move(to: 60, .eased(400, easing))
-                        if landed { try await $shift.journey.move(to: 0, .eased(400, easing)) }
+                        let landed = try await $shift.journey.move(to: 60, .eased(400, easing)).arrived()
+                        if landed { try await $shift.journey.move(to: 0, .eased(400, easing)).arrived() }
                     }
 
                     button("Scale") {
-                        let landed = try await $scale.journey.move(to: 1.4, .eased(400, easing))
-                        if landed { try await $scale.journey.move(to: 1, .eased(400, easing)) }
+                        let landed = try await $scale.journey.move(to: 1.4, .eased(400, easing)).arrived()
+                        if landed { try await $scale.journey.move(to: 1, .eased(400, easing)).arrived() }
                     }
 
                     // A movement goes TO a value, never BY one, so a full turn is
@@ -565,7 +566,7 @@ enum Listings {
                     // headed, which is what makes the next press carry on from
                     // there rather than start over.
                     button("Spin") {
-                        try await $angle.journey.move(to: angle + 360, .eased(700, easing))
+                        try await $angle.journey.move(to: angle + 360, .eased(700, easing)).arrived()
                     }
                 }
                 .horizontalAlignment(.center)
@@ -586,7 +587,7 @@ enum Listings {
         /// One of the buttons, all of which look the same.
         private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
             Button(caption)
-                .onClicked(act)
+                .onClicked(gate: .cancelPrevious, act)
         }
 
         /// The curve the picker is on.
@@ -603,7 +604,7 @@ enum Listings {
         // Sources/Styles/AppStyles.swift
         // A page's own name for itself. Tight tracking, because a large
         // size at the default spacing reads loose.
-        Style<Text>("Headline")
+        Style<Text>(.headline)
             .fontSize(32)
             .fontAttributes(.bold)
             .tracking(-0.5)
@@ -614,15 +615,15 @@ enum Listings {
         // about the shape of a quotation is stated once here, and
         // "QuoteLoud" adds the one property that makes it loud. The Styles
         // sample draws both, one under the other.
-        Style<Text>("Quote")
+        Style<Text>(.quote)
             .textColor(Palette.subtle)
             .fontSize(17)
             .fontAttributes(.italic)
             .tracking(0.3)
             .horizontalTextAlignment(.center)
 
-        Style<Text>("QuoteLoud")
-            .basedOn("Quote")
+        Style<Text>(.quoteLoud)
+            .basedOn(.quote)
             .textColor(Palette.accent)
 
         // Every button the gallery shows wears its violet - a style with no
@@ -889,6 +890,38 @@ enum Listings {
             }
         }
         """#,
+        "AwaitingEvents": #"""
+        // Sources/Samples/State/GateSample.swift
+        @State private var count = 0
+        @State private var query = ""
+        @State private var found = "Nothing searched yet."
+        @State private var logging = false
+        @State private var logged = 0
+
+        var body: some View {
+            VStack {
+                // No await: the handler runs whole inside the press and names no gate.
+                Button("+1 - \(count)")
+                    .onClicked { count += 1 }
+
+                // Every letter cancels the search under way: only the last one finishes.
+                SearchField($query)
+                    .onTextChanged(gate: .cancelPrevious) { text in
+                        try await Task.sleep(for: .milliseconds(600))
+                        found = text.isEmpty ? "Nothing searched yet." : "Found 3 for \"\(text)\"."
+                    }
+                Text(found)
+
+                SwitchRow("Log each change", $logging)
+                Text("Changes logged: \(logged)")
+                    // Each change logged beside the others: nothing held back.
+                    .onChanged(logging, gate: .none) {
+                        try await Task.sleep(for: .milliseconds(800))
+                        logged += 1
+                    }
+            }
+        }
+        """#,
         "BarStrips": #"""
         // Sources/Samples/Layout/ScrollViewSample.swift
         var body: some View {
@@ -1134,12 +1167,12 @@ enum Listings {
                     VStack(content: content)
                 }
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
         }
 
         /// One of the buttons, all of which look the same.
-        private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
+        private func button(_ caption: String, _ act: @escaping @MainActor () throws -> Void) -> Button {
             Button(caption)
                 .onClicked(act)
         }
@@ -1196,7 +1229,7 @@ enum Listings {
                 ZStack {
                     Text("A stroke is a brush too")
                 }
-                .style("Card")
+                .style(.card)
                 .lineWidth(4)
                 .stroke(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 0)))
 
@@ -1368,6 +1401,50 @@ enum Listings {
             }
         }
         """#,
+        "ComplaintsSample": #"""
+        // Sources/Samples/Fundamentals/ComplaintsSample.swift
+        /// What the library said while the page showed, oldest first.
+        @State private var heard: [String] = []
+
+        /// A list of two, for a write past its end.
+        @State private var pair = [1, 2]
+
+        /// How many presses landed.
+        @State private var presses = 0
+
+        var body: some View {
+            VStack {
+                Button("Write past the end of a list")
+                    .horizontalAlignment(.center)
+                    .onClicked {
+                        // A binding to the third element of a list of two: the write is dropped.
+                        let third = $pair[2]
+                        third.wrappedValue = 3
+                    }
+
+                // The second press supersedes the first, whose write is refused.
+                Button("Press twice, quickly")
+                    .horizontalAlignment(.center)
+                    .onClicked(gate: .cancelPrevious) {
+                        try? await Task.sleep(for: .seconds(1))
+                        presses += 1
+                    }
+
+                Text("\(presses) press(es) landed")
+                    .horizontalAlignment(.center)
+
+                ForEach(Array(heard.enumerated()), id: \.offset) { item in
+                    Text(item.element)
+                }
+            }
+            .onCreated {
+                // Each complaint comes on the thread that complained, and is posted here.
+                let heard = $heard
+                Complaints.route { words in heard.post { $0 + [words] } }
+            }
+            .onDestroying { Complaints.route(to: nil) }
+        }
+        """#,
         "ConcurrentAnimationSample": #"""
         // Sources/Samples/Animation/ConcurrentAnimationSample.swift
         @State private var playing = false
@@ -1413,12 +1490,11 @@ enum Listings {
                             .opacity($breath)
                     }
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(.transparent)
 
                 HStack {
                     button("Play") {
-                        guard !playing else { return }
                         playing = true
 
                         var n = 0
@@ -1433,7 +1509,7 @@ enum Listings {
                             if !finished { playing = false }
                         }
 
-                        try await $breath.journey.move(to: 1, .eased(200))
+                        try await $breath.journey.move(to: 1, .eased(200)).arrived()
                     }
                     .isEnabled(!playing)
 
@@ -1448,7 +1524,7 @@ enum Listings {
 
                         for bar in bars {
                             bar.journey.stop()
-                            try await bar.journey.move(to: 0, .eased(120))
+                            try await bar.journey.move(to: 0, .eased(120)).arrived()
                         }
                     }
                     .isEnabled(playing)
@@ -1466,14 +1542,14 @@ enum Listings {
         /// - Returns: whether everything in it ran to the end. False is what Stop
         ///   produces, through `stop()` on each of the states.
         private func beat(_ n: Int) async throws -> Bool {
-            // `async let` starts a movement and does not wait for it, so both of
-            // these are running while the bars below hop. Each is its own value on
-            // its own state, and the host carries all three on the same frames.
-            async let washing: Bool = $wash.journey.move(to:
+            // A movement starts as it is sent and is awaited apart, so both of these
+            // are running while the bars below hop. Each is its own value on its own
+            // state, and the host carries all three on the same frames.
+            let washing = $wash.journey.move(to:
                 n.isMultiple(of: 2) ? Palette.brand : Palette.accent,
                 .eased(1200, .cubicInOut))
 
-            async let breathing: Bool = $breath.journey.move(to: 0.25, .eased(600, .cubicInOut))
+            let breathing = $breath.journey.move(to: 0.25, .eased(600, .cubicInOut))
 
             // 4 bars x 300ms = the 1200ms the wash takes, so the wave crosses the
             // stage exactly once per colour. A hop that did not run to the end is
@@ -1482,33 +1558,34 @@ enum Listings {
             var hopped = true
 
             for bar in bars where hopped {
-                hopped = try await bar.journey.move(to: -26, .eased(150, .cubicOut))
+                hopped = try await bar.journey.move(to: -26, .eased(150, .cubicOut)).arrived()
 
                 if hopped {
-                    hopped = try await bar.journey.move(to: 0, .eased(150, .cubicIn))
+                    hopped = try await bar.journey.move(to: 0, .eased(150, .cubicIn)).arrived()
                 }
             }
 
             // Awaited at the BOTTOM: the beat is over when the longest thing in it
             // is over, not when the last one started is.
-            let (washed, breathed) = try await (washing, breathing)
+            let washed = try await washing.arrived()
+            let breathed = try await breathing.arrived()
 
-            try await $breath.journey.move(to: 1, .eased(300, .cubicInOut))
+            try await $breath.journey.move(to: 1, .eased(300, .cubicInOut)).arrived()
 
             return hopped && washed && breathed
         }
 
-        /// One of the buttons, both of which look the same.
+        /// One of the buttons, both of which look the same: a press while its run
+        /// is under way is let go.
         private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
             Button(caption)
-                .onClicked(act)
+                .onClicked(gate: .ignoreWhileRunning, act)
         }
         """#,
         "ConcurrentStateSample": #"""
         // Sources/Samples/State/ConcurrentStateSample.swift
-        /// The shared count every task increments. `_total` - the box behind it -
-        /// is what the tasks capture; it is Sendable, so it crosses to the
-        /// cooperative pool safely.
+        /// The shared count every task adds to. `$total` - the binding - is what the
+        /// tasks capture: it crosses to the cooperative pool, and is posted to.
         @State private var total = 0
 
         /// How many landed last run, to say out loud that none were lost.
@@ -1518,8 +1595,8 @@ enum Listings {
 
         var body: some View {
             VStack {
-                // The 20,000 writes land here as renders: this closure reads
-                // `total`, and the reading says how many it was actually built for.
+                // The 200 posts land here as renders: this closure reads `total`, and
+                // the reading says how many it was actually built for.
                 DebugInfoLabel()
 
                 Text("\(total)")
@@ -1534,22 +1611,25 @@ enum Listings {
                 Button(running ? "Counting…" : "Count from 200 tasks at once")
                     .isEnabled(!running)
                     .horizontalAlignment(.center)
-                    .onClicked {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         running = true
                         total = 0
                         expected = 200 * 100
 
-                        // The BOX, not the view: it is Sendable, so every task can
-                        // hold it. Two tasks doing `total += 1` would each read,
-                        // add and write, and lose one another's increments;
-                        // `update` runs the three steps under the state's own lock,
-                        // so every one of the 20,000 lands.
-                        let counter = _total
+                        // The BINDING: a task cannot write the state, which is the
+                        // UI thread's, so it posts to it. Each task counts on its
+                        // own and posts once; `post { $0 + counted }` runs every
+                        // change over the one before, so all 200 land. Their jobs
+                        // are queued before the group ends, so the line after it
+                        // finds the total whole.
+                        let counter = $total
 
                         await withTaskGroup(of: Void.self) { group in
                             for _ in 0 ..< 200 {
                                 group.addTask {
-                                    for _ in 0 ..< 100 { counter.update { $0 + 1 } }
+                                    var counted = 0
+                                    for _ in 0 ..< 100 { counted += 1 }
+                                    counter.post { [counted] in $0 + counted }
                                 }
                             }
                         }
@@ -1563,10 +1643,11 @@ enum Listings {
         //
         //     DispatchQueue.main.async { total = value }   // never runs on Android/Windows
         //
-        // RIGHT - just write it. A handler already runs on MainActor, the UI
-        // thread, and a plain @State write is safe from any thread anyway:
+        // RIGHT - in a handler, just write it: it runs on MainActor, the UI thread.
+        // From a task, post it:
         //
         //     total = value
+        //     $total.post(value)
         """#,
         "ConnectivitySample": #"""
         // Sources/Samples/Environment/ConnectivitySample.swift
@@ -1774,7 +1855,7 @@ enum Listings {
                     VStack(content: content)
                 }
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
         }
         """#,
@@ -2013,7 +2094,7 @@ enum Listings {
                 // One button, nothing to answer: the handler resumes when it is
                 // dismissed, so the next line runs with the alert already gone.
                 Button("Tell me something")
-                    .onClicked {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         try await Dialogs.alert(
                             "Saved", message: "The draft is safe")
                         answer = "the alert was dismissed"
@@ -2021,7 +2102,7 @@ enum Listings {
 
                 // Ask, await, branch - in one place, which is what an act is for.
                 Button("Ask me a question")
-                    .onClicked {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         let ok = try await Dialogs.confirm(
                             "Delete draft?", message: "This cannot be undone",
                             accept: "Delete", cancel: "Keep")
@@ -2032,7 +2113,7 @@ enum Listings {
                 // included - nil only when the sheet was dismissed with nothing
                 // chosen, tapping beside it where the platform allows that.
                 Button("Offer me choices")
-                    .onClicked {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         let choice = try await Dialogs.chooseAction(
                             "Share via", cancel: "Cancel", destruction: "Delete",
                             buttons: ["Mail", "Message"])
@@ -2043,7 +2124,7 @@ enum Listings {
                 // nil is CANCELLED; an accepted prompt with nothing typed comes
                 // back as "" - an empty answer, which is still an answer.
                 Button("Ask me to type")
-                    .onClicked {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         let typed = try await Dialogs.prompt(
                             "Rename", message: "A new name for the draft",
                             placeholder: "Name", initialValue: name, maximumLength: 40)
@@ -2077,7 +2158,7 @@ enum Listings {
                         ZStack {
                             Text(item)
                         }
-                        .style("Card")
+                        .style(.card)
                         .stroke(Palette.outline)
                         .lineWidth(1)
                         // What travels is decided before the drag starts: a
@@ -2105,7 +2186,7 @@ enum Listings {
                         }
                     }
                 }
-                .style("Card")
+                .style(.card)
                 // Lit while something is over it and dark again once it leaves,
                 // which is what the two events are for.
                 .stroke(over ? Palette.accent : Palette.outline)
@@ -2144,7 +2225,7 @@ enum Listings {
                 ZStack {
                     Text("")
                 }
-                .style("Card")
+                .style(.card)
                 .width($width)
                 .height(28)
                 .lineWidth(0)
@@ -2165,7 +2246,7 @@ enum Listings {
                 ZStack {
                     Text("")
                 }
-                .style("Card")
+                .style(.card)
                 .width($width.journey.convert { abs($0.destination - $0.value) })
                 .height(10)
                 .lineWidth(0)
@@ -2174,12 +2255,12 @@ enum Listings {
                 HStack {
                     Button("Grow")
                         .onClicked {
-                            try await $width.journey.move(to: 300, .eased(1600, .cubicOut))
+                            $width.journey.move(to: 300, .eased(1600, .cubicOut))
                         }
 
                     Button("Shrink")
                         .onClicked {
-                            try await $width.journey.move(to: 60, .eased(1600, .cubicIn))
+                            $width.journey.move(to: 60, .eased(1600, .cubicIn))
                         }
 
                     // Stopping leaves the value where it stands, and the
@@ -2234,7 +2315,7 @@ enum Listings {
                     .width(260)
                     .height(28)
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(.transparent)
                 .horizontalAlignment(.center)
 
@@ -2273,7 +2354,7 @@ enum Listings {
         }
 
         /// One of the buttons, all of which look the same.
-        private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
+        private func button(_ caption: String, _ act: @escaping @MainActor () throws -> Void) -> Button {
             Button(caption)
                 .onClicked(act)
         }
@@ -2314,7 +2395,7 @@ enum Listings {
                         .text($reading)
                         .horizontalAlignment(.center)
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(.transparent)
                 .horizontalAlignment(.center)
 
@@ -2344,7 +2425,7 @@ enum Listings {
                 }
                 .horizontalAlignment(.center)
             }
-            .engine(following: $running) { cycle in
+            .engine(tracking: $running) { cycle in
                 guard running else { return .wait }
 
                 elapsed += cycle.elapsed
@@ -2357,7 +2438,7 @@ enum Listings {
         }
 
         /// The buttons whose caption is their own rather than a driven state's.
-        private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
+        private func button(_ caption: String, _ act: @escaping @MainActor () throws -> Void) -> Button {
             Button(caption)
                 .onClicked(act)
         }
@@ -2366,6 +2447,7 @@ enum Listings {
         // Sources/Samples/Environment/EnvironmentSample.swift
         /// Who is signed in - the object a whole branch shares. Its properties are
         /// `@State`, so a write to one rebuilds exactly the views that READ it.
+        @MainActor
         private final class Session {
             @State var name = "guest"
             @State var visits = 0
@@ -2438,7 +2520,7 @@ enum Listings {
 
                 // The contents go first; nil is a cancel.
                 Button("Save…")
-                    .onClicked {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         let text = FileType("Text", extensions: ["txt"])
                         saved = try await Dialogs.saveFile(Array(words.utf8), name: "Note", types: [text])
                         answer = saved.map { "saved as \($0.name)" } ?? "cancelled"
@@ -2446,7 +2528,7 @@ enum Listings {
 
                 // No file longer than 1 KB is read whole: one byte past it says it is longer.
                 Button("Open…")
-                    .onClicked {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         let text = FileType("Text", extensions: ["txt", "md"])
                         guard let file = try await Dialogs.openFile(types: [text]) else {
                             return answer = "cancelled"
@@ -2460,12 +2542,12 @@ enum Listings {
                 // The system opens it in the application it gives its kind.
                 Button("Launch the saved file")
                     .isEnabled(saved != nil)
-                    .onClicked {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         if let saved { try await saved.launch() }
                     }
 
                 Button("Launch swift.org")
-                    .onClicked { try await Links.launch("https://www.swift.org") }
+                    .onClicked(gate: .ignoreWhileRunning) { try await Links.launch("https://www.swift.org") }
 
                 // A text file dragged from the system onto it is read into the editor.
                 ZStack {
@@ -2475,7 +2557,7 @@ enum Listings {
                 .lineWidth(dropping ? 2 : 1)
                 .onDragOver { dropping = true }
                 .onDragLeave { dropping = false }
-                .onDrop(files: [FileType("Text", extensions: ["txt", "md"])]) { files in
+                .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], gate: .waitForPrevious) { files in
                     dropping = false
                     let start = try await files[0].read(atMost: 1025)
                     guard start.count <= 1024 else { return answer = "\(files[0].name) is longer than 1 KB" }
@@ -3008,6 +3090,7 @@ enum Listings {
         /// Held by the galleries' scene and handed to its gallery windows and to its
         /// Fonts and Colours windows, so the Fonts and Colours windows change every
         /// gallery window at once, with nothing passed between them.
+        @MainActor
         final class SessionStyle {
             /// The font the preview is set in - empty for the platform's own.
             @State(sceneKey: .font) var font = ""
@@ -3062,14 +3145,14 @@ enum Listings {
                 // style follows the theme by itself. See Styles/AppStyles.swift.
                 application.styles = AppStyles.sheet
 
-                // What the gallery KEEPS between launches - `PersistentStateSample`'s
-                // three settings, and nothing else. Listed because a settings store
-                // is read one key at a time and offers no list of what it holds, so
-                // this is the only way the host can have the values in memory before
-                // the first view asks for one - which is why it is written HERE, as
-                // the application is made. Each host keeps them in the platform's
-                // settings store, or in a file of its own where the platform offers an
-                // application none.
+                // What the gallery keeps under its own keys between launches -
+                // `PersistentStateSample`'s three settings; what its scenes keep comes
+                // back with them. Listed because a settings store is read one key at a
+                // time and offers no list of what it holds, so this is the only way
+                // the host can have the values in memory before the first view asks
+                // for one - which is why it is written HERE, as the application is
+                // made. Each host keeps them in the platform's settings store, or in a
+                // file of its own where the platform offers an application none.
                 application.persistentKeys = [.visits, .who, .shade]
 
                 // On GNOME the gallery opens in the dark theme, the look it wears
@@ -3312,7 +3395,7 @@ enum Listings {
                 }
                 .clipsContent(true)
             }
-            .style("Card")
+            .style(.card)
             .lineWidth(0)
         }
         """#,
@@ -3431,7 +3514,7 @@ enum Listings {
                         // The width describes nothing: the host carries the width and
                         // the slider's thumb off the same state, and the frame reports
                         // say where the panel actually got to.
-                        try await $width.journey.move(to: $width.journey.value < 240 ? 340 : 140)
+                        $width.journey.move(to: $width.journey.value < 240 ? 340 : 140)
                     }
             }
         }
@@ -3538,7 +3621,7 @@ enum Listings {
                     .gridRow(0)
 
                 // A group per shelf, named so two shelves may hold the same item.
-                ItemsView(groups: Self.shelves.map { (shelf: Shelf) -> Section<[String], String> in
+                ItemsView(groups: Self.shelves.map { (shelf: Shelf) -> Section<String> in
                     let group = Section(shelf.items) { item in
                         Text(item)
                     }
@@ -3589,7 +3672,7 @@ enum Listings {
 
                 Button("Read again")
                     .horizontalAlignment(.center)
-                    .onClicked { try await read() }
+                    .onClicked(gate: .ignoreWhileRunning) { try await read() }
             }
             .onCreated { try await read() }
         }
@@ -3653,7 +3736,7 @@ enum Listings {
 
                 HStack {
                     Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
-                        .style("IconButton")
+                        .style(.iconButton)
                         .contentMode(.fit)
                         .width(64)
                         .height(64)
@@ -3664,7 +3747,7 @@ enum Listings {
                         .onReleased { pressed = false }
 
                     Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
-                        .style("IconButton")
+                        .style(.iconButton)
                         .contentMode(.fit)
                         .width(64)
                         .height(64)
@@ -3860,20 +3943,20 @@ enum Listings {
                 TextField($draft)
 
                 Button("Copy to the clipboard")
-                    .onClicked {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         try await stateUICall(GalleryContract.setClipboard, draft)
                         status = "copied"
                     }
 
                 Button("Paste from the clipboard")
-                    .onClicked {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         let text = try await stateUICall(GalleryContract.readClipboard)
                         draft = text
                         status = text.isEmpty ? "the clipboard is empty" : "pasted"
                     }
 
                 Button("Ask about the battery")
-                    .onClicked {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         let (level, charging) = try await stateUICall(GalleryContract.batteryLevel)
 
                         // A desktop without a battery answers 0, so only a level
@@ -3884,7 +3967,7 @@ enum Listings {
                     }
 
                 Button("Call something nobody registered")
-                    .onClicked {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         do {
                             try await stateUICall(GalleryContract.nobody)
                             status = "that should have thrown"
@@ -3899,7 +3982,7 @@ enum Listings {
                     .aim(stars)
 
                 Button("Flash the bar")
-                    .onClicked {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         try await stars.flash()
                         status = "flashed \(stars)"
                     }
@@ -3987,15 +4070,15 @@ enum Listings {
                 HStack {
                     Button("Focus first")
                         .horizontalAlignment(.fill)
-                        .onClicked { try await first.focus() }
+                        .onClicked(gate: .ignoreWhileRunning) { try await first.focus() }
 
                     Button("Unfocus first")
                         .horizontalAlignment(.fill)
-                        .onClicked { try await first.unfocus() }
+                        .onClicked(gate: .ignoreWhileRunning) { try await first.unfocus() }
                 }
 
                 Button("Close keyboard")
-                    .onClicked {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         said = try await OnScreenKeyboard.hide()
                             ? "Focus released"
                             : "Nothing was focused"
@@ -4186,7 +4269,7 @@ enum Listings {
                     VStack(content: content)
                 }
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
         }
         """#,
@@ -4338,13 +4421,13 @@ enum Listings {
                     .lineWidth(1.5)
                     .horizontalAlignment(.center)
                     .onClicked { taps += 1 }
-                    // Once, after the render that brings the card in - its
-                    // state and its environment are there to use.
+                    // Once, as the render that brings the card in has walked the
+                    // tree - its state and its environment are there to use.
                     .onCreated {
                         log.append("\(log.count + 1) · card \(number) created")
                     }
-                    // Once, after the render that leaves it out - and its
-                    // state still answers, which is what saving needs.
+                    // Once, as the render that leaves it out has walked the tree -
+                    // and its state still answers, which is what saving needs.
                     .onDestroying {
                         log.append("\(log.count + 1) · card \(number) destroying, tapped \(taps)")
                     }
@@ -4383,7 +4466,7 @@ enum Listings {
                             Text(name)
                                 .verticalAlignment(.center)
                         }
-                        .style("Card")
+                        .style(.card)
                         .lineWidth(0)
                         .height(40)
                     }
@@ -4431,7 +4514,7 @@ enum Listings {
                     .horizontalAlignment(.center)
                     .verticalAlignment(.center)
             }
-            .style("Card")
+            .style(.card)
             .opacity(faded ? 0.55 : 1)
             .lineWidth(0)
             .gridColumn(column)
@@ -4460,9 +4543,10 @@ enum Listings {
                 ItemsView(0..<count) { number in
                     Text("Item \(number + 1)")
                 }
-                // Within five items of the end, thirty more - once each time.
-                .onEndReached(within: 5) {
-                    guard !loading, count < 300 else { return }
+                // Within five items of the end, thirty more - one load at a time:
+                // reaching the end again while one runs lets that go.
+                .onEndReached(within: 5, gate: .ignoreWhileRunning) {
+                    guard count < 300 else { return }
 
                     loading = true
                     try await Task.sleep(for: .milliseconds(400))
@@ -4562,7 +4646,8 @@ enum Listings {
         // Sources/Gallery/MainPage.swift
         // The window's name and its size: `width` and `height` are its size
         // as it opens, the minimum how small the user may drag it before the
-        // layout stops making sense, the maximum how large. On a phone or a
+        // layout stops making sense - and no maximum, so maximized it fills
+        // the largest screen. On a phone or a
         // tablet the system sizes the window and these go unused - and the
         // gallery writes no `x` or `y` on purpose: pinning an app to the same
         // corner of the screen at every launch is worse than letting the
@@ -4574,8 +4659,6 @@ enum Listings {
             dress(window)
             window.minimumWidth = 700
             window.minimumHeight = 500
-            window.maximumWidth = 1600
-            window.maximumHeight = 1200
             window.isMaximizable = true
             window.isMinimizable = true
 
@@ -4613,6 +4696,31 @@ enum Listings {
                     page(for: route, path: nav.$path)
                 }
             }
+        }
+        """#,
+        "MainPage.look": #"""
+        // Sources/Gallery/MainPage.swift
+        /// The look the gallery wears in the theme in force: a change of theme,
+        /// the system's or the application's, builds the page again in the other.
+        private var look: ThemeLook {
+            style.look(dark: application.info.colorScheme == .dark)
+        }
+
+        /// What a surface of the gallery is made of, a material for each theme as
+        /// its looks say - the platform's own in a theme whose look leaves it.
+        private func surface(_ part: KeyPath<ThemeLook, SurfaceLook>, _ painted: GallerySurface) -> Material {
+            let system = application.info.accentColor
+            return Material(
+                light: style.look(dark: false)[keyPath: part].material(system: system, for: painted),
+                dark: style.look(dark: true)[keyPath: part].material(system: system, for: painted))
+        }
+
+        /// Dresses `window` as the gallery's looks say, one for each theme: what it
+        /// is made of behind its pages - the platform's own where both leave it.
+        private func dress(_ window: WindowSession) {
+            let unsaid = style.look(dark: false).window.material == .platform
+                && style.look(dark: true).window.material == .platform
+            window.background = unsaid ? nil : surface(\.window, .window)
         }
         """#,
         "MainPage.modal": #"""
@@ -4694,6 +4802,22 @@ enum Listings {
         @State private var showsMe = false
         @State private var locked = false
 
+        /// The places the map marks.
+        private static let places = [
+            Place(name: "Wawel Castle", address: "Wawel 5", type: .place, latitude: 50.0540, longitude: 19.9354),
+            Place(name: "Main Market Square", address: "Main Market Square 1/3", type: .searchResult,
+                  latitude: 50.0617, longitude: 19.9373),
+        ]
+
+        /// A place on the map: its name, where it stands, and what it is.
+        private struct Place {
+            let name: String
+            let address: String
+            let type: MarkerType
+            let latitude: Double
+            let longitude: Double
+        }
+
         var body: some View {
             VStack {
                 // What the map last said is read here, so every tap on it builds
@@ -4702,13 +4826,13 @@ enum Listings {
 
                 HStack {
                     Button("Old Town")
-                        .onClicked {
+                        .onClicked(gate: .cancelPrevious) {
                             try await map.moveToRegion(
                                 latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
                         }
 
                     Button("Poland")
-                        .onClicked {
+                        .onClicked(gate: .cancelPrevious) {
                             try await map.moveToRegion(
                                 latitude: 52.1, longitude: 19.4, radiusMeters: 350_000)
                         }
@@ -4749,20 +4873,19 @@ enum Listings {
                     .isZoomEnabled(!locked)
                     .isScrollEnabled(!locked)
                     .markers {
-                        Marker("Wawel Castle")
-                            .subtitle("Wawel 5")
-                            // What the marker stands for, which is what decides the
-                            // icon the platform draws for it.
-                            .type(.place)
-                            .location(latitude: 50.0540, longitude: 19.9354)
-                            .onSelected { said = "pin: Wawel Castle" }
-                            .onDetailsClicked { said = "details: Wawel Castle" }
-
-                        Marker("Main Market Square")
-                            .subtitle("Main Market Square 1/3")
-                            .type(.searchResult)
-                            .location(latitude: 50.0617, longitude: 19.9373)
-                            .onSelected { said = "pin: Main Market Square" }
+                        // Each place its own marker by its name, so a place put
+                        // before the others leaves them themselves.
+                        Self.places.map { place in
+                            Marker(place.name)
+                                .id(place.name)
+                                .subtitle(place.address)
+                                // What the marker stands for, which is what decides
+                                // the icon the platform draws for it.
+                                .type(place.type)
+                                .location(latitude: place.latitude, longitude: place.longitude)
+                                .onSelected { said = "pin: \(place.name)" }
+                                .onDetailsClicked { said = "details: \(place.name)" }
+                        }
                     }
                     .onMapClicked { location in
                         said = "map: \(rounded(location.latitude)), \(rounded(location.longitude))"
@@ -4881,7 +5004,7 @@ enum Listings {
 
                 Text("Saved \(saved) time(s), exported \(exported)")
 
-                Text("Open the File menu - on Android, in the bar's overflow.")
+                Text("Open the File menu - on Android, in the bar's overflow; on GNOME, in its main menu.")
 
                 switchRow($pageSaves, "This page saves", id: "menubar.pageSaves")
                 switchRow($ownMenu, "A menu of its own", id: "menubar.ownMenu")
@@ -4926,11 +5049,11 @@ enum Listings {
         // Sources/Gallery/MenuPage.swift
         /// The gallery's sidebar - and it is an ordinary page.
         ///
-        /// That is the whole point of it. A view with the mark at the top,
-        /// some rows in the middle and a line at the bottom - and a row is a view with
-        /// a tap on it that writes state. There is no menu vocabulary to learn: what
-        /// can go in the pane is whatever can go on a page, and what a row does is
-        /// whatever a handler can do.
+        /// That is the whole point of it. Some rows, a line at the bottom, and - on
+        /// Android, where nothing else names the gallery - the mark at the top. A row
+        /// is a view with a tap on it that writes state. There is no menu vocabulary
+        /// to learn: what can go in the pane is whatever can go on a page, and what a
+        /// row does is whatever a handler can do.
         ///
         /// Its title names the pane on hosts whose navigation chrome exposes that name.
         struct MenuPage: View {
@@ -5222,17 +5345,17 @@ enum Listings {
 
                 Button("Close swatch 2")
                     .horizontalAlignment(.center)
-                    .onClicked { await closeSwatch(2) }
+                    .onClicked(gate: .ignoreWhileRunning) { await closeSwatch(2) }
 
                 SectionTitle("More gallery windows")
 
                 Button("New gallery window")
                     .horizontalAlignment(.center)
-                    .onClicked { await openAnother() }
+                    .onClicked(gate: .ignoreWhileRunning) { await openAnother() }
 
                 Button("Close every gallery window")
                     .horizontalAlignment(.center)
-                    .onClicked { await closeThis() }
+                    .onClicked(gate: .ignoreWhileRunning) { await closeThis() }
             }
         }
 
@@ -5247,13 +5370,13 @@ enum Listings {
         /// The button that opens one of the scene's windows.
         private func opens(_ caption: String, _ type: WindowType) -> some View {
             Button(caption)
-                .onClicked { await open(type, caption) }
+                .onClicked(gate: .ignoreWhileRunning) { await open(type, caption) }
         }
 
         /// The button that closes it.
         private func closes(_ caption: String, _ type: WindowType) -> some View {
             Button(caption)
-                .onClicked { await close(type, caption) }
+                .onClicked(gate: .ignoreWhileRunning) { await close(type, caption) }
         }
 
         /// Opens a window of the scene, and says what came of it.
@@ -5293,7 +5416,7 @@ enum Listings {
         /// The button that opens one swatch's window.
         private func swatch(_ number: Int) -> some View {
             Button("Swatch \(number)")
-                .onClicked { await openSwatch(number) }
+                .onClicked(gate: .ignoreWhileRunning) { await openSwatch(number) }
         }
 
         /// Opens a swatch's window, and says what came of it.
@@ -5417,6 +5540,7 @@ enum Listings {
         // Sources/Samples/Layout/ScrollViewSample.swift
         /// Forty numbered lines - the same strip in all three columns below, so the
         /// only difference on the screen is what the offset costs.
+        @MainActor
         private func numberedLines() -> ScrollView {
             ScrollView {
                 VStack {
@@ -5431,6 +5555,7 @@ enum Listings {
         ///
         /// - Parameter text: what this column is.
         /// - Returns: the words, styled.
+        @MainActor
         private func columnTitle(_ text: String) -> Text {
             Text(text)
         }
@@ -5439,6 +5564,7 @@ enum Listings {
         ///
         /// - Parameter text: the line of code this column is about.
         /// - Returns: the words, in the code face.
+        @MainActor
         private func spelling(_ text: String) -> Text {
             Text(text)
         }
@@ -5583,10 +5709,10 @@ enum Listings {
 
                 HStack {
                     Button("Top")
-                        .onClicked { try await move(to: 0) }
+                        .onClicked(gate: .cancelPrevious) { try await move(to: 0) }
 
                     Button("Line 9")
-                        .onClicked { try await move(to: 240) }
+                        .onClicked(gate: .cancelPrevious) { try await move(to: 240) }
                 }
                 .horizontalAlignment(.center)
                 .gridRow(1)
@@ -5603,7 +5729,7 @@ enum Listings {
         /// - Parameter y: how far down each strip is sent.
         private func move(to y: Double) async throws {
             for strip in [$described, $paced, $driven] {
-                try await strip.journey.move(to: Point(0, y), .eased(300, .cubicOut))
+                try await strip.journey.move(to: Point(0, y), .eased(300, .cubicOut)).arrived()
             }
         }
         """#,
@@ -5685,6 +5811,60 @@ enum Listings {
             }
         }
         """#,
+        "OwnGates": #"""
+        // Sources/Samples/State/GateSample.swift
+        /// How many runs began, and how many came to their end.
+        struct Tally: Equatable {
+            var started = 0
+            var finished = 0
+        }
+
+        @State private var ignored = Tally()
+        @State private var cancelled = Tally()
+        @State private var waited = Tally()
+        @State private var unheld = Tally()
+
+        var body: some View {
+            VStack {
+                Text("Press each button three times, quickly.")
+
+                row("Ignore while running", ignored)
+                    .onClicked(gate: .ignoreWhileRunning) {
+                        ignored.started += 1
+                        try await Task.sleep(for: .milliseconds(1500))
+                        ignored.finished += 1
+                    }
+
+                // The run a press cancels ends at its sleep: what it would write
+                // after is never written.
+                row("Cancel previous", cancelled)
+                    .onClicked(gate: .cancelPrevious) {
+                        cancelled.started += 1
+                        try await Task.sleep(for: .milliseconds(1500))
+                        cancelled.finished += 1
+                    }
+
+                row("Wait for previous", waited)
+                    .onClicked(gate: .waitForPrevious) {
+                        waited.started += 1
+                        try await Task.sleep(for: .milliseconds(1500))
+                        waited.finished += 1
+                    }
+
+                row("None", unheld)
+                    .onClicked(gate: .none) {
+                        unheld.started += 1
+                        try await Task.sleep(for: .milliseconds(1500))
+                        unheld.finished += 1
+                    }
+            }
+        }
+
+        /// One button, and what its runs did so far.
+        private func row(_ caption: String, _ tally: Tally) -> Button {
+            Button("\(caption) - started \(tally.started), finished \(tally.finished)")
+        }
+        """#,
         "PacedStateSample": #"""
         // Sources/Samples/State/PacedStateSample.swift
         /// What the host walks. A write puts the DESTINATION on it at once, and
@@ -5698,9 +5878,9 @@ enum Listings {
         var body: some View {
             // One walked value, shown three ways.
             VStack {
-                // A CONVERTER. The words are worked out on the display's frames
-                // and the host wears them, so nothing here is described again -
-                // this count stands still for the whole walk.
+                // A CONVERTER. The words are worked out from the destination as
+                // it is written, and the host wears them, so nothing here is
+                // described again - this count stands still for the whole walk.
                 VStack {
                     DebugInfoLabel()
 
@@ -5732,10 +5912,10 @@ enum Listings {
 
                 HStack {
                     Button("Fade")
-                        .onClicked { try await $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
+                        .onClicked { $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
 
                     Button("Back")
-                        .onClicked { try await $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
+                        .onClicked { $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
                 }
                 .horizontalAlignment(.center)
             }
@@ -5801,7 +5981,7 @@ enum Listings {
                             }
                         }
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
                 .lineWidth(1)
                 .height(200)
@@ -5900,11 +6080,11 @@ enum Listings {
                 // A key whose value is an enum - kept as the word it is spelled
                 // with, so anything else that opens the store can read it.
                 HStack {
-                    Text("Shade")
+                    Text("Bold shade")
                         .verticalAlignment(.center)
 
-                    Button(shade == .quiet ? "quiet" : "bold")
-                        .onClicked { shade = shade == .quiet ? .bold : .quiet }
+                    Switch(shade == .bold)
+                        .onToggled { on in shade = on ? .bold : .quiet }
                 }
 
                 ColorBox()
@@ -5916,16 +6096,16 @@ enum Listings {
         "PickList": #"""
         // Sources/Samples/Collections/ChoosingItemsSample.swift
         @State private var chosen: Set<Int> = []
-        @Aim(ItemsViewContract.self) private var list
+        @Aim(ItemsView<Int>.self) private var list
 
         var body: some View {
             Grid {
                 HStack {
                     Button("Top")
-                        .onClicked { try await list.scrollTo(0, anchor: .start) }
+                        .onClicked(gate: .cancelPrevious) { try await list.scrollTo(0, anchor: .start) }
 
                     Button("Row 500")
-                        .onClicked { try await list.scrollTo(500, anchor: .start) }
+                        .onClicked(gate: .cancelPrevious) { try await list.scrollTo(500, anchor: .start) }
 
                     Button("Clear")
                         .isEnabled(!chosen.isEmpty)
@@ -6013,17 +6193,15 @@ enum Listings {
                         .verticalAlignment(.center)
                         .scale(pinch)
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
                 .lineWidth(1)
                 .height(220)
                 .onPinchUpdated { update in
                     reports += 1
 
-                    // Multiplying needs no scale captured at the start, and that
-                    // is what makes it the version to write: .began is not
-                    // guaranteed, and a trackpad magnification may send .changed
-                    // and .ended and nothing else.
+                    // Multiplying needs no scale captured at the start: each
+                    // report carries its own step.
                     if update.phase == .changed {
                         pinch = max(0.5, min(3, pinch * update.scale))
                     }
@@ -6088,35 +6266,20 @@ enum Listings {
         /// to be taken hold of, so the two swap places.
         @State private var grabbing = false
 
-        /// Whether the run has been put on the card it opens on. A scroller
-        /// cannot be moved before its content is laid out - asked earlier it
-        /// clamps to the length it has so far - so the opening aim below keeps
-        /// asking until the card it was aimed at is where it was sent, and this
-        /// closes it.
-        @State private var opened = false
-
-        /// Where the aim sends a fresh scroller, in device units. The middle card
-        /// at the first opening, and the card the ring STOOD ON at a handover -
-        /// held apart from the driven state, whose value a scroller being built can
-        /// briefly stomp with the clamps of its first layout.
-        @State private var aim = Double(PlacedSample.cards.count / 2) * PlacedSample.reach
-
-        /// How long the scroller's content was when it last reported - the aim
-        /// runs when this changes, which is when a jump can finally land.
-        @State private var length = 0.0
-
         /// How far the run has been SCROLLED, and how far it has been DRAGGED -
         /// both handed on, so neither describes anything when it moves. The
         /// arithmetic below reads both and the host runs it on its own frames.
         /// The offset is walked: a button's write glides, and `value` is where
-        /// the scroller IS, frame by frame.
+        /// the scroller IS, frame by frame. It starts on the middle card; a
+        /// scroller - the first, or one built afresh - stands where this value
+        /// says once it is laid out.
         @State private var scrolled = Point(Double(PlacedSample.cards.count / 2) * PlacedSample.reach, 0)
 
         @State private var dragged = 0.0
 
-        /// WHERE EVERY CARD GOES, and where every dot under them goes - one run of
-        /// placements each, written by the engines below and worn by the host on
-        /// its own frames. Nothing about a card's place is described.
+        /// WHERE EVERY CARD GOES, and where every dot at the board's foot goes -
+        /// one run of placements each, written by the engines below and worn by
+        /// the host on its own frames. Nothing about a card's place is described.
         @State private var ring = PlacedRun()
 
         @State private var dots = PlacedRun()
@@ -6182,26 +6345,6 @@ enum Listings {
                             let card = min(max(($scrolled.journey.value.x / Self.reach).rounded(), 0), Double(Self.cards.count - 1))
                             scrolled = Point(card * Self.reach, 0)
                         }
-                        // THE OPENING AIM: a scroller cannot be moved before its
-                        // content is laid out - asked earlier it clamps to the
-                        // length it has so far - so this puts it there again
-                        // until the card it was aimed at is where it was sent.
-                        .onFrameChanged { frame in
-                            guard !opened, frame.width != length else { return }
-
-                            length = frame.width
-
-                            let sendTo = aim
-                            var asks = 0
-
-                            repeat {
-                                $scrolled.journey.snap(to: Point(sendTo, 0))
-                                try await Task.sleep(for: .milliseconds(100))
-                                asks += 1
-                            } while abs($scrolled.journey.value.x - sendTo) > 1 && asks < 10
-
-                            opened = abs($scrolled.journey.value.x - sendTo) <= 1
-                        }
                     }
 
                     // WHICH CARD IS AT THE FRONT, said by a fade - a second layout
@@ -6232,11 +6375,11 @@ enum Listings {
 
                     Button("Back")
                         .isEnabled(!grabbing)
-                        .onClicked { try await move(-1) }
+                        .onClicked { move(-1) }
 
                     Button("Next")
                         .isEnabled(!grabbing)
-                        .onClicked { try await move(1) }
+                        .onClicked { move(1) }
                 }
                 .horizontalAlignment(.center)
                 .gridRow(1)
@@ -6249,14 +6392,11 @@ enum Listings {
                             // ONE NUMBER AT EACH HANDOVER: the two values are
                             // folded into the scroll alone, so whichever input
                             // comes next starts from where the ring stands -
-                            // and the scroller, built afresh by the swap,
-                            // is aimed at that card again by the opening aim.
+                            // the scroller, built afresh by the swap, included.
                             let standing = at.rounded() * Self.reach
 
                             dragged = 0
                             $scrolled.journey.snap(to: Point(standing, 0))
-                            aim = standing
-                            opened = taking
                             grabbing = taking
                         }))
                 .horizontalAlignment(.center)
@@ -6291,10 +6431,10 @@ enum Listings {
 
         /// A card either way, from a button: the scroller is what moves, so this
         /// sends its offset gliding and the arithmetic follows it frame by frame.
-        private func move(_ by: Int) async throws {
+        private func move(_ by: Int) {
             let slot = max(0, min(Double(Self.cards.count - 1), (at + Double(by)).rounded()))
 
-            try await $scrolled.journey.move(to: Point(slot * Self.reach, 0), .eased(300, .cubicOut))
+            $scrolled.journey.move(to: Point(slot * Self.reach, 0), .eased(300, .cubicOut))
         }
 
         /// One card's face - a picture and its name, and nothing at all about where
@@ -6321,11 +6461,12 @@ enum Listings {
                     .verticalAlignment(.end)
                 }
                 // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL
-                // the card covers it and spills past its edges, so the grid
-                // holding it - a layout, with edges to cut at - clips it.
+                // the card is cut at its own room - the Web's reaches two points
+                // past it - so the grid holding it - a layout, with edges to cut
+                // at - cuts it there.
                 .clipsContent(true)
             }
-            .style("Card")
+            .style(.card)
             .lineWidth(0)
         }
 
@@ -6364,7 +6505,7 @@ enum Listings {
                 zIndex: 1000 - Int(min(abs(step), 99) * 100))
         }
 
-        /// One dot under the board, saying which card is at the front by a fade.
+        /// One dot at the board's foot, saying which card is at the front by a fade.
         private func dot(_ index: Int, _ count: Int) -> Placement {
             Placement(
                 Rect(
@@ -6416,7 +6557,7 @@ enum Listings {
                     Text("last: \(last)")
                 }
             }
-            .style("Card")
+            .style(.card)
             // The box reacts, so its look is part of what it says: the outline is
             // the hover, the fill is the button held down.
             .stroke(hovering ? Palette.accent : Palette.outline)
@@ -6495,6 +6636,9 @@ enum Listings {
                         return "All good"
                     }.value
 
+                    // Stopped while it checked: the answer comes to nothing.
+                    guard checking else { return }
+
                     rounds += 1
                     checking = false
                     status = "\(answer) - next check in 2s"
@@ -6502,7 +6646,12 @@ enum Listings {
                     poll.start()
                 }
             }
-            .onDestroying { poll.stop() }
+            // The tick reaches this view's states, the ticker among them, so it holds
+            // them: leaving the page is stopping it, a check under way included.
+            .onDestroying {
+                poll.stop()
+                checking = false
+            }
         }
         """#,
         "PositionIndicatorSample": #"""
@@ -6655,6 +6804,7 @@ enum Listings {
         /// The point of the sample is which closure is built again: each property is
         /// a `@State` of its own, so a write to `visits` reaches the closures that
         /// read `visits` and nobody else.
+        @MainActor
         private final class Profile {
             @State var name = ""
             @State var visits = 0
@@ -6794,7 +6944,7 @@ enum Listings {
                             DebugInfoLabel()
                         }
                     }
-                    .style("Card")
+                    .style(.card)
                     .stroke(Palette.outline)
                 }
 
@@ -6818,7 +6968,7 @@ enum Listings {
                     VStack(content: content)
                 }
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
         }
 
@@ -6828,7 +6978,7 @@ enum Listings {
         }
 
         /// One of the buttons, all of which look the same.
-        private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
+        private func button(_ caption: String, _ act: @escaping @MainActor () throws -> Void) -> Button {
             Button(caption)
                 .onClicked(act)
         }
@@ -6846,7 +6996,7 @@ enum Listings {
                         DebugInfoLabel()
                     }
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
             }
 
@@ -6869,7 +7019,7 @@ enum Listings {
                         DebugInfoLabel()
                     }
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
             }
         }
@@ -6890,7 +7040,7 @@ enum Listings {
                         DebugInfoLabel()
                     }
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
                 .engine(following: $pulses) { _ in
                     said = "pulses · \(pulses)"
@@ -6944,7 +7094,7 @@ enum Listings {
                         RebuildPassenger()
                     }
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
                 .lineWidth(1)
             }
@@ -6965,7 +7115,7 @@ enum Listings {
 
         @State private var gone: Set<String> = []
         @State private var atOnce: Set<String> = []
-        @State private var slow = false
+        @State private var slow = true
 
         var body: some View {
             // A PLAIN VStack. Nothing here ASKS for animation: the row is HIDDEN,
@@ -7022,6 +7172,7 @@ enum Listings {
         /// A strip of tiles a fixed distance apart - the shape both strips of the rest
         /// example are cut from. A tile is 140 wide with 20 between them, so one
         /// starts every 160, which is the interval the first strip is brought to rest on.
+        @MainActor
         private func tileStrip() -> ScrollView {
             ScrollView {
                 HStack {
@@ -7161,6 +7312,43 @@ enum Listings {
             }
         }
         """#,
+        "SaveAndDelete": #"""
+        // Sources/Samples/State/GateSample.swift
+        /// One gate for both of the document's actions.
+        @State private var document = SharedGate(.ignoreWhileRunning)
+        @State private var said = "Saved nothing yet."
+
+        var body: some View {
+            VStack {
+                Text("Press Save, and watch Delete dim while it saves.")
+
+                HStack {
+                    Button("Save")
+                        .isEnabled(!document.isBusy)
+                        .onClicked(gate: document) {
+                            said = "Saving…"
+                            try await Task.sleep(for: .milliseconds(1500))
+                            said = "Saved."
+                        }
+
+                    Button("Delete")
+                        .isEnabled(!document.isBusy)
+                        .onClicked(gate: document) {
+                            said = "Deleting…"
+                            try await Task.sleep(for: .milliseconds(1500))
+                            said = "Deleted."
+                        }
+                }
+
+                HStack {
+                    if document.isBusy {
+                        ActivityIndicator(true)
+                    }
+                    Text(said)
+                }
+            }
+        }
+        """#,
         "ScenesSample": #"""
         // Sources/Samples/Windows/ScenesSample.swift
         /// The application as it runs - which opens a window in the scene declaring it.
@@ -7173,11 +7361,11 @@ enum Listings {
             VStack {
                 Button("New scratchpad")
                     .horizontalAlignment(.center)
-                    .onClicked { await open(.scratchpad, "New scratchpad") }
+                    .onClicked(gate: .ignoreWhileRunning) { await open(.scratchpad, "New scratchpad") }
 
                 Button("About")
                     .horizontalAlignment(.center)
-                    .onClicked { await open(.about, "About") }
+                    .onClicked(gate: .ignoreWhileRunning) { await open(.about, "About") }
 
                 VStack {
                     DebugInfoLabel()
@@ -7229,10 +7417,10 @@ enum Listings {
 
                     HStack {
                         Button("Close this window")
-                            .onClicked { try await window.close() }
+                            .onClicked(gate: .ignoreWhileRunning) { try await window.close() }
 
                         Button("Close every scratchpad")
-                            .onClicked { try await scene.close() }
+                            .onClicked(gate: .ignoreWhileRunning) { try await scene.close() }
                     }
                     .horizontalAlignment(.end)
                 }
@@ -7401,7 +7589,7 @@ enum Listings {
                         // A picture and nothing else. To anybody not looking at it,
                         // this control has no name at all.
                         Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
-                            .style("IconButton")
+                            .style(.iconButton)
                             .contentMode(.fit)
                             .width(64)
                             .height(64)
@@ -7455,7 +7643,7 @@ enum Listings {
                 // view can hold.
                 Button("Announce the count")
                     .horizontalAlignment(.center)
-                    .onClicked {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         let words = "Tapped \(taps) time\(taps == 1 ? "" : "s")"
                         try await ScreenReader.announce(words)
                         said = words
@@ -7477,7 +7665,7 @@ enum Listings {
                             Text("Both lines are read")
                         }
                     }
-                    .style("Card")
+                    .style(.card)
 
                     // The whole panel, and everything in it, is not there at all
                     // to a screen reader - one word instead of one per view.
@@ -7488,7 +7676,7 @@ enum Listings {
                             Text("Neither line is read")
                         }
                     }
-                    .style("Card")
+                    .style(.card)
                     .automationExcludedWithChildren(true)
                 }
                 .horizontalAlignment(.center)
@@ -7507,7 +7695,7 @@ enum Listings {
         /// the control.
         private var describedButton: some View {
             let button = Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
-                .style("IconButton")
+                .style(.iconButton)
                 .contentMode(.fit)
                 .width(64)
                 .height(64)
@@ -7859,6 +8047,7 @@ enum Listings {
         /// that property for another build, and no other. A plain `var` is stored and
         /// nothing more, and this one is here to be SEEN not working: pressing the
         /// button below raises it and the screen does not follow.
+        @MainActor
         private final class Basket {
             @State var items: [String] = []
             @State var note = ""
@@ -7967,12 +8156,12 @@ enum Listings {
                             Text(name.isEmpty ? "Hello, stranger" : "Hello, \(name)!")
                         }
                     }
-                    .style("Card")
+                    .style(.card)
                     .stroke(Palette.outline)
                     .lineWidth(1)
                 }
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
             .lineWidth(1)
         }
@@ -8062,19 +8251,19 @@ enum Listings {
                 // A keyed style is asked for; a keyed style REPLACES the implicit
                 // one, so it says everything it needs.
                 Text("Headline")
-                    .style("Headline")
+                    .style(.headline)
 
                 SectionTitle("A style written from another")
 
                 // The same words twice. "Quote" states the shape; "QuoteLoud" is
-                // `.basedOn("Quote")` plus one colour - so everything that matches
+                // `.basedOn(.quote)` plus one colour - so everything that matches
                 // below is inherited, and the one thing that differs is the one
                 // thing it declares.
                 Text("The same eleven words, and one of these declares a colour.")
-                    .style("Quote")
+                    .style(.quote)
 
                 Text("The same eleven words, and one of these declares a colour.")
-                    .style("QuoteLoud")
+                    .style(.quoteLoud)
             }
         }
         """#,
@@ -8092,7 +8281,7 @@ enum Listings {
                 ZStack {
                     Text("Swipe across this box")
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
                 .lineWidth(1)
                 // A recognizer that listens for nothing recognizes nothing, so
@@ -8106,7 +8295,7 @@ enum Listings {
                 ZStack {
                     Text("Left or right, and a long way")
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
                 .lineWidth(1)
                 // Narrowed: two of the four ways, and a finger that must travel
@@ -8180,7 +8369,7 @@ enum Listings {
                 ZStack {
                     Text("Tap anywhere on this box")
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
                 .lineWidth(1)
                 .onTapped { taps += 1 }
@@ -8188,7 +8377,7 @@ enum Listings {
                 ZStack {
                     Text("Double-tap this one to reset")
                 }
-                .style("Card")
+                .style(.card)
                 .stroke(Palette.outline)
                 .lineWidth(1)
                 .onTapped(count: 2) { taps = 0 }
@@ -8208,12 +8397,6 @@ enum Listings {
 
         @State private var running = false
 
-        /// Which start the running loop belongs to. Leaving stops the loop
-        /// through `.onDestroying`; the token is what retires a loop still asleep
-        /// when the next one starts - Stop and Start within a second - so two
-        /// loops never count the same numbers down.
-        @State private var visit = 0
-
         var body: some View {
             VStack {
                 // The countdown is read here, so every step builds this closure.
@@ -8224,8 +8407,10 @@ enum Listings {
                 ProgressBar(total == 0 ? 0 : Double(remaining) / Double(total))
 
                 HStack {
+                    // A press while the loop runs cancels it - Stop, or Start
+                    // straight after Reset - so no two loops count together.
                     Button(running ? "Stop" : "Start")
-                        .onClicked {
+                        .onClicked(gate: .cancelPrevious) {
                             if running {
                                 running = false
                                 return
@@ -8233,18 +8418,16 @@ enum Listings {
 
                             if remaining == 0 { remaining = total }
 
-                            visit += 1
-                            let mine = visit
                             running = true
 
                             // Plain Swift concurrency, on every platform: when the
                             // sleep comes due, the handler resumes on `MainActor` -
                             // the thread the host draws on - with no `Timer`
                             // anywhere.
-                            while running && visit == mine && remaining > 0 {
+                            while running && remaining > 0 {
                                 try await Task.sleep(for: .seconds(1))
 
-                                guard running, visit == mine else { return }
+                                guard running else { return }
 
                                 remaining -= 1
                             }
@@ -8562,7 +8745,6 @@ enum Listings {
                 }
                 .horizontalAlignment(.center)
             }
-            .onDestroying { ticker.stop() }
         }
 
         /// How much of the countdown is left, as a fraction for the bar.
@@ -8704,72 +8886,84 @@ enum Listings {
         /// Whether Add shows its words beside its picture on the bar.
         @State private var addWords = false
 
+        /// Whether the branch declaring the actions is disabled.
+        @State private var locked = false
+
         var body: some View {
             VStack {
-                // The counts are read here, so every toolbar item that acts
-                // builds this closure.
-                DebugInfoLabel()
+                VStack {
+                    // The counts are read here, so every toolbar item that acts
+                    // builds this closure.
+                    DebugInfoLabel()
 
-                Text("Saved \(saved) time(s)")
+                    Text("Saved \(saved) time(s)")
 
-                Text(recent.isEmpty ? "No recent files" : recent.joined(separator: ", "))
+                    Text(recent.isEmpty ? "No recent files" : recent.joined(separator: ", "))
 
-                Text("Press Save and Add on the bar; Clear is in its overflow.")
+                    Text("Press Save and Add on the bar; Clear is in its overflow.")
 
-                SectionTitle("Where the actions stand")
+                    SectionTitle("Where the actions stand")
 
-                switchRow($afterGallery, "After the gallery's actions", id: "toolbar.afterGallery")
-                switchRow($inGallery, "In the gallery's group", id: "toolbar.inGallery")
-                switchRow($atLeading, "At the leading edge", id: "toolbar.atLeading")
+                    switchRow($afterGallery, "After the gallery's actions", id: "toolbar.afterGallery")
+                    switchRow($inGallery, "In the gallery's group", id: "toolbar.inGallery")
+                    switchRow($atLeading, "At the leading edge", id: "toolbar.atLeading")
 
-                SectionTitle("A picture and its words")
+                    SectionTitle("A picture and its words")
 
-                switchRow($addWords, "Add's words beside its picture", id: "toolbar.addWords")
-            }
-            // The page's actions, declared where their state lives: they follow
-            // it as the body builds - `saved` decides whether Clear can be pressed,
-            // `addWords` Add's words, the three switches where the group stands.
-            .toolbar(atLeading ? .leading : .trailing, id: inGallery ? "gallery" : "sample", order: afterGallery ? 1 : 0) {
-                ToolbarItem("Save")
-                    .id("save")
-                    .onClicked { saved += 1 }
-
-                // A picture alone, unless it asks for its words beside it.
-                ToolbarItem("Add")
-                    .id("add")
-                    .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
-                    .showsText(addWords)
-                    .onClicked {
-                        added += 1
-                        recent.append("file\(added).txt")
-                    }
-
-                ToolbarItem("Clear")
-                    .id("clear")
-                    .placement(.overflow)
-                    .isDestructive(true)
-                    .isEnabled(saved > 0)
-                    .onClicked { saved = 0 }
-            }
-            // The desktop File menu, declared the same way: Save, and the recent
-            // files following the state.
-            .menuBar {
-                Menu("File") {
-                    MenuItem("Save")
+                    switchRow($addWords, "Add's words beside its picture", id: "toolbar.addWords")
+                }
+                // The page's actions, declared where their state lives: they follow
+                // it as the body builds - `saved` decides whether Clear can be pressed,
+                // `addWords` Add's words, the three switches where the group stands.
+                .toolbar(atLeading ? .leading : .trailing, id: inGallery ? "gallery" : "sample", order: afterGallery ? 1 : 0) {
+                    ToolbarItem("Save")
                         .id("save")
                         .onClicked { saved += 1 }
 
-                    Menu("Recent") {
-                        recent.map { file in
-                            MenuItem(file)
-                                .id(file)
-                                .onClicked { recent.removeAll { $0 == file } }
+                    // A picture alone, unless it asks for its words beside it.
+                    ToolbarItem("Add")
+                        .id("add")
+                        .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
+                        .showsText(addWords)
+                        .onClicked {
+                            added += 1
+                            recent.append("file\(added).txt")
                         }
-                    }
-                    .id("recent")
-                    .isEnabled(!recent.isEmpty)
+
+                    ToolbarItem("Clear")
+                        .id("clear")
+                        .placement(.overflow)
+                        .isDestructive(true)
+                        .isEnabled(saved > 0)
+                        .onClicked { saved = 0 }
                 }
-                .id(StandardMenu.file)
+                // The desktop File menu, declared the same way: Save, and the recent
+                // files following the state.
+                .menuBar {
+                    Menu("File") {
+                        MenuItem("Save")
+                            .id("save")
+                            .onClicked { saved += 1 }
+
+                        Menu("Recent") {
+                            recent.map { file in
+                                MenuItem(file)
+                                    .id(file)
+                                    .onClicked { recent.removeAll { $0 == file } }
+                            }
+                        }
+                        .id("recent")
+                        .isEnabled(!recent.isEmpty)
+                    }
+                    .id(StandardMenu.file)
+                }
+                // Locked, the branch takes no input: its switches, and the
+                // actions and menu items declared on it, dimmed with it.
+                .isEnabled(!locked)
+
+                SectionTitle("Out of reach")
+
+                switchRow($locked, "Lock the switches and actions above", id: "toolbar.locked")
             }
         }
 
@@ -8804,7 +8998,7 @@ enum Listings {
                     // On top. Its own empty area lets taps through to the box below
                     // while the label inside still answers - or, with "Children too",
                     // the whole of it ignores input, the label included; disabled,
-                    // it takes every tap on it and answers none.
+                    // the label still takes a tap and answers none.
                     VStack {
                         // The child wears its own colour and its own padding, so
                         // what is the child and what is the empty area around it
@@ -8881,7 +9075,7 @@ enum Listings {
             }
 
             /// A lamp was tapped, with its index from the top.
-            public func onLampTapped(_ handler: @escaping ValueEventHandler<Int>) -> Self {
+            public func onLampTapped(_ handler: @escaping @MainActor (Int) throws -> Void) -> Self {
                 onEvent(TrafficLightContract.lampTapped, handler)
             }
         }
@@ -8996,6 +9190,30 @@ enum Listings {
             }
         }
         """#,
+        "Uploads": #"""
+        // Sources/Samples/State/GateSample.swift
+        /// Nothing held back, and busy while any upload runs.
+        @State private var uploads = SharedGate(.none)
+        @State private var sent: [String] = []
+
+        private let files = ["notes.txt", "photo.png", "song.mp3"]
+
+        var body: some View {
+            VStack {
+                Text("Send all three, quickly.")
+
+                ForEach(files) { file in
+                    Button("Send \(file)")
+                        .onClicked(gate: uploads) {
+                            try await Task.sleep(for: .milliseconds(1500))
+                            sent.append(file)
+                        }
+                }
+
+                Text(uploads.isBusy ? "Uploading…" : "Sent: \(sent.isEmpty ? "nothing" : sent.joined(separator: ", "))")
+            }
+        }
+        """#,
         "VisualStateSample": #"""
         // Sources/Samples/Styles/VisualStateSample.swift
         @State private var enabled = true
@@ -9035,11 +9253,10 @@ enum Listings {
                         }
                         // The colour is a setter, which travels under the button's
                         // own motion. The scale is DRIVEN by `press`: the handler
-                        // moves the state over 90ms - a handler may await - and the
-                        // button follows it.
+                        // sends the state there over 90ms, and the button follows it.
                         .onVisualStateChanged { state in
                             entered = state.name
-                            try await $press.journey.move(to: state == .pressed ? 0.94 : 1, .eased(90))
+                            $press.journey.move(to: state == .pressed ? 0.94 : 1, .eased(90))
                         }
                         .onClicked { presses += 1 }
 
@@ -9048,9 +9265,6 @@ enum Listings {
                     // `.motion(.none)` is what none of it looks like.
                     Button(enabled ? "Hold me too" : "Disabled")
                         .isEnabled(enabled)
-                        // THE SAME STATES, ARRIVING. A visual state travels under
-                        // the control's own motion, and this is what none looks
-                        // like.
                         .motion(.none)
                         .visualState(.pressed) { $0.background(Palette.brand) }
                         .visualState(.disabled) { $0
@@ -9110,14 +9324,14 @@ enum Listings {
                     HStack {
                         Button("Back")
                             .isEnabled(hasBack)
-                            .onClicked { try await browser.goBack() }
+                            .onClicked(gate: .ignoreWhileRunning) { try await browser.goBack() }
 
                         Button("Forward")
                             .isEnabled(hasForward)
-                            .onClicked { try await browser.goForward() }
+                            .onClicked(gate: .ignoreWhileRunning) { try await browser.goForward() }
 
                         Button("Reload")
-                            .onClicked { try await browser.reload() }
+                            .onClicked(gate: .ignoreWhileRunning) { try await browser.reload() }
                     }
                     .horizontalAlignment(.center)
                 }
@@ -9150,7 +9364,7 @@ enum Listings {
 
                 Button("Title?")
                     .horizontalAlignment(.center)
-                    .onClicked {
+                    .onClicked(gate: .ignoreWhileRunning) {
                         answer = try await browser.evaluateJavaScript("document.title")
                     }
                     .gridRow(3)
@@ -9164,6 +9378,7 @@ enum Listings {
         "WindowBarSample": #"""
         // Sources/Samples/Windows/WindowBarSample.swift
         /// What the gallery's window says on its bar, written by the sample and declared by the window.
+        @MainActor
         final class WindowBarState {
             /// The line under the bar's title.
             @State var subtitle = ""
@@ -9195,6 +9410,7 @@ enum Listings {
         /// kept by the window (`GalleryWindow`), written by `MainPage` as the window
         /// is made and by `WindowPhaseLog` as its phase moves, and read by the
         /// Lifecycle sample.
+        @MainActor
         final class WindowLog {
             /// The last six moments, each numbered.
             @State var events: [String] = []
@@ -9349,7 +9565,7 @@ enum Listings {
         @State private var renames = 0
         @State private var maximizable = true
         @State private var minimizable = true
-        @State private var translucent = false
+        @State private var bounded = false
         @State private var width = 0.0
         @State private var height = 0.0
 
@@ -9393,9 +9609,12 @@ enum Listings {
                         window.isMinimizable = minimizable
                     }
 
-                option("Translucent", id: "window.translucent", value: $translucent)
-                    .onChanged(translucent) {
-                        window.background = translucent ? .blur(.regular) : nil
+                // A maximum bounds maximizing too: maximized, the window grows to
+                // it at most, and on a Mac it takes no full screen.
+                option("At most 1200 × 900", id: "window.bounded", value: $bounded)
+                    .onChanged(bounded) {
+                        window.maximumWidth = bounded ? 1200 : nil
+                        window.maximumHeight = bounded ? 900 : nil
                     }
 
                 Text("Sample frame: \(Int(width)) × \(Int(height))")
@@ -9404,9 +9623,6 @@ enum Listings {
                 width = frame.width
                 height = frame.height
             }
-            // The switch starts where the window stands - on, where the gallery's
-            // window opens translucent.
-            .onCreated { translucent = window.background == .blur(.regular) }
         }
 
         /// An action that writes the surrounding window session.
@@ -9421,6 +9637,46 @@ enum Listings {
                 Switch(value)
                 Text(title).verticalAlignment(.center)
             }
+        }
+        """#,
+        "WorkFromCode": #"""
+        // Sources/Samples/State/GateSample.swift
+        /// A draft that saves through its own gate, whoever asks.
+        @MainActor
+        final class Draft {
+            let saving = SharedGate(.ignoreWhileRunning)
+            @State var saves = 0
+
+            /// Saves, unless a save is under way: the gate lets this one go.
+            func save() {
+                Task(gate: saving) {
+                    try await Task.sleep(for: .milliseconds(1500))
+                    self.saves += 1
+                }
+            }
+        }
+
+        @State private var draft = Draft()
+        @State private var autosave = Ticker(every: .seconds(3))
+
+        var body: some View {
+            VStack {
+                Text("Start the autosave, and watch Save dim while it saves.")
+
+                HStack {
+                    // No await: the press asks the draft, whose own gate decides.
+                    Button("Save")
+                        .isEnabled(!draft.saving.isBusy)
+                        .onClicked { draft.save() }
+
+                    Button(autosave.isRunning ? "Stop autosave" : "Start autosave")
+                        .onClicked { autosave.isRunning ? autosave.stop() : autosave.start() }
+                }
+
+                Text(draft.saving.isBusy ? "Saving…" : "Saves: \(draft.saves)")
+            }
+            .onCreated { autosave.onTick = { draft.save() } }
+            .onDestroying { autosave.stop() }
         }
         """#,
         "WrittenInPlacePart": #"""
@@ -9909,9 +10165,10 @@ extension Listings {
             /// A view that draws on the GPU registers exactly like one that draws with a
             /// layer: an `MTKView` is an `NSView`. It reports nothing, so `create` only
             /// makes it - every member here goes one way, from the description to the
-            /// frames. The cube is declared only for the hosts that draw it, and this
-            /// file names it with no condition around it because nothing but an AppKit
-            /// build compiles this folder.
+            /// frames. Every host draws the cube in its own way; a build for no host -
+            /// the gallery's own tests - has nothing to draw it with, so it declares no
+            /// cube. This file names it with no condition around it because nothing but
+            /// an AppKit build compiles this folder.
             @MainActor
             static func register() {
                 StateUIControls.add(Cube3DContract.self, create: { _ -> MetalCube3DView in
@@ -10693,8 +10950,8 @@ extension Listings {
         // each in Host/ beside this file - and the host registers the native methods its activity calls.
         @_cdecl("JNI_OnLoad")
         public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
-            stateui_app_register()
             MainActor.assumeIsolated {
+                stateui_app_register()
                 GalleryControls.register()
                 GalleryActs.register()
                 GalleryEventSources.register()
@@ -10873,8 +11130,7 @@ extension Listings {
 
         // Platforms/GTK/main.swift
         // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
-        // the acts it performs, and the pushes it reports - each in Host/ beside this file. Then hand GTK this thread until
-        // the last window closes.
+        // the acts it performs, and the pushes it reports - each in Host/ beside this file.
         stateui_app_register()
         // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
         GalleryControls.register()
@@ -10916,7 +11172,6 @@ extension Listings {
             /// one. Said once, before the application runs.
             @MainActor
             static func register() {
-                // The bar, added for its contract: its rating put on it, a tapped star reported.
 
                         // Aimed at one bar: the identity the aim sent is turned back into the
                         // view this host made, and the performer is handed that view.
@@ -11080,7 +11335,6 @@ extension Listings {
             /// Adds the bar for `RatingBarContract`, and performs its aimed `flash`. Said once, before the application runs.
             @MainActor
             static func register() {
-                // The bar, made once per element, reporting the rating its user chooses.
 
                         // Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.
                         StateUIActs.add(RatingBarContract.flash, on: RatingBarControl.self) { bar in
@@ -11928,14 +12182,14 @@ extension Listings {
         /// THE SPLIT IS THE PLATFORM'S: a desktop with no battery reports nothing at
         /// all, and the sample's own words say so. What is watched here is the power
         /// source, which macOS reports through a run-loop source of its own.
+        @MainActor
         enum GalleryEventSources {
             /// What was last said, so an unchanged reading raises nothing - a power
             /// source notifies on far more than a level change.
-            nonisolated(unsafe) private static var lastSaid: (level: Double, charging: Bool)?
+            private static var lastSaid: (level: Double, charging: Bool)?
 
             /// Declares what the gallery raises and starts watching. Said once,
             /// before the application runs.
-            @MainActor
             static func start() {
                 // Declared where the source is wired: a handler listening for an
                 // event nothing declared is told, once, that it will not hear it.
@@ -11943,7 +12197,11 @@ extension Listings {
 
                 // Named in full: a C function pointer carries no context at all, and
                 // an unqualified call to a static method captures the type implicitly.
-                let notify: IOPowerSourceCallbackType = { _ in GalleryEventSources.report() }
+                // The source stands on the main run loop, so the call comes on the
+                // main thread.
+                let notify: IOPowerSourceCallbackType = { _ in
+                    MainActor.assumeIsolated { GalleryEventSources.report() }
+                }
 
                 guard let source = IOPSNotificationCreateRunLoopSource(notify, nil)?.takeRetainedValue()
                 else { return }
@@ -11976,8 +12234,8 @@ extension Listings {
         // Platforms/GTK/Host/GalleryEventSources.swift
         /// The gallery's own pushes, as this host raises them: the battery, as UPower tells it.
         ///
-        /// Raising is safe from any thread, and a raise nobody hears is an ordinary answer, so the source is wired whether or
-        /// not anything listens.
+        /// It raises on the UI thread, where GLib tells the signal, and a raise nobody hears is an ordinary answer, so the
+        /// source is wired whether or not anything listens.
         enum GalleryEventSources {
             /// The battery as it was last said, so a notice that changed nothing of it raises nothing.
             @MainActor private static var lastSaid: (level: Double, charging: Bool)?
@@ -12013,8 +12271,7 @@ extension Listings {
 
         // Platforms/GTK/main.swift
         // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
-        // the acts it performs, and the pushes it reports - each in Host/ beside this file. Then hand GTK this thread until
-        // the last window closes.
+        // the acts it performs, and the pushes it reports - each in Host/ beside this file.
         stateui_app_register()
         // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
         GalleryControls.register()

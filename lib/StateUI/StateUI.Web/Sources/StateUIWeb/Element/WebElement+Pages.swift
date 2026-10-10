@@ -43,7 +43,7 @@ extension WebElement {
                       icons: element.children.map { $0.value(.icon)?.string ?? "" },
                       requested: element.value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
-            tabs.showColors(background: element.barColors.background)
+            tabs.showColors(background: element.barColors.background, foreground: element.barColors.foreground)
         }
         guard let split = view as? WebSplitView else { return }
         split.onPresentationChanged = { [weak self] presented in self?.sidebarChanged(to: presented) }

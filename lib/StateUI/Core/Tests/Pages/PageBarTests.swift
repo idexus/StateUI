@@ -55,6 +55,7 @@ private struct BarredPage: View {
     }
 }
 
+@MainActor
 final class PageBarTests: XCTestCase {
     /// What the page's first message carries - its `.onCreated` run, and what
     /// it wrote walked in.

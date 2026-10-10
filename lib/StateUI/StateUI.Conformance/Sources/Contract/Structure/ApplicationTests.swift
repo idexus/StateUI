@@ -6,9 +6,10 @@
 
 /// `ApplicationContract` on a host: the application runs, and each act its host does for it with no control behind it
 /// answers as the contract says - every question shown and answered as the user answers it, cancelled as the user
-/// cancels it; a file saved where the user says, opened and read back; an address and a file launched; the clock, the
-/// zone and a zone's distance from UTC; a word to the screen reader; the keyboard taken down; a value kept for the
-/// next launch; a handler's failure reported.
+/// cancels it, each waiting its turn; a file saved where the user says, opened and read back, no further than asked,
+/// and several opened at once; an address and a file launched; the theme the application holds; the clock, the zone
+/// and a zone's distance from UTC; a word to the screen reader; the keyboard taken down; a value kept for the next
+/// launch, and a scene's for its own; a handler's failure reported.
 @_spi(Host) public enum ApplicationTests: ConformanceFamily {
     public static let name = "Application"
 
@@ -28,7 +29,7 @@
                 let said = Received<String>()
                 s.start {
                     VStack {
-                        Button("Alert").onClicked {
+                        Button("Alert").onClicked(gate: .ignoreWhileRunning) {
                             try await Dialogs.alert("Saved", message: "The draft is kept", cancel: "Fine")
                             said.values.append("dismissed")
                         }.id("ask")
@@ -51,7 +52,7 @@
                 let said = Received<Bool>()
                 s.start {
                     VStack {
-                        Button("Confirm").onClicked {
+                        Button("Confirm").onClicked(gate: .ignoreWhileRunning) {
                             said.values.append(try await Dialogs.confirm(
                                 "Delete draft?", message: "It goes for good", accept: "Delete", cancel: "Keep"))
                         }.id("ask")
@@ -78,7 +79,7 @@
                 let said = Received<String>()
                 s.start {
                     VStack {
-                        Button("Share").onClicked {
+                        Button("Share").onClicked(gate: .ignoreWhileRunning) {
                             let chosen = try await Dialogs.chooseAction(
                                 "Share via", cancel: "Cancel", destruction: "Delete", buttons: ["Mail", "Message"])
                             said.values.append(chosen ?? "nothing")
@@ -110,7 +111,7 @@
                 let said = Received<String>()
                 s.start {
                     VStack {
-                        Button("Rename").onClicked {
+                        Button("Rename").onClicked(gate: .ignoreWhileRunning) {
                             let typed = try await Dialogs.prompt(
                                 "Rename", message: "A new name", accept: "Save", cancel: "Cancel",
                                 placeholder: "Name", initialValue: "Draft")
@@ -139,11 +140,11 @@
                 let said = Received<String>()
                 s.start {
                     VStack {
-                        Button("Alert").onClicked {
+                        Button("Alert").onClicked(gate: .ignoreWhileRunning) {
                             try await Dialogs.alert("First", message: "")
                             said.values.append("first")
                         }.id("first")
-                        Button("Confirm").onClicked {
+                        Button("Confirm").onClicked(gate: .ignoreWhileRunning) {
                             let accepted = try await Dialogs.confirm("Second", message: "", accept: "Yes", cancel: "No")
                             said.values.append("second \(accepted)")
                         }.id("second")
@@ -170,11 +171,11 @@
                 let text = FileType("Text", extensions: ["txt"])
                 s.start {
                     VStack {
-                        Button("Save").onClicked {
+                        Button("Save").onClicked(gate: .ignoreWhileRunning) {
                             let saved = try await Dialogs.saveFile(Array("Kept words".utf8), name: "note", types: [text])
                             said.values.append(saved?.name ?? "nothing")
                         }.id("save")
-                        Button("Open").onClicked {
+                        Button("Open").onClicked(gate: .ignoreWhileRunning) {
                             guard let file = try await Dialogs.openFile(types: [text]) else {
                                 return said.values.append("nothing")
                             }
@@ -208,11 +209,11 @@
                 let text = FileType("Text", extensions: ["txt"])
                 s.start {
                     VStack {
-                        Button("Save").onClicked {
+                        Button("Save").onClicked(gate: .ignoreWhileRunning) {
                             let saved = try await Dialogs.saveFile(Array("Kept words".utf8), name: "start", types: [text])
                             said.values.append(saved?.name ?? "nothing")
                         }.id("save")
-                        Button("Open").onClicked {
+                        Button("Open").onClicked(gate: .ignoreWhileRunning) {
                             guard let file = try await Dialogs.openFile(types: [text]) else {
                                 return said.values.append("nothing")
                             }
@@ -243,10 +244,10 @@
                 let said = Received<String>()
                 s.start {
                     VStack {
-                        Button("Save").onClicked {
+                        Button("Save").onClicked(gate: .ignoreWhileRunning) {
                             said.values.append(try await Dialogs.saveFile([1], name: "file.txt")?.name ?? "nothing")
                         }.id("save")
-                        Button("Open").onClicked {
+                        Button("Open").onClicked(gate: .ignoreWhileRunning) {
                             let names = try await Dialogs.openFiles().map(\.name).sorted()
                             said.values.append(names.joined(separator: " "))
                         }.id("open")
@@ -273,10 +274,10 @@
                 let said = Received<String>()
                 s.start {
                     VStack {
-                        Button("Open").onClicked {
+                        Button("Open").onClicked(gate: .ignoreWhileRunning) {
                             said.values.append("opened \(try await Dialogs.openFiles().count)")
                         }.id("open")
-                        Button("Save").onClicked {
+                        Button("Save").onClicked(gate: .ignoreWhileRunning) {
                             let saved = try await Dialogs.saveFile([1], name: "never.txt")
                             said.values.append("saved \(saved?.name ?? "nothing")")
                         }.id("save")
@@ -301,7 +302,7 @@
                 let said = Received<Bool>()
                 s.start {
                     VStack {
-                        Button("Launch").onClicked {
+                        Button("Launch").onClicked(gate: .ignoreWhileRunning) {
                             said.values.append(try await Links.launch("https://www.swift.org"))
                             if let saved = try await Dialogs.saveFile(Array("<p>Report</p>".utf8), name: "report.html") {
                                 said.values.append(try await saved.launch())
@@ -323,7 +324,7 @@
                 let said = Received<String>()
                 s.start {
                     VStack {
-                        Button("Say").onClicked {
+                        Button("Say").onClicked(gate: .ignoreWhileRunning) {
                             try await ScreenReader.announce("Saved the draft")
                             said.values.append("announced")
                         }.id("say")
@@ -365,7 +366,7 @@
                 Covered(ApplicationContract.currentTime),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<ClockTime>()
-                s.start { VStack { Button("Time").onClicked { said.values.append(try await ClockTime.now()) }.id("ask") } }
+                s.start { VStack { Button("Time").onClicked(gate: .ignoreWhileRunning) { said.values.append(try await ClockTime.now()) }.id("ask") } }
 
                 try s.perform(.activate, on: s.element("ask"))
                 s.settle { !said.values.isEmpty }
@@ -379,7 +380,7 @@
                 let said = Received<String>()
                 s.start {
                     VStack {
-                        Button("Zones").onClicked {
+                        Button("Zones").onClicked(gate: .ignoreWhileRunning) {
                             let zone = try await TimeZoneInfo.local()
                             let local = try await TimeZoneInfo.utcOffset(of: zone)
                             let own = try await TimeZoneInfo.utcOffset()
@@ -398,7 +399,7 @@
                 let said = Received<[Int64]>()
                 s.start {
                     VStack {
-                        Button("Offsets").onClicked {
+                        Button("Offsets").onClicked(gate: .ignoreWhileRunning) {
                             let tokyo = try await TimeZoneInfo.utcOffset(of: "Asia/Tokyo")
                             let winter = try await TimeZoneInfo.utcOffset(
                                 of: "Europe/Warsaw", on: CalendarDate(year: 2026, month: 1, day: 15))
@@ -419,7 +420,7 @@
                 let said = Received<String>()
                 s.start {
                     VStack {
-                        Button("Nowhere").onClicked {
+                        Button("Nowhere").onClicked(gate: .ignoreWhileRunning) {
                             do {
                                 _ = try await TimeZoneInfo.utcOffset(of: "Nowhere/Else")
                                 said.values.append("answered")
@@ -441,7 +442,7 @@
                 s.start {
                     VStack {
                         TextField("").id("field")
-                        Button("Done").onClicked { said.values.append(try await OnScreenKeyboard.hide()) }.id("done")
+                        Button("Done").onClicked(gate: .ignoreWhileRunning) { said.values.append(try await OnScreenKeyboard.hide()) }.id("done")
                     }
                 }
                 let field = try s.element("field")

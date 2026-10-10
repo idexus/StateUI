@@ -107,7 +107,6 @@ namespace {
         return why;
     }
 
-    /// Reads the whole of the file at `path` into `bytes`: why not, empty where it was read.
     /// The file at `path` into `bytes` - whole for a `maximum` below nought, else its first `maximum` bytes, read
     /// no further; why it failed, or nothing.
     std::string read(std::string const &path, int64_t maximum, std::vector<uint8_t> &bytes) {

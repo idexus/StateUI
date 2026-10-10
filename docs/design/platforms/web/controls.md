@@ -1,8 +1,8 @@
 # Controls on the Web
 
-Every control is the browser's own element, in the look the browser gives it
-and the theme the user's system chose, until the application gives it a look
-of its own.
+Every control is the browser's own element, in the look the host's
+stylesheet gives it ([the look](look.md)), light or dark as the user's system
+is, until the application gives it a look of its own.
 
 ## A view
 
@@ -34,6 +34,15 @@ line breaks. A font, a colour and the room around the words are CSS's
 `padding`; what the application leaves unsaid is the page's, and the page's
 font is the system's own.
 
+## The user's text size
+
+Words follow the browser's font size (`isFontAutoScalingEnabled`, on unless
+said) in rems: the page's own size is `--stateui-words` (0.9375rem), a size
+the tree gives a sixteenth of a rem a point, and words that do not scale
+stand in pixels - the page's size held fixed, `--stateui-words-fixed`, where
+the tree gives none. A run held fixed within words that scale holds its
+text's size.
+
 ## Runs of words
 
 A Text holding spans shows its runs in place of its own words, each a `<span>`
@@ -41,7 +50,8 @@ of its own look (`MountedElement.textRuns`). A run says only what it says
 itself - its font, its colour, the space between its letters, its lines'
 height, its decorations, what stands behind it - and takes the rest from the
 text around it, as the page's styles inherit. A span is kept for each run by
-its place, so the runs that change are the only ones written.
+its place: every span's words are written again as the runs change, and of its
+look only what changed.
 
 A text's lines break as its line break says: at words or anywhere onto more
 lines, or on one line, cut short where they do not fit; the page cuts words
@@ -51,9 +61,10 @@ wrap (`LineBreak.lines`).
 
 ## A button
 
-A Button is a `<button>`. With no fill, outline or shape of its own it is the
-browser's button; with one, its box is the application's - its background,
-its border, its corners - and the browser's look goes. It holds its words in
+A Button is a `<button>`. With no fill, outline or shape of its own it wears
+the stylesheet's button; with one, its box is the application's - its
+background, its border, its corners - and the stylesheet's border and fill
+go. It holds its words in
 a `<span>` and its picture in an `<img>` beside them, the two in its middle:
 the icon's position is the row's or column's direction, its spacing their
 gap - 8 points where the tree says none - and a picture with no words fills
@@ -143,7 +154,7 @@ through years far before the range, and each would otherwise be taken from
 under the user's keys. A day typed past the range is told at its end, and the
 field shows that end once left; a field left empty shows the day held. The
 calendar opening and closing reach no event of the page's, so `isOpen`,
-`opened` and `closed` stay unrealized.
+`opened` and `closed` are not planned.
 
 ## Indicators
 
@@ -162,10 +173,10 @@ A WebView is the browser's own `<iframe>` over a box with no size of its
 own, as every host's web view: an address it loads, a document
 written in place shown at a `blob:` address of the page's own made for it -
 of the page's own site, a `<base>` before it where the document says where
-its links resolve - told by the same `data:` address every host tells such a
-document by (`WebDocument`). The trap: the browser takes a `srcdoc` written
-again in place of the one before, so a frame of documents written in place
-had no way back; a frame's own navigation is a step in its history. The page hears
+its links resolve - and reported by the `data:` address that holds it
+(`WebDocument`). The trap: the browser takes a `srcdoc` written again in place
+of the one before, so a frame of documents written in place would have no way
+back; a frame's own navigation is a step in its history. The page hears
 the frame's document load, and tells it navigated, for the reason the
 program asked where it asked one (`WebNavigationCause`); a step the frame
 takes - back, forward, the page again - tells its navigation began as it is
@@ -197,15 +208,14 @@ An Image is an `<img>` showing one of the application's pictures, which
 the host layer's order - a PNG, then the SVG of the same name - and the
 element shows the next when one is not found. Its content mode is
 `object-fit`. An SVG keeps its own proportions inside any room it is given,
-so stretched it is shown through its view `#svgView(preserveAspectRatio(none))`
-and fills its room as a bitmap does. Its own size is the picture's, as every host's picture view
-has it, its proportions binding neither length: the element holds its size
-alone (`contain: size`), the picture's own given as it loads
+so stretched it is shown through its view
+`#svgView(preserveAspectRatio(none))` and fills its room as a bitmap does.
+Its own size is the picture's, as every host's picture view has it, its
+proportions binding neither length: the element holds its size alone
+(`contain: size`), the picture's own given as it loads
 (`contain-intrinsic-size`) - a picture across a stack's width stands as tall
 as it is, where the browser's own would stand as tall as its proportions
-make it. The trap: an SVG picture keeps its own proportions under
-`object-fit: fill`, as the file's `preserveAspectRatio` says - stretched, it
-stands fitted. A picture filling its room (`object-fit: cover`) reaches two
+make it. A picture filling its room (`object-fit: cover`) reaches two
 pixels past each edge - margins two pixels less, its bounds four more - under
 its parent's clip: WebKit draws a covering picture rounded inward at a
 fractional edge, by more than a pixel on a card turned and drawn small, so a band laid over its bottom - a card's caption in seventy

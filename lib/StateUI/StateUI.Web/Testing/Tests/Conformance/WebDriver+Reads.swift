@@ -199,6 +199,17 @@ extension WebDriver {
         case .text: return .some(try WebBrowser.evaluate("e.textContent", on: e)?.propValue)
         case .textColor: return .some(try color("\(style).color", on: e)?.propValue)
         case .fontSize: return try WebBrowser.number("parseFloat(\(style).fontSize)", on: e)?.propValue
+        case .isFontAutoScalingEnabled:
+            // Whether the words grow with the browser's text size: read with the page's root size doubled, then given back.
+            return try WebBrowser.truth("""
+                ((root) => {
+                  const before = parseFloat(\(style).fontSize), kept = root.style.fontSize;
+                  root.style.fontSize = (2 * parseFloat(getComputedStyle(root).fontSize)) + 'px';
+                  const after = parseFloat(\(style).fontSize);
+                  root.style.fontSize = kept;
+                  return after > before + 0.5;
+                })(document.documentElement)
+                """, on: e).propValue
         case .fontFamily:
             let family = try WebBrowser.evaluate("\(style).fontFamily.split(',')[0].trim().replace(/^[\"']|[\"']$/g, '')", on: e)
             return .some(family.map { Name($0).propValue })

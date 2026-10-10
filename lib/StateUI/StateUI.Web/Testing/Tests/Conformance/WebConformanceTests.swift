@@ -9,7 +9,7 @@ import XCTest
 /// its verdicts the Web's column of the control dictionary.
 @MainActor
 final class WebConformanceTests: XCTestCase {
-    override func setUp() {
+    override func setUp() async throws {
         WebTestLoop.started
     }
 

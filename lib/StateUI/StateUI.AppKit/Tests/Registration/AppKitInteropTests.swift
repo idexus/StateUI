@@ -44,7 +44,7 @@ private struct Calling: View {
     var body: some View {
         VStack {
             Button("Ask")
-                .onClicked {
+                .onClicked(gate: .ignoreWhileRunning) {
                     do {
                         let doubled = try await stateUICall(InteropTestContract.doubled, 21)
                         answer = "\(doubled)"
@@ -54,7 +54,7 @@ private struct Calling: View {
                 }
 
             Button("Ask nobody")
-                .onClicked {
+                .onClicked(gate: .ignoreWhileRunning) {
                     do {
                         try await stateUICall(InteropTestContract.unregistered)
                         answer = "that should have thrown"
@@ -79,6 +79,7 @@ private struct Calling: View {
 
 /// What an APPLICATION registers with this host: the acts it performs and the
 /// events it raises, neither of which any control stands behind.
+@MainActor
 final class AppKitInteropTests: XCTestCase {
     /// Pumps until `done` holds - an act's answer resumes its handler, and the
     /// handler's write renders on the next pump.
@@ -144,10 +145,9 @@ final class AppKitInteropTests: XCTestCase {
         defer { renderer.closeForTesting() }
         XCTAssertEqual(said(renderer), "-")
 
-        let heard = StateUIEvents.raise(InteropTestContract.spoke, "hello")
+        StateUIEvents.raise(InteropTestContract.spoke, "hello")
         settle(renderer) { said(renderer) != "-" }
 
-        XCTAssertEqual(heard, 1, "the page subscribed while it is in the tree")
         XCTAssertEqual(said(renderer), "heard hello")
     }
 

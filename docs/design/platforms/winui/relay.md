@@ -8,11 +8,13 @@ compiles it as C++20 over the projection `tools.ps1` generates; it links into
 the host's library.
 
 The relay holds only what Swift cannot do: WinUI's subclasses - the
-application and the panel every layout is - the events, the post onto the UI
-thread's queue, the frame's event, and what a test reads of the screen. Measured on the first probe, a call
-from Swift into C costs a nanosecond, and a setter through the relay a few
-hundred more than the same setter in C++: the crossing is nothing next to the
-work it asks for.
+application, the panel every layout is, the canvas a drawing is replayed on,
+the figure a shape is drawn in, the acrylic backdrop, the factory an
+ItemsView's cells come from, and the automation peers assistive technology
+reads - the events, the post onto the UI thread's queue, the frame's event,
+and what a test reads of the screen. A call from Swift into C costs a
+nanosecond, and a setter through the relay a few hundred more than the same
+setter in C++: the crossing is nothing next to the work it asks for.
 
 ## The C surface
 
@@ -42,8 +44,11 @@ exception: destroying its statics as the process exits is its shutdown
 The host hands the relay one table of functions, which the relay calls on the
 UI thread: WinUI stands, a turn landed, a frame, a panel's measure and
 arrange, a click, a switch's turn, a slider's move, a field's words and its
-Return. Every one is set - the relay calls them unchecked, and an
-empty one is a jump to nothing.
+Return, and the rest of what WinUI tells - a scroller's move, a choice, the
+environment, a question's answer, files, a drag, a menu's item, the focus, a
+window's state and its closing, an ItemsView's cells and choices. Every one
+is set - the relay calls them unchecked, and an empty one is a jump to
+nothing.
 
 ## A view and its number
 
@@ -53,12 +58,15 @@ and a view that has left answers nothing.
 
 ## What a test reads
 
-The relay keeps one reader for tests: `stateui_winui_read(element, name)`
+The relay's general reader for tests, `stateui_winui_read(element, name)`,
 answers what WinUI holds of the element's property of that name, as words - a
 colour as #AARRGGBB, a number, 0 or 1, sides and corners as four numbers - or
 -1 for a property the element has none of. Beside it, `stateui_winui_question`
 reads the dialog showing over a window and `stateui_winui_announced` what the
-relay told the screen reader, which WinUI keeps nowhere a test can ask. A test
+relay told the screen reader, which WinUI keeps nowhere a test can ask; and a
+reader each answers what one property cannot say - a window's frame
+(`stateui_winui_window_frame`), a text's runs, a list's choice, its mode and
+a row's name, a title bar's words, a slider's steps, a field's facts. A test
 reads the control; it never asks the host what it wrote.
 
 A file dialog is Windows' own window, on a thread of its own:

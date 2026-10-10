@@ -225,7 +225,7 @@ enum JavaAPI {
     static let picker = Java.findClass("stateui/android/StateUIPicker")
     static let newPicker = Java.method(picker, "<init>", "(Landroid/content/Context;J)V")
     static let setChoices = Java.method(picker, "setChoices", "([Ljava/lang/String;Ljava/lang/String;IZ)V")
-    static let setPickerLook = Java.method(picker, "setLook", "(FILandroid/graphics/Typeface;I)V")
+    static let setPickerLook = Java.method(picker, "setLook", "(FIILandroid/graphics/Typeface;I)V")
     static let openList = Java.method(picker, "openList", "()V")
     static let setBackgroundTintList = Java.method(
         view, "setBackgroundTintList", "(Landroid/content/res/ColorStateList;)V")
@@ -506,8 +506,10 @@ enum ViewConstants {
     static let phoneInput: Int32 = 0x3
 
 
-    /// `TypedValue.COMPLEX_UNIT_PX` and `COMPLEX_UNIT_SP`: a text size in pixels, and one the user's font scale applies to.
+    /// `TypedValue.COMPLEX_UNIT_PX`, `COMPLEX_UNIT_DIP` and `COMPLEX_UNIT_SP`: a text size in pixels, in points the
+    /// user's font scale leaves, and in points it applies to.
     static let pixels: Int32 = 0
+    static let independentPixels: Int32 = 1
     static let scaledPixels: Int32 = 2
 
     /// `MeasureSpec.UNSPECIFIED`, `EXACTLY` and `AT_MOST`, in the spec's two top bits.

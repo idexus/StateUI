@@ -8,6 +8,7 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
+@MainActor
 final class AppKitSessionTests: XCTestCase {
     @MainActor
     func testApplicationScenesOwnAllOfTheirNativeWindows() {
@@ -205,6 +206,7 @@ final class AppKitSessionTests: XCTestCase {
         XCTAssertEqual(native.frame.maxY, screen.visibleFrame.maxY - 73, accuracy: 0.001)
         XCTAssertEqual(native.contentMinSize, NSSize(width: 320, height: 240 + chrome))
         XCTAssertEqual(native.contentMaxSize, NSSize(width: 1_200, height: 900 + chrome))
+        XCTAssertTrue(native.collectionBehavior.contains(.fullScreenNone), "a bounded window takes no full screen")
         XCTAssertFalse(try XCTUnwrap(native.standardWindowButton(.zoomButton)).isEnabled)
         XCTAssertFalse(native.styleMask.contains(.miniaturizable))
         XCTAssertFalse(
@@ -224,6 +226,7 @@ final class AppKitSessionTests: XCTestCase {
         XCTAssertEqual(native.contentMinSize, .zero)
         let unbounded = CGFloat(Float.greatestFiniteMagnitude)
         XCTAssertEqual(native.contentMaxSize, NSSize(width: unbounded, height: unbounded))
+        XCTAssertFalse(native.collectionBehavior.contains(.fullScreenNone), "unbounded, it takes the full screen again")
         XCTAssertTrue(try XCTUnwrap(native.standardWindowButton(.zoomButton)).isEnabled)
         XCTAssertTrue(native.styleMask.contains(.miniaturizable))
         XCTAssertTrue(native.delegate?.windowShouldZoom?(native, toFrame: native.frame) ?? true)

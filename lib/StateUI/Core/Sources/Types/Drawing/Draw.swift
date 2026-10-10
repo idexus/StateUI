@@ -36,12 +36,12 @@ public enum Draw {
         DrawCommand(.textColor, [value.propValue])
     }
 
-    /// How wide that outline is, in device units.
+    /// How wide the `stroke…` outline is, in device units.
     public static func lineWidth(_ value: Double) -> DrawCommand {
         DrawCommand(.lineWidth, [.number(value)])
     }
 
-    /// How big it writes.
+    /// How big `Draw.text` writes.
     public static func fontSize(_ value: Double) -> DrawCommand {
         DrawCommand(.fontSize, [.number(value)])
     }

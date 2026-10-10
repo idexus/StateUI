@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 extension Differ {
-    /// Lays the setters of the states that hold over the element's values, hears what the user does that they
-    /// follow, and books `.onVisualStateChanged` where its state moved from `previous`; answers the state it is in.
+    /// Lays the setters of the states that hold over the element's values and hears what the user does that they
+    /// follow; answers the state it is in, and the `.onVisualStateChanged` listeners that hear it where its state
+    /// moved from `previous`.
     /// What is read here makes the element its reader, so a change describes the element again from its placeholder.
     /// Design: docs/design/views/styles.md#which-state-a-control-is-in
     func resolveVisualStates(
@@ -11,20 +12,20 @@ extension Differ {
         input: VisualInput,
         previous: String?,
         reads: inout Set<ObjectIdentifier>
-    ) -> String {
+    ) -> (state: String, heard: [(index: Int, listener: VisualStateListener)]) {
         let names = Set(node.visualStates.map(\.name))
 
-        // The Watch rule: only what a declared state follows is heard.
+        // Only what a declared state follows is heard.
         if names.contains("Pressed") {
-            node.addHandler(.pressed) { input.hold(true) }
-            node.addHandler(.released) { input.hold(false) }
+            node.addHandler(.pressed, gate: .none) { input.hold(true) }
+            node.addHandler(.released, gate: .none) { input.hold(false) }
         }
         if names.contains("PointerOver") {
-            node.addHandler(.pointerEntered) { input.hover(true) }
-            node.addHandler(.pointerExited) { input.hover(false) }
+            node.addHandler(.pointerEntered, gate: .none) { input.hover(true) }
+            node.addHandler(.pointerExited, gate: .none) { input.hover(false) }
         }
         if names.contains("Focused") {
-            node.addHandler(.isFocusedChanged) {
+            node.addHandler(.isFocusedChanged, gate: .none) {
                 if let focused = EventBuffer.current.first?.bool { input.focus(focused) }
             }
         }
@@ -41,13 +42,9 @@ extension Differ {
         let state = holding.first ?? VisualStateRules.normal
         node.props = VisualStateRules.resolved(node.props, states: node.visualStates, holding: holding)
 
-        // Heard after the render that entered it, never for the state the control arrives in.
-        if let previous, previous != state {
-            for listener in node.visualStateListeners where listener.hears(state) {
-                fired.append { try await listener.run(state) }
-            }
-        }
+        guard let previous, previous != state else { return (state, []) }
 
-        return state
+        let heard = node.visualStateListeners.enumerated().filter { $0.element.hears(state) }
+        return (state, heard.map { ($0.offset, $0.element) })
     }
 }

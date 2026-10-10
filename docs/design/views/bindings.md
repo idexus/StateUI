@@ -9,33 +9,44 @@ into the state.
 
 ## Binding twins
 
-What the host does with a carried state follows from the value:
+What the host does with a carried state follows from the value and the
+member it is for:
 
 ```text
   journey   a number, a colour, a thickness,     the host animates the property there under the
-            an inset, a point                    element's motion; $x.journey is the animation,
+            an inset, a point, for a member      element's motion; $x.journey is the animation,
+            that travels
                                                  and .motion(.none) lands it at once. Reading the
                                                  state answers where the value is going.
 
   plain     a Bool, an Int, a member of a        the host sets the property as the value stands,
-            closed vocabulary, and numbers       on its own frames, with nothing animating
-            that never animate: a range's
-            ends, a spacing, a step
+            closed vocabulary, and a number      on its own frames, with nothing animating
+            for a member that does not travel:
+            a range's ends, a step
 
   words     a String                             the host writes the text, as it writes a
                                                  driven text
 ```
 
-Each twin is one line over one of three helpers of `PropertyContainer` -
-`journey(_:by:)`, `plain(_:by:mode:)` and `words(_:by:mode:)` - and stands
-beside its value form, in the file of the tier or the control it belongs to.
-`plain` takes a `LaneValue` and `words` a `String`, so text cannot take the
+Each twin is one line over `twin(_:by:)` - or `twin(_:carrying:)`, where the
+state carries another type than its member's, a radius into its corners - or
+over `words(_:by:mode:)` for text, and stands beside its value form, in the
+file of the tier or the control it belongs to. `twin` reads the member's
+`travels` fact: a value the host can walk, for a member that travels, is a
+journey, anything else is plain - the contract decides, once, and
+`testEveryTwinIsDecidedByItsContract` refuses a twin written straight over
+`journey` or `plain`. A control's own value carried both ways (`mode: .inOut`)
+and a scroller's offset stand apart.
+A composed view's twins read the state in its content instead: a
+`PositionIndicator`'s row is built again as the state changes.
+`twin` takes a `LaneValue` and `words` a `String`, so text cannot take the
 door for numbers ([what a host reads lanes as](../core/state.md#what-a-host-reads-lanes-as)).
 `testEveryValueModifierHasABindingTwin` holds the two forms together: a value
 modifier added without its twin is named there. The few allowed out are listed
 with their reason - a value the host cannot be handed whole (a brush, a
-picture, a date, a shape, a transform), a name rather than a value (a style
-key, a font family, a radio group), a rectangle, and the tiers no view wears.
+picture, a date, a shape, a transform, a law, a run of numbers), a name rather
+than a value (a style key, a font family, a radio group), a rectangle, and the
+tiers no view wears.
 
 ## The image never the value
 
@@ -52,8 +63,9 @@ under a finger costs the arithmetic and nothing else.
 
 A part of a state (`$room.width`) has no image of its own for the host to write
 into, and a binding made from closures has none either. A driven property
-refuses both with a complaint naming the property; a two-way control falls
-back to its described form instead.
+refuses both with a complaint naming the property, and so do a slider and a
+stepper; every other two-way control falls back to its described form
+instead.
 
 ## Element side only
 
@@ -85,8 +97,9 @@ since words have one.
 
 A value and a state may stand together on one property:
 `.opacity(dim).opacity($fade)`. A change of the stated value crosses as a value
-like any other, a write to the state crosses as nothing, and the newest of the
-two destinations is the one in force.
+like any other and a write to the state crosses as nothing; while the state is
+carried the host shows the state's value, the stated one standing only where
+the state has none.
 
 ## Driven text
 
@@ -106,8 +119,8 @@ control, so the driven text is written per control.
 ## Two way controls
 
 A control the user changes - a switch, a check box, a radio button, a picker,
-the date and time pickers, a slider, a stepper, the text fields - takes its
-binding in one of two ways, decided by the binding:
+the date and time pickers, the text fields - takes its binding in one of two
+ways, decided by the binding:
 
 ```text
   $x of a @State or @Binding      handed over: the host sets the control from the state on
@@ -121,21 +134,29 @@ binding in one of two ways, decided by the binding:
                                   and renders on every report.
 ```
 
+A slider and a stepper carry their value as a journey and take only a whole
+state. A part of a state or a binding made from closures they refuse: the
+control says so once and sets nothing.
+
 The date and time pickers carry their value as three lanes: year, month and
 day, or hour, minute and second. A value the platform cannot show - a day
-outside the picker's range, a time longer than a day - is shown as the platform
-clamps or folds it while the state keeps what was written; the user's next
-choice lands the value shown.
+outside the picker's range, a time longer than a day - is shown as the host
+layer holds it - a day past an end of the range at that end, a time added up
+from midnight round the day (`CalendarArithmetic`) - while the state keeps what
+was written; the user's next choice lands the value shown.
 
 ## Both spellings
 
-A two-way control takes its binding in the initializer - the short way to say
-what gives the control its purpose - and in a modifier of the same name, the
-way every other property is written: `TextField($name)` and
-`TextField().text($name)`. The initializer delegates to the modifier, so there
-is one body and neither is the real one. A value modifier written beside the
-initializer's binding wins for the value, while the binding goes on being
-written back to, which is how the two can then disagree.
+A two-way control whose bound value is its purpose takes its binding in the
+initializer - the short way to say what gives the control its purpose - and in
+a modifier of the same name, the way every other property is written:
+`TextField($name)` and `TextField().text($name)`. A picker and a radio button,
+whose initializers take their options and their caption, take it in the
+modifier alone: `Picker(sizes).selectedIndex($size)`. The initializer
+delegates to the modifier, so there is one body and neither is the real one. A
+value modifier written beside the initializer's binding wins for the value,
+while the binding goes on being written back to, which is how the two can then
+disagree.
 
 ## A report lands before its handler
 

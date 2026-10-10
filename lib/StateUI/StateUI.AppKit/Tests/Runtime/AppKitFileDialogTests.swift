@@ -11,6 +11,7 @@ import XCTest
 
 /// A file dialog is AppKit's own panel, set as the act asks: a save panel offers its kinds under their captions with
 /// the name it suggests, an open panel the files of every kind, several where asked.
+@MainActor
 final class AppKitFileDialogTests: XCTestCase {
     @MainActor
     private func settle(_ renderer: AppKitRenderer, until done: () -> Bool) {
@@ -68,7 +69,7 @@ private struct Saving: View {
 
     var body: some View {
         VStack {
-            Button("Save").onClicked {
+            Button("Save").onClicked(gate: .ignoreWhileRunning) {
                 let kinds = [FileType("Web page", extensions: ["html", "htm"]), FileType("Text", extensions: ["txt"])]
                 let saved = try await Dialogs.saveFile(Array("<p>Kept</p>".utf8), name: "Report", types: kinds)
                 answer = saved?.name ?? "nothing"
@@ -81,7 +82,7 @@ private struct Saving: View {
 /// A button opening files of two kinds.
 private struct Opening: View {
     var body: some View {
-        Button("Open").onClicked {
+        Button("Open").onClicked(gate: .ignoreWhileRunning) {
             _ = try await Dialogs.openFiles(types: [
                 FileType("Text", extensions: ["txt", "md"]), FileType("Web page", extensions: ["html"]),
             ])

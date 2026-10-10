@@ -73,8 +73,8 @@ struct WebPress {
         return drag.ended(letGo: letGo).map { [$0] } ?? []
     }
 
-    /// A trackpad's pinch moved by a wheel's turn `down`, or stands at Safari's `scale` from 1, at `point` in a view
-    /// `size`: it begins with its first step.
+    /// A trackpad's pinch at `scale` from 1 - a wheel's turn's or Safari's - at `point` in a view `size`: it begins
+    /// with its first step.
     mutating func trackpad(scale next: Double, at point: Point, size: LayoutSize) -> [HeardInput] {
         guard pinchSpan == nil else { return [] }
         let at = PinchStep.share(of: point, width: size.width, height: size.height)

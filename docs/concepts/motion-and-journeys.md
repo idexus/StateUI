@@ -79,8 +79,8 @@ merged over that plan.
 | --- | --- |
 | `.opacity` | opacity |
 | `.color` | every color-valued property |
-| `.width` | requested, minimum, maximum, or host-reported width |
-| `.height` | requested, minimum, maximum, or host-reported height |
+| `.width` | requested, minimum and maximum width, and the widths a layout gives its children |
+| `.height` | requested, minimum and maximum height, and the heights a layout gives its children |
 | `.size` | width and height plus outline and corner sizes |
 | `.place` | host-arranged position and translation |
 | `.transform` | scale, rotation, and anchors |
@@ -113,7 +113,7 @@ exposes what the host is showing between writes:
 | `destination` | the state's ordinary value |
 | `velocity` | per-second velocity, lane by lane |
 | `motion` | law owned by this value wherever it is attached |
-| `move(to:_:)` | set a destination and await its outcome |
+| `move(to:_:)` | set a destination; `arrived()` awaits its outcome |
 | `stop()` | stop at the standing value |
 | `snap(to:)` | set standing value, destination, and zero velocity together |
 | `convert` | derive another host-driven value from live journey lanes |
@@ -123,12 +123,13 @@ The built-in `Walked` values are `Double`, `Point`, `Rect`, `Insets`, and
 made from get/set closures do not own the complete storage image a host needs
 to walk; move the complete state instead.
 
-An awaited move returns its outcome:
+A move starts as it is sent and returns at once; its `arrived()` awaits the
+outcome:
 
 ```swift quote
 let arrived = try await $opacity.journey.move(
     to: 0.2,
-    .eased(400, .cubicOut))
+    .eased(400, .cubicOut)).arrived()
 
 if !arrived {
     // A newer destination, another write, or stop() ended this animation.
@@ -136,12 +137,14 @@ if !arrived {
 ```
 
 `true` means the value reached that move's destination. `false` means a newer
-destination, another write to the state, or `stop()` superseded it. An
-animation that has nothing to cover completes with `true` immediately. A
-custom-engine state also answers immediately because the engine, rather than
-the host's animator, owns its completion.
+destination, another write to the state, or `stop()` superseded it. A move
+already at its destination, or made while the user asks for less motion,
+completes with `true` on the host's next frame; a state nothing wears yet
+completes with `true` at once. A custom-engine state also answers at once
+because the engine, rather than the host's animator, owns its completion.
 
-The destination write happens before the handler first suspends. An unrelated
+The destination is written as `move` is called, so moves sent one after
+another are in the air together, each awaited apart. An unrelated
 body rebuild does not restart or cancel a journey: the motion channel belongs
 to the state storage and continues from its standing value and velocity. A
 later motion passed to `move` is retained as that value's law, so subsequent
@@ -206,9 +209,12 @@ shows verified host support.
 
 `@State(motion: .custom)` fixes who animates the state when it is first
 registered. An engine reads destination, standing value, velocity, and frame
-timing, writes the next standing lanes, and returns `.again` while it needs
-another frame or `.wait` until a followed state changes. An engine's own write
-does not wake it.
+timing, and writes the next standing lanes. One declared with
+`.engine(tracking:)` returns `.again` while it needs another frame or `.wait`
+until a tracked state is written; one declared with `.engine(following:)` runs
+on the display cycle after a state it follows is written - once, however many
+writes came - and once after each render that describes its view. An engine's
+own write does not wake it.
 
 See [State and reactivity](state-and-reactivity.md) for conversions, sampling,
 and engine composition, and [Host contract](../internals/host-contract.md) for the native

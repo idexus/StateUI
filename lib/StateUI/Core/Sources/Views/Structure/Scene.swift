@@ -13,7 +13,7 @@
 ///         var body: some Scene {
 ///             WindowGroup { NotePage() }
 ///                 .environment(library)
-///             Window(.inspector) { Inspector() }
+///             Window(.inspector) { InspectorPage() }
 ///                 .environment(library)
 ///         }
 ///     }
@@ -22,6 +22,7 @@
 /// An application with nothing to share writes its windows in its own `body`, each a scene of its own:
 /// `var body: some Scene { WindowGroup { NotePage() } }`. What every scene shares belongs to the `Application`
 /// and reaches a scene through `.environment(_:)`. The application's session opens a scene's windows.
+@MainActor
 public protocol Scene {
     /// The scene it is made of.
     associatedtype Body: Scene
@@ -56,6 +57,7 @@ extension Scene {
 }
 
 /// A scene with an object offered to everything in it.
+@MainActor
 protocol Offering {
     /// The scene the object is offered to.
     var offered: any Scene { get }

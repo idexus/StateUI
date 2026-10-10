@@ -38,8 +38,7 @@ final class GTKRenderer {
 
     /// What performs the acts the application calls, and answers them, by the host layer's rules.
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
-        answered: { [unowned self] in runtime.pump.turn() })
+        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree })
 
     /// The application's ID, which the desktop knows it by.
     var applicationID: String {
@@ -82,17 +81,25 @@ final class GTKRenderer {
         let frameClock = clock.map { GTKFrameClock(now: $0, ticksWithGTK: false) } ?? GTKFrameClock()
         self.frameClock = frameClock
         self.reducesMotion = reducesMotion
-        runtime.displayCycle.presenter = self
-        runtime.pump.presenter = self
+        runtime.presenter = self
+        // A pass is over at the priority after GTK's layout and paint.
+        runtime.afterLayout.askForPassEnd = {
+            g_idle_add_full(G_PRIORITY_DEFAULT_IDLE, { _ in
+                MainActor.assumeIsolated {
+                    guard let runtime = GTKRenderer.shared?.runtime, runtime.afterLayout.passEnded() else { return }
+                    runtime.pump.turn()
+                }
+                return 0
+            }, nil, nil)
+        }
     }
 
-    /// The application was activated on GLib's thread: the first time, the first drain makes it MainActor's and
-    /// the host starts; after that, a second launch brings the window forward.
+    /// The application was activated on GLib's thread: the first time, the host claims it as the UI thread and
+    /// starts; after that, a second launch brings the window forward.
     /// Design: docs/design/platforms/gtk/runtime.md#starting
     nonisolated static func activated(_ application: UnsafeMutablePointer<GtkApplication>) {
         let core = CoreLink()
-        _ = core.needsRender
-        _ = core.runJobs()
+        core.claimUIThread()
         nonisolated(unsafe) let application = application
 
         MainActor.assumeIsolated {
@@ -111,22 +118,23 @@ final class GTKRenderer {
 
         let renderer = GTKRenderer(application: application)
         shared = renderer
-        renderer.runtime.core.setRealization(
-            GTKRegistrations.registry.realization,
-            unrealized: GTKRealization.unmade)
-        renderer.show()
-        GTKDoorbell.install()
+        renderer.start(turns: GTKDoorbell.install)
         return renderer
     }
 
-    /// Renders the application whole, told what the host stands on: the scenes kept for this start come back, else
-    /// one new scene.
-    /// Design: docs/design/host/runtime.md#kept-scenes
-    func show() {
-        GTKEnvironment.report(to: runtime.core, applicationID: applicationID)
-        GTKKeptValues.restore(into: runtime.core, applicationID: applicationID)
-        GTKEnvironment.watch { [weak self] in self?.environmentChanged() }
-        scenes.restore(GTKKeptValues.readScenes(applicationID: applicationID), in: runtime)
+    /// Starts the runtime in the host layer's order, told what the host stands on and what it kept: the scenes kept
+    /// for this start come back, else one new scene; `turns` posts the turns after it.
+    /// Design: docs/design/host/runtime.md#starting
+    func start(turns: () -> Void = {}) {
+        runtime.start(
+            realizing: GTKRegistrations.registry.realization, unrealized: GTKRealization.unmade,
+            environment: {
+                GTKEnvironment.report(to: runtime.core, applicationID: applicationID)
+                GTKEnvironment.watch { [weak self] in self?.environmentChanged() }
+            },
+            kept: { GTKKeptValues.restore(into: runtime.core, applicationID: applicationID) },
+            windows: { scenes.restore(GTKKeptValues.readScenes(applicationID: applicationID), in: runtime) },
+            turns: turns)
     }
 
     /// The desktop's style, the power or the network changed: the core hears what stands now, the tree follows the
@@ -188,7 +196,7 @@ final class GTKRenderer {
     }
 }
 
-extension GTKRenderer: TurnPresenter {
+extension GTKRenderer: HostPresenter {
     func presentRendered() {
         showWindows()
         if let text = scenes.changed(root: runtime.tree.root) {
@@ -196,26 +204,20 @@ extension GTKRenderer: TurnPresenter {
         }
     }
 
+    /// A frame that moves what the chrome shows - a bar's colour, the window's frame - shows the window again.
+    func presentFrame(movedChrome: Bool) {
+        if movedChrome { showWindows() }
+    }
+
     func perform(_ call: HostActCall) {
         acts.perform(call)
     }
 }
 
-extension GTKRenderer: FramePresenter {
-    var wantsFrames: Bool {
-        runtime.frames.wantsFrames
-    }
-
-    func commitUserReports(now: Double) {
-        runtime.frames.commit(now: now)
-    }
-
-    /// A frame that moves what the chrome shows - a bar's colour, the window's frame - shows the window again.
-    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        if runtime.tree.present(states: states, properties: properties).windowChrome { showWindows() }
-    }
-
-    func renderIfNeeded() {
-        if runtime.core.needsRender { runtime.pump.turn() }
+extension GTKRenderer {
+    /// Runs `work` once GTK has laid the frame out, then a turn.
+    /// Design: docs/design/host/runtime.md#after-a-layout-pass
+    static func afterLayout(_ work: @escaping @MainActor () -> Void) {
+        shared?.runtime.afterLayout.run(work)
     }
 }

@@ -6,6 +6,7 @@
 /// page the view stands on takes them (Differ+Element.swift). Never changed once made, so a copied view shares
 /// nothing with the one it came from.
 /// Design: docs/design/views/pages.md#what-a-view-says-of-its-page
+@MainActor
 final class PageValues {
     /// The values: a `PageContract` node's properties, channels and handlers.
     let node: Node
@@ -20,8 +21,8 @@ final class PageValues {
         node.props.merge(written.node.props) { _, wrote in wrote }
         node.driven.merge(written.node.driven) { _, wrote in wrote }
 
-        for (name, handler) in written.node.events.sorted(by: { $0.key < $1.key }) {
-            node.addHandler(name, handler)
+        for (name, handlers) in written.node.events.sorted(by: { $0.key < $1.key }) {
+            node.addHandlers(name, handlers)
         }
 
         return PageValues(node)
@@ -34,8 +35,8 @@ extension Node {
         props.merge(values.node.props) { _, said in said }
         driven.merge(values.node.driven) { _, said in said }
 
-        for (name, handler) in values.node.events.sorted(by: { $0.key < $1.key }) {
-            addHandler(name, handler)
+        for (name, handlers) in values.node.events.sorted(by: { $0.key < $1.key }) {
+            addHandlers(name, handlers)
         }
     }
 

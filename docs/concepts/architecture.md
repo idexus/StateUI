@@ -1,8 +1,8 @@
 # Architecture
 
-StateUI is a platform-neutral Swift model for native interfaces. Swift owns
-the description tree, identity, state, diffing, and motion laws. A platform
-host owns native objects, platform lifecycle, input callbacks, layout
+StateUI is a platform-neutral Swift model for native interfaces. StateUI's
+core owns the description tree, identity, state, diffing, and motion laws. A
+platform host owns native objects, platform lifecycle, input callbacks, layout
 integration, and display-frame updates.
 
 The model has two reactive paths and one motion axis:
@@ -60,8 +60,9 @@ another owner. `@Environment` reads what the library offers by its name -
 `@Environment(\.window)` - and the nearest object an ancestor provided by its
 type; it is the route for session state and shared application models.
 
-A state's identity is its storage, not its current value. A write is serialized
-through that storage and is visible before the write returns.
+A state's identity is its storage, not its current value. A state is the UI
+thread's: it is read and written on `MainActor`, and a write is what the next
+read sees. Another thread posts to it with `$x.post`.
 
 ## Reactive path 1: description invalidation
 
@@ -83,10 +84,10 @@ struct Greeting: View {
 }
 ```
 
-`Text` reads `name`, so an edit rebuilds `Greeting`. The resulting patch
-contains only values and descendants that actually changed. Reader sets are a
-function of the current tree: when a body no longer reads a state, that state
-no longer invalidates it.
+The body reads `name` to build the `Text`, so an edit rebuilds `Greeting`.
+The resulting patch contains only values and descendants that actually
+changed. Reader sets are a function of the current tree: when a body no longer
+reads a state, that state no longer invalidates it.
 
 This path is for structural decisions and authored values:
 
@@ -118,7 +119,8 @@ struct Level: View {
 }
 ```
 
-The slider, scale, and converted label share the state channel. The host
+The slider and the scale share `level`'s state channel; the label shows a
+second state the conversion works out from `level` on the host cycle. The host
 applies a program write to every attachment on its display cycle. A native
 input report lands on the same state. A program write is not echoed as a user
 event; a handler runs only for input or lifecycle reported by the platform.
@@ -147,7 +149,9 @@ This path is for continuous or platform-owned values:
 
 Bindings and handlers may coexist on one control. The host first commits the
 reported value to its state channel, then invokes the handler. The handler
-therefore observes the new state.
+therefore observes the new state. For a binding the host does not carry - a
+part of a state, or one made from closures - the write-back is a handler of
+its own, and handlers run in the order written.
 
 Program writes are silent at the event boundary. This prevents a write such as
 `enabled = true` from pretending that the user toggled the native control.
@@ -161,9 +165,9 @@ callbacks.
 
 ## Journey
 
-A state remains discrete: reading `value` answers its destination immediately.
-For every `Walked` value, `$value.journey` exposes the continuous animation
-between destinations.
+A state remains discrete: reading the state answers its destination
+immediately. For every `Walked` value, `$value.journey` exposes the continuous
+animation between destinations.
 
 | Journey member | Meaning |
 | --- | --- |
@@ -171,7 +175,7 @@ between destinations.
 | `destination` | target; the same value a plain state read returns |
 | `velocity` | per-second velocity, lane by lane |
 | `motion` | law used wherever this state is shown |
-| `move(to:_:)` | set a destination and await whether it was reached |
+| `move(to:_:)` | set a destination; `arrived()` awaits whether it was reached |
 | `stop()` | end the active animation where it currently stands |
 | `snap(to:)` | set current value, destination, and zero velocity together |
 | `convert` | derive a host-driven value from the live journey |
@@ -183,9 +187,7 @@ struct Fader: View {
     var body: some View {
         VStack {
             Text("Native motion").opacity($fade)
-            Button("Fade").onClicked {
-                try await $fade.journey.move(to: 0.15, .eased(400, .cubicOut))
-            }
+            Button("Fade").onClicked { $fade.journey.move(to: 0.15, .eased(400, .cubicOut)) }
             Button("Restore").onClicked { $fade.journey.snap(to: 1) }
             Button("Stop").onClicked { $fade.journey.stop() }
         }
@@ -256,40 +258,53 @@ same; only the animation is shortened or removed.
 ## Custom engines
 
 `Motion.custom` gives the walk to StateUI code. An engine runs inside the host
-display cycle, reads and writes state, and returns `.again` while it needs
-another frame or `.wait` until a followed state is written.
+display cycle and reads and writes state. An engine declared with
+`.engine(tracking:)` answers `.again` while it needs another frame, or `.wait`
+until a tracked state is written; one declared with `.engine(following:)` runs
+on the display cycle after a state it follows is written - once, however many
+writes came - and once after each render that describes its view.
 
 ```swift
 struct FallingDot: View {
     @State(motion: .custom) private var y = 0.0
 
     var body: some View {
-        ColorBox(.cornflowerBlue)
-            .translationY($y)
-            .engine(following: $y) { cycle in
-                let journey = $y.journey
-                let elapsed = cycle.elapsed / 1000
-                journey.velocity += 180 * elapsed
-                journey.value += journey.velocity * elapsed
-                return abs(journey.destination - journey.value) > 0.5
-                    ? .again
-                    : .wait
-            }
+        VStack {
+            ColorBox(.cornflowerBlue)
+                .translationY($y)
+                .engine(tracking: $y) { cycle in
+                    let journey = $y.journey
+                    let elapsed = cycle.elapsed / 1000
+                    let pull = (journey.destination - journey.value) * 180
+                    journey.velocity += (pull - journey.velocity * 24) * elapsed
+                    journey.value += journey.velocity * elapsed
+                    if abs(journey.destination - journey.value) < 0.5,
+                       abs(journey.velocity) < 0.5 {
+                        journey.snap(to: journey.destination)
+                        return .wait
+                    }
+                    return .again
+                }
+
+            Button("Drop").onClicked { y = y == 0 ? 300 : 0 }
+        }
     }
 }
 ```
 
-Only a write to a state named in `following:` wakes a waiting engine. An
-engine's own write does not wake itself; it explicitly returns `.again` when it
-has more work. Engines run by ascending priority and stable registration order.
-They do not await, call controls, or create another thread-bound UI model.
+A waiting engine wakes when a state named in `following:` or `tracking:` is
+written, and once after a render that describes its view. An engine's own
+write does not wake itself; it explicitly returns `.again` when it has more
+work. Engines run by ascending priority and stable registration order.
+They do not await, ask the host for anything, or touch a control: they run
+inside the frame the platform draws.
 
 ## Application sessions
 
 The structural path is:
 
 ```text
-Application -> Scene -> WindowGroup, Window -> View
+Application -> Scene -> windows -> a view
 ```
 
 Each structural protocol has one composition property. A window shows a view,
@@ -343,8 +358,8 @@ control and is not state.
 
 The invariant across every host is one concept with one owner:
 
-- Swift owns state, reader tracking, identity, tree construction, diffing,
-  conversions, engines, and motion laws;
+- StateUI's core owns state, reader tracking, identity, tree construction,
+  diffing, conversions, engines, and motion laws;
 - the host owns native objects, native layout integration, input reports,
   platform lifecycle, and the display clock;
 - application state owns navigation and presentation choices;

@@ -10,27 +10,27 @@ extension Aim {
     ///     @Aim(TextField.self) private var email
     ///
     ///     TextField($address).aim(email)
-    ///     Button("Edit").onClicked { try await email.focus() }
+    ///     Button("Edit").onClicked(gate: .ignoreWhileRunning) { try await email.focus() }
     ///
     /// - Returns: true when the view took the focus. False is an ordinary
     ///   answer, not a failure: a view that is disabled, or not on screen, or
     ///   has nothing to focus refuses it.
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its view is no longer shown.
     @discardableResult
-    public nonisolated(nonsending) func focus() async throws -> Bool {
+    public func focus() async throws -> Bool {
         try await call(VisualElementContract.focus)
     }
 
     /// Takes the focus off this view, which is what closes the keyboard it
     /// opened.
     ///
-    ///     Button("Done").onClicked { try await email.unfocus() }
+    ///     Button("Done").onClicked(gate: .ignoreWhileRunning) { try await email.unfocus() }
     ///
     /// For a keyboard whose view is not known here - a Done button above a form
     /// of several fields - use `OnScreenKeyboard.hide()`, which asks the page.
     ///
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its view is no longer shown.
-    public nonisolated(nonsending) func unfocus() async throws {
+    public func unfocus() async throws {
         try await call(VisualElementContract.unfocus)
     }
 }
@@ -40,7 +40,7 @@ extension Aim {
 public enum OnScreenKeyboard {
     /// Closes the keyboard by taking the focus off whatever has it.
     ///
-    ///     Button("Done").onClicked { try await OnScreenKeyboard.hide() }
+    ///     Button("Done").onClicked(gate: .ignoreWhileRunning) { try await OnScreenKeyboard.hide() }
     ///
     /// The host looks at the page that is showing and walks it for whatever
     /// holds the focus - a search box in the navigation bar is an ordinary
@@ -51,7 +51,7 @@ public enum OnScreenKeyboard {
     /// - Returns: true when something was focused and is not any more. False
     ///   means the keyboard was already down - an answer, not a failure.
     @discardableResult
-    public static nonisolated(nonsending) func hide() async throws -> Bool {
+    public static func hide() async throws -> Bool {
         try await stateUICall(ApplicationContract.hideOnScreenKeyboard)
     }
 }

@@ -22,6 +22,7 @@
 /// an event, a gesture, an `.id()` or another control's property does not
 /// compile. Write it as `Style<Button>`; `Context` keeps a visual state from
 /// holding another.
+@MainActor
 public struct StyleBag<Target: StyleTarget, Context> {
     /// The setters written so far, on a node of the target's type.
     public var node: Node
@@ -66,18 +67,18 @@ extension StyleBag where Context == StyleBase {
         self.init(key: nil)
     }
 
-    /// A style asked for by name - `.style("Headline")` on a control.
-    public init(_ key: String) {
-        self.init(key: key)
+    /// A style asked for by its key - `.style(.headline)` on a control.
+    public init(_ key: StyleKey<Target>) {
+        self.init(key: key.name)
     }
 
     /// The style this one starts from, named by the key that style was given.
     ///
     /// The one it names must be in the same sheet. A key naming nothing is
     /// ignored, and a chain that comes back round to itself stops there.
-    public func basedOn(_ key: String) -> Self {
+    public func basedOn(_ key: StyleKey<Target>) -> Self {
         var copy = self
-        copy.basedOn = key
+        copy.basedOn = key.name
         return copy
     }
 
@@ -132,6 +133,7 @@ extension StyleBag where Context == StyleBase {
 
 /// A style whose target type has been forgotten - what a `StyleSheet`
 /// collects, made from a `Style<Text>()` and never by hand.
+@MainActor
 public struct AnyStyle {
     /// The node type this style is for - the target's own.
     let target: NodeType

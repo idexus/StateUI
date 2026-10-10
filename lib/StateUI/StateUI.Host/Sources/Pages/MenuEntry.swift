@@ -82,7 +82,7 @@
         self.element = element
         title = element?.value(.text)?.string ?? ""
         icon = element?.value(.icon)?.string.flatMap { $0.isEmpty ? nil : $0 }
-        isEnabled = element?.value(.isEnabled)?.bool ?? true
+        isEnabled = element?.isEffectivelyEnabled ?? true
         isDestructive = element?.value(.isDestructive)?.bool == true
         identifier = element?.value(.accessibilityIdentifier)?.string
         self.entries = entries

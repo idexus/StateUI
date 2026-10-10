@@ -1,41 +1,41 @@
-# revision 1.1
+# revision 2.1
 Button.fontAttributes: ✅
 Button.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
 Button.fontSize: ✅
-Button.isFontAutoScalingEnabled: not realized
+Button.isFontAutoScalingEnabled: ✅
 DatePicker.fontAttributes: ✅
 DatePicker.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
 DatePicker.fontSize: ✅
-DatePicker.isFontAutoScalingEnabled: not realized
+DatePicker.isFontAutoScalingEnabled: ✅
 Picker.fontAttributes: ✅
 Picker.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
 Picker.fontSize: ✅
-Picker.isFontAutoScalingEnabled: not realized
+Picker.isFontAutoScalingEnabled: ✅
 RadioButton.fontAttributes: ✅
 RadioButton.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
 RadioButton.fontSize: ✅
-RadioButton.isFontAutoScalingEnabled: not realized
+RadioButton.isFontAutoScalingEnabled: ✅
 SearchField.fontAttributes: ✅
 SearchField.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
 SearchField.fontSize: ✅
-SearchField.isFontAutoScalingEnabled: not realized
+SearchField.isFontAutoScalingEnabled: ✅
 Text.fontAttributes: ✅
 Text.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
 Text.fontSize: ✅
-Text.isFontAutoScalingEnabled: not realized
+Text.isFontAutoScalingEnabled: ✅
 TextEditor.fontAttributes: ✅
 TextEditor.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
 TextEditor.fontSize: ✅
-TextEditor.isFontAutoScalingEnabled: not realized
+TextEditor.isFontAutoScalingEnabled: ✅
 TextField.fontAttributes: ✅
 TextField.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
 TextField.fontSize: ✅
-TextField.isFontAutoScalingEnabled: not realized
+TextField.isFontAutoScalingEnabled: ✅
 TextSpan.fontAttributes: ✅
 TextSpan.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
 TextSpan.fontSize: ✅
-TextSpan.isFontAutoScalingEnabled: not realized
+TextSpan.isFontAutoScalingEnabled: ✅
 TimePicker.fontAttributes: ✅
 TimePicker.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
 TimePicker.fontSize: ✅
-TimePicker.isFontAutoScalingEnabled: not realized
+TimePicker.isFontAutoScalingEnabled: ✅

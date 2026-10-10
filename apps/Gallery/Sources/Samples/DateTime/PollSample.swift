@@ -71,6 +71,9 @@ struct PollSample: SampleContent, ExampleContent {
                     return "All good"
                 }.value
 
+                // Stopped while it checked: the answer comes to nothing.
+                guard checking else { return }
+
                 rounds += 1
                 checking = false
                 status = "\(answer) - next check in 2s"
@@ -78,7 +81,12 @@ struct PollSample: SampleContent, ExampleContent {
                 poll.start()
             }
         }
-        .onDestroying { poll.stop() }
+        // The tick reaches this view's states, the ticker among them, so it holds
+        // them: leaving the page is stopping it, a check under way included.
+        .onDestroying {
+            poll.stop()
+            checking = false
+        }
     }
     // listing: end
 
@@ -102,8 +110,7 @@ struct PollSample: SampleContent, ExampleContent {
 
             Text("The work runs on a detached task of its own. The tick is `@MainActor`, "
                 + "so it resumes on the thread the host draws on to write state and "
-                + "start the next round. `start`, `stop` and `reset` are safe "
-                + "from any thread all the same: `Ticker` keeps its state behind a lock.")
+                + "start the next round.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

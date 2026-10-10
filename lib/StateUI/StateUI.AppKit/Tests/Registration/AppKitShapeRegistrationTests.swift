@@ -15,6 +15,7 @@ import XCTest
 ///
 /// What a shape DRAWS is held to `AppKitShapeViewTests`, whose host-patch tests
 /// drive these same registered views.
+@MainActor
 final class AppKitShapeRegistrationTests: XCTestCase {
     /// Every shape is registered, each with the members of its own geometry.
     @MainActor

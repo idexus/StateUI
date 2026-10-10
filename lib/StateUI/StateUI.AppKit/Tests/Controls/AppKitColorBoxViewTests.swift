@@ -8,6 +8,7 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
+@MainActor
 final class AppKitColorBoxViewTests: XCTestCase {
     /// The box's colours reach the view, and its corners stand clockwise from the top left, as the host layer reads
     /// them.

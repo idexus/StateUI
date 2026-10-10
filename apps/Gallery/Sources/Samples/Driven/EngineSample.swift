@@ -54,7 +54,7 @@ struct EngineSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
                     .horizontalAlignment(.center)
             }
-            .style("Card")
+            .style(.card)
             .padding(horizontal: 24, vertical: 16)
             .background(Palette.well)
             .stroke(.transparent)
@@ -91,7 +91,7 @@ struct EngineSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
         }
         .spacing(12)
-        .engine(following: $running) { cycle in
+        .engine(tracking: $running) { cycle in
             guard running else { return .wait }
 
             elapsed += cycle.elapsed
@@ -137,7 +137,7 @@ struct EngineSample: SampleContent, ExampleContent {
             Text("`running` and `elapsed` are ordinary `@State` that no view reads, so "
                 + "writing them renders nothing - a step, a running total, whatever the sum "
                 + "needs, kept across renders like any state. The engine names `$running` "
-                + "in `following:`, which is why tapping Start - a handler writing it - "
+                + "in `tracking:`, which is why tapping Start - a handler writing it - "
                 + "wakes the engine; the engine's own writes wake nothing. Answering "
                 + "`.again` holds the frame clock, because a clock is moved by time rather "
                 + "than by anything being written; `.wait` lets the display go back to "
@@ -150,7 +150,7 @@ struct EngineSample: SampleContent, ExampleContent {
 
     // listing: EngineSample
     /// The buttons whose caption is their own rather than a driven state's.
-    private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
+    private func button(_ caption: String, _ act: @escaping @MainActor () throws -> Void) -> Button {
         Button(caption)
             .onClicked(act)
     }

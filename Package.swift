@@ -12,7 +12,7 @@ import PackageDescription
 // package's manifest from the root of the checkout and nowhere else, so this is
 // the one place it can sit if anybody is to write
 //
-//     .package(url: "https://github.com/idexus/StateUI.git", exact: "0.5.2")
+//     .package(url: "https://github.com/idexus/StateUI.git", exact: "0.6.0")
 //
 // The code stays under lib/StateUI/ regardless, which is what the paths below
 // say. Native host packages remain siblings so their platform dependencies do
@@ -57,10 +57,10 @@ let package = Package(
         // swiftSettings, and it is set wherever Swift is compiled here - in every
         // manifest of the repository. Without it a plain `async`
         // function runs on Swift's cooperative pool whoever calls it, so a
-        // handler awaiting one resumes away from its caller's executor. The library
-        // says `nonisolated(nonsending)` on its own async functions regardless; the flag is
-        // what extends that to the functions an APPLICATION writes, which no
-        // annotation of ours can reach. It becomes the default in Swift 7.
+        // handler awaiting one resumes away from its caller's executor. The library's
+        // own async functions are MainActor's; the flag is what keeps on the caller's
+        // executor the functions an APPLICATION writes, which no annotation of ours
+        // can reach. It becomes the default in Swift 7.
         .target(
             name: "StateUI",
             path: "lib/StateUI/Core/Sources",

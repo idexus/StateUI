@@ -38,10 +38,10 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (72)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>29 ✅ · 2 ☑️ · 38 ✓ · 3 –</td><td>custom <code>NSView</code> drawing</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>29 ✅ · 2 ☑️ · 38 ✓ · 3 –</td><td><code>UIView</code> <code>draw(_:)</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>55 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td><code>View</code> <code>onDraw(Canvas)</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>54 ✅ · 14 ✓ · 3 –</td><td>Direct2D in a <code>SurfaceImageSource</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>45 ✅ · 1 ☑️ · 22 ✓ · 4 –</td><td><code>GtkDrawingArea</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>29 ✅ · 2 ☑️ · 38 ✓ · 3 –</td><td>custom <code>UIView</code> <code>draw(_:)</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>55 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td>custom <code>View</code> <code>onDraw(Canvas)</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>54 ✅ · 14 ✓ · 3 –</td><td>custom <code>Panel</code> painting a Direct2D <code>SurfaceImageSource</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>45 ✅ · 1 ☑️ · 22 ✓ · 4 –</td><td>custom <code>GtkWidget</code> snapshot</td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>48 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;canvas&gt;</code></td></tr></tbody>
 </table>
 
@@ -67,7 +67,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>accessibilityIdentifier</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
-<tr><td colspan="9">GTK 4: GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.</td></tr></tbody>
+<tr><td colspan="9">GTK 4: GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.</td></tr></tbody>
 </table>
 
 ## From [VisualElement](tiers/VisualElement.md)

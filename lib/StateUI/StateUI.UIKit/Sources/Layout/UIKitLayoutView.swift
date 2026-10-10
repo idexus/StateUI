@@ -96,6 +96,11 @@ class UIKitLayoutView: UIView {
         box.paint(on: self)
     }
 
+    /// A touch outside the shape the layout cuts to reaches nothing of it: UIKit tests a touch against the bounds.
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        super.point(inside: point, with: event) && box.takes(point, in: bounds)
+    }
+
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let hit = super.hitTest(point, with: event)
         return passesBeside && hit === self ? nil : hit

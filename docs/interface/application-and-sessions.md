@@ -70,8 +70,8 @@ own. `application.colorScheme` is `.system` until it is written; `.light` or
 theme in force, which every `Color(light:dark:)` resolves against.
 
 ```swift quote
-Button("Dark") { application.colorScheme = .dark }
-Button("As the system") { application.colorScheme = .system }
+Button("Dark").onClicked { application.colorScheme = .dark }
+Button("As the system").onClicked { application.colorScheme = .system }
 ```
 
 `info.accentColor` is the accent the user chose for the system - on a
@@ -125,7 +125,7 @@ struct NotesScene: Scene {
             .environment(library)
         Window(.inspector) { InspectorPage() }
             .environment(library)
-        WindowGroup(.document, for: Int.self) { number in
+        WindowGroup(.document, for: Int.self) { $number in
             DocumentPage(number: number)
         }
     }
@@ -188,8 +188,8 @@ struct NotesPage: View {
 
     var body: some View {
         VStack {
-            Button("New editor").onClicked { try await application.openWindow(.editor) }
-            Button("About").onClicked { try await application.openWindow(.about) }
+            Button("New editor").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.editor) }
+            Button("About").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.about) }
         }
     }
 }
@@ -200,8 +200,8 @@ struct EditorPage: View {
 
     var body: some View {
         VStack {
-            Button("Close").onClicked { try await window.close() }
-            Button("Close every editor").onClicked { try await scene.close() }
+            Button("Close").onClicked(gate: .ignoreWhileRunning) { try await window.close() }
+            Button("Close every editor").onClicked(gate: .ignoreWhileRunning) { try await scene.close() }
         }
     }
 }
@@ -328,8 +328,9 @@ try await scene.close()
 ```
 
 A window opens in the scene declaring its kind, which opens with it where it
-does not stand. Whether a window may open beside another is the platform's: a
-desktop and an iPad open one, a phone answers `.unsupported`.
+does not stand. Whether a window may open beside another is the platform's. A
+desktop and an iPad open one; a phone, an Android tablet and a page in a
+browser answer `.unsupported`.
 `SceneSession.windows` and `ApplicationSession.scenes` are reactive readings.
 A body that reads either is rebuilt when the collection changes.
 
@@ -341,9 +342,10 @@ does not silently start referring to a newer scene after its own scene ends.
 
 Restoration has two inputs with different owners:
 
-- the platform keeps the windows that were open - AppKit and iPadOS by their
-  own restoration, the other hosts in a store of their own - each with its
-  kind, its value's text and its scene's `@State(sceneKey:)` values;
+- the platform keeps the windows that were open - AppKit and UIKit by their
+  own restoration, Android, WinUI and GTK in a store of their own, the Web in
+  the browser's storage for the page's site - each with its kind, its value's
+  text and its scene's `@State(sceneKey:)` values;
 - StateUI brings each back as its kind for its value, in the scene declaring
   it, which opens with it and its kept values where it does not stand.
 
@@ -365,7 +367,7 @@ sheets, its bar - is the view its `WindowGroup` or `Window` shows.
 | --- | --- |
 | `phase` | the last lifecycle phase reported by the host |
 | `title` | the name used by native window chrome and system window surfaces |
-| `x`, `y` | optional top-left position of the outer frame in desktop coordinates |
+| `x`, `y` | optional top-left position of the outer frame, counted from the top-left corner of its screen's work area (the screen less its menu bar, Dock or taskbar) |
 | `width`, `height` | optional requested content-area size |
 | `minimumWidth`, `minimumHeight` | optional lower content-size bounds |
 | `maximumWidth`, `maximumHeight` | optional upper content-size bounds |
@@ -398,6 +400,11 @@ another axis. `nil` leaves that axis under native
 window ownership, including user resizing and platform restoration. Minimum
 and maximum values constrain resizing; equal minimum and maximum values express
 a fixed dimension. A minimum wins over a smaller maximum on the same axis.
+Where a host realizes a maximum - AppKit and WinUI - it bounds maximizing
+too: maximized, a window that has one grows to that size at most, and on a
+Mac it takes no full screen, so a window meant to fill a large screen sets
+none. Elsewhere the platform sizes the window
+([Platform contract](../platform-contract.md)).
 Clearing a constraint or operation preference restores the native value the
 host found when it adopted the window. Full-screen hosts may retain geometry
 requests without presenting movable or resizable window chrome.
@@ -451,11 +458,12 @@ The host reports `WindowPhase` through the same session:
 
 The exact path is platform-adaptive: a host reports only transitions that
 occur in its lifecycle. Each phase it reports is rendered before its next
-report, so `.onChanged(window.phase)` sees every one. Repeating the phase
-already stored changes no state, and therefore triggers no extra reaction.
+report, so `.onChanged(window.phase)` sees every one. A host reports a phase
+only when it differs from the last it reported, so a repeated native callback
+triggers no extra reaction.
 
 ```swift quote
-.onChanged(window.phase) { oldPhase, newPhase in
+.onChanged(window.phase, gate: .waitForPrevious) { oldPhase, newPhase in
     if newPhase == .stopped {
         try await saveDraft()
     }
@@ -476,7 +484,7 @@ What the page is, the view it shows says by modifier:
 | --- | --- |
 | `.title` | navigation title, and the caption where the page is an item of something else |
 | `.icon` | the page's representative image, commonly a tab icon |
-| `.pageBackground` | flat color behind the whole page, also where the view does not reach |
+| `.pageBackground` | what the whole page is made of behind what it shows - a colour, a gradient, a blur or glass - also where the view does not reach |
 | `.showsNavigationBar` | whether a containing navigation stack shows its bar for this page |
 | `.showsBackButton` | whether that bar offers its native back affordance |
 | `.backButtonTitle` | short title supplied by this page for the page pushed above it |
@@ -598,38 +606,28 @@ line under the title, and its mark; `barBackgroundColor` and
 `barForegroundColor` paint the bar and what stands on it. Each is taken from
 the nearest arrangement on the visible path that declares it, so a stack
 further in paints its own bar or says its own line while it is shown; a
-sidebar and a sheet take nothing from around them. What stands on the bar is
+sidebar takes only what its own split view declares, and a sheet takes nothing
+from around it. What stands on the bar is
 declared the same way: actions with `.toolbar`, `.toolbar(.leading)` at the
 leading edge, and a view in the title's place with `.titleView`
 ([Toolbars](navigation-and-presentation.md#toolbars)).
 
-A desktop host shows the name, the line and the mark where its platform names
-the application - AppKit as text at the trailing edge of the title bar, WinUI
-in its title bar's title, subtitle and icon - while the visible page's title
-still names the window to the system. On a phone and a tablet each bar names
-its page: the line stands under each page's title, and the application's name
-and mark stand nowhere. [BarElement](../controls/tiers/BarElement.md) lists
-each value, and the page of each arrangement wearing it says what each host
-does with it.
+AppKit and WinUI show the name, the line and the mark where their platform
+names the application - AppKit as text at the trailing edge of the title bar,
+WinUI in its title bar's title, subtitle and icon - while the visible page's
+title still names the window to the system. GTK's header bar names its page,
+as each bar on a phone and a tablet does: the line stands under each page's
+title, and the application's name and mark stand nowhere.
+[BarElement](../controls/tiers/BarElement.md) lists each value, and the page
+of each arrangement wearing it says what each host does with it.
 
 ## Reading support status
 
 The types above define StateUI's cross-platform vocabulary. They do not make a
-blanket implementation claim. The platform matrix deliberately verifies these
-groups separately:
-
-- application, scene, window ownership and restoration;
-- window lifecycle handlers;
-- window geometry and native operations;
-- auxiliary-window metadata and policies;
-- core page properties and lifecycle;
-- adaptive page properties and structural slots;
-- the bar an arrangement declares.
-
-A `✅` covers the complete member group in its row. A blank cell means absent,
-partial, or unverified support, even when a related row for the same session is
-checked. This prevents a working lifecycle from being mistaken for working
-geometry, chrome, or presentation policy.
+blanket implementation claim. The platform matrix counts each element's
+members by mark, and the [control dictionary](../controls/README.md) marks
+each member per host; a partial member shows ☑️ or ◐, and an empty cell means
+not realized or not yet run.
 
 Current native evidence for sessions, lifecycle, geometry, and restoration is
 tracked in [Platform contract](../platform-contract.md).

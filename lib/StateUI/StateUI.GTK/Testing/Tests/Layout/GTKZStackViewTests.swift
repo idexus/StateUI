@@ -36,6 +36,7 @@ private let red: UInt32 = 0xFFFF_0000
 private let green: UInt32 = 0xFF00_8000
 private let blue: UInt32 = 0xFF00_00FF
 
+@MainActor
 final class GTKZStackViewTests: XCTestCase {
     /// An area in logical pixels, and one in fractions of the room: its bottom right quarter.
     func testAZStackStandsEachChildInItsArea() throws {

@@ -90,18 +90,54 @@ public struct TimePicker: ElementView, TextStyleElement, FontElement, TimePicker
 
     /// Fires when a time is chosen, with the new one. Runs after a binding's
     /// write.
-    public func onTimeChanged(_ handler: @escaping ValueEventHandler<ClockTime>) -> Self {
+    public func onTimeChanged(_ handler: @escaping @MainActor (ClockTime) throws -> Void) -> Self {
         onEvent(TimePickerContract.timeChanged, handler)
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onTimeChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<ClockTime>) -> Self {
+        onEvent(TimePickerContract.timeChanged, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTimeChanged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onTimeChanged(_ handler: @escaping ValueEventHandler<ClockTime>) -> Self {
+        fatalError("unavailable")
     }
 
     /// The user has opened the clock face. Opening it with `isOpen(true)` raises
     /// nothing: the application already knows.
-    public func onOpened(_ handler: @escaping EventHandler) -> Self {
+    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(TimePickerContract.opened, handler)
     }
 
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onOpened(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(TimePickerContract.opened, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onOpened(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onOpened(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
+    }
+
     /// It has closed - by a choice, by a tap outside, or by the platform.
-    public func onClosed(_ handler: @escaping EventHandler) -> Self {
+    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(TimePickerContract.closed, handler)
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onClosed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(TimePickerContract.closed, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClosed(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onClosed(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 }

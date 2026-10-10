@@ -5,6 +5,7 @@ import StateUI
 
 /// What a case puts on a specimen that only a view of a known kind takes - a state its frame lands in, the states a
 /// pan carries, an aim - put on whatever kind the specimen is.
+@MainActor
 enum Opened {
     /// `view`, its frame landing in `room`.
     static func framed<V: View>(_ view: V, into room: Binding<Rect>) -> some View {

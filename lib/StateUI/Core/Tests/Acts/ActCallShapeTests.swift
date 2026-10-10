@@ -14,8 +14,9 @@ import Foundation
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class ActCallShapeTests: XCTestCase {
-    private typealias Act<Value> = nonisolated(nonsending) () async throws -> Value
+    private typealias Act<Value> = @MainActor () async throws -> Value
 
     /// Empties the shared queue, so a test starts from nothing.
     @discardableResult
@@ -25,7 +26,7 @@ final class ActCallShapeTests: XCTestCase {
 
     /// Starts an act and lets it reach its suspension - see ActCallTests.
     @MainActor
-    private static func begin<Value>(_ body: sending @escaping Act<Value>) -> Task<Value, Error> {
+    private static func begin<Value: Sendable>(_ body: @escaping Act<Value>) -> Task<Value, Error> {
         Task.immediate { @MainActor in try await body() }
     }
 
@@ -48,7 +49,7 @@ final class ActCallShapeTests: XCTestCase {
         _ body: sending @escaping Act<Void>
     ) async throws {
         drain()
-        let task = await Self.begin(body)
+        let task = Self.begin(body)
         let batch = drain()
 
         taken(batch, act, arguments, awaited: true, file: file, line: line)
@@ -187,10 +188,10 @@ final class ActCallShapeTests: XCTestCase {
     /// list has groups - and says where it stands, after the view.
     func testScrollingAListCrossesWithItsArgumentsInPlace() async throws {
         try await check("scrollTo", [.string("list"), .string("500"), .enumeration(ScrollAnchor.start.rawValue)]) {
-            try await named("list", ItemsViewContract.self).scrollTo(500, anchor: .start)
+            try await named("list", ItemsView<Int>.self).scrollTo(500, anchor: .start)
         }
         try await check("scrollTo", [.string("list"), .string("Fruit\u{1F}Pear"), .enumeration(ScrollAnchor.nearest.rawValue)]) {
-            try await named("list", ItemsViewContract.self).scrollTo("Pear", inGroup: "Fruit")
+            try await named("list", ItemsView<String>.self).scrollTo("Pear", inGroup: "Fruit")
         }
     }
 

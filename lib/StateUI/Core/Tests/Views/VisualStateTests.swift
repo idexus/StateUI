@@ -7,13 +7,13 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class VisualStateTests: XCTestCase {
     private let green = Color("#008000").propValue
     private let gray = Color("#808080").propValue
     private let blue = Color("#0000FF").propValue
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
     }
 
@@ -200,6 +200,27 @@ final class VisualStateTests: XCTestCase {
         _ = fire(renders, button, "pressed")
         _ = fire(renders, button, "released")
         XCTAssertEqual(heard, ["Pressed", "Normal"])
+    }
+
+    /// An element made again - another kind of control under the same identity - arrives in its state, so a
+    /// listener hears nothing of it, even where the state is not the one the element before stood in.
+    func testAnElementMadeAgainArrivesInItsStateUnheard() throws {
+        let renders = Renders()
+        var heard: [String] = []
+        _ = try XCTUnwrap(render(renders, Button("Save")
+            .visualState(.disabled) { $0.opacity(0.5) }
+            .onVisualStateChanged { heard.append($0.name) }
+            .id("c")
+            .node))
+
+        let made = try XCTUnwrap(render(renders, Text("Save")
+            .isEnabled(false)
+            .visualState(.disabled) { $0.opacity(0.5) }
+            .onVisualStateChanged { heard.append($0.name) }
+            .id("c")
+            .node))
+        XCTAssertTrue(made.replace, "another kind of control is made again")
+        XCTAssertEqual(heard, [], "heard the state the element arrives in")
     }
 
     /// Naming states declares them without changing the look, and only they are heard - as the typed state.

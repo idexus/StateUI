@@ -16,6 +16,7 @@ import XCTest
 /// The verdicts are read where they are rendered, so they are held here: a
 /// line that is no verdict, and a verdict on what no contract of its element
 /// declares, fail.
+@MainActor
 final class ControlDictionaryTests: XCTestCase {
     private static let folder = SourceTree.repository.appendingPathComponent("docs/controls")
 

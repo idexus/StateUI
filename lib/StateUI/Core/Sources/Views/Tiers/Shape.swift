@@ -82,36 +82,36 @@ extension Shape {
     /// `contentMode` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func contentMode(_ state: Binding<ContentMode>) -> Modified {
-        plain(ShapeContract.contentMode, by: state)
+        twin(ShapeContract.contentMode, by: state)
     }
 
     /// `dashPhase` from a state, `$x`: the host animates the property to
     /// each new value, and no view is rebuilt for it.
     public func dashPhase(_ state: Binding<Double>) -> Modified {
-        journey(ShapeContract.dashPhase, by: state)
+        twin(ShapeContract.dashPhase, by: state)
     }
 
     /// `lineCap` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func lineCap(_ state: Binding<LineCap>) -> Modified {
-        plain(ShapeContract.lineCap, by: state)
+        twin(ShapeContract.lineCap, by: state)
     }
 
     /// `lineJoin` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func lineJoin(_ state: Binding<LineJoin>) -> Modified {
-        plain(ShapeContract.lineJoin, by: state)
+        twin(ShapeContract.lineJoin, by: state)
     }
 
     /// `miterLimit` from a state, `$x`: the host animates the property to
     /// each new value, and no view is rebuilt for it.
     public func miterLimit(_ state: Binding<Double>) -> Modified {
-        journey(ShapeContract.miterLimit, by: state)
+        twin(ShapeContract.miterLimit, by: state)
     }
 
     /// `lineWidth` from a state, `$x`: the host animates the property to each
     /// new value, and no view is rebuilt for it.
     public func lineWidth(_ state: Binding<Double>) -> Modified {
-        journey(ShapeContract.lineWidth, by: state)
+        twin(ShapeContract.lineWidth, by: state)
     }
 }

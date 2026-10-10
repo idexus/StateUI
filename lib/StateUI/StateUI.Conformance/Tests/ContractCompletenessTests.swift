@@ -8,6 +8,7 @@ import XCTest
 
 /// Every cell of the control dictionary has a case of its own contract's family, so a host's run gives its verdict on
 /// every one: the element itself, each of its own members, and each tier's member on every element wearing the tier.
+@MainActor
 final class ContractCompletenessTests: XCTestCase {
     /// Every contract has one family, named for it, and every family is a contract's.
     func testEveryContractHasOneFamily() {

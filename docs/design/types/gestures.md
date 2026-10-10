@@ -20,10 +20,11 @@ member of a closed vocabulary as StateUI's number for it.
 ## Phases
 
 `GesturePhase` numbers its cases by StateUI's declaration order, so a
-platform release cannot reinterpret a stored or transported report. A
-platform that reports no distinct beginning starts a gesture at `.changed`,
-so a handler reads the values each report carries rather than relying on
-catching `.began`.
+platform release cannot reinterpret a stored or transported report. Every
+pan and every pinch begins with `.began`, on every platform, goes on with
+`.changed` and ends with `.ended` or `.cancelled`; where a toolkit tells a
+press and its moves and no drag of its own, the host layer recognizes the
+drag (`DragRecognition`).
 
 ## Swipe directions
 
@@ -44,10 +45,9 @@ formatted nor parsed.
 
 A pan's totals are measured from where the pan began, on every platform,
 which is what makes moving a view a matter of assigning them to its
-translation. Android measures a pan against a frame that moves with the
-view, so a handler answering by translating the view would feed its own
-answer back into the next report; the host takes that movement back out
-before reporting.
+translation. Android measures a pan on the screen, where the touch stands
+whatever the view does, so a handler answering by translating the view does
+not feed its own answer back into the next report.
 
 ## A pinch is relative
 

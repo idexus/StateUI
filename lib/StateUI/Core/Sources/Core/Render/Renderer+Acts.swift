@@ -10,18 +10,16 @@ extension Renderer {
     /// image - the counter every awaited act draws from.
     /// Design: docs/design/core/journeys.md#moving-and-waiting
     func book(_ completion: @escaping (Reply) -> Void) -> Int {
-        guarded.withLock { () -> Int in
-            let issued = nextCompletionId
+        let issued = nextCompletionId
 
-            completions[issued] = completion
-            nextCompletionId -= 1
+        completions[issued] = completion
+        nextCompletionId -= 1
 
-            return issued
-        }
+        return issued
     }
 
     /// The completions nobody has answered yet - what a test playing the host answers.
-    var waiting: [Int] { guarded.withLock { Array(completions.keys) } }
+    var waiting: [Int] { Array(completions.keys) }
 
     /// Queues an act by its token, the library's or an application's.
     func send(_ act: Act, _ arguments: [PropValue], completion: ((Reply) -> Void)?) {
@@ -36,36 +34,35 @@ extension Renderer {
         send(act.token, MemberValues.encode(repeat each arguments), completion: nil)
     }
 
-    /// Queues an act. Callable from any thread: `async let` children send from the pool.
+    /// Queues an act.
     private func enqueue(_ make: (Int?) -> ActCall, _ completion: ((Reply) -> Void)?) {
-        guarded.withLock {
-            var id: Int?
+        guard HandlerRun.admits("an act") else { return }
 
-            if let completion = completion {
-                id = nextCompletionId
-                completions[nextCompletionId] = completion
-                nextCompletionId -= 1
-            }
+        var id: Int?
 
-            actCalls.append(make(id))
+        if let completion = completion {
+            id = nextCompletionId
+            completions[nextCompletionId] = completion
+            nextCompletionId -= 1
         }
 
-        // Wakes the host outside the lock: an act sent from a plain `Task` lands no job
-        // on the executor, and nothing else would tell the host it is there.
-        UIThreadExecutor.shared.poke()
+        actCalls.append(make(id))
+
+        // An act sent where no turn follows - an application's own callback - would wait for the next event.
+        UIThreadExecutor.shared.askForTurn()
     }
 
-    /// Acts queued and not yet taken, waiting saves included - work to the doorbell.
+    /// Acts queued and not yet taken, waiting saves included - work for a turn.
     var actCallsPending: Int {
         // A save waiting is an act the moment it is taken (Persistence.swift).
-        guarded.withLock { actCalls.count } + PersistentStore.shared.pending
+        actCalls.count + PersistentStore.shared.pending
             + OpenScenes.shared.pendingSaves
     }
 
     /// Queues an act and suspends until the host answers, running and resuming on
-    /// the caller's executor. Throws `StateUIError` with the host's reason.
+    /// the UI thread. Throws `StateUIError` with the host's reason.
     /// Design: docs/design/core/acts.md#awaiting-an-answer
-    nonisolated(nonsending) func call(
+    func call(
         _ act: Act,
         _ arguments: [PropValue] = []
     ) async throws -> [PropValue] {
@@ -74,20 +71,22 @@ extension Renderer {
 
     /// The suspension itself: queues through `send`, waits for the reply, and
     /// turns its two arms into a return and a throw.
-    nonisolated(nonsending) func answered(
+    func answered(
         _ send: (@escaping (Reply) -> Void) -> Void
     ) async throws -> [PropValue] {
+        // A superseded run's act never leaves: it fails as the run's cancellation.
+        guard HandlerRun.admits("an act") else { throw CancellationError() }
+
         let reply = await withCheckedContinuation { (continuation: CheckedContinuation<Reply, Never>) in
             send { outcome in
                 // Counted here and lowered first thing after the resume, so a host can tell a
                 // resume still landing from nothing to wait for.
-                Renderer.shared.guarded.withLock { Renderer.shared.resumes += 1 }
+                Renderer.shared.resumesPending += 1
                 continuation.resume(returning: outcome)
             }
         }
 
-        // On a pool thread when the caller was a child task, hence the lock.
-        guarded.withLock { resumes -= 1 }
+        resumesPending -= 1
 
         switch reply {
         case .finished(let values):
@@ -110,11 +109,8 @@ extension Renderer {
             ActCall(ApplicationContract.persistValue, Name($0.name), $0.value)
         }
 
-        let queued = guarded.withLock {
-            let queued = actCalls
-            actCalls.removeAll(keepingCapacity: true)
-            return queued
-        }
+        let queued = actCalls
+        actCalls.removeAll(keepingCapacity: true)
 
         // And what the open scenes keep, the same way (OpenScenes.swift).
         return queued + saves + OpenScenes.shared.takeSaves()

@@ -26,6 +26,7 @@ private struct WritingControls: View {
     }
 }
 
+@MainActor
 final class GTKDirectionTests: XCTestCase {
     /// GTK hands a widget's direction to none of its parts: the words a field, a search field and a stepper edit, an
     /// editor's text and a button's picture and caption take the element's own, and turn with it.

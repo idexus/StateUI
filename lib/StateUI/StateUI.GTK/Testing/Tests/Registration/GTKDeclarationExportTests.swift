@@ -11,9 +11,10 @@ import Foundation
 @testable import StateUIGTKDriver
 import XCTest
 
+@MainActor
 final class GTKDeclarationExportTests: XCTestCase {
     /// The host with its backends, as an application registering them runs it.
-    override func setUp() {
+    override func setUp() async throws {
         onUIThread { GTKBackends.registered }
     }
 

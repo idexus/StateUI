@@ -83,7 +83,7 @@ extension Bool: HostRepresentable {
 
 extension Int: HostRepresentable {
     /// A whole number, as every number crosses: a Double.
-    public var propValue: PropValue { .number(Double(self)) }
+    public var propValue: PropValue { .number(crossing) }
 
     /// The whole part of a number, or nil for anything else - a number too
     /// large for an `Int`, infinity or not a number, included.

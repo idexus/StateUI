@@ -24,10 +24,16 @@ platform. A handler runs on `MainActor` and may suspend; it resumes on
                                on its UI thread through HostBoundary.runJobs.
 ```
 
-The executor is installed as the renderer is made, before anything here starts a
-task: `MainActor`'s executor is chosen when it is first used. The factory is
-`@_spi(ExperimentalCustomExecutors)`; its shape is that of the one Swift release
-the project builds with.
+Away from Apple, a host's start installs the executor: its first call, before
+anything starts a task, is `HostBoundary.claimUIThread()`, which installs it
+and drains once on that thread. A job running when `MainActor`'s executor is
+replaced was started by the one before, and `Task.immediate` from it no longer
+finds itself on `MainActor`. So nothing else installs it - not the renderer,
+which a test makes in the middle of its first `@MainActor` test. A process
+with no host, such as a test of the core, keeps the platform's main queue,
+which its run loop drains as on Apple. The factory is
+`@_spi(ExperimentalCustomExecutors)`; its shape is that of the one Swift
+release the project builds with.
 
 Nothing waits for the platform's main queue in shared code - nothing drains it
 on Android or Windows - and nothing uses a run-loop timer, which hangs off a run
@@ -46,9 +52,8 @@ loop nothing turns there. A timer is `Task.sleep` (cycle.md).
 
 A program in a page runs only inside a call the page makes - its start, a
 listener, a display frame, a wake - so whatever a call leaves is collected by
-the turn that ends it. The executor keeps no doorbell there, and
-`HostBoundary.waitForWork` does not exist, so no Web host can park the one
-thread the page has.
+the turn that ends it. The Web host says no way to post a turn, and nothing
+waits on the one thread the page has.
 
 Every task runs on the one executor: a task the application starts, an `async
 let`'s child and a detached task alike, as no other executor is drained in a
@@ -67,16 +72,19 @@ call without end while an engine runs.
 ## Handlers run where their event arrives
 
 A handler starts with `Task.immediate`, which runs it on the UI thread up to its
-first suspension before the call that raised the event returns. A handler with
+first suspension before the call that raised the event returns - unless its
+gate holds it back: a run that waits starts when the run before it ends, and
+one let go never starts. A handler with
 no `await` finishes inside its event, and the host renders what it wrote in the
 same turn. Only a handler that really awaits comes back later, on the same
 thread (render.md).
 
-Every async function in the library is `nonisolated(nonsending)`, or names
-`@MainActor` outright: it runs on its caller's executor. A plain async function
-runs on Swift's cooperative pool whoever calls it, so a handler awaiting one
-would come back on a pool thread with the host drawing beside it. A test holds
-every async declaration in the library to one of the two spellings.
+Every async function in the library is `@MainActor`, or runs on its caller's
+executor: every manifest compiles its Swift with that as the default
+(`NonisolatedNonsendingByDefault`), so no declaration spells it. Without it, a
+plain async function runs on Swift's cooperative pool whoever calls it, and a
+handler awaiting one would come back on a pool thread with the host drawing
+beside it. A test holds every Swift target of every manifest to the setting.
 
 ## The host is never called back
 
@@ -86,34 +94,44 @@ thread its runtime has never seen. A relay in a platform's own language - Java
 through JNI - attaches that thread on the way in, and on Android, with a
 debugger attached, the attach can deadlock the UI thread: the app freezes at
 the first `await` in a handler and stops receiving touches, while the same
-build without a debugger is fine. So nothing here calls out; the host asks,
-through `HostBoundary.runJobs()`.
+build without a debugger is fine. So no job is handed to the host: the core
+only rings the doorbell - the host's own thread-safe post (`postTurns`), which
+enters no runtime - and the host runs the jobs on its UI thread through
+`HostBoundary.runJobs()`.
 
 ## The doorbell
 
 Work can arrive when no act is in flight at all: `Task.sleep` coming due, a task
-an author started finishing, a stream yielding. So the host parks a thread of
-its own in `HostBoundary.waitForWork()`, and that thread is
-the doorbell:
+an author started finishing, a stream yielding. Each is a job queued from
+another thread; and work the UI thread makes outside a turn - an application's
+own callback writing a state - has no turn after it either. The doorbell is how
+both reach the UI thread: the host says once, at its start, how a turn is put on
+its UI thread's queue from any thread (`HostBoundary.postTurns`), and the core
+posts one whenever there is work and none waits:
 
 ```text
-  doorbell thread (the host created it, so its runtime has always known it)
-    |  parked in UIThreadExecutor.waitForWork()
-    |  woken by: a job enqueued, a state write, an act sent, a save recorded,
-    |            a value written to a board between cycles   (poke)
-    v
-  answers how much is waiting:
-    jobs queued + acts and saves not taken + a dirty tree + a board awake
-    |
-    v  posts ONE turn onto the UI thread, the toolkit's own thread-safe way
+  a job enqueued, on whatever thread queued it      the UI thread: a state written,
+                                                    an act sent, a save recorded, a
+                                                    value written to a board
+                                                    between cycles
+                    \                               /
+                     v                             v
+  askForTurn: ONE turn posted, the host's own thread-safe way (postTurns),
+              until that turn's drain begins
   host turn on the UI thread:  run jobs -> a pending cycle -> render -> acts
 ```
 
-Nothing runs on the doorbell thread; it only asks. A wake is signalled at most
-once per park - the armed flag folds a thousand wakes inside one drain into
-one - and the count may be zero when another turn got there first. On Apple
-the doorbell rings for the work the main queue does not carry; `MainActor`'s
-jobs are the main queue's.
+No thread waits for work: the post happens on the thread that made the work,
+inside the executor's `enqueue` for a job, outside its lock. A turn is asked
+for at most once until its drain begins, so a thousand jobs inside one drain
+post one turn, and what comes after the drain began posts the next. Saying how
+to post posts one turn at once, for whatever was queued before the host said.
+Where the loop turns by itself the host says no way to post: Apple has no
+doorbell - `MainActor`'s jobs are the main queue's, and its hosts take a turn as
+each pass of the main run loop ends (../host/runtime.md#the-turn-on-apple) - and
+the Web host turns as every call from the page ends. An `async main` with no
+host runs the executor's own loop (`MainExecutor.run`, away from Apple), whose
+way to post is a signal it waits for itself.
 
 ## Draining jobs
 
@@ -147,50 +165,31 @@ queue has a thread of its own, the draining one rather than the host's. It is
 not the thread the executor was made on, which may be a pool thread enqueueing
 the first job.
 
-## The lock
+## What stands behind a lock
 
-`Lock` (Lock.swift) is what state more than one thread touches
-stands behind: a storage's value, the renderer's bookkeeping, a board's images,
-the act queue. It is a `Mutex` guarding nothing, with the state beside it
-rather than in it, because what it guards is often no value a mutex could hold:
-a `@State`'s value is whatever type its author declares, `Sendable` or not, and
-a value handed into a mutex has to be `sending`, which a property setter cannot
-promise. An uncontended hold costs a few nanoseconds.
+A state is the UI thread's, and so is everything the renderer, a board, the
+stores and a storage keep: none of it stands behind a lock. What another
+thread does touch stands inside a `Mutex` of its own, as the value it holds:
+the executor's queue, its turn flag and the host's way to post a turn; a
+state's posts waiting in its mailroom for the UI thread (state.md#posting); the
+application's events raised and waiting (`RaisedEvents`); and the complaints
+said (`Said`). A run's superseded flag and the count of superseded runs are
+atomics, which a write reads from any task under the run; in a debug build
+the stamps of what a run read stand in a `Mutex` beside them.
 
-It is not reentrant: a body that asks for the same lock again deadlocks. So what
-a body takes out - a continuation to resume, a handler to call - runs after
-`withLock` returns, and a wake only signals outside every lock.
+A `Mutex` is not reentrant: a body that asks for the same lock again
+deadlocks. So what a body takes out - a job to run, a write to book - runs
+after `withLock` returns, and a wake only signals outside it. No body holds
+two: a post books its entry under the mailroom's one lock and starts the job
+after letting it go.
 
-Where the guarded state is the lock owner's own, it stands inside the lock:
-`Guarded` (Guarded.swift) holds a value that `withLock` alone reaches, as
-`inout`, so a read or a write without the lock does not compile. A board's
-book is one (cycle.md, The board): the doorbell reads it from its own thread.
+## What the compiler checks
 
-## Lock order
-
-```text
-  State.Storage's lock   before   the persistent store's and a scene record's
-                                  (a save is recorded from under the storage)
-  State.Storage's lock   before   a board's hold   (carry() makes the image)
-  a board's hold         never around an engine's run, nor around a wake
-  the renderer's lock    never around a wake - the executor's lock is never
-                         taken inside it
-```
-
-Where a lock would take two of these in the other order, the read goes without
-it: an engine's `due` reads a storage's write count as an atomic under the
-board's hold (cycle.md), and `hydrate` lands stored values after letting go of
-the store (state.md).
-
-## Unchecked sendability
-
-The renderer, a `State`, a `Binding`, a board, the stores and the executor are
-`@unchecked Sendable`. What makes each safe is either its lock or a fact the
-compiler cannot see: a host calls in from one thread, and the handler registry
-is touched only on `MainActor`. `@unchecked` is written where that promise is
-made, rather than by loosening a type for everyone - a `Sendable`
-`EventHandler` would stop authors capturing their own state in handlers.
-
-The pieces written only by the thread that renders - the build frame, the
-inspector's record, the event and reply buffers - are `nonisolated(unsafe)`
-statics for the same reason.
+The core makes no promise the compiler cannot check: it has no `@unchecked
+Sendable`, no `nonisolated(unsafe)` and no `assumeIsolated`, which
+`UIThreadTests` holds. The renderer, a `State`, a `Binding`, a board and the
+stores are `@MainActor`; what crosses threads is `Sendable` by what it holds -
+the executor, a mailroom, the raised events and the complaints said over a
+`Mutex`, a handler's run over atomics. Where a platform calls in on its UI
+thread, a fact the compiler cannot see, the host says it once as the call
+enters, with `MainActor.assumeIsolated`.

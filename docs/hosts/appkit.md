@@ -52,9 +52,11 @@ StateUIAppKit.run(resourceDirectory: resources, applicationIcon: icon)
 ```
 
 The head finds its artwork from its own source file, `#filePath`, so it runs
-the same whether a debugger, a task or a terminal starts it. The icon it hands
-the host is `Resources/AppIcon/appicon_macos.svg`, drawn on macOS's icon grid:
-a 1024-point canvas whose body is an 824-point rounded square 100 points in.
+the same whether a debugger, a task or a terminal starts it. The Gallery's
+head, run from the bundle its build makes, reads the bundle's `Images` and
+`StateUI.icns` first. The icon a head hands the host is
+`Resources/AppIcon/appicon_macos.svg`, drawn on macOS's icon grid: a
+1024-point canvas whose body is an 824-point rounded square 100 points in.
 Artwork drawn edge to edge stands larger in the Dock than every icon beside
 it.
 
@@ -168,10 +170,11 @@ size moved while it is paused arrives only when the user starts it again.
 
 An element only some hosts can honestly realize is declared only for them.
 `Cube3D`'s contract and its `View` stand under
-`#if APPKIT || UIKIT || GTK || WINUI || ANDROID` - one declaration, drawn with
-Metal here and on UIKit, with OpenGL on GTK, Direct3D on WinUI and OpenGL ES on
-Android - so a test reading an application's elements against another host's
-registrations never demands of that host a control it cannot draw.
+`#if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB` - one declaration,
+drawn with Metal here and on UIKit, with OpenGL on GTK, Direct3D on WinUI,
+OpenGL ES on Android and WebGL 2 on the Web - so a test reading an
+application's elements against another host's registrations never demands of
+that host a control it cannot draw.
 
 **A registered control has no slot on this host.** This host arranges
 children by the container classes it makes itself, so a registered view is
@@ -256,10 +259,9 @@ The Swift half is under
 element, such as a power or network change:
 
 ```swift quote
-@discardableResult
 public nonisolated static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
     _ event: ElementEvent<Owner, (repeat each Value)>,
-    _ value: repeat each Value) -> Int
+    _ value: repeat each Value)
 ```
 
 ```swift quote
@@ -271,10 +273,10 @@ NotificationCenter.default.addObserver(
 }
 ```
 
-`raise` is safe from any thread, so a source is wired where the platform
-reports it. It answers how many subscriptions heard it: a raise nobody hears is
-an ordinary zero rather than a failure, so an application wires its sources
-unconditionally. The Swift side subscribes with `HostEvents.on`; see
+`raise` is one door in from any thread, as a post is: a source calls it where
+the platform reports, and the subscriptions hear it on the UI thread soon
+after, in the order raised. A raise nobody hears is an ordinary one rather
+than a failure, so an application wires its sources unconditionally. The Swift side subscribes with `HostEvents.on`; see
 [Host-extension events](../interface/interaction-and-actions.md#host-extension-events).
 
 The head declares each event it raises where it wires the source, before
@@ -348,8 +350,9 @@ one test a family - `AppKitConformanceTests/testButton` - and the longest in
 parts, each a test of its own, which `--parallel` runs side by side.
 
 A run holds what it says to `lib/StateUI/exports/`: what the host declares to
-`appkit.txt`, and each family's verdicts to `marks/appkit/<Family>.txt`; a
-run that says otherwise fails. `STATEUI_UPDATE_EXPORTS=1` writes them
+`appkit.txt`, and each family's verdicts to `marks/appkit/<Family>.txt` - a
+family run in parts to `marks/appkit/<Family>-<part>.txt`, one file a part;
+a run that says otherwise fails. `STATEUI_UPDATE_EXPORTS=1` writes them
 instead, each verdict file under the revision its family stands at in
 `lib/StateUI/StateUI.Conformance/revisions.txt`, and `STATEUI_STALE_ONLY=1`
 runs only the families whose verdicts stand at another revision, or at none:

@@ -31,7 +31,12 @@ import Foundation
 import XCTest
 @_spi(Host) @testable import StateUI
 
+extension StyleKey where Target == VStack {
+    fileprivate static let card = StyleKey("Card")
+}
+
 /// One control, built with everything of its own that it can do.
+@MainActor
 private struct ControlCase {
     /// The StateUI node type, which is also what the case is called.
     let name: String
@@ -52,6 +57,7 @@ private struct ControlCase {
     }
 }
 
+@MainActor
 final class ControlTests: XCTestCase {
     /// A turn, a sizing, a lean and a move, STATED rather than computed: a
     /// chain like `.rotate(15).scaleX(1.5).skew(10, 5)` puts a libm result in
@@ -505,7 +511,7 @@ final class ControlTests: XCTestCase {
                 .avoidsSafeArea(.none, .keyboard, .container, .all)
                 .clipsContent(true)
                 .letsInputThrough(true)
-                .style("Card")
+                .style(.card)
                 .padding(left: 24, top: 16, right: 24, bottom: 16)
                 .margin(left: 4, top: 8, right: 4, bottom: 8)
                 .horizontalAlignment(.center)
@@ -1035,6 +1041,12 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(ClockTime(hour: 9, minute: 5, second: 1, millisecond: 500).text, "09:05:01")
         XCTAssertNil(ClockTime("21:05:30.12"), "two digits is a truncated value, not 120ms")
         XCTAssertNil(ClockTime("21:05:30.abc"))
+
+        // Only digits, in every part, as a day reads: a sign, an empty part or
+        // a separator at an end is no time.
+        for text in ["+9:30", "09:-30", "09::30", "09:30:", ":09:30", "09:30:05.", "09:30:05.+12", "09:30:+5"] {
+            XCTAssertNil(ClockTime(text), text)
+        }
 
         XCTAssertLessThan(
             ClockTime(hour: 9, minute: 30, second: 1, millisecond: 100),

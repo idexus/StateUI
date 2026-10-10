@@ -89,17 +89,17 @@ host layer, with its build in `.scripts/<Platform>`. Swift written for one host 
 that host's condition - `#if APPKIT`, `#if UIKIT`, `#if ANDROID`, `#if WINUI`,
 `#if GTK`, `#if WEB` - which its builds define.
 
-The core schedules nothing on Foundation's `Timer` or `RunLoop`, or on
-`DispatchQueue.main`: nothing drains them on Android, on Windows or in a
-browser. Work for the
-UI thread goes to `MainActor`, and a timer is `Task.sleep` or `Ticker`. Memory
-allocated in Swift is freed in Swift - never `strdup` and `free` - because
-several C runtimes can share a Windows process.
+The core schedules nothing on Foundation's `Timer` or `RunLoop`, and nothing
+on `DispatchQueue.main` but the one drain `UIThread.swift` posts there for a
+process that turns that queue: nothing drains them on Android, on Windows or
+in a browser. Work for the UI thread goes to `MainActor`, and a timer is
+`Task.sleep` or `Ticker`. Memory allocated in Swift is freed in Swift - never
+`strdup` and `free` - because several C runtimes can share a Windows process.
 
-Swift owns identity, diffing, state, journeys, and motion descriptions. Hosts
-own native objects, platform callbacks, and display-frame property motion. Keep
-renderers thin and derive richer behavior from StateUI primitives where that
-produces one honest cross-platform contract.
+StateUI's core owns identity, diffing, state, journeys, and motion
+descriptions. Hosts own native objects, platform callbacks, and display-frame
+property motion. Keep renderers thin and derive richer behavior from StateUI
+primitives where that produces one honest cross-platform contract.
 
 ## Write current documentation
 
@@ -116,14 +116,18 @@ they need to try.
 
 Run the suite owned by the area while iterating, then every suite before
 handing off a complete vertical change. In VS Code, run **StateUI: Run Tests**
-once with AppKit and once with Android chosen. From a terminal,
-`.scripts/test-native.sh` runs the suites of the library, the host layer, the
-conformance package, the AppKit host and the applications on this Mac, and
-`.scripts/Android/test-android.sh <serial>` the Android host's on a device:
+once with each host this machine runs - AppKit, UIKit, Android and the Web on
+a Mac. From a terminal, `.scripts/test-native.sh` runs the suites of the
+library, the host layer, the conformance package, the AppKit host and the
+applications on this Mac, `.scripts/UIKit/test-uikit.sh` the UIKit host's on a
+simulator, `.scripts/Android/test-android.sh <serial>` the Android host's on a
+device, and `.scripts/Web/test-web.sh` the Web host's:
 
 ```bash
 .scripts/test-native.sh
+.scripts/UIKit/test-uikit.sh "iPhone 18 Pro"
 .scripts/Android/test-android.sh emulator-5554
+.scripts/Web/test-web.sh
 ```
 
 A plain `swift test` compiles no code under a host's condition, so it does not

@@ -1,12 +1,12 @@
 # The WinUI runtime
 
 The WinUI host is the runtime every host shares
-([the runtime](../../host/runtime.md)), over WinUI 3: the core's host layer
+([the runtime](../../host/runtime.md)), over WinUI 3: the host layer
 supplies the mounted tree, the patch intake, the animator, the state channels,
 the display cycle and the turn, and the WinUI half supplies what only the
 toolkit can - the frame signal, the doorbell's post, the elements, their
-layout, and the window around them. What WinUI asks of C++ stands in the relay beneath it
-([the relay](relay.md)).
+layout, and the window around them. What WinUI asks of C++ stands in the
+relay beneath it ([the relay](relay.md)).
 
 ## The WinUI runtime
 
@@ -18,12 +18,13 @@ WinUI's frame clock, and the pump. Its turn is the one every runtime keeps
 when the core needs one, the handlers the render created, and then the acts -
 on the interface their handler has just changed. A turn asked for inside a
 turn runs when it ends, and an event raised while a patch applies waits for
-the patch. What the renderer adds is WinUI's: the window, its sheets and its
-chrome shown after each render, and the acts performed.
+the patch. What the renderer adds is WinUI's, as the runtime's
+`HostPresenter`: the window, its sheets and its chrome shown after each render
+and after a frame that moved the chrome, and the acts performed.
 
 A view is let go of in the turn after its element left: its `deinit` is
 `MainActor`'s, and a release outside a task's context puts it in the UI
-executor's queue, which rings the doorbell. The WinUI element goes with it.
+executor's queue, which posts a turn. The WinUI element goes with it.
 
 ## Starting
 
@@ -31,9 +32,9 @@ The head's `main` names the application and hands the thread to
 `StateUIWinUI.run()`, which loads the Windows App SDK the application carries
 and starts WinUI's `Application` there; WinUI's loop runs that thread until
 the last window closes. Its `OnLaunched` calls the host, whose first act is to
-drain StateUI's UI executor on that thread: the drain is what makes the thread
-`MainActor`'s, and every native call after it asserts that isolation rather
-than assuming a thread.
+claim that thread as the UI thread: `claimUIThread()` makes StateUI's UI
+executor `MainActor`'s and drains it there, and every native call after it
+asserts that isolation rather than assuming a thread.
 
 ## A windowed application
 
@@ -64,16 +65,15 @@ template only in a window of that thread once the thread's messages ran.
 
 ## The doorbell
 
-A handler that awaits resumes on `MainActor`, whose jobs wait in StateUI's UI
-executor until the host drains them. A thread of the host's own parks until
-the core has work, and posts one turn to the UI thread's `DispatcherQueue`
-through the relay; the turn runs on the UI thread among WinUI's own work.
-What a layout pass decides - a split view's first room - waits in the doorbell
-until the pass is over, and runs as the next turn it posts begins.
-
-The thread is started from a nonisolated function: a closure written inside a
-`MainActor` function is `MainActor`'s, and the runtime reports it as a data
-race the moment another thread runs it.
+A turn is posted to the UI thread's `DispatcherQueue` through the relay, and
+runs on the UI thread among WinUI's own work. The host gives the core that
+post at its start (`CoreLink.postTurns`), and the core makes it from any
+thread: on the UI thread for work it made - a state written, an act sent - and
+on the thread that queued a job, a handler's resume or a post among them. No
+thread of the host's waits. What a layout pass decides - a split view's first
+room - waits in the host layer's queue (`HostRuntime.afterLayout`), which asks
+the relay to post a turn; the queue runs as that turn begins, once the pass is
+over ([after a layout pass](../../host/runtime.md#after-a-layout-pass)).
 
 ## One frame
 
@@ -121,14 +121,14 @@ backdrop of the relay's own over WinUI's `DesktopAcrylicController`, since
 WinUI's ready one holds neither a kind nor an opacity: the two thinnest
 blurs are the thin kind, the rest the base one, and its luminosity hides as
 much of the desktop as the blur's thickness does
-(`Blur.Thickness.opacity`, the share a stand-in colour lets through), and
-its tint grows from none on the thinnest blur to nine tenths on the
-thickest: the luminosity alone - from 0.45 to 0.95 - barely tells the five
-apart, an ultra-thick window still showing the desktop through. Its colour - tint, and the fallback an inactive window
-shows - is the blur's stand-in colour, the theme's: a controller given any
-one value keeps none of the theme's own (an ultra-thick blur came out
-white in the dark theme), so every colour is written, and the theme
-turning gives the window its traits again. XAML's default configuration has
+(`Blur.Thickness.opacity`, the share it hides - the stand-in colour's own
+opacity), and its tint grows from none on the thinnest blur to nine tenths
+on the thickest: the luminosity alone - from 0.45 to 0.95 - barely tells the
+five apart, an ultra-thick window still showing the desktop through. Its
+colour - tint, and the fallback an inactive window shows - is the blur's
+stand-in colour, the theme's: a controller given any one value keeps none of
+the theme's own, so every colour is written, and the theme turning gives the
+window its traits again. XAML's default configuration has
 the acrylic follow the window's activation. The backdrop is made
 again only where it turns. A tint colours the acrylic itself - its colour is
 the tint laid over the theme's, which the acrylic's tint then carries as far
@@ -137,10 +137,10 @@ the colour a window is painted does. Glass is the acrylic at its fallback
 thickness: WinUI has no glass.
 
 A background the application writes shows behind the detail as it does
-beside the sidebar and under the bars: the card a navigation view lays over
-its detail - WinUI's layer fill, which turns a written colour grey - is
-clear (`NavigationViewContentBackground`, written into the window root's
-resources, which every navigation view in the window reads on its way up),
+beside the sidebar and under the bars: the card a split view's detail stands
+on - WinUI's layer fill, which turns a written colour grey - is clear
+(`NavigationViewContentBackground`, written into the window root's
+resources, which every such card in the window reads on its way up),
 and its edge - the line under the bar and beside the sidebar - is the
 theme's divider (`DividerStrokeColorDefault`), in a dictionary for each
 theme so it follows the theme by itself. A window left to the platform keeps WinUI's card.

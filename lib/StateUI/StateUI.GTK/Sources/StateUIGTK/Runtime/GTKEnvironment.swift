@@ -38,7 +38,8 @@ enum GTKEnvironment {
         core.setConnectivityInfo(connectivity)
     }
 
-    /// Calls `changed` whenever the desktop's style turns dark or light, or the power or the network change.
+    /// Calls `changed` whenever the desktop's style turns dark or light, its accent changes where libadwaita offers
+    /// one to choose, or the power or the network change.
     static func watch(_ changed: @escaping @MainActor () -> Void) {
         onChange = changed
         watchMachine(changed)
@@ -48,9 +49,22 @@ enum GTKEnvironment {
         connectNotify(UnsafeMutableRawPointer(style), "dark", number: 0) { _, _, _ in
             MainActor.assumeIsolated { GTKEnvironment.onChange?() }
         }
+        // The accent the user chooses, where libadwaita offers one to choose (1.6 on).
+        if offersAccent {
+            connectNotify(UnsafeMutableRawPointer(style), "accent-color", number: 0) { _, _, _ in
+                MainActor.assumeIsolated { GTKEnvironment.onChange?() }
+            }
+        }
     }
 
     private static var watching = false
+
+    /// Whether libadwaita offers the user an accent to choose - from 1.6 on, once its style manager stands: before
+    /// it, GTK knows no class to look in.
+    static var offersAccent: Bool {
+        let styles = g_type_class_peek(adw_style_manager_get_type())?.assumingMemoryBound(to: GObjectClass.self)
+        return styles.map { g_object_class_find_property($0, "accent-color") != nil } ?? false
+    }
 
     /// A label of libadwaita's `accent` class, never shown, whose colour is the accent the desktop draws.
     private static var accentProbe: UnsafeMutablePointer<GtkWidget>?
@@ -98,6 +112,36 @@ enum GTKEnvironment {
         defer { g_value_unset(&value) }
         g_object_get_property(UnsafeMutablePointer<GObject>(settings), "gtk-enable-animations", &value)
         return g_value_get_boolean(&value) == 0
+    }
+
+    /// The desktop's text scale - what GNOME's text size multiplies words by: its dots an inch over 96.
+    /// Design: docs/design/platforms/gtk/controls.md#words
+    static var textScale: Double {
+        guard let settings = gtk_settings_get_default() else { return 1 }
+
+        var value = GValue()
+        g_value_init(&value, g_type_from_name("gint"))
+        defer { g_value_unset(&value) }
+        g_object_get_property(UnsafeMutablePointer<GObject>(settings), "gtk-xft-dpi", &value)
+        let dpi = Double(g_value_get_int(&value))
+        return dpi > 0 ? dpi / (96 * 1024) : 1
+    }
+
+    /// The size of the desktop's own font before its text scale, in StateUI's points - what words stand at where the
+    /// tree gives none: GNOME's 11 typographic points where the desktop names no font.
+    static var fontSize: Double {
+        var value = GValue()
+        g_value_init(&value, g_type_from_name("gchararray"))
+        defer { g_value_unset(&value) }
+        if let settings = gtk_settings_get_default() {
+            g_object_get_property(UnsafeMutablePointer<GObject>(settings), "gtk-font-name", &value)
+        }
+        guard let name = g_value_get_string(&value), let font = pango_font_description_from_string(name),
+              pango_font_description_get_size(font) > 0
+        else { return 11 * 96 / 72 }
+        defer { pango_font_description_free(font) }
+        let size = Double(pango_font_description_get_size(font)) / Double(PANGO_SCALE)
+        return pango_font_description_get_size_is_absolute(font) != 0 ? size : size * 96 / 72
     }
 
     /// A line of the system's own, read from a file of the kernel's; empty where it has none.

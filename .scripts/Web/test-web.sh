@@ -35,7 +35,7 @@ program="$products/StateUIWebTests-test-runner.wasm"
 relay="$checkout/lib/StateUI/StateUI.Web/JavaScript/stateui-web.js"
 conformance="StateUIWebTests.WebConformanceTests"
 # The classes whose tests need a browser's own page: the host's own, and the conformance suite.
-hosts_in_browser="StateUIWebTests.WebDrawnChildrenTests,StateUIWebTests.WebShapeRoomTests,StateUIWebTests.WebKeyboardTests,StateUIWebTests.WebFrameReportTests,StateUIWebTests.WebWindowClosingTests,StateUIWebTests.WebHistoryTests"
+hosts_in_browser="StateUIWebTests.WebDrawnChildrenTests,StateUIWebTests.WebShapeRoomTests,StateUIWebTests.WebKeyboardTests,StateUIWebTests.WebFrameReportTests,StateUIWebTests.WebWindowClosingTests,StateUIWebTests.WebHistoryTests,StateUIWebTests.WebTabTitleTests,StateUIWebTests.WebLeaveTests,StateUIWebTests.WebLookTests,StateUIWebTests.WebScrollOffsetTests"
 in_browser="$conformance,$hosts_in_browser"
 
 browser () {
@@ -65,8 +65,10 @@ if [[ "${1:-}" == "--browser" ]]; then
   exec node "$package/JavaScript/run-in-browser.mjs" "$(browser)" "$program" "$selected"
 fi
 
-# The host's own tests, every one but those the browser runs where none is named.
+# The host's own tests, every one but those the browser runs where none is named; a class named alone is the
+# suite's, as its runner knows it.
 selected="${1:-}"
+[[ -n "$selected" && "$selected" != StateUIWebTests.* ]] && selected="StateUIWebTests.$selected"
 if [[ -z "$selected" ]]; then
   selected="$(node "$package/JavaScript/run.mjs" "$relay" "$program" --list-tests \
     | grep -E '^StateUIWebTests\.' | grep -v -E "^(${in_browser//,/|})/" | paste -sd, -)"

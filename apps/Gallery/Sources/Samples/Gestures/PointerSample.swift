@@ -43,7 +43,7 @@ struct PointerSample: SampleContent, ExampleContent {
             .spacing(6)
             .padding(horizontal: 40, vertical: 100)
         }
-        .style("Card")
+        .style(.card)
         // The box reacts, so its look is part of what it says: the outline is
         // the hover, the fill is the button held down.
         .stroke(hovering ? Palette.accent : Palette.outline)

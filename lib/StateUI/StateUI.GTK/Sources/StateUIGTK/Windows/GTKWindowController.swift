@@ -48,21 +48,19 @@ final class GTKWindowController {
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.gtk.view)) }
     }
 
-    /// Keeps a sheet for each page presented, in its order: a sheet gone closes, the last first, and one new is shown
-    /// over those before it.
+    /// Keeps a sheet for each page presented, in its order, by the host layer's rule (`SheetChange`): a sheet gone
+    /// closes, the top first, and one new is shown over those before it.
     /// Design: docs/design/platforms/gtk/pages.md#sheets
     private func showSheets(_ pages: [MountedElement], in runtime: HostRuntime) {
-        let kept = sheets.filter { entry in
-            pages.contains { $0 === entry.element && $0.gtk.view === entry.sheet.page }
-        }
-        for entry in sheets.reversed() where !kept.contains(where: { $0.sheet === entry.sheet }) { entry.sheet.close() }
-        sheets = pages.compactMap { page in
-            if let entry = kept.first(where: { $0.element === page }) { return entry }
-            guard let view = page.gtk.view else { return nil }
+        let change = SheetChange(from: sheets, to: pages) { $0.element === $1 && $1.gtk.view === $0.sheet.page }
+        for entry in change.leaving { entry.sheet.close() }
+        sheets.removeLast(sheets.count - change.kept)
+        for page in change.coming {
+            guard let view = page.gtk.view else { continue }
             let sheet = GTKSheet(page: view, framed: GTKElement.framedTypes.contains(page.type))
             sheet.onClosedByUser = { [weak self] in self?.dismissTopSheet(in: runtime) }
             sheet.present(over: window)
-            return (page, sheet)
+            sheets.append((page, sheet))
         }
     }
 

@@ -27,7 +27,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             ZStack {
                 Text("")
             }
-            .style("Card")
+            .style(.card)
             .width($width)
             .height(28)
             .background(.solidColor(Palette.accent))
@@ -53,7 +53,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             ZStack {
                 Text("")
             }
-            .style("Card")
+            .style(.card)
             .width($width.journey.convert { abs($0.destination - $0.value) })
             .height(10)
             .background(.solidColor(Palette.subtle))
@@ -64,12 +64,12 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             HStack {
                 Button("Grow")
                     .onClicked {
-                        try await $width.journey.move(to: 300, .eased(1600, .cubicOut))
+                        $width.journey.move(to: 300, .eased(1600, .cubicOut))
                     }
 
                 Button("Shrink")
                     .onClicked {
-                        try await $width.journey.move(to: 60, .eased(1600, .cubicIn))
+                        $width.journey.move(to: 60, .eased(1600, .cubicIn))
                     }
 
                 // Stopping leaves the value where it stands, and the

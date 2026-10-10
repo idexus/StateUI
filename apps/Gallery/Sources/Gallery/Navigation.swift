@@ -41,9 +41,9 @@ enum GallerySection: Hashable {
 enum Route: Hashable {
     /// One group of samples, by the route in `Catalog` - `.group("layout")`.
     ///
-    /// A ROUTE rather than a section: the home page lists the groups with a
-    /// chevron on every row, so choosing one PUSHES it and the platform's back
-    /// button leads home. An associated value rather than one case per group,
+    /// A ROUTE rather than a section: choosing a group - a card on the home
+    /// page, a row of the menu - PUSHES it, and the platform's back button
+    /// leads home. An associated value rather than one case per group,
     /// because adding a group is a line in the catalog and must not be a change
     /// here.
     case group(String)
@@ -117,6 +117,7 @@ enum Sheet: Hashable {
 /// Every move is a plain assignment. Navigation is state this side owns, so no
 /// handler waits for a parallel routing system; the next render moves the
 /// native surface.
+@MainActor
 final class Navigation {
     /// Which section the menu has chosen.
     @State var section: GallerySection = .home
@@ -189,7 +190,7 @@ final class Navigation {
     /// anywhere. Chosen from the MENU it is still one move - the path is
     /// replaced rather than appended, so picking a second group from inside the
     /// first does not stack them - and chosen from a home card it is an ordinary
-    /// `push`, which is what the row's chevron says it will be.
+    /// `push`.
     func openGroup(_ route: String) {
         section = .home
         path = [.group(route)]

@@ -20,7 +20,7 @@ private final class RegisterOnly: HostDriver {
     }
 
     func start(
-        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @Sendable () -> any View
+        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> MountedTree {
         preconditionFailure("a host of a register alone shows no page")
     }

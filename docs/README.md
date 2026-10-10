@@ -33,13 +33,14 @@ design notes beside them.
   engines.
 - [Motion and journeys](concepts/motion-and-journeys.md) defines motion laws,
   precedence, value journeys, interruption, visibility, and layout motion.
-- [Environment](concepts/environment.md) covers application models, standard
-  provider domains, dates, time, locale, and values supplied by a host.
+- [Environment](concepts/environment.md) covers application objects, the
+  facts the library offers by name (`\.application`, `\.scene`, `\.window`,
+  `\.device`, `\.locale`), dates, time and time zones.
 
 ## Build an interface
 
 - [Applications and sessions](interface/application-and-sessions.md) covers
-  `Application -> Scene -> Window -> page`, restoration, scene-local state,
+  `Application -> Scene -> windows -> a view`, restoration, scene-local state,
   window groups, lifecycle, and geometry.
 - [Navigation and presentation](interface/navigation-and-presentation.md)
   covers stacks, tabs, split views, modal pages, toolbars, menu bars, and
@@ -57,8 +58,9 @@ design notes beside them.
   composed views, builders, identity, lifetime reactions, frame reports, and
   render diagnostics.
 - [Concurrency](interface/concurrency.md) defines handler isolation on
-  `MainActor`, handler suspension, `Ticker`, and the application module's
-  compiler setting.
+  `MainActor`, what an awaiting handler does when its event comes again
+  (`Gate`, `SharedGate`, `Task(gate:)`), a run superseded, posting to state from other threads,
+  `Ticker`, and the application module's compiler setting.
 
 ## Internals
 
@@ -87,9 +89,9 @@ process.
 
 ## Support and development
 
-- [Platform contract](platform-contract.md) is the checked control, property,
-  event, environment, and host-capability matrix. A check mark means native
-  implementation plus host tests.
+- [Platform contract](platform-contract.md) is the matrix of controls,
+  properties, events and acts. Each mark is the verdict of the conformance
+  case the host's suite runs.
 - [Control dictionary](controls/README.md) lists every control and part of an
   application's structure member by member, each with a mark per platform.
 - [Tested setups](tested-setups.md) names the systems, toolchains and

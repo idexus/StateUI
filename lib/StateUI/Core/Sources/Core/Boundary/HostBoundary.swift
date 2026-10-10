@@ -6,7 +6,7 @@
 // Design: docs/design/core/README.md#the-typed-boundary
 
 /// Operations a native Swift host performs on the StateUI runtime.
-@_spi(Host) public enum HostBoundary {
+@_spi(Host) @MainActor public enum HostBoundary {
     /// Whether state changed since the last render.
     public static var needsRender: Bool { Renderer.shared.needsRender }
 
@@ -42,6 +42,9 @@
         update(display, \.rotation, info.rotation)
         update(display, \.refreshRate, info.refreshRate)
     }
+
+    /// The application's name, as the host reported it - what a host shows where a sidebar says no title.
+    public static var applicationName: String { StandardEnvironment.application.info.name }
 
     /// Replaces the standard application-manifest report used by builds.
     public static func setApplicationInfo(_ info: HostApplicationInfo) {
@@ -120,7 +123,9 @@
     /// need, lists them as it is made.
     public static var persistentKeys: [PersistentKey] {
         Renderer.shared.madeApplication()
-        return StandardEnvironment.application.persistentKeys
+        let keys = StandardEnvironment.application.persistentKeys
+        PersistentStore.shared.listed(keys)
+        return keys
     }
 
     /// Hydrates values found in the native store before the first render.
@@ -273,19 +278,16 @@
     /// Whether any state or engine is waiting for a host cycle.
     public static var cyclesPending: Bool { Renderer.shared.cycleAwake() != 0 }
 
-    /// The last display cycle as one line - what it latched, ran, skipped and
-    /// wrote - for a host that traces its cycles.
-    public static var cycleTrace: String { Renderer.shared.cycleTrace() }
-
     /// What this process's renders came to, for a host that prints the tally.
     public static var tally: HostTally {
         let renderer = Renderer.shared
         return HostTally(
             renders: renderer.renders, empty: renderer.emptyRenders,
-            refused: renderer.refusedWrites, alive: renderer.liveNodes)
+            refused: renderer.refusedWrites, alive: renderer.liveNodes, runs: RunSlot.underWay)
     }
 
-    /// Reports a native event and runs its handler on StateUI's UI executor.
+    /// Reports a native event: its handlers start at once on `MainActor`, each
+    /// through its gate; false for an unknown id.
     @discardableResult
     public static func dispatch(_ handler: Int32, payload: [HostValue] = []) -> Bool {
         EventBuffer.current = payload
@@ -293,25 +295,22 @@
     }
 
     /// Raises an event of the application's - one no control raises - with
-    /// the values its contract declares, as the platform reported them: every
-    /// `HostEvents.on` subscription to the member hears them, each handler
-    /// started on `MainActor` at once, up to its first suspension. Typed at the
+    /// the values its contract declares, as the platform reported them, from
+    /// any thread: every `HostEvents.on` subscription to the member hears them
+    /// in a job of the UI thread's soon after, in the order raised. Typed at the
     /// call: the values are the member's, so a raise of another shape does not
-    /// compile.
+    /// compile. A raise nobody hears is an ordinary one.
     ///
     ///     HostBoundary.raise(GalleryContract.batteryChanged, level, charging)
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
     ///   - value: what it carries, in the order its contract declares.
-    /// - Returns: how many subscriptions heard it - a raise nobody hears is
-    ///   an ordinary zero.
-    @discardableResult
-    public static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
+    public nonisolated static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
-    ) -> Int {
-        HostEvents.dispatch(event.token.name, MemberValues.encode(repeat each value))
+    ) {
+        RaisedEvents.shared.raise(event.token.name, MemberValues.encode(repeat each value))
     }
 
     /// Tells the core what this host realizes - its `Registry.realization` -
@@ -347,9 +346,35 @@
         HostRealizations.current.members.contains { $0.owner == Owner.name && $0.member == member.name }
     }
 
+    /// Claims the calling thread as the UI thread, whose jobs are `MainActor`'s, and runs what waits - what a host's
+    /// start does first, before anything starts a task.
+    /// Design: docs/design/core/concurrency.md#mainactor-on-every-platform
+    public nonisolated static func claimUIThread() {
+        UIThreadExecutor.install()
+        stateUIRunJobs()
+    }
+
     /// Runs jobs waiting on StateUI's UI executor on the calling thread.
     @discardableResult
-    public static func runJobs() -> Int { stateUIRunJobs() }
+    public nonisolated static func runJobs() -> Int { stateUIRunJobs() }
+
+    /// Says how a turn is put on the UI thread's queue from any thread: the core posts one through `post` when the
+    /// UI thread makes work, and when a job is queued from any thread, on that thread. A host whose loop turns by
+    /// itself says nothing; nil posts no more - between a host's tests. One turn is posted at once, for what came
+    /// before.
+    /// Design: docs/design/core/concurrency.md#the-doorbell
+    public static func postTurns(with post: (@Sendable () -> Void)?) {
+        UIThreadExecutor.shared.postTurns(with: post)
+    }
+
+    /// Whether a turn has anything to do: jobs on the UI executor, acts or saves not taken, a render, a cycle
+    /// awake.
+    /// Design: docs/design/host/runtime.md#the-turn-on-apple
+    public static var wantsTurn: Bool {
+        let renderer = Renderer.shared
+        return UIThreadExecutor.shared.pendingCount > 0 || renderer.actCallsPending > 0 || renderer.needsRender
+            || renderer.cycleAwake() != 0
+    }
 
     #if os(WASI)
     /// When the page is to call again, in milliseconds - at once where jobs, acts or a render wait, else when a job
@@ -360,23 +385,6 @@
         if UIThreadExecutor.shared.pendingCount > 0 || renderer.actCallsPending > 0 || renderer.needsRender { return 0 }
         guard let due = UIThreadExecutor.shared.nextDue else { return nil }
         return max(0, Double(due.components.seconds) * 1000 + Double(due.components.attoseconds) / 1e15)
-    }
-    #else
-    /// Parks the calling doorbell thread until asynchronous work arrives, and
-    /// answers how much is waiting - which can be 0, when another turn got
-    /// there first.
-    ///
-    /// Four kinds of work, each of which a handler resumed on the pool can
-    /// leave with nothing else to announce it: jobs in the executor's queue,
-    /// acts not yet taken, a tree a write left dirty, and a value waiting on
-    /// its board for a cycle - a driven write nobody reads, or a movement
-    /// `move(to:)` sent. Each wakes this thread after it lands, so the thread
-    /// cannot wake, count nothing and park again with the work behind it.
-    public static func waitForWork() -> Int {
-        UIThreadExecutor.shared.waitForWork()
-            + Renderer.shared.actCallsPending
-            + (Renderer.shared.needsRender ? 1 : 0)
-            + (Renderer.shared.cycleAwake() > 0 ? 1 : 0)
     }
     #endif
 

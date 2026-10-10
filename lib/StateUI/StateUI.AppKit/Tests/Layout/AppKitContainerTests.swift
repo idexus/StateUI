@@ -8,7 +8,19 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
+@MainActor
 final class AppKitContainerTests: XCTestCase {
+    /// An oval scroller draws no outline: a rectangular border under its oval mask would show only as slivers
+    /// where the oval meets its bounds.
+    func testAnOvalScrollerDrawsNoOutline() {
+        let scroll = AppKitScrollView(frame: NSRect(x: 0, y: 0, width: 100, height: 60))
+        scroll.setBox(stroke: Color.red.propValue, lineWidth: 2, shape: ContainerShape.ellipse.propValue)
+        XCTAssertEqual(scroll.layer?.borderWidth ?? 0, 0, "an oval draws an outline")
+
+        scroll.setBox(stroke: Color.red.propValue, lineWidth: 2, shape: ContainerShape.rectangle.propValue)
+        XCTAssertEqual(scroll.layer?.borderWidth, 2, "a rectangle draws its outline")
+    }
+
     /// A container handed the arrangement it already has asks nothing. A patch
     /// on its way to a descendant applies every ancestor again, and a split
     /// view that laid out its panes on each one - every scroll report of a

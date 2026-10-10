@@ -24,6 +24,7 @@ private struct RewrittenPage: View {
     }
 }
 
+@MainActor
 final class GTKTextInputViewTests: XCTestCase {
     /// GNOME selects a field's words whole as it takes the focus: a caret or a selection the program put there stands
     /// over the field's first focus - and once the user has acted in the field, GNOME's own way stands.

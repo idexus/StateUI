@@ -35,9 +35,12 @@ Handlers run in writing order. A control's two-way binding is committed before
 its handler starts, so the handler observes the new state. Programmatic writes
 do not dispatch user events.
 
-Handlers are `async throws`. They may suspend and continue on StateUI's UI
-isolation domain. An uncaught error is reported through the host rather than
-being discarded. [Concurrency](concurrency.md) defines the execution model.
+A handler may throw. One that awaits says what its event does when it comes
+again while it runs - `.onClicked(gate: .ignoreWhileRunning) { … }` - and continues on
+StateUI's UI isolation domain after each suspension. An uncaught error is
+reported through the host rather than being discarded.
+[Concurrency](concurrency.md#when-the-event-comes-again) defines the execution
+model.
 
 ## Gestures
 
@@ -71,7 +74,7 @@ automation script activates the row without a pointer. Give such a view a
 
 ### Pan and pinch
 
-`PanUpdate` reports status and total displacement from the gesture's start.
+`PanUpdate` reports its phase and total displacement from the gesture's start.
 `PinchUpdate.scale` is relative to the previous report:
 
 ```swift quote
@@ -125,7 +128,7 @@ kinds it lists:
 
 ```swift quote
 ZStack { Text("Drop a report here") }
-    .onDrop(files: [FileType("Text", extensions: ["txt", "md"])]) { files in
+    .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], gate: .waitForPrevious) { files in
         report = String(decoding: try await files[0].read(), as: UTF8.self)
     }
 ```
@@ -151,8 +154,8 @@ struct FocusForm: View {
     var body: some View {
         VStack {
             TextField($text).aim(field)
-            Button("Edit").onClicked { try await field.focus() }
-            Button("Done").onClicked { try await field.unfocus() }
+            Button("Edit").onClicked(gate: .ignoreWhileRunning) { try await field.focus() }
+            Button("Done").onClicked(gate: .ignoreWhileRunning) { try await field.unfocus() }
         }
     }
 }
@@ -176,7 +179,7 @@ keyboard when the application does not hold that control's aim.
 Dialogs are sequential host actions rather than tree nodes:
 
 ```swift quote
-Button("Delete").onClicked {
+Button("Delete").onClicked(gate: .ignoreWhileRunning) {
     let confirmed = try await Dialogs.confirm(
         "Delete draft?",
         message: "This cannot be undone",
@@ -192,9 +195,8 @@ chosen caption, and a prompt that returns typed text or `nil` on cancellation.
 An accepted empty prompt is `""`, distinct from cancellation.
 
 The host presents a dialog from the page currently visible, including the top
-modal page. `await` determines sequencing: two actions queued together start
-in queue order but may finish independently; awaiting the first before issuing
-the second makes the dependency explicit.
+modal page. Dialogs show one at a time, in the order asked; one asked while
+another is up waits until that one is answered.
 
 ## Files and links
 
@@ -207,17 +209,17 @@ struct ReportPage: View {
 
     var body: some View {
         VStack {
-            Button("Save report…").onClicked {
+            Button("Save report…").onClicked(gate: .ignoreWhileRunning) {
                 let page = FileType("HTML page", extensions: ["html"])
                 let saved = try await Dialogs.saveFile(
                     Array(report.utf8), name: "Report", types: [page])
                 if let saved { try await saved.launch() }
             }
-            Button("Open…").onClicked {
+            Button("Open…").onClicked(gate: .ignoreWhileRunning) {
                 guard let file = try await Dialogs.openFile() else { return }
                 opened = String(decoding: try await file.read(), as: UTF8.self)
             }
-            Button("Help").onClicked {
+            Button("Help").onClicked(gate: .ignoreWhileRunning) {
                 try await Links.launch("https://www.swift.org")
             }
         }
@@ -252,7 +254,7 @@ struct NotePage: View {
     @State private var note = ""
 
     var body: some View {
-        Button("Open a note…").onClicked {
+        Button("Open a note…").onClicked(gate: .ignoreWhileRunning) {
             guard let file = try await Dialogs.openFile() else { return }
             let start = try await file.read(atMost: 1025)
             note = start.count > 1024
@@ -280,7 +282,7 @@ enum NotesContract: ApplicationTier {
 
 @State var location = ""
 
-Button("Export").onClicked {
+Button("Export").onClicked(gate: .ignoreWhileRunning) {
     location = try await stateUICall(NotesContract.exportDocument, "draft-7")
 }
 ```
@@ -319,8 +321,9 @@ StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
 
 `HostEvents` represents a provider notification with no tree element. The
 application declares it in its contract with the types of the values it
-carries, and the subscription must be retained and cancelled when its owner
-leaves:
+carries. `HostEvents.on` answers the subscription, which is kept - dropping it
+is a compiler warning - and cancelled with `cancel()` when its owner leaves,
+since nothing else ends it; a view keeps it in its own state:
 
 ```swift
 enum NotesContract: ApplicationTier {
@@ -331,16 +334,30 @@ enum NotesContract: ApplicationTier {
     static let members: [any ContractMember] = [importFinished]
 }
 
-@State var imported = ""
-var subscription: HostEventSubscription?
+struct ImportStatus: View {
+    @State private var imported = ""
+    @State private var heard: [HostEventSubscription] = []
 
-subscription = HostEvents.on(NotesContract.importFinished) { location in
-    imported = location
+    var body: some View {
+        Text(imported)
+            .onCreated {
+                heard = [
+                    HostEvents.on(NotesContract.importFinished) { location in
+                        imported = location
+                    },
+                ]
+            }
+            .onDestroying {
+                heard.forEach { $0.cancel() }
+                heard = []
+            }
+    }
 }
-
-subscription?.cancel()
-subscription = nil
 ```
+
+A handler that awaits names what a raise does while it runs, as an element's
+event does: `HostEvents.on(NotesContract.importFinished, gate: .waitForPrevious) {
+location in … }`.
 
 A raise carrying values of another shape is reported once and reaches no
 handler. An ordinary control or gesture event always belongs on its element
@@ -348,14 +365,15 @@ instead. Use an application's events only for provider-owned notifications
 that genuinely have no element identity.
 
 The AppKit host raises such an event in Swift, typed by the same contract the
-subscription is written against, and from any thread - so a source is wired
-where the platform reports it:
+subscription is written against, from whatever thread the platform reports
+on; the subscriptions hear it on the UI thread soon after, in the order
+raised:
 
 ```swift quote
 StateUIEvents.raise(NotesContract.importFinished, location)
 ```
 
-A raise nobody hears is an ordinary answer rather than a failure, so a host
+A raise nobody hears is an ordinary one rather than a failure, so a host
 wires its sources unconditionally. The head declares what it raises,
 `StateUIEvents.raises(NotesContract.importFinished)`, and a subscription to an
 event no head declared is said once, as a misspelled name would be.

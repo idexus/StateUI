@@ -122,7 +122,7 @@ extension PropertyContainer {
                 kind: kind,
                 laneKind: laneKind,
                 values: property.facts.moves.union(Value.moving),
-                current: { state.wrappedValue.carried })
+                current: { state.wrappedValue.carried(in: .current) })
         }
     }
 
@@ -214,21 +214,40 @@ extension PropertyContainer {
         setValue(property, on: state, mode: mode)
     }
 
-    /// `journey(_:by:)` over a member of the type its contract declares.
-    func journey<Owner: Contract, Value: Walked & HostRepresentable>(
+    /// A value modifier's binding twin over a member of the type its contract declares: the host walks the value
+    /// where the member travels, and sets it as it stands where it does not - the contract decides, so a twin never
+    /// disagrees with the value it twins.
+    /// Design: docs/design/views/bindings.md#binding-twins
+    func twin<Owner: Contract, Value: Walked & HostRepresentable>(
         _ property: ElementProperty<Owner, Value>,
         by state: Binding<Value>
     ) -> Modified {
-        journey(property.token, by: state)
+        property.travels ? journey(property.token, by: state) : plain(property.token, by: state)
     }
 
-    /// `plain(_:by:mode:)` over a member of the type its contract declares.
-    func plain<Owner: Contract, Value: LaneValue & HostRepresentable>(
+    /// A twin over a value no host walks: set as it stands.
+    func twin<Owner: Contract, Value: LaneValue & HostRepresentable>(
         _ property: ElementProperty<Owner, Value>,
-        by state: Binding<Value>,
-        mode: StateMode = .out
+        by state: Binding<Value>
     ) -> Modified {
-        plain(property.token, by: state, mode: mode)
+        plain(property.token, by: state)
+    }
+
+    /// A twin whose state carries another type than its member's - a colour into a material, a radius into its
+    /// corners: walked where the member travels and the value can be.
+    func twin<Owner: Contract, Member, Value: Walked>(
+        _ property: ElementProperty<Owner, Member>,
+        carrying state: Binding<Value>
+    ) -> Modified {
+        property.travels ? journey(property.token, by: state) : plain(property.token, by: state)
+    }
+
+    /// A twin carrying another type than its member's that no host walks: set as it stands.
+    func twin<Owner: Contract, Member, Value: LaneValue>(
+        _ property: ElementProperty<Owner, Member>,
+        carrying state: Binding<Value>
+    ) -> Modified {
+        plain(property.token, by: state)
     }
 
     /// `words(_:by:mode:)` over a text member.

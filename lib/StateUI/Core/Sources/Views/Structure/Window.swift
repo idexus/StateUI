@@ -3,14 +3,14 @@
 
 /// One window of a kind in the scene that declares it, showing one view.
 ///
-///     Window(.inspector) { Inspector() }
+///     Window(.inspector) { InspectorPage() }
 ///
 /// The window says what it is; the application's session says when it opens, opening its scene first where that
 /// is not open:
 ///
 ///     @Environment(\.application) private var application
 ///
-///     Button("Inspector").onClicked { try await application.openWindow(.inspector) }
+///     Button("Inspector").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.inspector) }
 ///
 /// It opens once - `openWindow` answers `WindowError.alreadyOpen` while it is open - and the platform restores it
 /// with its scene. A host without independent windows refuses `openWindow` with `WindowError.unsupported`. Windows

@@ -18,12 +18,12 @@ extension TextStyleElement where Self: VisualElement {
     /// `tracking` from a state, `$x`: the host animates the property to
     /// each new value, and no view is rebuilt for it.
     public func tracking(_ state: Binding<Double>) -> Modified {
-        journey(TextStyleElementContract.tracking, by: state)
+        twin(TextStyleElementContract.tracking, by: state)
     }
 
     /// `textColor` from a state, `$x`: the host animates the property to each
     /// new value, and no view is rebuilt for it.
     public func textColor(_ state: Binding<Color>) -> Modified {
-        journey(TextStyleElementContract.textColor, by: state)
+        twin(TextStyleElementContract.textColor, by: state)
     }
 }

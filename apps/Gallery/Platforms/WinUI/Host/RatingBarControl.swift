@@ -54,8 +54,8 @@ extension RatingBarControl {
     /// Adds the bar for `RatingBarContract`, and performs its aimed `flash`. Said once, before the application runs.
     @MainActor
     static func register() {
-        // The bar, made once per element, reporting the rating its user chooses.
 // listing: end
+        // The bar, made once per element, reporting the rating its user chooses.
         StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarControl in
             let bar = RatingBarControl()
             bar.onRatingChanged = { rating in

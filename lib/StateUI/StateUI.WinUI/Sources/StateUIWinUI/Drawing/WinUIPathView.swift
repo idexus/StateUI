@@ -131,4 +131,8 @@ final class WinUIPathView: WinUIView {
                 height: bounds.height * (placement[2] * placement[2] + placement[3] * placement[3]).squareRoot()))
         }
     }
+
+    /// None: a figure paints no ground of its own, and its panel's would lie under the shape - its register's
+    /// `notPlanned`.
+    override func setBackground(_ value: HostValue?) {}
 }

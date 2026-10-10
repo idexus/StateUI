@@ -26,9 +26,10 @@ the system bars; the host shows the first window's page in it.
 The activity loads the head's library - named by the manifest's
 `stateui.library` - whose `JNI_OnLoad` names the application and registers
 the host's natives. Its `onCreate` then starts the host on the UI thread. The
-first thing the start does is drain StateUI's UI executor on that thread: the
-drain is what makes the thread `MainActor`'s, and every native call after it
-asserts that isolation rather than assuming a thread.
+first thing the start does is claim that thread as the UI thread:
+`claimUIThread()` makes StateUI's UI executor `MainActor`'s and drains it
+there, and every native call after it asserts that isolation rather than
+assuming a thread.
 
 ## A later activity
 
@@ -45,14 +46,12 @@ for the first activity.
 
 ## The doorbell
 
-A handler that awaits resumes on `MainActor`, whose jobs wait in StateUI's UI
-executor until the host drains them. A thread of the host's own parks until
-the core has work, and writes an eventfd that the main looper watches; the
-looper's callback runs a turn. Nothing on that path enters the JVM.
-
-The thread is started from a nonisolated function: a closure written inside a
-`MainActor` function is `MainActor`'s, and the runtime reports it as a data
-race the moment another thread runs it.
+A turn is posted by writing an eventfd that the main looper watches; the
+looper's callback runs it. The host gives the core that write at its start
+(`CoreLink.postTurns`), and the core makes it from any thread: on the UI
+thread for work it made - a state written, an act sent - and on the thread
+that queued a job, a handler's resume or a post among them. No thread of the
+host's waits for a turn, and nothing on the path enters the JVM.
 
 ## One frame
 
@@ -134,8 +133,9 @@ A file dialog is the system's document picker, started for its result over
 the activity and waiting its turn among the questions
 ([files](../../host/runtime.md#files)); the activity hands its result to the
 relay by the request's code, and the picker answers under its ticket. One
-that opens asks for the MIME types of every kind's extensions - any document
-where none is known - and several only where asked; one that saves suggests
+that opens asks for the MIME types of every kind's extensions -
+`application/octet-stream` for one with no known type, any document where it
+names no kind - and several only where asked; one that saves suggests
 the act's name and the type of its extension, and the contents are written
 to the document the user made, beside the UI thread, before it is answered.
 A document's address is its `content:` URI and its name the one its provider

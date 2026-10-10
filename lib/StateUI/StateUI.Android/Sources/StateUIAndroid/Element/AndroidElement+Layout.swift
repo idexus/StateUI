@@ -10,6 +10,7 @@ extension AndroidElement {
     func directionChanged() {
         guard let view else { return }
         Java.call(view.reference, JavaAPI.setLayoutDirection, .int(element.layoutDirection == .rightToLeft ? 1 : 0))
+        (view as? AndroidLayoutView)?.direction = element.layoutDirection
     }
 
     /// Hands a layout its children's items, in order, and a label the runs of its spans.

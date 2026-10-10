@@ -87,7 +87,7 @@ final class WinUIDirectionTests: XCTestCase {
 
     /// The colours at `points` of `content` laid out right to left in a room 100 wide, read off the layout holding it.
     private func drawnRightToLeft(
-        at points: [(Double, Double)], _ content: @escaping @Sendable () -> any View
+        at points: [(Double, Double)], _ content: @escaping @MainActor () -> any View
     ) throws -> [UInt32] {
         try onUIThread {
             let host = WinUIRenderer.running {

@@ -2,20 +2,22 @@
 
 StateUI handlers may suspend without leaving the platform UI thread. That
 thread is Swift's `MainActor` on every platform: on Apple it is the main queue
-UIKit and AppKit drain, and on Android, Windows, and Linux StateUI makes it a
-queue the host drains on its UI thread. Application code uses ordinary Swift
-concurrency while the host remains the owner of its native event loop.
+UIKit and AppKit drain, and on Android, Windows, Linux and the Web StateUI
+makes it a queue the host drains on its UI thread. Application code uses
+ordinary Swift concurrency while the host remains the owner of its native
+event loop.
 
 ## Handler isolation
 
 Every StateUI event, change, lifetime, ticker, and host-event handler runs on
 `MainActor`. It can read and write state directly and may call an asynchronous
-function:
+function; an event, change or host-event handler that does names a gate, which
+says what happens when its event comes again while it is still running:
 
 ```swift
 @State var status = "Idle"
 
-Button("Load").onClicked {
+Button("Load").onClicked(gate: .ignoreWhileRunning) {
     status = "Loading"
     try await Task.sleep(for: .milliseconds(100))
     status = "Ready"
@@ -25,11 +27,155 @@ Button("Load").onClicked {
 A handler without an `await` completes during the event dispatch that started
 it. After a suspension, continuation requires a later turn of the platform UI
 loop. The host wakes for MainActor's jobs even when the awaited work was not a
-host action, so `Task.sleep`, task values, streams, continuations, and
-`MainActor.run` from a task on the pool all resume promptly.
+host action, so `Task.sleep`, task values, streams and continuations resume
+promptly, and a post made on another thread lands promptly.
 
-An uncaught handler error is reported through the active host. Use `do` and
-`catch` only when the application can recover or present a more useful state.
+An uncaught error of a run still wanted is reported through the active host;
+a superseded run's is refused with the rest of what it asks of the host. Use
+`do` and `catch` only when the application can recover or present a more
+useful state.
+
+## When the event comes again
+
+A handler that awaits can still be running when an event comes again - a
+second click on Save, a newer search query, another drop. It passes through a
+gate, which says what happens then; there is no default, and a handler that
+awaits without one does not compile:
+
+| Gate | The event that comes while a run is under way |
+| --- | --- |
+| `.ignoreWhileRunning` | is let go - a save, an order, a dialog |
+| `.cancelPrevious` | cancels the run under way and starts its own - a search, a movement to a new place |
+| `.waitForPrevious` | waits, and runs after the runs before it, in the order they came |
+| `.none` | starts a run beside the ones under way |
+
+```swift
+@State var query = ""
+@State var results: [String] = []
+
+TextField($query)
+    .onChanged(query, gate: .cancelPrevious) {
+        try await Task.sleep(for: .milliseconds(250))
+        results = ["\(query) 1", "\(query) 2"]
+    }
+```
+
+A policy given as the gate is the handler's own: two buttons written with
+`.ignoreWhileRunning` never hold each other back. Where several actions
+touch one thing - a save and a delete of one document - they pass through one
+`SharedGate`, kept in a state or a model, and its `isBusy` says whether a run
+is under way through it:
+
+```swift
+@MainActor
+final class Document {
+    func save() async {}
+    func delete() async {}
+}
+
+struct DocumentActions: View {
+    let document: Document
+    @State private var busy = SharedGate(.ignoreWhileRunning)
+
+    var body: some View {
+        HStack {
+            Button("Save").isEnabled(!busy.isBusy).onClicked(gate: busy) { await document.save() }
+            Button("Delete").isEnabled(!busy.isBusy).onClicked(gate: busy) { await document.delete() }
+        }
+    }
+}
+```
+
+A handler that reads a state, awaits, and writes it from what it read loses
+what another wrote while it waited; a debug build says so the moment it
+happens. Read the state again after the `await`: `count += 1`, not `let old =
+count` before it and `count = old + 1` after.
+
+A run that a later event cancels, or whose element leaves the tree, changes
+nothing from then on: its task is cancelled, and its state writes, movements,
+posts and acts are refused, each refusal said once - a slower, older search
+never overwrites a newer one, and a page already left never navigates. A
+`Task { }` or a child task the run started is refused with it; one started
+with `Task(gate:)` or `Task.detached` is not. An element leaving ends its own runs
+alone: in a shared gate, the others' runs go on. A handler without an `await`
+names no gate: it runs whole inside its event, so nothing supersedes it.
+`.onCreated` and `.onDestroying` name none either, as they come once.
+
+### Work started from code
+
+Work a model starts from its own code - an autosave, a refresh a timer asks
+for - passes a shared gate with `Task(gate:)`, as a handler written with the
+gate would. A save the user asks for and an autosave never run at once, and
+the gate's `isBusy` covers both:
+
+```swift
+@MainActor
+final class Draft {
+    let saving = SharedGate(.ignoreWhileRunning)
+    @State var saves = 0
+
+    func save() {
+        Task(gate: saving) {
+            try await Task.sleep(for: .milliseconds(200))
+            self.saves += 1
+        }
+    }
+}
+
+struct DraftActions: View {
+    let draft: Draft
+
+    var body: some View {
+        Button("Save")
+            .isEnabled(!draft.saving.isBusy)
+            .onClicked { draft.save() }
+    }
+}
+```
+
+The task is the run: awaiting its `value` waits for the work's end, cancelling
+it ends the run as a later event would - one still waiting its turn leaves the
+queue at once - and a task the gate lets go ends at once, its work not run. It belongs to the gate - not to an element, nor to the
+handler that started it - so no element leaving ends it. A task takes a
+`SharedGate` only: a policy alone has no element to keep its runs.
+
+### Work that outlives its element
+
+A superseded run changes nothing anywhere - a model the page does not own
+included - and says so, naming what it refused. Work that must outlive its
+element - a save the user asked for before the sheet closed - goes to a task
+of its own, detached from the run, which no run's end refuses. Awaited in the
+handler instead, the save would be the run's, which the sheet's leaving
+supersedes, and its write would be refused:
+
+```swift
+@MainActor
+final class Notes {
+    @State var saved: [String] = []
+
+    func save(_ draft: String) async {
+        try? await Task.sleep(for: .milliseconds(200))
+        saved.append(draft)
+    }
+}
+
+struct DraftSheet: View {
+    let notes: Notes
+    @Binding var shown: Bool
+    @State private var draft = ""
+
+    var body: some View {
+        VStack {
+            TextField($draft)
+            Button("Save").onClicked {
+                let draft = draft
+                Task.detached { await notes.save(draft) }
+                shown = false
+            }
+        }
+    }
+}
+```
 
 ## Application async functions
 
@@ -64,30 +210,37 @@ targets, and test targets. `@MainActor` names a function whose contract is
 specifically UI-isolated rather than merely caller-inheriting; a package whose
 UI code is already isolated to `@MainActor` runs unchanged.
 
-`DispatchQueue.main` is not the UI thread's queue on Android, Windows, or
-Linux: nothing drains it there. Work for the UI thread goes to `MainActor`.
+`DispatchQueue.main` is not the UI thread's queue on Android, Windows, Linux
+or the Web: nothing drains it there. Work for the UI thread goes to
+`MainActor`.
 
 ## State across tasks
 
-Each `@State` value has synchronized storage. Independent reads and writes are
-safe from any thread. A read-modify-write operation must remain one operation;
-use the box's `update` method:
+A `@State` is the UI thread's: it is read and written on `MainActor`, where
+application handlers are serialized and `total += 1` is one step. A task
+elsewhere cannot touch it - the compiler refuses - and posts to it instead:
 
 ```swift
 @State var total = 0
 
-let counter = _total
-counter.update { value in value + 1 }
+Button("Count").onClicked(gate: .ignoreWhileRunning) {
+    let counter = $total
+    await withTaskGroup(of: Void.self) { group in
+        for _ in 0..<4 {
+            group.addTask { counter.post { value in value + 1 } }
+        }
+    }
+}
 ```
 
-`total += 1` is appropriate on `MainActor`, where application handlers are
-serialized. Use `update` when several tasks may modify the same state
-concurrently.
-
-Thread safety does not turn a group of separate states into one transaction.
-If several fields must change as one invariant, place that invariant behind
-one synchronized owner or return the work to `MainActor` for the complete
-change.
+A posted change runs in a job on `MainActor` soon after, over the value as it
+stands then, in the order posted; a value posted replaces the changes waiting
+before it, so ten thousand values posted from a loop are one write and one
+render. A post is a message even on the UI thread: nothing reads it before its
+job runs. A write or a post to an element its collection no longer has - an
+index past the end - is dropped and said once. Several states that must change
+as one invariant change together on `MainActor`: nothing runs between the
+lines of a handler until it awaits.
 
 A write requests a render; the renderer coalesces pending work. A task that
 reads state outside a description does not become a view reader. Read tracking
@@ -101,7 +254,7 @@ batch is not a transaction and their completions can arrive independently.
 Use `await` to express a dependency:
 
 ```swift quote
-Button("Rename and confirm").onClicked {
+Button("Rename and confirm").onClicked(gate: .ignoreWhileRunning) {
     guard let name = try await Dialogs.prompt(
         "Rename", message: "New name", placeholder: "Name")
     else { return }
@@ -111,10 +264,10 @@ Button("Rename and confirm").onClicked {
 }
 ```
 
-An `async let` or child task may run work concurrently. Registry, state, and
-wake-up mechanics are safe for that route, but UI decisions still belong to
-the handler's `MainActor` continuation. Concurrency changes completion order;
-it does not weaken StateUI's identity or render ordering.
+An `async let` or child task may run work concurrently, off `MainActor`: it
+posts what it found to a state, or answers it to the handler, whose
+`MainActor` continuation makes the UI decision. Concurrency changes completion
+order; it does not weaken StateUI's identity or render ordering.
 
 ## Sleeping and deadlines
 
@@ -136,20 +289,25 @@ struct Countdown: View {
                     ticker.isRunning ? ticker.stop() : ticker.start()
                 }
         }
-        .onDestroying { ticker.stop() }
     }
 }
 ```
 
 Hold a ticker in `@State` so the same instance survives view rebuilds. Reading
 `ticks`, `isRunning`, `isFinished`, `interval`, `limit`, or `isRepeating`
-subscribes the current description to that ticker. A tick and each public
-configuration change request a render.
+subscribes the current description to that ticker. A tick, and each change
+to `interval`, `limit` or `isRepeating`, requests a render; setting `onTick`
+does not.
 
 `start()` returns immediately and does nothing while the same run is already
 active. A completed limited ticker starts again from zero. `stop()` keeps the
-count; `reset()` stops and sets it to zero. Stop a view-owned ticker from
-`onDestroying` so a removed element cannot keep doing work.
+count; `reset()` stops and sets it to zero. A ticker ends with whoever holds
+it: its loop holds it only through a tick, so one a view keeps in `@State`
+stops when the view goes. One that should keep counting is held by something
+that stays. A tick that reaches the view's state holds that state, the ticker
+among it, so such a ticker is stopped in `.onDestroying`, as the poll below. A
+ticker a handler starts belongs to no run: it goes on after that run is
+superseded, until it is stopped or nobody holds it.
 
 Intervals shorter than one millisecond are clamped to one millisecond. The
 platform scheduler may have a coarser practical resolution.
@@ -157,9 +315,9 @@ platform scheduler may have a coarser practical resolution.
 ## Work on each tick
 
 `onTick` is an optional `@MainActor` asynchronous closure. Ticks never overlap:
-the next interval is scheduled after the current closure finishes. If work
-takes more than a whole interval, the next deadline starts from completion
-instead of releasing a burst of missed ticks.
+the next waits for the current closure to finish and falls due one interval
+after the last deadline; if the work outlasts a whole interval, the next
+deadline starts from completion instead of releasing a burst of missed ticks.
 
 A nonrepeating ticker is a reusable delay. It is useful for polling that must
 not overlap:

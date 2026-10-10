@@ -17,12 +17,14 @@ tab shown is the one the user chose, else the one the tree says, kept within
 the tabs; the sidebar shows as it stands on screen, else as the tree says.
 
 A tabbed view's tabs stand in its window's row where it is the first tabbed
-view down the window's stacks and split view details (`tabsStandInWindow`):
-one in a sidebar, in a tab of another, in a sheet or inside content keeps a
-row of its own. It is read from where the tabbed view stands, each time, so a
-view moved elsewhere keeps no word it once had. A split view's sidebar is its
-first child as the patch writes it, so the answer is already right while the
-tree that holds the tabbed view is still being made.
+view down the window's stacks, split view details and a modal stack's root -
+the page the window shows under its sheets (`tabsStandInWindow`): one in a
+sidebar, in a tab of another, in a sheet or inside content keeps a row of its
+own. It is read from where the tabbed view stands, each time, so a view moved
+elsewhere keeps no word it once had. A split view's sidebar and a modal
+stack's root are their first children as the patch writes them, so the answer
+is already right while the tree that holds the tabbed view is still being
+made.
 
 ## A page's phases
 
@@ -39,7 +41,9 @@ sidebar shown or hidden - what stopped showing leaves first, then what started
 showing arrives (`reconcilePresentation`); on a stack it is a move. The tree
 does this itself after each patch of an arrangement shown, and the host layer
 after the user's own choices (`HostRuntime.tabChosen`, `sidebarShown`),
-before the state the choice carries hears it.
+before the state the choice carries hears it. A choice is an entry from the
+toolkit: it ends in a turn wherever the phases it queued wait, so a tab view
+with no selection bound tells its pages at once, on every host.
 
 A window's page - its top sheet, else its arrangement - hears it is shown as
 the window presents it, and the one before it that it is not: a move where a
@@ -64,20 +68,29 @@ said as the user's, where the room is at least the platform's own breakpoint
 and it was hidden. After that the user and the application decide. The
 breakpoint is each platform's, a host's parameter.
 
+## A sidebar's title
+
+A sidebar's page names the sidebar's own bar, where a host gives the sidebar
+one; a sidebar's page that says no title shows the application's name there,
+as a sidebar stands under it (`barTitle(applicationName:)`) - the same for a
+page at the root of a stack in the sidebar. Any other page that says no title
+shows none.
+
 ## A sidebar's material
 
 A split view says two materials for its sidebar: what it stands on beside the
 detail (`sidebarBackground`) and what it stands on while it slides over the
-detail (`flyoutBackground`). Each host knows which place its sidebar stands
-in - a drawer, an overlay pane, a collapsed split - and asks the split view
-for that place's material (`sidebarMaterial(over:)`); an empty one is the
-platform's own there. Beside the detail the platform's own lets the window
-through, as a desktop sidebar does; over the detail it is the platform's
-drawer or overlay surface, never the window's - a clear window would leave a
-flyout with nothing under its words. The sidebar page's own background still
-paints the page on top. A split view saying either material gives its
-sidebar to the application to paint (`paintsSidebar`): a host whose platform
-draws a sidebar's material of its own leaves it out then.
+detail (`flyoutBackground`). A host whose sidebar can stand over the detail
+knows which place it stands in - a drawer, an overlay pane, a collapsed
+split - and asks the split view for that place's material
+(`sidebarMaterial(over:)`); a Mac sidebar stands beside the detail alone. An
+empty material is the platform's own there. Beside the detail the platform's
+own lets the window through, as a desktop sidebar does; over the detail it is
+the platform's drawer or overlay surface, never the window's - a clear window
+would leave a flyout with nothing under its words. The sidebar page's own
+background still paints the page on top. A split view saying either material
+gives its sidebar to the application to paint (`paintsSidebar`): a host whose
+platform draws a sidebar's material of its own leaves it out then.
 
 ## The way back
 
@@ -88,6 +101,16 @@ one page and its top page shows its bar and its way back. Going back tells the
 stack it is one page shorter, or the window's modal stack how many sheets
 remain (`HostRuntime.goBack`).
 
+## Sheets
+
+A window's sheets follow its modal stack by one rule (`SheetChange`): the
+sheets shown that stand as asked, counted from the bottom, stay; the rest
+leave, the top first; and each page asked for after them comes over the one
+before. A sheet swapped beneath one that stays takes every sheet above it
+along, so the stack's last page is always the one on top. A host says only
+whether a sheet shown stands as asked - the same page, and on GTK and the Web
+the same native page - and presents and dismisses as its toolkit does.
+
 ## Slots
 
 A title view is a slot. What stands in it is the first element under the
@@ -95,12 +118,13 @@ slot that shows a view of its own (`chromeTitleView`); an element with no
 view of its own is shown by the first under it that has one
 (`presentingElement`).
 
-A declaration - a toolbar, a title view, a menu bar, a context menu - is a
-child of whatever element it is declared on, a page, a stack or a button,
-and furnishes the chrome from there: no layout places it, and no element
-with no view of its own is shown by it (`arrangedChildren`). Every host
-lays out and flattens through that one list, so a title view's field stands
-in the bar alone, measured by itself, and never also in the page's room.
+A declaration - a toolbar, a title view, a menu bar, a context menu, an
+overlay - is a child of whatever element it is declared on, a page, a stack
+or a button, and furnishes the chrome from there: no layout places it, and
+no element with no view of its own is shown by it (`arrangedChildren`).
+Every host lays out and flattens through that one list, so a title view's
+field stands in the bar alone, measured by itself, and never also in the
+page's room.
 
 ## The visible path
 
@@ -178,8 +202,9 @@ is shown as its root under its sheets.
 A window composes one chrome from what it shows (`WindowChrome`): the title
 of the page that names it (`titledPage`) - the visible page, but tabs on a
 stack are its last place and name the window by their own title, else by the
-page beneath, never by what they show, their pages naming their tabs alone -
-else the window's, else the host's own; the way back, in the
+page beneath, never by a page they show, their pages naming their tabs alone;
+a chosen tab that is itself an arrangement names the window as that
+arrangement does - else the window's, else the host's own; the way back, in the
 words the page beneath gives, else "Back"; the actions the visible page's
 path declares (`chromeActions`) - none where the page hides its bar - each
 showing its words beside its picture where it says so and always where it

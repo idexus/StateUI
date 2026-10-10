@@ -38,8 +38,7 @@ final class WinUIRenderer {
 
     /// What performs the acts the application calls, and answers them, by the host layer's rules.
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
-        answered: { [unowned self] in runtime.pump.turn() })
+        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree })
 
     /// The windows the tree holds, each with its controller, in the tree's order.
     private let roster = WindowRoster<WinUIWindowController>()
@@ -65,16 +64,15 @@ final class WinUIRenderer {
     init(clock: (() -> Double)? = nil, reducesMotion: @escaping () -> Bool = { !stateui_winui_animations_enabled() }) {
         frameClock = clock.map { WinUIFrameClock(now: $0, ticksWithWinUI: false) } ?? WinUIFrameClock()
         self.reducesMotion = reducesMotion
-        runtime.displayCycle.presenter = self
-        runtime.pump.presenter = self
+        runtime.presenter = self
+        // A pass is over in the next turn posted: WinUI lays out before the queue's next message.
+        runtime.afterLayout.askForPassEnd = { stateui_winui_post_turn() }
     }
 
-    /// WinUI stands on this thread: the first drain makes it MainActor's, then the host starts.
+    /// WinUI stands on this thread: the host claims it as the UI thread, then starts.
     /// Design: docs/design/platforms/winui/runtime.md#starting
     nonisolated static func launch() {
-        let core = CoreLink()
-        _ = core.needsRender
-        _ = core.runJobs()
+        CoreLink().claimUIThread()
 
         MainActor.assumeIsolated { _ = start() }
     }
@@ -87,12 +85,7 @@ final class WinUIRenderer {
         let previous = shared
         let renderer = WinUIRenderer()
         shared = renderer
-        renderer.runtime.core.setRealization(
-            WinUIRegistrations.registry.realization,
-            unrealized: WinUIRealization.unmade)
-        if previous == nil { WinUIPersistence.restore(into: renderer.runtime.core) }
-        renderer.show()
-        WinUIDoorbell.install()
+        renderer.start(restoringKept: previous == nil, turns: WinUIDoorbell.install)
         stateui_winui_watch_environment()
         return renderer
     }
@@ -131,12 +124,16 @@ final class WinUIRenderer {
         if let element = controller.element { runtime.userClosed(element) }
     }
 
-    /// Renders the application whole: the scenes kept for this start come back, else one new scene.
-    /// Design: docs/design/host/runtime.md#kept-scenes
-    func show() {
-        WinUIEnvironment.report(to: runtime.core)
-        runtime.tree.followTheLanguagesDirection()
-        scenes.restore(WinUIPersistence.readScenes(), in: runtime)
+    /// Starts the runtime in the host layer's order, told what the host stands on and, `restoringKept`, what it
+    /// kept: the scenes kept for this start come back, else one new scene; `turns` posts the turns after it.
+    /// Design: docs/design/host/runtime.md#starting
+    func start(restoringKept: Bool = false, turns: () -> Void = {}) {
+        runtime.start(
+            realizing: WinUIRegistrations.registry.realization, unrealized: WinUIRealization.unmade,
+            environment: { WinUIEnvironment.report(to: runtime.core) },
+            kept: { if restoringKept { WinUIPersistence.restore(into: runtime.core) } },
+            windows: { scenes.restore(WinUIPersistence.readScenes(), in: runtime) },
+            turns: turns)
     }
 
     /// Shows every window element in a WinUI window of its own, in the tree's order - a window the tree no longer
@@ -171,11 +168,17 @@ final class WinUIRenderer {
     }
 }
 
-extension WinUIRenderer: TurnPresenter {
+extension WinUIRenderer: HostPresenter {
     func presentRendered() {
         showWindows()
         refreshWindowChrome()
         if let text = scenes.changed(root: runtime.tree.root) { WinUIPersistence.writeScenes(text) }
+    }
+
+    func presentFrame(movedChrome: Bool) {
+        guard movedChrome else { return }
+        showWindows()
+        refreshWindowChrome()
     }
 
     func perform(_ call: HostActCall) {
@@ -183,24 +186,11 @@ extension WinUIRenderer: TurnPresenter {
     }
 }
 
-extension WinUIRenderer: FramePresenter {
-    var wantsFrames: Bool {
-        runtime.frames.wantsFrames
-    }
-
-    func commitUserReports(now: Double) {
-        runtime.frames.commit(now: now)
-    }
-
-    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        let impact = runtime.tree.present(states: states, properties: properties)
-        if impact.windowChrome {
-            showWindows()
-            refreshWindowChrome()
-        }
-    }
-
-    func renderIfNeeded() {
-        if runtime.core.needsRender { runtime.pump.turn() }
+extension WinUIRenderer {
+    /// Runs `work` once the layout pass under way is over: what a pass decides - a split view's first room - is
+    /// said once WinUI has finished laying out.
+    /// Design: docs/design/host/runtime.md#after-a-layout-pass
+    static func afterLayout(_ work: @escaping @MainActor () -> Void) {
+        shared?.runtime.afterLayout.run(work)
     }
 }

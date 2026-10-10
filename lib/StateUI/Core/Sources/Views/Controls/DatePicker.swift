@@ -100,19 +100,55 @@ public struct DatePicker: ElementView, TextStyleElement, FontElement, DatePicker
 
     /// Fires when a date is chosen. Runs after a binding's write, if there is
     /// one.
-    public func onDateChanged(_ handler: @escaping ValueEventHandler<CalendarDate>) -> Self {
+    public func onDateChanged(_ handler: @escaping @MainActor (CalendarDate) throws -> Void) -> Self {
         onEvent(DatePickerContract.dateChanged, handler)
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onDateChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<CalendarDate>) -> Self {
+        onEvent(DatePickerContract.dateChanged, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDateChanged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onDateChanged(_ handler: @escaping ValueEventHandler<CalendarDate>) -> Self {
+        fatalError("unavailable")
     }
 
     /// The user has opened the calendar. Opening it with `isOpen(true)` raises
     /// nothing: the application already knows.
-    public func onOpened(_ handler: @escaping EventHandler) -> Self {
+    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(DatePickerContract.opened, handler)
     }
 
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onOpened(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(DatePickerContract.opened, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onOpened(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onOpened(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
+    }
+
     /// It has closed - by a choice, by a tap outside, or by the platform.
-    public func onClosed(_ handler: @escaping EventHandler) -> Self {
+    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(DatePickerContract.closed, handler)
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onClosed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(DatePickerContract.closed, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClosed(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onClosed(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 }
 
@@ -120,6 +156,6 @@ extension DatePicker {
     /// `isOpen` from a state, `$x`: the host sets each new value as it stands,
     /// and no view is rebuilt for it.
     public func isOpen(_ state: Binding<Bool>) -> Modified {
-        plain(DatePickerContract.isOpen.token, by: state)
+        twin(DatePickerContract.isOpen, carrying: state)
     }
 }

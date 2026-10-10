@@ -35,7 +35,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     // A picture and nothing else. To anybody not looking at it,
                     // this control has no name at all.
                     Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
-                        .style("IconButton")
+                        .style(.iconButton)
                         .accessibilityIdentifier("semantics.bare")
                         .contentMode(.fit)
                         .width(64)
@@ -116,7 +116,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             Button("Announce the count")
                 .accessibilityIdentifier("semantics.announce")
                 .horizontalAlignment(.center)
-                .onClicked {
+                .onClicked(gate: .ignoreWhileRunning) {
                     let words = "Tapped \(taps) time\(taps == 1 ? "" : "s")"
                     try await ScreenReader.announce(words)
                     said = words
@@ -147,7 +147,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     .spacing(2)
                     .padding(12)
                 }
-                .style("Card")
+                .style(.card)
 
                 // The whole panel, and everything in it, is not there at all
                 // to a screen reader - one word instead of one per view.
@@ -164,7 +164,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     .spacing(2)
                     .padding(12)
                 }
-                .style("Card")
+                .style(.card)
                 .automationExcludedWithChildren(true)
             }
             .spacing(12)
@@ -185,7 +185,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
     /// the control.
     private var describedButton: some View {
         let button = Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
-            .style("IconButton")
+            .style(.iconButton)
             .accessibilityIdentifier("semantics.described")
             .contentMode(.fit)
             .width(64)
@@ -225,7 +225,8 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 + "was on, rather than a second button being drawn: a property that goes "
                 + "away is cleared back to the host's native default. To hear any of it, turn on "
                 + "the platform's screen reader - VoiceOver on Apple, TalkBack on "
-                + "Android, Narrator on Windows - and touch the two buttons in turn.")
+                + "Android, Narrator on Windows, Orca on GNOME - and touch the two "
+                + "buttons in turn.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

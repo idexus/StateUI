@@ -8,7 +8,8 @@ on the host's frames, so a run of views can follow a finger with no view built.
 ```text
   GalleryView
    ├── ScrollReader: an empty ScrollView over the cards ──────▶ offset state ($scrolled)
-   │     └── PlacedLayout (the cards) ◀── placements state ◀── engine(following: $scrolled, $room)
+   │     │                       .laidOut($length): the run the scroller laid out
+   │     └── PlacedLayout (the cards) ◀── placements state ◀── engine(following: $scrolled, $room, $length)
    │           └── .frame($room) ── the room, fed by the host ──┘   reads $scrolled.journey.value
    └── Turning: an empty view watching the asked position and shape
 ```
@@ -37,12 +38,13 @@ included - when an ancestor's does, and when a scroll among its ancestors
 moves it against the window. A view that asked about its frame says where it
 stands on the display's next frame after anything was laid out or moved,
 itself or not, because scrolling changes the window and safe-area answers
-without the view's own frame moving. Each report is deduplicated against the
-last, so a layout pass that writes four components is one report, and each
-handler deduplicates again in its own space, so a parent-space listener hears
-nothing of a scroll. A handler's memory starts afresh when the view is
-rebuilt, which costs one repeated report that the handler's own state write
-absorbs.
+without the view's own frame moving; on the Web, what a call from the page
+laid out says it as that call ends, before the browser draws. Each report is
+deduplicated against the last, so a layout pass that writes four components is
+one report, and each handler deduplicates again in its own space, so a
+parent-space listener hears nothing of a scroll. A handler's memory starts
+afresh when the view is rebuilt, which costs one repeated report that the
+handler's own state write absorbs.
 
 Translation, rotation and scale are drawing transforms, not layout: an
 animated translation reports nothing, while an animated width reports every
@@ -57,9 +59,9 @@ and reports its own frame, so the closure runs again whenever the frame
 settles somewhere new; the measurement arrives through the same channel as
 every other report, and nothing about it exists in the host. Before the first
 report the closure does not run and the reader holds nothing: content built
-for a zero rectangle stood at no size and grew when the frame came - every
-page sized by its reader grew from nothing, and WebKit kept the height of a
-caption it had measured at no width, a list standing short under it.
+for a zero rectangle would stand at no size and grow when the frame came, and
+a web engine keeps the height of a caption it measured at no width, a list
+standing short under it.
 
 ## A frame feed
 
@@ -76,9 +78,9 @@ motion it would crawl after every change of the measurement, and every step of
 an animated size is a layout pass of the whole page, which starves the frame
 clock every other animation runs on.
 
-A layout that reports its frame - through `onFrameChanged` or a frame feed -
-gives its children their new sizes at once while their places still animate,
-since what a measurement reports is what the views beside a child leave it. A
+A layout whose frame, or a frame under it, is read - through `onFrameChanged`
+or a frame feed - places every child at once, its size and its place alike:
+each frame of an animation would hand the reader a room nobody chose. A
 size worked out from a room elsewhere wants `.motion(.none)`. A place worked
 out from a measurement is written with no motion too: the room arrives over
 several passes, and a place left to animate to its answer sets off from
@@ -169,7 +171,9 @@ no more room than there already is - because a tap has to land on something: a
 run swiped at a point answers no tap at that point when the content there is
 one unit wide. The length is the content layout's own size, which the
 scroller measures, rather than an extent a host would have to find among its
-placements.
+placements. It is worked out from the room a render after the room changed,
+so a reader inside the module hears where the run is laid out (`laidOut(_:)`):
+that is when the scroller can hold what the new room asks.
 
 A tap on one part of the room - the card in front of the user - is answered by
 a box in the content, which slides under the room. The box belongs at the
@@ -199,10 +203,12 @@ run is written to animate. The rest of the time placements arrive, since a
 card a fifth of a second behind the hand is a card that lags.
 
 - The middle card is named as the run passes halfway between two cards - under
-  the hand, in the platform's throw, or on the way to a card - so a card
-  crossed is one render and a frame is none. A position the scroller reported
-  is where the run already is: it moves nothing, and the handler still hears
-  it as it hears an assignment.
+  the hand or in the platform's throw - so a card crossed is one render and a
+  frame is none. On a way the program sent the run - a position assigned, a
+  rest carried on - it names nothing: the card is the one it goes to, and
+  naming those it passes would turn the position back and forth. A position
+  the scroller reported is where the run already is: it moves nothing, and
+  the handler still hears it as it hears an assignment.
 - The asked position is a closure, not a read: read in the gallery's body it
   would make that body a reader, and every card crossed would describe the
   whole deck for a picture none of them changes. The watchers are a view of
@@ -224,11 +230,20 @@ card a fifth of a second behind the hand is a card that lags.
   began.
 - The run comes to rest on the nearest card: the scroller stops wherever the
   platform's throw leaves it, and a write to the offset carries it on under the
-  element's motion.
-- After each layout the run is put where the position says, asking again until
-  it lands: a scroller cannot be moved before its content is laid out, and
-  asked earlier it clamps to the length it has so far. That holds for every
-  showing, since a scroller built afresh by a resize stands at nothing.
+  element's motion. That card, or the one a position sent the run to, is the
+  card the run stands on.
+- After each layout the run is put on the card it stands on; a scroller not
+  laid out yet keeps the offset for its first layout (host/layout.md, an offset
+  the tree writes). A change of room keeps that card in front: a room grown
+  wider - a phone turned - stands the scroller in it before the run is as long
+  as the room asks, so the toolkit clamps the offset and reports a card short
+  of it. The gallery names its card again and, once the scroller says its run
+  is long enough to hold it, sends the run there; until then the hand names
+  nothing and a rest is no card the user chose.
+- A gallery nobody may swipe has no scroller: the deck stands in a `Grid`, an
+  assigned position animates the cards there for `crossing` milliseconds, and
+  a tap is answered by a box a `GeometryReader` places where the card in front
+  is drawn.
 
 The sensitivity is one number, how far the hand travels to turn the run by one
 card: three fifths of a card's width, far enough that the coarsest step a
@@ -261,14 +276,14 @@ platform (modifiers.md, turning out of the screen plane).
 
 `PositionIndicator` is StateUI's composition of colour boxes in a row, which
 no host receives as a control of its own: UIKit and WinUI have a page
-indicator, AppKit, Android's framework and GTK have none, so one composition
-serves all of them alike. Its count, its position and its look are values of
-the composed view, and a value given from a state is read in its content, so
-the row is built again when it changes - a row of a few boxes, where a
-host-carried value would buy nothing. The dots past `maximumVisible` are a
-run of that many holding the position as near its middle as the ends allow
-(`PositionIndicator.shown`), so the current dot is always drawn and the run
-moves only at its ends. A dot is a box as wide as it is tall, its corners
-half its size for a circle, the gap between two dots the size of one. Being a
-composition, it takes no `Style`: a style resolves into the node types a host
-receives.
+indicator, AppKit and Android's framework none, and GTK has none outside
+libadwaita's carousel, so one composition serves all of them alike. Its count,
+its position and its look are values of the composed view, and a value given
+from a state is read in its content, so the row is built again when it
+changes - a row of a few boxes, where a host-carried value would buy nothing.
+The dots past `maximumVisible` are a run of that many holding the position as
+near its middle as the ends allow (`PositionIndicator.shown`), so the current
+dot is always drawn, and the run stands still only near the ends of the
+sequence. A dot is a box as wide as it is tall, its corners half its size for
+a circle, the gap between two dots the size of one. Being a composition, it
+takes no `Style`: a style resolves into the node types a host receives.

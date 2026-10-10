@@ -30,9 +30,9 @@ import WASILibc
 /// like any other - `translationX`, `translationY`, `rotation`, `scaleX` and
 /// `scaleY` - and its own `.scale(_:)` multiplies on top. A `Path` takes it
 /// through `.geometryTransform(_:)`, where the whole matrix draws. A view cannot
-/// show a shear: after a turn, a sizing along one axis
-/// (`.rotate(45).scaleX(2)`) keeps the turn, the move and both sizes, and
-/// drops the slant.
+/// show a shear: a chain that slants it (`.rotate(45).scaleX(2)`) is drawn as
+/// the nearest turn and sizes - the direction and length of its across axis,
+/// and the height that keeps its area - and the slant is dropped.
 ///
 /// Design: docs/design/types/transforms.md#the-shear-limit
 public struct ViewTransform: Equatable, Sendable {
@@ -226,8 +226,9 @@ public struct ViewTransform: Equatable, Sendable {
     /// degrees over, each horizontal line `y` degrees down - after everything
     /// written before it.
     ///
-    /// A `Path` draws the lean through `.geometryTransform(_:)`; on a view it
-    /// changes nothing, since a view cannot show a slant.
+    /// A `Path` draws the lean through `.geometryTransform(_:)`. On a view the
+    /// slant is dropped: a lean along leaves it as drawn; a lean down shows as
+    /// a turn and a sizing.
     ///
     /// - Parameters:
     ///   - x: the lean along, in degrees.

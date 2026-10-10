@@ -152,7 +152,7 @@ extern "C" void stateui_winui_path_paint(
         path.StrokeDashCap(ends);
         path.StrokeLineJoin(join == 1 ? media::PenLineJoin::Bevel : join == 2 ? media::PenLineJoin::Round : media::PenLineJoin::Miter);
         // WinUI measures a mitre from its corner's point against half the outline's width, which is StateUI's
-        // ratio; past it WinUI cuts the mitre short where StateUI's other hosts bevel it.
+        // ratio; past it WinUI cuts the mitre short at the limit rather than bevelling it.
         path.StrokeMiterLimit(miter);
     } catch (...) {
         report("painting a shape");

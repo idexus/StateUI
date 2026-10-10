@@ -85,9 +85,9 @@ private final class Builds {
     var count = 0
 }
 
+@MainActor
 final class CarriedStateTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         Renderer.shared.clearStates()
     }
@@ -231,6 +231,21 @@ final class CarriedStateTests: XCTestCase {
         dragged(value.number, to: 2)
         XCTAssertTrue(Renderer.shared.needsRender, "and so does the next")
         XCTAssertEqual(value.wrappedValue, 2)
+    }
+
+    /// A twin over a member that travels is walked as a journey, whatever the member: a grid's spacings and a label's
+    /// line height glide from a state as their described values do.
+    func testATwinOverATravellingMemberIsAJourney() {
+        let rows = State(wrappedValue: 8.0)
+        let columns = State(wrappedValue: 4.0)
+        let line = State(wrappedValue: 20.0)
+
+        let grid = Renders().render(Grid {}.rowSpacing(rows.projectedValue).columnSpacing(columns.projectedValue).node)
+        let text = Renders().render(Text("Words").lineHeight(line.projectedValue).node)
+
+        XCTAssertEqual(grid.driven?[.rowSpacing]?.kind, .property)
+        XCTAssertEqual(grid.driven?[.columnSpacing]?.kind, .property)
+        XCTAssertEqual(text.driven?[.lineHeight]?.kind, .property)
     }
 
     /// `Slider($volume)` over a plain `Double` is HANDED OVER: the host walks
@@ -457,22 +472,11 @@ final class CarriedStateTests: XCTestCase {
     /// to walk it - and a waiter booked on it would wait for good. It answers
     /// that it arrived, and the value is at the target for whichever view is
     /// described next.
-    func testAJourneyOnAStateNothingWearsAnswersAtOnce() async throws {
+    func testAJourneyOnAStateNothingWearsAnswersAtOnce() throws {
         let fade = State(wrappedValue: 1.0)
-        let binding = fade.projectedValue
+        let arrival = fade.projectedValue.journey.move(to: 0.1, .eased(400, .cubicOut))
 
-        let arrived = try await withThrowingTaskGroup(of: Bool?.self) { group in
-            group.addTask { try await binding.journey.move(to: 0.1, .eased(400, .cubicOut)) }
-            group.addTask {
-                try await Task.sleep(for: .seconds(2))
-                return nil
-            }
-            let first = try await group.next() ?? nil
-            group.cancelAll()
-            return first
-        }
-
-        XCTAssertEqual(arrived, true, "answered, and answered that it arrived")
+        XCTAssertEqual(arrival.ended, true, "it arrived as it was sent")
         XCTAssertEqual(fade.projectedValue.journey.value, 0.1, "the value is at the target")
         XCTAssertEqual(fade.wrappedValue, 0.1, "and going nowhere else")
     }
@@ -692,10 +696,11 @@ final class CarriedStateTests: XCTestCase {
     /// A carried state keeps one image and nothing else, so there is no second
     /// storage for a read-change-write to land in: what this writes is what the
     /// next read answers with.
-    func testUpdatingACarriedStateMovesTheValue() {
+    func testAChangePostedToACarriedStateMovesTheValue() async {
         let offset = State(wrappedValue: 12.0)
 
-        offset.update { $0 + 30 }
+        offset.projectedValue.post { $0 + 30 }
+        await settle()
 
         XCTAssertEqual(offset.wrappedValue, 42, "the write reached the image")
         XCTAssertEqual(offset.get(), 42, "and every road to it reads the same")

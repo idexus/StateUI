@@ -397,6 +397,10 @@ void stateui_winui_set_padding(StateUIObjectRef element, double left, double top
 /// The room between the letters of a text block's or a control's words, in thousandths of an em.
 void stateui_winui_set_character_spacing(StateUIObjectRef element, int32_t thousandths);
 
+/// Whether a text block's or a control's words grow with the user's text size, written and read back.
+void stateui_winui_set_text_scales(StateUIObjectRef element, bool scales);
+bool stateui_winui_text_scales(StateUIObjectRef element);
+
 /// How words look, as WinUI holds it: the size, the weight, the most lines, the alignment and the colour as
 /// 0xAARRGGBB - five values; what a test reads back.
 void stateui_winui_text_style(StateUIObjectRef element, double *style);
@@ -485,11 +489,13 @@ void stateui_winui_set_tint(StateUIObjectRef control, uint32_t argb, bool tinted
 /// the control.
 int32_t stateui_winui_themes_read_again(void);
 
-/// A sheet: a card over a veil across its window, holding a presented page under its title; a window's sheets, the
-/// last on top. Escape takes the top one away, chosen on the window's chrome as -3.
+/// A sheet: a card over a veil across its window, holding a presented page under its title; a window's sheets, a
+/// sheet pushed over those before it and taking the keyboard, the top one popped. Escape takes the top one away,
+/// chosen on the window's chrome as -3.
 StateUIObjectRef stateui_winui_sheet_make(void);
 void stateui_winui_sheet_set(StateUIObjectRef sheet, char const *title, StateUIObjectRef page);
-void stateui_winui_window_set_sheets(StateUIObjectRef window, StateUIObjectRef const *sheets, int32_t count);
+void stateui_winui_window_push_sheet(StateUIObjectRef window, StateUIObjectRef sheet);
+void stateui_winui_window_pop_sheet(StateUIObjectRef window);
 
 /// Lays `overlays` over the window's page and its sheets, where the page stands, the first lowest; a click beside
 /// what they hold goes on to them. None takes the layer away.
@@ -642,8 +648,8 @@ void stateui_winui_field_set_behaviour(StateUIObjectRef field, bool readOnly, bo
 /// The case a field's or an editor's typing takes (StateUI's `TextCase`).
 void stateui_winui_field_set_casing(StateUIObjectRef field, int32_t textCase);
 
-/// How a search box takes words: read only, the case its typing takes (StateUI's `TextCase`), and the words typed
-/// across it as `stateui_winui_field_set_look` has them.
+/// How a search box takes words: read only, the case its typing takes (StateUI's `TextCase`), the words typed across
+/// it as `stateui_winui_field_set_look` has them, and how typing is checked, predicted and keyed.
 void stateui_winui_search_set_box(StateUIObjectRef search, bool readOnly, int32_t textCase, int32_t alignment,
                                   bool spellChecked, bool predicted, int32_t scope);
 
@@ -810,21 +816,20 @@ void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const
 int32_t stateui_winui_title_bar_words(StateUIObjectRef bar);
 
 /// What a test reads: the room a title bar keeps at its trailing edge, and the room the window's own buttons there
-/// take, both in DIPs; -1 kept where the bar stands in no window.
-void stateui_winui_title_bar_caption_room(StateUIObjectRef bar, double *kept, double *room);
+/// take, both in DIPs - -1 kept where the bar stands in no window - and how many of its two padding columns the
+/// relay found by name.
+void stateui_winui_title_bar_caption_room(StateUIObjectRef bar, double *kept, double *room, int32_t *columns);
 
 /// Stands `view` in the title bar's middle, in the title's place; null takes it away.
 void stateui_winui_title_bar_set_title_view(StateUIObjectRef bar, StateUIObjectRef view);
 
-/// A split view: WinUI's NavigationView, the sidebar in its pane as wide as WinUI opens it - beside the detail from
-/// `expandsAt` DIPs, over it and closed by a click beside it below - with none of the view's own buttons, which the
-/// window's chrome carries; `row` stands across the top of the detail.
-StateUIObjectRef stateui_winui_split_make(int64_t view, double expandsAt);
+/// A split view: WinUI's SplitView, the sidebar in its pane as wide as WinUI opens it - `beside` the detail, else
+/// over it and closed by a click beside it - the detail on a card; `row` stands across the top of the detail.
+StateUIObjectRef stateui_winui_split_make(int64_t view);
 void stateui_winui_split_set(StateUIObjectRef split, StateUIObjectRef pane, StateUIObjectRef content,
-                             StateUIObjectRef row, bool open);
+                             StateUIObjectRef row, bool open, bool beside);
 
-/// Stands a split view's pane on a ground for each place: beside the detail (the expanded pane) and over it (the
-/// overlay pane). A ground's kind is 0 for WinUI's own, 1 for the colour `argb`, 2 for the in-app acrylic in the
+/// Stands a split view's pane on a ground for each place: beside the detail and over it. A ground's kind is 0 for WinUI's own, 1 for the colour `argb`, 2 for the in-app acrylic in the
 /// colour `argb`, its luminosity hiding `opacity` of what is behind it and its tint `tintOpacity`.
 void stateui_winui_split_set_pane_grounds(StateUIObjectRef split, int32_t besideKind, uint32_t besideArgb,
                                           float besideOpacity, float besideTintOpacity, int32_t overKind,
@@ -919,7 +924,7 @@ void stateui_winui_clock(int32_t *time);
 int32_t stateui_winui_time_zone(char *utf8, int32_t capacity);
 
 /// How far `zone` - an IANA identifier, the local zone for null - stands from UTC on a day, in minutes; year 0
-/// for today. Answers false for a zone ICU does not know.
+/// for now. Answers false for a zone ICU does not know.
 bool stateui_winui_utc_offset(char const *zone, int32_t year, int32_t month, int32_t day, int32_t *minutes);
 
 /// Says `utf8` to a screen reader, from `element`, cutting off what it was saying.

@@ -398,8 +398,8 @@ extern "C" void stateui_winui_window_set_background(StateUIObjectRef handle, boo
 }
 
 namespace {
-    /// The card a navigation view lays over its detail, cleared: no fill, its edge the theme's divider - one
-    /// dictionary for each theme, so the edge follows the theme by itself.
+    /// The card a split view's detail stands on, cleared: no fill, its edge the theme's divider - one dictionary for
+    /// each theme, so the edge follows the theme by itself.
     xaml::ResourceDictionary clearedCard() {
         std::wstring brushes = L"<SolidColorBrush x:Key=\"NavigationViewContentBackground\" Color=\"#00000000\"/>"
                                L"<SolidColorBrush x:Key=\"NavigationViewContentGridBorderBrush\""
@@ -423,7 +423,7 @@ namespace {
 
 extern "C" void stateui_winui_window_clear_detail(StateUIObjectRef handle, bool clear) {
     try {
-        // Written into the window's root, which every navigation view in the window reads on its way up.
+        // Written into the window's root, which every split view's card in the window reads on its way up.
         // Design: docs/design/platforms/winui/runtime.md#a-windows-backdrop
         auto grid = root(borrow<xaml::Window>(handle));
         auto merged = grid.Resources().MergedDictionaries();

@@ -24,6 +24,7 @@ struct NotePage: View {
     }
 }
 
+@MainActor
 final class GTKLeaveTests: XCTestCase {
     /// An element that leaves the tree lets go of its widget: Swift holds one view fewer, and the panel one child.
     func testAViewIsLetGoOfWhenItsElementLeaves() throws {

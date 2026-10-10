@@ -8,6 +8,7 @@
 import XCTest
 
 /// Words `depth` grids deep, each grid with words and a stack of its own beside them.
+@MainActor
 private func nest(_ depth: Int, _ words: String) -> Node {
     guard depth > 0 else { return Text(words).margin(2).node }
 

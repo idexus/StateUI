@@ -55,8 +55,9 @@ element are part of what it is: another kind of view there, or the same kind
 in another order, replaces the element, as another host type does. The host
 makes the control anew, the elements under it are created, and nothing the
 view before it watched, wrote or was told carries over - its page, its
-`onChanged` readings, its focus. A composed view keeps state only from a view
-of its own kind ([state survives a rebuild](#state-survives-a-rebuild)).
+`onChanged` readings, its focus; the visual state it arrives in is not heard.
+A composed view keeps state only from a view of its own kind ([state survives
+a rebuild](#state-survives-a-rebuild)).
 
 The branch a composed view's content root was written in is part of it too:
 `if editing { TextField(…) } else { TextField(…) }` as a view's `body` is
@@ -104,7 +105,10 @@ host matches children by key and one control cannot stand in two places. A
 fresh automatic id every render would rebuild the repeat's control, handlers
 and state each time. The repeat takes a stable variant instead - the id, a NUL
 and its occurrence number - which is the same key every render and can never
-equal an id an author spelled.
+equal an id an author spelled. A repeat is said once: a node keeps the value
+its identity was written from (`Node.identify`), so one value written twice is
+told from two values that only describe themselves alike - a class printing
+its type's name - and the complaint names the cure for each.
 
 ## State survives a rebuild
 
@@ -160,7 +164,8 @@ one way it can be:
 
 ```text
   value       by ==, opened on the first value's type
-  borrowed    a @Binding by the storage it lends, never by the value in it
+  borrowed    a @Binding by the storage it lends and the part of it
+              (StatePart), never by the value in it
   box         a @State or declared @Aim by the storage/box held after adoption
   aim handed  by the box it aims through, never adopted
   slot        an @Environment by the object it resolved to
@@ -175,10 +180,10 @@ It errs toward building: what it cannot see through it does not assume.
 
 `sameWriting` compares the placeholder as the parent wrote it: properties, the
 motion plan, driven ties, the objects `.environment()` provided on it, the
-watched values, and the names of the handlers. What runs as the view comes and
-goes is compared by count, the closures being taken fresh by the carry. A slot
-child, an engine or a reading written on the view makes it build as it always
-did.
+watched values, what the view says of its page, and the names of the handlers.
+What runs as the view comes and goes is compared by count, the closures being
+taken fresh by the carry. A slot child, an engine, a reading or a driven tie
+through a conversion written on the view makes it build as it always did.
 
 A carried view takes the handlers the parent wrote on it afresh, under the ids
 it keeps: the parent's closure ran again, so what those handlers captured is
@@ -207,8 +212,10 @@ parent's business.
 An element keeps what the clean walk needs to build it without its parent:
 a composed view keeps its placeholder, a container keeps its node with the
 content still to run, the environment it provided, the scene it is in, and
-whether its sizes arrive. A leaf keeps nothing: its properties were computed by
-an ancestor's closure, and a change to them starts at that ancestor.
+whether its sizes arrive. A leaf keeps nothing, unless it declares visual
+states or wears a themed value: then it keeps its authored node, so the clean
+walk can resolve them again ([themes](#themes)). Its properties were computed
+by an ancestor's closure, and a change to them starts at that ancestor.
 
 ## Containers run their own content
 
@@ -333,8 +340,8 @@ the newest closure - this render's captures - to the engine that already has
 a number. A different count is a different set of engines and starts over, as
 with watches. The engines a conversion needs are armed beside the author's
 own, ahead of them, in property order. A board that has forgotten an element's
-engines, as after a session claimed afresh, gets them again under the numbers
-the element already had.
+engines, as after a session claimed afresh, gets them again under fresh
+numbers, which the element keeps from then on.
 
 ## Driven properties
 

@@ -91,9 +91,10 @@
 
     /// The sidebar stands on the material `member` says from a state handed on as `$x` - the colour the state holds,
     /// then the one written into it: a material's channel.
+    @MainActor
     private static func follows(
         _ member: ElementProperty<SplitViewContract, Material>, _ name: String,
-        _ write: @escaping @Sendable (SplitView, Binding<Material>) -> SplitView.Modified
+        _ write: @escaping @MainActor (SplitView, Binding<Material>) -> SplitView.Modified
     ) -> ConformanceCase {
         ConformanceCase(name, proves: [Covered(member)], needs: [Covered(ButtonContract.clicked)]) { s in
             let (first, changed) = (Material.color(Color("#0F766E")), Material.color(Color("#512BD4")))
@@ -117,9 +118,10 @@
 
     /// The sidebar stands on the material `member` says - the colour it starts with, then the one the tree changes
     /// it to.
+    @MainActor
     private static func standsOn(
         _ member: ElementProperty<SplitViewContract, Material>, _ name: String,
-        _ write: @escaping @Sendable (SplitView, Material) -> SplitView.Modified
+        _ write: @escaping @MainActor (SplitView, Material) -> SplitView.Modified
     ) -> ConformanceCase {
         ConformanceCase(name, proves: [Covered(member)], needs: [Covered(ButtonContract.clicked)]) { s in
             let (first, changed) = (Material.color(Color("#0F766E")), Material.color(Color("#512BD4")))

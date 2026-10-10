@@ -13,6 +13,7 @@ import XCTest
 @testable import GalleryUI
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class ResourceTests: XCTestCase {
     private var styles: [AnyStyle] {
         AppStyles.sheet.written

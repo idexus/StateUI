@@ -12,6 +12,7 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class RegistryTests: XCTestCase {
     /// A platform view, as far as a registry can tell: what every view it
     /// makes descends from.
@@ -40,9 +41,8 @@ final class RegistryTests: XCTestCase {
         var values: [String] = []
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         HostBoundary.setRealization(HostRealization())
-        super.tearDown()
     }
 
     /// A registered contract makes its view, the class its registration makes;

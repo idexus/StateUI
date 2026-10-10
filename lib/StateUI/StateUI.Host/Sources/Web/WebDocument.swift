@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Where a WebKit web view goes to show a document written in place with no address of its own: a `data:` address
-/// holding it, which WebKit keeps in the page's history as any other - of a document shown without one it keeps none.
+/// Where a web view goes to show a document written in place with no address of its own: a `data:` address holding
+/// it, which the view keeps in its history as any other.
 /// Design: docs/design/host/web.md#a-document-with-no-address
 @_spi(Host) public enum WebDocument {
     /// The `data:` address holding `document`, its words as UTF-8 in base64.

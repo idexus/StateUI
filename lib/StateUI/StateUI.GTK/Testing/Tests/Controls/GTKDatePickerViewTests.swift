@@ -8,6 +8,7 @@ import CStateUIGTK
 @testable import StateUIGTKDriver
 import XCTest
 
+@MainActor
 final class GTKDatePickerViewTests: XCTestCase {
     /// GTK's calendar offers every day: one the user picks past the range lands at its end, on the calendar, the
     /// button and the state alike.

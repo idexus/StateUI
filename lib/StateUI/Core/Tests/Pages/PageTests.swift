@@ -77,6 +77,7 @@ private struct EveryPropertyPage: View {
 }
 
 /// A window whose session says everything a window can be told.
+@MainActor
 private func everyPropertyWindow() -> Node {
     let session = WindowSession()
     session.title = "Everything"
@@ -185,6 +186,7 @@ private struct Deep: View {
     }
 }
 
+@MainActor
 final class PageTests: XCTestCase {
     /// A page position takes a branch as a page of its own: swapped for the other branch of the same view type,
     /// the page is made anew - created again - as two branches in a container are two elements.

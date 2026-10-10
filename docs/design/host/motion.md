@@ -15,8 +15,8 @@ timing and when it began. An animation is pure: its position is
 frame. One advance moves every animation in `AnimationTarget` order - states
 by number, then described properties by element and property, then layout
 places by element - so two runs of the same frame write in the same order. An
-animation that arrives leaves the animator, and with Reduce Motion every
-animation arrives at once, at its destination.
+animation that arrives leaves the animator, and where the user asks for less
+motion every animation arrives at once, at its destination.
 
 ## State channels
 
@@ -29,8 +29,9 @@ value where the channel stands.
 The channel is not a control's to end. It counts the controls wearing it; when
 the last one lets go it goes too, but only once its animation has landed where
 it was sent, so a control described again a moment later joins it where it
-is. When the user takes the value on a two-way control, the animation stops
-where the user holds it and its waiter hears that it was cut short.
+is. When the user takes the value on a control that reports it, the
+animation stops where the user holds it and its waiter hears that it was cut
+short.
 
 ## Described motion
 
@@ -78,13 +79,16 @@ child stands on the way. Why an arrangement happens decides everything:
   this case even with a patch: its width is its parent's to say.
 - The first arrangement arrives: the first thing anyone sees is the thing itself.
 
+`TravellingPlaces` decides it once for every child as an arrangement begins;
+a width that moved by more than half a point is a new width.
+
 A size a child states for itself arrives while its place animates: a stated
 size is either still or already animating on its own. Where a frame under the
 layout is read, every child arrives, because each frame of an animation would
 hand the reader of that frame a room nobody chose. The same place asked for
 again keeps its running animation, and a new place bends a running one from
-where it has reached, at its speed. A layout's children hold no strong
-reference: a view the tree dropped is not kept alive for its place.
+where it has reached, at its speed. Layout motion holds each child's view
+weakly: a view the tree dropped is not kept alive for its place.
 
 ## Words at their destination
 

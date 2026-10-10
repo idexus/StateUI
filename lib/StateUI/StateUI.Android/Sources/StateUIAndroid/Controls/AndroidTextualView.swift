@@ -16,6 +16,9 @@ class AndroidTextualView: AndroidView {
     /// The family the words are drawn in; nil for the platform's.
     private(set) var fontFamily: String?
 
+    /// Whether the words' size follows the user's font scale.
+    private(set) var scales = true
+
     /// The room around the words the tree describes; nil where the view keeps its own.
     private var padding: Insets?
     private var madePadding: (left: Int32, top: Int32, right: Int32, bottom: Int32)?
@@ -42,6 +45,7 @@ class AndroidTextualView: AndroidView {
     /// How the words look (`TextMembers.look`): their size, weight, slant, family and colour, each the
     /// platform's own where the look says nothing.
     func setLook(_ look: TextLook) {
+        scales = look.scales
         setFontSize(look.size)
         fontAttributes = look.attributes
         fontFamily = look.family
@@ -49,16 +53,27 @@ class AndroidTextualView: AndroidView {
         setTextColor(look.color)
     }
 
-    /// The size of the words, in points the user's font scale applies to; nil puts back the platform's. The space
-    /// between the letters is worked out again for it.
+    /// The size of the words in points - Android's scaled pixels where they follow the user's font scale, its
+    /// density-independent ones where not; nil puts back the platform's, said in the same unit. The space between
+    /// the letters is worked out again for it.
     func setFontSize(_ size: Double?) {
+        // The platform's own size is read before the first size written over it.
         let made = madeWith
-        if let size {
-            Java.call(reference, JavaAPI.setTextSize, .int(ViewConstants.scaledPixels), .float(Float(size)))
-        } else {
-            Java.call(reference, JavaAPI.setTextSize, .int(ViewConstants.pixels), .float(made.size))
-        }
+        let points = size ?? Double(made.size) / Self.pixels(perPoint: true)
+        let unit = scales ? ViewConstants.scaledPixels : ViewConstants.independentPixels
+        Java.call(reference, JavaAPI.setTextSize, .int(unit), .float(Float(points)))
         setLetterSpacing(letterSpacing)
+    }
+
+    /// The pixels of one point of text: Android's scaled pixel where the user's font scale applies to it, its
+    /// density-independent pixel where not.
+    static func pixels(perPoint scaled: Bool) -> Double {
+        Java.frame {
+            let resources = Java.callObject(AndroidRenderer.context, JavaAPI.getResources)!
+            let metrics = Java.callObject(resources, JavaAPI.getDisplayMetrics)!
+            let unit = scaled ? ViewConstants.scaledPixels : ViewConstants.independentPixels
+            return Double(Java.callStaticFloat(JavaAPI.typedValue, JavaAPI.applyDimension, .int(unit), .float(1), .object(metrics)))
+        }
     }
 
     /// The space between the letters, in points.

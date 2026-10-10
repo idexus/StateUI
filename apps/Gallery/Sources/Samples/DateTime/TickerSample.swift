@@ -11,8 +11,8 @@ struct TickerSample: SampleContent, ExampleContent {
 
     static let id = "ticker"
     static let title = "Ticker"
-    static let summary = "The same countdown from the library's timer - a loop the "
-        + "library owns, safe from any thread."
+    static let summary = "The same countdown from the library's timer, which ends "
+        + "with whoever holds it."
 
     // listing: TickerSample
     var body: some View {
@@ -53,7 +53,6 @@ struct TickerSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
         }
         .spacing(12)
-        .onDestroying { ticker.stop() }
     }
     // listing: end
 
@@ -73,10 +72,10 @@ struct TickerSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("Starting twice is safe - each run takes a token, and a loop that wakes "
-                + "holding an old one returns. Stopping it in .onDestroying is still the "
-                + "reader's to write: a ticker outlives the page unless someone says "
-                + "otherwise, which is what makes it usable for something that should "
-                + "keep counting.")
+                + "holding an old one returns. The ticker ends with whoever holds it - "
+                + "here the gallery's catalog, which keeps this sample's @State while its "
+                + "window stands, so the countdown goes on behind a page you have left. "
+                + "Stop it in `.onDestroying` where it should not.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

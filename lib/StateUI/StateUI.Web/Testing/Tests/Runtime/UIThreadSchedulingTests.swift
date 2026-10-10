@@ -9,6 +9,7 @@ import XCTest
 ///
 /// XCTest's own main runs on Swift's cooperative executor, which stays this process's default - a renderer made here
 /// would make the UI thread's executor the main one under it - so the woken task resumes there, between drains.
+@MainActor
 final class UIThreadSchedulingTests: XCTestCase {
     func testASleepComesDueOnTheFirstDrainAfterItsTime() async {
         nonisolated(unsafe) var woke = false

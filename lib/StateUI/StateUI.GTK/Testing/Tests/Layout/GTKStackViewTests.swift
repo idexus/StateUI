@@ -7,6 +7,7 @@
 @testable import StateUIGTKDriver
 import XCTest
 
+@MainActor
 final class GTKStackViewTests: XCTestCase {
     /// A vertical stack stands its children one under another, `spacing` apart, each as tall as GTK measured it.
     func testAVerticalStackStandsItsChildrenOneUnderAnother() {

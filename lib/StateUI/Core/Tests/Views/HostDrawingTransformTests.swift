@@ -6,6 +6,7 @@ import XCTest
 
 /// Every host draws a view's transform from this one matrix, so its pivot,
 /// its order and its perspective are pinned here rather than in each host.
+@MainActor
 final class HostDrawingTransformTests: XCTestCase {
     func testTheIdentityDrawsEveryPointWhereItIs() {
         XCTAssertEqual(HostDrawingTransform.identity.matrix(width: 100, height: 60), .identity)

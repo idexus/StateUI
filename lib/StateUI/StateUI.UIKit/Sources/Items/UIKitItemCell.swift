@@ -73,7 +73,7 @@ final class UIKitItemHolding: ItemsHolding {
 }
 
 /// A cell of an ItemsView, holding one item - UIKit's own list cell: the user's choice and touch in the platform's
-/// accent over the page, and at rest the page through it, as every host's list shows them.
+/// accent over the page, and at rest the page through it.
 /// Design: docs/design/platforms/uikit/items.md#a-cell
 @MainActor
 final class UIKitItemCell: UICollectionViewCell {

@@ -9,6 +9,7 @@
 ///         Window(.preferences) { Preferences() }  // one for the whole application
 ///     }
 @resultBuilder
+@MainActor
 public enum ApplicationBuilder {
     /// The scenes written so far.
     public struct Declared {

@@ -1,9 +1,9 @@
 <!doctype html>
 <!-- SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
-<!-- The page a Web head runs in: .scripts/Web/run-app.sh writes the application's names in place of the marks, and
-     the application's own scripts - its head's Page folder - in place of the scripts mark, each loaded before the
-     application starts. -->
+<!-- The page a Web head runs in: .scripts/Web/page.sh writes the application's names in place of the marks, the
+     application's own scripts - its head's Page folder - in place of the scripts mark, each loaded before the
+     application starts, and the Page folder's head.html, with the page's title, in place of the head mark. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -16,7 +16,7 @@
   }
 </script>
 <meta name="color-scheme" content="light dark">
-<title>{{application}}</title>
+{{head}}
 <link rel="stylesheet" href="./stateui-web.css?v={{stamp}}">
 <script>
   // What the application's own scripts answer it and tell it, there before them: StateUI.acts.<name> answers an

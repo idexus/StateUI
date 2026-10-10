@@ -133,9 +133,10 @@ enum GTKStyleSheet {
     static func words(_ look: TextLook, placeholder: GdkRGBA?, in part: String = "") -> String? {
         var name = "stateui-words"
         var body = ""
-        if let size = look.size, size > 0 {
-            name += "-s" + css(size).replacing(".", with: "_")
-            body += "font-size: \(css(size))px; "
+        // In typographic points where the words scale, which the desktop's text scale applies to; in pixels where not.
+        if let size = look.size ?? (look.scales ? nil : GTKEnvironment.fontSize), size > 0 {
+            name += "-s" + css(size).replacing(".", with: "_") + (look.scales ? "" : "x")
+            body += look.scales ? "font-size: \(css(TextLook.typographic(size)))pt; " : "font-size: \(css(size))px; "
         }
         if look.attributes.contains(.bold) || look.attributesGiven {
             name += look.attributes.contains(.bold) ? "-b" : "-r"

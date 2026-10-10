@@ -126,7 +126,7 @@ final class GTKItemsView: GTKLayoutView {
         } else {
             gtk_scrollable_set_vscroll_policy(made.opaque, GTK_SCROLL_NATURAL)
         }
-        // What stands under the collection shows behind its rows, as on every host.
+        // What stands under the collection shows behind its rows.
         // Design: docs/design/platforms/gtk/items.md#behind-the-rows
         gtk_widget_add_css_class(made, GTKStyleSheet.collection)
         connectSignal(UnsafeMutableRawPointer(made), "activate", number: number) { (_: UnsafeMutableRawPointer?, place: UInt32, data: gpointer?) in
@@ -232,7 +232,7 @@ final class GTKItemsView: GTKLayoutView {
         guard binding > 0 || !waiting.isEmpty else { return apply() }
         waiting.append(apply)
         guard waiting.count == 1 else { return }
-        GTKDoorbell.afterLayout { [weak self] in
+        GTKRenderer.afterLayout { [weak self] in
             guard let self else { return }
             let waiting = self.waiting
             self.waiting = []
@@ -326,7 +326,7 @@ final class GTKItemsView: GTKLayoutView {
     private func tellShowing() {
         guard !tellsShowing else { return }
         tellsShowing = true
-        GTKDoorbell.afterLayout { [weak self] in
+        GTKRenderer.afterLayout { [weak self] in
             guard let self else { return }
             tellsShowing = false
             guard !released, let list else { return }

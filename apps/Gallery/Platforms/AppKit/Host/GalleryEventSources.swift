@@ -16,14 +16,14 @@ import StateUIAppKit
 /// THE SPLIT IS THE PLATFORM'S: a desktop with no battery reports nothing at
 /// all, and the sample's own words say so. What is watched here is the power
 /// source, which macOS reports through a run-loop source of its own.
+@MainActor
 enum GalleryEventSources {
     /// What was last said, so an unchanged reading raises nothing - a power
     /// source notifies on far more than a level change.
-    nonisolated(unsafe) private static var lastSaid: (level: Double, charging: Bool)?
+    private static var lastSaid: (level: Double, charging: Bool)?
 
     /// Declares what the gallery raises and starts watching. Said once,
     /// before the application runs.
-    @MainActor
     static func start() {
         // Declared where the source is wired: a handler listening for an
         // event nothing declared is told, once, that it will not hear it.
@@ -31,7 +31,11 @@ enum GalleryEventSources {
 
         // Named in full: a C function pointer carries no context at all, and
         // an unqualified call to a static method captures the type implicitly.
-        let notify: IOPowerSourceCallbackType = { _ in GalleryEventSources.report() }
+        // The source stands on the main run loop, so the call comes on the
+        // main thread.
+        let notify: IOPowerSourceCallbackType = { _ in
+            MainActor.assumeIsolated { GalleryEventSources.report() }
+        }
 
         guard let source = IOPSNotificationCreateRunLoopSource(notify, nil)?.takeRetainedValue()
         else { return }

@@ -20,7 +20,7 @@ extension WebRegistrations {
                 }
                 if values.changed(DatePickerContract.date) { view.setDate(values[DatePickerContract.date]) }
             }
-            picker.applies(wordsMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
+            picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.raises(DatePickerContract.dateChanged)
         })
@@ -30,15 +30,9 @@ extension WebRegistrations {
             return picker
         }, members: { picker in
             picker.property(TimePickerContract.time) { view, time in view.setTime(time) }
-            picker.applies(wordsMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
+            picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.raises(TimePickerContract.timeChanged)
         })
     }
-
-    /// The font and the colour a day or a time is written in.
-    private static let wordsMembers: [any ContractMember] = [
-        FontElementContract.fontSize, FontElementContract.fontAttributes, FontElementContract.fontFamily,
-        TextStyleElementContract.textColor,
-    ]
 }

@@ -82,24 +82,60 @@ public struct WebView: ElementView, WebViewProperties {
 
     /// Fires as a navigation starts, with where it is going. Observing only: it
     /// cannot cancel the navigation.
-    public func onNavigating(_ handler: @escaping ValueEventHandler<WebNavigation>) -> Self {
-        onEvent(WebViewContract.navigating) { type, url in
+    public func onNavigating(_ handler: @escaping @MainActor (WebNavigation) throws -> Void) -> Self {
+        onNavigating(gate: .none) { try handler($0) }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onNavigating(gate: some Gate, _ handler: @escaping ValueEventHandler<WebNavigation>) -> Self {
+        onEvent(WebViewContract.navigating, gate: gate) { type, url in
             try await handler(WebNavigation(type: type, url: url))
         }
     }
 
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigating(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onNavigating(_ handler: @escaping ValueEventHandler<WebNavigation>) -> Self {
+        fatalError("unavailable")
+    }
+
     /// Fires when a navigation finished, with how it ended - the place to
     /// clear a spinner, or to say a page could not be fetched.
-    public func onNavigated(_ handler: @escaping ValueEventHandler<WebNavigated>) -> Self {
-        onEvent(WebViewContract.navigated) { result, type, url in
+    public func onNavigated(_ handler: @escaping @MainActor (WebNavigated) throws -> Void) -> Self {
+        onNavigated(gate: .none) { try handler($0) }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onNavigated(gate: some Gate, _ handler: @escaping ValueEventHandler<WebNavigated>) -> Self {
+        onEvent(WebViewContract.navigated, gate: gate) { result, type, url in
             try await handler(WebNavigated(result: result, type: type, url: url))
         }
     }
 
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigated(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onNavigated(_ handler: @escaping ValueEventHandler<WebNavigated>) -> Self {
+        fatalError("unavailable")
+    }
+
     /// Fires when the platform's web process died under the view - out of
     /// memory, usually - leaving it blank. `reload()` is the recovery.
-    public func onProcessTerminated(_ handler: @escaping EventHandler) -> Self {
+    public func onProcessTerminated(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(WebViewContract.processTerminated, handler)
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onProcessTerminated(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(WebViewContract.processTerminated, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onProcessTerminated(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onProcessTerminated(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 }
 
@@ -255,11 +291,11 @@ extension Aim where Target == WebView {
     ///
     ///     Button("Back")
     ///         .isEnabled(hasBack)
-    ///         .onClicked { try await browser.goBack() }
+    ///         .onClicked(gate: .ignoreWhileRunning) { try await browser.goBack() }
     ///
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.
-    public nonisolated(nonsending) func goBack() async throws {
+    public func goBack() async throws {
         try await call(WebViewContract.goBack)
     }
 
@@ -267,7 +303,7 @@ extension Aim where Target == WebView {
     ///
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.
-    public nonisolated(nonsending) func goForward() async throws {
+    public func goForward() async throws {
         try await call(WebViewContract.goForward)
     }
 
@@ -276,7 +312,7 @@ extension Aim where Target == WebView {
     ///
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.
-    public nonisolated(nonsending) func reload() async throws {
+    public func reload() async throws {
         try await call(WebViewContract.reload)
     }
 
@@ -289,7 +325,7 @@ extension Aim where Target == WebView {
     ///   JSON. Empty when the page answered nothing.
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.
-    public nonisolated(nonsending) func evaluateJavaScript(_ script: String) async throws -> String {
+    public func evaluateJavaScript(_ script: String) async throws -> String {
         let answer: String? = try await call(WebViewContract.evaluateJavaScript, script)
         return answer ?? ""
     }

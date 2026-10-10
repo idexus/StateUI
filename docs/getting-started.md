@@ -5,8 +5,8 @@ platform-neutral Swift module. A small native executable imports that module
 and the selected host package. The same application module can therefore be
 started by another host without changing its view tree.
 
-Five native hosts are active - AppKit, UIKit, Android Views, WinUI 3 and
-GTK 4 - each Swift, in the application's own process. The supported setup is a
+Six hosts are active - AppKit, UIKit, Android Views, WinUI 3, GTK 4 and the
+Web - each Swift, in the application's own process. The supported setup is a
 StateUI checkout: each host is a sibling Swift package whose manifest uses a
 local dependency on the repository root. No host has a published package route
 yet, so an application outside the checkout sits in a
@@ -62,7 +62,8 @@ The extension installs the **Swift** extension (swiftlang) with it. Install
 Open the repository folder. The status bar shows two StateUI items:
 
 - **the host** - AppKit, UIKit or Android on macOS, WinUI on Windows, GTK on
-  Linux; UIKit and Android only for an application with that head. The editor
+  Linux, and the Web on macOS and Linux; UIKit, Android and the Web only for
+  an application with that head. The editor
   works as that host: code under `#if APPKIT` is completed only while AppKit
   is chosen, as UIKit the language server compiles for the iOS simulator, and
   as Android for Android with the Swift SDK for Android. Switching restarts
@@ -70,16 +71,22 @@ Open the repository folder. The status bar shows two StateUI items:
 - **the application** - Gallery, HelloWorld, or any other under `apps/`. It is
   remembered for the workspace.
 
-While the host is UIKit or Android a third item shows the device: an iPhone,
-an iPad or a simulator for UIKit; an attached phone or an emulator, started
-when it is picked, for Android.
+While the host is UIKit, Android or the Web a third item shows the device: an
+iPhone, an iPad or a simulator for UIKit; an attached phone or an emulator,
+started when it is picked, for Android; the browser the page opens in, for
+the Web.
 
 Press **F5** to run **StateUI: Debug**, or choose **StateUI: Release** in Run
 and Debug. The application's head is built, installed where the host needs
 it, and started under `lldb-dap`, a breakpoint holding from the first line -
 on Android `lldb-dap` attaches once the application has started, and a
 breakpoint holds from then on; on UIKit and Android its terminal follows the
-application's log. A Release launch runs without a debugger.
+application's log. On UIKit, Android and the Web a Release launch runs
+without a debugger; on AppKit, WinUI and GTK `lldb-dap` starts the optimized
+build. A Web head is built, its page served and opened in the chosen browser;
+StateUI: Debug in Chrome, Edge or another of Chromium's browsers opens it
+under VS Code's own JavaScript debugger, the page's console in the Debug
+Console.
 
 `.vscode/launch.json` holds only those two launches. The extension resolves
 each one into the chosen host's own debugger.
@@ -93,6 +100,7 @@ The Command Palette offers the rest under **StateUI:**
 | Select Host | the host the editor and the launches work as, as the status bar item does |
 | Select UIKit Device | the iPhone, iPad or simulator a UIKit head runs on |
 | Select Android Device | the device or emulator an Android head runs on |
+| Select Browser | the browser a Web head's page opens in |
 | Select Application | the application F5 runs |
 | Run Tests | the workspace's suites, run as the chosen host |
 | Deploy | the chosen application built for release and laid, with what it runs with, in `artifacts/<application>/<platform>` - on WinUI per architecture - beside its `apps/` |
@@ -122,8 +130,8 @@ of one host's half; see
 [Project structure and development](development.md). Each host builds an
 application in a directory of its own inside the application's `.build` -
 `.build/appkit`, `.build/uikit`, `.build/android`, `.build/winui`,
-`.build/gtk` - beside SwiftPM's plain build, so switching hosts rebuilds
-nothing. `swift package clean` empties all of them.
+`.build/gtk`, `.build/web` - beside SwiftPM's plain build, so switching hosts
+rebuilds nothing. `swift package clean` empties all of them.
 
 Run HelloWorld's Android head on a device - `.scripts/Android/devices.sh list`
 names the devices:
@@ -139,12 +147,12 @@ one named, else the one booted, else an iPhone:
 .scripts/UIKit/run-app.sh apps/HelloWorld debug "iPhone 18 Pro"
 ```
 
-The WinUI and GTK heads have a script of their own too, under
+The WinUI, GTK and Web heads have a script of their own too, under
 [Build](development.md#build). So has each host's suite -
 `.scripts/AppKit/test-appkit.sh`, `.scripts/UIKit/test-uikit.sh`,
-`.scripts/Android/test-android.sh`, `.scripts/GTK/test-gtk.sh`, and
-`.scripts\WinUI\test-winui.ps1` on Windows - which [Test](development.md#test)
-lists with the arguments each takes.
+`.scripts/Android/test-android.sh`, `.scripts/GTK/test-gtk.sh`,
+`.scripts/Web/test-web.sh`, and `.scripts\WinUI\test-winui.ps1` on Windows -
+which [Test](development.md#test) lists with the arguments each takes.
 
 Build the signed Gallery bundle with its resources and icon:
 
@@ -187,7 +195,7 @@ the settings that save them.
 Every application follows one structural path:
 
 ```text
-Application -> Scene -> WindowGroup, Window -> View
+Application -> Scene -> windows -> a view
 ```
 
 Each declares what it is made of in its `body`. Runtime properties such as
@@ -223,7 +231,7 @@ as `Application` has - groups the windows that share its `@State`; it stands
 from its first window to its last. A scene's body declares its windows:
 
 - `WindowGroup { MainPage() }`, one in the application, is what launch and
-  *File ▸ New* make a window of;
+  *File ▸ New Window* make a window of;
 - `WindowGroup(.kind) { ... }` makes as many windows of a kind as are opened,
   and `Window(.kind) { ... }` makes one;
 - `WindowGroup(.kind, for: ID.self) { $id in ... }` makes one window per
@@ -257,7 +265,9 @@ no toolkit imports          contains no application UI
 ```
 
 The UI module exports one stable registration function. Registration names the
-application type to the host; it does not build native controls itself.
+application type to the host; it does not build native controls itself. It
+runs on the UI thread, where every head calls it before the host starts - it is
+`@MainActor`, as everything that touches the interface is.
 
 ```swift
 struct RegisteredApp: Application {
@@ -271,6 +281,7 @@ struct RegisteredPage: View {
 }
 
 @_cdecl("stateui_app_register")
+@MainActor
 public func stateui_app_register() {
     stateUIUseApp(RegisteredApp())
 }
@@ -377,6 +388,8 @@ apps/Notes/
     WinUI/
       main.swift
     GTK/
+      main.swift
+    Web/
       main.swift
   Resources/
     AppIcon/

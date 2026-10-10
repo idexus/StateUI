@@ -6,9 +6,10 @@
 ///
 ///     var body: some Scene {
 ///         WindowGroup { NotePage() }
-///         Window(.inspector) { Inspector() }
+///         Window(.inspector) { InspectorPage() }
 ///     }
 @resultBuilder
+@MainActor
 public enum SceneBuilder {
     /// The windows declared so far.
     public struct Declared {

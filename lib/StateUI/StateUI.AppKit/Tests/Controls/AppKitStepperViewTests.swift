@@ -6,6 +6,7 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
+@MainActor
 final class AppKitStepperViewTests: XCTestCase {
     @MainActor
     func testRangeAndIncrementAreAppliedBeforeTheValue() {

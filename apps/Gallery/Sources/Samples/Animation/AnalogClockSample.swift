@@ -1,6 +1,7 @@
 import StateUI
 
 /// A driven rotation, moved to real time by a plain Swift loop.
+@MainActor
 struct AnalogClockSample: SampleContent, ExampleContent {
     // listing: AnalogClockSample
     @State private var ticking = false
@@ -10,9 +11,9 @@ struct AnalogClockSample: SampleContent, ExampleContent {
     /// sweep them round in a blur.
     @State private var started = false
 
-    /// Which visit to this page the running loop belongs to. Each visit begins
-    /// a loop of its own, and this is what tells any earlier one - even one
-    /// still asleep when the next began - that its page is gone.
+    /// Which visit to this page the running loop belongs to. The page leaving
+    /// ends its loop: its sleep throws. `visit` tells an earlier loop on a
+    /// covered copy of this page that a newer visit took over.
     @State private var visit = 0
 
     /// The angle each hand is GOING to. Each hand's rotation is DRIVEN by
@@ -50,7 +51,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             // at one build while the clock runs.
             DebugInfoLabel()
 
-            ZStack().style("Card")
+            ZStack().style(.card)
                 .background(Palette.raised)
                 .stroke(Palette.outline)
                 .lineWidth(2)
@@ -77,7 +78,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             hand($mAngle, length: 84, width: 4, color: Palette.text)
             hand($sAngle, length: 96, width: 2, color: Palette.accent)
 
-            ZStack().style("Card")
+            ZStack().style(.card)
                 .background(Palette.accent)
                 .stroke(.transparent)
                 .shape(.roundedRectangle(6))
@@ -88,10 +89,11 @@ struct AnalogClockSample: SampleContent, ExampleContent {
         }
         .horizontalAlignment(.fill)
         .onCreated {
-            // Each visit starts a loop of its own and retires the last. The
-            // hands come back at the angles the state kept, and the first
-            // reading below ASSIGNS the time rather than flying through
-            // everything that passed while the page was away.
+            // The page leaving ends its loop: its sleep throws. `visit` tells
+            // an earlier loop on a covered copy of this page that a newer
+            // visit took over. The hands come back at the angles the state
+            // kept, and the first reading below ASSIGNS the time rather than
+            // flying through everything that passed while the page was away.
             visit += 1
             let mine = visit
             ticking = true
@@ -116,8 +118,8 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                     // is where the hand belongs now, so the arithmetic starts
                     // from it - never from the journey's value, which is
                     // wherever the host had got to when this reading came
-                    // in. `async let` starts all three at once; each is
-                    // short, because the movement IS the tick.
+                    // in. All three start as they are sent, and are awaited
+                    // after; each is short, because the movement IS the tick.
                     let atSecond = sAngle
                     let atMinute = mAngle
                     let atHour = hAngle
@@ -126,13 +128,12 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                     let toMinute = atMinute + (minute - atMinute).forwardTurn
                     let toHour = atHour + (hour - atHour).forwardTurn
 
-                    async let s: Bool = $sAngle.journey.move(to:
-                        toSecond, .eased(260, .backOut))
-                    async let m: Bool = $mAngle.journey.move(to:
-                        toMinute, .eased(300, .cubicOut))
-                    async let h: Bool = $hAngle.journey.move(to:
-                        toHour, .eased(300, .cubicOut))
-                    _ = try await (s, m, h)
+                    let s = $sAngle.journey.move(to: toSecond, .eased(260, .backOut))
+                    let m = $mAngle.journey.move(to: toMinute, .eased(300, .cubicOut))
+                    let h = $hAngle.journey.move(to: toHour, .eased(300, .cubicOut))
+                    try await s.arrived()
+                    try await m.arrived()
+                    try await h.arrived()
                 } else {
                     // The first reading SETS the hands: `value` is written, and
                     // the state to match, so nothing travels and nothing is awaited.

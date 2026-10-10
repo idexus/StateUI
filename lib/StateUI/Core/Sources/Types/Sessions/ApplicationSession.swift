@@ -7,8 +7,8 @@
 ///
 ///     @Environment(\.application) private var application
 ///
-///     Button("New window").onClicked { try await application.openWindow() }
-///     Button("Inspector").onClicked { try await application.openWindow(.inspector) }
+///     Button("New window").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow() }
+///     Button("Inspector").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.inspector) }
 ///
 /// A session is one opening of something declared: the application from its
 /// start to the end of its process, a scene from its first window opening to
@@ -18,6 +18,7 @@
 /// engine or a task alike.
 ///
 /// Design: docs/design/types/sessions.md#one-opening-of-something-declared
+@MainActor
 public final class ApplicationSession {
     /// Where the application stands: in front, behind another application, or
     /// out of sight, as the host maps its native application and window
@@ -25,7 +26,7 @@ public final class ApplicationSession {
     @State public internal(set) var phase: ApplicationPhase = .active
 
     /// What the application is, as the host describes it: its name, identifier, version and build, and the theme
-    /// the system asks for.
+    /// in force - the one `application.colorScheme` holds, else the one the system asks for - updated live.
     public let info = AppInfo()
 
     /// The sessions of the scenes standing right now, in the order they
@@ -87,7 +88,8 @@ public final class ApplicationSession {
     ///     }
     ///
     /// **A key left off this list is never read.** State declared with it
-    /// still saves, so its value arrives one launch late.
+    /// still saves, so its value arrives one launch late - and the library
+    /// says so once.
     ///
     /// Design: docs/design/types/sessions.md#kept-keys-are-declared
     @State public var persistentKeys: [PersistentKey] = []
@@ -102,7 +104,7 @@ public final class ApplicationSession {
     ///
     /// - Throws: `WindowError.unsupported` where the platform opens no second
     ///   window - a phone.
-    public nonisolated(nonsending) func openWindow() async throws {
+    public func openWindow() async throws {
         try OpenScenes.shared.open(nil)
     }
 
@@ -110,25 +112,25 @@ public final class ApplicationSession {
     /// where it does not stand: the one window of a `Window(type)`, or one more
     /// of a `WindowGroup(type)`.
     ///
-    ///     Button("Inspector").onClicked { try await application.openWindow(.inspector) }
+    ///     Button("Inspector").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.inspector) }
     ///
     /// - Throws: `WindowError.alreadyOpen` where its one window is open,
     ///   `WindowError.undeclared(type)` where no scene declares it,
     ///   `WindowError.wrongValue(type)` where it opens one per value, and
     ///   `WindowError.unsupported` where the platform opens no second window - a
     ///   phone.
-    public nonisolated(nonsending) func openWindow(_ type: WindowType) async throws {
+    public func openWindow(_ type: WindowType) async throws {
         try OpenScenes.shared.open(type)
     }
 
     /// Opens the window of `type` for `value` in the scene declaring it, which
     /// opens with it where it does not stand.
     ///
-    ///     Button("Open").onClicked { try await application.openWindow(.document, value: id) }
+    ///     Button("Open").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.document, value: id) }
     ///
     /// - Throws: `WindowError.alreadyOpen` where a window for that value is
     ///   open, and the rest of `WindowError` where it cannot open.
-    public nonisolated(nonsending) func openWindow<Value: Codable & Hashable>(
+    public func openWindow<Value: Codable & Hashable>(
         _ type: WindowType,
         value: Value
     ) async throws {
@@ -138,9 +140,10 @@ public final class ApplicationSession {
     /// Closes the window of `type` - every window of a `WindowGroup(type)` -
     /// its scene ending with its last window.
     ///
-    /// - Throws: `WindowError.notOpen` where none is open, and
-    ///   `WindowError.undeclared(type)` where no scene declares it.
-    public nonisolated(nonsending) func closeWindow(_ type: WindowType) async throws {
+    /// - Throws: `WindowError.notOpen` where none is open,
+    ///   `WindowError.undeclared(type)` where no scene declares it, and
+    ///   `WindowError.wrongValue(type)` where it opens one per value.
+    public func closeWindow(_ type: WindowType) async throws {
         try OpenScenes.shared.close(type)
     }
 
@@ -149,7 +152,7 @@ public final class ApplicationSession {
     ///
     /// - Throws: `WindowError.notOpen` where no window for that value is open,
     ///   and the rest of `WindowError` where it cannot close.
-    public nonisolated(nonsending) func closeWindow<Value: Codable & Hashable>(
+    public func closeWindow<Value: Codable & Hashable>(
         _ type: WindowType,
         value: Value
     ) async throws {

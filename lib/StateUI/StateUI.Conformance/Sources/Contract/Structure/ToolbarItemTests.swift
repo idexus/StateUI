@@ -70,8 +70,9 @@
 
     /// A page inside a navigation stack declaring `items` for its bar - again whenever `key` changes - with words and
     /// what stands `beside` them.
+    @MainActor
     static func page(
-        beside: [any View] = [], key: String = "", _ items: @escaping @Sendable () -> [ToolbarItem]
+        beside: [any View] = [], key: String = "", _ items: @escaping @MainActor () -> [ToolbarItem]
     ) -> some View {
         NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
             DeclaringPage(beside: beside.map { $0 }, key: key, items)

@@ -9,6 +9,7 @@ import UIKit
 import XCTest
 
 /// Where a view stands, as its handler hears it.
+@MainActor
 final class UIKitFrameReportTests: XCTestCase {
     /// A view says nothing of where it stands before a layout places it: the first report its handler hears is
     /// where it is laid out.

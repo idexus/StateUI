@@ -44,6 +44,7 @@ extension GTKRegistrations {
                 shown.attributesGiven = look.attributesGiven
                 shown.family = look.family
                 shown.color = look.color
+                shown.scales = look.scales
             }
         }
         if values.changed(PaddingElementContract.padding) {

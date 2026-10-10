@@ -14,9 +14,9 @@ extension LineHeightElement {
 }
 
 extension LineHeightElement where Self: VisualElement {
-    /// `lineHeight` from a state, `$x`: the host sets each new value as it
-    /// stands, and no view is rebuilt for it.
+    /// `lineHeight` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func lineHeight(_ state: Binding<Double>) -> Modified {
-        plain(LineHeightElementContract.lineHeight, by: state)
+        twin(LineHeightElementContract.lineHeight, by: state)
     }
 }

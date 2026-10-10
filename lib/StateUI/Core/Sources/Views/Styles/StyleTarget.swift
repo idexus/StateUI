@@ -11,6 +11,15 @@ public protocol StyleTarget: VisualElement {
     init()
 }
 
+extension StyleTarget {
+    /// The keyed style from the application's style sheet that this control wears.
+    ///
+    ///     Text("Welcome").style(.headline)
+    ///
+    /// A style without a key applies to every control of its type by itself.
+    public func style(_ key: StyleKey<Self>) -> Modified { setValue(VisualElementContract.style, Name(key.name)) }
+}
+
 extension Text: StyleTarget {}
 extension Button: StyleTarget {}
 extension TextField: StyleTarget {}

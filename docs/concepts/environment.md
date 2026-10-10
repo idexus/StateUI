@@ -78,9 +78,10 @@ the appropriate channel when a host carries that value:
 - `$account.name` reaches the member through the provided object;
 - `account.$name` borrows the `@State` declared on `Account.name` itself.
 
-Assigning a different object through `$account` is rejected. The ancestor owns
-which object it provides; descendants edit its properties or communicate a
-replacement through an explicit binding owned by that ancestor.
+`$account` lends members only: assigning a different object through it does
+not compile. The ancestor owns which object it provides; descendants edit its
+properties or communicate a replacement through an explicit binding owned by
+that ancestor.
 
 ## Overriding one branch
 
@@ -97,14 +98,14 @@ struct SavePanel: View {
     }
 }
 
-let offline = Device()
-offline.connectivity.networkAccess = .none
+let offline = Device(connectivity: Connectivity(networkAccess: .none))
 
 SavePanel().environment(offline)
 ```
 
 Only that branch sees the override. The process-wide provider remains the
-answer everywhere else.
+answer everywhere else. A fact is the host's to write: the application reads
+it, and a fake states its facts as it is made.
 
 ## What the library offers
 
@@ -121,8 +122,8 @@ to that field rather than to the whole object.
 | `\.device` | `Device` | what the device is (`info`), its `display`, `battery` and `connectivity` |
 | `\.locale` | `LocaleInfo` | the user's language, region, zone and conventions |
 
-The facts the host reports, and their ordered property schemas, are part of
-StateUI's contract:
+The facts the host reports, each group a typed value, are part of StateUI's
+contract:
 
 | Read as - type | Properties | Meaning and initial fallback |
 | --- | --- | --- |
@@ -131,17 +132,19 @@ StateUI's contract:
 | `device.display` - `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numeric values are `0` and enums `.unknown` until reported |
 | `device.info` - `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` | form factor, open platform name, hardware and system facts; text starts empty and closed values `.unknown` |
 | `locale` - `LocaleInfo` | `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `layoutDirection` | host-normalized language, region, IANA zone, clock and calendar conventions, and the way the language is written; text starts empty, the clock starts 12-hour, the week on Sunday, units metric, and the direction left to right |
-| `application.info` - `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `colorScheme` | manifest identity and live requested appearance; text starts empty and theme `.system` |
-| `application.phase` - `ApplicationPhase` | | process-wide visibility state; the host maps lifecycle to `.active`, `.inactive`, or `.background` |
+| `application.info` - `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, `accentColor` | manifest identity, live requested appearance and the user's accent; text starts empty, theme `.system` and accent `#0A84FF` until reported |
+| `application.phase` - `ApplicationPhase` | | process-wide visibility state; it starts `.active`, and the host maps lifecycle to `.active`, `.inactive`, or `.background` |
 
 A host may be unable to observe a fact. The documented fallback remains
 visible in that case; an empty string or `.unknown` is data, not a reason to
-guess. A malformed complete update is refused rather than partially
-applied. Closed enum values unknown to the runtime degrade to `.unknown` while
-open vocabulary, such as `device.info.platform`, stays authored text.
+guess. A host reports each fact group as one typed value; a field that does
+not change asks for no render. Closed enum values unknown to the runtime
+degrade to `.unknown`, a `Weekday` to `.sunday` and a `LayoutDirection` to
+`.leftToRight`, while open vocabulary, such as `device.info.platform`, stays
+authored text.
 
-Each of these is read by its name only: `@Environment var device: Device` stops
-the program as the view is made, naming `@Environment(\.device)`.
+Each of these is read by its name: `@Environment var device: Device` reads the
+same object, and says once that it is read as `@Environment(\.device)`.
 
 The closed vocabulary used by these fields is:
 
@@ -161,10 +164,10 @@ The closed vocabulary used by these fields is:
 | `ColorScheme` | `system`, `light`, `dark` |
 | `ApplicationPhase` | `active`, `inactive`, `background` |
 
-The [Platform contract](../platform-contract.md) is the implementation-status
-authority. A public provider describes the StateUI schema; it does not imply
-that every host can produce every fact. Where no checked host integration
-proves a capability, rely on the documented fallback.
+No conformance case gives a verdict for the standard facts: each host's page
+says which it supplies. A public provider describes the StateUI schema; it
+does not imply that every host can produce every fact. Where a host's page
+does not name one, rely on the documented fallback.
 
 ### Reading platform facts
 
@@ -207,7 +210,7 @@ The three sessions are read the same way, by name:
 
 | Name - session | Lifetime and ownership |
 | --- | --- |
-| `\.application` - `ApplicationSession` | one process; its facts, styles, default motion, persistent keys and storage, application phase, and open scenes |
+| `\.application` - `ApplicationSession` | one process; its facts, styles, default motion, application phase, kept keys, open scenes, and the opening and closing of windows |
 | `\.scene` - `SceneSession` | one application scene; scene phase, its windows, and its close operation |
 | `\.window` - `WindowSession` | one native window; lifecycle, title, geometry requests, chrome, translucency, and close operation |
 
@@ -252,9 +255,10 @@ VStack {
 }
 ```
 
-Both types are comparable lexicographically by their components and conform to
-`StateValue`, so they can be held in `@State`, bound to a picker, and carried
-without a formatter. Their text forms are invariant:
+Both types are comparable lexicographically by their components. `@State`
+holds any value; these conform to `StateValue`, which lets the host carry
+them, so they bind to a picker without a formatter. Their text forms are
+invariant:
 
 - `CalendarDate.text` is `YYYY-MM-DD`;
 - `ClockTime.text` is `HH:MM:SS` and omits milliseconds.
@@ -287,9 +291,9 @@ Text("Winter: \(winterOffset.components.seconds) seconds from UTC")
 
 `TimeZoneInfo.local()` returns an IANA identifier. `utcOffset(of:on:)`
 returns a Swift `Duration`, negative west of UTC; omit the zone for the local
-zone and omit the date for today. Supplying a date makes daylight-saving
-differences explicit. Offset transport uses signed minutes, so half-hour and
-quarter-hour zones need no special representation.
+zone and omit the date for the offset in effect now. Supplying a date makes
+daylight-saving differences explicit. Offset transport uses signed minutes, so
+half-hour and quarter-hour zones need no special representation.
 
 These calls throw when the host does not implement the act or returns a value
 of the wrong shape. Treat the active host's checked support as part of the
@@ -340,4 +344,5 @@ semantics it needs.
 - [Host contract](../internals/host-contract.md) defines typed state channels and host
   reconciliation.
 - [Platform contract](../platform-contract.md) is the checked implementation
-  matrix for standard facts, controls, properties, and events.
+  matrix for controls, properties, events and acts; it lists the standard
+  facts, which carry no mark.

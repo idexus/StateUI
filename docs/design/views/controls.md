@@ -7,7 +7,7 @@ and acts it declares, and the binding twins of its values.
 ## A control is a node and its modifiers
 
 ```text
-  public struct Slider: View, TintElement, SliderProperties {
+  public struct Slider: ElementView, TintElement, SliderProperties {
       public var node: Node                      Node(contract: SliderContract.self)
       init()                                     nothing set: what a Style<Slider> uses
       init(_ value: Double)                      the purpose value, one-way
@@ -15,14 +15,16 @@ and acts it declares, and the binding twins of its values.
       func value(_:) / minimum(_:) / …           properties, from SliderProperties
       func onValueChanged(_:)                    events, through onEvent(member)
   }
-  extension Aim where Target == ItemsView { … } a control's acts, through call(member)
+  extension Aim where Target == Map { … }       a control's acts, through call(member)
 ```
 
 What gives a control its purpose - a label's text, a picker's options, a
 path's outline, an image's source - goes in the initializer; everything else is
 a modifier (composition.md, what goes in the initializer). A two-way control
-takes its binding both ways - in the initializer and in a modifier of the same
-name (bindings.md, both spellings).
+whose bound value is its purpose takes its binding in the initializer and in a
+modifier of the same name; a picker and a radio button, whose initializers take
+their options and their caption, take it in the modifier alone (bindings.md,
+both spellings).
 
 ## Closed vocabularies are numbered here
 
@@ -93,9 +95,9 @@ method on; what it reports travels the other way, into a binding
 made of: an address as the kind and the address, a document as the kind, the
 document and its base address or nothing - three values whether or not there
 is a base address, so the host reads the same places every time and never tells
-the two apart by shape. A navigation's first report on Windows carries no
-reason, the source having been given before the browser existed, so
-`.unknown` there is an ordinary answer rather than a fault.
+the two apart by shape. WebView2 and WebKitGTK do not tell a step back from one
+forward, so a step through the history the program did not ask for reports
+`.unknown` there: an ordinary answer, not a fault.
 
 ## Canvas and path
 
@@ -137,9 +139,10 @@ is a state the tree describes and a rebuild cannot lose.
 
 A menu, a menu entry, a separator, a toolbar item and a map marker are elements
 but not views: each has a caption, a picture or a point and something to run,
-and no layout of its own. They take none of the modifiers a view has, belong
-in one place - a page's toolbar, a menu, a map - and are matched by their
-`.id()` or their position there.
+and no layout of its own. Of the modifiers a view has they take only `.id()`,
+and `.accessibilityIdentifier` on a menu entry or a toolbar item; they belong
+in one place - a page's toolbar, a menu, a map - and are matched there by
+their `.id()` or their position.
 
 ## Radio groups
 

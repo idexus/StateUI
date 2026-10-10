@@ -6,6 +6,7 @@
 import XCTest
 
 /// The rules every host's collection keeps alike: the changes told one by one, the end reached, a grid's columns.
+@MainActor
 final class ItemsRulesTests: XCTestCase {
     /// Removals come last first from the old list, insertions first first into the new one, and a list applied
     /// that way comes out as the new list.

@@ -13,6 +13,7 @@
 import Foundation
 import XCTest
 
+@MainActor
 final class VsCodeTests: XCTestCase {
     /// The repository's `.vscode`.
     private var directory: URL {

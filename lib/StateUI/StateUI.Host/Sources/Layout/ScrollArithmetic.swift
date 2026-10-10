@@ -22,10 +22,12 @@
         return LayoutSize(width: max(0, width + across), height: max(0, natural.height + down))
     }
 
-    /// The document's size in `viewport`, never smaller than it, and where the child stands in it.
+    /// The document's size in `viewport`, never smaller than it, and where the child stands in it laid out in
+    /// `direction`.
     @MainActor
     public static func arrange<Child: LayoutChild>(
-        _ item: Child, padding: Insets, orientation: ScrollOrientation, in viewport: LayoutSize
+        _ item: Child, padding: Insets, orientation: ScrollOrientation, in viewport: LayoutSize,
+        direction: LayoutDirection
     ) -> (document: LayoutSize, place: Rect) {
         let values = item.values
         let margin = values.margin
@@ -48,11 +50,12 @@
             option: values.vertical, stated: values.height, natural: natural.height,
             available: room.height, minimum: values.minimumHeight, maximum: values.maximumHeight)
 
-        return (document, Rect(
+        let place = Rect(
             x: Extent.start(option: values.horizontal, extent: width, start: room.x, available: room.width),
             y: Extent.start(option: values.vertical, extent: height, start: room.y, available: room.height),
             width: max(0, width),
-            height: max(0, height)))
+            height: max(0, height))
+        return (document, direction.places(place, in: Rect(x: 0, y: 0, width: document.width, height: document.height)))
     }
 
     /// Whether the content is held to the scroller's width: it scrolls only down, or not at all.

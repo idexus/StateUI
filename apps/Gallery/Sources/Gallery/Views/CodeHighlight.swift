@@ -29,8 +29,8 @@ struct CodeRun {
 /// scannable and cannot be wrong about code it does not understand - the worst
 /// it does is leave something uncoloured.
 enum CodeHighlight {
-    /// The colours, each right on both themes. `Color(light:dark:)` is bound
-    /// rather than resolved, so nothing here has to know which theme is on.
+    /// The colours, each right on both themes. `Color(light:dark:)` picks its
+    /// half as the run is built, so nothing here has to know which theme is on.
     private enum Ink {
         /// `let`, `func`, `if` - the words the language owns.
         static let keyword = Color(light: Color("#AF00DB"), dark: Color("#C586C0"))

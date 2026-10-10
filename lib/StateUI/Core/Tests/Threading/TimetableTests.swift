@@ -7,6 +7,7 @@
 import XCTest
 @testable import StateUI
 
+@MainActor
 final class TimetableTests: XCTestCase {
     /// Jobs come due in the order of their time, whatever order they were added in.
     func testJobsComeDueInTheOrderOfTheirTime() {

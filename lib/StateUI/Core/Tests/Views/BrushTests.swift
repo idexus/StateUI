@@ -9,6 +9,7 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class BrushTests: XCTestCase {
     /// One colour, and no geometry to speak of.
     func testASolidBrushIsItsKindAndItsColour() {

@@ -4,7 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `TextFieldContract` on a host: a field greets as it is typed into, and Enter submits it once.
+/// `TextFieldContract` on a host: a field greets as it is typed into, a password's words are heard as typed, and
+/// Enter submits it once.
 @_spi(Host) public enum TextFieldTests: ConformanceFamily {
     public static let name = "TextField"
 

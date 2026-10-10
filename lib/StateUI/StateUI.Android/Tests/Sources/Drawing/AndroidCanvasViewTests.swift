@@ -12,6 +12,7 @@ final class AndroidCanvasViewTests: XCTestCase {
         [
             ("testTheInstructionsDrawInPointsAndInOrder", testTheInstructionsDrawInPointsAndInOrder),
             ("testAFilledArcIsAWedge", testAFilledArcIsAWedge),
+            ("testADrawingRunningPastItsListsStopsThere", testADrawingRunningPastItsListsStopsThere),
             ("testAFingersPressDragAndReleaseArriveInPoints", testAFingersPressDragAndReleaseArriveInPoints),
         ]
     }
@@ -37,6 +38,29 @@ final class AndroidCanvasViewTests: XCTestCase {
             let canvas = try XCTUnwrap(host.views(AndroidCanvasView.self).first)
 
             XCTAssertEqual(canvas.pixels(at: [(5, 5), (25, 5), (35, 5)]), [Self.red, Self.blue, Self.blue])
+        }
+    }
+
+    /// A drawing whose last record runs past the end of its lists draws what stands before it and stops there:
+    /// no exception leaves the relay.
+    func testADrawingRunningPastItsListsStopsThere() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                Canvas { Draw.fillColor(.blue) }.width(20).height(10).horizontalAlignment(.start)
+            }
+            host.layOut()
+            let canvas = try XCTUnwrap(host.views(AndroidCanvasView.self).first)
+            let drawn = HostDrawing([Draw.fillColor(.red), Draw.fillRectangle(x: 0, y: 0, width: 20, height: 10)])
+            let cut = HostDrawing([Draw.fillRectangle(x: 0, y: 0, width: 20, height: 10)]).ints
+            Java.frame {
+                Java.call(
+                    canvas.reference, JavaAPI.setDrawing, .object(Java.ints(drawn.ints + cut)),
+                    .object(Java.floats(drawn.numbers.map(Float.init))),
+                    .object(Java.array(of: JavaAPI.string, [])))
+            }
+            let raised = Java.exceptionsCleared
+            XCTAssertEqual(canvas.pixels(at: [(5, 5)]), [Self.red], "what stands before the cut record is drawn")
+            XCTAssertEqual(Java.exceptionsCleared, raised, "an exception left the relay")
         }
     }
 

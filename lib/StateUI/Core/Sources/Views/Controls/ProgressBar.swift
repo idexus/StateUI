@@ -46,6 +46,6 @@ extension ProgressBar {
     /// `progress` from a state, `$x`: the host animates the property to each
     /// new value, and no view is rebuilt for it.
     public func progress(_ state: Binding<Double>) -> Modified {
-        journey(.progress, by: state)
+        twin(ProgressBarContract.progress, by: state)
     }
 }

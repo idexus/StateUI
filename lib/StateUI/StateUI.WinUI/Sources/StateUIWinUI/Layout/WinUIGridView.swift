@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A Grid: the core's grid arithmetic over the relay's panel.
+/// A Grid: the host layer's grid arithmetic over the relay's panel.
 @MainActor
 final class WinUIGridView: WinUITravellingLayout {
     var rows: [GridLength] = [] {

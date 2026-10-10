@@ -7,6 +7,7 @@
 @testable import StateUIGTKDriver
 import XCTest
 
+@MainActor
 final class GTKIndicatorViewTests: XCTestCase {
     /// A bar fills in its tint as far as its work went, and no further.
     func testABarFillsInItsTintAsFarAsItsWorkWent() {

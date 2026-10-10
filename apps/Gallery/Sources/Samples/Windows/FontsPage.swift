@@ -31,7 +31,7 @@ struct FontsPage: View {
             // The window closes itself, through its own session.
             Button("Done")
                 .horizontalAlignment(.end)
-                .onClicked { try await window.close() }
+                .onClicked(gate: .ignoreWhileRunning) { try await window.close() }
         }
         .spacing(10)
         .padding(16)

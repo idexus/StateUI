@@ -31,7 +31,8 @@ extension MenuItemElement {
     }
 
     /// Whether it responds to selection. A disabled item stays visible, so the
-    /// user still knows the action exists.
+    /// user still knows the action exists. An item declared in a disabled view
+    /// is disabled with it.
     public func isEnabled(_ value: Bool) -> Modified {
         setValue(MenuItemElementContract.isEnabled, value)
     }
@@ -40,7 +41,19 @@ extension MenuItemElement {
 extension MenuItemElement where Modified == Self {
     /// What it does - run when the item is chosen, clicked or tapped. A second
     /// `.onClicked` runs beside the first, like every typed event modifier.
+    public func onClicked(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+        onClicked(gate: .none) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onClicked(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        modified { $0.addHandler(MenuItemElementContract.clicked.token, gate: gate, handler) }
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClicked(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onClicked(_ handler: @escaping EventHandler) -> Self {
-        modified { $0.addHandler(MenuItemElementContract.clicked.token, handler) }
+        fatalError("unavailable")
     }
 }

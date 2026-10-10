@@ -8,6 +8,7 @@ import UIKit
 import XCTest
 
 /// What pages and their arrangements say on UIKit's bars and the window's scene.
+@MainActor
 final class UIKitPagesTests: XCTestCase {
     /// Tabs pushed onto a stack are its last place and name the window by their own title, on the bar and the
     /// scene alike - never by what they show: their pages name their tabs alone.

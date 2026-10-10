@@ -9,6 +9,7 @@ import XCTest
 @testable import StateUIAppKit
 
 /// The locale and the battery the host reports are the Mac's own, each told to the core in one report.
+@MainActor
 final class AppKitEnvironmentTests: XCTestCase {
     /// The locale report is the user's locale, its zone and its language's direction.
     @MainActor

@@ -12,11 +12,11 @@
 ///             window.width = 1100
 ///             window.height = 800
 ///         }
-///         .onChanged(window.phase) {
+///         .onChanged(window.phase, gate: .waitForPrevious) {
 ///             if window.phase == .stopped { try await save() }
 ///         }
 ///
-///     Button("Close").onClicked { try await window.close() }
+///     Button("Close").onClicked(gate: .ignoreWhileRunning) { try await window.close() }
 ///
 /// Every window offers its own, so a view acts on the window it is in, and
 /// what the window is told stands until it is told otherwise. See
@@ -27,6 +27,7 @@
 /// and changing x does not restore an old y. A `nil` axis stays under native
 /// window management, including platform restoration and the user's resizing.
 /// Full-screen hosts may retain these values without presenting geometry.
+@MainActor
 public final class WindowSession {
     /// Where the window stands in its life right now. Starts `.created`.
     @State public internal(set) var phase: WindowPhase = .created
@@ -34,14 +35,14 @@ public final class WindowSession {
     /// What the window is called in native window chrome and system surfaces.
     @State public var title: String? = nil
 
-    /// The horizontal position of the outer frame's top-left corner in the
-    /// host's desktop coordinate space, where the platform lets an
-    /// application place its windows.
+    /// The horizontal position of the outer frame's top-left corner, counted
+    /// from the top-left corner of the work area of the screen the window
+    /// stands on, where the platform lets an application place its windows.
     @State public var x: Double? = nil
 
-    /// The vertical position of the outer frame's top-left corner in the
-    /// host's desktop coordinate space, where the platform lets an
-    /// application place its windows.
+    /// The vertical position of the outer frame's top-left corner, counted
+    /// from the top-left corner of the work area of the screen the window
+    /// stands on, where the platform lets an application place its windows.
     @State public var y: Double? = nil
 
     /// The requested width of the window's content area.
@@ -109,11 +110,9 @@ public final class WindowSession {
     /// Closes the window - and where it is its scene's last, the scene with it.
     ///
     /// - Throws: `WindowError.noScene` for a window of no open scene - one
-    ///   whose scene has ended included, whoever still holds it -
-    ///   `WindowError.notOpen` for one already closed, and
-    ///   `WindowError.unsupported` where the host cannot close this window
-    ///   independently.
-    public nonisolated(nonsending) func close() async throws {
+    ///   whose scene has ended included, whoever still holds it - and
+    ///   `WindowError.notOpen` for one already closed.
+    public func close() async throws {
         guard let record, OpenScenes.shared.record(id: record.id) === record else {
             throw WindowError.noScene
         }

@@ -33,6 +33,7 @@ final class UIKitPickerView: UIButton {
         var configuration = UIButton.Configuration.plain()
         configuration.indicator = .popup
         self.configuration = configuration
+        followTextSize()
         showsMenuAsPrimaryAction = true
         contentHorizontalAlignment = .leading
     }
@@ -62,8 +63,7 @@ final class UIKitPickerView: UIButton {
 
     /// The words' look - the button's own where it says nothing - and where they stand across it.
     func setLook(_ look: TextLook, alignment: TextAlignment) {
-        configuration?.titleTextAttributesTransformer =
-            look.titleTransformer(standing: .preferredFont(forTextStyle: .body), color: tintColor)
+        configuration?.titleTextAttributesTransformer = look.titleTransformer(color: tintColor)
         contentHorizontalAlignment = switch alignment {
         case .start: .leading
         case .center: .center

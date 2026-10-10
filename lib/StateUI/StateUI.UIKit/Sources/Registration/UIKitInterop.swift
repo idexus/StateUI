@@ -106,25 +106,19 @@ public enum StateUIEvents {
         UIKitRegistrations.registry.raises(event)
     }
 
-    /// Raises an event of the application's - one no control raises - with the
-    /// values its contract declares.
-    ///
-    /// Every `HostEvents.on` subscription to the member hears it, each handler
-    /// queued on this library's executor. Safe from any thread, so an
-    /// application wires its sources where the platform reports them.
+    /// Raises an event of the application's - one no control raises - with the values its contract declares, from
+    /// any thread: every `HostEvents.on` subscription to the member hears it in a job of the UI thread's soon after,
+    /// in the order raised. A raise nobody hears is an ordinary one.
     ///
     ///     StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
     ///   - value: what it carries, in the order its contract declares.
-    /// - Returns: how many subscriptions heard it - a raise nobody hears is an
-    ///   ordinary zero.
-    @discardableResult
     public nonisolated static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
-    ) -> Int {
+    ) {
         CoreLink().raise(event, repeat each value)
     }
 }
@@ -142,8 +136,8 @@ public enum StateUIControls {
     /// is added the same way.
     ///
     /// The Swift half is the application's already - a contract, and a `View`
-    /// whose node that contract makes. This is the other half, and the only
-    /// one this host was missing: what the element IS on screen.
+    /// whose node that contract makes. This is the other half: what the
+    /// element is on screen.
     ///
     /// The view's own class is named where the closure makes it, so every
     /// applier below is handed that class rather than a bare `UIView`.

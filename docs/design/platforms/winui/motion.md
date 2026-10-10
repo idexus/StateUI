@@ -40,18 +40,19 @@ at its destination at once, and a journey's waiter hears it arrive.
 
 ## Joining and leaving
 
-A stack is a travelling layout: when a patch reaches it, its children travel
-to their new places ([layout motion](../../host/motion.md#layout-motion)). The
-display's frame writes each travelling child's place between WinUI's layout
-passes, and the place lands in the arrangement it asks for
-([a place between passes](layout.md#a-place-between-passes)); that
-arrangement asks for the same places and keeps the running animation.
+A stack, a grid and a ZStack are travelling layouts: when a patch reaches
+one, its children travel to their new places ([layout
+motion](../../host/motion.md#layout-motion)). The display's frame writes each
+travelling child's place between WinUI's layout passes, and the place lands
+in the arrangement it asks for ([a place between
+passes](layout.md#a-place-between-passes)); that arrangement asks for the
+same places and keeps the running animation.
 
 By the host layer's rule ([showing and
 hiding](../../host/motion.md#showing-and-hiding)), a child that joins a
-standing stack fades in while the others make room. A
-child the tree hides fades out first, still holding its room, and only then
-goes: the stack closes over it as over a row a patch removed. A child shown
-again comes up from nothing, or, shown again on its way out, from where the
-fade has reached. Under a layout that moves nothing, or with less motion, it
-goes and comes at once.
+standing layout fades in while the others make room. A child the tree hides
+fades out first, still holding its room, and only then goes: the layout
+closes over it as over a row a patch removed. A child shown again comes up
+from nothing, or, shown again on its way out, from where the fade has
+reached. Under a layout that moves nothing, or with less motion, it goes and
+comes at once.

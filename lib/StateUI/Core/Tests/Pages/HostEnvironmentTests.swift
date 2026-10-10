@@ -59,18 +59,19 @@ private final class Builds {
 
 /// The shape of an application: not a view, built outside any walk, so
 /// nothing ever fills its slots - the unfilled-slot fallback is what answers.
+@MainActor
 private struct AppShaped {
     @Environment(\.device) var device
     @Environment(\.application) var application
 }
 
+@MainActor
 final class HostEnvironmentTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         // The providers are process-wide on purpose, so every mutation here
         // is put back - a later test reading the headless defaults must find
         // them.
@@ -112,7 +113,6 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.locale.isMetric = true
         StandardEnvironment.locale.layoutDirection = .leftToRight
         Renderer.shared.clearInvalidation()
-        super.tearDown()
     }
 
     private var changed: Set<ObjectIdentifier> { Renderer.shared.pendingChanges }

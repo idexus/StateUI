@@ -9,6 +9,7 @@ import AppKit
 import StateUIConformance
 import XCTest
 
+@MainActor
 final class AppKitScrollViewTests: XCTestCase {
     @MainActor
     func testHorizontalScrollerKeepsItsContentsMeasuredHeight() {

@@ -142,8 +142,8 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Nothing about it is the user's to change, so there is no binding "
-                + "overload - `position` is told to it.")
+            Text("Nothing about it is the user's to change, so `position` has no binding "
+                + "overload - it is told to it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

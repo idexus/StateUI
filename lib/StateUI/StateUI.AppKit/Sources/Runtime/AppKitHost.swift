@@ -11,9 +11,8 @@ import QuartzCore
 /// Runs a StateUI application as native AppKit controls in the current process.
 ///
 /// The host materializes StateUI's application structure, page containers,
-/// foundational layouts and controls as AppKit objects. Unsupported controls
-/// remain visible as diagnostic labels, so each subsequent adapter can be
-/// delivered as a complete vertical slice.
+/// foundational layouts and controls as AppKit objects. A control this host
+/// does not present shows as a diagnostic label in its place.
 @MainActor
 public enum StateUIAppKit {
     /// Starts `NSApplication` and displays the application already registered

@@ -6,8 +6,8 @@
 ///
 /// The type says what a host reads its lanes as, so a value said from a state
 /// reaches the control as the same value said directly. Numbers unless said:
-/// `Bool` is read as a Boolean, `Color` as a colour, and a `StateChoice` as its
-/// case.
+/// `Bool` is read as a Boolean, `Color` as a colour, a `Material` as a material
+/// and a `StateChoice` as its case.
 /// Design: docs/design/core/state.md#what-a-host-reads-lanes-as
 public protocol LaneValue: StateValue {
     /// What a host reads this value's lanes as.

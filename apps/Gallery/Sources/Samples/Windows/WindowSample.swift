@@ -1,6 +1,6 @@
 import StateUI
 
-/// Native window identity, geometry, constraints, operations and translucency.
+/// Native window identity, geometry, constraints and operations - and what it is made of, as the gallery's look says.
 struct WindowSample: SampleContent, ExampleContent {
     // listing: WindowSample
     @Environment(\.window) private var window
@@ -8,7 +8,7 @@ struct WindowSample: SampleContent, ExampleContent {
     @State private var renames = 0
     @State private var maximizable = true
     @State private var minimizable = true
-    @State private var translucent = false
+    @State private var bounded = false
     @State private var width = 0.0
     @State private var height = 0.0
     // listing: end
@@ -17,11 +17,13 @@ struct WindowSample: SampleContent, ExampleContent {
     static let title = "Window"
     static let summary = "Change the native window while it stays on screen."
 
-    static var code: String { Listings.joined("MainPage.created", "WindowSample") }
+    static var code: String { Listings.joined("MainPage.created", "MainPage.look", "WindowSample") }
 
     var notes: (any View)? {
-        Text("On an iPad and a phone the system sizes and places a window - the user drags its corner - "
-            + "so the size, the place, maximizing, minimizing and translucency do nothing there.")
+        Text("On an iPad and a phone the system sizes and places a window, so the size, the place, the "
+            + "bound, maximizing and minimizing do nothing there. On GNOME the place, maximizing, "
+            + "minimizing and the bound do nothing. What the window is made of - its background - is "
+            + "the gallery's look, which the Appearance sample chooses.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
@@ -75,9 +77,12 @@ struct WindowSample: SampleContent, ExampleContent {
                     window.isMinimizable = minimizable
                 }
 
-            option("Translucent", id: "window.translucent", value: $translucent)
-                .onChanged(translucent) {
-                    window.background = translucent ? .blur(.regular) : nil
+            // A maximum bounds maximizing too: maximized, the window grows to
+            // it at most, and on a Mac it takes no full screen.
+            option("At most 1200 × 900", id: "window.bounded", value: $bounded)
+                .onChanged(bounded) {
+                    window.maximumWidth = bounded ? 1200 : nil
+                    window.maximumHeight = bounded ? 900 : nil
                 }
 
             Text("Sample frame: \(Int(width)) × \(Int(height))")
@@ -89,9 +94,6 @@ struct WindowSample: SampleContent, ExampleContent {
             width = frame.width
             height = frame.height
         }
-        // The switch starts where the window stands - on, where the gallery's
-        // window opens translucent.
-        .onCreated { translucent = window.background == .blur(.regular) }
     }
 
     /// An action that writes the surrounding window session.

@@ -29,7 +29,7 @@ private struct Calling: View {
 
     var body: some View {
         VStack {
-            Button("Ask").onClicked {
+            Button("Ask").onClicked(gate: .ignoreWhileRunning) {
                 do {
                     let doubled = try await stateUICall(InteropTestContract.doubled, 21)
                     answer = "\(doubled)"
@@ -37,7 +37,7 @@ private struct Calling: View {
                     answer = "thrown: \(error)"
                 }
             }
-            Button("Ask nobody").onClicked {
+            Button("Ask nobody").onClicked(gate: .ignoreWhileRunning) {
                 do {
                     try await stateUICall(InteropTestContract.unregistered)
                     answer = "that should have thrown"
@@ -101,7 +101,7 @@ private struct Lamp: ElementView {
         setValue(LampContract.lit, value)
     }
 
-    func onPulled(_ handler: @escaping ValueEventHandler<Int>) -> Self {
+    func onPulled(_ handler: @escaping @MainActor (Int) throws -> Void) -> Self {
         onEvent(LampContract.pulled, handler)
     }
 }
@@ -121,7 +121,7 @@ private struct Pulling: View {
     var body: some View {
         VStack {
             Lamp().lit(true).onPulled { pulls in said = "pulled \(pulls)" }.aim(lamp)
-            Button("Flash").onClicked {
+            Button("Flash").onClicked(gate: .ignoreWhileRunning) {
                 do {
                     try await lamp.flash()
                     said = "flashed"
@@ -241,10 +241,9 @@ final class AndroidInteropTests: XCTestCase {
             StateUIEvents.raises(InteropTestContract.spoke)
             let host = AndroidRenderer.running { Calling() }
 
-            let heard = StateUIEvents.raise(InteropTestContract.spoke, "hello")
+            StateUIEvents.raise(InteropTestContract.spoke, "hello")
             host.settle { host.views(AndroidTextView.self).first?.text != "-" }
 
-            XCTAssertEqual(heard, 1)
             XCTAssertEqual(host.views(AndroidTextView.self).map(\.text), ["heard hello"])
         }
     }

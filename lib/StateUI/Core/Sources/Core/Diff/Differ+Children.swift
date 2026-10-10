@@ -39,18 +39,20 @@ extension Differ {
         var claimed: Set<ElementID> = []
         var used: Set<ElementID> = []
         var unkeyedSoFar = 0
-        var manualSeen: [String: Int] = [:]
+        var manualSeen: [String: (count: Int, identity: AnyHashable?)] = [:]
 
         for (index, childNode) in node.children.enumerated() {
             // A repeated `.id()` takes a stable variant: the id, a NUL, its occurrence.
             // Design: docs/design/core/identity-and-diffing.md#repeated-ids
             var childNode = childNode
             if let rawId = childNode.id {
-                let occurrence = manualSeen[rawId, default: 0]
-                manualSeen[rawId] = occurrence + 1
+                let seen = manualSeen[rawId]
+                let occurrence = seen?.count ?? 0
+                manualSeen[rawId] = (occurrence + 1, seen?.identity ?? childNode.identity)
 
                 if occurrence > 0 {
                     childNode.id = "\(rawId)\u{0}\(occurrence)"
+                    Self.sayRepeated(rawId, first: seen?.identity, again: childNode.identity)
                 }
             }
 
@@ -139,5 +141,18 @@ extension Differ {
         }
 
         return candidate
+    }
+
+    /// Says a repeated identity once: one value written twice, or two values that describe themselves alike.
+    /// Design: docs/design/core/identity-and-diffing.md#repeated-ids
+    static func sayRepeated(_ id: String, first: AnyHashable?, again: AnyHashable?) {
+        if let first, let again, first != again {
+            complain("two different identities describe alike as \"\(id)\": a description that says less than the "
+                + "value - a class prints its type's name - gives two values one identity; identify each by what it "
+                + "holds (`id: \\.path`).")
+        } else {
+            complain("two siblings share the identity \"\(id)\": the second is told apart by where it stands, not by "
+                + "what it is; give each its own (`id:`).")
+        }
     }
 }

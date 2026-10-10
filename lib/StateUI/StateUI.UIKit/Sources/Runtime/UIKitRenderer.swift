@@ -7,7 +7,7 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 /// The UIKit host's runtime: the host layer's (`HostRuntime`) over UIKit's windows - each StateUI window in a
-/// window scene iOS connected - and the core woken on UIKit's main queue.
+/// window scene iOS connected - and the core turned after each pass of the main run loop.
 /// Design: docs/design/platforms/uikit/runtime.md
 @MainActor
 final class UIKitRenderer {
@@ -47,8 +47,7 @@ final class UIKitRenderer {
     /// UIKit's part of the files the user opens and saves, and of what iOS launches.
     private(set) lazy var fileToolkit = UIKitFileToolkit(renderer: self)
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
-        answered: { [unowned self] in runtime.pump.turn() })
+        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree })
 
     /// The key a scene's session keeps its window's record under, for iOS to hand back as it restores the scene.
     static let recordKey = "StateUI.Window"
@@ -64,6 +63,9 @@ final class UIKitRenderer {
 
     private var started = false
 
+    /// The turn after every pass of the main run loop, once the host has started.
+    var turns: RunLoopTurns?
+
     /// The menu bar as it was last built.
     private var menuBarSaid = ""
 
@@ -74,8 +76,7 @@ final class UIKitRenderer {
         frameClock = clock.map { UIKitFrameClock(now: $0, ticksWithTheDisplay: false) } ?? UIKitFrameClock()
         self.preferences = preferences
         self.reducesMotion = reducesMotion
-        runtime.displayCycle.presenter = self
-        runtime.pump.presenter = self
+        runtime.presenter = self
         // Nothing renders before iOS connects the first scene: a window it kept opens its StateUI scene with what
         // that kept.
         runtime.pump.waitsForFirstWindow = true
@@ -93,20 +94,26 @@ final class UIKitRenderer {
         runtime.tree.root?.uiKit.reportFocus()
     }
 
-    /// Starts the runtime as the application launches: what the host realizes and what the device is, then the core
-    /// woken on the main queue whenever it has work.
+    /// Starts the runtime as the application launches: what the host realizes and what the device is, then a turn
+    /// after every pass of the main run loop where the core has work.
+    /// Design: docs/design/host/runtime.md#the-turn-on-apple
     func start() {
         guard !started else { return }
         started = true
-        runtime.core.setRealization(UIKitRegistrations.registry.realization, unrealized: UIKitRealization.unrealized)
-        reportEnvironment()
-        environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
-        hydratePersistentState()
-        runtime.tree.followTheLanguagesDirection()
-        let core = runtime.core
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            core.ringForever { DispatchQueue.main.async { self?.runtime.pump.turn() } }
-        }
+        runtime.start(
+            realizing: UIKitRegistrations.registry.realization, unrealized: UIKitRealization.unrealized,
+            environment: {
+                reportEnvironment()
+                environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
+            },
+            kept: hydratePersistentState, turns: startTurns)
+    }
+
+    /// Takes a turn after every pass of the main run loop, where the core has work for one.
+    /// Design: docs/design/host/runtime.md#the-turn-on-apple
+    func startTurns() {
+        guard turns == nil else { return }
+        turns = RunLoopTurns(runtime.pump)
     }
 
     /// Asks iOS for a scene for a window the tree holds and no scene stands for - on an iPad another window.
@@ -353,32 +360,17 @@ final class UIKitRenderer {
     }
 }
 
-extension UIKitRenderer: TurnPresenter {
+extension UIKitRenderer: HostPresenter {
     func presentRendered() {
         synchronizeWindows()
     }
 
+    func presentFrame(movedChrome: Bool) {
+        if movedChrome { synchronizeWindows() }
+    }
+
     func perform(_ call: HostActCall) {
         acts.perform(call)
-    }
-}
-
-extension UIKitRenderer: FramePresenter {
-    var wantsFrames: Bool {
-        runtime.frames.wantsFrames
-    }
-
-    func commitUserReports(now: Double) {
-        runtime.frames.commit(now: now)
-    }
-
-    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        let impact = runtime.tree.present(states: states, properties: properties)
-        if impact.windowChrome { synchronizeWindows() }
-    }
-
-    func renderIfNeeded() {
-        if runtime.core.needsRender { runtime.pump.turn() }
     }
 }
 #endif

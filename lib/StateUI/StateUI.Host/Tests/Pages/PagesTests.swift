@@ -78,23 +78,54 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(told, [9, 10])
     }
 
-    /// A tabbed view's tabs stand in the window's row down its stacks and split view details, and nowhere else.
+    /// A tabbed view's tabs stand in the window's row down its stacks, its split view details and a modal stack's
+    /// root - the page the window shows - and nowhere else: never in a sidebar, a tab of another or a sheet.
     func testTabsStandInTheWindowDownItsStacksAndDetails() throws {
         let tabs = { (id: String) in self.node(id, .tabView, children: [self.node("\(id).page", .page)]) }
         let runtime = runtime(node("window", .window, children: [
-            node("split", .splitView, children: [
-                tabs("sidebar"),
-                node("stack", .navigationStack, children: [node("detail", .tabView, children: [tabs("inner")])]),
+            node("modal", .modalStack, children: [
+                node("split", .splitView, children: [
+                    tabs("sidebar"),
+                    node("stack", .navigationStack, children: [node("detail", .tabView, children: [tabs("inner")])]),
+                ]),
+                tabs("sheet"),
             ]),
-            node("sheets", .modalStack, children: [tabs("sheet")]),
         ])) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
         let stands = { (id: String) in root.first(id: .manual(id))?.tabsStandInWindow }
 
-        XCTAssertEqual(stands("detail"), true)
+        XCTAssertEqual(stands("detail"), true, "down a modal stack's root, a split view's detail and a stack")
+        XCTAssertTrue(root.first(id: .manual("modal"))?.visibleTabView === root.first(id: .manual("detail")))
         XCTAssertEqual(stands("sidebar"), false, "a sidebar keeps its own row")
         XCTAssertEqual(stands("inner"), false, "a tab of another keeps its own row")
         XCTAssertEqual(stands("sheet"), false, "a sheet keeps its own row")
+
+        let bare = self.runtime(node("window", .window, children: [
+            node("modal", .modalStack, children: [tabs("root")]),
+        ])) { _ in }
+        XCTAssertEqual(bare.tree.root?.first(id: .manual("root"))?.tabsStandInWindow, true, "a modal stack's root")
+    }
+
+    /// A page's bar says its title; a sidebar's page that says none - itself, or the root of a stack there - shows the
+    /// application's name, as a sidebar stands under it; any other page says none.
+    func testAnUntitledSidebarShowsTheApplicationsName() throws {
+        let titled = [Prop.title: HostValue.string("Folders")]
+        let runtime = runtime(node("window", .window, children: [
+            node("split", .splitView, children: [
+                node("menu", .navigationStack, children: [node("sidebar", .page)]),
+                node("detail", .page),
+            ]),
+        ])) { _ in }
+        let root = try XCTUnwrap(runtime.tree.root)
+        let title = { (id: String) in root.first(id: .manual(id))?.barTitle(applicationName: "Notes") }
+
+        XCTAssertEqual(title("sidebar"), "Notes", "an untitled sidebar")
+        XCTAssertEqual(title("detail"), "", "an untitled detail")
+
+        let named = self.runtime(node("window", .window, children: [
+            node("split", .splitView, children: [node("sidebar", .page, titled), node("detail", .page)]),
+        ])) { _ in }
+        XCTAssertEqual(named.tree.root?.first(id: .manual("sidebar"))?.barTitle(applicationName: "Notes"), "Folders")
     }
 
     /// A stack shows its bar over a page that keeps one, and over tabs only where the chosen tab stands in no stack of
@@ -132,6 +163,22 @@ final class PagesTests: XCTestCase {
     }
 
     /// A tab the tree asks for anew is chosen; the user's choice stands where it is another tab there is.
+    /// A tab the user chooses on a tab view with no selection bound tells its pages at once: the phases the choice
+    /// queues take a turn of their own, whatever else the choice carries.
+    func testATabChosenWithNothingBoundTellsItsPagesAtOnce() throws {
+        let runtime = HostRuntime.still()
+        runtime.tree.apply(node("window", .window, children: [node("tabs", .tabView, children: [
+            node("a", .page, events: [.appearing: 2, .disappearing: 3]),
+            node("b", .page, events: [.appearing: 4, .disappearing: 5]),
+        ])]), complete: true)
+        _ = WindowPresentation().show(try XCTUnwrap(runtime.tree.root), in: runtime.lifecycle)
+
+        let tabs = try XCTUnwrap(runtime.tree.root?.first(id: .manual("tabs")))
+        runtime.tabChosen(tabs, from: 0, to: 1)
+
+        XCTAssertFalse(runtime.pump.handlers.hasQueued, "the pages' phases wait for a turn nothing takes")
+    }
+
     func testATabChoiceFollowsTheTreeAndTheUser() {
         var choice = TabChoice()
         XCTAssertEqual(choice.shown, 0)
@@ -164,6 +211,22 @@ final class PagesTests: XCTestCase {
 
         var narrow = SidebarAdaptation()
         XCTAssertFalse(narrow.room(500, breakpoint: 700, shown: false))
+    }
+
+    /// A sidebar stands beside the detail from the breakpoint and over it below; one shown beside the detail closes
+    /// as the window narrows it over, and nothing opens it as the window widens.
+    func testASidebarBesideTheDetailClosesAsTheWindowNarrowsItOver() {
+        var adaptation = SidebarAdaptation()
+        XCTAssertEqual(adaptation.place(900, breakpoint: 700, shown: true).beside, true)
+        let narrowed = adaptation.place(600, breakpoint: 700, shown: true)
+        XCTAssertFalse(narrowed.beside)
+        XCTAssertTrue(narrowed.closes, "beside, then over")
+        XCTAssertFalse(adaptation.place(500, breakpoint: 700, shown: true).closes, "over already: the user's to close")
+        XCTAssertFalse(adaptation.place(900, breakpoint: 700, shown: false).closes)
+        XCTAssertFalse(adaptation.place(600, breakpoint: 700, shown: false).closes, "a hidden one has nothing to close")
+
+        var first = SidebarAdaptation()
+        XCTAssertFalse(first.place(600, breakpoint: 700, shown: true).closes, "placed over from the start")
     }
 
     /// An action's words stand on the bar beside its picture only where it says so, and always where it has none.

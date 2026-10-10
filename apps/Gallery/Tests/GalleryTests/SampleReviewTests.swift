@@ -7,6 +7,7 @@ import XCTest
 /// A sample's notes are read again whenever what they speak of changes. Its listings follow its code by
 /// themselves; its notes are prose, so a fingerprint of the sample's file and of every file its listings are
 /// cut from stands in `SampleReviews.txt`, recorded once they were read against them.
+@MainActor
 final class SampleReviewTests: XCTestCase {
     /// Where the fingerprints stand - beside the test target, which reads it as a file rather than a resource.
     private static let reviews = GallerySources.gallery.appendingPathComponent("Tests/SampleReviews.txt")

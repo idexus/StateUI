@@ -140,8 +140,8 @@ private struct LeavingOpeningPage: View {
     var body: some View {
         let application = self.application
         return VStack {
-            Button("Open").onClicked { try await application.openWindow(WindowType("leave.tool")) }
-            Button("Close").onClicked { try await application.closeWindow(WindowType("leave.tool")) }
+            Button("Open").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(WindowType("leave.tool")) }
+            Button("Close").onClicked(gate: .ignoreWhileRunning) { try await application.closeWindow(WindowType("leave.tool")) }
         }
     }
 }

@@ -22,6 +22,7 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 private final class Session {
     @State var name = "guest"
     @State var visits = 0
@@ -29,6 +30,7 @@ private final class Session {
 
 /// A second context type: types are independent domains, and a write to one
 /// must never rebuild the other's readers.
+@MainActor
 private final class Theme {
     @State var accent = "violet"
 }
@@ -113,9 +115,9 @@ private struct Holder: View {
     }
 }
 
+@MainActor
 final class EnvironmentTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
     }
 
@@ -338,5 +340,14 @@ final class EnvironmentTests: XCTestCase {
             "WindowSession is the library's: read it by its name, @Environment(\\.window) private var window.")
         XCTAssertEqual(Environment<Device>.refusal?.contains("@Environment(\\.device)"), true)
         XCTAssertNil(Environment<Session>.refusal, "an application's own object is read by its type")
+    }
+
+    /// Read by its type, the library's object is said once with the name it is read by - and is the object that
+    /// name reads: the program goes on.
+    func testALibraryObjectReadByItsTypeIsSaidOnceAndRead() {
+        let byType = Environment<LocaleInfo>()
+
+        XCTAssertTrue(hasComplained("LocaleInfo is the library's: read it by its name, @Environment(\\.locale)"))
+        XCTAssertTrue(byType.wrappedValue === Environment<LocaleInfo>(\.locale).wrappedValue)
     }
 }

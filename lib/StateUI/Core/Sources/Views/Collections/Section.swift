@@ -12,15 +12,15 @@
 ///
 /// Each group names itself with `.id`, so two groups may hold equal items; a
 /// group given none is named by its place.
-public struct Section<Items: RandomAccessCollection, ID: Hashable> {
-    /// The items.
-    let items: Items
+public struct Section<ID: Hashable> {
+    /// How many items it holds.
+    let count: Int
 
-    /// How an item names itself.
-    let identify: (Items.Element) -> ID
+    /// The identity of the item at a place.
+    let identify: (Int) -> ID
 
-    /// How an item looks.
-    let content: (Items.Element) -> any View
+    /// The view of the item at a place.
+    let content: (Int) -> any View
 
     /// What the group names itself, where it was given a name.
     private(set) var name: String?
@@ -32,21 +32,28 @@ public struct Section<Items: RandomAccessCollection, ID: Hashable> {
     private(set) var footer: (any View)?
 
     /// A group of `items`, each its own identity, each looking as `content` says.
-    public init<Content: View>(_ items: Items, @ViewBuilder content: @escaping (Items.Element) -> Content)
-    where Items.Element: Hashable, ID == Items.Element {
-        self.items = items
-        identify = { $0 }
-        self.content = { content($0) }
+    public init<Items: RandomAccessCollection, Content: View>(
+        _ items: Items, @ViewBuilder content: @escaping (Items.Element) -> Content
+    ) where Items.Element == ID {
+        self.init(items, identify: { $0 }, content: content)
     }
 
     /// A group of `items`, each named by the property `id`, each looking as
     /// `content` says.
-    public init<Content: View>(
+    public init<Items: RandomAccessCollection, Content: View>(
         _ items: Items, id: KeyPath<Items.Element, ID>, @ViewBuilder content: @escaping (Items.Element) -> Content
     ) {
-        self.items = items
-        identify = { $0[keyPath: id] }
-        self.content = { content($0) }
+        self.init(items, identify: { $0[keyPath: id] }, content: content)
+    }
+
+    /// The group of `items`, reached by their places.
+    private init<Items: RandomAccessCollection, Content: View>(
+        _ items: Items, identify: @escaping (Items.Element) -> ID, content: @escaping (Items.Element) -> Content
+    ) {
+        let item = { (place: Int) in items[items.index(items.startIndex, offsetBy: place)] }
+        count = items.count
+        self.identify = { identify(item($0)) }
+        self.content = { content(item($0)) }
     }
 
     /// The group's name, which sets its items apart from another group's.

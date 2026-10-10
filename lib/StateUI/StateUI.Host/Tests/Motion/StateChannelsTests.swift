@@ -8,6 +8,7 @@ import XCTest
 /// One state channel per host-carried state: every control tied to the state
 /// stands at its value, a retarget keeps the velocity, a landing writes the
 /// exact destination and a waiter hears once.
+@MainActor
 final class StateChannelsTests: XCTestCase {
     @MainActor
     func testOneStateNumberOwnsOneChannelAcrossControls() throws {

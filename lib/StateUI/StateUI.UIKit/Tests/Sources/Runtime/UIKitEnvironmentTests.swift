@@ -8,6 +8,7 @@ import UIKit
 import XCTest
 
 /// What the application stands on, as UIKit tells it: the theme, the user's locale, the battery.
+@MainActor
 final class UIKitEnvironmentTests: XCTestCase {
     /// The theme is the one the user's scene stands in: turning dark tells it, and turning light again.
     @MainActor

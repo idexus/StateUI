@@ -5,6 +5,7 @@
 @_spi(Host) @testable import StateUIHost
 import XCTest
 
+@MainActor
 final class SwipeRecognitionTests: XCTestCase {
     /// A press that moved goes the one way it moved most: across when it moved at least as far across as down.
     func testASwipeGoesAlongTheAxisItMovedMost() {

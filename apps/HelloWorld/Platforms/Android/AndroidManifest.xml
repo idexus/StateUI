@@ -14,7 +14,7 @@
             android:name="stateui.android.StateUIActivity"
             android:exported="true"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|density">
-            <!-- The library this head's Swift is built into; its JNI_OnLoad starts the host. -->
+            <!-- The library this head's Swift is built into; its JNI_OnLoad names the application and registers the host's native methods. -->
             <meta-data android:name="stateui.library" android:value="HelloWorldAndroid" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

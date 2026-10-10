@@ -13,6 +13,7 @@ final class AndroidWebViewTests: XCTestCase {
             ("testWhatThePageDoesArrivesAsTheViewsEvents", testWhatThePageDoesArrivesAsTheViewsEvents),
             ("testAHistoryFlagIsSaidWhenItChanges", testAHistoryFlagIsSaidWhenItChanges),
             ("testAScriptsValueAnswersAsText", testAScriptsValueAnswersAsText),
+            ("testAReloadShowsThePageAgainAfterItsProcessDied", testAReloadShowsThePageAgainAfterItsProcessDied),
         ]
     }
 
@@ -39,6 +40,24 @@ final class AndroidWebViewTests: XCTestCase {
                 "navigating reload https://a.example/", "navigated timeout reload https://a.example/",
                 "gone",
             ])
+        }
+    }
+
+    /// A web view whose process died is made again blank, and a reload shows the page it showed again.
+    func testAReloadShowsThePageAgainAfterItsProcessDied() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running { BrowsingPage(heard: Received<String>()) }
+            let web = try XCTUnwrap(host.views(AndroidWebView.self).first)
+            let source: () -> HostValue? = { (try? AndroidDriver.webHolds(.source, web)) ?? nil }
+            host.settle { source() != nil }
+            let shown = try XCTUnwrap(source(), "the page shown")
+
+            Java.call(web.reference, TestWeb.processGone)
+            XCTAssertNil(source(), "made again blank")
+            try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
+            host.settle { source() != nil }
+
+            XCTAssertEqual(source(), shown, "shown again")
         }
     }
 
@@ -93,8 +112,8 @@ private struct BrowsingPage: View {
                 .onNavigated { heard.values.append("navigated \($0.result) \($0.type) \($0.url)") }
                 .onProcessTerminated { heard.values.append("gone") }
                 .height(200)
-            Button("Reload").onClicked { try await browser.reload() }
-            Button("Title?").onClicked {
+            Button("Reload").onClicked(gate: .ignoreWhileRunning) { try await browser.reload() }
+            Button("Title?").onClicked(gate: .ignoreWhileRunning) {
                 let title = try await browser.evaluateJavaScript("document.title")
                 heard.values.append("title \(title)")
             }

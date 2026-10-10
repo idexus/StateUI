@@ -6,8 +6,8 @@ public enum RectangleContract: ElementContract {
     /// The node type the contract declares.
     public static let nodeType: NodeType = "Rectangle"
 
-    /// StateUI composes it from smaller primitives before a host receives the
-    /// tree.
+    /// StateUI decides its geometry, its arrangement or its composition; a host
+    /// draws what was decided.
     public static let layer: ElementLayer = .stateUI
 
     /// A rectangle is a shape.

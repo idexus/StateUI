@@ -73,21 +73,22 @@ the host is told at the first crossing and cannot be told again.
 
 ## Moving and waiting
 
-`$x.journey.move(to:_:)` sends the value and suspends until it arrives. The
-answer is true when it got there and false when something else ended the
-journey: a newer destination, a value written over it, or a stop. Where there
-is nothing to animate - already there, or the user asked for less motion - it
-answers true at once.
+`$x.journey.move(to:_:)` sends the value and returns its `Arrival` at once;
+`arrived()` suspends until the value arrives. The answer is true when it got
+there and false when something else ended the journey: a newer destination, a
+value written over it, or a stop. Where there is nothing to animate - already
+there, or the user asked for less motion - it arrives on the host's next frame
+and answers true.
 
 The waiter is booked with the renderer under a negative id from the counter
 every awaited act draws from, and the id is written into the completion lane;
 nothing is queued, and the host answers by that id when the animation finishes
 or is interrupted. The destination and completion lanes are forced dirty, so
 sending a value where it is already going is still a fresh journey with a fresh
-waiter. The write lands before the first suspension, so two moves started with
-`async let` from one handler are booked in the order written. A given law stays
-on the value: a plain assignment after `move(to: 0, .eased(2000))` animates for
-two seconds too.
+waiter. The write and the booking land before `move` returns, so moves sent one after
+another and awaited after are in the air together, booked in the order
+written. A given law stays on the value: a plain assignment after
+`move(to: 0, .eased(2000))` animates for two seconds too.
 
 A state nothing wears lands at once and answers true: nobody would ever answer a
 waiter booked on it. Under `.custom` the destination is written and the answer
@@ -97,7 +98,9 @@ is true at once, because the engine alone knows when it is done.
 
 `stop()` raises the stop counter, leaving the value where the animation stood;
 the host ends the animation and answers the waiter false. The waiter's id stays on
-the image, because the host needs it to answer.
+the image, because the host needs it to answer. The colour pair the state kept
+is let go: the value stands at a colour between two, which no pair names, and
+a render laying the pair again would send the host on to it.
 
 ## Writing the parts
 
@@ -115,6 +118,13 @@ the image, because the host needs it to answer.
 A value worked out from a measurement or a report is not a destination, and
 animated as one it crawls after the thing that decided it; `snap(to:)` is its
 write. It is synchronous: nothing is booked and nobody waits.
+
+Each write lays the lanes of its own parts and leaves every other lane as it
+lies, bit for bit. A value read back through its type is not always the lanes
+it came from - a colour is eight bits a channel, and the host reports the
+frames between them - so a stop or a move laying the whole journey again would
+say the value and its speed moved, and the host would start over from them
+(`JourneyTests.testAJourneyWriteLaysOnlyItsPart`).
 
 ## Two reader sets
 
@@ -134,7 +144,7 @@ to, which the host sends every cycle it moves. `.samples($fade, into: $shown,
 .every(100))` copies it into an ordinary state at most ten times a second; the
 body reads that state under the ordinary rules, and the source goes on costing
 nothing. The window belongs to the reading, not the state: one source may be
-read by two views into two states at two rates.
+read by two views into two states at two rates, taken in the order asked.
 
 ```text
   a frame lands   due():  now        -> take it, the window starts here
@@ -170,9 +180,13 @@ where it is not exactly - a rounding, a clamp - the source settles once on the
 value the round trip lands on.
 
 ```text
-  derived state   kept on the first source's storage under "file:line:column",
-                  so a conversion written once is one state across renders
-                  and the host's tie keeps its number
+  derived state   known to the first source's storage under the element being
+                  built and "file:line:column", and held by that element as it
+                  holds its readings: one state per element and line across
+                  renders - the host's tie keeps its number - two views
+                  converting one source on one line keep two, and an element
+                  that leaves takes its own; made with no element being built,
+                  the source holds it
   sources         held WEAKLY by the conversion
   engines         back (priority -2) first, then forward (-1), both ahead of
                   every author's engine, on the element wearing the result

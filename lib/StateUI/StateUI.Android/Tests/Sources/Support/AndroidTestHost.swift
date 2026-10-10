@@ -194,13 +194,12 @@ extension AndroidRenderer {
     /// A host running the application whose only window shows what `page` builds, at two pixels a point,
     /// on `clock` where one is given.
     static func running(
-        clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @Sendable () -> any View
+        clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> AndroidRenderer {
         stateUIUseApp(OneWindowApplication(page: page))
         let renderer = bare(clock: clock, reducesMotion: reducesMotion)
-        AndroidEnvironment.report(to: renderer.runtime.core, activity: TestContext.context.reference)  // as start does
         AndroidPersistence.writeScenes("", context: TestContext.context.reference)  // no scenes an earlier test kept
-        renderer.show()
+        renderer.start()
         return renderer
     }
 

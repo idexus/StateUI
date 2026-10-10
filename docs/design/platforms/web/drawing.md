@@ -11,8 +11,8 @@ A shape is a box with no size of its own, as on every host - it takes the
 room its layout gives it, and none along a stack - and over that box an
 `<svg>` holding one `<path>` and the `<defs>` of its brushes, drawn again
 whenever its room changes size. The trap: an `<svg>` as the view itself,
-sized `100%`, took the stack's whole height, and what stood after it in the
-stack fell out of the window. A rectangle and an ellipse fill
+sized `100%`, would take the stack's whole height, and what stands after it
+in the stack would fall out of the window. A rectangle and an ellipse fill
 the room, set in by half their outline so the outline stays inside it, a
 rectangle's corners fitted as the host layer fits a box's
 (`BoxArithmetic.fitted`). A geometry of the shape's own is written from the
@@ -27,7 +27,10 @@ the tree says it. An outline keeps its width however the path is placed or scale
 host layer measures them (`ShapeArithmetic.dashLengths`). A gradient is an
 SVG gradient of the shape's own, in the page's units over the room and one
 line width around it, so a fraction of the shape means the same in its fill
-and its outline; a colour is the path's own `fill` or `stroke`.
+and its outline; a colour is the path's own `fill` or `stroke`. The page's
+units are the path's own user space, which its transform places, so the
+gradient carries that transform undone (`gradientTransform`,
+`WebVector.inverse`) and stays over the room however the path is placed.
 
 The trap: a gradient in the units of the path's bounding box would follow a
 placed or dashed path rather than the room, and stretch with its aspect; the
@@ -51,9 +54,9 @@ centre, as far as the host layer's reach (`HostBrush.reach`).
 
 An outline of a gradient is a transparent border with the box's background in
 two layers: the fill cut to the inside (`padding-box`), the outline's gradient
-to the whole box (`border-box`), which the border shows. A box with a look of
-its own and no outline loses the browser's border, so a button drawn by the
-application carries no frame of the browser's.
+to the whole box (`border-box`), which the border shows. A button with a look
+of its own and no outline loses the stylesheet's border, so a button the
+application draws carries no frame of the page's.
 
 
 ## A blur

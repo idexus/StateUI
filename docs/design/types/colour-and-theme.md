@@ -38,8 +38,9 @@ text: a colour crosses as bytes wherever it crosses.
 ## Named colours
 
 The named colours are the ones that come up in practice, each with its CSS
-name and value; any other colour is one hex literal away. `darkGray` is
-lighter than `gray`, as its CSS value is.
+name and value - but `transparent`, a white let through to nothing
+(`#00FFFFFF`) where CSS's is black; any other colour is one hex literal away.
+`darkGray` is lighter than `gray`, as its CSS value is.
 
 ## A pair for each theme
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The inspector's colours, measures, words and the one kind of button it has.
+@MainActor
 enum Look {
     static let ground = Color(light: Color("#F7F6FB"), dark: Color("#1C1A24"))
     static let edge = Color(light: Color("#D6D2E2"), dark: Color("#3A3647"))

@@ -11,7 +11,7 @@
 ///     @Aim(WebView.self) private var browser
 ///
 ///     WebView(address).aim(browser)
-///     Button("Back").onClicked { try await browser.goBack() }
+///     Button("Back").onClicked(gate: .ignoreWhileRunning) { try await browser.goBack() }
 ///
 /// `.aim(_:)` puts it on a view, and the act reaches exactly that view: there is
 /// no name to spell, and two instances of one composed view each aim at their
@@ -23,7 +23,8 @@
 /// compose. An act on an aim that reached no view, or two, throws; one whose view
 /// has left reports that no such view is on screen.
 @propertyWrapper
-public final class Aim<Target>: @unchecked Sendable, CustomStringConvertible {
+@MainActor
+public final class Aim<Target>: @MainActor CustomStringConvertible {
     /// Where the key lives - untyped, because the tree holds it too. Replaced at most
     /// once, by adoption, before anything holding the view can act.
     private(set) var box = AimBox()
@@ -68,14 +69,15 @@ public final class Aim<Target>: @unchecked Sendable, CustomStringConvertible {
     ///
     /// Throws where the aim is on no view or on two, where the host could not
     /// perform the act, and where the answer is not what the contract
-    /// declares.
+    /// declares. In a run a later event, its task's cancellation or its element
+    /// leaving superseded, it throws `CancellationError` and the act never leaves.
     ///
     /// - Parameters:
     ///   - act: the member, written with its contract.
     ///   - arguments: its arguments, in the order the contract declares them.
     /// - Returns: the answer, as the contract declares it.
     @discardableResult
-    public nonisolated(nonsending) func call<
+    public func call<
         Owner: Contract, each Argument: HostRepresentable, each Answer: HostRepresentable
     >(
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
@@ -104,6 +106,7 @@ extension Aim: StateBox {
 /// Any aim - what the state walk asks to tell an aim a view was handed from one it
 /// declares.
 /// Design: docs/design/core/acts.md#an-aim-a-view-is-handed
+@MainActor
 protocol Aiming: AnyObject {
     /// The box it aims through.
     var box: AimBox { get }
@@ -112,11 +115,9 @@ protocol Aiming: AnyObject {
 extension Aim: Aiming {}
 
 /// The box behind an `Aim`, where the differ leaves the element's key and an act
-/// reads it; every read and write goes through one lock.
-final class AimBox: @unchecked Sendable, Hashable {
-    /// One lock for every box: a few attachments per render, a few reads per act.
-    private static let guarded = Lock()
-
+/// reads it.
+@MainActor
+final class AimBox: Hashable {
     /// The identity of the element this was last put on.
     private var identity: ElementID?
 
@@ -130,22 +131,18 @@ final class AimBox: @unchecked Sendable, Hashable {
     /// Attaches the element's key: the first attachment of a walk takes it, a second
     /// in the same walk is a conflict.
     func attach(_ id: ElementID, walk: Int) {
-        Self.guarded.withLock {
-            if self.walk != walk {
-                self.walk = walk
-                identity = id
-                conflicted = false
-            } else if identity != id {
-                conflicted = true
-            }
+        if self.walk != walk {
+            self.walk = walk
+            identity = id
+            conflicted = false
+        } else if identity != id {
+            conflicted = true
         }
     }
 
     /// The act argument this box aims with, or why it cannot.
     var target: PropValue {
         get throws {
-            let (identity, conflicted) = Self.guarded.withLock { (self.identity, self.conflicted) }
-
             if conflicted {
                 throw StateUIError(
                     message: "this aim is on two views - an aim names ONE; "
@@ -168,8 +165,6 @@ final class AimBox: @unchecked Sendable, Hashable {
 
     /// What `Aim.description` says.
     var label: String {
-        let (identity, conflicted) = Self.guarded.withLock { (self.identity, self.conflicted) }
-
         if conflicted { return "two views" }
 
         switch identity {
@@ -180,12 +175,12 @@ final class AimBox: @unchecked Sendable, Hashable {
     }
 
     /// Two boxes are the same box: this is storage, the way a `@State` is.
-    static func == (left: AimBox, right: AimBox) -> Bool {
+    nonisolated static func == (left: AimBox, right: AimBox) -> Bool {
         left === right
     }
 
     /// By identity, matching `==`.
-    func hash(into hasher: inout Hasher) {
+    nonisolated func hash(into hasher: inout Hasher) {
         hasher.combine(ObjectIdentifier(self))
     }
 }

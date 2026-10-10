@@ -19,6 +19,7 @@ import Foundation
 @testable import StateUIAppKit
 import XCTest
 
+@MainActor
 final class AppKitDeclarationExportTests: XCTestCase {
     /// The export is what the registry says, to the line.
     @MainActor

@@ -3,7 +3,8 @@
 
 /// One scene standing: the windows it has open, what the platform kept for it, and the sessions it hands the views
 /// under it.
-final class SceneRecord: @unchecked Sendable {
+@MainActor
+final class SceneRecord {
     /// Its number - "1" for the first scene - which is also its key in the tree.
     let id: String
 
@@ -24,10 +25,6 @@ final class SceneRecord: @unchecked Sendable {
 
     /// Each window's session, kept while the window is open.
     private var windowSessions: [String: WindowSession] = [:]
-
-    /// Held around the three tables below: a scene key's write lands from under its
-    /// state's lock, from any thread.
-    private let guarded = Lock()
 
     /// What the platform kept for the scene's keys, by name.
     private var restored: [String: PropValue] = [:]
@@ -133,42 +130,37 @@ final class SceneRecord: @unchecked Sendable {
     /// Takes what the platform kept for the scene's keys - before its first
     /// build, which is where the states claiming them are built.
     func restore(_ values: [String: PropValue]) {
-        guarded.withLock { restored = values }
+        restored = values
     }
 
     /// The storage a key of this scene means: the one standing, or the offered one
     /// adopted, with what the platform kept landed in it.
     func claim(_ name: String, orAdopt storage: AnyObject, landing land: (PropValue) -> Void) -> AnyObject {
-        let (owner, held): (AnyObject, PropValue?) = guarded.withLock {
-            if let standing = keyed[name] { return (standing, nil) }
+        if let standing = keyed[name] { return standing }
 
-            keyed[name] = storage
-            return (storage, restored[name])
-        }
+        keyed[name] = storage
 
-        if let held {
+        if let held = restored[name] {
             land(held)
         }
 
-        return owner
+        return storage
     }
 
     /// Marks a key as needing to be kept, replacing whatever value was
-    /// waiting. Runs under the state's lock, so it records and nothing else.
+    /// waiting.
     func record(_ name: String, _ value: PropValue) {
-        guarded.withLock { waiting[name] = value }
+        waiting[name] = value
     }
 
     /// How many keys are waiting to be kept.
-    var pending: Int { guarded.withLock { waiting.count } }
+    var pending: Int { waiting.count }
 
     /// The keys waiting to be kept, sorted by name, taken.
     func takeWaiting() -> [(name: String, value: PropValue)] {
-        guarded.withLock {
-            let taken = waiting.sorted { $0.key < $1.key }
-            waiting.removeAll(keepingCapacity: true)
-            return taken.map { (name: $0.key, value: $0.value) }
-        }
+        let taken = waiting.sorted { $0.key < $1.key }
+        waiting.removeAll(keepingCapacity: true)
+        return taken.map { (name: $0.key, value: $0.value) }
     }
 }
 
@@ -193,6 +185,7 @@ struct OpenedWindow: Equatable {
 
 /// A state box a scene may keep - one declared with a `SceneKey`, which the
 /// differ hands the scene it is built in.
+@MainActor
 protocol SceneClaiming: AnyObject {
     /// Pairs the box with the scene it is in: the storage the scene keeps
     /// under its key, and where its writes are kept.

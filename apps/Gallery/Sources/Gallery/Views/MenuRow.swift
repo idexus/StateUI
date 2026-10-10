@@ -9,11 +9,10 @@ import StateUI
 /// answer: `nav.showing(...)`, read while the row is being built, so the look
 /// of a chosen row is one ordinary value written on top of its style.
 ///
-/// Tapped rather than pressed, for the reason `Card` is: a button draws its own
-/// press, never its surroundings', and every row of this gallery answers a tap
-/// this way.
+/// Tapped rather than pressed: a button draws its own press, never its
+/// surroundings', and every row of this gallery answers a tap this way.
 ///
-/// Shaped like `Card`, and for the same reason: what the row IS goes in the
+/// Shaped like `ListRow`, and for the same reason: what the row IS goes in the
 /// initializer, and everything a caller may leave out is a modifier.
 struct MenuRow: View {
     /// What the row says.
@@ -59,10 +58,8 @@ struct MenuRow: View {
 
     /// A view, as everything placed in a stack is.
     var body: some View {
-        // Copies for the handler to capture, never `self` - see the note in
-        // Card.swift: a closure written in a body getter that captures the view
-        // is moved off this library's executor by the compiler, and the press
-        // then waits for the next event to arrive.
+        // Copies for the handler to capture, never `self`: it keeps the two
+        // values it needs, not the whole row.
         let action = self.action
         let chosen = self.isChosen
         // A finger takes the taller row a phone's own menus have; a pointer, a
@@ -81,12 +78,12 @@ struct MenuRow: View {
                 .verticalAlignment(.center)
 
             Text(title)
-                .style("MenuRowText")
+                .style(.menuRowText)
         }
         // The style says what a row is; the line under it says what the CHOSEN
         // one is. A control's own value wins over its style, per property,
         // which is what lets one style serve both.
-        .style("MenuRow")
+        .style(.menuRow)
         .spacing(touch ? 14 : 10)
         .padding(horizontal: touch ? 18 : 10, vertical: touch ? 13 : 8)
         .background(chosen ? Palette.selected : .transparent)
@@ -95,6 +92,6 @@ struct MenuRow: View {
         // nothing says they act together. Handle.swift has the rule.
         .accessibilityIdentifier(handle("menu", title))
         .accessibilityLabel(title)
-        .onTapped { try await action() }
+        .onTapped(gate: .ignoreWhileRunning) { try await action() }
     }
 }

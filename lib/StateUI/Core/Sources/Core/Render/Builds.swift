@@ -7,6 +7,7 @@
 
 /// A state that can say what the author calls it - worn by the storage, the one
 /// object that is the state across renders.
+@MainActor
 protocol NamedState: AnyObject {
     /// What the author calls it, once a reflection walk has said.
     var origin: String? { get }
@@ -14,6 +15,7 @@ protocol NamedState: AnyObject {
 
 /// Which view is being described now, and what changed that it had read: one
 /// frame per body or bare container's content, pushed around the build.
+@MainActor
 enum BuildScope {
     /// One view's build, as it stands.
     struct Frame {
@@ -29,15 +31,18 @@ enum BuildScope {
         /// The state written since the tree on screen was built.
         let changed: Set<ObjectIdentifier>
 
-        /// What each of those is called, by storage identity.
-        let names: [ObjectIdentifier: String]
+        /// Those states themselves, by storage identity, to be named.
+        let written: [ObjectIdentifier: AnyObject]
 
         /// Whether this render describes the whole tree.
         let everything: Bool
+
+        /// The element being built.
+        let element: ElementID
     }
 
     /// The build under way; written and read only by the thread that renders.
-    nonisolated(unsafe) static var current: Frame?
+    static var current: Frame?
 
     /// Runs a build with its frame in place, answering what the build answered.
     static func within<T>(_ frame: Frame, _ build: () -> T) -> T {
@@ -69,12 +74,20 @@ enum BuildScope {
 
         if !causes.isEmpty {
             return "for " + causes
-                .map { frame.names[$0] ?? "state" }
+                .map { name(of: frame.written[$0]) }
                 .sorted()
                 .joined(separator: ", ")
         }
 
         return frame.everything ? "the whole tree" : "with its parent"
+    }
+
+    /// What the author calls a written state: the property a walk named it by,
+    /// else its type - worked out only when asked, never as it is written.
+    static func name(of state: AnyObject?) -> String {
+        guard let state else { return "state" }
+
+        return (state as? NamedState)?.origin ?? String(describing: type(of: state))
     }
 
     /// A type without its module, which is what an author calls it.
@@ -84,7 +97,7 @@ enum BuildScope {
 
     /// A state's name as the author reads it: the walk's path without its leading
     /// dot and the wrapper's underscore.
-    static func readable(_ path: String) -> String {
+    nonisolated static func readable(_ path: String) -> String {
         var name = Substring(path)
 
         while name.first == "." || name.first == "_" {
@@ -102,7 +115,7 @@ extension Element {
     ///
     /// Answers the view's name, how many times the closure this is written in has
     /// been described, and which state this description is for -
-    /// `"PlacedSample: 47 builds, for aim"`. A view described because an ancestor
+    /// `"PlacedSample: 3 builds, for grabbing"`. A view described because an ancestor
     /// was says `with its parent`. Reading it causes no render; outside a body it
     /// says nothing is being described.
     ///

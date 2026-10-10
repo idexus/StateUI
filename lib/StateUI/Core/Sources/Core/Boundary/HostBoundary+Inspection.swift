@@ -12,7 +12,6 @@
 
     /// Tells the inspector what applying the message of `generation` cost: each scene's part by its key, in
     /// microseconds, then the whole - its time, the nodes it walked and the controls it had to build.
-    @MainActor
     public static func inspected(generation: Int32, scenes: [String: Double], apply: Double, nodes: Int, made: Int) {
         for (name, micros) in scenes.sorted(by: { $0.key < $1.key }) {
             guard let index = OpenScenes.shared.index(of: name) else { continue }

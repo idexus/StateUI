@@ -45,9 +45,10 @@ user asks for it, never before, so a menu that changed shows what it says
 now, and an empty one shows nothing. The items are held by their elements
 until the next time the menu is written, and an item chosen is heard by the
 element it was written from. Android's menus - a context menu, a bar's
-overflow and its submenus - draw no pictures, so an entry's picture is not
-read. When the slot goes, the view gives back whether it took a long press
-before.
+overflow and its submenus - draw no pictures, so a menu's entry is written
+without one; a bar's action behind the overflow still carries its picture,
+which Android does not draw there. When the slot goes, the view gives back
+whether it took a long press before.
 
 Each item's element keeps its place in the menu it last stood in
 (`menuPlace`), its Android id less one.

@@ -49,9 +49,9 @@ extension AppKitRenderer {
     /// time the native control's report returns. A handler isolated to the
     /// main actor never runs when its event is dispatched.
     @MainActor
-    static func running(@ViewBuilder _ page: @escaping @Sendable () -> any View) -> AppKitRenderer {
+    static func running(@ViewBuilder _ page: @escaping @MainActor () -> any View) -> AppKitRenderer {
         stateUIUseApp(OneWindowApplication(page: page))
-        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: TestPictures.directory, presentsWindows: false)
         renderer.startForTesting()
         return renderer
     }

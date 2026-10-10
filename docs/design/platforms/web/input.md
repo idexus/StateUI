@@ -36,8 +36,9 @@ reaches the element only while the element still asks.
 
 A control answers every tap, however quickly the next follows: a button, a
 field, a choice and an element the user taps take `touch-action:
-manipulation`, so two taps in a row on a touch screen are two taps, never the
-page's zoom - which the rest of the page keeps.
+manipulation` - in the window, on a sheet, in a question and in a menu - so
+two taps in a row on a touch screen are two taps, never the page's zoom -
+which the rest of the page keeps.
 
 ## A press dragged and a pinch
 

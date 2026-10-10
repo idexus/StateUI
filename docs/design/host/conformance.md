@@ -26,11 +26,13 @@ beside the native API they prove.
 
 A case is written once, in `lib/StateUI/StateUI.Conformance`, as a page,
 what the user and the program do to it, and what must follow. It says which
-members of the contract it covers; it runs on a host only where the host
-realizes all of them, by the host's register (`HostRegister`), so a case can
-never pass on a host that does not claim the member. A case covering a member
-the host's family does not plan says so and does not run; one covering a
-member the host lacks names the gap. A case never asks which host it runs on.
+members of the contract it proves and which it only needs - a button whose
+click makes the change the case is about; it runs on a host only where the
+host realizes all of them, by the host's register (`HostRegister`), so a case
+can never pass on a host that does not claim the member, and its verdict is
+on what it proves alone. A case proving a member the host's family does not
+plan says so and does not run; one proving or needing a member the host lacks
+names the gap. A case never asks which host it runs on.
 
 ## One family per contract
 
@@ -65,14 +67,15 @@ it, and the effect proves it there.
 
 A tier's member - a view's opacity, its being shown - is the contract's on
 every element wearing the tier, and each element's ✅ is proven apart. A
-tier's case is written once and made for each element: every element the
-library declares has a specimen, the smallest of its kind standing where an
+tier's case is written once and made for each element: every element
+wearing a tier has a specimen, the smallest of its kind standing where an
 application puts one - a control in a stack, a span in a label's words, a
 menu's item in a view's menu, a toolbar's on its page's bar, an arrangement
 as the page - which the case dresses with the
 members it writes, through the element's own `setValue`, and finds by its id
-or as the one element of its kind. The case runs on a host for each element
-the host realizes, and proves the member there.
+or as the one element of its kind; the page's tier stands each element
+wearing it in a tabbed view's first tab (`Presented.page`). The case runs on
+a host for each element the host realizes, and proves the member there.
 
 ## A backend's element
 
@@ -98,15 +101,18 @@ fail, and otherwise it fails - a nil never stands for "unknown". What its
 platform holds nothing of - a value no control of it keeps, its effect proven
 by another case - the driver lists apart (`platformHasNone`, or a read's
 `because:`): a case needing it does not apply there. Besides a
-member's value a driver reads a view's menu, whether it holds the keyboard,
-what a press at a point reaches, the order a layout's children are drawn in
-as its native view holds them, whether assistive technology meets a view as a
-heading, the question the window shows, what the
-screen reader was told, the colour StateUI draws at a point - never a native
-control's look - the host's log and what it keeps; each read a host does not
-have yet is its driver's "cannot". A case's first start of an application is
-its first launch: the driver forgets what the host's stores keep, and a
-start after it in the same case is the next launch, which finds them.
+member's value a driver reads a view's menu, a page's bar, whether a view
+holds the keyboard, what a press at a point reaches, where a view stands in
+its window, the order a layout's children are drawn in as its native view
+holds them, whether assistive technology meets a view as a heading, the
+question and the file dialog the window shows, what the screen reader was
+told, the theme the application shows in, what the host handed the system to
+launch, the colour StateUI draws at a point - never a native control's look -
+the host's log, what it keeps, and how many views it holds alive; each read a
+host does not have yet is its driver's "cannot". A case's first start of an
+application is its first launch: the driver forgets what the host's stores
+keep, and a start after it in the same case is the next launch, which finds
+them.
 
 A host with backends keeps its driver and its suite in a package of their own
 inside the host's folder, `Testing` - the WinUI host's `StateUIWinUIDriver`,
@@ -115,6 +121,13 @@ register the host's backends, which depend on the host, so they stand beside
 the host's package rather than in it, and everything there links the host's
 one dynamic library. The driver reads the host's own views, so it is built
 where the host is built for testing: a debug build, `swift test`.
+
+The Web host keeps its driver and its suite in `Testing` too, for another
+reason: the suite is XCTest compiled to WebAssembly, which the package's own
+JavaScript runs - in Node over a page with just enough of a DOM, and the
+conformance suite in a browser, whose layout, focus, dialogs and input its
+cases need - and what the driver reads, that JavaScript answers through
+functions of its own (`CWebTesting`).
 
 ## A drawing read by its colours
 
@@ -153,20 +166,20 @@ speed.
 A colour StateUI draws is read at a point of what it draws and held as a
 screen shows it: where the smoothing of an edge touches the pixel read, a
 colour drawn whole comes back a few steps off in a channel - at one pixel a
-DIP, the middle of a line four DIPs wide is a pixel or two. `Session.shows`
+point, the middle of a line four points wide is a pixel or two. `Session.shows`
 and `expect(_:shows:)` take each channel within four steps of the colour;
 nothing drawn at the point shows no colour.
 
 ## The runner
 
 The runner runs a family on a host and says one line for each case - passed,
-failed, never here, not planned, the application's, a gap, or what the driver
-cannot do and why - and gives
+failed, never here, not planned, the application's, a gap, does not apply, or
+what the driver cannot do and why - and gives
 the verdict on every member the cases cover. Each line is said as its case
 ends, with its place in the run and how long it took ("[3/15] ... passed in
 812 ms"), to standard error, which nothing buffers (`HostLog.note`): a long
 run shows how far it has come, and a run that stops shows where. Nothing is passed over in
-silence: a case covering no member fails, and a family none of whose cases
+silence: a case proving no member fails, and a family none of whose cases
 ran - an element the host realizes none of - says why for each, and its
 verdicts say it too. A failure names the host and the case, at the line of
 the case's expectation. A host may run a large family in parts
@@ -177,12 +190,16 @@ once, each writing its own file of verdicts; the dictionary reads them all.
 
 A run gives a verdict on every member its cases cover, one line each under
 `lib/StateUI/exports/marks/<host>/<Family>.txt`, written with `STATEUI_UPDATE_EXPORTS=1`
-and held to the file otherwise: ✅ where a passing case proved it, ☑️ with
-what the host's register says is missing, – with why where the host's family
-never has it or a case proved it absent, 🧩 where the host leaves it to the
-application's own registration, and - empty in the dictionary - "not
-realized" or what the driver cannot do and why. A member of a failing case
-gets ❌ with the case's first failure.
+and held to the file otherwise: ✅ where a passing case proved it, ✓ where it
+proved it only through the host's own entry or read, ☑️ with what the host's
+register says is missing, – with why where the host's family never has it or
+a case proved it absent, 🧩 where the host leaves it to the application's own
+registration, · with what the driver cannot do, or what the platform holds
+nothing of, and why, ⏸ where its case waits on a member the host does not
+realize, and "not realized", empty in the dictionary. A member of a failing
+case gets ❌ with the case's first failure; one some cases proved while
+another could not, ◐. Each file opens with the revision of its family it was
+run at; a part written apart is `<Family>-<n>.txt`.
 Those files are every mark a host's column shows: nothing a host implements
 or declares by hand is marked until its own run says so. A test of a host's
 look proves no member; it proves how the host draws.

@@ -37,7 +37,7 @@ private struct PressCard: Element {
 
         return Button("Go")
             .aim(press)
-            .onClicked {
+            .onClicked(gate: .none) {
                 _ = try await press.focus()
                 async let restored: Bool = press.focus()
                 try await action()
@@ -47,34 +47,27 @@ private struct PressCard: Element {
     }
 }
 
+@MainActor
 final class ConcurrencyTests: XCTestCase {
     /// Answers every act still queued and runs every job until nothing is
     /// left, so a test that stopped mid-handler leaves no suspended handler
     /// and no unanswered act for the NEXT test to trip over - a stray
     /// completion id was the first thing another test's `first` found.
     private func drainEverything() async {
-        var quiet = 0
         let deadline = Date().addingTimeInterval(5)
 
-        while quiet < 2 && Date() < deadline {
-            let ids = completionIds(in: drainedActs())
-
-            for completion in ids {
+        while RunSlot.underWay > 0 || UIThreadExecutor.shared.pendingCount > 0 || Renderer.shared.resumesPending > 0,
+              Date() < deadline {
+            for completion in completionIds(in: drainedActs()) {
                 ReplyBuffer.current = .finished([.bool(true)])
                 _ = Renderer.shared.dispatch(completion)
             }
 
-            let ran = stateUIRunJobs()
-
-            if ids.isEmpty && ran == 0 && UIThreadExecutor.shared.pendingCount == 0
-                && Renderer.shared.resumesPending == 0 {
-                quiet += 1
-            } else {
-                quiet = 0
-            }
-
+            stateUIRunJobs()
             try? await Task.sleep(nanoseconds: 100_000)
         }
+
+        XCTAssertEqual(RunSlot.underWay, 0, "a handler is still under way")
     }
 
     /// Every completion id in a batch of act calls, in order.
@@ -95,7 +88,7 @@ final class ConcurrencyTests: XCTestCase {
         let laps = 40
         let patch = renders.render(
             Button("Play")
-                .onClicked {
+                .onClicked(gate: .none) {
                     for _ in 0..<laps {
                         // Two acts in flight at once, from two pool threads -
                         // the shape the gallery's concurrent sample has, and
@@ -151,7 +144,7 @@ final class ConcurrencyTests: XCTestCase {
 
         let patch = renders.render(
             Button("Go")
-                .onClicked {
+                .onClicked(gate: .none) {
                     _ = try await named("a", ColorBox.self).focus()
                     async let restored: Bool = named("a", ColorBox.self).focus()
                     _ = try await named("b", ColorBox.self).focus()
@@ -242,7 +235,7 @@ final class ConcurrencyTests: XCTestCase {
 
         let patch = renders.render(
             Button("Go")
-                .onClicked {
+                .onClicked(gate: .none) {
                     _ = try await named("a", ColorBox.self).focus()
                     async let restored: Bool = named("a", ColorBox.self).focus()
                     _ = try await named("b", ColorBox.self).focus()
@@ -284,7 +277,7 @@ final class ConcurrencyTests: XCTestCase {
 
         let patch = renders.render(
             Button("Go")
-                .onClicked {
+                .onClicked(gate: .none) {
                     _ = try await named("a", ColorBox.self).focus()
                     reached = true
                 }

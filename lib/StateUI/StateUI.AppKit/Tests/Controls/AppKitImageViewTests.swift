@@ -8,6 +8,7 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
+@MainActor
 final class AppKitImageViewTests: XCTestCase {
     @MainActor
     func testFillCoversAndCentresWithoutDistortingTheImage() {
@@ -68,6 +69,14 @@ final class AppKitImageViewTests: XCTestCase {
     }
 
     @MainActor
+    /// A name the application has no file for resolves to nothing, as on every host: no picture stands in.
+    func testANameWithNoFileResolvesToNothing() {
+        let renderer = testRenderer(resourceDirectory: FileManager.default.temporaryDirectory, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        XCTAssertNil(renderer.image(named: "no-such-picture-\(UUID().uuidString)"))
+    }
+
     func testHostPatchMapsSourceAspectAndAnimation() throws {
         let directory = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString, isDirectory: true)

@@ -6,6 +6,7 @@
 import XCTest
 
 /// A kept value as the words every host's store holds.
+@MainActor
 final class KeptWordTests: XCTestCase {
     /// A listed key's value is kept as its key's kind; an unlisted one as its own, read back once its key is listed.
     func testAValueIsKeptAsItsKeysKindElseItsOwn() {

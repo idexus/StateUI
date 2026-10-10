@@ -77,7 +77,7 @@ final class WinUIDriver: HostDriver {
     var register: HostRegister { WinUIRealization.register.and(backendRecords) }
 
     func start(
-        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @Sendable () -> any View
+        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> MountedTree {
         written.listen()
         Self.emptyStore()

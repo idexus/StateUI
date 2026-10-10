@@ -12,8 +12,20 @@ public protocol TextInput: ElementView, TextInputProperties {}
 extension TextInput {
     /// Fires on every edit, with the whole of the new text. Runs after a
     /// binding's write, so the state already holds it.
-    public func onTextChanged(_ handler: @escaping ValueEventHandler<String>) -> Modified {
+    public func onTextChanged(_ handler: @escaping @MainActor (String) throws -> Void) -> Modified {
         onEvent(TextInputContract.textChanged, handler)
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onTextChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<String>) -> Modified {
+        onEvent(TextInputContract.textChanged, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTextChanged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onTextChanged(_ handler: @escaping ValueEventHandler<String>) -> Modified {
+        fatalError("unavailable")
     }
 }
 
@@ -57,7 +69,7 @@ extension TextInputProperties {
         setValue(TextInputContract.placeholder, value)
     }
 
-    /// The colour of that text.
+    /// The placeholder's colour.
     public func placeholderColor(_ value: Color) -> Modified {
         setValue(TextInputContract.placeholderColor, value)
     }
@@ -84,37 +96,37 @@ extension TextInput {
     /// `cursorPosition` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func cursorPosition(_ state: Binding<Int>) -> Modified {
-        plain(TextInputContract.cursorPosition, by: state)
+        twin(TextInputContract.cursorPosition, by: state)
     }
 
     /// `isReadOnly` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func isReadOnly(_ state: Binding<Bool>) -> Modified {
-        plain(TextInputContract.isReadOnly, by: state)
+        twin(TextInputContract.isReadOnly, by: state)
     }
 
     /// `isSpellCheckEnabled` from a state, `$x`: the host sets each new value
     /// as it stands, and no view is rebuilt for it.
     public func isSpellCheckEnabled(_ state: Binding<Bool>) -> Modified {
-        plain(TextInputContract.isSpellCheckEnabled, by: state)
+        twin(TextInputContract.isSpellCheckEnabled, by: state)
     }
 
     /// `isTextPredictionEnabled` from a state, `$x`: the host sets each new
     /// value as it stands, and no view is rebuilt for it.
     public func isTextPredictionEnabled(_ state: Binding<Bool>) -> Modified {
-        plain(TextInputContract.isTextPredictionEnabled, by: state)
+        twin(TextInputContract.isTextPredictionEnabled, by: state)
     }
 
     /// `inputPurpose` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func inputPurpose(_ state: Binding<InputPurpose>) -> Modified {
-        plain(TextInputContract.inputPurpose, by: state)
+        twin(TextInputContract.inputPurpose, by: state)
     }
 
     /// `maximumLength` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func maximumLength(_ state: Binding<Int>) -> Modified {
-        plain(TextInputContract.maximumLength, by: state)
+        twin(TextInputContract.maximumLength, by: state)
     }
 
     /// `placeholder` from a state, `$x`: the host writes each new text, and no
@@ -126,12 +138,12 @@ extension TextInput {
     /// `placeholderColor` from a state, `$x`: the host animates the property to
     /// each new value, and no view is rebuilt for it.
     public func placeholderColor(_ state: Binding<Color>) -> Modified {
-        journey(TextInputContract.placeholderColor, by: state)
+        twin(TextInputContract.placeholderColor, by: state)
     }
 
     /// `selectionLength` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func selectionLength(_ state: Binding<Int>) -> Modified {
-        plain(TextInputContract.selectionLength, by: state)
+        twin(TextInputContract.selectionLength, by: state)
     }
 }

@@ -48,6 +48,12 @@
     /// Where the application, its scenes and its windows stand, as the toolkit told it.
     public let lifecycle = ApplicationLifecycle()
 
+    /// What the runtime shows and performs through: the toolkit's windows and its acts.
+    public weak var presenter: (any HostPresenter)?
+
+    /// Work that waits for the layout pass under way to end.
+    public let afterLayout = AfterLayout()
+
     /// Whether a settling of what the toolkit told waits for its turn.
     private var settling = false
 
@@ -74,10 +80,28 @@
             makeNative: makeNative)
         pump = Pump(core: core, intake: intake, tree: tree, displayCycle: displayCycle, now: clock.now, log: log)
 
+        pump.presenter = self
+        displayCycle.presenter = self
         tree.tellPhase = { [weak pump] handler in pump?.handlers.enqueuePhase(handler) }
         clock.onFrame = { [weak self] now in self?.displayCycle.frame(now: now) }
         layoutMotion.onStart = { [weak self] in self?.displayCycle.hold() }
         tree.onAnimation = { [weak self] in self?.displayCycle.hold() }
+    }
+
+    /// Starts the runtime in the one order every host keeps: what it realizes, the environment it reports, the
+    /// values the platform kept - read once the device is told, as reading their keys makes the application - the
+    /// language's direction, the windows, then the turns. Each step but the first and the direction is the host's.
+    /// Design: docs/design/host/runtime.md#starting
+    public func start(
+        realizing realization: HostRealization, unrealized: Set<String>, environment: () -> Void,
+        kept: () -> Void = {}, windows: () -> Void = {}, turns: () -> Void = {}
+    ) {
+        core.setRealization(realization, unrealized: unrealized)
+        environment()
+        kept()
+        tree.followTheLanguagesDirection()
+        windows()
+        turns()
     }
 
     /// Reports a native event and runs its handler, then a turn; one raised while a patch applies, or inside a
@@ -151,7 +175,7 @@
         let moves = lifecycle.settle(windows: tree.root?.windows ?? [])
         if let phase = moves.phase { core.setApplicationPhase(phase) }
         tell(moves.told)
-        if moves.standing { pump.presenter?.presentRendered() }
+        if moves.standing { presenter?.presentRendered() }
     }
 
     /// Hands the core a window the platform made - its first, a new one of no kind, or one it kept, of `kind`, for
@@ -171,7 +195,7 @@
     }
 
     /// The user chose tab `selected` of `tabbed`, which showed `previous`: the pages hear it, then the state the
-    /// choice carries.
+    /// choice carries - in a turn taken here where nothing the choice carries takes one.
     /// Design: docs/design/host/pages.md#a-pages-phases
     public func tabChosen(_ tabbed: MountedElement, from previous: Int, to selected: Int) {
         let tabs = tabbed.children
@@ -182,12 +206,14 @@
             tabs[selected].setPagePresented(true, reason: .appearance)
         }
         tabbed.reportUserChange(.selectedTab, .selectedTabChanged, .number(Double(selected)), in: self) { _ in }
+        pump.turnIfWanted()
     }
 
     /// The sidebar of `split` showed or hid on screen: its page hears it, then the state its binding carries.
     public func sidebarShown(_ split: MountedElement, _ shown: Bool) {
         if split.isPagePresented { split.children.first?.setPagePresented(shown, reason: .appearance) }
         split.reportUserChange(.showsSidebar, .showsSidebarChanged, .bool(shown), in: self) { _ in }
+        pump.turnIfWanted()
     }
 
     /// Goes `way` back in `window`: a stack's top page goes, the path told it is one shorter, or the top sheet goes,
@@ -233,5 +259,31 @@
         guard !settling else { return }
         settling = true
         Task { @MainActor [weak self] in self?.settlePhases() }
+    }
+}
+
+extension HostRuntime: TurnPresenter {
+    func presentRendered() { presenter?.presentRendered() }
+
+    func perform(_ call: HostActCall) { presenter?.perform(call) }
+}
+
+/// A runtime with no presenter - its host gone, a test's host replaced - presents and renders nothing on its frames.
+extension HostRuntime: FramePresenter {
+    var wantsFrames: Bool { presenter != nil && frames.wantsFrames }
+
+    func commitUserReports(now: Double) {
+        guard presenter != nil else { return }
+        frames.commit(now: now)
+    }
+
+    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
+        guard let presenter else { return }
+        presenter.presentFrame(movedChrome: tree.present(states: states, properties: properties).windowChrome)
+    }
+
+    func renderIfNeeded() {
+        guard presenter != nil, core.needsRender else { return }
+        pump.turn()
     }
 }

@@ -22,6 +22,6 @@ public struct MenuItem: Element, MenuItemElement {
     /// position. On the menu bar an entry with the id of an entry in the menu
     /// declared around it stands in that entry's place.
     public func id(_ value: some Hashable) -> Self {
-        modified { $0.id = String(describing: value) }
+        modified { $0.identify(value) }
     }
 }

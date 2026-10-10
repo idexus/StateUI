@@ -4,8 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// StateUI's drawing as SVG writes it: a path's commands, a rounded rectangle, an ellipse, an affine matrix, and a
-/// gradient's geometry over the room it paints.
+/// StateUI's drawing as SVG writes it: a path's commands, a rounded rectangle, an ellipse, an affine matrix and its
+/// inverse, and a gradient's geometry over the room it paints.
 /// Design: docs/design/platforms/web/drawing.md#a-shape
 enum WebVector {
     /// The host layer's flat commands - move, line, cubic, quadratic, close, each with its points - as SVG's.
@@ -63,6 +63,16 @@ enum WebVector {
     static func matrix(_ numbers: [Double]) -> String? {
         guard numbers.count == 6, numbers.allSatisfy(\.isFinite) else { return nil }
         return "matrix(" + numbers.map(WebCSS.number).joined(separator: " ") + ")"
+    }
+
+    /// The transform that undoes an affine transform's six numbers; nil where it flattens the plane.
+    static func inverse(_ numbers: [Double]) -> [Double]? {
+        guard numbers.count == 6 else { return nil }
+        let (a, b, c, d, e, f) = (numbers[0], numbers[1], numbers[2], numbers[3], numbers[4], numbers[5])
+        let determinant = a * d - b * c
+        guard determinant != 0, determinant.isFinite else { return nil }
+        return [d / determinant, -b / determinant, -c / determinant, a / determinant,
+                (c * f - d * e) / determinant, (b * e - a * f) / determinant]
     }
 
     /// A gradient SVG paints: its element, its geometry over `painted` in the page's own units, and its stops.

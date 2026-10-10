@@ -9,13 +9,13 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class HostRealizationTests: XCTestCase {
     /// A view type as far as a registry can tell.
     private final class Plain {}
 
-    override func tearDown() {
+    override func tearDown() async throws {
         HostBoundary.setRealization(HostRealization())
-        super.tearDown()
     }
 
     /// A host that has said nothing is told nothing: every host realizes what

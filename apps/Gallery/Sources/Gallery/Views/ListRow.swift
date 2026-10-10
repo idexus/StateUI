@@ -5,7 +5,7 @@ import StateUI
 /// A row of a grouped list: what it leads to, the line under it, and a
 /// chevron saying it goes somewhere.
 ///
-/// A ROW IS A GRID WITH A TAP ON IT, standing with its neighbours in one
+/// A ROW IS A ZSTACK WITH A TAP ON IT, standing with its neighbours in one
 /// rounded group - the "RowGroup" style - with a hairline between each row and
 /// the one before it.
 ///
@@ -38,7 +38,8 @@ struct ListRow: View {
     ///   - title: What the row is called.
     ///   - summary: The line under it.
     ///   - action: Run when the row is tapped. May await - tapping a row
-    ///     navigates, and where it goes is what a row IS.
+    ///     navigates, and where it goes is what a row IS; a tap while it runs
+    ///     is let go.
     init(_ title: String, summary: String, action: @escaping EventHandler) {
         self.title = title
         self.summary = summary
@@ -116,7 +117,7 @@ struct ListRow: View {
             .columns(.auto, .fill, .auto)
             .padding(horizontal: 16, vertical: 11)
         }
-        .style("ListRow")
+        .style(.listRow)
         // A ROW IS A ZSTACK WITH A TAP ON IT, which no platform reads as a
         // control: so the row says what it is and where it goes, and the
         // handle is worked out from the title - see Handle.swift.
@@ -127,11 +128,11 @@ struct ListRow: View {
         // up and goes out again. It lights before the action starts - a
         // page's build holds the UI thread, which eats the frames beside it -
         // and goes out while the navigation runs.
-        .onTapped {
-            try await lit.journey.move(to: 1, .eased(60, .cubicOut))
-            async let dark: Bool = lit.journey.move(to: 0, .eased(250, .cubicOut))
+        .onTapped(gate: .ignoreWhileRunning) {
+            try await lit.journey.move(to: 1, .eased(60, .cubicOut)).arrived()
+            let dark = lit.journey.move(to: 0, .eased(250, .cubicOut))
             try await action()
-            _ = try await dark
+            try await dark.arrived()
         }
     }
 }

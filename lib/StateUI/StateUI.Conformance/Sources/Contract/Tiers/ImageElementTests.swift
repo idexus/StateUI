@@ -26,6 +26,7 @@
     }
 
     /// What `element`'s specimen wears to show the picture.
+    @MainActor
     static func picture(_ element: String) -> [any Worn] {
         element == "Button"
             ? [Write(ButtonContract.icon, ImageSource("test_wide.svg"))]
@@ -34,6 +35,7 @@
 
     /// An image's picture placed as `aspect` says in a room of `size` covers the points `filled` and leaves the points
     /// `empty` empty.
+    @MainActor
     static func placed(
         _ aspect: ContentMode, in size: (Double, Double), filled: [(Double, Double)], empty: [(Double, Double)]
     ) -> ConformanceCase {

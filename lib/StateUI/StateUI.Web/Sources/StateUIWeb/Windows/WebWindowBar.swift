@@ -33,6 +33,9 @@ final class WebWindowBar: WebDOMView {
     /// The groups of actions shown, each a run of buttons standing together.
     private var groups: [WebDOMView] = []
 
+    /// The shape drawn on each button of the bar's own, let go of with the bar.
+    private var glyphs: [WebDOMView] = []
+
     /// What the toggle and the way back do.
     var onToggle: () -> Void = {}
     var onBack: () -> Void = {}
@@ -99,7 +102,8 @@ final class WebWindowBar: WebDOMView {
         style("--stateui-bar-background", WebCSS.fill(chrome.background))
         // A clear bar shows what is behind it as it is: no blur, no deeper colour under it.
         style("--stateui-bar-filter", HostBrush(chrome.background).isClear ? "none" : nil)
-        style("--stateui-bar-foreground", WebCSS.color(chrome.foreground))
+        // Words the tree gives no colour stand light on a dark band and dark on a light one.
+        style("--stateui-bar-foreground", WebCSS.color(BandWords.color(on: chrome.background, written: chrome.foreground)))
 
         var kept: [ObjectIdentifier: WebBarButton] = [:]
         var made: [WebDOMView] = []
@@ -155,11 +159,13 @@ final class WebWindowBar: WebDOMView {
         shape.attribute("class", "stateui-glyph")
         shape.attribute("data-glyph", glyph)
         WebRelay.insert(shape.node, into: button.node, at: 0)
+        glyphs.append(shape)
     }
 
     override func detach() {
         for button in buttons.values { button.detach() }
         for group in groups { group.detach() }
+        for shape in glyphs { shape.detach() }
         let parts = [
             toggle, back, closer, more, name, subtitle, heading, brand, title, leading, trailing, side, start, lead,
         ]

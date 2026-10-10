@@ -7,7 +7,7 @@ public enum ModalStackContract: ElementContract {
     /// The node type the contract declares.
     public static let nodeType: NodeType = "ModalStack"
 
-    /// Each platform presents its sheets its own way.
+    /// Every base host presents it by its platform's conventions, keeping StateUI's state contract.
     public static let layer: ElementLayer = .adaptive
 
     /// A modal stack declares the bar over what it holds.

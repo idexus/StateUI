@@ -13,7 +13,7 @@ import WASILibc
 // listing: end
 import StateUI
 
-/// A layout of the author's own: one line of arithmetic says where each card
+/// A layout of the author's own: six lines of arithmetic say where each card
 /// goes and how it is turned, and the host puts every card there on its own
 /// frames.
 struct PlacedSample: SampleContent, ExampleContent {
@@ -51,35 +51,20 @@ struct PlacedSample: SampleContent, ExampleContent {
     /// to be taken hold of, so the two swap places.
     @State private var grabbing = false
 
-    /// Whether the run has been put on the card it opens on. A scroller
-    /// cannot be moved before its content is laid out - asked earlier it
-    /// clamps to the length it has so far - so the opening aim below keeps
-    /// asking until the card it was aimed at is where it was sent, and this
-    /// closes it.
-    @State private var opened = false
-
-    /// Where the aim sends a fresh scroller, in device units. The middle card
-    /// at the first opening, and the card the ring STOOD ON at a handover -
-    /// held apart from the driven state, whose value a scroller being built can
-    /// briefly stomp with the clamps of its first layout.
-    @State private var aim = Double(PlacedSample.cards.count / 2) * PlacedSample.reach
-
-    /// How long the scroller's content was when it last reported - the aim
-    /// runs when this changes, which is when a jump can finally land.
-    @State private var length = 0.0
-
     /// How far the run has been SCROLLED, and how far it has been DRAGGED -
     /// both handed on, so neither describes anything when it moves. The
     /// arithmetic below reads both and the host runs it on its own frames.
     /// The offset is walked: a button's write glides, and `value` is where
-    /// the scroller IS, frame by frame.
+    /// the scroller IS, frame by frame. It starts on the middle card; a
+    /// scroller - the first, or one built afresh - stands where this value
+    /// says once it is laid out.
     @State private var scrolled = Point(Double(PlacedSample.cards.count / 2) * PlacedSample.reach, 0)
 
     @State private var dragged = 0.0
 
-    /// WHERE EVERY CARD GOES, and where every dot under them goes - one run of
-    /// placements each, written by the engines below and worn by the host on
-    /// its own frames. Nothing about a card's place is described.
+    /// WHERE EVERY CARD GOES, and where every dot at the board's foot goes -
+    /// one run of placements each, written by the engines below and worn by
+    /// the host on its own frames. Nothing about a card's place is described.
     @State private var ring = PlacedRun()
 
     @State private var dots = PlacedRun()
@@ -158,26 +143,6 @@ struct PlacedSample: SampleContent, ExampleContent {
                         let card = min(max(($scrolled.journey.value.x / Self.reach).rounded(), 0), Double(Self.cards.count - 1))
                         scrolled = Point(card * Self.reach, 0)
                     }
-                    // THE OPENING AIM: a scroller cannot be moved before its
-                    // content is laid out - asked earlier it clamps to the
-                    // length it has so far - so this puts it there again
-                    // until the card it was aimed at is where it was sent.
-                    .onFrameChanged { frame in
-                        guard !opened, frame.width != length else { return }
-
-                        length = frame.width
-
-                        let sendTo = aim
-                        var asks = 0
-
-                        repeat {
-                            $scrolled.journey.snap(to: Point(sendTo, 0))
-                            try await Task.sleep(for: .milliseconds(100))
-                            asks += 1
-                        } while abs($scrolled.journey.value.x - sendTo) > 1 && asks < 10
-
-                        opened = abs($scrolled.journey.value.x - sendTo) <= 1
-                    }
                 }
 
                 // WHICH CARD IS AT THE FRONT, said by a fade - a second layout
@@ -211,12 +176,12 @@ struct PlacedSample: SampleContent, ExampleContent {
                 Button("Back")
                     .margin(horizontal: 4, vertical: 0)
                     .isEnabled(!grabbing)
-                    .onClicked { try await move(-1) }
+                    .onClicked { move(-1) }
 
                 Button("Next")
                     .margin(horizontal: 4, vertical: 0)
                     .isEnabled(!grabbing)
-                    .onClicked { try await move(1) }
+                    .onClicked { move(1) }
             }
             .spacing(8)
             .horizontalAlignment(.center)
@@ -230,14 +195,11 @@ struct PlacedSample: SampleContent, ExampleContent {
                         // ONE NUMBER AT EACH HANDOVER: the two values are
                         // folded into the scroll alone, so whichever input
                         // comes next starts from where the ring stands -
-                        // and the scroller, built afresh by the swap,
-                        // is aimed at that card again by the opening aim.
+                        // the scroller, built afresh by the swap, included.
                         let standing = at.rounded() * Self.reach
 
                         dragged = 0
                         $scrolled.journey.snap(to: Point(standing, 0))
-                        aim = standing
-                        opened = taking
                         grabbing = taking
                     }))
             .horizontalAlignment(.center)
@@ -273,10 +235,10 @@ struct PlacedSample: SampleContent, ExampleContent {
 
     /// A card either way, from a button: the scroller is what moves, so this
     /// sends its offset gliding and the arithmetic follows it frame by frame.
-    private func move(_ by: Int) async throws {
+    private func move(_ by: Int) {
         let slot = max(0, min(Double(Self.cards.count - 1), (at + Double(by)).rounded()))
 
-        try await $scrolled.journey.move(to: Point(slot * Self.reach, 0), .eased(300, .cubicOut))
+        $scrolled.journey.move(to: Point(slot * Self.reach, 0), .eased(300, .cubicOut))
     }
 
     /// One card's face - a picture and its name, and nothing at all about where
@@ -311,11 +273,12 @@ struct PlacedSample: SampleContent, ExampleContent {
                 .verticalAlignment(.end)
             }
             // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL
-            // the card covers it and spills past its edges, so the grid
-            // holding it - a layout, with edges to cut at - clips it.
+            // the card is cut at its own room - the Web's reaches two points
+            // past it - so the grid holding it - a layout, with edges to cut
+            // at - cuts it there.
             .clipsContent(true)
         }
-        .style("Card")
+        .style(.card)
         .lineWidth(0)
         .shape(.roundedRectangle(16))
     }
@@ -355,7 +318,7 @@ struct PlacedSample: SampleContent, ExampleContent {
             zIndex: 1000 - Int(min(abs(step), 99) * 100))
     }
 
-    /// One dot under the board, saying which card is at the front by a fade.
+    /// One dot at the board's foot, saying which card is at the front by a fade.
     private func dot(_ index: Int, _ count: Int) -> Placement {
         Placement(
             Rect(
@@ -410,16 +373,14 @@ struct PlacedSample: SampleContent, ExampleContent {
                 + "writing them describes nothing, and `.engine(following:)` says which of "
                 + "them moving runs the arithmetic again. It runs on the display's own "
                 + "frames and writes placements the host wears straight onto the cards, so "
-                + "the ring turns with no view built. The dots under the cards are a second "
-                + "layout and a second engine over the same two numbers.")
+                + "the ring turns with no view built. The dots at the board's foot are a "
+                + "second layout and a second engine over the same two numbers.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Text("The trap is a label written from a driven value: it is built again every "
                 + "time the value moves. A placement is not, which is why the cards shrink "
-                + "as they go round the back with no view rebuilt. The ring keeps its card "
-                + "through a change of geometry - turn the phone or resize the window, and "
-                + "the same card is back at the front once the room settles.")
+                + "as they go round the back with no view rebuilt.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

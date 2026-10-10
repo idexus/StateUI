@@ -119,6 +119,7 @@
 }
 
 /// `page` as the first page of a stack, whose bar a host with menus on its bar puts them on.
+@MainActor
 func onAStack(_ page: MenusPage) -> NavigationStack {
     NavigationStack(State(wrappedValue: [Int]()).projectedValue) { page } destination: { _ in Text("Note") }
 }

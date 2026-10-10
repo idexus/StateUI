@@ -22,7 +22,7 @@ final class WebCanvasView: WebDOMView {
         super.init(tag: "div")
         attribute("class", "stateui-canvas")
         WebRelay.insert(surface.node, into: node, at: 0)
-        WebRelay.observeSize(node, WebRelay.listener { [weak self] in self?.redraw() })
+        followSize { [weak self] in self?.redraw() }
         listen("pointerdown") { [weak self] in
             guard let self else { return }
             pressing = true

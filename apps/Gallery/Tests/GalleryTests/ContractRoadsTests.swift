@@ -16,6 +16,7 @@ import XCTest
 ///
 /// Compiled as an application compiles - a plain `import StateUI` - with the
 /// compiler and the module the handbook's examples are checked against.
+@MainActor
 final class ContractRoadsTests: XCTestCase {
     /// A road the API closes, and the road it offers to the same place.
     private struct Road {
@@ -99,6 +100,26 @@ final class ContractRoadsTests: XCTestCase {
             name: "an aim's identity taken to aim by hand",
             closed: "_ = try Aim(TextField.self).target",
             open: "try await Aim(TextField.self).call(VisualElementContract.unfocus)"),
+        Road(
+            name: "a list scrolled to an identity of another type",
+            closed: #"try await Aim(ItemsView<Int>.self).scrollTo("500")"#,
+            open: "try await Aim(ItemsView<Int>.self).scrollTo(500)"),
+        Road(
+            name: "a fact of the host's written by the application",
+            closed: "Device().battery.chargeLevel = 1",
+            open: "_ = Device(battery: Battery(chargeLevel: 1)).battery.chargeLevel"),
+        Road(
+            name: "a provided object replaced from below",
+            closed: "Environment<ApplicationSession>().projectedValue.wrappedValue = ApplicationSession()",
+            open: "_ = Environment<ApplicationSession>().projectedValue.motion"),
+        Road(
+            name: "a style asked for by a name as words",
+            closed: #"_ = Text("x").style("Headline")"#,
+            open: #"_ = Text("x").style(StyleKey<Text>("Headline"))"#),
+        Road(
+            name: "a style key of another control",
+            closed: #"_ = Text("x").style(StyleKey<Button>("Cta"))"#,
+            open: #"_ = Button("x").style(StyleKey<Button>("Cta"))"#),
         Road(
             name: "a node of a type named by hand",
             closed: #"_ = Node(type: "Maps.Beacon")"#,
@@ -228,6 +249,6 @@ final class ContractRoadsTests: XCTestCase {
             .map { $0.isEmpty ? "" : "    \($0)" }
             .joined(separator: "\n")
 
-        return "import StateUI\n\n\(declarations)\n\nfunc road() async throws {\n\(body)\n}\n"
+        return "import StateUI\n\n\(declarations)\n\n@MainActor func road() async throws {\n\(body)\n}\n"
     }
 }

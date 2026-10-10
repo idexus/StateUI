@@ -61,6 +61,11 @@ enum WinUIRealization {
         .notPlanned("ActivityIndicator", "background", reason: "WinUI's progress ring paints its Background as its "
             + "track, no ground under its frame."),
         .partial("Canvas", "background", missing: "A brush fills the canvas with its first colour alone."),
+        .partial("ActivityIndicator", "automationExcludedWithChildren", missing: Self.partsStayMet),
+        .partial("DatePicker", "automationExcludedWithChildren", missing: Self.partsStayMet),
+        .partial("SearchField", "automationExcludedWithChildren", missing: Self.partsStayMet),
+        .partial("Stepper", "automationExcludedWithChildren", missing: Self.partsStayMet),
+        .partial("TimePicker", "automationExcludedWithChildren", missing: Self.partsStayMet),
         .notPlanned("ColorBox", "background", reason: figurePaintsNoGround),
         .notPlanned("Ellipse", "background", reason: figurePaintsNoGround),
         .notPlanned("Image", "background", reason: "WinUI's picture paints the picture alone, no ground around it."),
@@ -102,6 +107,8 @@ enum WinUIRealization {
         .complete("TextSpan", "fontAttributes"),
         .complete("TextSpan", "fontFamily"),
         .complete("TextSpan", "fontSize"),
+        .notPlanned("TextSpan", "isFontAutoScalingEnabled",
+                    reason: "WinUI scales a text's runs with the text: a run has no text scaling of its own."),
         .complete("TextSpan", "text"),
         .complete("TextSpan", "textCase"),
         .complete("TextSpan", "textColor"),
@@ -161,13 +168,13 @@ enum WinUIRealization {
         .complete("Window", "y"),
     ]
 
-    /// Why a figure takes no background on WinUI.
     /// What a split view's pane leaves out of a material.
     static let paneHasNoGlass = "WinUI has no glass: a pane of glass shows the in-app acrylic at its fallback thickness."
 
+    /// Why a figure takes no background on WinUI.
     static let figurePaintsNoGround = "A WinUI shape is its figure alone: it paints no ground around it."
 
-    /// Why a drawing's press is not let through as the tree says.
+    /// Why an activity ring's press is not let through as the tree says.
     static let hitOnlyWherePainted = "WinUI hands the activity ring only the presses on its turning arc: the "
         + "ring's middle, where a press is read, is never pressed, so there is nothing to let through."
 
@@ -186,6 +193,11 @@ enum WinUIRealization {
             realization: registry.realization, shared: registry.sharedNames,
             acts: (HostActs.performed + HostActs.files + [ItemsViewContract.scrollTo]).map(\.name))
     }
+
+    /// Why a control left out with its children is left out alone: WinUI has no property that leaves out a
+    /// subtree, and the host reaches into no template's parts.
+    private static let partsStayMet =
+        "WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them."
 
     /// What WinUI realizes, member by member: these records before what its registry says.
     @MainActor static var register: HostRegister {

@@ -4,16 +4,16 @@ import StateUI
 private struct PickList: ExampleContent {
     // listing: PickList
     @State private var chosen: Set<Int> = []
-    @Aim(ItemsViewContract.self) private var list
+    @Aim(ItemsView<Int>.self) private var list
 
     var body: some View {
         Grid {
             HStack {
                 Button("Top")
-                    .onClicked { try await list.scrollTo(0, anchor: .start) }
+                    .onClicked(gate: .cancelPrevious) { try await list.scrollTo(0, anchor: .start) }
 
                 Button("Row 500")
-                    .onClicked { try await list.scrollTo(500, anchor: .start) }
+                    .onClicked(gate: .cancelPrevious) { try await list.scrollTo(500, anchor: .start) }
 
                 Button("Clear")
                     .isEnabled(!chosen.isEmpty)

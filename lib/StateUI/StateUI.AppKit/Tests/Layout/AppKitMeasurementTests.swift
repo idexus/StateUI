@@ -12,6 +12,7 @@ import XCTest
 /// that moves one view's extent re-measures that view's ancestors and never
 /// the unchanged text beside them; a frame that moves only presentation
 /// arranges and measures nothing at all.
+@MainActor
 final class AppKitMeasurementTests: XCTestCase {
     @MainActor
     func testASizeFrameDoesNotMeasureUnchangedTextAgain() throws {
@@ -169,7 +170,7 @@ final class AppKitMeasurementTests: XCTestCase {
 
     @MainActor
     func testReapplyingAnUnchangedImageSourceKeepsTheNativeImage() throws {
-        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: TestPictures.directory, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var image = HostPatch(id: .manual("image"), type: .image)

@@ -16,11 +16,12 @@ The core's sources stand in one folder per topic, one element to a file, and
 | [render.md](render.md) | the renderer, the three roads of a render, generations, handlers in the message, starting a handler |
 | [invalidation.md](invalidation.md) | reads and changes, live readers, writes during a render, `debugInfo()` |
 | [identity-and-diffing.md](identity-and-diffing.md) | keys, state surviving a rebuild, carrying a view, the clean walk, what a patch carries |
-| [state.md](state.md) | storage and box, bindings, model state, carried state, kept and scene-kept state, the environment |
+| [state.md](state.md) | storage and box, bindings and their parts, posting, model state, carried state, kept and scene-kept state, the environment |
 | [journeys.md](journeys.md) | the journey lanes, the law on the image, moving and waiting, readings, conversions, motion laws |
 | [cycle.md](cycle.md) | the board, where a write lands, host reports, engines, state numbers, the ticker |
 | [acts.md](acts.md) | acts, completion ids, aims, focus, dialogs, host events |
-| [concurrency.md](concurrency.md) | `MainActor` on every platform, the doorbell, draining jobs, the lock and its order |
+| [runs.md](runs.md) | the runs of a handler, `Gate` and `SharedGate`, work started from code (`Task(gate:)`), a superseded run, the library's own tasks, a write built on a value gone, what a walk runs |
+| [concurrency.md](concurrency.md) | `MainActor` on every platform, the doorbell, draining jobs, what stands behind a lock |
 | [contracts.md](contracts.md) | contracts and tiers, member facts, values that cross, tokens, realizations |
 | [scenes.md](scenes.md) | the scene tree, sessions, what the platform keeps, connecting and ending scenes |
 | [diagnostics.md](diagnostics.md) | the tally, the inspector, complaints |
@@ -28,7 +29,7 @@ The core's sources stand in one folder per topic, one element to a file, and
 ## The core at a glance
 
 ```text
-  application     Application -> Scene -> Window -> Page -> views
+  application     Application -> Scene -> windows -> a view, on a page
                   bodies READ @State; handlers WRITE @State and call acts
         |
         v
@@ -38,8 +39,8 @@ The core's sources stand in one folder per topic, one element to a file, and
   |                          | read at build: ReadScope records it   |     |
   |                          | write: Renderer.stateChanged          |     |
   |                          v                                       |     |
-  |   Renderer --- render(baseline) ---> Differ                      |     |
-  |     changed, readers,     walk / build / complete                |     |
+  |   Renderer --- renderHost(baseline) ---> Differ                  |     |
+  |     written, readers,     walk / build / complete                |     |
   |     generation            keys, adoption, carry, handlers        |     |
   |                           |                                      |     |
   |                           v                                      |     |
@@ -62,22 +63,23 @@ rewrite; it moves on the display cycle with no rebuild at all (reactive path 2).
 
 ## The typed boundary
 
-Every host is Swift in the application's process. It links the core's dynamic
-library and calls `HostBoundary`, behind `@_spi(Host)`: `render(baseline:)`
-answers a typed `HostRender` holding the sparse `HostPatch`, `cycle` a
-`HostCycle`, `takeActCalls` typed `HostActCall`s, and the reports come back
-the same way - `dispatch`, `report`, `reply`, `raise`, one setter per standard
-provider. One process holds one copy of StateUI's types, and nothing
+Every host is Swift in the application's process. On a native platform it
+links the core's dynamic library; a Web build is one WebAssembly module holding
+the application, the core and its host. It calls `HostBoundary`, behind
+`@_spi(Host)`: `render(baseline:)` answers a typed `HostRender` holding the
+sparse `HostPatch`, `cycle` a `HostCycle`, `takeActCalls` typed
+`HostActCall`s, and the reports come back the same way - `dispatch`, `report`,
+`reply`, `raise`, one setter per standard provider. One process holds one copy of StateUI's types, and nothing
 serializes the patch between the core and a host. Code in a platform's own
-language - Java through JNI, C++ behind a C ABI - is a relay beneath the Swift
-host and never calls the core.
+language - Java through JNI, C++ behind a C ABI, JavaScript in the page - is a
+relay beneath the Swift host and never calls the core.
 
 ## A state write from start to finish
 
 ```text
-  handler: count += 1                        on MainActor, or from any thread
-     |
-     v  State.wrappedValue.set -> Storage.write     under the storage's lock
+  handler: count += 1                        on MainActor, the UI thread; a
+     |                                       task elsewhere posts: $count.post
+     v  State.wrappedValue.set -> Storage.write
      |
      v  Storage.askForRender()
   never read at build? -------------------> nothing more: one load
@@ -85,13 +87,16 @@ host and never calls the core.
      v  Renderer.stateChanged(storage)
   no live reader and no render running? --> refused, counted in the tally
      |
-     |  dirty = true; changed += storage; its name kept for debugInfo()
-     v  UIThreadExecutor.poke()
-  doorbell thread wakes, posts one turn onto the UI thread
+     |  dirty = true; the state kept until the render takes it - named
+     |  only when debugInfo() or an inspector asks
+     v  UIThreadExecutor.askForTurn()
+  the host turns: as the pass of Apple's run loop ends, as a call from the page
+  ends on the Web, at the turn posted elsewhere
      |
      v  host turn:  run jobs -> a pending cycle -> RENDER -> take acts
-  Renderer.render(baseline: the generation the host holds)
-     |  take and clear the changes in one locked step
+  HostBoundary.render(baseline:) -> Renderer.renderHost(baseline:),
+  against the generation the host holds
+     |  take and clear the changes in one step
      |
      |  clean walk   every cause named its state, none read by the root
      |  build        the root built again and reconciled
@@ -101,8 +106,9 @@ host and never calls the core.
           composed views built with the same inputs are carried;
           children matched by .id(), builder path, position
      |
-     v  settle passes: .onDestroying, .onCreated, .onChanged run now,
-     |  what they write is walked and merged - up to three passes
+     v  settle passes: .onDestroying, .onCreated, .onChanged,
+     |  .onVisualStateChanged run now, what they write is walked and
+     |  merged - up to three passes
      v
   HostPatch -> HostRender
      |
@@ -139,33 +145,35 @@ host and never calls the core.
 ```text
   UI thread (the host's)                       any other thread
   -----------------------------------------    ----------------------------------
-  event   HostBoundary.dispatch(id, payload)    a Task.detached or async let child
-          Renderer.dispatch                      writes @State, sends an act,
-          Task.immediate on MainActor            writes a board between cycles
-          -> the handler runs to its first           |  poke(), outside every lock
-             await, inside the event                 v
-                                               doorbell thread (the host made it)
-  turn    HostBoundary.runJobs: MainActor's jobs  parked in waitForWork
-          (Apple: the main queue's instead)      wakes, counts the work, posts
-          a pending cycle, a render, the acts    ONE turn onto the UI thread
-                                                 and parks again
+  event   HostBoundary.dispatch(id, payload)    a Task.detached or a group's child
+          Renderer.dispatch -> each handler      posts to a @State ($x.post):
+          through its gate (RunSlot.start):      one job booked on MainActor
+          Task.immediate on MainActor                |  its enqueue posts, outside
+          -> it runs to its first await              |  the executor's lock
+             inside the event, unless its            v
+             gate holds it back                the host's way (postTurns):
+  turn    HostBoundary.runJobs: MainActor's jobs  ONE turn onto the UI thread,
+          (Apple: the main queue's instead)      none more until its drain
+          a pending cycle, a render, the acts    begins
   resume  a continuation's job lands on
           MainActor's executor -> next drain   nothing ever runs on it
 ```
 
-The library never calls the host back: a resume produces its job on a pool
+The library hands the host no job: a resume produces its job on a pool
 thread, and entering a runtime from a thread it has never seen can deadlock the
-UI thread under a debugger. The host asks instead (concurrency.md).
+UI thread under a debugger. It only rings the doorbell, and the host runs the
+jobs (concurrency.md).
 
 ## Where things live
 
 Each folder of `lib/StateUI/Core/Sources/Core` is one topic, and the note beside it
-holds its reasons. A type's extensions stand in its folder, named
-`Type+Responsibility.swift`.
+holds its reasons. A type's extensions are named `Type+Responsibility.swift`
+and stand in the folder of the topic they serve, usually the type's own.
 
 ```text
-  Core/State        @State and its storage, Binding, kept state,          state
-                    @Environment, the @Observable warning
+  Core/State        @State and its storage, Binding and its parts,        state
+                    posting, kept state, @Environment, the @Observable
+                    warning
   Core/Carried      what a carried value is: StateValue and its image,    state, cycle
                     the attachments, HostStorage's three copies
   Core/Journey      Journey and its lanes, the law on the image, the two  journeys
@@ -174,12 +182,17 @@ holds its reasons. A type's extensions stand in its folder, named
   Core/Render       the renderer, with its cycle, act queue and dispatch; render, acts,
                     read scopes, debugInfo()                              invalidation
   Core/Diff         the differ, Node, RenderedNode, placeholders and      identity-and-diffing
-                    inputs, .onChanged, .onCreated, .onDestroying
+                    inputs, .onChanged, .onCreated, .onDestroying,
+                    visual states and their listeners, page values
   Core/Acts         acts and replies, aims, focus, dialogs, the screen    acts
                     reader, host events
-  Core/Threads      the UI thread's executor, the doorbell, the lock      concurrency
+  Core/Runs         a handler's runs and the gate they pass               runs
+                    through, SharedGate, Task(gate:), the run a
+                    task belongs to, a walk's runs
+  Core/Threads      the UI thread's executor, the doorbell, the           concurrency
+                    timetable of jobs kept for later
   Core/Boundary     the typed SPI: HostBoundary, HostRender, HostPatch     (this note)
-                    and the values it carries, SVG path data
+                    and the values it carries, SVG path data, the tally
   Core/Contract     contracts and tiers, members, their facts and         contracts
                     values, the tokens
   Core/Realization  a host's registry and reports, realizations and       contracts

@@ -23,6 +23,6 @@ extension ImageElement where Self: VisualElement {
     /// `contentMode` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func contentMode(_ state: Binding<ContentMode>) -> Modified {
-        plain(ImageElementContract.contentMode, by: state)
+        twin(ImageElementContract.contentMode, by: state)
     }
 }

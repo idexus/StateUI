@@ -4,6 +4,7 @@
 import Foundation
 import XCTest
 
+@MainActor
 final class ReleaseTests: XCTestCase {
     /// Every place that names the release names the one the editor
     /// extension's `package.json` states, the release's only home: the

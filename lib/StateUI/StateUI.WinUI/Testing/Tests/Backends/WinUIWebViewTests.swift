@@ -41,8 +41,8 @@ final class WinUIWebViewTests: XCTestCase {
                     WebView().source(html: second.wrappedValue ? "<p>Second</p>" : "<p>First</p>").aim(web)
                         .onNavigated { arrived.values.append("\($0.result)") }
                         .height(200)
-                    Button("Back").onClicked { try await web.goBack() }.id("back")
-                    Button("Ask").onClicked { said.values.append(try await web.evaluateJavaScript("document.body.innerText")) }
+                    Button("Back").onClicked(gate: .ignoreWhileRunning) { try await web.goBack() }.id("back")
+                    Button("Ask").onClicked(gate: .ignoreWhileRunning) { said.values.append(try await web.evaluateJavaScript("document.body.innerText")) }
                 }
             }
             Self.wait(host) { arrived.values.count == 1 }
@@ -98,7 +98,7 @@ final class WinUIWebViewTests: XCTestCase {
 
     /// A page showing the web view `web` makes once it arrived, and what `script` answered in it.
     @MainActor private static func asking(
-        _ web: @escaping @Sendable () -> WebView, _ script: String
+        _ web: @escaping @MainActor () -> WebView, _ script: String
     ) throws -> (WinUIRenderer, Received<String>) {
         let aim = Aim(WebView.self)
         let arrived = Received<Bool>()
@@ -106,7 +106,7 @@ final class WinUIWebViewTests: XCTestCase {
         let host = WinUIRenderer.running {
             VStack {
                 web().aim(aim).onNavigated { _ in arrived.values.append(true) }.height(200)
-                Button("Ask").onClicked { said.values.append(try await aim.evaluateJavaScript(script)) }
+                Button("Ask").onClicked(gate: .ignoreWhileRunning) { said.values.append(try await aim.evaluateJavaScript(script)) }
             }
         }
         wait(host) { !arrived.values.isEmpty }

@@ -12,7 +12,7 @@ public struct Windows: Scene {
 }
 
 extension Windows {
-    /// The declaration of `type`'s windows - nil for the group launch and *File ▸ New* make a window of.
+    /// The declaration of `type`'s windows - nil for the group launch and *File ▸ New Window* make a window of.
     func declaration(of type: WindowType?) -> DeclaredWindows? {
         declared.first { $0.type == type }
     }

@@ -385,12 +385,11 @@ enum JavaNatives {
         return functions.RegisterNatives(env, host, &methods, jint(methods.count)) == JNI_OK
     }
 
-    /// The activity starts the host: the first drain makes this thread MainActor's, then the first render.
+    /// The activity starts the host: it claims this thread as the UI thread, then renders first.
     /// Design: docs/design/platforms/android/runtime.md#starting
     private static func start(env: UnsafeMutablePointer<JNIEnv?>, activity: jobject, root: jobject, density: Double) {
         let core = CoreLink()
-        _ = core.needsRender
-        _ = core.runJobs()
+        core.claimUIThread()
 
         nonisolated(unsafe) let env = env
         nonisolated(unsafe) let activity = activity

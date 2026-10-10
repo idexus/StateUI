@@ -4,6 +4,7 @@
 package stateui.android.test;
 
 import android.graphics.Typeface;
+import android.os.Build;
 import android.util.TypedValue;
 import android.widget.TextView;
 
@@ -16,6 +17,12 @@ public final class TestText {
         float one = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP, 1, view.getResources().getDisplayMetrics());
         return view.getTextSize() / one;
+    }
+
+    /** Whether the words' size follows the user's font scale: 1 in scaled pixels, 0 in another unit, -1 unread. */
+    public static int scales(TextView view) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return -1;
+        return view.getTextSizeUnit() == TypedValue.COMPLEX_UNIT_SP ? 1 : 0;
     }
 
     /** Bold and italic, in the bits `Typeface` numbers them by. */

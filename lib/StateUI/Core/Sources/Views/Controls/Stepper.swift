@@ -88,8 +88,20 @@ public struct Stepper: ElementView, StepperProperties {
 
     /// Fires on every tap of either button, with the value stepped to. Runs
     /// after a binding's write, if there is one.
-    public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
+    public func onValueChanged(_ handler: @escaping @MainActor (Double) throws -> Void) -> Self {
         onEvent(StepperContract.valueChanged, handler)
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onValueChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<Double>) -> Self {
+        onEvent(StepperContract.valueChanged, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onValueChanged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
+        fatalError("unavailable")
     }
 }
 
@@ -97,6 +109,6 @@ extension Stepper {
     /// `step` from a state, `$x`: the host sets each new value as it stands,
     /// and no view is rebuilt for it.
     public func step(_ state: Binding<Double>) -> Modified {
-        plain(.step, by: state)
+        twin(StepperContract.step, by: state)
     }
 }

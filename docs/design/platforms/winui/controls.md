@@ -31,6 +31,13 @@ four thirds of it. The lines a label's break allows are the host layer's
 short only at their end, so a label cut at its start or in its middle is cut
 at its end.
 
+## The user's text size
+
+Words follow Windows' text size (`isFontAutoScalingEnabled`, on unless said)
+through `IsTextScaleFactorEnabled` on the text block or the control - and on
+a button's caption, which the host makes. A run of a text has no scaling of
+its own in WinUI: it scales with its text, `–` in the matrix.
+
 ## A button
 
 A button's words are a `TextBlock` of its content, which takes the button's
@@ -75,12 +82,13 @@ down whole each time.
 
 ## Nothing the program writes is heard
 
-Every native write of an element - a patch applied, a display frame presented
-- runs inside `ProgramWrite`. WinUI raises a `ToggleSwitch`'s `Toggled`, a
-check box's or a radio button's `Checked` and `Unchecked`, a `Slider`'s and a
-`NumberBox`'s `ValueChanged` and a `TextBox`'s `TextChanging` inside the write
-that sets the value, so a report during that write is the write's echo, and
-the element reports nothing. A control keeps no flag of its own.
+Every native write of an element - a patch applied, a display frame
+presented - runs inside `ProgramWrite`. WinUI raises a `ToggleSwitch`'s
+`Toggled`, a check box's or a radio button's `Checked` and `Unchecked`, a
+`Slider`'s and a `NumberBox`'s `ValueChanged` and a `TextBox`'s `TextChanging`
+inside the write that sets the value, so a report during that write is the
+write's echo, and the element reports nothing. A control keeps no flag of its
+own.
 
 ## On or off
 
@@ -148,11 +156,12 @@ A DatePicker is WinUI's `CalendarDatePicker`: its day written short or long -
 "d" and "D" - in the user's own pattern, which WinUI's own formatter gives,
 between the bounds the tree set or WinUI's hundred years each way, and its
 calendar, whose opening and closing follow a picker's list. A day crosses as
-its year, month and day in the user's calendar, taken at noon so that no
-change of the clock moves it to another day. Which day it shows is the host
-layer's rule ([a day and a time](../../host/runtime.md#a-day-and-a-time)): a
-day not in the calendar leaves the day shown, one past the range stands at
-its end, and bounds given the wrong way round are read the right way.
+its year, month and day in the Gregorian calendar, in the user's time zone,
+taken at noon so that no change of the clock moves it to another day. Which
+day it shows is the host layer's rule ([a day and a
+time](../../host/runtime.md#a-day-and-a-time)): a day not in the calendar
+leaves the day shown, one past the range stands at its end, and bounds given
+the wrong way round are read the right way.
 
 A TimePicker is WinUI's `TimePicker`, in the user's clock: hours and minutes,
 as the user's 12- or 24-hour choice writes them, a time past the day added up
@@ -184,29 +193,30 @@ was: the box is given it back, and nobody hears it as the user's.
 
 What an element says for assistive technology - its identifier, its label,
 its hint and its heading level - is WinUI's `AutomationProperties`:
-`AutomationId`, `Name`, `HelpText` and `AccessibilityHeadingLevel`, level for level. A word
-the element does not say is cleared, not written empty, so a control's own
-name - a button's caption - stands where no label replaces it.
+`AutomationId`, `Name`, `HelpText` and `HeadingLevel`, level for level up to
+the ninth, which stands for any deeper. A word the element does not say is
+cleared, not written empty, so a control's own name - a button's caption -
+stands where no label replaces it.
 
 Whether it is met at all is its accessibility view: an element hidden is
 `Raw`, which assistive technology skips while it still meets what stands in
 it; an element that says it is not hidden is `Content`; one that says
 nothing keeps the view its control has. An element left out with its
 children is `Raw`, and a layout so left out answers assistive technology with
-no children at all, its panel's automation peer holding them back. A control
-needs nothing more: what its template draws - a button's words - WinUI
-already keeps out of what is read.
+no children at all, its panel's automation peer holding them back. WinUI has
+no property that leaves out a subtree, and the host reaches into no
+template's parts: a control left out is left out alone. What most templates
+draw - a button's words - WinUI already keeps out of what is read; the parts
+an activity ring, a stepper, a search box and a day's or a time's picker
+draw stay met, `☑️` in the matrix.
 
 Assistive technology meets an element only through its automation peer, and
-WinUI gives a shape, a colour box and a canvas none. Each stands in a figure
-of the relay's - a panel whose peer is an image, pressed as a tap while the
+WinUI gives a shape, a colour box and a canvas none. A shape and a colour box
+stand in a figure of the relay's, and a canvas is a panel of the relay's;
+each answers with the figure's peer - an image, pressed as a tap while the
 view listens for taps - met by itself only while it has a name or says it is
 met, so a decoration says nothing to a screen reader. A menu's item and a
-toolbar's carry the element's identifier as their automation id. A control
-left out with its children leaves out with it the parts its template draws -
-a thumb, a field, a button - now and as it draws them anew, and each comes
-back with the view it had; a layout holds its children back through its
-panel's peer.
+toolbar's carry the element's identifier as their automation id.
 
 ## A slider in steps
 
@@ -241,10 +251,8 @@ return, where StateUI's words end it with a line feed: the host reads and
 hears every line's end as a line feed.
 
 A test types by writing the field's words outside a program's write, which
-WinUI reports as it reports the user's. UI Automation's value pattern on a
-`TextBox` fails inside a test process that holds WinUI embedded, so a test
-does not type through it; a button, a switch and a slider are driven through
-their automation patterns.
+WinUI reports as it reports the user's ([typing](conformance.md#typing)); a
+button, a switch and a slider are driven through their automation patterns.
 
 How the words are taken is the tree's where it says so and WinUI's where it
 does not: read only, and the traits the host layer reads once ([what typing
@@ -266,7 +274,8 @@ placeholder's colour from theme resources, which the box's own resources name
 again - at rest, under the pointer, focused and disabled - as a control's
 accent is ([a control's accent](#a-controls-accent)). It stands the
 placeholder at the start whatever the text box says, so the register records
-the alignment in part: the host reaches into no template's parts.
+the alignment in part: the host leaves the box's template to stand its
+placeholder.
 
 A test of a search box types into the text box its template holds: the
 search box's own words written from outside are the program's to it, and
@@ -347,11 +356,16 @@ stretched SVG at its room's size, where the SVG would keep its own and leave
 bands: the relay hands WinUI the picture from memory with its proportions
 let go (`preserveAspectRatio="none"`).
 
-Every other SVG is handed to WinUI by its file's address. An SVG read from
-memory costs WinUI far more once another window shows it: the Gallery's
-pictures, read so in a second gallery window, held some five gigabytes of
-surfaces shared between the windows, where read from their files they add
-megabytes.
+Every SVG is read from memory, once for each file, the pixels it is drawn at
+and whether its proportions are let go, and that one source is shared by
+every picture, button and icon showing it in every window: a picture drawn
+at a new size takes the source for that size. Read by its file's address,
+WinUI draws an SVG short and cut under a turn with an uneven scale - a
+wheel's side cards - and read from memory once for every picture, the
+Gallery's pictures in a second window held some five gigabytes of surfaces;
+shared, a second window adds megabytes. The relay keeps each source weakly,
+with its file, which is how a picture's file is read back. WinUI's renderer
+draws no SVG text: a picture's words are outlines.
 
 ## A web view
 
@@ -380,7 +394,7 @@ its taps, pans, swipes, pinch and pointer are none on WinUI.
 A document written in place is what its address answers, the view serving
 it through `WebResourceRequested` whenever the view asks for it - going back
 to it too - and nothing is fetched: at its own address, which its relative
-links resolve against, else at one the host gives it, under
+links resolve against, else at one the backend gives it, under
 `https://page.stateui.invalid/`, which no network answers. WebView2 leaves a
 `data:` address unfinished, sent to it or taken back to - `NavigateToString`
 goes to one - and every navigation after it.

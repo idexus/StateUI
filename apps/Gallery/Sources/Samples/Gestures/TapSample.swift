@@ -27,7 +27,7 @@ struct TapSample: SampleContent, ExampleContent {
                     .padding(24)
                     .horizontalTextAlignment(.center)
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
             .lineWidth(1)
             .shape(.roundedRectangle(10))
@@ -39,7 +39,7 @@ struct TapSample: SampleContent, ExampleContent {
                     .padding(24)
                     .horizontalTextAlignment(.center)
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
             .lineWidth(1)
             .shape(.roundedRectangle(10))
@@ -54,7 +54,7 @@ struct TapSample: SampleContent, ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("Any view answers a tap: every card on a group's page is a view with "
+        Text("Any view answers a tap: every row on a group's page is a view with "
             + "`.onTapped` on it.")
             .fontSize(12)
             .textColor(Palette.subtle)

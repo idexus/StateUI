@@ -18,6 +18,7 @@ private struct ChoosingPage: View {
     }
 }
 
+@MainActor
 final class UIKitItemsViewTests: XCTestCase {
     /// A cell at rest shows the page through it, as every host's list does; a chosen one shows the user's choice in
     /// the platform's accent, UIKit's tint, laid over the page.

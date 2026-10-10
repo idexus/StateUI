@@ -38,12 +38,16 @@ corners rounded each as the element says; a `Rectangle` rounds all four alike.
 A view's background is the ground under its whole frame, painted the way
 WinUI's own templates paint one (`stateui_winui_set_background`): a control's
 `Background` and the theme resources its template draws that ground from -
-the container of a switch or a slider (`ToggleSwitchContainerBackground`,
-`SliderContainerBackground`), the field of a text box, a search box or a
-number box (`TextControlBackground`), of a combo box (`ComboBoxBackground`)
-and of a date or time picker (`DatePickerButtonBackground`,
-`TimePickerButtonBackground`), each in every state - and a panel's
-`Background`, a canvas's included. A layout paints its box, a label its
+a radio button's own (`RadioButtonBackground`) and a check box's, checked or
+not (`CheckBoxBackgroundUnchecked`, `CheckBoxBackgroundChecked`,
+`CheckBoxBackgroundIndeterminate`), the container of a switch or a slider
+(`ToggleSwitchContainerBackground`, `SliderContainerBackground`), the field
+of a text box, a search box or a number box (`TextControlBackground`), of a
+combo box (`ComboBoxBackground`), of a date picker
+(`CalendarDatePickerBackground`) and of a time picker
+(`TimePickerButtonBackground`), each in every state - and a panel's
+`Background`. A canvas clears its surface to its ground as it replays its
+drawing - a brush's first colour alone. A layout paints its box, a label its
 words' ground, a button its face. What paints no ground of its own takes
 none: a figure - a shape, a colour box - and a picture, and the progress bar
 and ring, whose `Background` is their track; their pages in the dictionary
@@ -60,19 +64,21 @@ again and a click reaches the one drawn in front. A placed grid's second child
 is its shade, drawn as opaque as the run says.
 
 A test reads what is drawn: the relay renders the element through
-`RenderTargetBitmap` and samples it at the root's rasterization scale. The
-bitmap holds only what is drawn, from the first thing drawn, so a panel with
-no background is painted clear while it is rendered, and the bitmap then
-begins at its corner.
+`RenderTargetBitmap` and samples it at the bitmap's own scale - its pixels
+over the element's size - as a large element's bitmap is rendered smaller
+than the screen shows it. The bitmap holds only what is drawn, from the first
+thing drawn, so a panel with no background is painted clear while it is
+rendered, and the bitmap then begins at its corner.
 
 ## A tipped view
 
 A view is moved, turned and scaled flat by its render transform, about its
-pivot. A tip - `rotationX`, `rotationY`, seen from the host layer's
-perspective distance - is a `Matrix3DProjection` laid over that: the host
-layer's `HostDrawingTransform.tip`, about the pivot the translation moved, so
-the flat drawing, then the projection, is the host layer's whole matrix, as
-every host draws it. A view that tips nothing has no projection.
+pivot. A tip - `rotationX`, `rotationY`, seen from the core's perspective
+distance (`HostDrawingTransform.perspectiveDistance`) - is a
+`Matrix3DProjection` laid over that: the core's `HostDrawingTransform.tip`,
+about the pivot the translation moved, so the flat drawing, then the
+projection, is the transform's whole matrix, as every host draws it. A view
+that tips nothing has no projection.
 
 ## The shapes
 

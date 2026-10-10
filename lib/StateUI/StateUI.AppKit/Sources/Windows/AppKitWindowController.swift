@@ -64,6 +64,7 @@ final class AppKitWindowController: NSWindowController {
     let content = AppKitWindowContentView()
     private let nativeContentMinSize: NSSize
     private let nativeContentMaxSize: NSSize
+    private let nativeCollectionBehavior: NSWindow.CollectionBehavior
     let nativeAllowsZoom: Bool
     private let nativeAllowsMinimizing: Bool
 
@@ -98,6 +99,7 @@ final class AppKitWindowController: NSWindowController {
         let window = nativeWindow ?? Self.makeWindow()
         nativeContentMinSize = window.contentMinSize
         nativeContentMaxSize = window.contentMaxSize
+        nativeCollectionBehavior = window.collectionBehavior
         nativeAllowsZoom = window.standardWindowButton(.zoomButton)?.isEnabled ?? true
         nativeAllowsMinimizing = window.styleMask.contains(.miniaturizable)
         window.isReleasedWhenClosed = false
@@ -160,10 +162,11 @@ final class AppKitWindowController: NSWindowController {
         case .height:
             return .number(Double(window.contentLayoutRect.height))
         case .x:
-            return .number(Double(window.frame.minX))
+            guard let area = Self.workArea(window) else { return nil }
+            return .number(Double(window.frame.minX - area.minX))
         case .y:
-            guard let screen = window.screen ?? NSScreen.main else { return nil }
-            return .number(Double(screen.visibleFrame.maxY - window.frame.maxY))
+            guard let area = Self.workArea(window) else { return nil }
+            return .number(Double(area.maxY - window.frame.maxY))
         default:
             return nil
         }
@@ -231,10 +234,17 @@ final class AppKitWindowController: NSWindowController {
         }
         guard frame.x != nil || frame.y != nil else { return }
 
+        guard let area = Self.workArea(window) else { return }
         var topLeft = NSPoint(x: window.frame.minX, y: window.frame.maxY)
-        if let x = frame.x { topLeft.x = CGFloat(x) }
-        if let y = frame.y, let screen = window.screen ?? NSScreen.main { topLeft.y = screen.visibleFrame.maxY - y }
+        if let x = frame.x { topLeft.x = area.minX + CGFloat(x) }
+        if let y = frame.y { topLeft.y = area.maxY - CGFloat(y) }
         window.setFrameTopLeftPoint(topLeft)
+    }
+
+    /// The work area of the screen `window` stands on - the screen less its menu bar and the Dock - which a place
+    /// is counted from.
+    static var workArea: (NSWindow) -> NSRect? = { window in
+        (window.screen ?? NSScreen.main)?.visibleFrame
     }
 
     /// Bounds the content area as the tree asks; AppKit bounds the whole content view, which reaches under the title
@@ -248,6 +258,14 @@ final class AppKitWindowController: NSWindowController {
         window.contentMaxSize = NSSize(
             width: max(minimum.width, bounds.maximumWidth.map { CGFloat($0) } ?? nativeContentMaxSize.width),
             height: max(minimum.height, bounds.maximumHeight.map { CGFloat($0) + chrome } ?? nativeContentMaxSize.height))
+        // A bounded window takes no full screen; its zoom grows it to its maximum instead.
+        // Design: docs/design/platforms/appkit/runtime.md#a-windows-frame
+        var behavior = nativeCollectionBehavior
+        if bounds.maximumWidth != nil || bounds.maximumHeight != nil {
+            behavior.remove(.fullScreenPrimary)
+            behavior.insert(.fullScreenNone)
+        }
+        window.collectionBehavior = behavior
     }
 
     /// Makes the window what the tree says: its zoom and minimize buttons, the desktop through it, and whether it

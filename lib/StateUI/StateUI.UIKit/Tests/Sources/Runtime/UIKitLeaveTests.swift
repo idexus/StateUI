@@ -23,6 +23,7 @@ private struct NotePage: View {
     }
 }
 
+@MainActor
 final class UIKitLeaveTests: XCTestCase {
     /// Every element shown and taken away twice leaves the host holding as many views as the first time.
     @MainActor

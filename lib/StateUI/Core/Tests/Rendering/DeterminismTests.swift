@@ -114,6 +114,7 @@ struct SessionMessage {
     let patch: HostPatch
 }
 
+@MainActor
 final class DeterminismTests: XCTestCase {
     // MARK: - One session, twice
 
@@ -275,7 +276,7 @@ final class DeterminismTests: XCTestCase {
             }
 
             for event in handlers {
-                node.events[event] = {}
+                node.addHandler(event, gate: .none) {}
             }
 
             return PatchDump.text(Differ().reconcile(nil, with: node).patch)

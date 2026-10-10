@@ -8,6 +8,7 @@
 
 /// Walks the authored tree against the rendered one and produces the message.
 /// Design: docs/design/core/identity-and-diffing.md#what-a-walk-keeps
+@MainActor
 final class Differ {
     /// The next element id. Never reset, not even by a resync.
     /// Design: docs/design/core/identity-and-diffing.md#ids-are-never-reused
@@ -36,15 +37,17 @@ final class Differ {
     /// The states written since the tree the host holds was built.
     private(set) var changed: Set<ObjectIdentifier> = []
 
-    /// What each changed state is called, for `debugInfo()` (Builds.swift).
-    var named: [ObjectIdentifier: String] = [:]
+    /// The changed states themselves, for `debugInfo()` and an inspector to name
+    /// (Builds.swift).
+    var written: [ObjectIdentifier: AnyObject] = [:]
 
     /// Whether the element described next is the view a page shows, whose page values the page takes.
     var describesPageRoot = false
 
-    /// The handlers this walk found to run - `.onChanged`, `.onCreated` - in order.
+    /// The handlers this walk found to run - `.onChanged`, `.onCreated` and
+    /// `.onVisualStateChanged` - in the order reached.
     /// Design: docs/design/core/render.md#handlers-in-the-message
-    var fired: [EventHandler] = []
+    var fired: [Fired] = []
 
     /// The `.onDestroying` handlers of what this walk let go, innermost first.
     private var leaving: [EventHandler] = []
@@ -55,9 +58,9 @@ final class Differ {
     /// The composed views whose bodies the walk is inside, outermost first.
     var bodies: [String] = []
 
-    /// What every live element's events run, kept between renders.
+    /// What every live element's events run, and their runs, kept between renders.
     /// Design: docs/design/core/identity-and-diffing.md#handlers-and-their-ids
-    var handlers: [Int: EventHandler] = [:]
+    var handlers: [Int: EventRegistration] = [:]
 
     /// The scene the walk is inside; `OpenScenes.building` follows it.
     var sceneRecord: SceneRecord? {
@@ -162,14 +165,14 @@ final class Differ {
     }
 
     /// What an element's event runs, or nothing if the id is unknown.
-    func handler(_ id: Int) -> EventHandler? {
+    func handler(_ id: Int) -> EventRegistration? {
         handlers[id]
     }
 
     /// The handlers the last walk found - what left first, then the rest - taken so
     /// each runs once.
-    func takeFired() -> [EventHandler] {
-        let taken = leaving + fired
+    func takeFired() -> [Fired] {
+        let taken = leaving.map { Fired(run: $0, gate: .none, owner: nil) } + fired
         leaving.removeAll(keepingCapacity: true)
         fired.removeAll(keepingCapacity: true)
         return taken
@@ -178,9 +181,10 @@ final class Differ {
     /// Drops the handlers and engines of an element that left the tree, and of
     /// everything under it, and books its `.onDestroying`.
     func forget(_ node: RenderedNode) {
-        for id in node.events.values {
-            handlers.removeValue(forKey: id)
+        for (_, id) in node.events.sorted(by: { $0.key < $1.key }) {
+            handlers.removeValue(forKey: id)?.orphan()
         }
+        node.runs.orphan()
 
         // Its engines: nothing is left to ask for their frames.
         for id in node.engines {

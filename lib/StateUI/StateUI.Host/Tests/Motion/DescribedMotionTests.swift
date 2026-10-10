@@ -7,6 +7,7 @@ import XCTest
 
 /// The transitions a patch describes: a value moves only within one shape,
 /// and lands exactly.
+@MainActor
 final class DescribedMotionTests: XCTestCase {
     @MainActor
     func testAStructuredBrushMovesOnlyInsideItsStableShape() throws {

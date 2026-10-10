@@ -60,7 +60,7 @@ public struct ModalStack: ElementView, Arrangement, BarElement {
 
         // A sheet gone without this side saying so; the report only shortens.
         // Design: docs/design/views/pages.md#a-pop-report-only-shortens
-        node.addHandler(ModalStackContract.popped.token) {
+        node.addHandler(ModalStackContract.popped.token, gate: .none) {
             guard let remaining = EventBuffer.current.value()?.int else { return }
 
             let presented = sheets.wrappedValue

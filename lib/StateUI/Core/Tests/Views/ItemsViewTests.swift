@@ -19,9 +19,9 @@ private final class Built {
     var counts: [Int: Int] = [:]
 }
 
+@MainActor
 final class ItemsViewTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         Renderer.shared.clearStates()
     }

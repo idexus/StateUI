@@ -5,6 +5,7 @@ import StateUI
 /// kept by the window (`GalleryWindow`), written by `MainPage` as the window
 /// is made and by `WindowPhaseLog` as its phase moves, and read by the
 /// Lifecycle sample.
+@MainActor
 final class WindowLog {
     /// The last six moments, each numbered.
     @State var events: [String] = []

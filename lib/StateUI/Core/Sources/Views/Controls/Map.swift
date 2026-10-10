@@ -26,9 +26,10 @@ extension MapProperties {
     }
 
     /// Whether the user's own position is drawn on it. That needs the
-    /// platform's location permission: on iOS an app without
-    /// `NSLocationWhenInUseUsageDescription` in its Info.plist is killed the
-    /// moment this turns on, and Android needs the permission granted.
+    /// platform's location permission: without
+    /// `NSLocationWhenInUseUsageDescription` in its Info.plist on iOS, or
+    /// `NSLocationUsageDescription` on macOS, the platform refuses the asking
+    /// and the position is never drawn; Android needs the permission granted.
     public func showsUserLocation(_ value: Bool) -> Modified {
         setValue(MapContract.showsUserLocation, value)
     }
@@ -71,8 +72,9 @@ public struct Map: ElementView, MapProperties {
     /// the platform's own opening region overwrites. Moving later is the act,
     /// `map.moveToRegion(latitude:longitude:radiusMeters:)`.
     ///
-    /// - Parameter radiusMeters: Half the width of what is shown, in METERS -
-    ///   a plain number, its unit in its name.
+    /// - Parameter radiusMeters: the circle around the point the map shows
+    ///   whole, its shorter side spanning the circle's width, in METERS - a
+    ///   plain number, its unit in its name.
     public init(latitude: Double, longitude: Double, radiusMeters: Double) {
         node = Node(contract: MapContract.self)
         node.write(MapContract.region, MapRegion(latitude: latitude, longitude: longitude, radiusMeters: radiusMeters))
@@ -98,8 +100,20 @@ public struct Map: ElementView, MapProperties {
     // MARK: Events
 
     /// Fires when the map itself is tapped - not a marker - with where.
-    public func onMapClicked(_ handler: @escaping ValueEventHandler<Location>) -> Self {
+    public func onMapClicked(_ handler: @escaping @MainActor (Location) throws -> Void) -> Self {
         onEvent(MapContract.mapClicked, handler)
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onMapClicked(gate: some Gate, _ handler: @escaping ValueEventHandler<Location>) -> Self {
+        onEvent(MapContract.mapClicked, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onMapClicked(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onMapClicked(_ handler: @escaping ValueEventHandler<Location>) -> Self {
+        fatalError("unavailable")
     }
 }
 
@@ -121,6 +135,18 @@ public struct Marker: Element {
     public init(_ label: String) {
         node = Node(contract: MarkerContract.self)
         node.write(MarkerContract.label, label)
+    }
+
+    /// Who this marker is among the map's others, so a marker put before it
+    /// leaves it itself rather than dressing it as the next place; without one
+    /// it is matched by its position.
+    ///
+    /// - Parameter value: distinct among the map's markers, and the same value
+    ///   across renders.
+    public func id(_ value: some Hashable) -> Self {
+        var copy = self
+        copy.node.identify(value)
+        return copy
     }
 
     /// The callout's first line, in bold. The initializer takes the same
@@ -155,18 +181,42 @@ public struct Marker: Element {
 
     /// Fires when the marker is tapped. Observing only: it cannot keep the
     /// callout shut.
-    public func onSelected(_ handler: @escaping EventHandler) -> Self {
+    public func onSelected(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+        onSelected(gate: .none) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onSelected(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
         var copy = self
-        copy.node.addHandler(MarkerContract.selected, handler)
+        copy.node.addHandler(MarkerContract.selected, gate: gate, handler)
         return copy
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSelected(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onSelected(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 
     /// Fires when the callout above the marker - its details - is tapped: the
     /// place a navigation usually goes.
-    public func onDetailsClicked(_ handler: @escaping EventHandler) -> Self {
+    public func onDetailsClicked(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+        onDetailsClicked(gate: .none) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onDetailsClicked(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
         var copy = self
-        copy.node.addHandler(MarkerContract.detailsClicked, handler)
+        copy.node.addHandler(MarkerContract.detailsClicked, gate: gate, handler)
         return copy
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDetailsClicked(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onDetailsClicked(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 }
 
@@ -227,7 +277,8 @@ public struct MapRegion: Equatable, Sendable, HostRepresentable {
     /// Degrees east of Greenwich, negative west of it.
     public var longitude: Double
 
-    /// Half the width of what is shown, in meters.
+    /// The circle around the centre the map shows whole, its shorter side
+    /// spanning the circle's width, in meters.
     public var radiusMeters: Double
 
     /// A region, by its centre and its radius.
@@ -235,7 +286,8 @@ public struct MapRegion: Equatable, Sendable, HostRepresentable {
     /// - Parameters:
     ///   - latitude: degrees north of the equator, negative south.
     ///   - longitude: degrees east of Greenwich, negative west.
-    ///   - radiusMeters: half the width of what is shown, in meters.
+    ///   - radiusMeters: the circle around the centre the map shows whole, in
+    ///     meters.
     public init(latitude: Double, longitude: Double, radiusMeters: Double) {
         self.latitude = latitude
         self.longitude = longitude
@@ -264,7 +316,7 @@ extension Aim where Target == Map {
     ///     Map(latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
     ///         .aim(map)
     ///
-    ///     Button("Old Town").onClicked {
+    ///     Button("Old Town").onClicked(gate: .cancelPrevious) {
     ///         try await map.moveToRegion(
     ///             latitude: 52.2497, longitude: 21.0135, radiusMeters: 800)
     ///     }
@@ -272,11 +324,12 @@ extension Aim where Target == Map {
     /// For moving a map that is already up; where one opens is
     /// `Map(latitude:longitude:radiusMeters:)`.
     ///
-    /// - Parameter radiusMeters: Half the width of what is shown, in METERS -
-    ///   a plain number, its unit in its name.
+    /// - Parameter radiusMeters: the circle around the point the map shows
+    ///   whole, its shorter side spanning the circle's width, in METERS - a
+    ///   plain number, its unit in its name.
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.
-    public nonisolated(nonsending) func moveToRegion(
+    public func moveToRegion(
         latitude: Double,
         longitude: Double,
         radiusMeters: Double

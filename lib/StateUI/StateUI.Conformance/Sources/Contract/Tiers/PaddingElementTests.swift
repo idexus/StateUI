@@ -23,6 +23,7 @@
     }
 
     /// A layout's child stands its padding in from the layout's corner, and the padding the tree changes it to.
+    @MainActor
     static func keepsItsChildIn(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).keepsItsChildItsPaddingIn", proves: [
             Covered(PaddingElementContract.padding, on: element),
@@ -51,6 +52,7 @@
 }
 
 /// A layout of each kind holding a view within its padding.
+@MainActor
 enum Padded {
     /// A layout of `element`'s kind holding `content`, `padding` in.
     static func layout(_ element: String, padding: Insets, _ content: () -> any View) -> ModifiedContent {

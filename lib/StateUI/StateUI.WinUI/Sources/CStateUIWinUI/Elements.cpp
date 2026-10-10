@@ -336,7 +336,7 @@ namespace {
         else if (control.try_as<controls::ToggleSwitch>()) named = {L"ToggleSwitchContainerBackground"};
         else if (control.try_as<controls::Slider>()) named = {L"SliderContainerBackground"};
         else if (control.try_as<controls::ComboBox>()) named = {L"ComboBoxBackground"};
-        else if (control.try_as<controls::DatePicker>()) named = {L"DatePickerButtonBackground"};
+        else if (control.try_as<controls::CalendarDatePicker>()) named = {L"CalendarDatePickerBackground"};
         else if (control.try_as<controls::TimePicker>()) named = {L"TimePickerButtonBackground"};
         else if (control.try_as<controls::TextBox>() || control.try_as<controls::PasswordBox>() ||
                  control.try_as<controls::AutoSuggestBox>() || control.try_as<controls::NumberBox>())

@@ -6,6 +6,7 @@
 import XCTest
 
 /// How a layout measures a child, the same on every host.
+@MainActor
 final class ChildMeasureTests: XCTestCase {
     /// A stated width is the width a child is measured at, within its bounds; with none, the offer, no wider than
     /// its most width.

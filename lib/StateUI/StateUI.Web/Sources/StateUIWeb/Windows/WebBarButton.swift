@@ -36,7 +36,7 @@ final class WebBarButton: WebDOMView {
         words.setShown(item.showsActionWords)
         attribute("aria-label", text)
         attribute("title", text)
-        attribute("disabled", item.value(.isEnabled)?.bool == false ? "" : nil)
+        attribute("disabled", item.isEffectivelyEnabled ? nil : "")
         attribute("data-destructive", item.value(.isDestructive)?.bool == true ? "" : nil)
         attribute("data-identifier", item.value(.accessibilityIdentifier)?.string)
         attribute("aria-haspopup", item.type == .menu ? "menu" : nil)

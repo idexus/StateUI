@@ -73,7 +73,7 @@ public struct RatingBar: ElementView, RatingBarProperties {
 
     /// How many stars are filled, walked by the host from a state.
     ///
-    ///     try await $stars.journey.move(to: 5, .eased(1200))
+    ///     try await $stars.journey.move(to: 5, .eased(1200)).arrived()
     ///
     /// `.inOut`, because the host reports where the walk has got to, which is
     /// what `$stars.journey.value` reads. A tap does not arrive this way;
@@ -87,7 +87,7 @@ public struct RatingBar: ElementView, RatingBarProperties {
 
     /// A star was tapped, with the rating it gave. Runs beside a binding's
     /// write-back, never instead of it.
-    public func onRatingChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
+    public func onRatingChanged(_ handler: @escaping @MainActor (Double) throws -> Void) -> Self {
         onEvent(RatingBarContract.ratingChanged, handler)
     }
 }

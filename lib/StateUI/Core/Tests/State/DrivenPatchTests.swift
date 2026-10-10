@@ -12,9 +12,9 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class DrivenPatchTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
 
         // The numbering starts over, so these patches are the same whichever
@@ -345,8 +345,8 @@ final class DrivenPatchTests: XCTestCase {
     /// A walked twin for a property nothing declares, or over a value nothing
     /// interpolates, would compile and then do nothing at all - which is the
     /// one failure this library refuses to ship. Read off the source: every
-    /// `journey(.x, by:)` - or `journey(SomeContract.x, by:)`, the member with
-    /// its contract - under a `public func x(_ state: Binding<T>)`.
+    /// `journey(.x, by:)` - or `twin(SomeContract.x, by:)` over a value the
+    /// host walks - under a `public func x(_ state: Binding<T>)`.
     func testEveryWalkedModifierNamesACarriedPropertyOfTheSameName() throws {
         let sources = try SourceTree.allSources()
 
@@ -372,6 +372,8 @@ final class DrivenPatchTests: XCTestCase {
                             || property.split(separator: ".").first?.hasSuffix("Contract") == true,
                           let signature {
                     walked.append(signature)
+                } else if written.contains("twin("), let signature, Self.walkedTypes.contains(signature.type) {
+                    walked.append(signature)
                 }
             }
         }
@@ -384,7 +386,7 @@ final class DrivenPatchTests: XCTestCase {
         // two lanes the host carries by the scroller's own key rather than by
         // a property's type, the platform declaring no settable property for
         // it.
-        let carried: Set<String> = ["Double", "Color", "Insets", "Point"]
+        let carried = Self.walkedTypes
 
         // THE ONE WALKED MODIFIER WITH NO DESCRIBED TWIN. A scroller's offset
         // is a property the platform keeps read-only - a scroller reports
@@ -400,6 +402,35 @@ final class DrivenPatchTests: XCTestCase {
                 values.contains(modifier.name) || stateOnly.contains(modifier.name),
                 "`\(modifier.name)` is walked but no modifier of that name takes a value")
         }
+    }
+
+    /// What the host has a blend for, and the whole of it - a number, a colour, a thickness, and a point.
+    private static let walkedTypes: Set<String> = ["Double", "Color", "Insets", "Point"]
+
+    /// A VALUE MODIFIER'S TWIN IS DECIDED BY ITS CONTRACT. Every twin goes through `twin(_:by:)` or
+    /// `twin(_:carrying:)`, which walk the value where its member travels and set it as it stands where it does
+    /// not; a `journey(` or a `plain(` written straight would be a second owner of that choice, which is how a
+    /// grid's spacing came to jump where a stack's glides. A control's own value, carried both ways (`mode:`), and
+    /// the values the host walks by a key of their own stand apart.
+    func testEveryTwinIsDecidedByItsContract() throws {
+        let ownValues = ["journey(.scrollOffset,", "journey(SliderContract.value.token,", "journey(StepperContract.value.token,"]
+        var bypassing: [String] = []
+
+        // The helpers themselves, where the choice is made, stand apart.
+        for (path, text) in try SourceTree.allSources()
+        where path.contains("Views") && !path.hasSuffix("PropertyContainer+Bindings.swift") {
+            for line in text.split(whereSeparator: \.isNewline) {
+                let written = line.trimmingCharacters(in: .whitespaces)
+                guard written.hasPrefix("journey(") || written.hasPrefix("plain(") || written.hasPrefix(": plain(")
+                        || written.contains("$0.journey(") || written.contains("$0.plain("),
+                      !written.contains("mode:"),
+                      !ownValues.contains(where: { written.contains($0) })
+                else { continue }
+                bypassing.append("\(path.split(separator: "/").last ?? ""): \(written)")
+            }
+        }
+
+        XCTAssertEqual(bypassing, [], "a twin decides journey or plain itself; go through twin(_:by:)")
     }
 
     /// ONE SPELLING PER ROAD, and `move(to:_:)` is the JOURNEY's.

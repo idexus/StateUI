@@ -9,6 +9,7 @@ import AppKit
 import StateUIConformance
 import XCTest
 
+@MainActor
 final class AppKitPickerViewTests: XCTestCase {
     @MainActor
     func testItemsPlaceholderAndSelectionFormOneNativeSnapshot() {

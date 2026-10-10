@@ -12,6 +12,7 @@ import XCTest
 /// field's whole text, and the render that report causes writes the field
 /// back from the value it carries - never from the one before it, which would
 /// put every field one keystroke behind the user.
+@MainActor
 final class AppKitTypingTests: XCTestCase {
     @MainActor
     func testEveryBoundTextControlKeepsEachKeystroke() throws {
@@ -56,6 +57,7 @@ final class AppKitTypingTests: XCTestCase {
 }
 
 /// The three texts the test types into.
+@MainActor
 private final class TypingForm {
     @State var name = ""
     @State var notes = ""

@@ -15,13 +15,14 @@ the whole window.
 
 A page's view stands in its controller's safe area, clear of the bars, the
 notch and an iPad window's own controls in its corner (the safe area with its
-corner adapted), and out to the screen's edge on each edge its content lets itself under
-them ([the safe area](../../host/layout.md#the-safe-area)); the controller's
-own view shows the page's background, so it stands behind the bars either
-way. Only a page's own layout reaches under them; one deeper in stands where
-its page puts it. A frame report's safe area is that same one - the page's,
-under its stack's bar as well as the status bar - so a view at its page's top
-corner reads nothing from it.
+corner adapted), and out to the screen's edge where its content lets itself
+under the screen's bars and notch - never under a stack's bar or the tabs
+(`barsOver`) ([the safe area](../../host/layout.md#the-safe-area)); the
+controller's own view shows the page's background, so it stands behind the
+bars either way. Only a page's own layout reaches under them; one deeper in
+stands where its page puts it. A frame report's safe area is that same one -
+the page's, under its stack's bar as well as the status bar - so a view at its
+page's top corner reads nothing from it.
 
 ## The bar
 
@@ -32,17 +33,17 @@ background, the leading ones beside the way back, those beyond the bar in a
 menu behind its last button, whether it offers the way back, and its colours
 where the tree gives them. The view standing in for the title is fitted to
 what it holds as it comes, and a layout again at every render; a control -
-a search field - keeps the width the bar gives it: fitted to its words at
-every render, it was cut as the user typed and widened again by the bar,
-letter by letter. An action that destroys something is marked
-destructive in the menu and tinted red on the bar. A clear bar is UIKit's
-transparent bar: nothing under it and no line - the opaque bar of a clear
-colour drew its line under nothing. A tabbed view's bar is its
-chosen tab's page's, but for its title: the page the window is named by
-([the window's chrome](../../host/pages.md#the-windows-chrome)) - tabs pushed
-onto a stack by their own title, else by the page beneath - which names the
-window's scene too. Every bar in the window is written again as the window is shown, so a bar
-always says what its page says now.
+a search field - keeps the width the bar gives it, since a fit to its words
+at every render would cut it as the user types and the bar would widen it
+again. An action that destroys something is marked destructive in the menu
+and tinted red on the bar. A clear bar is UIKit's transparent bar: nothing
+under it and no line - an opaque bar of a clear colour would draw its line
+under nothing. A tabbed view's bar is its chosen tab's page's, but for its
+title: the page the window is named by ([the window's
+chrome](../../host/pages.md#the-windows-chrome)) - tabs pushed onto a stack
+by their own title, else by the page beneath - which names the window's
+scene too. Every bar in the window is written again as the window is shown,
+so a bar always says what its page says now.
 
 ## Pictures on the bars
 
@@ -115,27 +116,32 @@ place is UIKit's own effect under what the sidebar page shows - a blur's tint
 washed over it, glass tinted in itself - beside the detail and over it alike;
 a colour is the page's own background.
 
-Whether the sidebar shows is the display mode the host prefers: over or
-beside the detail while the tree asks for it, the detail alone while not.
-The tree's move is UIKit's own (`show`/`hide` of the sidebar's column), which
-moves the columns together with a page pushed in the same turn: in an
-animation of the host's own, the page's first frame was laid out inside it
-and grew from nothing.
-The sidebar showing or hiding on screen is heard as the display mode
-changes, whoever moved it; the program's own move and the host's adapting
-to a new room are not told back. The traps: sliding over the detail, UIKit
-tells no column shown or hidden (`willShow`/`willHide` stay silent for the
-sidebar); entering its window it settles a display mode of its own before
-the first layout, which is no user's move; and its sidebar button item is
-handed out bare - the one on the bar is UIKit's own.
+Whether the sidebar shows is the display mode the host prefers: over or beside
+the detail while the tree asks for it, the detail alone while not. The tree's
+move is UIKit's own (`show`/`hide` of the sidebar's column), which moves the
+columns together with a page pushed in the same turn; an animation of the
+host's own would lay the page's first frame out inside it and grow it from
+nothing. The sidebar showing or hiding on screen is heard as the display mode
+changes, whoever moved it; the program's own move and the host's adapting to a
+new room are not told back. The traps: sliding over the detail, UIKit tells no
+column shown or hidden (`willShow`/`willHide` stay silent for the sidebar);
+entering its window it settles a display mode of its own before the first
+layout, which is no user's move; and its sidebar button item is handed out
+bare - the one on the bar is UIKit's own.
 
 ## Sheets
 
 A modal stack standing as the window's page is UIKit's page sheets, each presented over the one
 before once that one stands - UIKit presents over a controller only then -
 and all of them only once the window stands on screen: a sheet presented
-before, UIKit takes away again at once and tells as the user's. Those still
-asked for stay, the rest go from the top. The user swiping the top sheet down
+before, UIKit takes away again at once and tells as the user's. Which stay
+and which go is the host layer's rule ([sheets](../../host/pages.md#sheets),
+`SheetChange`): those standing as asked, counted from the bottom, stay; the
+rest go from the top. Nor does UIKit present over a controller whose sheet
+is still coming or going: it drops the request and says nothing, and the
+window would hold a sheet never shown. So while a sheet the
+window presented or took away still moves, what is asked waits - the latest
+asking - and comes as that movement ends. The user swiping the top sheet down
 is the window's way back, told the stack as how many stay; a window that leaves tells
 nobody of its sheets, which leave with it.
 

@@ -6,6 +6,7 @@ import XCTest
 
 /// The native-host contract is closed over StateUI's built-in vocabulary even
 /// though applications remain free to declare their own contracts.
+@MainActor
 final class HostContractTests: XCTestCase {
     func testEveryBuiltInControlPropertyAndEventHasOneOwner() throws {
         let source = try SourceTree.text(in: "Tokens.swift")
@@ -24,13 +25,16 @@ final class HostContractTests: XCTestCase {
             vocabulary: "Event")
     }
 
-    func testDerivedLayoutsAndControlsBelongToStateUI() {
+    func testWhatStateUIDecidesBelongsToStateUI() {
         for type in [
-            NodeType.checkBox, .ellipse, .grid,
-            .line, .path, .polygon, .polyline, .radioButton,
+            NodeType.ellipse, .grid,
+            .line, .path, .polygon, .polyline,
             .rectangle,
         ] {
             XCTAssertEqual(Self.layer(of: type), .stateUI)
+        }
+        for type in [NodeType.checkBox, .radioButton] {
+            XCTAssertEqual(Self.layer(of: type), .adaptive, "a toolkit's own box where it has one")
         }
 
         for property in [

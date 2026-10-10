@@ -20,10 +20,11 @@ on a glass of its own, apart from the next. Each action is a button with
 its picture, its words beside it where it shows them, its name for assistive
 technology and its tooltip. The bar's colours are the arrangement's, written
 as CSS variables the stylesheet paints it with; without them the bar is the
-page's surface, translucent over what scrolls beneath, blurred and deepened.
+page's surface, translucent, blurred and deepened over what lies behind it;
+the room stands in the row below the bar, so nothing scrolls beneath it.
 A clear bar drops the blur: it shows what lies behind it as it is, the same
 colour as the page under it. No line stands under the bar. The same title
-names the browser's tab.
+names the browser's tab, beside the site's name ([The tab](#the-tab)).
 
 Beside a sidebar shown, the bar stands in two parts as wide as the split
 view's columns: over the sidebar the application's name and the line under
@@ -41,6 +42,19 @@ in words, and the browser's tab shows the site's own icon.
 The page is one window: an application's second window has no place of its
 own in it.
 
+## The tab
+
+The tab names the page the user sees beside the site's name the page's head
+gives - its `application-name`, which an application writes in its
+`Page/head.html` - as "Home - StateUI": the site's name tells one of the
+user's tabs from another, the page's which place of the site it shows. A page
+with no title, or one named as the site, names the tab as the site alone.
+Where the head gives no name, the tab is the page's title alone, so a page
+the library lays out by itself reads as its window's title. The head's
+`<title>` is the page's name before the module runs and what a crawler that
+runs no script reads; it is often a sentence, too long to stand beside every
+page's title.
+
 ## The browser's way back
 
 The browser's own way back - its button, a swipe on a phone - goes back a
@@ -54,6 +68,8 @@ user's - only where the browser stands on that entry, so the page never takes
 the user off the site from one it did not put there. One entry, never one a
 page: a page the application pushes is the
 tree's, and the browser could hand none of them back on its way forward.
+A window hears the history move until it closes, and closing lets that
+listener go on both sides of the relay.
 
 A window closing takes its sheets away first, the top one first: each is a
 modal dialog of the page's, which would hold every page after it still.
@@ -155,7 +171,9 @@ share. The strip scrolls across alone, never down - its line drawn inside it,
 so no tab's underline reaches past it for a finger to drag it by. It wears
 the colour of the bars on its path (`barColors`), and no blur under a clear
 one - the window bar's own look where nothing is said - so under the window's
-bar it stands as one with it. Each tab is a button with the role of a tab - its page's picture, where
+bar it stands as one with it; its words, as the window bar's, are the colour
+the tree writes, else light on a dark band and dark on a light one
+(`BandWords`). Each tab is a button with the role of a tab - its page's picture, where
 it has one, beside its name - the chosen one selected; the chosen page shows and the others stand beside it covered, kept
 as they stood, scrolled where the user left them. A covered page is laid out
 unseen - it takes no touch, no keyboard and no assistive technology - so a

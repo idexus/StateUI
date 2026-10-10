@@ -24,6 +24,7 @@ extension AndroidDriver {
         switch ability {
         case "read minimum of Slider", "read maximum of Slider":
             return "the host's own range; the SeekBar holds only steps"
+        case "read value of Stepper": return "the host's own number; Android's stepper is two buttons, which hold none"
         case "read options of Picker", "read title of Picker": return "the rows the relay keeps, not the spinner's"
         case "read showsSidebar of SplitView": return "the split's own flag; the drawer slides on it"
         case "read sidebarBackground of SplitView":

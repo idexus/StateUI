@@ -41,13 +41,23 @@ extension View {
     ///   - handler: What to run with each settled frame.
     public func onFrameChanged(
         in space: CoordinateSpace = .parent,
+        _ handler: @escaping @MainActor (Rect) throws -> Void
+    ) -> Modified {
+        onFrameChanged(in: space, gate: .none) { try handler($0) }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onFrameChanged(
+        in space: CoordinateSpace = .parent,
+        gate: some Gate,
         _ handler: @escaping ValueEventHandler<Rect>
     ) -> Modified {
         // One report serves every space; each handler stays quiet while its
         // own answer is unchanged.
         let last = LastFrame()
 
-        return onEvent(ViewContract.frameChanged) { numbers in
+        return onEvent(ViewContract.frameChanged, gate: gate) { numbers in
             guard let report = FrameReport(numbers) else { return }
 
             let frame = report.frame(in: space)
@@ -57,11 +67,21 @@ extension View {
             try await handler(frame)
         }
     }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onFrameChanged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onFrameChanged(
+        in space: CoordinateSpace = .parent,
+        _ handler: @escaping ValueEventHandler<Rect>
+    ) -> Modified {
+        fatalError("unavailable")
+    }
 }
 
 /// What a frame handler last handed over, remembered across reports; a
 /// rebuilt view starts it afresh, costing one repeated report.
-private final class LastFrame: @unchecked Sendable {
+@MainActor
+private final class LastFrame {
     /// The rectangle the handler last ran with.
     var rect: Rect?
 }

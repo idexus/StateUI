@@ -4,6 +4,7 @@ import StateUI
 /// A strip of tiles a fixed distance apart - the shape both strips of the rest
 /// example are cut from. A tile is 140 wide with 20 between them, so one
 /// starts every 160, which is the interval the first strip is brought to rest on.
+@MainActor
 private func tileStrip() -> ScrollView {
     ScrollView {
         HStack {
@@ -27,6 +28,7 @@ private func tileStrip() -> ScrollView {
 // listing: OffsetStrips
 /// Forty numbered lines - the same strip in all three columns below, so the
 /// only difference on the screen is what the offset costs.
+@MainActor
 private func numberedLines() -> ScrollView {
     ScrollView {
         VStack {
@@ -45,6 +47,7 @@ private func numberedLines() -> ScrollView {
 ///
 /// - Parameter text: what this column is.
 /// - Returns: the words, styled.
+@MainActor
 private func columnTitle(_ text: String) -> Text {
     Text(text)
         .fontSize(12)
@@ -59,6 +62,7 @@ private func columnTitle(_ text: String) -> Text {
 ///
 /// - Parameter text: the line of code this column is about.
 /// - Returns: the words, in the code face.
+@MainActor
 private func spelling(_ text: String) -> Text {
     Text(text)
         .fontSize(11)
@@ -231,10 +235,10 @@ private struct OffsetStrips: ExampleContent {
 
             HStack {
                 Button("Top")
-                    .onClicked { try await move(to: 0) }
+                    .onClicked(gate: .cancelPrevious) { try await move(to: 0) }
 
                 Button("Line 9")
-                    .onClicked { try await move(to: 240) }
+                    .onClicked(gate: .cancelPrevious) { try await move(to: 240) }
             }
             .spacing(16)
             .horizontalAlignment(.center)
@@ -253,7 +257,7 @@ private struct OffsetStrips: ExampleContent {
     /// - Parameter y: how far down each strip is sent.
     private func move(to y: Double) async throws {
         for strip in [$described, $paced, $driven] {
-            try await strip.journey.move(to: Point(0, y), .eased(300, .cubicOut))
+            try await strip.journey.move(to: Point(0, y), .eased(300, .cubicOut)).arrived()
         }
     }
     // listing: end
@@ -283,7 +287,7 @@ private struct OffsetStrips: ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("`.scrollOffset($offset)` goes both ways: scrolling writes the state, and a "
-                + "write moves the scroller. `try await $offset.journey.move(to:)` returns "
+                + "write moves the scroller. `try await $offset.journey.move(to:).arrived()` returns "
                 + "when the glide finishes, which is why Top moves the strips one after "
                 + "another; `$offset.journey.snap(to:)` puts one there at once.")
                 .fontSize(12)

@@ -57,7 +57,9 @@ public struct StateUIError: Error, CustomStringConvertible, Equatable {
 ///
 /// Throws `StateUIError` when the host could not perform it - including when no
 /// host answers its name - and when the answer is not what the contract
-/// declares. It resumes where it was called, and may be called from a handler, a
+/// declares. In a run a later event, its task's cancellation or its element
+/// leaving superseded, it throws `CancellationError` and the act never leaves.
+/// It resumes where it was called, and may be called from a handler, a
 /// child task or a detached task. Acts queued without an `await` between them
 /// start in order and finish in whatever order the host's work does. An act of
 /// an element is called through its aim: `Aim.call`.
@@ -67,7 +69,7 @@ public struct StateUIError: Error, CustomStringConvertible, Equatable {
 ///   - arguments: its arguments, in the order the contract declares them.
 /// - Returns: the answer, as the contract declares it.
 @discardableResult
-public nonisolated(nonsending) func stateUICall<
+public func stateUICall<
     Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable
 >(
     _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
@@ -91,6 +93,7 @@ public nonisolated(nonsending) func stateUICall<
 /// - Parameters:
 ///   - act: the member, written with its contract.
 ///   - arguments: its arguments, in the order the contract declares them.
+@MainActor
 public func stateUISend<Owner: ApplicationTier, each Argument: HostRepresentable, Answer>(
     _ act: ElementAct<Owner, (repeat each Argument), Answer>,
     _ arguments: repeat each Argument

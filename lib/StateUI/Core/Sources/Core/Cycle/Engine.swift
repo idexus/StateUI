@@ -50,16 +50,17 @@ public struct EngineCycle: Sendable {
     public let reducesMotion: Bool
 }
 
-/// What an engine follows: a state's storage, asked how many times it was written.
-/// This library's own. Every write counts, this side's and the host's, equal
-/// bytes included.
-public protocol FollowedState: AnyObject {
+/// What an engine follows: a state's storage, asked how many times it was written -
+/// this side's and the host's, equal bytes included.
+@MainActor
+protocol FollowedState: AnyObject {
     /// How many times the state has been written.
     var stamp: Int { get }
 }
 
 /// An engine as the tree carries it, before the differ numbers it. Its closure
 /// captured the view by value.
+@MainActor
 struct EngineDeclaration {
     /// The states whose being written is a reason to run it.
     let follows: [any FollowedState]
@@ -71,13 +72,13 @@ struct EngineDeclaration {
     let priority: Double
 
     /// The arithmetic.
-    let run: (EngineCycle) -> EngineAnswer
+    let run: @MainActor (EngineCycle) -> EngineAnswer
 }
 
 /// One registered engine and everything the board remembers about it: a value in
-/// the board's book, so its reasons to run are read and written under the board's
-/// hold alone.
+/// the board's book, its reasons to run read and written by the board alone.
 /// Design: docs/design/core/cycle.md#the-board
+@MainActor
 struct EngineEntry {
     /// What the differ registered it under, which is also its tie-break.
     let id: Int
@@ -90,7 +91,7 @@ struct EngineEntry {
 
     /// The arithmetic - rewritten by each render that describes the view, with that
     /// render's captures.
-    var run: (EngineCycle) -> EngineAnswer
+    var run: @MainActor (EngineCycle) -> EngineAnswer
 
     /// The states it follows, as the last render that described the view named them.
     private(set) var follows: [any FollowedState]
@@ -112,7 +113,7 @@ struct EngineEntry {
         priority: Double,
         sync: Sync,
         follows: [any FollowedState],
-        run: @escaping (EngineCycle) -> EngineAnswer
+        run: @escaping @MainActor (EngineCycle) -> EngineAnswer
     ) {
 
         self.id = id
@@ -153,17 +154,6 @@ struct EngineEntry {
     }
 }
 
-// Design: docs/design/core/cycle.md#engine-order
-/// A state an engine can follow - `$x` on any `@State`, whatever it holds. This
-/// library's own.
-public protocol Followable {
-    /// The storage the state lives on, asked for its stamp alone; nothing for a part
-    /// of a state or a binding made from closures.
-    var followed: (any FollowedState)? { get }
-}
-
-extension Binding: Followable {}
-
 // MARK: - Attaching one
 
 extension ModifiableElement {
@@ -192,82 +182,79 @@ extension ModifiableElement {
     ///   - sync: which clock it runs on. The display's own frame.
     ///   - priority: where it comes in the order, ascending. 0 unless said.
     ///   - run: the arithmetic, handed the instant and how long it has been.
-    public func engine(
-        following first: any Followable,
-        _ more: any Followable...,
+    public func engine<First, each More>(
+        following first: Binding<First>,
+        _ more: repeat Binding<each More>,
         sync: Sync = .display,
         priority: Double = 0,
-        _ run: @escaping (EngineCycle) -> Void
+        _ run: @escaping @MainActor (EngineCycle) -> Void
     ) -> Modified {
-        let named = [first] + more
-        let follows = named.compactMap(\.followed)
+        var follows = [first.followed]
+        for storage in repeat (each more).followed { follows.append(storage) }
 
-        if follows.count < named.count {
-            complain("`following:` was handed a part of a state, or a binding made "
-                + "from closures, which has no storage of its own to be woken by. "
-                + "Follow the whole state.")
-        }
-
-        return modified {
-            $0.engines.append(EngineDeclaration(
-                follows: follows,
-                sync: sync,
-                priority: priority,
-                run: { cycle in
-                    run(cycle)
-                    return .wait
-                }))
+        return engine(follows, sync: sync, priority: priority) { cycle in
+            run(cycle)
+            return .wait
         }
     }
 
-    /// The same, answering whether it has more to do.
+    /// An engine that keeps tracking: it answers on each cycle whether it has more to
+    /// do.
     ///
-    ///     .engine { cycle in
-    ///         body.step(cycle.elapsed / 1000) { _ in Point(0, 9.8) }
-    ///         return body.isStill() ? .wait : .again
+    ///     .engine(tracking: $y) { cycle in
+    ///         let journey = $y.journey
+    ///         let seconds = cycle.elapsed / 1_000
+    ///         let displacement = journey.destination - journey.value
+    ///         journey.velocity += (displacement * 40 - journey.velocity * 10) * seconds
+    ///         journey.value += journey.velocity * seconds
+    ///
+    ///         let arrived = abs(displacement) < 0.01 && abs(journey.velocity) < 0.01
+    ///         if arrived { journey.snap(to: journey.destination) }
+    ///         return arrived ? .wait : .again
     ///     }
     ///
     /// `.again` holds the frame clock and runs next cycle; `.wait` lets it go until a
-    /// followed state is written - so `following:` may be left out here, for a
-    /// motion moved by time alone. Nothing bounds how long `.again` holds the clock.
-    /// A sequence is a state the engine follows and writes: a handler moving it wakes
-    /// the engine, and the engine's own write wakes nothing.
+    /// tracked state is written - so `tracking:` may be left out, for a motion moved
+    /// by time alone. Nothing bounds how long `.again` holds the clock. A sequence is
+    /// a state the engine tracks and writes: a handler moving it wakes the engine,
+    /// and the engine's own write wakes nothing.
     ///
-    /// A `@State` the engine reads and does not follow is recorded nowhere: writing
-    /// it wakes nothing. Follow it, or read it in the body and hand it over.
+    /// A `@State` the engine reads and does not track is recorded nowhere: writing
+    /// it wakes nothing. Track it, or read it in the body and hand it over.
     ///
     /// - Parameters:
-    ///   - following: the states whose being written is a reason to run. May be none.
+    ///   - tracking: the states whose being written is a reason to run. May be none.
     ///   - sync: which clock it runs on. The display's own frame.
     ///   - priority: where it comes in the order, ascending. 0 unless said.
     ///   - run: the arithmetic, answering whether to run again next cycle.
     public func engine<each Value>(
-        following: repeat Binding<each Value>,
+        tracking: repeat Binding<each Value>,
         sync: Sync = .display,
         priority: Double = 0,
-        _ run: @escaping (EngineCycle) -> EngineAnswer
+        _ run: @escaping @MainActor (EngineCycle) -> EngineAnswer
     ) -> Modified {
-        var follows: [any FollowedState] = []
-        var named = 0
+        var follows: [(any FollowedState)?] = []
+        for storage in repeat (each tracking).followed { follows.append(storage) }
 
-        for storage in repeat (each following).followed {
-            named += 1
+        return engine(follows, sync: sync, priority: priority, run)
+    }
 
-            if let storage { follows.append(storage) }
-        }
+    /// Registers an engine woken by `named`'s writes; a part of a state or a binding made from closures is
+    /// refused, said once.
+    private func engine(
+        _ named: [(any FollowedState)?], sync: Sync, priority: Double,
+        _ run: @escaping @MainActor (EngineCycle) -> EngineAnswer
+    ) -> Modified {
+        let follows = named.compactMap { $0 }
 
-        if follows.count < named {
-            complain("`following:` was handed a part of a state, or a binding made "
+        if follows.count < named.count {
+            complain("An engine was handed a part of a state, or a binding made "
                 + "from closures, which has no storage of its own to be woken by. "
                 + "Follow the whole state.")
         }
 
         return modified {
-            $0.engines.append(EngineDeclaration(
-                follows: follows,
-                sync: sync,
-                priority: priority,
-                run: run))
+            $0.engines.append(EngineDeclaration(follows: follows, sync: sync, priority: priority, run: run))
         }
     }
 }

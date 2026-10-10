@@ -111,8 +111,8 @@ struct MaterialsSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("A background is a material: a colour, a gradient, a blur of what lies behind the view, "
-                + "or the platform's glass, each cut to the view's shape. A blur's tint lies over it; "
-                + "glass takes the platform's own tint.")
+                + "or the platform's glass, each cut to the view's shape. A tint lies over a blur or "
+                + "glass alike; this glass wears none, so the platform's own shows.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

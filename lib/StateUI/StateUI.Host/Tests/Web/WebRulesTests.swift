@@ -5,6 +5,7 @@
 @_spi(Host) @testable import StateUIHost
 import XCTest
 
+@MainActor
 final class WebRulesTests: XCTestCase {
     /// A script's answer is its words as they are, a number as it is written, anything else as JSON; nothing for no
     /// value.

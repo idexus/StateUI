@@ -11,7 +11,7 @@
 /// while the element is written in the same place in the source, or stands at
 /// the same position when put in by hand. A manual one survives anywhere, which
 /// is what a collection needs.
-public enum ElementID: Hashable, Sendable {
+@_spi(Host) public enum ElementID: Hashable, Sendable {
     /// Assigned by the differ, from a counter, never reused. Written as a
     /// number.
     case auto(Int)
@@ -31,6 +31,7 @@ public enum ElementID: Hashable, Sendable {
 
 /// One element as it stands on the host - a class, so unchanged parts of one
 /// tree are shared into the next.
+@MainActor
 final class RenderedNode {
     /// Who this element is. Fixed for as long as it stays in the tree.
     let id: ElementID
@@ -89,6 +90,9 @@ final class RenderedNode {
     /// What `.onDestroying` runs as it leaves: its last build's closures.
     var destroying: [EventHandler] = []
 
+    /// The runs of what its walks found to run, kept while it is the same element.
+    var runs = RunSlots()
+
     /// The numbers its engines are registered under, in written order; the closures
     /// live on the board.
     var engines: [Int] = []
@@ -106,6 +110,10 @@ final class RenderedNode {
     /// The readings `.samples` asked for here, held - which is how long one lives.
     /// Design: docs/design/core/journeys.md#readings
     let readings: [Sampling]
+
+    /// The derived states its builds made or found - its conversions' - which it holds while it stands.
+    /// Design: docs/design/core/journeys.md#conversions
+    let derived: [AnyObject]
 
     /// The elements under it, in the order the host has them.
     var children: [RenderedNode]
@@ -145,6 +153,7 @@ final class RenderedNode {
         engines: [Int] = [],
         driven: [Prop: StateEntry] = [:],
         readings: [Sampling] = [],
+        derived: [AnyObject] = [],
         children: [RenderedNode]
     ) {
         self.motion = motion
@@ -160,6 +169,7 @@ final class RenderedNode {
         self.engines = engines
         self.driven = driven
         self.readings = readings
+        self.derived = derived
         self.id = id
         self.type = type
         self.props = props
@@ -168,7 +178,7 @@ final class RenderedNode {
         self.children = children
 
         // A reader of what it read for as long as it lives; an element that read
-        // nothing skips the lock.
+        // nothing asks nothing.
         if !reads.isEmpty {
             Renderer.shared.reading(reads)
         }
@@ -177,7 +187,7 @@ final class RenderedNode {
         Renderer.shared.nodeBorn()
     }
 
-    deinit {
+    isolated deinit {
         if !reads.isEmpty {
             Renderer.shared.unreading(reads)
         }

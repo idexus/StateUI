@@ -30,9 +30,7 @@ extension Renderer {
         nextNumber += 1
         storage.number = issued
 
-        guarded.withLock {
-            states[issued] = { [weak storage] in storage }
-        }
+        states[issued] = { [weak storage] in storage }
 
         return issued
     }
@@ -113,7 +111,7 @@ extension Renderer {
         let board = board(of: storage)
         board.told(StateImage.bytes(of: value), mask: mask, to: storage)
 
-        // After the board has let go: both callbacks may take this renderer's lock.
+        // After the board holds the reported value, which both callbacks read.
         storage.told?(mask)
         storage.sampleTaken()
         return true
@@ -203,23 +201,12 @@ extension Renderer {
         Int32(boards.filter { $0.awake }.count)
     }
 
-    /// The last cycle of every board as one line, built only when the host traces.
-    func cycleTrace() -> String {
-        boards.enumerated().map { index, board in
-            let report = board.reported
-
-            return "cycle \(index) latched=\(report.latched) ran=\(report.ran)"
-                + " skipped=\(report.skipped) wrote=\(report.written.count)"
-                + " awake=\(report.awake ? 1 : 0)"
-        }.joined(separator: " | ")
-    }
-
     /// A state by its number, or nil where none rides it any more.
     func storage(of number: Int32) -> HostStorage? {
-        let found = guarded.withLock { states[number] }
+        let found = states[number]
 
         guard let storage = found?() else {
-            guarded.withLock { states[number] = nil }
+            states[number] = nil
             return nil
         }
 
@@ -229,11 +216,8 @@ extension Renderer {
     /// Puts the numbering back to a fresh process's, for the tests, whose
     /// assertions name state numbers. Never while an interface runs.
     func clearStates() {
-        let issued = guarded.withLock { () -> [() -> HostStorage?] in
-            let held = Array(states.values)
-            states.removeAll()
-            return held
-        }
+        let issued = Array(states.values)
+        states.removeAll()
 
         for storage in issued {
             storage()?.number = nil

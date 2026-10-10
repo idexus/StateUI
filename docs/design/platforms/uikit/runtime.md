@@ -5,16 +5,15 @@ The UIKit host is the runtime every host shares
 host layer supplies the mounted tree, the patch intake, the animator, the
 state channels, the display cycle, the windows' roster and presentation and
 every layout's arithmetic, and the UIKit half supplies what only the toolkit
-can - the display link, the main queue the core is woken on, the views, and
-the scenes around them.
+can - the display link, the views, and the scenes around them.
 
 ## The UIKit runtime
 
-`UIKitRenderer` owns the runtime's elements as every runtime does: the
-runtime (`HostRuntime`), its frame clock - a `CADisplayLink` running only
-while something holds it - and the roster of the windows it shows. The core
-is woken as on every Apple host: a thread of the host's parks until the core
-has work, and each ring puts a turn of the pump on the main queue. The
+`UIKitRenderer` owns the runtime's elements as every runtime does: the runtime
+(`HostRuntime`), its frame clock - a `CADisplayLink` running only while
+something holds it - and the roster of the windows it shows. The core is
+turned as on every Apple host: after each pass of the main run loop where it
+has work ([the turn on Apple](../../host/runtime.md#the-turn-on-apple)). The
 application's delegate starts the runtime as the application launches, which
 tells what the device and the application are; each scene iOS connects tells
 what the display is.
@@ -22,9 +21,10 @@ what the display is.
 ## Scenes
 
 Each StateUI window stands in a window scene of UIKit's own: a window of the
-scene's, its root view showing the window's arrangement of pages within the
-safe area, the title of the page the user sees the scene's title. A window
-the tree lets go of lets its scene go with it. The application's `Info.plist`
+scene's, its root view showing the window's arrangement of pages over the
+whole window, each page within the safe area its bars leave, the title of
+the page the user sees the scene's title. A window the tree lets go of lets
+its scene go with it. The application's `Info.plist`
 says it supports many scenes, so an iPad opens as many as the user asks for.
 
 A scene iOS connects is one of four (`UIKitRenderer.connect`):
@@ -66,9 +66,9 @@ the closing window's place, at its size.
 
 The trap: the scene of a window the tree lets go of is destroyed, and iPadOS
 ends the process once an application's last scene is destroyed. A host whose
-windows share one scene - the tests' host stands every window in the one
-scene the runner has - does not own that scene, so its windows only leave
-it.
+windows do not own their scenes (`ownsScenes` off) - the tests' host, which
+stands its window in the one scene the runner has - does not own that scene,
+so its windows only leave it.
 
 ## The environment
 
@@ -83,8 +83,8 @@ path moves. The theme is the whole application's: every scene stands in the
 one the user chose, so the first scene's traits say it. A battery UIKit knows
 nothing of - the simulator's - is none, full, on mains; Low Power Mode is the
 battery saver. The network is reachable when its path is satisfied, local
-when interfaces stand but no route leads out; each interface in use - Wi-Fi,
-wired, cellular - is a connection profile.
+when interfaces stand but no route leads out; each interface available to
+the path - Wi-Fi, wired, cellular - is a connection profile.
 
 ## Acts
 

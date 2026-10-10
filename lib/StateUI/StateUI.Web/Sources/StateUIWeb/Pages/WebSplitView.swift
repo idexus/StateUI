@@ -70,11 +70,6 @@ final class WebSplitView: WebDOMView {
         }
     }
 
-    /// Whether the sidebar stands over the detail, the page being narrow.
-    var overlays: Bool {
-        WebRelay.box(of: node).width < Self.breakpoint
-    }
-
     override func detach() {
         sidebar.detach()
         detail.detach()

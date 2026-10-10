@@ -21,6 +21,7 @@ private extension SceneKey {
 }
 
 /// What a scene shares with every window of it.
+@MainActor
 private final class Palette {
     @State var accent = "violet"
 }
@@ -44,11 +45,11 @@ private struct Home: View {
             Accent()
             Text(shade)
             Button("teal").onClicked { palette.accent = "teal" }
-            Button("new").onClicked { try await application.openWindow() }
-            Button("fonts").onClicked { try await application.openWindow(.fonts) }
-            Button("note").onClicked { try await application.openWindow(.note) }
-            Button("document").onClicked { try await application.openWindow(.document, value: 42) }
-            Button("about").onClicked { try await application.openWindow(.about) }
+            Button("new").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow() }
+            Button("fonts").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.fonts) }
+            Button("note").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.note) }
+            Button("document").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.document, value: 42) }
+            Button("about").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.about) }
             Button("dusk").onClicked { shade = "dusk" }
         }
     }
@@ -207,16 +208,15 @@ private struct ListingApp: Application {
     }
 }
 
+@MainActor
 final class SceneTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         start(Studio())
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         OpenScenes.shared.reset()
-        super.tearDown()
     }
 
     /// Registers `application`, as a host's head does: its scenes are what its body declares.
@@ -414,6 +414,7 @@ final class SceneTests: XCTestCase {
     // MARK: - A scene ends with its last window
 
     /// A scene ENDS WITH ITS LAST WINDOW, its state with it: the next window of it opens a fresh scene.
+    @MainActor
     func testASceneEndsWithItsLastWindow() async throws {
         let renders = Renders()
         let first = renders.render(tree())

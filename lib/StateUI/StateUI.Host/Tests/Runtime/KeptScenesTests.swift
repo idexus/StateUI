@@ -8,9 +8,8 @@ import XCTest
 /// The scenes a host keeps for the application's next start, where the platform restores no windows.
 @MainActor
 final class KeptScenesTests: XCTestCase {
-    override func tearDown() {
+    override func tearDown() async throws {
         OpenScenes.shared.reset()
-        super.tearDown()
     }
 
     /// The text reads back the scenes it was written from - each kind of value, a window of the group with no name,

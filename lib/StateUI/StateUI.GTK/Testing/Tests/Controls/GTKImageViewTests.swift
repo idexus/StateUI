@@ -8,6 +8,7 @@ import CStateUIGTK
 @testable import StateUIGTKDriver
 import XCTest
 
+@MainActor
 final class GTKImageViewTests: XCTestCase {
     /// The test's wide picture is an SVG, 40 by 20, of one colour.
     private static let wide: UInt32 = 0xFF33_6699
@@ -165,7 +166,7 @@ private struct PicturesPage: View {
         let application = self.application
         return VStack {
             if opens {
-                Button("Open").onClicked { try await application.openWindow(WindowType("pictures.again")) }
+                Button("Open").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(WindowType("pictures.again")) }
             }
             ForEach(Array(0..<17)) { _ in
                 Image("test_wide.svg").width(177).height(248)

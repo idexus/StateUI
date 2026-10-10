@@ -25,6 +25,6 @@ A tap on the map itself is the map's `mapClicked`; one on a marker, or on what
 a marker opened, is the marker's. The host hears the map's taps with a recognizer
 of its own, beside the engine's, and what decides whether a tap is the
 map's is a delegate apart from the map: MapKit's map is the delegate of its
-own recognizers, and a map that answered a recognizer's question itself
-answered it for every one of them - a tap on a marker no longer chose the
+own recognizers, and a map answering a recognizer's question itself would
+answer it for every one of them, and a tap on a marker would choose no
 marker.

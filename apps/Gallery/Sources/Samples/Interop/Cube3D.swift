@@ -1,15 +1,13 @@
 #if APPKIT || UIKIT || GTK || WINUI || ANDROID || WEB
-// A control of the application's OWN that draws with the GPU, declared for the
-// hosts that can realize it: an `MTKView` drawing with Metal on AppKit and UIKit, a
-// `GtkGLArea` drawing with OpenGL 3.3 on GTK, a `SwapChainPanel` drawing with
-// Direct3D 11.1 on WinUI, a `TextureView` drawn into with OpenGL ES 3.0 on
-// Android, a custom element drawing with WebGL 2 on the Web.
+// A control of the application's OWN that draws with the GPU: an `MTKView`
+// drawing with Metal on AppKit and UIKit, a `GtkGLArea` drawing with OpenGL 3.3
+// on GTK, a `SwapChainPanel` drawing with Direct3D 11.1 on WinUI, a
+// `TextureView` drawn into with OpenGL ES 3.0 on Android, a custom element
+// drawing with WebGL 2 on the Web.
 //
-// Every other element here is declared for all of them: a contract and a
-// `View`, shared, with each host saying what it IS on screen. This one is
-// declared under a condition, because the view behind it draws on the GPU in
-// the platform's own way. `GalleryElements` lists it under the same
-// condition, so no other host is held to a promise it cannot keep.
+// Every host draws it in its own way; a build for no host - the gallery's own
+// tests - has nothing to draw it with, so it declares no cube.
+// `GalleryElements` lists it under the same condition.
 //
 // PUBLIC, because a host in the same process registers BY TYPE and lives in a
 // module of its own - see GalleryContract.swift.

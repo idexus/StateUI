@@ -6,6 +6,7 @@
 import XCTest
 
 /// Where a placing run stands a ZStack's children, and in what order it draws them.
+@MainActor
 final class PlacingRunTests: XCTestCase {
     private func placed(z: Int, width: Double = 10, opacity: Double = 1, shade: Double = 0) -> HostPlacement {
         HostPlacement(

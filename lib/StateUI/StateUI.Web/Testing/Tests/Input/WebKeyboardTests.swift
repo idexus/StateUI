@@ -11,7 +11,7 @@ import XCTest
 /// (`test-web.sh --browser`).
 @MainActor
 final class WebKeyboardTests: XCTestCase {
-    override func setUp() {
+    override func setUp() async throws {
         WebTestLoop.started
     }
 

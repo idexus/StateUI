@@ -20,6 +20,7 @@ extension View {
     /// every page shown in it. Groups declared further in join those declared
     /// around them, nearer the title, so an action of the window keeps its
     /// place from page to page; when a page goes, its groups go with it.
+    /// Declared on a disabled view, its items are disabled with it.
     ///
     /// One declaration is one group, drawn with one shared background where the
     /// platform groups its bar's actions; a second group is a second
@@ -41,7 +42,7 @@ extension View {
     /// sharing its background - or starting it, where no group has the id yet.
     ///
     ///     // the window's page
-    ///     SplitView { … } detail: { … }
+    ///     SplitView($showsMenu) { … } detail: { … }
     ///         .toolbar(id: "window") {
     ///             ToolbarItem("Account").onClicked { showAccount() }
     ///         }

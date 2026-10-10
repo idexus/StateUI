@@ -5,24 +5,25 @@
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
 
-/// WinUI's `NavigationView`: the sidebar page in its pane - beside the detail page where the window is wide, over it
-/// where it is narrow - and a row across the top of the detail. WinUI chooses which, as it does for any Windows app.
+/// WinUI's `SplitView`: the sidebar page in its pane - beside the detail page or over it, as the split places it -
+/// and the detail on a card, a row across its top.
 /// Design: docs/design/platforms/winui/pages.md#a-split-view
 @MainActor
 final class WinUISidebarView: WinUIView {
-    /// The width from which the pane stands beside the detail, in DIPs: where WinUI's navigation pane expands.
+    /// The width from which the pane stands beside the detail, in DIPs: where a Windows application's navigation
+    /// pane expands.
     static let expandsAt = 1008.0
 
     /// What the view does when its pane opens or closes of WinUI's accord.
     var onPresented: ((Bool) -> Void)?
 
     init() {
-        super.init { number in stateui_winui_split_make(number, Self.expandsAt) }
+        super.init { number in stateui_winui_split_make(number) }
     }
 
-    /// The two pages, the row over the detail, and whether the pane is open.
-    func set(sidebar: WinUIView?, detail: WinUIView?, row: WinUIView?, open: Bool) {
-        stateui_winui_split_set(handle, sidebar?.handle, detail?.handle, row?.handle, open)
+    /// The two pages, the row over the detail, whether the pane is open, and whether it stands beside the detail.
+    func set(sidebar: WinUIView?, detail: WinUIView?, row: WinUIView?, open: Bool, beside: Bool) {
+        stateui_winui_split_set(handle, sidebar?.handle, detail?.handle, row?.handle, open, beside)
     }
 
     override func presented(_ open: Bool) {

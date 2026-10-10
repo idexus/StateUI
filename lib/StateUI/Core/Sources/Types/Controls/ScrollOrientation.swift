@@ -15,8 +15,8 @@ public enum ScrollOrientation: Int32, Sendable {
     /// Both at once.
     case both = 2
 
-    /// Neither - which is how a ScrollView is stopped from scrolling without
-    /// being replaced.
+    /// Neither: nothing scrolls and the scroller stands at its beginning - for
+    /// a scroller with nothing to scroll.
     case neither = 3
 }
 

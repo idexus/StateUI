@@ -25,6 +25,12 @@ extension MountedElement {
         }
     }
 
+    /// Whether a view may say where it stands: once a layout placed it - StateUI's (`placed`), or its toolkit's
+    /// giving it a size - and never before, as a view meets a display frame before the pass that places it.
+    public static func isLaidOut(placed: Bool, width: Double, height: Double) -> Bool {
+        placed || width > 0 || height > 0
+    }
+
     /// A frame report's eight numbers for a view standing at `place` in its parent, its top left corner at
     /// `corner` in its window, and the window's content - clear of its chrome - beginning at `content`: the place,
     /// the corner in the window, and the corner from the content's.

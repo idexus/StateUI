@@ -83,6 +83,11 @@ StateUI has one state declaration and two reactive paths:
 - handing a binding to a control or property lets the host update it without
   rebuilding that body.
 
+State belongs to the UI thread: a handler writes it on `MainActor`, a task
+elsewhere posts to it (`$count.post { $0 + 1 }`), and a handler that awaits
+says what its event does when it comes again
+([Concurrency](docs/interface/concurrency.md)).
+
 `Journey` belongs to the same state and carries its current value, destination,
 velocity, and motion. A host with verified motion support animates compatible
 property changes on the platform display clock; an unverified or unsupported
@@ -139,9 +144,10 @@ code --install-extension ../../artifacts/stateui-*.vsix
 
 The AppKit host needs only Xcode 27, on macOS 26 or newer, and the UIKit host
 adds Xcode's iOS 26 or newer simulator runtime. StateUI builds with one Swift
-release everywhere, Swift 6.4: Xcode 27's on macOS and the swift.org 6.4.0
-toolchain on the other platforms. WinUI builds on Windows, GTK on Linux, and
-the Web on macOS and Linux; their pages say what each needs:
+release everywhere, Swift 6.4: Xcode 27's for AppKit and UIKit; swift.org's
+6.4.0 toolchain for Android and the Web on macOS, and on the other platforms.
+WinUI builds on Windows, GTK on Linux, and the Web on macOS and Linux; their
+pages say what each needs:
 [WinUI host](docs/hosts/winui.md#requirements), [GTK host](docs/hosts/gtk.md#requirements),
 [Web host](docs/hosts/web.md#requirements).
 
@@ -149,6 +155,7 @@ Android asks for more, and builds on macOS only:
 
 - the Android SDK with NDK 30, for Android 9 (API 28) or newer; an NDK
   outside the Android SDK is named by `ANDROID_NDK_HOME`;
+- JDK 21 for Gradle, and the Android SDK's platform 36 with its build tools;
 - the Swift SDK for Android 6.4.0, installed with `swift sdk install`;
 - the swift.org toolchain of that SDK's build, `swift-6.4.0-RELEASE`, beside
   Xcode. Xcode's own Swift 6.4 is a different build and cannot read the SDK's
@@ -215,7 +222,8 @@ request targets. Each badge above is one workflow.
 
 **Core macOS**, **Core Linux** and **Core Windows** run the core's suites on
 each machine - StateUI, the host layer and the conformance runner, and the
-Gallery's and HelloWorld's too. Each host has a workflow of its own
+Gallery's and HelloWorld's too; Core macOS runs the core's own once more
+under Thread Sanitizer. Each host has a workflow of its own
 that runs its suite with every verdict held: **AppKit**, **UIKit** on an
 iPhone and an iPad simulator, **Android** built on macOS and run on an
 emulator, **WinUI** on Windows and **GTK** on Linux. **Web** runs the host's

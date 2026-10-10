@@ -36,7 +36,7 @@ extension AppKitElement {
             page.translatesAutoresizingMaskIntoConstraints = true
             return page
 
-        case .modalStack, .titleView, .toolbarItemGroup, .menuBar, .contextMenu,
+        case .modalStack, .overlay, .titleView, .toolbarItemGroup, .menuBar, .contextMenu,
              .menu, .menuItem,
              .divider, .textSpans, .textSpan:
             return nil
@@ -101,36 +101,12 @@ extension AppKitElement {
         }
 
         // A family the registry realizes takes its own members there, each read
-        // as this element presents it; the arms below are the families still
-        // to move.
+        // as this element presents it; the arms below are the families this
+        // host applies itself.
         let taken = AppKitRegistrations.registry.apply(changed, to: view, presenting: element)
         if changed.contains(.isEnabled), !taken.contains(.isEnabled) {
             // A view that is no control tells assistive technology whether it answers; its hand is the host layer's.
             view.setAccessibilityEnabled(element.presented(.isEnabled)?.bool ?? true)
-        }
-
-        if type == .toolbarItem, let button = view as? NSButton {
-            button.title = string(.text) ?? ""
-            let buttonFont = font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize))
-            button.font = buttonFont
-            button.isEnabled = value(.isEnabled)?.bool ?? true
-
-            let foreground = value(.isDestructive)?.bool == true
-                ? NSColor.systemRed
-                : (color(.textColor) ?? .controlTextColor)
-            button.attributedTitle = NSAttributedString(
-                string: button.title,
-                attributes: [.font: buttonFont, .foregroundColor: foreground])
-
-            button.image = string(.icon).flatMap { image(named: $0) }
-            button.imagePosition = button.image == nil
-                ? .noImage
-                : (button.title.isEmpty ? .imageOnly : .imageLeading)
-
-            let background = paintedColor(value(.background))
-            button.isBordered = background == nil
-            button.wantsLayer = background != nil
-            button.layer?.backgroundColor = background?.cgColor
         }
 
         if let split = view as? AppKitSplitView {
@@ -254,11 +230,6 @@ extension AppKitElement {
     func whole(_ property: Prop) -> Int? {
         guard let number = value(property)?.number, number.isFinite else { return nil }
         return Int(number.rounded())
-    }
-
-    func font(fallback: NSFont) -> NSFont {
-        let look = element.textLook
-        return appKitFont(family: look.family, size: look.size, attributes: look.attributes, fallback: fallback)
     }
 
     /// A label's words: its spans as runs over the label's own look (`MountedElement.textRuns`), else its own words

@@ -225,7 +225,9 @@ class GTKView {
 
     /// Whether a layout has placed the view: StateUI's, or GTK's allocation giving it a size.
     private var isLaidOut: Bool {
-        placed != nil || gtk_widget_get_width(widget) > 0 || gtk_widget_get_height(widget) > 0
+        MountedElement.isLaidOut(
+            placed: placed != nil, width: Double(gtk_widget_get_width(widget)),
+            height: Double(gtk_widget_get_height(widget)))
     }
 
     private static func origin(of widget: GTKWidget, in root: GTKWidget) -> Point {

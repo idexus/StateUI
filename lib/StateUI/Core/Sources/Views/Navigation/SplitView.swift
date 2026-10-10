@@ -40,7 +40,7 @@
 ///                         }
 ///                 }
 ///             }
-///             .title("Sections")   // required
+///             .title("Sections")   // names the sidebar's bar
 ///         }
 ///     }
 ///
@@ -49,7 +49,8 @@
 /// second. The platform's own ways to show or hide the sidebar - its button,
 /// an edge swipe, a tap on the dimmed page - are written into the binding, and
 /// a host with room for both pages may open with the sidebar showing. The
-/// sidebar page must have a title.
+/// sidebar page's title names the sidebar's bar; a sidebar page with none
+/// shows the application's name there.
 public struct SplitView: ElementView, Arrangement, BarElement {
     /// The node this page describes.
     public var node: Node
@@ -59,7 +60,8 @@ public struct SplitView: ElementView, Arrangement, BarElement {
     /// - Parameter showsSidebar: whether the sidebar shows, borrowed
     ///   two-way. The platform's own sidebar button, a swipe or a tap outside
     ///   it write here.
-    /// - Parameter sidebar: the page at the side. It must have a title.
+    /// - Parameter sidebar: the page at the side; its title names the
+    ///   sidebar's bar, the application's name where it says none.
     /// - Parameter detail: the page beside it, which is the application.
     public init<Sidebar: View, Detail: View>(
         _ showsSidebar: Binding<Bool>,
@@ -75,7 +77,7 @@ public struct SplitView: ElementView, Arrangement, BarElement {
         node.write(SplitViewContract.showsSidebar, showsSidebar.wrappedValue)
 
         // The user's ways in and out, once finished, written only when moved.
-        node.addHandler(SplitViewContract.showsSidebarChanged.token) {
+        node.addHandler(SplitViewContract.showsSidebarChanged.token, gate: .none) {
             guard let visible = EventBuffer.current.value()?.bool,
                   visible != showsSidebar.wrappedValue else { return }
 
@@ -120,12 +122,12 @@ extension SplitView {
     /// `sidebarBackground` from a state, `$x`: the host shows each new material
     /// as it stands, and no view is rebuilt for it.
     public func sidebarBackground(_ state: Binding<Material>) -> Modified {
-        plain(SplitViewContract.sidebarBackground, by: state)
+        twin(SplitViewContract.sidebarBackground, by: state)
     }
 
     /// `flyoutBackground` from a state, `$x`: the host shows each new material
     /// as it stands, and no view is rebuilt for it.
     public func flyoutBackground(_ state: Binding<Material>) -> Modified {
-        plain(SplitViewContract.flyoutBackground, by: state)
+        twin(SplitViewContract.flyoutBackground, by: state)
     }
 }

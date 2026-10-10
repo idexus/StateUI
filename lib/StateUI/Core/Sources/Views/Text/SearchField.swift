@@ -75,7 +75,19 @@ public struct SearchField: TextInput, TextualElement, FontElement, TextAlignment
 
     /// Fires when the search is submitted - the return key, or the magnifier
     /// where a platform draws a button.
-    public func onSubmitted(_ handler: @escaping EventHandler) -> Self {
+    public func onSubmitted(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(SearchFieldContract.submitted, handler)
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onSubmitted(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(SearchFieldContract.submitted, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSubmitted(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onSubmitted(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 }

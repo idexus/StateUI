@@ -16,6 +16,8 @@ lib/StateUI/StateUI.WinUI/         WinUI host package and its C++/WinRT relay
 lib/StateUI/StateUI.WinUI/Testing/ its tests, and the driver its conformance runs go through
 lib/StateUI/StateUI.GTK/           GTK host package, Swift over GTK's C API
 lib/StateUI/StateUI.GTK/Testing/   its tests, and the driver its conformance runs go through
+lib/StateUI/StateUI.Web/           Web host package, Swift for WebAssembly over its JavaScript relay
+lib/StateUI/StateUI.Web/Testing/   its tests, and the driver its conformance runs go through
 lib/StateUI.Head/                  the package that brings each application's head its host
 lib/Backends/                      backends: one element on one host, its engine not shipped - WebView.GTK, WebView.WinUI
 lib/StateUI.VSCode/                the editor extension
@@ -24,6 +26,7 @@ lib/StateUI.VSCode/                the editor extension
 .scripts/Android/                  Android Views builds, runs, devices, tests and deploys
 .scripts/WinUI/                    WinUI builds, runs, tests and deploys, and the Windows App SDK
 .scripts/GTK/                      GTK builds, runs, tests and deploys
+.scripts/Web/                      Web builds, pages, runs, tests and deploys, and the Swift SDK for WebAssembly
 .scripts/Marks/                    the revision a conformance family's verdicts stand at
 .scripts/new-app.sh                a new application in apps/ (new-app.ps1 on Windows)
 .scripts/test-native.sh            the Swift suites on macOS, the AppKit host's among them
@@ -33,6 +36,7 @@ apps/Gallery/Platforms/UIKit/      Gallery UIKit head
 apps/Gallery/Platforms/Android/    Gallery Android head
 apps/Gallery/Platforms/WinUI/      Gallery WinUI head
 apps/Gallery/Platforms/GTK/        Gallery GTK head
+apps/Gallery/Platforms/Web/        Gallery Web head
 apps/Gallery/Tests/                Gallery acceptance tests
 apps/HelloWorld/Sources/           small platform-neutral example application
 apps/HelloWorld/Tests/             its example test, which every new application starts with
@@ -41,6 +45,7 @@ apps/HelloWorld/Platforms/UIKit/   HelloWorld UIKit head
 apps/HelloWorld/Platforms/Android/ HelloWorld Android head
 apps/HelloWorld/Platforms/WinUI/   HelloWorld WinUI head
 apps/HelloWorld/Platforms/GTK/     HelloWorld GTK head
+apps/HelloWorld/Platforms/Web/     HelloWorld Web head
 ```
 
 The core and the host layer never import Foundation or a platform UI
@@ -48,13 +53,13 @@ framework. Application code may import Foundation. Platform frameworks remain in
 platform entry points.
 
 Swift written for one host alone stands under the condition named for it:
-`#if APPKIT`, `#if UIKIT`, `#if ANDROID`, `#if WINUI` and `#if GTK`, which
-every build of an application for that host defines through its manifest,
-from the one variable a build names its host by: `STATEUI_HOST=appkit`,
-`uikit`, `android`, `winui` or `gtk`. One variable holds one host, so no build
-is two hosts' at once. `NativeProjectTests` refuses
-any other mention of a host in the library and in the applications'
-`Sources/`.
+`#if APPKIT`, `#if UIKIT`, `#if ANDROID`, `#if WINUI`, `#if GTK` and
+`#if WEB`, which every build of an application for that host defines through
+its manifest, from the one variable a build names its host by:
+`STATEUI_HOST=appkit`, `uikit`, `android`, `winui`, `gtk` or `web`. One
+variable holds one host, so no build is two hosts' at once.
+`NativeProjectTests` refuses a mention of AppKit, WinUI or GTK outside its
+condition in the core's and the applications' `Sources/`.
 
 `STATEUI_HOST=appkit` is what makes a build an AppKit one. An application's
 manifest reads it, declares its `Platforms/AppKit` head and defines `APPKIT`
@@ -97,9 +102,12 @@ A sample is a `SampleContent` under
 `apps/Gallery/Sources/Gallery/Catalog.swift`; group pages, navigation, and the
 home count derive from that catalog.
 
-Keep the visible example and its `code` listing equivalent. The listing is the
-smallest usable expression of the behavior: include state and helpers it names,
-but leave Gallery-only decoration out. Give the sample a unique stable id and a
+A sample's listing is cut from its running code by `// listing: <name>` …
+`// listing: end`; decoration is left out unless `// listing: keep`. Once its
+notes and the comments in its listings are read against the code,
+`STATEUI_UPDATE_SAMPLES=1 swift test --package-path apps/Gallery --filter
+'SampleListingsTests|SampleReviewTests'` writes `Listings.swift` and records
+the review; nobody edits either. Give the sample a unique stable id and a
 short title. Its summary is one instruction or result, not a second handbook.
 
 A sample that owns vertical scrolling or a continuous drag must own its page
@@ -130,11 +138,11 @@ Treat one control, property, event, or host action as one vertical change:
    owner when the documents are rendered. What a registry cannot know stays
    written by hand, in the host's `<Host>Realization` - `AppKitRealization`,
    `UIKitRealization`, `AndroidRealization`, `WinUIRealization`,
-   `GTKRealization` - every judgement: a partial record saying what is
-   missing, what a host realizes none of, what it leaves to the application
-   or to a backend, and what it presents with no view of its own. Where the
-   change alters what a family's cases prove, raise the family's revision
-   first. Then `STATEUI_UPDATE_DOCS=1 swift test --filter
+   `GTKRealization`, `WebRealization` - every judgement: a partial record
+   saying what is missing, what a host realizes none of, what it leaves to the
+   application or to a backend, and what it presents with no view of its own.
+   Where the change alters what a family's cases prove, raise the family's
+   revision first. Then `STATEUI_UPDATE_DOCS=1 swift test --filter
    ControlDictionaryTests` writes `docs/controls/` and the tables of
    `platform-contract.md`. [Conformance and marks](#conformance-and-marks)
    walks through it.
@@ -211,9 +219,9 @@ libadwaita. An application's GTK head is built and started by one script:
 
 [GTK host](hosts/gtk.md) lists what it needs and what it builds.
 
-The Web host builds on macOS and Linux with Swift 6.4 and its Swift SDK for
-WebAssembly. An application's Web head is built, served and opened in a
-browser by one script:
+The Web host builds on macOS and Linux with swift.org's Swift 6.4.0
+toolchain and its Swift SDK for WebAssembly. An application's Web head is
+built, served and opened in a browser by one script:
 
 ```bash
 .scripts/Web/run-app.sh apps/HelloWorld
@@ -248,9 +256,9 @@ it, with what it runs with, in a folder it makes anew:
   Swift and C++ runtimes of its architecture, its pictures - so the folder
   runs on a Windows machine with none of them installed;
 - GTK, the head, the StateUI libraries it links, and its pictures;
-- Web, the page: `index.html`, the relay and its style sheet, the module, the
-  application's own scripts and its pictures - a folder any web server serves
-  as it is.
+- Web, the page: `index.html` with the head the application gives it, the
+  relay and its style sheet, the module, the application's own scripts and its
+  pictures - a folder any web server serves as it is.
 
 In VS Code, **StateUI: Deploy** runs the chosen host's script for the chosen
 application and lays it in `artifacts/<application>/<platform>` beside the
@@ -315,9 +323,9 @@ The Android Views host's suite runs on a device, in a test APK:
 `Case.test` name holds one of the names, split at commas.
 
 The WinUI host's suite runs on Windows, the Windows App SDK laid beside its
-test runner first. Alone the script runs the host's own tests, in one
-process; `-Conformance` runs the conformance families, each test in a process
-of its own - some fifteen minutes; `-Filter <test>` runs the tests it names:
+test runner first, every test in a process of its own. Alone the script runs
+the host's own tests; `-Conformance` runs the conformance families - some
+fifteen minutes; `-Filter <test>` runs the tests it names:
 
 ```powershell
 .scripts\WinUI\test-winui.ps1
@@ -333,6 +341,18 @@ its windows. Its script runs `swift test` in
 .scripts/GTK/test-gtk.sh
 ```
 
+The Web host's suite is built for WebAssembly from
+`lib/StateUI/StateUI.Web/Testing`. Alone its script runs the host's own tests
+in Node; `--browser` runs the conformance families - every family, or those
+named - and the host's tests that need a browser's own page, in a headless
+Google Chrome or Chromium; `--browser --host` runs only those tests of the
+host's:
+
+```bash
+.scripts/Web/test-web.sh
+.scripts/Web/test-web.sh --browser
+```
+
 A passing unit suite does not prove native drawing or interaction. Exercise a
 user-visible change in the running Gallery on the affected platform. Run only
 one application build at a time because Swift build directories are shared by
@@ -343,11 +363,16 @@ the core apart from the hosts: **Core macOS**, **Core Linux** and **Core
 Windows** (`build-mac.yml`, `build-linux.yml`, `build-windows.yml` - the core,
 the host layer and the conformance runner, and the Gallery and HelloWorld), and one
 for each host - **AppKit**, **UIKit** (an iPhone and an iPad simulator),
-**Android** (the test APK built on macOS, run on a Linux emulator), **WinUI**
-and **GTK**.
+**Android** (the test APK built on macOS, run on a Linux emulator), **WinUI**,
+**GTK** and **Web**. **Core macOS** runs the core, the host layer and the
+conformance runner once more under Thread Sanitizer, where a race it sees
+fails the run - `swift test --sanitize=thread` on a Mac; on Linux the
+sanitizer cannot see through a `Mutex` and reports every guarded access.
 A host's workflow holds every conformance verdict to its marks and never
 writes them: a family whose verdicts changed fails there, and its marks are
-written again on that platform's machine.
+written again on that platform's machine. The Web's workflow runs the host's
+own tests alone; its marks are written on a Mac by
+`STATEUI_UPDATE_EXPORTS=1 .scripts/Web/test-web.sh --browser`.
 
 ### Conformance and marks
 
@@ -396,8 +421,10 @@ In VS Code, **StateUI: Conformance - Rebuild all** runs the chosen host's
 families writing their verdicts, then renders the documents;
 **StateUI: Conformance - Rebuild changed** runs only the stale families. A
 UIKit or an Android rebuild runs on the device chosen in the status bar; for
-Android the editor offers Rebuild all alone, as its device reads no
-repository.
+Android the editor offers Rebuild all alone, and
+`STATEUI_STALE_ONLY=1 .scripts/Android/test-android.sh <serial>` runs the
+stale families. The editor makes no marks for the Web;
+`STATEUI_UPDATE_EXPORTS=1 .scripts/Web/test-web.sh --browser` writes them.
 [Reading the matrix](platform-contract.md#reading-the-matrix) says what each
 mark means.
 
@@ -417,6 +444,8 @@ copyable application examples as plain `swift` so API drift fails visibly.
 The core's suite also guards the project itself, in
 `lib/StateUI/Core/Tests/Project/`:
 
+- `AppsTests` - every path an application's manifest names resolves, and the
+  scaffolder makes a new application from `apps/HelloWorld`;
 - `DocumentLinksTests` - every relative link in every Markdown document of
   the repository names a file or a folder that exists;
 - `ReleaseTests` - every place that names the release names the one
@@ -429,7 +458,15 @@ The core's suite also guards the project itself, in
   a heading that exist, and in each directory it holds, comments stay under a
   quarter of each file's lines;
 - `NativeProjectTests` - each host package and head keeps its shape, and
-  shared Swift names a host only under its condition.
+  shared Swift names a host only under its condition;
+- `RuntimeArchitectureTests` - each host holds only what its toolkit makes it
+  write, and does not do again what the host layer does;
+- `ToolchainTests` - every place that names the Swift release, the Xcode, the
+  NDK and the oldest system names the same one;
+- `VsCodeTests` - every name the VS Code configurations point at, in another
+  file or a script, exists;
+- `WebPageTests` - the page `.scripts/Web/page.sh` lays out for a Web head
+  holds the application's names and what its `Page` folder adds.
 
 ## Diagnostics
 
@@ -452,14 +489,14 @@ The switches write what the runtime does as text to the standard error, which
 an Android application sends to logcat:
 
 - `STATEUI_TALLY=1` - the running totals: messages applied, controls made and
-  kept, renders, the elements alive and the host's own views alive, the
-  numbers that tell a page left in memory from one let go;
+  kept, renders, the elements alive, the runs under way or waiting and the host's
+  own views alive, the numbers that tell a page left in memory from one let go;
 - `STATEUI_INSPECT=1` - every render the inspector records, from the first.
 
 The host layer's runtime reads both from the process's environment as it
-starts (`DiagnosticText`), so they hold on every host. The Android, WinUI and
-GTK run scripts hand every `STATEUI_` variable of the shell that runs them to
-the application:
+starts (`DiagnosticText`), so they hold on every host. The Android, WinUI,
+GTK and Web run scripts hand every `STATEUI_` variable of the shell that runs
+them to the application - the Web's as a parameter of the page's address:
 
 ```bash
 STATEUI_TALLY=1 .scripts/GTK/run-app.sh apps/Gallery
@@ -473,14 +510,15 @@ in is being built.
 
 The repository-root `Package.swift` is the package boundary for the
 platform-neutral `StateUI` product. Native hosts remain sibling packages so a
-consumer selects a toolkit without pulling it into the core. The current AppKit
+consumer selects a toolkit without pulling it into the core. Every host
 package uses the root checkout as a local dependency; the complete remote
 library-plus-host installation path is not published yet. Keep Getting Started
 honest about that state until both products have a supported versioned route.
 
 A release has one version, stated in the editor extension's
 `lib/StateUI.VSCode/package.json`. Every other place that names it - the
-published-package line in the root `Package.swift`, each application's Android
+published-package line in the root `Package.swift`, the library's own
+`stateUIVersion()`, each application's Android
 head's version and the Android host's test head's, the Gallery's AppKit
 bundle, every UIKit bundle (`.scripts/UIKit/tools.sh`), the bug report's
 example - names the same one, and `ReleaseTests` holds them to it.

@@ -6,6 +6,7 @@ import XCTest
 
 /// The code a page shows is the code that runs: `Listings.swift` is written from the regions the sources mark,
 /// and never by hand.
+@MainActor
 final class SampleListingsTests: XCTestCase {
     /// The file the listings are written into, which every host compiles.
     private static let listingsFile = GallerySources.gallery.appendingPathComponent("Sources/Gallery/Listings.swift")

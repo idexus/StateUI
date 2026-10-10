@@ -5,54 +5,51 @@
 // once anything hands the state on.
 // Design: docs/design/core/state.md#storage-and-box
 
-import Synchronization
-
 extension State {
     /// Where the value lives, one level below the box: a fresh box adopts its
-    /// predecessor's storage, so every box that stood for this state shares it and
-    /// its lock. Internal, so the tests can hold its invariants.
+    /// predecessor's storage, so every box that stood for this state shares it.
+    /// Internal, so the tests can hold its invariants.
     /// Design: docs/design/core/state.md#storage-and-box
-    final class Storage: @unchecked Sendable, NamedState, AnyStateStorage, FollowedState {
-        private let guarded = Lock()
-
-        /// How many times this side wrote the value while it lived here - read without
-        /// the lock, through `stamp`.
+    @usableFromInline
+    @MainActor
+    final class Storage: NamedState, AnyStateStorage, FollowedState {
+        /// How many times this side wrote the value while it lived here.
         /// Design: docs/design/core/cycle.md#what-wakes-an-engine
-        private let written = Atomic<Int>(0)
+        @usableFromInline var written = 0
 
         /// How many times the state was written, by this side or the host - what an
         /// engine following it compares.
-        var stamp: Int { written.load(ordering: .relaxed) &+ (image?.stamp ?? 0) }
+        @usableFromInline var stamp: Int { written &+ (image?.stamp ?? 0) }
 
         /// The value, once anybody has wanted it; one optional deeper than `Value`, so a
         /// nil value is told from no value yet.
-        private var held: Value?
+        @usableFromInline var held: Value?
 
         /// What the value would be, until something asks.
         /// Design: docs/design/core/state.md#the-initial-value-waits
-        private var make: (() -> Value)?
+        @usableFromInline var make: (() -> Value)?
 
-        /// What the author calls this state (Builds.swift). Outside the
-        /// lock: every walk writes the same name.
-        nonisolated(unsafe) var origin: String?
+        /// Where posts to this state wait for their job, made at the first binding.
+        /// Design: docs/design/core/state.md#posting
+        private(set) lazy var mailroom = Mailroom()
 
-        /// Names this storage where nothing has yet - under the lock, since two first
-        /// touches of a model may race.
+        /// What the author calls this state (Builds.swift).
+        var origin: String?
+
+        /// Names this storage where nothing has yet.
         func name(once name: String) {
-            guarded.withLock {
-                if origin == nil { origin = name }
-            }
+            if origin == nil { origin = name }
         }
 
         /// The image the host carries this state on, once anything asks; on the storage,
         /// because its number is issued against it.
         /// Design: docs/design/core/state.md#carried-state
-        nonisolated(unsafe) private(set) var image: HostStorage?
+        private(set) var image: HostStorage?
 
         /// How the value is read and written once carried, installed by `carry()` - only
         /// a `StateValue` has lanes.
-        private var hostRead: (() -> Value)?
-        private var hostWrite: ((Value) -> Void)?
+        @usableFromInline var hostRead: (() -> Value)?
+        @usableFromInline var hostWrite: ((Value) -> Void)?
 
         /// How a journey's value is put somewhere at once, standing still; nil where a
         /// write already is that.
@@ -65,16 +62,17 @@ extension State {
         /// The value wearing the theme last written into a carried state - a colour
         /// pair, the accent, a material holding either; the image holds its half in force.
         /// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
-        nonisolated(unsafe) var themed: Value?
+        @usableFromInline var themed: Value?
 
         /// Whether a value turns with the theme or the accent (`ThemeWearing`).
+        @usableFromInline
         static func wearsTheTheme(_ value: Value) -> Bool {
             (value as? any ThemeWearing)?.wearsTheTheme == true
         }
 
         /// Whether the image is a journey's rather than the value's own lanes.
         /// Design: docs/design/core/state.md#a-state-has-one-shape
-        nonisolated(unsafe) private(set) var journeyed = false
+        private(set) var journeyed = false
 
         /// Puts the value there - where it is, where it is going, standing still; for a
         /// plain value, a write.
@@ -92,35 +90,44 @@ extension State {
 
         /// The law `@State(motion:)` declared, or `.inherited`; read once, when the
         /// journey image is made.
-        nonisolated(unsafe) var law: Motion = .inherited
+        var law: Motion = .inherited
 
         /// Whether any build ever read this state - sticky, and what a write consults
         /// before asking for a render.
         /// Design: docs/design/core/invalidation.md#live-readers
-        nonisolated(unsafe) var readAtBuild = false
+        @usableFromInline var readAtBuild = false
 
         /// The conversion this storage is the derived side of, held weakly to break a
         /// ring (Conversion.swift).
         /// Design: docs/design/core/journeys.md#conversions
-        nonisolated(unsafe) weak var conversion: Conversion?
+        weak var conversion: Conversion?
 
-        /// The derived states worked out from this one, by the line that wrote each
-        /// conversion.
-        nonisolated(unsafe) var derivations: [String: AnyObject] = [:]
+        /// The derived states worked out from this one, by the element and the line that
+        /// wrote each conversion - known weakly: the element holds them.
+        var derivations: [String: Derivation] = [:]
 
-        /// The derived state a conversion written at `key` keeps - made once, then kept.
-        func derived<Out>(_: Out.Type, at key: String, make: @escaping () -> Out) -> State<Out>.Storage {
-            if let kept = derivations[key] as? State<Out>.Storage { return kept }
+        /// The derived state a conversion written at `site` keeps - made once for the
+        /// element being built, then kept while the element holds it.
+        /// Design: docs/design/core/journeys.md#conversions
+        func derived<Out>(_: Out.Type, at site: String, make: @escaping () -> Out) -> State<Out>.Storage {
+            let key = DerivationScope.key(site)
+
+            if let kept = derivations[key]?.state as? State<Out>.Storage {
+                DerivationScope.hold(kept)
+                return kept
+            }
 
             let made = State<Out>(making: make).storage
 
-            derivations[key] = made
+            derivations = derivations.filter { $0.value.state != nil }
+            derivations[key] = Derivation(made, heldHere: !DerivationScope.hold(made))
             return made
         }
 
         /// What every write ends with, this side's and the host's: the readers are asked,
-        /// and nobody where no build read the state. A state has no cadence.
-        /// Design: docs/design/core/journeys.md#readings
+        /// and nobody where no build read the state.
+        /// Design: docs/design/core/invalidation.md#live-readers
+        @usableFromInline
         func askForRender() {
             // No build ever read it: nobody to render for, and this costs one load.
             if readAtBuild {
@@ -145,8 +152,9 @@ extension State {
             self.make = make
         }
 
-        /// The value, worked out the first time; called under the lock only.
-        private func settled() -> Value {
+        /// The value, worked out the first time.
+        @inlinable
+        func settled() -> Value {
             if let make {
                 held = make()
                 self.make = nil
@@ -156,12 +164,13 @@ extension State {
             return held!
         }
 
-        /// The value, read or written whole under the lock.
+        /// The value, read or written whole.
+        @inlinable
         var value: Value {
             get {
                 if let hostRead { return themed ?? hostRead() }
 
-                return guarded.withLock { settled() }
+                return settled()
             }
             set {
                 if let hostWrite {
@@ -170,62 +179,47 @@ extension State {
                     return
                 }
 
-                guarded.withLock {
-                    held = newValue
-                    make = nil
-                    written.wrappingAdd(1, ordering: .relaxed)
-                }
+                held = newValue
+                make = nil
+                written &+= 1
             }
+        }
+
+        /// Whether a write may land: not from a run a later event, or its element leaving,
+        /// superseded.
+        /// Design: docs/design/core/runs.md#a-superseded-run
+        @usableFromInline
+        func admitsWrite() -> Bool {
+            #if DEBUG
+            HandlerRun.noteWrite(of: self, named: "`\(origin ?? "a state")`")
+            #endif
+            return HandlerRun.admits("a write of `\(origin ?? "a state")`")
         }
 
         /// What a kept state does with every value it takes, whoever writes it - the
         /// program, a binding, the host: marking its key for saving. Set once, as the
         /// state claims its key.
         /// Design: docs/design/core/state.md#kept-state
-        nonisolated(unsafe) var keep: ((Value) -> Void)?
+        @usableFromInline var keep: ((Value) -> Void)?
 
-        /// Writes the value and keeps it under one hold, so a kept state's save never
-        /// comes apart from its write. `keep` runs under the lock.
-        /// Design: docs/design/core/state.md#writes-from-any-thread
+        /// Writes the value and keeps it, so a kept state's save never comes apart
+        /// from its write.
+        /// Design: docs/design/core/state.md#the-ui-threads-state
+        @inlinable
         func write(_ newValue: Value) {
             if let hostWrite {
-                // The board's hold serializes a carried write; the record comes after it.
                 themed = Self.wearsTheTheme(newValue) ? newValue : nil
                 hostWrite(newValue)
                 keep?(newValue)
                 return
             }
 
-            guarded.withLock {
-                held = newValue
-                make = nil
-                written.wrappingAdd(1, ordering: .relaxed)
-                keep?(newValue)
-            }
+            held = newValue
+            make = nil
+            written &+= 1
+            keep?(newValue)
         }
 
-        /// Reads, changes, writes and records under one hold, so two tasks counting at
-        /// once both count.
-        func update(_ transform: (Value) -> Value) {
-            if let hostRead, let hostWrite {
-                // A read and then a write: the host rewrites the image on its own frames.
-                let settled = transform(themed ?? hostRead())
-
-                themed = Self.wearsTheTheme(settled) ? settled : nil
-                hostWrite(settled)
-                keep?(settled)
-                return
-            }
-
-            guarded.withLock {
-                let settled = transform(settled())
-
-                held = settled
-                make = nil
-                written.wrappingAdd(1, ordering: .relaxed)
-                keep?(settled)
-            }
-        }
     }
 }
 
@@ -237,7 +231,7 @@ extension State.Storage where Value: Walked {
     /// own image already has a number.
     /// Design: docs/design/core/state.md#a-state-has-one-shape
     func carryAsJourney() -> HostStorage? {
-        let made: HostStorage? = guarded.withLock {
+        let made: HostStorage? = {
             if let image, journeyed { return image }
 
             // Refused where the host already has the value's own image by number; an image
@@ -251,10 +245,10 @@ extension State.Storage where Value: Walked {
             let made: HostStorage
 
             if let image {
-                Renderer.shared.board(of: image).reshape(image, to: StateImage.bytes(of: start.carried))
+                Renderer.shared.board(of: image).reshape(image, to: StateImage.bytes(of: start.carried(in: .current)))
                 made = image
             } else {
-                made = HostStorage(StateImage.bytes(of: start.carried))
+                made = HostStorage(StateImage.bytes(of: start.carried(in: .current)))
                 made.origin = origin
                 Renderer.shared.board(of: made).hold(made)
             }
@@ -278,10 +272,13 @@ extension State.Storage where Value: Walked {
                 if made.number == nil, !journey.motion.isCustom {
                     journey.value = target
                     journey.velocity = JourneyLanes<Value>.still
+                    known.destination = target
+                    Self.lay([.value, .destination, .velocity], of: journey, on: made)
+                    return
                 }
 
                 known.destination = target
-                Self.lay(journey, on: made)
+                Self.lay([.destination], of: journey, on: made)
             }
             hostSnap = { landed in
                 var journey = Self.journey(on: made)
@@ -291,7 +288,7 @@ extension State.Storage where Value: Walked {
                 journey.velocity = JourneyLanes<Value>.still
 
                 known.destination = landed
-                Self.lay(journey, on: made)
+                Self.lay([.value, .destination, .velocity], of: journey, on: made)
             }
             noted = { destination in known.destination = destination }
             made.told = { [weak self] mask in
@@ -311,7 +308,7 @@ extension State.Storage where Value: Walked {
             }
 
             return made
-        }
+        }()
 
         if made == nil {
             complain("`\(origin ?? "a state")` is carried as the value itself - a feed "
@@ -339,28 +336,40 @@ extension State.Storage where Value: Walked {
         return Self.journey(on: image)
     }
 
-    /// Writes the journey's lanes whole; the board finds which moved.
-    func lay(_ lanes: JourneyLanes<Value>) {
+    /// Writes `parts` of the journey and leaves every other lane as it lies; the board
+    /// finds which moved, and `forcing` marks lanes a write means even unmoved.
+    /// Design: docs/design/core/journeys.md#writing-the-parts
+    func lay(_ parts: [JourneyPart], of lanes: JourneyLanes<Value>, forcing: UInt64 = 0) {
         guard journeyed, let image else { return }
 
-        Self.lay(lanes, on: image)
+        Self.lay(parts, of: lanes, on: image, forcing: forcing)
     }
 
     /// Tells the storage a destination sent by another road than a write, so the host
-    /// writing it back on landing asks for nothing.
+    /// writing it back on landing asks for nothing - and keeps the pair it wears, as a
+    /// write does, or lets go of the one it kept.
+    /// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
     func noteDestination(_ destination: Value) {
+        themed = Self.wearsTheTheme(destination) ? destination : nil
         noted?(destination)
     }
 
+    /// Lets go of the pair a stopped value no longer stands for.
+    /// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
+    func stoppedWhereItStands() {
+        themed = nil
+    }
+
     /// The destination this side last knew, shared by three closures.
-    private final class Known: @unchecked Sendable {
-        nonisolated(unsafe) var destination: Value
+    @MainActor
+    private final class Known {
+        var destination: Value
 
         init(_ destination: Value) { self.destination = destination }
 
         /// Whether a destination is the one already known, lane for lane.
         func stands(at other: Value) -> Bool {
-            StateImage.bytes(of: destination.carried) == StateImage.bytes(of: other.carried)
+            StateImage.bytes(of: destination.carried(in: .current)) == StateImage.bytes(of: other.carried(in: .current))
         }
     }
 
@@ -371,9 +380,27 @@ extension State.Storage where Value: Walked {
             ?? JourneyLanes(nothing)
     }
 
-    /// Writes the journey into the lanes, whole.
-    private static func lay(_ journey: JourneyLanes<Value>, on image: HostStorage) {
-        Renderer.shared.board(of: image).write(StateImage.bytes(of: journey.carried), to: image)
+    /// Writes `parts` of the journey, each in the theme in force, over the lanes as they
+    /// lie: a value read back through its type - a colour's eight bits a channel - is not
+    /// always the lanes it was read from, and a lane rewritten so reads as moved.
+    /// Design: docs/design/core/journeys.md#writing-the-parts
+    private static func lay(
+        _ parts: [JourneyPart], of journey: JourneyLanes<Value>, on image: HostStorage, forcing: UInt64 = 0
+    ) {
+        let board = Renderer.shared.board(of: image)
+        guard case .lanes(let written) = journey.carried(in: .current) else { return }
+        guard case .lanes(var lanes) = board.read(image, lanes: JourneyLanes<Value>.lanes),
+              lanes.count == written.count
+        else {
+            board.write(StateImage.bytes(of: .lanes(written)), to: image, forcing: forcing)
+            return
+        }
+
+        for part in parts {
+            for lane in JourneyLanes<Value>.range(of: part) { lanes[lane] = written[lane] }
+        }
+
+        board.write(StateImage.bytes(of: .lanes(lanes)), to: image, forcing: forcing)
     }
 }
 
@@ -381,7 +408,7 @@ extension State.Storage where Value: StateValue {
     /// Writes the value where it differs, lane for lane, asking the readers where
     /// `asking` says - what a conversion's engines do.
     func settle(_ newValue: Value, asking: Bool) {
-        guard StateImage.bytes(of: newValue.carried) != StateImage.bytes(of: value.carried) else { return }
+        guard StateImage.bytes(of: newValue.carried(in: .current)) != StateImage.bytes(of: value.carried(in: .current)) else { return }
 
         write(newValue)
 
@@ -392,11 +419,11 @@ extension State.Storage where Value: StateValue {
     /// value as it stands - or nothing, said out loud, where the image is a journey's.
     /// Design: docs/design/core/state.md#carried-state
     func carry() -> HostStorage? {
-        let made: HostStorage? = guarded.withLock {
+        let made: HostStorage? = {
             if let image { return journeyed ? nil : image }
 
             let initial = settled()
-            let bytes = StateImage.bytes(of: initial.carried)
+            let bytes = StateImage.bytes(of: initial.carried(in: .current))
             let made = HostStorage(bytes)
 
             themed = Self.wearsTheTheme(initial) ? initial : nil
@@ -414,14 +441,14 @@ extension State.Storage where Value: StateValue {
 
             hostRead = { Self.lifted(from: made) }
             hostWrite = { value in
-                known.bytes = StateImage.bytes(of: value.carried)
+                known.bytes = StateImage.bytes(of: value.carried(in: .current))
                 Self.lay(value, on: made)
             }
 
             // A host write ends where this side's do, the storage deciding by its readers.
             made.told = { [weak self] _ in
                 let value = Self.lifted(from: made)
-                let now = StateImage.bytes(of: value.carried)
+                let now = StateImage.bytes(of: value.carried(in: .current))
 
                 guard now != known.bytes else { return }
 
@@ -432,21 +459,22 @@ extension State.Storage where Value: StateValue {
             }
 
             return made
-        }
+        }()
 
         if made == nil {
-            complain("`\(origin ?? "a state")` is carried as a journey - a Slider's "
-                + "or a Stepper's - and was handed to something that carries the "
-                + "value itself. One state has one shape: declare a second state "
-                + "for the other.")
+            complain("`\(origin ?? "a state")` is carried as a journey - an animated "
+                + "driven property's, a slider's, a stepper's or a scroller's - and was "
+                + "handed to something that carries the value itself. One state has one "
+                + "shape: declare a second state for the other.")
         }
 
         return made
     }
 
     /// The bytes this side last knew, shared by the writer and the host's hook.
-    private final class KnownBytes: @unchecked Sendable {
-        nonisolated(unsafe) var bytes: [UInt8]
+    @MainActor
+    private final class KnownBytes {
+        var bytes: [UInt8]
 
         init(_ bytes: [UInt8]) { self.bytes = bytes }
     }
@@ -461,7 +489,7 @@ extension State.Storage where Value: StateValue {
         _ = StandardEnvironment.application.info.colorScheme
         _ = StandardEnvironment.application.info.accentColor
 
-        guard StateImage.bytes(of: themed.carried) != StateImage.bytes(of: hostRead().carried) else { return }
+        guard StateImage.bytes(of: themed.carried(in: .current)) != StateImage.bytes(of: hostRead().carried(in: .current)) else { return }
 
         hostWrite(themed)
     }
@@ -474,7 +502,7 @@ extension State.Storage where Value: StateValue {
 
     /// The value written into the lanes, whole.
     static func lay(_ value: Value, on image: HostStorage) {
-        Renderer.shared.board(of: image).write(StateImage.bytes(of: value.carried), to: image)
+        Renderer.shared.board(of: image).write(StateImage.bytes(of: value.carried(in: .current)), to: image)
     }
 
     /// What a value answers where its bytes stand for none of its type - every lane

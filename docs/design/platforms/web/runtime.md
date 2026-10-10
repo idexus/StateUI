@@ -10,21 +10,26 @@ frames, the DOM elements, the browser's layout, and the window.
 
 ## The Web runtime
 
-`WebRenderer` owns the runtime's elements, as every runtime does: the core
-link, the intake, the mounted tree whose native halves are `WebElement`s, the
-pump, the animator and what follows it, the display cycle, and the frame
-clock. It is the pump's `TurnPresenter` - after a render it shows the window -
-and the display cycle's `FramePresenter`. An act the host does not perform yet
+`WebRenderer` holds the host layer's runtime (`HostRuntime`), which holds the
+elements every runtime holds alike: the core link, the intake, the mounted
+tree whose native halves are `WebElement`s, the pump, the animator and what
+follows it, and the display cycle on the page's frame clock. It is the
+runtime's `HostPresenter` - after a render it shows the window,
+and after a frame's walk it says the page may have moved. An act the host does not perform yet
 fails at once, so a handler awaiting it goes on.
 
 ## Starting
 
 The page loads the module and calls its `_start`, which runs the head's
 `main`: it names the application and calls `StateUIWeb.run(name:)`. The host
-hands the relay the two functions the page calls it through, tells the core
-what it realizes and what the page stands on, connects the one window and runs
-the first turn - and `main` returns. The module lives on with the page; from
-then on the browser calls it, as the user acts and as the display draws.
+claims the page's one thread as the UI thread, hands the relay the two
+functions the page calls it through, and starts in the order every host keeps
+([starting](../../host/runtime.md#starting)): it tells the core what it
+realizes and what the page stands on, hands it the values kept in the
+browser's storage, brings back the scenes kept when the page was left
+(`SceneKeeper`) - else connects the window launch opens - and runs the first
+turn; then `main` returns. The module lives on with the page; from then on
+the browser calls it, as the user acts and as the display draws.
 
 While the module loads, the page shows the application's name in its
 middle, a ring turning and a bar of how much of the module has come, read
@@ -41,8 +46,10 @@ the relay's, which the C header `CStateUIWeb.h` declares as the module's
 imports, and the system interface, WASI, which a Swift program asks of its
 machine. The relay keeps every DOM element Swift makes under a number, and
 words cross as UTF-8 and their length in bytes. It decides nothing of
-StateUI's: it makes, places and changes elements as Swift says, and calls
-Swift back when one hears an event.
+StateUI's: it makes, places and changes elements as Swift says, calls Swift
+back when one hears an event, and keeps the keyboard's way through a strip of
+tabs and a menu, and a field's focus under a pressed button, as the page's
+own.
 
 The page calls Swift through function pointers. The host hands the relay two
 `@convention(c)` closures - one for a listener's number, one for a display
@@ -85,8 +92,10 @@ The page tells the core it stands in a browser, and on what: where its user
 points by touch (`pointer: coarse`), a phone or a tablet by the screen's
 smallest width, as the host layer decides it for every touch screen
 (`FormFactor.touchScreen`); else a desktop. It tells too whether the user's
-system is dark or light; a change of the appearance renders the application
-again in the other.
+system is dark or light, and the accent the browser draws its own controls
+in - the system's `AccentColor` where the browser knows one, else its own
+blue; a change of the appearance renders the application again in the other,
+the accent read again with it.
 
 ## One frame
 
@@ -167,21 +176,21 @@ own, so the window hears it was made before it hears it is in front.
 ## The conformance run
 
 The conformance suite runs in a browser, headless: its cases need the
-browser's own layout, focus, dialogs and input, which the host's own suite in
-Node has none of. The suite's program is the same WebAssembly module, started
-with the relay's `suspends`: its `main` runs through `WebAssembly.promising`,
-and the driver's imports that wait - a frame of the page's, a question to the
-controller beside the browser - are `WebAssembly.Suspending`, so a case written
-as one synchronous run sets itself aside while the browser goes on, its events
-reaching Swift as they do on any page. The controller drives the browser over
-its DevTools pipe: the user's input is the browser's own - the mouse, the keys,
-typed words - and it reads and writes the repository's files, the verdicts
-among them, which the page cannot reach. A file dialog is the relay's, held
-on the test's page and answered from the test's own files, what the page
-would launch is the relay's record, a drag between views is the DOM's drag
-events the driver dispatches, and a window's phases are the notices the
-driver gives - a member proven through them is the host's own, ✓, whatever
-element the act is done on.
+browser's own layout, focus, dialogs and input, which the host's own tests in
+Node have none of; the host's tests that run a host run in the browser too. The suite's program is a WebAssembly module of its own,
+started by the same relay with its `suspends`: its `main` runs through
+`WebAssembly.promising`, and the driver's imports that wait - a frame of the
+page's, a question to the controller beside the browser - are
+`WebAssembly.Suspending`, so a case written as one synchronous run sets itself
+aside while the browser goes on, its events reaching Swift as they do on any
+page. The controller drives the browser over its DevTools pipe: the user's
+input is the browser's own - the mouse, the keys, typed words - and it reads
+and writes the repository's files, the verdicts among them, which the page
+cannot reach. A file dialog is the relay's, held on the test's page and
+answered from the test's own files, what the page would launch is the relay's
+record, a drag between views is the DOM's drag events the driver dispatches,
+and a window's phases are the notices the driver gives - a member proven
+through them is the host's own, ✓, whatever element the act is done on.
 
 XCTest's own loop runs on Swift's cooperative executor and awaits MainActor
 between its tests. Once a host runs, MainActor's executor is the UI thread's,

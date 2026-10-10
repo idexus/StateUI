@@ -79,6 +79,8 @@ extension AndroidDriver {
             return (!Java.callBool(field.reference, Self.onCheckIsTextEditor)).propValue
         case (.fontSize, let text as AndroidTextualView):
             return Double(Java.callStaticFloat(Self.testText, Self.points, .object(text.reference))).rounded().propValue
+        case (.isFontAutoScalingEnabled, let text as AndroidTextualView):
+            return try Self.scales(Java.callStaticInt(Self.testText, Self.scales, .object(text.reference)))
         case (.fontAttributes, let text as AndroidTextualView):
             return FontAttributes(rawValue: Java.callStaticInt(Self.testText, Self.style, .object(text.reference)) & 3)
                 .propValue
@@ -89,6 +91,7 @@ extension AndroidDriver {
             guard held >> 32 == 1 else { throw DriverCannot("read a background of no one colour") }
             return StandIns.material(painted: Self.color(UInt32(truncatingIfNeeded: held))).propValue
         case (.fontSize, let picker as AndroidPickerView), (.fontAttributes, let picker as AndroidPickerView),
+             (.isFontAutoScalingEnabled, let picker as AndroidPickerView),
              (.textColor, let picker as AndroidPickerView), (.horizontalTextAlignment, let picker as AndroidPickerView):
             return try Self.fieldHolds(property, of: picker)
         case (.fontFamily, is AndroidPickerView):
@@ -113,6 +116,8 @@ extension AndroidDriver {
             guard let row = Java.callObject(picker.reference, getSelectedView) else { return .none }
             switch property {
             case .fontSize: return Double(Java.callStaticFloat(testText, points, .object(row))).rounded().propValue
+            case .isFontAutoScalingEnabled:
+                return try? Self.scales(Java.callStaticInt(testText, scales, .object(row)))
             case .fontAttributes:
                 return FontAttributes(rawValue: Java.callStaticInt(testText, style, .object(row)) & 3).propValue
             case .textColor: return color(UInt32(bitPattern: Java.callInt(row, getCurrentTextColor))).propValue
@@ -222,6 +227,13 @@ extension AndroidDriver {
     static let testText = Java.findClass("stateui/android/test/TestText")
     static let points = Java.staticMethod(testText, "points", "(Landroid/widget/TextView;)F")
     static let style = Java.staticMethod(testText, "style", "(Landroid/widget/TextView;)I")
+    static let scales = Java.staticMethod(testText, "scales", "(Landroid/widget/TextView;)I")
+
+    /// Whether a size follows the user's font scale, as the test reads it: 1, 0, or -1 where Android cannot say.
+    static func scales(_ held: Int32) throws -> HostValue? {
+        guard held >= 0 else { throw DriverCannot("read a size's unit", because: "Android says it from API 30") }
+        return (held == 1).propValue
+    }
     static let getCurrentTextColor = Java.method(JavaAPI.textView, "getCurrentTextColor", "()I")
 
     /// A picker's rows' words as its spinner shows them, the title's first.

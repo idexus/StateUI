@@ -80,7 +80,7 @@ struct ReaderSample: SampleContent, ExampleContent {
                     }
                     .spacing(4)
                 }
-                .style("Card")
+                .style(.card)
                 .padding(8)
                 .shape(.roundedRectangle(6))
                 .stroke(Palette.outline)
@@ -150,7 +150,7 @@ struct ReaderSample: SampleContent, ExampleContent {
             }
             .spacing(6)
         }
-        .style("Card")
+        .style(.card)
         .padding(10)
         .shape(.roundedRectangle(8))
         .stroke(Palette.outline)
@@ -162,7 +162,7 @@ struct ReaderSample: SampleContent, ExampleContent {
     }
 
     /// One of the buttons, all of which look the same.
-    private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
+    private func button(_ caption: String, _ act: @escaping @MainActor () throws -> Void) -> Button {
         Button(caption)
             .onClicked(act)
     }
@@ -187,7 +187,7 @@ private struct Reading: View {
             }
             .spacing(4)
         }
-        .style("Card")
+        .style(.card)
         .padding(10)
         .shape(.roundedRectangle(8))
         .stroke(Palette.outline)
@@ -220,7 +220,7 @@ private struct Holding: View {
             }
             .spacing(4)
         }
-        .style("Card")
+        .style(.card)
         .padding(10)
         .shape(.roundedRectangle(8))
         .stroke(Palette.outline)
@@ -249,7 +249,7 @@ private struct Pulsed: View {
             }
             .spacing(4)
         }
-        .style("Card")
+        .style(.card)
         .padding(10)
         .shape(.roundedRectangle(8))
         .stroke(Palette.outline)

@@ -28,6 +28,18 @@ class filling that box in its colour - a brush's first colour. A button's captio
 the `GtkLabel` the button shows it in, and takes the same look, font and
 colour, and the button its padding.
 
+## The user's text size
+
+Words follow GNOME's text scaling (`isFontAutoScalingEnabled`, on unless said),
+which writes the desktop's dots an inch (`gtk-xft-dpi`): a size stands in
+typographic points where the words scale - CSS `pt`, Pango's
+`pango_attr_size_new`, both measured against those dots - and in pixels where
+not, CSS `px` and `pango_attr_size_new_absolute`. A StateUI point is a pixel
+at 96 dots an inch, so 20 is 15 typographic points. Words that do not scale
+and are given no size stand at the desktop font's size before its scale
+(`GTKEnvironment.fontSize`). A CSS class setting `-gtk-dpi` on one widget
+changed nothing GTK 4.14 measures; the driver doubles `gtk-xft-dpi` itself.
+
 ## A button's box
 
 A button the tree gives a fill, an outline or a shape wears a class of the
@@ -69,10 +81,11 @@ label apply again, so the runs are laid down whole each time.
 ## On or off
 
 A Switch is GTK's `GtkSwitch`, a CheckBox and a RadioButton each a
-`GtkCheckButton`, one view kind in the host: whether it is on, whether it can
-be turned, and the turn the user makes, each heard through the property GTK
-notifies. A check box has no caption, so it is the box alone; a radio
-button's caption is its label, in the look the tree gives its words.
+`GtkCheckButton`, one view kind in the host: it writes whether the control is
+on and whether it can be turned, and hears the turn the user makes through the
+property GTK notifies, `active`. A check box has no caption, so it is the box
+alone; a radio button's caption is its label, in the look the tree gives its
+words.
 
 Which of a radio button's set loses its check is the host's. A set is named
 across the window, or is the buttons beside one that names none, and only
@@ -85,12 +98,12 @@ in a group with a partner of its own that is never shown.
 
 ## Nothing the program writes is heard
 
-Every native write of an element - a patch applied, a display frame presented
-- runs inside `ProgramWrite`. GTK tells of a change inside the call that makes
-it: a `GtkSwitch`'s `active` notice, a `GtkScale`'s `value-changed`, a
-`GtkEntry`'s `changed` come from the host's own setter as from the user's
-hand. A report during the program's write is the write's echo, and the
-element reports nothing. A control keeps no flag of its own.
+Every native write of an element - a patch applied, a display frame
+presented - runs inside `ProgramWrite`. GTK tells of a change inside the call
+that makes it: a `GtkSwitch`'s `active` notice, a `GtkScale`'s
+`value-changed`, a `GtkEntry`'s `changed` come from the host's own setter as
+from the user's hand. A report during the program's write is the write's echo,
+and the element reports nothing. A control keeps no flag of its own.
 
 ## A slider and its range
 
@@ -127,14 +140,15 @@ leaves the user's words and caret alone. Words the program writes put the
 caret after them.
 
 `maximumLength` and `textCase` are kept as words go in: GTK holds no case and
-bounds code points, so the entry's `insert-text` takes what goes in in the
-field's case and its first characters that fit, as the contract counts them
-([typed words](../../host/runtime.md#typed-words)) - from a key, a paste and
-a program's write alike. An editor's buffer does the same.
+bounds code points, so the `insert-text` of the entry's own `GtkText` takes
+what goes in in the field's case and its first characters that fit, as the
+contract counts them ([typed words](../../host/runtime.md#typed-words)) - from
+a key, a paste and a program's write alike. An editor's buffer does the same.
 
 A field submits when Enter is pressed in it, through the entry's `activate`.
-A test types by writing the entry's words outside a program's write, which
-GTK reports as it reports the user's.
+A test types as the keyboard does: through the key bindings' signals of the
+field's text - `delete-from-cursor` over what it replaces,
+`insert-at-cursor` - which a read-only field refuses.
 
 A field's words stand in its `GtkText`, the text widget a `GtkEntry` and a
 `GtkSearchEntry` both hold, so the two are one view. How the words are taken
@@ -205,8 +219,8 @@ chosen one shown on its button. The chosen one is written only where the tree
 changed it or the choices changed, so the user's choice is never argued with,
 and the user's choice is reported onto the state it is carried in. GTK gives a
 drop-down no placeholder and tells no one its list opened or closed, so the
-title and the list's opening and closing are not planned. The words of the
-chosen one - on the drop-down's `button` node - take the tree's font and
+placeholder and the list's opening and closing are not planned. The words of
+the chosen one - on the drop-down's `button` node - take the tree's font and
 colour; the list keeps the theme's. A GNOME drop-down wears no accent: a
 check in its words' colour marks the choice, so a picker takes no tint.
 
@@ -242,12 +256,12 @@ turning while its work runs and drawing nothing while it does not.
 ## A control's accent
 
 A control's tint is its one accent colour, where GNOME's theme draws its
-accent: a switch's track while it is on, a ticked box or radio, a slider's
-track up to its thumb, a progress bar's done part and a spinner. Each is a
-node GTK documents for the control, so the tint is a class of the
-display-wide sheet ([a widget's own box](drawing.md#a-widgets-own-box))
-filling that node - `switch:checked`, `check:checked`, `radio:checked`,
-`trough > highlight`, `trough > progress` - and the spinner's colour; the
+accent: a switch's track while it is on, a ticked box, a slider's track up to
+its thumb, a progress bar's done part and a spinner. Each is a node GTK
+documents for the control, so the tint is a class of the display-wide sheet
+([a widget's own box](drawing.md#a-widgets-own-box)) filling that node -
+`switch:checked`, `check:checked`, `trough > highlight`, `trough > progress` -
+and the spinner's colour; the
 theme's light under the pointer and pressed lies over it as over its own
 accent.
 
@@ -263,11 +277,12 @@ stands in no window - as the element's first properties find it - and a GTK
 widget in a role other than its own is not named by the words it shows, so a
 heading's label is its words, written again as they change.
 
-GTK 4.14 gives assistive technology no identifier for a widget: its
-`AccessibleId` is empty for every one, a builder's id and a widget's name
-alike. A hidden state leaves out the element itself and passes its children
-up to its parent, which is what a hidden element asks; an element left out
-with its children needs every widget under it hidden too.
+GTK 4 tells assistive technology no identifier before 4.22, and from 4.22
+only a GtkBuilder file's id, which no public call sets on a widget made in
+code; so `accessibilityIdentifier` is not planned on GTK. A hidden state leaves out the element itself and passes its
+children up to its parent, which is what a hidden element asks; an element
+left out with its children takes the same state on its own widget alone, and
+the widgets under it keep theirs.
 
 A word said to a screen reader goes through the window's accessible, and only
 where its context is GTK's AT-SPI one: without the accessibility bus GTK

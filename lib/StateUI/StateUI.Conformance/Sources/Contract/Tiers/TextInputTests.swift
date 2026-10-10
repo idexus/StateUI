@@ -32,6 +32,7 @@
     }
 
     /// A field the tree makes read only keeps the words it holds, whatever the user types.
+    @MainActor
     static func readOnly(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aReadOnlyFieldKeepsItsWords", proves: [
             Covered(TextInputContract.isReadOnly, on: element), Covered(TextualElementContract.text, on: element),
@@ -48,6 +49,7 @@
     }
 
     /// A field the tree closes to input stays closed whatever else of its behaviour the tree writes.
+    @MainActor
     static func closed(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aClosedFieldStaysClosedAsItsBehaviourChanges", proves: [
             Covered(VisualElementContract.isEnabled, on: element),
@@ -73,6 +75,7 @@
     }
 
     /// Each keystroke's words reach the state, are heard once, and stay typed.
+    @MainActor
     static func typed(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).eachKeystrokeIsHeardAndStaysTyped", proves: [
             Covered(TextInputContract.textChanged, on: element), Covered(TextualElementContract.text, on: element),
@@ -94,6 +97,7 @@
     }
 
     /// Typing stops at the most characters the tree allows.
+    @MainActor
     static func bounded(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).typingStopsAtTheMaximumLength", proves: [
             Covered(TextInputContract.maximumLength, on: element), Covered(TextualElementContract.text, on: element),
@@ -113,6 +117,7 @@
     }
 
     /// The program's words are shown, and not heard as typing.
+    @MainActor
     static func written(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).theProgramsWordsAreShownAndNotHeardAsTyping", proves: [
             Covered(TextInputContract.textChanged, on: element), Covered(TextualElementContract.text, on: element),
@@ -136,6 +141,7 @@
     }
 
     /// A field of `element`'s kind over `words`, wearing `worn`, found by the id "field".
+    @MainActor
     static func field(_ element: String, _ words: State<String>, _ worn: [any Worn] = []) -> ModifiedContent {
         let dressing = Dressing(worn, id: "field")
         let field: any View = switch element {

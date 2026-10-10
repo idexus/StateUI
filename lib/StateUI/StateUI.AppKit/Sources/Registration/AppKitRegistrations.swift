@@ -8,8 +8,8 @@ import AppKit
 
 /// The contracts this host realizes through the core's registry: how each
 /// element's view is made, which of its members the view takes, and what it
-/// reports. Families move here from `AppKitElement`'s switch one at a time; an
-/// element no registration answers is still made there.
+/// reports. An element no registration answers is made by
+/// `AppKitElement.makeView`.
 @MainActor
 enum AppKitRegistrations {
     /// The registry, built once.
@@ -37,7 +37,7 @@ enum AppKitRegistrations {
 
     /// The elements whose registration draws their background itself - a field, a button, a colour box - under
     /// which no layer paints another: a search field's rounded field takes no fill colour, and a square painted
-    /// under it hid its shape.
+    /// under it would hide its shape.
     /// Design: docs/design/platforms/appkit/registrations.md#a-background
     static let drawOwnBackground: Set<NodeType> = Set(registry.realization.members
         .filter { $0.owner == VisualElementContract.name && $0.member == VisualElementContract.background.name }

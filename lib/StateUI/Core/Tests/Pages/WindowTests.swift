@@ -32,6 +32,7 @@ private struct Noticed: View {
 }
 
 /// A desktop-sized window session used to verify the complete authored shape.
+@MainActor
 private func desktop() -> WindowSession {
     let session = WindowSession()
     session.title = "My Application"
@@ -44,9 +45,9 @@ private func desktop() -> WindowSession {
     return session
 }
 
+@MainActor
 final class WindowTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
     }
 

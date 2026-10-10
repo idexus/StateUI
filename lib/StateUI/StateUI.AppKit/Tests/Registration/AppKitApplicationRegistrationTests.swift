@@ -56,7 +56,7 @@ private struct Lamp: ElementView {
         setValue(LampContract.lit, value)
     }
 
-    func onPulled(_ handler: @escaping ValueEventHandler<Int>) -> Self {
+    func onPulled(_ handler: @escaping @MainActor (Int) throws -> Void) -> Self {
         onEvent(LampContract.pulled, handler)
     }
 }
@@ -82,7 +82,7 @@ private struct Pulling: View {
                 .aim(lamp)
 
             Button("Flash")
-                .onClicked {
+                .onClicked(gate: .ignoreWhileRunning) {
                     do {
                         try await lamp.flash()
                         said = "flashed"
@@ -99,6 +99,7 @@ private struct Pulling: View {
 /// An element of the APPLICATION'S OWN, realized on this host by a view of the
 /// application's own: made by its registration, taking the members its
 /// contract declares, raising its events, and answering an act aimed at it.
+@MainActor
 final class AppKitApplicationRegistrationTests: XCTestCase {
     /// Registers the lamp - a registry keeps what it is told, so each test's
     /// registration only replaces the same entry.

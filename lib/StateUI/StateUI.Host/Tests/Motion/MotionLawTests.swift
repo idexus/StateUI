@@ -8,6 +8,7 @@ import XCTest
 
 /// The two motion laws every runtime animates with, as numbers - and the
 /// promises every animation of the table below keeps.
+@MainActor
 final class MotionLawTests: XCTestCase {
     func testAnEasedAnimationIsAFunctionOfElapsedTime() {
         let halfway = HostMotionLaw.sample(

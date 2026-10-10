@@ -72,10 +72,10 @@ public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollView
     ///
     /// `offset` is where it is going and `$offset.journey.value` where it is. A
     /// write animates under the element's motion, `$offset.journey.snap(to:)`
-    /// jumps, and `try await $offset.journey.move(to:)` waits for the arrival.
+    /// jumps, and `$offset.journey.move(to:)` animates under a law of its own.
     /// Handing `$offset` over reads nothing: a body that reads `offset` renders
-    /// on every report, and `.samples($offset, into:, .every(100))` holds a
-    /// reading to ten a second.
+    /// on every report, and `.samples($offset, into: $shown, .every(100))`
+    /// holds a reading to ten a second.
     ///
     /// - Parameter state: the state the offset is carried on.
     /// - Returns: the scroller, moving with that state and reporting into it.
@@ -93,8 +93,20 @@ public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollView
     /// runs once per movement the user makes - a drag let go, a throw that ran
     /// out, a wheel, a key - and not for one that leaves the offset where it
     /// was, nor for one the application wrote.
-    public func onScrollStopped(_ handler: @escaping EventHandler) -> Self {
+    public func onScrollStopped(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(ScrollViewContract.scrollStopped, handler)
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onScrollStopped(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(ScrollViewContract.scrollStopped, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onScrollStopped(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onScrollStopped(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 }
 
@@ -102,18 +114,18 @@ extension ScrollView {
     /// `horizontalScrollIndicator` from a state, `$x`: the host sets each
     /// new value as it stands, and no view is rebuilt for it.
     public func horizontalScrollIndicator(_ state: Binding<ScrollIndicatorVisibility>) -> Modified {
-        plain(.horizontalScrollIndicator, by: state)
+        twin(ScrollViewContract.horizontalScrollIndicator, by: state)
     }
 
     /// `orientation` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func orientation(_ state: Binding<ScrollOrientation>) -> Modified {
-        plain(.orientation, by: state)
+        twin(ScrollViewContract.orientation, by: state)
     }
 
     /// `verticalScrollIndicator` from a state, `$x`: the host sets each new
     /// value as it stands, and no view is rebuilt for it.
     public func verticalScrollIndicator(_ state: Binding<ScrollIndicatorVisibility>) -> Modified {
-        plain(.verticalScrollIndicator, by: state)
+        twin(ScrollViewContract.verticalScrollIndicator, by: state)
     }
 }

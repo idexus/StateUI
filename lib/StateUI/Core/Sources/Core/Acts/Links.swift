@@ -16,7 +16,7 @@ public enum Links {
     /// - Returns: whether an application took it; false where none opens its
     ///   scheme.
     @discardableResult
-    public static nonisolated(nonsending) func launch(_ address: String) async throws -> Bool {
+    public static func launch(_ address: String) async throws -> Bool {
         try await stateUICall(ApplicationContract.launchLink, address)
     }
 }

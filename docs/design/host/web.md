@@ -36,4 +36,6 @@ back and forward is the page's history like any other. On a WebKit web view
 and on Android's it is a `data:` address - its words as UTF-8, in base64
 (`WebDocument`), from which the document is read back; WebView2 goes to an
 address its backend answers with the document. A navigation reports the
-address the page stands at.
+address the page stands at. The Web shows every document written in place at
+a `blob:` address of the page's own, a `<base>` before it where the document
+has an address, and reports it by its `data:` address.

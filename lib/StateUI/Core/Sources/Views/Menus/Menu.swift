@@ -43,7 +43,7 @@ public struct Menu: Element {
     /// a `StandardMenu` joins the platform's own.
     public func id(_ value: some Hashable) -> Self {
         var copy = self
-        copy.node.id = String(describing: value)
+        copy.node.identify(value)
         return copy
     }
 

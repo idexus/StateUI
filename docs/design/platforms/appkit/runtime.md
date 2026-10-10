@@ -8,12 +8,13 @@ every runtime.
 
 `AppKitRenderer` holds the host layer's runtime (`HostRuntime`) and adds what
 is AppKit's: the windows, native window restoration, the page menus in the
-application's menu bar, the pictures, the doorbell on the main queue. It presents what a turn rendered through the `Pump`
-(`TurnPresenter`): the windows kept in step with the tree, a window element
+application's menu bar, the pictures, the turn after every pass of the main run loop. It presents what a turn rendered as the runtime's
+`HostPresenter`: the windows kept in step with the tree, a window element
 new to it taking the window the system restored for it where one waits - and
-it performs the acts the application calls. A window's or a scene's phase, and what the user settled
-on a native control after the phases it moved, wait in the pump's queue and
-are rendered in their turn.
+it performs the acts the application calls. A window's or a scene's phase,
+and what the user settled on a native control after the phases it moved, wait
+in the host layer's queue of handlers - a phase through
+`HandlerDispatch.enqueuePhase` - and are rendered in their turn.
 
 ## The window
 
@@ -38,8 +39,17 @@ bounds the whole content view, and are applied again on every presentation,
 since the chrome grows with a row of tabs; what the tree leaves unsaid is the
 window's own. The traits ([a window's traits](../../host/tree.md#a-windows-traits))
 are the zoom and minimize buttons, a window the desktop shows through, and
-the floating level while the application is in front. Every window stands
-in the Windows menu.
+the floating level (`.floating`), which keeps the window above the
+application's other windows. The host layer gives it while the application
+is in front: another application brought forward - by a click on its window
+too - leaves the window at the normal level beneath that one. Every window
+stands in the Windows menu.
+
+A window with a maximum takes no full screen: AppKit would stand it at its
+maximum in the middle of the screen, the toolbar alone across the top in the
+system's colour. Its zoom button grows it to the maximum instead, the way a
+bounded window maximizes on every desktop; with the maximum cleared, the
+window's own full-screen behaviour is back.
 
 ## The application's phase
 
@@ -134,10 +144,10 @@ looking at, waiting its turn among the questions
 every kind's extensions and chooses several only where asked; a save panel
 offers each kind once, by its first extension, under its caption in the
 panel's menu of kinds where there are two or more, and suggests the act's
-name - an empty name is the panel's own. A save's contents are written
-beside the UI thread where the user said, in place, as a sandbox lets an
-application write the file the user chose and not a neighbour swapped in;
-the file is answered once they stand written, or the act fails with the
+name - an empty name leaves the panel's name field empty. A save's contents
+are written beside the UI thread where the user said, in place, as a sandbox
+lets an application write the file the user chose and not a neighbour swapped
+in; the file is answered once they stand written, or the act fails with the
 system's reason. A chosen file's address is its path; the sandbox keeps it
 the application's while it runs. A file is read beside the UI thread too.
 
@@ -160,5 +170,5 @@ nearest the user's languages - so an application localized in no language
 written right to left lays out left to right, as AppKit's own controls do. A Mac
 with no battery reports none - full, on mains - and Low Power Mode as the
 battery saver. The network is reachable when its path is satisfied, local when
-interfaces stand but no route leads out; each interface in use - Wi-Fi, wired,
-cellular - is a connection profile.
+interfaces stand but no route leads out; each interface available to the path -
+Wi-Fi, wired, cellular - is a connection profile.

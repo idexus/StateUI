@@ -14,7 +14,7 @@ belongs, so a gap is visible rather than silent.
 lib/StateUI/StateUI.Android/
   Sources/StateUIAndroid/    the host: its runtime, elements, registrations, layout and JNI
   Sources/CStateUIAndroid/   the NDK's C surface: JNI, the looper, the log
-  Java/stateui/android/      the Java layer: the activity, the layout view group, the frame callback, the listener
+  Java/stateui/android/      the Java layer: the activity, the views and view groups the host makes, the frame callback and the listeners
   Tests/                     the host's suite, run in a test APK on a device
 .scripts/Android/
   build-swift.sh             an application's Swift for Android, for the ABIs asked
@@ -49,7 +49,9 @@ The host builds on macOS, for Android 9 (API 28) or newer:
 ## The head
 
 An application's Android head is a library Android loads. Its `JNI_OnLoad`
-names the application and hands the virtual machine to the host:
+names the application and hands the virtual machine to the host. Android calls
+it on the UI thread from C, which no actor's type can say, so the head enters
+`MainActor` there once, with `MainActor.assumeIsolated`:
 
 ```swift quote
 import NotesUI
@@ -57,7 +59,7 @@ import StateUIAndroid
 
 @_cdecl("JNI_OnLoad")
 public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
-    stateui_app_register()
+    MainActor.assumeIsolated { stateui_app_register() }
     return StateUIAndroid.load(machine)
 }
 ```
@@ -75,8 +77,8 @@ application's manifest reads it, declares its `Platforms/Android/Swift` head
 and the library it makes, and defines the `ANDROID` compilation condition for
 every module of the application; `lib/StateUI.Head` brings the
 `StateUIAndroid` host to the head. Swift written for this host alone stands
-under `#if ANDROID`. `build-swift.sh` sets nothing else: the library itself is
-built as every host builds it.
+under `#if ANDROID`. The scripts set it as they call `build-swift.sh`, and
+nothing else: the library itself is built as every host builds it.
 
 A new application made in `apps/` - **StateUI: New Application in apps/**, or
 `.scripts/new-app.sh` - has an Android head, as HelloWorld does, and runs and
@@ -224,10 +226,10 @@ the head needs and nothing else - the Swift runtime's own among them -
 stripped, with the unstripped copies kept in `.build/android/symbols/` for
 `ndk-stack` and a debugger. Android draws no SVG, so the application's
 `Resources/Images` are drawn for it as the APK is built: an SVG three times
-over, as a PNG, which `Image("mark.png")` finds as it finds the SVG on every
-other host. An application's `print` reaches logcat under the
-tag `StateUI`, and so does what `STATEUI_TALLY=1` and `STATEUI_INSPECT=1`
-write: `run-app.sh` hands every `STATEUI_` variable of the shell that runs it
+over, as a PNG, which `Image("mark.png")` finds as it does on UIKit, and as
+it finds the SVG on the hosts that draw one. An application's `print`
+reaches logcat under the tag `StateUI`, and so does what `STATEUI_TALLY=1`
+and `STATEUI_INSPECT=1` write: `run-app.sh` hands every `STATEUI_` variable of the shell that runs it
 to the application's environment. A head's manifest asks for
 `ACCESS_NETWORK_STATE`, which the host needs to report the network to the
 application's views.
@@ -264,9 +266,9 @@ before it is attached to. Android's runtime raises SIGSEGV and SIGBUS on purpose
 and the debugger passes them to it rather than stopping. Nor does the debugger
 follow the code the runtime's JIT compiles: the runtime announces each method
 it compiles, and a debugger that reads each announcement stops the whole
-application every time - over USB, opening a page took seconds. End a session by
-detaching - stopping the debugger itself leaves its breakpoints in the
-application, which the next of them then ends.
+application every time, which over USB holds the UI thread for seconds. End a
+session by detaching - stopping the debugger itself leaves its breakpoints in
+the application, which the next of them then ends.
 
 ## Deploying
 

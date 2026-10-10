@@ -4,7 +4,7 @@
 /// What a window declaration makes, as a scene's tree reads it: the page each of its windows shows - a view of
 /// `kind` - what opens one, what restores one, and how they stand.
 struct DeclaredWindows {
-    /// The kind a window is opened by; nil for the group launch and *File ▸ New* make a window of.
+    /// The kind a window is opened by; nil for the group launch and *File ▸ New Window* make a window of.
     let type: WindowType?
 
     /// The type of value one window stands for; nil for a declaration of windows of no value.

@@ -14,10 +14,17 @@ extension TextLook {
     /// What stands behind the words as GTK draws it: a brush's first colour; nil for nothing.
     var rgbaBackground: GdkRGBA? { GTKBrush(background).firstColor }
 
-    /// Puts the look on the words from byte `start` to byte `end` of `list`.
+    /// Puts the look on the words from byte `start` to byte `end` of `list`. A size stands in typographic points,
+    /// which the desktop's text scale applies to, where the words scale, and in pixels where not - the desktop's own
+    /// size where the look gives none and does not scale.
+    @MainActor
     func insert(into list: OpaquePointer, from start: UInt32 = 0, to end: UInt32 = UInt32.max) {
         var made: [UnsafeMutablePointer<PangoAttribute>] = []
-        if let size, size > 0 { made.append(pango_attr_size_new_absolute(Int32((size * Double(PANGO_SCALE)).rounded()))) }
+        if let size = size ?? (scales ? nil : GTKEnvironment.fontSize), size > 0 {
+            made.append(scales
+                ? pango_attr_size_new(Int32((Self.typographic(size) * Double(PANGO_SCALE)).rounded()))
+                : pango_attr_size_new_absolute(Int32((size * Double(PANGO_SCALE)).rounded())))
+        }
         if attributes.contains(.bold) || attributesGiven {
             made.append(pango_attr_weight_new(attributes.contains(.bold) ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL))
         }
@@ -45,6 +52,12 @@ extension TextLook {
             attribute.pointee.end_index = end
             pango_attr_list_insert(list, attribute)
         }
+    }
+
+    /// A size in StateUI's points - pixels at 96 dots an inch - in the typographic points a desktop's text scale
+    /// applies to.
+    static func typographic(_ size: Double) -> Double {
+        size * 72 / 96
     }
 
     /// A colour's channels as Pango takes them, each 0 to 65535.

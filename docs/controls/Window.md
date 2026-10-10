@@ -48,8 +48,8 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 4 ✓ · 8 –</td><td><code>UIWindow</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 4 ✓ · 12 –</td><td><code>Activity</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>21 ✅ · 1 ☑️</td><td><code>Window</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>8 ✅ · 7 ✓ · 7 –</td><td><code>GtkApplicationWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 4 ✓ · 14 –</td><td>browser <code>window</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>8 ✅ · 7 ✓ · 7 –</td><td><code>AdwApplicationWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 4 ✓ · 14 –</td><td>fixed <code>&lt;div&gt;</code> over the browser window</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/WindowContract.swift`.

@@ -64,7 +64,7 @@
 
     /// Shows `page` in a window of its own on the host, its display frames at `clock`'s time where one is given.
     public func start(
-        clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @Sendable () -> any View
+        clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) {
         tree = driver.start(clock: clock, reducesMotion: reducesMotion, page)
     }
@@ -88,7 +88,7 @@
 
     /// Runs `application` on the host, its display frames at `clock`'s time where one is given. The case's first
     /// start is the application's first launch, and finds nothing kept; a start after it is the next launch.
-    public func start(clock: TestClock? = nil, application: @escaping @Sendable () -> any Application) throws {
+    public func start(clock: TestClock? = nil, application: @escaping @MainActor () -> any Application) throws {
         if tree == nil { driver.forgetWhatIsKept() }
         tree = try driver.start(clock: clock, application: application)
     }

@@ -7,6 +7,7 @@
 ///
 /// A view reads the nearest: the scene and the window it stands in, or a fake one branch was given with
 /// `.environment(...)`.
+@MainActor
 public struct EnvironmentValues {
     /// Made by no one: a name is read through `@Environment`.
     private init() {}

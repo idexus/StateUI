@@ -50,6 +50,9 @@ enum WebRelay {
         return number
     }
 
+    /// How many listeners the page can call now: what a test counts to see nothing outlived its view.
+    static var listenerCount: Int { listeners.count }
+
     /// Lets go of the listener `number`.
     static func forget(_ number: Int32) {
         listeners[number] = nil
@@ -213,6 +216,12 @@ enum WebRelay {
         stateui_web_listen_history(listener)
     }
 
+    /// The history no longer calls `listener`, and it is let go of.
+    static func stopListeningToHistory(_ listener: Int32) {
+        stateui_web_unlisten_history(listener)
+        forget(listener)
+    }
+
     /// Calls the act `name` of the application's scripts with `words`; `listener` hears its promise settle.
     static func callScript(_ name: String, _ words: String, _ listener: Int32) {
         utf8(name) { name, length in utf8(words) { stateui_web_call_script(name, length, $0, $1, listener) } }
@@ -371,6 +380,9 @@ enum WebRelay {
         utf8(title) { stateui_web_set_title($0, $1) }
     }
 
+    /// The site's name the page's head gives, its `application-name`; "" where it gives none.
+    static var siteName: String { copyRead(length: stateui_web_site_name()) }
+
     static func requestFrame() {
         stateui_web_request_frame()
     }
@@ -411,7 +423,7 @@ enum WebRelay {
     /// The local time zone's name.
     static var localZone: String { copyRead(length: stateui_web_local_zone()) }
 
-    /// How far `zone` - the local one where nil - is from UTC at noon on `day` - today where nil - in minutes; nil
+    /// How far `zone` - the local one where nil - is from UTC at noon on `day` - now where nil - in minutes; nil
     /// for a zone the browser does not know.
     static func utcOffset(of zone: String?, on day: CalendarDate?) -> Int? {
         let minutes = utf8(zone ?? "") {

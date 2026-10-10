@@ -16,12 +16,12 @@ rectangle, a rectangle with rounded corners, or an ellipse, each GSK's
 rounded rectangle. A stroke is drawn in one colour: a gradient's first stop.
 
 A layout that clips cuts what it holds to its outline as it draws it, and
-takes `overflow: hidden`, so a child cut away also takes no click. A layout
+its widget's overflow is hidden (`gtk_widget_set_overflow`), so a child cut
+away also takes no click. A layout
 that does not clip cuts nothing.
 
 A colour box is a panel of one colour, its corners rounded each by its own
 radius; it takes the room its layout gives it and asks for none.
-
 
 ## A view's background
 
@@ -31,6 +31,7 @@ which GTK paints under whatever the widget draws - a field's box is its
 field, as GNOME's applications show one. A brush gives its first colour; a
 layout paints its box with the whole brush. A switch takes none: GTK paints
 its box as the track, so a colour there would recolour the track.
+
 ## A widget's own box
 
 GTK sizes and draws a widget's own box - the room between its edge and its
@@ -40,7 +41,7 @@ it says - `stateui-padding-24-8-12-4`, a header bar's colours
 `stateui-bar-b512BD4FF-fFFFFFFFF` - which a widget wears to take it and takes
 off to give it up. The sheet stands above the theme, so its rule wins over
 the theme's own for the same widget. A rule is written the first time its value is
-asked for and stays, the sheet written again in the rules' order; a value
+asked for and stays, the sheet written again sorted by class name; a value
 that moves every frame has its own road, never a rule a frame.
 
 ## The application's pictures
@@ -67,10 +68,11 @@ path, a polygon and a polyline draw a geometry of their own - a path's data
 read by the core's parser, its arcs as curves - placed in the room by the host
 layer's rule ([a shape's own geometry](../../host/layout.md#a-shapes-own-geometry))
 from the bounds GSK measures. The fill and the outline are the shape's
-brushes painted through the path - a gradient runs across the shape it fills;
-dashes, gaps and their offset are outline widths in StateUI and lengths in
-GSK, so they are multiplied by the width. A shape has no size of its own: it
-takes the room its layout gives it.
+brushes painted through the path - a gradient runs across the shape's room,
+widened by the outline's width on every side; dashes, gaps and their offset
+are outline widths in StateUI and lengths in GSK, so they are multiplied by
+the width. A shape has no size of its own: it takes the room its layout gives
+it.
 
 ## A canvas
 
@@ -84,7 +86,9 @@ rectangles - and words are a Pango layout of the pen's size, placed across and
 down their room and cut to it. A press, its drag and its release reach the
 application through GTK's drag gesture, each where it is in the canvas.
 
-The shapes take their transform the same way, drawn under it on the snapshot.
+A rectangle and an ellipse take their transform the same way, drawn under it
+on the snapshot; a line, a path, a polygon and a polyline are placed with it
+by the host layer's rule (`ShapeArithmetic.placement`).
 
 ## A placed child
 

@@ -28,17 +28,15 @@ final class AndroidModals {
     }
 
 
-    /// Presents the modal stack's pages: the ones shown and still described stay, the rest leave from the top,
-    /// and each new one rises over the one before; the page in front is the one that shows. Whether one rose.
+    /// Presents the modal stack's pages by the host layer's rule (`SheetChange`): the ones shown and still described
+    /// stay, the rest leave from the top, and each new one rises over the one before; the page in front is the one
+    /// that shows. Whether one rose.
     @discardableResult
     func present(_ target: [MountedElement]) -> Bool {
-        var common = 0
-        while common < shown.count, common < target.count, shown[common].element === target[common] {
-            common += 1
-        }
-        while shown.count > common { dismissTop() }
+        let change = SheetChange(from: shown, to: target) { $0.element === $1 }
+        for _ in change.leaving { dismissTop() }
 
-        for element in target[common...] {
+        for element in change.coming {
             guard let view = element.android.view else { continue }
             view.forgetPlace()
             let holder = Java.frame {
@@ -52,7 +50,7 @@ final class AndroidModals {
                 .long(duration))
             shown.append(Shown(element: element, holder: holder))
         }
-        return shown.count > common
+        return shown.count > change.kept
     }
 
     /// Takes the page in front down, and the one under it shows again.

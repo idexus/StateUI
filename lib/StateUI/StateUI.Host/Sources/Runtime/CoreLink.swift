@@ -5,9 +5,9 @@
 
 /// A runtime's one line to the running StateUI core; nothing else in a runtime calls it.
 /// Design: docs/design/host/runtime.md#core-link
-@_spi(Host) public struct CoreLink: Sendable {
+@_spi(Host) @MainActor public struct CoreLink {
     /// The line to the core running in this process.
-    public init() {}
+    public nonisolated init() {}
 
     // MARK: - Rendering
 
@@ -32,7 +32,6 @@
 
     /// Tells the inspector what applying the message of `generation` cost: every scene's part by its key, then the
     /// whole.
-    @MainActor
     func inspected(_ tally: RenderTally, generation: Int32) {
         var scenes: [String: Double] = [:]
         for (scene, spent) in tally.scenes {
@@ -47,9 +46,6 @@
 
     /// Whether any state or engine waits for a display cycle.
     public var cyclesPending: Bool { HostBoundary.cyclesPending }
-
-    /// The last display cycle as one line.
-    public var cycleTrace: String { HostBoundary.cycleTrace }
 
     /// What this process's renders came to - the tally a runtime prints to count leaks.
     public var tally: HostTally { HostBoundary.tally }
@@ -105,16 +101,23 @@
         HostBoundary.dispatch(handler, payload: payload)
     }
 
+    /// Claims the calling thread as the UI thread, whose jobs are `MainActor`'s - the host's start, before anything.
+    public nonisolated func claimUIThread() { HostBoundary.claimUIThread() }
+
     /// Runs the jobs waiting on StateUI's UI executor.
     @discardableResult
     public func runJobs() -> Int { HostBoundary.runJobs() }
 
+    /// Says how a turn is put on the UI thread's queue from any thread - for work the UI thread makes, and for a
+    /// job queued from any thread. A host whose loop turns by itself says nothing; nil posts no more.
+    public func postTurns(with post: (@Sendable () -> Void)?) { HostBoundary.postTurns(with: post) }
+
+    /// Whether a turn has anything to do.
+    public var wantsTurn: Bool { HostBoundary.wantsTurn }
+
     #if os(WASI)
     /// When the page is to call again, in milliseconds; nil with nothing to come.
     public var nextWake: Double? { HostBoundary.nextWake }
-    #else
-    /// Parks the doorbell's thread until work arrives.
-    public func waitForWork() -> Int { HostBoundary.waitForWork() }
     #endif
 
     /// Takes the act calls queued since the previous pump.
@@ -132,12 +135,11 @@
         HostBoundary.fail(completion, reason: reason)
     }
 
-    /// Raises an application event no control raises; answers how many heard it. Any thread.
-    @discardableResult
-    public func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
+    /// Raises an application event no control raises, from any thread; its subscriptions hear it on the UI thread.
+    public nonisolated func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
-    ) -> Int {
+    ) {
         HostBoundary.raise(event, repeat each value)
     }
 
@@ -152,7 +154,7 @@
     // MARK: - The application, its scenes and its kept values
 
     /// Reports the theme the system asks for; themed values resolve against the theme in force (`HostThemes`).
-    @MainActor public func setColorScheme(_ theme: ColorScheme) {
+    public func setColorScheme(_ theme: ColorScheme) {
         HostBoundary.setColorScheme(HostThemes.report(system: theme))
     }
 
@@ -160,7 +162,7 @@
     public func setAccentColor(_ color: Color) { HostBoundary.setAccentColor(color) }
 
     /// Takes the theme the application holds; themed values resolve against the theme in force.
-    @MainActor public func holdColorScheme(_ theme: ColorScheme) {
+    public func holdColorScheme(_ theme: ColorScheme) {
         HostBoundary.setColorScheme(HostThemes.hold(theme))
     }
 
@@ -174,6 +176,9 @@
     public func setApplicationInfo(_ info: HostApplicationInfo) {
         HostBoundary.setApplicationInfo(info)
     }
+
+    /// The application's name, as the host reported it.
+    public var applicationName: String { HostBoundary.applicationName }
 
     /// Reports the battery.
     public func setBatteryInfo(_ info: HostBatteryInfo) { HostBoundary.setBatteryInfo(info) }

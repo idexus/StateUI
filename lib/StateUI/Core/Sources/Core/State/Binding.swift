@@ -24,24 +24,37 @@
 /// `@Binding var basket: Basket`, with `basket.$note` the note's own state.
 @propertyWrapper
 @dynamicMemberLookup
+@MainActor
 public struct Binding<Value> {
     // Two closures: reading and writing is all a binding asks of what it borrows.
     private let read: () -> Value
     private let write: (Value) -> Void
 
+    /// Whether what this borrows still stands - false for an element a list no longer has.
+    /// Design: docs/design/core/state.md#bindings
+    let reaches: () -> Bool
+
     // Who this borrows from - the storage and which part of it - so two spellings
-    // of one state recognize each other. Only `described` reads it.
+    // of one state recognize each other: `described` finds the storage by it, a
+    // view's inputs compare by it (`lends`), and a post waits under its part.
     // Design: docs/design/core/state.md#bindings
     let lender: AnyObject?
-    let lent: AnyHashable?
+    nonisolated let lent: StatePart?
+
+    /// Where a post to this waits for its job - the borrowed state's, shared by every
+    /// binding to it.
+    /// Design: docs/design/core/state.md#posting
+    nonisolated let mailroom: Mailroom
 
     /// A binding to state somebody else owns. `$counter` is the ordinary way to
     /// get one.
     public init(_ state: State<Value>) {
         read = { state.get() }
         write = { state.wrappedValue = $0 }
+        reaches = { true }
         lender = state.lender
         lent = nil
+        mailroom = state.storage.mailroom
     }
 
     /// A binding over a storage no box holds - a conversion's derived side: a read
@@ -64,24 +77,32 @@ public struct Binding<Value> {
             return storage.value
         }
         write = {
+            guard storage.admitsWrite() else { return }
+
             storage.write($0)
             storage.askForRender()
         }
+        reaches = { true }
         lender = storage
         lent = nil
+        mailroom = storage.mailroom
     }
 
     /// The one the property subscripts use, with who the value came from.
     init(
         read: @escaping () -> Value,
         write: @escaping (Value) -> Void,
+        reaches: @escaping () -> Bool,
         lender: AnyObject?,
-        lent: AnyHashable?
+        lent: StatePart?,
+        mailroom: Mailroom
     ) {
         self.read = read
         self.write = write
+        self.reaches = reaches
         self.lender = lender
         self.lent = lent
+        self.mailroom = mailroom
     }
 
     /// A binding to something this library does not own: read it with `get`, write
@@ -94,8 +115,10 @@ public struct Binding<Value> {
     public init(get: @escaping () -> Value, set: @escaping (Value) -> Void) {
         read = get
         write = set
+        reaches = { true }
         lender = nil
         lent = nil
+        mailroom = Mailroom()
     }
 
     /// The value this borrows. Writing goes straight to the owner, and asks
@@ -104,7 +127,14 @@ public struct Binding<Value> {
         get { read() }
 
         // Nonmutating: what changes is what the owner holds.
-        nonmutating set { write(newValue) }
+        nonmutating set {
+            guard reaches() else {
+                return complain("A write through a binding to an element its collection no longer has - the list "
+                    + "shrank under it - was dropped. Hand the element's identity rather than its index.")
+            }
+
+            write(newValue)
+        }
     }
 
     /// So a borrowed value can be lent on again, unchanged.
@@ -127,7 +157,7 @@ public struct Binding<Value> {
     /// For a value: the whole is read, the property written, and the whole put back.
     /// A model takes the subscript below.
     public subscript<Subject>(
-        dynamicMember keyPath: WritableKeyPath<Value, Subject>
+        dynamicMember keyPath: WritableKeyPath<Value, Subject> & Sendable
     ) -> Binding<Subject> {
         Binding<Subject>(
             read: { wrappedValue[keyPath: keyPath] },
@@ -136,8 +166,10 @@ public struct Binding<Value> {
                 whole[keyPath: keyPath] = newValue
                 wrappedValue = whole
             },
+            reaches: reaches,
             lender: lender,
-            lent: keyPath)
+            lent: .step(keyPath, from: lent),
+            mailroom: mailroom)
     }
 
     /// A binding to one property of a model, through the model - `$basket.note`.
@@ -148,17 +180,19 @@ public struct Binding<Value> {
     /// of the state holding the model; the property's own state is `basket.$note`,
     /// which is what a control the host carries is handed.
     public subscript<Subject>(
-        dynamicMember keyPath: ReferenceWritableKeyPath<Value, Subject>
+        dynamicMember keyPath: ReferenceWritableKeyPath<Value, Subject> & Sendable
     ) -> Binding<Subject> {
         Binding<Subject>(
             read: { wrappedValue[keyPath: keyPath] },
             write: { wrappedValue[keyPath: keyPath] = $0 },
+            reaches: reaches,
             lender: lender,
-            lent: keyPath)
+            lent: .step(keyPath, from: lent),
+            mailroom: mailroom)
     }
 }
 
-extension Binding where Value: MutableCollection, Value.Index: Hashable {
+extension Binding where Value: MutableCollection, Value.Index: Hashable & Sendable {
     /// A binding to one element of what this borrows - `$hops[2]`.
     ///
     ///     ForEach(Array(hops.enumerated()), id: \.offset) { hop in
@@ -178,8 +212,10 @@ extension Binding where Value: MutableCollection, Value.Index: Hashable {
                 whole[index] = newValue
                 wrappedValue = whole
             },
+            reaches: { [reaches] in reaches() && wrappedValue.indices.contains(index) },
             lender: lender,
-            lent: index)
+            lent: .step(index, from: lent),
+            mailroom: mailroom)
     }
 }
 
@@ -197,7 +233,7 @@ extension Binding {
 
     /// The storage an engine follows - the borrowed state's own; nothing for a part
     /// of a state or a binding made from closures.
-    public var followed: (any FollowedState)? { described }
+    var followed: (any FollowedState)? { described }
 
 }
 
@@ -205,7 +241,7 @@ extension Binding where Value: StateValue {
     /// The image the host carries the borrowed state on, made the first time anything
     /// asks and kept for good - what every driven modifier and feed takes from
     /// `$state`. Nothing for a part of a state or a binding made from closures.
-    public var image: HostStorage? { described?.carry() }
+    var image: HostStorage? { described?.carry() }
 }
 
 extension Binding where Value: StateValue {
@@ -241,10 +277,6 @@ extension Binding {
 }
 
 extension Binding: BorrowedState {
-    var lends: (lender: AnyObject?, lent: AnyHashable?) { (lender, lent) }
+    var lends: (lender: AnyObject?, lent: AnyHashable?) { (lender, lent.map { AnyHashable($0) }) }
 }
 
-/// `@unchecked Sendable` for the reason `State` is: a handler's `async let` child
-/// writes through a binding from the pool.
-/// Design: docs/design/core/state.md#sendable-promises
-extension Binding: @unchecked Sendable {}

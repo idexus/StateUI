@@ -33,6 +33,9 @@ public enum Java {
         return body()
     }
 
+    /// How many Java exceptions a checked call raised and the host cleared (`check`), in this process.
+    private(set) static var exceptionsCleared = 0
+
     /// Says and clears a pending Java exception: one left pending aborts the next call.
     /// Design: docs/design/platforms/android/jni.md#exceptions
     static func check(_ call: @autoclosure () -> String) {
@@ -40,6 +43,7 @@ public enum Java {
 
         jni.ExceptionDescribe(env)
         jni.ExceptionClear(env)
+        exceptionsCleared += 1
         AndroidRenderer.log.error("a Java exception in \(call())")
     }
 

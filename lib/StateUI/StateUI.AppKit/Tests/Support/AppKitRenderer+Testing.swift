@@ -74,18 +74,21 @@ extension AppKitRenderer {
     var animatingForTesting: Bool { runtime.animator.isMoving }
 
     func applyStateForTesting(_ state: Int32, value: HostStateValue) {
-        present(states: [state: value], properties: [:])
+        applyStatesForTesting([state: value])
     }
 
+    /// Presents the values as a frame's walk does: in the tree, then the chrome where it moved.
     func applyStatesForTesting(_ valuesByState: [Int32: HostStateValue]) {
         guard !valuesByState.isEmpty else { return }
-        present(states: valuesByState, properties: [:])
+        presentFrame(movedChrome: runtime.tree.present(states: valuesByState, properties: [:]).windowChrome)
     }
 
     func closeForTesting() {
         roster.update(root: nil, make: { _ in fatalError("no window comes while closing") }, close: { $0.closeFromTree() })
         runtime.tree.root?.leave()
         frameClock.stop()
+        turns?.stop()
+        turns = nil
     }
 }
 #endif

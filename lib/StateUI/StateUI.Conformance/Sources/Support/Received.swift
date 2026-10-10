@@ -4,7 +4,8 @@
 import StateUI
 
 /// What a handler heard, in order.
-public final class Received<Value>: Sendable {
+@MainActor
+public final class Received<Value> {
     private let received = State(wrappedValue: [Value]())
 
     /// Nothing heard yet.
