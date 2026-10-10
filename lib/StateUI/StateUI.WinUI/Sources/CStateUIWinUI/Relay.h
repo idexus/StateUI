@@ -88,15 +88,16 @@ namespace stateui {
     /// empty for none.
     std::wstring pictureFile(char const *names);
 
-    /// A source drawing the application's picture `file` - a bitmap, or an SVG - at its own proportions.
+    /// A source reading the application's picture `file` - a bitmap, or an SVG - from its address, at its own
+    /// proportions.
     xaml::Media::ImageSource pictureSource(std::wstring const &file);
 
-    /// An icon showing the first of the files `names` lists that the pictures hold, keeping that file for a test to
-    /// read (`iconFile`); null for none.
+    /// An icon showing the first of the files `names` lists that the pictures hold, read from its address, which
+    /// says the file again (`iconFile`); null for none.
     controls::ImageIcon pictureIcon(char const *names);
 
     /// An image showing that picture at its own size - an SVG at the size it declares, which WinUI takes for
-    /// thousands of pixels - keeping its file as its tag; null for none.
+    /// thousands of pixels - read from its address; null for none.
     controls::Image pictureImage(char const *names);
 
     /// An icon source showing the first of the files `names` lists that the pictures hold, read from its address,
@@ -105,6 +106,9 @@ namespace stateui {
 
     /// The file an icon source `pictureIconSource` made shows; empty for any other, and for none.
     std::wstring sourceFile(controls::IconSource const &icon);
+
+    /// The file `source` reads by its address; empty for one read from memory.
+    std::wstring sourceFile(xaml::Media::ImageSource const &source);
 
     /// The file an icon `pictureIcon` made shows; empty for any other icon, and for none.
     std::wstring iconFile(controls::IconElement const &icon);

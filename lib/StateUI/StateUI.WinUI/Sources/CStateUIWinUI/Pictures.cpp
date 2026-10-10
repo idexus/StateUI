@@ -158,7 +158,7 @@ std::wstring stateui::pictureFile(char const *names) {
 xaml::Media::ImageSource stateui::pictureSource(std::wstring const &file) {
     auto path = pictures() + file;
     auto dot = file.find_last_of(L'.');
-    if (dot != std::wstring::npos && file.substr(dot) == L".svg") return drawing(contents(path));
+    if (dot != std::wstring::npos && file.substr(dot) == L".svg") return imaging::SvgImageSource(address(path));
     return imaging::BitmapImage(address(path));
 }
 
@@ -167,7 +167,6 @@ controls::ImageIcon stateui::pictureIcon(char const *names) {
     if (file.empty()) return nullptr;
     controls::ImageIcon icon;
     icon.Source(pictureSource(file));
-    icon.Tag(winrt::box_value(winrt::hstring(file)));
     return icon;
 }
 
@@ -175,19 +174,15 @@ controls::Image stateui::pictureImage(char const *names) {
     auto file = pictureFile(names);
     if (file.empty()) return nullptr;
     controls::Image image;
-    image.Tag(winrt::box_value(winrt::hstring(file)));
     auto path = pictures() + file;
     auto dot = file.find_last_of(L'.');
-    if (dot == std::wstring::npos || file.substr(dot) != L".svg") {
-        image.Source(imaging::BitmapImage(address(path)));
-        return image;
+    if (dot != std::wstring::npos && file.substr(dot) == L".svg") {
+        if (auto own = declared(contents(path)); own.Width > 0) {
+            image.Width(own.Width);
+            image.Height(own.Height);
+        }
     }
-    auto text = contents(path);
-    if (auto own = declared(text); own.Width > 0) {
-        image.Width(own.Width);
-        image.Height(own.Height);
-    }
-    image.Source(drawing(text));
+    image.Source(pictureSource(file));
     return image;
 }
 
@@ -202,21 +197,24 @@ controls::IconSource stateui::pictureIconSource(char const *names) {
     return icon;
 }
 
-std::wstring stateui::sourceFile(controls::IconSource const &icon) {
-    auto pictured = icon ? icon.try_as<controls::ImageIconSource>() : nullptr;
-    if (!pictured || !pictured.ImageSource()) return {};
+std::wstring stateui::sourceFile(xaml::Media::ImageSource const &source) {
+    if (!source) return {};
     winrt::Windows::Foundation::Uri at{nullptr};
-    if (auto svg = pictured.ImageSource().try_as<imaging::SvgImageSource>()) at = svg.UriSource();
-    else if (auto bitmap = pictured.ImageSource().try_as<imaging::BitmapImage>()) at = bitmap.UriSource();
+    if (auto svg = source.try_as<imaging::SvgImageSource>()) at = svg.UriSource();
+    else if (auto bitmap = source.try_as<imaging::BitmapImage>()) at = bitmap.UriSource();
     if (!at) return {};
     std::wstring path(at.Path());
     return path.substr(path.find_last_of(L'/') + 1);
 }
 
+std::wstring stateui::sourceFile(controls::IconSource const &icon) {
+    auto pictured = icon ? icon.try_as<controls::ImageIconSource>() : nullptr;
+    return pictured ? sourceFile(pictured.ImageSource()) : std::wstring();
+}
+
 std::wstring stateui::iconFile(controls::IconElement const &icon) {
     auto pictured = icon ? icon.try_as<controls::ImageIcon>() : nullptr;
-    if (!pictured || !pictured.Tag()) return {};
-    return std::wstring(winrt::unbox_value_or<winrt::hstring>(pictured.Tag(), L""));
+    return pictured ? sourceFile(pictured.Source()) : std::wstring();
 }
 
 extern "C" void stateui_winui_set_pictures(char const *utf8) {

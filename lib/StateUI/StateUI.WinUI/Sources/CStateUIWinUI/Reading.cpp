@@ -122,7 +122,7 @@ namespace {
             for (auto const &child : both.Children())
                 if (auto found = child.try_as<controls::Viewbox>()) box = found;
         auto picture = box ? box.Child().try_as<controls::Image>() : nullptr;
-        if (what == "icon") return picture ? narrow(winrt::unbox_value_or<winrt::hstring>(picture.Tag(), L"")) : "";
+        if (what == "icon") return picture ? winrt::to_string(sourceFile(picture.Source())) : "";
         if (what == "stretch") return box ? number(static_cast<int32_t>(box.Stretch())) : "";
         if (what == "iconSpacing") return both ? number(both.Spacing()) : "";
         if (what == "iconPosition") {
