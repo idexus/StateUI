@@ -2,7 +2,7 @@
   "name": "stateui",
   "displayName": "StateUI",
   "description": "Build, run and debug StateUI applications on AppKit, UIKit, Android, WinUI, GTK and the Web.",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "publisher": "idexus",
   "license": "Apache-2.0",
   "icon": "icon.png",
