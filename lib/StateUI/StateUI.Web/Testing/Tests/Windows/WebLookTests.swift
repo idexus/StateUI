@@ -70,6 +70,24 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(moving, "", "these move where the user asks for less motion")
     }
 
+    /// The sidebar stands beside the detail from the split view's breakpoint on, and over it below: the stylesheet's
+    /// drawer stops short of the width the host layer's rule shows the sidebar at, and its bar starts there.
+    func testTheDrawerStopsWhereTheSidebarStandsBeside() throws {
+        _ = WebRenderer.running { Text("Wide") }
+        let widths = try WebBrowser.evaluate("""
+            [...document.styleSheets].flatMap(s => { try { return [...s.cssRules]; } catch { return []; } })
+              .filter(r => r.media && /(max|min)-width/.test(r.media.mediaText) && /stateui-split|data-sidebar/.test(r.cssText))
+              .map(r => r.media.mediaText).join(" | ")
+            """, on: 0) ?? ""
+        let breakpoint = WebSplitView.breakpoint
+        let most = widths.matches(of: /max-width: ([0-9.]+)px/).compactMap { Double($0.1) }
+        let least = widths.matches(of: /min-width: ([0-9.]+)px/).compactMap { Double($0.1) }
+
+        XCTAssertFalse(most.isEmpty || least.isEmpty, widths)
+        XCTAssertTrue(most.allSatisfy { $0 < breakpoint && $0 > breakpoint - 1 }, "the drawer reaches the breakpoint: \(widths)")
+        XCTAssertTrue(least.allSatisfy { $0 == breakpoint }, "the sidebar beside starts past it: \(widths)")
+    }
+
     /// One computed style of the first element `selector` finds on the page.
     private func look(_ selector: String, _ property: String) throws -> String? {
         try WebBrowser.evaluate("getComputedStyle(document.querySelector('\(selector)')).\(property)", on: 0)
