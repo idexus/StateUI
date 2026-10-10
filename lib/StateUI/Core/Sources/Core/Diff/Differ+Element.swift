@@ -311,11 +311,11 @@ extension Differ {
         // Design: docs/design/views/styles.md#which-state-a-control-is-in
         let visualInput = node.visualStates.isEmpty ? nil : (rendered?.visualInput ?? VisualInput())
         var visualState: String?
-        let runs = rendered?.runs ?? RunSlots()
+        var heard: [(index: Int, listener: VisualStateListener)] = []
 
         if let visualInput {
-            visualState = resolveVisualStates(
-                &node, input: visualInput, previous: rendered?.visualState, runs: runs, reads: &reads)
+            (visualState, heard) = resolveVisualStates(
+                &node, input: visualInput, previous: rendered?.visualState, reads: &reads)
 
             if placeholder == nil {
                 placeholder = authored
@@ -356,7 +356,15 @@ extension Differ {
         let previous = replace ? nil : rendered
 
         // The runs of what this element's walks find, kept while it is the same element.
-        let kept = replace ? RunSlots() : runs
+        let kept = replace ? RunSlots() : rendered?.runs ?? RunSlots()
+
+        // A state entered is heard after this render; an element made again arrives in its state, unheard.
+        if !replace, let state = visualState {
+            for (index, listener) in heard {
+                fired.append(Fired(
+                    run: { try await listener.run(state) }, gate: listener.gate, owner: kept.owner("state \(index)")))
+            }
+        }
 
         if replace, let rendered = rendered {
             forget(rendered)

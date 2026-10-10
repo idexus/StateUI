@@ -202,6 +202,27 @@ final class VisualStateTests: XCTestCase {
         XCTAssertEqual(heard, ["Pressed", "Normal"])
     }
 
+    /// An element made again - another kind of control under the same identity - arrives in its state, so a
+    /// listener hears nothing of it, even where the state is not the one the element before stood in.
+    func testAnElementMadeAgainArrivesInItsStateUnheard() throws {
+        let renders = Renders()
+        var heard: [String] = []
+        _ = try XCTUnwrap(render(renders, Button("Save")
+            .visualState(.disabled) { $0.opacity(0.5) }
+            .onVisualStateChanged { heard.append($0.name) }
+            .id("c")
+            .node))
+
+        let made = try XCTUnwrap(render(renders, Text("Save")
+            .isEnabled(false)
+            .visualState(.disabled) { $0.opacity(0.5) }
+            .onVisualStateChanged { heard.append($0.name) }
+            .id("c")
+            .node))
+        XCTAssertTrue(made.replace, "another kind of control is made again")
+        XCTAssertEqual(heard, [], "heard the state the element arrives in")
+    }
+
     /// Naming states declares them without changing the look, and only they are heard - as the typed state.
     func testAListenerDeclaresTheStatesItNamesAndHearsOnlyThem() throws {
         let node = Button("Save").onVisualStateChanged(.pressed) { _ in }.node
