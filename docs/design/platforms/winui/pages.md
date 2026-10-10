@@ -189,6 +189,13 @@ once signed in - would stand over every sheet presented after it, the veil
 and the card under the page; it shows rarely, only where a sheet comes
 before the arrangement.
 
+Which sheets stay, leave and come is the host layer's rule
+([sheets](../../host/pages.md#sheets)), a sheet standing as asked where its
+page is the same; the relay pushes a sheet over those before it - the sheet
+taking the keyboard at its first place that does - and pops the top one.
+Every presentation writes each kept sheet's title and page again, as the card
+shows the page's title itself.
+
 What the user sees is the top sheet, else the window's arrangement: when that
 changes, the page that stops showing hears it and then the one that starts,
 as a move. Escape takes the top sheet away, and so does the window's way back

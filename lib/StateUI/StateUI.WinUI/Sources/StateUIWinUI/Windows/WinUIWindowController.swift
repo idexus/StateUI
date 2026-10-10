@@ -47,17 +47,25 @@ final class WinUIWindowController {
         if let hidden = changes.hidden { window.setHidden(hidden) }
     }
 
-    /// Keeps a sheet for each page shown as one, in its order, each under its page's title.
+    /// Keeps a sheet for each page presented, in its order, by the host layer's rule (`SheetChange`): a sheet gone
+    /// leaves, the top first, and one new comes over those before it - each under its page's title, written again on
+    /// every presentation.
     /// Design: docs/design/platforms/winui/pages.md#the-modal-stack
     private func showSheets(_ pages: [MountedElement]) {
-        guard !pages.isEmpty || !sheets.isEmpty else { return }
-
-        sheets = pages.map { page in
-            let sheet = sheets.first { $0.element === page }?.sheet ?? WinUISheetView()
-            sheet.show(title: page.visiblePage?.value(.title)?.string ?? "", page: page.winUI.view)
-            return (page, sheet)
+        let change = SheetChange(from: sheets, to: pages) { $0.element === $1 }
+        for _ in change.leaving { window.popSheet() }
+        sheets.removeLast(sheets.count - change.kept)
+        for (page, sheet) in sheets { show(page, on: sheet) }
+        for page in change.coming {
+            let sheet = WinUISheetView()
+            show(page, on: sheet)
+            window.pushSheet(sheet)
+            sheets.append((page, sheet))
         }
-        window.showSheets(sheets.map(\.sheet))
+    }
+
+    private func show(_ page: MountedElement, on sheet: WinUISheetView) {
+        sheet.show(title: page.visiblePage?.value(.title)?.string ?? "", page: page.winUI.view)
     }
 
     /// The user took the top sheet away - Escape, its dismissing: the window is told how many remain.

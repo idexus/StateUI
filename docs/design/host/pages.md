@@ -111,11 +111,6 @@ along, so the stack's last page is always the one on top. A host says only
 whether a sheet shown stands as asked - the same page, and on GTK and the Web
 the same native page - and presents and dismisses as its toolkit does.
 
-WinUI is the exception: it keeps each page's sheet wherever the page stands
-in the stack and hands the whole stack to its relay
-(`stateui_winui_window_set_sheets`), which keeps the sheets that stand as
-asked from the bottom and lays the rest over them.
-
 ## Slots
 
 A title view is a slot. What stands in it is the first element under the

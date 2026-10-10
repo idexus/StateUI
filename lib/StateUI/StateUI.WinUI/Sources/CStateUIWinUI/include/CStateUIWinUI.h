@@ -489,11 +489,13 @@ void stateui_winui_set_tint(StateUIObjectRef control, uint32_t argb, bool tinted
 /// the control.
 int32_t stateui_winui_themes_read_again(void);
 
-/// A sheet: a card over a veil across its window, holding a presented page under its title; a window's sheets, the
-/// last on top. Escape takes the top one away, chosen on the window's chrome as -3.
+/// A sheet: a card over a veil across its window, holding a presented page under its title; a window's sheets, a
+/// sheet pushed over those before it and taking the keyboard, the top one popped. Escape takes the top one away,
+/// chosen on the window's chrome as -3.
 StateUIObjectRef stateui_winui_sheet_make(void);
 void stateui_winui_sheet_set(StateUIObjectRef sheet, char const *title, StateUIObjectRef page);
-void stateui_winui_window_set_sheets(StateUIObjectRef window, StateUIObjectRef const *sheets, int32_t count);
+void stateui_winui_window_push_sheet(StateUIObjectRef window, StateUIObjectRef sheet);
+void stateui_winui_window_pop_sheet(StateUIObjectRef window);
 
 /// Lays `overlays` over the window's page and its sheets, where the page stands, the first lowest; a click beside
 /// what they hold goes on to them. None takes the layer away.

@@ -174,11 +174,15 @@ final class WinUIWindow {
             handle, titleBar.handle, menuBarStands ? menuBar.handle : nil, tabsStandInWindow ? tabRow.handle : nil)
     }
 
-    /// Shows `sheets` over everything the window shows, the last on top.
+    /// Shows `sheet` over everything the window shows, its sheets before included; it takes the keyboard.
     /// Design: docs/design/platforms/winui/pages.md#the-modal-stack
-    func showSheets(_ sheets: [WinUISheetView]) {
-        let handles: [StateUIObjectRef?] = sheets.map(\.handle)
-        stateui_winui_window_set_sheets(handle, handles, Int32(handles.count))
+    func pushSheet(_ sheet: WinUISheetView) {
+        stateui_winui_window_push_sheet(handle, sheet.handle)
+    }
+
+    /// Takes the top sheet away.
+    func popSheet() {
+        stateui_winui_window_pop_sheet(handle)
     }
 
     /// Lays `views` over the page and its sheets, where the page stands, the first lowest - a click beside what they

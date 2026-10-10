@@ -103,28 +103,29 @@ extern "C" void stateui_winui_sheet_set(StateUIObjectRef handle, char const *tit
     }
 }
 
-extern "C" void stateui_winui_window_set_sheets(StateUIObjectRef handle, StateUIObjectRef const *sheets, int32_t count) {
+extern "C" void stateui_winui_window_push_sheet(StateUIObjectRef handle, StateUIObjectRef sheet) {
     try {
-        auto window = borrow<xaml::Window>(handle);
-        auto held = layer(window, count > 0);
-        if (!held) return;
-        std::vector<xaml::UIElement> shown;
-        for (int32_t index = 0; index < count; ++index) shown.push_back(as<xaml::UIElement>(sheets[index]));
-        auto children = held.Children();
-        // Kept where it stands so it does not enter again; gone from the top, added on top.
-        uint32_t kept = 0;
-        while (kept < children.Size() && kept < shown.size() && children.GetAt(kept) == shown[kept]) ++kept;
-        while (children.Size() > kept) children.RemoveAtEnd();
-        for (auto index = kept; index < shown.size(); ++index) children.Append(shown[index]);
-        held.Visibility(count > 0 ? xaml::Visibility::Visible : xaml::Visibility::Collapsed);
-        // The top sheet takes the keyboard: its first place that does.
-        if (count > kept && count > 0) {
-            auto top = shown.back().as<controls::Grid>().Children().GetAt(1);
-            if (auto first = xaml::Input::FocusManager::FindFirstFocusableElement(top))
-                if (auto focusable = first.try_as<xaml::UIElement>()) focusable.Focus(xaml::FocusState::Programmatic);
-        }
+        auto held = layer(borrow<xaml::Window>(handle), true);
+        auto shown = as<xaml::UIElement>(sheet);
+        held.Children().Append(shown);
+        held.Visibility(xaml::Visibility::Visible);
+        // The sheet takes the keyboard: its first place that does.
+        auto card = shown.as<controls::Grid>().Children().GetAt(1);
+        if (auto first = xaml::Input::FocusManager::FindFirstFocusableElement(card))
+            if (auto focusable = first.try_as<xaml::UIElement>()) focusable.Focus(xaml::FocusState::Programmatic);
     } catch (...) {
-        report("presenting sheets");
+        report("presenting a sheet");
+    }
+}
+
+extern "C" void stateui_winui_window_pop_sheet(StateUIObjectRef handle) {
+    try {
+        auto held = layer(borrow<xaml::Window>(handle), false);
+        if (!held || held.Children().Size() == 0) return;
+        held.Children().RemoveAtEnd();
+        if (held.Children().Size() == 0) held.Visibility(xaml::Visibility::Collapsed);
+    } catch (...) {
+        report("taking a sheet away");
     }
 }
 
