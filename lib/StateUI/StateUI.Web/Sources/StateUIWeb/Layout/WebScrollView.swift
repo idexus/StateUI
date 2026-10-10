@@ -25,10 +25,14 @@ final class WebScrollView: WebLayoutView, FramedScroller {
     /// The offset the tree wrote last, whose own scroll event the element is still to raise.
     private var written: Point?
 
+    /// The offset the tree writes, kept for the first layout where it comes before it.
+    private var writtenOffset = WrittenScrollOffset()
+
     init() {
         super.init(arrangement: .single)
         attribute("class", "stateui-scroller")
         listen("scroll") { [weak self] in self?.scrolled() }
+        followSize { [weak self] in self?.laidOut() }
         listen("pointerdown") { [weak self] in self?.movement.holdBegan() }
         listen("pointerup") { [weak self] in self?.movement.holdEnded(rests: false) }
         listen("pointercancel") { [weak self] in self?.movement.holdEnded(rests: false) }
@@ -52,15 +56,26 @@ final class WebScrollView: WebLayoutView, FramedScroller {
         style("grid-template-columns", across ? "minmax(max-content, 1fr)" : "minmax(0, 1fr)")
         style("grid-template-rows", down ? "minmax(max-content, 1fr)" : "minmax(0, 1fr)")
         attribute("data-bars", bars == .never ? "never" : nil)
-        if let offset, offset != self.offset {
-            // The browser stops it at the document's end: where it stopped is read at once; the scroll event it
-            // raises is the program's.
-            let before = WebRelay.scroll(of: node)
-            WebRelay.scroll(node, to: offset)
-            let taken = WebRelay.scroll(of: node)
-            self.offset = taken
-            written = taken == before ? nil : taken
+        if let target = writtenOffset.written(offset, standing: self.offset, orientation: orientation) {
+            move(to: target)
         }
+    }
+
+    /// The browser laid the scroller out: the offset written before, where one waits, is moved to now.
+    private func laidOut() {
+        guard WebRelay.isLaidOut(node), let target = writtenOffset.laidOutNow() else { return }
+        move(to: target)
+    }
+
+    /// Moves the scroller to `target`. The browser stops it at the document's end: where it stopped is read at
+    /// once; the scroll event it raises is the program's.
+    /// Design: docs/design/host/layout.md#an-offset-the-tree-writes
+    private func move(to target: Point) {
+        let before = WebRelay.scroll(of: node)
+        WebRelay.scroll(node, to: target)
+        let taken = WebRelay.scroll(of: node)
+        offset = taken
+        written = taken == before ? nil : taken
     }
 
     /// The element scrolled: the user's movement, unless it is the offset the tree just wrote.

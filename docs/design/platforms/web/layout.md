@@ -105,9 +105,11 @@ anything to scroll to; bars never shown are hidden by the page's style.
 
 The user's movement is the host layer's (`ScrollMovement`): each `scroll` the
 page raises moves it, a pointer down holds it, and the display's frames report
-where it went and that it came to rest. An offset the tree writes scrolls the
-element at once, and the `scroll` the element raises for it is no movement of
-the user's: it is taken where it stands, not reported back. Where it stands
+where it went and that it came to rest. An offset the tree writes moves the
+element as the host layer's rule says (`WrittenScrollOffset`) - at once where
+the browser laid it out or it scrolls neither way, else at its first layout,
+which its size observer tells - and the `scroll` the element raises for it is
+no movement of the user's: it is taken where it stands, not reported back. Where it stands
 is read back once written - the browser stops an offset past the end at the
 end, and its `scroll` says that end, which waiting for the offset written
 heard as the user's; an offset that moved nothing raises no `scroll`, so

@@ -35,7 +35,7 @@ program="$products/StateUIWebTests-test-runner.wasm"
 relay="$checkout/lib/StateUI/StateUI.Web/JavaScript/stateui-web.js"
 conformance="StateUIWebTests.WebConformanceTests"
 # The classes whose tests need a browser's own page: the host's own, and the conformance suite.
-hosts_in_browser="StateUIWebTests.WebDrawnChildrenTests,StateUIWebTests.WebShapeRoomTests,StateUIWebTests.WebKeyboardTests,StateUIWebTests.WebFrameReportTests,StateUIWebTests.WebWindowClosingTests,StateUIWebTests.WebHistoryTests,StateUIWebTests.WebTabTitleTests,StateUIWebTests.WebLeaveTests,StateUIWebTests.WebLookTests"
+hosts_in_browser="StateUIWebTests.WebDrawnChildrenTests,StateUIWebTests.WebShapeRoomTests,StateUIWebTests.WebKeyboardTests,StateUIWebTests.WebFrameReportTests,StateUIWebTests.WebWindowClosingTests,StateUIWebTests.WebHistoryTests,StateUIWebTests.WebTabTitleTests,StateUIWebTests.WebLeaveTests,StateUIWebTests.WebLookTests,StateUIWebTests.WebScrollOffsetTests"
 in_browser="$conformance,$hosts_in_browser"
 
 browser () {
