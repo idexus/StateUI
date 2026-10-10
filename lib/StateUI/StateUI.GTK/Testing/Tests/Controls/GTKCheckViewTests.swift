@@ -40,6 +40,20 @@ final class GTKCheckViewTests: XCTestCase {
         }
     }
 
+    /// A switch takes no background, as its register says: GTK paints its box as its track, which a colour there
+    /// would recolour.
+    func testASwitchTakesNoBackground() {
+        onUIThread {
+            let host = GTKRenderer.running {
+                VStack { Switch(true).background(Color("#FF0000")) }
+            }
+            let toggle = host.views(GTKSwitchView.self)[0]
+            XCTAssertFalse(
+                GTKTestHost.classes(of: toggle.widget).contains { $0.hasPrefix("stateui-fill") },
+                "the switch wears a fill: \(GTKTestHost.classes(of: toggle.widget))")
+        }
+    }
+
     /// A switch, a check box and a slider draw what GTK draws in the accent - the track while on, the ticked box,
     /// the track up to the thumb - in their tint, and nothing in it where they have none.
     func testAControlDrawsItsAccentInItsTint() {
