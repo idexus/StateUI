@@ -1042,6 +1042,12 @@ final class ControlTests: XCTestCase {
         XCTAssertNil(ClockTime("21:05:30.12"), "two digits is a truncated value, not 120ms")
         XCTAssertNil(ClockTime("21:05:30.abc"))
 
+        // Only digits, in every part, as a day reads: a sign, an empty part or
+        // a separator at an end is no time.
+        for text in ["+9:30", "09:-30", "09::30", "09:30:", ":09:30", "09:30:05.", "09:30:05.+12", "09:30:+5"] {
+            XCTAssertNil(ClockTime(text), text)
+        }
+
         XCTAssertLessThan(
             ClockTime(hour: 9, minute: 30, second: 1, millisecond: 100),
             ClockTime(hour: 9, minute: 30, second: 1, millisecond: 200))

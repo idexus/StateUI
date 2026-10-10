@@ -44,19 +44,19 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable, HostRepresen
     /// Nil for any other shape, so text that is not a time shows up at the
     /// point it is read instead of becoming a silent midnight.
     public init?(_ text: String) {
-        let parts = text.split(separator: ":")
+        let parts = text.split(separator: ":", omittingEmptySubsequences: false)
 
         guard parts.count == 2 || parts.count == 3,
-              let hour = Int(parts[0]),
-              let minute = Int(parts[1])
+              let hour = Self.number(parts[0]),
+              let minute = Self.number(parts[1])
         else {
             return nil
         }
 
         guard parts.count == 2 else {
-            let tail = parts[2].split(separator: ".")
+            let tail = parts[2].split(separator: ".", omittingEmptySubsequences: false)
 
-            guard tail.count <= 2, let second = Int(tail[0]) else { return nil }
+            guard tail.count <= 2, let second = Self.number(tail[0]) else { return nil }
 
             guard tail.count == 2 else {
                 self.init(hour: hour, minute: minute, second: second)
@@ -64,13 +64,19 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable, HostRepresen
             }
 
             // Exactly three digits: "05.12" is refused rather than read as 12 ms.
-            guard tail[1].count == 3, let millisecond = Int(tail[1]) else { return nil }
+            guard tail[1].count == 3, let millisecond = Self.number(tail[1]) else { return nil }
 
             self.init(hour: hour, minute: minute, second: second, millisecond: millisecond)
             return
         }
 
         self.init(hour: hour, minute: minute)
+    }
+
+    /// A part of a time's text as its number: digits only, at least one.
+    private static func number(_ part: Substring) -> Int? {
+        guard !part.isEmpty, part.allSatisfy({ ("0"..."9").contains($0) }) else { return nil }
+        return Int(part)
     }
 
     /// The time back from the three numbers a picker reports - hour, minute,
