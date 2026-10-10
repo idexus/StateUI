@@ -64,6 +64,7 @@ final class AppKitWindowController: NSWindowController {
     let content = AppKitWindowContentView()
     private let nativeContentMinSize: NSSize
     private let nativeContentMaxSize: NSSize
+    private let nativeCollectionBehavior: NSWindow.CollectionBehavior
     let nativeAllowsZoom: Bool
     private let nativeAllowsMinimizing: Bool
 
@@ -98,6 +99,7 @@ final class AppKitWindowController: NSWindowController {
         let window = nativeWindow ?? Self.makeWindow()
         nativeContentMinSize = window.contentMinSize
         nativeContentMaxSize = window.contentMaxSize
+        nativeCollectionBehavior = window.collectionBehavior
         nativeAllowsZoom = window.standardWindowButton(.zoomButton)?.isEnabled ?? true
         nativeAllowsMinimizing = window.styleMask.contains(.miniaturizable)
         window.isReleasedWhenClosed = false
@@ -248,6 +250,14 @@ final class AppKitWindowController: NSWindowController {
         window.contentMaxSize = NSSize(
             width: max(minimum.width, bounds.maximumWidth.map { CGFloat($0) } ?? nativeContentMaxSize.width),
             height: max(minimum.height, bounds.maximumHeight.map { CGFloat($0) + chrome } ?? nativeContentMaxSize.height))
+        // A bounded window takes no full screen; its zoom grows it to its maximum instead.
+        // Design: docs/design/platforms/appkit/runtime.md#a-windows-frame
+        var behavior = nativeCollectionBehavior
+        if bounds.maximumWidth != nil || bounds.maximumHeight != nil {
+            behavior.remove(.fullScreenPrimary)
+            behavior.insert(.fullScreenNone)
+        }
+        window.collectionBehavior = behavior
     }
 
     /// Makes the window what the tree says: its zoom and minimize buttons, the desktop through it, and whether it

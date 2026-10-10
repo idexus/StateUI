@@ -41,6 +41,12 @@ are the zoom and minimize buttons, a window the desktop shows through, and
 the floating level while the application is in front. Every window stands
 in the Windows menu.
 
+A window with a maximum takes no full screen: AppKit would stand it at its
+maximum in the middle of the screen, the toolbar alone across the top in the
+system's colour. Its zoom button grows it to the maximum instead, the way a
+bounded window maximizes on every desktop; with the maximum cleared, the
+window's own full-screen behaviour is back.
+
 ## The application's phase
 
 What AppKit tells a window's delegate - the keyboard coming and going,

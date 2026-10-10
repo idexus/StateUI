@@ -117,5 +117,5 @@ WebViewSample.swift 5fca8ce19314cdea
 WindowBarSample.swift 239e3ebf2b1a15ad
 WindowOverlaySample.swift 0e3ef5c100b3c4a1
 WindowPhaseSample.swift f8b6d04b59fbc2cd
-WindowSample.swift 041bfcb545fc9503
+WindowSample.swift 2f890fbd73019302
 ZStackSample.swift 61e21a29812145b5

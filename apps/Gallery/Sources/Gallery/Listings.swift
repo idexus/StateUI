@@ -9500,8 +9500,8 @@ enum Listings {
                         window.isMinimizable = minimizable
                     }
 
-                // A maximum bounds maximizing too: full screen, the window stands
-                // at most this large in the middle of it.
+                // A maximum bounds maximizing too: maximized, the window grows to
+                // it at most, and on a Mac it takes no full screen.
                 option("At most 1200 × 900", id: "window.bounded", value: $bounded)
                     .onChanged(bounded) {
                         window.maximumWidth = bounded ? 1200 : nil
