@@ -40,10 +40,10 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (18)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>8 ✅ · 10 ✓</td><td><code>NSApplication</code> / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>8 ✅ · 10 ✓</td><td><code>UIApplication</code> / <code>UIWindowScene</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 9 ✓</td><td><code>Application</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>8 ✅ · 10 ✓</td><td><code>UIApplication</code> / structure, a <code>UIWindowScene</code> per window</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 9 ✓</td><td>structure / structure</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>16 ✅ · 2 ✓</td><td><code>Application</code> / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>12 ✅ · 6 ✓</td><td><code>GtkApplication</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>12 ✅ · 6 ✓</td><td><code>AdwApplication</code> / structure</td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>13 ✅ · 5 ✓</td><td><code>document</code> / structure</td></tr></tbody>
 </table>
 

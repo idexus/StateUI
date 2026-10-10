@@ -38,7 +38,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>49 ✅ · 2 ☑️ · 35 ✓</td><td><code>UITextView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>70 ✅ · 3 ☑️ · 10 ✓ · 1 –</td><td>multi-line <code>EditText</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>73 ✅ · 1 ☑️ · 12 ✓</td><td>multi-line <code>TextBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>60 ✅ · 2 ☑️ · 23 ✓ · 1 –</td><td><code>GtkTextView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>60 ✅ · 2 ☑️ · 23 ✓ · 1 –</td><td><code>GtkTextView</code> in a <code>GtkScrolledWindow</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>65 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;textarea&gt;</code></td></tr></tbody>
 </table>
 

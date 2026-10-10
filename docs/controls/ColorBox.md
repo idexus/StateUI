@@ -33,9 +33,9 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (70)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>30 ✅ · 1 ☑️ · 35 ✓ · 3 –</td><td>custom <code>NSView</code> drawing</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>30 ✅ · 2 ☑️ · 35 ✓ · 3 –</td><td><code>UIView</code> + <code>CALayer</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>53 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td><code>View</code> + <code>GradientDrawable</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>53 ✅ · 13 ✓ · 4 –</td><td><code>Border</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>30 ✅ · 2 ☑️ · 35 ✓ · 3 –</td><td>custom <code>UIView</code> on a <code>CAShapeLayer</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>53 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td><code>View</code> + custom <code>Drawable</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>53 ✅ · 13 ✓ · 4 –</td><td>custom <code>Grid</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>43 ✅ · 1 ☑️ · 22 ✓ · 4 –</td><td>custom <code>GtkWidget</code> snapshot</td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>46 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;div&gt;</code></td></tr></tbody>
 </table>

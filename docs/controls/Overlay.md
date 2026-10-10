@@ -44,8 +44,8 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">◐</td><td></td><td>top child of a <code>FrameLayout</code></td></tr>
 <tr><td colspan="3">cannot read what reaches Text - Android's driver has no path for it yet</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td></td><td>top layer of a root <code>Grid</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td></td><td><code>GtkOverlay</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td></td><td>positioned element above the page</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td></td><td>custom <code>GtkWidget</code> in the window's <code>GtkOverlay</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td></td><td><code>&lt;div&gt;</code> layered over the page</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Slots/OverlayContract.swift`.

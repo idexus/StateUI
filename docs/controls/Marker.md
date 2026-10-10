@@ -46,7 +46,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2">GTK 4</td><td align="center">🧩</td><td>6 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">🧩</td><td>6 🧩</td><td>no honest native counterpart</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">🧩</td><td>6 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
 </table>
 

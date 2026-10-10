@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>30 ✅ · 2 ☑️ · 35 ✓ · 3 –</td><td><code>UIImageView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>52 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td><code>ImageView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>53 ✅ · 13 ✓ · 4 –</td><td><code>Image</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>43 ✅ · 1 ☑️ · 22 ✓ · 4 –</td><td><code>GtkPicture</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>43 ✅ · 1 ☑️ · 22 ✓ · 4 –</td><td>custom <code>GtkWidget</code> drawing a <code>GdkTexture</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>46 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;img&gt;</code></td></tr></tbody>
 </table>
 

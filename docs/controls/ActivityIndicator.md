@@ -38,7 +38,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>53 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td>indeterminate <code>ProgressBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>52 ✅ · 13 ✓ · 4 –</td><td><code>ProgressRing</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>43 ✅ · 1 ☑️ · 22 ✓ · 4 –</td><td><code>GtkSpinner</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>46 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td>indeterminate <code>&lt;progress&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>46 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td>CSS ring with <code>role=progressbar</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ActivityIndicatorContract.swift`.
