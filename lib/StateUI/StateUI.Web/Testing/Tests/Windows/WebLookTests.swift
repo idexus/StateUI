@@ -39,7 +39,8 @@ final class WebLookTests: XCTestCase {
     }
 
     /// Where the user asks for less motion, nothing the stylesheet moves once - a sheet rising, its shade, a
-    /// question, a menu, a page arriving - moves: each part it animates stands in the less-motion rules.
+    /// question, a menu, a page arriving, a drawer, a switch's knob, a bar's value, the loading screen fading - moves:
+    /// each part it animates, or moves by a transition, stands in the less-motion rules.
     func testLessMotionStillsEveryPartTheStylesheetMoves() throws {
         _ = WebRenderer.running { Text("Still") }
         let moving = try WebBrowser.evaluate("""
@@ -52,17 +53,49 @@ final class WebLookTests: XCTestCase {
                 }
               };
               for (const s of document.styleSheets) { try { walk(s.cssRules, false); } catch {} }
-              const last = (selector) => selector.split(/\\s*[>+~ ]\\s*/).pop();
-              const stilled = rules.filter(x => x.still && x.r.style.animationName === "none")
-                .flatMap(x => x.r.selectorText.split(",").map(t => last(t.trim())));
-              return rules.filter(x => !x.still && x.r.style.animationName && x.r.style.animationName !== "none"
-                  && x.r.style.animationIterationCount !== "infinite")
-                .flatMap(x => x.r.selectorText.split(",").map(t => last(t.trim())))
-                .filter(part => {
-                  const pseudo = part.includes("::") ? part.slice(part.indexOf("::")) : "";
-                  const named = part.match(/\\.stateui-[a-z-]+/g) ?? [];
-                  return !named.every(c => stilled.some(s => s.includes(c) && (pseudo === "" || s.includes(pseudo))));
-                })
+              const selectors = (text) => {
+                const out = []; let depth = 0, from = 0;
+                for (let i = 0; i < text.length; i++) {
+                  if ("([".includes(text[i])) depth++;
+                  else if (")]".includes(text[i])) depth--;
+                  else if (text[i] === "," && depth === 0) { out.push(text.slice(from, i).trim()); from = i + 1; }
+                }
+                return [...out, text.slice(from).trim()];
+              };
+              const compounds = (selector) => {
+                const out = []; let depth = 0, from = 0;
+                for (let i = 0; i < selector.length; i++) {
+                  if ("([".includes(selector[i])) depth++;
+                  else if (")]".includes(selector[i])) depth--;
+                  else if (depth === 0 && " >+~".includes(selector[i])) { out.push(selector.slice(from, i)); from = i + 1; }
+                }
+                return [...out, selector.slice(from)].filter(c => c !== "");
+              };
+              const tokens = (compound) => {
+                const at = compound.indexOf("::");
+                const body = at < 0 ? compound : compound.slice(0, at);
+                return { pseudo: at < 0 ? "" : compound.slice(at), tag: (body.match(/^[a-z]+/) ?? [""])[0],
+                         marks: [...(body.match(/\\.[a-z-]+/g) ?? []), ...(body.match(/\\[[^\\]]+\\]/g) ?? [])] };
+              };
+              const covers = (still, part) => {
+                const [s, p] = [compounds(still), compounds(part)];
+                if (s[s.length - 1] === "*") return tokens(s[s.length - 2] ?? "").marks.every(m => part.includes(m));
+                const [a, b] = [tokens(s[s.length - 1]), tokens(p[p.length - 1])];
+                return (a.tag !== "" || a.marks.length > 0) && a.pseudo === b.pseudo && (a.tag === "" || a.tag === b.tag)
+                  && a.marks.every(m => b.marks.includes(m));
+              };
+              const glides = ["transform", "translate", "width", "height", "opacity", "padding", "margin", "inset",
+                              "grid-template-columns", "top", "left", "right", "bottom"];
+              const moves = (style) => {
+                const transition = style.transitionProperty || style.getPropertyValue("transition");
+                return (style.animationName && style.animationName !== "none" && style.animationIterationCount !== "infinite")
+                  || transition.split(",").some(t => glides.some(g => t.trim().startsWith(g)));
+              };
+              const stilled = rules.filter(x => x.still && x.r.style.animationName === "none"
+                  && x.r.style.transitionProperty === "none").flatMap(x => selectors(x.r.selectorText));
+              return rules.filter(x => !x.still && moves(x.r.style))
+                .flatMap(x => selectors(x.r.selectorText))
+                .filter(part => !stilled.some(still => covers(still, part)))
                 .join(" | ");
             })()
             """, on: 0)
