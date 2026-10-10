@@ -31,7 +31,8 @@ extension MenuItemElement {
     }
 
     /// Whether it responds to selection. A disabled item stays visible, so the
-    /// user still knows the action exists.
+    /// user still knows the action exists. An item declared in a disabled view
+    /// is disabled with it.
     public func isEnabled(_ value: Bool) -> Modified {
         setValue(MenuItemElementContract.isEnabled, value)
     }

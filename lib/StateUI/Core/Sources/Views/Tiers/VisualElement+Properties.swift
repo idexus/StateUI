@@ -12,7 +12,7 @@ extension VisualElementProperties {
     public func isVisible(_ value: Bool) -> Modified { setValue(VisualElementContract.isVisible, value) }
 
     /// Whether the view responds to the user. Disabling a container disables
-    /// everything in it.
+    /// everything in it, the bar's actions and menu items declared in it too.
     public func isEnabled(_ value: Bool) -> Modified { setValue(VisualElementContract.isEnabled, value) }
 
     /// Whether the view and everything in it ignore input: a tap or a click

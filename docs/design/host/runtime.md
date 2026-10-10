@@ -321,8 +321,9 @@ it began still ends there - and a view's `isEnabled` reaches its control as
 a layout's `isEnabled` changes, every element in it presents its own again
 (`enablementTurned`), so a native control in the branch is disabled and
 enabled with it. A host reads a view's members through `presented`, never
-the element's own value; a bar's action and a menu's item read their own
-`isEnabled`.
+the element's own value. A bar's action and a menu's item stand in no view,
+so a host reads `isEffectivelyEnabled` for them: one declared in a disabled
+branch is out of reach with it, and comes back as the branch is enabled.
 
 ## A press dragged
 

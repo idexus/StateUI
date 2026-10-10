@@ -230,7 +230,9 @@ item, a separator, a submenu opening and closing, each with its caption, an
 item with its picture and its mark - and hears a choice by the item's place
 among the items, submenus' included; the item's own handler runs. A bar's
 menus are written the same way. Any entry the tree changes, adds or removes
-gives the view its menu again, and a menu with no entries is none.
+gives the view its menu again, and so does the view's own reach turning - a
+branch disabled or enabled around it - as its entries are in reach with it; a
+menu with no entries is none.
 
 The window's menu bar is one of its bars: it wears the bars' colour as the
 title bar does, its `Background` and the theme of its words - light on a dark

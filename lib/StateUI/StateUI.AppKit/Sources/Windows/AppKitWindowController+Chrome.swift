@@ -71,7 +71,7 @@ extension AppKitWindowController {
             identifier: NSToolbarItem.Identifier("StateUI.action.\(item.mount)"),
             title: item.value(.text)?.string ?? "",
             image: item.appKit.image(.icon),
-            isEnabled: item.value(.isEnabled)?.bool ?? true,
+            isEnabled: item.isEffectivelyEnabled,
             perform: { [weak item] in item?.appKit.clicked(nil) })
     }
 

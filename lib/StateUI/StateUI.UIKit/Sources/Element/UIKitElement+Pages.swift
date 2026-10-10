@@ -62,7 +62,7 @@ extension UIKitElement {
     private static func action(_ item: MountedElement) -> UIKitBarAction {
         UIKitBarAction(
             title: item.value(.text)?.string ?? "", icon: item.value(.icon)?.string,
-            isEnabled: item.value(.isEnabled)?.bool ?? true, isDestructive: item.value(.isDestructive)?.bool == true,
+            isEnabled: item.isEffectivelyEnabled, isDestructive: item.value(.isDestructive)?.bool == true,
             identifier: item.value(.accessibilityIdentifier)?.string,
             perform: { [weak item] in item?.uiKit.send(.clicked, []) }, element: item.uiKit)
     }

@@ -27,7 +27,7 @@ struct GTKToolbarAction {
         title = item.value(.text)?.string ?? ""
         icon = item.value(.icon)?.string
         showsTitle = item.showsActionWords
-        isEnabled = item.value(.isEnabled)?.bool ?? true
+        isEnabled = item.isEffectivelyEnabled
         isDestructive = item.value(.isDestructive)?.bool == true
     }
 

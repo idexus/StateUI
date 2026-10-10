@@ -203,9 +203,9 @@ extension AppKitElement: FrameReporter {
 
 /// A menu that enables its items by asking - the menu bar's - asks the element an item tells when chosen.
 extension AppKitElement: NSMenuItemValidation {
-    /// Whether the item can be chosen: as the tree says.
+    /// Whether the item can be chosen: as the tree says, out of reach in a disabled branch.
     func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
-        element.value(.isEnabled)?.bool ?? true
+        element.isEffectivelyEnabled
     }
 }
 #endif

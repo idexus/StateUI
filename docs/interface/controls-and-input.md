@@ -46,7 +46,8 @@ The matrix is authoritative for the exact members and host evidence.
 
 `isEnabled(false)` keeps a view in layout and in the hit-test path, but the
 view does not perform its action. On a container it disables interaction in
-the contained branch.
+the contained branch, the bar's actions and menu items declared in it
+included.
 
 `ignoresInput(true)` instead takes the view and everything in it out of hit
 testing, so input reaches what is behind it. A layout's `letsInputThrough(true)`

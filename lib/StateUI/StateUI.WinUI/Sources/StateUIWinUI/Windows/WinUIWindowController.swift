@@ -115,7 +115,7 @@ final class WinUIWindowController {
     /// A page's action as a button of the chrome.
     private static func action(_ item: MountedElement) -> WinUIToolbarAction {
         WinUIToolbarAction(
-            title: item.value(.text)?.string ?? "", isEnabled: item.value(.isEnabled)?.bool ?? true,
+            title: item.value(.text)?.string ?? "", isEnabled: item.isEffectivelyEnabled,
             identifier: item.value(.accessibilityIdentifier)?.string,
             icon: item.value(.icon)?.string.flatMap { $0.isEmpty ? nil : PictureArithmetic.files(for: $0) } ?? [],
             isDestructive: item.value(.isDestructive)?.bool == true, showsWords: item.showsActionWords,
