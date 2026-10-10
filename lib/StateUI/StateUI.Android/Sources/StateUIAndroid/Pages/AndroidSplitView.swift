@@ -38,7 +38,7 @@ final class AndroidSplitView: AndroidLayoutView {
     private var adaptation = SidebarAdaptation()
 
     /// The drawer holding the sidebar page, and the shade over the detail while it is open.
-    private let drawer = AndroidSingleChildView()
+    let drawer = AndroidSingleChildView()
     private let scrim = AndroidColorBoxView()
     private var drawerWidth = 0.0
 
@@ -91,14 +91,16 @@ final class AndroidSplitView: AndroidLayoutView {
         overlays = overlaid
         drawerWidth = width
         let beside = !overlays && isPresented ? drawerWidth : 0
+        // The drawer stands at the edge the language starts from, the detail beside it.
+        let leading = direction == .leftToRight
 
         if let detail = items.dropFirst().first {
-            let room = Rect(x: beside, y: 0, width: bounds.width - beside, height: bounds.height)
+            let room = Rect(x: leading ? beside : 0, y: 0, width: bounds.width - beside, height: bounds.height)
             detail.view.layout(
                 SingleChildArithmetic.place(of: detail, in: room, direction: direction))
         }
         scrim.layout(Rect(x: 0, y: 0, width: bounds.width, height: bounds.height))
-        drawer.layout(Rect(x: 0, y: 0, width: drawerWidth, height: bounds.height))
+        drawer.layout(Rect(x: leading ? 0 : bounds.width - drawerWidth, y: 0, width: drawerWidth, height: bounds.height))
         if newRoom { showDrawer(animated: false) }
     }
 
@@ -110,9 +112,8 @@ final class AndroidSplitView: AndroidLayoutView {
         let duration = animated ? Self.slide : 0
         ground()
         let visibility = isPresented ? ViewConstants.visible : overlays ? ViewConstants.invisible : ViewConstants.gone
-        slide(
-            drawer, to: overlays && !isPresented ? -drawerWidth : 0, alpha: 1, visibility: visibility,
-            duration: duration)
+        let away = direction == .leftToRight ? -drawerWidth : drawerWidth
+        slide(drawer, to: overlays && !isPresented ? away : 0, alpha: 1, visibility: visibility, duration: duration)
 
         let shaded = overlays && isPresented
         slide(scrim, to: 0, alpha: shaded ? 1 : 0, visibility: ViewConstants.visible, duration: duration)

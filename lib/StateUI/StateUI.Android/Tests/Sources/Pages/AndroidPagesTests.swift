@@ -10,6 +10,7 @@ import XCTest
 final class AndroidPagesTests: XCTestCase {
     static var allTests: [(String, (AndroidPagesTests) -> () throws -> Void)] {
         [
+            ("testADrawerStandsAtTheEdgeTheLanguageStartsFrom", testADrawerStandsAtTheEdgeTheLanguageStartsFrom),
             ("testAStackShowsItsTopPageUnderItsBarAndGoesBack", testAStackShowsItsTopPageUnderItsBarAndGoesBack),
             ("testTabsOnAStackNameTheBarByTheirOwnTitle", testTabsOnAStackNameTheBarByTheirOwnTitle),
             ("testWordsOnAPaintedBarFollowHowDarkItIs", testWordsOnAPaintedBarFollowHowDarkItIs),
@@ -173,6 +174,29 @@ final class AndroidPagesTests: XCTestCase {
 
     /// On a phone the sidebar slides over the detail: the detail's bar shows the sidebar's picture, pressing it
     /// opens the sidebar and says so, and back closes it.
+    /// A sidebar in a language written right to left is a drawer at the right edge, the edge that language starts
+    /// from.
+    func testADrawerStandsAtTheEdgeTheLanguageStartsFrom() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                SplitView(State(wrappedValue: true).projectedValue) {
+                    TitledPage(title: "Menu")
+                } detail: {
+                    TitledPage(title: "Home")
+                }
+            }
+            let hebrew = try XCTUnwrap(HostLocaleInfo(words: ["he", "IL", "he-IL", "Asia/Jerusalem", "1", "0", "1", "1"]))
+            let english = try XCTUnwrap(HostLocaleInfo(words: ["en", "GB", "en-GB", "Europe/London", "1", "1", "1", "0"]))
+            defer { host.runtime.environmentChanged { host.runtime.core.setLocaleInfo(english) } }
+            host.runtime.environmentChanged { host.runtime.core.setLocaleInfo(hebrew) }
+            host.layOut()
+            let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
+            XCTAssertTrue(split.overlays, "a narrow window's sidebar is a drawer")
+            XCTAssertEqual(
+                split.drawer.frame.x + split.drawer.frame.width, split.frame.width, "the drawer stands at the right edge")
+        }
+    }
+
     func testTheBarOpensTheSidebarAndBackClosesIt() throws {
         try onMainActor {
             let open = State(wrappedValue: false)
