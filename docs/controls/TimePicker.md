@@ -33,7 +33,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (80)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>36 ✅ · 2 ☑️ · 36 ✓ · 5 –</td><td><code>NSDatePicker</code> in time mode</td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>36 ✅ · 2 ☑️ · 36 ✓ · 5 –</td><td><code>NSDatePicker</code> showing hour and minute</td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>33 ✅ · 1 ☑️ · 35 ✓ · 5 –</td><td><code>UIDatePicker</code> in time mode</td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>59 ✅ · 3 ☑️ · 11 ✓ · 3 –</td><td><code>TextView</code> opening a <code>TimePickerDialog</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>61 ✅ · 1 ☑️ · 12 ✓</td><td><code>TimePicker</code></td></tr></tbody>

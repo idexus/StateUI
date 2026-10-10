@@ -52,11 +52,11 @@ There is no default. Each event modifier comes three ways: a step, `() throws
 `gate:`, for a handler that awaits; and an awaiting handler with no gate,
 unavailable, whose message says what to write; `.onCreated` and
 `.onDestroying` take no gate, as each comes once, and
-`.draggable(text:onDragStarting:)` takes a step alone. The compiler asks the
-question where there is one, and only there. A step runs through a `.none` gate of its
-own and never suspends. It takes no road of its own: an event dispatched to a
-step costs a couple of microseconds, so even a drag's 120 events a second
-spend a fraction of a millisecond.
+`.draggable(text:canDrag:onDragStarting:)` takes a step alone. The compiler
+asks the question where there is one, and only there. A step runs through a
+`.none` gate of its own and never suspends. It takes no road of its own: an
+event dispatched to a step costs a couple of microseconds, so even a drag's
+120 events a second spend a fraction of a millisecond.
 
 `RunSlot.underWay` counts the runs of every slot from the moment a slot takes
 one - started, or waiting its turn - to its end: what a test waits on for the

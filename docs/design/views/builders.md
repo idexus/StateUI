@@ -7,7 +7,7 @@ an application's scenes and a scene's windows (`ApplicationBuilder`,
 `SceneBuilder`), and one each for
 a menu bar's menus, menu entries, toolbar items, text runs, markers, styles
 and a canvas's drawing. The view builder also gives every view it collects a
-key.
+key, but for a view written as a lone statement.
 
 ## The result says what was written
 
@@ -18,8 +18,9 @@ optional, several statements `Statements`, repetition a `ForEach`, and a list
 of `any View` an array. Everything a container holds is `Views`: every view is
 one, and so is each of these. A composed view's `body` and a one-view slot
 take a `View`, so two statements or an `if` with no `else` there do not compile,
-and neither does `VStack { ToolbarItem("Save") }`: an action, a run of text, a
-marker and an arrangement of pages each go where they belong. A modifier on a view
+and neither does `VStack { ToolbarItem("Save") }`: an action, a run of text
+and a marker each go where they belong; an arrangement of pages compiles there
+but is left out, and said once (pages.md). A modifier on a view
 gives back a view (`View where Modified: View`), so a chain goes on on
 `any View` as on a view of a known type.
 
@@ -85,8 +86,10 @@ wrote as a switch between two fields. `2.if` and `2.else` are different
 places, so switching branches replaces the control rather than editing it. The
 same holds where the branch is a composed view's whole content: the content
 root's branch is part of what the element is
-([another kind of view](../core/identity-and-diffing.md#another-kind-of-view)),
-and so is a `ForEach` row's, whose builder takes an `if`/`else` too.
+([another kind of view](../core/identity-and-diffing.md#another-kind-of-view)).
+A `ForEach` row is matched by its identity alone, so an `if`/`else` in its
+builder replaces the row only where the two branches are views of different
+types.
 
 ## No plain for loop
 
@@ -95,7 +98,8 @@ number is its position: a collection that gains a row at the top renumbers
 every turn below it, and every view would be rebuilt as though it had changed.
 `ForEach` is where repetition is written, and it keys each view by its item;
 where views are not what is repeated - menu entries, toolbar items, runs, markers -
-an array of them stands for the loop, each matched by its `.id()`.
+an array of them stands for the loop: a menu entry or a toolbar item matched
+by its `.id()`, a run or a marker by its position.
 
 ## ForEach keys are text
 

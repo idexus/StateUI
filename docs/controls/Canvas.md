@@ -38,8 +38,8 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (72)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>29 ✅ · 2 ☑️ · 38 ✓ · 3 –</td><td>custom <code>NSView</code> drawing</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>29 ✅ · 2 ☑️ · 38 ✓ · 3 –</td><td><code>UIView</code> <code>draw(_:)</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>55 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td><code>View</code> <code>onDraw(Canvas)</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>29 ✅ · 2 ☑️ · 38 ✓ · 3 –</td><td>custom <code>UIView</code> <code>draw(_:)</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>55 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td>custom <code>View</code> <code>onDraw(Canvas)</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>54 ✅ · 14 ✓ · 3 –</td><td>custom <code>Panel</code> painting a Direct2D <code>SurfaceImageSource</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>45 ✅ · 1 ☑️ · 22 ✓ · 4 –</td><td>custom <code>GtkWidget</code> snapshot</td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>48 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;canvas&gt;</code></td></tr></tbody>

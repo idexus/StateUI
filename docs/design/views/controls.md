@@ -139,9 +139,11 @@ is a state the tree describes and a rebuild cannot lose.
 
 A menu, a menu entry, a separator, a toolbar item and a map marker are elements
 but not views: each has a caption, a picture or a point and something to run,
-and no layout of its own. They take none of the modifiers a view has, belong
-in one place - a page's toolbar, a menu, a map - and are matched by their
-`.id()` or their position there.
+and no layout of its own. Of the modifiers a view has they take only `.id()`,
+which a marker lacks, and `.accessibilityIdentifier` on a menu entry or a
+toolbar item; they belong in one place - a page's toolbar, a menu, a map - and
+are matched there by their `.id()` or their position, a marker by its position
+alone.
 
 ## Radio groups
 

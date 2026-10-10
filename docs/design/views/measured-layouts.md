@@ -38,12 +38,13 @@ included - when an ancestor's does, and when a scroll among its ancestors
 moves it against the window. A view that asked about its frame says where it
 stands on the display's next frame after anything was laid out or moved,
 itself or not, because scrolling changes the window and safe-area answers
-without the view's own frame moving. Each report is deduplicated against the
-last, so a layout pass that writes four components is one report, and each
-handler deduplicates again in its own space, so a parent-space listener hears
-nothing of a scroll. A handler's memory starts afresh when the view is
-rebuilt, which costs one repeated report that the handler's own state write
-absorbs.
+without the view's own frame moving; on the Web, what a call from the page
+laid out says it as that call ends, before the browser draws. Each report is
+deduplicated against the last, so a layout pass that writes four components is
+one report, and each handler deduplicates again in its own space, so a
+parent-space listener hears nothing of a scroll. A handler's memory starts
+afresh when the view is rebuilt, which costs one repeated report that the
+handler's own state write absorbs.
 
 Translation, rotation and scale are drawing transforms, not layout: an
 animated translation reports nothing, while an animated width reports every
@@ -275,14 +276,14 @@ platform (modifiers.md, turning out of the screen plane).
 
 `PositionIndicator` is StateUI's composition of colour boxes in a row, which
 no host receives as a control of its own: UIKit and WinUI have a page
-indicator, AppKit, Android's framework and GTK have none, so one composition
-serves all of them alike. Its count, its position and its look are values of
-the composed view, and a value given from a state is read in its content, so
-the row is built again when it changes - a row of a few boxes, where a
-host-carried value would buy nothing. The dots past `maximumVisible` are a
-run of that many holding the position as near its middle as the ends allow
-(`PositionIndicator.shown`), so the current dot is always drawn and the run
-moves only at its ends. A dot is a box as wide as it is tall, its corners
-half its size for a circle, the gap between two dots the size of one. Being a
-composition, it takes no `Style`: a style resolves into the node types a host
-receives.
+indicator, AppKit and Android's framework none, and GTK has none outside
+libadwaita's carousel, so one composition serves all of them alike. Its count,
+its position and its look are values of the composed view, and a value given
+from a state is read in its content, so the row is built again when it
+changes - a row of a few boxes, where a host-carried value would buy nothing.
+The dots past `maximumVisible` are a run of that many holding the position as
+near its middle as the ends allow (`PositionIndicator.shown`), so the current
+dot is always drawn, and the run stands still only near the ends of the
+sequence. A dot is a box as wide as it is tall, its corners half its size for
+a circle, the gap between two dots the size of one. Being a composition, it
+takes no `Style`: a style resolves into the node types a host receives.

@@ -9,7 +9,7 @@ and this table maps the two.
 | StateUI term | Common term | What it means here |
 | --- | --- | --- |
 | user | user | the person using the application |
-| application, scene, window, page | same | the structure an application declares: `Application -> Scene -> Window -> Page` |
+| application, scene, window, page | same | the structure an application declares: `Application -> Scene -> windows -> a view`, each view standing on a page |
 | element | node | one entry of the described tree: a control, a layout, a part of the structure |
 | element contract | node schema | a node type's declaration: its tiers and each member with its value's type |
 | tier | trait | a set of members several elements share, such as `VisualElement` |
@@ -95,7 +95,7 @@ and this table maps the two.
 | animation (`Animation`) | animation | one running animation of one value |
 | animator (`Animator`), advance | animator, advance a frame | the one place a runtime advances every animation |
 | lane | component | one number of an animated value: x of a point, red of a colour |
-| lane kind (`LaneKind`) | component type | what a host reads a carried value's lanes as: numbers, a Boolean, a choice, a colour |
+| lane kind (`LaneKind`) | component type | what a host reads a carried value's lanes as: numbers, a Boolean, a choice, a colour, a material |
 | land, arrive | finish | an animation reaching its destination |
 | snap | jump | a change applied at once, with no animation |
 | travels, cleared, moves (member facts) | animatable, reset when unset, animation group | what a member's contract says about how its value changes |

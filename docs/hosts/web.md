@@ -226,7 +226,8 @@ navigator.getBattery?.().then((power) => {
 
 Words cross both ways: what an act takes and answers is written in them. A
 page served over plain http has no clipboard - its act fails with the
-reason - and a browser that says nothing of its battery answers none.
+reason - and a browser that says nothing of its battery answers 0 and tells
+nothing.
 
 ## Running
 
@@ -246,12 +247,13 @@ A server the script started for the application before is stopped first.
 `release` builds the optimized module, `--browser <id>` opens another
 browser - `.scripts/Web/browsers.sh list` lists them - and `--browser none`
 none, and `--build-only` builds and lays the page out, serving nothing. Every
-`STATEUI_` variable of the shell that runs it - `STATEUI_TALLY=1` - reaches
-the application as a parameter of the page's address, which the application
-reads as its environment.
+`STATEUI_` variable of the shell that runs it but the build's own
+`STATEUI_HOST` - `STATEUI_TALLY=1` - reaches the application as a parameter
+of the page's address, which the application reads as its environment.
 
 What the application prints goes to the browser's console, and so does a
-failure: one that stops the module also shows in red on the page.
+failure; one that stops the module as it starts also shows in red on the
+page.
 
 In VS Code, with **Web** chosen in the status bar, a third item shows the
 browser - click it, or run **StateUI: Select Browser**, which offers the

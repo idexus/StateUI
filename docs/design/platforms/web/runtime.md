@@ -92,8 +92,10 @@ The page tells the core it stands in a browser, and on what: where its user
 points by touch (`pointer: coarse`), a phone or a tablet by the screen's
 smallest width, as the host layer decides it for every touch screen
 (`FormFactor.touchScreen`); else a desktop. It tells too whether the user's
-system is dark or light; a change of the appearance renders the application
-again in the other.
+system is dark or light, and the accent the browser draws its own controls
+in - the system's `AccentColor` where the browser knows one, else its own
+blue; a change of the appearance renders the application again in the other,
+the accent read again with it.
 
 ## One frame
 
@@ -174,8 +176,8 @@ own, so the window hears it was made before it hears it is in front.
 ## The conformance run
 
 The conformance suite runs in a browser, headless: its cases need the
-browser's own layout, focus, dialogs and input, which the host's own suite in
-Node has none of. The suite's program is a WebAssembly module of its own,
+browser's own layout, focus, dialogs and input, which the host's own tests in
+Node have none of; the host's tests that run a host run in the browser too. The suite's program is a WebAssembly module of its own,
 started by the same relay with its `suspends`: its `main` runs through
 `WebAssembly.promising`, and the driver's imports that wait - a frame of the
 page's, a question to the controller beside the browser - are

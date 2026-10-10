@@ -166,8 +166,8 @@ turns the nodes into the patch.
   `ZStack`, `ScrollView`), `Shapes/` (`Rectangle`, `Path`, `Canvas` and
   their kin) and `Collections/` (`ItemsView`, whose groups are `Section`s) -
   are each a node written through its contract, most with a `…Properties`
-  protocol of its own; `VStack`, `HStack`, `ZStack`, `Ellipse`, `TextSpan` and
-  `ItemsView` have none. *Application.*
+  protocol of its own; `VStack`, `HStack`, `ZStack`, `Ellipse`, `TextSpan`,
+  `ItemsView` and `Marker` have none. *Application.*
   ([Controls](../design/views/controls.md);
   [controls and input](../interface/controls-and-input.md), [layout](../interface/layout.md))
 - **The composed layouts** - `GeometryReader`, `ScrollReader` and `PlacedLayout`
@@ -248,9 +248,9 @@ declarations and each host's verdicts ([marks](../design/contracts/dictionary.md
 
 `Core/` holds the machinery: one folder a topic, one element to a file - a
 small type its element works with may share it, as `RunOwner` does
-`RunSlot.swift` and `Fired` `Handler.swift` - a type's extensions in its
-folder as `Type+Responsibility.swift`
-([where things live](../design/core/README.md#where-things-live)).
+`RunSlot.swift` and `Fired` `Handler.swift` - a type's extensions named
+`Type+Responsibility.swift`, in the folder of the topic they serve, usually
+the type's own ([where things live](../design/core/README.md#where-things-live)).
 
 ### State
 

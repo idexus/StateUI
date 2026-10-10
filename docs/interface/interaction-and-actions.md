@@ -322,8 +322,8 @@ StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
 `HostEvents` represents a provider notification with no tree element. The
 application declares it in its contract with the types of the values it
 carries. `HostEvents.on` answers the subscription, which is kept - dropping it
-is a compiler warning - and cancelled when its owner leaves; a view keeps it
-in its own state:
+is a compiler warning - and cancelled with `cancel()` when its owner leaves,
+since nothing else ends it; a view keeps it in its own state:
 
 ```swift
 enum NotesContract: ApplicationTier {

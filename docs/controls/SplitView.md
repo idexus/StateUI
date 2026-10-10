@@ -45,7 +45,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>5 ✅ · 2 ☑️ · 3 ✓ · 2 –</td><td>custom <code>ViewGroup</code>: a drawer where narrow, beside where wide</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>10 ✅ · 2 ☑️</td><td><code>NavigationView</code>, the sidebar in its pane</td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>6 ✅ · 2 ✓ · 4 –</td><td><code>AdwOverlaySplitView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>9 ✅ · 2 ☑️ · 1 –</td><td><code>&lt;aside&gt;</code> beside the detail in a CSS grid</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>9 ✅ · 2 ☑️ · 1 –</td><td><code>&lt;aside&gt;</code> in a CSS grid: beside the detail from 900px wide, a drawer over it where narrower</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Navigation/SplitViewContract.swift`.

@@ -66,9 +66,9 @@ the closing window's place, at its size.
 
 The trap: the scene of a window the tree lets go of is destroyed, and iPadOS
 ends the process once an application's last scene is destroyed. A host whose
-windows share one scene - the tests' host stands every window in the one
-scene the runner has - does not own that scene, so its windows only leave
-it.
+windows do not own their scenes (`ownsScenes` off) - the tests' host, which
+stands its window in the one scene the runner has - does not own that scene,
+so its windows only leave it.
 
 ## The environment
 

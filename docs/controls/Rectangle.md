@@ -33,9 +33,9 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (79)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>39 ✅ · 2 ☑️ · 35 ✓ · 3 –</td><td><code>NSView</code> drawing <code>NSBezierPath</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>39 ✅ · 2 ☑️ · 35 ✓ · 3 –</td><td>custom <code>NSView</code> drawing <code>NSBezierPath</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>39 ✅ · 2 ☑️ · 35 ✓ · 3 –</td><td>custom <code>UIView</code> masked by a <code>CAShapeLayer</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>62 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td><code>View</code> drawing <code>Path</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>62 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td>custom <code>View</code> drawing <code>Path</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>62 ✅ · 13 ✓ · 4 –</td><td><code>Shapes.Path</code> in a custom <code>Grid</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>52 ✅ · 1 ☑️ · 22 ✓ · 4 –</td><td><code>GskPath</code> in a snapshot</td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>55 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td>inline SVG <code>&lt;path&gt;</code></td></tr></tbody>

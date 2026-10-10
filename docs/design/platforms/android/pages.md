@@ -39,13 +39,13 @@ whose back button is not taken away; at the root of a split view's detail,
 where the sidebar slides over it, it is the sidebar page's picture - Android's
 menu glyph where the page has none - and opens the sidebar. The bar's words'
 colour - the one written, or white or black against a written background -
-is its title's, its navigation button's, its overflow button's and its
-actions' pictures'. The actions' words follow the bar's theme, as Android's
-own bars do: the toolbar is made in Android's overlay for a dark bar, its
-action words light, or for a light one, their words dark - by the host
-layer's reading of the bar's colour (`BandWords.light`), as a desktop host
-picks its bar's theme - and in the activity's theme where the tree paints no
-bar. A view's theme is fixed as it is made, so a bar painted again in the
+is its title's, its overflow button's, its actions' pictures' and its back
+arrow's or menu glyph's; a sidebar page's own picture keeps its colours.
+The actions' words follow the bar's theme, as Android's own bars do: the
+toolbar is made in Android's overlay for a dark bar, its action words light,
+or for a light one, their words dark - by the host layer's reading of the
+bar's colour (`BandWords.light`), as a desktop host picks its bar's theme -
+and in the activity's theme where the tree paints no bar. A view's theme is fixed as it is made, so a bar painted again in the
 other shade is made again. A page without a navigation bar hides it. The bar
 shows only what changed since it last showed.
 

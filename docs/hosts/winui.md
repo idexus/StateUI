@@ -275,10 +275,11 @@ tests it names, each in a process of its own.
 
 A run holds what it says to `lib\StateUI\exports\`: the host's own tests what
 it declares to `winui.txt`, and each family its verdicts to
-`marks\winui\<Family>.txt`; a run that says otherwise fails. With
-`STATEUI_UPDATE_EXPORTS=1` in its environment it writes them instead, each
-verdict file under the revision its family stands at in
-`lib\StateUI\StateUI.Conformance\revisions.txt`. `-Stale` runs only the
+`marks\winui\<Family>.txt` - a family run in parts to
+`marks\winui\<Family>-<part>.txt`, one file a part; a run that says
+otherwise fails. With `STATEUI_UPDATE_EXPORTS=1` in its environment it
+writes them instead, each verdict file under the revision its family stands
+at in `lib\StateUI\StateUI.Conformance\revisions.txt`. `-Stale` runs only the
 families whose verdicts stand at another revision, or at none: each other
 one's process ends at once. With the verdicts written,
 `swift test --filter ControlDictionaryTests` at the repository's root, with

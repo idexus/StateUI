@@ -38,7 +38,8 @@ a property and its value meet in the compiler and nothing is spelled twice.
 
   TextContract.worn    Text, View, VisualElement, PropertyContainer, TextualElement,
                         TextStyleElement, FontElement, TextAlignmentElement, ...
-                        every tier once, nearest first
+                        each once, in the order met - depth first,
+                        in declaration order
 ```
 
 A member is one of three kinds, each carrying the types it holds:

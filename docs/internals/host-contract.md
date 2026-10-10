@@ -86,7 +86,10 @@ native objects.
 
 A host applies one generation as one transaction:
 
-1. validate the generation before changing the mounted tree;
+1. take a patch computed against the last generation applied in full; a
+   drift found while it applies - a sparse message about a tree the host does
+   not hold - refuses the whole message, and the whole tree is asked for once
+   ([patch intake](../design/host/patches.md#patch-intake));
 2. find the mounted element by `ElementID`, or create the native object for
    a new complete patch;
 3. replace an element only when `replace` says so;

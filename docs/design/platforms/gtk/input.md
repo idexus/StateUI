@@ -11,10 +11,11 @@ and stays there ([controls](controls.md)).
 A view listens only for what its element's handlers and channels ask: taps
 for a tap handler, the pointer for a pointer handler, a press dragged for a
 pan, a swipe or a state a pan carries, a pinch for a pinch handler. Each kind
-is a GTK event controller on the view's widget, added when the view starts
-listening for it and removed when it stops, and every controller's signals
-name the view by its number. A view that leaves the tree stops listening
-first, so its widget holds none of them.
+is a GTK event controller on the view's widget - the pointer's two, a motion
+controller and a drag gesture - added when the view starts listening for it
+and removed when it stops, and every controller's signals name the view by
+its number. A view that leaves the tree stops listening first, so its widget
+holds none of them.
 
 GTK hits a widget across its bounds, whatever it draws: a panel with nothing
 between its children still takes a click there, so a row answers past its

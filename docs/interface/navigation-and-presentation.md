@@ -425,20 +425,21 @@ SplitView($sidebar) {
 The platform's own menus are joined by identity, never by caption:
 `.id(StandardMenu.file)` - `edit`, `view`, `window`, `help` - puts a menu's
 entries into AppKit's File menu and UIKit's `.file` menu after the platform's
-own, whatever the menu is called, so "Plik" joins it too. On WinUI and GTK it
-is an ordinary menu of the application's. Android keeps no menu bar: a page's
-menus stand behind its stack's bar's overflow, each a submenu after the
-actions. An iPhone shows no menu bar. `Menu`
-holds only `MenuItem`, `Menu` and `Divider`, and a menu bar only `Menu`:
-anything else does not compile.
+own, whatever the menu is called, so "Plik" joins it too. On WinUI it is an
+ordinary menu of the application's; on GTK, a submenu of the header bar's main
+menu. Android keeps no menu bar: a page's menus stand behind its stack's
+bar's overflow, each a submenu after the actions. An iPhone shows no menu
+bar. `Menu` holds only `MenuItem`, `Menu` and `Divider`, and a menu bar only
+`Menu`: anything else does not compile.
 
-A menu bar stands only while something declares a menu. On WinUI and GTK a
-window shows its menu bar while its page, or an arrangement around that page,
-declares one, and none at all otherwise; macOS and iPadOS always keep the
-platform's own menus, which a declared menu joins. So declare a menu where its
-entries act - File on the page that saves - and around every page only what
-every page offers: a menu declared on the window's page stands over every
-page, even where it holds nothing the page can do.
+A menu bar stands only while something declares a menu. On WinUI a window
+shows its menu bar, and on GTK its page's header bar its main menu, while that
+page, or an arrangement around it, declares a menu, and none at all otherwise;
+macOS and iPadOS always keep the platform's own menus, which a declared menu
+joins. So declare a menu where its entries act - File on the page that saves -
+and around every page only what every page offers: a menu declared on the
+window's page stands over every page, even where it holds nothing the page
+can do.
 
 The same item vocabulary can be attached to any view as a context menu:
 

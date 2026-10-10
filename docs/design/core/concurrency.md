@@ -24,15 +24,16 @@ platform. A handler runs on `MainActor` and may suspend; it resumes on
                                on its UI thread through HostBoundary.runJobs.
 ```
 
-A host's start installs the executor: its first call, before anything starts a
-task, is `HostBoundary.claimUIThread()`, which installs it and drains once on
-that thread. A job running when `MainActor`'s executor is replaced was started
-by the one before, and `Task.immediate` from it no longer finds itself on
-`MainActor`. So nothing else installs it - not the renderer, which a test makes
-in the middle of its first `@MainActor` test. A process with no host, such as
-a test of the core, keeps the platform's main queue, which its run loop drains
-as on Apple. The factory is `@_spi(ExperimentalCustomExecutors)`; its shape is
-that of the one Swift release the project builds with.
+Away from Apple, a host's start installs the executor: its first call, before
+anything starts a task, is `HostBoundary.claimUIThread()`, which installs it
+and drains once on that thread. A job running when `MainActor`'s executor is
+replaced was started by the one before, and `Task.immediate` from it no longer
+finds itself on `MainActor`. So nothing else installs it - not the renderer,
+which a test makes in the middle of its first `@MainActor` test. A process
+with no host, such as a test of the core, keeps the platform's main queue,
+which its run loop drains as on Apple. The factory is
+`@_spi(ExperimentalCustomExecutors)`; its shape is that of the one Swift
+release the project builds with.
 
 Nothing waits for the platform's main queue in shared code - nothing drains it
 on Android or Windows - and nothing uses a run-loop timer, which hangs off a run

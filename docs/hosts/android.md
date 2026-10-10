@@ -77,8 +77,8 @@ application's manifest reads it, declares its `Platforms/Android/Swift` head
 and the library it makes, and defines the `ANDROID` compilation condition for
 every module of the application; `lib/StateUI.Head` brings the
 `StateUIAndroid` host to the head. Swift written for this host alone stands
-under `#if ANDROID`. `build-swift.sh` sets nothing else: the library itself is
-built as every host builds it.
+under `#if ANDROID`. The scripts set it as they call `build-swift.sh`, and
+nothing else: the library itself is built as every host builds it.
 
 A new application made in `apps/` - **StateUI: New Application in apps/**, or
 `.scripts/new-app.sh` - has an Android head, as HelloWorld does, and runs and
@@ -226,10 +226,10 @@ the head needs and nothing else - the Swift runtime's own among them -
 stripped, with the unstripped copies kept in `.build/android/symbols/` for
 `ndk-stack` and a debugger. Android draws no SVG, so the application's
 `Resources/Images` are drawn for it as the APK is built: an SVG three times
-over, as a PNG, which `Image("mark.png")` finds as it finds the SVG on every
-other host. An application's `print` reaches logcat under the
-tag `StateUI`, and so does what `STATEUI_TALLY=1` and `STATEUI_INSPECT=1`
-write: `run-app.sh` hands every `STATEUI_` variable of the shell that runs it
+over, as a PNG, which `Image("mark.png")` finds as it does on UIKit, and as
+it finds the SVG on the hosts that draw one. An application's `print`
+reaches logcat under the tag `StateUI`, and so does what `STATEUI_TALLY=1`
+and `STATEUI_INSPECT=1` write: `run-app.sh` hands every `STATEUI_` variable of the shell that runs it
 to the application's environment. A head's manifest asks for
 `ACCESS_NETWORK_STATE`, which the host needs to report the network to the
 application's views.

@@ -20,7 +20,7 @@ What the host does with a carried state follows from the value:
   plain     a Bool, an Int, a member of a        the host sets the property as the value stands,
             closed vocabulary, and numbers       on its own frames, with nothing animating
             that never animate: a range's
-            ends, a spacing, a step
+            ends, a grid's spacings, a step
 
   words     a String                             the host writes the text, as it writes a
                                                  driven text
@@ -89,8 +89,9 @@ since words have one.
 
 A value and a state may stand together on one property:
 `.opacity(dim).opacity($fade)`. A change of the stated value crosses as a value
-like any other, a write to the state crosses as nothing, and the newest of the
-two destinations is the one in force.
+like any other and a write to the state crosses as nothing; while the state is
+carried the host shows the state's value, the stated one standing only where
+the state has none.
 
 ## Driven text
 

@@ -38,8 +38,10 @@ its parts; [the host layer](../../internals/host-layer.md) maps them.
   native views
 ```
 
-A host links the core's dynamic library and takes the typed patch, so one
-process holds one copy of StateUI's types.
+A host takes the typed patch. A native host links the core's dynamic library,
+so one process holds one copy of StateUI's types; WebAssembly links no library
+dynamically, so a Web build is one module holding the application, StateUI
+and its host.
 
 ## The parts
 
@@ -76,7 +78,7 @@ display cycle, in this order, in every runtime:
     2  Animator.advance(to: now)                   StateChannels, DescribedMotion and
                                                    LayoutMotion follow the animations;
                                                    the channels' reports reach the core
-    3  CoreLink.cycle(now)                         engines and conversions run in the core;
+    3  CoreLink.cycle(now:reducesMotion:)          engines and conversions run in the core;
                                                    StateChannels take the changes
     4  one walk of the mounted tree                each element's native setters once,
                                                    each changed parent arranged once,
@@ -114,7 +116,7 @@ The turn always runs in the same order.
   pump:  run the jobs  ->  a pending cycle  ->  render  ->  acts
                                                   |
                                                   v
-                          PatchIntake.take(root, generation)
+                          PatchIntake.take(_:generation:apply:)
                             ProgramWrite marks the writes, handlers wait
                             the mounted tree applies the patch
                             a drift: refused, and render(baseline: 0) once
@@ -328,12 +330,15 @@ A host whose toolkit tells a press and its moves, and no drag of its own,
 tells a drag by one rule (`DragRecognition`): the press is a drag once it
 has moved MORE than the platform's distance from where it went down - along
 either axis where the platform measures a rectangle, Windows and GTK, or any
-way where it measures a radius, Android. It starts there, at nothing, and
-then each move is the drag's, measured from where the press went down, until
-the press lets go and it completes, or the platform takes the press away and
-it is cancelled. A press that never became a drag ends with nothing. The
-distance is the platform's, in DIPs; the toolkit holds the pointer once the
-press is a drag, which the host asks for as the rule says so.
+way where it measures a radius, Android; the browser gives none, so the Web
+takes a radius of its own - four points for a mouse or a pen, ten for a
+finger ([its input](../platforms/web/input.md#a-press-dragged-and-a-pinch)).
+It starts there, at nothing, and then each move is the drag's, measured from
+where the press went down, until the press lets go and it completes, or the
+platform takes the press away and it is cancelled. A press that never became
+a drag ends with nothing. A platform's distance is taken in DIPs; the toolkit
+holds the pointer once the press is a drag, which the host asks for as the
+rule says so.
 
 ## A swipe
 

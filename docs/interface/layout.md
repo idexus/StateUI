@@ -185,8 +185,9 @@ ZStack {
 `.absolute(x, y, width, height)` names an area in device-independent units
 from the top left of the room inside the stack's padding;
 `.proportional(x, y, width, height)` names one in fractions of that room, so
-`.proportional(0.5, 0, 0.5, 1)` is its right half whatever the stack's size.
-A child fills its area unless its size or alignment says otherwise. A later
+`.proportional(0.5, 0, 0.5, 1)` is its right half whatever the stack's size
+(left to right; a right-to-left stack mirrors the area, so there it is the
+left half). A child fills its area unless its size or alignment says otherwise. A later
 child is drawn over an earlier one, and `zIndex` reorders them without moving
 anything. The stack needs the room its neediest child needs at its natural
 size.

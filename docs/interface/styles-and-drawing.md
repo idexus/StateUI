@@ -203,7 +203,9 @@ StateUI decides which state a control is in, the same way on every platform:
 the first that holds of disabled, pressed, pointer-over, focused, on or
 checked, off or unchecked - and normal when none does. What the control shows
 is every state that holds at once, the earlier in that order winning a value
-two of them set. A disabled switch that is on is dimmed, and green:
+two of them set. A disabled switch that is on is dimmed, and green where its
+host paints a switch's background - GTK paints none, its switch's box being its
+track:
 
 ```swift
 @State var isOn = true

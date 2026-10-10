@@ -132,7 +132,9 @@ A host never:
   object, routes, or keeps an application's state;
 - samples a timing law, advances an animation, runs the core's cycle, renders
   or takes the acts - `Animator`, `DisplayCycle` and `Pump` each do that
-  alone - or calls the core except through `CoreLink`;
+  alone - or calls the core except through `CoreLink`, but for the lane
+  codecs (`journey(from:)`, `value(of:)`, `placements(from:)`), arithmetic on
+  values it already holds;
 - keeps a write flag of its own: `ProgramWrite` is the one mark;
 - times a scroller's rest on a clock of its own, or aims, shortens or corrects
   the toolkit's scrolling;
@@ -142,9 +144,10 @@ A host never:
 
 `RuntimeArchitectureTests` reads the layer's and every host's sources and
 refuses a law sampled, an animation advanced, a cycle run, a render or an act
-taken outside its one owner, a call into the core outside `CoreLink`, a
-control's own write flag, a timer in scrolling, and a type named for an engine
-or a channel ([names](../design/host/runtime.md#names)).
+taken outside its one owner, a call into the core outside `CoreLink` but for
+the lane codecs, a control's own write flag, a timer in scrolling, and a type
+named for an engine or a channel
+([names](../design/host/runtime.md#names)).
 
 ## The runtime
 
@@ -184,8 +187,8 @@ or a channel ([names](../design/host/runtime.md#names)).
   `ProgramWrite.perform`.
   ([Program write](../design/host/patches.md#program-write))
 - **`DisplayCycle`** is one display frame, in one order: the user's reports,
-  the animations, the core's cycle, one walk of the tree, a render, and the
-  clock's hold, which lets go only when nothing moves. The host's
+  the animations, the core's cycle, one walk of the tree, the clock's hold,
+  which lets go only when nothing moves, and a render. The host's
   `FrameClock` ticks it; the runtime keeps each step, and the host's
   `HostPresenter` follows a frame that moved the chrome. ([One frame](../design/host/runtime.md#one-frame))
 - **`FrameFollowers`** keeps the frames coming while a scroller moves or a
@@ -221,9 +224,11 @@ per described node, each with a native half its toolkit writes.
   `layoutValues`, `layoutDirection` - and keeps no copy.
   ([Leaving](../design/host/tree.md#leaving))
 - **`NativeElement`** is the native half's whole contract with the tree: it
-  hears a patch about to apply and applied, presents a frame's changed
-  properties and says what the frame asks around it (`FrameImpact`), arranges
-  its children, says where a property stands natively (`standingValue`) and
+  hears a patch applied (`applied`), presents a frame's changed properties
+  (`presentFrame`) - what the frame asks around it (`FrameImpact`) the mounted
+  element decides - arranges its children, takes a turned direction
+  (`directionChanged`), says whether it shows a view of its own
+  (`presentsView`), says where a property stands natively (`standingValue`) and
   whether the toolkit animates it, says the tab the user chose (`chosenTab`)
   and whether a sidebar shows on screen (`showsSidebar`) where its toolkit
   knows them, and lets go of what it attached outside the tree as the element
@@ -373,9 +378,11 @@ measures only its native views.
   its stroke's width and its dashes.
   ([A shape's own geometry](../design/host/layout.md#a-shapes-own-geometry))
 
-Every call takes the element's `layoutDirection`: places are worked out left
-to right and turned about the room's middle for a language written right to
-left ([right to left](../design/host/layout.md#right-to-left)). A grid's and a
+Every call that places children - a stack's, a grid's and a ZStack's
+`places`, one child's `place` and a scroller's `arrange` - takes the
+element's `layoutDirection`: places are worked out left to right and turned
+about the room's middle for a language written right to left
+([right to left](../design/host/layout.md#right-to-left)). A grid's and a
 ZStack's `children` stand in drawing order, by `zIndex`, so a host hands its
 toolkit the children in that order
 ([drawing order](../design/host/layout.md#drawing-order)).

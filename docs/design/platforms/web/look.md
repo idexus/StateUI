@@ -21,8 +21,9 @@ buttons of one group of actions share one capsule. The sidebar is a surface of
 its own beside the page, a drawer over it where the page is narrow. Buttons
 and fields take a border, rounded corners and a ring in the accent colour
 where the keyboard's focus is; a checkbox, a radio button, a slider and a
-progress bar take the accent colour. Scroll bars are thin. A control the host
-makes no element for yet is named in red, in a dashed box, where it belongs.
+progress bar take the accent colour. A ScrollView's scroll bars are thin. A
+control the host makes no element for yet is named in red, in a dashed box,
+where it belongs.
 
 ## A field's padding
 

@@ -41,7 +41,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (10)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>7 ✅ · 1 ☑️ · 1 ✓</td><td><code>NSTabView</code>: tabless under a full-width select-one <code>NSSegmentedControl</code> beneath the toolbar - the split view detail's <code>NSSplitViewItemAccessoryViewController</code> on macOS 26 and later, else the title bar's bottom accessory - with top tabs where no window serves it</td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>7 ✅ · 1 ☑️ · 1 ✓</td><td><code>NSTabView</code>: tabless under a full-width select-one <code>NSSegmentedControl</code> beneath the toolbar - the split view detail's <code>NSSplitViewItemAccessoryViewController</code> where the tabbed view stands in a split view's detail, else the title bar's bottom accessory - with top tabs where no window serves it</td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>8 ✅ · 2 –</td><td><code>UITabBarController</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>7 ✅ · 1 ☑️ · 2 –</td><td>custom <code>ViewGroup</code> + <code>LinearLayout</code> tab row</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>10 ✅</td><td>custom <code>Panel</code> under a <code>SelectorBar</code></td></tr></tbody>

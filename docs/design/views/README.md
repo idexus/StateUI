@@ -26,6 +26,7 @@ hangs off them, `Styles` the styles and `Inspector` the inspector.
 | [pages.md](pages.md) | application, scenes, windows, pages, the arrangements and their keys |
 | [styles.md](styles.md) | styles resolved before the patch, visual states, the sheet |
 | [measured-layouts.md](measured-layouts.md) | frame reports, placed layouts, the scroll reader and the gallery |
+| [items.md](items.md) | the items view: identities in order, entries built when a cell asks, a source a build, the empty view |
 | [inspector.md](inspector.md) | the in-app inspector of renders |
 
 ## From an application to the tree
@@ -45,8 +46,9 @@ An application declares types; the tree under a window is views.
 ```
 
 A window's node carries its page and the library's overlay - the inspector's
-panel - and a page's node carries the view and what it declares: its
-toolbar, menus, title view and overlays. See pages.md.
+panel - and a page's node carries the view, its one child, whose node carries
+what it declares for the page - its toolbar, menus, title view and overlays -
+as slot children after its own. See pages.md.
 
 ## What a view is
 
@@ -132,5 +134,7 @@ through those members, never through spelled tokens.
 ```
 
 The tier protocols here and the tier contracts under `Contracts/Tiers` and
-`Contracts/Mixins` name the same sets, so a modifier offered on a tier is a
-member that tier's contract declares.
+`Contracts/Mixins` name the same sets - but `PageElementContract`, whose title
+and icon a view says of its page (`View+PageValues.swift`), and
+`ModifiableElement` and `ElementView`, which declare no property - so a
+modifier offered on a tier is a member that tier's contract declares.

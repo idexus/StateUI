@@ -367,7 +367,7 @@ sheets, its bar - is the view its `WindowGroup` or `Window` shows.
 | --- | --- |
 | `phase` | the last lifecycle phase reported by the host |
 | `title` | the name used by native window chrome and system window surfaces |
-| `x`, `y` | optional top-left position of the outer frame in desktop coordinates |
+| `x`, `y` | optional top-left position of the outer frame, counted from the top-left corner of its screen's work area (the screen less its menu bar, Dock or taskbar) |
 | `width`, `height` | optional requested content-area size |
 | `minimumWidth`, `minimumHeight` | optional lower content-size bounds |
 | `maximumWidth`, `maximumHeight` | optional upper content-size bounds |
@@ -458,8 +458,9 @@ The host reports `WindowPhase` through the same session:
 
 The exact path is platform-adaptive: a host reports only transitions that
 occur in its lifecycle. Each phase it reports is rendered before its next
-report, so `.onChanged(window.phase)` sees every one. Repeating the phase
-already stored changes no state, and therefore triggers no extra reaction.
+report, so `.onChanged(window.phase)` sees every one. A host reports a phase
+only when it differs from the last it reported, so a repeated native callback
+triggers no extra reaction.
 
 ```swift quote
 .onChanged(window.phase, gate: .waitForPrevious) { oldPhase, newPhase in

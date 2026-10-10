@@ -27,9 +27,9 @@ There is no style object, no resource lookup, and nothing in a host that has to
 know what a style is, which keeps each host small enough to be written again
 for another platform. The key a view asks for, `.style(.headline)`, is a
 `StyleKey` typed by its control and declared once - one spelling, one style,
-and a key of another control's or one misspelled does not compile - which
-crosses as its name; the differ consumes it and takes it off the node, the
-host having no dictionary to look one up in.
+and a key of another control's or one misspelled does not compile - which is
+written on the node as its name; the differ consumes it and takes it off the
+node before the patch, the host having no dictionary to look one up in.
 
 ## A style wears the property half
 
@@ -43,9 +43,9 @@ properties, and the modifiers themselves are written once for both.
 The style takes its node type from its target's blank initializer, so the
 target is named once, by the control itself. `StyleBag<Target, Context>` has a
 phantom context - the style itself, or one of its states - whose one job is to
-keep `visualState` from nesting: a state cannot hold a state. `Style<Target>`
-is a typealias with the context filled in, since Swift has no default generic
-arguments.
+keep `visualState` and `basedOn`, which only the style itself says, out of its
+states: a state cannot hold a state. `Style<Target>` is a typealias with the
+context filled in, since Swift has no default generic arguments.
 
 ## Precedence
 

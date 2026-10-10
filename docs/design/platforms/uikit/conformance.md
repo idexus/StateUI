@@ -18,8 +18,10 @@ loop to let what it waits for arrive, and a handler resumed on the main actor
 comes back on the main queue, which runs nothing while one of its own blocks
 does. The process ends with the report the script reads.
 
-Every test's windows stand in that one scene; a host a test ends takes its
-windows out of the scene and leaves the scene for the next. XCTest is the
+A test's host stands its window in that one scene; a test that opens a
+second window lets its host own scenes and hands it the scene iOS connects
+through `TestScene.connecting`. A host a test ends takes its windows out of
+the scene and leaves the scene for the next. XCTest is the
 simulator platform's own, read where it stands. An application on the
 simulator reads and writes the Mac's files where they are, so a run holds
 `exports` to what it says, or writes it there with

@@ -30,23 +30,23 @@ modifier, so the tree is steered by `@State` and `@Environment` alone.
 
 A scene is a set of windows and the state they share. An application declares
 its scenes, each standing at most once: it opens with its first window -
-launch opens the window of the `WindowGroup` with no name, *File ▸ New* one
-more, `openWindow` one of a kind - and ends with its last
+launch opens the window of the `WindowGroup` with no name, *File ▸ New
+Window* one more, `openWindow` one of a kind - and ends with its last
 ([scenes.md](../core/scenes.md#a-scene-stands-once)).
 
 ```text
-  struct GalleryApp: Application {
+  struct NotesApp: Application {
       @State private var library = Library()                  every scene's
       var body: some Scene {
-          GalleryScene().environment(library)
+          NotesScene().environment(library)
           Window(.about) { AboutPage() }                      a scene of its own
       }
   }
 
-  struct GalleryScene: Scene {
+  struct NotesScene: Scene {
       @State private var theme = Theme()                      the scene's
       var body: some Scene {
-          WindowGroup { MainPage() }.environment(theme)       launch, New: one more
+          WindowGroup { MainPage() }.environment(theme)       launch, New Window: one more
           Window(.fonts) { FontsPanel() }.environment(theme)  one
           WindowGroup(.document, for: UUID.self) { $id in DocumentPage(id: id) }
       }
@@ -148,9 +148,9 @@ bar and the way back show, the back button's words, the phases it hears - is
 said by modifiers on the view a page shows: `.title`, `.icon`,
 `.pageBackground`, `.showsNavigationBar`, `.showsBackButton`,
 `.backButtonTitle`, `.onAppearing`, `.onDisappearing`, `.onNavigatedTo`,
-`.onNavigatingFrom`, `.onNavigatedFrom`. Each takes a value, and a value one
-takes from a state, `$x`, is a channel the host follows without a view being
-built again.
+`.onNavigatingFrom`, `.onNavigatedFrom`. A phase modifier takes a handler and
+the others a value; a value taken from a state, `$x`, is a channel the host
+follows without a view being built again.
 
 They are held apart from the view's own values (`PageValues`, `pageSays`): the
 page's background never meets the view's `.background`, and the page has no
@@ -165,9 +165,11 @@ again although the page itself read nothing. A page carries only the phases its
 view hears; a host raises a phase for which the page carries a handler.
 
 The place decides, not the type, since any view may stand on a page. An
-arrangement standing where a page stands is the page, and takes the title and
-the icon itself, for where it is shown as an item of something else, such as a
-tab; anything else said of a page there is said once (`complain`) and left out.
+arrangement standing where a page stands is the page. A `NavigationStack`, a
+`TabView` or a `SplitView` takes the title and the icon itself, for where it is
+shown as an item of something else, such as a tab; anything else said of a page
+there - and on a `ModalStack`, whose contract declares neither, the title and
+the icon too - is said once (`complain`) and left out.
 Written on a view no page shows - inside a layout, deeper in a body - what a
 view says of its page says nothing, and is said once.
 
@@ -180,7 +182,8 @@ itself, with no page element around it. Whether a view builds one is told by
 its type (`Node.isArrangement`): an arrangement, or a composed view whose
 `body`, followed down, ends on one; the placeholder records the view's type,
 so a modifier written on the view keeps the answer. A `body` whose `if`
-chooses between an arrangement and another view cannot be told by its type,
+chooses between an arrangement and another view, or that ends on a modifier
+written on a composed view (`ModifiedContent`), cannot be told by its type,
 and stands as a view.
 
 Anywhere else an arrangement is left out of what is described and said once
@@ -188,14 +191,15 @@ Anywhere else an arrangement is left out of what is described and said once
 one. No type refuses an arrangement in a `VStack`, since a composed view may
 hide one in its `body`; the hosts show one only where a page stands. An
 arrangement fills where it stands, so it keeps what its contract declares - its
-bar, its title and icon, its own state - and leaves out, said once, what a
-view's modifier writes on it: a width, a margin, a gesture.
+bar, its title and icon where it declares them, its own state - and leaves
+out, said once, what a view's modifier writes on it: a width, a margin, a
+gesture.
 
 What a screen is - its title, its buttons - its view says of its page. An
 arrangement's bar belongs to the arrangement (`BarElement`) and looks the same
-whichever page it shows. An arrangement standing where a page stands takes its
-own title and icon from the same modifiers, for where it is shown as an item
-of something else, such as a tab.
+whichever page it shows. An arrangement other than a `ModalStack` standing
+where a page stands takes its own title and icon from the same modifiers, for
+where it is shown as an item of something else, such as a tab.
 
 ## The stack is the state
 

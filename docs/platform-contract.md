@@ -19,7 +19,7 @@ host merely implements or declares by hand earns a mark.
 | ☑️ | The member is proven by its tests, but the host's register records what is still missing; the element's page in [the control dictionary](controls/README.md) names it. |
 | ✓ | Its tests passed only through the host's own entry or record - an act the driver hands past the toolkit's input, a read of what the host keeps rather than what the toolkit holds - which the driver names. The member works and its effect is proven, by weaker evidence than ✅: it counts as met, in a row of its own in each total. |
 | – | The member will never be met by that host's family - a phone with no menu bar, a desktop whose keyboard captions no return key, a view that takes no keyboard focus - and meets the contract there: the host's register, or the case that proved it absent, says why, and the Gallery shows that family no example of it. |
-| 🧩 | Left to the application: the platform ships no control for it - a map on Android Views, WinUI 3 and GTK 4, where each provider needs the application's own key - so the host makes none, and the application registers its own control with the host, as each host's page shows ([Android Views](hosts/android.md#controls-acts-and-events-registered-in-swift)). Shown in each total, it is not counted as met: what the user gets there is the application's. |
+| 🧩 | Left to the application: the platform ships no control for it - a map on Android Views, WinUI 3, GTK 4 and the Web, where each provider needs the application's own key - so the host makes none, and the application registers its own control with the host, as each host's page shows ([Android Views](hosts/android.md#controls-acts-and-events-registered-in-swift)). Shown in each total, it is not counted as met: what the user gets there is the application's. |
 | ❌ | A test of the member failed on that host's last run; the note gives the first failure. |
 | ◐ | Some of its tests proved it and another could not run or read; the note says which. |
 | · | The driver cannot do or read what the test needs - not yet, or because the platform holds nothing the test reads; the note says which. |
@@ -153,9 +153,12 @@ application's name, the line under the title and its mark (`barTitle`,
 `barSubtitle`, `barIcon`); a page's bar takes each from the nearest arrangement
 around it that declares one. A split view's bar is both its panes': a sidebar
 with a bar of its own wears what its split view declares, and nothing from
-around the split view. A tab selector keeps the toolkit's selected and unselected
-appearance. An unwritten background retains the native material; StateUI does
-not ask a host to rasterize an arbitrary brush into page chrome.
+around the split view. On AppKit and WinUI 3 a tab selector keeps the
+toolkit's selected and unselected appearance; GTK 4 stands its switcher on a
+bar painted as its header bar is, and UIKit, Android Views and Web paint
+their tabs in the bar's colours. An unwritten background retains the native
+material; StateUI does not ask a host to rasterize an arbitrary brush into
+page chrome.
 
 On AppKit a written bar colour paints the bars alone: the band the title bar
 and toolbar cover, the window's under a floating sidebar's glass and the
@@ -196,8 +199,8 @@ contract.
 | `Window` | `NSWindow` | `UIWindow` | `Activity` | `Window` | `AdwApplicationWindow` | fixed `<div>` over the browser window |
 | `Page` | custom `NSView` | `UIViewController` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` in an `AdwToolbarView` | `<section>` |
 | `NavigationStack` | custom `NSView` stack; title, back and actions in the window's `NSToolbar` | `UINavigationController` | custom `ViewGroup` stack + `Toolbar` | custom `Panel` stack; title, back and actions in the window's `TitleBar` | `AdwNavigationView` of `AdwNavigationPage`s | `<div>` stack; one History API entry to go back |
-| `TabView` | `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` on macOS 26 and later, else the title bar's bottom accessory - with top tabs where no window serves it | `UITabBarController` | custom `ViewGroup` + `LinearLayout` tab row | custom `Panel` under a `SelectorBar` | `GtkStack` + `GtkStackSwitcher` | ARIA `tablist` of `<button>` tabs |
-| `SplitView` | `NSSplitViewController` | `UISplitViewController` | custom `ViewGroup`: a drawer where narrow, beside where wide | `NavigationView`, the sidebar in its pane | `AdwOverlaySplitView` | `<aside>` beside the detail in a CSS grid |
+| `TabView` | `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` where the tabbed view stands in a split view's detail, else the title bar's bottom accessory - with top tabs where no window serves it | `UITabBarController` | custom `ViewGroup` + `LinearLayout` tab row | custom `Panel` under a `SelectorBar` | `GtkStack` + `GtkStackSwitcher` | ARIA `tablist` of `<button>` tabs |
+| `SplitView` | `NSSplitViewController` | `UISplitViewController` | custom `ViewGroup`: a drawer where narrow, beside where wide | `NavigationView`, the sidebar in its pane | `AdwOverlaySplitView` | `<aside>` in a CSS grid: beside the detail from 900px wide, a drawer over it where narrower |
 | `ModalStack` | sheet `NSWindow` | `present(_:animated:)` | `FrameLayout` sheet over the activity | sheets of `ContentDialog`'s look in a `Grid` layer over the window | `AdwDialog` | `<dialog>` with `showModal()` |
 | `Overlay` | pass-through `NSView` above the page | pass-through `UIView` above the page | top child of a `FrameLayout` | top layer of a root `Grid` | custom `GtkWidget` in the window's `GtkOverlay` | `<div>` layered over the page |
 | `ContextMenu`, `MenuBar`, `Menu`, `MenuItem`, `Divider` | `NSMenu` / `NSMenuItem` | `UIMenu` / `UIAction`; `UIContextMenuInteraction`; `UIMenuBuilder` menu bar | `ContextMenu` / `SubMenu` / `MenuItem`; a menu bar's menus in the `Toolbar` overflow | `MenuFlyout` / `MenuBar` | `GMenu` in a `GtkPopoverMenu`; a menu bar as a `GtkMenuButton` main menu | ARIA `menu` in a `popover`; a menu bar's menus under the bar's More button |
@@ -215,7 +218,7 @@ contract.
 | `SearchField` | `NSSearchField` | `UISearchTextField` | one-line `EditText` with a search key | `AutoSuggestBox` | `GtkSearchEntry` | `<input type=search>` |
 | `Picker` | `NSPopUpButton` | pop-up `UIButton` menu | `Spinner` | `ComboBox` | `GtkDropDown` | `<select>` |
 | `DatePicker` | `NSDatePicker` | `UIDatePicker` | `TextView` opening a `DatePickerDialog` | `CalendarDatePicker` | `GtkCalendar` in a `GtkMenuButton`'s `GtkPopover` | `<input type=date>` |
-| `TimePicker` | `NSDatePicker` in time mode | `UIDatePicker` in time mode | `TextView` opening a `TimePickerDialog` | `TimePicker` | an hour's and a minute's `GtkSpinButton` in a `GtkMenuButton`'s `GtkPopover` | `<input type=time>` |
+| `TimePicker` | `NSDatePicker` showing hour and minute | `UIDatePicker` in time mode | `TextView` opening a `TimePickerDialog` | `TimePicker` | an hour's and a minute's `GtkSpinButton` in a `GtkMenuButton`'s `GtkPopover` | `<input type=time>` |
 | `Switch` | `NSSwitch` | `UISwitch` | `Switch` | `ToggleSwitch` | `GtkSwitch` | checkbox `<input>` with `role=switch` |
 | `CheckBox` | `NSButton` checkbox | `UIButton` with a box symbol | `CheckBox` | `CheckBox` | `GtkCheckButton` | `<input type=checkbox>` |
 | `RadioButton` | `NSButton` radio | `UIButton` with a circle symbol | `RadioButton` | `RadioButton` | grouped `GtkCheckButton` | `<input type=radio>` |
@@ -223,9 +226,9 @@ contract.
 | `Stepper` | `NSStepper` | `UIStepper` | custom `LinearLayout` of two `Button`s | `NumberBox` | `GtkSpinButton` | `<input role=spinbutton>` between two `<button>`s |
 | `ProgressBar` | `NSProgressIndicator` bar | `UIProgressView` | horizontal `ProgressBar` | `ProgressBar` | `GtkProgressBar` | `<progress>` |
 | `ActivityIndicator` | spinning `NSProgressIndicator` | `UIActivityIndicatorView` | indeterminate `ProgressBar` | `ProgressRing` | `GtkSpinner` | CSS ring with `role=progressbar` |
-| `Canvas` | custom `NSView` drawing | `UIView` `draw(_:)` | `View` `onDraw(Canvas)` | custom `Panel` painting a Direct2D `SurfaceImageSource` | custom `GtkWidget` snapshot | `<canvas>` |
-| `Rectangle` / `Ellipse` | `NSView` drawing `NSBezierPath` | custom `UIView` masked by a `CAShapeLayer` | `View` drawing `Path` | `Shapes.Path` in a custom `Grid` | `GskPath` in a snapshot | inline SVG `<path>` |
-| `Line` / `Path` / `Polygon` / `Polyline` | `NSView` drawing `NSBezierPath` | custom `UIView` masked by a `CAShapeLayer` | `View` drawing `Path` | `Shapes.Path` in a custom `Grid` | `GskPath` in a snapshot | inline SVG `<path>` |
+| `Canvas` | custom `NSView` drawing | custom `UIView` `draw(_:)` | custom `View` `onDraw(Canvas)` | custom `Panel` painting a Direct2D `SurfaceImageSource` | custom `GtkWidget` snapshot | `<canvas>` |
+| `Rectangle` / `Ellipse` | custom `NSView` drawing `NSBezierPath` | custom `UIView` masked by a `CAShapeLayer` | custom `View` drawing `Path` | `Shapes.Path` in a custom `Grid` | `GskPath` in a snapshot | inline SVG `<path>` |
+| `Line` / `Path` / `Polygon` / `Polyline` | custom `NSView` drawing `NSBezierPath` | custom `UIView` masked by a `CAShapeLayer` | custom `View` drawing `Path` | `Shapes.Path` in a custom `Grid` | `GskPath` in a snapshot | inline SVG `<path>` |
 | `Map` / `Marker` | `MKMapView` / `MKAnnotation` | `MKMapView` / `MKAnnotation` | the application's own, registered | the application's own, registered | the application's own, registered | the application's own, registered |
 | `WebView` | `WKWebView` | `WKWebView` | `WebView` | `WebView2`, a backend | WebKitGTK `WebKitWebView`, a backend | `<iframe>` |
 | `ItemsView` | `NSCollectionView` | `UICollectionView` | AndroidX `RecyclerView` | `ItemsView` | `GtkListView` / `GtkGridView` | ARIA `list` or `listbox` |
@@ -243,7 +246,7 @@ These surfaces lack an honest native counterpart on at least one target:
 - `TabView`: Android Views has no framework tab bar; Web has no tab element.
 - `SplitView`: Android Views has no framework drawer or split pane, so its host lays out its own; Web has no native pane.
 - `ModalStack`: Android Views has no modal page presentation, so its host slides a sheet over the activity; WinUI 3 shows one `ContentDialog` at a time, so its host stacks sheets of a dialog's look over the window.
-- The application's name and mark in the bar (`barTitle`, `barIcon`): UIKit, Android Views and GTK 4 give each page a bar of its own that names that page.
+- The application's name and mark in the bar (`barTitle`, `barIcon`): UIKit, Android Views and GTK 4 give each page a bar of its own that names that page; Web shows no mark in its bar - the browser's tab shows the site's icon.
 - Menus: Android Views has no menu bar, so a menu bar's menus join the bar's overflow; Web has no native menu element.
 - `Grid`: AppKit, UIKit, and GTK 4 have no container with star and auto tracks.
 - `CheckBox` and `RadioButton`: UIKit has neither control.
@@ -287,8 +290,8 @@ claimed for any host.
 - `device.connectivity`: `networkAccess`, `connectionProfiles`
 - `device.display`: `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate`
 - `device.info`: `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType`
-- `locale`: `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`
-- `application.info`: `name`, `packageName`, `versionString`, `buildString`, `colorScheme`
+- `locale`: `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `layoutDirection`
+- `application.info`: `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, `accentColor`
 - `application`: `phase`
 
 The public provider and its fallback values exist whatever a host supplies.
@@ -353,7 +356,7 @@ of its own; no case gives them a verdict of their own, so no page marks them:
 - identity: `id`
 - aimed control methods: `aim`
 - core reactions: `onCreated`, `onDestroying`, `onChanged`, `samples`, `engine`
-- motion selection: `motion`, `MotionValues`, `MotionLanes`
+- motion selection: `motion`, `MotionValues`
 - focus feed: `isFocused`
 
 <!-- shared:begin -->

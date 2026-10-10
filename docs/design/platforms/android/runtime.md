@@ -51,7 +51,7 @@ looper's callback runs it. The host gives the core that write at its start
 (`CoreLink.postTurns`), and the core makes it from any thread: on the UI
 thread for work it made - a state written, an act sent - and on the thread
 that queued a job, a handler's resume or a post among them. No thread of the
-host's waits, and nothing on the path enters the JVM.
+host's waits for a turn, and nothing on the path enters the JVM.
 
 ## One frame
 

@@ -115,10 +115,11 @@ its cell makes; AppKit's turning off of the others is refused.
 
 A text field's, a search field's and an editor's placeholder stands where the
 field's own words would: across the field as `horizontalTextAlignment` says,
-in the field's font. A placeholder in a colour of its own is attributed text,
-which takes no alignment from its field as a plain one does, so it carries the
-field's alignment itself. An editor's placeholder is a label over the text
-view, as wide as the text view's room, so the alignment has room to move it.
+a plain placeholder in the field's font. A placeholder in a colour of its own
+is attributed text, which takes no alignment from its field as a plain one
+does, so it carries the field's alignment itself. An editor's placeholder is
+a label over the text view, in the editor's font, as wide as the text view's
+room, so the alignment has room to move it.
 
 ## What typing is given
 

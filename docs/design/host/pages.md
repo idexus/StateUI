@@ -19,7 +19,9 @@ the tabs; the sidebar shows as it stands on screen, else as the tree says.
 A tabbed view's tabs stand in its window's row where it is the first tabbed
 view down the window's stacks and split view details (`tabsStandInWindow`):
 one in a sidebar, in a tab of another, in a sheet or inside content keeps a
-row of its own. It is read from where the tabbed view stands, each time, so a
+row of its own. The way down passes no modal stack, so one at a modal stack's
+root keeps a row of its own too, even where the window shows that modal stack
+as its page. It is read from where the tabbed view stands, each time, so a
 view moved elsewhere keeps no word it once had. A split view's sidebar is its
 first child as the patch writes it, so the answer is already right while the
 tree that holds the tabbed view is still being made.
@@ -197,8 +199,9 @@ is shown as its root under its sheets.
 A window composes one chrome from what it shows (`WindowChrome`): the title
 of the page that names it (`titledPage`) - the visible page, but tabs on a
 stack are its last place and name the window by their own title, else by the
-page beneath, never by what they show, their pages naming their tabs alone -
-else the window's, else the host's own; the way back, in the
+page beneath, never by a page they show, their pages naming their tabs alone;
+a chosen tab that is itself an arrangement names the window as that
+arrangement does - else the window's, else the host's own; the way back, in the
 words the page beneath gives, else "Back"; the actions the visible page's
 path declares (`chromeActions`) - none where the page hides its bar - each
 showing its words beside its picture where it says so and always where it

@@ -212,8 +212,10 @@ parent's business.
 An element keeps what the clean walk needs to build it without its parent:
 a composed view keeps its placeholder, a container keeps its node with the
 content still to run, the environment it provided, the scene it is in, and
-whether its sizes arrive. A leaf keeps nothing: its properties were computed by
-an ancestor's closure, and a change to them starts at that ancestor.
+whether its sizes arrive. A leaf keeps nothing, unless it declares visual
+states or wears a themed value: then it keeps its authored node, so the clean
+walk can resolve them again ([themes](#themes)). Its properties were computed
+by an ancestor's closure, and a change to them starts at that ancestor.
 
 ## Containers run their own content
 

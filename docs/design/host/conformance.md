@@ -122,6 +122,13 @@ the host's package rather than in it, and everything there links the host's
 one dynamic library. The driver reads the host's own views, so it is built
 where the host is built for testing: a debug build, `swift test`.
 
+The Web host keeps its driver and its suite in `Testing` too, for another
+reason: the suite is XCTest compiled to WebAssembly, which the package's own
+JavaScript runs - in Node over a page with just enough of a DOM, and the
+conformance suite in a browser, whose layout, focus, dialogs and input its
+cases need - and what the driver reads, that JavaScript answers through
+functions of its own (`CWebTesting`).
+
 ## A drawing read by its colours
 
 What StateUI draws itself - a shape's outline, a canvas, a box's fill - holds

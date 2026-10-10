@@ -22,8 +22,10 @@ and a host realizes the contract member by member.
 A tier is a contract with no node type of its own: members many elements share,
 declared once - every text control's font size is one member of one tier. An
 element names the tiers it wears, and a tier may wear tiers. `Contract.worn`
-lists a contract and every tier it wears, each once, nearest first; a member an
-element redeclares therefore belongs to the element.
+lists a contract and every tier it wears, each once, in the order met - depth
+first, in declaration order - the contract itself first. No contract wears two
+members of one name, so each member it wears has one owner
+([worn once](../contracts/tiers.md#worn-once-nearest-first)).
 
 What happens with no control behind it - an alert, the clock, a battery
 reporting - belongs to the application: `ApplicationTier` is a contract of

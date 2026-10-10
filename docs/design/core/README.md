@@ -29,7 +29,7 @@ The core's sources stand in one folder per topic, one element to a file, and
 ## The core at a glance
 
 ```text
-  application     Application -> Scene -> Window -> Page -> views
+  application     Application -> Scene -> windows -> a view, on a page
                   bodies READ @State; handlers WRITE @State and call acts
         |
         v
@@ -167,8 +167,8 @@ jobs (concurrency.md).
 ## Where things live
 
 Each folder of `lib/StateUI/Core/Sources/Core` is one topic, and the note beside it
-holds its reasons. A type's extensions stand in its folder, named
-`Type+Responsibility.swift`.
+holds its reasons. A type's extensions are named `Type+Responsibility.swift`
+and stand in the folder of the topic they serve, usually the type's own.
 
 ```text
   Core/State        @State and its storage, Binding and its parts,        state

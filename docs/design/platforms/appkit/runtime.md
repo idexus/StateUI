@@ -142,10 +142,10 @@ looking at, waiting its turn among the questions
 every kind's extensions and chooses several only where asked; a save panel
 offers each kind once, by its first extension, under its caption in the
 panel's menu of kinds where there are two or more, and suggests the act's
-name - an empty name is the panel's own. A save's contents are written
-beside the UI thread where the user said, in place, as a sandbox lets an
-application write the file the user chose and not a neighbour swapped in;
-the file is answered once they stand written, or the act fails with the
+name - an empty name leaves the panel's name field empty. A save's contents
+are written beside the UI thread where the user said, in place, as a sandbox
+lets an application write the file the user chose and not a neighbour swapped
+in; the file is answered once they stand written, or the act fails with the
 system's reason. A chosen file's address is its path; the sandbox keeps it
 the application's while it runs. A file is read beside the UI thread too.
 

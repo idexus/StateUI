@@ -265,12 +265,12 @@ stands in no window - as the element's first properties find it - and a GTK
 widget in a role other than its own is not named by the words it shows, so a
 heading's label is its words, written again as they change.
 
-GTK 4.14 gives assistive technology no identifier for a widget: its
-`AccessibleId` is empty for every one, a builder's id and a widget's name
-alike. A hidden state leaves out the element itself and passes its children
-up to its parent, which is what a hidden element asks; an element left out
-with its children takes the same state on its own widget alone, and the
-widgets under it keep theirs.
+GTK 4 gives assistive technology only the identifier a GtkBuilder file
+names; a widget made in code has none, so `accessibilityIdentifier` is not
+planned on GTK. A hidden state leaves out the element itself and passes its
+children up to its parent, which is what a hidden element asks; an element
+left out with its children takes the same state on its own widget alone, and
+the widgets under it keep theirs.
 
 A word said to a screen reader goes through the window's accessible, and only
 where its context is GTK's AT-SPI one: without the accessibility bus GTK

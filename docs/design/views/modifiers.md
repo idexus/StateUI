@@ -6,11 +6,13 @@ modified copy, so a view stays a value all the way down.
 
 ## A modifier returns a modified copy
 
-Every modifier goes through one operation, `modified(_:)`: copy the node,
-change one thing, return the copy. There is a single place where a change is
-stored, and only that place knows where it goes, which keeps every modifier
-working for controls, styles and composed views alike - a composed view's
-`modified` answers a `ModifiedContent` (composition.md).
+Almost every modifier goes through one operation, `modified(_:)`: copy the
+node, change one thing, return the copy. There is a single place where a
+change is stored, and only that place knows where it goes, which keeps every
+modifier working for controls, styles and composed views alike - a composed
+view's `modified` answers a `ModifiedContent` (composition.md). The few that
+edit a copy directly - `Map.markers`, a style's `basedOn` and `visualState`
+among them - do the same thing by hand.
 
 ```text
   Text("Total")           Node(Text, props: [text: "Total"])
@@ -48,8 +50,9 @@ one `SharedGate` (core/runs.md).
 
 What arrives is what the contract says or nothing. A payload with a value
 missing, one too many, or one of another kind is reported once and does not
-reach the handler. Gestures follow the same rule: a swipe handler run with an
-empty direction set would say a swipe happened with no direction, which no
+reach the handler - but for an optional value at its end, which may be left
+out and reads as nil. Gestures follow the same rule: a swipe handler run with
+an empty direction set would say a swipe happened with no direction, which no
 test of the direction could tell from a real one.
 
 ## Slot children
@@ -95,9 +98,10 @@ An aim (`@Aim`, `.aim(_:)`) is who a view is to an act; `.id(_:)` is who it is
 to the differ. The differ fills the aim with the element's own identity as it
 walks, so there is nothing to spell and nothing to collide. A view carrying
 only an aim is still matched by where it was written, so a collection's rows
-keep wanting `.id()`, and the two compose. The aim is typed, `Aim<Self>`, so
-the declaration and the view agree at compile time and the aim offers exactly
-the acts the control has.
+keep wanting `.id()`, and the two compose. The aim is typed - `Aim<Self>`, or
+the contract or control it reaches (`Aim<ItemsViewContract>`) - so the
+declaration and the view agree at compile time and the aim offers exactly the
+acts the control has.
 
 ## Showing and hiding cross fades
 
@@ -105,8 +109,9 @@ the acts the control has.
 hidden fades to nothing first and goes when it gets there, and one being shown
 appears at nothing and fades in. Two views in one place - a tab chosen, a
 panel swapped - therefore cross-fade. The view stays in the tree the whole
-time and is hidden once the fade lands; a view on its way out answers no touch,
-so a tap during the change reaches what is arriving. A view described for the
+time and is hidden once the fade lands. On AppKit a view on its way out
+answers no touch, so a tap during the change reaches what is arriving; the
+other hosts keep it touchable until it has faded. A view described for the
 first time is simply shown or not, since nothing anybody saw is changing, and
 `.motion(.none)` makes the property a plain flag again.
 

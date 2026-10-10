@@ -15,8 +15,11 @@ lets its entry go. The user's choice is the collection's selection -
 none, one or many as the tree says - told back in the list's order; what
 the tree selects is selected inside `ProgramWrite` and told nobody. An item
 opened is the collection's primary action, which a tap performs.
-`scrollTo` scrolls to the item's index path at the anchor it names; nearest
-scrolls only where the item is not wholly in view, the shorter way. The end
+`scrollTo` stands the item where its anchor says, by the host layer's rule
+(`ScrollAnchor.place`), from the item's frame as the layout holds it, within
+the room the collection's insets leave and within its reach - gliding there
+unless the user asks for less motion; nearest scrolls only where the item is
+not wholly in view, the shorter way. The end
 reached is watched as the collection scrolls and lays out.
 
 ## The layout

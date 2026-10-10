@@ -111,12 +111,14 @@ its measure: the run moves its children without the layout measuring again.
 
 What the host layer's own rules realize on every element - a view's place in
 its layout and its depth among the siblings it overlaps, its drawing over that
-place, where it stands as the tree reads it
-and what the user does to it - is declared once, as groups a host's registry
-names (`everyElementTakesItsPlace`, `everyElementIsDrawnOverItsPlace`,
-`everyElementMeetsAssistiveTechnology`, `everyElementHearsTheUser`): a host
-realizing them through those rules says so in one line each, and the control dictionary reads the members as every
-host alike.
+place, where it stands as the tree reads it, what the user does to it, a drag
+between views and the files dropped on it - is declared once, as groups a
+host's registry names (`everyElementTakesItsPlace`,
+`everyElementIsDrawnOverItsPlace`, `everyElementMeetsAssistiveTechnology`,
+`everyElementHearsTheUser`, `everyElementDragsAndDrops`,
+`everyElementTakesDroppedFiles`): a host realizing them through those rules
+says so in one line each, and the control dictionary reads the members as
+every host alike.
 
 ## Views by number
 

@@ -137,10 +137,11 @@ if !arrived {
 ```
 
 `true` means the value reached that move's destination. `false` means a newer
-destination, another write to the state, or `stop()` superseded it. An
-animation that has nothing to cover completes with `true` immediately. A
-custom-engine state also answers immediately because the engine, rather than
-the host's animator, owns its completion.
+destination, another write to the state, or `stop()` superseded it. A move
+already at its destination, or made while the user asks for less motion,
+completes with `true` on the host's next frame; a state nothing wears yet
+completes with `true` at once. A custom-engine state also answers at once
+because the engine, rather than the host's animator, owns its completion.
 
 The destination is written as `move` is called, so moves sent one after
 another are in the air together, each awaited apart. An unrelated

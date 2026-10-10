@@ -38,10 +38,13 @@ corners rounded each as the element says; a `Rectangle` rounds all four alike.
 A view's background is the ground under its whole frame, painted the way
 WinUI's own templates paint one (`stateui_winui_set_background`): a control's
 `Background` and the theme resources its template draws that ground from -
-the container of a switch or a slider (`ToggleSwitchContainerBackground`,
-`SliderContainerBackground`), the field of a text box, a search box or a
-number box (`TextControlBackground`), of a combo box (`ComboBoxBackground`),
-of a date picker (`CalendarDatePickerBackground`) and of a time picker
+a radio button's own (`RadioButtonBackground`) and a check box's, checked or
+not (`CheckBoxBackgroundUnchecked`, `CheckBoxBackgroundChecked`,
+`CheckBoxBackgroundIndeterminate`), the container of a switch or a slider
+(`ToggleSwitchContainerBackground`, `SliderContainerBackground`), the field
+of a text box, a search box or a number box (`TextControlBackground`), of a
+combo box (`ComboBoxBackground`), of a date picker
+(`CalendarDatePickerBackground`) and of a time picker
 (`TimePickerButtonBackground`), each in every state - and a panel's
 `Background`. A canvas clears its surface to its ground as it replays its
 drawing - a brush's first colour alone. A layout paints its box, a label its

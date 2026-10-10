@@ -49,9 +49,13 @@ holds, as `HostDrawing` lays it out in three flat lists:
 - `strings`: the text the instructions write.
 
 ```text
-  Draw.fillColor(.red)                      ints     [0, #FFFF0000, 13, 17, 1, 0, 0]
-  Draw.fillRoundedRectangle(0, 0, 90, 30, 8)   numbers  [0, 0, 90, 30, 8, 0, 0, 90, 30]
-  Draw.text("Go", 0, 0, 90, 30, .center)   strings  ["Go"]
+  Draw.fillColor(.red)
+  Draw.fillRoundedRectangle(x: 0, y: 0, width: 90, height: 30, cornerRadius: 8)
+  Draw.text("Go", x: 0, y: 0, width: 90, height: 30, horizontalAlignment: .center)
+
+  ints     [0, #FFFF0000, 13, 17, 1, 0, 0]
+  numbers  [0, 0, 90, 30, 8, 0, 0, 90, 30]
+  strings  ["Go"]
 ```
 
 A path's arcs arrive as the shared parser's cubic curves, so no relay parses
@@ -92,5 +96,5 @@ reading direction.
 
 A colour written `Color(light:dark:)` goes into its record as both halves.
 The differ picks the half in force as it builds the canvas, which builds
-again when the system theme changes; see
+again when the theme in force changes; see
 [a pair for each theme](colour-and-theme.md#a-pair-for-each-theme).

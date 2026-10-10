@@ -105,12 +105,12 @@ difference the list exists for.
 
 ## State declared first
 
-The library's composed views declare their `@State` first, above the stored
-properties that may hold other views. A box is adopted next render by its path:
-the stored property's name at every level, the branch a keyed child came from
-and the type of any view stored along the way. A view stored below may carry
-boxes of its own under paths through it, and the view's own state stays apart
-from them at the top.
+The library's composed views declare their `@State` above any stored property
+that may hold another view. A box is adopted next render by its path: the
+stored property's name at every level, the branch a keyed child came from and
+the type of any view stored along the way. A view stored below may carry boxes
+of its own under paths through it, and the view's own state stays apart from
+them at the top.
 
 ## Handlers capture locals
 

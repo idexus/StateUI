@@ -29,7 +29,9 @@ user's font scale applies to it as it does to every application's text.
 A layout keeps the sizes it measured for each width offered. Anything that
 can change a size - a child arriving or leaving, a spacing, a padding, a
 property of a descendant that is not only drawn - forgets the kept sizes from
-that element up to the root and asks Android to lay out again.
+that element up to the root - or, in an ItemsView, up to the cell holding
+it, whose list's size never follows its items - and asks Android to lay out
+again.
 
 ## Children past the edges
 
@@ -55,7 +57,9 @@ children are stacked down inside the document, as one.
 The native scrollers take the element's direction rather than the
 activity's: one right to left starts at its end, one left to right at its
 first column, so a block of code told `.leftToRight` starts at its first
-column in a language written right to left.
+column in a language written right to left. The document, and the stack
+holding several children, lay out in that direction too: right to left, the
+content stands from the document's right edge.
 
 What the user does is Android's - the drag, the throw, the edge's glow - and
 the host hears each move of either scroller and when a finger takes hold and

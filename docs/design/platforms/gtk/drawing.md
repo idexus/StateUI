@@ -68,10 +68,11 @@ path, a polygon and a polyline draw a geometry of their own - a path's data
 read by the core's parser, its arcs as curves - placed in the room by the host
 layer's rule ([a shape's own geometry](../../host/layout.md#a-shapes-own-geometry))
 from the bounds GSK measures. The fill and the outline are the shape's
-brushes painted through the path - a gradient runs across the shape it fills;
-dashes, gaps and their offset are outline widths in StateUI and lengths in
-GSK, so they are multiplied by the width. A shape has no size of its own: it
-takes the room its layout gives it.
+brushes painted through the path - a gradient runs across the shape's room,
+widened by the outline's width on every side; dashes, gaps and their offset
+are outline widths in StateUI and lengths in GSK, so they are multiplied by
+the width. A shape has no size of its own: it takes the room its layout gives
+it.
 
 ## A canvas
 

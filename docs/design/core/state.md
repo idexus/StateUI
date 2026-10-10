@@ -173,10 +173,10 @@ reshaped rather than refused, because the host has no picture of it yet.
 ## What a host reads lanes as
 
 A value that lies as numbers is a `LaneValue`, and its type says what a host
-reads its lanes as: numbers, a Boolean, a choice or a colour (`LaneKind`). A
-registration takes the kind from the value it is handed and the patch carries
-it beside the state's door, so a value said from a state reaches the control
-as the same value said directly - `.isOn($x)` a Boolean,
+reads its lanes as: numbers, a Boolean, a choice, a colour or a material
+(`LaneKind`). A registration takes the kind from the value it is handed and
+the patch carries it beside the state's door, so a value said from a state
+reaches the control as the same value said directly - `.isOn($x)` a Boolean,
 `.horizontalAlignment($side)` a case, an application's own `Bool` member a
 Boolean too. A host reading lanes by the property's name would know only the
 names it lists, and any other member would arrive as a number.

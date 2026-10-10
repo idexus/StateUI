@@ -19,10 +19,10 @@ casts GTK's macros make are a pointer reinterpreted as another class:
 
 `g_signal_connect` is a macro; the host calls `g_signal_connect_data`, the
 handler a C function handed a number as its data - a view's, or one a window,
-a sheet, a question or a menu item keeps of its own. A C function can
-capture nothing, and a widget's pointer is not `Sendable`: the number is, so
-the handler finds its view by the number, on the main actor, and does
-nothing once the view has gone.
+a sheet, a question, a context menu or a menu item keeps of its own. A C
+function can capture nothing, and a widget's pointer is not `Sendable`: the
+number is, so the handler finds its view by the number, on the main actor,
+and does nothing once the view has gone.
 
 A handler's type is the C shape GTK calls it with - the instance, what the
 signal hands, the number - one for each shape the host hears: nothing, one

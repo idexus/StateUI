@@ -350,8 +350,9 @@ one test a family - `AppKitConformanceTests/testButton` - and the longest in
 parts, each a test of its own, which `--parallel` runs side by side.
 
 A run holds what it says to `lib/StateUI/exports/`: what the host declares to
-`appkit.txt`, and each family's verdicts to `marks/appkit/<Family>.txt`; a
-run that says otherwise fails. `STATEUI_UPDATE_EXPORTS=1` writes them
+`appkit.txt`, and each family's verdicts to `marks/appkit/<Family>.txt` - a
+family run in parts to `marks/appkit/<Family>-<part>.txt`, one file a part;
+a run that says otherwise fails. `STATEUI_UPDATE_EXPORTS=1` writes them
 instead, each verdict file under the revision its family stands at in
 `lib/StateUI/StateUI.Conformance/revisions.txt`, and `STATEUI_STALE_ONLY=1`
 runs only the families whose verdicts stand at another revision, or at none:

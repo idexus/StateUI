@@ -38,11 +38,12 @@ plain text, its shadow the view, the view's number its local state; a view
 that takes drops takes a drag of plain text as it starts. The listener tells
 the host the drag over the view at each of Android's entering and moving,
 its leaving, the drop with the clip's text, and - for the view whose own
-drag it is - its start and, wherever it ended, its end. The host layer's
-rule makes over once and no leave after a drop. A view taking files takes a
-drag of another application's documents - anything but plain text - and its
-drop asks the activity for leave to read them, kept while the application
-runs, and hands over each document's address and name.
+drag it is - its end, wherever it ended; the long press tells its start as
+the drag begins. The host layer's rule makes over once and no leave after a
+drop. A view taking files takes a drag of another application's documents -
+anything but plain text - and its drop asks the activity for leave to read
+them, kept while the application runs, and hands over each document's address
+and name.
 
 ## A slider in steps
 
@@ -151,8 +152,9 @@ is. The label's letter spacing is in points and Android counts it in the
 text's own size, so it is worked out again whenever the size changes; a
 run's own spacing is not drawn, as no span of Android's spaces letters. A line that is
 cut or truncated is one line and only a truncated one says so; otherwise the
-label wraps, to at most as many lines as it allows. A stated width is the
-width a view is measured at, so wrapped words are as tall as they will stand.
+label wraps, to at most as many lines as it allows. A stated width, within
+the room its layout offers, is the width a view is measured at, so wrapped
+words are as tall as they will stand.
 
 ## A button's size
 
