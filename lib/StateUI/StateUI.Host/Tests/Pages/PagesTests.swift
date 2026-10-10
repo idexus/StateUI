@@ -78,23 +78,32 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(told, [9, 10])
     }
 
-    /// A tabbed view's tabs stand in the window's row down its stacks and split view details, and nowhere else.
+    /// A tabbed view's tabs stand in the window's row down its stacks, its split view details and a modal stack's
+    /// root - the page the window shows - and nowhere else: never in a sidebar, a tab of another or a sheet.
     func testTabsStandInTheWindowDownItsStacksAndDetails() throws {
         let tabs = { (id: String) in self.node(id, .tabView, children: [self.node("\(id).page", .page)]) }
         let runtime = runtime(node("window", .window, children: [
-            node("split", .splitView, children: [
-                tabs("sidebar"),
-                node("stack", .navigationStack, children: [node("detail", .tabView, children: [tabs("inner")])]),
+            node("modal", .modalStack, children: [
+                node("split", .splitView, children: [
+                    tabs("sidebar"),
+                    node("stack", .navigationStack, children: [node("detail", .tabView, children: [tabs("inner")])]),
+                ]),
+                tabs("sheet"),
             ]),
-            node("sheets", .modalStack, children: [tabs("sheet")]),
         ])) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
         let stands = { (id: String) in root.first(id: .manual(id))?.tabsStandInWindow }
 
-        XCTAssertEqual(stands("detail"), true)
+        XCTAssertEqual(stands("detail"), true, "down a modal stack's root, a split view's detail and a stack")
+        XCTAssertTrue(root.first(id: .manual("modal"))?.visibleTabView === root.first(id: .manual("detail")))
         XCTAssertEqual(stands("sidebar"), false, "a sidebar keeps its own row")
         XCTAssertEqual(stands("inner"), false, "a tab of another keeps its own row")
         XCTAssertEqual(stands("sheet"), false, "a sheet keeps its own row")
+
+        let bare = self.runtime(node("window", .window, children: [
+            node("modal", .modalStack, children: [tabs("root")]),
+        ])) { _ in }
+        XCTAssertEqual(bare.tree.root?.first(id: .manual("root"))?.tabsStandInWindow, true, "a modal stack's root")
     }
 
     /// A stack shows its bar over a page that keeps one, and over tabs only where the chosen tab stands in no stack of

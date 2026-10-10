@@ -17,14 +17,14 @@ tab shown is the one the user chose, else the one the tree says, kept within
 the tabs; the sidebar shows as it stands on screen, else as the tree says.
 
 A tabbed view's tabs stand in its window's row where it is the first tabbed
-view down the window's stacks and split view details (`tabsStandInWindow`):
-one in a sidebar, in a tab of another, in a sheet or inside content keeps a
-row of its own. The way down passes no modal stack, so one at a modal stack's
-root keeps a row of its own too, even where the window shows that modal stack
-as its page. It is read from where the tabbed view stands, each time, so a
-view moved elsewhere keeps no word it once had. A split view's sidebar is its
-first child as the patch writes it, so the answer is already right while the
-tree that holds the tabbed view is still being made.
+view down the window's stacks, split view details and a modal stack's root -
+the page the window shows under its sheets (`tabsStandInWindow`): one in a
+sidebar, in a tab of another, in a sheet or inside content keeps a row of its
+own. It is read from where the tabbed view stands, each time, so a view moved
+elsewhere keeps no word it once had. A split view's sidebar and a modal
+stack's root are their first children as the patch writes them, so the answer
+is already right while the tree that holds the tabbed view is still being
+made.
 
 ## A page's phases
 

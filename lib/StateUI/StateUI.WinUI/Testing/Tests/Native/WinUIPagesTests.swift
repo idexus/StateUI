@@ -399,6 +399,25 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// A tabbed detail under a modal stack - the window's page, its sheets over it - stands its tabs across the
+    /// detail as it does with no modal stack.
+    func testATabbedDetailUnderAModalStackStandsItsTabsAcrossTheDetail() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                ModalStack(State(wrappedValue: [Int]()).projectedValue) {
+                    SplitView(State(wrappedValue: true).projectedValue) {
+                        TitledPage(title: "Menu")
+                    } detail: {
+                        TabView([0, 1]) { number in TitledPage(title: "Tab \(number)") }
+                    }
+                } destination: { number in TitledPage(title: "Sheet \(number)") }
+            }
+            let window = try XCTUnwrap(host.window)
+            let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
+            XCTAssertTrue(split.detailRow === window.tabRow)
+        }
+    }
+
     /// A page that asks for the focus as it appears holds it in a new arrangement of the window - a split view in
     /// place of the stack a sign-in stood on - though the field that held it leaves with that stack.
     func testAPageInANewArrangementHoldsTheFocusItAskedFor() throws {

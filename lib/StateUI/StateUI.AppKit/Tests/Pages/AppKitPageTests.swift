@@ -574,6 +574,27 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertFalse(controller.tabRowStandsInTitleBarForTesting)
     }
 
+    /// A tabbed detail under a modal stack - the window's page, its sheets over
+    /// it - stands its tabs in the window's row as it does with no modal stack.
+    @MainActor
+    func testATabbedDetailUnderAModalStackTakesTheWindowsRow() throws {
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        renderer.applyForTesting(tree(flyout(
+            presented: true,
+            menu: page("menu", title: "Menu", events: 100),
+            detail: tabbed([
+                page("home", title: "Home", events: 200),
+                page("browse", title: "Browse", events: 300),
+            ], selected: 0)), modals: []))
+
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let split = try XCTUnwrap(renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
+        XCTAssertEqual(controller.tabRowForTesting.controlForTesting.segmentCount, 2)
+        XCTAssertTrue(split.detailRowForTesting === controller.tabRowForTesting)
+    }
+
     /// A tabbed view in a tab of another is a native tab view with its tabs on
     /// the top edge of its content, named by its pages; a tab clicked there is
     /// the user choosing. The window's toolbar serves only the outer one.
