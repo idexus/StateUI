@@ -27,7 +27,10 @@ the tree says it. An outline keeps its width however the path is placed or scale
 host layer measures them (`ShapeArithmetic.dashLengths`). A gradient is an
 SVG gradient of the shape's own, in the page's units over the room and one
 line width around it, so a fraction of the shape means the same in its fill
-and its outline; a colour is the path's own `fill` or `stroke`.
+and its outline; a colour is the path's own `fill` or `stroke`. The page's
+units are the path's own user space, which its transform places, so the
+gradient carries that transform undone (`gradientTransform`,
+`WebVector.inverse`) and stays over the room however the path is placed.
 
 The trap: a gradient in the units of the path's bounding box would follow a
 placed or dashed path rather than the room, and stretch with its aspect; the

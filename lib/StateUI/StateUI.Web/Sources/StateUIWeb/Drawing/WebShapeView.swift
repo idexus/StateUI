@@ -67,38 +67,42 @@ final class WebShapeView: WebDOMView {
         let outlined = stroke != nil && lineWidth > 0
         let inset = outlined ? lineWidth / 2 : 0
         let room = Rect(x: inset, y: inset, width: max(0, width - inset * 2), height: max(0, height - inset * 2))
+        // The path's own transform, which a gradient over the room undoes: it lies in the path's units.
+        let placed: [Double]?
         switch geometry {
         case .rectangle(let radii, let transform):
             path.attribute("d", WebVector.rounded(room, radii: radii))
             path.attribute("fill-rule", nil)
-            path.attribute("transform", transform.flatMap(WebVector.matrix))
+            placed = transform
         case .ellipse(let transform):
             path.attribute("d", WebVector.ellipse(in: room))
             path.attribute("fill-rule", nil)
-            path.attribute("transform", transform.flatMap(WebVector.matrix))
+            placed = transform
         case .authored(let commands, let evenOdd, let aspect, let transform):
             path.attribute("d", WebVector.path(commands))
             path.attribute("fill-rule", evenOdd ? "evenodd" : "nonzero")
-            let placement = ShapeArithmetic.placement(
+            placed = ShapeArithmetic.placement(
                 of: WebRelay.shapeBounds(of: path.node), in: LayoutSize(width: width, height: height),
                 aspect: aspect, transform: transform)
-            path.attribute("transform", WebVector.matrix(placement))
         }
+        path.attribute("transform", placed.flatMap(WebVector.matrix))
         let painted = Rect(x: -lineWidth, y: -lineWidth, width: width + lineWidth * 2, height: height + lineWidth * 2)
+        let undone = placed.flatMap(WebVector.inverse).flatMap(WebVector.matrix)
         for gone in shown { gone.detach() }
         shown = []
-        path.attribute("fill", brush(fill, "fill", over: painted))
-        path.attribute("stroke", outlined ? brush(stroke, "stroke", over: painted) : "none")
+        path.attribute("fill", brush(fill, "fill", over: painted, undoing: undone))
+        path.attribute("stroke", outlined ? brush(stroke, "stroke", over: painted, undoing: undone) : "none")
     }
 
     /// A brush as SVG paints it over `painted`: a colour, or a gradient of its own, its geometry in that room.
-    private func brush(_ value: HostValue?, _ role: String, over painted: Rect) -> String {
+    private func brush(_ value: HostValue?, _ role: String, over painted: Rect, undoing placed: String?) -> String {
         guard let gradient = WebVector.gradient(HostBrush(value), over: painted, id: "stateui-\(serial)-\(role)") else {
             return WebCSS.color(HostBrush(value).firstColor) ?? "none"
         }
         brushes.attribute("data-brushes", "")
         let made = WebDOMView(vector: gradient.tag)
         for (name, written) in gradient.attributes { made.attribute(name, written) }
+        made.attribute("gradientTransform", placed)
         for (index, stop) in gradient.stops.enumerated() {
             let element = WebDOMView(vector: "stop")
             element.attribute("offset", WebCSS.number(stop.offset))
