@@ -77,6 +77,15 @@ final class PlacesRulesTests: XCTestCase {
             [1, 2, 30, 40, 11, 52, 11, 20])
     }
 
+    /// A view says where it stands once a layout placed it - StateUI's, or its toolkit's giving it a size - and
+    /// never before: a view meets a display frame before the pass that places it.
+    func testAViewSaysWhereItStandsOnlyOnceLaidOut() {
+        XCTAssertFalse(MountedElement.isLaidOut(placed: false, width: 0, height: 0), "no layout placed it yet")
+        XCTAssertTrue(MountedElement.isLaidOut(placed: true, width: 0, height: 0), "StateUI's layout placed it, empty")
+        XCTAssertTrue(MountedElement.isLaidOut(placed: false, width: 40, height: 0), "the toolkit gave it a width")
+        XCTAssertTrue(MountedElement.isLaidOut(placed: false, width: 0, height: 12), "or a height")
+    }
+
     /// What only paints, places a cursor, reports a value or is read by assistive technology never asks for a new
     /// measure, on any host; what changes a size always does.
     func testOnlyWhatChangesASizeIsMeasuredAgain() {

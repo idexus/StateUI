@@ -256,7 +256,10 @@ says it too (items.md, `The view moving`). A host says only what its
 toolkit knows: the numbers of the place. It says nothing while the view
 stands in no window or before a layout placed it - a view that joins a shown
 page meets a display frame before the layout pass that places it - so the
-first report a handler hears is where the view is laid out, never zeros.
+first report a handler hears is where the view is laid out, never zeros. A
+view is laid out once StateUI's layout placed it or its toolkit gave it a
+size, the same on every native host (`MountedElement.isLaidOut`); the Web
+asks the browser whether the element has a box.
 A toolkit that tells, once it has laid out and before it draws, that it did
 lets what was laid out say it at once (`FrameFollowers.reportLaidOut`), so a
 size worked out from a frame is drawn in the frame that measured it; a

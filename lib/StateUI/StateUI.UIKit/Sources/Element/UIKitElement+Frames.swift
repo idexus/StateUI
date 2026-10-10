@@ -25,7 +25,9 @@ extension UIKitElement: FrameReporter {
     /// under the page's bars as well as the screen's; nil for a view in no window, or one no layout placed yet -
     /// StateUI's, or UIKit's giving it a size.
     func frameNumbers() -> [Double]? {
-        guard let view, let window = view.window, isPlaced || view.bounds.size != .zero else { return nil }
+        guard let view, let window = view.window,
+              MountedElement.isLaidOut(placed: isPlaced, width: view.bounds.width, height: view.bounds.height)
+        else { return nil }
         let corner = view.convert(view.bounds, to: window).origin
         let safe = Self.safeCorner(of: view, in: window)
         return MountedElement.frameNumbers(
