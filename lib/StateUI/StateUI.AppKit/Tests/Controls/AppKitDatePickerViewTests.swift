@@ -9,6 +9,7 @@ import AppKit
 import StateUIConformance
 import XCTest
 
+@MainActor
 final class AppKitDatePickerViewTests: XCTestCase {
     /// The range is AppKit's field's, and a day past it stands at its end.
     @MainActor

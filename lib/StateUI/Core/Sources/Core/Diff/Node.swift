@@ -87,6 +87,7 @@ public enum PropValue: Equatable, Sendable {
     }
 
     /// This value with the half in force picked - a read of the theme.
+    @MainActor
     func resolvingTheme() -> PropValue {
         switch self {
         case .themed(let light, let dark):
@@ -129,12 +130,12 @@ public enum PropValue: Equatable, Sendable {
         return nil
     }
 
-    /// The number as a whole one, when this value is a number - what an index
-    /// or a position payload is read with. Rounds nothing: 2.0 answers 2, and
-    /// text answers nil.
+    /// The number's whole part, when this value is a finite number - what an
+    /// index or a position payload is read with: 2.7 answers 2; text, infinity
+    /// or a number past `Int` answers nil.
     public var int: Int? {
-        if case .number(let value) = self { return Int(value) }
-        return nil
+        guard case .number(let value) = self, value.isFinite else { return nil }
+        return Int(exactly: value.rounded(.towardZero))
     }
 
     /// True or false, when this value is one - nil for any other kind.
@@ -195,28 +196,26 @@ extension [PropValue] {
     }
 }
 
-/// What a StateUI event runs. It may await, and usually does not:
+/// What a handler that awaits runs - through a gate, or once by `.onCreated`
+/// and `.onDestroying`:
 ///
-///     Button("Save").onClicked { saved = true }
-///     Button("Open").onClicked { path.append(.details) }
+///     Button("Save").onClicked(gate: .ignoreWhileRunning) { try await model.save() }
 ///
-/// It runs on `@MainActor`, the UI thread's actor: a handler that never awaits
-/// finishes before the event returns, and one that awaits resumes in a later
-/// turn. What it throws is reported to the host.
-public typealias EventHandler = nonisolated(nonsending) () async throws -> Void
+/// It runs on `@MainActor`, up to its first `await` inside its event; what it
+/// throws is reported to the host.
+public typealias EventHandler = @MainActor () async throws -> Void
 
 /// What an event that carries values runs - one parameter for each, in the order
 /// the event declares them. An event with nothing to say takes an `EventHandler`.
 ///
-///     TextField("").onTextChanged { text in query = text }
-///     .onEvent(NotesContract.batteryChanged) { level, charging in … }
-public typealias ValueEventHandler<each Value> = nonisolated(nonsending) (repeat each Value) async throws -> Void
+///     TextField("").onTextChanged(gate: .cancelPrevious) { text in try await model.search(text) }
+///     let heard = HostEvents.on(NotesContract.batteryChanged, gate: .none) { level, charging in … }
+public typealias ValueEventHandler<each Value> = @MainActor (repeat each Value) async throws -> Void
 
 /// One element of the UI tree: its type, properties, children and handlers.
 ///
-/// Every element ends up as one, made from its contract, and a `Node` is itself
-/// an `Element`, so one goes into any builder - which is how an application
-/// describes a control it registered with a host:
+/// Every element ends up as one, made from its contract - which is how an
+/// application describes a control it registered with a host:
 ///
 ///     struct Beacon: ElementView {
 ///         var node = Node(contract: BeaconContract.self)
@@ -228,6 +227,7 @@ public typealias ValueEventHandler<each Value> = nonisolated(nonsending) (repeat
 ///
 /// A type no host resolves draws the unknown-control marker rather than hiding
 /// the rest of the interface.
+@MainActor
 public struct Node {
     /// The element's StateUI type token, such as `.text`,
     /// `.vStack`, or an application's own registered type.
@@ -238,13 +238,25 @@ public struct Node {
     /// a collection's rows need one.
     public var id: String?
 
+    /// The value `id` was written from, compared as that value: what tells a repeated
+    /// identity from two that only describe themselves alike.
+    var identity: AnyHashable?
+
+    /// Writes `value` as who this element is: the value itself, and its name in the
+    /// patch, `String(describing:)`.
+    /// Design: docs/design/core/identity-and-diffing.md#repeated-ids
+    mutating func identify(_ value: some Hashable) {
+        identity = AnyHashable(value)
+        id = String(describing: value)
+    }
+
     /// The aim put on this view with `.aim(_:)`: a box the differ fills with the
     /// element's key. It takes no part in matching and never crosses.
     var aim: AimBox?
 
     /// The readings asked for with `.samples(_:into:_:)`, for the differ to put on
     /// the values they read. Never crosses (Sampling.swift).
-    var samples: [(image: HostStorage, into: ObjectIdentifier, asks: Asks, take: @Sendable () -> Void)] = []
+    var samples: [(image: HostStorage, into: ObjectIdentifier, asks: Asks, take: @MainActor () -> Void)] = []
 
     /// The objects `.environment()` wrote here, in writing order, provided to this
     /// element and its subtree by type. Never crosses.
@@ -285,8 +297,9 @@ public struct Node {
     var visualStates: [DeclaredState] = []
     var visualStateListeners: [VisualStateListener] = []
 
-    /// Each event's handler; the ids belong to the element, assigned by the differ.
-    var events: [Event: EventHandler]
+    /// Each event's handlers in written order, each with the gate it passes through; the ids belong to the element,
+    /// assigned by the differ.
+    var events: [Event: [Handler]]
 
     /// The properties driven by a state and how each crosses - what `.opacity($fade)`
     /// records instead of a value (StateAttachment.swift).
@@ -327,15 +340,16 @@ public struct Node {
     /// What the view says of the page it stands on, apart from its own values (PageValues.swift).
     var pageValues: PageValues?
 
-    /// Adds a handler beside any the event already has, never instead of it.
+    /// Adds a handler beside any the event already has, never instead of it; it starts runs as an owner of its own.
     /// Design: docs/design/core/identity-and-diffing.md#handlers-and-their-ids
-    mutating func addHandler(_ event: Event, _ handler: @escaping EventHandler) {
-        let existing = events[event]
+    mutating func addHandler(_ event: Event, gate: some Gate, _ handler: @escaping EventHandler) {
+        events[event, default: []].append(Handler(run: handler, gate: gate))
+    }
 
-        events[event] = {
-            try await existing?()
-            try await handler()
-        }
+    /// Takes `handlers` for `event` after any it already has - what is written on a composed view, moved onto
+    /// its body.
+    mutating func addHandlers(_ event: Event, _ handlers: [Handler]) {
+        events[event, default: []] += handlers
     }
 
     /// A node of a type with its parts already made - what `Node(contract:)` and the
@@ -351,7 +365,7 @@ public struct Node {
         self.id = id
         self.props = props
         self.children = children
-        self.events = events
+        self.events = events.mapValues { [Handler(run: $0, gate: .none)] }
     }
 
     /// A node of an element's own type: how every element's view begins.
@@ -376,6 +390,7 @@ public struct Node {
 
 /// Anything that describes itself as a UI tree. A view is a value; StateUI reads
 /// `node` whenever it needs the element's description.
+@MainActor
 public protocol Element {
     /// This element as a node, read afresh on every render.
     var node: Node { get }

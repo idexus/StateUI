@@ -114,7 +114,7 @@ private struct Stepping: View {
     let ran: Ran
 
     var body: some View {
-        Text("stepping").engine(following: $step) { cycle in
+        Text("stepping").engine(tracking: $step) { cycle in
             ran.note("stepping \(step)", cycle)
 
             switch step {
@@ -255,29 +255,7 @@ private final class Stamped: FollowedState {
     func write() { written.add(1, ordering: .relaxed) }
 }
 
-/// The host's doorbell in miniature: a thread of its own asking a board whether anything is awake, over and over,
-/// until it is told to stop.
-private final class Doorbell: @unchecked Sendable {
-    private let stopped = Atomic(false)
-    private let finished = DispatchSemaphore(value: 0)
-    let asked = Atomic(0)
-
-    init(asking board: CycleBoard) {
-        Thread {
-            while !self.stopped.load(ordering: .relaxed) {
-                _ = board.awake
-                self.asked.add(1, ordering: .relaxed)
-            }
-            self.finished.signal()
-        }.start()
-    }
-
-    func stop() {
-        stopped.store(true, ordering: .relaxed)
-        finished.wait()
-    }
-}
-
+@MainActor
 final class CycleTests: XCTestCase {
     private var board: CycleBoard { Renderer.shared.board(for: .display) }
 
@@ -286,8 +264,7 @@ final class CycleTests: XCTestCase {
         EngineCycle(sync: .display, now: now, elapsed: 16, count: 1, reducesMotion: false)
     }
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         Renderer.shared.clearStates()
     }
@@ -577,10 +554,9 @@ final class CycleTests: XCTestCase {
         XCTAssertFalse(board.cycle(now: 96, reducesMotion: false).awake)
     }
 
-    /// The plain form takes any number of states of different values and a
-    /// closure of any length, and Swift resolves that only with the two forms
-    /// shaped as they are - `any Followable` here, a parameter pack on the
-    /// answering one (see `Followable`). Pinned so the shape stays.
+    /// The plain form takes states of different values and a closure of many
+    /// statements: its label alone tells it from the tracking form, so both
+    /// take packs. Pinned so the shape stays.
     func testAnEngineFollowsTwoStatesWithAClosureOfManyStatements() {
         let ran = Ran()
         let renders = Renders()
@@ -701,6 +677,36 @@ final class CycleTests: XCTestCase {
             "the writer and the follower behind it, having seen the write, sat that cycle out")
 
         XCTAssertFalse(board.cycle(now: 64, reducesMotion: false).awake, "nobody wrote, nobody runs")
+    }
+
+    /// EVERY ENGINE IN ONE CYCLE SEES ONE PICTURE. A post made while the engines
+    /// run - here by the first - waits for its job, after the cycle: the second
+    /// engine sees what the cycle latched, and the next cycle sees the post.
+    func testAPostDuringACycleWaitsForTheNextOne() async {
+        let value = State(wrappedValue: 1.0)
+        let binding = value.projectedValue
+        var seen: [Double] = []
+
+        // Carried from here on, on the display's board.
+        _ = value.image
+
+        board.arm(EngineEntry(id: 1, priority: 0, sync: .display, follows: []) { _ in
+            seen.append(value.wrappedValue)
+            binding.post(2)
+            return .wait
+        })
+        board.arm(EngineEntry(id: 2, priority: 1, sync: .display, follows: []) { _ in
+            seen.append(value.wrappedValue)
+            return .again
+        })
+
+        board.cycle(now: 0, reducesMotion: false)
+        board.cycle(now: 16, reducesMotion: false)
+        XCTAssertEqual(seen, [1, 1], "both engines saw the picture the cycle latched")
+
+        await settle()
+        board.cycle(now: 32, reducesMotion: false)
+        XCTAssertEqual(seen, [1, 1, 2], "the next cycle latched the post")
     }
 
     /// AN ENGINE FOLLOWS WHAT THE LATEST RENDER NAMED. `following:` is an
@@ -969,36 +975,5 @@ final class CycleTests: XCTestCase {
             and a state the body DOES read rebuilds the view, which is what \
             arms the engine again
             """)
-    }
-
-    // MARK: - Asked from another thread
-
-    /// THE DOORBELL ASKS WHILE A CYCLE RUNS. The host's doorbell thread asks the board whether anything is awake
-    /// while the UI thread runs its cycles, and each engine's reasons to run - what it saw of what it follows,
-    /// whether it is armed or awake - are written under the board's hold, so the question never meets them half
-    /// written.
-    ///
-    /// Measured live before it was written down: dragging a slider on a page with an engine, or walking a journey
-    /// back and forth, crashed the application on every platform - the doorbell read an engine's stamps while
-    /// the cycle wrote them.
-    func testTheDoorbellAsksWhileACycleNotesWhatItsEnginesSaw() {
-        let board = CycleBoard(sync: .display)
-        let followed = (0..<16).map { _ in Stamped() }
-
-        board.arm(EngineEntry(id: 1, priority: 0, sync: .display, follows: followed) { _ in .wait })
-        board.cycle(now: 0, reducesMotion: false)
-
-        let doorbell = Doorbell(asking: board)
-        var ran = 0
-
-        for turn in 1...20_000 {
-            followed[turn % followed.count].write()
-            ran += board.cycle(now: Double(turn) * 16, reducesMotion: false).ran
-        }
-
-        doorbell.stop()
-
-        XCTAssertEqual(ran, 20_000, "each write woke the engine once")
-        XCTAssertGreaterThan(doorbell.asked.load(ordering: .relaxed), 0, "the doorbell asked while the cycles ran")
     }
 }

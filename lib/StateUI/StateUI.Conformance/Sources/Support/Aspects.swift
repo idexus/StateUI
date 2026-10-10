@@ -7,6 +7,7 @@
 /// The cases a member of one kind owes on every element it is written on, written once: a property holds the value
 /// the tree gives it, and the value the tree changes it to.
 /// Design: docs/design/host/conformance.md#a-members-aspects
+@MainActor
 @_spi(Host) public enum Aspects {
     /// `member` of `element` holds the value the tree gives it, and then the one the tree changes it to; the
     /// specimen wears `with` too.

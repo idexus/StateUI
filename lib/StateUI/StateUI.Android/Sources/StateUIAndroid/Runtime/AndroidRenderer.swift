@@ -64,8 +64,7 @@ final class AndroidRenderer {
         self.density = density
         frameClock = clock.map { AndroidFrameClock(now: $0, ticksWithTheDisplay: false) } ?? AndroidFrameClock()
         self.reducesMotion = reducesMotion
-        runtime.displayCycle.presenter = self
-        runtime.pump.presenter = self
+        runtime.presenter = self
     }
 
     /// Whether the user turned the system's animations off, which StateUI reads as asking for less motion.
@@ -87,15 +86,8 @@ final class AndroidRenderer {
         let renderer = AndroidRenderer(context: context, root: root, density: density)
         shared = renderer
         renderer.watchLayout()
-        let core = renderer.runtime.core
-        core.setRealization(
-            AndroidRegistrations.registry.realization,
-            unrealized: AndroidRealization.unmade)
-        AndroidEnvironment.report(to: core, activity: context.reference)
-        if previous == nil { AndroidPersistence.restore(into: core, context: context.reference) }
         if let previous { renderer.scenes = previous.scenes }
-        renderer.show(restoringScenes: !sceneStands)
-        AndroidDoorbell.install { AndroidRenderer.shared?.runtime.pump.turn() }
+        renderer.start(restoringKept: previous == nil, restoringScenes: !sceneStands, turns: AndroidDoorbell.install)
         return renderer
     }
 
@@ -123,37 +115,40 @@ final class AndroidRenderer {
     private lazy var acts = HostActPerformer(
         toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree })
 
-    /// An act waiting under a ticket was answered - a dialog, a script: its caller resumes, and what that
-    /// writes runs.
+    /// An act waiting under a ticket was answered - a dialog, a script: its caller resumes in a job of its own.
     func answered(ticket: Int64, accepted: Bool, words: String?) {
         actToolkit.answered(ticket: ticket, accepted: accepted, words: words)
-        runtime.pump.turn()
     }
 
     /// The document picker under `ticket` closed: its caller resumes with the documents chosen.
     func filesChosen(ticket: Int64, addresses: [String], names: [String], failure: String?) {
         fileToolkit.chose(ticket: ticket, addresses: addresses, names: names, failure: failure)
-        runtime.pump.turn()
     }
 
     /// The document read under `ticket`: its caller resumes with its bytes.
     func fileRead(ticket: Int64, bytes: [UInt8], failure: String?) {
         fileToolkit.read(ticket: ticket, bytes: bytes, failure: failure)
-        runtime.pump.turn()
     }
 
     /// What was launched under `ticket` was taken, or not: its caller resumes.
     func launched(ticket: Int64, taken: Bool) {
         fileToolkit.launched(ticket: ticket, taken: taken)
-        runtime.pump.turn()
     }
 
-    /// Renders the application whole: where no activity shows a scene, the scenes kept for this start come back
-    /// first, else the window launch opens.
-    /// Design: docs/design/host/runtime.md#kept-scenes
-    func show(restoringScenes: Bool = true) {
-        if restoringScenes { scenes.restore(AndroidPersistence.readScenes(context: context.reference), in: runtime) }
-        runtime.pump.turn()
+    /// Starts the runtime in the host layer's order, told what the host stands on and, `restoringKept`, what it
+    /// kept; the application renders whole - where no activity shows a scene, the scenes kept for this start come
+    /// back first, else the window launch opens - and `turns` posts the turns after it.
+    /// Design: docs/design/host/runtime.md#starting
+    func start(restoringKept: Bool = false, restoringScenes: Bool = true, turns: () -> Void = {}) {
+        runtime.start(
+            realizing: AndroidRegistrations.registry.realization, unrealized: AndroidRealization.unmade,
+            environment: { AndroidEnvironment.report(to: runtime.core, activity: context.reference) },
+            kept: { if restoringKept { AndroidPersistence.restore(into: runtime.core, context: context.reference) } },
+            windows: {
+                if restoringScenes { scenes.restore(AndroidPersistence.readScenes(context: context.reference), in: runtime) }
+                runtime.pump.turn()
+            },
+            turns: turns)
     }
 
     /// A scene keeps a value, kept with the scenes for the next start.
@@ -209,7 +204,6 @@ final class AndroidRenderer {
     /// The colour the activity's window was last painted in behind its pages; nil while it keeps its own.
     private var paintedBackground: Int32?
 
-    /// Names the activity after the first window: the title its chrome shows, the visible page's that names it first.
     /// Paints the activity's window behind its pages as the window's element says, and gives it the theme's own back
     /// once it says none - a window never painted keeps whatever it shows.
     private func showBackground(_ background: HostValue?) {
@@ -223,6 +217,7 @@ final class AndroidRenderer {
         }
     }
 
+    /// Names the activity after the first window: the title its chrome shows, the visible page's that names it first.
     private func showTitle(of window: MountedElement) {
         let title = WindowChrome(window: window, arrangement: presentation.arrangement).title
         guard windowTitle != .some(title) else { return }
@@ -323,7 +318,7 @@ final class AndroidRenderer {
     }
 }
 
-extension AndroidRenderer: TurnPresenter {
+extension AndroidRenderer: HostPresenter {
     /// Shows what a render changed: the activity's title, the window's pages, its sheets and its overlays, and
     /// whether there is a way back.
     func presentRendered() {
@@ -334,25 +329,11 @@ extension AndroidRenderer: TurnPresenter {
         }
     }
 
+    func presentFrame(movedChrome: Bool) {
+        if movedChrome { showChrome() }
+    }
+
     func perform(_ call: HostActCall) {
         acts.perform(call)
-    }
-}
-
-extension AndroidRenderer: FramePresenter {
-    var wantsFrames: Bool {
-        runtime.frames.wantsFrames
-    }
-
-    func commitUserReports(now: Double) {
-        runtime.frames.commit(now: now)
-    }
-
-    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        if runtime.tree.present(states: states, properties: properties).windowChrome { showChrome() }
-    }
-
-    func renderIfNeeded() {
-        if runtime.core.needsRender { runtime.pump.turn() }
     }
 }

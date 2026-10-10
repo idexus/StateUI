@@ -57,6 +57,7 @@ private struct DragPage: View {
     }
 }
 
+@MainActor
 final class GTKGesturesTests: XCTestCase {
     /// A click on a row that answers a tap is a tap, past its words where it draws nothing; a press that moved past
     /// the drag threshold, or is let go beside the row, is none.

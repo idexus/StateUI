@@ -7,6 +7,7 @@ import Foundation
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 private struct Owner {
     @State var counter = 0
     @State var name = ""
@@ -20,6 +21,7 @@ private struct Profile {
     var age = 30
 }
 
+@MainActor
 private struct Settings {
     @State var profile = Profile()
 
@@ -27,6 +29,7 @@ private struct Settings {
     var name: Binding<String> { $profile.name }
 }
 
+@MainActor
 private struct Borrower {
     @Binding var counter: Int
     @Binding var name: String
@@ -126,6 +129,7 @@ private struct Shown: View {
     }
 }
 
+@MainActor
 final class StateTests: XCTestCase {
     func testAdoptingABoxSharesItsStorageBothWays() {
         let old = State(1)
@@ -437,94 +441,153 @@ final class StateTests: XCTestCase {
         XCTAssertTrue(Renderer.shared.pendingChanges.isEmpty, "and it is not even named")
     }
 
-    func testUpdateReadsAndWritesInOneStep() {
+    /// A POST WAITS FOR ITS JOB, on the UI thread too, and the changes posted run in
+    /// that job in the order posted, each over what the one before left.
+    func testPostedChangesRunInOrderInOneJob() async {
         let state = State(5)
-        state.update { $0 * 2 }
+        let binding = state.projectedValue
 
-        XCTAssertEqual(state.get(), 10)
+        binding.post { $0 * 2 }
+        binding.post { $0 + 1 }
+        XCTAssertEqual(state.get(), 5, "nothing changes before the job")
+
+        await settle()
+        XCTAssertEqual(state.get(), 11, "doubled, then one more")
+    }
+
+    /// POSTS TO TWO ELEMENTS' PROPERTIES of one state land each in its own
+    /// element: a part is the whole road from the state.
+    func testPostsToTwoElementsOfOneStateLandInTheirOwn() async {
+        let rows = State([PostedRow(title: "a"), PostedRow(title: "b")])
+        let binding = rows.projectedValue
+
+        binding[0].title.post("A")
+        binding[1].title.post("B")
+        await settle()
+
+        XCTAssertEqual(rows.get().map(\.title), ["A", "B"], "the second row's post landed in the first")
+    }
+
+    /// A POST TO AN ELEMENT GONE lands nowhere: the list shrank under a binding
+    /// to one of its elements, and the job drops what waits, said once.
+    func testAPostToAnElementGoneLandsNowhere() async {
+        let items = State([1, 2, 3])
+        let third = items.projectedValue[2]
+
+        items.wrappedValue = [1]
+        third.post(30)
+        third.post { $0 + 1 }
+        await settle()
+
+        XCTAssertEqual(items.get(), [1], "the post wrote past the end")
+    }
+
+    /// A WRITE THROUGH A BINDING TO AN ELEMENT GONE is dropped, said once - its
+    /// property's binding too.
+    func testAWriteToAnElementGoneIsDropped() {
+        let rows = State([PostedRow(title: "a"), PostedRow(title: "b")])
+        let second = rows.projectedValue[1]
+        let secondTitle = rows.projectedValue[1].title
+
+        rows.wrappedValue = [PostedRow(title: "a")]
+        second.wrappedValue = PostedRow(title: "x")
+        secondTitle.wrappedValue = "y"
+
+        XCTAssertEqual(rows.get().map(\.title), ["a"], "the write landed past the end")
+    }
+
+    /// POSTS TO A PART AND TO THE WHOLE land in the order posted - the last one
+    /// stands whenever the job runs: a part posted after the whole lands over it,
+    /// and the whole posted after a part replaces it.
+    func testPostsToAPartAndTheWholeLandInPostOrder() async {
+        let row = State(PostedRow(title: "a"))
+        let binding = row.projectedValue
+
+        binding.title.post("1")
+        binding.post(PostedRow(title: "W"))
+        binding.title.post("2")
+        await settle()
+        XCTAssertEqual(row.get().title, "2", "the part posted last was overwritten by the whole posted before it")
+
+        binding.title.post("3")
+        binding.post(PostedRow(title: "V"))
+        await settle()
+        XCTAssertEqual(row.get().title, "V", "the whole posted last did not replace the part before it")
+    }
+
+    /// A POST HOLDS NOTHING ALIVE once its job ran: a state posted to is freed
+    /// with whatever held it, as every state is.
+    func testAStatePostedToIsFreedOnceItsJobRan() async {
+        weak var storage: State<Int>.Storage?
+
+        do {
+            let state = State(0)
+            storage = state.storage
+            state.projectedValue.post(1)
+            await settle()
+            XCTAssertEqual(state.get(), 1, "the job wrote it")
+        }
+
+        XCTAssertNil(storage, "the post's slot holds the state it wrote, and the state holds the slot")
+    }
+
+    /// A VALUE POSTED REPLACES THE CHANGES WAITING BEFORE IT; a change posted after
+    /// it runs over it.
+    func testAPostedValueReplacesTheChangesBeforeIt() async {
+        let state = State(1)
+        let binding = state.projectedValue
+
+        binding.post { $0 + 100 }
+        binding.post(10)
+        binding.post { $0 + 1 }
+
+        await settle()
+        XCTAssertEqual(state.get(), 11)
     }
 }
 
 
 extension StateTests {
-    /// State is written from ANY thread, whole: a hundred detached tasks each
-    /// counting a hundred times through `update` land every count, because
-    /// the read, the change and the write happen under one hold of the lock.
-    /// The wrapper's `+= 1` is a read and then a write and could not promise
-    /// this from two tasks at once - which is what `update` is for.
-    func testUpdateFromManyTasksAtOnceCountsEveryOne() async {
+    /// Posts from MANY THREADS at once all count: a hundred tasks of the pool each
+    /// post a hundred changes, and every one lands, each over the last - the read,
+    /// the change and the write happen in the one job on `MainActor`.
+    func testPostsFromManyTasksAtOnceCountEveryOne() async {
         let counter = State(0)
+        let binding = counter.projectedValue
         let reader = reading { _ = counter.get() }
 
         await withTaskGroup(of: Void.self) { group in
             for _ in 0 ..< 100 {
                 group.addTask {
-                    await Task.detached {
-                        for _ in 0 ..< 100 {
-                            counter.update { $0 + 1 }
-                        }
-                    }.value
+                    for _ in 0 ..< 100 {
+                        binding.post { $0 + 1 }
+                    }
                 }
             }
         }
 
+        await settle()
         XCTAssertEqual(counter.get(), 10_000)
-        XCTAssertTrue(Renderer.shared.needsRender, "and every one of them asked for a render")
+        XCTAssertTrue(Renderer.shared.needsRender, "and the job asked for a render")
         _ = reader
-    }
-
-    /// Reads and writes from many threads at once are whole values, never a
-    /// mix of two: a value wider than a word is written under the lock, so a
-    /// reader sees one write or the other and nothing in between.
-    func testAWideValueIsNeverReadTorn() async {
-        let wide = State((a: 0, b: 0, c: 0, d: 0))
-
-        await withTaskGroup(of: Bool.self) { group in
-            group.addTask {
-                await Task.detached {
-                    for n in 1 ... 2_000 { wide.wrappedValue = (n, n, n, n) }
-                }.value
-                return true
-            }
-
-            for _ in 0 ..< 4 {
-                group.addTask {
-                    await Task.detached {
-                        for _ in 0 ..< 2_000 {
-                            let read = wide.get()
-                            if read.a != read.b || read.b != read.c || read.c != read.d {
-                                return false
-                            }
-                        }
-                        return true
-                    }.value
-                }
-            }
-
-            for await whole in group {
-                XCTAssertTrue(whole, "a read saw two writes mixed")
-            }
-        }
     }
 
     // MARK: - Reading a value the host is moving
 
-    /// Drains the executor - the host's job, here done by hand - until `done`
-    /// answers true or `seconds` have passed. Answers whether it happened.
+    /// Takes turns of the UI thread - the host's job, here done by hand - until
+    /// `done` answers true or `seconds` have passed. Answers whether it happened.
     ///
     /// The one test here that involves real time needs it: a reading booked
-    /// for the end of a window is a sleeping Task, and nothing turns the
-    /// executor in a test.
+    /// for the end of a window is a sleeping task of `MainActor`'s, and nothing
+    /// turns the UI thread in a test.
     @discardableResult
     private func drain(until done: () -> Bool, within seconds: Double = 3) -> Bool {
         let deadline = Date().addingTimeInterval(seconds)
 
         while Date() < deadline {
-            stateUIRunJobs()
-
             if done() { return true }
 
-            Thread.sleep(forTimeInterval: 0.002)
+            turnTheUIThread()
         }
 
         return done()
@@ -568,6 +631,21 @@ extension StateTests {
             sampling.due(at: now + .milliseconds(150)),
             .waitUntil(now + .milliseconds(201)),
             "and the next window runs from the reading that was taken")
+    }
+
+    /// One value's readings are taken in the order they were asked for, every time - never by the hash of the
+    /// states they are read into.
+    func testAValuesReadingsAreTakenInTheOrderAsked() {
+        let storage = HostStorage(StateImage.bytes(of: JourneyLanes(0.0).carried))
+        let targets = (0..<8).map { _ in State(0.0) }
+        var taken: [Int] = []
+
+        let readings = targets.enumerated().map { index, target in
+            storage.sample(into: ObjectIdentifier(target.storage), every: 0) { taken.append(index) }
+        }
+        storage.sampleTaken()
+
+        withExtendedLifetime(readings) { XCTAssertEqual(taken, Array(0..<8)) }
     }
 
     /// A READ OF THE JOURNEY IS A BUILD PER FRAME, AND A READ OF THE STATE IS
@@ -809,4 +887,9 @@ extension StateTests {
         XCTAssertTrue(Renderer.shared.needsRender, "and the next one, at once as well")
         _ = reader
     }
+}
+
+/// One element of a list a post is aimed at a property of.
+private struct PostedRow: Equatable, Sendable {
+    var title: String
 }

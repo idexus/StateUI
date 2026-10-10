@@ -30,7 +30,7 @@ extension WinUIElement {
             guard let split = view as? WinUISplitView else { return }
             // The split's first room is decided inside a layout pass, and said once the pass is over.
             split.onPresentationChanged = { [weak self] presented in
-                WinUIDoorbell.afterPass { [weak self] in self?.sidebarShown(presented) }
+                WinUIRenderer.afterLayout { [weak self] in self?.sidebarShown(presented) }
             }
             if changed.contains(.showsSidebar) { split.present(value(.showsSidebar)?.bool == true) }
             split.grounds = (element.sidebarMaterial(over: false), element.sidebarMaterial(over: true))

@@ -45,7 +45,7 @@ extension VisualElement where Self: StyleTarget {
     ///     ZStack { Text("Open") }
     ///         .scale($lift)
     ///         .onVisualStateChanged(.pointerOver, .normal) { state in
-    ///             try await $lift.journey.move(to: state == .pointerOver ? 1.03 : 1, .eased(120, .cubicOut))
+    ///             $lift.journey.move(to: state == .pointerOver ? 1.03 : 1, .eased(120, .cubicOut))
     ///         }
     ///
     /// It runs after the render in which the control entered the state, never
@@ -53,10 +53,45 @@ extension VisualElement where Self: StyleTarget {
     /// changing how the control looks; naming none hears every state the
     /// control declares, and `.normal`.
     ///
-    /// - Parameter perform: what to run, given the state entered.
+    /// - Parameters:
+    ///   - states: the states to hear; none hears every state.
+    ///   - perform: what to run, given the state entered.
+    public func onVisualStateChanged(
+        _ states: VisualState<Self>...,
+        perform handler: @escaping @MainActor (VisualState<Self>) throws -> Void
+    ) -> Modified {
+        listening(states, gate: .none) { try handler($0) }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what entering a
+    /// state does while a run is under way.
+    ///
+    /// - Parameters:
+    ///   - states: the states to hear; none hears every state.
+    ///   - gate: what the handler passes through: what entering a state does while a run is under way.
+    ///   - perform: what to run, given the state entered.
+    public func onVisualStateChanged(
+        _ states: VisualState<Self>...,
+        gate: some Gate,
+        perform handler: @escaping ValueEventHandler<VisualState<Self>>
+    ) -> Modified {
+        listening(states, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onVisualStateChanged(states, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onVisualStateChanged(
         _ states: VisualState<Self>...,
         perform handler: @escaping ValueEventHandler<VisualState<Self>>
+    ) -> Modified {
+        fatalError("unavailable")
+    }
+
+    /// Declares `states` and hears the control entering them.
+    private func listening(
+        _ states: [VisualState<Self>],
+        gate: some Gate,
+        _ handler: @escaping ValueEventHandler<VisualState<Self>>
     ) -> Modified {
         modified { node in
             for state in states where !node.visualStates.contains(where: { $0.name == state.name }) {
@@ -65,6 +100,7 @@ extension VisualElement where Self: StyleTarget {
 
             node.visualStateListeners.append(VisualStateListener(
                 states: states.isEmpty ? nil : Set(states.map(\.name)),
+                gate: gate,
                 run: { name in try await handler(VisualState<Self>(name)) }))
         }
     }

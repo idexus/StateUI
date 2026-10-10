@@ -104,11 +104,12 @@ struct PersistentStateSample: SampleContent, ExampleContent {
             // A key whose value is an enum - kept as the word it is spelled
             // with, so anything else that opens the store can read it.
             HStack {
-                Text("Shade")
+                Text("Bold shade")
                     .verticalAlignment(.center)
 
-                Button(shade == .quiet ? "quiet" : "bold")
-                    .onClicked { shade = shade == .quiet ? .bold : .quiet }
+                Switch(shade == .bold)
+                    .accessibilityLabel("Bold shade")
+                    .onToggled { on in shade = on ? .bold : .quiet }
             }
             .spacing(12)
 

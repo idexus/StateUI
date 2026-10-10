@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A repeating timer as a loop that sleeps to a deadline, safe to drive from any
-// thread.
+// A repeating timer as a loop that sleeps to a deadline, on the UI thread.
 // Design: docs/design/core/cycle.md#the-ticker
 
 /// A repeating timer: something to read while it counts.
@@ -15,19 +14,16 @@
 ///         Button(ticker.isRunning ? "Stop" : "Start")
 ///             .onClicked { ticker.isRunning ? ticker.stop() : ticker.start() }
 ///     }
-///     .onDestroying { ticker.stop() }
 ///
 /// A tick asks for a render, so a view reading `ticks` follows it with nothing
-/// subscribed. Hold it in a `@State`, and stop it in `.onDestroying` when it
-/// should not outlive the view. Every method is safe from any thread. It sleeps
+/// subscribed. Hold it in a `@State`: it ends with whoever holds it. It sleeps
 /// to a deadline, so a minute of seconds is a minute.
-public final class Ticker: @unchecked Sendable {
+@MainActor
+public final class Ticker {
     /// What a tick runs. It runs on `@MainActor`, so it may read and write `@State`;
-    /// it may await, and the next tick is scheduled from where it ends.
-    public typealias Tick = @MainActor @Sendable () async -> Void
-
-    /// The one lock.
-    private let guarded = Lock()
+    /// it may await; the next tick waits for it to end and keeps the interval's
+    /// beat - an interval after its end where it overran a whole one.
+    public typealias Tick = @MainActor () async -> Void
 
     private var storedInterval: Duration
     private var storedLimit: Int?
@@ -44,10 +40,10 @@ public final class Ticker: @unchecked Sendable {
     public var interval: Duration {
         get {
             Renderer.shared.stateRead(self)
-            return guarded.withLock { storedInterval }
+            return storedInterval
         }
         set {
-            guarded.withLock { storedInterval = Ticker.usable(newValue) }
+            storedInterval = Ticker.usable(newValue)
             Renderer.shared.stateChanged(self)
         }
     }
@@ -60,10 +56,10 @@ public final class Ticker: @unchecked Sendable {
     public var limit: Int? {
         get {
             Renderer.shared.stateRead(self)
-            return guarded.withLock { storedLimit }
+            return storedLimit
         }
         set {
-            guarded.withLock { storedLimit = newValue }
+            storedLimit = newValue
             Renderer.shared.stateChanged(self)
         }
     }
@@ -78,10 +74,10 @@ public final class Ticker: @unchecked Sendable {
     public var isRepeating: Bool {
         get {
             Renderer.shared.stateRead(self)
-            return guarded.withLock { storedRepeating }
+            return storedRepeating
         }
         set {
-            guarded.withLock { storedRepeating = newValue }
+            storedRepeating = newValue
             Renderer.shared.stateChanged(self)
         }
     }
@@ -103,8 +99,8 @@ public final class Ticker: @unchecked Sendable {
     /// A `Tick` does not throw, so anything that can has to be handled inside
     /// it - `try?`, or a `do`/`catch` that writes the failure into state.
     public var onTick: Tick? {
-        get { guarded.withLock { storedTick } }
-        set { guarded.withLock { storedTick = newValue } }
+        get { storedTick }
+        set { storedTick = newValue }
     }
 
     /// How many ticks have happened since the last `reset()`.
@@ -114,7 +110,7 @@ public final class Ticker: @unchecked Sendable {
     /// it and leaves the rest of the tree alone.
     public var ticks: Int {
         Renderer.shared.stateRead(self)
-        return guarded.withLock { count }
+        return count
     }
 
     /// Whether another tick is coming. `start()` and `stop()` are what change
@@ -127,14 +123,14 @@ public final class Ticker: @unchecked Sendable {
     /// not "the work is over".
     public var isRunning: Bool {
         Renderer.shared.stateRead(self)
-        return guarded.withLock { running }
+        return running
     }
 
     /// Whether it has counted all the way to its `limit`. Always false for a
     /// ticker with no limit.
     public var isFinished: Bool {
         Renderer.shared.stateRead(self)
-        return guarded.withLock { finished }
+        return finished
     }
 
     /// A ticker, not started.
@@ -155,8 +151,9 @@ public final class Ticker: @unchecked Sendable {
     ///     repeat, how long before its one tick. A millisecond is the floor.
     ///   - isRepeating: whether it ticks again after each tick. Default true.
     ///   - limit: how many ticks to run for, or nil for no end.
-    ///   - onTick: what each tick runs. It may await, and the next tick is
-    ///     scheduled from where it ends.
+    ///   - onTick: what each tick runs. It may await; the next tick waits for it
+    ///     to end and keeps the interval's beat - an interval after its end where
+    ///     it overran a whole one.
     public init(
         every interval: Duration,
         isRepeating: Bool = true,
@@ -171,95 +168,79 @@ public final class Ticker: @unchecked Sendable {
 
     /// Starts counting, or does nothing if it is already counting. Returns at once;
     /// the first tick is an interval away, and a ticker at its limit starts over.
-    /// Safe from any thread.
     public func start() {
-        let mine: Int? = guarded.withLock { () -> Int? in
-            guard !running else { return nil }
-
-            if finished { count = 0 }
-
-            running = true
-            run += 1
-
-            return run
-        }
-
         // Already running: not an error, and nothing to report.
-        guard let mine else { return }
+        guard !running else { return }
 
-        // Outside the lock: the renderer takes a lock of its own.
+        if finished { count = 0 }
+
+        running = true
+        run += 1
+
+        let mine = run
+
         Renderer.shared.stateChanged(self)
 
-        Task { @MainActor [self] in await loop(mine) }
+        // The loop holds the ticker only through a tick, so a ticker nobody holds ends.
+        libraryTask { [weak self] in
+            var deadline = ContinuousClock.now
+
+            while let interval = self?.storedInterval {
+                deadline += interval
+                try? await Task.sleep(until: deadline)
+                guard await self?.lap(mine, after: &deadline) == true else { return }
+            }
+        }
     }
 
     /// Stops counting, keeping the count. Starting again goes on from there.
     ///
-    /// Safe from any thread. The loop notices when it wakes, so a stop during a
-    /// sleep costs at most the rest of that sleep - and nothing ticks after it.
+    /// The loop notices when it wakes, so a stop during a sleep costs at most the
+    /// rest of that sleep - and nothing ticks after it.
     public func stop() {
-        let changed = guarded.withLock {
-            let was = running
-            running = false
+        guard running else { return }
 
-            return was
-        }
-
-        if changed { Renderer.shared.stateChanged(self) }
+        running = false
+        Renderer.shared.stateChanged(self)
     }
 
-    /// Stops counting and puts the count back to zero. Safe from any thread.
+    /// Stops counting and puts the count back to zero.
     public func reset() {
-        guarded.withLock {
-            running = false
-            count = 0
-        }
+        running = false
+        count = 0
 
         Renderer.shared.stateChanged(self)
     }
 
-    /// The loop, on the UI thread; every read of the state goes through the lock.
-    private nonisolated(nonsending) func loop(_ mine: Int) async {
-        var deadline = ContinuousClock.now
+    /// One tick of run `mine`, on the UI thread; answers whether its loop goes on.
+    private func lap(_ mine: Int, after deadline: inout ContinuousClock.Instant) async -> Bool {
+        // A stop and a replaced run both end the loop. The last tick stops the ticker
+        // before it runs, so the tick itself can start the next round.
+        // Design: docs/design/core/cycle.md#the-ticker
+        guard running, run == mine else { return false }
 
-        while true {
-            deadline += guarded.withLock { storedInterval }
+        count += 1
 
-            try? await Task.sleep(until: deadline)
+        let last = !storedRepeating || finished
+        if last { running = false }
 
-            // A stop and a replaced run both end the loop. The last tick stops the ticker
-            // before it runs, so the tick itself can start the next round.
-            // Design: docs/design/core/cycle.md#the-ticker
-            let (tick, last): (Tick?, Bool) = guarded.withLock { () -> (Tick?, Bool) in
-                guard running, run == mine else { return (nil, false) }
+        let tick = storedTick ?? Ticker.nothing
 
-                count += 1
+        Renderer.shared.stateChanged(self)
 
-                let last = !storedRepeating || finished
-                if last { running = false }
+        await tick()
 
-                return (storedTick ?? Ticker.nothing, last)
-            }
+        // The tick may have stopped the ticker, or started a new run.
+        guard !last, running, run == mine else { return false }
 
-            guard let tick else { return }
-
-            Renderer.shared.stateChanged(self)
-
-            await tick()
-
-            if last { return }
-
-            // The tick may have stopped the ticker, or started a new run.
-            guard guarded.withLock({ running && run == mine }) else { return }
-
-            // A lap longer than a whole interval restarts the deadline from now, so missed
-            // laps do not all come due at once.
-            // Design: docs/design/core/cycle.md#the-ticker
-            if deadline + guarded.withLock({ storedInterval }) < .now { deadline = .now }
-        }
+        // A lap longer than a whole interval restarts the deadline from now, so missed
+        // laps do not all come due at once.
+        // Design: docs/design/core/cycle.md#the-ticker
+        if deadline + storedInterval < .now { deadline = .now }
+        return true
     }
 
-    /// Whether the count has reached the limit. Callers hold the lock.
+    /// Whether the count has reached the limit.
     private var finished: Bool { storedLimit.map { count >= $0 } ?? false }
 
     /// An interval the loop can sleep for: a millisecond at least.

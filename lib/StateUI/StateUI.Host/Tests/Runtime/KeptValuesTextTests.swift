@@ -5,6 +5,7 @@
 @_spi(Host) @testable import StateUIHost
 import XCTest
 
+@MainActor
 final class KeptValuesTextTests: XCTestCase {
     private let keys = [
         PersistentKey("kept.count", of: Int.self), PersistentKey("kept.name", of: String.self),

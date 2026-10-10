@@ -7,12 +7,15 @@
 /// and the look its font and colour give them.
 /// Design: docs/design/host/tree.md#runs-of-words
 @_spi(Host) public enum TextMembers {
-    /// What every element showing words takes: the words in their case, the font, their colour, and the room
-    /// around them.
-    public static let members: [any ContractMember] = [
-        TextualElementContract.text, TextualElementContract.textCase, FontElementContract.fontSize,
-        FontElementContract.fontAttributes, FontElementContract.fontFamily, TextStyleElementContract.textColor,
-        PaddingElementContract.padding,
+    /// What every element showing words takes: the words in their case, their look, and the room around them.
+    public static let members: [any ContractMember] =
+        [TextualElementContract.text, TextualElementContract.textCase] + lookMembers + [PaddingElementContract.padding]
+
+    /// What the words' look is made of, which `look` reads: the font, whether it follows the user's text size, and
+    /// the words' colour.
+    public static let lookMembers: [any ContractMember] = [
+        FontElementContract.fontSize, FontElementContract.fontAttributes, FontElementContract.fontFamily,
+        FontElementContract.isFontAutoScalingEnabled, TextStyleElementContract.textColor,
     ]
 
     /// The words in their case, where the words or their case changed; nil where neither did.
@@ -24,10 +27,11 @@
         return values[TextualElementContract.textCase]?.applied(to: text) ?? text
     }
 
-    /// The look the font and the colour give the words, where one of them changed; nil where none did.
+    /// The look the font, its scaling and the colour give the words, where one of them changed; nil where none did.
     public static func look<Realized>(_ values: ElementValues<Realized>) -> TextLook? {
         guard values.changed(FontElementContract.fontSize) || values.changed(FontElementContract.fontAttributes)
             || values.changed(FontElementContract.fontFamily) || values.changed(TextStyleElementContract.textColor)
+            || values.changed(FontElementContract.isFontAutoScalingEnabled)
         else { return nil }
         return look(of: values)
     }
@@ -40,6 +44,7 @@
         look.attributesGiven = values[FontElementContract.fontAttributes] != nil
         look.family = values[FontElementContract.fontFamily]?.text
         look.color = values[TextStyleElementContract.textColor]?.propValue
+        look.scales = values[FontElementContract.isFontAutoScalingEnabled] ?? true
         return look
     }
 }

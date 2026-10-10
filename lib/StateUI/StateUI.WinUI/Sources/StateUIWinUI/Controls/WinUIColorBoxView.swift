@@ -18,4 +18,7 @@ final class WinUIColorBoxView: WinUIView {
         let radii = BoxArithmetic.clockwise(corners.flatMap(CornerRadius.init(propValue:)))
         stateui_winui_color_box_set(handle, color?.argb ?? 0, radii)
     }
+
+    /// None: a colour box is its colour alone, which a ground would paint over - its register's `notPlanned`.
+    override func setBackground(_ value: HostValue?) {}
 }

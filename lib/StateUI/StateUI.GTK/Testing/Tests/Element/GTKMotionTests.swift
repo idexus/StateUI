@@ -8,6 +8,7 @@
 import StateUIConformance
 import XCTest
 
+@MainActor
 final class GTKMotionTests: XCTestCase {
     func testTheTransitionSurfaceIsClosedAroundWhatTheHostPresents() {
         onUIThread {
@@ -77,8 +78,8 @@ final class GTKMotionTests: XCTestCase {
                     Text(arrived.wrappedValue ? "arrived" : "away")
                     Slider(level.projectedValue)
                     Slider(level.projectedValue)
-                    Button("Go").onClicked {
-                        try await level.projectedValue.journey.move(to: 1, .eased(200, .linear))
+                    Button("Go").onClicked(gate: .ignoreWhileRunning) {
+                        try await level.projectedValue.journey.move(to: 1, .eased(200, .linear)).arrived()
                         arrived.wrappedValue = true
                     }
                 }
@@ -140,8 +141,8 @@ final class GTKMotionTests: XCTestCase {
             let host = GTKRenderer.running(clock: clock) {
                 VStack {
                     Text("moving").translationX(offset.projectedValue)
-                    Button("Go").onClicked {
-                        try await offset.projectedValue.journey.move(to: 100, .eased(200, .linear))
+                    Button("Go").onClicked(gate: .ignoreWhileRunning) {
+                        try await offset.projectedValue.journey.move(to: 100, .eased(200, .linear)).arrived()
                     }
                 }
             }

@@ -105,9 +105,9 @@ enum GTKTestHost {
 }
 
 extension XCTestCase {
-    /// Runs `body` as the main actor's on the test thread, which holds GTK: a drain makes it MainActor's first.
+    /// Runs `body` as the main actor's on the test thread, which holds GTK and is claimed as the UI thread first.
     func onUIThread<Result: Sendable>(_ body: @MainActor () throws -> Result) rethrows -> Result {
-        _ = CoreLink().runJobs()
+        CoreLink().claimUIThread()
         return try MainActor.assumeIsolated(body)
     }
 }
@@ -116,7 +116,7 @@ extension GTKRenderer {
     /// A host showing `page` in a window of its own, laid out, on `clock` where one is given: a first launch, which
     /// finds nothing an earlier host kept.
     static func running(
-        clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @Sendable () -> any View
+        clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> GTKRenderer {
         let application = OneWindowApplication(page: page)
         return running(clock: clock, reducesMotion: reducesMotion, application: { application })
@@ -126,7 +126,7 @@ extension GTKRenderer {
     /// nothing an earlier host kept - or, `keeping`, a launch after the last, which finds what it kept.
     static func running(
         clock: TestClock? = nil, reducesMotion: Bool = false, keeping: Bool = false,
-        application: @escaping @Sendable () -> any Application
+        application: @escaping @MainActor () -> any Application
     ) -> GTKRenderer {
         Renderer.shared.setApplication(application())
         let renderer = replacing(clock: clock, reducesMotion: reducesMotion)
@@ -134,7 +134,7 @@ extension GTKRenderer {
             unlink(GTKKeptValues.file(for: renderer.applicationID))
             unlink(GTKKeptValues.scenesFile(for: renderer.applicationID))
         }
-        renderer.show()
+        renderer.start()
         GTKTestHost.pump(0.02)
         renderer.layOut()
         return renderer
@@ -156,8 +156,7 @@ extension GTKRenderer {
         // no window of the next test's.
         if let previous = shared {
             previous.runtime.tree.root?.leave()
-            previous.runtime.pump.presenter = nil
-            previous.runtime.displayCycle.presenter = nil
+            previous.runtime.presenter = nil
             previous.frameClock.widget = nil
             for controller in previous.windows { controller.window.close() }
         }

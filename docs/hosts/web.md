@@ -30,6 +30,7 @@ lib/StateUI/StateUI.Web/
   Sources/CStateUIWeb/       the relay's functions, as the module imports them
   JavaScript/
     stateui-web.js           the relay, and the system interface a Swift program asks of its machine
+    stateui-web.css          the look of the page's elements
     index.html               the page a head runs in
   Testing/                   a package of its own: the host's suite, compiled for WebAssembly, the page in
                              Node it runs over, and what it runs in a browser
@@ -40,6 +41,7 @@ lib/StateUI/StateUI.Web/
   browsers.sh                lists the browsers installed, and opens a page in one
   deploy.sh                  builds it for release and lays the page in a folder of its own
   test-web.sh                runs the host's suite, or what of it needs a browser
+  swift-sdk.sh               names the Swift SDK for WebAssembly of the compiler's release
 apps/<App>/Platforms/Web/
   main.swift                 the application's Web head
   Page/                      what the application adds to its page: its scripts, and head.html
@@ -49,7 +51,8 @@ apps/<App>/Platforms/Web/
 
 The host builds on macOS and on Linux:
 
-- Swift 6.4 and the Swift SDK for WebAssembly of the same release,
+- swift.org's Swift 6.4.0 toolchain, not Xcode's, first on `PATH`, and the
+  Swift SDK for WebAssembly of the same release,
   `swift-6.4.0-RELEASE_wasm`, which `swift sdk install` installs
   ([Getting started with WebAssembly](https://www.swift.org/documentation/articles/wasm-getting-started.html));
   its `_wasm-embedded` sibling is Embedded Swift, which StateUI does not use;
@@ -89,10 +92,11 @@ The page a head runs in is the library's `index.html`: it loads the relay and
 the module, and shows the application's name while the module loads. The
 head's `Page` folder - `apps/<App>/Platforms/Web/Page` - adds the
 application's own to it. Each script there is laid beside the page and loaded
-before the application starts ([Controls registered in
-Swift](#controls-registered-in-swift)). `head.html` is written into the page's
-head as it stands: what a search engine reads of the page and what a link to
-it shows - its description, the address it is found at, its preview.
+before the application starts ([Controls, acts, and events registered in
+Swift](#controls-acts-and-events-registered-in-swift)). `head.html` is written
+into the page's head as it stands: what a search engine reads of the page and
+what a link to it shows - its description, the address it is found at, its
+preview.
 
 ```html
 <title>Notes - Plain notes, kept</title>
@@ -110,7 +114,7 @@ head gives in `application-name` - "Home - Notes" - and the page alone where
 the head gives none. The Gallery's describes StateUI at stateui.dev:
 `apps/Gallery/Platforms/Web/Page/head.html`.
 
-## Controls registered in Swift
+## Controls, acts, and events registered in Swift
 
 An application extends the host from its Web head: registrations run before
 `StateUIWeb.run`. A control of the application's own is an object that makes
@@ -222,7 +226,8 @@ navigator.getBattery?.().then((power) => {
 
 Words cross both ways: what an act takes and answers is written in them. A
 page served over plain http has no clipboard - its act fails with the
-reason - and a browser that says nothing of its battery answers none.
+reason - and a browser that says nothing of its battery answers 0 and tells
+nothing.
 
 ## Running
 
@@ -231,20 +236,24 @@ reason - and a browser that says nothing of its battery answers none.
 ```
 
 `run-app.sh` builds the head, lays its page out in the application's
-`.build/web/site/<configuration>` - `index.html`, the relay, the module and
-the pictures in `Images/` - serves it at `http://127.0.0.1:8460/` and opens it
-in the system's browser. The port stays the same from run to run, so the
-page's address, and what the browser keeps for it, does too; a server the
-script started for the application before is stopped first. `release` builds
-the optimized module, `--browser <id>` opens another browser -
-`.scripts/Web/browsers.sh list` lists them - and `--browser none` none, and
-`--build-only` builds and lays the page out, serving nothing. Every
-`STATEUI_` variable of the shell that runs it - `STATEUI_TALLY=1` - reaches
-the application as a parameter of the page's address, which the application
-reads as its environment.
+`.build/web/site/<configuration>` - `index.html`, the relay and its
+stylesheet, the module and the pictures in `Images/` - serves it at
+`http://127.0.0.1:8460/` and opens it in the system's browser. The server
+listens on every interface of this machine, so a phone or a tablet on its
+network opens the page too. The port stays the same from run to run, so the
+page's address, and what the browser keeps for it, does too; `--port <port>`
+names another, and where the port is taken the server listens on a free one.
+A server the script started for the application before is stopped first.
+`release` builds the optimized module, `--browser <id>` opens another
+browser - `.scripts/Web/browsers.sh list` lists them - and `--browser none`
+none, and `--build-only` builds and lays the page out, serving nothing. Every
+`STATEUI_` variable of the shell that runs it but the build's own
+`STATEUI_HOST` - `STATEUI_TALLY=1` - reaches the application as a parameter
+of the page's address, which the application reads as its environment.
 
 What the application prints goes to the browser's console, and so does a
-failure: one that stops the module also shows in red on the page.
+failure; one that stops the module as it starts also shows in red on the
+page.
 
 In VS Code, with **Web** chosen in the status bar, a third item shows the
 browser - click it, or run **StateUI: Select Browser**, which offers the

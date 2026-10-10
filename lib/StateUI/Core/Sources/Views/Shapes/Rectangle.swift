@@ -56,9 +56,9 @@ extension RectangleProperties {
 }
 
 extension Rectangle {
-    /// `cornerRadius` from a state, `$x`: the host sets each new value as it
-    /// stands, and no view is rebuilt for it.
+    /// `cornerRadius` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func cornerRadius(_ state: Binding<Double>) -> Modified {
-        plain(RectangleContract.cornerRadius.token, by: state)
+        twin(RectangleContract.cornerRadius, carrying: state)
     }
 }

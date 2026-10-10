@@ -7,7 +7,7 @@ an application's scenes and a scene's windows (`ApplicationBuilder`,
 `SceneBuilder`), and one each for
 a menu bar's menus, menu entries, toolbar items, text runs, markers, styles
 and a canvas's drawing. The view builder also gives every view it collects a
-key.
+key, but for a view written as a lone statement.
 
 ## The result says what was written
 
@@ -18,8 +18,9 @@ optional, several statements `Statements`, repetition a `ForEach`, and a list
 of `any View` an array. Everything a container holds is `Views`: every view is
 one, and so is each of these. A composed view's `body` and a one-view slot
 take a `View`, so two statements or an `if` with no `else` there do not compile,
-and neither does `VStack { ToolbarItem("Save") }`: an action, a run of text, a
-marker and an arrangement of pages each go where they belong. A modifier on a view
+and neither does `VStack { ToolbarItem("Save") }`: an action, a run of text
+and a marker each go where they belong; an arrangement of pages compiles there
+but is left out, and said once (pages.md). A modifier on a view
 gives back a view (`View where Modified: View`), so a chain goes on on
 `any View` as on a view of a known type.
 
@@ -85,8 +86,10 @@ wrote as a switch between two fields. `2.if` and `2.else` are different
 places, so switching branches replaces the control rather than editing it. The
 same holds where the branch is a composed view's whole content: the content
 root's branch is part of what the element is
-([another kind of view](../core/identity-and-diffing.md#another-kind-of-view)),
-and so is a `ForEach` row's, whose builder takes an `if`/`else` too.
+([another kind of view](../core/identity-and-diffing.md#another-kind-of-view)).
+A `ForEach` row is matched by its identity alone, so an `if`/`else` in its
+builder replaces the row only where the two branches are views of different
+types.
 
 ## No plain for loop
 
@@ -95,21 +98,24 @@ number is its position: a collection that gains a row at the top renumbers
 every turn below it, and every view would be rebuilt as though it had changed.
 `ForEach` is where repetition is written, and it keys each view by its item;
 where views are not what is repeated - menu entries, toolbar items, runs, markers -
-an array of them stands for the loop, each matched by its `.id()`.
+an array of them stands for the loop: a menu entry, a toolbar item or a
+marker matched by its `.id()`, a run by its position.
 
 ## ForEach keys are text
 
-`ForEach` writes each item's identity - `String(describing:)` of the item, or
-of the part `id:` names - into the view's `id`. Identity is text wherever a
-value names an element: `.id(_:)`, a navigation route, a tab, a modal sheet, a
-menu entry. One value therefore means one thing wherever it is given.
+`ForEach` writes each item's identity - the item, or the part `id:` names -
+into the view: the value itself, and its name in the patch,
+`String(describing:)`. A value names an element alike wherever it is given:
+`.id(_:)`, a tab, a menu entry, `ForEach`. One value therefore means one thing
+wherever it is given.
 
 The trap is a type that describes itself with less than it holds. A
 `CustomStringConvertible` printing one field of a compound key gives two values
-one identity, and the differ then tells those views apart by where they stand
-rather than by what they are. A synthesized description of an enum or a struct
-carries every field and is safe. A class prints its type's name for every
-instance, so a class is identified by something it holds.
+one name, and the differ then tells those views apart by where they stand
+rather than by what they are - which is said, as the element keeps the value
+its name came from. A synthesized description of an enum or a struct carries
+every field and is safe. A class prints its type's name for every instance, so
+a class is identified by something it holds.
 
 An author's own `.id()` on the view wins over the item's.
 
@@ -129,7 +135,7 @@ composed view's placeholder included, which is where a key has to sit for the
 differ to see it; a `ForEach` writes its item's identity as the node's `id`. A
 Text, a composed view and a hand-written `Node` in `ModifiedContent(node:)`
 take a segment the same way. A container asks for the nodes in its producer,
-so its views are built no earlier than before.
+so its views are built only when the differ reaches the container.
 
 ## Menus collect without keys
 
@@ -151,8 +157,8 @@ unavailable overload with a message of its own refuses a view written where a
 window belongs and a scene inside a scene. What a window shows is chosen
 inside its view, where an `if` changes what the one window shows while the
 platform's window stays where it is. `ApplicationBuilder` collects the
-application's scenes the same way, a window written there being a scene of its
-own, and refuses a view.
+application's scenes in any number and order, a window written there being a
+scene of its own; it takes no `if`, and refuses a view.
 
 `StyleBuilder` keeps `buildArray`: a style is filed by its target type or its
 key, so there is no identity to lose in a loop, and a sheet may use `for` and

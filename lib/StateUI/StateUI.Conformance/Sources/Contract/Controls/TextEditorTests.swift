@@ -4,7 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `TextEditorContract` on a host: an editor's lines are heard as typed, within their bound.
+/// `TextEditorContract` on a host: an editor's lines are heard as typed, within their bound, and it grows with its
+/// words only where it is told to.
 @_spi(Host) public enum TextEditorTests: ConformanceFamily {
     public static let name = "TextEditor"
 

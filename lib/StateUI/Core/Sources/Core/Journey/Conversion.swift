@@ -8,7 +8,8 @@
 
 /// What the differ writes engines for: the sources, the arithmetic each way, and
 /// the derived state.
-final class Conversion: @unchecked Sendable {
+@MainActor
+final class Conversion {
     /// The sources, weakly: held strongly, they would make a ring nothing breaks.
     /// Design: docs/design/core/journeys.md#conversions
     private var kept: [WeakSource] = []
@@ -58,7 +59,8 @@ final class Conversion: @unchecked Sendable {
 }
 
 /// One source as the conversion knows it: weakly.
-final class WeakSource: @unchecked Sendable {
+@MainActor
+final class WeakSource {
     weak var storage: (any AnyStateStorage)?
 
     init(_ storage: any AnyStateStorage) { self.storage = storage }

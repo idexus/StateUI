@@ -21,7 +21,7 @@
 /// size, as a scroller needs - a `.height`, or a `.fill` row of a Grid - and the
 /// cards are fitted to it.
 ///
-/// A swipe settles on a card, and `.position($:)` says which; assigning it
+/// A swipe settles on a card, and `.position(_:)` says which; assigning it
 /// moves the run. A tap opens the middle card, handed to `.onItemTapped`. No
 /// view is rebuilt while the run moves: the one render is the card changing.
 public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
@@ -48,6 +48,17 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// happened, which is when an offset refused before can finally land.
     @State private var measured = 0.0
 
+    /// The card the run last stood on - where it was sent, or where the user
+    /// left it - which a change of room keeps in front.
+    @State private var standing: Int?
+
+    /// Whether a change of room left the run short of that card, until the
+    /// scroller is long enough to hold it.
+    @State private var regaining = false
+
+    /// Where the scroller's run is laid out, as the platform reports it.
+    @State private var length = Rect(0, 0, 0, 0)
+
     /// Which card is held down, by its identity: the scroller over the cards
     /// takes every touch, so the gallery shows the press itself.
     @State private var dipping: ID?
@@ -64,6 +75,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// the drag is measured from.
     @State private var dragged = 0.0
 
+    /// Who starts the runs of what `onPositionChanged` asked for, ended with the gallery.
+    @State private var positionRuns = RunOwner()
+
     /// Every card's placement, written by the engine on the host's frames.
     @State private var placements = PlacedRun()
 
@@ -76,11 +90,11 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// Where the middle card is written, when an author lent a binding.
     private var pin: Binding<Int>?
 
-    /// What runs when the middle card changes, beside any binding.
-    private var moved: ValueEventHandler<Int>?
+    /// What runs when the middle card changes, beside any binding, through its gate.
+    private var moved: (gate: any Gate, handler: ValueEventHandler<Int>)?
 
-    /// What runs when the user taps the run.
-    private var tapped: ValueEventHandler<Items.Element>?
+    /// What runs when the user taps the run, through its gate.
+    private var tapped: (gate: any Gate, handler: ValueEventHandler<Items.Element>)?
 
     /// Which shape the cards stand in.
     private var look = GalleryArrangement.default
@@ -179,27 +193,53 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     ///
     /// - Parameter handler: what to run, given the card's index.
     /// - Returns: the gallery, telling that handler.
-    public func onPositionChanged(_ handler: @escaping ValueEventHandler<Int>) -> Self {
+    public func onPositionChanged(_ handler: @escaping @MainActor (Int) throws -> Void) -> Self {
+        onPositionChanged(gate: .none) { try handler($0) }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what another card coming to the middle does while
+    /// a run is under way.
+    public func onPositionChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<Int>) -> Self {
         var copy = self
-        copy.moved = handler
+        copy.moved = (gate, handler)
         return copy
     }
 
-    /// Runs when the user taps the run, with the item in the middle.
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPositionChanged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onPositionChanged(_ handler: @escaping ValueEventHandler<Int>) -> Self {
+        fatalError("unavailable")
+    }
+
+    /// Runs when the user taps the card in front, with its item.
     ///
     ///     GalleryView(groups, id: \.route) { … }
     ///         .position($shown)
     ///         .onItemTapped { group in open(group) }
     ///
-    /// The tap is about the card the run has settled on, wherever the finger
-    /// landed.
+    /// The tap lands on the card in front as its shape draws it, whether the
+    /// user may swipe the run or not.
     ///
     /// - Parameter handler: what to run, given the middle item.
     /// - Returns: the gallery, answering a tap.
-    public func onItemTapped(_ handler: @escaping ValueEventHandler<Items.Element>) -> Self {
+    public func onItemTapped(_ handler: @escaping @MainActor (Items.Element) throws -> Void) -> Self {
+        onItemTapped(gate: .none) { try handler($0) }
+    }
+
+    /// The same, with a handler that awaits - opening a page does: its `gate` says what a tap does while a run
+    /// is under way.
+    public func onItemTapped(
+        gate: some Gate, _ handler: @escaping ValueEventHandler<Items.Element>
+    ) -> Self {
         var copy = self
-        copy.tapped = handler
+        copy.tapped = (gate, handler)
         return copy
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onItemTapped(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onItemTapped(_ handler: @escaping ValueEventHandler<Items.Element>) -> Self {
+        fatalError("unavailable")
     }
 
     /// How big a card is, in device units - 176 by 248 unless said.
@@ -316,11 +356,15 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         let worn = _wearing
         let flies = _flying
         let measures = _measured
+        let standings = _standing
+        let regains = _regaining
+        let lengths = _length
         let offset = _scrolled
         let drags = _dragged
         let pin = pin
         let moved = moved
         let tapped = tapped
+        let positionRuns = positionRuns
         let look = look
         let swipes = swipes
         let step = reach
@@ -354,6 +398,16 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             }
         }
 
+        // The run sent back to the card it stood on once the scroller holds it.
+        let regain = {
+            let sendTo = Double(standings.wrappedValue ?? asked()) * step
+
+            guard lengths.wrappedValue.width - measures.wrappedValue >= sendTo - 1 else { return }
+
+            regains.wrappedValue = false
+            offset.projectedValue.journey.snap(to: Point(sendTo, 0))
+        }
+
         // The face in a wrapper of its own, so the press on it is not overwritten
         // by the placement written on the wrapper every frame. The wrapper is the
         // card's size: a card the run has not placed yet would fill the room.
@@ -377,8 +431,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         let cards = run
             .placement($placements)
             .frame($room)
-            // The arithmetic runs again whenever the hand or the room moves.
-            .engine(following: $scrolled, $room) { _ in
+            // The arithmetic runs again whenever the hand, the room or the run's
+            // laid-out length moves.
+            .engine(following: $scrolled, $room, $length) { _ in
                 // A room not yet measured places nothing: every card stands as it is until it is.
                 let measured = room.width > 0 && room.height > 0
                 placements = PlacedRun(
@@ -386,10 +441,15 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
                     // Following the hand, placements arrive; a shape change animates.
                     motion: travels ? .inherited : .none)
 
-                // The middle card is named as the run passes halfway: one render
-                // per card crossed, none per frame.
-                if swipes {
-                    name(Int((offset.projectedValue.journey.value.x / step).rounded()))
+                // The middle card is named as the hand passes halfway: one render
+                // per card crossed, none per frame - and none on a way the
+                // program sent the run, nor while a change of room is regained.
+                // Design: docs/design/views/measured-layouts.md#gallery-view
+                let journey = offset.projectedValue.journey
+                if swipes, regains.wrappedValue {
+                    regain()
+                } else if swipes, journey.value == journey.destination {
+                    name(Int((journey.value.x / step).rounded()))
                 }
             }
 
@@ -402,11 +462,12 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
                 // A reported position is where the run already is: it moves
                 // nothing, but the handler still hears it.
                 guard position != reports.wrappedValue else {
-                    if let moved { try await moved(position) }
+                    if let moved { moved.gate.runs(for: positionRuns).start({ try await moved.handler(position) }, moved.gate.policy, payload: nil, owner: positionRuns) }
                     return
                 }
 
                 reports.wrappedValue = position
+                standings.wrappedValue = position
 
                 if swipes {
                     offset.wrappedValue = Point(Double(position) * step, 0)
@@ -420,7 +481,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
                     flies.wrappedValue = false
                 }
 
-                if let moved { try await moved(position) }
+                if let moved { moved.gate.runs(for: positionRuns).start({ try await moved.handler(position) }, moved.gate.policy, payload: nil, owner: positionRuns) }
             },
             wore: {
                 // The shape is worn a render late, so the cards are told they
@@ -433,9 +494,38 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
                 flies.wrappedValue = false
             })
 
+        // The tap, answered on the card in front: the press shows, and the card is
+        // back at its size, before the tap's own work, which usually builds a page.
+        var answer: EventHandler?
+        if let tapped {
+            answer = {
+                let middle = items.index(items.startIndex, offsetBy: asked())
+
+                dips.wrappedValue = items[middle][keyPath: path]
+
+                try await Task.sleep(for: .milliseconds(Self.held))
+
+                dips.wrappedValue = nil
+
+                try await tapped.handler(items[middle])
+            }
+        }
+
         guard swipes else {
+            // Nothing scrolls: the card in front stands where its shape draws it.
             return ModifiedContent(node: Grid {
                 ModifiedContent(node: cards.node)
+                if let tapped, let answer {
+                    GeometryReader { room in
+                        let at = drawn(room)
+
+                        ZStack {
+                            ColorBox(Color("#00000000"))
+                                .area(.absolute(at.x, at.y, at.width, at.height))
+                                .onTapped(gate: tapped.gate, answer)
+                        }
+                    }
+                }
                 turning
             }.node)
         }
@@ -444,13 +534,19 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             .scrollOffset($scrolled)
             // The run comes to rest on the nearest card, by a write.
             .onScrollStopped {
+                // A rest a change of room caused is no card the user chose.
+                guard !regains.wrappedValue else { return }
+
                 let stood = offset.projectedValue.journey.value.x
-                let rest = Double(min(max(Int((stood / step).rounded()), 0), count - 1)) * step
+                let card = min(max(Int((stood / step).rounded()), 0), count - 1)
+                let rest = Double(card) * step
 
                 if abs(stood - rest) > Self.settled {
                     offset.wrappedValue = Point(rest, 0)
                 }
+                standings.wrappedValue = card
             }
+            .laidOut($length)
 
         // On a desktop a pointer drag turns the run: a scroller takes no drag
         // from a mouse, and a finger drags the scroller itself.
@@ -472,50 +568,43 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
                     // Snap the scroller to where the run is, then animate on.
                     offset.projectedValue.journey.snap(to: Point(stood, 0))
                     offset.wrappedValue = Point(Double(card) * step, 0)
+                    standings.wrappedValue = card
                 }
             }
         }
 
-        if let tapped {
+        if let tapped, let answer {
             // The tap is answered on the card in front, as its shape draws it.
-            reader = reader.onTapped(within: drawn) {
-                // The press shows, and the card is back at its size, before the
-                // tap's own work, which usually builds a page.
-                let middle = items.index(items.startIndex, offsetBy: asked())
-
-                dips.wrappedValue = items[middle][keyPath: path]
-
-                try await Task.sleep(for: .milliseconds(Self.held))
-
-                dips.wrappedValue = nil
-
-                try await tapped(items[middle])
-            }
+            reader = reader.onTapped(within: drawn, gate: tapped.gate, answer)
         }
 
         let deck = Grid {
             reader
-                // After each layout the run is put where the position says,
-                // asking again until it lands: an unlaid scroller clamps.
+                // After each layout the run is put where the position says; a
+                // scroller not laid out yet keeps the offset for its first layout.
+                // Design: docs/design/host/layout.md#an-offset-the-tree-writes
                 .onFrameChanged { frame in
-                    let sendTo = Double(asked()) * step
+                    let card = standings.wrappedValue ?? asked()
+                    let sendTo = Double(card) * step
                     let astray = abs(offset.projectedValue.journey.value.x - sendTo) > 1
+                    let changed = measures.wrappedValue > 0 && frame.width != measures.wrappedValue
 
                     guard astray || frame.width != measures.wrappedValue else { return }
 
                     measures.wrappedValue = frame.width
-
-                    var asks = 0
-
-                    while abs(offset.projectedValue.journey.value.x - sendTo) > 1, asks < 10 {
-                        offset.projectedValue.journey.snap(to: Point(sendTo, 0))
-                        try await Task.sleep(for: .milliseconds(100))
-                        asks += 1
+                    // A change of room keeps the card the run stood on: one a
+                    // clamped offset named is put back.
+                    name(card)
+                    if astray { offset.projectedValue.journey.snap(to: Point(sendTo, 0)) }
+                    if changed, lengths.wrappedValue.width - frame.width < sendTo - 1 {
+                        regains.wrappedValue = true
                     }
                 }
 
             turning
         }
+        // What the position asked for ends with the gallery.
+        .onDestroying { positionRuns.orphan() }
 
         return ModifiedContent(node: deck.node)
     }
@@ -740,7 +829,7 @@ private struct Turning: View {
             .width(0)
             .height(0)
             .ignoresInput(true)
-            .onChanged(position) { try await turned(position) }
-            .onChanged(look) { try await wore() }
+            .onChanged(position, gate: .none) { try await turned(position) }
+            .onChanged(look, gate: .none) { try await wore() }
     }
 }

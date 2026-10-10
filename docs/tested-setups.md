@@ -13,8 +13,8 @@ Last verified 2026-10-08.
 | --- | --- |
 | Machine | Apple M1 Max |
 | System | macOS 26.6.2 (25G83) |
-| Xcode | 27.0 (27A266a), with its Swift 6.4 (`swift-6.4-RELEASE`) |
-| Editor | VS Code 1.140.0; the StateUI extension 0.5.2, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.4.1 |
+| Xcode | 27.0 (27A266a), with its Swift 6.4 (`swiftlang-6.4.0.34.1`) |
+| Editor | VS Code 1.140.0; the StateUI extension 0.6.0, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.4.1 |
 | Node.js | 26.10.0, for building and testing the extension |
 
 ### AppKit
@@ -80,7 +80,7 @@ Last verified 2026-10-05.
 | --- | --- |
 | Machine | a Parallels virtual machine on Apple silicon: ARM64, 4 cores, 16 GB |
 | System | Windows 11 Pro 25H2 (build 26200.9457) |
-| Swift | the swift.org toolchain `swift-6.4-RELEASE` (6.4.0, Asserts), ARM64, with its Embedded Python 3.10.1 for LLDB |
+| Swift | the swift.org toolchain `swift-6.4.0-RELEASE` (Asserts), ARM64, with its Embedded Python 3.10.1 for LLDB |
 | C++ | Visual Studio Community 2026 18.10.2, MSVC 14.51, the ARM64 C++ tools |
 | Windows SDK | 10.0.26100 |
 | Editor | VS Code 1.140.0; the StateUI extension 0.5.1, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.7.20261004 |
@@ -112,7 +112,7 @@ Last verified 2026-10-05.
 | --- | --- |
 | Machine | a Parallels virtual machine on Apple silicon: aarch64, 2 cores, 16 GB |
 | System | Ubuntu 24.04.5 LTS, Linux 7.0.0; GNOME Shell 46 on Wayland |
-| Swift | the swift.org toolchain `swift-6.4-RELEASE`, installed by swiftly |
+| Swift | the swift.org toolchain `swift-6.4.0-RELEASE`, installed by swiftly |
 | Editor | VS Code 1.140.0; the StateUI extension 0.5.1, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.4.1 |
 | Node.js | 22.23.3, for building and testing the extension, the Web host's own suite and the conformance run's controller |
 

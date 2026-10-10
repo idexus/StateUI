@@ -65,7 +65,7 @@ struct StateSample: SampleContent, ExampleContent {
                     }
                     .spacing(14)
                 }
-                .style("Card")
+                .style(.card)
                 .padding(14)
                 .stroke(Palette.outline)
                 .lineWidth(1)
@@ -73,7 +73,7 @@ struct StateSample: SampleContent, ExampleContent {
             }
             .spacing(14)
         }
-        .style("Card")
+        .style(.card)
         .padding(14)
         .stroke(Palette.outline)
         .lineWidth(1)

@@ -16,6 +16,7 @@ import StateUI
 /// A sample of one example IS that example: it conforms to `ExampleContent` as
 /// well, and its `examples` are itself. A sample of several lists them, each
 /// an `ExampleContent` of its own.
+@MainActor
 protocol SampleContent {
     /// The route parameter and the row's identity. Unique across the catalog.
     static var id: String { get }
@@ -85,8 +86,8 @@ extension SampleContent where Self: ExampleContent {
 ///
 /// A `View`, because that is what a piece of interface is in this
 /// library - so an example is written the way an application writes one, and
-/// a build reading it takes sits where the example means it to and is shown in
-/// the same place in `code`. Its `@State` is its own, carried by the catalog
+/// a build reading (`DebugInfoLabel`) stands where the example puts it, in
+/// `code` as on screen. Its `@State` is its own, carried by the catalog
 /// the gallery keeps.
 ///
 /// The example says as little as it can: its controls, what they report, and
@@ -221,6 +222,7 @@ struct Example {
     /// What answers it on the host, where the example has such a half.
     let hostCode: HostCode
 
+    @MainActor
     init<Content: ExampleContent>(_ content: Content) {
         view = content
         notes = content.notes
@@ -268,6 +270,7 @@ struct Sample {
         examples.count == 1 ? "Example" : "Example \(index + 1)"
     }
 
+    @MainActor
     init<Content: SampleContent>(_ content: Content) {
         id = Content.id
         title = Content.title

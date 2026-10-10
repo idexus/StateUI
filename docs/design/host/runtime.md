@@ -31,14 +31,17 @@ its parts; [the host layer](../../internals/host-layer.md) maps them.
   lib/StateUI/StateUI.UIKit,
   lib/StateUI/StateUI.Android,
   lib/StateUI/StateUI.WinUI,
-  lib/StateUI/StateUI.GTK)
+  lib/StateUI/StateUI.GTK,
+  lib/StateUI/StateUI.Web)
        |
        v
   native views
 ```
 
-A host links the core's dynamic library and takes the typed patch, so one
-process holds one copy of StateUI's types.
+A host takes the typed patch. A native host links the core's dynamic library,
+so one process holds one copy of StateUI's types; WebAssembly links no library
+dynamically, so a Web build is one module holding the application, StateUI
+and its host.
 
 ## The parts
 
@@ -52,7 +55,7 @@ paths, the journey's animations and the frame they run on.
 | | | `HandlerDispatch` | host layer |
 | | | each element's native half (`NativeElement`), one realization per control family | toolkit half |
 | C | reactive path 2: a value reaches a native control with no rebuild, and the user's change comes back | `ProgramWrite` | host layer |
-| | | a user's change carried onto its state and its event, a radio set, a scroller's move (`MountedElement.reportUserChange`) | host layer |
+| | | a user's change carried onto its state and its event, a radio set (`MountedElement.reportUserChange`), a scroller's move (`reportScrolled`) | host layer |
 | | | the native callback that hears the user | toolkit half |
 | J | a journey's animations, run by the host | `Animator`, `Animation`, `AnimationTarget`; the laws are `HostMotionLaw` in the core | host layer |
 | E | the frame engines and animations run on | `DisplayCycle`; the `FrameClock` protocol | host layer |
@@ -75,7 +78,7 @@ display cycle, in this order, in every runtime:
     2  Animator.advance(to: now)                   StateChannels, DescribedMotion and
                                                    LayoutMotion follow the animations;
                                                    the channels' reports reach the core
-    3  CoreLink.cycle(now)                         engines and conversions run in the core;
+    3  CoreLink.cycle(now:reducesMotion:)          engines and conversions run in the core;
                                                    StateChannels take the changes
     4  one walk of the mounted tree                each element's native setters once,
                                                    each changed parent arranged once,
@@ -99,18 +102,21 @@ back button's words said from a state, which no render follows.
 
 ## One turn
 
-A thread parked in `CoreLink.waitForWork()` wakes the UI thread whenever the
-core has work: a job on `MainActor`, a cycle, a render or an act. The turn
-always runs in the same order.
+The UI thread takes a turn whenever the core has work: a job on `MainActor`, a
+cycle, a render or an act. On Apple it is taken after each pass of the main run
+loop; on the Web as each call from the page ends, and the page is asked to call
+again when work is left (`CoreLink.nextWake`); elsewhere the doorbell posts it.
+The turn always runs in the same order.
 
 ```text
-  doorbell thread: CoreLink.waitForWork() returns
-    |  posts one turn to the UI thread
-    v
+  Apple: the main run     the Web: a call      elsewhere: the doorbell posts
+  loop's pass ends        from the page ends   one turn to the UI thread
+    |                       |                    |
+    v                       v                    v
   pump:  run the jobs  ->  a pending cycle  ->  render  ->  acts
                                                   |
                                                   v
-                          PatchIntake.take(root, generation)
+                          PatchIntake.take(_:generation:apply:)
                             ProgramWrite marks the writes, handlers wait
                             the mounted tree applies the patch
                             a drift: refused, and render(baseline: 0) once
@@ -119,20 +125,36 @@ always runs in the same order.
 
 The acts come last, so an act lands on the interface its handler just changed.
 
-`Pump` is that turn, once for every runtime. A toolkit gives it a
-`TurnPresenter`: what a render changed around the tree - the windows, their
-pages, their chrome - and the performer of an act. A turn asked for while one
+`Pump` is that turn, once for every runtime. A toolkit gives the runtime one
+`HostPresenter`: what a render changed around the tree - the windows, their
+pages, their chrome - what a frame's walk moved of the chrome, and the
+performer of an act; the rest of a turn and a frame is the runtime's. A turn asked for while one
 runs runs when it ends; the handlers a render created run and the turn goes
 round again; the handlers waiting in `HandlerDispatch` run, a phase rendered
 before what comes after it, and the turn goes round again; only then the acts.
 
 ## The doorbell
 
-The core rings when it has work a turn must take - a handler resumed off the
-UI thread, a state an engine wrote. A host parks a thread of its own on the
-core (`CoreLink.ringForever`) and posts a turn onto its UI thread each time the
-core rings: AppKit and UIKit onto the main queue, WinUI through its relay,
-GTK through GLib, Android onto its looper. The turn itself is the `Pump`'s.
+Where the platform's loop is neither Apple's nor the browser's, a host says at
+its start how a turn is posted onto its UI thread from any thread
+(`CoreLink.postTurns`): WinUI through its relay, GTK through GLib, Android onto
+its looper. The core posts one through it whenever work comes - a state written
+or an act sent on the UI thread, a job queued from any thread, a handler's
+resume or a post - on the thread the work came from; no thread of the host's
+waits. One turn is posted until its drain begins. The turn itself is the
+`Pump`'s.
+
+## The turn on Apple
+
+On Apple every source of work is a pass of the main run loop: a handler's
+event, a resumed task on the main queue, a post's job, a frame. So AppKit and
+UIKit ring nothing: `RunLoopTurns` watches the main run loop in every common
+mode and, as each pass ends - before the loop sleeps, or as a run of it returns
+- takes a turn where the core has work (`Pump.turnIfWanted`, the core's
+`wantsTurn` or a handler waiting). The turn renders what the pass wrote before
+the pass is over, ahead of Core Animation's commit, so a write is on the
+screen in the frame of the pass that made it, and no thread of the host's own
+ever waits on the core.
 
 ## The handlers' order
 
@@ -198,8 +220,8 @@ the windows, the pages, the layout, drawing, text and input rules, the acts
 and the environment's words, which [the host layer](../../internals/host-layer.md) maps
 part by part. A toolkit gives the layer
 each element's native half through `NativeElement`, its frame signal through
-`FrameClock`, presents a frame through `FramePresenter` and a turn through
-`TurnPresenter`, and hands
+`FrameClock`, presents a turn and a frame through one `HostPresenter`, and
+hands
 `LayoutMotion` the views it places as `PlacedView`. The host layer's own suite
 tests them on every platform it builds on, and `RuntimeArchitectureTests` holds
 every Swift runtime to them: only `Animator` samples a timing law, only
@@ -211,6 +233,21 @@ reasons of the animator, the state channels, the described motion and the layout
 motion; [patches](patches.md) those of the patch intake and the program write;
 [the mounted tree](tree.md) those of the tree and its native halves;
 [layout](layout.md) those of the layout arithmetic.
+
+## After a layout pass
+
+What a host must do once the layout pass under way is over - on GTK a field's
+caret the toolkit's focus undid, a list's changes held while its rows bind and
+the entries it shows, and a split view's first room; on WinUI a split view's
+first room - waits in one queue
+(`HostRuntime.afterLayout`): it runs once the pass is over, in the order it
+came, and work that comes while it runs waits for the next. The host asks once
+to be told a pass is over and then takes a turn: GTK at the idle after its
+layout and paint, WinUI in the next turn it posts, as WinUI lays out before its
+queue's next message. Android's list holds its changes in its relay until the
+recycler stops laying out. A scroller's offset written before its first layout
+is not this queue's: it waits in the scroller (`WrittenScrollOffset`), which
+applies it in its own arrange, before it draws and only once it has a size.
 
 ## Where a view stands
 
@@ -227,9 +264,12 @@ says it too (items.md, `The view moving`). A host says only what its
 toolkit knows: the numbers of the place. It says nothing while the view
 stands in no window or before a layout placed it - a view that joins a shown
 page meets a display frame before the layout pass that places it - so the
-first report a handler hears is where the view is laid out, never zeros.
-A toolkit that tells, once it has laid out and before it draws, that it did
-lets what was laid out say it at once (`FrameFollowers.reportLaidOut`), so a
+first report a handler hears is where the view is laid out, never zeros. A
+view is laid out once StateUI's layout placed it or its toolkit gave it a
+size, the same on every native host (`MountedElement.isLaidOut`); the Web
+asks the browser whether the element has a box.
+The Web, as each call from the page ends and before the browser draws, lets
+what was laid out say it at once (`FrameFollowers.reportLaidOut`), so a
 size worked out from a frame is drawn in the frame that measured it; a
 scroller still says what it did on the display's frame.
 
@@ -270,7 +310,6 @@ enough ([a swipe](#a-swipe)); a pinch says each step's scale since the last
 and where, as shares of the view (`PinchStep`). A host's toolkit hears the
 input and says it as `HeardInput`.
 
-
 ## A disabled branch
 
 A view the tree disables keeps its place and still stands in the way of a
@@ -281,20 +320,26 @@ it began still ends there - and a view's `isEnabled` reaches its control as
 `presented(_:)` gives it, false wherever a view holding it is disabled. When
 a layout's `isEnabled` changes, every element in it presents its own again
 (`enablementTurned`), so a native control in the branch is disabled and
-enabled with it. A host reads its members through `presented`, never the
-element's own value, and needs no rule of its own.
+enabled with it. A host reads a view's members through `presented`, never
+the element's own value. A bar's action and a menu's item stand in no view,
+so a host reads `isEffectivelyEnabled` for them: one declared in a disabled
+branch is out of reach with it, and comes back as the branch is enabled.
+
 ## A press dragged
 
 A host whose toolkit tells a press and its moves, and no drag of its own,
 tells a drag by one rule (`DragRecognition`): the press is a drag once it
 has moved MORE than the platform's distance from where it went down - along
 either axis where the platform measures a rectangle, Windows and GTK, or any
-way where it measures a radius, Android. It starts there, at nothing, and
-then each move is the drag's, measured from where the press went down, until
-the press lets go and it completes, or the platform takes the press away and
-it is cancelled. A press that never became a drag ends with nothing. The
-distance is the platform's, in DIPs; the toolkit holds the pointer once the
-press is a drag, which the host asks for as the rule says so.
+way where it measures a radius, Android; the browser gives none, so the Web
+takes a radius of its own - four points for a mouse or a pen, ten for a
+finger ([its input](../platforms/web/input.md#a-press-dragged-and-a-pinch)).
+It starts there, at nothing, and then each move is the drag's, measured from
+where the press went down, until the press lets go and it completes, or the
+platform takes the press away and it is cancelled. A press that never became
+a drag ends with nothing. A platform's distance is taken in DIPs; the toolkit
+holds the pointer once the press is a drag, which the host asks for as the
+rule says so.
 
 ## A swipe
 
@@ -358,10 +403,10 @@ with it.
 
 ## The application's phase
 
-A toolkit tells what each window does - whether it stands off the screen,
-minimized or hidden by its scene, and whether it is
-activated - and whether the whole application is hidden, and every host
-tells it on alike (`ApplicationLifecycle`, `HostRuntime.windowStateChanged`).
+A toolkit tells what each window does - whether it is minimized, and whether
+it is activated - and whether the whole application is hidden, and every host
+tells it on alike (`ApplicationLifecycle`, `HostRuntime.windowStateChanged`);
+whether a scene hides a window is the host layer's (`hidesWhenInactive`).
 What it tells settles a turn later, with whatever else it tells in the same
 one: a toolkit tells a window deactivated before it tells another activated,
 and the two are one move, in which the application stays in use.
@@ -412,9 +457,10 @@ its first argument, the element's own id or its number; one naming none, or
 none on screen, fails with that reason (`MountedTree.aimed`). One performer
 does this for every host (`HostActPerformer`): it reads each act, keeps the
 questions in line, answers and fails; a host gives it its toolkit's part
-(`ActToolkit`) - the clock and the zones, a question shown, a word to the
-screen reader, the focus and the on-screen keyboard, a value kept, the acts
-its own controls answer - and nothing more.
+(`ActToolkit`) - its name and its log, the clock and the zones, a question
+shown, a word to the screen reader, the theme shown, the focus and the
+on-screen keyboard, a value kept, the acts its own controls answer and those
+the application registered - and nothing more.
 
 ## An application's own acts
 
@@ -457,6 +503,22 @@ declares `HostActs.files`; a host without one fails every act for files by
 name. A file read and a launch answer when the platform does, never in the
 turn that asked.
 
+## Starting
+
+Every host starts in one order (`HostRuntime.start`): what it realizes; the
+environment it stands on - the device, the display, the theme, the
+application's facts; the values the platform kept, read only once the device
+is told, as reading their keys makes the application, which is made knowing
+the device; the language's direction, so the tree stands in it from its first
+window; the windows - the scenes kept, or the platform's first window; then
+the turns - a doorbell, the run loop's, the page's entries. A host gives each
+step in its toolkit's terms, and a later start in the same process - Android's
+next activity, WinUI's next launch - reads no kept values again.
+
+Before that order, a host whose UI thread is not Apple's main thread - on
+Android, GTK, WinUI and the Web - claims the thread it starts on as the UI
+thread (`CoreLink.claimUIThread`).
+
 ## Kept values
 
 Every host keeps a value as its words, by one rule (`KeptWord`): a value is
@@ -472,7 +534,8 @@ file of its own, and one codec says what the file holds (`KeptValuesText`): a
 line a key, its name and its words apart by a tab - a tab, a line's end and a
 backslash in either escaped - the keys in order, so the same values write the
 same file. Where the file stands and how it is read and written is the
-host's.
+host's. The Web keeps the codec's text whole, under one key, in the browser's
+storage for its site.
 
 ## The platform's first window
 
@@ -591,7 +654,7 @@ the lines there.
 
 A runtime calls the running core through `CoreLink` alone: a render, a cycle,
 an event, an act call and its answer, a user's report, the application's and
-the scene's reports, the kept values and the doorbell's wait. The line is the
+the scene's reports, the kept values and the way a turn is posted. The line is the
 typed `HostBoundary` SPI. The lane codecs - a journey read from its
 image and written back, a placement run - are arithmetic on values the runtime
 already holds, and stay the SPI's.

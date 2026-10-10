@@ -80,15 +80,15 @@ public struct Grid: Layout, GridProperties {
 }
 
 extension Grid {
-    /// `columnSpacing` from a state, `$x`: the host sets each new value as it
-    /// stands, and no view is rebuilt for it.
+    /// `columnSpacing` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func columnSpacing(_ state: Binding<Double>) -> Modified {
-        plain(.columnSpacing, by: state)
+        twin(GridContract.columnSpacing, by: state)
     }
 
-    /// `rowSpacing` from a state, `$x`: the host sets each new value as it
-    /// stands, and no view is rebuilt for it.
+    /// `rowSpacing` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func rowSpacing(_ state: Binding<Double>) -> Modified {
-        plain(.rowSpacing, by: state)
+        twin(GridContract.rowSpacing, by: state)
     }
 }

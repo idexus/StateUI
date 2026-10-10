@@ -16,6 +16,7 @@ private let circle = Brush.radialGradient([
     GradientStop(Color(red: 0, green: 0, blue: 255), 0.6), GradientStop(Color(red: 0, green: 0, blue: 255), 1),
 ])
 
+@MainActor
 final class GTKBrushTests: XCTestCase {
     /// A radial gradient is a circle whatever it paints: on a box 200 by 100 it reaches 100 down as across, so 40
     /// above the middle is red - an ellipse would reach 50 down and paint it blue; turned 100 by 200, 40 left of the

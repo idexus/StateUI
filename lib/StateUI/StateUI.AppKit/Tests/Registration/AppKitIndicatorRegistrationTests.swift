@@ -11,6 +11,7 @@ import XCTest
 /// The indicators, realized through the registry: a progress bar and an
 /// activity indicator made by their registrations, their members reaching the
 /// native views, and what the registry says it realizes.
+@MainActor
 final class AppKitIndicatorRegistrationTests: XCTestCase {
     /// The registry realizes both indicators, each with its own member.
     @MainActor

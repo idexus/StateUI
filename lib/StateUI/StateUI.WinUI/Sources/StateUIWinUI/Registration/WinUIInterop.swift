@@ -132,20 +132,19 @@ public enum StateUIEvents {
         WinUIRegistrations.registry.raises(event)
     }
 
-    /// Raises an event of the application's - one no control raises - with the values its contract declares.
-    /// Every `HostEvents.on` subscription to the member hears it. Safe from any thread.
+    /// Raises an event of the application's - one no control raises - with the values its contract declares, from
+    /// any thread: every `HostEvents.on` subscription to the member hears it in a job of the UI thread's soon after,
+    /// in the order raised. A raise nobody hears is an ordinary one.
     ///
     ///     StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
     ///   - value: what it carries, in the order its contract declares.
-    /// - Returns: how many subscriptions heard it - a raise nobody hears is an ordinary zero.
-    @discardableResult
     public nonisolated static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
-    ) -> Int {
+    ) {
         CoreLink().raise(event, repeat each value)
     }
 }

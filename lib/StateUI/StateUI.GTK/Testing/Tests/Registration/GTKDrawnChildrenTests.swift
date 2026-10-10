@@ -39,7 +39,7 @@ private struct Book: Element {
         node.write(BookContract.title, title)
     }
 
-    func onOpened(_ handler: @escaping EventHandler) -> Self {
+    func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         var copy = self
         copy.node.addHandler(BookContract.opened, handler)
         return copy
@@ -85,6 +85,7 @@ private struct Shelving: View {
 
 /// Children an application's control draws itself, through this host's facade: handed whole and typed, each the same
 /// child for as long as it lives, each event raised on its own child, and none given a widget of its own.
+@MainActor
 final class GTKDrawnChildrenTests: XCTestCase {
     @MainActor
     private static func registerShelf() {

@@ -16,8 +16,9 @@ a value as the thing it is, with nothing to parse and nothing to guess.
 ## Text and names
 
 A `Name` is a word an application chose that repeats across a tree and means
-the same thing every time: a style key, a font family, a radio group. It
-crosses as `.name`, which a host may match by what it names.
+the same thing every time: a font family, a radio group, a kept key. It
+crosses as `.name`, which a host may match by what it names. A style key is a
+`StyleKey<Control>`, which the core resolves before any host sees it.
 A member holding a `String` crosses as text an author wrote. The member's declared type
 decides which it is, so a contract declares `Name` or `String` by what the
 words are.
@@ -76,4 +77,4 @@ value that says so. `.nothing` is that value, and an optional crosses as its
 value or as `.nothing`. An empty string, a -1 or an empty list would each be
 indistinguishable from something someone meant. `TimeZoneInfo.utcOffset`
 sends its zone and its day this way: nothing for the local zone, and nothing
-for today.
+for now.

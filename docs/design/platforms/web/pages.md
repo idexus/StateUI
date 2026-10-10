@@ -20,7 +20,8 @@ on a glass of its own, apart from the next. Each action is a button with
 its picture, its words beside it where it shows them, its name for assistive
 technology and its tooltip. The bar's colours are the arrangement's, written
 as CSS variables the stylesheet paints it with; without them the bar is the
-page's surface, translucent over what scrolls beneath, blurred and deepened.
+page's surface, translucent, blurred and deepened over what lies behind it;
+the room stands in the row below the bar, so nothing scrolls beneath it.
 A clear bar drops the blur: it shows what lies behind it as it is, the same
 colour as the page under it. No line stands under the bar. The same title
 names the browser's tab, beside the site's name ([The tab](#the-tab)).
@@ -67,6 +68,8 @@ user's - only where the browser stands on that entry, so the page never takes
 the user off the site from one it did not put there. One entry, never one a
 page: a page the application pushes is the
 tree's, and the browser could hand none of them back on its way forward.
+A window hears the history move until it closes, and closing lets that
+listener go on both sides of the relay.
 
 A window closing takes its sheets away first, the top one first: each is a
 modal dialog of the page's, which would hold every page after it still.
@@ -168,7 +171,9 @@ share. The strip scrolls across alone, never down - its line drawn inside it,
 so no tab's underline reaches past it for a finger to drag it by. It wears
 the colour of the bars on its path (`barColors`), and no blur under a clear
 one - the window bar's own look where nothing is said - so under the window's
-bar it stands as one with it. Each tab is a button with the role of a tab - its page's picture, where
+bar it stands as one with it; its words, as the window bar's, are the colour
+the tree writes, else light on a dark band and dark on a light one
+(`BandWords`). Each tab is a button with the role of a tab - its page's picture, where
 it has one, beside its name - the chosen one selected; the chosen page shows and the others stand beside it covered, kept
 as they stood, scrolled where the user left them. A covered page is laid out
 unseen - it takes no touch, no keyboard and no assistive technology - so a

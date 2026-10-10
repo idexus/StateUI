@@ -48,7 +48,8 @@ Two switches in the process's environment make a runtime write text for
 whoever reads its log rather than its screen, on the standard error - which an
 Android runtime sends to logcat. `STATEUI_TALLY=1` writes the running totals:
 the messages applied, the elements they walked, made and kept, the core's
-renders, empty renders, refused writes and live elements (the core's tally),
+renders, empty renders, refused writes, live elements and runs under way or waiting
+(the core's tally),
 the host's own views alive (`views`, which `HostRuntime` takes - a view
 outliving its element shows there while the elements' count comes back), and
 the apply's average, worst and total time. The totals run from the start,

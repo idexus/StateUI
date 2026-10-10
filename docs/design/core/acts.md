@@ -36,22 +36,19 @@ member declares, checked on the way back: an answer of another shape throws.
 
 Acts wait in the renderer's queue until the host takes them, at the end of its
 turn, after the render - so an act lands on the interface its handler just
-changed. The queue and the completion registry are behind the renderer's lock
-because a child task reaches them, as it reaches the record of what changed:
-`async let` runs its child on the cooperative pool, so two animations started
-that way book their waiters from pool threads while the UI thread takes acts
-and dispatches completions.
-Unguarded, that race loses a continuation (a handler frozen at its `await`) on
-a good day and corrupts memory on a bad one.
+changed. The queue and the completion registry are the UI thread's, as everything the
+renderer keeps: a handler books its waiter there, and the host takes acts and
+dispatches completions there, one after another. A task off the UI thread
+sends an act by awaiting it, which runs it on `MainActor`.
 
-## Waking the host for an act
+## An act asks for a turn
 
-An act queued from a plain `Task` runs on the pool and lands no job on the UI
-thread's executor, so nothing else would tell the host it exists - it would sit
-in the queue until the next event, a pressed card never coming back up. So
-`send` wakes the host after queueing, outside the lock; the executor's armed
-flag folds a burst of sends into one wake. The doorbell counts queued acts and
-waiting saves as work (concurrency.md).
+An act is sent on the UI thread, and where no turn follows the code that sent
+it - an application's own callback - nothing else would tell the host it
+exists: it would sit in the queue until the next event, a pressed card never
+coming back up. So `send` asks the host for a turn after queueing; a burst of
+sends asks for one (concurrency.md#the-doorbell). A turn counts queued acts and
+waiting saves as work.
 
 ## Completion ids
 
@@ -65,17 +62,16 @@ rebuilt.
 
 ## Awaiting an answer
 
-`Renderer.call` and every async API here are `nonisolated(nonsending)`: they
-run, and resume, on the executor of whoever called them, which for a handler is
-`MainActor`. A plain async function would run on the cooperative pool, and the
-caller would come back to life beside a render the host is running. The reply
+`Renderer.call` and every async API here belong to `MainActor`, as the
+handlers awaiting them do: they run, and resume, on the UI thread, between the
+host's turns, never beside a render the host is running. The reply
 crosses as tagged values, so nothing is parsed: `focus` reads one bool, the
 clock its numbers, and a failure throws `StateUIError` with the host's reason.
 
 A resume is counted the moment the continuation is resumed and uncounted by the
 handler as the first thing after its `await`. The job a resume produces does not
-exist yet when the outcome is reported - it lands a moment later and wakes the
-doorbell - so a test waiting for a quiet queue reads this count to tell "the
+exist yet when the outcome is reported - it lands a moment later and posts a
+turn - so a test waiting for a quiet queue reads this count to tell "the
 resume has not landed yet" from "nothing to wait for". `dispatch` runs nothing
 for a completion, for the same reason.
 
@@ -217,11 +213,16 @@ row - and nothing happens where no screen reader runs.
 An event the host raises by name has no element behind it - connectivity
 changing, the battery reporting - so the application declares it in an
 `ApplicationTier`, registers the raise with the host, and subscribes with
-`HostEvents.on`. A raise reaches the subscriptions by the member's name, and
-the values arrive as the types the member declares; a raise of another shape
-is reported once and does not reach the handler. Handlers run in subscription
-order, each started on `MainActor` exactly as a control's handler is, taken
-under the lock and started outside it. Subscription ids are never reused, so a
-cancelled subscription cannot take a newer listener with it. A raise nobody
-subscribed to is an ordinary zero, and prefixing event names with the
-application's own keeps them from ever meeting one this library adds.
+`HostEvents.on`. A raise reaches the subscriptions by the member's name.
+`HostBoundary.raise` is typed by the member, so a raise of another shape does
+not compile, and the values arrive as the types the member declares. A raise
+is one door in from any thread, as a post is (`RaisedEvents`): its values are
+encoded where it is raised, and the raises wait, in order, for one job of the
+UI thread's, which hands each to its subscriptions. Handlers run in
+subscription order, each started on `MainActor` exactly as a control's handler
+is, from the list as it stood when the raise was delivered: a handler that
+cancels a subscription changes the next raise, not this one. Subscription ids
+are never reused, so a cancelled subscription cannot take a newer listener
+with it. A raise nobody subscribed to is an ordinary one, and prefixing event
+names with the application's own keeps them from ever meeting one this library
+adds.

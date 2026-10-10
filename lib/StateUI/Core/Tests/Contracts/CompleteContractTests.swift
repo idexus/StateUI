@@ -11,6 +11,7 @@ import Foundation
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class CompleteContractTests: XCTestCase {
     /// One member, with the contract declaring it.
     private struct Declared {

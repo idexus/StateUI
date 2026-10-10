@@ -21,8 +21,8 @@ refuses two cells of one identity.
 
 The entries cross in the patch as any property does, so they are compared,
 sent only when they change, and printed by the inspector. What a host needs
-from one list to the next - removals, insertions and moves - is worked out
-once in the host layer.
+from one list to the next - removals and insertions, an entry that moved being
+one of each - is worked out once in the host layer.
 
 ## Built when a cell asks
 

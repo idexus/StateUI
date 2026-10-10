@@ -62,7 +62,7 @@ private struct Lamp: ElementView {
         setValue(LampContract.lit, value)
     }
 
-    func onPulled(_ handler: @escaping ValueEventHandler<Int>) -> Self {
+    func onPulled(_ handler: @escaping @MainActor (Int) throws -> Void) -> Self {
         onEvent(LampContract.pulled, handler)
     }
 }
@@ -82,7 +82,7 @@ private struct Calling: View {
 
     var body: some View {
         VStack {
-            Button("Ask").onClicked {
+            Button("Ask").onClicked(gate: .ignoreWhileRunning) {
                 do {
                     let doubled = try await stateUICall(InteropTestContract.doubled, 21)
                     said = "\(doubled)"
@@ -90,7 +90,7 @@ private struct Calling: View {
                     said = "thrown: \(error)"
                 }
             }
-            Button("Ask nobody").onClicked {
+            Button("Ask nobody").onClicked(gate: .ignoreWhileRunning) {
                 do {
                     try await stateUICall(InteropTestContract.unregistered)
                     said = "that should have thrown"
@@ -98,7 +98,7 @@ private struct Calling: View {
                     said = "thrown: \(error)"
                 }
             }
-            Button("Flash").onClicked {
+            Button("Flash").onClicked(gate: .ignoreWhileRunning) {
                 do {
                     try await lamp.flash()
                     said = "flashed"
@@ -119,6 +119,7 @@ private struct Calling: View {
 
 /// What an application registers with this host: the acts it performs, the events it raises, and its own elements,
 /// each realized by a view of its own.
+@MainActor
 final class UIKitInteropTests: XCTestCase {
     /// Registers the lamp - a registry keeps what it is told, each registration in place of the last.
     @MainActor
@@ -188,10 +189,9 @@ final class UIKitInteropTests: XCTestCase {
         let host = running()
         defer { host.finish() }
 
-        let heard = StateUIEvents.raise(InteropTestContract.spoke, "hello")
+        StateUIEvents.raise(InteropTestContract.spoke, "hello")
         host.settle { said(host) != "-" }
 
-        XCTAssertEqual(heard, 1)
         XCTAssertEqual(said(host), "heard hello")
     }
 

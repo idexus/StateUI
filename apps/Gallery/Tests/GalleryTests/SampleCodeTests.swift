@@ -7,6 +7,7 @@ import XCTest
 
 /// What a sample's page shows under its heading compiles as a reader would paste it, against the library and the
 /// Gallery's own helpers: a listing is cut from running code, and a cut that leaves out what it needs is caught.
+@MainActor
 final class SampleCodeTests: XCTestCase {
     /// Every listing in Swift compiles - every sample's, whichever host it is shown on.
     func testEverySamplesCodeCompiles() throws {

@@ -8,6 +8,7 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class ContractTests: XCTestCase {
     /// A place a handler writes - a plain class captured in a test method,
     /// which is the capture that stays on this library's executor.
@@ -282,7 +283,7 @@ final class ContractTests: XCTestCase {
     func testAnApplicationActIsCalledAndAnsweredAsItsDeclaredValues() async throws {
         _ = drainedActs()
 
-        let asked = await Self.begin { try await stateUICall(TestDevice.battery) }
+        let asked = Self.begin { try await stateUICall(TestDevice.battery) }
         let acts = drainedActs()
         XCTAssertEqual(acts.first?.name, "Test.Battery")
         XCTAssertEqual(acts.first?.arguments, [])
@@ -292,7 +293,7 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(level, 0.5)
         XCTAssertTrue(charging)
 
-        let copied = await Self.begin { try await stateUICall(TestDevice.copy, "note") }
+        let copied = Self.begin { try await stateUICall(TestDevice.copy, "note") }
         let copy = drainedActs()
         XCTAssertEqual(copy.first?.name, "Test.Copy")
         XCTAssertEqual(copy.first?.arguments, [.string("note")])
@@ -306,7 +307,7 @@ final class ContractTests: XCTestCase {
     func testAnAnswerOfAnotherShapeThrowsNamingTheAct() async throws {
         _ = drainedActs()
 
-        let asked = await Self.begin { try await stateUICall(TestDevice.battery) }
+        let asked = Self.begin { try await stateUICall(TestDevice.battery) }
         await report(try completionId(in: drainedActs()), .finished([.string("full")]))
 
         do {
@@ -327,7 +328,7 @@ final class ContractTests: XCTestCase {
         renders.render(stack([Lamp().aim(lamp).node], id: "root"))
         _ = drainedActs()
 
-        let asked = await Self.begin { try await lamp.call(LampContract.flash, 3) }
+        let asked = Self.begin { try await lamp.call(LampContract.flash, 3) }
         let acts = drainedActs()
         XCTAssertEqual(acts.first?.name, "Test.Flash")
         XCTAssertEqual(acts.first?.arguments, [.number(1), .number(3)], "the element it was put on, then the times")
@@ -361,12 +362,12 @@ final class ContractTests: XCTestCase {
     ///
     /// Spelled as an alias because `nonisolated(nonsending)` cannot be written
     /// inline in a parameter type - the same reason EventHandler exists.
-    private typealias Asking<Value> = nonisolated(nonsending) () async throws -> Value
+    private typealias Asking<Value> = @MainActor () async throws -> Value
 
     /// Starts an act and lets it reach its suspension, the way an event does:
     /// by the time this returns the act is on the act queue.
     @MainActor
-    private static func begin<Value: Sendable>(_ body: sending @escaping Asking<Value>) -> Task<Value, Error> {
+    private static func begin<Value: Sendable>(_ body: @escaping Asking<Value>) -> Task<Value, Error> {
         Task.immediate { @MainActor in try await body() }
     }
 

@@ -29,7 +29,7 @@ extension WebRenderer {
     /// A host showing `page` in the browser's window, on `clock` where one is given: a first launch, which finds
     /// nothing an earlier host kept.
     static func running(
-        clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @Sendable () -> any View
+        clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> WebRenderer {
         let application = OneWindowApplication(page: page)
         return running(clock: clock, reducesMotion: reducesMotion, application: { application })
@@ -39,7 +39,7 @@ extension WebRenderer {
     /// host kept - or, `keeping`, a launch after the last, which finds what it kept.
     static func running(
         clock: TestClock? = nil, reducesMotion: Bool = false, keeping: Bool = false,
-        application: @escaping @Sendable () -> any Application
+        application: @escaping @MainActor () -> any Application
     ) -> WebRenderer {
         shared?.leave()
         if !keeping { forgetWhatIsKept() }
@@ -57,12 +57,13 @@ extension WebRenderer {
         try? WebBrowser.run("localStorage.clear()")
     }
 
-    /// The host leaves the page: what it was told late settles into no window of the next host's.
+    /// The host leaves the page: what it was told late settles into no window of the next host's, and the page's
+    /// listeners are let go of.
     func leave() {
         runtime.tree.root?.leave()
-        runtime.pump.presenter = nil
-        runtime.displayCycle.presenter = nil
+        runtime.presenter = nil
         for controller in roster.controllers { controller.close() }
+        for listener in pageListeners { WebRelay.forget(listener) }
     }
 
     /// One step as the browser takes it: a frame of the page's - its tasks, its rendering, what its observers say -

@@ -8,6 +8,7 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class PatchShapeTests: XCTestCase {
     /// The counter page of the sample, in miniature: enough to carry a title, a
     /// value that changes, a button with a handler, and a keyed list.

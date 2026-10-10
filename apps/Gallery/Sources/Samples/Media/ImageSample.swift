@@ -115,7 +115,8 @@ struct ImageSample: SampleContent, ExampleContent {
         VStack {
             Text("The first row is the sidebar's own icons: SVGs in `Resources/Images`, "
                 + "each asked for by its `.png` name. Where the build makes no PNG of that "
-                + "name, the host loads the SVG of the same name instead.")
+                + "name, a host that draws vector pictures loads the SVG of the same name; "
+                + "UIKit and Android load the PNG the build draws from it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

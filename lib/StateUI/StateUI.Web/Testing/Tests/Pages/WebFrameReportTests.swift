@@ -8,12 +8,13 @@
 import XCTest
 
 /// A view says where it stands only where the browser lays it out: on a covered tab it says nothing, so the frame it
-/// said last stands - never zeros, which a frame driving a size would turn into a page of no width; and it says where
-/// it went when its layout moves it on the way, its size the same all along. A host runs here,
-/// so the suite runs it in a browser (`test-web.sh --browser`).
+/// said last stands - never zeros, which a frame driving a size would turn into a page of no width; it says where it
+/// went when its layout moves it on the way, its size the same all along; a filling picture says its room, and a
+/// shape whose frame is read is drawn again at its new size. A host runs here, so the suite runs it in a browser
+/// (`test-web.sh --browser`).
 @MainActor
 final class WebFrameReportTests: XCTestCase {
-    override func setUp() {
+    override func setUp() async throws {
         WebTestLoop.started
     }
 
@@ -35,6 +36,54 @@ final class WebFrameReportTests: XCTestCase {
         XCTAssertTrue(Aspects.laidOut(frames), "laid out at a size again")
         XCTAssertFalse(frames.values.contains { FrameReport.size($0).allSatisfy { $0 == 0 } },
                        "a covered tab's view said it stood at no size: \(frames.values)")
+    }
+
+    /// A picture filling its room says that room as its frame, never the margin it reaches past each edge.
+    func testAFillingPictureSaysItsRoomAsItsFrame() throws {
+        let frames = Received<[Double]>()
+        let host = WebRenderer.running {
+            VStack {
+                Image("test_dot.png").contentMode(.fill).width(60).height(40)
+                    .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+            }
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }
+        host.settle { !frames.values.isEmpty }
+
+        XCTAssertEqual(frames.values.last.map(FrameReport.size), [60, 40], "\(frames.values)")
+    }
+
+    /// A shape whose frame the tree reads, its room growing, is drawn again at its new size and says its new frame:
+    /// one observer of the element carries both, never one in the other's place.
+    func testAShapeWhoseFrameIsReadIsDrawnAgainAtItsNewSize() throws {
+        let wide = State(wrappedValue: false)
+        let frames = Received<[Double]>()
+        let host = WebRenderer.running {
+            VStack {
+                VStack {
+                    Rectangle().fill(.red).height(20)
+                        .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+                }
+                .width(wide.wrappedValue ? 160 : 80)
+                Button("Wider").onClicked { wide.wrappedValue = true }
+            }
+            .horizontalAlignment(.start)
+        }
+        host.settle { frames.values.last.map(FrameReport.size)?.first == 80 }
+        let shape = try XCTUnwrap(host.views(WebShapeView.self).first)
+        try XCTUnwrap(host.views(WebButtonView.self).first).onClicked()
+        host.settle { frames.values.last.map(FrameReport.size)?.first == 160 }
+
+        let width = "e.querySelector('path').getBBox().width"
+        host.settle { ((try? WebBrowser.number(width, on: shape.node)) ?? 0).map { abs($0 - 160) < 0.5 } ?? false }
+
+        XCTAssertEqual(frames.values.last.map(FrameReport.size)?.first, 160, "the frame said the old width")
+        let drawn = try XCTUnwrap(WebBrowser.number(width, on: shape.node))
+        let box = try WebBrowser.evaluate(
+            "[e.clientWidth, e.getBoundingClientRect().width, e.querySelector('svg').getBoundingClientRect().width].join(' ')",
+            on: shape.node) ?? ""
+        XCTAssertEqual(drawn, 160, accuracy: 0.5, "the shape was not drawn again at its new width - its box: \(box)")
     }
 
     func testAViewItsLayoutMovesOnTheWaySaysWhereItWent() throws {

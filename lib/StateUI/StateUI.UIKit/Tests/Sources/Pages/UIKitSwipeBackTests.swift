@@ -8,6 +8,7 @@ import UIKit
 import XCTest
 
 /// A stack's swipe back from within its page, beside what the page's own views listen for.
+@MainActor
 final class UIKitSwipeBackTests: XCTestCase {
     /// A view's own drag comes before the stack's swipe back from within its page: the swipe back waits for the drag
     /// to fail, and never recognizes with it.

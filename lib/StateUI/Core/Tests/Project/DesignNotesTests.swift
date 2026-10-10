@@ -6,6 +6,7 @@ import XCTest
 
 /// The code says what a declaration is; `docs/design/` says why.
 /// Design: docs/design/README.md#the-golden-rule
+@MainActor
 final class DesignNotesTests: XCTestCase {
     /// The directories that keep the golden rule, relative to the repository: StateUI's, and every backend's.
     private static var held: [String] {

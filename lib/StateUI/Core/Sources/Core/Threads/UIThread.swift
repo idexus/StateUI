@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The UI thread's executor: `MainActor`'s on every platform but Apple's, drained
-// by the host through `HostBoundary.runJobs`, and the doorbell that tells the host
-// to ask.
+// by the host through `HostBoundary.runJobs`, and the doorbell that posts the
+// host a turn.
 // Design: docs/design/core/concurrency.md#mainactor-on-every-platform
 
+import Synchronization
 #if !os(WASI)
 import Dispatch
 #endif
@@ -38,10 +39,10 @@ private func currentThread() -> UInt64 {
     #endif
 }
 
-/// The executor whose jobs the host runs on its UI thread, and the doorbell. Its
-/// queue is guarded; the rest rests on the host draining from one thread.
+/// The executor whose jobs the host runs on its UI thread, and the doorbell. What
+/// its threads share stands inside its one lock.
 /// Design: docs/design/core/concurrency.md#the-doorbell
-final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
+final class UIThreadExecutor: SerialExecutor, Sendable {
     /// The one executor. There is one host, and one thread it draws on.
     static let shared = UIThreadExecutor()
 
@@ -57,61 +58,76 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
         #endif
     }()
 
-    /// Guards the queue, the doorbell's flag and the flags below.
-    private let guarded = Lock()
+    /// The jobs, the host's way to post a turn and the flags below, which any thread touches.
+    private struct Queue {
+        /// Jobs waiting for the host to run them.
+        var pending: [UnownedJob] = []
 
-    /// Jobs waiting for the host to run them.
-    private var pending: [UnownedJob] = []
+        #if os(WASI)
+        /// Jobs waiting for their time - a sleep's - on the page's one thread.
+        var later = Timetable<UnownedJob, ContinuousClock.Instant>()
+        #endif
 
-    #if os(WASI)
-    /// Jobs waiting for their time - a sleep's - on the page's one thread.
-    private var later = Timetable<UnownedJob, ContinuousClock.Instant>()
-    #else
-    /// What the host's parked thread waits on, signalled at most once per park.
+        /// How the host puts a turn on its UI thread's queue; nil where its loop turns by itself.
+        /// Design: docs/design/core/concurrency.md#the-doorbell
+        var postTurn: (@Sendable () -> Void)?
+
+        /// Whether a turn is posted and its drain has not begun.
+        var turnAsked = false
+
+        /// The way to post a turn, taken once until the turn's drain begins; nil where one waits or none is said.
+        mutating func turnToPost() -> (@Sendable () -> Void)? {
+            guard !turnAsked, let postTurn else { return nil }
+            turnAsked = true
+            return postTurn
+        }
+
+        /// Whether a drain is posted to the platform's main queue and has not run - for
+        /// processes where something turns that queue.
+        /// Design: docs/design/core/concurrency.md#draining-jobs
+        var mainQueueAsked = false
+
+        /// Whether a drain is running; a second one entered meanwhile returns at once.
+        var draining = false
+
+        #if !canImport(Darwin)
+        /// Whether `run()` has been told to return.
+        var stopped = false
+        #endif
+
+        /// The thread the last drain ran on - the UI thread, and this executor's
+        /// isolation.
+        /// Design: docs/design/core/concurrency.md#isolation-checks
+        var uiThread = currentThread()
+    }
+
+    private let queue = Mutex(Queue())
+
+    #if !canImport(Darwin) && !os(WASI)
+    /// What `run()` waits on: the turn it posts itself.
     private let wake = DispatchSemaphore(value: 0)
     #endif
 
-    /// Whether a wake is signalled that the parked thread has not collected.
-    private var wakeArmed = false
-
-    /// Whether a drain is posted to the platform's main queue and has not run - for
-    /// processes where something turns that queue.
-    /// Design: docs/design/core/concurrency.md#draining-jobs
-    private var mainQueueAsked = false
-
-    /// Whether a drain is running; a second one entered meanwhile returns at once.
-    private var draining = false
-
-    /// Whether `run()` has been told to return.
-    private var stopped = false
-
-    /// The thread the last drain ran on - the UI thread, and this executor's
-    /// isolation.
-    /// Design: docs/design/core/concurrency.md#isolation-checks
-    private var uiThread = currentThread()
-
-    /// Takes a job and wakes the host; it runs nothing, the calling thread being any
-    /// thread. The signal and the post happen outside the lock.
+    /// Takes a job and asks the host for a turn, on the calling thread, which is any
+    /// thread; it runs nothing. The posts happen outside the lock.
+    /// Design: docs/design/core/concurrency.md#the-doorbell
     func enqueue(_ job: consuming ExecutorJob) {
         let job = UnownedJob(job)
 
         // One thread, and the browser's event loop around it: the host drains as every entry ends.
         // Design: docs/design/core/concurrency.md#webassembly
         #if os(WASI)
-        guarded.withLock { pending.append(job) }
+        queue.withLock { $0.pending.append(job) }
         #else
-        let (signal, post): (Bool, Bool) = guarded.withLock {
-            pending.append(job)
+        let (turn, post): ((@Sendable () -> Void)?, Bool) = queue.withLock { queue in
+            queue.pending.append(job)
 
-            let post = !mainQueueAsked
-            mainQueueAsked = true
-
-            guard !wakeArmed else { return (false, post) }
-            wakeArmed = true
-            return (true, post)
+            let post = !queue.mainQueueAsked
+            queue.mainQueueAsked = true
+            return (queue.turnToPost(), post)
         }
 
-        if signal { wake.signal() }
+        turn?()
 
         if post {
             // A work item, not a closure: a closure on the main queue is `MainActor`'s, and
@@ -124,58 +140,48 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
         #endif
     }
 
-    /// Wakes the host's parked thread for work this queue cannot see - an act sent
-    /// from the pool, a state write.
-    /// Design: docs/design/core/acts.md#waking-the-host-for-an-act
-    func poke() {
-        #if !os(WASI)
-        let signal: Bool = guarded.withLock {
-            guard !wakeArmed else { return false }
-            wakeArmed = true
-            return true
+    /// Says how the host puts a turn on its UI thread's queue, from any thread - and posts one at once, for what
+    /// came before the host said.
+    func postTurns(with post: (@Sendable () -> Void)?) {
+        queue.withLock { queue in
+            queue.postTurn = post
+            queue.turnAsked = false
         }
-
-        if signal { wake.signal() }
-        #endif
+        askForTurn()
     }
 
-    #if !os(WASI)
-    /// Parks the calling thread until work lands and answers how many jobs wait -
-    /// what `HostBoundary.waitForWork` runs.
-    func waitForWork() -> Int {
-        wake.wait()
-
-        return guarded.withLock {
-            wakeArmed = false
-            return pending.count
-        }
+    /// Puts one turn on the host's UI thread's queue unless one is there whose drain has not begun - for work the
+    /// UI thread made, or a job queued.
+    /// Design: docs/design/core/concurrency.md#the-doorbell
+    func askForTurn() {
+        queue.withLock { $0.turnToPost() }?()
     }
-    #endif
 
     /// Runs every waiting job on the calling thread and answers how many ran - in a
     /// loop, since a job can queue another, and bounded.
     @discardableResult
     func drain() -> Int {
-        let entered: Bool = guarded.withLock {
-            guard !draining else { return false }
-            draining = true
+        // Jobs run on this thread, so this is where MainActor stands.
+        let thread = currentThread()
+        let entered: Bool = queue.withLock { queue in
+            guard !queue.draining else { return false }
+            queue.draining = true
+            queue.turnAsked = false
+            queue.uiThread = thread
             return true
         }
 
         guard entered else { return 0 }
 
-        // Jobs run on this thread, so this is where MainActor stands.
-        guarded.withLock { uiThread = currentThread() }
-
         var ran = 0
 
         for _ in 0..<64 {
-            let taken: [UnownedJob] = guarded.withLock {
+            let taken: [UnownedJob] = queue.withLock { queue in
                 #if os(WASI)
-                pending += later.takeDue(at: .now)
+                queue.pending += queue.later.takeDue(at: .now)
                 #endif
-                let taken = pending
-                pending.removeAll(keepingCapacity: true)
+                let taken = queue.pending
+                queue.pending.removeAll(keepingCapacity: true)
                 return taken
             }
 
@@ -188,14 +194,14 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
             }
         }
 
-        guarded.withLock { draining = false }
+        queue.withLock { $0.draining = false }
         return ran
     }
 
     #if !os(WASI)
     /// The drain the platform's main queue runs, where something turns it.
     private func drainFromTheMainQueue() {
-        guarded.withLock { mainQueueAsked = false }
+        queue.withLock { $0.mainQueueAsked = false }
         drain()
     }
     #endif
@@ -210,7 +216,7 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
     func isIsolatingCurrentContext() -> Bool? {
         let thread = currentThread()
 
-        return guarded.withLock { thread == uiThread }
+        return queue.withLock { thread == $0.uiThread }
     }
 
     /// The same question, where the runtime wants a stop rather than an answer.
@@ -223,40 +229,37 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
     /// How many jobs are waiting, without running any - what a test waits on, beside
     /// `resumesPending`, for a queue gone quiet.
     var pendingCount: Int {
-        guarded.withLock { pending.count }
+        queue.withLock { $0.pending.count }
     }
 
-    /// Runs the UI thread's loop here until `stop()` - what an `async main` asks of
-    /// `MainActor`'s executor; a host drains through `HostBoundary.runJobs` instead.
-    func runTheLoop() {
-        #if os(WASI)
-        // No thread waits for work on WebAssembly: the browser's event loop is the loop.
-        drain()
-        #else
-        while !guarded.withLock({ stopped }) {
-            _ = waitForWork()
-            drain()
-        }
-
-        guarded.withLock { stopped = false }
-        #endif
-    }
-
-    /// Makes `runTheLoop()` return after the drain it is in.
-    func stopTheLoop() {
-        guarded.withLock { stopped = true }
-        poke()
-    }
 }
 
 #if !canImport(Darwin)
 extension UIThreadExecutor: MainExecutor {
+    /// Runs the UI thread's loop here until `stop()` - what an `async main` asks of
+    /// `MainActor`'s executor; a host drains through `HostBoundary.runJobs` instead.
     func run() throws {
-        runTheLoop()
+        #if os(WASI)
+        // No thread waits for work on WebAssembly: the browser's event loop is the loop.
+        drain()
+        #else
+        // The loop is the host here: its turn is a signal it waits for.
+        postTurns(with: { [wake] in wake.signal() })
+        while !queue.withLock({ $0.stopped }) {
+            wake.wait()
+            drain()
+        }
+
+        queue.withLock { $0.stopped = false }
+        #endif
     }
 
+    /// Makes `run()` return after the drain it is in.
     func stop() {
-        stopTheLoop()
+        queue.withLock { $0.stopped = true }
+        #if !os(WASI)
+        wake.signal()
+        #endif
     }
 }
 
@@ -287,12 +290,12 @@ extension UIThreadExecutor: TaskExecutor, SchedulingExecutor {
 
     private func keep<Wait>(_ job: UnownedJob, for wait: Wait) {
         let due = ContinuousClock.now.advanced(by: (wait as? Duration) ?? .zero)
-        guarded.withLock { later.add(job, due: due) }
+        queue.withLock { $0.later.add(job, due: due) }
     }
 
     /// How long until a job kept for later comes due; nil with none waiting.
     var nextDue: Duration? {
-        guarded.withLock { later.nextDue.map { ContinuousClock.now.duration(to: $0) } }
+        queue.withLock { $0.later.nextDue }.map { ContinuousClock.now.duration(to: $0) }
     }
 }
 #endif

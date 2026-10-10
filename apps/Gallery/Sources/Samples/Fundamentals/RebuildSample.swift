@@ -92,7 +92,7 @@ private struct RebuildPanel: View {
             .spacing(4)
             .padding(horizontal: 14, vertical: 12)
         }
-        .style("Card")
+        .style(.card)
         .stroke(Palette.outline)
         .lineWidth(1)
         .shape(.roundedRectangle(10))

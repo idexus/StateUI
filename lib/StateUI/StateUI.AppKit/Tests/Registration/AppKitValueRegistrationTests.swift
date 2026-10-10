@@ -13,6 +13,7 @@ import XCTest
 /// their registrations, their range and value reaching the native controls, and
 /// the number their user moves reported by member - onto the journey the host
 /// carries it in, and to the handler that listens for it.
+@MainActor
 final class AppKitValueRegistrationTests: XCTestCase {
     /// The registry realizes both: the number each carries, the events each
     /// raises, and the tint a slider takes from the tier it wears.

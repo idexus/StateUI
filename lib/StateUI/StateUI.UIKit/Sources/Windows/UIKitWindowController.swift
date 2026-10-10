@@ -155,9 +155,14 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
     /// What the window does when the user took the top sheet away, handed how many stay.
     var onSheetDismissed: ((Int) -> Void)?
 
-    /// The sheets asked for before the window stood on screen, which UIKit presents over it only once it does.
+    /// The sheets last asked for before the window stood on screen, or while a sheet moved: UIKit presents over a
+    /// controller only once it stands, and over none whose sheet is still coming or going.
+    /// Design: docs/design/platforms/uikit/pages.md#sheets
     private var waiting: (sheets: [UIViewController], animated: Bool)?
     private var appeared = false
+
+    /// Whether a presentation or a dismissal this controller asked for has not ended.
+    private var moving = false
 
     override func loadView() {
         view = UIView()
@@ -190,18 +195,20 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
         view.setNeedsLayout()
     }
 
-    /// Presents `sheets` over the arrangement: those shown and still asked for stay, the rest go from the top, and
-    /// each new one comes over the one before once that one stands - UIKit presents over a controller only then.
+    /// Presents `sheets` over the arrangement by the host layer's rule (`SheetChange`): those shown and still asked
+    /// for stay, the rest go from the top, and each new one comes over the one before once that one stands - UIKit
+    /// presents over a controller only then.
     func present(_ sheets: [UIViewController], animated: Bool) {
-        guard appeared else { return waiting = (sheets, animated) }
-        var common = 0
-        while common < self.sheets.count, common < sheets.count, self.sheets[common] === sheets[common] { common += 1 }
-        let coming = Array(sheets[common...])
+        guard appeared, !moving else { return waiting = (sheets, animated) }
+        let change = SheetChange(from: self.sheets, to: sheets) { $0 === $1 }
+        let (common, coming) = (change.kept, change.coming)
         guard common < self.sheets.count else { return presentEach(coming, animated: animated) }
         let presenter = common == 0 ? self : self.sheets[common - 1]
         self.sheets = Array(self.sheets.prefix(common))
+        guard presenter.presentedViewController != nil else { return presentEach(coming, animated: animated) }
+        moving = true
         presenter.dismiss(animated: animated && coming.isEmpty) { [weak self] in
-            self?.presentEach(coming, animated: animated)
+            self?.moved { self?.presentEach(coming, animated: animated) }
         }
     }
 
@@ -211,9 +218,18 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
         sheet.modalPresentationStyle = .pageSheet
         sheet.presentationController?.delegate = self
         sheets.append(sheet)
+        moving = true
         presenter.present(sheet, animated: animated && coming.count == 1) { [weak self] in
-            self?.presentEach(Array(coming.dropFirst()), animated: animated)
+            self?.moved { self?.presentEach(Array(coming.dropFirst()), animated: animated) }
         }
+    }
+
+    /// A presentation or a dismissal ended: the sheets asked for meanwhile come next, else `next`.
+    private func moved(else next: () -> Void) {
+        moving = false
+        guard let (sheets, animated) = waiting else { return next() }
+        waiting = nil
+        present(sheets, animated: animated)
     }
 
     /// Tells nobody of its sheets any more: they leave with the window.

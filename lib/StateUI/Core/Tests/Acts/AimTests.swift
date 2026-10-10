@@ -9,9 +9,9 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class AimTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
     }
 
@@ -288,11 +288,11 @@ final class AimTests: XCTestCase {
         renders.render(stack([Wheel().aim(wheel).node], id: "root"))
         _ = drainedActs()
 
-        async let spun: Void = wheel.spin(by: 90)
+        // Started here and now, up to the act it awaits.
+        let spun = Task.immediate { @MainActor in try await wheel.spin(by: 90) }
 
         // The act is queued with the element's identity in front of its own
         // arguments, which is the order every act of the library's uses.
-        try await Task.sleep(nanoseconds: 20_000_000)
         let queued = drainedActs()
 
         XCTAssertEqual(queued.first?.name, "Test.Spin")
@@ -305,7 +305,7 @@ final class AimTests: XCTestCase {
         }
 
         stateUIRunJobs()
-        _ = try await spun
+        try await spun.value
     }
 }
 
@@ -409,6 +409,7 @@ private struct Choosing: View {
 /// A model holding the aim at the field it shows - the shape a page with a
 /// form has, where the handler that focuses a field lives beside the state
 /// that field shows.
+@MainActor
 private final class Form {
     @State var note = ""
 

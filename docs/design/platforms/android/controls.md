@@ -23,11 +23,11 @@ the host layer hears nothing of the hand in any view there.
 
 ## Nothing the program writes is heard
 
-Every native write of an element - a patch applied, a display frame presented
-- runs inside `ProgramWrite`. Android calls a switch's, a slider's and a
-field's listener while the value is being set, so the listener's call during
-that write is the write's echo, and the element reports nothing. A control
-does not keep a flag of its own.
+Every native write of an element - a patch applied, a display frame
+presented - runs inside `ProgramWrite`. Android calls a switch's, a slider's
+and a field's listener while the value is being set, so the listener's call
+during that write is the write's echo, and the element reports nothing. A
+control does not keep a flag of its own.
 
 ## A drag between views
 
@@ -38,11 +38,12 @@ plain text, its shadow the view, the view's number its local state; a view
 that takes drops takes a drag of plain text as it starts. The listener tells
 the host the drag over the view at each of Android's entering and moving,
 its leaving, the drop with the clip's text, and - for the view whose own
-drag it is - its start and, wherever it ended, its end. The host layer's
-rule makes over once and no leave after a drop. A view taking files takes a
-drag of another application's documents - anything but plain text - and its
-drop asks the activity for leave to read them, kept while the application
-runs, and hands over each document's address and name.
+drag it is - its end, wherever it ended; the long press tells its start as
+the drag begins. The host layer's rule makes over once and no leave after a
+drop. A view taking files takes a drag of another application's documents -
+anything but plain text - and its drop asks the activity for leave to read
+them, kept while the application runs, and hands over each document's address
+and name.
 
 ## A slider in steps
 
@@ -151,8 +152,20 @@ is. The label's letter spacing is in points and Android counts it in the
 text's own size, so it is worked out again whenever the size changes; a
 run's own spacing is not drawn, as no span of Android's spaces letters. A line that is
 cut or truncated is one line and only a truncated one says so; otherwise the
-label wraps, to at most as many lines as it allows. A stated width is the
-width a view is measured at, so wrapped words are as tall as they will stand.
+label wraps, to at most as many lines as it allows. A stated width, within
+the room its layout offers, is the width a view is measured at, so wrapped
+words are as tall as they will stand.
+
+## The user's text size
+
+Words follow the user's font scale (`isFontAutoScalingEnabled`, on unless
+said) in Android's own unit for it: a size stands in scaled pixels, and in
+density-independent ones where the words do not scale - the theme's own size
+said in the same unit where the tree gives none, so `getTextSizeUnit()` tells
+which. A run sized differently from its label is an `AbsoluteSizeSpan` in
+pixels where it scales and in density-independent points where not. A
+picker's rows take the unit too, at the theme's size of each row's layout
+where the tree gives none.
 
 ## A button's size
 
@@ -217,7 +230,7 @@ program close the list: `isOpen` set to false leaves it to the user.
 
 A date picker and a time picker are one field of the host's, showing the day
 or the time in the user's locale - "D" and "d" the long and short day, "T" and
-"t" the long and short time, which follows the user's choice of a 24-hour
+"t" the long and short time, "t" following the user's choice of a 24-hour
 clock, any other text a pattern - and opening the platform's own calendar or
 clock, within the bounds the tree gave. A day and a time stand by the host
 layer's rule (`CalendarArithmetic`): a day not in the calendar keeps the day
@@ -253,14 +266,15 @@ and how it ended: an error on the page itself makes it a failure, a timeout
 its own. A page crosses with the name the view asks by, the name written
 first: written while a page loads, Android leaves that page out of the
 history, and there is no way back to it. A document written in place with
-no address of its own is gone to as a `data:` address, as on a WebKit web
-view (docs/design/host/web.md) - Android's web view takes an address of at most
-2 MB, so such a document stays under about 1.5 MB, or is given an address.
-Whether there is a page behind and ahead is said when it changes. A script runs in the page and answers later,
-by ticket, with the JSON Android hands back read as text by the host layer's
-rule (docs/design/host/web.md). The web view runs scripts and
-keeps the page's storage, as a browser does, and lets go of its page and its
-web process when its element leaves.
+no address of its own is gone to as a `data:` address by the host layer's
+rule ([a document with no address](../../host/web.md#a-document-with-no-address),
+`WebDocument`) - Android's web view takes an address of at most 2 MB, so such
+a document stays under about 1.5 MB, or is given an address. Whether there
+is a page behind and ahead is said when it changes. A script runs in the page
+and answers later, by ticket, with the JSON Android hands back read as text
+by the host layer's rule ([a script's answer](../../host/web.md#a-scripts-answer)).
+The web view runs the page's scripts and keeps its storage, and lets go of
+its page and its web process when its element leaves.
 
 ## The keyboard's focus
 

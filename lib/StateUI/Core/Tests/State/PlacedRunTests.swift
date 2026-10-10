@@ -16,9 +16,9 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class PlacedRunTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         Renderer.shared.clearStates()
     }

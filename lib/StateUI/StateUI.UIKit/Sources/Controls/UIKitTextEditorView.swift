@@ -12,16 +12,17 @@ import UIKit
 final class UIKitTextEditorView: UITextView, UIKitTextInputView {
     let typing = UIKitTyping()
 
-    private let madeFont = UIFont.preferredFont(forTextStyle: .body)
     private let placeholderLabel = UILabel()
 
     init() {
         super.init(frame: .zero, textContainer: nil)
-        font = madeFont
+        font = .stateUI(TextLook())
+        adjustsFontForContentSizeCategory = true
         backgroundColor = .secondarySystemBackground
         layer.cornerRadius = 8
         delegate = typing
-        placeholderLabel.font = madeFont
+        placeholderLabel.font = font
+        placeholderLabel.adjustsFontForContentSizeCategory = true
         placeholderLabel.textColor = .placeholderText
         placeholderLabel.numberOfLines = 0
         addSubview(placeholderLabel)
@@ -66,8 +67,10 @@ final class UIKitTextEditorView: UITextView, UIKitTextInputView {
     }
 
     func setLook(_ look: TextLook) {
-        font = .stateUI(look, standing: madeFont)
+        font = .stateUI(look, in: traitCollection)
+        adjustsFontForContentSizeCategory = look.scales
         placeholderLabel.font = font
+        placeholderLabel.adjustsFontForContentSizeCategory = look.scales
         textColor = look.color.flatMap(UIColor.init(stateUI:)) ?? .label
     }
 

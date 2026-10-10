@@ -8,7 +8,7 @@ import UIKit
 /// Five stars, filled up to a rating - an ordinary `UIView` with one value.
 ///
 /// `register()`, at the end of this file, adds it for `RatingBarContract` with
-/// `rating`, so the host assigns it whenever a message carries it, a style sets
+/// `rating`, so the host assigns it whenever a patch carries it, a style sets
 /// it, and a state walks it - and performs the `flash` act aimed at one bar.
 /// The Swift half is Sources/Samples/Interop/RatingBar.swift.
 final class RatingBarView: UIView {
@@ -107,8 +107,8 @@ extension RatingBarView {
     /// one. Said once, before the application runs.
     @MainActor
     static func register() {
-        // The bar, added for its contract: its rating put on it, a tapped star reported.
         // listing: end
+        // The bar, added for its contract: its rating put on it, a tapped star reported.
         StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
             let bar = RatingBarView()
 

@@ -8,6 +8,7 @@ import UIKit
 import XCTest
 
 /// A page under the numbered sheets one state lists.
+@MainActor
 private func sheetsOver(_ sheets: State<[Int]>) -> ModalStack {
     ModalStack(sheets.projectedValue) {
         Text("beneath")
@@ -17,6 +18,7 @@ private func sheetsOver(_ sheets: State<[Int]>) -> ModalStack {
 }
 
 /// Pages a window presents over its page, as UIKit presents them.
+@MainActor
 final class UIKitSheetsTests: XCTestCase {
     /// Sheets the window starts with stand each over the one before, as UIKit presents over a controller only once
     /// it stands.
@@ -66,6 +68,31 @@ final class UIKitSheetsTests: XCTestCase {
 
         XCTAssertEqual(sheets.wrappedValue, [1, 2], "nothing told the window its sheets went")
         XCTAssertNotNil(root.presentedViewController?.presentedViewController, "both came")
+    }
+
+    /// A sheet asked for while the one before is still coming, and already asked to go, comes once that one has
+    /// gone: UIKit presents nothing over a controller whose sheet is still moving, and drops what it is asked.
+    @MainActor
+    func testASheetAskedForWhileTheOneBeforeStillMovesComesOnceItHasGone() throws {
+        let sheets = State(wrappedValue: [Int]())
+        let host = UIKitRenderer.running(reducesMotion: false) { sheetsOver(sheets) }
+        defer { host.finish() }
+        let root = try XCTUnwrap(host.roster.windows.first?.1.window?.rootViewController)
+        let shown = Date(timeIntervalSinceNow: 0.5)
+        host.settle { Date() > shown }
+        let stands = { host.views(UIKitTextView.self).first { $0.text == "On sheet 2" }?.window != nil }
+
+        sheets.wrappedValue = [1]
+        host.runtime.pump.turn()
+        XCTAssertEqual(root.presentedViewController?.isBeingPresented, true, "the first sheet is on its way in")
+        sheets.wrappedValue = []
+        host.runtime.pump.turn()
+        sheets.wrappedValue = [2]
+        host.runtime.pump.turn()
+        let given = Date(timeIntervalSinceNow: 3)
+        host.settle { stands() || Date() > given }
+
+        XCTAssertTrue(stands(), "the second sheet never stood in the window")
     }
 
     /// The user swiping the top sheet down takes it off the window's stack: the window hears how many stay.

@@ -2,19 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// What the host told the core it realizes - nothing until it says.
+@MainActor
 enum HostRealizations {
-    /// The realization, behind the lock: the host says it once at start-up,
-    /// and an application may ask from any thread.
-    nonisolated(unsafe) private static var told = HostRealization()
-
-    /// The lock.
-    private static let guarded = Lock()
-
-    /// What the host said, replacing what it said before.
-    static var current: HostRealization {
-        get { guarded.withLock { told } }
-        set { guarded.withLock { told = newValue } }
-    }
+    /// What the host said, replacing what it said before - once, at start-up.
+    static var current = HostRealization()
 
     /// What to say about a node type described for the first time: nothing where the
     /// host realizes it or has said nothing, and otherwise that it does not, with the

@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// A tier the application element wears: acts and events with no control
-/// behind them - an alert, the clock, a battery that reports.
+/// A contract of acts and events with no control behind them - an alert,
+/// the clock, a battery that reports - which belong to the application.
 ///
 ///     enum NotesContract: ApplicationTier {
 ///         static let name = "Notes"

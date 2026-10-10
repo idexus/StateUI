@@ -52,9 +52,9 @@ extension AndroidRegistrations {
 
     /// What every field takes whole.
     private static let inputMembers: [any ContractMember] = [
-        TextualElementContract.text, TextualElementContract.textCase, FontElementContract.fontSize,
-        FontElementContract.fontAttributes,
-        FontElementContract.fontFamily, TextStyleElementContract.textColor, TextInputContract.placeholder,
+        TextualElementContract.text, TextualElementContract.textCase,
+    ] + TextMembers.lookMembers + [
+        TextInputContract.placeholder,
         TextInputContract.placeholderColor, TextAlignmentElementContract.horizontalTextAlignment,
         TextInputContract.inputPurpose, TextInputContract.isTextPredictionEnabled,
         TextInputContract.maximumLength, TextInputContract.cursorPosition, TextInputContract.selectionLength,

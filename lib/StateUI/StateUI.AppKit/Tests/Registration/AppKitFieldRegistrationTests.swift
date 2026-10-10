@@ -15,6 +15,7 @@ import XCTest
 /// What a field does as a user types in it is held to
 /// `AppKitTextFieldViewTests`, `AppKitTextEditorViewTests` and
 /// `AppKitSearchFieldViewTests`, which drive these same registered views.
+@MainActor
 final class AppKitFieldRegistrationTests: XCTestCase {
     /// The registry realizes all three fields: the words each carries, the
     /// change each reports, and the members they take from the tiers they wear.

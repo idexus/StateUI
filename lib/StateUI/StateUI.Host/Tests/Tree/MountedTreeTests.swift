@@ -9,6 +9,7 @@ import CRT
 #endif
 
 /// The mounted tree every Swift runtime shares: patches, drift, leaving and the frame walk.
+@MainActor
 final class MountedTreeTests: XCTestCase {
     /// An arranged patch mounts every child in order, each with its native half applied once.
     @MainActor
@@ -228,8 +229,8 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertTrue(written[1].hasSuffix(" ms total\n"), written[1])
     }
 
-    /// A host counting its own views alive has the count written beside the elements alive: a view outliving its
-    /// element shows there, where the elements' count stays.
+    /// A host counting its own views alive has the count written beside the elements alive and the runs under
+    /// way: a view outliving its element shows there, where the elements' count stays.
     @MainActor
     func testTheTallyWritesTheViewsAHostCountsAlive() {
         var written: [String] = []
@@ -239,7 +240,8 @@ final class MountedTreeTests: XCTestCase {
 
         tree.apply(Self.stack("stack", ["a", "b"]), complete: true)
 
-        XCTAssertTrue(written.first?.contains("  views 7  apply ") ?? false, written.joined())
+        let runs = HostBoundary.tally.runs
+        XCTAssertTrue(written.first?.contains("  runs \(runs)  views 7  apply ") ?? false, written.joined())
     }
 
     /// With the passes asked for, the tree starts the inspector's recording, and each message applied writes
@@ -586,6 +588,7 @@ final class MountedTreeTests: XCTestCase {
         label.properties = [
             .fontSize: .number(15), .fontFamily: .name("Menlo"), .tracking: .number(2),
             .lineHeight: .number(1.2), .textDecorations: .enumeration(TextDecorations.underline.rawValue),
+            .isFontAutoScalingEnabled: .bool(false),
         ]
         tree.apply(label, complete: true)
 
@@ -595,6 +598,7 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(look?.letterSpacing, 2)
         XCTAssertEqual(look?.lineHeight, 1.2)
         XCTAssertEqual(look?.decorations, .underline)
+        XCTAssertEqual(look?.scales, false)
         XCTAssertEqual(tree.root?.textRuns, nil)
     }
 

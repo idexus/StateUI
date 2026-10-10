@@ -12,7 +12,7 @@ extension AndroidElement {
         AndroidMenu.Item(
             text: value(.text)?.string ?? "",
             picture: value(.icon)?.string.flatMap { $0.isEmpty ? nil : $0 },
-            isEnabled: value(.isEnabled)?.bool ?? true,
+            isEnabled: element.isEffectivelyEnabled,
             isDestructive: value(.isDestructive)?.bool == true)
     }
 

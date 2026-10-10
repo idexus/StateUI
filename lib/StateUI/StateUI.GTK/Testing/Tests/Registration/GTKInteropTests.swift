@@ -37,7 +37,7 @@ private struct Calling: View {
     var body: some View {
         VStack {
             Button("Ask")
-                .onClicked {
+                .onClicked(gate: .ignoreWhileRunning) {
                     do {
                         let doubled = try await stateUICall(InteropTestContract.doubled, 21)
                         answer = "\(doubled)"
@@ -47,7 +47,7 @@ private struct Calling: View {
                 }
 
             Button("Ask nobody")
-                .onClicked {
+                .onClicked(gate: .ignoreWhileRunning) {
                     do {
                         try await stateUICall(InteropTestContract.unregistered)
                         answer = "that should have thrown"
@@ -119,7 +119,7 @@ private struct Lamp: ElementView {
         setValue(LampContract.lit, value)
     }
 
-    func onPulled(_ handler: @escaping ValueEventHandler<Int>) -> Self {
+    func onPulled(_ handler: @escaping @MainActor (Int) throws -> Void) -> Self {
         onEvent(LampContract.pulled, handler)
     }
 }
@@ -145,7 +145,7 @@ private struct Pulling: View {
                 .aim(lamp)
 
             Button("Flash")
-                .onClicked {
+                .onClicked(gate: .ignoreWhileRunning) {
                     do {
                         try await lamp.flash()
                         said = "flashed"
@@ -160,6 +160,7 @@ private struct Pulling: View {
 }
 
 /// What an APPLICATION registers with this host: its own controls, the acts it performs and the events it raises.
+@MainActor
 final class GTKInteropTests: XCTestCase {
     /// Registers the lamp: a registry keeps what it is told, so registering it again only replaces the same entry.
     @MainActor
@@ -231,10 +232,9 @@ final class GTKInteropTests: XCTestCase {
             let host = GTKRenderer.running { Calling() }
             XCTAssertEqual(host.said, "-")
 
-            let heard = StateUIEvents.raise(InteropTestContract.spoke, "hello")
+            StateUIEvents.raise(InteropTestContract.spoke, "hello")
             host.settle { host.said != "-" }
 
-            XCTAssertEqual(heard, 1, "the page subscribed while it is in the tree")
             XCTAssertEqual(host.said, "heard hello")
         }
     }

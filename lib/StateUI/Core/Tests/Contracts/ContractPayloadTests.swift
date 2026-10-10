@@ -10,6 +10,7 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class ContractPayloadTests: XCTestCase {
     /// The events the table checked, as `Contract.member`.
     private var checked: Set<String> = []

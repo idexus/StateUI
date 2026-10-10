@@ -8,6 +8,7 @@
 
 /// Anything carrying property values, whether or not it is drawn: a control,
 /// a `Style`, a `TextSpan`.
+@MainActor
 public protocol PropertyContainer {
     /// What a modifier gives back: the control or style itself, so a chain goes
     /// on offering everything it has, or a `ModifiedContent` for a composed view.

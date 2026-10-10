@@ -43,6 +43,7 @@ private struct DetailPage: View {
 }
 
 /// The flyout under test, over whatever state is lent to it.
+@MainActor
 private func flyout(
     _ menu: Binding<Bool>,
     _ section: Binding<String>
@@ -54,6 +55,7 @@ private func flyout(
     }
 }
 
+@MainActor
 final class SplitViewTests: XCTestCase {
     // MARK: - What goes out
 

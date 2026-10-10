@@ -61,7 +61,7 @@ struct PanSample: SampleContent, ExampleContent {
                         }
                     }
             }
-            .style("Card")
+            .style(.card)
             .stroke(Palette.outline)
             .lineWidth(1)
             .shape(.roundedRectangle(10))

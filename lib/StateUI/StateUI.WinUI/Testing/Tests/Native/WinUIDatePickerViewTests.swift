@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import CStateUIWinUI
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIWinUI
@@ -25,6 +26,32 @@ final class WinUIDatePickerViewTests: XCTestCase {
             due.wrappedValue = CalendarDate(year: 2026, month: 12, day: 24)
             host.settle { picker.date != CalendarDate(year: 2026, month: 2, day: 10) }
             XCTAssertEqual(picker.date, CalendarDate(year: 2026, month: 6, day: 30), "held at the latest day")
+        }
+    }
+
+    /// A picker the tree colours stands on its colour in every state: under the pointer and pressed, its ground is
+    /// the tree's, not the theme's.
+    func testAColouredPickerKeepsItsGroundInEveryState() throws {
+        try onUIThread {
+            let due = State(wrappedValue: CalendarDate(year: 2026, month: 2, day: 10))
+            let host = WinUIRenderer.running {
+                VStack {
+                    DatePicker(due.projectedValue)
+                        .background(Color("#FF0000"))
+                        .width(200)
+                        .height(32)
+                        .horizontalAlignment(.start)
+                }
+            }
+            let picker = try XCTUnwrap(host.views(WinUIDatePickerView.self).first)
+            host.settle { picker.pixels(at: [(140, 4)]) == [0xFFFF_0000] }
+            XCTAssertEqual(picker.pixels(at: [(140, 4)]), [0xFFFF_0000], "its ground")
+
+            for state in ["PointerOver", "Pressed"] {
+                XCTAssertTrue(stateui_winui_go_to_state(picker.handle, state))
+                host.layOut()
+                XCTAssertEqual(picker.pixels(at: [(140, 4)]), [0xFFFF_0000], "its ground, \(state)")
+            }
         }
     }
 

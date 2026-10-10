@@ -61,7 +61,7 @@ private struct FocusPage: View {
         let field = self.field
         return VStack {
             TextField("").aim(field)
-            Button("Focus").onClicked { answers.values.append(try await field.focus()) }
+            Button("Focus").onClicked(gate: .ignoreWhileRunning) { answers.values.append(try await field.focus()) }
         }
     }
 }

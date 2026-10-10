@@ -24,6 +24,7 @@ private struct SaidPage: View {
     }
 }
 
+@MainActor
 final class GTKAccessibilityTests: XCTestCase {
     /// An element's label, hint and heading level reach GTK's accessible; where it says nothing, it holds only
     /// GTK's own - a group none.

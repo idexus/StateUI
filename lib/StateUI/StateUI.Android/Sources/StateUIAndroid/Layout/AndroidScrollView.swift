@@ -41,9 +41,14 @@ final class AndroidScrollView: AndroidLayoutView {
     private var writtenOffset = WrittenScrollOffset()
 
     /// The native scrollers scroll in the element's direction, not the activity's: one right to left starts at its
-    /// end, one left to right at its first column.
+    /// end, one left to right at its first column. The document and the stack holding several children lay out in it.
     override var direction: LayoutDirection {
-        didSet { if direction != oldValue { directScrollers() } }
+        didSet {
+            guard direction != oldValue else { return }
+            directScrollers()
+            document.direction = direction
+            wrapper.direction = direction
+        }
     }
 
     private func directScrollers() {

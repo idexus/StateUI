@@ -5,6 +5,7 @@
 @_spi(Host) @testable import StateUIHost
 import XCTest
 
+@MainActor
 final class HostDrawingTests: XCTestCase {
     /// Each instruction lays its kind and whole numbers, its numbers and its text out in the three lists, in the
     /// order the drawing wrote them - an arc as the path the host layer works out for it.

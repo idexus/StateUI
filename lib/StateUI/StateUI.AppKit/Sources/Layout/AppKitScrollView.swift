@@ -12,7 +12,7 @@ import QuartzCore
 /// platform's - an application that wants it somewhere else writes the offset
 /// when it hears it stop.
 @MainActor
-final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
+final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, AppKitDirectedLayout {
     var onOffsetChanged: ((NSPoint, NSPoint) -> Void)?
     var onScrollStopped: (() -> Void)?
 
@@ -26,6 +26,17 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     private var horizontalBarVisibility: Int32 = 0
 
     private let documentSurface = AppKitScrollDocumentView()
+
+    /// The direction its content is laid out in, the element's: the document and the stack holding several children
+    /// take it.
+    var direction = LayoutDirection.leftToRight {
+        didSet {
+            guard direction != oldValue else { return }
+            documentSurface.direction = direction
+            stackWrapper.direction = direction
+            needsLayout = true
+        }
+    }
     private let stackWrapper = AppKitStackView(axis: .vertical)
     private var usesStackWrapper = false
     /// The offset the tree writes, kept for the first layout where it comes before it (`WrittenScrollOffset`).
@@ -146,7 +157,9 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     func setBox(stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
         boxShape = BoxArithmetic.outline(shape)
         let width = BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth)
-        boxOutline = AppKitBrush(stroke).lineColor.flatMap { width > 0 ? ($0.cgColor, CGFloat(width)) : nil }
+        // An oval cuts by a mask, under which a layer's border would show only as slivers: it draws none.
+        boxOutline = boxShape == .ellipse
+            ? nil : AppKitBrush(stroke).lineColor.flatMap { width > 0 ? ($0.cgColor, CGFloat(width)) : nil }
         paintBox()
     }
 
@@ -357,6 +370,7 @@ private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
     var orientation = ScrollOrientation.vertical {
         didSet { if orientation != oldValue { invalidateMeasurements() } }
     }
+    var direction = LayoutDirection.leftToRight
 
     override var isFlipped: Bool { true }
 
@@ -379,7 +393,7 @@ private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
         }
 
         let arranged = ScrollArithmetic.arrange(
-            item, padding: Insets(padding), orientation: orientation, in: LayoutSize(viewport))
+            item, padding: Insets(padding), orientation: orientation, in: LayoutSize(viewport), direction: direction)
         frame = NSRect(origin: .zero, size: NSSize(arranged.document))
         item.view.frame = NSRect(placed: arranged.place)
         item.view.needsLayout = true

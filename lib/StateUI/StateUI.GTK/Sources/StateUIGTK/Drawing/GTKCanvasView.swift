@@ -63,7 +63,7 @@ final class GTKCanvasView: GTKPanelView {
     }
 
     override func draw(_ snapshot: OpaquePointer, width: Double, height: Double) {
-        // A canvas draws inside its own room, as on every platform: an instruction reaching past it paints nothing.
+        // A canvas draws inside its own room: an instruction reaching past it paints nothing.
         var room = graphene_rect_t(
             origin: graphene_point_t(x: 0, y: 0), size: graphene_size_t(width: Float(width), height: Float(height)))
         gtk_snapshot_push_clip(snapshot, &room)

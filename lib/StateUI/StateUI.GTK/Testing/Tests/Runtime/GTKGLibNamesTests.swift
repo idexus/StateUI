@@ -6,6 +6,7 @@ import XCTest
 
 /// GLib marks its flags as flag enumerations from 2.86, and Swift then imports them as option sets naming their
 /// members itself: a GLib flag Swift names by GLib's own constant builds on one GLib and not on the next.
+@MainActor
 final class GTKGLibNamesTests: XCTestCase {
     /// The GLib enumerations no flags are made of, whose constants Swift names as GLib does.
     private static let plainEnumerations = ["G_PRIORITY_", "G_BUS_TYPE_", "G_NETWORK_CONNECTIVITY_"]

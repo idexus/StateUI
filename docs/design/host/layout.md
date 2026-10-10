@@ -1,8 +1,10 @@
 # Layout in the runtime
 
 StateUI owns its layouts' semantics: where a child of a stack, a grid, a
-ZStack or a page goes is StateUI's arithmetic, the same on every
-host, and a toolkit only measures its own views and moves them. [The
+ZStack or a page goes is StateUI's arithmetic, the same on every native host,
+where a toolkit only measures its own views and moves them; the Web host
+writes the same semantics as each element's CSS, and the browser places it
+([Web layout](../platforms/web/layout.md)). [The
 runtime](runtime.md) draws where layout sits in a frame; [motion](motion.md)
 says how a child travels to the place this arithmetic gives it.
 
@@ -56,9 +58,11 @@ A view keeps the sizes it measured, by the width its parent offered, until
 something that can change them happens: its own content, its arrangement, or a
 change beneath it. A parent offers a child one or two widths in a pass - its
 natural width and the width it then lays it out in - so four kept answers
-cover a pass and the next. The toolkit forgets them upward from the change to
-the nearest room, and nothing beside the change is measured again. Which
-change is which is one list on every host (`MountedElement.arrangedProperties`,
+cover a pass and the next. The host forgets them upward from the change,
+every layout to the root - on AppKit to the nearest room - and an
+ItemsView's entry stops at its cell, which measures it again; nothing beside
+the change is measured again. Which change is which is one list on every
+native host (`MountedElement.arrangedProperties`,
 `unmeasuredProperties`): a property a parent reads into its child's place
 arranges the parent again, and one that is only drawn - an opacity, a colour,
 a toggle's state, a transform, what assistive technology meets - measures
@@ -203,10 +207,10 @@ keeps nine tenths of its opacity under the pointer and eight tenths pressed
 
 ## The safe area
 
-A window with bars and a notch over its screen - a phone's, a tablet's -
-stands a page's content clear of them, in the safe area. Where the content's
-own layout lets itself under them on an edge - `.none`, edge to edge, or
-`.keyboard`, clear of the keyboard alone - its page reaches out to the
+On UIKit a window with bars and a notch over its screen - a phone's, a
+tablet's - stands a page's content clear of them, in the safe area. Where the
+content's own layout lets itself under them on an edge - `.none`, edge to
+edge, or `.keyboard`, clear of the keyboard alone - its page reaches out to the
 screen's edge there (`SafeAreaArithmetic.room`), so a background or a
 gradient runs behind the status bar. A scroller let under the strip at its
 bottom or its right - a list running under a phone's home indicator - keeps
@@ -230,7 +234,9 @@ its toolkit's own idea of a dark colour.
 An application's picture is the file its name stands for, looked for in one
 order (`PictureArithmetic.files`): the name, then - for a PNG - an SVG of the
 same name, which a host drawing vector pictures reads in its place. A host
-drawing the picture itself stands it in its room by its aspect
+drawing no SVG reads the SVG's drawing made as the application is built,
+`<name>@3x.png`, at three pixels a point (`PictureArithmetic.drawnFiles`). A
+host drawing the picture itself stands it in its room by its aspect
 (`PictureArithmetic.place`): fitted in or covering the room with its
 proportions kept, or at its own size - each in the room's middle - or
 stretched over the whole of it. A picture on a bar or a tab stands at the
@@ -260,7 +266,8 @@ A layout works its places out left to right, then turns each about the
 middle of its room when it lays out right to left. That one rule is every
 mirror a language written right to left needs: a row fills from the right, a
 column's start stands at the right, a grid's column 0 is the rightmost, a
-ZStack's area counts from the right edge, and padding and margins swap sides.
+ZStack's area counts from the right edge, a scroller's content stands from
+the right of its document, and padding and margins swap sides.
 Nothing vertical changes, and no transform or drawing is turned.
 
 The direction is the element's own `layoutDirection`, or - left at

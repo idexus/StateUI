@@ -52,8 +52,9 @@ struct ActivityIndicatorSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("No binding here, unlike the inputs: nothing about a spinner is the "
-                + "user's to change, so the value only goes one way.")
+            Text("No two-way binding, unlike the inputs: nothing about a spinner is the "
+                + "user's to change, so the value only goes one way - `.isAnimating($loading)` "
+                + "would carry a state one way too.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

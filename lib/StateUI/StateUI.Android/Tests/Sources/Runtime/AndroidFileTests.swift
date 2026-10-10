@@ -77,7 +77,7 @@ final class AndroidFileTests: XCTestCase {
 /// A button saving words under a name of the text kind.
 private struct Saving: View {
     var body: some View {
-        Button("Save").onClicked {
+        Button("Save").onClicked(gate: .ignoreWhileRunning) {
             _ = try await Dialogs.saveFile(Array("Kept".utf8), name: "Note", types: [FileType("Text", extensions: ["txt"])])
         }
     }
@@ -86,7 +86,7 @@ private struct Saving: View {
 /// A button opening files of two kinds.
 private struct Opening: View {
     var body: some View {
-        Button("Open").onClicked {
+        Button("Open").onClicked(gate: .ignoreWhileRunning) {
             _ = try await Dialogs.openFiles(types: [
                 FileType("Text", extensions: ["txt", "md"]), FileType("Web page", extensions: ["html"]),
             ])

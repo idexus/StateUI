@@ -35,6 +35,15 @@ public final class TestSpans {
         return (size != null ? size.getSize() : view.getTextSize()) / one;
     }
 
+    /**
+     * Whether the size at `at` follows the user's font scale: 1 where it does, 0 where it stands in density-independent
+     * points, -1 unread - the view's own where no span sizes the words there.
+     */
+    public static int scales(TextView view, int at) {
+        AbsoluteSizeSpan size = span(view, at, AbsoluteSizeSpan.class);
+        return size != null ? (size.getDip() ? 0 : 1) : TestText.scales(view);
+    }
+
     /** The colour at `at`, as ARGB. */
     public static int color(TextView view, int at) {
         ForegroundColorSpan color = span(view, at, ForegroundColorSpan.class);

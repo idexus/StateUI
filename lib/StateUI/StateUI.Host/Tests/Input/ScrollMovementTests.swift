@@ -7,6 +7,7 @@ import XCTest
 
 /// A scroller says where it went once a frame and rests once a movement: at
 /// the end of a hold that ran its throw out, or once it has stood still.
+@MainActor
 final class ScrollMovementTests: XCTestCase {
     @MainActor
     func testTheMovesOfAFrameAreOneMoveAndAQuietMovementRestsOnce() {

@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// An inspector itself: what it can do, its scene's renders, and the one
-/// chosen.
+/// An inspector itself: what it can do, its scene's renders and the one
+/// chosen, or what the library complained of.
 struct InspectorView: View {
     /// The scene it looks at, by its number.
     let scene: String
@@ -41,7 +41,10 @@ struct InspectorView: View {
                 .lineBreak(.tailTruncation)
                 .gridRow(1)
 
-            if wide {
+            if model.showingComplaints {
+                Grid { complaints() }
+                    .gridRow(2)
+            } else if wide {
                 Grid {
                     Grid { list(passes, scene: element, at: index) }
                         .gridColumn(0)
@@ -87,7 +90,8 @@ struct InspectorView: View {
             : "Nothing has reached this scene yet - \(all) renders elsewhere."
     }
 
-    /// What it can do - hold the record, forget it, move, go.
+    /// What it can do - hold the record, forget it, list what the library
+    /// complained of, move, go.
     ///
     /// A horizontally scrolling action row that remains reachable in a narrow
     /// inspector.
@@ -111,6 +115,9 @@ struct InspectorView: View {
 
                 Look.action(model.paused ? "Record" : "Pause") { model.pause() }
                 Look.action("Clear") { model.clear() }
+                Look.action(model.showingComplaints ? "Renders" : "Complaints · \(Said.shared.everySaid.count)") {
+                    model.showingComplaints.toggle()
+                }
 
                 if place == .window {
                     Look.action("Dock in the window") {
@@ -193,6 +200,27 @@ struct InspectorView: View {
                     .onTapped { model.selected = pass.number }
                 }
             }
+        }
+    }
+
+    /// What the library complained of, newest first: a value it could not use, a write it refused.
+    private func complaints() -> some View {
+        let said = Said.shared.everySaid
+
+        return ScrollView {
+            VStack {
+                if said.isEmpty {
+                    Look.line("Nothing said: everything the application handed the library was something it could use.")
+                }
+
+                ForEach(Array(said.enumerated().reversed()), id: \.offset) { item in
+                    Text(item.element)
+                        .fontSize(12)
+                        .textColor(Look.ink)
+                        .padding(horizontal: 8, vertical: 4)
+                }
+            }
+            .spacing(2)
         }
     }
 

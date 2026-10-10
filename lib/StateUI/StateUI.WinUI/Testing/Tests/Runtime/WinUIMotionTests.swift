@@ -120,8 +120,8 @@ final class WinUIMotionTests: XCTestCase {
             let host = WinUIRenderer.running {
                 VStack {
                     Slider(level.projectedValue)
-                    Button("Go").onClicked {
-                        try await level.projectedValue.journey.move(to: 1, .eased(100, .linear))
+                    Button("Go").onClicked(gate: .ignoreWhileRunning) {
+                        try await level.projectedValue.journey.move(to: 1, .eased(100, .linear)).arrived()
                         arrived.wrappedValue = true
                     }
                 }
@@ -140,6 +140,32 @@ final class WinUIMotionTests: XCTestCase {
         }
     }
 
+    /// A step runs the frame a held clock waits for, as every host's driver does: a settle reaches an arrival at the
+    /// test clock's time with no frame of its own.
+    func testAStepRunsTheFrameAHeldClockWaitsFor() throws {
+        try onUIThread {
+            let clock = TestClock()
+            let level = State(wrappedValue: 0.0)
+            let arrived = State(wrappedValue: false)
+            let host = WinUIRenderer.running(clock: clock) {
+                VStack {
+                    Slider(level.projectedValue)
+                    Button("Go").onClicked(gate: .ignoreWhileRunning) {
+                        try await level.projectedValue.journey.move(to: 1, .eased(200, .linear)).arrived()
+                        arrived.wrappedValue = true
+                    }
+                }
+            }
+
+            try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
+            host.step()
+            clock.now = 300
+            host.settle(until: { arrived.wrappedValue })
+
+            XCTAssertTrue(arrived.wrappedValue, "no step ran the frame the moving slider holds the clock for")
+        }
+    }
+
     /// One state, one channel: both sliders stand at the same value on every frame, and the waiter hears the arrival.
     func testAJourneyMovesEveryBoundControlOnTheSameFrames() throws {
         try onUIThread {
@@ -151,8 +177,8 @@ final class WinUIMotionTests: XCTestCase {
                     Text(arrived.wrappedValue ? "arrived" : "away")
                     Slider(level.projectedValue)
                     Slider(level.projectedValue)
-                    Button("Go").onClicked {
-                        try await level.projectedValue.journey.move(to: 1, .eased(200, .linear))
+                    Button("Go").onClicked(gate: .ignoreWhileRunning) {
+                        try await level.projectedValue.journey.move(to: 1, .eased(200, .linear)).arrived()
                         arrived.wrappedValue = true
                     }
                 }
@@ -209,8 +235,8 @@ final class WinUIMotionTests: XCTestCase {
             let host = WinUIRenderer.running(clock: clock) {
                 VStack {
                     Text("moving").translationX(offset.projectedValue)
-                    Button("Go").onClicked {
-                        try await offset.projectedValue.journey.move(to: 100, .eased(200, .linear))
+                    Button("Go").onClicked(gate: .ignoreWhileRunning) {
+                        try await offset.projectedValue.journey.move(to: 100, .eased(200, .linear)).arrived()
                     }
                 }
             }

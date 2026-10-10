@@ -10,6 +10,7 @@ import XCTest
 
 /// A change that travels, as UIKit draws it frame by frame: the host layer walks the value, and the view stands where
 /// the frame says.
+@MainActor
 final class UIKitMotionTests: XCTestCase {
     /// A label whose width travels lays its words out at the width it is bound for: midway, its view is already as
     /// wide as it lands, so words that fit there on one line never break at the widths its place passes through.

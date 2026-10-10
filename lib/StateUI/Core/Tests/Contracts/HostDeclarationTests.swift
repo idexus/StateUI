@@ -11,6 +11,7 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class HostDeclarationTests: XCTestCase {
 
     /// A declaration written as text reads back whole, shared machinery and

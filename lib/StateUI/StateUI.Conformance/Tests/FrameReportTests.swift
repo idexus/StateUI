@@ -5,6 +5,7 @@ import StateUIConformance
 import XCTest
 
 /// A frame report read as a case compares it.
+@MainActor
 final class FrameReportTests: XCTestCase {
     /// A corner moved, then rounded, stands where the report standing there reads: a corner at half a point - a
     /// window's top at 107 pixels, two a point - rounds up, and 200 higher it rounds down.

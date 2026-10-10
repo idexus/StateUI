@@ -23,6 +23,7 @@ import XCTest
 /// The blocks are type-checked in parallel, one `swiftc -typecheck` each,
 /// against the `.swiftmodule` this package's own build wrote - so the check
 /// costs seconds, and needs nothing installed beyond the toolchain running it.
+@MainActor
 final class DocumentationExamplesTests: XCTestCase {
     /// A fenced block, with its document and opening line.
     struct Example {
@@ -34,7 +35,7 @@ final class DocumentationExamplesTests: XCTestCase {
                 let head = line.trimmingCharacters(in: .whitespaces)
                 // A listing's model - a class of `@State` properties - is
                 // declared at file scope, where an application declares one.
-                return ["extension ", "protocol ", "@_cdecl", "@main", "public ", "open ",
+                return ["extension ", "protocol ", "@_cdecl", "@main", "@MainActor ", "public ", "open ",
                         "final class ", "class ", "private final class ", "private class "]
                     .contains { head.hasPrefix($0) }
             }
@@ -211,7 +212,7 @@ final class DocumentationExamplesTests: XCTestCase {
         let indented = stripped.split(separator: "\n", omittingEmptySubsequences: false)
             .map { $0.isEmpty ? "" : "    \($0)" }
             .joined(separator: "\n")
-        return "\(imports)\nfunc readmeExample() async throws {\n\(indented)\n}\n"
+        return "\(imports)\n@MainActor func readmeExample() async throws {\n\(indented)\n}\n"
     }
 
     // MARK: - Running the compiler
@@ -260,7 +261,7 @@ final class DocumentationExamplesTests: XCTestCase {
     }
 
     /// Type-checks one file; the compiler's output where it failed, nil where it passed.
-    static func typecheck(_ file: URL, module: URL, sdk: String?) -> String? {
+    nonisolated static func typecheck(_ file: URL, module: URL, sdk: String?) -> String? {
         var arguments = ["-typecheck", "-parse-as-library", "-I", module.path, file.path]
         if let sdk { arguments += ["-sdk", sdk] }
         // XCRUN ON A MAC, THE TOOL ITSELF EVERYWHERE ELSE. There is no
@@ -303,7 +304,7 @@ final class DocumentationExamplesTests: XCTestCase {
     /// Foundation's `Process` opens exactly the path it is handed, so the tool
     /// has to be found before it can be run - and the spelling differs: an
     /// executable is `swiftc.exe` on Windows and `swiftc` everywhere else.
-    static func onPath(_ name: String) -> URL? {
+    nonisolated static func onPath(_ name: String) -> URL? {
         #if os(Windows)
         let divider: Character = ";"
         let spellings = [name + ".exe", name]

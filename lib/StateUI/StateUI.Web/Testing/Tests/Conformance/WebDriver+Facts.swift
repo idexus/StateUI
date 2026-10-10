@@ -6,9 +6,10 @@
 @_spi(Host) import StateUIConformance
 @testable import StateUIWeb
 
-/// The facts the Web driver reads besides a member - the keyboard's focus, what a press reaches, where a view stands,
-/// the question showing, what assistive technology was told, the log, what is kept, the bar - and the bar's actions
-/// chosen and a question answered, as the user does.
+/// The facts the Web driver reads besides a member - the keyboard's focus, what a press reaches, the drawing order,
+/// where a view stands, the colour shown, the question and the file dialog showing, what was launched, the theme,
+/// what assistive technology was told, what is kept, the bar - and the bar's actions chosen, a question answered and
+/// files chosen, as the user does.
 /// Design: docs/design/host/conformance.md#the-driver
 extension WebDriver {
     func focused(_ element: MountedElement) throws -> Bool {
@@ -18,8 +19,9 @@ extension WebDriver {
 
     func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
         let view = try self.view(of: element, reading: .frame)
+        let x = point.x + view.reach, y = point.y + view.reach
         return try WebBrowser.truth("""
-            ((box) => ((hit) => !!hit && e.contains(hit))(document.elementFromPoint(box.x + \(point.x), box.y + \(point.y))))\
+            ((box) => ((hit) => !!hit && e.contains(hit))(document.elementFromPoint(box.x + \(x), box.y + \(y))))\
             (e.getBoundingClientRect())
             """, on: view.node)
     }
@@ -46,7 +48,8 @@ extension WebDriver {
         let view = try self.view(of: element, reading: .frame)
         let numbers = try numbers("stateui.box(e)", on: view.node)
         guard numbers.count == 4 else { throw DriverCannot("read where \(element.type.name) stands") }
-        return Rect(x: numbers[0], y: numbers[1], width: numbers[2], height: numbers[3])
+        let laid = Rect(x: numbers[0], y: numbers[1], width: numbers[2], height: numbers[3])
+        return view.frame(laidOut: laid) ?? laid
     }
 
     /// The colour the window shows at `point` of `element`, where it differs from what shows there without the

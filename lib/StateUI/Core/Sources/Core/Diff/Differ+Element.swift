@@ -22,7 +22,7 @@ extension Differ {
             }
 
             // Unless the board forgot them, as after a session claimed afresh: then they
-            // are registered again under the numbers they had.
+            // are registered again under fresh numbers, which the element keeps from then on.
             if kept { return previous }
         }
 
@@ -118,6 +118,9 @@ extension Differ {
         // Everything the builds below read, recorded against this element.
         var reads: Set<ObjectIdentifier> = []
 
+        // The derived states its builds made or found, which it holds.
+        var derived: [AnyObject] = []
+
         // The frame the last body build ran under, for the container content below.
         var frame: BuildScope.Frame?
 
@@ -204,15 +207,18 @@ extension Differ {
                     builds: builds,
                     read: rendered?.reads ?? [],
                     changed: self.changed,
-                    names: self.named,
-                    everything: describeAll)
+                    written: self.written,
+                    everything: describeAll,
+                    element: id)
 
                 frame = built
                 bodies.append(stateful.viewType)
                 entered += 1
 
                 node = ReadScope.collect(into: &reads) {
-                    BuildScope.within(built) { stateful.expand(over: node) }
+                    DerivationScope.collect(into: &derived) {
+                        BuildScope.within(built) { stateful.expand(over: node) }
+                    }
                 }
                 views[step].branch = node.branch
                 pushed += node.environments.count
@@ -243,7 +249,7 @@ extension Differ {
         // The container's own content runs here, inside this element's read scope and
         // build frame: the reader of a state is the closure that read it.
         // Design: docs/design/core/identity-and-diffing.md#containers-run-their-own-content
-        let within = frame ?? bareFrame(for: rendered, builds: builds)
+        let within = frame ?? bareFrame(for: rendered, builds: builds, element: id)
 
         // A container built again for what its own closure read: an inspector names the
         // view and the container.
@@ -265,7 +271,7 @@ extension Differ {
 
             guard let within else { return shallow() }
 
-            return BuildScope.within(within, shallow)
+            return DerivationScope.collect(into: &derived) { BuildScope.within(within, shallow) }
         }
 
         // A page describes the view it shows first, and says what that view says of it; it reads all that view's
@@ -305,9 +311,10 @@ extension Differ {
         // Design: docs/design/views/styles.md#which-state-a-control-is-in
         let visualInput = node.visualStates.isEmpty ? nil : (rendered?.visualInput ?? VisualInput())
         var visualState: String?
+        var heard: [(index: Int, listener: VisualStateListener)] = []
 
         if let visualInput {
-            visualState = resolveVisualStates(
+            (visualState, heard) = resolveVisualStates(
                 &node, input: visualInput, previous: rendered?.visualState, reads: &reads)
 
             if placeholder == nil {
@@ -347,6 +354,17 @@ extension Differ {
 
         // Nothing to build on: the element is new, or cannot become what is described.
         let previous = replace ? nil : rendered
+
+        // The runs of what this element's walks find, kept while it is the same element.
+        let kept = replace ? RunSlots() : rendered?.runs ?? RunSlots()
+
+        // A state entered is heard after this render; an element made again arrives in its state, unheard.
+        if !replace, let state = visualState {
+            for (index, listener) in heard {
+                fired.append(Fired(
+                    run: { try await listener.run(state) }, gate: listener.gate, owner: kept.owner("state \(index)")))
+            }
+        }
 
         if replace, let rendered = rendered {
             forget(rendered)
@@ -411,7 +429,9 @@ extension Differ {
                 // Nil: the stored value is of another type, and the slot starts over.
                 if watch.matches(old) == false {
                     let new = watch.value
-                    fired.append { try await watch.run(old, new) }
+                    fired.append(Fired(
+                        run: { try await watch.run(old, new) }, gate: watch.gate,
+                        owner: kept.owner("watch \(index)")))
                 }
             }
         }
@@ -419,7 +439,9 @@ extension Differ {
         // `.onCreated` for an element that was not here.
         // Design: docs/design/core/identity-and-diffing.md#created-and-destroying
         if previous == nil {
-            fired.append(contentsOf: node.created)
+            for (index, created) in node.created.enumerated() {
+                fired.append(Fired(run: created, gate: .none, owner: kept.owner("created \(index)")))
+            }
 
             // A node type the host does not realize is said once, with near misses.
             if let unrealized = HostRealizations.unrealized(node.type) {
@@ -456,16 +478,16 @@ extension Differ {
         // Handler ids are kept per event, assigned in name order.
         // Design: docs/design/core/identity-and-diffing.md#handlers-and-their-ids
         var events: [Event: Int] = [:]
-        for (name, handler) in node.events.sorted(by: { $0.key < $1.key }) {
+        for (name, written) in node.events.sorted(by: { $0.key < $1.key }) {
             let handlerId = previous?.events[name] ?? allocateHandlerId()
             events[name] = handlerId
-            handlers[handlerId] = handler
+            register(written, under: handlerId)
         }
 
         if let previous = previous {
-            // An event this element no longer handles takes its id with it.
-            for (name, handlerId) in previous.events where events[name] == nil {
-                handlers.removeValue(forKey: handlerId)
+            // An event this element no longer handles takes its id and its runs with it.
+            for (name, handlerId) in previous.events.sorted(by: { $0.key < $1.key }) where events[name] == nil {
+                handlers.removeValue(forKey: handlerId)?.orphan()
             }
         }
 
@@ -546,10 +568,12 @@ extension Differ {
             engines: engines,
             driven: driven,
             readings: readings,
+            derived: derived,
             children: children
         )
         result.sizesArrive = sizesArrive
         result.visualInput = visualInput
+        result.runs = kept
         result.visualState = visualState
 
         // What it says of the page it is the view of.
@@ -563,7 +587,7 @@ extension Differ {
 
     /// The frame a bare container's content runs under: the view the walk is in,
     /// with this element's own count and reads.
-    private func bareFrame(for rendered: RenderedNode?, builds: Int) -> BuildScope.Frame? {
+    private func bareFrame(for rendered: RenderedNode?, builds: Int, element: ElementID) -> BuildScope.Frame? {
         guard let view = bodies.last ?? rendered?.view else { return nil }
 
         return BuildScope.Frame(
@@ -571,8 +595,9 @@ extension Differ {
             builds: builds,
             read: rendered?.reads ?? [],
             changed: changed,
-            names: named,
-            everything: describeAll)
+            written: written,
+            everything: describeAll,
+            element: element)
     }
 
     /// What an element is by its composed views: each one's type and the branch its content root stood in.
@@ -630,7 +655,7 @@ extension Differ {
 
     /// States by the names their authors gave them, in name order.
     private func names(of states: Set<ObjectIdentifier>) -> String {
-        states.map { named[$0] ?? "state" }.sorted().joined(separator: ", ")
+        states.map { BuildScope.name(of: written[$0]) }.sorted().joined(separator: ", ")
     }
 
     /// Whether two writings say the same of their page.
@@ -683,6 +708,15 @@ extension Differ {
         return true
     }
 
+    /// Keeps `written` under `id`: an id an element keeps keeps its handlers' runs.
+    private func register(_ written: [Handler], under id: Int) {
+        if let registered = handlers[id] {
+            registered.replace(written)
+        } else {
+            handlers[id] = EventRegistration(written)
+        }
+    }
+
     /// Carries a composed element whose inputs, reads and writing all held: nothing
     /// under it is built, and the handlers the parent wrote on it are taken fresh.
     /// Design: docs/design/core/identity-and-diffing.md#what-the-parent-wrote
@@ -690,9 +724,9 @@ extension Differ {
         _ rendered: RenderedNode,
         written node: Node
     ) -> (node: RenderedNode, patch: HostPatch) {
-        for (name, handler) in node.events {
+        for (name, written) in node.events {
             if let id = rendered.events[name] {
-                handlers[id] = handler
+                register(written, under: id)
             }
         }
 

@@ -6,11 +6,13 @@ modified copy, so a view stays a value all the way down.
 
 ## A modifier returns a modified copy
 
-Every modifier goes through one operation, `modified(_:)`: copy the node,
-change one thing, return the copy. There is a single place where a change is
-stored, and only that place knows where it goes, which keeps every modifier
-working for controls, styles and composed views alike - a composed view's
-`modified` answers a `ModifiedContent` (composition.md).
+Almost every modifier goes through one operation, `modified(_:)`: copy the
+node, change one thing, return the copy. There is a single place where a
+change is stored, and only that place knows where it goes, which keeps every
+modifier working for controls, styles and composed views alike - a composed
+view's `modified` answers a `ModifiedContent` (composition.md). The few that
+edit a copy directly - `Map.markers`, a style's `basedOn` and `visualState`
+among them - do the same thing by hand.
 
 ```text
   Text("Total")           Node(Text, props: [text: "Total"])
@@ -37,25 +39,30 @@ modifiers would return `Modified.Modified`, which nothing can promise is
 place. What a described two-way binding leaves behind is itself a handler - it
 writes the new text back on every edit - and an `.onTextChanged` written after
 it has to run beside it, or the binding would go quietly dead. Every typed
-event modifier comes through here with its member's token. It lives on
-`ModifiableElement`, so nothing reachable from a `Style` can put a handler
-into a bag of values.
+event modifier comes through here with its member's token. The typed event
+modifiers live on `ModifiableElement`, so a style is offered none after the
+dot, and a style keeps only its values and states (`AnyStyle`), so nothing
+else written into its node reaches a control (tiers.md). Each handler passes through its own gate - a policy
+given as the gate is the handler's alone - so the second never waits for the first unless both are written with
+one `SharedGate` (core/runs.md).
 
 ## An event payload that does not read
 
 What arrives is what the contract says or nothing. A payload with a value
 missing, one too many, or one of another kind is reported once and does not
-reach the handler. Gestures follow the same rule: a swipe handler run with an
-empty direction set would say a swipe happened with no direction, which no
+reach the handler - but for an optional value at its end, which may be left
+out and reads as nil. Gestures follow the same rule: a swipe handler run with
+an empty direction set would say a swipe happened with no direction, which no
 test of the direction could tell from a real one.
 
 ## Slot children
 
 Some modifiers write a child rather than a property: `.contextMenu` appends a
 context menu, `.toolbar` a group of actions, `.titleView` the view in a page's
-title place, `.overlays` the views laid over the window, and `Map.markers`
-writes markers. On an arrangement the child follows its pages, and the host
-keeps it apart from them.
+title place, `.overlays` the views laid over the window, `.menuBar` the
+window's menus while the page shows, and `Map.markers` writes markers. On an
+arrangement the child follows its pages, and the host keeps it apart from
+them.
 They sit after whatever the view lays out, so the view's own children keep the
 positions the differ gave them, and the host finds each by type and leaves it
 out of the arrangement. The slot a `.contextMenu` appended stays last: a
@@ -91,9 +98,11 @@ An aim (`@Aim`, `.aim(_:)`) is who a view is to an act; `.id(_:)` is who it is
 to the differ. The differ fills the aim with the element's own identity as it
 walks, so there is nothing to spell and nothing to collide. A view carrying
 only an aim is still matched by where it was written, so a collection's rows
-keep wanting `.id()`, and the two compose. The aim is typed, `Aim<Self>`, so
-the declaration and the view agree at compile time and the aim offers exactly
-the acts the control has.
+keep wanting `.id()`, and the two compose. The aim is typed by the control it
+reaches - `Aim<WebView>`, `Aim<ItemsView<Int>>` - so the declaration and the
+view agree at compile time and the aim offers exactly the acts the control
+has: a list scrolls to an item of its own identity type, and an identity of
+another type does not compile.
 
 ## Showing and hiding cross fades
 
@@ -101,8 +110,9 @@ the acts the control has.
 hidden fades to nothing first and goes when it gets there, and one being shown
 appears at nothing and fades in. Two views in one place - a tab chosen, a
 panel swapped - therefore cross-fade. The view stays in the tree the whole
-time and is hidden once the fade lands; a view on its way out answers no touch,
-so a tap during the change reaches what is arriving. A view described for the
+time and is hidden once the fade lands. On AppKit a view on its way out
+answers no touch, so a tap during the change reaches what is arriving; the
+other hosts keep it touchable until it has faded. A view described for the
 first time is simply shown or not, since nothing anybody saw is changing, and
 `.motion(.none)` makes the property a plain flag again.
 
@@ -127,8 +137,11 @@ draws a turn about the vertical axis that way.
 
 ## Accessibility and automation
 
-Four modifiers say what a view is to somebody not looking at it, and they are
-two jobs that do not stand in for one another.
+Six modifiers say what a view is to somebody not looking at it, and they are
+two jobs that do not stand in for one another: an identifier for automation;
+and a label, a hint, a heading level, and whether a screen reader skips the
+view (`isAccessibilityHidden`) or the view and everything in it
+(`automationExcludedWithChildren`).
 
 `accessibilityIdentifier` is a handle nothing reads out: a UI test, a script or
 an agent driving the application asks the platform's automation for it, where

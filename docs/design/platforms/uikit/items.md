@@ -5,7 +5,8 @@ list's identities, one section a group, and a compositional layout. The host
 makes the view itself, since each cell asks the tree for what it holds
 through the host layer's `ItemsCells` ([items](../../host/items.md)).
 UIKit scrolls, reuses its cells, shows the user's choice and touch - each
-cell is UIKit's own list cell - and tells VoiceOver about the items.
+cell wears UIKit's list cell background
+(`UIBackgroundConfiguration.listCell`) - and tells VoiceOver about the items.
 
 What the list holds for a cell is an entry's subtree: the cell provider
 realizes the identity, and the subtree - mounted before the call returns,
@@ -14,8 +15,11 @@ lets its entry go. The user's choice is the collection's selection -
 none, one or many as the tree says - told back in the list's order; what
 the tree selects is selected inside `ProgramWrite` and told nobody. An item
 opened is the collection's primary action, which a tap performs.
-`scrollTo` scrolls to the item's index path at the anchor it names; nearest
-scrolls only where the item is not wholly in view, the shorter way. The end
+`scrollTo` stands the item where its anchor says, by the host layer's rule
+(`ScrollAnchor.place`), from the item's frame as the layout holds it, within
+the room the collection's insets leave and within its reach - gliding there
+unless the user asks for less motion; nearest scrolls only where the item is
+not wholly in view, the shorter way. The end
 reached is watched as the collection scrolls and lays out.
 
 ## The layout
@@ -31,13 +35,13 @@ list gains or loses one.
 
 ## A cell
 
-A cell holds its entry's subtree in a single-child view, placed by the
-layer's arithmetic, and answers UIKit's question for its size with what the
-entry asks for: its height at the cell's width, or its width at the cell's
-height in a row. An entry whose size changes has its cell measured again by
-the cell's own self-sizing invalidation - UIKit measures the same cell. A whole invalidation
-of the layout is never the answer: UIKit then configures fresh cells for the
-items on screen, and a subtree, which stands in one cell at a time, leaves
+A cell holds its entry's subtree in a single-child view, placed by the layer's
+arithmetic, and answers UIKit's question for its size with what the entry asks
+for: its height at the cell's width, or its width at the cell's height in a
+row. An entry whose size changes has its cell measured again by the cell's own
+self-sizing invalidation - UIKit measures the same cell. A whole invalidation
+is never the answer to an entry's size: UIKit then configures fresh cells for
+the items on screen, and a subtree, which stands in one cell at a time, leaves
 the cell on screen empty. An entry mounting for the first time is measured by
 the cell taking it, so nothing is measured again for it.
 
@@ -46,10 +50,10 @@ layout gives it - a height, or a row of a grid that fills.
 
 A cell at rest is clear, and the page shows through the list as it does on
 every host. The user's choice and a touch lay the platform's accent - the
-cell's tint - over the page at a fifth of its strength, as Android lays its
-own; the focus keeps the list cell's look. The list cell's own colours are
-the system background at rest and a grey when chosen, which a page of
-another colour shows as blocks.
+cell's tint - over the page at a fifth of its strength; the focus keeps the
+list cell's look. The list cell's own colours are the system background at
+rest and a grey when chosen, which a page of another colour shows as
+blocks.
 
 ## One cell an entry
 

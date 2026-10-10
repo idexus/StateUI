@@ -16,6 +16,24 @@ extension WinUIView {
             handle, size ?? 0, attributes.contains(.bold), attributes.contains(.italic), family ?? "")
     }
 
+    /// How the words look (`TextMembers.look`): their font, whether it grows with the user's text size, and their
+    /// colour - each the platform's where the look says nothing.
+    func setLook(_ look: TextLook) {
+        setFont(size: look.size, attributes: look.attributes, family: look.family)
+        setTextScales(look.scales)
+        setForeground(look.color)
+    }
+
+    /// Whether the words grow with the user's text size.
+    func setTextScales(_ scales: Bool) {
+        stateui_winui_set_text_scales(handle, scales)
+    }
+
+    /// Whether the words grow with the user's text size, as WinUI holds it.
+    var textScales: Bool {
+        stateui_winui_text_scales(handle)
+    }
+
     /// The room between the letters, in points, of words `size` points tall - the platform's size for nil.
     func setLetterSpacing(_ points: Double, size: Double?) {
         var look = TextLook()

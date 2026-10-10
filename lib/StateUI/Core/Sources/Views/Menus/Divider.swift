@@ -25,7 +25,7 @@ public struct Divider: Element {
     /// entries come and go around it.
     public func id(_ value: some Hashable) -> Self {
         var copy = self
-        copy.node.id = String(describing: value)
+        copy.node.identify(value)
         return copy
     }
 }

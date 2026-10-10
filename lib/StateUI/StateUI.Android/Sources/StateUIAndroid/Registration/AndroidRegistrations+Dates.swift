@@ -25,7 +25,7 @@ extension AndroidRegistrations {
             }
             field.property(DatePickerContract.format) { view, format in view.setFormat(format) }
             field.property(DatePickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
-            field.applies(fontMembers) { view, values in applyFont(view, values) }
+            field.applies(TextMembers.lookMembers) { view, values in applyFont(view, values) }
             field.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             field.raises(DatePickerContract.dateChanged)
             field.raises(DatePickerContract.opened)
@@ -45,19 +45,13 @@ extension AndroidRegistrations {
             field.property(TimePickerContract.time) { view, time in view.setTime(time) }
             field.property(TimePickerContract.format) { view, format in view.setFormat(format) }
             field.property(TimePickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
-            field.applies(fontMembers) { view, values in applyFont(view, values) }
+            field.applies(TextMembers.lookMembers) { view, values in applyFont(view, values) }
             field.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             field.raises(TimePickerContract.timeChanged)
             field.raises(TimePickerContract.opened)
             field.raises(TimePickerContract.closed)
         })
     }
-
-    /// The look of a field's words, for a field that has no words of the tree's.
-    private static let fontMembers: [any ContractMember] = [
-        FontElementContract.fontSize, FontElementContract.fontAttributes, FontElementContract.fontFamily,
-        TextStyleElementContract.textColor,
-    ]
 
     private static func applyFont<Realized: ElementContract>(_ view: AndroidTextualView, _ values: ElementValues<Realized>) {
         if let look = TextMembers.look(values) { view.setLook(look) }

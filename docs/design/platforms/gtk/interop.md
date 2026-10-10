@@ -11,10 +11,14 @@ widget it shows (`GTKControl`). The host stands it in the tree as a view of
 its own that wraps the control: the widget is placed, sized, shown and
 listened to like any widget the host makes, its own measure is what the host
 measures, and the control is held for as long as its element lives. The
-registration's appliers are handed the application's own class, so a
-property of the wrong type, or an event of a contract the element does not
-wear, does not compile. A registered control is a leaf: this host arranges
-children only in the layouts it makes itself.
+registration's appliers are handed the application's own class and each
+value as its contract declares it, so an applier of the wrong type does not
+compile; a member of a contract the element does not wear is refused, and
+said once. A registered control holds no widget of the tree:
+this host arranges children only in the layouts it makes itself. A control
+may draw children of one contract itself - a map's markers - handed over
+whole, in the tree's order, whenever they change (`GTKRegistration.children`);
+such a child has no widget of its own.
 
 ## Acts and events
 
@@ -26,6 +30,7 @@ control, the aim's identity turned back into what is on screen. A performer
 may await - GTK's clipboard answers only asynchronously - so it runs as a task
 on the main actor and the call is answered once it returns. What a performer
 throws fails the call with its reason; an act nobody registered is
-refused by name. An event of the application's is raised through the core,
-from any thread, and heard by every subscription; declaring it tells a
-handler listening for one no source raises that it will not hear it.
+refused by name. An event of the application's is raised through the core
+from any thread, and heard by every subscription on the UI thread; declaring
+it tells a handler listening for one no source raises that it will not hear
+it.

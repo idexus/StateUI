@@ -61,7 +61,8 @@ enum ListingFile {
             ofTheView.append(caller)
         }
         let helpers = functions.filter { !ofTheView.contains($0) }
-        types += helpers
+        // A sample's helper is the sample's, and so the UI thread's actor's, as it moves out.
+        types += helpers.map { $0.contains(try! Regex(#"@MainActor\s[^{]*\bfunc\s"#)) ? $0 : "@MainActor\n" + $0 }
         members.removeAll { helpers.contains($0) }
 
         var file = (["import StateUI", "@testable import GalleryUI"] + imports).joined(separator: "\n")
@@ -73,7 +74,7 @@ enum ListingFile {
         let body = hasBody || views.isEmpty ? "" : "\n\n    var body: some View {\n\(indented(viewsBody, by: 8))\n    }"
         let conformance = hasBody || !views.isEmpty ? ": View" : ""
 
-        return file + "\nstruct Listing\(conformance) {\n\(indented(members.joined(separator: "\n\n")))\(body)\n}\n"
+        return file + "\n@MainActor\nstruct Listing\(conformance) {\n\(indented(members.joined(separator: "\n\n")))\(body)\n}\n"
     }
 
     /// What a statement at the listing's outermost level is.
@@ -81,13 +82,18 @@ enum ListingFile {
         case `import`, type, member, function, view
     }
 
-    /// A statement's first line of code, past its comments and compiler directives.
+    /// A statement's first line of code, past its comments, compiler directives and attributes on lines of their own.
     private static func firstCode(of statement: String) -> String? {
         statement.split(separator: "\n").first { line in
             let trimmed = line.trimmingCharacters(in: .whitespaces)
-            return !trimmed.isEmpty && !trimmed.hasPrefix("//") && !trimmed.hasPrefix("#")
+            return !trimmed.isEmpty && !trimmed.hasPrefix("//") && !trimmed.hasPrefix("#") && !isAttributes(line)
         }
         .map(String.init)
+    }
+
+    /// Whether `line` holds attributes alone, which belong to the declaration under them.
+    private static func isAttributes(_ line: Substring) -> Bool {
+        line.trimmingCharacters(in: .whitespaces).wholeMatch(of: try! Regex(#"(@\w+(\([^)]*\))?\s*)+"#)) != nil
     }
 
     /// What the statement whose first line of code is `line` is, read past its attributes and modifiers.
@@ -127,6 +133,7 @@ enum ListingFile {
             }
             let previous = statements.last?.last { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
             let continues = previous?.trimmingCharacters(in: .whitespaces).last.map { ",([=".contains($0) } == true
+                || previous.map(isAttributes) == true
             let begins = depth == 0 && conditions == 0 && line.first.map { !" \t.)}]".contains($0) } == true
                 && !continues
 

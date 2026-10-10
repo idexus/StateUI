@@ -19,9 +19,9 @@ private final class Built {
     var count = 0
 }
 
+@MainActor
 final class GalleryViewTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         Renderer.shared.clearStates()
     }
@@ -564,6 +564,97 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(shown.wrappedValue, 4, "a card past the last is the last")
     }
 
+    /// A ROOM THAT GROWS KEEPS THE CARD IN FRONT. Widened - a phone turned -
+    /// the scroller stands in the new room before its run is as long as the
+    /// room asks, so the toolkit clamps the offset and reports it, a card
+    /// short of the one in front; the gallery puts back the card the user left
+    /// there, and sends the run to it once the run is long enough to hold it.
+    func testARoomThatGrowsKeepsTheCardInFront() throws {
+        let renders = Renders()
+        let shown = State(0)
+        func tree() -> Node { gallery(5).position(shown.projectedValue).node }
+        let showing = laid(renders, tree)
+        let scroller = try XCTUnwrap(find(.scrollView, in: showing.whole))
+        let offset = try XCTUnwrap(scroller.driven?[.scrollOffset]?.state)
+        let stopped = try XCTUnwrap(scroller.events?[.scrollStopped])
+        let step = try XCTUnwrap(travel(showing.patch, cards: 5))
+        let narrow = room.width
+        let board = Renderer.shared.board(for: .display)
+
+        // THE FIRST CYCLE OF ALL LATCHES rather than runs.
+        _ = board.cycle(now: turned, reducesMotion: false)
+
+        func cycle() {
+            turned += 16
+            _ = board.cycle(now: turned, reducesMotion: false)
+        }
+
+        // The user leaves card 4 in front.
+        slid(offset, to: Point(4 * step, 0))
+        cycle()
+        XCTAssertTrue(renders.fire(stopped))
+        cycle()
+        XCTAssertEqual(shown.wrappedValue, 4)
+
+        // Turned: the scroller stands in the wide room while the run is as long
+        // as the narrow one asked, and its offset comes back clamped.
+        let wide = 700.0
+        slid(offset, to: Point(narrow + 4 * step - wide, 0))
+        cycle()
+        for id in frames(in: renders.renderFromScratch(tree())) {
+            XCTAssertTrue(renders.fire(id, with: frame(width: wide, height: 300)))
+        }
+        if let feeder { moved(feeder, to: [0, 0, wide, 300]) }
+        cycle()
+
+        // The run is as long as the wide room asks, and laid out so.
+        let longer = renders.render(tree())
+        let length = try XCTUnwrap(find(.colorBox, in: longer)?.props[.width]?.number)
+        XCTAssertEqual(length, wide + 4 * step, accuracy: 0.001)
+        if let laid = find(.colorBox, in: renders.renderFromScratch(tree()))?.driven?[.frame]?.state {
+            moved(laid, to: [0, 0, length, 300])
+        }
+        cycle()
+
+        XCTAssertEqual(shown.wrappedValue, 4, "the card the user left in front")
+        let sent = try XCTUnwrap(standing(offset, as: JourneyLanes<Point>.self))
+        XCTAssertEqual(sent.destination.x, 4 * step, accuracy: 0.001, "the run sent back to it")
+    }
+
+    /// A RUN SENT TO A CARD NAMES NONE ON THE WAY: the position written, the
+    /// run travels there, and every card it passes is behind or ahead of the
+    /// one it goes to - naming it would turn the position back and forth.
+    func testARunSentToACardNamesNoneOnTheWay() async throws {
+        let renders = Renders()
+        let shown = State(1)
+        var heard: [Int] = []
+        func tree() -> Node {
+            gallery(5).position(shown.projectedValue).onPositionChanged { heard.append($0) }.node
+        }
+        let showing = laid(renders, tree)
+        let offset = try XCTUnwrap(find(.scrollView, in: showing.whole)?.driven?[.scrollOffset]?.state)
+        let step = try XCTUnwrap(travel(showing.patch, cards: 5))
+        let board = Renderer.shared.board(for: .display)
+
+        // THE FIRST CYCLE OF ALL LATCHES rather than runs.
+        _ = board.cycle(now: turned, reducesMotion: false)
+        slid(offset, to: Point(step, 0))
+        turned += 16
+        _ = board.cycle(now: turned, reducesMotion: false)
+
+        shown.wrappedValue = 3
+        _ = renders.render(tree())
+        _ = await settle()
+
+        // The host walks the run from card 1 towards card 3: a frame of the way.
+        moved(offset, to: [1.4 * step, 0], mask: 0b11)
+        turned += 16
+        _ = board.cycle(now: turned, reducesMotion: false)
+
+        XCTAssertEqual(shown.wrappedValue, 3, "the card it goes to, not the one it passes")
+        XCTAssertEqual(heard, [3], "the author hears the position once")
+    }
+
     /// A run that COMES TO REST between two cards travels on to the nearer: its
     /// scroller's stop is heard, and the offset is SENT to that card - a
     /// destination, so the host walks the rest of the way from where the run
@@ -633,6 +724,15 @@ final class GalleryViewTests: XCTestCase {
     }
 
     /// And a gallery nobody asked for a tap lays no target at all.
+    /// A gallery the user may not swipe still answers a tap on the card in front: nothing scrolls, so the
+    /// target stands where the card does.
+    func testAGalleryNobodyMaySwipeAnswersATapOnItsCardInFront() throws {
+        let renders = Renders()
+        let shown = laid(renders, { self.gallery(5).isSwipeEnabled(false).onItemTapped { _ in }.node })
+
+        XCTAssertNotNil(tappable(in: shown.whole), "the gallery laid no target")
+    }
+
     func testAGalleryNobodyAskedForATapAnswersNone() throws {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(5).node }).whole
@@ -645,6 +745,7 @@ final class GalleryViewTests: XCTestCase {
     /// cannot say it was pressed by itself - the gallery says it for it, on the
     /// face inside the placement rather than on the placement, which the host
     /// rewrites on its own frames.
+    @MainActor
     func testTheCardInFrontIsPressedWhileTheTapIsAnswered() async throws {
         let renders = Renders()
         let view = gallery(5).onItemTapped { _ in }
@@ -843,23 +944,19 @@ final class GalleryViewTests: XCTestCase {
             and a write only the engine would have read moves nothing
             """)
 
-        // THE DEFERRAL SLEEPS BEFORE IT LETS GO, so it is waited out here
-        // rather than left for whichever test runs next: a job still suspended
-        // when this returns is a pass another test counts as its own. A
-        // suspended sleep is not PENDING until it wakes, so the wait is the
-        // crossing's own half-second and a little over it.
-        let deadline = Date().addingTimeInterval(0.7)
+        // THE DEFERRAL SLEEPS BEFORE IT LETS GO, so it is ended here rather
+        // than left for whichever test runs next: the gallery leaving cancels
+        // its sleep, and the run ends on the turn its cancellation wakes.
+        let before = RunSlot.underWay
+        _ = renders.render(Text("gone").node)
 
-        while Date() < deadline {
-            _ = stateUIRunJobs()
-            Thread.sleep(forTimeInterval: 0.02)
+        for _ in 0..<500 where RunSlot.underWay > 0 || UIThreadExecutor.shared.pendingCount > 0 {
+            turnTheUIThread()
         }
 
-        _ = stateUIRunJobs()
-
-        XCTAssertEqual(
-            UIThreadExecutor.shared.pendingCount, 0,
-            "the shape's deferral was left running")
+        XCTAssertGreaterThan(before, 0, "the shape's deferral never ran")
+        XCTAssertEqual(RunSlot.underWay, 0, "the shape's deferral was left running")
+        XCTAssertEqual(UIThreadExecutor.shared.pendingCount, 0)
     }
 
     /// Whether ANYTHING in this patch answers the event - a gesture lands on

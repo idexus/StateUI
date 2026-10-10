@@ -53,7 +53,8 @@ kind is made of.
 ```
 
 Each type numbers its kinds in an internal `Kind` enum, written out by the
-rule above. `Brush.Kind` numbers from 1 rather than 0: the contract asks
+rule above - except `Material`, whose blur and glass continue the brush's
+numbers as 4 and 5. `Brush.Kind` numbers from 1 rather than 0: the contract asks
 only that both sides say the same number. A grid length's `.auto` carries a
 1, so every length is the same two parts and a host reads each one the same
 way.
@@ -73,5 +74,5 @@ nothing. Each conformance is one line beside the type's other conformances.
 
 ## An unknown member
 
-A number a vocabulary has no case for reads back as nil, and the property or
-payload holding it is refused.
+A number an enum has no case for reads back as nil, and the property or
+payload holding it is refused; a flag set reads whatever bits it holds.

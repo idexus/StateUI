@@ -29,7 +29,8 @@ final class WinUIWebView: WinUIControl {
     private var written = 0
 
     /// What the view calls itself; the page last asked for - its address, and the document written in place there -
-    /// and whether a navigation is under way; and a page not loaded yet, loaded once the element's values are applied.
+    /// and whether a navigation is under way; a page not loaded yet, loaded once the element's values are applied;
+    /// and the source loaded last, which `shownSource` answers while the view shows its document.
     private var agent = ""
     private var asked: (address: String, document: String?)?
     private var loading = false

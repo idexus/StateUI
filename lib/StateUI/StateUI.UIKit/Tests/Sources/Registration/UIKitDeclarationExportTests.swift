@@ -10,6 +10,7 @@ import Foundation
 @testable import StateUIUIKit
 import XCTest
 
+@MainActor
 final class UIKitDeclarationExportTests: XCTestCase {
     /// The export is what the registry says, to the line.
     @MainActor

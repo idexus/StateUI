@@ -6,6 +6,7 @@ import XCTest
 
 /// A window's value written down as text and read back: what a restored window is opened for. A value that does not
 /// read back loses its window on restoration.
+@MainActor
 final class ValueTextTests: XCTestCase {
     /// Every shape a `Codable` value takes comes back as it went: nested values, lists, maps, an absent and a present
     /// optional, whole numbers of every width, fractions, a raw-valued choice, and a subclass with its superclass's
@@ -24,6 +25,21 @@ final class ValueTextTests: XCTestCase {
         let back = try XCTUnwrap(ValueText.read(Derived.self, from: try ValueText.write(subclass)))
         XCTAssertEqual(back.base, 4, "the superclass's member, under its own key")
         XCTAssertEqual(back.extra, "more")
+    }
+
+    /// Equal values are written as one text: an object's members by their keys, whatever order its own
+    /// `encode(to:)` - a dictionary's, by its hash - hands them over in.
+    func testEqualValuesAreWrittenAsOneText() throws {
+        var few: [String: Int] = [:]
+        var many = [String: Int](minimumCapacity: 512)
+        for index in 0..<20 {
+            few["key\(index)"] = index
+            many["key\(19 - index)"] = 19 - index
+        }
+
+        XCTAssertEqual(few, many)
+        XCTAssertEqual(try ValueText.write(few), try ValueText.write(many))
+        XCTAssertEqual(try ValueText.write(["b": 1, "a": 2]), #"{"a":2,"b":1}"#)
     }
 
     /// Words come back whole: a quote, a backslash, a line's end, a tab, a control with no letter, a letter past the

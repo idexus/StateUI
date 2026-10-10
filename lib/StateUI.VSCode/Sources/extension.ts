@@ -257,7 +257,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             return;
         }
         if (chosen === "web") {
-            void vscode.window.showInformationMessage("StateUI: the Web host has no conformance driver yet, so it makes no marks.");
+            void vscode.window.showInformationMessage("StateUI: the editor makes no Web marks - .scripts/Web/test-web.sh --browser makes them, with STATEUI_UPDATE_EXPORTS=1.");
             return;
         }
         if (chosen === "android" && rebuild === "changed") {

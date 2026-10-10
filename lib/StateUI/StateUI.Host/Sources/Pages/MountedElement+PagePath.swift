@@ -63,6 +63,7 @@ extension MountedElement {
         case .tabView: self
         case .navigationStack: children.last?.visibleTabView
         case .splitView: children.dropFirst().first?.visibleTabView
+        case .modalStack: children.first?.visibleTabView
         default: nil
         }
     }
@@ -101,9 +102,10 @@ extension MountedElement {
         return stack
     }
 
-    /// Whether a tabbed view's tabs stand in its window's row: the first tabbed view down the window's stacks and
-    /// split view details - never one in a sidebar, in a tab of another, in a sheet or in content. A split view's
-    /// sidebar is its first child as written, which holds while the children are still being made.
+    /// Whether a tabbed view's tabs stand in its window's row: the first tabbed view down the window's stacks, split
+    /// view details and a modal stack's root - never one in a sidebar, in a tab of another, in a sheet or in content.
+    /// A split view's sidebar and a modal stack's root are their first children as written, which holds while the
+    /// children are still being made.
     public var tabsStandInWindow: Bool {
         guard type == .tabView else { return false }
 
@@ -113,6 +115,7 @@ extension MountedElement {
             case .window: return true
             case .navigationStack: break
             case .splitView where parent.writingOrder[child.id] != 0: break
+            case .modalStack where parent.writingOrder[child.id] == 0: break
             default: return false
             }
             child = parent

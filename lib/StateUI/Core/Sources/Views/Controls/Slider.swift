@@ -58,7 +58,7 @@ public struct Slider: ElementView, TintElement, SliderProperties {
     ///
     /// An assignment (`volume = 1`) animates the thumb there under the
     /// element's motion; `$volume.journey` reads where the thumb is, and
-    /// `try await $volume.journey.move(to: 1)` waits for the arrival.
+    /// `try await $volume.journey.move(to: 1).arrived()` waits for the arrival.
     public init(_ value: Binding<Double>) {
         self = Slider().value(value)
     }
@@ -83,20 +83,56 @@ public struct Slider: ElementView, TintElement, SliderProperties {
 
     /// Fires on every step of a drag, with the value dragged to, after a
     /// binding's write. Heavy work belongs in `.onReleased`.
-    public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
+    public func onValueChanged(_ handler: @escaping @MainActor (Double) throws -> Void) -> Self {
         onEvent(SliderContract.valueChanged, handler)
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onValueChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<Double>) -> Self {
+        onEvent(SliderContract.valueChanged, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onValueChanged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
+        fatalError("unavailable")
     }
 
     /// Runs when the thumb is grabbed - the start of a drag whose every step
     /// is an `onValueChanged`.
-    public func onPressed(_ handler: @escaping EventHandler) -> Self {
+    public func onPressed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(SliderContract.pressed, handler)
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onPressed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(SliderContract.pressed, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPressed(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onPressed(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 
     /// Runs when the thumb is let go - where work too heavy for every step of
     /// the drag belongs.
-    public func onReleased(_ handler: @escaping EventHandler) -> Self {
+    public func onReleased(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(SliderContract.released, handler)
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onReleased(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(SliderContract.released, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onReleased(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onReleased(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 }
 
@@ -104,12 +140,12 @@ extension Slider {
     /// `maximum` from a state, `$x`: the host sets each new value as it stands,
     /// and no view is rebuilt for it.
     public func maximum(_ state: Binding<Double>) -> Modified {
-        plain(SliderContract.maximum.token, by: state)
+        twin(SliderContract.maximum, carrying: state)
     }
 
     /// `minimum` from a state, `$x`: the host sets each new value as it stands,
     /// and no view is rebuilt for it.
     public func minimum(_ state: Binding<Double>) -> Modified {
-        plain(SliderContract.minimum.token, by: state)
+        twin(SliderContract.minimum, carrying: state)
     }
 }

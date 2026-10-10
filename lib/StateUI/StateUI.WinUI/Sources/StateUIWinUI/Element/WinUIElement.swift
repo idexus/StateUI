@@ -64,6 +64,8 @@ final class WinUIElement: NativeElement {
         arrangeChildren()
         arrangePages(changed: changed)
         if type == .contextMenu { parent?.contextMenuChanged = true }
+        // Its menu's entries are in reach with the view.
+        if changed.contains(.isEnabled), hadContextMenu { contextMenuChanged = true }
         refreshContextMenu()
         if let view { host?.runtime.frames.follow(self, order: view.number, reads: readsFrame) }
     }

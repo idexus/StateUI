@@ -4,8 +4,9 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `PickerContract` on a host: it offers its choices and shows the one the tree made; the user's choice is heard once
-/// and lands on the state, the program's is shown and heard by nobody.
+/// `PickerContract` on a host: it offers its choices, those the tree changes too, and shows the one the tree made; the
+/// user's choice is heard once and lands on the state, the program's is shown and heard by nobody; its list opened and
+/// closed by the user is heard, opened by the program heard only as the user closes it.
 @_spi(Host) public enum PickerTests: ConformanceFamily {
     public static let name = "Picker"
 

@@ -8,7 +8,7 @@
 ///
 ///     application.styles = StyleSheet {
 ///         Style<Text>().textColor(AppColors.text)
-///         Style<Button>("Danger").background(.firebrick)
+///         Style<Button>(.danger).background(.firebrick)
 ///     }
 ///
 /// Writing a new sheet restyles every control.
@@ -21,7 +21,13 @@ public struct StyleSheet {
     private var implicit: [NodeType: Int] = [:]
 
     /// Where the ones asked for by name are.
-    private var keyed: [String: Int] = [:]
+    private var keyed: [Filed: Int] = [:]
+
+    /// A keyed style's place: its control's type and its key's name, as a key is typed by its control.
+    private struct Filed: Hashable {
+        let target: NodeType
+        let name: String
+    }
 
     /// The styles the closure describes, with every `basedOn` chain flattened.
     ///
@@ -32,7 +38,7 @@ public struct StyleSheet {
 
         for (index, style) in written.enumerated() {
             if let key = style.key {
-                keyed[key] = index
+                keyed[Filed(target: style.target, name: key)] = index
             } else {
                 implicit[style.target] = index
             }
@@ -51,10 +57,10 @@ public struct StyleSheet {
     private static func flatten(
         _ style: AnyStyle,
         from written: [AnyStyle],
-        keyed: [String: Int],
+        keyed: [Filed: Int],
         chain: Set<String> = []
     ) -> AnyStyle {
-        guard let key = style.basedOn, !chain.contains(key), let at = keyed[key] else {
+        guard let key = style.basedOn, !chain.contains(key), let at = keyed[Filed(target: style.target, name: key)] else {
             return style
         }
 
@@ -71,8 +77,8 @@ public struct StyleSheet {
     /// The style a node wears: the keyed one it asks for where that is for its
     /// type, or else the one every control of its type gets.
     func style(for node: Node) -> AnyStyle? {
-        if let key = node.props[VisualElementContract.style.token]?.name, let at = keyed[key],
-           written[at].target == node.type {
+        if let key = node.props[VisualElementContract.style.token]?.name,
+           let at = keyed[Filed(target: node.type, name: key)] {
             return written[at]
         }
 

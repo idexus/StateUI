@@ -9,10 +9,10 @@ leaves.
 ```text
   application.styles = StyleSheet {             a value in the application session
       Style<Text>().fontSize(14)               implicit: every Text
-      Style<Text>("Headline").fontSize(32)     keyed: asked for with .style("Headline")
+      Style<Text>(.headline).fontSize(32)     keyed: asked for with .style(.headline)
   }
 
-  Text("Welcome").style("Headline")
+  Text("Welcome").style(.headline)
         │
         ▼  the differ, for every element it builds: styled(_:with:)
   Text with the style's values under its own, and the states of both
@@ -25,9 +25,11 @@ Nothing about a style crosses to a host: the differ merges it into the control
 it belongs to, so a host receives a control with every value already on it.
 There is no style object, no resource lookup, and nothing in a host that has to
 know what a style is, which keeps each host small enough to be written again
-for another platform. The key a view asks for, `.style("Headline")`, is a name
-- one spelling, one style - and the differ consumes it and takes it off the
-node, the host having no dictionary to look one up in.
+for another platform. The key a view asks for, `.style(.headline)`, is a
+`StyleKey` typed by its control and declared once - one spelling, one style,
+and a key of another control's or one misspelled does not compile - which is
+written on the node as its name; the differ consumes it and takes it off the
+node before the patch, the host having no dictionary to look one up in.
 
 ## A style wears the property half
 
@@ -41,17 +43,17 @@ properties, and the modifiers themselves are written once for both.
 The style takes its node type from its target's blank initializer, so the
 target is named once, by the control itself. `StyleBag<Target, Context>` has a
 phantom context - the style itself, or one of its states - whose one job is to
-keep `visualState` from nesting: a state cannot hold a state. `Style<Target>`
-is a typealias with the context filled in, since Swift has no default generic
-arguments.
+keep `visualState` and `basedOn`, which only the style itself says, out of its
+states: a state cannot hold a state. `Style<Target>` is a typealias with the
+context filled in, since Swift has no default generic arguments.
 
 ## Precedence
 
 - A keyed style replaces the implicit one for the type, and a value written on
   the control beats both, one property at a time.
-- A key naming nothing falls through to the implicit style, and so does a key
-  naming a style declared for another control, whose values would be half
-  applied and half dropped unread.
+- A key naming no style of its own control falls through to the implicit
+  style; two controls' keys spelled alike are two, since the sheet files a
+  keyed style by its control's type and its key's name.
 - Two styles under one key, or two implicit ones for one target, are one: the
   last wins, as a second assignment to one dictionary key does.
 - `basedOn` is flattened when the sheet is built, against what was written -
@@ -136,8 +138,9 @@ style does not have joins after the style's.
 `onVisualStateChanged` runs after the render in which the control entered a
 state, which is where a state can animate rather than only be set: a style's
 values change with the render, and a handler can take as long as it likes. It
-runs for a state entered, never for the one the control arrives in, as
-`.onChanged` does not. The states it names are declared without values,
+runs for a state entered, never for the one the control arrives in - first
+described, or made again as another kind of control under the same identity -
+as `.onChanged` does not. The states it names are declared without values,
 merged into the style's without changing how the control looks, and only
 they are heard; naming none hears every state the control declares, and
 Normal.
@@ -157,7 +160,7 @@ view's inputs - states included, which are values like the rest.
 `styled(_:with:)` is the one place a style is applied, called by the differ for
 every element it builds: after a composed view is unwrapped, since the real
 node's type and key decide which style it wears, and before anything is sent.
-It runs even with no sheet, because `.style("…")` is consumed there whatever
+It runs even with no sheet, because `.style(…)` is consumed there whatever
 happens. It asks before it writes: assigning nil to a key a dictionary does not
 have still makes the storage unique, so an unguarded removal would copy the
 properties of every node in the tree, styled or not.

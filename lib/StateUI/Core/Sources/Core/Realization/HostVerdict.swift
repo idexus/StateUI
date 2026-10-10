@@ -15,12 +15,12 @@
         case notPlanned(reason: String)
         /// Empty: the host does not realize it yet.
         case notRealized
-        /// Empty: the host's driver cannot do or read what the case needs; what, and why.
+        /// ·: the host's driver cannot do or read what the case needs; what, and why.
         case cannot(String)
-        /// Empty: the case does not apply - the host's platform holds nothing it reads - and no other case judges the
+        /// ·: the case does not apply - the host's platform holds nothing it reads - and no other case judges the
         /// subject; what, and why. Beside any other verdict it gives way.
         case inapplicable(String)
-        /// Empty: the host realizes it, and its case waits on another member the host does not realize yet; which.
+        /// ⏸: the host realizes it, and its case waits on another member the host does not realize yet; which.
         case waiting(on: String)
         /// ❌: a case proving it failed on the host; what was expected and what came.
         case failed(String)
@@ -112,15 +112,6 @@
             return nil
         }
         self.init(element: String(parts[0]), member: parts.count == 2 ? String(parts[1]) : nil, mark: mark)
-    }
-
-    /// Whether the dictionary counts the verdict as met: proven whole, never on the host's family, or left to the
-    /// application's own registration.
-    public var meets: Bool {
-        switch mark {
-        case .proven, .notPlanned, .byApplication: true
-        case .partial, .notRealized, .cannot, .inapplicable, .waiting, .failed, .partly, .byHost: false
-        }
     }
 
     /// Whether a case proving the subject passed: proved whole or in part, or never had by the host's family.

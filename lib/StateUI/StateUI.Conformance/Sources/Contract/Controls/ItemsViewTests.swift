@@ -167,10 +167,10 @@
             ConformanceCase("theListScrollsToAnItem", proves: [
                 Covered(ItemsViewContract.scrollTo),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
-                let aim = Aim(ItemsViewContract.self)
+                let aim = Aim(ItemsView<Int>.self)
                 s.start(reducesMotion: true) {
                     VStack {
-                        Button("To 80").onClicked { try await aim.scrollTo(80, anchor: .start) }.id("go")
+                        Button("To 80").onClicked(gate: .ignoreWhileRunning) { try await aim.scrollTo(80, anchor: .start) }.id("go")
                         numbers().aim(aim).width(300).height(300).id("list")
                     }
                 }
@@ -187,7 +187,8 @@
     }
 
     /// A thousand numbered items, each words with room around them.
-    static func numbers() -> ItemsView<Range<Int>, Int> {
+    @MainActor
+    static func numbers() -> ItemsView<Int> {
         ItemsView(0..<1_000) { Text("Item \($0)").padding(12) }
     }
 }

@@ -51,12 +51,15 @@ box that adopts existing storage does not evaluate and discard its proposed
 initial value. State declared on the `Application` instead lives for the
 application process because the application value itself is retained.
 
-### Writes and concurrent updates
+### Writes from other threads
 
-A state read or write is protected as one operation and may be performed from
-any thread. A read followed by a write is still two operations. When concurrent
-tasks must derive a new value from the same old value, use `update` on the state
-box so the transform runs under one hold:
+A state belongs to the UI thread: a body reads it and a handler writes it on
+`MainActor`, and a write from any other thread does not compile. On the UI
+thread a handler's lines run with nothing between them, so `count += 1` is one
+step. A task off the UI thread posts instead - `$state.post(value)` to replace
+the value, `$state.post { … }` to change it - and each post lands in one job on
+the UI thread soon after, in the order posted, so tasks counting at once all
+count:
 
 ```swift
 struct DownloadCount: View {
@@ -65,10 +68,11 @@ struct DownloadCount: View {
     var body: some View {
         Text("Completed: \(completed)")
             .onCreated {
+                let completed = $completed
                 await withTaskGroup(of: Void.self) { group in
                     for _ in 0..<4 {
                         group.addTask {
-                            _completed.update { $0 + 1 }
+                            completed.post { $0 + 1 }
                         }
                     }
                 }
@@ -77,18 +81,21 @@ struct DownloadCount: View {
 }
 ```
 
-The transform must not read or write the same state again while it runs. In a
-single handler, ordinary operations such as `count += 1` remain the clear
-spelling.
+A post is never written at once, on the UI thread neither: it is a message,
+and nothing reads it before its job runs. A value posted replaces the changes
+waiting before it, so a loop posting ten thousand values costs one write and
+one render. What it carries crosses threads, so the value is `Sendable`.
 
 Swift does not allow a property wrapper at file scope. A value with that
-lifetime can use the box directly:
+lifetime can use the box directly, on the UI thread's actor:
 
 ```swift
-let launchCount = State(0)
+@MainActor let launchCount = State(0)
 
-launchCount.update { $0 + 1 }
-let current = launchCount.get()
+@MainActor func countLaunch() -> Int {
+    launchCount.wrappedValue += 1
+    return launchCount.get()
+}
 ```
 
 ## State in a class
@@ -236,11 +243,16 @@ A part has no independent state storage. It works for described values and
 write-back, but it cannot be a host motion channel, a journey, or an engine's
 followed state. Give independently carried values their own `@State` storage.
 
+A binding to an element knows whether its collection still has it: a write, or
+a post, to `$levels[1]` after the array shrank to one element is dropped and
+said once rather than reaching past the end.
+
 ### A custom binding
 
 Use `Binding(get:set:)` at an integration boundary that StateUI does not own:
 
 ```swift
+@MainActor
 final class ExternalSettings {
     var name = ""
 
@@ -266,7 +278,7 @@ Use the consequence you need as the selection rule:
 | Change which views exist or how authored values are composed | read the state in a body | rebuild current readers, then diff |
 | Give a child access to the same value | pass `$value` to `@Binding` | determined by what the child does with it |
 | Keep a native property synchronized continuously | hand the whole state to a binding-taking control or modifier | host-cycle update, no body read |
-| Wake arithmetic on a display frame | name the state in `engine(following:)` | wake that engine |
+| Wake arithmetic on a display frame | name the state in `engine(following:)` or `engine(tracking:)` | wake that engine |
 | Turn one or more carried states into another carried value | `convert`, `convert(with:)`, or `multi` | conversion engine, no body read |
 | Let a continuous value make an occasional structural decision | `samples` into ordinary state, or an engine that writes only when a threshold changes | rebuild only for sampled or changed decisions |
 
@@ -325,7 +337,7 @@ The declared value is the default when the store has no entry. The application
 must list every key in `ApplicationSession.persistentKeys` during its
 initialization; otherwise the host has no key to hydrate before the first
 build. A write still has its key, so omitting it can look like restoration is
-one launch late.
+one launch late; a key a state keeps and the list leaves out is said once.
 
 `Bool`, `Int`, `Double`, and `String` conform to `PersistentValue`. An enum
 whose raw value conforms gains the same representation. Larger records belong
@@ -342,11 +354,12 @@ the state; persistence does not depend on description invalidation. Writing the
 same value also schedules a save because the host store may not hold it yet.
 
 Kept state lives in the platform's own settings store - `UserDefaults` on
-AppKit and UIKit, `SharedPreferences` on Android - and on WinUI and GTK, whose
-platforms keep no store an application can use, in a file of the host's own.
-An application that keeps something
-in a file or a database of its own reads and writes it in its own code and
-hands the values to ordinary `@State`.
+AppKit and UIKit, `SharedPreferences` on Android - on WinUI and GTK, whose
+platforms keep no store an application can use, in a file of the host's own,
+and on the Web in the browser's storage for the page's site, under the
+application's name. An application that keeps something in a file or a
+database of its own reads and writes it in its own code and hands the values
+to ordinary `@State`.
 
 ## State kept with a scene
 
@@ -424,6 +437,9 @@ Text(.multi($name, $width, $height).convert { name, width, height in
 })
 ```
 
+Each view writing a conversion keeps its own derived state, even where two
+views convert one source on one line, and lets it go when it leaves.
+
 Conversions require whole StateUI states as sources to remain on the host-cycle
 path. A binding to a member or one made from closures is evaluated as described
 data instead and cannot receive a host-carried reverse conversion.
@@ -464,7 +480,7 @@ state itself remains discrete and immediately holds the destination:
 | `journey.destination` | target; the same value as a plain state read |
 | `journey.velocity` | per-second velocity in the value's lanes |
 | `journey.motion` | law used wherever this state is carried |
-| `move(to:_:)` | set a destination and await whether it was reached |
+| `move(to:_:)` | set a destination; `arrived()` awaits whether it was reached |
 | `stop()` | settle an active animation at its current presentation |
 | `snap(to:)` | set presentation, destination, and zero velocity together |
 
@@ -485,9 +501,7 @@ struct SampledProgress: View {
             ProgressBar().progress($progress)
             Text("Shown: \(Int(shown * 100))%")
             Button("Run").onClicked {
-                try await $progress.journey.move(
-                    to: 1,
-                    .eased(1_000, .cubicOut))
+                $progress.journey.move(to: 1, .eased(1_000, .cubicOut))
             }
         }
         .samples($progress, into: $shown, .every(100))
@@ -503,7 +517,11 @@ differs, and delivers the final value. `.always` takes every changed frame.
 
 Write a custom engine for frame arithmetic that needs memory or sequencing and
 cannot be expressed as a pure conversion. An engine is attached to an element
-and runs inside the host's display cycle.
+and runs inside the host's display cycle. It comes two ways:
+`.engine(following:)` runs on the display cycle after a state it follows is
+written - once, however many writes came - and once after each render that
+describes its view; `.engine(tracking:)` keeps tracking, answering on each
+cycle whether it has more to do - a spring, a stopwatch:
 
 ```swift
 struct SpringDot: View {
@@ -515,7 +533,7 @@ struct SpringDot: View {
                 .width(28)
                 .height(28)
                 .translationY($y)
-                .engine(following: $y) { cycle in
+                .engine(tracking: $y) { cycle in
                     let journey = $y.journey
 
                     if cycle.reducesMotion {
@@ -546,14 +564,14 @@ struct SpringDot: View {
 
 The engine contract is deliberately narrow:
 
-- `following:` names the writes that wake it; it does not limit which values
-  the closure may read;
-- a time-driven engine may omit `following:` when its answer controls whether
-  it receives another cycle;
-- an engine runs once after the render that declares it;
+- `following:` and `tracking:` name the writes that wake it; they do not limit
+  which values the closure may read;
+- a time-driven engine may omit `tracking:`: its answer controls whether it
+  receives another cycle;
+- an engine runs once after every render that describes its view;
 - a write made by the engine itself does not wake that same engine;
 - `.again` requests the next display cycle, while `.wait` sleeps until a
-  followed state is written or a render rearms the declaration;
+  tracked state is written or a render rearms the declaration;
 - `EngineCycle.elapsed` is milliseconds since this engine last ran, capped at
   `EngineCycle.mostElapsed`; `now`, `count`, `sync`, and `reducesMotion`
   describe the same display board;
@@ -561,8 +579,8 @@ The engine contract is deliberately narrow:
   ties;
 - anything remembered between runs belongs in `@State` that the engine reads
   or writes;
-- an engine does not suspend, invoke an aimed control, perform host acts, or
-  create another UI-thread model.
+- an engine does not await, ask the host for anything, or touch a control: it
+  runs inside the frame the platform draws.
 
 Like every attachment owned by an element, an engine is removed when that
 element leaves the tree.

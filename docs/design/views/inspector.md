@@ -16,10 +16,13 @@ long describing it took in Swift and applying it took in the host, in
 microseconds, and how many composed views it built and carried. A chosen
 render shows its tree - every composed view it reached, built with the reason
 it could not be carried, carried whole, or walked past on the way to one below
-it - with each one's time, its own and with what is under it.
+it - with each one's time, its own and with what is under it. Its Complaints,
+one action away, list what the library said (core/diagnostics.md), newest
+first: a complaint comes on any thread, and tells the inspectors on theirs,
+as a landed render does.
 
 ```text
-  InspectorModel (one, shared)       places, folded, paused, revision, selected
+  InspectorModel (one, shared)       places, collapsed, paused, revision, selected, showingComplaints
         │ revision moves at most once per pace
         ▼
   Node.overlay(inspector:of:) ──▶ InspectorPanel   docked in the window whose ⓘ was pressed
@@ -27,6 +30,7 @@ it - with each one's time, its own and with what is under it.
         │
         ▼
   InspectorView: head (actions) · summary line · list of renders · chosen render's tree
+                 · or the complaints said
 ```
 
 ## Each scene has its own
@@ -36,11 +40,11 @@ the ⓘ is handed its window, whose scene's inspector it opens. It opens along
 the bottom of the window its ⓘ is in, folded to one line - the last render
 that reached the scene -
 leaving the page all but uncovered while it is watched, with two buttons at the
-end of the line to open it out and to close it. Opened out, it docks down the
-side on a desktop or a tablet, or shows in the scene's `DebugInspector` window
-where the scene declares one and the platform opens windows: a window of the
-scene like any other, closed with it, hidden with it where its `Window` says so,
-and restored with it.
+end of the line to open it out and to close it. Opened out, it stays along the
+bottom, from where it can dock down the side on a desktop or a tablet, or show
+in the scene's `DebugInspector` window where the scene declares one and the
+platform opens windows: a window of the scene like any other, closed with it,
+hidden with it where its `Window` says so, and restored with it.
 
 ## Where it docks
 
@@ -62,9 +66,11 @@ drawn rather than typed, because a font without the glyph draws an empty box.
 
 The inspector is a tree like any other, described by this library and applied
 by the host, so it is careful about its own cost. Its views are muted in the
-record, and a render its own state caused is not kept: every state it has lives
-in one model, whose storages the record knows as the inspector's own, so a
-pass whose causes are all among them is the inspector drawing itself. It is
-built again at most once per `Inspector.pace` milliseconds however fast the
-application renders. Nothing is recorded while every inspector is closed or
-paused, so an application that offers one costs nothing until somebody looks.
+record, and a render its own state caused is not kept: every state it has but
+where it docks lives in one model, whose storages the record knows as the
+inspector's own, so a pass whose causes are all among them is the inspector
+drawing itself; where it docks is its scene's (`dockedInspector`), so a pass
+that docks or moves it is kept. It is built again at most once per
+`Inspector.pace` milliseconds however fast the application renders. Nothing is
+recorded while every inspector is closed or paused, so an application that
+offers one costs nothing until somebody looks.

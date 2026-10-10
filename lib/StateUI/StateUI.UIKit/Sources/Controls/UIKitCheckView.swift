@@ -26,6 +26,7 @@ final class UIKitCheckView: UIButton {
         configuration.imagePadding = 8
         configuration.contentInsets = .zero
         self.configuration = configuration
+        followTextSize()
         contentHorizontalAlignment = .leading
         showTick()
         addAction(UIAction { [weak self] _ in self?.tapped() }, for: .primaryActionTriggered)
@@ -57,11 +58,10 @@ final class UIKitCheckView: UIButton {
 
     /// The caption's look: the button's own where it says nothing.
     func setLook(_ look: TextLook) {
-        let font = UIFont.stateUI(look, standing: .preferredFont(forTextStyle: .body))
         let color = look.color.flatMap(UIColor.init(stateUI:)) ?? .label
         configuration?.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attributes in
             var attributes = attributes
-            attributes.font = font
+            attributes.font = UIFont.stateUI(look)
             attributes.foregroundColor = color
             return attributes
         }

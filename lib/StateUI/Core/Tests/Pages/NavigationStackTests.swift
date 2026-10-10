@@ -52,6 +52,7 @@ private struct DressedDestination: View {
 }
 
 /// The stack under test, over whatever path is lent to it.
+@MainActor
 private func stack(_ path: Binding<[Route]>) -> NavigationStack {
     NavigationStack(path) {
         Root()
@@ -63,6 +64,7 @@ private func stack(_ path: Binding<[Route]>) -> NavigationStack {
     }
 }
 
+@MainActor
 final class NavigationStackTests: XCTestCase {
     // MARK: - What goes out
 

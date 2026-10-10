@@ -51,6 +51,7 @@ import WASILibc
     }
 
     /// One message applied, which began at `began` milliseconds on the runtime's clock.
+    @MainActor
     mutating func applied(_ tally: RenderTally, began: Double, core: CoreLink) {
         if inspects {
             let passes = core.takeInspectionLog()
@@ -75,7 +76,7 @@ import WASILibc
     /// The running totals, as one line.
     private func line(_ core: HostTally) -> String {
         "StateUI tally: applies \(applies)  nodes \(nodes)  made \(made)  kept \(nodes - made)  "
-            + "renders \(core.renders)  empty \(core.empty)  refused \(core.refused)  alive \(core.alive)  "
+            + "renders \(core.renders)  empty \(core.empty)  refused \(core.refused)  alive \(core.alive)  runs \(core.runs)  "
             + (views.map { "views \($0())  " } ?? "")
             + "apply \(Self.milliseconds(applyMicros / Double(applies))) ms avg / "
             + "\(Self.milliseconds(longestMicros)) ms worst / \(Self.milliseconds(applyMicros)) ms total\n"

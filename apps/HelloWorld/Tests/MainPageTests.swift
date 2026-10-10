@@ -3,6 +3,7 @@ import XCTest
 
 /// The application's own logic, tested as plain Swift: what the page's button
 /// says as it is clicked.
+@MainActor
 final class MainPageTests: XCTestCase {
     func testTheButtonCountsItsClicks() {
         XCTAssertEqual(MainPage.caption(clicks: 0), "Click me")

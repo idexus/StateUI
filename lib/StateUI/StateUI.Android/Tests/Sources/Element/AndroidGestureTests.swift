@@ -160,7 +160,7 @@ final class AndroidGestureTests: XCTestCase {
 
     /// A box of 100 points - 200 pixels - at the top left, listening as `listens` has it.
     @MainActor
-    private static func box(_ listens: @escaping @Sendable (ColorBox) -> any View) throws -> (AndroidRenderer, AndroidView) {
+    private static func box(_ listens: @escaping @MainActor (ColorBox) -> any View) throws -> (AndroidRenderer, AndroidView) {
         let host = AndroidRenderer.running {
             listens(ColorBox(.red).width(100).height(100).horizontalAlignment(.start).verticalAlignment(.start))
         }

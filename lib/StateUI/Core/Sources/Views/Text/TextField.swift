@@ -88,8 +88,20 @@ public struct TextField: TextInput, TextualElement, FontElement, TextAlignmentEl
 
     /// Fires when the return key is pressed - the moment to move to the next
     /// field or run the search.
-    public func onSubmitted(_ handler: @escaping EventHandler) -> Self {
+    public func onSubmitted(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(TextFieldContract.submitted, handler)
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onSubmitted(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(TextFieldContract.submitted, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSubmitted(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onSubmitted(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 }
 
@@ -97,18 +109,18 @@ extension TextField {
     /// `showsClearButton` from a state, `$x`: the host sets each new value as
     /// it stands, and no view is rebuilt for it.
     public func showsClearButton(_ state: Binding<Bool>) -> Modified {
-        plain(.showsClearButton, by: state)
+        twin(TextFieldContract.showsClearButton, by: state)
     }
 
     /// `isPassword` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func isPassword(_ state: Binding<Bool>) -> Modified {
-        plain(.isPassword, by: state)
+        twin(TextFieldContract.isPassword, by: state)
     }
 
     /// `submitLabel` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func submitLabel(_ state: Binding<SubmitLabel>) -> Modified {
-        plain(TextFieldContract.submitLabel.token, by: state)
+        twin(TextFieldContract.submitLabel, carrying: state)
     }
 }

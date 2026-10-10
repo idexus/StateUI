@@ -17,10 +17,10 @@ builds the gradient for the bounds it is drawn at, so a gradient's points stay
 in fractions of the thing painted, as
 [brushes](../../types/brushes.md#geometry-in-fractions) says. A radial
 gradient's reach is the host layer's circle, worked out in Swift for the size
-the drawable is drawn at and told again as that size changes - whether Swift
-or Android placed the view. A plain colour
-stays the view's own colour background; a background cleared gives back the
-one the view was made with.
+the drawable is drawn at, and told again as that size changes: wherever Swift
+places the view, and for a layout's own box where Android places it too. A
+plain colour stays the view's own colour background; a background cleared
+gives back the one the view was made with.
 
 A corner rounds no more than half the side it rounds within the outline,
 so a radius wider than a short box rounds it in a quarter of an ellipse.
@@ -31,25 +31,26 @@ outline takes it.
 
 ## A layout's own box
 
-A stack, a grid or a ZStack paints its own box. A plain colour with no
-outline, shape or cut is the view's plain background, as on any view. An
-outline, a shape or a cut gives the layout a shape drawable instead, made
-the first time one is said: the background fills the shape, the outline is
-drawn inside the bounds, half its width either side of the shape's edge
-being inside, and never pushes a child in - that is the padding's work.
-With `clipsContent` the view clips to the drawable's outline, so a picture in
-a rounded card has rounded corners; without it nothing is cut, the shape
-drawn all the same.
+A stack, a grid, a ZStack or a scroll view paints its own box. A plain
+colour with no outline, shape or cut is the view's plain background, as on
+any view. An outline, a shape or a cut gives the layout a shape drawable
+instead, made the first time one is said: the background fills the shape,
+the outline is drawn inside the bounds, half its width either side of the
+shape's edge being inside, and never pushes a child in - that is the
+padding's work. With `clipsContent` - on a scroll view, with any shape - the
+view clips to the drawable's outline, so a picture in a rounded card has
+rounded corners; without it nothing is cut, the shape drawn all the same.
 
 ## A placed child
 
 An engine's placement run stands each child of a ZStack at a
 rectangle of its own and draws it moved, turned, scaled and faded about its
 centre, over whatever the child's own properties say. Android keeps one
-translation, rotation and scale per view, so the host composes the two:
-rotations add, scales multiply, and the view's own translation is turned and
-scaled by the placement's before the placement's is added. That is exact
-while the scales are the same on both axes, which is what a placement draws.
+translation, rotation and scale per view, so the host layer composes the two
+(`HostDrawingTransform.under`): rotations add, scales multiply, and the view's
+own translation is turned and scaled by the placement's before the
+placement's is added. That is exact while the scales are the same on both
+axes, which is what a placement draws.
 The opacities multiply, and the view's own opacity is still what its
 animations start from.
 
@@ -68,8 +69,8 @@ A picture crosses as a file name, and the files are the application's
 `Resources/Images`. Android draws no SVG, so the build draws each SVG three
 times over, in sRGB, as `<name>@3x.png`, and copies every other picture as it
 is, into the APK's `images` assets; only what changed is drawn again. At run
-time a name finds its drawing three times over first, then a file of its
-own name, which is kept at one pixel a point.
+time a name finds a file of its own name first, kept at one pixel a point,
+then its drawing three times over (`PictureArithmetic.drawnFiles`).
 
 An image is measured at its picture's own size in points, read from the
 file's header alone: the size is at the display's density, and Android's own
@@ -118,13 +119,15 @@ shape asks for no room of its own.
 A canvas is one view of the host's that replays the drawing's instructions on
 its own canvas, in the order they were written, inside its bounds, in points:
 the canvas is scaled once by the display's density. The whole drawing
-crosses in one call - each instruction's kind, colours, flags and the index
-of its text as ints, its numbers as floats, its text as strings - so a
-drawing of a thousand instructions is one crossing, not a thousand. The three
-lists are the host layer's
+crosses in one call - each instruction's kind, colours, a text's alignments
+and index and a path's count of curves as ints, its numbers as floats, its
+text as strings - so a drawing of a thousand instructions is one crossing,
+not a thousand. The three lists are the host layer's
 ([three lists for a relay](../../types/drawing.md#three-lists-for-a-relay)):
 a record that does not read whole is left out, as every host leaves it out,
-and a path's arcs and an arc of an ellipse come as the curves they run along,
-so a whole turn fills the whole oval. Text wraps within its rectangle, stands across and down it as the
-instruction says, and is cut at its edges. A finger's press, drag and release
-come back in points; the canvas asks for no room of its own.
+and the relay stops at a record that runs past the lists' ends, drawing what
+stands before it; a path's arcs and an arc of an ellipse come as the curves
+they run along, so a whole turn fills the whole oval. Text wraps within its
+rectangle, stands across and down it as the instruction says, and is cut at
+its edges. A finger's press, drag and release come back in points; the canvas
+asks for no room of its own.

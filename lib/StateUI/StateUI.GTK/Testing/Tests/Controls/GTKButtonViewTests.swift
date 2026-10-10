@@ -8,6 +8,7 @@ import CStateUIGTK
 @testable import StateUIGTKDriver
 import XCTest
 
+@MainActor
 final class GTKButtonViewTests: XCTestCase {
     /// A button's caption takes the font and colour the tree gives it, and its box the fill, the outline and the
     /// corners, drawn in the fill.
@@ -32,7 +33,7 @@ final class GTKButtonViewTests: XCTestCase {
             host.layOut()
             let (width, height) = (button.frame.width, button.frame.height)
 
-            XCTAssertTrue(said.contains(PANGO_ATTR_ABSOLUTE_SIZE.rawValue), "the font's size")
+            XCTAssertTrue(said.contains(PANGO_ATTR_SIZE.rawValue), "the font's size, in points the text scale applies to")
             XCTAssertTrue(said.contains(PANGO_ATTR_WEIGHT.rawValue), "bold")
             XCTAssertTrue(said.contains(PANGO_ATTR_FOREGROUND.rawValue), "the words' colour")
             XCTAssertNotEqual(gtk_widget_has_css_class(button.widget, "stateui-box-f0000FFFF-sFF0000FF-w2-r10"), 0)

@@ -10,6 +10,7 @@ import XCTest
 
 /// The acts the application calls on the host are performed and answered: a
 /// caller never waits on an act nobody performs.
+@MainActor
 final class AppKitActsTests: XCTestCase {
     /// Pumps until `done` holds - an act's answer resumes its handler, and the
     /// handler's write renders on the next pump.
@@ -81,12 +82,12 @@ private struct Focusing: View {
     var body: some View {
         VStack {
             TextField($name).aim(field)
-            Button("Focus").onClicked { answer = try await field.focus() ? "took" : "refused" }
-            Button("Unfocus").onClicked {
+            Button("Focus").onClicked(gate: .ignoreWhileRunning) { answer = try await field.focus() ? "took" : "refused" }
+            Button("Unfocus").onClicked(gate: .ignoreWhileRunning) {
                 try await field.unfocus()
                 answer = "released"
             }
-            Button("Hide").onClicked {
+            Button("Hide").onClicked(gate: .ignoreWhileRunning) {
                 answer = try await OnScreenKeyboard.hide() ? "hid" : "nothing"
             }
             Text(answer)
@@ -104,7 +105,7 @@ private struct EnablingAndFocusing: View {
     var body: some View {
         VStack {
             TextField($name).aim(field).isEnabled(enabled)
-            Button("Enable and focus").onClicked {
+            Button("Enable and focus").onClicked(gate: .ignoreWhileRunning) {
                 enabled = true
                 answer = try await field.focus() ? "took" : "refused"
             }

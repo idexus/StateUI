@@ -68,8 +68,8 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
         guard narrow != nil else { return }
         movingItself = true
         defer { movingItself = false }
-        // UIKit's own slide, which moves the columns with a page pushed in the same turn: a page laid out in a slide
-        // of our own grew from nothing.
+        // UIKit's own slide, which moves the columns with a page pushed in the same turn: in a slide the host made
+        // itself, that page would grow from nothing.
         presented ? show(.primary) : hide(.primary)
         preferredDisplayMode = askedDisplayMode
     }

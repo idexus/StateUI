@@ -1,30 +1,93 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import Synchronization
 
 // Where the library says an application handed it something it cannot use.
 // Design: docs/design/core/diagnostics.md#complaints
 
+/// What this library says, once a process, when an application hands it something it cannot use - a value held to
+/// what it can be, a write refused. Each goes to the standard output, or where the application routes them.
+///
+///     Complaints.route { words in logger.notice("\(words)") }
+public enum Complaints {
+    /// Routes every complaint from now on to `hear`, called on the thread that complains; nil sends them to the
+    /// standard output again.
+    public static func route(to hear: (@Sendable (String) -> Void)?) {
+        Said.shared.route(hear)
+    }
+}
+
 /// Says, once per process, that a value an application handed this library was
 /// not one it could use; the caller carries on with what it used instead.
 func complain(_ message: String) {
-    Complaints.shared.say(message)
+    Said.shared.say(message)
 }
 
-/// What has been said already, so nothing is said twice, behind a `Lock`.
-private final class Complaints: @unchecked Sendable {
-    static let shared = Complaints()
+/// Whether anything said so far holds `words` - what a test asks.
+func hasComplained(_ words: String) -> Bool {
+    Said.shared.said(words)
+}
 
-    private let guarded = Lock()
+/// What has been said already, so nothing is said twice - from any thread, up to `cap` things.
+final class Said: Sendable {
+    static let shared = Said(cap: 1000)
 
-    private var said: Set<String> = []
+    private struct Held {
+        var said: Set<String> = []
+        var order: [String] = []
+        var full = false
+        var hear: (@Sendable (String) -> Void)?
+        var told: (@Sendable () -> Void)?
+    }
+
+    private let held = Mutex(Held())
+    private let cap: Int
+
+    init(cap: Int) {
+        self.cap = cap
+    }
+
+    /// Sends what is said to `hear`, or to the standard output where nil.
+    func route(_ hear: (@Sendable (String) -> Void)?) {
+        held.withLock { $0.hear = hear }
+    }
+
+    /// Tells `told` whenever something new is said - how an inspector learns of it.
+    func onSaid(_ told: (@Sendable () -> Void)?) {
+        held.withLock { $0.told = told }
+    }
+
+    /// Everything said, in the order it was.
+    var everySaid: [String] { held.withLock { $0.order } }
 
     func say(_ message: String) {
-        let first = guarded.withLock { said.insert(message).inserted }
-
-        // Outside the hold: writing is somebody else's I/O.
-        if first {
-            print("StateUI: \(message)")
+        typealias Said = (words: String, hear: (@Sendable (String) -> Void)?, told: (@Sendable () -> Void)?)
+        let said: Said? = held.withLock { held in
+            guard !held.said.contains(message) else { return nil }
+            let words: String
+            if held.said.count < cap {
+                held.said.insert(message)
+                words = message
+            } else {
+                // Past the cap, the cap is said once and nothing after it.
+                guard !held.full else { return nil }
+                held.full = true
+                words = "more than \(cap) different complaints were said; the rest are not said"
+            }
+            held.order.append(words)
+            return (words, held.hear, held.told)
         }
+        guard let said else { return }
+
+        // Outside the hold, and outside every run: what hears it is somebody else's, and a run refused is not its.
+        HandlerRun.$current.withValue(nil) {
+            if let hear = said.hear { hear(said.words) } else { print("StateUI: \(said.words)") }
+        }
+        said.told?()
+    }
+
+    func said(_ words: String) -> Bool {
+        held.withLock { $0.said.contains { $0.contains(words) } }
     }
 }

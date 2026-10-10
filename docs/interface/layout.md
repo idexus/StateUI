@@ -35,11 +35,11 @@ vertical values, or four edges. `horizontalAlignment` and `verticalAlignment`
 express start, center, end, or fill behavior in the slot assigned by the
 parent.
 
-An explicit size wins over `.fill`: a view with a `width` keeps that
-width, bounded only by its own minimum and maximum, even in a slot that would
-stretch it. A filling view that stops short of its slot, because of an
-explicit size or a maximum, stands in the middle of the slot. Without either,
-`.fill` takes the whole slot.
+An explicit size wins over `.fill`: a view with a `width` keeps that width,
+held within its own minimum and maximum and the room its slot has, even in a
+slot that would stretch it. A filling view that stops short of its slot,
+because of an explicit size or a maximum, stands in the middle of the slot.
+Without either, `.fill` takes the whole slot.
 
 `layoutDirection` lays a view and everything under it out right to left or
 left to right: a row fills from the right, a view aligned to `.start` stands
@@ -53,9 +53,9 @@ one, and children of the same `zIndex` in the order they are written.
 ## Visual transforms
 
 `ViewTransform` is one ordered value for planar movement, turning, and sizing.
-It is applied about the view's center after layout has assigned the view's
-rectangle, so it changes the drawing without changing measurement or
-arrangement:
+It is applied about the view's pivot - its center unless `pivotX`/`pivotY`
+say otherwise - after layout has assigned the view's rectangle, so it changes
+the drawing without changing measurement or arrangement:
 
 ```swift
 ColorBox(.cornflowerBlue)
@@ -183,12 +183,14 @@ ZStack {
 ```
 
 `.absolute(x, y, width, height)` names an area in device-independent units
-from the stack's top left; `.proportional(x, y, width, height)` names one in
-fractions of its room, so `.proportional(0.5, 0, 0.5, 1)` is its right half
-whatever the stack's size. A child fills its area unless its size or
-alignment says otherwise. A later child is drawn over an earlier one, and
-`zIndex` reorders them without moving anything. The stack needs the room its
-neediest child needs at its natural size.
+from the top left of the room inside the stack's padding;
+`.proportional(x, y, width, height)` names one in fractions of that room, so
+`.proportional(0.5, 0, 0.5, 1)` is its right half whatever the stack's size
+(left to right; a right-to-left stack mirrors the area, so there it is the
+left half). A child fills its area unless its size or alignment says otherwise. A later
+child is drawn over an earlier one, and `zIndex` reorders them without moving
+anything. The stack needs the room its neediest child needs at its natural
+size.
 
 Layers are for overlays, badges and externally calculated positions. They are
 not a reason to reproduce ordinary stack or grid behavior in application code.
@@ -197,7 +199,7 @@ corner; a picture behind words is a ZStack with the picture first. Either
 counts towards the stack's room, so a badge or a picture larger than the view
 makes the stack larger - give it a size, or keep it smaller. What stays over
 every page of a window is declared with `.overlays { }` on the window's page
-(navigation-and-presentation.md).
+([Over every page](navigation-and-presentation.md#over-every-page)).
 
 ## Scrolling
 
@@ -218,9 +220,9 @@ ScrollView {
 ```
 
 The `Point` binding is two-way. A program write moves the viewport; native
-scrolling reports the standing offset into the same state. The state is a
-`Journey`, so `offset` is its destination and `$offset.journey.value` is its
-current host-frame position.
+scrolling reports the standing offset into the same state. The state walks a
+journey: `offset` is its destination and `$offset.journey.value` where the
+viewport stands this frame.
 
 Where a scroller comes to rest is the platform's, with the platform's own
 deceleration. `onScrollStopped` runs once a movement has ended, and a write to
@@ -311,7 +313,8 @@ ForEach(items, id: \.id) { item in
 }
 ```
 
-Use it for finite content in stacks, grids, menus, and drawing structures. A
+Use it for finite content in stacks, grids and other view builders; a menu
+takes an array of items, and a `Canvas` drawing repeats with a plain `for`. A
 plain `for` is intentionally not accepted by `ViewBuilder`, because the
 builder must know stable identity rather than receiving only positions.
 
@@ -335,7 +338,7 @@ There are three readings of the same native measurement:
 | Surface | Use |
 | --- | --- |
 | `.frame($room)` | a one-way host feed of the parent-space rectangle into state |
-| `.onFrameChanged(in:)` | an asynchronous handler for one selected coordinate space |
+| `.onFrameChanged(in:)` | a handler run after layout for one selected coordinate space |
 | `GeometryReader` | local content rebuilt from its last measured rectangle |
 
 The frame feed is useful when an engine or authored layout needs the native
@@ -381,8 +384,10 @@ no remembered rectangle and can therefore receive the standing value once
 again. A malformed frame payload is rejected rather than delivered as a
 partial rectangle.
 
-The handler runs as an ordinary asynchronous StateUI event after layout. It may
-await and may write state; such a write requests a later description. The
+The handler runs as an ordinary StateUI event after layout. It may write state;
+such a write requests a later description. A handler that awaits names what a
+newer rectangle does while it runs: `.onFrameChanged(gate: .cancelPrevious) { frame
+in … }`. The
 report never changes layout by itself. A visual transform never reports,
 because it does not alter the layout rectangle; an animated layout property
 reports the rectangles that the host actually settles.
@@ -498,12 +503,12 @@ struct AlbumsPage: View {
 
 The initializer builds a card's face, one card per item, identified by `id:`
 or by the item itself where it is `Hashable`. Where a card stands and which
-way it faces is the arrangement's - `.default`, a wheel, `.fan` or `.row` -
+way it faces is the arrangement's - `.default` (a wheel), `.fan` or `.row` -
 and changing it animates every card to the new shape. `.position($shown)` is
 the card in the middle, counted from 0 and two-way: a swipe writes the card it
-settled on, and a write moves the run. `.onItemTapped` hears a tap with the
-item in the middle, wherever the finger landed, and `.onPositionChanged`
-another card coming to the middle; `.itemSize(width:height:)`,
+settled on, and a write moves the run. `.onItemTapped` hears a tap on the
+card in front, with its item, and `.onPositionChanged` another card coming to
+the middle; `.itemSize(width:height:)`,
 `.isSwipeEnabled`, `.emptyView`, `.shade` and `.fade` say the rest. Give it a
 bounded size, as a scroller needs - a `.height`, or a `.fill` row of a `Grid`.
 No view is built again while the run moves.

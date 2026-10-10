@@ -8,10 +8,9 @@ import QuartzCore
 @_spi(Host) import StateUIHost
 
 /// The AppKit runtime: the mounted tree over AppKit views, the scenes and windows around it, and the turn.
-/// Unchecked Sendable: every mutation is on MainActor; the doorbell only posts a turn to the main queue.
 /// Design: docs/design/platforms/appkit/runtime.md#the-appkit-runtime
 @MainActor
-final class AppKitRenderer: @unchecked Sendable {
+final class AppKitRenderer {
     /// What the host says for whoever reads its log: standard error, or wherever a test listens.
     static var log = HostLog(host: "AppKit")
 
@@ -35,8 +34,7 @@ final class AppKitRenderer: @unchecked Sendable {
     /// AppKit's part of the files the user opens and saves, and of what macOS launches.
     lazy var fileToolkit = AppKitFileToolkit(renderer: self)
     lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: fileToolkit, tree: { [unowned self] in runtime.tree },
-        answered: { [unowned self] in runtime.pump.turn() })
+        toolkit: actToolkit, files: fileToolkit, tree: { [unowned self] in runtime.tree })
     var focusReportQueued = false
 
     /// The windows the tree holds, each with its controller, in the tree's order.
@@ -44,7 +42,8 @@ final class AppKitRenderer: @unchecked Sendable {
 
     /// What each scene keeps for the system's window restoration, by the scene's key.
     var sceneValues = SceneValues()
-    var doorbellStarted = false
+    /// The turn after every pass of the main run loop, once the host has started.
+    var turns: RunLoopTurns?
     /// Whether the platform's first window came - one the system restored before the start.
     var connectedFirstWindow = false
     var started = false
@@ -68,27 +67,35 @@ final class AppKitRenderer: @unchecked Sendable {
         self.preferences = preferences
         frameClock = clock.map { AppKitFrameClock(now: $0) } ?? AppKitFrameClock()
         self.reducesMotion = reducesMotion
-        runtime.displayCycle.presenter = self
-        runtime.pump.presenter = self
+        runtime.presenter = self
     }
 
     func start() {
-        environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
-        startRuntime()
-        startDoorbell()
+        startRuntime {
+            environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
+        }
+        startTurns()
     }
 
-    func startRuntime() {
+    /// Starts the runtime in the one order every host keeps (`HostRuntime.start`): `watching` begins what follows
+    /// the environment once its first facts are told - nothing in a test host.
+    /// Design: docs/design/host/runtime.md#starting
+    func startRuntime(watching: () -> Void = {}) {
         started = true
-        runtime.core.setRealization(AppKitRegistrations.registry.realization, unrealized: AppKitRealization.unrealized)
-        configureEnvironment()
-        runtime.tree.followTheLanguagesDirection()
-        hydratePersistentState()
-        if !connectedFirstWindow {
-            runtime.connectWindow()
-            connectedFirstWindow = true
-        }
-        runtime.pump.turn()
+        runtime.start(
+            realizing: AppKitRegistrations.registry.realization, unrealized: AppKitRealization.unrealized,
+            environment: {
+                configureEnvironment()
+                watching()
+            },
+            kept: hydratePersistentState,
+            windows: {
+                if !connectedFirstWindow {
+                    runtime.connectWindow()
+                    connectedFirstWindow = true
+                }
+                runtime.pump.turn()
+            })
     }
 
     func configureEnvironment() {
@@ -132,25 +139,11 @@ final class AppKitRenderer: @unchecked Sendable {
         return String(decoding: bytes[..<end].map(UInt8.init(bitPattern:)), as: UTF8.self)
     }
 
-    /// Tells a window's or a scene's phase - or what the user settled on a native control, after the phases it
-    /// moved - in its turn: rendered before anything after it.
-    func tellPhase(_ handler: Int32?, payload: [HostValue] = []) {
-        if let handler { runtime.pump.handlers.enqueuePhase(handler, payload: payload) }
-        runtime.pump.turn()
-    }
-
-    /// Rings the core's doorbell from a thread of its own: each ring puts a turn on the main queue.
-    /// Design: docs/design/host/runtime.md#the-doorbell
-    func startDoorbell() {
-        guard !doorbellStarted else { return }
-        doorbellStarted = true
-
-        let core = runtime.core
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            core.ringForever {
-                DispatchQueue.main.async { self?.runtime.pump.turn() }
-            }
-        }
+    /// Takes a turn after every pass of the main run loop, where the core has work for one.
+    /// Design: docs/design/host/runtime.md#the-turn-on-apple
+    func startTurns() {
+        guard turns == nil else { return }
+        turns = RunLoopTurns(runtime.pump)
     }
 
     /// The native view of the element with `id`, as the tree stands.
@@ -195,7 +188,7 @@ final class AppKitRenderer: @unchecked Sendable {
                 return image
             }
         }
-        return NSImage(systemSymbolName: "swift", accessibilityDescription: name)
+        return nil
     }
 }
 
@@ -216,32 +209,17 @@ extension AppKitElement: PlacedView {
     }
 }
 
-extension AppKitRenderer: TurnPresenter {
+extension AppKitRenderer: HostPresenter {
     func presentRendered() {
         synchronizeWindows()
     }
 
+    func presentFrame(movedChrome: Bool) {
+        if movedChrome { synchronizeWindows() }
+    }
+
     func perform(_ call: HostActCall) {
         acts.perform(call)
-    }
-}
-
-extension AppKitRenderer: FramePresenter {
-    var wantsFrames: Bool {
-        runtime.frames.wantsFrames
-    }
-
-    func commitUserReports(now: Double) {
-        runtime.frames.commit(now: now)
-    }
-
-    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        let impact = runtime.tree.present(states: states, properties: properties)
-        if impact.windowChrome { synchronizeWindows() }
-    }
-
-    func renderIfNeeded() {
-        if runtime.core.needsRender { runtime.pump.turn() }
     }
 }
 #endif

@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// What the page tells the core it stands on: a browser on a phone or a tablet where its user points by touch, on a
-/// desktop else, and the user's appearance.
+/// desktop else, the application's info, and the user's appearance and its accent.
 /// Design: docs/design/platforms/web/runtime.md#the-environment
 @MainActor
 enum WebEnvironment {
@@ -28,8 +28,10 @@ enum WebEnvironment {
             alpha: Int(accent >> 24 & 255)))
     }
 
-    /// Calls `changed` whenever the user's appearance turns dark or light.
-    static func watch(_ changed: @escaping () -> Void) {
-        WebRelay.listenToAppearance(WebRelay.listener(changed))
+    /// Calls `changed` whenever the user's appearance turns dark or light, under the listener it answers.
+    static func watch(_ changed: @escaping () -> Void) -> Int32 {
+        let listener = WebRelay.listener(changed)
+        WebRelay.listenToAppearance(listener)
+        return listener
     }
 }

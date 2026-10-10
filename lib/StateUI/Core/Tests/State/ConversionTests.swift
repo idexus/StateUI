@@ -37,11 +37,57 @@ private struct Twice: View {
     }
 }
 
+/// The derived states some readouts were handed, in the order built.
+private final class Seen {
+    var storages: [ObjectIdentifier] = []
+}
+
+/// A readout of one source in a unit it was built with - two of them, one line,
+/// converting one source two ways.
+private struct Readout: View {
+    let volume: State<Double>
+    let unit: String
+    let seen: Seen
+
+    var body: some View {
+        let shown = volume.projectedValue.convert { "\($0) \(unit)" }
+        if let storage = shown.described { seen.storages.append(ObjectIdentifier(storage)) }
+
+        return Slider(volume.projectedValue).accessibilityLabel(shown.wrappedValue)
+    }
+}
+
+@MainActor
 final class ConversionTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         Renderer.shared.clearStates()
+    }
+
+    /// TWO VIEWS CONVERTING ONE SOURCE ON ONE LINE keep two derived states - each
+    /// its own unit, each one object across renders - and the one that leaves
+    /// takes its own with it.
+    func testTwoViewsConvertingOneSourceOnOneLineKeepTwoStates() {
+        let renders = Renders()
+        let seen = Seen()
+        let volume = State(0.5)
+
+        func tree(_ both: Bool) -> Node {
+            VStack {
+                Readout(volume: volume, unit: "cm", seen: seen).id("cm")
+                if both { Readout(volume: volume, unit: "in", seen: seen).id("in") }
+            }.node
+        }
+
+        renders.render(tree(true))
+        XCTAssertEqual(Set(seen.storages).count, 2, "the two readouts share one derived state")
+
+        let live = { volume.storage.derivations.values.filter { $0.state != nil }.count }
+        renders.render(tree(true))
+        XCTAssertEqual(live(), 2, "one derived state a readout, kept across renders")
+
+        renders.render(tree(false))
+        XCTAssertEqual(live(), 1, "the readout that left kept its derived state")
     }
 
     /// The journey a converted slider walks, read off its image.

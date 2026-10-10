@@ -6,7 +6,7 @@
 
 /// An Image: the browser's `<img>` showing one of the application's pictures, served beside the page in Images/,
 /// fitted in its room as its content mode says - its own size the picture's, which a room wider than it leaves as
-/// tall as the picture is, as on every host.
+/// tall as the picture is.
 /// Design: docs/design/platforms/web/controls.md#pictures
 @MainActor
 final class WebImageView: WebDOMView {
@@ -31,7 +31,8 @@ final class WebImageView: WebDOMView {
         listen("load") { [weak self] in self?.sizeAsLoaded() }
     }
 
-    /// Shows the picture `source` names, fitted as `aspect` says; the same name again changes nothing.
+    /// Shows the picture `source` names, fitted as `aspect` says; the same name again is shown anew only where the
+    /// aspect turns to or from stretched.
     func apply(source: ImageSource?, aspect: ContentMode) {
         style("object-fit", Self.fit(aspect))
         let restretched = (aspect == .stretch) != (self.aspect == .stretch)

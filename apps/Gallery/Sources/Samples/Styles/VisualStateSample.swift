@@ -47,11 +47,10 @@ struct VisualStateSample: SampleContent, ExampleContent {
                     }
                     // The colour is a setter, which travels under the button's
                     // own motion. The scale is DRIVEN by `press`: the handler
-                    // moves the state over 90ms - a handler may await - and the
-                    // button follows it.
+                    // sends the state there over 90ms, and the button follows it.
                     .onVisualStateChanged { state in
                         entered = state.name
-                        try await $press.journey.move(to: state == .pressed ? 0.94 : 1, .eased(90))
+                        $press.journey.move(to: state == .pressed ? 0.94 : 1, .eased(90))
                     }
                     .onClicked { presses += 1 }
 
@@ -60,9 +59,6 @@ struct VisualStateSample: SampleContent, ExampleContent {
                 // `.motion(.none)` is what none of it looks like.
                 Button(enabled ? "Hold me too" : "Disabled")
                     .isEnabled(enabled)
-                    // THE SAME STATES, ARRIVING. A visual state travels under
-                    // the control's own motion, and this is what none looks
-                    // like.
                     .motion(.none)
                     .visualState(.pressed) { $0.background(Palette.brand) }
                     .visualState(.disabled) { $0

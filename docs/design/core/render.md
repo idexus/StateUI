@@ -8,18 +8,16 @@ host per process.
 
 ## One renderer
 
-The renderer is entered only from the host's UI thread, synchronously, through
-the typed `HostBoundary` SPI. It is `@unchecked Sendable` rather than
-`@MainActor`: isolating it would add an `assumeIsolated` to every entry point
-for a promise the compiler cannot check across a relay's callbacks anyway. The part that can suspend - a handler - is what `@MainActor` names.
+The renderer is `@MainActor`, the UI thread's: the host enters it from that
+thread, synchronously, through the typed `HostBoundary` SPI, and a relay's
+callback says so once as it enters, with `MainActor.assumeIsolated`.
 
-What more than one thread touches stands behind the renderer's `guarded` lock:
-the change bookkeeping, the live reader counts, the act queue, the completion
-registry and the counters beside them. A write to a `@State` may come from a
-`Task.detached` or an `async let` child on the cooperative pool, and an act
-may be sent from one. Closures taken out of the registry are always invoked
-after the lock is released, because a resumed continuation can re-enter `send`
-and the lock is not reentrant.
+Everything it keeps - the change bookkeeping, the live reader counts, the act
+queue, the completion registry and the counters beside them - is touched on
+that thread alone, so none of it stands behind a lock. A task elsewhere
+reaches a state by posting to it (state.md#posting) and sends an act by
+awaiting it on `MainActor`. A completion is taken out of the registry before
+it runs, because what it resumes may book or answer another.
 
 ## Three roads
 
@@ -65,10 +63,10 @@ issues; a counter that wraps skips it.
 
 ## Taking the changes
 
-The changed states, their names and the untracked flag are taken and cleared
-in one locked step before anything is built, and `rendering` is set in the
-same step. A write that lands while the render runs then stays on the books
-and asks for the next render instead of being wiped by this one's clear. The
+The written states and the untracked flag are taken and cleared in one step
+before anything is built, and `rendering` is set in the same step. A write
+that a build makes while the render runs then stays on the books and asks for
+the next render instead of being wiped by this one's clear. The
 cost is at most one clean walk that finds nothing; the other direction would
 be a control left stale and a handler left waiting on an update nobody draws.
 
@@ -80,7 +78,8 @@ window its size, and the platform acts on the message that makes the element:
 a page presented without its style is presented wrong.
 
 So after the walk, the handlers it found - `.onDestroying` of what left, then
-`.onCreated` and `.onChanged` in the order they were reached - run at once,
+`.onCreated`, `.onChanged` and `.onVisualStateChanged` in the order they were
+reached - run at once,
 each up to its first suspension. What they wrote is walked and merged into
 the same message, up to `settleLimit` passes. Three passes cover a handler
 that writes, a view that arrives with a handler of its own that writes, and
@@ -95,15 +94,13 @@ event.
 
 ## Self-dirtying renders
 
-A render that ends with the tree dirty again is, once, a write that crossed
-from another thread while it ran. A streak of `selfDirtyLimit` such renders is
-a body that writes the state it reads, which the bookkeeping would otherwise
-turn into a render loop. The streak is how that author error is told apart
-from a legitimate crossing without knowing which thread wrote: nothing that
-crosses legitimately does so on every consecutive render. The error is
-reported and the pending change dropped once, which ends the loop. The check
-runs before the settle passes, so a handler's write is never taken for a
-body's.
+Nothing else runs while a render does, so a render that ends with the tree
+dirty again had a state written by what it built. A streak of `selfDirtyLimit`
+such renders is a body that writes the state it reads, which the bookkeeping
+would otherwise turn into a render loop; a shorter one ends by itself and is
+let be. The error is reported and the pending change dropped once, which ends
+the loop. The check runs before the settle passes, so a handler's write is
+never taken for a body's.
 
 ## Starting a handler
 
@@ -111,18 +108,24 @@ Every handler runs on `MainActor`, inside a task, which gives it somewhere to
 suspend. There are three ways in, one path each:
 
 ```text
-  start(handler)   an event the host dispatched: the payload is read NOW,
-                   then begin(...)
-  run(handler)     a handler a render's walk found, run in a settle pass
-  queue(handler)   a handler found with no settle pass left: Task on MainActor,
-                   a later turn of the UI thread
+  start(registration)  an event the host dispatched: the payload is read NOW,
+                       each of the event's handlers handed to its gate's
+                       RunSlot, which starts a run as the gate says (runs.md)
+  run(fired)           a handler a render's walk found, started in a settle
+                       pass through its gate, under an owner its element's
+                       RunSlots keep; a farewell (.onDestroying) through
+                       begin, a plain Task.immediate with no run
+  queue(fired)         a handler found with no settle pass left: libraryTask,
+                       a later turn of the UI thread
 ```
 
-`begin` uses `Task.immediate`, which starts the task on the calling thread -
-the host's UI thread, which is `MainActor`'s - so a handler with no `await`
-finishes before the dispatch returns and the host renders what it wrote in
-the same turn. Where the runtime cannot start the task inline, it lands in
-the UI thread's queue and the drain that follows runs it.
+A run starts with `Task.immediate`, which starts the task on the calling
+thread - the host's UI thread, which is `MainActor`'s - so a handler with no
+`await` finishes before the dispatch returns and the host renders what it
+wrote in the same turn. A dispatch runs that event's handlers and nothing
+else: a job already waiting on the UI thread's queue runs when the host drains
+it, at its turn - the same point on every platform, whichever executor
+`MainActor` is.
 
 `dispatch` answers whether a handler was found, not whether it finished. An
 unknown id is an event for an element that has already left the tree, or an
@@ -136,12 +139,6 @@ outcome reaches its continuation through `ReplyBuffer`. A side channel keeps
 event shape. `start` reads the payload before the task begins, so a handler
 that suspends keeps the payload it started with. The two buffers stay apart
 because an outcome is values or a failure and an event is only values.
-
-`CarriedHandler` hands a handler into its task. The handler lives in the
-differ's registry, which the compiler reads as shared state; the task is
-isolated to `MainActor` and the registry is only touched there, so the
-promise is made in this one place instead of making `EventHandler` `Sendable`
-and stopping authors from capturing their own state.
 
 ## A new application
 

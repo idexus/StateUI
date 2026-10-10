@@ -12,10 +12,10 @@
 ///
 /// Every field but the bounds defaults to the view as it was drawn, so a
 /// layout that only positions its views says `Placement(rect)`. The fields are
-/// written onto the placed view: turn, scale and fade it here rather than in
-/// the closure that builds it, which the placement would overwrite. A turn out
-/// of the screen's plane is `.turn(_:)`, drawn flat, and a pivot is set in
-/// that closure.
+/// written onto a frame the view stands in, so a turn, scale or fade the
+/// closure gives the view stays its own, drawn inside the placement. A turn
+/// out of the screen's plane is `.turn(_:)`, drawn flat, and a pivot is set
+/// in that closure.
 ///
 /// Design: docs/design/types/placement.md#one-picture-on-every-platform
 public struct Placement: LaneValue {
@@ -134,7 +134,7 @@ extension Placement {
                 height: lanes[8]),
             opacity: lanes[9],
             shade: lanes[11],
-            zIndex: Int(lanes[10].rounded()))
+            zIndex: Int(nearest: lanes[10]) ?? 0)
     }
 
     /// Twelve, which is what the host reads by stride.

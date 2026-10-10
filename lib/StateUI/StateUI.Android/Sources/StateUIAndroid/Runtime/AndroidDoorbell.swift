@@ -6,20 +6,21 @@
 import Android
 import CStateUIAndroid
 
-/// The doorbell: a thread parked until the core has work, ringing the main looper through an eventfd.
+/// The doorbell: the main looper rung through an eventfd from any thread - for a job queued, or work the UI thread
+/// made.
 /// Design: docs/design/platforms/android/runtime.md#the-doorbell
 enum AndroidDoorbell {
-    /// The eventfd the doorbell's thread writes and the main looper watches.
+    /// The eventfd a turn is rung on and the main looper watches.
     nonisolated(unsafe) private static var bell: Int32 = -1
 
-    /// What the main looper runs when the bell rings.
-    @MainActor private static var ring: () -> Void = {}
+    /// Watches the bell from the main looper, once, running a turn on each ring - then gives the core the way to
+    /// post a turn.
+    @MainActor static func install() {
+        if bell < 0 { watch() }
+        CoreLink().postTurns(with: { AndroidDoorbell.postTurn() })
+    }
 
-    /// Watches the bell from the main looper, running `ring` on each ring, and starts the thread.
-    @MainActor static func install(ring: @escaping () -> Void) {
-        guard bell < 0 else { return }
-
-        self.ring = ring
+    @MainActor private static func watch() {
         bell = eventfd(0, Int32(EFD_CLOEXEC) | Int32(EFD_NONBLOCK))
 
         guard let looper = ALooper_forThread() else {
@@ -31,22 +32,14 @@ enum AndroidDoorbell {
         ALooper_addFd(looper, bell, Int32(ALOOPER_POLL_CALLBACK), Int32(ALOOPER_EVENT_INPUT), { descriptor, _, _ in
             var count: UInt64 = 0
             _ = read(descriptor, &count, 8)
-            MainActor.assumeIsolated { Java.frame { AndroidDoorbell.ring() } }
+            MainActor.assumeIsolated { Java.frame { AndroidRenderer.shared?.runtime.pump.turn() } }
             return 1
         }, nil)
-
-        startThread()
     }
 
-    /// Started from a nonisolated function: a closure written in a `@MainActor` one would be MainActor's.
-    /// Design: docs/design/platforms/android/runtime.md#the-doorbell
-    private nonisolated static func startThread() {
-        var thread: pthread_t = 0
-        pthread_create(&thread, nil, { _ in
-            CoreLink().ringForever {
-                var one: UInt64 = 1
-                _ = write(AndroidDoorbell.bell, &one, 8)
-            }
-        }, nil)
+    /// Rings the bell the main looper watches, from any thread.
+    nonisolated static func postTurn() {
+        var one: UInt64 = 1
+        _ = write(bell, &one, 8)
     }
 }

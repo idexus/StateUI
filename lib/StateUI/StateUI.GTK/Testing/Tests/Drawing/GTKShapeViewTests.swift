@@ -7,6 +7,7 @@
 @testable import StateUIGTKDriver
 import XCTest
 
+@MainActor
 final class GTKShapeViewTests: XCTestCase {
     private static let red: UInt32 = 0xFFFF_0000
     private static let blue: UInt32 = 0xFF00_00FF
@@ -100,7 +101,7 @@ final class GTKShapeViewTests: XCTestCase {
 
     /// The colours at `points` of `shape`, sized `width` by `height`, read from the layout holding it.
     private func drawn(
-        width: Double, height: Double, at points: [(Double, Double)], _ shape: @escaping @Sendable () -> any View
+        width: Double, height: Double, at points: [(Double, Double)], _ shape: @escaping @MainActor () -> any View
     ) throws -> [UInt32] {
         try onUIThread {
             let host = GTKRenderer.running {

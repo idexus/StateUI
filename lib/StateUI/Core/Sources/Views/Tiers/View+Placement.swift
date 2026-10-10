@@ -33,24 +33,24 @@ extension View {
     /// `gridColumn` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func gridColumn(_ state: Binding<Int>) -> Modified {
-        plain(ViewContract.gridColumn, by: state)
+        twin(ViewContract.gridColumn, by: state)
     }
 
     /// `gridColumnSpan` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func gridColumnSpan(_ state: Binding<Int>) -> Modified {
-        plain(ViewContract.gridColumnSpan, by: state)
+        twin(ViewContract.gridColumnSpan, by: state)
     }
 
     /// `gridRow` from a state, `$x`: the host sets each new value as it stands,
     /// and no view is rebuilt for it.
     public func gridRow(_ state: Binding<Int>) -> Modified {
-        plain(ViewContract.gridRow, by: state)
+        twin(ViewContract.gridRow, by: state)
     }
 
     /// `gridRowSpan` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func gridRowSpan(_ state: Binding<Int>) -> Modified {
-        plain(ViewContract.gridRowSpan, by: state)
+        twin(ViewContract.gridRowSpan, by: state)
     }
 }

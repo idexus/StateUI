@@ -9,6 +9,7 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class GeometryReaderTests: XCTestCase {
     /// What the last handler run was given, shared with the assert the way a
     /// state box would be.

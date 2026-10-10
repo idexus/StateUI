@@ -14,6 +14,7 @@ import XCTest
 ///
 /// Compiled as an application compiles - a plain `import StateUI` - with the
 /// compiler and the module the handbook's examples are checked against.
+@MainActor
 final class UIThreadRoadTests: XCTestCase {
     /// A listing of each spelling, as the body of a function an application
     /// could hold.

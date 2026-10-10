@@ -24,6 +24,7 @@ private struct NotePage: View {
     }
 }
 
+@MainActor
 final class AppKitLeaveTests: XCTestCase {
     /// An element that leaves the tree lets go of its view: the host holds one view fewer alive, the count its
     /// tally writes.

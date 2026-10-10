@@ -70,14 +70,14 @@ extension VisualElement {
     ///
     /// An `.id()` written on the view wins over the one `ForEach` gives. Any
     /// `Hashable` is a key - a string, a number, a UUID, the author's own enum
-    /// or struct - compared as `String(describing:)`: a description that says
-    /// less than the value gives two values one key, and a class is keyed by
-    /// something it holds (`.id(file.path)`).
+    /// or struct - named in the patch by `String(describing:)`: two values
+    /// that describe themselves alike, and one written twice, are said; a
+    /// class is keyed by something it holds (`.id(file.path)`).
     ///
     /// - Parameter value: who this view is - distinct among its siblings and
     ///   the same across renders.
     public func id(_ value: some Hashable) -> Modified {
-        modified { $0.id = String(describing: value) }
+        modified { $0.identify(value) }
     }
 
     /// Puts an aim on this control, which is how an act reaches it.
@@ -85,7 +85,7 @@ extension VisualElement {
     ///     @Aim(TextField.self) private var field
     ///
     ///     TextField($address).aim(field)
-    ///     Button("Edit").onClicked { try await field.focus() }
+    ///     Button("Edit").onClicked(gate: .ignoreWhileRunning) { try await field.focus() }
     ///
     /// A model may declare its aims beside its state. An aim is not a key: a
     /// view carrying only an aim is still matched by where it was written, so
@@ -141,8 +141,8 @@ extension VisualElement {
                 // built does not become a reader of the value.
                 guard let now = from.journeyLanes?.value else { return }
 
-                guard StateImage.bytes(of: now.carried)
-                    != StateImage.bytes(of: into.value.carried) else { return }
+                guard StateImage.bytes(of: now.carried(in: .current))
+                    != StateImage.bytes(of: into.value.carried(in: .current)) else { return }
 
                 target.wrappedValue = now
             }))
@@ -165,13 +165,6 @@ extension VisualElement {
     public func environment<Value: AnyObject>(_ object: Value) -> Modified {
         modified { $0.environments.append((key: ObjectIdentifier(Value.self), object: object)) }
     }
-
-    /// The keyed style from the application's style sheet that this view wears.
-    ///
-    ///     Text("Welcome").style("Headline")
-    ///
-    /// A style without a key applies to every control of its type by itself.
-    public func style(_ key: String) -> Modified { setValue(VisualElementContract.style, Name(key)) }
 }
 
 extension VisualElement {

@@ -108,18 +108,18 @@ extension View {
     /// `horizontalAlignment` from a state, `$x`: the host sets each new value
     /// as it stands, and no view is rebuilt for it.
     public func horizontalAlignment(_ state: Binding<Alignment>) -> Modified {
-        plain(ViewContract.horizontalAlignment, by: state)
+        twin(ViewContract.horizontalAlignment, by: state)
     }
 
     /// `margin` from a state, `$x`: the host animates the property to each new
     /// value, and no view is rebuilt for it.
     public func margin(_ state: Binding<Insets>) -> Modified {
-        journey(ViewContract.margin, by: state)
+        twin(ViewContract.margin, by: state)
     }
 
     /// `verticalAlignment` from a state, `$x`: the host sets each new value as
     /// it stands, and no view is rebuilt for it.
     public func verticalAlignment(_ state: Binding<Alignment>) -> Modified {
-        plain(ViewContract.verticalAlignment, by: state)
+        twin(ViewContract.verticalAlignment, by: state)
     }
 }

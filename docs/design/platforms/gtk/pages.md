@@ -32,7 +32,7 @@ every render, and written on the header bar of each page shown:
   trailing ones at its end, each group a box of its own, apart from the
   next by twice the room between two buttons of a group - a header bar
   draws no shared background - and the actions placed in overflow behind
-  the bar's menu at the very end. An action with a picture stands on the
+  the bar's menu at its end, before the main menu. An action with a picture stands on the
   bar as an icon, the way a header bar's buttons stand, its title its
   tooltip and its name to assistive technology; one that shows its words
   stands with its picture before them, as libadwaita's button content
@@ -66,12 +66,13 @@ a page with no title leaves the window's own.
 ## A navigation stack
 
 A navigation stack is libadwaita's `AdwNavigationView`, each page in a
-navigation page holding its frame. A path one page longer pushes the page, one
-shorter pops to where it now ends, any other change replaces the stack - each
-as the program's move, whose `popped` is its echo. The user's back - the back
-button, the swipe, Alt+Left, the mouse's back button - pops in GTK first, and
-the stack's `popped` then tells the path how many pages remain; a path that
-does not follow is put back by the next render. The host's own way back is
+navigation page holding its frame. A path one page longer pushes the page, a
+shorter one that keeps the stack's first pages pops to where it now ends, any
+other change replaces the stack - each as the program's move, whose `popped`
+is its echo. The user's back - the back button, the swipe, Alt+Left, the
+mouse's back button - pops in GTK first, and the stack's `popped` then tells
+the path how many pages remain; a path that does not follow is put back by
+the next render. The host's own way back is
 the window's (`WindowPresentation.wayBack`): a top page that refuses it - no
 back button - offers none. A page is pushed named as the
 tree names it, or after the application until it does: libadwaita asks every
@@ -103,7 +104,7 @@ the split is collapsed, beside it otherwise - as a fill class of the host's
 style sheet on the sidebar's widget, moved as the split's `collapsed` turns.
 Beside the detail libadwaita's opaque sidebar pane gives way: with no
 material it lets the window through shaded a breath (`alpha(@shade_color,
-0.6)`, GNOME's own shade, as the Web's sidebar is), and under a material it
+0.6)`, GNOME's own shade), and under a material it
 is clear, so the material lies on the window; the class is the split's, over
 its `.sidebar-pane` node. Over the detail the pane stays libadwaita's own -
 never the window. GTK blurs nothing inside a window, so a blur stands as its
@@ -145,7 +146,8 @@ the user clicks with the secondary button or holds a finger, at that point; a
 panel presents it as it lays out. A menu of no entries is none.
 
 A desktop of header bars has no menu bar: the menus a page's path declares
-stand in the main menu at the very end of its header bar - GNOME's
+stand in the main menu at the very end of its header bar, after the
+overflow's menu whichever changed last - GNOME's
 `open-menu-symbolic` button - each a submenu holding its entries, joined by
 the host layer's rule. A page that declares none shows no main menu.
 

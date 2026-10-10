@@ -6,6 +6,7 @@
 import XCTest
 
 /// Where a page's content stands against the window's safe area.
+@MainActor
 final class SafeAreaTests: XCTestCase {
     private let whole = Rect(x: 0, y: 0, width: 400, height: 800)
     private let safe = Rect(x: 0, y: 60, width: 400, height: 710)

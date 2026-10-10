@@ -15,7 +15,8 @@
 /// Each render is listed as it happens - its cause, its road, the time Swift
 /// took to describe it and the host to apply it, and how many composed views
 /// it built and carried - and a chosen render shows its tree of composed
-/// views with each one's time.
+/// views with each one's time. It also lists what the library complained of:
+/// a value it could not use, a write it refused.
 ///
 /// Each scene has its own. It opens along the bottom of the window its ⓘ is
 /// in, folded to one line, the last render - the ⓘ of another window of the
@@ -25,6 +26,7 @@
 ///     Window(.debugInspector) { DebugInspector() }
 ///
 /// Nothing is recorded while every inspector is closed or paused.
+@MainActor
 public enum Inspector {
     /// Where an inspector shows.
     public enum Place: Sendable, Equatable {
@@ -47,7 +49,8 @@ public enum Inspector {
         window.record.map(showing(in:)) ?? false
     }
 
-    /// Shows the inspector of a window's scene, docked in that window, and
+    /// Shows the inspector of a window's scene, docked in that window, or for
+    /// `.window` in the scene's own inspector window where it has one, and
     /// records from now on.
     ///
     ///     @Environment(\.window) private var window

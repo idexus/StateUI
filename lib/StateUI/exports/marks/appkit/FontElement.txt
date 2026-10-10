@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 Button.fontAttributes: ✅
 Button.fontFamily: ✅
 Button.fontSize: ✅
@@ -34,7 +34,7 @@ TextField.isFontAutoScalingEnabled: – macOS gives an application no text size 
 TextSpan.fontAttributes: ✅
 TextSpan.fontFamily: ✅
 TextSpan.fontSize: ✅
-TextSpan.isFontAutoScalingEnabled: not realized
+TextSpan.isFontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
 TimePicker.fontAttributes: ✅
 TimePicker.fontFamily: ✅
 TimePicker.fontSize: ✅

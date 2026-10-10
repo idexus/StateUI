@@ -151,9 +151,8 @@ final class UIKitActToolkit: ActToolkit {
         case .goForward: web.step(.forward)
         case .reload: web.step(.reload)
         default:
-            web.evaluate(call.arguments.value(1)?.string ?? "") { [weak renderer] answer in
+            web.evaluate(call.arguments.value(1)?.string ?? "") { answer in
                 core.reply(call, [answer.propValue])
-                renderer?.runtime.pump.turn()
             }
             return true
         }

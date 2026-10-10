@@ -17,6 +17,7 @@ import Observation
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 private final class Cart {
     @State var items: [String] = []
     @State var note = ""
@@ -67,6 +68,7 @@ private struct CartPage: View {
 }
 
 /// A view that OWNS the model, so `$cart` is already a binding to it.
+@MainActor
 private struct CartOwner {
     @State var cart = Cart()
 
@@ -77,6 +79,7 @@ private struct CartOwner {
 
 /// A view that was LENT the model. There is no second wrapper for a class: a
 /// model is borrowed with `@Binding`, exactly as an Int is.
+@MainActor
 private struct NoteRow {
     @Binding var basket: Cart
 
@@ -118,9 +121,9 @@ private struct Reader: View {
     }
 }
 
+@MainActor
 final class ModelStateTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         settled()
     }
 

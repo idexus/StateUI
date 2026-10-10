@@ -11,12 +11,6 @@ struct TaskSleepSample: SampleContent, ExampleContent {
     @State private var total = 30
 
     @State private var running = false
-
-    /// Which start the running loop belongs to. Leaving stops the loop
-    /// through `.onDestroying`; the token is what retires a loop still asleep
-    /// when the next one starts - Stop and Start within a second - so two
-    /// loops never count the same numbers down.
-    @State private var visit = 0
     // listing: end
 
     static let id = "taskSleep"
@@ -39,8 +33,10 @@ struct TaskSleepSample: SampleContent, ExampleContent {
                 .tint(Palette.accent)
 
             HStack {
+                // A press while the loop runs cancels it - Stop, or Start
+                // straight after Reset - so no two loops count together.
                 Button(running ? "Stop" : "Start")
-                    .onClicked {
+                    .onClicked(gate: .cancelPrevious) {
                         if running {
                             running = false
                             return
@@ -48,18 +44,16 @@ struct TaskSleepSample: SampleContent, ExampleContent {
 
                         if remaining == 0 { remaining = total }
 
-                        visit += 1
-                        let mine = visit
                         running = true
 
                         // Plain Swift concurrency, on every platform: when the
                         // sleep comes due, the handler resumes on `MainActor` -
                         // the thread the host draws on - with no `Timer`
                         // anywhere.
-                        while running && visit == mine && remaining > 0 {
+                        while running && remaining > 0 {
                             try await Task.sleep(for: .seconds(1))
 
-                            guard running, visit == mine else { return }
+                            guard running else { return }
 
                             remaining -= 1
                         }
@@ -103,10 +97,11 @@ struct TaskSleepSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Leaving the page stops it: .onDestroying clears the flag, and the visit "
-                + "token retires a loop still asleep when the next one starts. Without it, "
-                + "Stop and Start within a second would leave the sleeping loop to wake "
-                + "and count beside the new one, twice as fast.")
+            Text("Start and Stop are one button whose handler passes through `.cancelPrevious`: a "
+                + "press while the loop sleeps cancels it, so Stop and Start within a second "
+                + "never leave a sleeping loop to wake and count beside the new one, twice "
+                + "as fast. Leaving the page cancels it the same way, and .onDestroying "
+                + "clears the flag.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -80,8 +80,8 @@ final class AppKitItemCellView: NSView {
         didSet { if chosen != oldValue { needsDisplay = true } }
     }
 
-    /// What the cell lays over the page: the platform's accent at a fifth of its strength where its item is chosen,
-    /// as every host's list shows the user's choice; nothing at rest.
+    /// What the cell lays over the page: the platform's accent at a fifth of its strength where its item is chosen;
+    /// nothing at rest.
     var fill: NSColor? {
         chosen ? NSColor.controlAccentColor.withAlphaComponent(0.2) : nil
     }

@@ -11,6 +11,7 @@ import XCTest
 /// SHOWING AND HIDING CROSSES: a view being hidden fades to nothing first and
 /// goes when it gets there, and one being shown comes up from nothing, so two
 /// views in one slot change over rather than blink.
+@MainActor
 final class AppKitVisibilityTests: XCTestCase {
     /// A label, visible or not, crossing under `motion`.
     private func label(visible: Bool, motion: Motion = .eased(100, .linear)) -> HostPatch {

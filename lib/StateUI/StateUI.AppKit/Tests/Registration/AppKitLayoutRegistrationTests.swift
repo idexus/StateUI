@@ -13,6 +13,7 @@ import XCTest
 /// children is the host's, and stays there - as does a scroll view, whose view
 /// is made with the host's own closures, and an absolute layout, whose
 /// placement a binding carries.
+@MainActor
 final class AppKitLayoutRegistrationTests: XCTestCase {
     /// The registry realizes the stacks and the grid, each with the members it
     /// takes - and claims nothing of the layouts it does not make.

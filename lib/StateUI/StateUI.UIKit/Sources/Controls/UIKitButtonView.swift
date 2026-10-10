@@ -20,6 +20,7 @@ final class UIKitButtonView: UIButton {
     init() {
         super.init(frame: .zero)
         configuration = .plain()
+        followTextSize()
         addAction(UIAction { [weak self] _ in self?.onClicked?() }, for: .primaryActionTriggered)
         addAction(UIAction { [weak self] _ in self?.onPressed?() }, for: .touchDown)
         addAction(UIAction { [weak self] _ in self?.onReleased?() }, for: [.touchUpInside, .touchUpOutside, .touchCancel])
@@ -92,8 +93,7 @@ final class UIKitButtonView: UIButton {
     }
 
     private func showLook() {
-        configuration?.titleTextAttributesTransformer =
-            look.titleTransformer(standing: .preferredFont(forTextStyle: .body), color: tintColor)
+        configuration?.titleTextAttributesTransformer = look.titleTransformer(color: tintColor)
     }
 }
 #endif

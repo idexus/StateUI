@@ -4,6 +4,7 @@
 /// Collects the styles written in a `StyleSheet`'s closure; `if`, `else` and
 /// `for` all work, so a sheet can answer a platform or a form factor.
 @resultBuilder
+@MainActor
 public enum StyleBuilder {
     /// One style, whatever its target.
     public static func buildExpression<Target: StyleTarget>(_ style: Style<Target>) -> [AnyStyle] {

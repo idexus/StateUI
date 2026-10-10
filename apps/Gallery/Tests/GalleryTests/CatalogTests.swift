@@ -40,6 +40,7 @@ private extension HostEventUpdate {
 /// This is the whole reason the navigation tests below are three lines each:
 /// `Navigation` is a class of `@State` properties, so a test makes one, hands
 /// it to what it builds, and reads each property's state through its `$`.
+@MainActor
 private struct Place {
     let nav = Navigation()
 
@@ -100,6 +101,7 @@ private extension Sample {
 
 /// The headings a tree shows, in order - what a user moving by heading
 /// lands on.
+@MainActor
 private func headings(in node: Node) -> [String] {
     var found: [String] = []
 
@@ -118,6 +120,7 @@ private func headings(in node: Node) -> [String] {
 }
 
 /// How large the heading that says `text` is drawn - zero where there is none.
+@MainActor
 private func headingSize(_ text: String, in node: Node) -> Double {
     func find(_ node: Node) -> Double? {
         let node = node.built
@@ -137,6 +140,7 @@ private func headingSize(_ text: String, in node: Node) -> Double {
 }
 
 /// How many scrollers in a tree move down rather than only across.
+@MainActor
 private func verticalScrollers(in node: Node) -> Int {
     var count = 0
 
@@ -159,6 +163,7 @@ private func verticalScrollers(in node: Node) -> Int {
 ///
 /// A `CodeBlock` colours its snippet with spans under one formatted label, so
 /// the visible text is what those runs spell together.
+@MainActor
 private func shownTexts(in node: Node) -> [String] {
     var said: [String] = []
 
@@ -182,6 +187,7 @@ private func shownTexts(in node: Node) -> [String] {
 }
 
 /// Every row of a menu, by what it says - a row being a view with a tap on it.
+@MainActor
 private func rowTitles(in node: Node) -> [String] {
     var titles: [String] = []
 
@@ -201,8 +207,9 @@ private func rowTitles(in node: Node) -> [String] {
 }
 
 /// The tap on the row that says `title`.
-private func rowHandler(_ title: String, in node: Node) -> EventHandler? {
-    func walk(_ node: Node) -> EventHandler? {
+@MainActor
+private func rowHandler(_ title: String, in node: Node) -> [Handler]? {
+    func walk(_ node: Node) -> [Handler]? {
         let node = node.built
 
         if let tap = node.events["tapped"],
@@ -234,13 +241,14 @@ private func rowHandler(_ title: String, in node: Node) -> EventHandler? {
 /// answered acts would leave the handler suspended at its first `move(to:)`
 /// for ever.
 
+@MainActor
 private func settle(
-    _ handler: @escaping EventHandler,
+    _ handlers: [Handler],
     rendering renders: Renders? = nil,
     _ tree: (() -> Node)? = nil
 ) async {
     _ = HostBoundary.takeActCalls()
-    Renderer.shared.start(handler)
+    Renderer.shared.start(EventRegistration(handlers))
 
     // Bounded rather than "until nothing is asked": a handler that asks for
     // ever should fail this test, not hang the suite.
@@ -290,8 +298,9 @@ private func settle(
     }
 }
 
-private func clicked(_ title: String, in node: Node) -> EventHandler? {
-    func walk(_ node: Node) -> EventHandler? {
+@MainActor
+private func clicked(_ title: String, in node: Node) -> [Handler]? {
+    func walk(_ node: Node) -> [Handler]? {
         let node = node.built
 
         if node.props["text"]?.string == title, let click = node.events["clicked"] {
@@ -310,6 +319,7 @@ private func clicked(_ title: String, in node: Node) -> EventHandler? {
 
 /// A differ and the tree it last produced - the same harness StateUITests
 /// calls Renders, small enough to repeat rather than share across packages.
+@MainActor
 private final class Renders {
     private let differ = Differ()
     private var rendered: RenderedNode?
@@ -398,22 +408,22 @@ private final class Renders {
     /// the render filled. A closure walked off a freshly built tree is a
     /// different one: every build makes new values, and an aim is
     /// filled where the tree was rendered.
-    func handler(_ id: Int) -> EventHandler? {
+    func handler(_ id: Int) -> EventRegistration? {
         differ.handler(id)
     }
 
     /// Resolves a handler id carried by the typed host contract.
-    func handler(_ id: Int32) -> EventHandler? {
+    func handler(_ id: Int32) -> EventRegistration? {
         handler(Int(id))
     }
 
     /// Runs the closure an id refers to, the way a dispatched event does.
     @discardableResult
     func fire(_ id: Int, with payload: [PropValue] = []) -> Bool {
-        guard let handler = differ.handler(id) else { return false }
+        guard let registration = differ.handler(id) else { return false }
 
         EventBuffer.current = payload
-        Renderer.shared.start(handler)
+        Renderer.shared.start(registration)
         return true
     }
 
@@ -480,6 +490,7 @@ private func bareProjections(in code: String) -> Set<String> {
     return found
 }
 
+@MainActor
 final class CatalogTests: XCTestCase {
     /// A catalog the way the application makes one, over a test's own boxes.
     private func catalog(
@@ -1020,8 +1031,9 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(detail.children.count, 1, "the stack opens on its root alone")
     }
 
-    /// The gallery's own window exercises the complete native size and
-    /// operation policy while leaving placement to the platform.
+    /// The gallery's own window exercises the native size and operation policy
+    /// while leaving placement to the platform - and no maximum, so maximized
+    /// it fills the largest screen.
     func testTheMainWindowCarriesItsNativePropertyPolicy() {
         let shown = firstPatch(mainPage(Place().nav))
 
@@ -1030,8 +1042,8 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(prop(shown, .height), .number(800))
         XCTAssertEqual(prop(shown, .minimumWidth), .number(700))
         XCTAssertEqual(prop(shown, .minimumHeight), .number(500))
-        XCTAssertEqual(prop(shown, .maximumWidth), .number(1_600))
-        XCTAssertEqual(prop(shown, .maximumHeight), .number(1_200))
+        XCTAssertNil(prop(shown, .maximumWidth))
+        XCTAssertNil(prop(shown, .maximumHeight))
         XCTAssertEqual(prop(shown, .isMaximizable), .bool(true))
         XCTAssertEqual(prop(shown, .isMinimizable), .bool(true))
         XCTAssertNil(prop(shown, .x))
@@ -1162,7 +1174,7 @@ final class CatalogTests: XCTestCase {
         let menu = MenuPage(catalog: catalog(place.nav), nav: place.nav,
                             log: WindowLog(), listsHiddenRow: false)
 
-        Renderer.shared.start(try XCTUnwrap(rowHandler("Layout", in: menu.node)))
+        Renderer.shared.start(EventRegistration(try XCTUnwrap(rowHandler("Layout", in: menu.node))))
 
         XCTAssertEqual(place.section.wrappedValue, .home, "a group stands ON home")
         XCTAssertEqual(
@@ -1187,7 +1199,7 @@ final class CatalogTests: XCTestCase {
         let tapped = try XCTUnwrap(eventId("tapped", in: patch), "no card answers a tap")
 
         await settle(
-            try XCTUnwrap(renders.handler(tapped)),
+            try XCTUnwrap(renders.handler(tapped)).handlers,
             rendering: renders,
             { GroupPage(group: group, nav: place.nav).node })
 
@@ -1200,7 +1212,7 @@ final class CatalogTests: XCTestCase {
         place.path.wrappedValue = [.group("layout"), .sample("grid"), .level(1)]
 
         let home = try XCTUnwrap(ToolbarItem.home(place.nav).node.events["clicked"])
-        Renderer.shared.start(home)
+        Renderer.shared.start(EventRegistration(home))
 
         XCTAssertEqual(place.section.wrappedValue, .home)
         XCTAssertEqual(place.path.wrappedValue, [])
@@ -1301,7 +1313,7 @@ final class CatalogTests: XCTestCase {
         let stack = try XCTUnwrap(detail.children.first)
         let root = try XCTUnwrap(stack.children.first).built
 
-        Renderer.shared.start(try XCTUnwrap(clicked("Push a page onto this tab", in: root)))
+        Renderer.shared.start(EventRegistration(try XCTUnwrap(clicked("Push a page onto this tab", in: root))))
 
         XCTAssertEqual(tabsPath.wrappedValue, [.level(1)])
         XCTAssertEqual(place.path.wrappedValue, [], "the tab pushed onto the gallery's stack")
@@ -1328,7 +1340,7 @@ final class CatalogTests: XCTestCase {
                 clicked("Back to the Navigation samples", in: page),
                 "tab \(index) has no way back")
 
-            Renderer.shared.start(back)
+            Renderer.shared.start(EventRegistration(back))
 
             XCTAssertEqual(place.section.wrappedValue, .home)
             XCTAssertEqual(place.path.wrappedValue, [.group("navigation")])
@@ -1469,10 +1481,11 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(heights.count, 1,
                        "the run's height is described rather than driven")
 
-        // TWO rooms: the page's own, which that height is arithmetic over, and
-        // the gallery's, which its cards are placed in.
-        XCTAssertEqual(rooms, ["Grid", "ZStack"],
-                       "the page and its run are measured onto numbers")
+        // THREE rooms: the page's own, which that height is arithmetic over,
+        // the gallery's, which its cards are placed in, and where its
+        // scroller's run is laid out, which a change of room waits for.
+        XCTAssertEqual(rooms, ["Grid", "ZStack", "ZStack"],
+                       "the page, its run and the scroller's run are measured onto numbers")
 
         // And the entrance is the third number - so the page waits for its room
         // to settle and then comes in, with nothing built for either.

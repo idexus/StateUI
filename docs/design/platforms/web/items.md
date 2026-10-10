@@ -17,7 +17,7 @@ has a cell - an empty one costs a `<div>`. A cell holds its entry's subtree
 while the browser says it is near the list's view - within half the view's
 size (`IntersectionObserver`) - and lets it go as it goes away; the tree
 builds the entries within reach of the cells held, and lets the others go
-with its next render (docs/design/host/items.md, `Within reach`). A cell
+with its next render ([within reach](../../host/items.md#within-reach)). A cell
 whose entry never came keeps a row's room, 44 points; one that lets its
 entry go keeps the room the entry took, so the cells after it stand where
 they stood.

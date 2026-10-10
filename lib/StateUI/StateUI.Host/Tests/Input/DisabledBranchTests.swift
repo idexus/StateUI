@@ -42,6 +42,21 @@ final class DisabledBranchTests: XCTestCase {
         XCTAssertEqual(heard, ["opened", "inner tapped"])
     }
 
+    /// A bar's action and a menu's entry declared in a disabled branch are out of reach as every view in it is, and
+    /// come back with it.
+    func testAnActionDeclaredInADisabledBranchIsOutOfReach() throws {
+        let runtime = running()
+
+        XCTAssertFalse(try element("save", in: runtime).isEffectivelyEnabled, "the bar's action")
+        XCTAssertFalse(MenuEntry.entry(of: try element("copy", in: runtime)).isEnabled, "the menu's entry")
+
+        try element("opener", in: runtime).hear(.tap(run: 1), in: runtime)
+        for _ in 0..<5 { runtime.pump.turn() }
+
+        XCTAssertTrue(try element("save", in: runtime).isEffectivelyEnabled)
+        XCTAssertTrue(MenuEntry.entry(of: try element("copy", in: runtime)).isEnabled)
+    }
+
     private func running() -> HostRuntime {
         heard = []
         told = []
@@ -92,6 +107,8 @@ private struct BranchPage: View {
             VStack {
                 Text("Inner").onTapped { @MainActor in heard.append("inner tapped") }.id("inner")
                     .onPointerEntered { @MainActor in heard.append("inner entered") }
+                    .contextMenu { MenuItem("Copy").id("copy") }
+                    .toolbar { ToolbarItem("Save").id("save") }
             }
             .isEnabled(open)
             .id("branch")

@@ -22,7 +22,9 @@ extension StateChoice {
     public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried,
               let first = lanes.first,
-              let made = Self(rawValue: Int32(first.rounded()))
+              let number = Int(nearest: first),
+              let raw = Int32(exactly: number),
+              let made = Self(rawValue: raw)
         else { return nil }
 
         self = made

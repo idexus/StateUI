@@ -22,6 +22,9 @@ struct ToolbarSample: SampleContent, ExampleContent {
 
     /// Whether Add shows its words beside its picture on the bar.
     @State private var addWords = false
+
+    /// Whether the branch declaring the actions is disabled.
+    @State private var locked = false
     // listing: end
 
     static let id = "toolbar"
@@ -31,77 +34,87 @@ struct ToolbarSample: SampleContent, ExampleContent {
     // listing: ToolbarSample
     var body: some View {
         VStack {
-            // The counts are read here, so every toolbar item that acts
-            // builds this closure.
-            DebugInfoLabel()
+            VStack {
+                // The counts are read here, so every toolbar item that acts
+                // builds this closure.
+                DebugInfoLabel()
 
-            Text("Saved \(saved) time(s)")
-                .fontSize(17)
+                Text("Saved \(saved) time(s)")
+                    .fontSize(17)
 
-            Text(recent.isEmpty ? "No recent files" : recent.joined(separator: ", "))
-                .fontSize(13)
-                .textColor(Palette.subtle)
+                Text(recent.isEmpty ? "No recent files" : recent.joined(separator: ", "))
+                    .fontSize(13)
+                    .textColor(Palette.subtle)
 
-            Text("Press Save and Add on the bar; Clear is in its overflow.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
+                Text("Press Save and Add on the bar; Clear is in its overflow.")
+                    .fontSize(12)
+                    .textColor(Palette.subtle)
 
-            SectionTitle("Where the actions stand")
+                SectionTitle("Where the actions stand")
 
-            switchRow($afterGallery, "After the gallery's actions", id: "toolbar.afterGallery")
-            switchRow($inGallery, "In the gallery's group", id: "toolbar.inGallery")
-            switchRow($atLeading, "At the leading edge", id: "toolbar.atLeading")
+                switchRow($afterGallery, "After the gallery's actions", id: "toolbar.afterGallery")
+                switchRow($inGallery, "In the gallery's group", id: "toolbar.inGallery")
+                switchRow($atLeading, "At the leading edge", id: "toolbar.atLeading")
 
-            SectionTitle("A picture and its words")
+                SectionTitle("A picture and its words")
 
-            switchRow($addWords, "Add's words beside its picture", id: "toolbar.addWords")
-        }
-        .spacing(12)
-        // The page's actions, declared where their state lives: they follow
-        // it as the body builds - `saved` decides whether Clear can be pressed,
-        // `addWords` Add's words, the three switches where the group stands.
-        .toolbar(atLeading ? .leading : .trailing, id: inGallery ? "gallery" : "sample", order: afterGallery ? 1 : 0) {
-            ToolbarItem("Save")
-                .id("save")
-                .onClicked { saved += 1 }
-
-            // A picture alone, unless it asks for its words beside it.
-            ToolbarItem("Add")
-                .id("add")
-                .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
-                .showsText(addWords)
-                .onClicked {
-                    added += 1
-                    recent.append("file\(added).txt")
-                }
-
-            ToolbarItem("Clear")
-                .id("clear")
-                .placement(.overflow)
-                .isDestructive(true)
-                .isEnabled(saved > 0)
-                .onClicked { saved = 0 }
-        }
-        // The desktop File menu, declared the same way: Save, and the recent
-        // files following the state.
-        .menuBar {
-            Menu("File") {
-                MenuItem("Save")
+                switchRow($addWords, "Add's words beside its picture", id: "toolbar.addWords")
+            }
+            .spacing(12)
+            // The page's actions, declared where their state lives: they follow
+            // it as the body builds - `saved` decides whether Clear can be pressed,
+            // `addWords` Add's words, the three switches where the group stands.
+            .toolbar(atLeading ? .leading : .trailing, id: inGallery ? "gallery" : "sample", order: afterGallery ? 1 : 0) {
+                ToolbarItem("Save")
                     .id("save")
                     .onClicked { saved += 1 }
 
-                Menu("Recent") {
-                    recent.map { file in
-                        MenuItem(file)
-                            .id(file)
-                            .onClicked { recent.removeAll { $0 == file } }
+                // A picture alone, unless it asks for its words beside it.
+                ToolbarItem("Add")
+                    .id("add")
+                    .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
+                    .showsText(addWords)
+                    .onClicked {
+                        added += 1
+                        recent.append("file\(added).txt")
                     }
-                }
-                .id("recent")
-                .isEnabled(!recent.isEmpty)
+
+                ToolbarItem("Clear")
+                    .id("clear")
+                    .placement(.overflow)
+                    .isDestructive(true)
+                    .isEnabled(saved > 0)
+                    .onClicked { saved = 0 }
             }
-            .id(StandardMenu.file)
+            // The desktop File menu, declared the same way: Save, and the recent
+            // files following the state.
+            .menuBar {
+                Menu("File") {
+                    MenuItem("Save")
+                        .id("save")
+                        .onClicked { saved += 1 }
+
+                    Menu("Recent") {
+                        recent.map { file in
+                            MenuItem(file)
+                                .id(file)
+                                .onClicked { recent.removeAll { $0 == file } }
+                        }
+                    }
+                    .id("recent")
+                    .isEnabled(!recent.isEmpty)
+                }
+                .id(StandardMenu.file)
+            }
+            // Locked, the branch takes no input: its switches, and the
+            // actions and menu items declared on it, dimmed with it.
+            .isEnabled(!locked)
+
+            SectionTitle("Out of reach")
+
+            switchRow($locked, "Lock the switches and actions above", id: "toolbar.locked")
         }
+        .spacing(12)
     }
 
     /// A switch and what it says, told apart for scripts by `id`.
@@ -140,6 +153,12 @@ struct ToolbarSample: SampleContent, ExampleContent {
             Text("Recent files live in the desktop File menu, after Save: "
                 + "Add puts one there, choosing one removes it, and the submenu is disabled "
                 + "while it is empty.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Lock disables the view declaring the actions: its switches go out of reach, "
+                + "and Save, Add, Clear and the File menu's items with them. The gallery's own "
+                + "actions, declared around it, stay.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

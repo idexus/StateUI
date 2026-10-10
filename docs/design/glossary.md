@@ -9,7 +9,7 @@ and this table maps the two.
 | StateUI term | Common term | What it means here |
 | --- | --- | --- |
 | user | user | the person using the application |
-| application, scene, window, page | same | the structure an application declares: `Application -> Scene -> Window -> Page` |
+| application, scene, window, page | same | the structure an application declares: `Application -> Scene -> windows -> a view`, each view standing on a page |
 | element | node | one entry of the described tree: a control, a layout, a part of the structure |
 | element contract | node schema | a node type's declaration: its tiers and each member with its value's type |
 | tier | trait | a set of members several elements share, such as `VisualElement` |
@@ -37,6 +37,7 @@ and this table maps the two.
 | binding twin | binding overload | the `Binding` form of a value modifier |
 | driven property | bound property | a control property that reads a state the host carries |
 | follow (`following:`) | depend on, subscribe to | what wakes an engine: a write to a state it follows |
+| track (`tracking:`) | follow continuously | an engine that follows and keeps running on the next cycles while it answers `.again` |
 | conversion (`convert`) | derived binding | a binding that reads and writes another state through a mapping |
 | lender, lent | source storage | what a `Binding` borrows its value from |
 | reading, sample (`.samples`) | throttled copy | an animated value copied into ordinary state at a pace |
@@ -47,7 +48,7 @@ and this table maps the two.
 | kept value (`persistentKey:`) | persisted state | a state saved in a store and read back at launch |
 | standard environment, provider | environment object | the typed values an application and its host provide down the tree |
 | themed pair, the half in force | light and dark variant, the active variant | a value with one side for each theme, and the side the theme picks |
-| engine | frame callback | application code that runs once per display frame while it follows states |
+| engine | frame callback | application code the display cycle runs on the frame after a state it follows is written or a render describes it, and on every frame while it answers `.again` |
 
 ## Identity and diffing
 
@@ -94,7 +95,7 @@ and this table maps the two.
 | animation (`Animation`) | animation | one running animation of one value |
 | animator (`Animator`), advance | animator, advance a frame | the one place a runtime advances every animation |
 | lane | component | one number of an animated value: x of a point, red of a colour |
-| lane kind (`LaneKind`) | component type | what a host reads a carried value's lanes as: numbers, a Boolean, a choice, a colour |
+| lane kind (`LaneKind`) | component type | what a host reads a carried value's lanes as: numbers, a Boolean, a choice, a colour, a material |
 | land, arrive | finish | an animation reaching its destination |
 | snap | jump | a change applied at once, with no animation |
 | travels, cleared, moves (member facts) | animatable, reset when unset, animation group | what a member's contract says about how its value changes |
@@ -113,10 +114,13 @@ and this table maps the two.
 | the application's (`byApplication`, 🧩) | application-provided | an element a host leaves to a control the application registers itself - a map where the platform has none |
 | display cycle, cycle | frame update | the ordered work of one display frame |
 | frame clock | display link, vsync | what ticks once per display frame while something holds it |
-| doorbell | wake-up thread | a thread parked until the core has work, which then wakes the UI thread |
+| doorbell | wake-up | how a turn is posted to the UI thread's queue from any thread, when a job is queued or the UI thread made work |
 | pump, turn | event-loop pass | one pass of the host's work: jobs, a cycle, a render, then acts |
 | program write | programmatic change | a write to a control made by the program, not the user |
 | act | imperative control call | a call the application makes on a control, such as `focus` |
+| run | in-flight handler call | one going of a handler that awaits, or of a task through a gate, from its start to its end |
+| gate (`Gate`, `SharedGate`) | concurrency policy | what an event or a task does while a run is under way: let go, cancel the run before it, wait, or run beside it - a handler's own, or shared by every handler and task written with it |
+| superseded run | cancelled task | a run a later event, its task's cancellation or its element leaving ended: it changes nothing more |
 | chosen file (`ChosenFile`) | file handle, picked file | a file the user opened or saved in a dialog: its name, and its place, which only the host reads |
 | kind of file (`FileType`) | file type filter | a caption and the extensions a dialog shows or offers |
 | launch | open with the default application | a file or an address handed to the system, which opens it in the application it gives it |

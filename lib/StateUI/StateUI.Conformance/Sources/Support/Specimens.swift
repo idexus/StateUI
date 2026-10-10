@@ -9,6 +9,7 @@
 /// bar, an arrangement as the page. What a tier's cases dress, so a case written once
 /// covers its member on every element wearing the tier.
 /// Design: docs/design/host/conformance.md#a-tiers-cases
+@MainActor
 @_spi(Host) public enum Specimens {
     /// The control a specimen stands for, by its node type's name, dressed; nil for an element that stands
     /// nowhere in a stack.
@@ -133,12 +134,12 @@ public struct WindowSessionPage: View {
     let key: String
 
     /// What it writes.
-    let write: @Sendable (WindowSession) -> Void
+    let write: @MainActor (WindowSession) -> Void
 
     @Environment(\.window) private var window
 
     /// A page writing its window's session as `write` says - again whenever `key` changes - `beside` its words.
-    public init(beside: [any View] = [], key: String = "", _ write: @escaping @Sendable (WindowSession) -> Void) {
+    public init(beside: [any View] = [], key: String = "", _ write: @escaping @MainActor (WindowSession) -> Void) {
         self.beside = beside
         self.key = key
         self.write = write
@@ -175,13 +176,13 @@ public struct DeclaringPage: View {
     let title: (any View)?
 
     /// Its group's items.
-    let items: @Sendable () -> [ToolbarItem]
+    let items: @MainActor () -> [ToolbarItem]
 
     /// A page declaring `items` at `side` in `order` - joining `group` where one is named - and `title`, `beside` its
     /// words.
     public init(
         beside: [any View] = [], key: String = "", side: ToolbarSide = .trailing, order: Int = 0, group: String? = nil,
-        title: (any View)? = nil, _ items: @escaping @Sendable () -> [ToolbarItem] = { [] }
+        title: (any View)? = nil, _ items: @escaping @MainActor () -> [ToolbarItem] = { [] }
     ) {
         self.beside = beside
         self.key = key

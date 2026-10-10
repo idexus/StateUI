@@ -25,6 +25,7 @@
 
     /// `member`, declared by `element` `over` what else it declares, holds what the tree gives it and what the tree
     /// changes it to.
+    @MainActor
     static func holds<Value: HostRepresentable & Sendable & Equatable>(
         _ member: ElementProperty<BarElementContract, Value>, on element: String, _ first: Value, then second: Value,
         over others: [any Worn] = []
@@ -51,12 +52,14 @@
     /// A page where `element` wears `worn` around a bar every host draws - a split view's detail, a tabbed view's
     /// first tab and a modal stack's root are a stack of one page - `beside` the page's words, its title standing on
     /// the bar in the bar's colours.
+    @MainActor
     static func declaring(_ element: String, _ worn: [any Worn], beside: [any View]) -> ModifiedContent {
         // Chosen by name, so held as `any View` and handed on as its node.
         ModifiedContent(node: chosen(element, worn, beside: beside).node)
     }
 
     /// The page `declaring(_:_:beside:)` shows, chosen by name.
+    @MainActor
     private static func chosen(_ element: String, _ worn: [any Worn], beside: [any View]) -> any View {
         let dressing = Dressing(worn)
         let others: [any View] = beside

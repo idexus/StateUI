@@ -32,6 +32,7 @@
 
     /// A shape is filled in its colour inside its figure, and in the colour the tree changes it to; a line, which
     /// encloses nothing, shows no fill.
+    @MainActor
     static func filled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isFilledInItsColour", proves: [
             Covered(ShapeContract.fill, on: element),
@@ -59,6 +60,7 @@
     }
 
     /// A shape's outline is drawn in its colour, as wide as the tree says.
+    @MainActor
     static func outlined(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isOutlinedInItsColourAndWidth", proves: [
             Covered(ShapeContract.stroke, on: element), Covered(ShapeContract.lineWidth, on: element),
@@ -78,6 +80,7 @@
 
     /// A figure drawn in its own small numbers is fitted whole into its room, keeping its proportions, or stretched
     /// across it as its aspect says; a rectangle and an ellipse fill their room either way.
+    @MainActor
     static func placedByItsAspect(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isPlacedInItsRoomAsItsAspectSays", proves: [
             Covered(ShapeContract.contentMode, on: element),
@@ -110,6 +113,7 @@
     }
 
     /// A shape's transform moves what it draws, as the tree changes it.
+    @MainActor
     static func movedByItsTransform(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isMovedByItsTransform", proves: [
             Covered(ShapeContract.geometryTransform, on: element),
@@ -137,6 +141,7 @@
     }
 
     /// A figure in small numbers of its own - ten across - which its aspect places in a larger room.
+    @MainActor
     static func small(_ element: String) -> [any Worn] {
         switch element {
         case "Line":
@@ -149,6 +154,7 @@
     }
 
     /// What `element`'s specimen needs to be a figure at all: a line's ends, a polygon's points, a path's data.
+    @MainActor
     static func figure(_ element: String) -> [any Worn] {
         switch element {
         case "Line":
@@ -165,6 +171,7 @@
     }
 
     /// `element`'s figure with an outline to hold its dashes, ends and joins: red, two wide.
+    @MainActor
     static func stroked(_ element: String) -> [any Worn] {
         figure(element) + [Write(ShapeContract.stroke, Brush.solidColor(.red)), Write(ShapeContract.lineWidth, 2.0)]
     }

@@ -15,6 +15,7 @@ import XCTest
 /// What a picker does on screen is held to `AppKitPickerViewTests`,
 /// `AppKitDatePickerViewTests` and `AppKitTimePickerViewTests`, which drive the
 /// same registered views.
+@MainActor
 final class AppKitPickerRegistrationTests: XCTestCase {
     /// The registry realizes all three, each with its own value and event -
     /// and claims no moment a native control does not have: an AppKit date or

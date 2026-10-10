@@ -6,6 +6,7 @@
 import XCTest
 
 /// What every host's keyboard and checking do for the words a view takes, by what the tree says of them.
+@MainActor
 final class InputTraitsTests: XCTestCase {
     /// Nothing said leaves the platform its own capitals, with checking, correction and prediction on.
     func testTheDefaultIsThePlatformsOwn() {

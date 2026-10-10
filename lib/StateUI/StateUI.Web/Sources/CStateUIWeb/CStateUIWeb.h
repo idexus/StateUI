@@ -74,7 +74,7 @@ STATEUI_WEB(listen) void stateui_web_listen(int32_t element, const char *event, 
 /// What the event a listener is hearing carries: 0 how many clicks it counts, 1 and 2 where the pointer is from the
 /// listening element's top left corner; 3 the pointer's number, 4 and 5 where it is on the page, 6 its kind - 0 a
 /// mouse, 1 a pen, 2 a touch - 7 its button; 8 a wheel's turn down, 9 whether a key made it a pinch, 10 a gesture's
-/// scale; 11 and 12 the listening element's size.
+/// scale; 11 and 12 the listening element's size; 13 whether a click on a label passes to its control.
 STATEUI_WEB(event_number) double stateui_web_event_number(int32_t index);
 /// The words the event being heard carries in its `detail`, read by `copy_read`: their length.
 STATEUI_WEB(event_words) int32_t stateui_web_event_words(void);
@@ -109,10 +109,11 @@ STATEUI_WEB(frame_evaluate) int32_t stateui_web_frame_evaluate(int32_t element, 
 
 /// Puts one entry of the page's own on the browser's history; `back_history` goes back over it where it stands on
 /// it, 1 where it went; `listen_history` calls `listener` whenever the browser's history moves - its way back, or
-/// forward.
+/// forward - until `unlisten_history` lets it go.
 STATEUI_WEB(push_history) void stateui_web_push_history(void);
 STATEUI_WEB(back_history) int32_t stateui_web_back_history(void);
 STATEUI_WEB(listen_history) void stateui_web_listen_history(int32_t listener);
+STATEUI_WEB(unlisten_history) void stateui_web_unlisten_history(int32_t listener);
 
 /// What the page stands as: 1 its tab shows, 2 it holds the keyboard; `listen_page` calls `changed` once as the
 /// page starts and again as either changes, and `leaving` as the browser leaves the page.
@@ -146,7 +147,8 @@ STATEUI_WEB(capture_pointer) void stateui_web_capture_pointer(int32_t element);
 /// The event being heard no longer does what the page would do with it: scroll, zoom, select.
 STATEUI_WEB(take_event) void stateui_web_take_event(void);
 
-/// Calls listener `listener` whenever the element's size changes.
+/// Calls listener `listener` whenever the element's size changes - one listener an element: a second call takes the
+/// first's place.
 STATEUI_WEB(observe_size) void stateui_web_observe_size(int32_t element, int32_t listener);
 /// 1 where the browser lays the element out - it stands in the page, in no element shown as nothing - else 0.
 STATEUI_WEB(is_laid_out) int32_t stateui_web_is_laid_out(int32_t element);
@@ -213,7 +215,8 @@ STATEUI_WEB(save_file) void stateui_web_save_file(
     const char *name, int32_t nameLength, const char *kinds, int32_t kindsLength,
     const uint8_t *contents, int32_t length, int32_t listener);
 
-/// Reads the file whole: `listener` hears event 1 and its length, its bytes read by `copy_read` - or 0 and why.
+/// Reads the file - whole for a negative `maximum`, else its first `maximum` bytes: `listener` hears event 1 and its
+/// length, the bytes read by `copy_read`, or 0 and why.
 STATEUI_WEB(read_file) void stateui_web_read_file(int32_t file, int32_t maximum, int32_t listener);
 
 /// What a file's act answered last, read by `copy_read`: its length.
@@ -238,7 +241,7 @@ STATEUI_WEB(local_time) void stateui_web_local_time(double *into);
 /// The local time zone's name, read in two steps: its length in bytes, then `copy_read`.
 STATEUI_WEB(local_zone) int32_t stateui_web_local_zone(void);
 
-/// How far the zone named - the local one for none - is from UTC at noon on the day - today for a year of 0 - in
+/// How far the zone named - the local one for none - is from UTC at noon on the day - now for a year of 0 - in
 /// minutes; NaN for a zone the browser does not know.
 STATEUI_WEB(utc_offset) double stateui_web_utc_offset(
     const char *zone, int32_t length, int32_t year, int32_t month, int32_t day);

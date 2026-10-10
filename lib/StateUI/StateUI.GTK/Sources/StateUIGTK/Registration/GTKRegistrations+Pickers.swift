@@ -19,10 +19,7 @@ extension GTKRegistrations {
                     values[PickerContract.options] ?? [], chosen: values[PickerContract.selectedIndex] ?? -1,
                     writeChosen: values.changed(PickerContract.selectedIndex))
             }
-            picker.applies([
-                FontElementContract.fontSize, FontElementContract.fontAttributes, FontElementContract.fontFamily,
-                TextStyleElementContract.textColor,
-            ]) { view, values in
+            picker.applies(TextMembers.lookMembers) { view, values in
                 view.setWordsClass(GTKStyleSheet.words(TextMembers.look(of: values), placeholder: nil, in: " > button"))
             }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }

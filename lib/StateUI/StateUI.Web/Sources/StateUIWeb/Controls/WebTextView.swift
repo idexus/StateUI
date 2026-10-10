@@ -25,9 +25,10 @@ final class WebTextView: WebDOMView, WebWordsView {
         if runs == nil { WebRelay.setText(node, text) }
     }
 
-    /// Shows `runs` in place of the text's own words, each in its look; nil to show the words again.
+    /// Shows `runs` in place of the text's own words, each in its look over the text's `look`; nil to show the words
+    /// again. A run held at its size within words that scale holds the text's size where it gives none.
     /// Design: docs/design/platforms/web/controls.md#runs-of-words
-    func setRuns(_ shown: [TextRun]?) {
+    func setRuns(_ shown: [TextRun]?, over look: TextLook) {
         guard let shown else {
             for span in runs ?? [] { span.detach() }
             runs = nil
@@ -40,7 +41,10 @@ final class WebTextView: WebDOMView, WebWordsView {
         for (index, (span, run)) in zip(spans, shown).enumerated() {
             WebRelay.insert(span.node, into: node, at: index)
             WebRelay.setText(span.node, run.text)
-            for (name, value) in WebCSS.font(run.look) + WebCSS.spacing(run.look) { span.style(name, value) }
+            var runLook = run.look
+            runLook.scales = run.look.scales && look.scales
+            if runLook.scales != look.scales, runLook.size == nil { runLook.size = look.size }
+            for (name, value) in WebCSS.font(runLook) + WebCSS.spacing(runLook) { span.style(name, value) }
             span.style("background", WebCSS.fill(run.look.background))
         }
         runs = spans

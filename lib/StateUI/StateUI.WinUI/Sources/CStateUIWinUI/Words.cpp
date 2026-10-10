@@ -80,6 +80,36 @@ extern "C" void stateui_winui_set_character_spacing(StateUIObjectRef handle, int
     }
 }
 
+extern "C" void stateui_winui_set_text_scales(StateUIObjectRef handle, bool scales) {
+    try {
+        either(handle,
+            [&](controls::TextBlock const &block) { block.IsTextScaleFactorEnabled(scales); },
+            [&](controls::Control const &control) {
+                control.IsTextScaleFactorEnabled(scales);
+                // A button's words are a caption of the host's, which scales its own.
+                if (auto caption = captionOf(control)) caption.IsTextScaleFactorEnabled(scales);
+            });
+    } catch (...) {
+        report("scaling words");
+    }
+}
+
+extern "C" bool stateui_winui_text_scales(StateUIObjectRef handle) {
+    try {
+        bool scales = true;
+        either(handle,
+            [&](controls::TextBlock const &block) { scales = block.IsTextScaleFactorEnabled(); },
+            [&](controls::Control const &control) {
+                auto caption = captionOf(control);
+                scales = caption ? caption.IsTextScaleFactorEnabled() : control.IsTextScaleFactorEnabled();
+            });
+        return scales;
+    } catch (...) {
+        report("reading whether words scale");
+        return true;
+    }
+}
+
 extern "C" void stateui_winui_set_foreground(StateUIObjectRef handle, bool has, uint32_t argb) {
     try {
         auto brush = has ? media::SolidColorBrush(color(argb)) : media::SolidColorBrush{nullptr};

@@ -32,14 +32,17 @@ public struct ScrollReader: View {
     private var scroller: Aim<ScrollView>?
 
     /// What runs when the scroller comes to rest, if anything.
-    private var stopped: EventHandler?
-    private var tapped: EventHandler?
+    private var stopped: (gate: any Gate, handler: EventHandler)?
+    private var tapped: (gate: any Gate, handler: EventHandler)?
 
     /// Where in the room a tap is answered, given the room; nil for all of it.
     private var target: ((Rect) -> Rect)?
 
     /// What runs while a finger or a mouse drags the run, if anything.
-    private var dragged: ValueEventHandler<PanUpdate>?
+    private var dragged: (gate: any Gate, handler: ValueEventHandler<PanUpdate>)?
+
+    /// Where the scroller's run is laid out, as the platform reports it, where a reader in this module asked.
+    private var laid: Binding<Rect>?
 
     /// The two parts of the content where a tap has a place of its own: the
     /// run's length, and where a tap may land.
@@ -107,10 +110,22 @@ public struct ScrollReader: View {
     ///
     /// - Parameter handler: what to run once the scroller has stopped.
     /// - Returns: the reader, answering its scroller coming to rest.
-    public func onScrollStopped(_ handler: @escaping EventHandler) -> ScrollReader {
+    public func onScrollStopped(_ handler: @escaping @MainActor () throws -> Void) -> ScrollReader {
+        onScrollStopped(gate: .none) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the scroller coming to rest does while a run
+    /// is under way.
+    public func onScrollStopped(gate: some Gate, _ handler: @escaping EventHandler) -> ScrollReader {
         var copy = self
-        copy.stopped = handler
+        copy.stopped = (gate, handler)
         return copy
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onScrollStopped(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onScrollStopped(_ handler: @escaping EventHandler) -> ScrollReader {
+        fatalError("unavailable")
     }
 
     /// What runs when the user taps the run. The views under the scroller take
@@ -118,10 +133,21 @@ public struct ScrollReader: View {
     ///
     /// - Parameter handler: what to run when the run is tapped.
     /// - Returns: the reader, answering a tap.
-    public func onTapped(_ handler: @escaping EventHandler) -> ScrollReader {
+    public func onTapped(_ handler: @escaping @MainActor () throws -> Void) -> ScrollReader {
+        onTapped(gate: .none) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what a tap does while a run is under way.
+    public func onTapped(gate: some Gate, _ handler: @escaping EventHandler) -> ScrollReader {
         var copy = self
-        copy.tapped = handler
+        copy.tapped = (gate, handler)
         return copy
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onTapped(_ handler: @escaping EventHandler) -> ScrollReader {
+        fatalError("unavailable")
     }
 
     /// What runs while the user drags the run, reported as `onPanUpdated`
@@ -130,10 +156,24 @@ public struct ScrollReader: View {
     ///
     /// - Parameter handler: what to run as the drag goes on.
     /// - Returns: the reader, answering a drag.
-    public func onPanUpdated(_ handler: @escaping ValueEventHandler<PanUpdate>) -> ScrollReader {
+    public func onPanUpdated(_ handler: @escaping @MainActor (PanUpdate) throws -> Void) -> ScrollReader {
+        onPanUpdated(gate: .none) { try handler($0) }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what a report of the drag does while a run is
+    /// under way.
+    public func onPanUpdated(
+        gate: some Gate, _ handler: @escaping ValueEventHandler<PanUpdate>
+    ) -> ScrollReader {
         var copy = self
-        copy.dragged = handler
+        copy.dragged = (gate, handler)
         return copy
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPanUpdated(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onPanUpdated(_ handler: @escaping ValueEventHandler<PanUpdate>) -> ScrollReader {
+        fatalError("unavailable")
     }
 
     /// The same, answered on one part of the room rather than the whole run -
@@ -141,7 +181,7 @@ public struct ScrollReader: View {
     ///
     /// The closure is handed the room and answers a rectangle in it, where the
     /// user is looking; the host keeps the box there as the run scrolls.
-    /// Without `.scrollOffset($:)` the tap is answered on the whole run.
+    /// Without `.scrollOffset(_:)` the tap is answered on the whole run.
     ///
     /// - Parameters:
     ///   - area: where in the room the tap is answered, given the room.
@@ -149,18 +189,33 @@ public struct ScrollReader: View {
     /// - Returns: the reader, answering a tap there and nowhere else.
     public func onTapped(
         within area: @escaping (Rect) -> Rect,
+        _ handler: @escaping @MainActor () throws -> Void
+    ) -> ScrollReader {
+        onTapped(within: area, gate: .none) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what a tap does while a run is under way.
+    public func onTapped(
+        within area: @escaping (Rect) -> Rect,
+        gate: some Gate,
         _ handler: @escaping EventHandler
     ) -> ScrollReader {
         var copy = self
-        copy.tapped = handler
+        copy.tapped = (gate, handler)
         copy.target = area
         return copy
     }
 
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(within: area, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onTapped(within area: @escaping (Rect) -> Rect, _ handler: @escaping EventHandler) -> ScrollReader {
+        fatalError("unavailable")
+    }
+
     /// Puts an aim on the scroller, for an act aimed at it. Moving the run is a
-    /// write to the `.scrollOffset($:)` state instead:
-    /// `$across.journey.snap(to:)` at once, `try await
-    /// $across.journey.move(to:)` animated.
+    /// write to the `.scrollOffset(_:)` state instead:
+    /// `$across.journey.snap(to:)` at once, `$across.journey.move(to:)`
+    /// animated.
     ///
     ///     ScrollReader(across: 540) { … }.scrollOffset($across).aim(scroller)
     ///
@@ -169,6 +224,15 @@ public struct ScrollReader: View {
     public func aim(_ aim: Aim<ScrollView>) -> ScrollReader {
         var copy = self
         copy.scroller = aim
+        return copy
+    }
+
+    /// The run laid out, reported onto `state`: the room the run is as long as is measured a render after it
+    /// changed, so a reader learns here when the scroller can hold what the new room asks.
+    /// Design: docs/design/views/measured-layouts.md#scroll-reader
+    func laidOut(_ state: Binding<Rect>) -> ScrollReader {
+        var copy = self
+        copy.laid = state
         return copy
     }
 
@@ -194,6 +258,7 @@ public struct ScrollReader: View {
         let tap = tapped
         let area = target
         let drag = dragged
+        let length = laid
 
         return Grid {
             // What is moved takes no touches: the scroller over it takes them.
@@ -211,10 +276,9 @@ public struct ScrollReader: View {
                     let tall = downward > 0 ? max(room.height, 1) + downward : down(room)
 
                     // The box follows the state and reads where the run is.
-                    let following: (any Followable)? = at
                     let reading: (() -> Point)? = at.map { held in { held.journey.value } }
 
-                    if let area, let carried = following, let where_ = reading {
+                    if let area, let carried = at, let where_ = reading {
                         // A tap on one part of the room: the host keeps the box at
                         // the room's place plus how far the run has scrolled.
                         let want = area(room)
@@ -232,6 +296,7 @@ public struct ScrollReader: View {
                         .width(long)
                         .height(tall)
                         .motion(.none, .size)
+                        .reporting(laid: length)
                         .engine(following: carried) { _ in
                             // Where the run is, not where it is going.
                             let stands = where_()
@@ -257,6 +322,7 @@ public struct ScrollReader: View {
                             .motion(.none)
                             .tapping(tap)
                             .dragging(drag)
+                            .reporting(laid: length)
                     }
                 }
                 .orientation(
@@ -281,8 +347,10 @@ extension ScrollView {
 
     /// The scroller answering its own rest, where asked: an unwanted handler is
     /// an event subscribed to on every platform.
-    func stopping(_ handler: EventHandler?) -> ScrollView {
-        handler.map { onScrollStopped($0) } ?? self
+    func stopping(_ handler: (gate: any Gate, handler: EventHandler)?) -> ScrollView {
+        guard let handler else { return self }
+
+        return onScrollStopped(gate: handler.gate, handler.handler)
     }
 
     /// The scroller carried on the offset state, where one was given: a
@@ -292,16 +360,25 @@ extension ScrollView {
     }
 }
 
+extension VisualElement where Modified == Self {
+    /// The element reporting where it is laid out onto `state`, where one was given.
+    func reporting(laid state: Binding<Rect>?) -> Self {
+        state.map { frame($0) } ?? self
+    }
+}
+
 extension ColorBox {
     /// The box answering a drag, where one was asked for.
-    func dragging(_ handler: ValueEventHandler<PanUpdate>?) -> ColorBox {
+    func dragging(_ handler: (gate: any Gate, handler: ValueEventHandler<PanUpdate>)?) -> ColorBox {
         guard let handler else { return self }
 
-        return onPanUpdated(handler)
+        return onPanUpdated(gate: handler.gate, handler.handler)
     }
 
     /// The box answering a tap, where one was asked for.
-    func tapping(_ handler: EventHandler?) -> ColorBox {
-        handler.map { onTapped($0) } ?? self
+    func tapping(_ handler: (gate: any Gate, handler: EventHandler)?) -> ColorBox {
+        guard let handler else { return self }
+
+        return onTapped(gate: handler.gate, handler.handler)
     }
 }

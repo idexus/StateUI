@@ -8,8 +8,8 @@ import StateUIGTK
 // listing: InteropEventsSample.GTK.swift
 /// The gallery's own pushes, as this host raises them: the battery, as UPower tells it.
 ///
-/// Raising is safe from any thread, and a raise nobody hears is an ordinary answer, so the source is wired whether or
-/// not anything listens.
+/// It raises on the UI thread, where GLib tells the signal, and a raise nobody hears is an ordinary answer, so the
+/// source is wired whether or not anything listens.
 enum GalleryEventSources {
     /// The battery as it was last said, so a notice that changed nothing of it raises nothing.
     @MainActor private static var lastSaid: (level: Double, charging: Bool)?

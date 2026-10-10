@@ -57,6 +57,7 @@ struct HostStateBinding {
     let state: Int32
     let mode: HostStateMode
     let kind: HostStateKind
+    let laneKind: HostLaneKind?
 }
 
 struct HostTransition {
@@ -85,7 +86,10 @@ native objects.
 
 A host applies one generation as one transaction:
 
-1. validate the generation before changing the mounted tree;
+1. take a patch computed against the last generation applied in full; a
+   drift found while it applies - a sparse message about a tree the host does
+   not hold - refuses the whole message, and the whole tree is asked for once
+   ([patch intake](../design/host/patches.md#patch-intake));
 2. find the mounted element by `ElementID`, or create the native object for
    a new complete patch;
 3. replace an element only when `replace` says so;
@@ -109,9 +113,10 @@ only case from which a host may infer insertion, removal, or movement.
 When the set of handled events is unchanged, the handler ids stay stable and no
 event-map patch is needed. A rebuilt description replaces the Swift closure
 registered under that id, so a native subscription invokes the current
-captures without being detached and added again. A composed subtree that is
-carried keeps the closure it already registered because that description was
-not rebuilt.
+captures without being detached and added again. A carried composed view
+takes afresh the handlers its parent wrote on it, under the ids it keeps; the
+handlers inside it keep the closures they registered, as their description
+was not rebuilt.
 
 A complete resynchronization sends the complete event map with those same
 stable ids. When an event is removed, an explicit map replacement makes the
@@ -182,7 +187,8 @@ of its members - an `ElementLayer`:
   toolkit;
 - `adaptive` — each host follows its platform convention while preserving the
   StateUI state contract;
-- `stateUI` — the core derives the behavior from smaller primitives;
+- `stateUI` — StateUI decides it, in the core or the shared host layer, and the
+  host draws what was decided;
 - `structure` — it carries tree or protocol structure;
 - `provider` — an optional package owns the capability.
 
@@ -255,6 +261,7 @@ Every carried value is one case of `HostValue`:
 | `.number` | a `Double` |
 | `.string` | authored text |
 | `.numbers`, `.strings` | homogeneous lists |
+| `.bytes` | a run of bytes - a file's contents |
 | `.color` | four RGBA channels |
 | `.values` | a list of values of different kinds |
 | `.enumeration` | an `Int32` member of a closed StateUI vocabulary |
@@ -267,6 +274,5 @@ numbers; open names stay names; absence never borrows an empty string,
 sentinel number, or empty list.
 
 The patch is deterministic. Every dictionary- or set-derived collection is
-sorted by its stable StateUI name, and subtree shapes use a stable hash rather
-than Swift's randomized `Hashable`, so the same session renders the same
+sorted by its stable StateUI name, so the same session renders the same
 patches in every run.

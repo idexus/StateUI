@@ -5,6 +5,7 @@
 @_spi(Host) @testable import StateUIHost
 import XCTest
 
+@MainActor
 final class DragRecognitionTests: XCTestCase {
     /// A press is a drag once it moved more than the distance along either axis: it starts, and each move after is
     /// measured from where the press went down.

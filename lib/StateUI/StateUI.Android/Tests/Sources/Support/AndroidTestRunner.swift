@@ -14,6 +14,7 @@ import XCTest
 nonisolated(unsafe) let testCases: [XCTestCaseEntry] = [
     testCase(AndroidRendererTests.allTests),
     testCase(AndroidActTests.allTests),
+    testCase(AndroidDoorbellTests.allTests),
     testCase(AndroidFileTests.allTests),
     testCase(AndroidLeaveTests.allTests),
     testCase(AndroidMotionTests.allTests),
@@ -123,10 +124,8 @@ enum AndroidTestRunner {
     private static func begin(
         env: UnsafeMutablePointer<JNIEnv?>, context: jobject, window: jobject, filter: jstring?
     ) -> jobjectArray? {
-        // The first drain makes this thread MainActor's, as the activity's start does.
-        let core = CoreLink()
-        _ = core.needsRender
-        _ = core.runJobs()
+        // This thread is claimed as the UI thread, as the activity's start does.
+        CoreLink().claimUIThread()
 
         nonisolated(unsafe) let env = env
         nonisolated(unsafe) let context = context

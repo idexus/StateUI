@@ -16,6 +16,7 @@
     }
 
     /// A stack's children stand the spacing apart.
+    @MainActor
     static func spaced(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).keepsItsChildrenItsSpacingApart", proves: [
             Covered(StackContract.spacing, on: element),
@@ -47,6 +48,7 @@
 }
 
 /// A stack of each kind holding views, as a stack's cases need it.
+@MainActor
 enum Stacked {
     /// A stack of `element`'s kind, its children `spacing` apart.
     static func stack(_ element: String, spacing: Double, _ children: () -> [any View]) -> ModifiedContent {

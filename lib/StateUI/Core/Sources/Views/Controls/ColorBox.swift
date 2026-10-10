@@ -75,12 +75,12 @@ extension ColorBox {
     /// value, and no view is rebuilt for it.
     /// Not `.background`, which is a second square behind the one a box draws.
     public func color(_ state: Binding<Color>) -> Modified {
-        journey(.color, by: state)
+        twin(ColorBoxContract.color, by: state)
     }
 
-    /// `cornerRadius` from a state, `$x`: the host sets each new value as it
-    /// stands, and no view is rebuilt for it.
+    /// `cornerRadius` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func cornerRadius(_ state: Binding<Double>) -> Modified {
-        plain(ColorBoxContract.cornerRadius.token, by: state)
+        twin(ColorBoxContract.cornerRadius, carrying: state)
     }
 }

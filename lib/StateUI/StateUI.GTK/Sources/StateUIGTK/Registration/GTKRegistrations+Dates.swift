@@ -24,7 +24,7 @@ extension GTKRegistrations {
             }
             picker.property(DatePickerContract.format) { view, format in view.setFormat(format) }
             picker.property(DatePickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
-            picker.applies(wordsMembers) { view, values in applyWords(view, values) }
+            picker.applies(TextMembers.lookMembers) { view, values in applyWords(view, values) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.raises(DatePickerContract.dateChanged)
             picker.raises(DatePickerContract.opened)
@@ -40,19 +40,13 @@ extension GTKRegistrations {
             picker.property(TimePickerContract.time) { view, time in view.setTime(time) }
             picker.property(TimePickerContract.format) { _, _ in }
             picker.property(TimePickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
-            picker.applies(wordsMembers) { view, values in applyWords(view, values) }
+            picker.applies(TextMembers.lookMembers) { view, values in applyWords(view, values) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.raises(TimePickerContract.timeChanged)
             picker.raises(TimePickerContract.opened)
             picker.raises(TimePickerContract.closed)
         })
     }
-
-    /// The font and the colour a day or a time is written in.
-    private static let wordsMembers: [any ContractMember] = [
-        FontElementContract.fontSize, FontElementContract.fontAttributes, FontElementContract.fontFamily,
-        TextStyleElementContract.textColor,
-    ]
 
     private static func applyWords<Realized: ElementContract>(
         _ view: GTKPopoverPickerView, _ values: ElementValues<Realized>

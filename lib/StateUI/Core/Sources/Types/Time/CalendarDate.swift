@@ -110,9 +110,11 @@ extension CalendarDate: LaneValue {
     /// A day from those three lanes. Nil for any other count, so a report that
     /// does not read leaves the state alone.
     public init?(carried: StateCarried) {
-        guard case .lanes(let lanes) = carried, lanes.count == 3 else { return nil }
+        guard case .lanes(let lanes) = carried, lanes.count == 3,
+              let year = Int(nearest: lanes[0]), let month = Int(nearest: lanes[1]), let day = Int(nearest: lanes[2])
+        else { return nil }
 
-        self.init(year: Int(lanes[0].rounded()), month: Int(lanes[1].rounded()), day: Int(lanes[2].rounded()))
+        self.init(year: year, month: month, day: day)
     }
 
     /// Three.

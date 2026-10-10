@@ -9,6 +9,7 @@ import CStateUIGTK
 import StateUIConformance
 import XCTest
 
+@MainActor
 final class GTKSplitViewTests: XCTestCase {
     /// Each pane is a page in a frame of its own; a window wide enough for both opens with the sidebar shown, and
     /// the binding hears it.
@@ -31,6 +32,23 @@ final class GTKSplitViewTests: XCTestCase {
             XCTAssertTrue(split.isPresented, "shown beside the detail")
             XCTAssertTrue(open.wrappedValue, "and the binding heard it")
             XCTAssertFalse(split.isCollapsed)
+        }
+    }
+
+    /// A sidebar whose page says no title names its pane's bar by the application's name; the detail stays untitled.
+    func testAnUntitledSidebarIsNamedByTheApplication() throws {
+        try onUIThread {
+            // A test process names no application; one does, as GLib gives it.
+            if g_get_application_name() == nil { g_set_application_name("Notes") }
+            let host = GTKRenderer.running {
+                SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+            }
+            let split = try XCTUnwrap(host.views(GTKSplitView.self).first)
+            let name = host.runtime.core.applicationName
+
+            XCTAssertFalse(name.isEmpty, "the host reported the application's name")
+            XCTAssertEqual(split.sidebarFrame?.chrome.title, name)
+            XCTAssertEqual(split.detailFrame?.chrome.title, "")
         }
     }
 
@@ -173,6 +191,7 @@ final class GTKSplitViewTests: XCTestCase {
     }
 }
 
+@MainActor
 final class GTKTabViewTests: XCTestCase {
     /// A tabbed view shown by the window stands in a frame whose switcher stands in a bar of its own beneath the
     /// header bar, which carries the chosen tab's title; the user's choice reaches the selection, the pages hear it,

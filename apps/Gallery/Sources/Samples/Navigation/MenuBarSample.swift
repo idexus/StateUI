@@ -28,7 +28,7 @@ struct MenuBarSample: SampleContent, ExampleContent {
             Text("Saved \(saved) time(s), exported \(exported)")
                 .fontSize(17)
 
-            Text("Open the File menu - on Android, in the bar's overflow.")
+            Text("Open the File menu - on Android, in the bar's overflow; on GNOME, in its main menu.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -87,7 +87,8 @@ struct MenuBarSample: SampleContent, ExampleContent {
 
             Text("A menu of its own stands after File, before the platform's Window and "
                 + "Help. File is joined by `.id(StandardMenu.file)`, never by its caption. Android "
-                + "puts the menus behind the bar's overflow; an iPhone shows none.")
+                + "puts the menus behind the bar's overflow, GNOME in the bar's main menu; an "
+                + "iPhone shows none.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

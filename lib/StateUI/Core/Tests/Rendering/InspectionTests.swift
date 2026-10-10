@@ -11,6 +11,7 @@ import XCTest
 @_spi(Host) @testable import StateUI
 
 /// A state an author keeps on a model.
+@MainActor
 private final class Counts {
     @State var count = 0
 }
@@ -53,10 +54,12 @@ private struct First: View {
 
 /// What an inspector holds, for the test that writes it - a model at file
 /// scope, the one place a `let` of one stays the same instance.
+@MainActor
 private final class Drawn: @unchecked Sendable {
     @State var revision = 0
 }
 
+@MainActor
 private let drawn = Drawn()
 
 /// A page that reads it, so a write to it has a reader.
@@ -100,15 +103,15 @@ private struct InspectedApp: Application {
     var body: some Scene { Inspected() }
 }
 
+@MainActor
 final class InspectionTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         Renderer.shared.setApplication(Plain())
         Inspection.start()
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         InspectorModel.shared.places = [:]
         InspectorModel.shared.collapsed = []
         InspectorModel.shared.selected = nil
@@ -122,7 +125,6 @@ final class InspectionTests: XCTestCase {
         // the inspector's paced rebuild, a sleeping task another test counts.
         Inspection.landed = nil
         OpenScenes.shared.reset()
-        super.tearDown()
     }
 
     /// One render, opened and closed the way `Renderer.renderHost` does it.

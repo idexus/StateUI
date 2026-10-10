@@ -12,7 +12,7 @@ struct RemovingRowSample: SampleContent, ExampleContent {
 
     @State private var gone: Set<String> = []
     @State private var atOnce: Set<String> = []
-    @State private var slow = false
+    @State private var slow = true
 
     var body: some View {
         // A PLAIN VStack. Nothing here ASKS for animation: the row is HIDDEN,

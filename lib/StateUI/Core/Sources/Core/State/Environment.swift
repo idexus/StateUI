@@ -6,6 +6,7 @@
 // Design: docs/design/core/state.md#the-environment
 
 /// One `@Environment` slot, which the differ fills as it walks.
+@MainActor
 protocol EnvironmentSlot: AnyObject {
     /// The type this slot resolves, as the identity the scope is keyed by.
     var wants: ObjectIdentifier { get }
@@ -36,10 +37,11 @@ protocol EnvironmentSlot: AnyObject {
 ///
 /// A body that reads one of the object's `@State` properties is rebuilt when it
 /// changes; the provider, which only passes the reference, is not. Reading a
-/// type no ancestor provided stops the program with its name, and so does
-/// reading one of the library's by its type.
+/// type no ancestor provided stops the program with its name; reading one of
+/// the library's by its type is said once, with the name it is read by.
 @propertyWrapper
-public final class Environment<Value: AnyObject>: @unchecked Sendable {
+@MainActor
+public final class Environment<Value: AnyObject> {
     /// What the differ resolved for this view's place in the tree - written and read
     /// on the UI thread.
     private var resolved: Value?
@@ -50,7 +52,7 @@ public final class Environment<Value: AnyObject>: @unchecked Sendable {
     /// Reads an object an ancestor provided with `.environment()`, found by its
     /// type. The differ fills it before the view's body builds.
     public init() {
-        if let refusal = Self.refusal { preconditionFailure(refusal) }
+        if let refusal = Self.refusal { complain(refusal) }
     }
 
     /// Why the library's own object is not read by its type - the name it is read by; nil for any other type.
@@ -80,20 +82,33 @@ public final class Environment<Value: AnyObject>: @unchecked Sendable {
             """)
     }
 
-    /// The provided object lent on as a `Binding`, so one property of it can
-    /// be handed to an input: `TextField($context.note)`. Assigning the WHOLE
-    /// binding a new object stops the program - the object is the ancestor's
-    /// to provide, and only its properties are writable from below.
-    public var projectedValue: Binding<Value> {
-        Binding(
-            get: { self.wrappedValue },
-            set: { _ in
-                preconditionFailure("""
-                    An environment \(Value.self) is provided by an ancestor \
-                    and cannot be replaced from below. Write its properties \
-                    instead - $context.someProperty lends one on.
-                    """)
-            })
+    /// The provided object, lent on a property at a time: `TextField($context.note)`.
+    /// The object itself is the ancestor's to provide, so nothing replaces it from below.
+    public var projectedValue: EnvironmentLender<Value> {
+        EnvironmentLender { self.wrappedValue }
+    }
+}
+
+/// An object an ancestor provided, lent on a property at a time - what `$context` is
+/// for an `@Environment var context`. It lends properties only: the object is the
+/// ancestor's, so there is no road to replace it.
+///
+///     TextField($context.note)
+@dynamicMemberLookup
+@MainActor
+public struct EnvironmentLender<Value: AnyObject> {
+    private let object: () -> Value
+
+    init(_ object: @escaping () -> Value) {
+        self.object = object
+    }
+
+    /// One property of the object, as a binding that writes through it.
+    public subscript<Subject>(
+        dynamicMember keyPath: ReferenceWritableKeyPath<Value, Subject> & Sendable
+    ) -> Binding<Subject> {
+        let object = object
+        return Binding(get: { object()[keyPath: keyPath] }, set: { object()[keyPath: keyPath] = $0 })
     }
 }
 

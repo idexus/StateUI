@@ -7,8 +7,9 @@
 
 /// The one renderer: it holds the application and renders what changed for
 /// the host, which calls in from the thread it draws on.
-public final class Renderer: @unchecked Sendable {
-    // Entered only from the host's UI thread, synchronously, so it is not isolated.
+@MainActor
+public final class Renderer {
+    // The UI thread's actor's: the host enters it from that thread, synchronously.
     // Design: docs/design/core/render.md#one-renderer
 
     /// The one renderer: a process has one host.
@@ -21,12 +22,10 @@ public final class Renderer: @unchecked Sendable {
     private var making: (() -> any Application)?
     private var dirty = true
 
-    /// The states written since the last render, by storage identity. Behind
-    /// `guarded`: a write may come from any thread.
-    private var changed: Set<ObjectIdentifier> = []
-
-    /// What each changed state is called, for `debugInfo()` and an inspector.
-    private var names: [ObjectIdentifier: String] = [:]
+    /// The states written since the last render, by storage identity, each held
+    /// until the render takes it - named only when `debugInfo()` or an inspector
+    /// asks (`BuildScope.name(of:)`).
+    private var written: [ObjectIdentifier: AnyObject] = [:]
 
     /// Whether a render was asked for without naming a state, which makes the next
     /// render build the whole tree.
@@ -38,7 +37,7 @@ public final class Renderer: @unchecked Sendable {
     private var rootReads: Set<ObjectIdentifier> = []
 
     /// How many live elements read each state, by storage identity. A write to a
-    /// state nobody reads asks for nothing. Behind `guarded`.
+    /// state nobody reads asks for nothing.
     /// Design: docs/design/core/invalidation.md#live-readers
     private var readers: [ObjectIdentifier: Int] = [:]
 
@@ -61,11 +60,11 @@ public final class Renderer: @unchecked Sendable {
     private(set) var liveNodes = 0
 
     func nodeBorn() {
-        guarded.withLock { liveNodes += 1 }
+        liveNodes += 1
     }
 
     func nodeGone() {
-        guarded.withLock { liveNodes -= 1 }
+        liveNodes -= 1
     }
 
     let differ = Differ()
@@ -89,11 +88,6 @@ public final class Renderer: @unchecked Sendable {
     /// Design: docs/design/core/render.md#handlers-in-the-message
     static let settleLimit = 3
 
-    /// Guards what a pool thread can reach: the change bookkeeping, the readers, the
-    /// act queue and the completions. What is taken out runs after it is released.
-    /// Design: docs/design/core/render.md#one-renderer
-    let guarded = Lock()
-
     /// Acts waiting for the host to take them (ActCall.swift).
     var actCalls: [ActCall] = []
 
@@ -102,13 +96,10 @@ public final class Renderer: @unchecked Sendable {
     var completions: [Int: (Reply) -> Void] = [:]
     var nextCompletionId = -1
 
-    /// Resumes reported by the host that have not come back yet. Behind `guarded`.
-    var resumes = 0
-
     /// How many handlers were told their act is over and have not run a line since;
     /// a test waits on it for a queue gone quiet.
     /// Design: docs/design/core/acts.md#awaiting-an-answer
-    var resumesPending: Int { guarded.withLock { resumes } }
+    var resumesPending = 0
 
     /// One board per sync; the display's frame is the only sync.
     /// Design: docs/design/core/cycle.md#the-board
@@ -120,18 +111,14 @@ public final class Renderer: @unchecked Sendable {
     /// The next state number, from one.
     var nextNumber: Int32 = 1
 
-    /// Installs the UI thread's executor before anything here starts a task.
-    /// Design: docs/design/core/concurrency.md#mainactor-on-every-platform
-    private init() {
-        UIThreadExecutor.install()
-    }
+    private init() {}
 
     /// Registers the application. Called through `stateUIUseApp`.
     ///
     /// - Parameter application: the application, made at its first need, once
     ///   what an earlier registration wrote into the application's session is
     ///   forgotten and the host has told what the device is.
-    public func setApplication(_ application: @escaping @autoclosure () -> any Application) {
+    @_spi(Host) public func setApplication(_ application: @escaping @autoclosure () -> any Application) {
         StandardEnvironment.application.forget()
 
         // A new application is a new tree: the old one is let go, and every element of
@@ -179,15 +166,11 @@ public final class Renderer: @unchecked Sendable {
     }
 
     /// Asks for a render without naming what changed, so the next render builds
-    /// the whole tree. Safe from any thread; it wakes the host.
+    /// the whole tree. It asks the host for a turn.
     public func setNeedsRender() {
-        guarded.withLock {
-            dirty = true
-            untracked = true
-        }
-
-        // Outside the lock: the executor's lock is never taken inside this one.
-        UIThreadExecutor.shared.poke()
+        dirty = true
+        untracked = true
+        UIThreadExecutor.shared.askForTurn()
     }
 
     /// Records that a state was read. While a view is built, the view becomes
@@ -195,91 +178,84 @@ public final class Renderer: @unchecked Sendable {
     ///
     /// - Returns: whether a build was open to record it.
     @discardableResult
-    public func stateRead(_ state: AnyObject) -> Bool {
-        ReadScope.note(ObjectIdentifier(state))
+    @usableFromInline func stateRead(_ state: AnyObject) -> Bool {
+        #if DEBUG
+        HandlerRun.noteRead(of: state)
+        #endif
+        return ReadScope.note(ObjectIdentifier(state))
     }
 
     /// Records that a state was written and asks for a render that rebuilds only
     /// the views that read it. A state no live element reads asks for nothing.
-    /// Safe from any thread; it wakes the host.
-    public func stateChanged(_ state: AnyObject) {
+    /// It asks the host for a turn.
+    func stateChanged(_ state: AnyObject) {
         let id = ObjectIdentifier(state)
 
-        // Named while the object is in hand: a `@State` knows its property, anything
-        // else is called by its type.
-        let name = (state as? NamedState)?.origin
-
-        let asked: Bool = guarded.withLock {
-            guard rendering || readers[id] != nil else {
-                refusedWrites += 1
-                return false
-            }
-
-            dirty = true
-            changed.insert(id)
-
-            if let name = name {
-                names[id] = name
-            } else if names[id] == nil {
-                names[id] = String(describing: type(of: state))
-            }
-
-            return true
+        guard rendering || readers[id] != nil else {
+            refusedWrites += 1
+            return
         }
 
-        if asked {
-            UIThreadExecutor.shared.poke()
-        }
+        dirty = true
+        written[id] = state
+        UIThreadExecutor.shared.askForTurn()
     }
 
     /// Counts one more live reader of each state - an element as it is made, or
     /// the root build.
     func reading(_ states: Set<ObjectIdentifier>) {
-        guarded.withLock {
-            for id in states {
-                readers[id, default: 0] += 1
-            }
+        for id in states {
+            readers[id, default: 0] += 1
         }
     }
 
     /// Counts one reader fewer of each state - the element that read them has gone.
     func unreading(_ states: Set<ObjectIdentifier>) {
-        guarded.withLock {
-            for id in states {
-                guard let count = readers[id] else { continue }
+        for id in states {
+            guard let count = readers[id] else { continue }
 
-                readers[id] = count > 1 ? count - 1 : nil
-            }
+            readers[id] = count > 1 ? count - 1 : nil
         }
     }
 
     /// Whether any live element reads this state - what a test asks.
     func isRead(_ state: AnyObject) -> Bool {
-        guarded.withLock { readers[ObjectIdentifier(state)] != nil }
+        readers[ObjectIdentifier(state)] != nil
     }
 
     /// What the next render will act on - for tests driving a differ of their own.
-    var pendingChanges: Set<ObjectIdentifier> { guarded.withLock { changed } }
+    var pendingChanges: Set<ObjectIdentifier> { Set(pendingWrites.keys) }
 
-    /// What those changes are called, for the same tests.
-    var pendingNames: [ObjectIdentifier: String] { guarded.withLock { names } }
+    /// The states those changes are, for the same tests to name.
+    var pendingWrites: [ObjectIdentifier: AnyObject] { written }
 
     /// Whether a render was asked for without naming a state - for tests.
-    var hasUntrackedCause: Bool { guarded.withLock { untracked } }
+    var hasUntrackedCause: Bool { untracked }
 
     /// Puts the bookkeeping back to "nothing has changed", for a test's start.
     func clearInvalidation() {
-        guarded.withLock {
-            dirty = false
-            changed.removeAll()
-            names.removeAll()
-            untracked = false
-        }
+        dirty = false
+        written.removeAll()
+        untracked = false
     }
 
     /// Whether anything has changed since the last render. The host polls this
     /// rather than being called back, so nothing here calls into the host.
-    public var needsRender: Bool { guarded.withLock { dirty } }
+    var needsRender: Bool { dirty }
+
+    /// Takes what was written since the last take and starts a render, in one step,
+    /// so a write landing during this render asks for the next one.
+    /// Design: docs/design/core/render.md#taking-the-changes
+    private func takeWritten() -> (written: [ObjectIdentifier: AnyObject], untracked: Bool) {
+        defer {
+            written.removeAll()
+            untracked = false
+            dirty = false
+            rendering = true
+        }
+
+        return (written, untracked)
+    }
 
     /// Renders the patch against `baseline`, the generation the host holds;
     /// any other baseline gets the whole tree.
@@ -288,22 +264,13 @@ public final class Renderer: @unchecked Sendable {
         // The first render is complete although both sides agree at zero.
         let describeAll = baseline != generation || rendered == nil
 
-        // Taken and cleared in one locked step, so a write landing during this render
-        // asks for the next one.
-        // Design: docs/design/core/render.md#taking-the-changes
-        let (changedNow, untrackedNow, namesNow):
-            (Set<ObjectIdentifier>, Bool, [ObjectIdentifier: String]) = guarded.withLock {
-            let taken = (changed, untracked, names)
-            changed.removeAll()
-            names.removeAll()
-            untracked = false
-            dirty = false
-            rendering = true
-            return taken
-        }
+        let (writtenNow, untrackedNow) = takeWritten()
 
-        // Taken once: naming a build must never reach a lock.
-        differ.named = namesNow
+        let changedNow = Set(writtenNow.keys)
+
+        // Taken once, and held for this render alone: naming a build reads it.
+        differ.written = writtenNow
+        defer { differ.written = [:] }
 
         let walks = rendered != nil && !describeAll && !untrackedNow
             && rootReads.isDisjoint(with: changedNow)
@@ -313,7 +280,7 @@ public final class Renderer: @unchecked Sendable {
         let began: ContinuousClock.Instant? = inspecting ? .now : nil
 
         if inspecting {
-            var causes = Set(changedNow.map { namesNow[$0] ?? "state" }).sorted()
+            var causes = Set(writtenNow.values.map { BuildScope.name(of: $0) }).sorted()
 
             if untrackedNow {
                 causes.append("a render asked for without naming a state")
@@ -356,10 +323,8 @@ public final class Renderer: @unchecked Sendable {
         // A streak of renders left dirty is a body writing what it reads: reported, and
         // the pending change dropped once.
         // Design: docs/design/core/render.md#self-dirtying-renders
-        let dirtiedMeanwhile: Bool = guarded.withLock {
-            rendering = false
-            return dirty
-        }
+        rendering = false
+        let dirtiedMeanwhile = dirty
 
         if dirtiedMeanwhile {
             selfDirtied += 1
@@ -394,24 +359,17 @@ public final class Renderer: @unchecked Sendable {
                 run(handler)
             }
 
-            let (wrote, wroteUntracked, wroteNames):
-                (Set<ObjectIdentifier>, Bool, [ObjectIdentifier: String]) = guarded.withLock {
-                let taken = (changed, untracked, names)
-                changed.removeAll()
-                names.removeAll()
-                untracked = false
-                dirty = false
-                rendering = true
-                return taken
-            }
+            let (wroteNow, wroteUntracked) = takeWritten()
+
+            let wrote = Set(wroteNow.keys)
 
             // Nothing they wrote is read anywhere.
             if wrote.isEmpty && !wroteUntracked {
-                guarded.withLock { rendering = false }
+                rendering = false
                 break
             }
 
-            differ.named = wroteNames
+            differ.written = wroteNow
 
             let settled: (node: RenderedNode, patch: HostPatch)
 
@@ -429,7 +387,7 @@ public final class Renderer: @unchecked Sendable {
                     rendered, with: built.tree, styles: built.styles, changed: wrote)
             }
 
-            guarded.withLock { rendering = false }
+            rendering = false
 
             rendered = settled.node
             patch = patch.merging(settled.patch)

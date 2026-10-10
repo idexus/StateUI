@@ -113,7 +113,8 @@ An explicit id must be unique among siblings and stable while the element means
 the same thing. Its text representation is the boundary, so a custom
 `description` must remain just as distinct as the underlying value. Identify a
 class instance by a stable property it owns rather than by the class value
-itself.
+itself. Siblings sharing one identity, and two identities that describe
+themselves alike, are said once, naming which it is.
 
 ```swift
 struct FileRow: View {
@@ -216,6 +217,10 @@ inside-out before a replacement is created; creation runs outside-in.
 
 Rebuilding or carrying an existing element is neither creation nor destruction.
 
+Both come once, so neither names a `Gate`, even when it awaits. An
+`onCreated` still awaiting when its element leaves is cancelled and changes
+nothing from then on; an `onDestroying` runs to its end.
+
 ## Reacting to a changed value
 
 `onChanged` compares one `Equatable` value with the value the same element
@@ -233,8 +238,22 @@ Text(direction)
 
 It does not run on the first description; use `onCreated` when arrival itself
 requires work. Multiple watchers are paired by modifier order. If their count
-or value type changes, that element starts watching afresh instead of matching
-unrelated slots.
+changes, the element starts watching afresh; a watcher whose value type
+changed starts over alone, instead of matching an unrelated slot.
+
+A handler that awaits names what a newer change does while it runs - a search
+cancels the one before it:
+
+```swift
+@State var query = ""
+@State var results: [String] = []
+
+Text(results.joined(separator: ", "))
+    .onChanged(query, gate: .cancelPrevious) { _, new in
+        try await Task.sleep(for: .milliseconds(250))
+        results = ["\(new) 1", "\(new) 2"]
+    }
+```
 
 Handlers run after the tree walk. A write made by a handler can therefore be
 settled safely. A handler that unconditionally changes the value it watches
@@ -281,21 +300,45 @@ struct EditorScene: Scene {
 
 The inspector shows what caused each pass, whether a composed view was built,
 carried, or walked, the Swift and host costs, and how many native controls were
-made or kept. It records nothing while closed, so applications that do not use
+made or kept; its Complaints list what the library said, newest first. It records nothing while closed, so applications that do not use
 it pay only disabled checks.
 
 Set `STATEUI_INSPECT=1` in the host process to emit the same render record as
 diagnostic text from the first pass. Use this for automated runs or a problem
 that happens before the inspector can be opened. `STATEUI_TALLY=1` writes the
 running totals instead: messages applied, controls made and kept, renders, the
-elements alive and the host's native views alive - the numbers that tell a page
-left in memory from one let go. Both go to the standard error, which an Android
-application sends to logcat; `.scripts/Android/run-app.sh` hands every `STATEUI_` variable of the
-shell that runs it to the application:
+elements alive, the runs under way or waiting and the host's native views alive -
+the numbers that tell a page left in memory from one let go. Both go to the
+standard error, which an Android application sends to logcat;
+`.scripts/Android/run-app.sh` hands every `STATEUI_` variable of the shell
+that runs it to the application:
 
 ```bash
 STATEUI_TALLY=1 .scripts/Android/run-app.sh apps/Gallery debug emulator-5554
 ```
+
+### Complaints
+
+When an application hands the library something it cannot use - a gallery's
+fade of 1.4, a write from a run that a later event, or its element leaving,
+superseded, a kept key the application did not list - the library carries on
+with what it can use and says so once per process, on the standard output. An
+application routes those complaints to its own log or crash reporter, each on
+the thread that complained:
+
+```swift
+struct LoggingApp: Application {
+    init() {
+        Complaints.route { words in
+            print("[StateUI] \(words)")
+        }
+    }
+
+    var body: some Scene { WindowGroup { Text("Hello") } }
+}
+```
+
+`Complaints.route(to: nil)` sends them back to the standard output.
 
 ## Recovery and resynchronization
 

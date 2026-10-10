@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The native parts of a window and its arrangements of pages: the window's
-// chrome in WinUI's TitleBar, a split view's NavigationView, and a row of tabs.
+// chrome in WinUI's TitleBar, a split view's SplitView, and a row of tabs.
 // Each says what the user chose by the view's number and the entry's place.
 // Design: docs/design/platforms/winui/pages.md
 
@@ -13,6 +13,7 @@
 #include <winrt/Microsoft.UI.Xaml.Media.h>
 #include <winrt/Microsoft.UI.Content.h>
 #include <winrt/Microsoft.UI.Windowing.h>
+#include <winrt/Microsoft.UI.Xaml.Markup.h>
 
 using namespace stateui;
 namespace media = winrt::Microsoft::UI::Xaml::Media;
@@ -106,20 +107,48 @@ namespace {
         if (slot.Content() != shown) slot.Content(shown);
     }
 
-    /// Shows the sidebar in the split's pane, or collapses it: a closed pane stands beside the detail at no width,
-    /// where the keyboard and Narrator would still reach what it holds.
+    /// Shows the sidebar in the split's pane, or collapses it: a closed pane keeps what it holds, where the keyboard
+    /// and Narrator would still reach it.
     /// Design: docs/design/platforms/winui/pages.md#a-split-view
-    void showSidebar(controls::NavigationView const &split, bool shown) {
-        auto sidebar = split.PaneCustomContent();
+    void showSidebar(controls::SplitView const &split, bool shown) {
+        auto sidebar = split.Pane();
         auto visibility = shown ? xaml::Visibility::Visible : xaml::Visibility::Collapsed;
         if (sidebar && sidebar.Visibility() != visibility) sidebar.Visibility(visibility);
     }
 
-    /// Asks WinUI to measure `element` and everything in it again.
-    void measureAgain(xaml::DependencyObject const &element) {
-        if (auto each = element.try_as<xaml::UIElement>()) each.InvalidateMeasure();
-        for (int32_t index = 0, count = xaml::Media::VisualTreeHelper::GetChildrenCount(element); index < count; ++index)
-            measureAgain(xaml::Media::VisualTreeHelper::GetChild(element, index));
+    /// The card a split view's detail stands in: WinUI's own layer and its edge, as a Windows application's content
+    /// stands beside its navigation pane, by the theme resources that card is named by - which a window writing its
+    /// background clears (`stateui_winui_window_clear_detail`).
+    controls::Border detailCard() {
+        return xaml::Markup::XamlReader::Load(
+            L"<Border xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\""
+            L" Background=\"{ThemeResource NavigationViewContentBackground}\""
+            L" BorderBrush=\"{ThemeResource NavigationViewContentGridBorderBrush}\"/>").as<controls::Border>();
+    }
+
+    /// The brush WinUI's theme names `name`, in the theme `element` stands in.
+    media::Brush themeBrush(xaml::FrameworkElement const &element, wchar_t const *name) {
+        auto theme = winrt::box_value(element.ActualTheme() == xaml::ElementTheme::Light ? L"Light" : L"Dark");
+        auto resources = xaml::Application::Current().Resources();
+        for (auto const &merged : resources.MergedDictionaries()) {
+            auto themed = merged.ThemeDictionaries().TryLookup(theme).try_as<xaml::ResourceDictionary>();
+            if (auto found = themed ? themed.TryLookup(winrt::box_value(name)) : nullptr) return found.try_as<media::Brush>();
+        }
+        return resources.TryLookup(winrt::box_value(name)).try_as<media::Brush>();
+    }
+
+    /// Stands the split as its place says - the pane beside the detail, the card's edge along the top and the pane's
+    /// side and its corner rounded where they meet, or over it, the edge along the top alone - and the pane on its
+    /// ground for that place: the split's own, else WinUI's navigation pane's.
+    /// Design: docs/design/platforms/winui/pages.md#a-split-view
+    void stand(controls::SplitView const &split) {
+        bool beside = split.DisplayMode() == controls::SplitViewDisplayMode::Inline;
+        auto card = split.Content().as<controls::Border>();
+        card.BorderThickness(beside ? xaml::Thickness{1, 1, 0, 0} : xaml::Thickness{0, 1, 0, 0});
+        card.CornerRadius(beside ? xaml::CornerRadius{8, 0, 0, 0} : xaml::CornerRadius{0, 0, 0, 0});
+        auto own = ownBrush(split.Resources(), beside ? L"StateUIPaneBeside" : L"StateUIPaneOver");
+        split.PaneBackground(own ? own : themeBrush(split, beside ? L"NavigationViewExpandedPaneBackground"
+                                                                    : L"NavigationViewDefaultPaneBackground"));
     }
 }
 
@@ -176,11 +205,13 @@ extern "C" void stateui_winui_title_bar_set(
     }
 }
 
-extern "C" void stateui_winui_title_bar_caption_room(StateUIObjectRef handle, double *kept, double *room) {
+extern "C" void stateui_winui_title_bar_caption_room(
+    StateUIObjectRef handle, double *kept, double *room, int32_t *columns) {
     try {
         auto found = captionRoom(borrow<controls::TitleBar>(handle));
         *kept = found.trailing ? found.trailing.ActualWidth() : -1;
         *room = found.trailingRoom;
+        *columns = (found.leading ? 1 : 0) + (found.trailing ? 1 : 0);
     } catch (...) {
         report("reading the room a title bar keeps");
     }
@@ -262,51 +293,25 @@ extern "C" void stateui_winui_title_bar_set_title_view(StateUIObjectRef handle, 
     }
 }
 
-extern "C" StateUIObjectRef stateui_winui_split_make(int64_t view, double expandsAt) {
+extern "C" StateUIObjectRef stateui_winui_split_make(int64_t view) {
     try {
-        controls::NavigationView split;
-        split.PaneDisplayMode(controls::NavigationViewPaneDisplayMode::Auto);
-        split.CompactModeThresholdWidth(expandsAt);
-        split.ExpandedModeThresholdWidth(expandsAt);
-        split.CompactPaneLength(0);
-        split.IsSettingsVisible(false);
-        split.IsBackButtonVisible(controls::NavigationViewBackButtonVisible::Collapsed);
-        split.IsPaneToggleButtonVisible(false);
-        split.IsTitleBarAutoPaddingEnabled(false);
-        // The sidebar page fills its pane from the top: no border of the view's, no margin of the pane's above it.
-        // Design: docs/design/platforms/winui/pages.md#a-split-view
-        split.Resources().Insert(winrt::box_value(L"NavigationViewBorderThickness"), winrt::box_value(xaml::Thickness{0, 0, 0, 0}));
-        split.Resources().Insert(winrt::box_value(L"NavigationViewPaneContentGridMargin"), winrt::box_value(xaml::Thickness{-1, 0, 0, 0}));
-        split.Content(rows({true, false}));
-        // The pane's own content stands in a row sized to what it holds, so a sidebar's scroller would never scroll.
-        // Design: docs/design/platforms/winui/pages.md#a-split-view
-        split.Loaded(guarded("handling Loaded", [](IInspectable const &sender, xaml::RoutedEventArgs const &) {
-            auto split = sender.as<controls::NavigationView>();
-            auto sidebar = first<controls::ContentControl>(split, L"PaneCustomContentBorder");
-            auto items = first<controls::Grid>(split, L"ItemsContainerGrid");
-            auto pane = sidebar ? xaml::Media::VisualTreeHelper::GetParent(sidebar).try_as<controls::Grid>() : nullptr;
-            if (!pane || !items) return;
-            auto rows = pane.RowDefinitions();
-            rows.GetAt(controls::Grid::GetRow(sidebar)).Height(xaml::GridLengthHelper::FromValueAndType(1, xaml::GridUnitType::Star));
-            rows.GetAt(controls::Grid::GetRow(items)).Height(xaml::GridLengthHelper::Auto());
-            // Laid out once already, in the row sized to what it holds: measured again, it takes the pane's height.
-            measureAgain(sidebar);
-        }));
-        split.PaneOpening(guarded("handling PaneOpening",
-            [view](controls::NavigationView const &sender, IInspectable const &) {
+        controls::SplitView split;
+        split.DisplayMode(controls::SplitViewDisplayMode::Overlay);
+        auto card = detailCard();
+        card.Child(rows({true, false}));
+        split.Content(card);
+        stand(split);
+        split.ActualThemeChanged(guarded("handling ActualThemeChanged",
+            [](xaml::FrameworkElement const &sender, IInspectable const &) { stand(sender.as<controls::SplitView>()); }));
+        split.PaneOpening(guarded("handling PaneOpening", [view](controls::SplitView const &sender, IInspectable const &) {
             showSidebar(sender, true);
             callbacks.presented(view, true);
         }));
         split.PaneClosing(guarded("handling PaneClosing",
-            [view](controls::NavigationView const &, controls::NavigationViewPaneClosingEventArgs const &) {
+            [view](controls::SplitView const &, controls::SplitViewPaneClosingEventArgs const &) {
             callbacks.presented(view, false);
         }));
-        split.PaneClosed(guarded("handling PaneClosed",
-            [](controls::NavigationView const &sender, IInspectable const &) {
-            if (!sender.IsPaneOpen()) showSidebar(sender, false);
-        }));
-        split.DisplayModeChanged(guarded("handling DisplayModeChanged",
-            [](controls::NavigationView const &sender, IInspectable const &) {
+        split.PaneClosed(guarded("handling PaneClosed", [](controls::SplitView const &sender, IInspectable const &) {
             if (!sender.IsPaneOpen()) showSidebar(sender, false);
         }));
         return detach(split);
@@ -317,19 +322,24 @@ extern "C" StateUIObjectRef stateui_winui_split_make(int64_t view, double expand
 }
 
 extern "C" void stateui_winui_split_set(
-    StateUIObjectRef handle, StateUIObjectRef pane, StateUIObjectRef content, StateUIObjectRef row, bool open
+    StateUIObjectRef handle, StateUIObjectRef pane, StateUIObjectRef content, StateUIObjectRef row, bool open,
+    bool beside
 ) {
     try {
-        auto split = borrow<controls::NavigationView>(handle);
+        auto split = borrow<controls::SplitView>(handle);
         auto sidebar = pane ? as<xaml::UIElement>(pane) : xaml::UIElement{nullptr};
-        bool anew = split.PaneCustomContent() != sidebar;
-        if (anew) split.PaneCustomContent(sidebar);
-        auto detail = split.Content().as<controls::Grid>();
+        bool anew = split.Pane() != sidebar;
+        if (anew) split.Pane(sidebar);
+        auto detail = split.Content().as<controls::Border>().Child().as<controls::Grid>();
         standInRow(detail, 0, row);
         standInRow(detail, 1, content);
+        auto mode = beside ? controls::SplitViewDisplayMode::Inline : controls::SplitViewDisplayMode::Overlay;
+        if (split.DisplayMode() != mode) {
+            split.DisplayMode(mode);
+            stand(split);
+        }
         // A pane over the detail collapses its sidebar once it has closed; one beside it tells no closing, and a
         // view WinUI has not loaded, or a new sidebar, tells nothing.
-        bool beside = split.DisplayMode() == controls::NavigationViewDisplayMode::Expanded;
         if (open || anew || beside || !split.IsLoaded()) showSidebar(split, open);
         if (split.IsPaneOpen() != open) split.IsPaneOpen(open);
     } catch (...) {
@@ -354,10 +364,15 @@ extern "C" void stateui_winui_split_set_pane_grounds(
             acrylic.FallbackColor(color(argb | 0xFF000000u));
             return acrylic;
         };
-        writeResources(borrow<controls::NavigationView>(handle), {
-            {L"NavigationViewExpandedPaneBackground", ground(besideKind, besideArgb, besideOpacity, besideTintOpacity)},
-            {L"NavigationViewDefaultPaneBackground", ground(overKind, overArgb, overOpacity, overTintOpacity)},
-        });
+        auto split = borrow<controls::SplitView>(handle);
+        auto keep = [&](wchar_t const *name, xaml::Media::Brush const &brush) {
+            auto key = winrt::box_value(name);
+            if (brush) split.Resources().Insert(key, brush);
+            else if (split.Resources().HasKey(key)) split.Resources().Remove(key);
+        };
+        keep(L"StateUIPaneBeside", ground(besideKind, besideArgb, besideOpacity, besideTintOpacity));
+        keep(L"StateUIPaneOver", ground(overKind, overArgb, overOpacity, overTintOpacity));
+        stand(split);
     } catch (...) {
         report("standing a split view's sidebar");
     }

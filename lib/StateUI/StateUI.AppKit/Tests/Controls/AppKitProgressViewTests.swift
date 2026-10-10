@@ -8,6 +8,7 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
+@MainActor
 final class AppKitProgressViewTests: XCTestCase {
     /// The indicator shows exactly while it runs and is visible, whatever
     /// later patch reaches it: running is the spinner's, visibility the

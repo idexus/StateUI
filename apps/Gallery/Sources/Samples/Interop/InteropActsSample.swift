@@ -44,20 +44,20 @@ struct InteropActsSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Text to copy")
 
             Button("Copy to the clipboard")
-                .onClicked {
+                .onClicked(gate: .ignoreWhileRunning) {
                     try await stateUICall(GalleryContract.setClipboard, draft)
                     status = "copied"
                 }
 
             Button("Paste from the clipboard")
-                .onClicked {
+                .onClicked(gate: .ignoreWhileRunning) {
                     let text = try await stateUICall(GalleryContract.readClipboard)
                     draft = text
                     status = text.isEmpty ? "the clipboard is empty" : "pasted"
                 }
 
             Button("Ask about the battery")
-                .onClicked {
+                .onClicked(gate: .ignoreWhileRunning) {
                     let (level, charging) = try await stateUICall(GalleryContract.batteryLevel)
 
                     // A desktop without a battery answers 0, so only a level
@@ -68,7 +68,7 @@ struct InteropActsSample: SampleContent, ExampleContent {
                 }
 
             Button("Call something nobody registered")
-                .onClicked {
+                .onClicked(gate: .ignoreWhileRunning) {
                     do {
                         try await stateUICall(GalleryContract.nobody)
                         status = "that should have thrown"
@@ -83,7 +83,7 @@ struct InteropActsSample: SampleContent, ExampleContent {
                 .aim(stars)
 
             Button("Flash the bar")
-                .onClicked {
+                .onClicked(gate: .ignoreWhileRunning) {
                     try await stars.flash()
                     status = "flashed \(stars)"
                 }

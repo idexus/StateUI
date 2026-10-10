@@ -6,6 +6,7 @@
 import XCTest
 
 /// Where a scroller stands when the tree writes its offset.
+@MainActor
 final class ScrollOffsetTests: XCTestCase {
     /// A scroller that scrolls neither way stands at its origin; an offset it stands at already, none, or one that
     /// is no number moves nothing; any other moves it.

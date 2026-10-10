@@ -25,6 +25,10 @@ final class WebRenderer {
     /// The application's name, which the core tells the application.
     let applicationName: String
 
+    /// What the host hears the page by - its focus and visibility, its leaving, the user's appearance - for as
+    /// long as it runs the page.
+    private(set) var pageListeners: [Int32] = []
+
     /// The parts every host holds alike, each element's Web half a `WebElement`.
     private(set) lazy var runtime = HostRuntime(
         clock: frameClock, reducesMotion: reducesMotion,
@@ -34,8 +38,7 @@ final class WebRenderer {
     /// The Web's part of the acts and of the files, and what performs them and answers them by the host layer's rules.
     private(set) lazy var actToolkit = WebActToolkit(renderer: self)
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: WebFileToolkit(), answers: runtime.core, tree: { [unowned self] in runtime.tree },
-        answered: { [unowned self] in runtime.pump.turn() })
+        toolkit: actToolkit, files: WebFileToolkit(), answers: runtime.core, tree: { [unowned self] in runtime.tree })
 
     /// Whether the call ending reports what it laid out: a call the browser makes inside it reports nothing.
     private var ending = false
@@ -55,8 +58,7 @@ final class WebRenderer {
         self.applicationName = applicationName
         frameClock = clock.map { WebFrameClock(now: $0, ticksWithBrowser: false) } ?? WebFrameClock()
         self.reducesMotion = reducesMotion
-        runtime.displayCycle.presenter = self
-        runtime.pump.presenter = self
+        runtime.presenter = self
     }
 
     /// Starts the host in the page: told what the page stands on, the application rendered in one new scene, and a
@@ -66,24 +68,30 @@ final class WebRenderer {
         WebRenderer(applicationName: applicationName).run()
     }
 
-    /// Runs this host in the page, in place of any before it.
+    /// Runs this host in the page, in place of any before it, on the page's thread claimed as the UI thread.
     func run() {
+        runtime.core.claimUIThread()
         WebRelay.start()
         Self.shared = self
         let core = runtime.core
-        core.setRealization(WebRegistrations.registry.realization, unrealized: WebRealization.unmade)
-        WebEnvironment.report(to: core, applicationName: applicationName)
-        WebKeptValues.restore(into: core, application: applicationName)
-        WebEnvironment.watch { [weak self] in
-            self?.runtime.environmentChanged { WebEnvironment.reportChanging(to: core) }
-        }
         WebRelay.afterEntry = { [weak self] in self?.entryEnded() }
-        WebRelay.listenToPage(
-            changed: WebRelay.listener { [weak self] in self?.pageChanged(WebRelay.pageState) },
-            leaving: WebRelay.listener { [weak self] in self?.runtime.ending() })
-        // The scenes kept when the page was left come back; else the window launch opens.
-        scenes.restore(WebKeptValues.readScenes(applicationName), in: runtime)
-        entryEnded()
+        pageListeners = [
+            WebRelay.listener { [weak self] in self?.pageChanged(WebRelay.pageState) },
+            WebRelay.listener { [weak self] in self?.runtime.ending() },
+        ]
+        WebRelay.listenToPage(changed: pageListeners[0], leaving: pageListeners[1])
+        runtime.start(
+            realizing: WebRegistrations.registry.realization, unrealized: WebRealization.unmade,
+            environment: {
+                WebEnvironment.report(to: core, applicationName: applicationName)
+                pageListeners.append(WebEnvironment.watch { [weak self] in
+                    self?.runtime.environmentChanged { WebEnvironment.reportChanging(to: core) }
+                })
+            },
+            kept: { WebKeptValues.restore(into: core, application: applicationName) },
+            // The scenes kept when the page was left come back; else the window launch opens.
+            windows: { scenes.restore(WebKeptValues.readScenes(applicationName), in: runtime) },
+            turns: entryEnded)
     }
 
     /// Every call from the page ends with a turn, and asks the page to call again where work is left or a job kept
@@ -138,33 +146,19 @@ final class WebRenderer {
     }
 }
 
-extension WebRenderer: TurnPresenter {
+extension WebRenderer: HostPresenter {
     func presentRendered() {
         showWindows()
         if let text = scenes.changed(root: runtime.tree.root) { WebKeptValues.writeScenes(text, application: applicationName) }
     }
 
+    func presentFrame(movedChrome: Bool) {
+        if movedChrome { showWindows() }
+        // What a frame wrote may move a view without resizing it, which no observer of the page tells.
+        runtime.frames.laidOut()
+    }
+
     func perform(_ call: HostActCall) {
         acts.perform(call)
-    }
-}
-
-extension WebRenderer: FramePresenter {
-    var wantsFrames: Bool {
-        runtime.frames.wantsFrames
-    }
-
-    func commitUserReports(now: Double) {
-        runtime.frames.commit(now: now)
-    }
-
-    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        if runtime.tree.present(states: states, properties: properties).windowChrome { showWindows() }
-        // What a frame wrote may move a view without resizing it, which no observer of the page tells.
-        if !states.isEmpty || !properties.isEmpty { runtime.frames.laidOut() }
-    }
-
-    func renderIfNeeded() {
-        if runtime.core.needsRender { runtime.pump.turn() }
     }
 }

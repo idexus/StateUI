@@ -23,6 +23,7 @@
     }
 
     /// An outline to show the shape in: an element that draws nothing shows no shape.
+    @MainActor
     static var outlined: [any Worn] {
         [Write(BorderElementContract.stroke, Brush.solidColor(.red)), Write(BorderElementContract.lineWidth, 2)]
     }

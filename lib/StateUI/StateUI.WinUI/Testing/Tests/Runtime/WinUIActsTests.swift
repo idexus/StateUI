@@ -101,7 +101,7 @@ private struct AskingScene: Scene {
     var body: some Scene {
         WindowGroup { AskingOpeningPage() }
         Window(WindowType("acts.tool")) {
-            Button("Ask").onClicked { try await Dialogs.alert("Saved", message: "The draft is safe") }
+            Button("Ask").onClicked(gate: .ignoreWhileRunning) { try await Dialogs.alert("Saved", message: "The draft is safe") }
         }
     }
 }
@@ -111,6 +111,6 @@ private struct AskingOpeningPage: View {
 
     var body: some View {
         let application = self.application
-        return Button("Tool").onClicked { try await application.openWindow(WindowType("acts.tool")) }
+        return Button("Tool").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(WindowType("acts.tool")) }
     }
 }

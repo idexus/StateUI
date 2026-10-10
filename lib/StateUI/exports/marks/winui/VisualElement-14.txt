@@ -1,4 +1,4 @@
-# revision 7.1
+# revision 8.1
 ActivityIndicator.accessibilityHeading: ✅
 Button.isEnabled: ✅
 Button.rotation: ✅
@@ -7,54 +7,56 @@ CheckBox.isVisible: ✅
 CheckBox.pivotX: ✅
 ColorBox.style: ✅
 ColorBox.translationX: ✅
-DatePicker.automationExcludedWithChildren: ✅
+DatePicker.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 Ellipse.ignoresInput: ✅
 Ellipse.scale: ✅
 Grid.accessibilityHint: ✅
-Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-HStack.layoutDirection: ✓ read layoutDirection of HStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Image.frameChanged: ✅
-Image.maximumHeight: ✅
-Image.maximumWidth: ✅
-Image.minimumHeight: ✅
-Image.minimumWidth: ✅
-Image.rotationY: ✓ read rotationY of Image: the host's own tip, checked against the projection it laid on the element
-ItemsView.accessibilityLabel: ✅
-Line.style: ✅
-Line.translationX: ✅
-Map.automationExcludedWithChildren: 🧩
-Path.ignoresInput: ✅
-Path.scale: ✅
-Picker.accessibilityHint: ✅
-Polygon.isEnabled: does not apply - read isEnabled of Polygon - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Polygon.rotation: ✅
-Polyline.translationY: ✅
-Polyline.zIndex: ✅
-ProgressBar.background: – WinUI's progress bar paints its Background as its track, no ground under its frame.
-RadioButton.ignoresInput: ✅
-RadioButton.scale: ✅
-Rectangle.accessibilityHeading: ✅
-ScrollView.isEnabled: ✅
-ScrollView.rotation: ✅
-SearchField.translationY: ✅
-SearchField.zIndex: ✅
-Slider.layoutDirection: ✅
-Stepper.focus: ✅
-Stepper.isFocusedChanged: ✅
-Stepper.scaleY: ✅
-Stepper.unfocus: ✅
-Switch.automationExcludedWithChildren: ✅
-Text.opacity: ✅
-Text.pivotY: ✅
-TextEditor.ignoresInput: ✅
-TextEditor.scale: ✅
+Grid.layoutDirection: ✅
+HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Image.isEnabled: does not apply - read isEnabled of Image - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Image.rotation: ✅
+ItemsView.translationY: ✅
+ItemsView.zIndex: ✅
+Line.frame: ✅
+Line.scaleX: ✅
+Map.accessibilityHeading: 🧩
+Path.frameChanged: ✅
+Path.height: ✅
+Path.rotationX: ✓ read rotationX of Path: the host's own tip, checked against the projection it laid on the element
+Path.width: ✅
+Picker.accessibilityHeading: ✅
+Polygon.isVisible: ✅
+Polygon.pivotX: ✅
+Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
+Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
+Polyline.scaleY: ✅
+Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
+ProgressBar.isAccessibilityHidden: ✅
+RadioButton.frameChanged: ✅
+RadioButton.height: ✅
+RadioButton.rotationX: ✓ read rotationX of RadioButton: the host's own tip, checked against the projection it laid on the element
+RadioButton.width: ✅
+Rectangle.accessibilityLabel: ✅
+ScrollView.isVisible: ✅
+ScrollView.pivotX: ✅
+SearchField.frame: ✅
+SearchField.scaleX: ✅
+Slider.isAccessibilityHidden: ✅
+Stepper.frameChanged: ✅
+Stepper.maximumHeight: ✅
+Stepper.maximumWidth: ✅
+Stepper.minimumHeight: ✅
+Stepper.minimumWidth: ✅
+Stepper.rotationY: ✓ read rotationY of Stepper: the host's own tip, checked against the projection it laid on the element
+Switch.accessibilityHint: ✅
+Text.layoutDirection: ✅
+TextEditor.isEnabled: ✅
+TextEditor.rotation: ✅
 TextField.accessibilityHeading: ✅
-TimePicker.frameChanged: ✅
-TimePicker.height: ✅
-TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own tip, checked against the projection it laid on the element
-TimePicker.width: ✅
-VStack.accessibilityLabel: ✅
-VStack.isEnabled: ✅
-WebView.automationExcludedWithChildren: ✅
-ZStack.ignoresInput: ✅
-ZStack.scale: ✅
+TimePicker.isVisible: ✅
+TimePicker.pivotX: ✅
+VStack.style: ✅
+VStack.translationX: ✅
+WebView.accessibilityLabel: ✅
+ZStack.opacity: ✅
+ZStack.pivotY: ✅

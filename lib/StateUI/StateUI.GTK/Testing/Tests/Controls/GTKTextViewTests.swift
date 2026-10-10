@@ -36,8 +36,10 @@ private struct SpannedPage: View {
     }
 }
 
+@MainActor
 final class GTKTextViewTests: XCTestCase {
-    /// A label's words take the font, the colour, the spacing, the lines and the alignment the tree gives them.
+    /// A label's words take the font, the colour, the spacing, the lines and the alignment the tree gives them - its
+    /// size in typographic points the desktop's text scale applies to, in pixels where the words do not scale.
     func testATextTakesItsFontColourLinesAndAlignment() throws {
         try onUIThread {
             let host = GTKRenderer.running {
@@ -52,12 +54,15 @@ final class GTKTextViewTests: XCTestCase {
                         .textDecorations(.underline)
                         .maximumLines(2)
                         .horizontalTextAlignment(.center)
+                    Text("fixed").fontSize(20).isFontAutoScalingEnabled(false)
                 }
             }
-            let label = try XCTUnwrap(host.views(GTKTextView.self).first)
+            let labels = host.views(GTKTextView.self)
+            let label = try XCTUnwrap(labels.first)
             let said = label.attributes
 
-            XCTAssertEqual(said[PANGO_ATTR_ABSOLUTE_SIZE.rawValue], "\(20 * PANGO_SCALE)")
+            XCTAssertEqual(said[PANGO_ATTR_SIZE.rawValue], "\(15 * PANGO_SCALE)", "20 points, 15 typographic ones")
+            XCTAssertEqual(try XCTUnwrap(labels.last).attributes[PANGO_ATTR_ABSOLUTE_SIZE.rawValue], "\(20 * PANGO_SCALE)")
             XCTAssertEqual(said[PANGO_ATTR_WEIGHT.rawValue], "\(PANGO_WEIGHT_BOLD.rawValue)")
             XCTAssertEqual(said[PANGO_ATTR_STYLE.rawValue], "\(PANGO_STYLE_ITALIC.rawValue)")
             XCTAssertEqual(said[PANGO_ATTR_FAMILY.rawValue], "monospace")
@@ -152,7 +157,7 @@ final class GTKTextViewTests: XCTestCase {
             XCTAssertEqual(label.text, "let x = 1")
             XCTAssertEqual(label.ranged, [
                 "0-4 foreground 65535 0 0", "0-4 foreground-alpha 65535",
-                "4-5 size \(20 * PANGO_SCALE)", "4-5 style \(PANGO_STYLE_ITALIC.rawValue)",
+                "4-5 points \(15 * PANGO_SCALE)", "4-5 style \(PANGO_STYLE_ITALIC.rawValue)",
                 "4-5 weight \(PANGO_WEIGHT_BOLD.rawValue)",
                 "5-9 background 65535 65535 0", "5-9 background-alpha 65535",
                 "5-9 underline \(PANGO_UNDERLINE_SINGLE.rawValue)",
@@ -226,14 +231,15 @@ private extension GTKTextView {
     private static let kinds: [UInt32: String] = [
         PANGO_ATTR_FOREGROUND.rawValue: "foreground", PANGO_ATTR_FOREGROUND_ALPHA.rawValue: "foreground-alpha",
         PANGO_ATTR_BACKGROUND.rawValue: "background", PANGO_ATTR_BACKGROUND_ALPHA.rawValue: "background-alpha",
-        PANGO_ATTR_ABSOLUTE_SIZE.rawValue: "size", PANGO_ATTR_WEIGHT.rawValue: "weight",
+        PANGO_ATTR_SIZE.rawValue: "points", PANGO_ATTR_ABSOLUTE_SIZE.rawValue: "pixels",
+        PANGO_ATTR_WEIGHT.rawValue: "weight",
         PANGO_ATTR_STYLE.rawValue: "style", PANGO_ATTR_UNDERLINE.rawValue: "underline",
     ]
 
     private static func describe(_ attribute: UnsafeMutablePointer<PangoAttribute>) -> String {
         let raw = UnsafeMutableRawPointer(attribute)
         switch attribute.pointee.klass.pointee.type {
-        case PANGO_ATTR_ABSOLUTE_SIZE:
+        case PANGO_ATTR_SIZE, PANGO_ATTR_ABSOLUTE_SIZE:
             return "\(raw.assumingMemoryBound(to: PangoAttrSize.self).pointee.size)"
         case PANGO_ATTR_FAMILY:
             return String(cString: raw.assumingMemoryBound(to: PangoAttrString.self).pointee.value)

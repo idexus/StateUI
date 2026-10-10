@@ -106,12 +106,13 @@ struct InspectedHost {
 
 /// The record an inspector reads, and the hooks the renderer and the differ write
 /// it through - touched only by the thread that renders.
+@MainActor
 enum Inspection {
     /// Whether anything is being recorded.
-    nonisolated(unsafe) static var recording = false
+    static var recording = false
 
     /// The passes kept, oldest first.
-    nonisolated(unsafe) private(set) static var passes: [InspectedPass] = []
+    private(set) static var passes: [InspectedPass] = []
 
     /// How many passes are kept.
     static let kept = 400
@@ -121,21 +122,21 @@ enum Inspection {
     static let most = 5000
 
     /// The types of the inspector's own views, module-qualified: muted.
-    nonisolated(unsafe) static var ownViews: Set<String> = []
+    static var ownViews: Set<String> = []
 
     /// The storages of the inspector's own state: a pass caused by these alone
     /// is the inspector drawing itself, and is not kept.
-    nonisolated(unsafe) static var ownStates: Set<ObjectIdentifier> = []
+    static var ownStates: Set<ObjectIdentifier> = []
 
     /// Told whenever a pass lands or the host reports on one.
-    nonisolated(unsafe) static var landed: (() -> Void)?
+    static var landed: (() -> Void)?
 
     /// Whether the host takes every pass as text too (`STATEUI_INSPECT=1`); set by its
     /// first `takeLog()`, after which recording stays on.
-    nonisolated(unsafe) static var logging = false
+    static var logging = false
 
     /// The passes written out as text and not yet taken.
-    nonisolated(unsafe) private static var log = ""
+    private static var log = ""
 
     /// One composed view the differ is inside.
     private struct Frame {
@@ -149,14 +150,14 @@ enum Inspection {
         var children: Double = 0
     }
 
-    nonisolated(unsafe) private static var stack: [Frame] = []
-    nonisolated(unsafe) private static var pass: InspectedPass?
-    nonisolated(unsafe) private static var mutedMicros = 0.0
-    nonisolated(unsafe) private static var muting = 0
-    nonisolated(unsafe) private static var scene: ElementID?
-    nonisolated(unsafe) private static var origin = ContinuousClock.now
-    nonisolated(unsafe) private static var numbered = 0
-    nonisolated(unsafe) private static var waiting: (generation: Int32, scenes: [Double])?
+    private static var stack: [Frame] = []
+    private static var pass: InspectedPass?
+    private static var mutedMicros = 0.0
+    private static var muting = 0
+    private static var scene: ElementID?
+    private static var origin = ContinuousClock.now
+    private static var numbered = 0
+    private static var waiting: (generation: Int32, scenes: [Double])?
 
     /// Starts recording afresh.
     static func start() {

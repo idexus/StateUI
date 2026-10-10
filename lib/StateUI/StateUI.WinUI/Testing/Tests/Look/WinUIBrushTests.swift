@@ -42,6 +42,25 @@ final class WinUIBrushTests: XCTestCase {
         }
     }
 
+    /// A figure paints no ground of its own and takes none: a colour box stays its colour under a background, and an
+    /// ellipse's corner, outside its oval, stays clear.
+    func testAFigureTakesNoBackground() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                VStack {
+                    ColorBox(Color("#0000FF")).background(Color("#FF0000")).width(40).height(40)
+                    Ellipse().fill(Color("#0000FF")).background(Color("#FF0000")).width(40).height(40)
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            let box = try XCTUnwrap(host.views(WinUIColorBoxView.self).first)
+            let oval = try XCTUnwrap(host.views(WinUIPathView.self).first)
+            XCTAssertEqual(box.pixels(at: [(20, 20)]), [blue], "the box's own colour")
+            XCTAssertEqual(oval.pixels(at: [(1, 1), (20, 20)]), [0, blue], "clear outside the oval")
+        }
+    }
+
     /// A box that changes its size is painted again for the new one: turned 100 by 200, 40 left of the middle is
     /// red.
     func testARadialGradientIsPaintedAgainAtANewSize() throws {

@@ -161,7 +161,7 @@ final class GTKSplitView: GTKLayoutView {
     /// with its sidebar shown, and says so - once GTK has laid the frame out, not inside its allocation.
     private func adaptToFirstRoom(width: Double) {
         guard adaptation.room(width, breakpoint: Self.breakpoint, shown: isPresented) else { return }
-        GTKDoorbell.afterLayout { [weak self] in
+        GTKRenderer.afterLayout { [weak self] in
             guard let self, !isPresented else { return }
             present(true)
             onPresentationChanged?(true)
@@ -170,13 +170,7 @@ final class GTKSplitView: GTKLayoutView {
 
     /// The breakpoint in logical pixels: a scale-independent pixel follows the desktop's text scale.
     private static var breakpoint: Double {
-        guard let settings = gtk_settings_get_default() else { return collapsesAt }
-        var value = GValue()
-        g_value_init(&value, g_type_from_name("gint"))
-        defer { g_value_unset(&value) }
-        g_object_get_property(UnsafeMutablePointer<GObject>(settings), "gtk-xft-dpi", &value)
-        let dpi = Double(g_value_get_int(&value))
-        return dpi > 0 ? collapsesAt * dpi / (96 * 1024) : collapsesAt
+        collapsesAt * GTKEnvironment.textScale
     }
 
     override func contentSize(width: Double?) -> LayoutSize {

@@ -12,7 +12,7 @@
 ///
 ///     VStack { … }.motion(.spring(response: 260))
 ///
-///     try await $fade.journey.move(to: 0.1, .eased(400, .cubicOut))
+///     $fade.journey.move(to: 0.1, .eased(400, .cubicOut))
 ///
 /// `.none` applies a change at once. `.custom` hands the animation to an
 /// engine of your own. `.eased` and `.spring` name a timing law and its
@@ -53,7 +53,8 @@ public struct Motion: Equatable, Sendable {
     /// else `standard`.
     ///
     /// What a write means when it names no motion, so a plain assignment and
-    /// `move(to:)` agree about the motion and differ only in being awaited.
+    /// `move(to:)` agree about the motion and differ only in `move(to:)`
+    /// answering an `Arrival` whose `arrived()` waits.
     public static let inherited = Motion(
         law: .eased, milliseconds: 0, curve: .cubicOut, factor: 0, isInherited: true, isCustom: false)
 
@@ -69,12 +70,18 @@ public struct Motion: Equatable, Sendable {
     ///
     ///     ColorBox()
     ///         .translationY($ball)
-    ///         .engine(following: $ball) { cycle in
+    ///         .engine(tracking: $ball) { cycle in
     ///             let journey = $ball.journey
-    ///             let pull = (journey.destination - journey.value) * 0.2
-    ///             journey.velocity += pull
-    ///             journey.value += journey.velocity * cycle.elapsed / 1000
-    ///             return abs(pull) > 0.01 ? .again : .wait
+    ///             let seconds = cycle.elapsed / 1000
+    ///             // A spring towards the destination, damped by the speed.
+    ///             let pull = (journey.destination - journey.value) * 180 - journey.velocity * 24
+    ///             journey.velocity += pull * seconds
+    ///             journey.value += journey.velocity * seconds
+    ///             let resting = abs(journey.destination - journey.value) < 0.5 && abs(journey.velocity) < 1
+    ///             guard resting else { return .again }
+    ///             journey.value = journey.destination
+    ///             journey.velocity = 0
+    ///             return .wait
     ///         }
     ///
     /// Unlike `.none`, a write changes only where the value is going; where it

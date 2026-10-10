@@ -11,7 +11,6 @@ and a host realizes the contract member by member.
     tiers      [ViewContract.self]            members worn from a tier
     members    signal      ElementProperty<Self, TrafficSignal>
                lampTapped  ElementEvent<Self, Int>
-               flash       ElementAct<Self, Int, Void>
 
   view:      Node(contract: TrafficLightContract.self)
   modifier:  setValue(TrafficLightContract.signal, value)
@@ -23,13 +22,16 @@ and a host realizes the contract member by member.
 A tier is a contract with no node type of its own: members many elements share,
 declared once - every text control's font size is one member of one tier. An
 element names the tiers it wears, and a tier may wear tiers. `Contract.worn`
-lists a contract and every tier it wears, each once, nearest first; a member an
-element redeclares therefore belongs to the element.
+lists a contract and every tier it wears, each once, in the order met - depth
+first, in declaration order - the contract itself first. No contract wears two
+members of one name, so each member it wears has one owner
+([worn once](../contracts/tiers.md#worn-once-nearest-first)).
 
 What happens with no control behind it - an alert, the clock, a battery
-reporting - belongs to the application: `ApplicationTier` is a tier the
-application element wears, and an application declares its own exactly as the
-library declares its.
+reporting - belongs to the application: `ApplicationTier` is a contract of
+acts and events with no control behind them - `ApplicationContract` is one,
+and no element lists one among its tiers - and an application declares its
+own exactly as the library declares its.
 
 ## Members are written with their contract
 
@@ -76,11 +78,14 @@ animates, is cleared, and says nothing of motion.
 ## Values that cross
 
 `HostRepresentable` is a member's value and how it crosses and comes back:
-`Bool`, `Int` (a `Double`, read back as its whole part), `Double`, `String`, an
+`Bool`, `Int` (a `Double`, read back as its whole part - exact up to 2^53, and
+a whole number past it, which arrives rounded, said once; a carried `Int` lane
+alike), `Double`, `String`, `UInt8` (a byte), an
 optional of any of them (nil crosses as `.nothing`), `PropValue` itself, and an
-`Int32` enum (its member's number). A list of numbers crosses as one run of
-numbers, a list of text as one list of text, and a list of bytes - a file's
-contents - as one run of bytes (`.bytes`); any other list as a list of values.
+`Int32` enum (its member's number). A list of `Double` crosses as one run of
+numbers, a list of text as one list of text, a list of bytes - a file's
+contents - as one run of bytes (`.bytes`); any other list - of `Int` included -
+as a list of values.
 
 `MemberValues` encodes a member's positional values - what an event carries,
 what an act is handed and what it answers - and decodes them against the
@@ -101,9 +106,9 @@ Nobody writes a token by hand. A member's token is made from its name, and each
 name is spelled once, where a contract declares its member; the library's
 tokens (`Tokens.swift`, for the hosts, behind `@_spi(Host)`) are
 made from the members, and a guard names any source that spells a name out
-instead. A node type is the one token a contract spells, as a literal. Tokens
-compare by name, because the differ walks properties and numbers handlers in name
-order.
+instead. A node type is the one token a contract spells, as a literal. Node
+types, properties and events compare by name, because the differ walks
+properties and numbers handlers in name order.
 
 An application's own node type can be one no host knows; the host draws an
 unknown type as a red marker rather than failing, which keeps a lagging host
@@ -129,10 +134,12 @@ host takes the same machinery.
   ElementValues   what a registration reads: each member typed, whether it
                   is carried in (the host's to write - the control is the
                   source), and whether the patch changed it
-  Registration    property(...), applies([...]), raises(...)
+  Registration    property(...), applies([...]), raises(...),
+                  children(Contract, members:) - children the view draws
+                  itself, a map's markers, handed over whole as ChildElements
   Registry        add, add(madeByHost:), everyElementRealizes/Raises,
                   raises (the application's events), makeView, apply,
-                  realization
+                  childTypes, applyChildren, realization
 ```
 
 A member of a contract the element does not wear is refused and said once, at
@@ -170,8 +177,9 @@ answers shared members from the contracts rather than through the elements, so
 a tier worn only by elements the host registers nothing for is still counted.
 
 A member no contract declares is a host and the contracts disagreeing, named by
-`undeclared`. An act is held the same way but not listed there: a host performs
-some acts of its own - a chooser, a prompt - that no contract declares.
+`undeclared`. An act is not listed there: a host names each act it performs
+from its contract's member - a chooser and a prompt from `ApplicationContract` -
+so none can be undeclared.
 
 ## Unrealized names
 

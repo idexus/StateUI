@@ -36,6 +36,6 @@ extension BorderElement where Self: VisualElement {
     /// `lineWidth` from a state, `$x`: the host animates the outline to each new width, and no view is
     /// rebuilt for it.
     public func lineWidth(_ state: Binding<Double>) -> Modified {
-        journey(BorderElementContract.lineWidth, by: state)
+        twin(BorderElementContract.lineWidth, by: state)
     }
 }

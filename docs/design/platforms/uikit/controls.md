@@ -35,8 +35,9 @@ the tree reads. It draws its words in its own font and colour.
 A TextField is UIKit's field, a SearchField its search field, a TextEditor its
 text view; each takes the words the tree changed and leaves the user's typing
 and caret alone. One delegate serves them all: it reports the user's words,
-cut to the view's bound, keeps them unchanged while the view is read only,
-and hears the return key as submitting a field. A caret and a selection are
+cut to the view's bound, keeps a field's words unchanged while it is read
+only - a read-only editor is not editable - and hears the return key as
+submitting a field. A caret and a selection are
 counted in characters and handed to UIKit in its UTF-16 units. A text view has
 no placeholder of its own, so an editor shows one in a label over itself; an
 editor that grows with its words asks for their whole height instead of
@@ -54,10 +55,22 @@ a colour or a brush - fills its whole box, that room included, painted
 before the words: they are the label's own drawing, which a layer laid over
 it would cover.
 
+## The user's text size
+
+Words follow the user's text size (`isFontAutoScalingEnabled`, on unless
+said) through `UIFontMetrics`: a size the tree gives, or the body's at the
+platform's own text size, is scaled for the view's traits, and a field and
+an editor carry `adjustsFontForContentSizeCategory`. A label builds its words
+again, and a button, a picker and a radio button update their configuration,
+as the user's text size changes. Words that do not scale stand at their size
+whatever the user chooses. A day's and a time's picker draws its words in
+UIKit's own font, which follows the user always - `–` in the matrix.
+
+## A button
+
 A Button is UIKit's button, its configuration what the tree says: its words
 and their look, an icon beside them, the box behind them - its colour, its
 outline and its shape, an oval a capsule - and the room inside it.
-
 
 ## Accessibility
 
@@ -79,6 +92,6 @@ as it starts, with why, and as it ends, with how; whether there is a page
 behind and ahead, said as a whole as a navigation commits and ends - the way
 back first, and only a flag that changed; its web process dying. A step back,
 forward or a load again the program asks for carries that as its cause; a
-page still coming, which WebKit reloads without asking, is asked for again. A script's value is written as JSON
-and answers as text by the host layer's rule, as on every host
-(docs/design/host/web.md).
+page still coming, which WebKit reloads without asking, is asked for again.
+A script's value is written as JSON and answers as text by the host layer's
+rule, as on every host ([the host layer's web rules](../../host/web.md)).

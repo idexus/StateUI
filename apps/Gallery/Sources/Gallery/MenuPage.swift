@@ -5,11 +5,11 @@ import StateUI
 // listing: MenuPage
 /// The gallery's sidebar - and it is an ordinary page.
 ///
-/// That is the whole point of it. A view with the mark at the top,
-/// some rows in the middle and a line at the bottom - and a row is a view with
-/// a tap on it that writes state. There is no menu vocabulary to learn: what
-/// can go in the pane is whatever can go on a page, and what a row does is
-/// whatever a handler can do.
+/// That is the whole point of it. Some rows, a line at the bottom, and - on
+/// Android, where nothing else names the gallery - the mark at the top. A row
+/// is a view with a tap on it that writes state. There is no menu vocabulary
+/// to learn: what can go in the pane is whatever can go on a page, and what a
+/// row does is whatever a handler can do.
 ///
 /// Its title names the pane on hosts whose navigation chrome exposes that name.
 struct MenuPage: View {

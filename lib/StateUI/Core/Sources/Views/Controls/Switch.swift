@@ -65,7 +65,19 @@ public struct Switch: ElementView, TintElement, SwitchProperties {
 
     /// Fires when it is flipped, with the way it was flipped to. Runs after a
     /// binding's write.
-    public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
+    public func onToggled(_ handler: @escaping @MainActor (Bool) throws -> Void) -> Self {
         onEvent(SwitchContract.toggled, handler)
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onToggled(gate: some Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Self {
+        onEvent(SwitchContract.toggled, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onToggled(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
+        fatalError("unavailable")
     }
 }

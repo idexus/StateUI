@@ -8,6 +8,7 @@ import XCTest
 /// the elements every toolkit shares, each host holds only what its toolkit
 /// makes it write, and no host does again what an element of the layer does.
 /// These guards read the layer and every Swift host's sources as text.
+@MainActor
 final class RuntimeArchitectureTests: XCTestCase {
     /// One animator animates every value: no other file of a runtime samples a
     /// motion law, so a state channel and a described property cannot animate

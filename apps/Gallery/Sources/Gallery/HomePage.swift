@@ -15,7 +15,7 @@ import StateUI
 /// the page has been laid out - so the measurement is read TWICE, by two roads,
 /// because the two answers are different in kind. How TALL the run stands moves
 /// with every pass the layout settles through and is worn rather than drawn, so
-/// it is `.frame` into a driven state and `.engine(following:)` over it: no render, on
+/// it is `.frame` into a driven state and `.engine(tracking:)` over it: no render, on
 /// the host's own frames. WHICH ROWS THERE ARE is described, so it renders -
 /// but only when a user turns the device or drags the window past a
 /// threshold, which is a handful of times in a session rather than a handful of
@@ -50,8 +50,9 @@ struct HomePage: View {
     /// what the WRITE says rather than a word beside it: the engine writes a
     /// whole journey already standing at its answer, so every write is an
     /// arrival. Sent as the plain name - which is a set point, and a journey -
-    /// this size would crawl to its answer over half a second, with everything
-    /// under the run riding every step of it.
+    /// this size would crawl to its answer under the application's motion -
+    /// 200 ms unless said - with everything under the run riding every step of
+    /// it.
     @State private var box = HomePage.gallery
 
     /// How far the page has come in.
@@ -128,9 +129,9 @@ struct HomePage: View {
                 // The mark, the name and what it is, on the identity gradient -
                 // the one place in the app that says all three at once.
                 //
-                // The panel paints its own background and its own edge: the
-                // Card style fills a card and draws a hairline, and both would
-                // show through the gradient.
+                // The panel paints its own background and takes away its
+                // edge: the Card style draws a hairline, which would show
+                // around the gradient.
                 ZStack {
                     VStack {
                         Image("stateui_mark.png")
@@ -152,7 +153,7 @@ struct HomePage: View {
                     .spacing(10)
                     .padding(22)
                 }
-                .style("Card")
+                .style(.card)
                 .background(Palette.identity)
                 .stroke(.transparent)
                 .lineWidth(0)
@@ -276,10 +277,10 @@ struct HomePage: View {
         // THE PAGE'S OWN ROOM, written by the host and read by the arithmetic
         // that sizes the run. Nothing is built for it, which is the whole
         // difference between this and measuring a page with a `GeometryReader`:
-        // the run's height then rode a render per settling pass, and everything
-        // standing under it rode them too.
+        // the run's height would ride a render per settling pass, and
+        // everything under it with it.
         .frame($room)
-        .engine(following: $room) { cycle in
+        .engine(tracking: $room) { cycle in
             // NOTHING IS DECIDED FROM A ROOM NOBODY HAS MEASURED. Every render
             // arms every engine, so this runs once over the room as DECLARED -
             // before any layout has happened - and the host writes a frame
@@ -290,9 +291,9 @@ struct HomePage: View {
                 // A SIZE WORKED OUT FROM A MEASUREMENT DOES NOT TRAVEL, and
                 // `snap(to:)` is the one write that says so - there, going
                 // nowhere, standing still. Written as the plain name, which is
-                // a set point, this number would crawl to its answer over
-                // half a second with everything under the run riding every
-                // step of it.
+                // a set point, this number would crawl to its answer under the
+                // application's motion - 200 ms unless said - with everything
+                // under the run riding every step of it.
                 $box.journey.snap(to: Self.fitted(in: room, at: ceiling, stepping: stepping).run)
             }
 
@@ -322,7 +323,7 @@ struct HomePage: View {
 
             $shown.journey.motion = .eased(Self.entrance, .cubicOut)
             shown = 1
-            // `phase` is named in no `following:`, so writing it wakes
+            // `phase` is named in no `tracking:`, so writing it wakes
             // nothing and the entrance is over for good - the engine goes on
             // waking for `room`, sizing the run, and answering `.wait` at the
             // guard above.
@@ -658,7 +659,7 @@ private struct GroupFace: View {
             // grid holding it - a layout, with edges to cut at - clips it.
             .clipsContent(true)
         }
-        .style("Card")
+        .style(.card)
         // A CARD OF THE RUN IS A PICTURE WITH A CAPTION OVER IT, and the run
         // itself takes the touch - so nothing here is a control on any
         // platform. The card says which group it is, and what its summary

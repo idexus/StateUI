@@ -16,7 +16,7 @@ final class WebFrameView: WebDOMView {
     var onCanGoBack: (Bool) -> Void = { _ in }
     var onCanGoForward: (Bool) -> Void = { _ in }
 
-    /// The address the page gave the frame last: a document's own `data:` address, as every host tells it.
+    /// The address the page gave the frame last: a document's own `data:` address.
     private var given = ""
 
     /// Each document written in place, by the address made for it: what the frame tells for it.

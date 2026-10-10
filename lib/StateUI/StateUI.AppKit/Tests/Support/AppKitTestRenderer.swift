@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #if os(macOS)
+import AppKit
 import Foundation
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -37,6 +38,7 @@ func testRenderer(
 }
 
 /// The suite answers for the machine rather than reading it.
+@MainActor
 final class AppKitTestRendererTests: XCTestCase {
     /// EVERY TEST MAKES ITS RENDERER THROUGH `testRenderer`. The host's own
     /// initializer asks macOS whether it should reduce motion, and a machine
@@ -60,5 +62,22 @@ final class AppKitTestRendererTests: XCTestCase {
             "these make a renderer through AppKitRenderer, which reads the machine's own Reduce "
                 + "Motion setting - make it with testRenderer, which answers for the machine")
     }
+}
+/// A folder holding a picture for each name the tests give an icon or an image: a name with no file resolves to
+/// nothing, as on every host, so a test that needs a picture names one that stands here.
+@MainActor
+enum TestPictures {
+    static let directory: URL = {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("StateUIAppKitTestPictures")
+        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let dot = NSBitmapImageRep(
+            bitmapDataPlanes: nil, pixelsWide: 2, pixelsHigh: 2, bitsPerSample: 8, samplesPerPixel: 4,
+            hasAlpha: true, isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)
+        let png = dot?.representation(using: .png, properties: [:]) ?? Data()
+        for name in ["books", "favourite", "home", "mail", "more", "notes", "photo", "picture", "save", "trash"] {
+            try? png.write(to: folder.appendingPathComponent("\(name).png"))
+        }
+        return folder
+    }()
 }
 #endif

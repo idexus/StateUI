@@ -14,6 +14,7 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class MotionTests: XCTestCase {
     /// A panel of a stated opacity, which is a number with a half-way.
     private func panel(_ opacity: Double, id: String = "panel") -> Node {

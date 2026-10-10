@@ -17,6 +17,7 @@ import XCTest
 
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class ClosedVocabularyTests: XCTestCase {
     /// No closed vocabulary may ride its spelling.
     ///

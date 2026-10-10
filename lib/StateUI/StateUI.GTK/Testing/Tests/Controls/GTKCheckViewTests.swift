@@ -8,6 +8,7 @@ import CStateUIGTK
 @testable import StateUIGTKDriver
 import XCTest
 
+@MainActor
 final class GTKCheckViewTests: XCTestCase {
     /// A check box is the box and nothing else: it takes no caption's room.
     func testACheckBoxTakesItsBoxsRoomAlone() throws {
@@ -36,6 +37,20 @@ final class GTKCheckViewTests: XCTestCase {
             let views = host.views(GTKCheckView.self)
 
             XCTAssertEqual(views.map(\.indicator), ["check", "radio"])
+        }
+    }
+
+    /// A switch takes no background, as its register says: GTK paints its box as its track, which a colour there
+    /// would recolour.
+    func testASwitchTakesNoBackground() {
+        onUIThread {
+            let host = GTKRenderer.running {
+                VStack { Switch(true).background(Color("#FF0000")) }
+            }
+            let toggle = host.views(GTKSwitchView.self)[0]
+            XCTAssertFalse(
+                GTKTestHost.classes(of: toggle.widget).contains { $0.hasPrefix("stateui-fill") },
+                "the switch wears a fill: \(GTKTestHost.classes(of: toggle.widget))")
         }
     }
 

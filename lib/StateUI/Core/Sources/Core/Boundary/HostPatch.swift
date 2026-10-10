@@ -30,8 +30,8 @@
     /// typed boundary.
     var fresh = false
 
-    /// Only the properties that changed. All of them when `replace` is set or
-    /// the element is new.
+    /// Only the properties that changed. All of them when `replace` is set, the
+    /// element is new, or on a resync.
     public var properties: [Prop: HostValue] = [:]
 
     /// The properties this element described last render and does not
@@ -44,7 +44,7 @@
     public var clearedProperties: [Prop] = []
 
     /// The properties among `properties` the host is to move to rather than
-    /// assign, and how. Empty on almost every patch there ever is.
+    /// assign, and how.
     ///
     /// A moved property is ordinary in every other respect: its target is in
     /// `properties`, the differ compares it normally, and a host that ignores

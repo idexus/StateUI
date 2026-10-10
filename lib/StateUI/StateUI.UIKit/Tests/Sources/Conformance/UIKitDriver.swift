@@ -69,7 +69,7 @@ final class UIKitDriver: HostDriver {
     var register: HostRegister { UIKitRealization.register }
 
     func start(
-        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @Sendable () -> any View
+        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> MountedTree {
         finish()
         forgetWhatIsKept()
@@ -81,7 +81,7 @@ final class UIKitDriver: HostDriver {
     }
 
     /// Runs `application` on a new host, as the next launch does: what the last kept stands.
-    func start(clock: TestClock?, application: @escaping @Sendable () -> any Application) throws -> MountedTree {
+    func start(clock: TestClock?, application: @escaping @MainActor () -> any Application) throws -> MountedTree {
         finish()
         written.listen()
         let renderer = UIKitRenderer.running(clock: clock, application: application)

@@ -18,12 +18,14 @@ extension BorderElementTests {
     }
 
     /// The box cases of a layout.
+    @MainActor
     static func boxCases(_ element: String) -> [ConformanceCase] {
         guard drawnBoxes.contains(element) else { return [] }
         return [boxFilled(element), boxOutlined(element), boxWidened(element), boxShaped(element)]
     }
 
     /// A layout's box is filled in its background.
+    @MainActor
     static func boxFilled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).fillsItsBoxInItsBackground", proves: [
             Covered(VisualElementContract.background, on: element),
@@ -36,6 +38,7 @@ extension BorderElementTests {
     }
 
     /// A layout's box is outlined at its edge in its stroke, and nowhere inside.
+    @MainActor
     static func boxOutlined(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).outlinesItsBoxInItsStroke", proves: [
             Covered(BorderElementContract.stroke, on: element),
@@ -49,6 +52,7 @@ extension BorderElementTests {
     }
 
     /// A wider outline reaches further in from the box's edge.
+    @MainActor
     static func boxWidened(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).outlinesItsBoxAsWideAsTheTreeSays", proves: [
             Covered(BorderElementContract.lineWidth, on: element),
@@ -72,6 +76,7 @@ extension BorderElementTests {
     }
 
     /// A box outlined as an ellipse leaves its corners bare, which a rectangle's outline covers.
+    @MainActor
     static func boxShaped(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).outlinesItsBoxInItsShape", proves: [
             Covered(BorderElementContract.shape, on: element),
@@ -97,6 +102,7 @@ extension BorderElementTests {
     }
 
     /// A box of 60 by 40 at the top left.
+    @MainActor
     private static var room: [any Worn] {
         [
             Write(VisualElementContract.width, 60), Write(VisualElementContract.height, 40),
@@ -105,6 +111,7 @@ extension BorderElementTests {
     }
 
     /// An outline in red, `width` wide.
+    @MainActor
     private static func outline(width: Double) -> [any Worn] {
         [Write(BorderElementContract.stroke, Brush.solidColor(.red)), Write(BorderElementContract.lineWidth, width)]
     }

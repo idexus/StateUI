@@ -169,7 +169,9 @@ extension AppKitElement {
     /// StateUI's, or AppKit's giving it a size.
     /// Design: docs/design/platforms/appkit/input.md#where-a-view-stands
     func frameNumbers() -> [Double]? {
-        guard let view, let content = view.window?.contentView, isPlaced || view.frame.size != .zero else { return nil }
+        guard let view, let content = view.window?.contentView,
+              MountedElement.isLaidOut(placed: isPlaced, width: view.frame.width, height: view.frame.height)
+        else { return nil }
 
         let parentFrame = topLeftFrame(view.frame, in: view.superview)
         let windowFrame = topLeftFrame(view.convert(view.bounds, to: content), in: content)
@@ -201,9 +203,9 @@ extension AppKitElement: FrameReporter {
 
 /// A menu that enables its items by asking - the menu bar's - asks the element an item tells when chosen.
 extension AppKitElement: NSMenuItemValidation {
-    /// Whether the item can be chosen: as the tree says.
+    /// Whether the item can be chosen: as the tree says, out of reach in a disabled branch.
     func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
-        element.value(.isEnabled)?.bool ?? true
+        element.isEffectivelyEnabled
     }
 }
 #endif

@@ -55,7 +55,7 @@ extension WebRegistrations {
                 view.setPadding(values[PaddingElementContract.padding])
             }
             scroll.applies(scrollerBoxMembers) { view, values in
-                // A scroller cuts what it shows to its bounds always.
+                // A scroller cuts what it shows by its own overflow, always: its box writes no cut.
                 view.setBox(
                     background: values[VisualElementContract.background]?.propValue,
                     stroke: values[BorderElementContract.stroke]?.propValue,

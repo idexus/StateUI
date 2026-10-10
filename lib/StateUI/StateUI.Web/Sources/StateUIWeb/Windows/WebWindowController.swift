@@ -27,12 +27,16 @@ final class WebWindowController {
     private var holdsHistory = false
     private var leavesHistory = false
 
+    /// What the window hears the browser's history move by, until it closes.
+    private var historyListener: Int32 = 0
+
     init(_ element: MountedElement, runtime: HostRuntime) {
         self.element = element
         self.runtime = runtime
         window.bar.onBack = { [weak self] in self?.goBack(in: runtime) }
         window.bar.onToggle = { [weak self] in self?.toggleSidebar() }
-        WebRelay.listenToHistory(WebRelay.listener { [weak self] in self?.historyMoved() })
+        historyListener = WebRelay.listener { [weak self] in self?.historyMoved() }
+        WebRelay.listenToHistory(historyListener)
     }
 
     /// Keeps the page's own entry on the browser's history while the window offers a way back, and none while not.
@@ -75,17 +79,15 @@ final class WebWindowController {
         (presentation.arrangement?.web.view as? WebSplitView)?.adapt()
     }
 
-    /// Keeps a sheet for each page presented, in its order: a sheet gone closes, the last first, and one new is shown
-    /// over those before it.
+    /// Keeps a sheet for each page presented, in its order, by the host layer's rule (`SheetChange`): a sheet gone
+    /// closes, the top first, and one new is shown over those before it.
     /// Design: docs/design/platforms/web/pages.md#sheets
     private func showSheets(_ pages: [MountedElement]) {
-        let kept = sheets.filter { entry in
-            pages.contains { $0 === entry.element && $0.web.view === entry.sheet.page }
-        }
-        for entry in sheets.reversed() where !kept.contains(where: { $0.sheet === entry.sheet }) { entry.sheet.close() }
-        sheets = pages.compactMap { page in
-            if let entry = kept.first(where: { $0.element === page }) { return entry }
-            guard let view = page.web.view else { return nil }
+        let change = SheetChange(from: sheets, to: pages) { $0.element === $1 && $1.web.view === $0.sheet.page }
+        for entry in change.leaving { entry.sheet.close() }
+        sheets.removeLast(sheets.count - change.kept)
+        for page in change.coming {
+            guard let view = page.web.view else { continue }
             let sheet = WebSheet(page: view)
             sheet.onClosedByUser = { [weak self] in self?.dismissTopSheet() }
             sheet.bar.onBack = { [weak self] in
@@ -93,16 +95,17 @@ final class WebWindowController {
                 goBack(in: runtime)
             }
             sheet.present()
-            return (page, sheet)
+            sheets.append((page, sheet))
         }
     }
 
-    /// Closes the window, the sheets over it first, the top one first: a sheet is a modal dialog of the page's, which
-    /// would hold every page after it still.
+    /// Closes the window, the sheets over it first, the top one first - a sheet is a modal dialog of the page's, which
+    /// would hold every page after it still - and stops hearing the page's history.
     func close() {
         for entry in sheets.reversed() { entry.sheet.close() }
         sheets = []
         window.close()
+        WebRelay.stopListeningToHistory(historyListener)
     }
 
     /// The user took the top sheet away: the modal stack is told how many remain.

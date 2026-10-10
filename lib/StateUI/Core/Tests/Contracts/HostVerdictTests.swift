@@ -5,6 +5,7 @@
 import XCTest
 
 /// A verdict is the one line a host's run writes of a member, and the dictionary's mark is read from it alone.
+@MainActor
 final class HostVerdictTests: XCTestCase {
     /// Every verdict reads back as it was written, the element itself among them.
     func testAVerdictReadsBackAsItWasWritten() {
@@ -135,17 +136,5 @@ final class HostVerdictTests: XCTestCase {
         XCTAssertTrue(HostVerdict.isStale(held, family: "Slider", on: "winui", in: revisions), "WinUI's own was raised")
         XCTAssertTrue(HostVerdict.isStale("Slider: ✅\n", family: "Slider", on: "gtk", in: revisions), "no revision")
         XCTAssertTrue(HostVerdict.isStale(nil, family: "Slider", on: "gtk", in: revisions), "no file")
-    }
-
-    /// Met is proven whole, never had, or left to the application's own registration; the rest is not met.
-    func testMetIsProvenNeverOrTheApplications() {
-        let marks: [HostVerdict.Mark] = [
-            .proven, .partial(missing: "m"), .notPlanned(reason: "r"), .notRealized, .cannot("c"), .waiting(on: "w"),
-            .failed("f"), .partly("p"), .byHost("b"), .byApplication, .inapplicable("i"),
-        ]
-
-        XCTAssertEqual(
-            marks.map { HostVerdict(element: "Text", member: "text", mark: $0).meets },
-            [true, false, true, false, false, false, false, false, false, true, false])
     }
 }

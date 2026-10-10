@@ -6,10 +6,11 @@
 // Design: docs/design/core/state.md#a-material-on-a-carried-state
 
 extension Material: LaneValue {
-    /// The material as it stands, as lanes: its kind - 0 none, 1 a colour, 2 a
-    /// gradient, 3 a blur, 4 glass - then what that kind is made of.
+    /// The material as lanes: its kind - 0 none, 1 a colour, 2 a gradient, 3 a
+    /// blur, 4 glass - then what that kind is made of, each colour in the standard
+    /// theme. The state that carries a material lays it in the theme in force.
     public var carried: StateCarried {
-        .lanes(standingLanes)
+        .lanes(standingLanes(in: .standard))
     }
 
     /// The material back from its lanes; a pair's half that is none is a pair
@@ -29,29 +30,29 @@ extension Material: LaneValue {
     /// A material.
     public static var laneKind: LaneKind { .material }
 
-    /// The lanes of the material as it stands.
-    private var standingLanes: [Double] {
+    /// The lanes of the material in `theme`.
+    private func standingLanes(in theme: ThemeInForce) -> [Double] {
         switch kind {
         case .color(let color):
-            return [1] + color.standingLanes
+            return [1] + color.standingLanes(in: theme)
         case .gradient(let brush):
             return [2, Double(brush.kind.rawValue), Double(brush.geometry.count)] + brush.geometry
-                + brush.stops.flatMap { [$0.offset] + $0.color.standingLanes }
+                + brush.stops.flatMap { [$0.offset] + $0.color.standingLanes(in: theme) }
         case .blur(let blur):
-            return [3, Double(blur.thickness.rawValue)] + Self.lanes(tint: blur.tint)
-                + blur.thickness.standIn.standingLanes
+            return [3, Double(blur.thickness.rawValue)] + Self.lanes(tint: blur.tint, in: theme)
+                + blur.thickness.standIn.standingLanes(in: theme)
         case .glass(let glass):
-            return [4, Double(glass.clarity.rawValue), glass.isInteractive ? 1 : 0] + Self.lanes(tint: glass.tint)
-                + glass.fallback.standIn.standingLanes
+            return [4, Double(glass.clarity.rawValue), glass.isInteractive ? 1 : 0] + Self.lanes(tint: glass.tint, in: theme)
+                + glass.fallback.standIn.standingLanes(in: theme)
         case .pair(let light, let dark):
-            let half = StandardEnvironment.application.info.$colorScheme.standing == .dark ? dark : light
-            return half?.standingLanes ?? [0]
+            let half = theme.scheme == .dark ? dark : light
+            return half?.standingLanes(in: theme) ?? [0]
         }
     }
 
     /// A tint as five lanes: whether there is one, then its colour.
-    private static func lanes(tint: Color?) -> [Double] {
-        tint.map { [1] + $0.standingLanes } ?? [0, 0, 0, 0, 0]
+    private static func lanes(tint: Color?, in theme: ThemeInForce) -> [Double] {
+        tint.map { [1] + $0.standingLanes(in: theme) } ?? [0, 0, 0, 0, 0]
     }
 
     /// The value a host reads the lanes as - the material's own, its stand-in
@@ -117,5 +118,10 @@ extension Material: ThemeWearing {
         case .gradient(let brush): brush.stops.contains { $0.color.wearsTheTheme }
         case .blur, .glass, .pair: true
         }
+    }
+
+    /// Each pair's half in force, each colour in force.
+    func carried(wearing theme: ThemeInForce) -> StateCarried {
+        .lanes(standingLanes(in: theme))
     }
 }

@@ -14,7 +14,7 @@ extension WebElement: FrameReporter {
         host.runtime.frames.follow(self, order: view.serial, reads: reads)
         if reads, !observesSize {
             observesSize = true
-            WebRelay.observeSize(view.node, WebRelay.listener { [weak host] in host?.runtime.frames.laidOut() })
+            view.followSize { [weak host] in host?.runtime.frames.laidOut() }
         }
     }
 
@@ -22,7 +22,8 @@ extension WebElement: FrameReporter {
     /// it said last stands.
     func reportFrame() {
         guard let view, let host, WebRelay.isLaidOut(view.node) else { return }
-        let box = WebRelay.box(of: view.node)
+        let laid = WebRelay.box(of: view.node)
+        let box = view.frame(laidOut: laid) ?? laid
         let parentView = layoutParent?.view
         let parent = parentView.map { WebRelay.box(of: $0.node) } ?? box
         // A parent that scrolls holds its children in its content: their place there stays as it scrolls.

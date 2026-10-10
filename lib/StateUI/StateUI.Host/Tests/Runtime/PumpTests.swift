@@ -6,9 +6,9 @@ import XCTest
 @_spi(Host) @testable import StateUIHost
 
 /// One turn of a runtime, and the order the application's handlers run in, over a real application.
+@MainActor
 final class PumpTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         _ = HostBoundary.takeActCalls()
     }
 
@@ -33,6 +33,21 @@ final class PumpTests: XCTestCase {
         runtime.pump.dispatch(runtime.add)
 
         XCTAssertEqual(runtime.shown, ["count 0", "count 1", "count 2"])
+    }
+
+    /// A turn after a pass of the platform's loop is taken only where there is work: with none, nothing renders;
+    /// with a handler's write waiting, it renders.
+    @MainActor
+    func testATurnIsTakenOnlyWhereThereIsWork() {
+        let runtime = TurnRuntime()
+        runtime.pump.turn()
+
+        runtime.pump.turnIfWanted()
+        XCTAssertEqual(runtime.shown, ["count 0"], "nothing waited, nothing rendered")
+
+        _ = runtime.core.dispatch(runtime.add)
+        runtime.pump.turnIfWanted()
+        XCTAssertEqual(runtime.shown, ["count 0", "count 1"], "the write waiting rendered")
     }
 
     /// The handlers raised inside the user's transaction wait for it, run in their order, and one render shows
@@ -141,7 +156,7 @@ private struct CountingPage: View {
             Button("Add")
                 .onClicked { count += 1 }
             Button("Add and hide")
-                .onClicked {
+                .onClicked(gate: .none) {
                     count += 1
                     _ = try? await OnScreenKeyboard.hide()
                 }

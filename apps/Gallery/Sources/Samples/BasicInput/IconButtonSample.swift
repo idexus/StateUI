@@ -25,7 +25,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
 
             HStack {
                 Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
-                    .style("IconButton")
+                    .style(.iconButton)
                     .contentMode(.fit)
                     .width(64)
                     .height(64)
@@ -38,7 +38,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
                     .onReleased { pressed = false }
 
                 Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
-                    .style("IconButton")
+                    .style(.iconButton)
                     .contentMode(.fit)
                     .width(64)
                     .height(64)

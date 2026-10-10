@@ -26,6 +26,8 @@ extension AndroidDriver {
         case .fontSize:
             return Double(Java.callStaticFloat(Self.testSpans, Self.spanPoints, .object(reference), .int(start)))
                 .rounded().propValue
+        case .isFontAutoScalingEnabled:
+            return try Self.scales(Java.callStaticInt(Self.testSpans, Self.spanScales, .object(reference), .int(start)))
         case .fontAttributes:
             let style = Java.callStaticInt(Self.testSpans, Self.spanStyle, .object(reference), .int(start))
             return FontAttributes(rawValue: style & 3).propValue
@@ -51,6 +53,7 @@ extension AndroidDriver {
     static let spanPoints = Java.staticMethod(testSpans, "points", "(Landroid/widget/TextView;I)F")
     static let spanColor = Java.staticMethod(testSpans, "color", "(Landroid/widget/TextView;I)I")
     static let spanStyle = Java.staticMethod(testSpans, "style", "(Landroid/widget/TextView;I)I")
+    static let spanScales = Java.staticMethod(testSpans, "scales", "(Landroid/widget/TextView;I)I")
     static let spanLines = Java.staticMethod(testSpans, "lines", "(Landroid/widget/TextView;I)I")
     static let spanBackground = Java.staticMethod(testSpans, "background", "(Landroid/widget/TextView;I)I")
 }

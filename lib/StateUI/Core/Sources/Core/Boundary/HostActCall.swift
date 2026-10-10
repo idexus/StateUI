@@ -3,7 +3,8 @@
 
 /// One act the application called, for a native host to perform.
 ///
-/// The application calls through `stateUICall` or `stateUISend`. The host
+/// The application calls through `stateUICall`, `stateUISend` or an aim's
+/// `call`; the library adds its own - a save, a failed handler. The host
 /// takes the call with `HostBoundary.takeActCalls()` and answers one that
 /// carries a completion with `HostBoundary.reply(_:with:)` or
 /// `HostBoundary.fail(_:reason:)`.

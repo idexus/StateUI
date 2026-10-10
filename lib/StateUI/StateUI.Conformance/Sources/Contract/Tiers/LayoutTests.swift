@@ -23,6 +23,7 @@
 
     /// What a layout holds drawn past its edge - moved there, which its arithmetic does not see - shows until the tree
     /// says it clips, and then shows no more.
+    @MainActor
     static func clipped(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).cutsWhatItHoldsToItsOutlineWhereItClips", proves: [
             Covered(LayoutContract.clipsContent, on: element),
@@ -54,6 +55,7 @@
     }
 
     /// A press on a layout where it holds nothing reaches what stands beneath it once the tree lets input through.
+    @MainActor
     static func throughIt(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).letsAPressThroughWhereItHoldsNothing", proves: [
             Covered(LayoutContract.letsInputThrough, on: element),
@@ -84,6 +86,7 @@
 }
 
 /// A layout of each kind holding a view, as a layout's cases need it.
+@MainActor
 enum Holding {
     /// A layout of `element`'s kind holding `content`, clipping and letting input through as said, as large as
     /// said where it is and then at its room's corner.

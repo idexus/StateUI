@@ -1,10 +1,11 @@
 # Views
 
 `lib/StateUI/Core/Sources/Views` holds what an application writes: the structure
-(`Application`, `Scene`, `Window`, `Page`), the controls, the layouts and
-arrangements, the modifiers, the builders, the styles, and the library's own
-composed views. Each of them is a value that describes itself as a node; the
-core's differ turns the nodes into the patch a host applies.
+(`Application`, `Scene`, `WindowGroup`, `Window`) and the page every view stands
+on, the controls, the layouts and arrangements, the modifiers, the builders, the
+styles, and the library's own composed views. Each of them is a value that
+describes itself as a node; the core's differ turns the nodes into the patch a
+host applies.
 
 Its folders: `Tiers` and `Mixins` the tiers and their modifiers, `Bindings` a
 property carried from a state, `Composition` composed views and builders,
@@ -25,6 +26,7 @@ hangs off them, `Styles` the styles and `Inspector` the inspector.
 | [pages.md](pages.md) | application, scenes, windows, pages, the arrangements and their keys |
 | [styles.md](styles.md) | styles resolved before the patch, visual states, the sheet |
 | [measured-layouts.md](measured-layouts.md) | frame reports, placed layouts, the scroll reader and the gallery |
+| [items.md](items.md) | the items view: identities in order, entries built when a cell asks, a source a build, the empty view |
 | [inspector.md](inspector.md) | the in-app inspector of renders |
 
 ## From an application to the tree
@@ -44,16 +46,18 @@ An application declares types; the tree under a window is views.
 ```
 
 A window's node carries its page and the library's overlay - the inspector's
-panel - and a page's node carries the view and what it declares: its
-toolbar, menus, title view and overlays. See pages.md.
+panel - and a page's node carries the view, its one child, whose node carries
+what it declares for the page - its toolbar, menus, title view and overlays -
+as slot children after its own. See pages.md.
 
 ## What a view is
 
-Everything a builder collects is an `Element`: something that answers `node`, a
-`Node` read afresh on every render.
+Everything a view builder collects is `Views`: something that answers
+`nodes`, read afresh on every render. A view is one, answering with its one
+`node`.
 
 ```text
-  a control              struct Text: View { var node: Node }
+  a control              struct Text: ElementView { var node: Node }
     Text("Total")         body is its node: Node(Text, props: [text: "Total"])
 
   a container            VStack { … }
@@ -86,8 +90,8 @@ differ turns what they describe into a patch.
   a state is written
      │  its readers: a body, or a container's content closure
      ▼
-  body / content ──▶ ViewBuilder ──▶ [Element], each keyed by its path ("0", "1.some.0")
-     │                                ForEach views keyed by their items
+  body / content ──▶ ViewBuilder ──▶ Views ──nodes──▶ [Node], each keyed by its path
+     │                                ("0", "1.some.0"); ForEach views keyed by their items
      ▼
   a tree of nodes with placeholders and deferred content
      │
@@ -130,5 +134,7 @@ through those members, never through spelled tokens.
 ```
 
 The tier protocols here and the tier contracts under `Contracts/Tiers` and
-`Contracts/Mixins` name the same sets, so a modifier offered on a tier is a
-member that tier's contract declares.
+`Contracts/Mixins` name the same sets - but `PageElementContract`, whose title
+and icon a view says of its page (`View+PageValues.swift`), and
+`ModifiableElement` and `ElementView`, which declare no property - so a
+modifier offered on a tier is a member that tier's contract declares.

@@ -26,14 +26,15 @@ final class AndroidTextView: AndroidTextualView {
 
     /// The words as runs, each spanning its own part of them with how its look differs from the label's.
     func setRuns(_ runs: [TextRun]) {
-        let point = Self.pointPixels
+        let points = (scaled: Self.pixels(perPoint: true), fixed: Self.pixels(perPoint: false))
+        let labelPoints = Double(Java.callFloat(reference, JavaAPI.getTextSize)) / (scales ? points.scaled : points.fixed)
         Java.frame {
             let words = Java.new(JavaAPI.spannableBuilder, JavaAPI.newSpannableBuilder)
             var start: Int32 = 0
             for run in runs {
                 let end = start + Int32(run.text.utf16.count)
                 Java.release(local: Java.callObject(words.reference, JavaAPI.append, .object(Java.string(run.text))))
-                for span in spans(of: run, point: point) {
+                for span in spans(of: run, points: points, labelPoints: labelPoints) {
                     Java.call(
                         words.reference, JavaAPI.setSpan,
                         .object(span.reference), .int(start), .int(end), .int(Self.exclusive))
@@ -46,16 +47,19 @@ final class AndroidTextView: AndroidTextualView {
     }
 
     /// The Java spans that make a run differ from the label: its colour, size, family, weight, background and
-    /// lines. Android spaces the letters of a whole text alone.
-    private func spans(of run: TextRun, point: Double) -> [JavaObject] {
+    /// lines. Android spaces the letters of a whole text alone. A run's size stands in pixels where it follows the
+    /// user's font scale and in density-independent points where not - the label's size where the run says none
+    /// and the label scales while the run does not.
+    private func spans(of run: TextRun, points: (scaled: Double, fixed: Double), labelPoints: Double) -> [JavaObject] {
         let look = run.look
         var spans: [JavaObject] = []
         if let argb = look.color.flatMap(Self.argb) {
             spans.append(Java.new(JavaAPI.foregroundSpan, JavaAPI.newForegroundSpan, .int(argb)))
         }
-        if let size = look.size {
-            let pixels = Int32((size * point).rounded())
-            spans.append(Java.new(JavaAPI.sizeSpan, JavaAPI.newSizeSpan, .int(pixels), .bool(false)))
+        let runScales = look.scales && scales
+        if let size = look.size ?? (runScales == scales ? nil : labelPoints) {
+            let held = runScales ? Int32((size * points.scaled).rounded()) : Int32(size.rounded())
+            spans.append(Java.new(JavaAPI.sizeSpan, JavaAPI.newSizeSpan, .int(held), .bool(!runScales)))
         }
         let style = look.attributes.rawValue & 3
         if let family = look.family, let face = Java.callStaticObject(
@@ -101,15 +105,4 @@ final class AndroidTextView: AndroidTextualView {
     private static let exclusive: Int32 = 33
     private static let underline: Int32 = 8
     private static let strikethrough: Int32 = 16
-
-    /// The pixels of one point of text the user's font scale applies to - Android's scaled pixel, the label's
-    /// own size's unit - which a run's size is drawn in.
-    private static var pointPixels: Double {
-        Java.frame {
-            let resources = Java.callObject(AndroidRenderer.context, JavaAPI.getResources)!
-            let metrics = Java.callObject(resources, JavaAPI.getDisplayMetrics)!
-            return Double(Java.callStaticFloat(
-                JavaAPI.typedValue, JavaAPI.applyDimension, .int(ViewConstants.scaledPixels), .float(1), .object(metrics)))
-        }
-    }
 }

@@ -10,15 +10,16 @@ API is C, and Swift calls it as it stands ([the C API](c-api.md)).
 
 ## The GTK runtime
 
-`GTKRenderer` owns the runtime's elements, as every runtime does: the core
-link, the intake, the mounted tree whose native halves are `GTKElement`s, the
-pump, the animator and what follows it, the display cycle, and the frame
-clock. It is the pump's `TurnPresenter` - after a render it shows the window -
-and the display cycle's `FramePresenter`.
+`GTKRenderer` holds the host layer's runtime (`HostRuntime`), which holds the
+elements every runtime holds alike: the core link, the intake, the mounted
+tree whose native halves are `GTKElement`s, the pump, the animator and what
+follows it, and the display cycle on GTK's frame clock. It is the runtime's
+`HostPresenter` - after a render, and a frame that moved the chrome, it shows
+the window.
 
 A view is let go of in the turn after its element left: its `deinit` is
 `MainActor`'s, and a release outside a task's context puts it in the UI
-executor's queue, which rings the doorbell. The view takes its widget out of
+executor's queue, which posts a turn. The view takes its widget out of
 its panel and drops the reference it held.
 
 ## Starting
@@ -26,9 +27,9 @@ its panel and drops the reference it held.
 The head's `main` names the application and hands the thread to
 `StateUIGTK.run(applicationID:)`, which makes an `AdwApplication` under that
 name and runs GLib's main loop on the thread until the last window closes.
-The application's first activation calls the host, whose first act is to drain
-StateUI's UI executor on that thread: the drain is what makes the thread
-`MainActor`'s. The name is the one the desktop knows the application by, and
+The application's first activation calls the host, whose first act is to claim
+that thread as the UI thread: `claimUIThread()` makes StateUI's UI executor
+`MainActor`'s and drains it there. The name is the one the desktop knows the application by, and
 GTK keeps one instance of it: a second launch activates the first, which
 brings its window forward.
 
@@ -41,15 +42,13 @@ makes - rather than by waiting for a frame.
 
 ## The doorbell
 
-A handler that awaits resumes on `MainActor`, whose jobs wait in StateUI's UI
-executor until the host drains them. A GLib thread of the host's own parks
-until the core has work, and posts one turn to the main loop with
-`g_idle_add_full` at `G_PRIORITY_DEFAULT` - input's priority, above GTK's
-redraw - so a turn's render lands before the next frame is drawn.
-
-The thread is started from a nonisolated function: a closure written inside a
-`MainActor` function is `MainActor`'s, and the runtime reports it as a data
-race the moment another thread runs it.
+A turn is posted to the main loop with `g_idle_add_full` at
+`G_PRIORITY_DEFAULT` - input's priority, above GTK's redraw - so a turn's
+render lands before the next frame is drawn. The host gives the core that post
+at its start (`CoreLink.postTurns`), and the core makes it from any thread -
+GLib's post is thread-safe: on the UI thread for work it made - a state
+written, an act sent - and on the thread that queued a job, a handler's resume
+or a post among them. No thread of the host's waits.
 
 ## One frame
 
@@ -89,8 +88,9 @@ for the application, its scenes and its windows ([the application's
 phase](../../host/runtime.md#the-applications-phase)): whether the window is
 active, and whether it stands minimized - a Wayland desktop says nothing of
 that - told again only where one of the two changed: a surface tells every
-change of its state, its tiling and its focus among them. A window the user closes - its close button, Alt+F4, GTK's close request
-- is heard by it and its scene as it goes ([a window the user
+change of its state, its tiling and its focus among them. A window the user
+closes - its close button, Alt+F4, GTK's close request - is heard by it and
+its scene as it goes ([a window the user
 closes](../../host/runtime.md#a-window-the-user-closes)); one the tree or the
 host closes tells nothing. A window let go of tells nobody it went: its
 handlers leave before GTK destroys it.
@@ -104,10 +104,13 @@ its identifier. It tells the core what may change, and again whenever the
 desktop says one did, through the host layer ([the
 environment](../../host/runtime.md#the-environment)): the desktop's style -
 dark or light, as libadwaita's style manager reads it from the desktop's
-settings; the locale - the language and region GLib reads from the
-environment, the local zone, and the clock, the first day of the week and the
-measures of the C library's locale, the week's first day read as GTK's own
-calendar reads it; the power - UPower's display device, whether the machine
+settings - and its accent, the colour libadwaita's `accent` class gives words,
+read again as the style turns and, where libadwaita offers the user an accent
+to choose (1.6 on), as it changes; the locale - the language and region GLib
+reads from the environment, the local zone, and the clock, the first day of
+the week and the measures of the C library's locale, the week's first day
+read as GTK's own calendar reads it, and the direction GTK writes its
+language in; the power - UPower's display device, whether the machine
 is on mains, and whether the power profiles save energy, no battery where
 UPower stands nowhere; and the network - GIO's monitor, and the kind of
 connection NetworkManager calls the primary one. Once the window stands it

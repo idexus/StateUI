@@ -4,6 +4,7 @@
 import StateUI
 
 /// What a specimen wears: a member's value, or a handler of one of its events.
+@MainActor
 public protocol Worn: Sendable {
     /// `element` wearing it.
     func worn<Element: ModifiableElement>(by element: Element) -> Element where Element.Modified == Element
@@ -14,12 +15,14 @@ public protocol Worn: Sendable {
 }
 
 extension Worn {
+    @MainActor
     public func worn<Part: PropertyContainer>(byPart part: Part) -> Part where Part.Modified == Part {
         part
     }
 }
 
 /// One member and its value, written through the element's own `setValue`.
+@MainActor
 public struct Write<Owner: Contract, Value: HostRepresentable & Sendable>: Worn {
     /// The member.
     public let member: ElementProperty<Owner, Value>
@@ -37,76 +40,83 @@ public struct Write<Owner: Contract, Value: HostRepresentable & Sendable>: Worn 
         element.setValue(member, value)
     }
 
+    @MainActor
     public func worn<Part: PropertyContainer>(byPart part: Part) -> Part where Part.Modified == Part {
         part.setValue(member, value)
     }
 }
 
 /// One event and what hears it, through the element's own `onEvent`.
+@MainActor
 public struct Hear<Owner: Contract, Value: HostRepresentable & Sendable>: Worn {
     /// The event.
     public let event: ElementEvent<Owner, Value>
 
     /// What hears it.
-    public let handler: @Sendable (Value) async throws -> Void
+    public let handler: @MainActor (Value) async throws -> Void
 
     /// `event` heard by `handler`.
-    public init(_ event: ElementEvent<Owner, Value>, _ handler: @escaping @Sendable (Value) async throws -> Void) {
+    public init(_ event: ElementEvent<Owner, Value>, _ handler: @escaping @MainActor (Value) async throws -> Void) {
         self.event = event
         self.handler = handler
     }
 
+    @MainActor
     public func worn<Element: ModifiableElement>(by element: Element) -> Element where Element.Modified == Element {
         let handler = handler
-        return element.onEvent(event) { value in try await handler(value) }
+        return element.onEvent(event, gate: .none) { value in try await handler(value) }
     }
 }
 
 /// One event carrying three values, and what hears them.
+@MainActor
 public struct HearThree<Owner: Contract, First, Second, Third>: Worn
 where First: HostRepresentable & Sendable, Second: HostRepresentable & Sendable, Third: HostRepresentable & Sendable {
     /// The event.
     public let event: ElementEvent<Owner, (First, Second, Third)>
 
     /// What hears it.
-    public let handler: @Sendable (First, Second, Third) async throws -> Void
+    public let handler: @MainActor (First, Second, Third) async throws -> Void
 
     /// `event` heard by `handler`.
     public init(
         _ event: ElementEvent<Owner, (First, Second, Third)>,
-        _ handler: @escaping @Sendable (First, Second, Third) async throws -> Void
+        _ handler: @escaping @MainActor (First, Second, Third) async throws -> Void
     ) {
         self.event = event
         self.handler = handler
     }
 
+    @MainActor
     public func worn<Element: ModifiableElement>(by element: Element) -> Element where Element.Modified == Element {
         let handler = handler
-        return element.onEvent(event) { first, second, third in try await handler(first, second, third) }
+        return element.onEvent(event, gate: .none) { first, second, third in try await handler(first, second, third) }
     }
 }
 
 /// One event carrying nothing, and what hears it.
+@MainActor
 public struct HearDone<Owner: Contract>: Worn {
     /// The event.
     public let event: ElementEvent<Owner, Void>
 
     /// What hears it.
-    public let handler: @Sendable () async throws -> Void
+    public let handler: @MainActor () async throws -> Void
 
     /// `event` heard by `handler`.
-    public init(_ event: ElementEvent<Owner, Void>, _ handler: @escaping @Sendable () async throws -> Void) {
+    public init(_ event: ElementEvent<Owner, Void>, _ handler: @escaping @MainActor () async throws -> Void) {
         self.event = event
         self.handler = handler
     }
 
     public func worn<Element: ModifiableElement>(by element: Element) -> Element where Element.Modified == Element {
         let handler = handler
-        return element.onEvent(event) { try await handler() }
+        return element.onEvent(event, gate: .none) { try await handler() }
     }
 }
 
 /// What a case puts on a specimen: the members it writes, and the id it finds it by.
+@MainActor
 public struct Dressing: Sendable {
     /// What it wears, in order.
     public let worn: [any Worn]

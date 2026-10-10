@@ -10,6 +10,7 @@ import XCTest
 
 /// The focus is the platform's, and a view that watches it hears every move -
 /// an act's, the user's, the window's own.
+@MainActor
 final class AppKitFocusTests: XCTestCase {
     /// Pumps until `done` holds: a focus move is reported once it has settled,
     /// and the binding it writes renders on the next pump.
@@ -111,8 +112,8 @@ private struct Watching: View {
     var body: some View {
         VStack {
             TextField($name).aim(field).isFocused($editing)
-            Button("Focus").onClicked { try await field.focus() }
-            Button("Unfocus").onClicked { try await field.unfocus() }
+            Button("Focus").onClicked(gate: .ignoreWhileRunning) { try await field.focus() }
+            Button("Unfocus").onClicked(gate: .ignoreWhileRunning) { try await field.unfocus() }
             Text(editing ? "editing" : "idle")
         }
     }

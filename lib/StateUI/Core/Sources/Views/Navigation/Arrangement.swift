@@ -40,6 +40,7 @@ extension Node {
 }
 
 /// An `if`/`else` of views, telling whether both of its branches build an arrangement.
+@MainActor
 private protocol Branches {
     static var isArrangement: Bool? { get }
 }

@@ -16,6 +16,7 @@ import XCTest
 ///
 /// Compiled as an application's AppKit head compiles - `import StateUI` and
 /// `import StateUIAppKit` - against the modules this package's build wrote.
+@MainActor
 final class AppKitRegistrationRoadsTests: XCTestCase {
     /// A spelling taken away, and the registry's spelling for the same thing.
     private struct Road {
@@ -123,7 +124,7 @@ final class AppKitRegistrationRoadsTests: XCTestCase {
     }
 
     /// Type-checks one file: the compiler's errors where it failed, nil where it passed.
-    private static func typecheck(_ file: URL, modules: URL) -> String? {
+    private nonisolated static func typecheck(_ file: URL, modules: URL) -> String? {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
         process.arguments = ["swiftc", "-typecheck", "-parse-as-library", "-I", modules.path, file.path]

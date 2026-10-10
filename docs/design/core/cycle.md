@@ -25,25 +25,20 @@ frame.
 ## The board
 
 A `CycleBoard` holds one cycle: the images of its states (weakly - a state
-belongs to its view), its engines in running order, and one hold over both.
-There is one board per sync - one clock, one cycle - and the display's own frame
-is the only sync; a second would be a board beside it, driven from a thread of
-the host's own.
+belongs to its view) and its engines in running order. There is one board per
+sync - one clock, one cycle - and the display's own frame is the only sync.
 
-Every touch of an image goes through the board's hold, so a handler's write,
-the host's report and an engine's arithmetic cannot tear one another. The hold
-is never held while an engine runs: an engine reads and writes states, and a
-lock held across the call would be a lock the engine asks for again.
+The board is the UI thread's, as everything it serves is: a handler's write,
+the host's report and an engine's arithmetic come one after another on that
+thread, so none can tear another and nothing stands behind a lock. The host's
+doorbell posts a turn and reads nothing; the turn reads the board on the UI
+thread.
 
-What the board keeps - its storages, its engines, whether a cycle is running -
-stands in its book, a `Guarded` value reached only with the hold taken. The
-host's doorbell asks the board from a thread of its own whether anything is
-awake, and that question reads every engine's reasons to run: what it saw of
-what it follows, whether it is armed or awake. So an engine is a value in the
-book, not an object the cycle holds beside it: the cycle takes each engine's
-closure out under the hold, runs it outside, and notes what it answered under
-the hold again. Written beside the hold, those reasons would be read half
-written, and the process would crash on a torn dictionary.
+An engine is a value in the board's list, not an object the cycle holds beside
+it. The cycle takes the engine's closure and its last run out of the list,
+runs the closure, and notes what it answered by the engine's number: the
+closure reads and writes states, and an engine it disarms or arms moves the
+list under it.
 
 ## Three copies of a value
 
@@ -53,24 +48,27 @@ written, and the process would crash on a torn dictionary.
   pending     a write made while no cycle runs, waiting to be latched
 ```
 
-A read inside a cycle answers the image, so every engine in one cycle sees one
-picture. A read outside answers the newest thing this side knows - a pending
+The image is the cycle's alone, from its latch to its publish. A read during
+the cycle answers the image, so every engine in one cycle sees one picture. A
+read between cycles answers the newest thing this side knows - a pending
 write, or else the published copy - so a handler that writes a value and reads
-it back gets what it wrote, while the next cycle still runs over a picture that
-cannot change under it. Nothing outside ever sees a half-finished picture, and
-running the same cycle twice over the same image answers the same bytes.
+it back gets what it wrote, while the next cycle runs over the picture it
+latched. Running the same cycle twice over the same image answers the same
+bytes.
 
-A state the host does not carry is read live, under its own lock. On the one
-thread that runs handlers and engines alike that is the same picture, and it is
-what makes following any state cost nothing extra.
+A state the host does not carry is read live. On the one thread that runs
+handlers and engines alike that is the same picture, and it is what makes
+following any state cost nothing extra.
 
 ## Where a write lands
 
-A write inside a cycle goes into the image and marks its changed lanes dirty. A
-write outside one goes into the pending slot, and wakes the host after it has
-landed, outside the hold: a write from the pool - a `Task.detached`, an
-`async let` child sending a movement - has no event, render or act after it to
-start a cycle, and nothing else would tell the host it is there.
+A write during a cycle - an engine's, as nothing else runs then - goes into
+the image and marks its changed lanes dirty, so the engines after it see it.
+Any other write lands between cycles, in the pending slot, and asks the host for
+a turn: a write from a task that resumed on the UI thread - after a sleep, or a
+post's job (state.md#posting) - or from an application's own callback
+has no event, render or act after it to start a cycle, and nothing else would
+tell the host it is there.
 
 Each write bumps the value's stamp, even where the bytes are what they already
 were: an engine following a value a finger is holding still is entitled to hear
@@ -132,7 +130,8 @@ nothing was cycling is a reason to run.
 ## Engines
 
 An engine is the application's arithmetic run on the host's frames, written
-with `.engine(following:)`: the only code the display cycle runs. What it may
+with `.engine(following:)` or `.engine(tracking:)`: the only code the display
+cycle runs. What it may
 do is narrow on purpose - read states, write states, and say whether it has
 more to do. It may not await, ask the host for anything or touch a control,
 because it runs inside the frame the platform is drawing. The closure captures
@@ -153,7 +152,7 @@ changing spends battery on nothing.
 
 ## What wakes an engine
 
-A write to a state named in `following:` is the only reason to run, whoever
+A write to a state named in `following:` or `tracking:` is the only reason to run, whoever
 made it: a handler, a control reporting, the host's frames, another engine. A
 state read inside the run and named nowhere wakes nothing - the engine runs
 outside every render, so such a read is recorded nowhere, and writing that
@@ -174,11 +173,8 @@ view again arms the engine once with the new closure (`rearm`).
 ```
 
 A state's stamp is its storage's own write count plus its image's, because a
-value has two homes in its life. The storage's count is an atomic read without
-the storage's lock, on purpose: `carry()` takes the board's hold while holding
-the storage's lock, and an engine's `due` reads stamps under the board's hold,
-so taking the storage's lock there would take the two in the other order. A
-write from a detached task is seen a cycle late at worst.
+value has two homes in its life: the storage, and the image once the host
+carries it.
 
 A render that names different states to follow forgets the stamps, so the next
 cycle runs over the new list; one naming the same states leaves them, or every
@@ -193,11 +189,15 @@ an element is paired with its predecessor by the order the modifiers appear
 in, so an `.engine` under an `if` changes the count, and every engine of that
 element starts over (identity-and-diffing.md).
 
-`.engine(following:)` has two forms because Swift resolves one of each and not
-two of a kind: it cannot rank two parameter-pack overloads against each other
-for a multi-statement closure, nor two existential ones for a closure over two
-states. The form answering nothing takes `any Followable`; the form answering
-an `EngineAnswer` takes a pack. `Followable` exists for the first.
+An engine comes in two forms told apart by their label: `.engine(following:)`,
+which answers nothing and runs on the cycle after a followed state is written,
+however many writes came between, and `.engine(tracking:)`, which answers an
+`EngineAnswer` and keeps tracking while it says `.again`.
+Swift cannot rank two parameter-pack overloads against each other for a
+multi-statement closure; two labels leave it nothing to rank, so both take a
+pack. The plain form asks for one state at least - an engine that never
+answers and follows nothing would never run again - and the tracking form may
+track none.
 
 ## State numbers
 
@@ -235,19 +235,20 @@ that imports Foundation.
                              a page never leaves two loops counting
   a tick asks for a render   naming the ticker, so a view reading `ticks`
                              follows with nothing subscribed
-  one lock                   the count, the running flag and the run change
-                             together; reads go through it, renders are asked
-                             outside it
+  one thread                 the count, the running flag and the run change
+                             together on the UI thread, and a tick's render is
+                             asked there
   the last tick stops first  before its closure runs, so the closure can start
                              the next round - start() on a running ticker does
                              nothing, and a stop written after would undo it
+  held only through a tick   the loop keeps the ticker weakly while it sleeps,
+                             so a ticker ends with whoever holds it - a view's
+                             `@State` - with no stop written for it
 ```
 
 Its values are not separate `@State`s because they change together: a tick
 moves the count, the last one clears the running flag, and `start`, `stop` and
-`reset` arrive from wherever the tick's work ended up; read from separate locks,
-`start()` racing a last tick could see the count of one moment and the flag of
-another.
+`reset` answer the count and the flag of one moment.
 
 A lap that took longer than a whole interval would leave the deadline so far
 behind that the missed laps all come due at once, so the next deadline is

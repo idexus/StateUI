@@ -5,17 +5,8 @@
 // render. Nothing about it crosses to the host.
 // Design: docs/design/core/identity-and-diffing.md#watching-values
 
-/// What `.onChanged` runs, given the old value and the new one, in that order.
-///
-///     .onChanged(step) { old, new in
-///         direction = new > old ? "forward" : "back"
-///     }
-///
-/// It runs on `@MainActor` like every handler, and may write `@State` and await.
-public typealias ChangeHandler<Value> = nonisolated(nonsending) (Value, Value) async throws -> Void
-
-/// The same with the value's type erased - what a node stores.
-typealias ErasedChangeHandler = nonisolated(nonsending) (Any, Any) async throws -> Void
+/// What `.onChanged` runs, the value's type erased - what a node stores: the old value and the new one.
+typealias ErasedChangeHandler = @MainActor (Any, Any) async throws -> Void
 
 /// One value a view watches and what to run when it moves; the comparison is
 /// captured where the value's type was known.
@@ -30,25 +21,29 @@ struct Watch {
     /// What to run, given the old value and the new one.
     let run: ErasedChangeHandler
 
+    /// What a change does while a run is under way.
+    let gate: any Gate
+
     /// A watch on one value. Written by `.onChanged`, never by hand.
-    init<Value: Equatable>(_ value: Value, run: @escaping ErasedChangeHandler) {
+    init<Value: Equatable>(_ value: Value, gate: some Gate, run: @escaping ErasedChangeHandler) {
         self.value = value
         self.matches = { stored in (stored as? Value).map { $0 == value } }
+        self.gate = gate
         self.run = run
     }
 }
 
 extension ModifiableElement {
-    /// Runs something when `value` is not what it was last render.
+    /// Runs something when `value` is not what it was last render - all of it,
+    /// after the render's walk, in that render.
     ///
     ///     VStack { … }
-    ///         .onChanged(query) { try await search() }
+    ///         .onChanged(step) { visits += 1 }
     ///
     /// The value is compared with the one this view carried last render. It does
-    /// not fire when the view first appears - use `.onCreated` for that. The
-    /// handler runs once the render has walked the tree, and what it writes before
-    /// its first suspension is sent in the same render; a handler that moves the
-    /// value it watches every time is a loop.
+    /// not fire when the view first appears - use `.onCreated` for that. What the
+    /// handler writes is sent in the same render; a handler that moves the value
+    /// it watches every time is a loop.
     ///
     /// Each `.onChanged` is paired with its predecessor by the order the modifiers
     /// appear in, so one written under an `if` makes the view start watching afresh.
@@ -58,9 +53,40 @@ extension ModifiableElement {
     ///   - handler: What to run once the value has moved.
     public func onChanged<Value: Equatable>(
         _ value: Value,
+        _ handler: @escaping @MainActor () throws -> Void
+    ) -> Modified {
+        onChanged(value, gate: .none) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what another change
+    /// does while a run is under way - a newer query cancelling the search for
+    /// the older one, say.
+    ///
+    ///     VStack { … }
+    ///         .onChanged(query, gate: .cancelPrevious) { try await search() }
+    ///
+    /// What the handler writes before its first suspension is sent in the same
+    /// render.
+    ///
+    /// - Parameters:
+    ///   - value: What to watch. Anything `Equatable`.
+    ///   - gate: what the handler passes through: what a change does while a run is under way.
+    ///   - handler: What to run once the value has moved.
+    public func onChanged<Value: Equatable>(
+        _ value: Value,
+        gate: some Gate,
         _ handler: @escaping EventHandler
     ) -> Modified {
-        modified { $0.watches.append(Watch(value) { _, _ in try await handler() }) }
+        modified { $0.watches.append(Watch(value, gate: gate) { _, _ in try await handler() }) }
+    }
+
+    /// A handler that awaits says what a change does while it runs.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onChanged(value, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onChanged<Value: Equatable>(
+        _ value: Value,
+        _ handler: @escaping EventHandler
+    ) -> Modified {
+        fatalError("unavailable")
     }
 
     /// The same, handed the value it was and the value it now is.
@@ -79,15 +105,40 @@ extension ModifiableElement {
     ///   - handler: What to run, given the old value and the new one.
     public func onChanged<Value: Equatable>(
         _ value: Value,
-        _ handler: @escaping ChangeHandler<Value>
+        _ handler: @escaping @MainActor (Value, Value) throws -> Void
+    ) -> Modified {
+        onChanged(value, gate: .none) { old, new in try handler(old, new) }
+    }
+
+    /// The same, with a handler that awaits, handed the value it was and the
+    /// value it now is; its `gate` says what another change does while a run is
+    /// under way.
+    ///
+    /// - Parameters:
+    ///   - value: What to watch. Anything `Equatable`.
+    ///   - gate: what the handler passes through: what a change does while a run is under way.
+    ///   - handler: What to run, given the old value and the new one.
+    public func onChanged<Value: Equatable>(
+        _ value: Value,
+        gate: some Gate,
+        _ handler: @escaping ValueEventHandler<Value, Value>
     ) -> Modified {
         modified {
-            $0.watches.append(Watch(value) { old, new in
+            $0.watches.append(Watch(value, gate: gate) { old, new in
                 // Both casts hold by construction: a slot is written by one modifier.
                 guard let old = old as? Value, let new = new as? Value else { return }
 
                 try await handler(old, new)
             })
         }
+    }
+
+    /// A handler that awaits says what a change does while it runs.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onChanged(value, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onChanged<Value: Equatable>(
+        _ value: Value,
+        _ handler: @escaping ValueEventHandler<Value, Value>
+    ) -> Modified {
+        fatalError("unavailable")
     }
 }

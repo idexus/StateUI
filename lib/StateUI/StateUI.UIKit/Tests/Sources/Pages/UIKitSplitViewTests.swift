@@ -9,6 +9,7 @@ import XCTest
 
 /// A split view's columns as UIKit shows them: the sidebar over the detail in a narrow room, as on a phone, and
 /// beside it in a wide one, as on an iPad.
+@MainActor
 final class UIKitSplitViewTests: XCTestCase {
     /// In a narrow room the split view stays two columns - the sidebar sliding over the detail, never one column
     /// standing in for the other - and each column is as narrow as the room: its tabs and sheets are a phone's.
@@ -36,6 +37,25 @@ final class UIKitSplitViewTests: XCTestCase {
         host.settle { split.displayMode != .secondaryOnly }
         XCTAssertEqual(split.displayMode, room == .compact ? .oneOverSecondary : .oneBesideSecondary)
         XCTAssertTrue(menuOpen.wrappedValue, "the program's move is not told back as another")
+    }
+
+    /// A sidebar whose page says no title names its column's bar by the application's name; the detail stays
+    /// untitled.
+    @MainActor
+    func testAnUntitledSidebarIsNamedByTheApplication() throws {
+        // The tests' host reports no application; one does as it starts.
+        HostBoundary.setApplicationInfo(HostApplicationInfo(name: "Notes", packageName: "", versionString: "", buildString: ""))
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+        }
+        defer { host.finish() }
+        let split = try XCTUnwrap(host.runtime.tree.root?.first(type: .splitView))
+        let name = host.runtime.core.applicationName
+
+        XCTAssertFalse(name.isEmpty, "the host reported the application's name")
+        let chrome = { (page: MountedElement?) in (page?.native as? UIKitElement)?.chrome.title }
+        XCTAssertEqual(chrome(split.children.first), name)
+        XCTAssertEqual(chrome(split.children.dropFirst().first), "")
     }
 
     /// A sidebar the application paints stands on UIKit's plain column, which UIKit parts from the detail by its

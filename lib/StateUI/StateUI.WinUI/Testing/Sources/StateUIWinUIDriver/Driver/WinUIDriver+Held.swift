@@ -41,6 +41,7 @@ extension WinUIDriver {
         }
         guard let view else { throw cannot }
         if property.name == "layoutDirection" { return try direction(of: view, element) }
+        if property.name == "automationExcludedWithChildren" { return excluded(view, element) }
         if let held = try viewHolds(property.name, view) { return held }
         if let held = try wordsHold(property.name, view) { return held }
         if let held = try boxHolds(property.name, view) { return held }
@@ -148,6 +149,16 @@ extension WinUIDriver {
         return (try read(holder, "flowDirection") == "1" ? LayoutDirection.rightToLeft : .leftToRight).propValue
     }
 
+    /// Whether the view is left out with its children: itself out of what assistive technology meets, and nothing it
+    /// holds met - but the parts a control's template draws, where the register records them staying.
+    private func excluded(_ view: WinUIView, _ element: MountedElement) -> HostValue? {
+        let facts = view.automationFacts
+        let judgement = WinUIRealization.register.judgement(
+            of: "automationExcludedWithChildren", on: element.type.name, from: "VisualElement")
+        let partsStay = if case .partial? = judgement { true } else { false }
+        return (!facts.isControl && !facts.isContent && (facts.children == 0 || partsStay)).propValue
+    }
+
     /// Every element: shown, how opaque, taking input, what assistive technology meets, how it is moved.
     private func viewHolds(_ name: String, _ view: WinUIView) throws -> HostValue? {
         switch name {
@@ -164,9 +175,6 @@ extension WinUIDriver {
         case "isAccessibilityHidden":
             let facts = view.automationFacts
             return (!facts.isControl && !facts.isContent).propValue
-        case "automationExcludedWithChildren":
-            let facts = view.automationFacts
-            return (!facts.isControl && !facts.isContent && facts.children == 0).propValue
         case "translationX": return view.drawnTransform.translationX.propValue
         case "translationY": return view.drawnTransform.translationY.propValue
         case "rotation": return view.drawnTransform.rotation.propValue
@@ -208,6 +216,7 @@ extension WinUIDriver {
         case "textColor": return try Self.color(read(view, "foreground")).map { $0.propValue }
         case "fontSize": return Double(try read(view, "fontSize"))?.propValue
         case "fontFamily": return Name(try read(view, "fontFamily")).propValue
+        case "isFontAutoScalingEnabled": return (try read(view, "textScales") == "1").propValue
         case "fontAttributes":
             var attributes: FontAttributes = []
             if (Int(try read(view, "fontWeight")) ?? 400) >= 600 { attributes.insert(.bold) }

@@ -37,13 +37,13 @@ extension View {
 
     /// The page's background from a state, `$x`: the host animates its colour to each new value.
     public func pageBackground(_ state: Binding<Color>) -> Modified {
-        pageSays { $0.journey(PageContract.background.token, by: state) }
+        pageSays { $0.twin(PageContract.background, carrying: state) }
     }
 
     /// The page's background from a material state, `$x`: the host shows each
     /// new material as it stands.
     public func pageBackground(_ state: Binding<Material>) -> Modified {
-        pageSays { $0.plain(PageContract.background, by: state) }
+        pageSays { $0.twin(PageContract.background, by: state) }
     }
 
     /// Whether the navigation bar shows while the page is on top of its stack.
@@ -53,7 +53,7 @@ extension View {
 
     /// Whether the navigation bar shows, from a state, `$x`.
     public func showsNavigationBar(_ state: Binding<Bool>) -> Modified {
-        pageSays { $0.plain(PageContract.showsNavigationBar, by: state) }
+        pageSays { $0.twin(PageContract.showsNavigationBar, by: state) }
     }
 
     /// Whether the way back is offered while the page is on top - false for a page the user must finish rather than
@@ -64,7 +64,7 @@ extension View {
 
     /// Whether the way back is offered, from a state, `$x`.
     public func showsBackButton(_ state: Binding<Bool>) -> Modified {
-        pageSays { $0.plain(PageContract.showsBackButton, by: state) }
+        pageSays { $0.twin(PageContract.showsBackButton, by: state) }
     }
 
     /// What the back button reads while the page ABOVE this one is on top - written on the page the user would go
@@ -79,27 +79,87 @@ extension View {
     }
 
     /// Runs as the page comes on screen - on every arrival, coming back from a pushed page included.
+    public func onAppearing(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        onAppearing(gate: .none) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onAppearing(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.appearing, gate: gate, handler) } }
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onAppearing(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onAppearing(_ handler: @escaping EventHandler) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageContract.appearing, handler) } }
+        fatalError("unavailable")
     }
 
     /// Runs as the page leaves the screen - covered, left, or another tab chosen.
+    public func onDisappearing(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        onDisappearing(gate: .none) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onDisappearing(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.disappearing, gate: gate, handler) } }
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDisappearing(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onDisappearing(_ handler: @escaping EventHandler) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageContract.disappearing, handler) } }
+        fatalError("unavailable")
     }
 
     /// Runs once navigation has arrived at the page. Only navigation says it; `onAppearing` answers any showing.
+    public func onNavigatedTo(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        onNavigatedTo(gate: .none) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onNavigatedTo(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.navigatedTo, gate: gate, handler) } }
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigatedTo(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onNavigatedTo(_ handler: @escaping EventHandler) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageContract.navigatedTo, handler) } }
+        fatalError("unavailable")
     }
 
     /// Runs as navigation is about to leave the page, while it is still on screen.
+    public func onNavigatingFrom(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        onNavigatingFrom(gate: .none) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onNavigatingFrom(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.navigatingFrom, gate: gate, handler) } }
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigatingFrom(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onNavigatingFrom(_ handler: @escaping EventHandler) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageContract.navigatingFrom, handler) } }
+        fatalError("unavailable")
     }
 
     /// Runs once navigation has left the page, its destination on screen.
+    public func onNavigatedFrom(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        onNavigatedFrom(gate: .none) { try handler() }
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onNavigatedFrom(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+        pageSays { $0.modified { $0.addHandler(PageContract.navigatedFrom, gate: gate, handler) } }
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigatedFrom(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onNavigatedFrom(_ handler: @escaping EventHandler) -> Modified {
-        pageSays { $0.modified { $0.addHandler(PageContract.navigatedFrom, handler) } }
+        fatalError("unavailable")
     }
 }

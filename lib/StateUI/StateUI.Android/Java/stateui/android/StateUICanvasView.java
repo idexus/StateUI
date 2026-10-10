@@ -17,9 +17,9 @@ import java.util.ArrayDeque;
 
 /**
  * A canvas: StateUI's drawing instructions replayed in the order they were written, inside the view's own
- * bounds, in points. The Swift host sends the whole drawing in one call - each instruction's kind, colours,
- * flags and text as ints, its numbers as floats, its text as strings, an arc as the curves it runs along -
- * and a finger's press, drag and release come back in points.
+ * bounds, in points. The Swift host sends the whole drawing in one call - each instruction's kind and colours,
+ * a text's alignments and index and a path's count of curves as ints, its numbers as floats, its text as
+ * strings, an arc as the curves it runs along - and a finger's press, drag and release come back in points.
  */
 final class StateUICanvasView extends View {
     /** The instructions' kinds, as StateUI numbers them. */
@@ -85,6 +85,21 @@ final class StateUICanvasView extends View {
         ArrayDeque<State> saved = new ArrayDeque<>();
         int at = 0;
         int number = 0;
+        // A record running past the end of its lists stops the drawing there: what stands before it is drawn.
+        try {
+            draw(canvas, state, saved, at, number);
+        } catch (ArrayIndexOutOfBoundsException runsPast) {
+            // Nothing past the cut is read.
+        }
+        while (!saved.isEmpty()) {
+            saved.pop();
+            canvas.restore();
+        }
+        canvas.restore();
+    }
+
+    /** Draws the records from `at` and `number` on: ints and numbers as the host laid them out. */
+    private void draw(Canvas canvas, State state, ArrayDeque<State> saved, int at, int number) {
         while (at < ints.length) {
             int kind = ints[at++];
             switch (kind) {
@@ -153,11 +168,6 @@ final class StateUICanvasView extends View {
                 default: return;
             }
         }
-        while (!saved.isEmpty()) {
-            saved.pop();
-            canvas.restore();
-        }
-        canvas.restore();
     }
 
     private boolean filling(State state) {

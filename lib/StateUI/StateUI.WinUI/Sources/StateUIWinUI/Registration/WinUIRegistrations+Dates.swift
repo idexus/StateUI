@@ -21,7 +21,7 @@ extension WinUIRegistrations {
             }
             picker.property(DatePickerContract.format) { view, format in view.setFormat(format) }
             picker.property(DatePickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
-            picker.applies(dayMembers) { view, values in applyDayWords(view, values) }
+            picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.raises(DatePickerContract.dateChanged)
             picker.raises(DatePickerContract.opened)
@@ -34,22 +34,9 @@ extension WinUIRegistrations {
         }, members: { picker in
             picker.property(TimePickerContract.time) { view, time in view.setTime(time) }
             picker.property(TimePickerContract.format) { _, _ in }
-            picker.applies(dayMembers) { view, values in applyDayWords(view, values) }
+            picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.raises(TimePickerContract.timeChanged)
         })
-    }
-
-    /// The font and the colour a day or a time is written in.
-    private static let dayMembers: [any ContractMember] = [
-        FontElementContract.fontSize, FontElementContract.fontAttributes, FontElementContract.fontFamily,
-        TextStyleElementContract.textColor,
-    ]
-
-    private static func applyDayWords<Realized: ElementContract>(_ view: WinUIView, _ values: ElementValues<Realized>) {
-        view.setFont(
-            size: values[FontElementContract.fontSize], attributes: values[FontElementContract.fontAttributes],
-            family: values[FontElementContract.fontFamily]?.text)
-        view.setForeground(values[TextStyleElementContract.textColor]?.propValue)
     }
 }

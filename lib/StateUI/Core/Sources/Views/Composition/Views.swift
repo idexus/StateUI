@@ -5,6 +5,7 @@
 /// where it was written. Every view is one; the view builder makes the rest -
 /// `Statements` for several statements, `Either` for the branches of an `if`,
 /// an optional for an `if` with no `else`, `ForEach` for repetition.
+@MainActor
 public protocol Views {
     /// The nodes, in order, each carrying where it was written.
     var nodes: [Node] { get }

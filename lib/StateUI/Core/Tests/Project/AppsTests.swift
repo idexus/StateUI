@@ -21,6 +21,7 @@
 import Foundation
 import XCTest
 
+@MainActor
 final class AppsTests: XCTestCase {
     /// `apps/HelloWorld`, what a new application is made from.
     private var helloWorld: URL {

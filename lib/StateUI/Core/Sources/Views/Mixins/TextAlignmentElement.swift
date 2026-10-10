@@ -21,12 +21,12 @@ extension TextAlignmentElement where Self: VisualElement {
     /// `horizontalTextAlignment` from a state, `$x`: the host sets each new
     /// value as it stands, and no view is rebuilt for it.
     public func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Modified {
-        plain(TextAlignmentElementContract.horizontalTextAlignment, by: state)
+        twin(TextAlignmentElementContract.horizontalTextAlignment, by: state)
     }
 
     /// `verticalTextAlignment` from a state, `$x`: the host sets each new value
     /// as it stands, and no view is rebuilt for it.
     public func verticalTextAlignment(_ state: Binding<TextAlignment>) -> Modified {
-        plain(TextAlignmentElementContract.verticalTextAlignment, by: state)
+        twin(TextAlignmentElementContract.verticalTextAlignment, by: state)
     }
 }

@@ -5,7 +5,8 @@
 // Design: docs/design/core/scenes.md#the-scene-tree
 
 /// The application's scenes standing now - each at most once, from its first window to its last.
-final class OpenScenes: @unchecked Sendable {
+@MainActor
+final class OpenScenes {
     /// The one there is: a process runs one application.
     static let shared = OpenScenes()
 
@@ -110,8 +111,8 @@ final class OpenScenes: @unchecked Sendable {
 
     // MARK: - Opening and closing windows
 
-    /// Opens a window of `type` - nil for one more of the group launch and *File ▸ New* make a window of - for
-    /// `value`, written `text`, in the scene declaring it, which opens with it where it does not stand.
+    /// Opens a window of `type` - nil for one more of the group launch and *File ▸ New Window* make a window
+    /// of - for `value`, written `text`, in the scene declaring it, which opens with it where it does not stand.
     /// Design: docs/design/core/scenes.md#opening-windows
     func open(_ type: WindowType?, value: AnyHashable? = nil, text: String? = nil, of valueType: Any.Type? = nil)
         throws {

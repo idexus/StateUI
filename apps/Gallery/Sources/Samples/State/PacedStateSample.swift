@@ -18,9 +18,9 @@ struct PacedStateSample: SampleContent, ExampleContent {
     var body: some View {
         // One walked value, shown three ways.
         VStack {
-            // A CONVERTER. The words are worked out on the display's frames
-            // and the host wears them, so nothing here is described again -
-            // this count stands still for the whole walk.
+            // A CONVERTER. The words are worked out from the destination as
+            // it is written, and the host wears them, so nothing here is
+            // described again - this count stands still for the whole walk.
             VStack {
                 DebugInfoLabel()
 
@@ -67,12 +67,12 @@ struct PacedStateSample: SampleContent, ExampleContent {
                 Button("Fade")
                     .accessibilityIdentifier("paced.fade")
                     .accessibilityLabel("Fade the box out")
-                    .onClicked { try await $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
+                    .onClicked { $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
 
                 Button("Back")
                     .accessibilityIdentifier("paced.back")
                     .accessibilityLabel("Bring the box back")
-                    .onClicked { try await $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
+                    .onClicked { $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
             }
             .spacing(12)
             .horizontalAlignment(.center)

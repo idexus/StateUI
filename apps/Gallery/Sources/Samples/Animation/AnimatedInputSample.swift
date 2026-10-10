@@ -91,7 +91,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
 
                 button("Send the bottom one") {
                     try await $level.journey.move(to: level < 0.5 ? 1 : 0,
-                                               .eased(900, .cubicInOut))
+                                               .eased(900, .cubicInOut)).arrived()
                 }
             }
             .spacing(10)
@@ -113,7 +113,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
                     .horizontalAlignment(.start)
 
                 button("Send the stepper to 12") {
-                    try await $count.journey.move(to: 12, .eased(800, .cubicOut))
+                    try await $count.journey.move(to: 12, .eased(800, .cubicOut)).arrived()
                 }
             }
             .spacing(10)
@@ -176,7 +176,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
     /// One of the buttons, all of which look the same.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
-            .onClicked(act)
+            .onClicked(gate: .cancelPrevious, act)
     }
     // listing: end
 }

@@ -18,7 +18,7 @@ public enum TimeZoneInfo {
     /// `setenv("TZ", zone, 1)` with this before its first `TimeZone` use.
     ///
     /// - Returns: the IANA identifier of the host's local time zone.
-    public static nonisolated(nonsending) func local() async throws -> String {
+    public static func local() async throws -> String {
         try await stateUICall(ApplicationContract.currentTimeZone)
     }
 
@@ -39,7 +39,7 @@ public enum TimeZoneInfo {
     ///   - zone: an IANA identifier, or nil for the host's own zone.
     ///   - date: the day to ask about, or nil for the offset in effect now.
     /// - Returns: the zone's distance from UTC, negative west of it.
-    public static nonisolated(nonsending) func utcOffset(
+    public static func utcOffset(
         of zone: String? = nil,
         on date: CalendarDate? = nil
     ) async throws -> Duration {

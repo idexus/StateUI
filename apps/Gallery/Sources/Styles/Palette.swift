@@ -39,7 +39,7 @@ enum Palette {
 
     /// Violet into orange: the two halves of what this library is, in one
     /// mark. The gallery's signature, and deliberately RARE - the home page's
-    /// title, and nothing else.
+    /// title, and the Materials sample's gradient.
     static let identity = Brush.linearGradient(
         [
             GradientStop(Color(light: AppColors.violet, dark: AppColors.violetDeep), 0),

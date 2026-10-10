@@ -35,6 +35,9 @@
     /// The lines under or through the words.
     public var decorations = TextDecorations.none
 
+    /// Whether the words' size follows the user's text-size setting.
+    public var scales = true
+
     /// A look saying nothing: the host's own throughout.
     public init() {}
 
@@ -56,6 +59,7 @@
         look.letterSpacing = letterSpacing != 0 ? letterSpacing : other.letterSpacing
         look.lineHeight = lineHeight ?? other.lineHeight
         look.decorations = decorations.isEmpty ? other.decorations : decorations
+        look.scales = scales && other.scales
         return look
     }
 }
@@ -88,6 +92,7 @@ extension MountedElement {
         look.letterSpacing = number(.tracking) ?? 0
         look.lineHeight = number(.lineHeight)
         look.decorations = value(.textDecorations)?.enumeration.map { TextDecorations(rawValue: $0) } ?? .none
+        look.scales = value(.isFontAutoScalingEnabled)?.bool != false
         return look
     }
 

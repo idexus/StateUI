@@ -10,6 +10,7 @@ import XCTest
 final class AndroidPagesTests: XCTestCase {
     static var allTests: [(String, (AndroidPagesTests) -> () throws -> Void)] {
         [
+            ("testADrawerStandsAtTheEdgeTheLanguageStartsFrom", testADrawerStandsAtTheEdgeTheLanguageStartsFrom),
             ("testAStackShowsItsTopPageUnderItsBarAndGoesBack", testAStackShowsItsTopPageUnderItsBarAndGoesBack),
             ("testTabsOnAStackNameTheBarByTheirOwnTitle", testTabsOnAStackNameTheBarByTheirOwnTitle),
             ("testWordsOnAPaintedBarFollowHowDarkItIs", testWordsOnAPaintedBarFollowHowDarkItIs),
@@ -168,6 +169,29 @@ final class AndroidPagesTests: XCTestCase {
             log.values = []
             XCTAssertTrue(host.goBack())
             XCTAssertEqual(log.values, ["Root appearing", "Root navigatedTo"])
+        }
+    }
+
+    /// A sidebar in a language written right to left is a drawer at the right edge, the edge that language starts
+    /// from.
+    func testADrawerStandsAtTheEdgeTheLanguageStartsFrom() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                SplitView(State(wrappedValue: true).projectedValue) {
+                    TitledPage(title: "Menu")
+                } detail: {
+                    TitledPage(title: "Home")
+                }
+            }
+            let hebrew = try XCTUnwrap(HostLocaleInfo(words: ["he", "IL", "he-IL", "Asia/Jerusalem", "1", "0", "1", "1"]))
+            let english = try XCTUnwrap(HostLocaleInfo(words: ["en", "GB", "en-GB", "Europe/London", "1", "1", "1", "0"]))
+            defer { host.runtime.environmentChanged { host.runtime.core.setLocaleInfo(english) } }
+            host.runtime.environmentChanged { host.runtime.core.setLocaleInfo(hebrew) }
+            host.layOut()
+            let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
+            XCTAssertTrue(split.overlays, "a narrow window's sidebar is a drawer")
+            XCTAssertEqual(
+                split.drawer.frame.x + split.drawer.frame.width, split.frame.width, "the drawer stands at the right edge")
         }
     }
 
@@ -698,6 +722,7 @@ private struct SearchingPage: View {
 }
 
 /// A page under the sheets one state lists, telling its window - the window's page, a modal stack.
+@MainActor
 private func sheetsPage(
     _ sheets: State<[Int]>, log: Received<String> = Received(), windows: Received<WindowSession> = Received()
 ) -> ModalStack {
@@ -722,6 +747,7 @@ private struct ScenePage: View {
 }
 
 /// A split whose sidebar slides over a stack, as on a phone.
+@MainActor
 private func drawerOverStack(sidebar: some View) -> some View {
     SplitView(State(wrappedValue: false).projectedValue) {
         sidebar

@@ -6,6 +6,7 @@ import AppKit
 import XCTest
 @testable import StateUIAppKit
 
+@MainActor
 final class AppKitFrameClockTests: XCTestCase {
     /// The runtime has one frame signal and one timebase, and both are the
     /// frame clock's: no other file of the host takes a display link or reads

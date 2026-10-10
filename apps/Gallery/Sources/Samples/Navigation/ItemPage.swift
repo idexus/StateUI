@@ -38,7 +38,7 @@ struct ItemPage: View {
             }
             .spacing(16)
         }
-        .style("Card")
+        .style(.card)
         .padding(24)
         .margin(24)
         .background(Palette.well)

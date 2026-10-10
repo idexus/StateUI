@@ -69,19 +69,19 @@ struct StyleSample: SampleContent, ExampleContent {
             // A keyed style is asked for; a keyed style REPLACES the implicit
             // one, so it says everything it needs.
             Text("Headline")
-                .style("Headline")
+                .style(.headline)
 
             SectionTitle("A style written from another")
 
             // The same words twice. "Quote" states the shape; "QuoteLoud" is
-            // `.basedOn("Quote")` plus one colour - so everything that matches
+            // `.basedOn(.quote)` plus one colour - so everything that matches
             // below is inherited, and the one thing that differs is the one
             // thing it declares.
             Text("The same eleven words, and one of these declares a colour.")
-                .style("Quote")
+                .style(.quote)
 
             Text("The same eleven words, and one of these declares a colour.")
-                .style("QuoteLoud")
+                .style(.quoteLoud)
         }
         .spacing(14)
     }
@@ -103,7 +103,7 @@ struct StyleSample: SampleContent, ExampleContent {
 
             Text("Both quotes are italic, both are 17 point, both are centred, both "
                 + "carry the same letter spacing - and only one of them says so. "
-                + "`QuoteLoud` is `.basedOn(\"Quote\")` and a text colour, which "
+                + "`QuoteLoud` is `.basedOn(.quote)` and a text colour, which "
                 + "is the whole of its declaration. A property the child states "
                 + "wins; every property it leaves out comes from the parent.")
                 .fontSize(12)

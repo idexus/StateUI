@@ -21,6 +21,7 @@
 
     /// `member` of `element`, presented as a tabbed view's first tab, holds what the tree gives it and what the tree
     /// changes it to.
+    @MainActor
     static func inTab<Value: HostRepresentable & Sendable & Equatable>(
         _ member: ElementProperty<PageElementContract, Value>, of element: String, _ first: Value, then second: Value
     ) -> ConformanceCase {
@@ -62,6 +63,7 @@
     }
 
     /// The visible page's title names its window.
+    @MainActor
     static var titled: ConformanceCase {
         ConformanceCase("Page.theVisiblePagesTitleNamesItsWindow", proves: [
             Covered(PageElementContract.title, on: "Page"),
@@ -74,6 +76,7 @@
     }
 
     /// The visible page's title said from a state names its window, and follows the state as it is written.
+    @MainActor
     static var titledByState: ConformanceCase {
         ConformanceCase("Page.theTitleFromAStateFollowsIt", proves: [
             Covered(PageElementContract.title, on: "Page"),
@@ -98,6 +101,7 @@
 }
 
 /// A page of each kind wearing the tier - a page of its own, or an arrangement - carrying one of the tier's members.
+@MainActor
 enum Presented {
     /// A page of `element`'s kind whose `member` is `value`, `beside` its words.
     static func page<Value: HostRepresentable & Sendable & Equatable>(

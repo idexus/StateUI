@@ -9,6 +9,7 @@ import AppKit
 import StateUIConformance
 import XCTest
 
+@MainActor
 final class AppKitTimePickerViewTests: XCTestCase {
     /// A time is an hour and a minute: the field keeps no second it does not show.
     @MainActor

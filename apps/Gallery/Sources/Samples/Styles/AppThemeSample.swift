@@ -10,7 +10,7 @@ struct AppThemeSample: SampleContent, ExampleContent {
     static let id = "appTheme"
     static let title = "Theme"
     static let summary = "The theme as a value a view can branch on - "
-        + "updated live when the system switches."
+        + "updated live as the theme in force changes."
 
     // listing: AppThemeSample
     var body: some View {
@@ -40,7 +40,9 @@ struct AppThemeSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("Switch the SYSTEM's appearance and the word above follows "
-                + "in the same breath.")
+                + "in the same breath, while the application holds no theme of its "
+                + "own. On GNOME the gallery opens held in the dark; the Appearance "
+                + "sample's \"The system's\" lets it follow.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

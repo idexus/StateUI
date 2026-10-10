@@ -7,6 +7,7 @@ import XCTest
 
 /// What a host reads of the machine it stands on, as the core is told it on every host, and the one step that
 /// follows a change of it.
+@MainActor
 final class EnvironmentFactsTests: XCTestCase {
     /// A locale is eight words; the week's first day counts from Sunday's 0; any other count is no locale.
     func testALocaleIsEightWords() throws {

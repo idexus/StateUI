@@ -23,7 +23,7 @@ Swift protocols behind them refine each other.
   |-- FontElement                        family, size, weight and slant, text-size scaling
   |-- LineHeightElement                  space between lines
   |-- DecorableTextElement               underline and strikethrough
-  |-- BorderElement                      a control's own outline and corner radius
+  |-- BorderElement                      the shape of an element's own box, and its outline
   |-- ImageElement                       how a picture fills its room
   |-- TintElement                        a control's one accent colour
   '-- MenuItemElement                    an item the user chooses: caption, icon, action
@@ -72,7 +72,8 @@ write each other's key.
 
 A tier is worn by whatever carries its values, not only by views. A `TextSpan`,
 one run of text inside a label, wears the text tiers and no view. A `Style`
-is a property container, so it can carry any member a control can. A page
+is a property container typed by its control: `Style<Button>` carries any
+property a button carries, and nothing else. A page
 and a page arrangement say their title and icon under the same keys, so both
 wear `PageElement`, and it wears nothing: a page carries its title and its
 icon and no other value an element carries.

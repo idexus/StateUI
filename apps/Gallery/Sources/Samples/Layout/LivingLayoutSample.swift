@@ -40,7 +40,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                             .fontSize(15)
                             .verticalAlignment(.center)
                     }
-                    .style("Card")
+                    .style(.card)
                     .padding(Insets(left: 12, top: 8, right: 12, bottom: 8))
                     .background(Palette.raised)
                     .lineWidth(0)
@@ -98,7 +98,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
                 .verticalAlignment(.center)
         }
-        .style("Card")
+        .style(.card)
         .background(colour)
         .opacity(faded ? 0.55 : 1)
         .lineWidth(0)

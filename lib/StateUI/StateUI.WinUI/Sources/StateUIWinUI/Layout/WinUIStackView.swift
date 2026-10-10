@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A VStack or an HStack: the core's stack arithmetic over the relay's panel.
+/// A VStack or an HStack: the host layer's stack arithmetic over the relay's panel.
 @MainActor
 final class WinUIStackView: WinUITravellingLayout {
     /// The axis the stack runs along.

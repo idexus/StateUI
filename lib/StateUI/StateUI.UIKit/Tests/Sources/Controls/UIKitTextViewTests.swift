@@ -8,6 +8,7 @@ import UIKit
 import XCTest
 
 /// A label's own box on UIKit.
+@MainActor
 final class UIKitTextViewTests: XCTestCase {
     /// A label's background fills its whole box, the room around its words included - a colour, and a brush.
     @MainActor

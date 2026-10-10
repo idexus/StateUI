@@ -56,9 +56,10 @@ extension ButtonProperties where Self: View {
 ///         .shape(.roundedRectangle(8))
 ///         .onClicked { counter += 1 }
 ///
-/// A handler runs on the main actor and may `await`; the interface goes on
-/// updating while it is suspended, so `.onClicked { items = try await load() }`
-/// needs nothing around it.
+/// A handler runs on the main actor. One that awaits passes through a gate,
+/// which says what a click does while it runs -
+/// `.onClicked(gate: .ignoreWhileRunning) { items = try await load() }` - and
+/// the interface goes on updating while it is suspended.
 public struct Button: ElementView, TextualElement, FontElement, PaddingElement, BorderElement, ImageElement,
     ButtonProperties {
     /// The node this control describes.
@@ -98,22 +99,58 @@ public struct Button: ElementView, TextualElement, FontElement, PaddingElement, 
 
     // MARK: Events
 
-    /// Runs when the button is pressed AND released on it - the ordinary one.
-    /// A second `.onClicked` runs beside the first, like every typed event
-    /// modifier.
-    public func onClicked(_ handler: @escaping EventHandler) -> Self {
+    /// Runs when the button is pressed AND released on it - the ordinary one - all
+    /// of it before the click is over. A second `.onClicked` runs beside the first,
+    /// like every typed event modifier.
+    public func onClicked(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(ButtonContract.clicked, handler)
     }
 
+    /// Runs when the button is clicked, awaiting as it goes; its `gate` says what a
+    /// click does while a run is under way.
+    public func onClicked(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(ButtonContract.clicked, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClicked(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onClicked(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
+    }
+
     /// Runs the moment a press begins, before it ends.
-    public func onPressed(_ handler: @escaping EventHandler) -> Self {
+    public func onPressed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(ButtonContract.pressed, handler)
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onPressed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(ButtonContract.pressed, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPressed(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onPressed(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 
     /// Runs when the press ends, wherever the pointer ends up - unlike
     /// `onClicked`, which needs it to end on the button.
-    public func onReleased(_ handler: @escaping EventHandler) -> Self {
+    public func onReleased(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(ButtonContract.released, handler)
+    }
+
+    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// again while a run is under way.
+    public func onReleased(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+        onEvent(ButtonContract.released, gate: gate, handler)
+    }
+
+    /// A handler that awaits passes through a gate.
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onReleased(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    public func onReleased(_ handler: @escaping EventHandler) -> Self {
+        fatalError("unavailable")
     }
 }
 
@@ -138,18 +175,18 @@ extension Button {
     /// `iconPosition` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func iconPosition(_ state: Binding<IconPosition>) -> Modified {
-        plain(.iconPosition, by: state)
+        twin(ButtonContract.iconPosition, by: state)
     }
 
     /// `iconSpacing` from a state, `$x`: the host animates the property to each
     /// new value, and no view is rebuilt for it.
     public func iconSpacing(_ state: Binding<Double>) -> Modified {
-        journey(.iconSpacing, by: state)
+        twin(ButtonContract.iconSpacing, by: state)
     }
 
     /// `lineBreak` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func lineBreak(_ state: Binding<LineBreak>) -> Modified {
-        plain(ButtonContract.lineBreak.token, by: state)
+        twin(ButtonContract.lineBreak, carrying: state)
     }
 }

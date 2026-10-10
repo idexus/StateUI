@@ -15,6 +15,7 @@ import CStateUIGTK
 extension GTKDriver {
     /// What `element` holds of `property`, read from its widget; nil for a member this does not read.
     func reads(_ property: Prop, on element: MountedElement, view: GTKView?) -> HostValue?? {
+        if property == .isFontAutoScalingEnabled { return scalesHolds(element, view) }
         if element.type == .textSpan { return spanHolds(property, element) }
         if let assisted = accessibilityHolds(property, element, view) { return assisted }
         if property == .title, let tab = tabTitle(of: element) { return .some(tab.propValue) }
@@ -112,6 +113,63 @@ extension GTKDriver {
                     : has(GTK_INPUT_HINT_NO_SPELLCHECK) && !has(GTK_INPUT_HINT_WORD_COMPLETION) ? .plain : .default
             }
             return read.propValue
+        }
+    }
+
+    // MARK: - The desktop's text scale
+
+    /// Whether `element`'s words grow with the desktop's text scale: how tall they stand where it is doubled, beside
+    /// how tall they stand now - a span's run in its label, else the widget.
+    private func scalesHolds(_ element: MountedElement, _ view: GTKView?) -> HostValue?? {
+        if element.type == .textSpan {
+            guard let (label, start, _) = Self.run(of: element) else { return nil }
+            return Self.grows(GTKWidget(label)) {
+                var place = PangoRectangle()
+                pango_layout_index_to_pos(gtk_label_get_layout(label), Int32(start), &place)
+                return Double(place.height) / Double(PANGO_SCALE)
+            }.propValue
+        }
+        guard let widget = view?.widget else { return nil }
+        // An editor's box keeps its height; its text view's words are measured.
+        let words = view is GTKTextEditorView
+            ? GTKTestHost.descendants(of: widget).first { GTKTestHost.holds($0, gtk_text_view_get_type()) } ?? widget
+            : widget
+        return Self.grows(widget) {
+            var natural: Int32 = 0
+            gtk_widget_measure(words, GTK_ORIENTATION_VERTICAL, -1, nil, &natural, nil, nil)
+            return Double(natural)
+        }.propValue
+    }
+
+    /// Whether what `height` measures grows as the desktop's text scale doubles - its own given back after.
+    private static func grows(_ widget: GTKWidget, _ height: () -> Double) -> Bool {
+        let standing = height()
+        let dots = desktopDots
+        desktopDots = dots * 2
+        GTKTestHost.pump(0.05)
+        defer {
+            desktopDots = dots
+            GTKTestHost.pump(0.05)
+        }
+        return height() > standing + 0.5
+    }
+
+    /// The desktop's dots an inch, in GTK's 1024ths - what GNOME's text scale writes.
+    private static var desktopDots: Int32 {
+        get {
+            var value = GValue()
+            g_value_init(&value, g_type_from_name("gint"))
+            defer { g_value_unset(&value) }
+            g_object_get_property(UnsafeMutablePointer<GObject>(gtk_settings_get_default()), "gtk-xft-dpi", &value)
+            let dots = g_value_get_int(&value)
+            return dots > 0 ? dots : 96 * 1024
+        }
+        set {
+            var value = GValue()
+            g_value_init(&value, g_type_from_name("gint"))
+            defer { g_value_unset(&value) }
+            g_value_set_int(&value, newValue)
+            g_object_set_property(UnsafeMutablePointer<GObject>(gtk_settings_get_default()), "gtk-xft-dpi", &value)
         }
     }
 
@@ -336,10 +394,13 @@ private struct PangoRun {
     func holds(_ property: Prop) -> HostValue? {
         switch property {
         case .fontSize:
-            return first(PANGO_ATTR_ABSOLUTE_SIZE).map {
-                (Double($0.withMemoryRebound(to: PangoAttrSize.self, capacity: 1) { $0.pointee.size }) / Double(PANGO_SCALE))
-                    .propValue
+            // Pixels where the words stand fixed; typographic points, back in StateUI's, where they scale.
+            let size = { (attribute: UnsafeMutablePointer<PangoAttribute>) in
+                Double(attribute.withMemoryRebound(to: PangoAttrSize.self, capacity: 1) { $0.pointee.size })
+                    / Double(PANGO_SCALE)
             }
+            return (first(PANGO_ATTR_ABSOLUTE_SIZE).map(size) ?? first(PANGO_ATTR_SIZE).map { size($0) * 96 / 72 })?
+                .propValue
         case .fontFamily:
             return first(PANGO_ATTR_FAMILY).map {
                 Name(String(cString: $0.withMemoryRebound(to: PangoAttrString.self, capacity: 1) { $0.pointee.value })).propValue

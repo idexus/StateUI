@@ -74,12 +74,12 @@ extension Int: PersistentValue {
     /// here does.
     public var persistentValue: PropValue { .number(Double(self)) }
 
-    /// The value back from the host, or nil for anything that is not a number.
+    /// The value back from the host, or nil for anything that is not a number an `Int` holds.
     /// - Parameter persisted: what the host read out of the store.
     public init?(persisted: PropValue) {
-        guard case .number(let value) = persisted else { return nil }
+        guard case .number(let value) = persisted, let whole = Int(nearest: value) else { return nil }
 
-        self = Int(value)
+        self = whole
     }
 }
 
@@ -170,96 +170,91 @@ public struct PersistentKey: Hashable, Sendable, CustomStringConvertible {
 }
 
 /// Where kept state lives on this side: what the host hydrated, the storage for
-/// each key, and the keys waiting to be saved. Behind its own lock.
-final class PersistentStore: @unchecked Sendable {
+/// each key, and the keys waiting to be saved.
+@MainActor
+final class PersistentStore {
     /// The one store: a process has one host.
     static let shared = PersistentStore()
-
-    private let guarded = Lock()
 
     /// What the host read out of the store before the first render, by key name.
     private var hydrated: [String: PropValue] = [:]
 
     /// The storage standing for each key, with the typed write that lands a restored
     /// value in it - the first state to claim a key puts its own here.
-    private var storages: [String: (storage: AnyObject, land: (PropValue) -> Void)] = [:]
+    private var storages: [String: (storage: AnyObject, land: @MainActor (PropValue) -> Void)] = [:]
 
     /// The keys written since the last take, each with its last value.
     private var waiting: [String: PropValue] = [:]
 
+    /// The names the application lists, once the host has read them.
+    private var listed: Set<String>?
+
+    /// The host read the keys the application lists: a key a state keeps and the list leaves out is said.
+    /// Design: docs/design/core/state.md#kept-state
+    func listed(_ keys: [PersistentKey]) {
+        listed = Set(keys.map(\.name))
+        for name in storages.keys.sorted() { sayUnlisted(name) }
+    }
+
+    /// Says once that the host never reads `name` at launch, where the list leaves it out.
+    private func sayUnlisted(_ name: String) {
+        guard let listed, !listed.contains(name) else { return }
+        complain("'\(name)' keeps a state but application.persistentKeys does not list it: the host never reads it "
+            + "at launch, so its value comes back one launch late. List it in the application's init.")
+    }
+
     /// Takes what the host read out of the store, before the first render; a storage
     /// claimed earlier takes its value now.
     func hydrate(_ values: [(name: String, value: PropValue)]) {
-        let landings: [((PropValue) -> Void, PropValue)] = guarded.withLock {
-            var landings: [((PropValue) -> Void, PropValue)] = []
-
-            for pair in values {
-                hydrated[pair.name] = pair.value
-
-                if let standing = storages[pair.name] {
-                    landings.append((standing.land, pair.value))
-                }
-            }
-
-            return landings
-        }
-
-        // Outside the hold: the storage's lock always comes first.
-        // Design: docs/design/core/state.md#kept-state
-        for (land, value) in landings {
-            land(value)
+        for pair in values {
+            hydrated[pair.name] = pair.value
+            storages[pair.name]?.land(pair.value)
         }
     }
 
-    /// The storage this key means, decided under one hold: the one standing, or the
-    /// offered one adopted, with a value the host already read landed in it.
+    /// The storage this key means: the one standing, or the offered one adopted, with
+    /// a value the host already read landed in it.
     /// Design: docs/design/core/state.md#kept-state
     func claim(
         _ key: PersistentKey,
         orAdopt storage: AnyObject,
-        landing land: @escaping (PropValue) -> Void
+        landing land: @escaping @MainActor (PropValue) -> Void
     ) -> AnyObject {
-        let (owner, held): (AnyObject, PropValue?) = guarded.withLock {
-            if let standing = storages[key.name] {
-                return (standing.storage, nil)
-            }
-
-            storages[key.name] = (storage, land)
-            return (storage, hydrated[key.name])
+        if let standing = storages[key.name] {
+            return standing.storage
         }
 
-        if let held {
+        storages[key.name] = (storage, land)
+        sayUnlisted(key.name)
+
+        if let held = hydrated[key.name] {
             land(held)
         }
 
-        return owner
+        return storage
     }
 
-    /// Marks a key for saving with its value. Runs under the state's lock, so it only
-    /// records; the write wakes the host.
+    /// Marks a key for saving with its value; the write wakes the host.
     func record(_ key: PersistentKey, _ value: PropValue) {
-        guarded.withLock { waiting[key.name] = value }
+        waiting[key.name] = value
     }
 
     /// How many keys are waiting - work the host takes whether or not a render was
     /// asked for.
-    var pending: Int { guarded.withLock { waiting.count } }
+    var pending: Int { waiting.count }
 
     /// The keys waiting, sorted by name, taken.
     func takeWaiting() -> [(name: String, value: PropValue)] {
-        guarded.withLock {
-            let taken = waiting.sorted { $0.key < $1.key }
-            waiting.removeAll(keepingCapacity: true)
-            return taken.map { (name: $0.key, value: $0.value) }
-        }
+        let taken = waiting.sorted { $0.key < $1.key }
+        waiting.removeAll(keepingCapacity: true)
+        return taken.map { (name: $0.key, value: $0.value) }
     }
 
     /// Forgets everything, for tests building many sessions in one process.
     func forgetAll() {
-        guarded.withLock {
-            hydrated.removeAll()
-            storages.removeAll()
-            waiting.removeAll()
-        }
+        hydrated.removeAll()
+        storages.removeAll()
+        waiting.removeAll()
+        listed = nil
     }
 }

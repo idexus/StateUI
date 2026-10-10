@@ -7,6 +7,7 @@
 import XCTest
 
 /// The pointers pressed on a view: one dragged past its distance, two pinched by how far apart they stand.
+@MainActor
 final class WebPressTests: XCTestCase {
     private let corner = Point(x: 100, y: 100)
     private let size = LayoutSize(width: 200, height: 200)

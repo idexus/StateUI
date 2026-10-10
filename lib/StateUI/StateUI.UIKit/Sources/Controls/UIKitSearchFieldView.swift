@@ -12,11 +12,10 @@ import UIKit
 final class UIKitSearchFieldView: UISearchTextField, UIKitTextInputView {
     let typing = UIKitTyping()
 
-    private let madeFont = UIFont.preferredFont(forTextStyle: .body)
-
     init() {
         super.init(frame: .zero)
-        font = madeFont
+        font = .stateUI(TextLook())
+        adjustsFontForContentSizeCategory = true
         setReturnKey(InputTraits.submitLabel(nil, searching: true))
         hearTyping()
     }
@@ -27,7 +26,8 @@ final class UIKitSearchFieldView: UISearchTextField, UIKitTextInputView {
     }
 
     func setLook(_ look: TextLook) {
-        font = .stateUI(look, standing: madeFont)
+        font = .stateUI(look, in: traitCollection)
+        adjustsFontForContentSizeCategory = look.scales
         textColor = look.color.flatMap(UIColor.init(stateUI:)) ?? .label
     }
 }

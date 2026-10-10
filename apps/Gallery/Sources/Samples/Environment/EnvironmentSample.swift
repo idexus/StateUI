@@ -3,6 +3,7 @@ import StateUI
 // listing: EnvironmentSample
 /// Who is signed in - the object a whole branch shares. Its properties are
 /// `@State`, so a write to one rebuilds exactly the views that READ it.
+@MainActor
 private final class Session {
     @State var name = "guest"
     @State var visits = 0

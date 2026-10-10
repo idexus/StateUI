@@ -230,9 +230,8 @@ final class GTKFileToolkit: FileToolkit {
         }
     }
 
-    /// The contents of the file at `path`, read beside the UI thread.
-    /// The file's bytes, or its first `maximum`: GIO reads block by block and stops once it holds as many, the
-    /// last block's rest cut off.
+    /// The file's bytes, or its first `maximum`, read beside the UI thread: GIO reads block by block and stops once it
+    /// holds as many, the last block's rest cut off.
     private static func contents(of path: String, atMost maximum: Int?) async -> Result<[UInt8], ActFailure> {
         await withCheckedContinuation { done in
             let gfile = g_file_new_for_path(path)

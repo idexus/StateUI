@@ -8,6 +8,7 @@ import UIKit
 import XCTest
 
 /// A picture is read from the application's images and measured in points.
+@MainActor
 final class UIKitImageViewTests: XCTestCase {
     /// An SVG of 40 by 20 points, drawn three times over; a PNG of 6 by 4 pixels kept at a pixel a point; a name
     /// with no picture, which takes no room.
@@ -92,7 +93,7 @@ private struct PicturesPage: View {
         let application = self.application
         return VStack {
             if opens {
-                Button("Open").onClicked { try await application.openWindow(WindowType("pictures.again")) }
+                Button("Open").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(WindowType("pictures.again")) }
             }
             ForEach(Array(0..<17)) { _ in
                 Image("test_wide.svg").width(177).height(248)

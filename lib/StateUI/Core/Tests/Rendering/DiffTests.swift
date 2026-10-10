@@ -12,6 +12,7 @@ private final class Log: @unchecked Sendable {
     var lines: [String] = []
 }
 
+@MainActor
 final class DiffTests: XCTestCase {
     func testFirstRenderDescribesEverything() {
         let renders = Renders()
@@ -265,7 +266,7 @@ final class DiffTests: XCTestCase {
 
         func tree(_ withHandler: Bool) -> Node {
             var node = Node(type: "Button", id: "b", props: ["text": .string("go")])
-            if withHandler { node.events["clicked"] = {} }
+            if withHandler { node.addHandler("clicked", gate: .none) {} }
             return node
         }
 

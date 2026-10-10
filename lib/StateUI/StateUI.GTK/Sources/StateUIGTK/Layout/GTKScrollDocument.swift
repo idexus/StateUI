@@ -27,7 +27,7 @@ final class GTKScrollDocument: GTKLayoutView {
 
         let arranged = ScrollArithmetic.arrange(
             item, padding: padding, orientation: orientation,
-            in: LayoutSize(width: bounds.width, height: bounds.height))
+            in: LayoutSize(width: bounds.width, height: bounds.height), direction: direction)
         item.view.layout(arranged.place)
     }
 }

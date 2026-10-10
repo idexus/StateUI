@@ -11,12 +11,11 @@ import UIKit
 final class UIKitTextFieldView: UITextField, UIKitTextInputView {
     let typing = UIKitTyping()
 
-    private let madeFont = UIFont.preferredFont(forTextStyle: .body)
-
     init() {
         super.init(frame: .zero)
         borderStyle = .roundedRect
-        font = madeFont
+        font = .stateUI(TextLook())
+        adjustsFontForContentSizeCategory = true
         hearTyping()
     }
 
@@ -26,7 +25,8 @@ final class UIKitTextFieldView: UITextField, UIKitTextInputView {
     }
 
     func setLook(_ look: TextLook) {
-        font = .stateUI(look, standing: madeFont)
+        font = .stateUI(look, in: traitCollection)
+        adjustsFontForContentSizeCategory = look.scales
         textColor = look.color.flatMap(UIColor.init(stateUI:)) ?? .label
     }
 }

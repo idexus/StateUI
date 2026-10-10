@@ -12,9 +12,9 @@ extension WinUIElement: FrameReporter {
         view != nil && element.readsOwnFrame
     }
 
-    /// Says where the element stands, where that changed (`MountedElement.reportFrame`).
+    /// Says where the element stands, where that changed (`MountedElement.reportFrame`) - once a layout placed it.
     func reportFrame() {
-        guard let host, let view else { return }
+        guard let host, let view, view.isLaidOut else { return }
         element.reportFrame(view.frameReport(safeArea: host.safeAreaOrigin(of: element)), in: host.runtime)
     }
 }

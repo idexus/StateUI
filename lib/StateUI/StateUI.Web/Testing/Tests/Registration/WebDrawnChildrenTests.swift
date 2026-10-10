@@ -37,7 +37,7 @@ private struct Book: Element {
         node.write(BookContract.title, title)
     }
 
-    func onOpened(_ handler: @escaping EventHandler) -> Self {
+    func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         var copy = self
         copy.node.addHandler(BookContract.opened, handler)
         return copy
@@ -86,7 +86,7 @@ private struct Shelving: View {
 /// runs here, so the suite runs it in a browser (`test-web.sh --browser`).
 @MainActor
 final class WebDrawnChildrenTests: XCTestCase {
-    override func setUp() {
+    override func setUp() async throws {
         WebTestLoop.started
     }
 

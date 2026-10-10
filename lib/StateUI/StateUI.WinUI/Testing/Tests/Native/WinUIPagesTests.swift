@@ -339,8 +339,9 @@ final class WinUIPagesTests: XCTestCase {
     }
 
     /// The chrome keeps the window's own buttons their room once, at the scale the window stands at: WinUI's title
-    /// bar keeps it in pixels as though they were DIPs, which at 200% stands its actions a caption's width short of
-    /// the bar's end.
+    /// bar keeps it in pixels as though they were DIPs (microsoft-ui-xaml #10344), which at 200% stands its actions a
+    /// caption's width short of the bar's end. The relay finds both columns it caps by name; a template that renames
+    /// them fails here.
     func testTheChromeKeepsTheCaptionButtonsTheirRoomOnce() throws {
         try onUIThread {
             let host = WinUIRenderer.running {
@@ -349,11 +350,12 @@ final class WinUIPagesTests: XCTestCase {
                 } destination: { _ in Text("Pushed") }
             }
             let bar = try XCTUnwrap(host.window).titleBar
-            var (kept, room) = (-1.0, 0.0)
+            var (kept, room, columns) = (-1.0, 0.0, Int32(0))
             host.settle {
-                stateui_winui_title_bar_caption_room(bar.handle, &kept, &room)
+                stateui_winui_title_bar_caption_room(bar.handle, &kept, &room, &columns)
                 return kept >= 0 && room > 0
             }
+            XCTAssertEqual(columns, 2, "LeftPaddingColumn and RightPaddingColumn, as the bar's template names them")
             XCTAssertGreaterThan(room, 0, "the window has its own buttons")
             XCTAssertEqual(kept, room, accuracy: 0.5, "the room kept is theirs")
         }
@@ -395,6 +397,25 @@ final class WinUIPagesTests: XCTestCase {
             let window = try XCTUnwrap(host.window)
             let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
             XCTAssertFalse(window.tabsStandInWindow)
+            XCTAssertTrue(split.detailRow === window.tabRow)
+        }
+    }
+
+    /// A tabbed detail under a modal stack - the window's page, its sheets over it - stands its tabs across the
+    /// detail as it does with no modal stack.
+    func testATabbedDetailUnderAModalStackStandsItsTabsAcrossTheDetail() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                ModalStack(State(wrappedValue: [Int]()).projectedValue) {
+                    SplitView(State(wrappedValue: true).projectedValue) {
+                        TitledPage(title: "Menu")
+                    } detail: {
+                        TabView([0, 1]) { number in TitledPage(title: "Tab \(number)") }
+                    }
+                } destination: { number in TitledPage(title: "Sheet \(number)") }
+            }
+            let window = try XCTUnwrap(host.window)
+            let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
             XCTAssertTrue(split.detailRow === window.tabRow)
         }
     }
@@ -471,6 +492,7 @@ final class WinUIPagesTests: XCTestCase {
 
     /// A sign-in's field on a stack, then a split view whose stack's page aims at its field.
     @ViewBuilder
+    @MainActor
     private static func signIn(_ signedIn: State<Bool>) -> some View {
         if signedIn.wrappedValue {
             SplitView(State(wrappedValue: false).projectedValue) {
@@ -498,7 +520,7 @@ private struct AimedFieldPage: View {
             TextField(State(wrappedValue: "").projectedValue).aim(field)
             Button("Below")
         }
-        .onAppearing { try await field.focus() }
+        .onAppearing(gate: .ignoreWhileRunning) { try await field.focus() }
     }
 }
 

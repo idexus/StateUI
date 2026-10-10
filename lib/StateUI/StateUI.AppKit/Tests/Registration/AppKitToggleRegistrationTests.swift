@@ -13,6 +13,7 @@ import XCTest
 /// by their registrations, their members reaching the native controls, and
 /// what their user does reported by member - onto the state the value is
 /// carried in, and to the handler that listens for it.
+@MainActor
 final class AppKitToggleRegistrationTests: XCTestCase {
     /// The registry realizes both toggles: the value each carries, the event
     /// each raises, and the enabled state they take from the tier they wear.

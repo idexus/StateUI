@@ -8,6 +8,7 @@ import CStateUIGTK
 @testable import StateUIGTKDriver
 import XCTest
 
+@MainActor
 final class GTKStepperViewTests: XCTestCase {
     /// A stepper writes its number with as many decimals as its step and its range take, and steps by its step.
     func testAStepperWritesTheDecimalsItsStepTakes() throws {

@@ -32,7 +32,7 @@ extension WebDriver {
     }
 
     /// The item `element` chosen from its menu, as the user does: the menu opened, each submenu on its way, the
-    /// item clicked.
+    /// item clicked - and taken down where the item was out of reach.
     func choose(_ element: MountedElement) throws {
         let path = captions(to: element)
         guard let anchor = menuAnchor(of: element), !path.isEmpty else { throw DriverCannot(.activate, on: element) }
@@ -41,6 +41,9 @@ extension WebDriver {
             let item = try openItem(caption, depth: depth)
             try click(item)
         }
+        // An item out of reach leaves its menus open, and the user takes them down.
+        let open = "[...document.querySelectorAll('.stateui-menu')].some((m) => m.matches(':popover-open'))"
+        for _ in path where try WebBrowser.truth(open, on: 0) { press("Escape") }
     }
 
     /// What an item of a menu holds, read from its button as the open menu shows it.

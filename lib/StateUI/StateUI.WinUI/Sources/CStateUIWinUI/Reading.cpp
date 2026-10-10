@@ -93,6 +93,9 @@ namespace {
         }
         if (what == "fontFamily") return narrow((text ? text.FontFamily() : control.FontFamily()).Source());
         if (what == "tracking") return number(text ? text.CharacterSpacing() : control.CharacterSpacing());
+        if (what == "textScales") {
+            return flag(text ? text.IsTextScaleFactorEnabled() : control.IsTextScaleFactorEnabled());
+        }
         if (what == "foreground") return colour(text ? text.Foreground() : control.Foreground());
         if (what == "padding") return sides(text ? text.Padding() : control.Padding());
         return std::nullopt;
@@ -122,7 +125,7 @@ namespace {
             for (auto const &child : both.Children())
                 if (auto found = child.try_as<controls::Viewbox>()) box = found;
         auto picture = box ? box.Child().try_as<controls::Image>() : nullptr;
-        if (what == "icon") return picture ? narrow(winrt::unbox_value_or<winrt::hstring>(picture.Tag(), L"")) : "";
+        if (what == "icon") return picture ? winrt::to_string(sourceFile(picture.Source())) : "";
         if (what == "stretch") return box ? number(static_cast<int32_t>(box.Stretch())) : "";
         if (what == "iconSpacing") return both ? number(both.Spacing()) : "";
         if (what == "iconPosition") {
@@ -338,8 +341,11 @@ namespace {
         if (what == "tint") return tint(object);
         if (what == "scope") return scope(object);
         if (auto bar = object.try_as<controls::TitleBar>()) return chrome(bar, what);
-        if (auto split = object.try_as<controls::NavigationView>(); split && what == "paneOpen") {
+        if (auto split = object.try_as<controls::SplitView>(); split && what == "paneOpen") {
             return flag(split.IsPaneOpen());
+        }
+        if (auto split = object.try_as<controls::SplitView>(); split && what == "paneBeside") {
+            return flag(split.DisplayMode() == controls::SplitViewDisplayMode::Inline);
         }
         if (auto tabs = object.try_as<controls::SelectorBar>()) {
             if (what == "tabs" || what == "tabIcons" || what == "tabIconSizes") {
@@ -388,7 +394,7 @@ namespace {
             auto own = ownBrush(bar.Resources(), L"MenuBarItemForeground");
             return own ? colour(own) : std::string();
         }
-        // The card over a navigation view's detail - its fill, its edge - as the window's root writes it in the theme
+        // The card over a split view's detail - its fill, its edge - as the window's root writes it in the theme
         // the root shows; empty for WinUI's own. The theme's divider, as the application's theme gives it.
         if (auto window = object.try_as<xaml::Window>(); window && (what == "detailCard" || what == "detailEdge")) {
             auto root = window.Content().try_as<xaml::FrameworkElement>();
@@ -408,10 +414,9 @@ namespace {
             return colour(divider.as<media::Brush>());
         }
         // A pane's ground beside the detail and over it: a colour, or "acrylic" with its colour and luminosity.
-        if (auto split = object.try_as<controls::NavigationView>();
+        if (auto split = object.try_as<controls::SplitView>();
             split && (what == "paneBackground" || what == "overlayPaneBackground")) {
-            auto own = ownBrush(split.Resources(), what == "paneBackground" ? L"NavigationViewExpandedPaneBackground"
-                                                                            : L"NavigationViewDefaultPaneBackground");
+            auto own = ownBrush(split.Resources(), what == "paneBackground" ? L"StateUIPaneBeside" : L"StateUIPaneOver");
             if (auto acrylic = own ? own.try_as<media::AcrylicBrush>() : nullptr) {
                 auto luminosity = acrylic.TintLuminosityOpacity();
                 return "acrylic " + colour(media::SolidColorBrush(acrylic.TintColor())) + " " +

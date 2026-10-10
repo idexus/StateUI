@@ -17,9 +17,9 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
+@MainActor
 final class JourneyTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         Renderer.shared.clearStates()
     }
@@ -102,6 +102,37 @@ final class JourneyTests: XCTestCase {
 
         XCTAssertEqual(journey.destination, 0.9, "the destination moved")
         XCTAssertEqual(journey.value, 0.2, "and the value waits for the host to walk it")
+    }
+
+    /// A WRITE LAYS ONLY ITS PART. A colour read back through its type is eight
+    /// bits a channel, and the host reports lanes between them: a stop or a move
+    /// that laid the whole journey again would say the value and the speed moved,
+    /// and the host would start over from them - Stop in the Gallery's At the same
+    /// time let the wash travel on to where it had been going.
+    func testAJourneyWriteLaysOnlyItsPart() throws {
+        let wash = State(wrappedValue: Color("#7C3AED"))
+        Renders().render(ColorBox().background(wash.projectedValue).node)
+        let image = try XCTUnwrap(wash.storage.walkedImage())
+        let board = Renderer.shared.board(of: image)
+        typealias Lanes = JourneyLanes<Color>
+
+        // The host reports a frame on its way: lanes no eight bits say.
+        guard case .lanes(var lanes) = board.read(image, lanes: Lanes.lanes) else { return XCTFail("no journey") }
+        for lane in Lanes.range(of: .value).lowerBound..<Lanes.range(of: .velocity).upperBound
+        where !Lanes.range(of: .destination).contains(lane) {
+            lanes[lane] += 0.0137
+        }
+        board.told(StateImage.bytes(of: .lanes(lanes)), mask: Lanes.mask(of: .value) | Lanes.mask(of: .velocity), to: image)
+
+        let beforeStop = image.pendingMask
+        wash.projectedValue.journey.stop()
+        XCTAssertEqual(image.pendingMask & ~beforeStop, Lanes.mask(of: .stopped), "a stop lays its counter alone")
+
+        let beforeMove = image.pendingMask
+        wash.projectedValue.journey.move(to: Color("#EA580C"), .eased(400))
+        let moved = image.pendingMask & ~beforeMove
+        XCTAssertEqual(moved & (Lanes.mask(of: .value) | Lanes.mask(of: .velocity)), 0, "a move leaves the value and the speed")
+        XCTAssertNotEqual(moved & Lanes.mask(of: .destination), 0, "and lays where it goes")
     }
 
     /// THE LAW RIDES THE VALUE, not the view showing it. `.motion(_:)` on an
@@ -224,25 +255,14 @@ final class JourneyTests: XCTestCase {
     /// A `move` awaited on a `.custom` value writes the destination and answers
     /// at once: the walk is the engine's, and the engine is the only one that
     /// knows when it is done.
-    func testAMoveUnderACustomLawAnswersAtOnce() async throws {
+    func testAMoveUnderACustomLawAnswersAtOnce() throws {
         let ball = State(wrappedValue: 0.0, motion: .custom)
         let binding = ball.projectedValue
         let renders = Renders()
 
         renders.render(ColorBox().translationY(binding).node)
 
-        let arrived = try await withThrowingTaskGroup(of: Bool?.self) { group in
-            group.addTask { try await binding.journey.move(to: 50) }
-            group.addTask {
-                try await Task.sleep(for: .seconds(2))
-                return nil
-            }
-            let first = try await group.next() ?? nil
-            group.cancelAll()
-            return first
-        }
-
-        XCTAssertEqual(arrived, true)
+        XCTAssertEqual(binding.journey.move(to: 50).ended, true, "it arrived as it was sent")
         XCTAssertEqual(ball.wrappedValue, 50, "the destination was written")
         XCTAssertEqual(binding.journey.value, 0, "and the value was left to the engine")
     }

@@ -102,7 +102,7 @@ struct TabsControls: View {
     private func move(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
             .horizontalAlignment(.start)
-            .onClicked(act)
+            .onClicked(gate: .ignoreWhileRunning, act)
     }
 
     /// The index `TabView.selection` sends the host for this selection -

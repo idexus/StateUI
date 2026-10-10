@@ -7,9 +7,18 @@ properties it must apply; it does not run a second style cascade.
 ## Style sheets
 
 A `StyleSheet` contains typed styles. An unkeyed style applies implicitly to
-every control of its target type. A keyed style is selected with `.style(...)`:
+every control of its target type. A keyed style is selected with `.style(...)`
+and its key: a `StyleKey` typed by the control it is for and declared once, so
+a key misspelled, or asked of another kind of control, does not compile. A
+sheet describes the interface, so it is built on `MainActor`, as a body is:
 
 ```swift
+extension StyleKey where Target == Button {
+    static let primary = StyleKey("Primary")
+    static let danger = StyleKey("Danger")
+}
+
+@MainActor
 enum HandbookStyles {
     static var sheet: StyleSheet {
         StyleSheet {
@@ -17,13 +26,13 @@ enum HandbookStyles {
                 .fontSize(15)
                 .textColor(Color(light: .black, dark: .white))
 
-            Style<Button>("Primary")
+            Style<Button>(.primary)
                 .textColor(.white)
                 .background(.cornflowerBlue)
                 .shape(.roundedRectangle(8))
 
-            Style<Button>("Danger")
-                .basedOn("Primary")
+            Style<Button>(.danger)
+                .basedOn(.primary)
                 .background(.firebrick)
         }
     }
@@ -44,11 +53,19 @@ struct NotesApp: Application {
 }
 ```
 
-Use a keyed style by name:
+Use a keyed style by its key:
 
 ```swift
-Button("Delete")
-    .style("Danger")
+extension StyleKey where Target == Button {
+    static let danger = StyleKey("Danger")
+}
+
+struct DeleteButton: View {
+    var body: some View {
+        Button("Delete")
+            .style(.danger)
+    }
+}
 ```
 
 `basedOn` is flattened when the sheet is resolved. A derived style inherits
@@ -62,11 +79,11 @@ express a useful precedence and should be removed.
 
 A property written directly on a control wins over a style. A recognized keyed
 style for the same target replaces that target's implicit style, so it must
-inherit from or state every value it requires. A key that is absent, or belongs
-to another target type, is unresolved and falls through to the implicit style
-for the control's own type. If no implicit style exists, only the control's own
-values remain. The differ consumes the key in every case; hosts never resolve
-style names.
+inherit from or state every value it requires. A key under which no style of
+the control's own type is written is unresolved, and falls through to the
+implicit style for that type. If no implicit style exists, only the control's
+own values remain. The differ consumes the key in every case; hosts never
+resolve style names.
 
 The style's generic target is a compile-time boundary. It offers only the
 property modifiers valid for that control; events, gestures, identity, and
@@ -109,9 +126,9 @@ app`, only when application logic needs the theme as a value. A themed color or 
 application branch.
 
 `Color.accent` is the accent in force - the one the user chose for the
-system, or the platform's tint where it has none - resolved as the view
-wearing it is built, as a pair is, so a change in the system's settings
-builds again exactly the views wearing it, in a style too:
+system, or, on a platform with none, the application's own tint - resolved
+as the view wearing it is built, as a pair is, so a change in the system's
+settings builds again exactly the views wearing it, in a style too:
 
 ```swift
 let marked = Color.accent.opacity(0.7)
@@ -186,7 +203,9 @@ StateUI decides which state a control is in, the same way on every platform:
 the first that holds of disabled, pressed, pointer-over, focused, on or
 checked, off or unchecked - and normal when none does. What the control shows
 is every state that holds at once, the earlier in that order winning a value
-two of them set. A disabled switch that is on is dimmed, and green:
+two of them set. A disabled switch that is on is dimmed, and green where its
+host paints a switch's background - GTK paints none, its switch's box being its
+track:
 
 ```swift
 @State var isOn = true
@@ -197,7 +216,7 @@ Switch($isOn)
     .visualState(.on) { $0.background(.green) }
 ```
 
-Normal's values show only when no other state holds.
+Normal's values show only while no other state the control declares holds.
 
 Leaving a state gives the control its own values back. A state's values are
 ordinary property changes: they move under the control's `.motion(_:)` like
@@ -225,10 +244,8 @@ hears every state the control declares, normal included:
 Button("Hold")
     .scale($scale)
     .onVisualStateChanged(.pressed, .normal) { state in
-        try await $scale.journey.move(
-            to: state == .pressed ? 0.96 : 1,
-            .eased(90))
-}
+        $scale.journey.move(to: state == .pressed ? 0.96 : 1, .eased(90))
+    }
 ```
 
 Use the handler when entering a state starts or sequences another `Journey`,
@@ -276,9 +293,10 @@ vocabulary:
 - `Path` with path data;
 - `Polygon` and `Polyline` with `Point` values.
 
-Common shape modifiers include fill, stroke, stroke width and dash
-settings, aspect, and `geometryTransform`. Geometry-specific modifiers such as a
-rectangle's corner radius or line endpoints remain on the matching shape.
+Common shape modifiers include `fill`, `stroke`, `lineWidth` and the dash
+settings, `contentMode`, and `geometryTransform`. Geometry-specific modifiers
+such as a rectangle's corner radius or line endpoints remain on the matching
+shape.
 
 ```swift
 Rectangle()
@@ -325,14 +343,15 @@ Canvas {
 .height(48)
 ```
 
-Commands execute in order. Color, stroke, font, alpha, and transform commands
-change the state used by later drawing commands. `saveState` and
+Commands execute in order. The color commands, `lineWidth`, `fontSize`,
+`opacity` and the transform commands (`translateBy`, `rotate(by:)`,
+`scaleBy`) change the state used by later drawing commands. `saveState` and
 `restoreState` bound temporary transform or paint changes.
 
 The interaction handlers report points in the canvas's own coordinate space:
-`onPressed`, `onDragged`, and `onReleased`. A state
-change that alters the command list rebuilds the drawing description; a host
-may animate compatible command values without rebuilding the application tree.
+`onPressed`, `onDragged`, and `onReleased`. A state change that alters the
+command list describes the drawing again, and the host replays the new list
+whole; nothing in a drawing animates.
 
 `Canvas` is for drawing content, not for recreating standard controls.
 Use accepted controls whenever native input, focus, selection, or accessibility

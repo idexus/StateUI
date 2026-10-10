@@ -10,7 +10,7 @@ import XCTest
 /// runs it in a browser (`test-web.sh --browser`).
 @MainActor
 final class WebTabTitleTests: XCTestCase {
-    override func setUp() {
+    override func setUp() async throws {
         WebTestLoop.started
     }
 
@@ -51,7 +51,7 @@ final class WebTabTitleTests: XCTestCase {
     }
 
     /// What the tab says once a host shows `page`.
-    private func tab(@ViewBuilder _ page: @escaping @Sendable () -> any View) throws -> String? {
+    private func tab(@ViewBuilder _ page: @escaping @MainActor () -> any View) throws -> String? {
         let host = WebRenderer.running(page)
         defer { host.leave() }
         for _ in 0..<3 { host.step() }
