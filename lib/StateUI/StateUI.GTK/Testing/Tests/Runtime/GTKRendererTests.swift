@@ -25,6 +25,19 @@ struct CounterPage: View {
 @MainActor
 final class GTKRendererTests: XCTestCase {
     /// A page's controls are GTK's, shown in a window: the words it describes are the words GTK holds.
+    /// The accent the user chooses is heard where libadwaita offers one to choose: the style manager telling it
+    /// changed tells the environment's watcher, as the theme turning does.
+    func testAnAccentChangeIsHeard() throws {
+        try onUIThread {
+            let style = adw_style_manager_get_default()!
+            try XCTSkipUnless(GTKEnvironment.offersAccent, "this libadwaita offers no accent to choose")
+            let heard = Received<Int>()
+            GTKEnvironment.watch { heard.values.append(1) }
+            g_object_notify(UnsafeMutableRawPointer(style).assumingMemoryBound(to: GObject.self), "accent-color")
+            XCTAssertEqual(heard.values.count, 1, "nobody heard the accent change")
+        }
+    }
+
     func testThePageShowsItsControlsInAWindow() {
         onUIThread {
             let host = GTKRenderer.running { CounterPage() }

@@ -38,7 +38,8 @@ enum GTKEnvironment {
         core.setConnectivityInfo(connectivity)
     }
 
-    /// Calls `changed` whenever the desktop's style turns dark or light, or the power or the network change.
+    /// Calls `changed` whenever the desktop's style turns dark or light, its accent changes where libadwaita offers
+    /// one to choose, or the power or the network change.
     static func watch(_ changed: @escaping @MainActor () -> Void) {
         onChange = changed
         watchMachine(changed)
@@ -48,9 +49,21 @@ enum GTKEnvironment {
         connectNotify(UnsafeMutableRawPointer(style), "dark", number: 0) { _, _, _ in
             MainActor.assumeIsolated { GTKEnvironment.onChange?() }
         }
+        // The accent the user chooses, where libadwaita offers one to choose (1.6 on).
+        if offersAccent {
+            connectNotify(UnsafeMutableRawPointer(style), "accent-color", number: 0) { _, _, _ in
+                MainActor.assumeIsolated { GTKEnvironment.onChange?() }
+            }
+        }
     }
 
     private static var watching = false
+
+    /// Whether libadwaita offers the user an accent to choose - from 1.6 on.
+    static var offersAccent: Bool {
+        let styles = g_type_class_peek(adw_style_manager_get_type())?.assumingMemoryBound(to: GObjectClass.self)
+        return styles.map { g_object_class_find_property($0, "accent-color") != nil } ?? false
+    }
 
     /// A label of libadwaita's `accent` class, never shown, whose colour is the accent the desktop draws.
     private static var accentProbe: UnsafeMutablePointer<GtkWidget>?

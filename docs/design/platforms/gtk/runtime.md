@@ -104,10 +104,13 @@ its identifier. It tells the core what may change, and again whenever the
 desktop says one did, through the host layer ([the
 environment](../../host/runtime.md#the-environment)): the desktop's style -
 dark or light, as libadwaita's style manager reads it from the desktop's
-settings; the locale - the language and region GLib reads from the
-environment, the local zone, and the clock, the first day of the week and the
-measures of the C library's locale, the week's first day read as GTK's own
-calendar reads it; the power - UPower's display device, whether the machine
+settings - and its accent, the colour libadwaita's `accent` class gives words,
+read again as the style turns and, where libadwaita offers the user an accent
+to choose (1.6 on), as it changes; the locale - the language and region GLib
+reads from the environment, the local zone, and the clock, the first day of
+the week and the measures of the C library's locale, the week's first day
+read as GTK's own calendar reads it, and the direction GTK writes its
+language in; the power - UPower's display device, whether the machine
 is on mains, and whether the power profiles save energy, no battery where
 UPower stands nowhere; and the network - GIO's monitor, and the kind of
 connection NetworkManager calls the primary one. Once the window stands it
