@@ -28,9 +28,9 @@ order.
 Neither type checks that its numbers make a real day or time. February 31st
 crosses, and the host reads it as no day at all, which leaves the property
 unset: a `DatePicker` goes on showing the date it had. A host reads a time
-as a length of time since midnight, adding the three numbers up, so
-`ClockTime(hour: 25, minute: 99)` reaches a picker as 26 hours and 39
-minutes past midnight rather than being refused.
+as a length of time since midnight, adding the three numbers up round the
+day (`CalendarArithmetic.clock`), so `ClockTime(hour: 25, minute: 99)`
+reaches a picker as 02:39 rather than being refused.
 
 ## Whole seconds
 

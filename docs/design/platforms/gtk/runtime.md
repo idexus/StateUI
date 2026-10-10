@@ -88,8 +88,9 @@ for the application, its scenes and its windows ([the application's
 phase](../../host/runtime.md#the-applications-phase)): whether the window is
 active, and whether it stands minimized - a Wayland desktop says nothing of
 that - told again only where one of the two changed: a surface tells every
-change of its state, its tiling and its focus among them. A window the user closes - its close button, Alt+F4, GTK's close request
-- is heard by it and its scene as it goes ([a window the user
+change of its state, its tiling and its focus among them. A window the user
+closes - its close button, Alt+F4, GTK's close request - is heard by it and
+its scene as it goes ([a window the user
 closes](../../host/runtime.md#a-window-the-user-closes)); one the tree or the
 host closes tells nothing. A window let go of tells nobody it went: its
 handlers leave before GTK destroys it.

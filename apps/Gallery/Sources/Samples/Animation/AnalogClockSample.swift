@@ -11,9 +11,9 @@ struct AnalogClockSample: SampleContent, ExampleContent {
     /// sweep them round in a blur.
     @State private var started = false
 
-    /// Which visit to this page the running loop belongs to. Each visit begins
-    /// a loop of its own, and this is what tells any earlier one - even one
-    /// still asleep when the next began - that its page is gone.
+    /// Which visit to this page the running loop belongs to. The page leaving
+    /// ends its loop: its sleep throws. `visit` tells an earlier loop on a
+    /// covered copy of this page that a newer visit took over.
     @State private var visit = 0
 
     /// The angle each hand is GOING to. Each hand's rotation is DRIVEN by
@@ -89,10 +89,11 @@ struct AnalogClockSample: SampleContent, ExampleContent {
         }
         .horizontalAlignment(.fill)
         .onCreated {
-            // Each visit starts a loop of its own and retires the last. The
-            // hands come back at the angles the state kept, and the first
-            // reading below ASSIGNS the time rather than flying through
-            // everything that passed while the page was away.
+            // The page leaving ends its loop: its sleep throws. `visit` tells
+            // an earlier loop on a covered copy of this page that a newer
+            // visit took over. The hands come back at the angles the state
+            // kept, and the first reading below ASSIGNS the time rather than
+            // flying through everything that passed while the page was away.
             visit += 1
             let mine = visit
             ticking = true

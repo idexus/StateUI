@@ -13,7 +13,7 @@
 ///         var body: some Scene {
 ///             WindowGroup { NotePage() }
 ///                 .environment(library)
-///             Window(.inspector) { Inspector() }
+///             Window(.inspector) { InspectorPage() }
 ///                 .environment(library)
 ///         }
 ///     }

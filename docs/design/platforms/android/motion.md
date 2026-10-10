@@ -31,7 +31,7 @@ axes over `scaleX` and `scaleY`.
 
 StateUI's pivot is a fraction of the view's size; Android's is in pixels. At
 the centre Android keeps the pivot there itself as the size changes; any other
-pivot is put back in pixels each time the view is placed.
+pivot is put back in pixels each time the view is placed at a new size.
 
 ## Less motion
 

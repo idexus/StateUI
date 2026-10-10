@@ -22,15 +22,15 @@ allowed can be written" a compiler rule rather than a convention.
   PropertyContainer                        Element
   ├── VisualElementProperties              └── ModifiableElement      events, lifetime
   │   └── ViewProperties                       └── VisualElement      key, aim, samples,
-  │       ├── LayoutProperties                     │                  environment, style
-  │       │   └── StackProperties                  └── View           gestures, pan, frame,
-  │       ├── ShapeProperties                          │              context menu
-  │       └── TextInputProperties                      └── ElementView
-  └── the mixins, one file each:                           ├── Layout
-      TextStyleElement  TextualElement  FontElement        │   └── Stack
-      TextAlignmentElement  PaddingElement                 ├── Shape
-      LineHeightElement  DecorableTextElement              └── TextInput
-      BorderElement  ImageElement  TintElement
+  │       ├── LayoutProperties                     │                  environment
+  │       │   └── StackProperties                  ├── StyleTarget    style
+  │       ├── ShapeProperties                      └── View           gestures, pan, frame,
+  │       └── TextInputProperties                      │              context menu
+  └── the mixins, one file each:                       └── ElementView
+      TextStyleElement  TextualElement  FontElement        ├── Layout
+      TextAlignmentElement  PaddingElement                 │   └── Stack
+      LineHeightElement  DecorableTextElement              ├── Shape
+      BorderElement  ImageElement  TintElement             └── TextInput
       BarElement  MenuItemElement
 ```
 

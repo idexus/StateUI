@@ -18,8 +18,10 @@ task alike - and says which by the session it holds.
 A page has no session: what it is, the view it shows says by modifier
 ([What a view says of its page](../views/pages.md#what-a-view-says-of-its-page)).
 
-Every property is a `@State`, so a view that reads one builds again when it
-is written, and what a session is told stands until it is told otherwise.
+Every value a session holds is a `@State` - `info` is the provider itself,
+and `scenes`, `windows` and `colorScheme` are worked out from what is held -
+so a view that reads one builds again when it is written, and what a session
+is told stands until it is told otherwise.
 An optional property is nil until written, which leaves the host's own
 default standing.
 
@@ -84,12 +86,14 @@ the keys do not exist yet when the store is read.
 
 ## Styles and motion stay in the core
 
-`ApplicationSession.styles` and `.motion` are never sent to a host. A style
-is resolved in the core into the controls it applies to, a colour pair in it
-picked for the theme as each control builds, so a sheet written once serves
-both themes, and a sheet written again is the next render's. What reaches
-the host of a motion is the resolved law, beside each property that
-animates.
+`ApplicationSession.styles` is never sent to a host. A style is resolved in
+the core into the controls it applies to, a colour pair in it picked for the
+theme as each control builds, so a sheet written once serves both themes, and
+a sheet written again is the next render's. What reaches the host of a motion
+is the resolved law beside each property that animates, and the
+application's own motion once, as the application element's
+`HostLayoutMotion`, which a layout that says nothing of its own animates
+under.
 
 ## Window geometry is a request
 

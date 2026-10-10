@@ -91,7 +91,7 @@ what another wrote while it waited; a debug build says so the moment it
 happens. Read the state again after the `await`: `count += 1`, not `let old =
 count` before it and `count = old + 1` after.
 
-A run that a later event cancels, or whose element leaves the screen, changes
+A run that a later event cancels, or whose element leaves the tree, changes
 nothing from then on: its task is cancelled, and its state writes, movements,
 posts and acts are refused, each refusal said once - a slower, older search
 never overwrites a newer one, and a page already left never navigates. A
@@ -295,8 +295,9 @@ struct Countdown: View {
 
 Hold a ticker in `@State` so the same instance survives view rebuilds. Reading
 `ticks`, `isRunning`, `isFinished`, `interval`, `limit`, or `isRepeating`
-subscribes the current description to that ticker. A tick and each public
-configuration change request a render.
+subscribes the current description to that ticker. A tick, and each change
+to `interval`, `limit` or `isRepeating`, requests a render; setting `onTick`
+does not.
 
 `start()` returns immediately and does nothing while the same run is already
 active. A completed limited ticker starts again from zero. `stop()` keeps the
@@ -314,9 +315,9 @@ platform scheduler may have a coarser practical resolution.
 ## Work on each tick
 
 `onTick` is an optional `@MainActor` asynchronous closure. Ticks never overlap:
-the next interval is scheduled after the current closure finishes. If work
-takes more than a whole interval, the next deadline starts from completion
-instead of releasing a burst of missed ticks.
+the next waits for the current closure to finish and falls due one interval
+after the last deadline; if the work outlasts a whole interval, the next
+deadline starts from completion instead of releasing a burst of missed ticks.
 
 A nonrepeating ticker is a reusable delay. It is useful for polling that must
 not overlap:

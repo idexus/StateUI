@@ -139,7 +139,7 @@ Text().spans {
 ```
 
 Plain text and formatted text are mutually exclusive descriptions of one
-label. Do not rely on modifier order to keep both.
+label. A label given both a `text` and runs shows the runs.
 
 Text properties distinguish their semantic tier; [Text](../controls/Text.md)
 and the tier pages it links list each with its mark per host:
@@ -451,10 +451,10 @@ Grid {
 ```
 
 A script answers what it evaluated to as text: words as they are, a number as
-it is written, anything else as JSON, and nothing for no value. A navigation
-is heard as it starts, with why - a new page, back, forward, the page again -
-and as it ends, with how; the web process ending under the view is heard
-too, and `reload()` brings the page back:
+it is written, anything else as JSON, and an empty string for no value. A
+navigation is heard as it starts, with why - a new page, back, forward, the
+page again - and as it ends, with how; the web process ending under the view
+is heard too, and `reload()` brings the page back:
 
 ```swift
 @State var status = "nothing has loaded yet"

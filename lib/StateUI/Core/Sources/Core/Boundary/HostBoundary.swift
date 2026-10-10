@@ -283,7 +283,8 @@
             refused: renderer.refusedWrites, alive: renderer.liveNodes, runs: RunSlot.underWay)
     }
 
-    /// Reports a native event and runs its handler on StateUI's UI executor.
+    /// Reports a native event: its handlers start at once on `MainActor`, each
+    /// through its gate; false for an unknown id.
     @discardableResult
     public static func dispatch(_ handler: Int32, payload: [HostValue] = []) -> Bool {
         EventBuffer.current = payload

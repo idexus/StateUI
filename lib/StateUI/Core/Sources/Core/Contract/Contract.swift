@@ -33,7 +33,8 @@ extension Contract {
     /// Nothing worn, unless the contract says.
     public static var tiers: [any Contract.Type] { [] }
 
-    /// This contract and every tier it wears, each once, nearest first.
+    /// This contract, then every tier it wears, each once, depth first in
+    /// declaration order.
     @_spi(Host) public static var worn: [any Contract.Type] {
         var seen: Set<ObjectIdentifier> = []
         var order: [any Contract.Type] = []

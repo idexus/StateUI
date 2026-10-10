@@ -354,11 +354,12 @@ the state; persistence does not depend on description invalidation. Writing the
 same value also schedules a save because the host store may not hold it yet.
 
 Kept state lives in the platform's own settings store - `UserDefaults` on
-AppKit and UIKit, `SharedPreferences` on Android - and on WinUI and GTK, whose
-platforms keep no store an application can use, in a file of the host's own.
-An application that keeps something
-in a file or a database of its own reads and writes it in its own code and
-hands the values to ordinary `@State`.
+AppKit and UIKit, `SharedPreferences` on Android - on WinUI and GTK, whose
+platforms keep no store an application can use, in a file of the host's own,
+and on the Web in the browser's storage for the page's site, under the
+application's name. An application that keeps something in a file or a
+database of its own reads and writes it in its own code and hands the values
+to ordinary `@State`.
 
 ## State kept with a scene
 
@@ -517,9 +518,10 @@ differs, and delivers the final value. `.always` takes every changed frame.
 Write a custom engine for frame arithmetic that needs memory or sequencing and
 cannot be expressed as a pure conversion. An engine is attached to an element
 and runs inside the host's display cycle. It comes two ways:
-`.engine(following:)` runs once for each write to a state it follows;
-`.engine(tracking:)` keeps tracking, answering on each cycle whether it has
-more to do - a spring, a stopwatch:
+`.engine(following:)` runs on the display cycle after a state it follows is
+written - once, however many writes came - and once after each render that
+describes its view; `.engine(tracking:)` keeps tracking, answering on each
+cycle whether it has more to do - a spring, a stopwatch:
 
 ```swift
 struct SpringDot: View {
@@ -566,7 +568,7 @@ The engine contract is deliberately narrow:
   which values the closure may read;
 - a time-driven engine may omit `tracking:`: its answer controls whether it
   receives another cycle;
-- an engine runs once after the render that declares it;
+- an engine runs once after every render that describes its view;
 - a write made by the engine itself does not wake that same engine;
 - `.again` requests the next display cycle, while `.wait` sleeps until a
   tracked state is written or a render rearms the declaration;
@@ -577,8 +579,8 @@ The engine contract is deliberately narrow:
   ties;
 - anything remembered between runs belongs in `@State` that the engine reads
   or writes;
-- an engine does not suspend, invoke an aimed control, perform host acts, or
-  create another UI-thread model.
+- an engine does not await, ask the host for anything, or touch a control: it
+  runs inside the frame the platform draws.
 
 Like every attachment owned by an element, an engine is removed when that
 element leaves the tree.

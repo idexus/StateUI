@@ -57,7 +57,9 @@ public struct StateUIError: Error, CustomStringConvertible, Equatable {
 ///
 /// Throws `StateUIError` when the host could not perform it - including when no
 /// host answers its name - and when the answer is not what the contract
-/// declares. It resumes where it was called, and may be called from a handler, a
+/// declares. In a run a later event, its task's cancellation or its element
+/// leaving superseded, it throws `CancellationError` and the act never leaves.
+/// It resumes where it was called, and may be called from a handler, a
 /// child task or a detached task. Acts queued without an `await` between them
 /// start in order and finish in whatever order the host's work does. An act of
 /// an element is called through its aim: `Aim.call`.

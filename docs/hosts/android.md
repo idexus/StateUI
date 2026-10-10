@@ -14,7 +14,7 @@ belongs, so a gap is visible rather than silent.
 lib/StateUI/StateUI.Android/
   Sources/StateUIAndroid/    the host: its runtime, elements, registrations, layout and JNI
   Sources/CStateUIAndroid/   the NDK's C surface: JNI, the looper, the log
-  Java/stateui/android/      the Java layer: the activity, the layout view group, the frame callback, the listener
+  Java/stateui/android/      the Java layer: the activity, the views and view groups the host makes, the frame callback and the listeners
   Tests/                     the host's suite, run in a test APK on a device
 .scripts/Android/
   build-swift.sh             an application's Swift for Android, for the ABIs asked
@@ -266,9 +266,9 @@ before it is attached to. Android's runtime raises SIGSEGV and SIGBUS on purpose
 and the debugger passes them to it rather than stopping. Nor does the debugger
 follow the code the runtime's JIT compiles: the runtime announces each method
 it compiles, and a debugger that reads each announcement stops the whole
-application every time - over USB, opening a page took seconds. End a session by
-detaching - stopping the debugger itself leaves its breakpoints in the
-application, which the next of them then ends.
+application every time, which over USB holds the UI thread for seconds. End a
+session by detaching - stopping the debugger itself leaves its breakpoints in
+the application, which the next of them then ends.
 
 ## Deploying
 

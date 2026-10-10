@@ -68,9 +68,9 @@ struct ProgressBarSample: SampleContent, ExampleContent {
             Text("That pairing is the rule, not this control's quirk: wherever a "
                 + "control takes its purpose in the initializer - `Switch($on)`, "
                 + "`Picker(items)`, `Path(\"M 28,0 ...\")`, `Polygon(points)` - there is a "
-                + "modifier of the same name beside it. The initializer is what a view "
-                + "written in place uses; the MODIFIER is what a `Style` needs, and what "
-                + "a control built empty and filled in later has.")
+                + "modifier beside it - `.isOn`, `.options`, `.data`, `.points`. The "
+                + "initializer is what a view written in place uses; the MODIFIER is what "
+                + "a `Style` needs, and what a control built empty and filled in later has.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

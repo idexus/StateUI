@@ -44,15 +44,16 @@ public protocol Application {
     ///         Window(.about) { AboutPage() }                // a scene of its own
     ///     }
     ///
-    /// *File ▸ New* makes one more window of the `WindowGroup` with no name.
+    /// *File ▸ New Window* makes one more window of the `WindowGroup` with no name.
     @ApplicationBuilder var body: Body { get }
 }
 
 // Design: docs/design/views/pages.md#the-application-is-named-once
 /// Names the application to the host.
 ///
-/// The one line an app writes outside its own interface, in the function the
-/// host calls by name at startup, in the app's own module:
+/// The one line an app writes outside its own interface, in a function of its
+/// own module that every head calls by name before its host runs. The library
+/// cannot declare that function, as the dependency runs app -> library:
 ///
 ///     @_cdecl("stateui_app_register")
 ///     public func stateui_app_register() {

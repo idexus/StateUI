@@ -29,9 +29,9 @@ final class AppKitCanvasView: AppKitHitTestView {
         super.draw(dirtyRect)
         guard let context = NSGraphicsContext.current else { return }
 
-        // A canvas draws inside its own frame, as it does on every other
-        // platform. A view is not clipped to its bounds, so an instruction
-        // reaching past the edge would paint over the views beside it.
+        // A canvas draws inside its own frame: a view is not clipped to its
+        // bounds, so an instruction reaching past the edge would paint over
+        // the views beside it.
         bounds.clip()
 
         var pen = CanvasPen()

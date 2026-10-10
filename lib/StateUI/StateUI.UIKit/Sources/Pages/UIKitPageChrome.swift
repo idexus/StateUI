@@ -28,8 +28,8 @@ struct UIKitPageChrome {
     func show(on item: UINavigationItem) {
         item.title = title
         if item.subtitle != subtitle { item.subtitle = subtitle }
-        // A layout's size follows what it holds; a control keeps the width the bar gave it, which a fit to its
-        // words at every render cut and the bar widened again, letter by letter.
+        // A layout's size follows what it holds; a control is fitted once and keeps the width the bar gives it:
+        // fitted to its words at every render, it would be cut and widened by the bar, letter by letter.
         // Design: docs/design/platforms/uikit/pages.md#the-bar
         if let titleView, item.titleView !== titleView || titleView is UIKitLayoutView || titleView.bounds.isEmpty {
             titleView.bounds.size = titleView.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: 44))

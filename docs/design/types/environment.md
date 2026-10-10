@@ -17,7 +17,7 @@ every view the way an object an ancestor provides is, and read by its name.
                                   layoutDirection
   \.application   ApplicationSession
                      info          name, packageName, versionString, buildString, colorScheme, accentColor
-                     phase, and what the application writes: styles, motion, kept keys
+                     phase, scenes, and what the application writes: colour scheme, styles, motion, kept keys
   \.scene, \.window   the sessions a view stands in
 ```
 

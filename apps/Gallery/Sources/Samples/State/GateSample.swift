@@ -254,9 +254,10 @@ private struct AwaitingEvents: ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("A handler with no await needs no gate. Every handler that awaits names one, "
-            + "on every event - a click, the words typed, a change: a handler that awaits "
-            + "without one does not compile, and the compiler says what to write.")
+        Text("A handler with no await needs no gate. Every handler that awaits names one - "
+            + "a click, the words typed, a change - on every event but `.onCreated` and "
+            + "`.onDestroying`, which come once: a handler that awaits without one does not "
+            + "compile, and the compiler says what to write.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

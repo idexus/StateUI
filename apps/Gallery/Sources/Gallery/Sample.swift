@@ -86,8 +86,8 @@ extension SampleContent where Self: ExampleContent {
 ///
 /// A `View`, because that is what a piece of interface is in this
 /// library - so an example is written the way an application writes one, and
-/// a build reading it takes sits where the example means it to and is shown in
-/// the same place in `code`. Its `@State` is its own, carried by the catalog
+/// a build reading (`DebugInfoLabel`) stands where the example puts it, in
+/// `code` as on screen. Its `@State` is its own, carried by the catalog
 /// the gallery keeps.
 ///
 /// The example says as little as it can: its controls, what they report, and

@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// A factory of windows, each showing one view, made as they are asked for - in the scene that declares it, which
-/// opens with its first window and stands while one is open. With no name, what launch and *File ▸ New* make one
-/// more of, one such group in an application; with a name, a window each time `application.openWindow(.kind)` asks;
-/// with a name and `for:`, one window per value.
+/// opens with its first window and stands while one is open. With no name, what launch and *File ▸ New Window* make
+/// one more of, one such group in an application; with a name, a window each time `application.openWindow(.kind)`
+/// asks; with a name and `for:`, one window per value.
 ///
 ///     WindowGroup { MainPage() }
 ///     WindowGroup(.editor) { EditorPage() }
@@ -18,8 +18,8 @@ public struct WindowGroup: Scene {
     /// None: the library's own scene.
     public var body: Never { return fatalError("a WindowGroup is the library's own scene: it has no body") }
 
-    /// The group launch and *File ▸ New* make a window of, showing `content` - an `if`/`else` there swaps what a
-    /// window shows.
+    /// The group launch and *File ▸ New Window* make a window of, showing `content` - an `if`/`else` there swaps
+    /// what a window shows.
     ///
     /// - Parameter content: the view a window shows.
     public init<Content: View>(@ViewBuilder content: @escaping () -> Content) {

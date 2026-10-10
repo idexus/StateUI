@@ -6,7 +6,8 @@
 
 /// Children placed: each child's view in its layout, with its place written as CSS.
 extension WebElement {
-    /// Hands a layout its children's views in order, each with what its place reads.
+    /// Hands a text its runs, a collection its changed entries and a page structure its pages; else a layout its
+    /// children's views in order, each with what its place reads.
     func arrangeChildren() {
         if let text = view as? WebTextView { return text.setRuns(element.textRuns) }
         if let items = view as? WebItemsView { return items.childrenChanged() }

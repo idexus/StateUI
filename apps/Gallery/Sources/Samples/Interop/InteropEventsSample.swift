@@ -64,12 +64,12 @@ struct InteropEventsSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("The host calls `StateUIEvents.raise(event, values)` on the UI thread "
+            Text("The host calls `StateUIEvents.raise(event, values)`, from any thread, "
                 + "when the platform reports something. Every `HostEvents.on` subscription "
-                + "to that member runs like a control's handler: on `MainActor`, handed "
-                + "the values the contract declares, free to await and to write `@State`. The head declares each event it raises with "
-                + "`StateUIEvents.raises`, so a handler listening for one nothing raises "
-                + "is told so once.")
+                + "hears it in a job of the UI thread's, like a control's handler: on "
+                + "`MainActor`, free to write `@State`, and to await through a `gate:`. "
+                + "The head declares each event it raises with `StateUIEvents.raises`, so "
+                + "a handler listening for one nothing raises is told so once.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

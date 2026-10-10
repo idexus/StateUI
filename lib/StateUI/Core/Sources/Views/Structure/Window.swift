@@ -3,7 +3,7 @@
 
 /// One window of a kind in the scene that declares it, showing one view.
 ///
-///     Window(.inspector) { Inspector() }
+///     Window(.inspector) { InspectorPage() }
 ///
 /// The window says what it is; the application's session says when it opens, opening its scene first where that
 /// is not open:

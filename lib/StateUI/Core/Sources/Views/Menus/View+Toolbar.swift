@@ -41,7 +41,7 @@ extension View {
     /// sharing its background - or starting it, where no group has the id yet.
     ///
     ///     // the window's page
-    ///     SplitView { … } detail: { … }
+    ///     SplitView($showsMenu) { … } detail: { … }
     ///         .toolbar(id: "window") {
     ///             ToolbarItem("Account").onClicked { showAccount() }
     ///         }

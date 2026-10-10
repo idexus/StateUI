@@ -71,8 +71,9 @@ public struct Map: ElementView, MapProperties {
     /// the platform's own opening region overwrites. Moving later is the act,
     /// `map.moveToRegion(latitude:longitude:radiusMeters:)`.
     ///
-    /// - Parameter radiusMeters: Half the width of what is shown, in METERS -
-    ///   a plain number, its unit in its name.
+    /// - Parameter radiusMeters: the circle around the point the map shows
+    ///   whole, its shorter side spanning the circle's width, in METERS - a
+    ///   plain number, its unit in its name.
     public init(latitude: Double, longitude: Double, radiusMeters: Double) {
         node = Node(contract: MapContract.self)
         node.write(MapContract.region, MapRegion(latitude: latitude, longitude: longitude, radiusMeters: radiusMeters))
@@ -263,7 +264,8 @@ public struct MapRegion: Equatable, Sendable, HostRepresentable {
     /// Degrees east of Greenwich, negative west of it.
     public var longitude: Double
 
-    /// Half the width of what is shown, in meters.
+    /// The circle around the centre the map shows whole, its shorter side
+    /// spanning the circle's width, in meters.
     public var radiusMeters: Double
 
     /// A region, by its centre and its radius.
@@ -271,7 +273,8 @@ public struct MapRegion: Equatable, Sendable, HostRepresentable {
     /// - Parameters:
     ///   - latitude: degrees north of the equator, negative south.
     ///   - longitude: degrees east of Greenwich, negative west.
-    ///   - radiusMeters: half the width of what is shown, in meters.
+    ///   - radiusMeters: the circle around the centre the map shows whole, in
+    ///     meters.
     public init(latitude: Double, longitude: Double, radiusMeters: Double) {
         self.latitude = latitude
         self.longitude = longitude
@@ -308,8 +311,9 @@ extension Aim where Target == Map {
     /// For moving a map that is already up; where one opens is
     /// `Map(latitude:longitude:radiusMeters:)`.
     ///
-    /// - Parameter radiusMeters: Half the width of what is shown, in METERS -
-    ///   a plain number, its unit in its name.
+    /// - Parameter radiusMeters: the circle around the point the map shows
+    ///   whole, its shorter side spanning the circle's width, in METERS - a
+    ///   plain number, its unit in its name.
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.
     public func moveToRegion(

@@ -18,7 +18,8 @@ casts GTK's macros make are a pointer reinterpreted as another class:
 ## Signals
 
 `g_signal_connect` is a macro; the host calls `g_signal_connect_data`, the
-handler a C function handed the view's number as its data. A C function can
+handler a C function handed a number as its data - a view's, or one a window,
+a sheet, a question or a menu item keeps of its own. A C function can
 capture nothing, and a widget's pointer is not `Sendable`: the number is, so
 the handler finds its view by the number, on the main actor, and does
 nothing once the view has gone.

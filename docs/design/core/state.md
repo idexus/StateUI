@@ -97,9 +97,10 @@ element the list no longer has - it shrank under the binding - is dropped and
 said once, rather than writing past the end. `$counter`
 builds a new binding every time it is written, so two spellings of one state
 are two values; the lender is how they recognize each other. `described`
-reads it and answers the storage behind a whole `@State` and nothing for a
-part of one or a binding made from closures. The host's image, the journey and
-an engine's following all hang off it.
+finds the storage by it - the storage behind a whole `@State`, and nothing for
+a part of one or a binding made from closures; a view's inputs compare by it
+and the part (`lends`); and a post waits under the part lent. The host's
+image, the journey and an engine's following all hang off it.
 
 `$` lends a capability: a borrower may write the whole value or one property of
 it, and a model lent this way may be edited or replaced outright. Handing over

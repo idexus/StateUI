@@ -10,7 +10,7 @@
 /// What it carries is positional - nothing, one value or a tuple of them, each
 /// `HostRepresentable` - and a handler takes the values as its parameters:
 ///
-///     onEvent(GalleryContract.batteryChanged) { level, charging in … }
+///     onEvent(TrafficLightContract.lampTapped) { index in … }
 public struct ElementEvent<Owner: Contract, Payload>: ContractMember {
     /// The event's name: what crosses the boundary.
     public let name: String

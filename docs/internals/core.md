@@ -1,8 +1,9 @@
 # StateUI core
 
-The core is the `StateUI` library, in `lib/StateUI/Core/Sources`: one dynamic
+The core is the `StateUI` library, in `lib/StateUI/Core/Sources`: one
 library, the same on every platform, which every application and every host
-links, so a process holds one copy of StateUI's types. It imports no
+links - dynamically on a native platform, so a process holds one copy of
+StateUI's types, and into one WebAssembly module on the Web. It imports no
 Foundation and no platform framework, depends on no package and exports no C
 function. It owns the UI tree, state, identity and diffing, the state side of
 the display cycle, the timing laws of motion, acts, scenes and sessions, and
@@ -34,14 +35,15 @@ decides again; one concept has one owner, one spelling and one source:
   `.id()`, then its builder path, then its position, and only the patch tells
   a host what changed. ([Keys](../design/core/identity-and-diffing.md#keys))
 - **The patch is deterministic.** The same session gives the same patch and
-  exports on every run: tokens compare by name, whatever a dictionary or a set
-  yields is sorted, and the core numbers the scenes.
+  exports on every run: node types, properties and events compare by name,
+  whatever a dictionary or a set yields is sorted, and the core numbers the
+  scenes.
   ([Tokens](../design/core/contracts.md#tokens))
 - **The UI thread is `MainActor`.** The core has no thread, run loop or timer
   of its own; everything happens inside a call the host makes on its UI
   thread, and handlers run on `@MainActor`. Nothing uses `Timer`, `RunLoop` or
-  `DispatchQueue.main` but `UIThread.swift`'s one drain, and the core never
-  calls a host back.
+  `DispatchQueue.main` but `UIThread.swift`'s one drain, and the core hands a
+  host no job: it only rings the doorbell, and the host runs the jobs.
   ([MainActor on every platform](../design/core/concurrency.md#mainactor-on-every-platform))
 - **One process, one renderer.** `Renderer.shared` holds the one tree of every
   scene and window, with one generation, one board and one act queue.
@@ -58,7 +60,7 @@ lib/StateUI/Core/Sources/
     Styles/ Inspector/              styles and visual states, the inspector
   Types/         the values an application passes, and how each crosses
     Geometry/ Layout/ Colour/ Drawing/ Text/ Time/
-    Motion/ Gestures/ Environment/ Sessions/ Controls/
+    Motion/ Gestures/ Environment/ Sessions/ Controls/ Collections/ Files/
   Contracts/     the library's contracts, and LibraryContracts
     Elements/    one contract per node type, in its view's topic folder
     Tiers/ Mixins/                  members several elements share
@@ -122,8 +124,8 @@ turns the nodes into the patch.
   structure, each a `body` built by `ApplicationBuilder` - its
   `Scenes` - or `SceneBuilder`;
   `WindowGroup`, `Window`, `Windows`, `WindowType` and
-  `WindowError` are a scene's windows, and `Node.page` and `Node.window` the
-  page a view stands on and the window around it.
+  `WindowError` are a scene's windows, and `Node.page` and `Node.window`,
+  internal, the page a view stands on and the window around it.
   `stateUIUseApp` names the application
   to the host from the application's own registration function.
   *Application.* ([Pages and windows](../design/views/pages.md);
@@ -138,17 +140,19 @@ turns the nodes into the patch.
   [menus](../design/views/builders.md#menus-collect-without-keys);
   [navigation and presentation](../interface/navigation-and-presentation.md))
 - **The tier protocols** (`Tiers/`) - `PropertyContainer`,
-  `ModifiableElement`, `VisualElement`, `View`, `Layout`, `Stack`, `Shape`
-  and `TextInput`, each with the `…Properties` half a style wears - and **the
+  `ModifiableElement`, `ElementView` (a view that is an element, with no
+  `body`), and `VisualElement`, `View`, `Layout`, `Stack`, `Shape` and
+  `TextInput`, each with the `…Properties` half a style wears - and **the
   mixin tiers** (`Mixins/`), `TextualElement`, `FontElement`, `TintElement` and
   their kin, offer the modifiers; a protocol's modifiers write the members of
   the tier contract of its name. *Application.*
   ([Two halves](../design/views/tiers.md#two-halves),
   [modifiers](../design/views/modifiers.md))
-- **The binding twins** (`Bindings/`) are the `Binding` form of each value
-  modifier, the driven words of a label, and the feeds the platform reports
-  into a state; `setValue(_:on:mode:kind:)` carries an application's own
-  property. *Application.* ([Bindings](../design/views/bindings.md);
+- **The binding twins**, the `Binding` form of each value modifier, stand
+  beside their value forms; `Bindings/` holds the driven words of a label, the
+  feeds the platform reports into a state, the described two-way form, and
+  `setValue(_:on:mode:kind:)`, which carries an application's own property.
+  *Application.* ([Bindings](../design/views/bindings.md);
   [described and carried values](../interface/controls-and-input.md#described-and-carried-values))
 - **`View`**, **`ModifiedContent`**, **`ViewBuilder`** and
   **`ForEach`** (`Composition/`) compose: a composed view is a placeholder
@@ -159,9 +163,11 @@ turns the nodes into the patch.
 - **The library's views** - `Controls/` (`Button`, `Slider`, `Picker`, `Map`,
   `WebView` and the rest), `Text/` (`Text`, `TextSpan`, `TextField`,
   `TextEditor`, `SearchField`), `Layouts/` (`VStack`, `HStack`, `Grid`,
-  `ZStack`, `ScrollView`) and `Shapes/` (`Rectangle`, `Path`, `Canvas` and
-  their kin) - are each a node written through its contract, with a
-  `…Properties` protocol of its own. *Application.*
+  `ZStack`, `ScrollView`), `Shapes/` (`Rectangle`, `Path`, `Canvas` and
+  their kin) and `Collections/` (`ItemsView`, whose groups are `Section`s) -
+  are each a node written through its contract, most with a `…Properties`
+  protocol of its own; `VStack`, `HStack`, `ZStack`, `Ellipse`, `TextSpan` and
+  `ItemsView` have none. *Application.*
   ([Controls](../design/views/controls.md);
   [controls and input](../interface/controls-and-input.md), [layout](../interface/layout.md))
 - **The composed layouts** - `GeometryReader`, `ScrollReader` and `PlacedLayout`
@@ -196,7 +202,7 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
 | --- | --- | --- |
 | `Geometry/` | `Point`, `Rect`, `Insets`, `CornerRadius`, `ViewTransform` | [runs of numbers](../design/types/values.md#runs-of-numbers), [transforms](../design/types/transforms.md) |
 | `Layout/` | `Alignment`, `Area`, `GridLength`, `LayoutDirection`, `SafeArea`, `SafeAreaEdges`, `Placement`, `PlacedRun` | [placement](../design/types/placement.md) |
-| `Colour/` | `Color`, `GradientStop`, `Brush`, `Background` | [colour and theme](../design/types/colour-and-theme.md), [brushes](../design/types/brushes.md); [styles and drawing](../interface/styles-and-drawing.md) |
+| `Colour/` | `Color`, `GradientStop`, `Brush`, `Material`, `Blur`, `Glass` | [colour and theme](../design/types/colour-and-theme.md), [brushes](../design/types/brushes.md); [styles and drawing](../interface/styles-and-drawing.md) |
 | `Drawing/` | `ImageSource`, `ContainerShape`, `ContentMode`, the strokes, `Draw`, `DrawCommand`, `DrawingBuilder` | [drawing on a canvas](../design/types/drawing.md) |
 | `Text/` | `Name`, `FontAttributes`, `LineBreak`, `TextAlignment`, `TextCase`, `TextDecorations`, `InputPurpose`, `SubmitLabel`, `AccessibilityHeadingLevel` | [text and names](../design/types/values.md#text-and-names), [closed vocabularies](../design/types/vocabularies.md) |
 | `Time/` | `CalendarDate`, `ClockTime`, `TimeZoneInfo`, `Weekday` | [dates and time](../design/types/dates-and-time.md) |
@@ -205,6 +211,8 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
 | `Environment/` | what the host knows - `Device` (`DeviceInfo`, `DeviceDisplay`, `Battery`, `Connectivity`), `LocaleInfo`, `AppInfo` - their vocabularies and `ColorScheme`; `StandardEnvironment`, internal | [the standard environment](../design/types/environment.md); [environment](../concepts/environment.md) |
 | `Sessions/` | `ApplicationSession`, `SceneSession`, `WindowSession`, their phases | [sessions](../design/types/sessions.md); [applications and sessions](../interface/application-and-sessions.md) |
 | `Controls/` | the vocabularies one control takes: `ScrollOrientation`, `ToolbarItemPlacement`, `MarkerType` and their kin | [closed vocabularies](../design/types/vocabularies.md) |
+| `Collections/` | what an `ItemsView` takes: `ItemsEntries`, `ItemsLayout`, `ScrollAnchor`, `SelectionMode` | [items](../design/views/items.md), [closed vocabularies](../design/types/vocabularies.md) |
+| `Files/` | `ChosenFile`, `FileType`: the files the dialogs open and save | [files](../design/core/acts.md#files) |
 
 ## Contracts
 
@@ -222,8 +230,10 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
   [structure elements](../design/contracts/structure.md))
 - **The tier contracts** (`Contracts/Tiers/`) and **the mixin tiers**
   (`Contracts/Mixins/`) declare once the members several elements share, each
-  naming the same set as the Swift tier protocol of its name in `Views/`.
-  *Application* and *host.* ([Tiers](../design/contracts/tiers.md),
+  naming the same set as the Swift tier protocol of its name in `Views/` - but
+  `PageElementContract`, which has no protocol: a view's page modifiers write
+  it (`View+PageValues.swift`). *Application* and *host.*
+  ([Tiers](../design/contracts/tiers.md),
   [layers](../design/contracts/layers.md))
 - **`LibraryContracts`** lists every contract the library declares, the tiers
   first; the differ reads its member facts by name from it, and the guards and
@@ -236,8 +246,10 @@ declarations and each host's verdicts ([marks](../design/contracts/dictionary.md
 
 ## Core
 
-`Core/` holds the machinery: one folder a topic, one element to a file, a
-type's extensions in its folder as `Type+Responsibility.swift`
+`Core/` holds the machinery: one folder a topic, one element to a file - a
+small type its element works with may share it, as `RunOwner` does
+`RunSlot.swift` and `Fired` `Handler.swift` - a type's extensions in its
+folder as `Type+Responsibility.swift`
 ([where things live](../design/core/README.md#where-things-live)).
 
 ### State
@@ -251,6 +263,9 @@ type's extensions in its folder as `Type+Responsibility.swift`
 - **`Binding`** is a state borrowed as `$x` - no second value, no second
   owner - and a part of one through dynamic member lookup. *Application.*
   ([Bindings](../design/core/state.md#bindings))
+- **`Binding.post`** writes a state from any thread: what is posted waits in
+  the state's mailroom (`Mailroom`, internal) for one job on `MainActor`,
+  which writes it. *Application.* ([Posting](../design/core/state.md#posting))
 - **`Environment`** reads what the library offers by its name
   (`EnvironmentValues`) - the standard providers and the three sessions,
   there with nothing provided - and the nearest provided object by its type.
@@ -274,7 +289,7 @@ type's extensions in its folder as `Type+Responsibility.swift`
   [a state has one shape](../design/core/state.md#a-state-has-one-shape))
 - **`HostStorage`** is a carried state's value as the bytes both sides
   rewrite, in three copies: the image, the published copy and a pending
-  write. Its type is public and its members internal.
+  write. *Internal.*
   ([Three copies of a value](../design/core/cycle.md#three-copies-of-a-value))
 - **`StateCarried`**, **`StateMode`**, **`StateKind`** and **`LaneKind`** are a
   value as the image holds it, the way it crosses at an attachment, the door
@@ -289,8 +304,10 @@ type's extensions in its folder as `Type+Responsibility.swift`
   *Application.* ([The journey lanes](../design/core/journeys.md#the-journey-lanes);
   [journey is part of state](../concepts/motion-and-journeys.md#journey-is-part-of-state))
 - **Conversions and readings** - `convert`, `.multi` (`MultiBinding`) and
-  `.samples(_:into:_:)` at the pace `Asks` gives - run as engines the differ
-  writes (`Conversion`, `Sampling`, internal). *Application.*
+  `.samples(_:into:_:)` at the pace `Asks` gives. A conversion runs as engines
+  the differ writes (`Conversion`, internal); a reading (`Sampling`,
+  internal) is no engine, but held by the element that asked for it.
+  *Application.*
   ([Conversions](../design/core/journeys.md#conversions),
   [readings](../design/core/journeys.md#readings))
 - **`HostMotionLaw`** and **`HostMotionSample`** evaluate the two timing laws
@@ -331,8 +348,9 @@ type's extensions in its folder as `Type+Responsibility.swift`
 - **`ReadScope`** and **`BuildScope`** record what a build reads and which
   view is being described; `debugInfo()`, public, explains a build in the
   author's names. *Internal.* ([Invalidation](../design/core/invalidation.md))
-- **The dispatch** (`Renderer+Dispatch.swift`) starts a handler: its payload
-  read at once, then `Task.immediate` on `MainActor`. The handlers a render
+- **The dispatch** (`Renderer+Dispatch.swift`) starts each of an event's
+  handlers through its gate: its payload read at once, then `Task.immediate`
+  on `MainActor`, unless the gate holds it back. The handlers a render
   finds run in settle passes, and what they write joins the same message.
   *Internal.* ([Starting a handler](../design/core/render.md#starting-a-handler),
   [handlers in the message](../design/core/render.md#handlers-in-the-message))
@@ -378,8 +396,9 @@ type's extensions in its folder as `Type+Responsibility.swift`
   an aim are the library's own acts. *Application.*
   ([Dialogs](../design/core/acts.md#dialogs),
   [focus and the keyboard](../design/core/acts.md#focus-and-the-keyboard))
-- **`ChosenFile`**, **`FileType`** and **`Links`** are the files the dialogs
-  open and save, read and launched, and an address launched. *Application.*
+- **`ChosenFile`**, **`FileType`** (`Types/Files/`) and **`Links`** are the
+  files the dialogs open and save, read and launched, and an address
+  launched. *Application.*
   ([Files](../design/core/acts.md#files),
   [launching](../design/core/acts.md#launching);
   [files and links](../interface/interaction-and-actions.md#files-and-links))
@@ -392,11 +411,31 @@ type's extensions in its folder as `Type+Responsibility.swift`
   ([The act queue](../design/core/acts.md#the-act-queue),
   [completion ids](../design/core/acts.md#completion-ids))
 
+### Runs
+
+- **`Gate`**, **`GatePolicy`** and **`SharedGate`** are what a handler that
+  awaits passes through - what an event that comes while a run is under way
+  does: a handler's own policy, or a gate kept in a state and shared by every
+  handler and task written with it; **`Task(gate:)`** starts work from code
+  through a shared gate. *Application.*
+  ([A gate](../design/core/runs.md#a-gate),
+  [work started from code](../design/core/runs.md#work-started-from-code))
+- **`RunSlot`**, **`RunOwner`**, **`RunSlots`** and **`EventRegistration`**
+  are the runs under way through one gate, who started a run, the runs of
+  what an element's walk finds, and what one event of one element runs;
+  **`HandlerRun`** is one run, which a later event, its task's cancellation or
+  its element leaving supersedes. *Internal.*
+  ([The runs of a handler](../design/core/runs.md#the-runs-of-a-handler),
+  [a superseded run](../design/core/runs.md#a-superseded-run))
+
 ### Contract
 
 - **`Contract`**, **`ElementContract`** and **`ApplicationTier`** are a named
-  set of members, a node type's contract, and a tier the application element
-  wears. *Application* declares its own; `Contract.worn` is the host's.
+  set of members, a node type's contract, and a contract of acts and events
+  with no control behind them, which belong to the application -
+  `ApplicationContract` is one, and no element lists one among its tiers.
+  *Application* declares
+  its own; `Contract.worn` is the host's.
   ([Tiers](../design/core/contracts.md#tiers))
 - **`ElementProperty`**, **`ElementEvent`** and **`ElementAct`** are the three
   kinds of `ContractMember`, each carrying its value's types. *Application*;
@@ -450,8 +489,9 @@ type's extensions in its folder as `Type+Responsibility.swift`
   (`@State(sceneKey:)`). *Application.*
   ([Scene keys](../design/core/scenes.md#scene-keys);
   [state kept with a scene](../concepts/state-and-reactivity.md#state-kept-with-a-scene))
-- **`ValueText`** writes a `Codable` value as text and reads it back, by hand,
-  in the order the value encoded it. *Internal.*
+- **`ValueText`** writes a `Codable` value as text and reads it back, by hand:
+  a list in its order, an object's members sorted by key, so equal values are
+  one text. *Internal.*
   ([What the platform keeps](../design/core/scenes.md#what-the-platform-keeps))
 
 ### Threads
@@ -465,6 +505,9 @@ type's extensions in its folder as `Type+Responsibility.swift`
   through `HostBoundary.postTurns`.
   ([The doorbell](../design/core/concurrency.md#the-doorbell),
   [draining jobs](../design/core/concurrency.md#draining-jobs))
+- **`Timetable`** keeps the jobs the UI thread holds for later where no thread
+  can sleep - a sleep on WebAssembly - in the order they come due.
+  *Internal.* ([WebAssembly](../design/core/concurrency.md#webassembly))
 
 ### Diagnostics
 
@@ -472,10 +515,11 @@ type's extensions in its folder as `Type+Responsibility.swift`
   an entry for each composed view it reached, and the host's half matched by
   generation. *Internal.* ([The inspector](../design/core/diagnostics.md#the-inspector))
 - **`complain`** says, once per process, that a value an application handed
-  the library was not one it could use. *Internal.*
+  the library was not one it could use. *Internal*; `Complaints.route(to:)`
+  sends what it says where the application chooses.
   ([Complaints](../design/core/diagnostics.md#complaints))
-- **The tally** - renders, empty ones, refused writes, live elements - is the
-  renderer's, and a host reads it as `HostTally`.
+- **The tally** - renders, empty ones, refused writes, live elements, runs
+  under way - is the renderer's, and a host reads it as `HostTally`.
   ([The tally](../design/core/diagnostics.md#the-tally))
 
 ## The boundary
@@ -483,8 +527,9 @@ type's extensions in its folder as `Type+Responsibility.swift`
 `Core/Boundary/` is the core's face to a host: `HostBoundary`, an enum of
 static calls, and the typed values it hands over and takes back, all behind
 `@_spi(Host)` and never serialized. In a runtime the host layer's `CoreLink`
-alone calls it, and the lane codecs are called where the layer holds the
-values ([core link](../design/host/runtime.md#core-link)). The
+alone calls it, and the lane codecs are called where the values are held - in
+the layer, and `placements(from:)` in AppKit's element too
+([core link](../design/host/runtime.md#core-link)). The
 [host contract](host-contract.md) says what each value means.
 
 - **Render and patch.** `needsRender` and `render(baseline:)` answer a
@@ -506,23 +551,26 @@ values ([core link](../design/host/runtime.md#core-link)). The
   a `HostPlacementRun` and back, so no host knows a lane.
   ([What the host reports](../design/core/cycle.md#what-the-host-reports))
 - **Handlers and the application's events.** `dispatch(_:payload:)` runs the
-  handler an event names, and `raise(_:_:)` an event of the application's
-  tier, typed by its member.
+  handlers an event names, each through its gate, and `raise(_:_:)` an event
+  of the application's tier, typed by its member.
   ([Handler identity and lifetime](host-contract.md#handler-identity-and-lifetime))
 - **Acts.** `takeActCalls()` hands over the `HostActCall`s in the order the
   application made them; `reply(_:with:)` answers one and `fail(_:reason:)`
   fails it, so no caller waits on an act nobody performs.
   ([Acts](../design/core/acts.md))
-- **The UI thread.** `runJobs()` drains `MainActor`'s queued jobs on the
-  calling thread; `postTurns(with:)` takes the host's way to post a turn, which
-  the core uses at most once until the turn's drain begins - for a job queued
-  from any thread, or work the UI thread made.
+- **The UI thread.** `claimUIThread()` claims the calling thread as the UI
+  thread, before anything starts a task; `runJobs()` drains `MainActor`'s
+  queued jobs on the calling thread; `postTurns(with:)` takes the host's way
+  to post a turn, which the core uses at most once until the turn's drain
+  begins - for a job queued from any thread, or work the UI thread made;
+  `wantsTurn` says whether a turn has anything to do, and on the Web
+  `nextWake` when the page is to call again.
   ([The doorbell](../design/core/concurrency.md#the-doorbell))
-- **What the host knows.** `setColorScheme`, `setDeviceInfo`, `setDisplayInfo`,
-  `setApplicationInfo`, `setBatteryInfo`, `setConnectivityInfo`,
-  `setLocaleInfo` and `setApplicationPhase` each write one standard provider,
-  only where a field differs; `languageDirection` reads back the way the
-  user's language is written.
+- **What the host knows.** `setColorScheme`, `setAccentColor`,
+  `setDeviceInfo`, `setDisplayInfo`, `setApplicationInfo`, `setBatteryInfo`,
+  `setConnectivityInfo`, `setLocaleInfo` and `setApplicationPhase` each write
+  one standard provider, only where a field differs; `languageDirection` reads
+  back the way the user's language is written.
   ([How the host writes it](../design/types/environment.md#how-the-host-writes-it))
 - **Windows and kept values.** `connectWindow(kind:value:restoring:)` hands
   the core a window the platform made - its first, a new one, or one it kept,
@@ -560,22 +608,24 @@ never against a stored copy
 
 | Folder | What it proves |
 | --- | --- |
-| `Rendering/` | builders and paths, builds and carried views, the diff, an element's release, determinism, the patch's shape, the typed render, drawings and SVG paths, the inspector |
-| `State/` | `@State`, readers and invalidation, carried state and its cost, conversions, journeys and motion, the cycle and engines, the ticker, kept and model state, the environment, `.onChanged` and lifetime handlers, placed runs, driven patches |
+| `Rendering/` | builders and paths, builds and carried views, the diff, an element's release, determinism, the patch's shape, the typed render, drawings and SVG paths, the inspector, complaints (`ComplaintsTests`), who a view is (`IdentityTests`) |
+| `State/` | `@State`, readers and invalidation, what a state costs (`StateCostTests`), carried state and its cost, a material on it (`MaterialChannelTests`), carried views (`CarriedViewTests`), numbers no type holds (`NumberDecodingTests`), conversions, journeys and motion, the cycle and engines, the ticker, kept and model state, the environment, `.onChanged` and lifetime handlers, placed runs, driven patches |
 | `Contracts/` | the contracts and the library's list, closed vocabularies, payloads, the whole contract against every name the library uses, the registry, declarations, realizations, the register and its verdicts, and the rendered dictionary (`ControlDictionaryTests`) |
-| `Pages/` | scenes, windows, pages and their bars, the navigation stack, tabs, the split view, the modal stack, the environment a host writes |
+| `Pages/` | scenes, windows, pages and their bars, the navigation stack, tabs, the split view, the modal stack, the environment a host writes, a window's value as text (`ValueTextTests`) |
 | `Acts/` | act calls and their shape, aims, host events |
-| `Views/` | controls, styles and visual states, colours and brushes, gestures, the frame reader, the gallery view, context menus, drawing transforms |
-| `Threading/` | the UI thread's executor and the doorbell, posts, the gates a handler or a task passes through and what a superseded run changes, acts sent from child tasks, no promise the compiler cannot check, every async function on its caller's executor, and the library's four rules: no Foundation, no `DispatchQueue.main` but the one drain, no `Timer` or `RunLoop`, no `strdup` |
+| `Views/` | controls, styles and visual states, colours and brushes, gestures, the frame reader, the gallery view, the position indicator (`PositionIndicatorTests`), the items view (`ItemsViewTests`), context menus, drawing transforms |
+| `Threading/` | the UI thread's executor and the doorbell, the jobs kept for later (`TimetableTests`), posts, the gates a handler or a task passes through and what a superseded run changes, acts sent from child tasks, no promise the compiler cannot check, every async function on its caller's executor, and the library's four rules: no Foundation, no `DispatchQueue.main` but the one drain, no `Timer` or `RunLoop`, no `strdup` |
 | `Project/` | the guards below |
 | `Support/` | what the tests share: a differ to talk to, a patch printed readably, the dictionary's rendering, the applications' sources as files |
 
 - **The project guards** read the repository as files: `DesignNotesTests`
   resolves every `Design:` reference and holds the golden rule of comments;
   `DocumentationTests` refuses an undocumented public declaration;
-  `LicenceTests` holds the SPDX lines; `NativeProjectTests` keeps each host a
-  sibling package named only under its condition, and a library that exports
-  no C function; `RuntimeArchitectureTests` reads every host's sources
+  `DocumentLinksTests` follows every document's links; `WebPageTests` holds
+  the page a Web head lays out; `LicenceTests` holds the SPDX lines;
+  `NativeProjectTests` keeps each host a sibling package named only under its
+  condition, and a library that exports no C function;
+  `RuntimeArchitectureTests` reads the layer's and every host's sources
   ([what a host never does](host-layer.md#what-a-host-never-does));
   `ToolchainTests`, `ReleaseTests`, `AppsTests` and `VsCodeTests` keep one
   Swift release, one version, the applications and the editor.

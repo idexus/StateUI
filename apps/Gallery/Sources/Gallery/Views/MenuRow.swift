@@ -9,11 +9,10 @@ import StateUI
 /// answer: `nav.showing(...)`, read while the row is being built, so the look
 /// of a chosen row is one ordinary value written on top of its style.
 ///
-/// Tapped rather than pressed, for the reason `Card` is: a button draws its own
-/// press, never its surroundings', and every row of this gallery answers a tap
-/// this way.
+/// Tapped rather than pressed: a button draws its own press, never its
+/// surroundings', and every row of this gallery answers a tap this way.
 ///
-/// Shaped like `Card`, and for the same reason: what the row IS goes in the
+/// Shaped like `ListRow`, and for the same reason: what the row IS goes in the
 /// initializer, and everything a caller may leave out is a modifier.
 struct MenuRow: View {
     /// What the row says.

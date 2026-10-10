@@ -1,12 +1,12 @@
 # The WinUI runtime
 
 The WinUI host is the runtime every host shares
-([the runtime](../../host/runtime.md)), over WinUI 3: the core's host layer
+([the runtime](../../host/runtime.md)), over WinUI 3: the host layer
 supplies the mounted tree, the patch intake, the animator, the state channels,
 the display cycle and the turn, and the WinUI half supplies what only the
 toolkit can - the frame signal, the doorbell's post, the elements, their
-layout, and the window around them. What WinUI asks of C++ stands in the relay beneath it
-([the relay](relay.md)).
+layout, and the window around them. What WinUI asks of C++ stands in the
+relay beneath it ([the relay](relay.md)).
 
 ## The WinUI runtime
 
@@ -121,14 +121,14 @@ backdrop of the relay's own over WinUI's `DesktopAcrylicController`, since
 WinUI's ready one holds neither a kind nor an opacity: the two thinnest
 blurs are the thin kind, the rest the base one, and its luminosity hides as
 much of the desktop as the blur's thickness does
-(`Blur.Thickness.opacity`, the share a stand-in colour lets through), and
-its tint grows from none on the thinnest blur to nine tenths on the
-thickest: the luminosity alone - from 0.45 to 0.95 - barely tells the five
-apart, an ultra-thick window still showing the desktop through. Its colour - tint, and the fallback an inactive window
-shows - is the blur's stand-in colour, the theme's: a controller given any
-one value keeps none of the theme's own (an ultra-thick blur came out
-white in the dark theme), so every colour is written, and the theme
-turning gives the window its traits again. XAML's default configuration has
+(`Blur.Thickness.opacity`, the share it hides - the stand-in colour's own
+opacity), and its tint grows from none on the thinnest blur to nine tenths
+on the thickest: the luminosity alone - from 0.45 to 0.95 - barely tells the
+five apart, an ultra-thick window still showing the desktop through. Its
+colour - tint, and the fallback an inactive window shows - is the blur's
+stand-in colour, the theme's: a controller given any one value keeps none of
+the theme's own, so every colour is written, and the theme turning gives the
+window its traits again. XAML's default configuration has
 the acrylic follow the window's activation. The backdrop is made
 again only where it turns. A tint colours the acrylic itself - its colour is
 the tint laid over the theme's, which the acrylic's tint then carries as far

@@ -77,7 +77,8 @@ the host is told at the first crossing and cannot be told again.
 `arrived()` suspends until the value arrives. The answer is true when it got
 there and false when something else ended the journey: a newer destination, a
 value written over it, or a stop. Where there is nothing to animate - already
-there, or the user asked for less motion - it answers true at once.
+there, or the user asked for less motion - it arrives on the host's next frame
+and answers true.
 
 The waiter is booked with the renderer under a negative id from the counter
 every awaited act draws from, and the id is written into the completion lane;

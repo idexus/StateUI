@@ -161,13 +161,13 @@ enum WinUIRealization {
         .complete("Window", "y"),
     ]
 
-    /// Why a figure takes no background on WinUI.
     /// What a split view's pane leaves out of a material.
     static let paneHasNoGlass = "WinUI has no glass: a pane of glass shows the in-app acrylic at its fallback thickness."
 
+    /// Why a figure takes no background on WinUI.
     static let figurePaintsNoGround = "A WinUI shape is its figure alone: it paints no ground around it."
 
-    /// Why a drawing's press is not let through as the tree says.
+    /// Why an activity ring's press is not let through as the tree says.
     static let hitOnlyWherePainted = "WinUI hands the activity ring only the presses on its turning arc: the "
         + "ring's middle, where a press is read, is never pressed, so there is nothing to let through."
 

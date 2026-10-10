@@ -74,5 +74,5 @@ nothing. Each conformance is one line beside the type's other conformances.
 
 ## An unknown member
 
-A number a vocabulary has no case for reads back as nil, and the property or
-payload holding it is refused.
+A number an enum has no case for reads back as nil, and the property or
+payload holding it is refused; a flag set reads whatever bits it holds.

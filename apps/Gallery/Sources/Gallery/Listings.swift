@@ -147,9 +147,9 @@ enum Listings {
         /// sweep them round in a blur.
         @State private var started = false
 
-        /// Which visit to this page the running loop belongs to. Each visit begins
-        /// a loop of its own, and this is what tells any earlier one - even one
-        /// still asleep when the next began - that its page is gone.
+        /// Which visit to this page the running loop belongs to. The page leaving
+        /// ends its loop: its sleep throws. `visit` tells an earlier loop on a
+        /// covered copy of this page that a newer visit took over.
         @State private var visit = 0
 
         /// The angle each hand is GOING to. Each hand's rotation is DRIVEN by
@@ -214,10 +214,11 @@ enum Listings {
             }
             .horizontalAlignment(.fill)
             .onCreated {
-                // Each visit starts a loop of its own and retires the last. The
-                // hands come back at the angles the state kept, and the first
-                // reading below ASSIGNS the time rather than flying through
-                // everything that passed while the page was away.
+                // The page leaving ends its loop: its sleep throws. `visit` tells
+                // an earlier loop on a covered copy of this page that a newer
+                // visit took over. The hands come back at the angles the state
+                // kept, and the first reading below ASSIGNS the time rather than
+                // flying through everything that passed while the page was away.
                 visit += 1
                 let mine = visit
                 ticking = true
@@ -3144,14 +3145,14 @@ enum Listings {
                 // style follows the theme by itself. See Styles/AppStyles.swift.
                 application.styles = AppStyles.sheet
 
-                // What the gallery KEEPS between launches - `PersistentStateSample`'s
-                // three settings, and nothing else. Listed because a settings store
-                // is read one key at a time and offers no list of what it holds, so
-                // this is the only way the host can have the values in memory before
-                // the first view asks for one - which is why it is written HERE, as
-                // the application is made. Each host keeps them in the platform's
-                // settings store, or in a file of its own where the platform offers an
-                // application none.
+                // What the gallery keeps under its own keys between launches -
+                // `PersistentStateSample`'s three settings; what its scenes keep comes
+                // back with them. Listed because a settings store is read one key at a
+                // time and offers no list of what it holds, so this is the only way
+                // the host can have the values in memory before the first view asks
+                // for one - which is why it is written HERE, as the application is
+                // made. Each host keeps them in the platform's settings store, or in a
+                // file of its own where the platform offers an application none.
                 application.persistentKeys = [.visits, .who, .shade]
 
                 // On GNOME the gallery opens in the dark theme, the look it wears
@@ -5008,11 +5009,11 @@ enum Listings {
         // Sources/Gallery/MenuPage.swift
         /// The gallery's sidebar - and it is an ordinary page.
         ///
-        /// That is the whole point of it. A view with the mark at the top,
-        /// some rows in the middle and a line at the bottom - and a row is a view with
-        /// a tap on it that writes state. There is no menu vocabulary to learn: what
-        /// can go in the pane is whatever can go on a page, and what a row does is
-        /// whatever a handler can do.
+        /// That is the whole point of it. Some rows, a line at the bottom, and - on
+        /// Android, where nothing else names the gallery - the mark at the top. A row
+        /// is a view with a tap on it that writes state. There is no menu vocabulary
+        /// to learn: what can go in the pane is whatever can go on a page, and what a
+        /// row does is whatever a handler can do.
         ///
         /// Its title names the pane on hosts whose navigation chrome exposes that name.
         struct MenuPage: View {
@@ -6039,11 +6040,11 @@ enum Listings {
                 // A key whose value is an enum - kept as the word it is spelled
                 // with, so anything else that opens the store can read it.
                 HStack {
-                    Text("Shade")
+                    Text("Bold shade")
                         .verticalAlignment(.center)
 
-                    Button(shade == .quiet ? "quiet" : "bold")
-                        .onClicked { shade = shade == .quiet ? .bold : .quiet }
+                    Switch(shade == .bold)
+                        .onToggled { on in shade = on ? .bold : .quiet }
                 }
 
                 ColorBox()
@@ -7107,7 +7108,7 @@ enum Listings {
 
         @State private var gone: Set<String> = []
         @State private var atOnce: Set<String> = []
-        @State private var slow = false
+        @State private var slow = true
 
         var body: some View {
             // A PLAIN VStack. Nothing here ASKS for animation: the row is HIDDEN,
@@ -9245,9 +9246,6 @@ enum Listings {
                     // `.motion(.none)` is what none of it looks like.
                     Button(enabled ? "Hold me too" : "Disabled")
                         .isEnabled(enabled)
-                        // THE SAME STATES, ARRIVING. A visual state travels under
-                        // the control's own motion, and this is what none looks
-                        // like.
                         .motion(.none)
                         .visualState(.pressed) { $0.background(Palette.brand) }
                         .visualState(.disabled) { $0
@@ -10157,9 +10155,10 @@ extension Listings {
             /// A view that draws on the GPU registers exactly like one that draws with a
             /// layer: an `MTKView` is an `NSView`. It reports nothing, so `create` only
             /// makes it - every member here goes one way, from the description to the
-            /// frames. The cube is declared only for the hosts that draw it, and this
-            /// file names it with no condition around it because nothing but an AppKit
-            /// build compiles this folder.
+            /// frames. Every host draws the cube in its own way; a build for no host -
+            /// the gallery's own tests - has nothing to draw it with, so it declares no
+            /// cube. This file names it with no condition around it because nothing but
+            /// an AppKit build compiles this folder.
             @MainActor
             static func register() {
                 StateUIControls.add(Cube3DContract.self, create: { _ -> MetalCube3DView in
@@ -11121,8 +11120,7 @@ extension Listings {
 
         // Platforms/GTK/main.swift
         // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
-        // the acts it performs, and the pushes it reports - each in Host/ beside this file. Then hand GTK this thread until
-        // the last window closes.
+        // the acts it performs, and the pushes it reports - each in Host/ beside this file.
         stateui_app_register()
         // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
         GalleryControls.register()
@@ -11164,7 +11162,6 @@ extension Listings {
             /// one. Said once, before the application runs.
             @MainActor
             static func register() {
-                // The bar, added for its contract: its rating put on it, a tapped star reported.
 
                         // Aimed at one bar: the identity the aim sent is turned back into the
                         // view this host made, and the performer is handed that view.
@@ -11328,7 +11325,6 @@ extension Listings {
             /// Adds the bar for `RatingBarContract`, and performs its aimed `flash`. Said once, before the application runs.
             @MainActor
             static func register() {
-                // The bar, made once per element, reporting the rating its user chooses.
 
                         // Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.
                         StateUIActs.add(RatingBarContract.flash, on: RatingBarControl.self) { bar in
@@ -12265,8 +12261,7 @@ extension Listings {
 
         // Platforms/GTK/main.swift
         // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
-        // the acts it performs, and the pushes it reports - each in Host/ beside this file. Then hand GTK this thread until
-        // the last window closes.
+        // the acts it performs, and the pushes it reports - each in Host/ beside this file.
         stateui_app_register()
         // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
         GalleryControls.register()

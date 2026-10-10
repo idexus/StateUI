@@ -414,7 +414,7 @@ enum WebRelay {
     /// The local time zone's name.
     static var localZone: String { copyRead(length: stateui_web_local_zone()) }
 
-    /// How far `zone` - the local one where nil - is from UTC at noon on `day` - today where nil - in minutes; nil
+    /// How far `zone` - the local one where nil - is from UTC at noon on `day` - now where nil - in minutes; nil
     /// for a zone the browser does not know.
     static func utcOffset(of zone: String?, on day: CalendarDate?) -> Int? {
         let minutes = utf8(zone ?? "") {

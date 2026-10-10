@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// An inspector itself: what it can do, its scene's renders, and the one
-/// chosen.
+/// An inspector itself: what it can do, its scene's renders and the one
+/// chosen, or what the library complained of.
 struct InspectorView: View {
     /// The scene it looks at, by its number.
     let scene: String
@@ -90,7 +90,8 @@ struct InspectorView: View {
             : "Nothing has reached this scene yet - \(all) renders elsewhere."
     }
 
-    /// What it can do - hold the record, forget it, move, go.
+    /// What it can do - hold the record, forget it, list what the library
+    /// complained of, move, go.
     ///
     /// A horizontally scrolling action row that remains reachable in a narrow
     /// inspector.

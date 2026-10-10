@@ -70,16 +70,17 @@ breakpoint is each platform's, a host's parameter.
 
 A split view says two materials for its sidebar: what it stands on beside the
 detail (`sidebarBackground`) and what it stands on while it slides over the
-detail (`flyoutBackground`). Each host knows which place its sidebar stands
-in - a drawer, an overlay pane, a collapsed split - and asks the split view
-for that place's material (`sidebarMaterial(over:)`); an empty one is the
-platform's own there. Beside the detail the platform's own lets the window
-through, as a desktop sidebar does; over the detail it is the platform's
-drawer or overlay surface, never the window's - a clear window would leave a
-flyout with nothing under its words. The sidebar page's own background still
-paints the page on top. A split view saying either material gives its
-sidebar to the application to paint (`paintsSidebar`): a host whose platform
-draws a sidebar's material of its own leaves it out then.
+detail (`flyoutBackground`). A host whose sidebar can stand over the detail
+knows which place it stands in - a drawer, an overlay pane, a collapsed
+split - and asks the split view for that place's material
+(`sidebarMaterial(over:)`); a Mac sidebar stands beside the detail alone. An
+empty material is the platform's own there. Beside the detail the platform's
+own lets the window through, as a desktop sidebar does; over the detail it is
+the platform's drawer or overlay surface, never the window's - a clear window
+would leave a flyout with nothing under its words. The sidebar page's own
+background still paints the page on top. A split view saying either material
+gives its sidebar to the application to paint (`paintsSidebar`): a host whose
+platform draws a sidebar's material of its own leaves it out then.
 
 ## The way back
 
@@ -112,12 +113,13 @@ slot that shows a view of its own (`chromeTitleView`); an element with no
 view of its own is shown by the first under it that has one
 (`presentingElement`).
 
-A declaration - a toolbar, a title view, a menu bar, a context menu - is a
-child of whatever element it is declared on, a page, a stack or a button,
-and furnishes the chrome from there: no layout places it, and no element
-with no view of its own is shown by it (`arrangedChildren`). Every host
-lays out and flattens through that one list, so a title view's field stands
-in the bar alone, measured by itself, and never also in the page's room.
+A declaration - a toolbar, a title view, a menu bar, a context menu, an
+overlay - is a child of whatever element it is declared on, a page, a stack
+or a button, and furnishes the chrome from there: no layout places it, and
+no element with no view of its own is shown by it (`arrangedChildren`).
+Every host lays out and flattens through that one list, so a title view's
+field stands in the bar alone, measured by itself, and never also in the
+page's room.
 
 ## The visible path
 

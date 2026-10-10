@@ -35,7 +35,8 @@ public struct Binding<Value> {
     let reaches: () -> Bool
 
     // Who this borrows from - the storage and which part of it - so two spellings
-    // of one state recognize each other. Only `described` reads it.
+    // of one state recognize each other: `described` finds the storage by it, a
+    // view's inputs compare by it (`lends`), and a post waits under its part.
     // Design: docs/design/core/state.md#bindings
     let lender: AnyObject?
     nonisolated let lent: StatePart?

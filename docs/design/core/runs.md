@@ -54,10 +54,9 @@ unavailable, whose message says what to write; `.onCreated` and
 `.onDestroying` take no gate, as each comes once, and
 `.draggable(text:onDragStarting:)` takes a step alone. The compiler asks the
 question where there is one, and only there. A step runs through a `.none` gate of its
-own and never suspends. It takes no road of its own: measured in a Release
-build (2026-10-10, an M-series Mac), an event dispatched to a step costs some
-2 µs end to end - a state's write in it some 66 ns - so even 120 events a
-second, a drag's, spend a quarter of a millisecond a second.
+own and never suspends. It takes no road of its own: an event dispatched to a
+step costs a couple of microseconds, so even a drag's 120 events a second
+spend a fraction of a millisecond.
 
 `RunSlot.underWay` counts the runs of every slot from the moment a slot takes
 one - started, or waiting its turn - to its end: what a test waits on for the
@@ -116,7 +115,8 @@ Work that outlives its element).
 
 A task the library starts for itself - a ticker's loop, a sampling's late
 reading, a post's job, the delivery of raised events, a handler a render
-queued, the inspector's pace and its notice of a complaint - starts with no run
+queued, a cancelled waiting run's leaving the queue, the inspector's pace and
+its notice of a complaint - starts with no run
 around it (`libraryTask` clears `HandlerRun.current`), so it belongs to no run.
 Started inside a handler, it would inherit that run and be refused once the
 run is superseded: a ticker started by a run a second press cancelled would

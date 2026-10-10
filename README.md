@@ -144,9 +144,10 @@ code --install-extension ../../artifacts/stateui-*.vsix
 
 The AppKit host needs only Xcode 27, on macOS 26 or newer, and the UIKit host
 adds Xcode's iOS 26 or newer simulator runtime. StateUI builds with one Swift
-release everywhere, Swift 6.4: Xcode 27's on macOS and the swift.org 6.4.0
-toolchain on the other platforms. WinUI builds on Windows, GTK on Linux, and
-the Web on macOS and Linux; their pages say what each needs:
+release everywhere, Swift 6.4: Xcode 27's for AppKit and UIKit; swift.org's
+6.4.0 toolchain for Android and the Web on macOS, and on the other platforms.
+WinUI builds on Windows, GTK on Linux, and the Web on macOS and Linux; their
+pages say what each needs:
 [WinUI host](docs/hosts/winui.md#requirements), [GTK host](docs/hosts/gtk.md#requirements),
 [Web host](docs/hosts/web.md#requirements).
 
@@ -154,6 +155,7 @@ Android asks for more, and builds on macOS only:
 
 - the Android SDK with NDK 30, for Android 9 (API 28) or newer; an NDK
   outside the Android SDK is named by `ANDROID_NDK_HOME`;
+- JDK 21 for Gradle, and the Android SDK's platform 36 with its build tools;
 - the Swift SDK for Android 6.4.0, installed with `swift sdk install`;
 - the swift.org toolchain of that SDK's build, `swift-6.4.0-RELEASE`, beside
   Xcode. Xcode's own Swift 6.4 is a different build and cannot read the SDK's

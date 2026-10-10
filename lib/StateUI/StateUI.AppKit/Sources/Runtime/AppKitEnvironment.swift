@@ -8,8 +8,8 @@ import Network
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// The user's locale, the battery and the network, told to the core as the host starts and whenever one changes,
-/// for as long as the application runs.
+/// The user's locale, the battery, the network, the theme and the accent, told to the core as the host starts and
+/// whenever one changes, for as long as the application runs.
 /// Design: docs/design/platforms/appkit/runtime.md#the-environment
 @MainActor
 final class AppKitEnvironment {
@@ -28,8 +28,8 @@ final class AppKitEnvironment {
         self.core = core
     }
 
-    /// Reports all three, then watches each for a change.
-    /// Tells the core what stands now, then each change as it comes, through `reportingChanges`.
+    /// Tells the core the locale, the battery, the theme and the accent as they stand, then each change through
+    /// `reportingChanges` - the network as its monitor answers.
     func start(reportingChanges: @escaping (() -> Void) -> Void) {
         reportLocale()
         reportBattery()

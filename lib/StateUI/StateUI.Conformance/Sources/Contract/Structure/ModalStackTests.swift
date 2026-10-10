@@ -41,8 +41,8 @@
                     sheets.wrappedValue = [1]
                     s.settle { shown("sheet") }
                     let sheet = try s.element("sheet")
-                    // A sheet still entering its window - the platform's presentation, an iPad's slower - is waited
-                    // for, not read as unreachable.
+                    // A sheet still entering its window - the platform's presentation, slower on some devices - is
+                    // waited for, not read as unreachable.
                     s.settle(for: 5) { (try? s.reaches(sheet, at: Point(20, 20))) == true }
                     return try s.reaches(sheet, at: Point(20, 20))
                 }

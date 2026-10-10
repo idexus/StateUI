@@ -7,8 +7,7 @@ import StateUIWebViewGTK
 
 // listing: InteropActsSample.GTK.swift, InteropEventsSample.GTK.swift
 // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
-// the acts it performs, and the pushes it reports - each in Host/ beside this file. Then hand GTK this thread until
-// the last window closes.
+// the acts it performs, and the pushes it reports - each in Host/ beside this file.
 stateui_app_register()
 // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
 GalleryControls.register()
@@ -17,4 +16,5 @@ GalleryEventSources.start()
 // listing: end
 // The backends the Gallery shows a library element through: the web view, over WebKitGTK.
 StateUIWebViewGTK.register()
+// Then GTK holds this thread until the last window closes.
 StateUIGTK.run(applicationID: "com.stateui.gallery")

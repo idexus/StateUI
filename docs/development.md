@@ -103,11 +103,12 @@ A sample is a `SampleContent` under
 home count derive from that catalog.
 
 A sample's listing is cut from its running code by `// listing: <name>` …
-`// listing: end`; decoration is left out unless `// listing: keep`.
+`// listing: end`; decoration is left out unless `// listing: keep`. Once its
+notes and the comments in its listings are read against the code,
 `STATEUI_UPDATE_SAMPLES=1 swift test --package-path apps/Gallery --filter
-SampleListingsTests` writes `Listings.swift`, which nobody edits. Give the
-sample a unique stable id and a short title. Its summary is one instruction or
-result, not a second handbook.
+'SampleListingsTests|SampleReviewTests'` writes `Listings.swift` and records
+the review; nobody edits either. Give the sample a unique stable id and a
+short title. Its summary is one instruction or result, not a second handbook.
 
 A sample that owns vertical scrolling or a continuous drag must own its page
 viewport; do not nest it under the page's scroller. Boolean choices are
@@ -218,9 +219,9 @@ libadwaita. An application's GTK head is built and started by one script:
 
 [GTK host](hosts/gtk.md) lists what it needs and what it builds.
 
-The Web host builds on macOS and Linux with Swift 6.4 and its Swift SDK for
-WebAssembly. An application's Web head is built, served and opened in a
-browser by one script:
+The Web host builds on macOS and Linux with swift.org's Swift 6.4.0
+toolchain and its Swift SDK for WebAssembly. An application's Web head is
+built, served and opened in a browser by one script:
 
 ```bash
 .scripts/Web/run-app.sh apps/HelloWorld
@@ -371,7 +372,7 @@ A host's workflow holds every conformance verdict to its marks and never
 writes them: a family whose verdicts changed fails there, and its marks are
 written again on that platform's machine. The Web's workflow runs the host's
 own tests alone; its marks are written on a Mac by
-`.scripts/Web/test-web.sh --browser`.
+`STATEUI_UPDATE_EXPORTS=1 .scripts/Web/test-web.sh --browser`.
 
 ### Conformance and marks
 
@@ -423,7 +424,7 @@ UIKit or an Android rebuild runs on the device chosen in the status bar; for
 Android the editor offers Rebuild all alone, and
 `STATEUI_STALE_ONLY=1 .scripts/Android/test-android.sh <serial>` runs the
 stale families. The editor makes no marks for the Web;
-`.scripts/Web/test-web.sh --browser` writes them.
+`STATEUI_UPDATE_EXPORTS=1 .scripts/Web/test-web.sh --browser` writes them.
 [Reading the matrix](platform-contract.md#reading-the-matrix) says what each
 mark means.
 
@@ -443,6 +444,8 @@ copyable application examples as plain `swift` so API drift fails visibly.
 The core's suite also guards the project itself, in
 `lib/StateUI/Core/Tests/Project/`:
 
+- `AppsTests` - every path an application's manifest names resolves, and the
+  scaffolder makes a new application from `apps/HelloWorld`;
 - `DocumentLinksTests` - every relative link in every Markdown document of
   the repository names a file or a folder that exists;
 - `ReleaseTests` - every place that names the release names the one
@@ -455,7 +458,15 @@ The core's suite also guards the project itself, in
   a heading that exist, and in each directory it holds, comments stay under a
   quarter of each file's lines;
 - `NativeProjectTests` - each host package and head keeps its shape, and
-  shared Swift names a host only under its condition.
+  shared Swift names a host only under its condition;
+- `RuntimeArchitectureTests` - each host holds only what its toolkit makes it
+  write, and does not do again what the host layer does;
+- `ToolchainTests` - every place that names the Swift release, the Xcode, the
+  NDK and the oldest system names the same one;
+- `VsCodeTests` - every name the VS Code configurations point at, in another
+  file or a script, exists;
+- `WebPageTests` - the page `.scripts/Web/page.sh` lays out for a Web head
+  holds the application's names and what its `Page` folder adds.
 
 ## Diagnostics
 
@@ -499,7 +510,7 @@ in is being built.
 
 The repository-root `Package.swift` is the package boundary for the
 platform-neutral `StateUI` product. Native hosts remain sibling packages so a
-consumer selects a toolkit without pulling it into the core. The current AppKit
+consumer selects a toolkit without pulling it into the core. Every host
 package uses the root checkout as a local dependency; the complete remote
 library-plus-host installation path is not published yet. Keep Getting Started
 honest about that state until both products have a supported versioned route.

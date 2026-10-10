@@ -22,7 +22,7 @@ extension Differ {
             }
 
             // Unless the board forgot them, as after a session claimed afresh: then they
-            // are registered again under the numbers they had.
+            // are registered again under fresh numbers, which the element keeps from then on.
             if kept { return previous }
         }
 

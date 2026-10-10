@@ -136,8 +136,8 @@ public enum StateUIControls {
     /// is added the same way.
     ///
     /// The Swift half is the application's already - a contract, and a `View`
-    /// whose node that contract makes. This is the other half, and the only
-    /// one this host was missing: what the element IS on screen.
+    /// whose node that contract makes. This is the other half: what the
+    /// element is on screen.
     ///
     /// The view's own class is named where the closure makes it, so every
     /// applier below is handed that class rather than a bare `UIView`.

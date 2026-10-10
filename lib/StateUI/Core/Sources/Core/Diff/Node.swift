@@ -130,9 +130,9 @@ public enum PropValue: Equatable, Sendable {
         return nil
     }
 
-    /// The number as a whole one, when this value is a number - what an index
-    /// or a position payload is read with. Rounds nothing: 2.0 answers 2, and
-    /// text answers nil.
+    /// The number's whole part, when this value is a finite number - what an
+    /// index or a position payload is read with: 2.7 answers 2; text, infinity
+    /// or a number past `Int` answers nil.
     public var int: Int? {
         guard case .number(let value) = self, value.isFinite else { return nil }
         return Int(exactly: value.rounded(.towardZero))
@@ -196,28 +196,26 @@ extension [PropValue] {
     }
 }
 
-/// What a StateUI event runs. It may await, and usually does not:
+/// What a handler that awaits runs - through a gate, or once by `.onCreated`
+/// and `.onDestroying`:
 ///
-///     Button("Save").onClicked { saved = true }
-///     Button("Open").onClicked { path.append(.details) }
+///     Button("Save").onClicked(gate: .ignoreWhileRunning) { try await model.save() }
 ///
-/// It runs on `@MainActor`, the UI thread's actor: a handler that never awaits
-/// finishes before the event returns, and one that awaits resumes in a later
-/// turn. What it throws is reported to the host.
+/// It runs on `@MainActor`, up to its first `await` inside its event; what it
+/// throws is reported to the host.
 public typealias EventHandler = @MainActor () async throws -> Void
 
 /// What an event that carries values runs - one parameter for each, in the order
 /// the event declares them. An event with nothing to say takes an `EventHandler`.
 ///
-///     TextField("").onTextChanged { text in query = text }
-///     .onEvent(NotesContract.batteryChanged) { level, charging in … }
+///     TextField("").onTextChanged(gate: .cancelPrevious) { text in try await model.search(text) }
+///     let heard = HostEvents.on(NotesContract.batteryChanged, gate: .none) { level, charging in … }
 public typealias ValueEventHandler<each Value> = @MainActor (repeat each Value) async throws -> Void
 
 /// One element of the UI tree: its type, properties, children and handlers.
 ///
-/// Every element ends up as one, made from its contract, and a `Node` is itself
-/// an `Element`, so one goes into any builder - which is how an application
-/// describes a control it registered with a host:
+/// Every element ends up as one, made from its contract - which is how an
+/// application describes a control it registered with a host:
 ///
 ///     struct Beacon: ElementView {
 ///         var node = Node(contract: BeaconContract.self)

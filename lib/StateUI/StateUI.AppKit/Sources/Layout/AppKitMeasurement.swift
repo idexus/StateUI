@@ -61,9 +61,8 @@ protocol AppKitMeasurementCaching: AnyObject {
 /// content - and which gives its child all of it.
 ///
 /// A change inside a room is laid out inside it: the measurement climb stops
-/// below the room, and nothing around it is asked. A label's report that
-/// climbed on into a split view item's glass container made every window
-/// update wait ~90 ms for it.
+/// below the room, and nothing around it - a split view item's glass container
+/// included - is asked.
 @MainActor
 protocol AppKitRoom: NSView {}
 

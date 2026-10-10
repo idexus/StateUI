@@ -17,8 +17,9 @@ the hosts' test runs write, so the handbook cannot drift from the code.
       members  -------------------------------->  a row each: name, kind, value, layer,
                                                   a mark per host, notes
       the element's verdict and its members' ->  the hosts table under the legend: a row
-                                                  per host - made, members met, what it is
-                                                  there, why a mark is empty
+                                                  per host - made, its members counted by
+                                                  every mark, what it is there, why a mark
+                                                  is empty
   a tier contract
       first paragraph  ------------------------>  the tier's page
       its example  ---------------------------->  a Swift block under that paragraph
@@ -31,7 +32,9 @@ the hosts' test runs write, so the handbook cannot drift from the code.
 
 The matrix's blocks - the dictionary's two tables, element creation, the
 members, the shared members, the acts and the vocabulary - are rendered the
-same way, between marker comments in `docs/platform-contract.md`.
+same way, between marker comments in `docs/platform-contract.md`, and so are
+the index's - the legend, the controls, the parts of an application's
+structure, the tiers and the layers - in `docs/controls/README.md`.
 
 ## The first paragraph
 
@@ -91,16 +94,17 @@ a host writes by hand and what its runtime registers - and by the case:
 ```text
   Button.clicked: ✅               a passing case proved it
   DatePicker.format: ☑️ <missing>  proved, while the register says what is missing
+  Image.rotation: ✓ <why>          proved only through the host's own entry or read
   Map: – <why>                     the host's family never has it
   Marker.label: 🧩                    the host leaves it to the application, which
                                    registers its own control for it
   Line.x1: not realized            empty: the host has no realization yet
-  TextField.submitted: cannot ...  empty: the driver cannot do or read it, and why
+  TextField.submitted: cannot ...  ·: the driver cannot do or read it, and why
   Text.isEnabled: does not apply - ...
-                                   empty: the host's platform holds nothing the case
+                                   ·: the host's platform holds nothing the case
                                    reads, and why - beside any other case's word,
                                    that word stands
-  SplitView: waits on <member>     empty: realized, its case stopped by a member
+  SplitView: waits on <member>     ⏸: realized, its case stopped by a member
                                    the host does not realize yet
   Switch.toggled: ❌ <failure>      a case proving it failed, its first failure
   Text.lineBreak: ◐ <why>         one case proved it, another could not run or read
@@ -122,7 +126,7 @@ A 🧩 is shown and not counted: what the user gets there is the
 application's. Every total gives each mark counted as met a row of its own,
 and 🧩 one, so the evidence stays in sight beside the sum. The element
 itself has a verdict of its own, `Button: ✅`: the creation table's mark, and
-the "Created" cell of the hosts table that opens the element's page, above
+the "Created" cell of the hosts table, which stands under the legend, above
 its own members and then its tiers'. Every view has one case that proves it
 alone, `standsAloneOnAPage` - made with nothing written on it, alone on a
 page, laid out in the window at a size - and an arrangement of pages one
@@ -140,12 +144,17 @@ makes. Where an element wearing the tier does not take such a member - a
 toolbar item AppKit holds as no view - the element's own record says so,
 `.unrealized("ToolbarItem", "accessibilityIdentifier", why:)`, and stands
 over the tier's: the member's case does not run there and its cell stays
-empty. An element's record is the only one that says unrealized.
+empty. An element's record is the only one that says unrealized. An element
+the host presents with no view of its own (`viewless`) is reached by no
+tier's record: only its own records speak for it.
 
 A host checks its own register in its suite (`HostRegister.problems`): a
 record naming what its owner does not declare, one written twice, a partial
 one saying nothing is missing, a never or an unrealized one saying no
-reason, an unrealized one on a tier.
+reason, an unrealized one on a tier - and an element called both unrealized
+and never, both never and the application's, or both unrealized and the
+application's, or one left to the application that the library does not
+declare.
 
 ```text
   ✅   proven by every test of it that ran on that host
@@ -154,7 +163,8 @@ reason, an unrealized one on a tier.
   –    never on that host's family; its register or an absence case says why
   🧩   left to the application's own registration on that host
   ❌   a test of it failed; ◐ some tests proved it, another could not
-  ·    the driver cannot yet do or read what its test needs; ⏸ its test waits
+  ·    the driver cannot yet do or read what its test needs, or the platform
+       holds nothing it reads; ⏸ its test waits on a member not realized
   ⌛   said at another revision of its family than it stands at (Fresh verdicts)
        (empty) not realized, or no run - the note says which
 ```
@@ -189,15 +199,17 @@ others end at once, their files left as they stand.
 A case's outcome is the verdict of what it proves, never of what it only
 needs: `needs:` holds the button whose click makes the change, and the case
 runs only where the host realizes it too. The verdicts of one subject from all
-its cases combine into the worst: a failure over everything, a proof beside a
-case that could not run or read into ◐, a proof whole only where every case
-proved it. A case that proves its members absent on a host - a
+its cases combine into the worst: a case that does not apply gives way to any
+other word, and "not realized" to any word of a case; a failure stands over
+everything, and a proof beside a case that could not run or read makes ◐; of
+proofs, ☑️ stands over ✅ and ✅ over ✓, so a proof is whole only where every
+case proved it. A case that proves its members absent on a host - a
 view that refuses the keyboard and hears nothing never takes the focus there
 - ends with `absent`, and they are – there with why. A case needing what the
 platform holds nothing of - a value no control of it keeps, which the driver
 lists in `platformHasNone` or its read throws with `because:` - does not
 apply there: the member's other cases judge it, and only a member no other
-case judges stays empty with why.
+case judges stays `·` with why.
 
 ## Rendering again
 

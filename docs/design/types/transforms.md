@@ -44,9 +44,11 @@ Those five properties can say any move, any turn, and any sizing of the
 turned view, but not a sizing along one axis of a view turned earlier:
 `.rotate(45).scaleX(2)` slants a rectangle into a parallelogram, and no
 platform has a view property that draws one. Such a chain is drawn as the
-nearest thing the five can say: the turn, the move and both sizes are kept,
-and the slant alone is left out. `skew` is exactly that slant, so on a view
-it changes nothing. A geometry is redrawn rather than carried by view
+nearest thing the five can say: the across axis keeps its direction and
+length, the move is kept, the height is how far the down axis reaches square
+to it, and the slant alone is left out. `skew` on a view is read the same
+way: a lean along an unturned view changes nothing, and a lean down reads back
+as a turn and a sizing. A geometry is redrawn rather than carried by view
 properties, so `.geometryTransform(_:)` on a shape draws the whole matrix,
 lean included.
 

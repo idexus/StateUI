@@ -1,8 +1,8 @@
 # Controls on the Web
 
-Every control is the browser's own element, in the look the browser gives it
-and the theme the user's system chose, until the application gives it a look
-of its own.
+Every control is the browser's own element, in the look the host's
+stylesheet gives it ([the look](look.md)), light or dark as the user's system
+is, until the application gives it a look of its own.
 
 ## A view
 
@@ -52,9 +52,10 @@ wrap (`LineBreak.lines`).
 
 ## A button
 
-A Button is a `<button>`. With no fill, outline or shape of its own it is the
-browser's button; with one, its box is the application's - its background,
-its border, its corners - and the browser's look goes. It holds its words in
+A Button is a `<button>`. With no fill, outline or shape of its own it wears
+the stylesheet's button; with one, its box is the application's - its
+background, its border, its corners - and the stylesheet's border and fill
+go. It holds its words in
 a `<span>` and its picture in an `<img>` beside them, the two in its middle:
 the icon's position is the row's or column's direction, its spacing their
 gap - 8 points where the tree says none - and a picture with no words fills
@@ -198,15 +199,14 @@ An Image is an `<img>` showing one of the application's pictures, which
 the host layer's order - a PNG, then the SVG of the same name - and the
 element shows the next when one is not found. Its content mode is
 `object-fit`. An SVG keeps its own proportions inside any room it is given,
-so stretched it is shown through its view `#svgView(preserveAspectRatio(none))`
-and fills its room as a bitmap does. Its own size is the picture's, as every host's picture view
-has it, its proportions binding neither length: the element holds its size
-alone (`contain: size`), the picture's own given as it loads
+so stretched it is shown through its view
+`#svgView(preserveAspectRatio(none))` and fills its room as a bitmap does.
+Its own size is the picture's, as every host's picture view has it, its
+proportions binding neither length: the element holds its size alone
+(`contain: size`), the picture's own given as it loads
 (`contain-intrinsic-size`) - a picture across a stack's width stands as tall
 as it is, where the browser's own would stand as tall as its proportions
-make it. The trap: an SVG picture keeps its own proportions under
-`object-fit: fill`, as the file's `preserveAspectRatio` says - stretched, it
-stands fitted. A picture filling its room (`object-fit: cover`) reaches two
+make it. A picture filling its room (`object-fit: cover`) reaches two
 pixels past each edge - margins two pixels less, its bounds four more - under
 its parent's clip: WebKit draws a covering picture rounded inward at a
 fractional edge, by more than a pixel on a card turned and drawn small, so a band laid over its bottom - a card's caption in seventy

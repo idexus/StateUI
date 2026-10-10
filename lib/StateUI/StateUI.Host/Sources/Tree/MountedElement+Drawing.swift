@@ -27,8 +27,8 @@ extension MountedElement {
             pivotY: number(.pivotY) ?? 0.5)
     }
 
-    /// The layout's own placing run, where a state drives one: it moves the children without changing what the
-    /// layout measures.
+    /// The property carrying the layout's own placing run, where a state drives one: the run moves the children
+    /// without changing what the layout measures.
     public var ownPlacementRun: Set<Prop> {
         driven[.area]?.kind == .placement ? [.area] : []
     }

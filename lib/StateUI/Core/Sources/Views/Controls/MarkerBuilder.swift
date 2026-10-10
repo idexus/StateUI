@@ -6,11 +6,11 @@
 ///     Map(latitude: 52.23, longitude: 21.01, radiusMeters: 2_000).markers {
 ///         Marker("Royal Castle").location(latitude: 52.2479, longitude: 21.0155)
 ///
-///         places.map { Marker($0.name).location(latitude: $0.latitude, longitude: $0.longitude).id($0.id) }
+///         places.map { Marker($0.name).location(latitude: $0.latitude, longitude: $0.longitude) }
 ///     }
 ///
 /// An `if`, an `if/else` and an array of markers work in one, and a plain `for`
-/// does not. A marker is matched by its `.id()` and otherwise by its position.
+/// does not. A marker is matched by its position among the map's markers.
 @resultBuilder
 public enum MarkerBuilder {
     /// A single marker written as a statement.

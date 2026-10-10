@@ -28,9 +28,7 @@ control arranged at a width other than the one it was last measured at would
 mark its layout again. Its size at any other width is the arithmetic's, kept
 per width until WinUI measures it again or a change forgets it on the way up.
 Measured at every width asked of it, a layout would forget its sizes each time
-and measure its whole subtree again: some seven hundred sizings for one word
-six grids deep, and 2910 measures - 150 ms of a debug build's frame - for one
-card of the home page's run turned.
+and measure its whole subtree again.
 
 ## A place between passes
 

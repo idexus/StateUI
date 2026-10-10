@@ -49,12 +49,14 @@ A member is one of three kinds, each carrying the types it holds:
   ElementAct<Owner, Arguments, Answer>   a call a host performs          on an aimed element, or none
 ```
 
-A member's name is the name of the static member holding it, and it is what
-crosses the boundary: `TextContract.maximumLines` crosses as the property
-`maximumLines`. A node type's name is its contract's name without
-`Contract`. Every member a contract declares is on its `members` list, and
-the list names nothing else: the list is what the dictionary shows and what
-a host is held to.
+In the library's contracts a member's name is the name of the static member
+holding it, and it is what crosses the boundary: `TextContract.maximumLines`
+crosses as the property `maximumLines`. A node type's name is its contract's
+name without `Contract`. An application prefixes its node types and its acts
+with its own name (`"Gallery.RatingBar"`, `"Gallery.FlashRating"`), so they
+never meet the library's. Every member a contract declares is on its
+`members` list, and the list names nothing else: the list is what the
+dictionary shows and what a host is held to.
 
 ## Who reads a contract
 
@@ -74,7 +76,7 @@ a host is held to.
       |                    member, and tells the core what it realizes
       |
       +--> the dictionary  docs/controls/*.md and the tables of docs/platform-contract.md,
-      |                    rendered from the contracts and each host's declaration
+      |                    rendered from the contracts and the verdicts each host's runs write
       |
       +--> the guards      every node built through its contract, every member on its
                            list and a token the library declares, one name one set of
@@ -86,7 +88,9 @@ A tier mirrors a Swift protocol of the same name in `Views`: an element's
 view conforms to the protocols whose tiers its contract wears, and a
 protocol's modifiers write the tier's members. A tier wears the tiers its
 protocol refines, so `View` wears `VisualElement`, which wears
-`PropertyContainer`.
+`PropertyContainer`. Two tiers stand apart: `PageElement` has no protocol -
+a view's page modifiers write its members - and `BarElementContract` wears
+nothing, though `BarElement` refines `PropertyContainer`.
 
 ## The contracts of the library
 

@@ -69,10 +69,11 @@ label apply again, so the runs are laid down whole each time.
 ## On or off
 
 A Switch is GTK's `GtkSwitch`, a CheckBox and a RadioButton each a
-`GtkCheckButton`, one view kind in the host: whether it is on, whether it can
-be turned, and the turn the user makes, each heard through the property GTK
-notifies. A check box has no caption, so it is the box alone; a radio
-button's caption is its label, in the look the tree gives its words.
+`GtkCheckButton`, one view kind in the host: it writes whether the control is
+on and whether it can be turned, and hears the turn the user makes through the
+property GTK notifies, `active`. A check box has no caption, so it is the box
+alone; a radio button's caption is its label, in the look the tree gives its
+words.
 
 Which of a radio button's set loses its check is the host's. A set is named
 across the window, or is the buttons beside one that names none, and only
@@ -85,12 +86,12 @@ in a group with a partner of its own that is never shown.
 
 ## Nothing the program writes is heard
 
-Every native write of an element - a patch applied, a display frame presented
-- runs inside `ProgramWrite`. GTK tells of a change inside the call that makes
-it: a `GtkSwitch`'s `active` notice, a `GtkScale`'s `value-changed`, a
-`GtkEntry`'s `changed` come from the host's own setter as from the user's
-hand. A report during the program's write is the write's echo, and the
-element reports nothing. A control keeps no flag of its own.
+Every native write of an element - a patch applied, a display frame
+presented - runs inside `ProgramWrite`. GTK tells of a change inside the call
+that makes it: a `GtkSwitch`'s `active` notice, a `GtkScale`'s
+`value-changed`, a `GtkEntry`'s `changed` come from the host's own setter as
+from the user's hand. A report during the program's write is the write's echo,
+and the element reports nothing. A control keeps no flag of its own.
 
 ## A slider and its range
 
@@ -133,8 +134,9 @@ contract counts them ([typed words](../../host/runtime.md#typed-words)) - from
 a key, a paste and a program's write alike. An editor's buffer does the same.
 
 A field submits when Enter is pressed in it, through the entry's `activate`.
-A test types by writing the entry's words outside a program's write, which
-GTK reports as it reports the user's.
+A test types as the keyboard does: through the key bindings' signals of the
+field's text - `delete-from-cursor` over what it replaces,
+`insert-at-cursor` - which a read-only field refuses.
 
 A field's words stand in its `GtkText`, the text widget a `GtkEntry` and a
 `GtkSearchEntry` both hold, so the two are one view. How the words are taken
@@ -242,12 +244,12 @@ turning while its work runs and drawing nothing while it does not.
 ## A control's accent
 
 A control's tint is its one accent colour, where GNOME's theme draws its
-accent: a switch's track while it is on, a ticked box or radio, a slider's
-track up to its thumb, a progress bar's done part and a spinner. Each is a
-node GTK documents for the control, so the tint is a class of the
-display-wide sheet ([a widget's own box](drawing.md#a-widgets-own-box))
-filling that node - `switch:checked`, `check:checked`, `radio:checked`,
-`trough > highlight`, `trough > progress` - and the spinner's colour; the
+accent: a switch's track while it is on, a ticked box, a slider's track up to
+its thumb, a progress bar's done part and a spinner. Each is a node GTK
+documents for the control, so the tint is a class of the display-wide sheet
+([a widget's own box](drawing.md#a-widgets-own-box)) filling that node -
+`switch:checked`, `check:checked`, `trough > highlight`, `trough > progress` -
+and the spinner's colour; the
 theme's light under the pointer and pressed lies over it as over its own
 accent.
 

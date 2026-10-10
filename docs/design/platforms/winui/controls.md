@@ -75,12 +75,13 @@ down whole each time.
 
 ## Nothing the program writes is heard
 
-Every native write of an element - a patch applied, a display frame presented
-- runs inside `ProgramWrite`. WinUI raises a `ToggleSwitch`'s `Toggled`, a
-check box's or a radio button's `Checked` and `Unchecked`, a `Slider`'s and a
-`NumberBox`'s `ValueChanged` and a `TextBox`'s `TextChanging` inside the write
-that sets the value, so a report during that write is the write's echo, and
-the element reports nothing. A control keeps no flag of its own.
+Every native write of an element - a patch applied, a display frame
+presented - runs inside `ProgramWrite`. WinUI raises a `ToggleSwitch`'s
+`Toggled`, a check box's or a radio button's `Checked` and `Unchecked`, a
+`Slider`'s and a `NumberBox`'s `ValueChanged` and a `TextBox`'s `TextChanging`
+inside the write that sets the value, so a report during that write is the
+write's echo, and the element reports nothing. A control keeps no flag of its
+own.
 
 ## On or off
 
@@ -148,11 +149,12 @@ A DatePicker is WinUI's `CalendarDatePicker`: its day written short or long -
 "d" and "D" - in the user's own pattern, which WinUI's own formatter gives,
 between the bounds the tree set or WinUI's hundred years each way, and its
 calendar, whose opening and closing follow a picker's list. A day crosses as
-its year, month and day in the user's calendar, taken at noon so that no
-change of the clock moves it to another day. Which day it shows is the host
-layer's rule ([a day and a time](../../host/runtime.md#a-day-and-a-time)): a
-day not in the calendar leaves the day shown, one past the range stands at
-its end, and bounds given the wrong way round are read the right way.
+its year, month and day in the Gregorian calendar, in the user's time zone,
+taken at noon so that no change of the clock moves it to another day. Which
+day it shows is the host layer's rule ([a day and a
+time](../../host/runtime.md#a-day-and-a-time)): a day not in the calendar
+leaves the day shown, one past the range stands at its end, and bounds given
+the wrong way round are read the right way.
 
 A TimePicker is WinUI's `TimePicker`, in the user's clock: hours and minutes,
 as the user's 12- or 24-hour choice writes them, a time past the day added up
@@ -199,8 +201,9 @@ needs nothing more: what its template draws - a button's words - WinUI
 already keeps out of what is read.
 
 Assistive technology meets an element only through its automation peer, and
-WinUI gives a shape, a colour box and a canvas none. Each stands in a figure
-of the relay's - a panel whose peer is an image, pressed as a tap while the
+WinUI gives a shape, a colour box and a canvas none. A shape and a colour box
+stand in a figure of the relay's, and a canvas is a panel of the relay's;
+each answers with the figure's peer - an image, pressed as a tap while the
 view listens for taps - met by itself only while it has a name or says it is
 met, so a decoration says nothing to a screen reader. A menu's item and a
 toolbar's carry the element's identifier as their automation id. A control
@@ -242,10 +245,8 @@ return, where StateUI's words end it with a line feed: the host reads and
 hears every line's end as a line feed.
 
 A test types by writing the field's words outside a program's write, which
-WinUI reports as it reports the user's. UI Automation's value pattern on a
-`TextBox` fails inside a test process that holds WinUI embedded, so a test
-does not type through it; a button, a switch and a slider are driven through
-their automation patterns.
+WinUI reports as it reports the user's ([typing](conformance.md#typing)); a
+button, a switch and a slider are driven through their automation patterns.
 
 How the words are taken is the tree's where it says so and WinUI's where it
 does not: read only, and the traits the host layer reads once ([what typing
@@ -267,7 +268,8 @@ placeholder's colour from theme resources, which the box's own resources name
 again - at rest, under the pointer, focused and disabled - as a control's
 accent is ([a control's accent](#a-controls-accent)). It stands the
 placeholder at the start whatever the text box says, so the register records
-the alignment in part: the host reaches into no template's parts.
+the alignment in part: the host leaves the box's template to stand its
+placeholder.
 
 A test of a search box types into the text box its template holds: the
 search box's own words written from outside are the program's to it, and
@@ -381,7 +383,7 @@ its taps, pans, swipes, pinch and pointer are none on WinUI.
 A document written in place is what its address answers, the view serving
 it through `WebResourceRequested` whenever the view asks for it - going back
 to it too - and nothing is fetched: at its own address, which its relative
-links resolve against, else at one the host gives it, under
+links resolve against, else at one the backend gives it, under
 `https://page.stateui.invalid/`, which no network answers. WebView2 leaves a
 `data:` address unfinished, sent to it or taken back to - `NavigateToString`
 goes to one - and every navigation after it.

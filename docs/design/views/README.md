@@ -1,10 +1,11 @@
 # Views
 
 `lib/StateUI/Core/Sources/Views` holds what an application writes: the structure
-(`Application`, `Scene`, `Window`, `Page`), the controls, the layouts and
-arrangements, the modifiers, the builders, the styles, and the library's own
-composed views. Each of them is a value that describes itself as a node; the
-core's differ turns the nodes into the patch a host applies.
+(`Application`, `Scene`, `WindowGroup`, `Window`) and the page every view stands
+on, the controls, the layouts and arrangements, the modifiers, the builders, the
+styles, and the library's own composed views. Each of them is a value that
+describes itself as a node; the core's differ turns the nodes into the patch a
+host applies.
 
 Its folders: `Tiers` and `Mixins` the tiers and their modifiers, `Bindings` a
 property carried from a state, `Composition` composed views and builders,

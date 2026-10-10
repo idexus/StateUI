@@ -111,8 +111,8 @@ final class OpenScenes {
 
     // MARK: - Opening and closing windows
 
-    /// Opens a window of `type` - nil for one more of the group launch and *File ▸ New* make a window of - for
-    /// `value`, written `text`, in the scene declaring it, which opens with it where it does not stand.
+    /// Opens a window of `type` - nil for one more of the group launch and *File ▸ New Window* make a window
+    /// of - for `value`, written `text`, in the scene declaring it, which opens with it where it does not stand.
     /// Design: docs/design/core/scenes.md#opening-windows
     func open(_ type: WindowType?, value: AnyHashable? = nil, text: String? = nil, of valueType: Any.Type? = nil)
         throws {

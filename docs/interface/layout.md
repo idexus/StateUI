@@ -53,9 +53,9 @@ one, and children of the same `zIndex` in the order they are written.
 ## Visual transforms
 
 `ViewTransform` is one ordered value for planar movement, turning, and sizing.
-It is applied about the view's center after layout has assigned the view's
-rectangle, so it changes the drawing without changing measurement or
-arrangement:
+It is applied about the view's pivot - its center unless `pivotX`/`pivotY`
+say otherwise - after layout has assigned the view's rectangle, so it changes
+the drawing without changing measurement or arrangement:
 
 ```swift
 ColorBox(.cornflowerBlue)
@@ -198,7 +198,7 @@ corner; a picture behind words is a ZStack with the picture first. Either
 counts towards the stack's room, so a badge or a picture larger than the view
 makes the stack larger - give it a size, or keep it smaller. What stays over
 every page of a window is declared with `.overlays { }` on the window's page
-(navigation-and-presentation.md).
+([Over every page](navigation-and-presentation.md#over-every-page)).
 
 ## Scrolling
 
@@ -219,9 +219,9 @@ ScrollView {
 ```
 
 The `Point` binding is two-way. A program write moves the viewport; native
-scrolling reports the standing offset into the same state. The state is a
-`Journey`, so `offset` is its destination and `$offset.journey.value` is its
-current host-frame position.
+scrolling reports the standing offset into the same state. The state walks a
+journey: `offset` is its destination and `$offset.journey.value` where the
+viewport stands this frame.
 
 Where a scroller comes to rest is the platform's, with the platform's own
 deceleration. `onScrollStopped` runs once a movement has ended, and a write to
@@ -337,7 +337,7 @@ There are three readings of the same native measurement:
 | Surface | Use |
 | --- | --- |
 | `.frame($room)` | a one-way host feed of the parent-space rectangle into state |
-| `.onFrameChanged(in:)` | an asynchronous handler for one selected coordinate space |
+| `.onFrameChanged(in:)` | a handler run after layout for one selected coordinate space |
 | `GeometryReader` | local content rebuilt from its last measured rectangle |
 
 The frame feed is useful when an engine or authored layout needs the native
@@ -502,7 +502,7 @@ struct AlbumsPage: View {
 
 The initializer builds a card's face, one card per item, identified by `id:`
 or by the item itself where it is `Hashable`. Where a card stands and which
-way it faces is the arrangement's - `.default`, a wheel, `.fan` or `.row` -
+way it faces is the arrangement's - `.default` (a wheel), `.fan` or `.row` -
 and changing it animates every card to the new shape. `.position($shown)` is
 the card in the middle, counted from 0 and two-way: a swipe writes the card it
 settled on, and a write moves the run. `.onItemTapped` hears a tap on the

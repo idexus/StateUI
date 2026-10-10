@@ -56,9 +56,10 @@ extension ButtonProperties where Self: View {
 ///         .shape(.roundedRectangle(8))
 ///         .onClicked { counter += 1 }
 ///
-/// A handler runs on the main actor. One that awaits says what a click does
-/// while it runs - `.onClicked(gate: .ignoreWhileRunning) { items = try await load() }` -
-/// and the interface goes on updating while it is suspended.
+/// A handler runs on the main actor. One that awaits passes through a gate,
+/// which says what a click does while it runs -
+/// `.onClicked(gate: .ignoreWhileRunning) { items = try await load() }` - and
+/// the interface goes on updating while it is suspended.
 public struct Button: ElementView, TextualElement, FontElement, PaddingElement, BorderElement, ImageElement,
     ButtonProperties {
     /// The node this control describes.
@@ -111,7 +112,7 @@ public struct Button: ElementView, TextualElement, FontElement, PaddingElement, 
         onEvent(ButtonContract.clicked, gate: gate, handler)
     }
 
-    /// A handler that awaits says what a click does while it runs.
+    /// A handler that awaits passes through a gate.
     @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClicked(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onClicked(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")

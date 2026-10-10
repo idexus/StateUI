@@ -63,11 +63,12 @@ behind it, a menu entry's NSMenuItem and a toolbar item's NSToolbarItem -
 never from what the host last wrote. A run of a text's words is the label's
 attributes over the letters the host layer's runs place it at (`RunPlace`). A
 view's transform is the drawing's where the view's layer holds that drawing
-now, and none where AppKit holds another. A colour is read from the view
-displayed into a context of sRGB, which StateUI's colours are: a bitmap in
-the screen's own space holds the screen's numbers. A heading's level stays
-unread, with why: AppKit marks a heading, not its level. What the driver cannot read or do yet it says with why, and the
-case stays empty in AppKit's column rather than failing.
+now, and unread, with why, where AppKit holds another. A colour is read from
+the view displayed into a context of sRGB, which StateUI's colours are: a
+bitmap in the screen's own space holds the screen's numbers. A heading's level
+stays unread, with why: AppKit marks a heading, not its level. What the driver
+cannot read or do yet it says with why, and the case stays empty in AppKit's
+column rather than failing.
 
 A label's words are read from the text field it lays out, a field's from its
 text field, an editor's from its text view; a button's and a scroller's
@@ -84,13 +85,15 @@ not read.
 A window the driver never orders in takes no synthetic event, so the driver
 hands some acts to the host's own entry: the gestures and the pointer to the
 host's recognizers, a button's press and a canvas's to their handlers, a
-picker's menu, choice and date to the host's own change, a scroll to the
-host's movement, a question's answer and a file dialog's, a drag between views
-to its source and the window's drop routing, the toolbar's and a sheet's way
-back, and a window's phases as the notifications AppKit would post.
-A few reads are the host's own too: the tab it chose, a spinner's flag, a
-transform checked against the layer it composed, the restoration record, the
-menu bar's items as built at the read, the captions of a question, the panel
-it holds, what it announced and what it launched. The driver
-names each (`byHost`), and a member a case proves only through them is the
-host's own - ✓ - never ✅.
+picker's menu, choice, date and time to the host's own change, a scroll to the
+host's movement, an ItemsView's choice and opening to its collection's
+delegate, a question's answer and a file dialog's, a drag between views and
+files dropped to its source and the window's drop routing, the toolbar's and a
+sheet's way back, a toolbar item to the toolbar's entry, a web page's end to
+its navigation delegate, and a window's phases as the notifications AppKit
+would post. A few reads are the host's own too: the tab it chose, a spinner's
+flag, the input traits it keeps, a transform checked against the layer it
+composed, the restoration record, the menu bar's items as built at the read,
+the captions of a question, the panel it holds, what it announced and what it
+launched. The driver names each (`byHost`), and a member a case proves only
+through them is the host's own - ✓ - never ✅.

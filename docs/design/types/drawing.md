@@ -21,7 +21,9 @@ the list of those records, so it crosses as one `.values` holding one
   [[0, #FF6495ED], [13, 0, 0, 120, 40, 8]]
 ```
 
-Nothing is formatted on this side and nothing is parsed on arrival.
+Nothing is formatted on this side, and on arrival only a path's SVG text is
+parsed, once, by the shared parser (`HostPath`) as the host layer reads the
+instructions (`CanvasInstruction`).
 
 ## The kinds are the contract
 

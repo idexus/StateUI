@@ -4,8 +4,8 @@ import StateUI
 ///
 /// A style with no key applies to every control of its type, so the look of
 /// the app is decided here rather than repeated in the views. Add a style the
-/// day a control needs one - the sample app in the StateUI repository has
-/// the full version of this file, one style per control it shows.
+/// day a control needs one - the Gallery in the StateUI repository has a
+/// longer one: implicit styles, keyed ones, and one written from another.
 @MainActor
 enum AppStyles {
     /// Built on demand, and never sent: a style is resolved on this side,

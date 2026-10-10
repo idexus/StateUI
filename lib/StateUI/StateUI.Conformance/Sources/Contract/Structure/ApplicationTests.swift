@@ -6,9 +6,10 @@
 
 /// `ApplicationContract` on a host: the application runs, and each act its host does for it with no control behind it
 /// answers as the contract says - every question shown and answered as the user answers it, cancelled as the user
-/// cancels it; a file saved where the user says, opened and read back; an address and a file launched; the clock, the
-/// zone and a zone's distance from UTC; a word to the screen reader; the keyboard taken down; a value kept for the
-/// next launch; a handler's failure reported.
+/// cancels it, each waiting its turn; a file saved where the user says, opened and read back, no further than asked,
+/// and several opened at once; an address and a file launched; the theme the application holds; the clock, the zone
+/// and a zone's distance from UTC; a word to the screen reader; the keyboard taken down; a value kept for the next
+/// launch, and a scene's for its own; a handler's failure reported.
 @_spi(Host) public enum ApplicationTests: ConformanceFamily {
     public static let name = "Application"
 

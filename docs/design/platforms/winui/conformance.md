@@ -2,17 +2,20 @@
 
 How the conformance suite drives WinUI: `WinUIDriver` in the library target
 `StateUIWinUIDriver` of the host's `Testing` package, one test for each family
-of cases in `WinUIConformanceTests`.
+of cases, or each part of the largest, in `WinUIConformanceTests`.
 
 ## What the driver does
 
 A user's act goes through UI Automation where WinUI offers a pattern for it -
-Invoke for a button, a menu's item and a search box's query, Toggle, a range's
-value - and otherwise through the relay's callback that WinUI's own input
-takes into the host: a button held, a canvas pressed, a view's taps, pans,
-pinches and pointer, the window's phase, the chrome's way back and its toggle.
-WinUI raises a text box's KeyDown only from the keyboard, so Enter in a field
-is walked on HelloWorld's field instead.
+Invoke for a button, a menu's item and a search box's query, Toggle,
+SelectionItem for a radio button, ExpandCollapse for a picker's list, a
+range's value. A picker's choice, a tab, a day, a time and a stepper's words
+are written straight into the control's own selection or value, outside a
+program's write. Any other act goes through the relay's callback that WinUI's
+own input takes into the host: a button held, a canvas pressed, a view's taps,
+pans, pinches and pointer, the window's phase, the chrome's way back and its
+toggle. WinUI raises a text box's KeyDown only from the keyboard, so Enter in
+a field is walked on HelloWorld's field instead.
 
 ## Typing
 
@@ -70,8 +73,9 @@ placeholder and bound, a path's paint, a layout's box, a range, a date, a scroll
 bar, the chrome's title, way back and actions, a row's tabs - and the relay's
 readers of words, toggles, values, choices and dates. What WinUI keeps
 nowhere - a shape's aspect and transform, folded into its figure; an editor's
-growing, which is StateUI's measuring - the driver says it cannot read, with
-why, and a case of the effect proves the member.
+growing, which is StateUI's measuring - the driver says WinUI holds none of it
+(`platformHasNone`), with why, so the case does not apply, and a case of the
+effect proves the member.
 
 A running ring's automation peer says it is busy before the name its element
 holds, so the driver reads an activity indicator's label from the element.

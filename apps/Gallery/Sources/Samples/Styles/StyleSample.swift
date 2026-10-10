@@ -103,7 +103,7 @@ struct StyleSample: SampleContent, ExampleContent {
 
             Text("Both quotes are italic, both are 17 point, both are centred, both "
                 + "carry the same letter spacing - and only one of them says so. "
-                + "`QuoteLoud` is `.basedOn(\"Quote\")` and a text colour, which "
+                + "`QuoteLoud` is `.basedOn(.quote)` and a text colour, which "
                 + "is the whole of its declaration. A property the child states "
                 + "wins; every property it leaves out comes from the parent.")
                 .fontSize(12)

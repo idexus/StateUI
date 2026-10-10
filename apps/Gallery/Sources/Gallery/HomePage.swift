@@ -50,8 +50,9 @@ struct HomePage: View {
     /// what the WRITE says rather than a word beside it: the engine writes a
     /// whole journey already standing at its answer, so every write is an
     /// arrival. Sent as the plain name - which is a set point, and a journey -
-    /// this size would crawl to its answer over half a second, with everything
-    /// under the run riding every step of it.
+    /// this size would crawl to its answer under the application's motion -
+    /// 200 ms unless said - with everything under the run riding every step of
+    /// it.
     @State private var box = HomePage.gallery
 
     /// How far the page has come in.
@@ -128,9 +129,9 @@ struct HomePage: View {
                 // The mark, the name and what it is, on the identity gradient -
                 // the one place in the app that says all three at once.
                 //
-                // The panel paints its own background and its own edge: the
-                // Card style fills a card and draws a hairline, and both would
-                // show through the gradient.
+                // The panel paints its own background and takes away its
+                // edge: the Card style draws a hairline, which would show
+                // around the gradient.
                 ZStack {
                     VStack {
                         Image("stateui_mark.png")
@@ -276,8 +277,8 @@ struct HomePage: View {
         // THE PAGE'S OWN ROOM, written by the host and read by the arithmetic
         // that sizes the run. Nothing is built for it, which is the whole
         // difference between this and measuring a page with a `GeometryReader`:
-        // the run's height then rode a render per settling pass, and everything
-        // standing under it rode them too.
+        // the run's height would ride a render per settling pass, and
+        // everything under it with it.
         .frame($room)
         .engine(tracking: $room) { cycle in
             // NOTHING IS DECIDED FROM A ROOM NOBODY HAS MEASURED. Every render
@@ -290,9 +291,9 @@ struct HomePage: View {
                 // A SIZE WORKED OUT FROM A MEASUREMENT DOES NOT TRAVEL, and
                 // `snap(to:)` is the one write that says so - there, going
                 // nowhere, standing still. Written as the plain name, which is
-                // a set point, this number would crawl to its answer over
-                // half a second with everything under the run riding every
-                // step of it.
+                // a set point, this number would crawl to its answer under the
+                // application's motion - 200 ms unless said - with everything
+                // under the run riding every step of it.
                 $box.journey.snap(to: Self.fitted(in: room, at: ceiling, stepping: stepping).run)
             }
 

@@ -55,8 +55,9 @@ element are part of what it is: another kind of view there, or the same kind
 in another order, replaces the element, as another host type does. The host
 makes the control anew, the elements under it are created, and nothing the
 view before it watched, wrote or was told carries over - its page, its
-`onChanged` readings, its focus. A composed view keeps state only from a view
-of its own kind ([state survives a rebuild](#state-survives-a-rebuild)).
+`onChanged` readings, its focus; the visual state it arrives in is not heard.
+A composed view keeps state only from a view of its own kind ([state survives
+a rebuild](#state-survives-a-rebuild)).
 
 The branch a composed view's content root was written in is part of it too:
 `if editing { TextField(…) } else { TextField(…) }` as a view's `body` is
@@ -337,8 +338,8 @@ the newest closure - this render's captures - to the engine that already has
 a number. A different count is a different set of engines and starts over, as
 with watches. The engines a conversion needs are armed beside the author's
 own, ahead of them, in property order. A board that has forgotten an element's
-engines, as after a session claimed afresh, gets them again under the numbers
-the element already had.
+engines, as after a session claimed afresh, gets them again under fresh
+numbers, which the element keeps from then on.
 
 ## Driven properties
 

@@ -11,9 +11,10 @@ widget it shows (`GTKControl`). The host stands it in the tree as a view of
 its own that wraps the control: the widget is placed, sized, shown and
 listened to like any widget the host makes, its own measure is what the host
 measures, and the control is held for as long as its element lives. The
-registration's appliers are handed the application's own class, so a
-property of the wrong type, or an event of a contract the element does not
-wear, does not compile. A registered control holds no widget of the tree:
+registration's appliers are handed the application's own class and each
+value as its contract declares it, so an applier of the wrong type does not
+compile; a member of a contract the element does not wear is refused, and
+said once. A registered control holds no widget of the tree:
 this host arranges children only in the layouts it makes itself. A control
 may draw children of one contract itself - a map's markers - handed over
 whole, in the tree's order, whenever they change (`GTKRegistration.children`);

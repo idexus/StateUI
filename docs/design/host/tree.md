@@ -120,10 +120,10 @@ host alike.
 
 ## Views by number
 
-A host's views are numbered as they are made and held weakly by their number
-(`LiveViews`): a toolkit's callback crossing C names a view by its number, as
-it cannot hold an object, and finds nothing once the view is gone; a test
-counts the numbers held to see every view let go.
+GTK's and WinUI's views are numbered as they are made and held weakly by
+their number (`LiveViews`): a toolkit's callback crossing C names a view by
+its number, as it cannot hold an object, and finds nothing once the view is
+gone; a test counts the numbers held to see every view let go.
 
 ## A window shown
 
@@ -186,9 +186,10 @@ text tiers the same way on every host (`TextMembers`): its words in their
 case where the words or the case changed, and the look its font and colour
 give them where one of those did. A break keeps the words on one line unless
 it wraps - word and character wrapping do - and wrapped words stand on as
-many lines as the tree allows, none where it allows none or fewer than one
-(`LineBreak.lines`); a truncating break cuts them with an ellipsis. A toolkit
-spacing letters in ems is handed the space as a share of the font's size.
+many lines as the tree allows, any number where it allows none or fewer than
+one (`LineBreak.lines`); a truncating break cuts them with an ellipsis. A
+toolkit spacing letters in ems is handed the space as a share of the font's
+size.
 
 ## What assistive technology meets
 

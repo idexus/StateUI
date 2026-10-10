@@ -15,7 +15,7 @@ extension Differ {
     ) -> (state: String, heard: [(index: Int, listener: VisualStateListener)]) {
         let names = Set(node.visualStates.map(\.name))
 
-        // The Watch rule: only what a declared state follows is heard.
+        // Only what a declared state follows is heard.
         if names.contains("Pressed") {
             node.addHandler(.pressed, gate: .none) { input.hold(true) }
             node.addHandler(.released, gate: .none) { input.hold(false) }

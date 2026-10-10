@@ -23,11 +23,11 @@ the host layer hears nothing of the hand in any view there.
 
 ## Nothing the program writes is heard
 
-Every native write of an element - a patch applied, a display frame presented
-- runs inside `ProgramWrite`. Android calls a switch's, a slider's and a
-field's listener while the value is being set, so the listener's call during
-that write is the write's echo, and the element reports nothing. A control
-does not keep a flag of its own.
+Every native write of an element - a patch applied, a display frame
+presented - runs inside `ProgramWrite`. Android calls a switch's, a slider's
+and a field's listener while the value is being set, so the listener's call
+during that write is the write's echo, and the element reports nothing. A
+control does not keep a flag of its own.
 
 ## A drag between views
 
@@ -253,14 +253,15 @@ and how it ended: an error on the page itself makes it a failure, a timeout
 its own. A page crosses with the name the view asks by, the name written
 first: written while a page loads, Android leaves that page out of the
 history, and there is no way back to it. A document written in place with
-no address of its own is gone to as a `data:` address, as on a WebKit web
-view (docs/design/host/web.md) - Android's web view takes an address of at most
-2 MB, so such a document stays under about 1.5 MB, or is given an address.
-Whether there is a page behind and ahead is said when it changes. A script runs in the page and answers later,
-by ticket, with the JSON Android hands back read as text by the host layer's
-rule (docs/design/host/web.md). The web view runs scripts and
-keeps the page's storage, as a browser does, and lets go of its page and its
-web process when its element leaves.
+no address of its own is gone to as a `data:` address by the host layer's
+rule ([a document with no address](../../host/web.md#a-document-with-no-address),
+`WebDocument`) - Android's web view takes an address of at most 2 MB, so such
+a document stays under about 1.5 MB, or is given an address. Whether there
+is a page behind and ahead is said when it changes. A script runs in the page
+and answers later, by ticket, with the JSON Android hands back read as text
+by the host layer's rule ([a script's answer](../../host/web.md#a-scripts-answer)).
+The web view runs the page's scripts and keeps its storage, and lets go of
+its page and its web process when its element leaves.
 
 ## The keyboard's focus
 

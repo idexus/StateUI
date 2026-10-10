@@ -161,9 +161,10 @@ public struct Journey<Value: Walked> {
     ///     try await fading.arrived()
     ///     try await sliding.arrived()
     ///
-    /// With nothing to animate - already there, the user asked for less motion, or
-    /// nothing wears the state yet - it arrives at once. A law given here stays on
-    /// the value; without one, the value's own law stands.
+    /// Where nothing wears the state yet, or an engine of the application's animates
+    /// it (`.custom`), it arrives at once; already there, or where the user asked for
+    /// less motion, it arrives on the host's next frame. A law given here stays on the
+    /// value; without one, the value's own law stands.
     ///
     /// - Parameters:
     ///   - target: where to send it.

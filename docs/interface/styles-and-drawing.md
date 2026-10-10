@@ -79,11 +79,11 @@ express a useful precedence and should be removed.
 
 A property written directly on a control wins over a style. A recognized keyed
 style for the same target replaces that target's implicit style, so it must
-inherit from or state every value it requires. A key that is absent, or belongs
-to another target type, is unresolved and falls through to the implicit style
-for the control's own type. If no implicit style exists, only the control's own
-values remain. The differ consumes the key in every case; hosts never resolve
-style names.
+inherit from or state every value it requires. A key under which no style of
+the control's own type is written is unresolved, and falls through to the
+implicit style for that type. If no implicit style exists, only the control's
+own values remain. The differ consumes the key in every case; hosts never
+resolve style names.
 
 The style's generic target is a compile-time boundary. It offers only the
 property modifiers valid for that control; events, gestures, identity, and
@@ -214,7 +214,7 @@ Switch($isOn)
     .visualState(.on) { $0.background(.green) }
 ```
 
-Normal's values show only when no other state holds.
+Normal's values show only while no other state the control declares holds.
 
 Leaving a state gives the control its own values back. A state's values are
 ordinary property changes: they move under the control's `.motion(_:)` like
@@ -291,9 +291,10 @@ vocabulary:
 - `Path` with path data;
 - `Polygon` and `Polyline` with `Point` values.
 
-Common shape modifiers include fill, stroke, stroke width and dash
-settings, aspect, and `geometryTransform`. Geometry-specific modifiers such as a
-rectangle's corner radius or line endpoints remain on the matching shape.
+Common shape modifiers include `fill`, `stroke`, `lineWidth` and the dash
+settings, `contentMode`, and `geometryTransform`. Geometry-specific modifiers
+such as a rectangle's corner radius or line endpoints remain on the matching
+shape.
 
 ```swift
 Rectangle()
@@ -340,14 +341,15 @@ Canvas {
 .height(48)
 ```
 
-Commands execute in order. Color, stroke, font, alpha, and transform commands
-change the state used by later drawing commands. `saveState` and
+Commands execute in order. The color commands, `lineWidth`, `fontSize`,
+`opacity` and the transform commands (`translateBy`, `rotate(by:)`,
+`scaleBy`) change the state used by later drawing commands. `saveState` and
 `restoreState` bound temporary transform or paint changes.
 
 The interaction handlers report points in the canvas's own coordinate space:
-`onPressed`, `onDragged`, and `onReleased`. A state
-change that alters the command list rebuilds the drawing description; a host
-may animate compatible command values without rebuilding the application tree.
+`onPressed`, `onDragged`, and `onReleased`. A state change that alters the
+command list describes the drawing again, and the host replays the new list
+whole; nothing in a drawing animates.
 
 `Canvas` is for drawing content, not for recreating standard controls.
 Use accepted controls whenever native input, focus, selection, or accessibility

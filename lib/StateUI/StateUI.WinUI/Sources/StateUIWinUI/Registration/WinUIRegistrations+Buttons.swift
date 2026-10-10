@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 extension WinUIRegistrations {
-    /// A Button: its caption, its picture and its look, whether it takes a press, and the click.
+    /// A Button: its caption, its picture and its look, whether it takes a press, the press, its release and the click.
     static func buttons(_ registry: Registry<WinUIView>) {
         registry.add(ButtonContract.self, create: { reports in
             let button = WinUIButtonView()

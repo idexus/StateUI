@@ -19,8 +19,9 @@ the contract that declares it, so `Layout`'s members go to the layouts alone.
 
 What every host realizes by the host layer's rules is declared by the layer's
 groups ([what every element realizes](../../host/tree.md#what-every-element-realizes)):
-the room, the drawing over it, what assistive technology meets and the
-user's input; the host adds one call per member of its own. Each member is
+the room, the drawing over it, what assistive technology meets, the user's
+input, a drag between views and files dropped on a view; the host adds one
+call per member of its own. Each member is
 declared with the type it carries, so the compiler still refuses a wrong
 tier where a list of names would pass quietly.
 

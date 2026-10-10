@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// What the page tells the core it stands on: a browser on a phone or a tablet where its user points by touch, on a
-/// desktop else, and the user's appearance.
+/// desktop else, the application's info, and the user's appearance and its accent.
 /// Design: docs/design/platforms/web/runtime.md#the-environment
 @MainActor
 enum WebEnvironment {

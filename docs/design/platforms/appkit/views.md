@@ -51,11 +51,10 @@ its own (`AppKitBoxWash`), the material's top view, hidden while it paints
 nothing. Laying out the children keeps the surface beneath them. Glass that
 answers the user takes the press, which rises to the layout; any other
 surface takes none. A window's blur carries the same wash for its tint.
-The trap: macOS draws an inactive window's glass without its tint - a violet
-sidebar went grey as its window lost the focus - but never what the glass
-holds. So glass wears its tint while its window stands key or main in the
-application in front, and in its content (the wash) otherwise, following the
-window's and the application's notices.
+The trap: macOS draws an inactive window's glass without its tint, but never
+what the glass holds. So glass wears its tint while its window stands key or
+main in the application in front, and in its content (the wash) otherwise,
+following the window's and the application's notices.
 
 A scroller's box is its layer's alone: a colour behind what it shows, a
 colour's outline on a rectangle or a rounded one, and the cut of what it shows
@@ -88,22 +87,20 @@ AppleShowScrollBars Always`, and delete that key afterwards.
 
 AppKit draws a layer-backed view only where it is visible, so a scroller
 uncovering a label a few points at a time draws it strip by strip - and an
-`NSTextField` label lays its whole text out again for every strip: a listing
-of 1275 characters cost 6.4 ms a strip, the Appearance sample's 756 by 3424
-point listing 200 ms, each frame of the first pass and every time the label
-drew again (a theme turned, the window resized). A label that wraps and shows
-every line therefore draws from a layout of its words it keeps in TextKit
-(`NSLayoutManager`), laid out again only when its words or its width change,
-drawing only the lines the strip shows; its lines stand where the cell's do,
-2 points in from each side. A truncated label draws as its cell does.
+`NSTextField` label lays its whole text out again for every strip, each frame
+of the first pass and every time the label draws again (a theme turned, the
+window resized). A label that wraps and shows every line therefore draws
+from a layout of its words it keeps in TextKit (`NSLayoutManager`), laid out
+again only when its words or its width change, drawing only the lines the
+strip shows; its lines stand where the cell's do, 2 points in from each
+side. A truncated label draws as its cell does.
 
 ## A button's icon beside its words
 
 A button keeps its icon beside its words, the two together in the middle
 (`imageHugsTitle`), however wide the layout stands it. Left to its default,
-AppKit puts the icon at the button's edge and the words alone in the middle:
-a sidebar's "Log out" stretched across the sidebar had its icon at the far
-side of it.
+AppKit puts the icon at the button's edge and the words alone in the middle,
+so a wide button's icon stands far from its words.
 
 ## A radio button's set
 
@@ -138,7 +135,7 @@ keyboard on the screen, so a purpose picks no keys - the register records it.
 
 ## A web view
 
-A WebView is WebKit's own web view, as on UIKit
+A WebView is WebKit's own web view
 ([the host layer's web rules](../../host/web.md)): a page at an address is
 loaded; a document written in place with an address of its own is shown
 there, and one with none is gone to as a `data:` address. What the page does

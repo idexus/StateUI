@@ -178,9 +178,9 @@
     }()
 
     /// What this declaration means against the contracts: the same members, each
-    /// under the contract declaring it - the element's own, or the nearest tier it
-    /// wears that declares a member of that name. A member no contract declares is
-    /// left out rather than guessed at.
+    /// under the contract declaring it - the first contract in `worn` that
+    /// declares a member of that name. A member no contract declares is left out
+    /// rather than guessed at.
     public var realization: HostRealization {
         var members: Set<HostRealizedMember> = []
         var elements: Set<String> = []
@@ -230,7 +230,7 @@
         var unknown: [(element: String, member: String)] = []
 
         // A shared member no contract declares is said under the empty element. Acts are
-        // not listed: a host performs some of its own that no contract declares.
+        // not listed: a host names each from its contract member, so none can be undeclared.
         // Design: docs/design/core/contracts.md#declarations
         for member in shared.members.union(shared.events).sorted()
         where !LibraryContracts.all.contains(where: { owner in

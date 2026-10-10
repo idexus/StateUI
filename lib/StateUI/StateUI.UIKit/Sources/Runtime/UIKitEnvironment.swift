@@ -7,8 +7,9 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// The theme, the user's locale, the battery and the network, told to the core as the host starts - the theme as
-/// the first scene connects - and whenever one changes, for as long as the application runs.
+/// The theme, the accent, the user's locale, the battery, the network and the display, told to the core as the host
+/// starts - the theme and the accent as the first scene connects, the display as each does - and whenever one
+/// changes, for as long as the application runs.
 /// Design: docs/design/platforms/uikit/runtime.md#the-environment
 @MainActor
 final class UIKitEnvironment {

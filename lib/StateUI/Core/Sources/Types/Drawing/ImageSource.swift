@@ -72,8 +72,9 @@ public struct ImageSource: Equatable, Sendable, ExpressibleByStringLiteral, Host
         }
     }
 
-    /// Read back off a node, for the templates that are handed an item and have
-    /// to draw it - a pair coming back as the pair it was written as.
+    /// A picture read from a property's value - a pair coming back as the
+    /// pair it was written as, anything else as one file's name, empty where
+    /// there is none.
     init(_ value: PropValue?) {
         if case .themed(let light, let dark) = value {
             self.init(light: light.string ?? "", dark: dark.string ?? "")

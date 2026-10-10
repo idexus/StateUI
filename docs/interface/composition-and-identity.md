@@ -238,8 +238,8 @@ Text(direction)
 
 It does not run on the first description; use `onCreated` when arrival itself
 requires work. Multiple watchers are paired by modifier order. If their count
-or value type changes, that element starts watching afresh instead of matching
-unrelated slots.
+changes, the element starts watching afresh; a watcher whose value type
+changed starts over alone, instead of matching an unrelated slot.
 
 A handler that awaits names what a newer change does while it runs - a search
 cancels the one before it:

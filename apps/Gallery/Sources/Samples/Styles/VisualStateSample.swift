@@ -59,9 +59,6 @@ struct VisualStateSample: SampleContent, ExampleContent {
                 // `.motion(.none)` is what none of it looks like.
                 Button(enabled ? "Hold me too" : "Disabled")
                     .isEnabled(enabled)
-                    // THE SAME STATES, ARRIVING. A visual state travels under
-                    // the control's own motion, and this is what none looks
-                    // like.
                     .motion(.none)
                     .visualState(.pressed) { $0.background(Palette.brand) }
                     .visualState(.disabled) { $0

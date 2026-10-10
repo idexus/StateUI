@@ -53,7 +53,8 @@ final class WebScrollView: WebLayoutView, FramedScroller {
         style("grid-template-rows", down ? "minmax(max-content, 1fr)" : "minmax(0, 1fr)")
         attribute("data-bars", bars == .never ? "never" : nil)
         if let offset, offset != self.offset {
-            // The browser stops it at the document's end: its scroll event says where it stopped.
+            // The browser stops it at the document's end: where it stopped is read at once; the scroll event it
+            // raises is the program's.
             let before = WebRelay.scroll(of: node)
             WebRelay.scroll(node, to: offset)
             let taken = WebRelay.scroll(of: node)

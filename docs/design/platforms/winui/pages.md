@@ -99,7 +99,7 @@ loaded that row takes the pane's room, and the row of the items the view
 holds none of takes only theirs. The row exists only once WinUI has measured
 the view, so the sidebar has been laid out in it by then; everything in the
 pane is measured again, or a layout inside keeps the places that first layout
-gave it - a footer under a scroller stood below the window. A closed pane
+gave it. A closed pane
 beside the detail stands there at no width, where the keyboard's Tab and
 Narrator would still reach what it holds - a sign-out button among them - so
 the sidebar is collapsed while its pane is closed: shown as the pane starts to
@@ -115,9 +115,10 @@ layout pass, so the binding hears it in the turn after it.
 
 The navigation view draws a border round itself and keeps a margin above and
 below the page in its pane - a line and a band of another tone between the
-window's bar and the sidebar - so its own resources set both to none
-(`NavigationViewBorderThickness`, `NavigationViewPaneContentGridMargin`): the
-sidebar page fills its pane from the top. The rows of the pane's own items
+window's bar and the sidebar - so its own resources take the border away and
+the margin above and below the page (`NavigationViewBorderThickness` 0,
+`NavigationViewPaneContentGridMargin` -1,0,0,0): the sidebar page fills its
+pane from the top. The rows of the pane's own items
 beneath the page still show the window's backdrop where nothing paints them,
 so the pane stands on a ground of its own for each place ([a sidebar's
 material](../../host/pages.md#a-sidebars-material)), written into the
@@ -208,9 +209,9 @@ are. The window takes the overlays' layer out when it is told none.
 ## Menus
 
 The menus the visible page composes (`chromeMenus`) stand on WinUI's
-`MenuBar` in a row of the window beneath its chrome, above the window's tabs
-- each menu one of the bar's, its entries within it - while there are any;
-a path with none leaves no row. WinUI keeps no menus of its own, so a
+`MenuBar` in a row of the window beneath its chrome, above the window's
+tabs - each menu one of the bar's, its entries within it - while there are
+any; a path with none leaves no row. WinUI keeps no menus of its own, so a
 `StandardMenu` is an ordinary menu of the application's. The bar is written again only when what it draws changes: a render that
 changes nothing on it leaves the bar, and a menu open on it, as they are.
 

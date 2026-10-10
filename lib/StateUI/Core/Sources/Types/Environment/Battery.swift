@@ -5,8 +5,7 @@
 /// `battery`, `@Environment(\.device)`; the values update as the platform
 /// reports, and exactly the views that read them are rebuilt.
 ///
-///     let fake = Device()
-///     fake.battery.chargeLevel = 0.07
+///     let fake = Device(battery: Battery(chargeLevel: 0.07))
 ///     ChildView().environment(fake)
 ///
 /// A host that cannot observe a battery leaves `chargeLevel` at `-1` and the

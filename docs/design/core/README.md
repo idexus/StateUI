@@ -39,7 +39,7 @@ The core's sources stand in one folder per topic, one element to a file, and
   |                          | read at build: ReadScope records it   |     |
   |                          | write: Renderer.stateChanged          |     |
   |                          v                                       |     |
-  |   Renderer --- render(baseline) ---> Differ                      |     |
+  |   Renderer --- renderHost(baseline) ---> Differ                  |     |
   |     written, readers,     walk / build / complete                |     |
   |     generation            keys, adoption, carry, handlers        |     |
   |                           |                                      |     |
@@ -94,7 +94,8 @@ relay beneath the Swift host and never calls the core.
   ends on the Web, at the turn posted elsewhere
      |
      v  host turn:  run jobs -> a pending cycle -> RENDER -> take acts
-  Renderer.render(baseline: the generation the host holds)
+  HostBoundary.render(baseline:) -> Renderer.renderHost(baseline:),
+  against the generation the host holds
      |  take and clear the changes in one step
      |
      |  clean walk   every cause named its state, none read by the root
@@ -105,8 +106,9 @@ relay beneath the Swift host and never calls the core.
           composed views built with the same inputs are carried;
           children matched by .id(), builder path, position
      |
-     v  settle passes: .onDestroying, .onCreated, .onChanged run now,
-     |  what they write is walked and merged - up to three passes
+     v  settle passes: .onDestroying, .onCreated, .onChanged,
+     |  .onVisualStateChanged run now, what they write is walked and
+     |  merged - up to three passes
      v
   HostPatch -> HostRender
      |
@@ -144,11 +146,12 @@ relay beneath the Swift host and never calls the core.
   UI thread (the host's)                       any other thread
   -----------------------------------------    ----------------------------------
   event   HostBoundary.dispatch(id, payload)    a Task.detached or a group's child
-          Renderer.dispatch                      posts to a @State ($x.post):
-          Task.immediate on MainActor            one job booked on MainActor
-          -> the handler runs to its first           |  its enqueue posts, outside
-             await, inside the event                 v  the executor's lock
-                                               the host's way (postTurns):
+          Renderer.dispatch -> each handler      posts to a @State ($x.post):
+          through its gate (RunSlot.start):      one job booked on MainActor
+          Task.immediate on MainActor                |  its enqueue posts, outside
+          -> it runs to its first await              |  the executor's lock
+             inside the event, unless its            v
+             gate holds it back                the host's way (postTurns):
   turn    HostBoundary.runJobs: MainActor's jobs  ONE turn onto the UI thread,
           (Apple: the main queue's instead)      none more until its drain
           a pending cycle, a render, the acts    begins
@@ -156,9 +159,10 @@ relay beneath the Swift host and never calls the core.
           MainActor's executor -> next drain   nothing ever runs on it
 ```
 
-The library never calls the host back: a resume produces its job on a pool
+The library hands the host no job: a resume produces its job on a pool
 thread, and entering a runtime from a thread it has never seen can deadlock the
-UI thread under a debugger. The host asks instead (concurrency.md).
+UI thread under a debugger. It only rings the doorbell, and the host runs the
+jobs (concurrency.md).
 
 ## Where things live
 
@@ -178,15 +182,17 @@ holds its reasons. A type's extensions stand in its folder, named
   Core/Render       the renderer, with its cycle, act queue and dispatch; render, acts,
                     read scopes, debugInfo()                              invalidation
   Core/Diff         the differ, Node, RenderedNode, placeholders and      identity-and-diffing
-                    inputs, .onChanged, .onCreated, .onDestroying
+                    inputs, .onChanged, .onCreated, .onDestroying,
+                    visual states and their listeners, page values
   Core/Acts         acts and replies, aims, focus, dialogs, the screen    acts
                     reader, host events
   Core/Runs         a handler's runs and the gate they pass               runs
                     through, SharedGate, Task(gate:), the run a
                     task belongs to, a walk's runs
-  Core/Threads      the UI thread's executor, the doorbell                concurrency
+  Core/Threads      the UI thread's executor, the doorbell, the           concurrency
+                    timetable of jobs kept for later
   Core/Boundary     the typed SPI: HostBoundary, HostRender, HostPatch     (this note)
-                    and the values it carries, SVG path data
+                    and the values it carries, SVG path data, the tally
   Core/Contract     contracts and tiers, members, their facts and         contracts
                     values, the tokens
   Core/Realization  a host's registry and reports, realizations and       contracts

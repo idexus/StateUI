@@ -6,7 +6,7 @@
 ///
 ///     var body: some Scene {
 ///         WindowGroup { NotePage() }
-///         Window(.inspector) { Inspector() }
+///         Window(.inspector) { InspectorPage() }
 ///     }
 @resultBuilder
 @MainActor

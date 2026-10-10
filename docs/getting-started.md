@@ -81,10 +81,12 @@ and Debug. The application's head is built, installed where the host needs
 it, and started under `lldb-dap`, a breakpoint holding from the first line -
 on Android `lldb-dap` attaches once the application has started, and a
 breakpoint holds from then on; on UIKit and Android its terminal follows the
-application's log. A Release launch runs without a debugger. A Web head is
-built, its page served and opened in the chosen browser; StateUI: Debug in
-Chrome, Edge or another of Chromium's browsers opens it under VS Code's own
-JavaScript debugger, the page's console in the Debug Console.
+application's log. On UIKit, Android and the Web a Release launch runs
+without a debugger; on AppKit, WinUI and GTK `lldb-dap` starts the optimized
+build. A Web head is built, its page served and opened in the chosen browser;
+StateUI: Debug in Chrome, Edge or another of Chromium's browsers opens it
+under VS Code's own JavaScript debugger, the page's console in the Debug
+Console.
 
 `.vscode/launch.json` holds only those two launches. The extension resolves
 each one into the chosen host's own debugger.
@@ -193,7 +195,7 @@ the settings that save them.
 Every application follows one structural path:
 
 ```text
-Application -> Scene -> WindowGroup, Window -> View
+Application -> Scene -> windows -> a view
 ```
 
 Each declares what it is made of in its `body`. Runtime properties such as

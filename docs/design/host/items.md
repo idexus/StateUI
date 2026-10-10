@@ -2,8 +2,10 @@
 
 What a platform's collection holds of one ItemsView, and what it tells the
 tree, is decided once in the host layer (`ItemsCells`); a host's half is the
-toolkit's collection and its calls. A collection paints nothing behind its
-rows on any host: what it stands on shows through.
+toolkit's collection and its calls. A collection paints nothing of its own
+behind its rows, so what it stands on shows through: AppKit, UIKit and GTK
+clear the background their toolkit paints there; Android, WinUI and the Web
+set none and keep their collection's default.
 
 The entries cross as one property, every identity in order. A host takes
 them as they change (`takeEntries`) and shows one cell for each. When the

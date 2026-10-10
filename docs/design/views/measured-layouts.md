@@ -77,9 +77,9 @@ motion it would crawl after every change of the measurement, and every step of
 an animated size is a layout pass of the whole page, which starves the frame
 clock every other animation runs on.
 
-A layout that reports its frame - through `onFrameChanged` or a frame feed -
-gives its children their new sizes at once while their places still animate,
-since what a measurement reports is what the views beside a child leave it. A
+A layout whose frame, or a frame under it, is read - through `onFrameChanged`
+or a frame feed - places every child at once, its size and its place alike:
+each frame of an animation would hand the reader a room nobody chose. A
 size worked out from a room elsewhere wants `.motion(.none)`. A place worked
 out from a measurement is written with no motion too: the room arrives over
 several passes, and a place left to animate to its answer sets off from
@@ -239,6 +239,10 @@ card a fifth of a second behind the hand is a card that lags.
   of it. The gallery names its card again and, once the scroller says its run
   is long enough to hold it, sends the run there; until then the hand names
   nothing and a rest is no card the user chose.
+- A gallery nobody may swipe has no scroller: the deck stands in a `Grid`, an
+  assigned position animates the cards there for `crossing` milliseconds, and
+  a tap is answered by a box a `GeometryReader` places where the card in front
+  is drawn.
 
 The sensitivity is one number, how far the hand travels to turn the run by one
 card: three fifths of a card's width, far enough that the coarsest step a

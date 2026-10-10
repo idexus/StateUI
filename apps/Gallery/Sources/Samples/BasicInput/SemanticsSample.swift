@@ -225,7 +225,8 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 + "was on, rather than a second button being drawn: a property that goes "
                 + "away is cleared back to the host's native default. To hear any of it, turn on "
                 + "the platform's screen reader - VoiceOver on Apple, TalkBack on "
-                + "Android, Narrator on Windows - and touch the two buttons in turn.")
+                + "Android, Narrator on Windows, Orca on GNOME - and touch the two "
+                + "buttons in turn.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

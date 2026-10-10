@@ -6,7 +6,7 @@
     /// Complete values for the state channels changed by this cycle.
     public let changes: [HostStateChange]
 
-    /// Whether an engine or pending state needs another cycle.
+    /// Whether an engine has a reason to run next cycle.
     public let continues: Bool
 }
 

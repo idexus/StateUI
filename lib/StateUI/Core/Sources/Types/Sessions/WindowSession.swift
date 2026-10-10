@@ -110,10 +110,8 @@ public final class WindowSession {
     /// Closes the window - and where it is its scene's last, the scene with it.
     ///
     /// - Throws: `WindowError.noScene` for a window of no open scene - one
-    ///   whose scene has ended included, whoever still holds it -
-    ///   `WindowError.notOpen` for one already closed, and
-    ///   `WindowError.unsupported` where the host cannot close this window
-    ///   independently.
+    ///   whose scene has ended included, whoever still holds it - and
+    ///   `WindowError.notOpen` for one already closed.
     public func close() async throws {
         guard let record, OpenScenes.shared.record(id: record.id) === record else {
             throw WindowError.noScene

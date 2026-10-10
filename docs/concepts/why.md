@@ -114,8 +114,9 @@ old values. A model another package owns is bridged by the application
 A state is discrete: `fade` is where the value is going. Where it is now, how
 fast it moves and under what law is `$fade.journey`, the same state seen in
 motion ([Motion and journeys](motion-and-journeys.md)). A state named in an
-engine's `following:` or `tracking:` wakes the engine when it is written,
-whoever writes it; reading a state wakes nothing.
+engine's `following:` or `tracking:` wakes the engine when it is written by
+anyone but that engine: a handler, the host, or another engine; reading a
+state wakes nothing.
 
 **Deliberately rejected:** a second declaration for a value that moves, a
 declared journey type, and an engine woken by what it reads. Each would double
@@ -204,9 +205,9 @@ library can carry on past.
 ## A state belongs to the UI thread
 
 A `@State`, its bindings and its journey are read and written on `MainActor`,
-with no lock: a handler's lines run with nothing between them, and a write is
-what the next read sees. Another thread posts - `$x.post` - the one door in,
-landing on the UI thread in the order posted.
+with no lock: a handler's lines between two `await`s run with nothing between
+them, and a write is what the next read sees. Another thread posts -
+`$x.post` - the one door in, landing on the UI thread in the order posted.
 
 **Deliberately rejected:** state written from any thread under locks, where a
 write costs a lock, two writers interleave inside one change and an author
@@ -271,12 +272,12 @@ from code.
 ## A run no longer wanted changes nothing
 
 A run that a later event cancels, whose task is cancelled, or whose element
-leaves the screen changes nothing from then on: its writes, movements, posts
-and acts are refused - on every state, a model the page does not own included
-- and each refusal is said once, naming what it refused. A slower, older
-search never overwrites a newer one, and a page already left never navigates.
-Work that must outlive its element goes to a task of its own, which no run's
-end refuses
+leaves the tree changes nothing from then on: its writes, movements, posts
+and acts are refused - on every state, a model the page does not own
+included - and each refusal is said once, naming what it refused. A slower,
+older search never overwrites a newer one, and a page already left never
+navigates. Work that must outlive its element goes to a task of its own,
+which no run's end refuses
 ([Work that outlives its element](../interface/concurrency.md#work-that-outlives-its-element)).
 
 **Deliberately rejected:** cancellation that only asks, where a run that never
@@ -286,7 +287,8 @@ let a page already left write through a shared model.
 ## The library never imports Foundation
 
 The StateUI library never imports Foundation; an application may. Handlers run
-on `MainActor`, which every host drains on its own UI thread.
+on `MainActor`, drained by the platform's own loop on Apple, and by the host
+through `HostBoundary.runJobs` elsewhere.
 
 **Deliberately rejected:** Foundation in the library, and its timers, run loops
 and main queue as the library's clock. The library runs on macOS, iOS, Android,

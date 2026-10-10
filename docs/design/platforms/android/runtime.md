@@ -133,8 +133,9 @@ A file dialog is the system's document picker, started for its result over
 the activity and waiting its turn among the questions
 ([files](../../host/runtime.md#files)); the activity hands its result to the
 relay by the request's code, and the picker answers under its ticket. One
-that opens asks for the MIME types of every kind's extensions - any document
-where none is known - and several only where asked; one that saves suggests
+that opens asks for the MIME types of every kind's extensions -
+`application/octet-stream` for one with no known type, any document where it
+names no kind - and several only where asked; one that saves suggests
 the act's name and the type of its extension, and the contents are written
 to the document the user made, beside the UI thread, before it is answered.
 A document's address is its `content:` URI and its name the one its provider

@@ -178,10 +178,9 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("One `Cube3D` on this side, drawn by each host in its own way. An "
-                + "element only some hosts can honestly realize is declared only for "
-                + "them - this one stands under the same condition as its sample, so no "
-                + "other host is held to a promise it cannot keep.")
+            Text("One `Cube3D` on this side, which every host draws in its own way; a "
+                + "build for no host - the gallery's own tests - has nothing to draw it "
+                + "with, so it declares no cube.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

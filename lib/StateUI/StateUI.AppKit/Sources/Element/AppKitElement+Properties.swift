@@ -101,8 +101,8 @@ extension AppKitElement {
         }
 
         // A family the registry realizes takes its own members there, each read
-        // as this element presents it; the arms below are the families still
-        // to move.
+        // as this element presents it; the arms below are the families this
+        // host applies itself.
         let taken = AppKitRegistrations.registry.apply(changed, to: view, presenting: element)
         if changed.contains(.isEnabled), !taken.contains(.isEnabled) {
             // A view that is no control tells assistive technology whether it answers; its hand is the host layer's.

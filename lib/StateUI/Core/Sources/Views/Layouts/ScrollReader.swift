@@ -181,7 +181,7 @@ public struct ScrollReader: View {
     ///
     /// The closure is handed the room and answers a rectangle in it, where the
     /// user is looking; the host keeps the box there as the run scrolls.
-    /// Without `.scrollOffset($:)` the tap is answered on the whole run.
+    /// Without `.scrollOffset(_:)` the tap is answered on the whole run.
     ///
     /// - Parameters:
     ///   - area: where in the room the tap is answered, given the room.
@@ -213,7 +213,7 @@ public struct ScrollReader: View {
     }
 
     /// Puts an aim on the scroller, for an act aimed at it. Moving the run is a
-    /// write to the `.scrollOffset($:)` state instead:
+    /// write to the `.scrollOffset(_:)` state instead:
     /// `$across.journey.snap(to:)` at once, `$across.journey.move(to:)`
     /// animated.
     ///

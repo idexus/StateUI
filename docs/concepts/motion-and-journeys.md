@@ -79,8 +79,8 @@ merged over that plan.
 | --- | --- |
 | `.opacity` | opacity |
 | `.color` | every color-valued property |
-| `.width` | requested, minimum, maximum, or host-reported width |
-| `.height` | requested, minimum, maximum, or host-reported height |
+| `.width` | requested, minimum and maximum width, and the widths a layout gives its children |
+| `.height` | requested, minimum and maximum height, and the heights a layout gives its children |
 | `.size` | width and height plus outline and corner sizes |
 | `.place` | host-arranged position and translation |
 | `.transform` | scale, rotation, and anchors |
@@ -211,7 +211,9 @@ registered. An engine reads destination, standing value, velocity, and frame
 timing, and writes the next standing lanes. One declared with
 `.engine(tracking:)` returns `.again` while it needs another frame or `.wait`
 until a tracked state is written; one declared with `.engine(following:)` runs
-once per write. An engine's own write does not wake it.
+on the display cycle after a state it follows is written - once, however many
+writes came - and once after each render that describes its view. An engine's
+own write does not wake it.
 
 See [State and reactivity](state-and-reactivity.md) for conversions, sampling,
 and engine composition, and [Host contract](../internals/host-contract.md) for the native

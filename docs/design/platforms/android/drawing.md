@@ -17,10 +17,10 @@ builds the gradient for the bounds it is drawn at, so a gradient's points stay
 in fractions of the thing painted, as
 [brushes](../../types/brushes.md#geometry-in-fractions) says. A radial
 gradient's reach is the host layer's circle, worked out in Swift for the size
-the drawable is drawn at and told again as that size changes - whether Swift
-or Android placed the view. A plain colour
-stays the view's own colour background; a background cleared gives back the
-one the view was made with.
+the drawable is drawn at, and told again as that size changes: wherever Swift
+places the view, and for a layout's own box where Android places it too. A
+plain colour stays the view's own colour background; a background cleared
+gives back the one the view was made with.
 
 A corner rounds no more than half the side it rounds within the outline,
 so a radius wider than a short box rounds it in a quarter of an ellipse.
@@ -31,15 +31,15 @@ outline takes it.
 
 ## A layout's own box
 
-A stack, a grid or a ZStack paints its own box. A plain colour with no
-outline, shape or cut is the view's plain background, as on any view. An
-outline, a shape or a cut gives the layout a shape drawable instead, made
-the first time one is said: the background fills the shape, the outline is
-drawn inside the bounds, half its width either side of the shape's edge
-being inside, and never pushes a child in - that is the padding's work.
-With `clipsContent` the view clips to the drawable's outline, so a picture in
-a rounded card has rounded corners; without it nothing is cut, the shape
-drawn all the same.
+A stack, a grid, a ZStack or a scroll view paints its own box. A plain
+colour with no outline, shape or cut is the view's plain background, as on
+any view. An outline, a shape or a cut gives the layout a shape drawable
+instead, made the first time one is said: the background fills the shape,
+the outline is drawn inside the bounds, half its width either side of the
+shape's edge being inside, and never pushes a child in - that is the
+padding's work. With `clipsContent` - on a scroll view, with any shape - the
+view clips to the drawable's outline, so a picture in a rounded card has
+rounded corners; without it nothing is cut, the shape drawn all the same.
 
 ## A placed child
 

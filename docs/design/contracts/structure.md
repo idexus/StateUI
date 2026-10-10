@@ -21,9 +21,10 @@ own.
   MenuBar, Menu, MenuItem,           a page's menus, their entries, and the lines between them
   Divider
   ContextMenu                        the menu a view offers where the user asks for one
-  ToolbarItemGroup, ToolbarItem          a page's actions in its bar or toolbar
+  ToolbarItemGroup, ToolbarItem      a page's actions in its bar or toolbar
   TitleView                          the view a page shows in its bar in place of its title
-  TextSpans, TextSpan                        the runs of text a label is made of
+  TextSpans, TextSpan                the runs of text a label is made of
+  Marker                             a pin on a map, which stands only among its map's pins
 ```
 
 ## Slots

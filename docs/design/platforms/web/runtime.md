@@ -46,8 +46,10 @@ the relay's, which the C header `CStateUIWeb.h` declares as the module's
 imports, and the system interface, WASI, which a Swift program asks of its
 machine. The relay keeps every DOM element Swift makes under a number, and
 words cross as UTF-8 and their length in bytes. It decides nothing of
-StateUI's: it makes, places and changes elements as Swift says, and calls
-Swift back when one hears an event.
+StateUI's: it makes, places and changes elements as Swift says, calls Swift
+back when one hears an event, and keeps the keyboard's way through a strip of
+tabs and a menu, and a field's focus under a pressed button, as the page's
+own.
 
 The page calls Swift through function pointers. The host hands the relay two
 `@convention(c)` closures - one for a listener's number, one for a display
@@ -173,20 +175,20 @@ own, so the window hears it was made before it hears it is in front.
 
 The conformance suite runs in a browser, headless: its cases need the
 browser's own layout, focus, dialogs and input, which the host's own suite in
-Node has none of. The suite's program is the same WebAssembly module, started
-with the relay's `suspends`: its `main` runs through `WebAssembly.promising`,
-and the driver's imports that wait - a frame of the page's, a question to the
-controller beside the browser - are `WebAssembly.Suspending`, so a case written
-as one synchronous run sets itself aside while the browser goes on, its events
-reaching Swift as they do on any page. The controller drives the browser over
-its DevTools pipe: the user's input is the browser's own - the mouse, the keys,
-typed words - and it reads and writes the repository's files, the verdicts
-among them, which the page cannot reach. A file dialog is the relay's, held
-on the test's page and answered from the test's own files, what the page
-would launch is the relay's record, a drag between views is the DOM's drag
-events the driver dispatches, and a window's phases are the notices the
-driver gives - a member proven through them is the host's own, ✓, whatever
-element the act is done on.
+Node has none of. The suite's program is a WebAssembly module of its own,
+started by the same relay with its `suspends`: its `main` runs through
+`WebAssembly.promising`, and the driver's imports that wait - a frame of the
+page's, a question to the controller beside the browser - are
+`WebAssembly.Suspending`, so a case written as one synchronous run sets itself
+aside while the browser goes on, its events reaching Swift as they do on any
+page. The controller drives the browser over its DevTools pipe: the user's
+input is the browser's own - the mouse, the keys, typed words - and it reads
+and writes the repository's files, the verdicts among them, which the page
+cannot reach. A file dialog is the relay's, held on the test's page and
+answered from the test's own files, what the page would launch is the relay's
+record, a drag between views is the DOM's drag events the driver dispatches,
+and a window's phases are the notices the driver gives - a member proven
+through them is the host's own, ✓, whatever element the act is done on.
 
 XCTest's own loop runs on Swift's cooperative executor and awaits MainActor
 between its tests. Once a host runs, MainActor's executor is the UI thread's,

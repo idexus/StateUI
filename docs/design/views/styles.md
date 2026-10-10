@@ -51,9 +51,9 @@ arguments.
 
 - A keyed style replaces the implicit one for the type, and a value written on
   the control beats both, one property at a time.
-- A key naming nothing falls through to the implicit style, and so does a key
-  naming a style declared for another control, whose values would be half
-  applied and half dropped unread.
+- A key naming no style of its own control falls through to the implicit
+  style; two controls' keys spelled alike are two, since the sheet files a
+  keyed style by its control's type and its key's name.
 - Two styles under one key, or two implicit ones for one target, are one: the
   last wins, as a second assignment to one dictionary key does.
 - `basedOn` is flattened when the sheet is built, against what was written -
@@ -138,8 +138,9 @@ style does not have joins after the style's.
 `onVisualStateChanged` runs after the render in which the control entered a
 state, which is where a state can animate rather than only be set: a style's
 values change with the render, and a handler can take as long as it likes. It
-runs for a state entered, never for the one the control arrives in, as
-`.onChanged` does not. The states it names are declared without values,
+runs for a state entered, never for the one the control arrives in - first
+described, or made again as another kind of control under the same identity -
+as `.onChanged` does not. The states it names are declared without values,
 merged into the style's without changing how the control looks, and only
 they are heard; naming none hears every state the control declares, and
 Normal.

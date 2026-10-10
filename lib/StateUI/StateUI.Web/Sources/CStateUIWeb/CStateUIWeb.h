@@ -213,7 +213,8 @@ STATEUI_WEB(save_file) void stateui_web_save_file(
     const char *name, int32_t nameLength, const char *kinds, int32_t kindsLength,
     const uint8_t *contents, int32_t length, int32_t listener);
 
-/// Reads the file whole: `listener` hears event 1 and its length, its bytes read by `copy_read` - or 0 and why.
+/// Reads the file - whole for a negative `maximum`, else its first `maximum` bytes: `listener` hears event 1 and its
+/// length, the bytes read by `copy_read`, or 0 and why.
 STATEUI_WEB(read_file) void stateui_web_read_file(int32_t file, int32_t maximum, int32_t listener);
 
 /// What a file's act answered last, read by `copy_read`: its length.
@@ -238,7 +239,7 @@ STATEUI_WEB(local_time) void stateui_web_local_time(double *into);
 /// The local time zone's name, read in two steps: its length in bytes, then `copy_read`.
 STATEUI_WEB(local_zone) int32_t stateui_web_local_zone(void);
 
-/// How far the zone named - the local one for none - is from UTC at noon on the day - today for a year of 0 - in
+/// How far the zone named - the local one for none - is from UTC at noon on the day - now for a year of 0 - in
 /// minutes; NaN for a zone the browser does not know.
 STATEUI_WEB(utc_offset) double stateui_web_utc_offset(
     const char *zone, int32_t length, int32_t year, int32_t month, int32_t day);

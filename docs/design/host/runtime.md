@@ -53,7 +53,7 @@ paths, the journey's animations and the frame they run on.
 | | | `HandlerDispatch` | host layer |
 | | | each element's native half (`NativeElement`), one realization per control family | toolkit half |
 | C | reactive path 2: a value reaches a native control with no rebuild, and the user's change comes back | `ProgramWrite` | host layer |
-| | | a user's change carried onto its state and its event, a radio set, a scroller's move (`MountedElement.reportUserChange`) | host layer |
+| | | a user's change carried onto its state and its event, a radio set (`MountedElement.reportUserChange`), a scroller's move (`reportScrolled`) | host layer |
 | | | the native callback that hears the user | toolkit half |
 | J | a journey's animations, run by the host | `Animator`, `Animation`, `AnimationTarget`; the laws are `HostMotionLaw` in the core | host layer |
 | E | the frame engines and animations run on | `DisplayCycle`; the `FrameClock` protocol | host layer |
@@ -234,9 +234,10 @@ motion; [patches](patches.md) those of the patch intake and the program write;
 
 ## After a layout pass
 
-What a host must do once the layout pass under way is over - a field's caret
-the toolkit's focus undid, a list's changes held while its rows bind, a split
-view's first room - waits, on GTK and WinUI, in one queue
+What a host must do once the layout pass under way is over - on GTK a field's
+caret the toolkit's focus undid, a list's changes held while its rows bind and
+the entries it shows, and a split view's first room; on WinUI a split view's
+first room - waits in one queue
 (`HostRuntime.afterLayout`): it runs once the pass is over, in the order it
 came, and work that comes while it runs waits for the next. The host asks once
 to be told a pass is over and then takes a turn: GTK at the idle after its
@@ -265,8 +266,8 @@ first report a handler hears is where the view is laid out, never zeros. A
 view is laid out once StateUI's layout placed it or its toolkit gave it a
 size, the same on every native host (`MountedElement.isLaidOut`); the Web
 asks the browser whether the element has a box.
-A toolkit that tells, once it has laid out and before it draws, that it did
-lets what was laid out say it at once (`FrameFollowers.reportLaidOut`), so a
+The Web, as each call from the page ends and before the browser draws, lets
+what was laid out say it at once (`FrameFollowers.reportLaidOut`), so a
 size worked out from a frame is drawn in the frame that measured it; a
 scroller still says what it did on the display's frame.
 
@@ -307,7 +308,6 @@ enough ([a swipe](#a-swipe)); a pinch says each step's scale since the last
 and where, as shares of the view (`PinchStep`). A host's toolkit hears the
 input and says it as `HeardInput`.
 
-
 ## A disabled branch
 
 A view the tree disables keeps its place and still stands in the way of a
@@ -318,8 +318,10 @@ it began still ends there - and a view's `isEnabled` reaches its control as
 `presented(_:)` gives it, false wherever a view holding it is disabled. When
 a layout's `isEnabled` changes, every element in it presents its own again
 (`enablementTurned`), so a native control in the branch is disabled and
-enabled with it. A host reads its members through `presented`, never the
-element's own value, and needs no rule of its own.
+enabled with it. A host reads a view's members through `presented`, never
+the element's own value; a bar's action and a menu's item read their own
+`isEnabled`.
+
 ## A press dragged
 
 A host whose toolkit tells a press and its moves, and no drag of its own,
@@ -395,10 +397,10 @@ with it.
 
 ## The application's phase
 
-A toolkit tells what each window does - whether it stands off the screen,
-minimized or hidden by its scene, and whether it is
-activated - and whether the whole application is hidden, and every host
-tells it on alike (`ApplicationLifecycle`, `HostRuntime.windowStateChanged`).
+A toolkit tells what each window does - whether it is minimized, and whether
+it is activated - and whether the whole application is hidden, and every host
+tells it on alike (`ApplicationLifecycle`, `HostRuntime.windowStateChanged`);
+whether a scene hides a window is the host layer's (`hidesWhenInactive`).
 What it tells settles a turn later, with whatever else it tells in the same
 one: a toolkit tells a window deactivated before it tells another activated,
 and the two are one move, in which the application stays in use.
@@ -449,9 +451,10 @@ its first argument, the element's own id or its number; one naming none, or
 none on screen, fails with that reason (`MountedTree.aimed`). One performer
 does this for every host (`HostActPerformer`): it reads each act, keeps the
 questions in line, answers and fails; a host gives it its toolkit's part
-(`ActToolkit`) - the clock and the zones, a question shown, a word to the
-screen reader, the focus and the on-screen keyboard, a value kept, the acts
-its own controls answer - and nothing more.
+(`ActToolkit`) - its name and its log, the clock and the zones, a question
+shown, a word to the screen reader, the theme shown, the focus and the
+on-screen keyboard, a value kept, the acts its own controls answer and those
+the application registered - and nothing more.
 
 ## An application's own acts
 

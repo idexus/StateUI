@@ -30,8 +30,8 @@ enum UIKitRegistrations {
         return registry
     }()
 
-    /// What every view takes the same way: whether it shows, how opaque it is, what VoiceOver meets of it, its place,
-    /// and how it is drawn over it.
+    /// What every view takes the same way: whether it shows and is enabled, how opaque it is, what VoiceOver meets of
+    /// it, its place, how it is drawn over it, the user's gestures, drags and drops and dropped files, and its focus.
     static func shared(_ registry: Registry<UIView>) {
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(VisualElementContract.isVisible)

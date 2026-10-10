@@ -53,7 +53,9 @@ extension VisualElement where Self: StyleTarget {
     /// changing how the control looks; naming none hears every state the
     /// control declares, and `.normal`.
     ///
-    /// - Parameter perform: what to run, given the state entered.
+    /// - Parameters:
+    ///   - states: the states to hear; none hears every state.
+    ///   - perform: what to run, given the state entered.
     public func onVisualStateChanged(
         _ states: VisualState<Self>...,
         perform handler: @escaping @MainActor (VisualState<Self>) throws -> Void
@@ -65,6 +67,7 @@ extension VisualElement where Self: StyleTarget {
     /// state does while a run is under way.
     ///
     /// - Parameters:
+    ///   - states: the states to hear; none hears every state.
     ///   - gate: what the handler passes through: what entering a state does while a run is under way.
     ///   - perform: what to run, given the state entered.
     public func onVisualStateChanged(
@@ -75,7 +78,7 @@ extension VisualElement where Self: StyleTarget {
         listening(states, gate: gate, handler)
     }
 
-    /// A handler that awaits says what entering a state does while it runs.
+    /// A handler that awaits passes through a gate.
     @available(*, unavailable, message: "a handler that awaits passes through a gate: .onVisualStateChanged(states, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
     public func onVisualStateChanged(
         _ states: VisualState<Self>...,

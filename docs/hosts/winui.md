@@ -37,6 +37,8 @@ lib/StateUI/StateUI.WinUI/
   test-winui.ps1             builds and runs the host's suite
 apps/<App>/Platforms/WinUI/
   main.swift                 the application's WinUI head
+  Host/                      what this host answers for the application
+  Relay/                     its C++/WinRT relay, a target of its manifest, where it has one
 ```
 
 ## Requirements
@@ -48,9 +50,10 @@ The host builds on Windows 10 1809 or newer, on arm64 or x64:
   `lldb-dap --check-python` names;
 - Visual Studio 2026 with the C++ tools for the machine's architecture, and
   the Windows SDK 10.0.26100;
-- nothing else to install: `tools.ps1` fetches C++/WinRT and the Windows App
-  SDK from nuget.org the first time, each checked against nuget.org's own
-  hash, and generates the C++/WinRT projection the relay includes.
+- nothing else to install: `tools.ps1` fetches C++/WinRT, the Windows App SDK
+  and the WebView2 SDK from nuget.org the first time, each checked against
+  nuget.org's own hash, and generates the C++/WinRT projection the relay
+  includes.
 
 The web view is a backend, `lib/Backends/WebView.WinUI` - WinUI's `WebView2`
 over the system's WebView2 runtime, which WinUI does not ship: an application
@@ -107,7 +110,8 @@ An application extends the host from its WinUI head. Registrations run before
 replaces the earlier registration. Every registration is written against the
 application's own contracts, so they are `public`: the host lives in a module
 of its own and must see them. The Gallery's WinUI halves are in
-`apps/Gallery/Platforms/WinUI/Host/`.
+`apps/Gallery/Platforms/WinUI/`: Swift in `Host/`, its C++/WinRT relay in
+`Relay/`.
 
 ### A control
 
@@ -256,7 +260,8 @@ WinUI's controls stand on the test thread with no loop of WinUI's running, and
 a test lets the thread's messages run where WinUI lays out. The test runner is given
 the Windows App SDK as an application is, before the run.
 
-Alone, `test-winui.ps1` runs the host's own tests, in one process.
+Alone, `test-winui.ps1` runs the host's own tests, each in a process of its
+own, one after another.
 `-Conformance` runs the conformance families, one test a family -
 `WinUIConformanceTests.testButton` - and the longest in parts, each test in a
 process of its own, as WinUI keeps GDI objects of every window a test closes

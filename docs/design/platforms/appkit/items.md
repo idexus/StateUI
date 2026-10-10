@@ -47,9 +47,10 @@ that follows loops until AppKit gives up on the window's constraint passes.
 ## Scrolling to an item
 
 AppKit's own scroll to an item goes by the sizes it estimated, and lands
-short once the cells on the way are measured. `scrollTo` without motion
-brings the item near first, lets the layout measure what it shows, and then
-stands the clip view where the anchor says from the item's frame as the layout
-holds it ([scrolling to an item](../../host/items.md#scrolling-to-an-item)).
-With motion, the clip view glides to where the anchor says from the frames the
-layout holds now, and settles once more as it stops.
+short once the cells on the way are measured. Where the user asks for less
+motion, `scrollTo` brings the item near first, lets the layout measure what
+it shows, and then stands the clip view where the anchor says from the item's
+frame as the layout holds it ([scrolling to an
+item](../../host/items.md#scrolling-to-an-item)); otherwise the clip view
+glides to where the anchor says from the frames the layout holds now, and
+settles once more as it stops.

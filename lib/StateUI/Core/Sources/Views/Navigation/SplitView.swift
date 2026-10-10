@@ -40,7 +40,7 @@
 ///                         }
 ///                 }
 ///             }
-///             .title("Sections")   // required
+///             .title("Sections")   // names the sidebar's bar
 ///         }
 ///     }
 ///
@@ -49,7 +49,7 @@
 /// second. The platform's own ways to show or hide the sidebar - its button,
 /// an edge swipe, a tap on the dimmed page - are written into the binding, and
 /// a host with room for both pages may open with the sidebar showing. The
-/// sidebar page must have a title.
+/// sidebar page's title names the sidebar's bar.
 public struct SplitView: ElementView, Arrangement, BarElement {
     /// The node this page describes.
     public var node: Node
@@ -59,7 +59,8 @@ public struct SplitView: ElementView, Arrangement, BarElement {
     /// - Parameter showsSidebar: whether the sidebar shows, borrowed
     ///   two-way. The platform's own sidebar button, a swipe or a tap outside
     ///   it write here.
-    /// - Parameter sidebar: the page at the side. It must have a title.
+    /// - Parameter sidebar: the page at the side; its title names the
+    ///   sidebar's bar.
     /// - Parameter detail: the page beside it, which is the application.
     public init<Sidebar: View, Detail: View>(
         _ showsSidebar: Binding<Bool>,

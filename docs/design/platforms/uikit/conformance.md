@@ -1,8 +1,9 @@
 # Conformance on UIKit
 
 How the conformance suite drives UIKit: `UIKitDriver` in the host's test
-application, one test for each family of cases in `UIKitConformanceTests`,
-their verdicts held to `lib/StateUI/exports/marks/uikit`.
+application, one test for each family of cases - the longest in parts - in
+`UIKitConformanceTests`, their verdicts held to
+`lib/StateUI/exports/marks/uikit`.
 
 ## An application of tests
 
@@ -70,12 +71,14 @@ measures - does not apply here, its effect proven by another case.
 
 UIKit lets a test send no touch and moves no scene, so the driver hands some
 acts to the host's own entry: the gestures and the pointer to the view's
-listening as the recognizers' states, a drag between views to the
-interactions' handlers, a picker's choice, a question's answer and a file
-dialog's to the host, a scene's phases to the renderer, and a web
-view's end of content to its delegate. A few reads are the host's own too: a
-check's and a picker's state, the menu bar's entries, a question's captions,
-the document picker it presented, what it announced and launched, and a
-transform checked against the layer it composed. The
+listening as the recognizers' states, a drag between views and files dropped
+to the interactions' handlers, a picker's choice, a question's answer and a
+file dialog's to the host, a scene's phases to the renderer, a web view's end
+of content to its delegate, an ItemsView's choice and opening to its
+collection's delegate, and a marker's callout to the map's delegate. A few
+reads are the host's own too: a check's and a picker's state, the menu bar's
+entries, a split view's sidebar material, a layout's blur or glass as given,
+a question's captions, the document picker it presented, what it announced
+and launched, and a transform checked against the layer it composed. The
 driver names each (`byHost`), and a member a case proves only through them is
 the host's own - ✓ - never ✅.

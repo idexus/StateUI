@@ -95,7 +95,7 @@ back as the types `ApplicationContract.currentTime` declares.
 | Kind | What it carries | Used by |
 | --- | --- | --- |
 | `.string` | text an author wrote | captions, placeholders, picture file names, path data, formats |
-| `.name` | a word from an open vocabulary | `Name`: style keys, font families, radio groups |
+| `.name` | a word from an open vocabulary | `Name`: font families, radio groups, kept keys; a style key is resolved in the core |
 | `.enumeration` | a member's number, or a flag set's bits | every closed vocabulary, `FontAttributes`, `SwipeDirection` |
 | `.number` | one number | `Double`, `Int`, a uniform `CornerRadius` |
 | `.bool` | true or false | `Bool` |

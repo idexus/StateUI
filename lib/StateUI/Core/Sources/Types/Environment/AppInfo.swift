@@ -19,9 +19,9 @@ public final class AppInfo {
     /// The build number behind it.
     @State public internal(set) var buildString = ""
 
-    /// Light or dark, as the system asks, updated live when the user switches.
-    /// A `Color(light:dark:)` follows the theme by itself; read this for logic
-    /// that branches on the theme.
+    /// The theme in force - the one `application.colorScheme` holds, else the
+    /// one the system asks for - updated live. A `Color(light:dark:)` follows
+    /// the theme by itself; read this for logic that branches on the theme.
     @State public internal(set) var colorScheme: ColorScheme = .system
 
     /// The accent the user chose for the system - where the platform has

@@ -31,8 +31,9 @@ enum WebRegistrations {
     }()
 
     /// What `WebElement` puts on every view wearing each member's contract, and what the host layer's rules realize on
-    /// every element the page shows: its place, its drawing over it, its words for assistive technology, the way its
-    /// words run, where it stands, and the user's taps, presses, pinches and swipes and the pointer over it.
+    /// every element the page shows: whether it shows and is enabled, its focus, its place, its drawing over it, its
+    /// words for assistive technology, the way its words run, where it stands, the user's taps, presses, pinches and
+    /// swipes and the pointer over it, and drags and drops and dropped files.
     static func shared(_ registry: Registry<WebDOMView>) {
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(VisualElementContract.isVisible)

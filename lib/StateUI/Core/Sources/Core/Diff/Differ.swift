@@ -44,7 +44,8 @@ final class Differ {
     /// Whether the element described next is the view a page shows, whose page values the page takes.
     var describesPageRoot = false
 
-    /// The handlers this walk found to run - `.onChanged`, `.onCreated` - in order.
+    /// The handlers this walk found to run - `.onChanged`, `.onCreated` and
+    /// `.onVisualStateChanged` - in the order reached.
     /// Design: docs/design/core/render.md#handlers-in-the-message
     var fired: [Fired] = []
 

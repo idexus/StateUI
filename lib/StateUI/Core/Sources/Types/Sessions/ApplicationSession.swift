@@ -26,7 +26,7 @@ public final class ApplicationSession {
     @State public internal(set) var phase: ApplicationPhase = .active
 
     /// What the application is, as the host describes it: its name, identifier, version and build, and the theme
-    /// the system asks for.
+    /// in force - the one `application.colorScheme` holds, else the one the system asks for - updated live.
     public let info = AppInfo()
 
     /// The sessions of the scenes standing right now, in the order they
@@ -140,8 +140,9 @@ public final class ApplicationSession {
     /// Closes the window of `type` - every window of a `WindowGroup(type)` -
     /// its scene ending with its last window.
     ///
-    /// - Throws: `WindowError.notOpen` where none is open, and
-    ///   `WindowError.undeclared(type)` where no scene declares it.
+    /// - Throws: `WindowError.notOpen` where none is open,
+    ///   `WindowError.undeclared(type)` where no scene declares it, and
+    ///   `WindowError.wrongValue(type)` where it opens one per value.
     public func closeWindow(_ type: WindowType) async throws {
         try OpenScenes.shared.close(type)
     }

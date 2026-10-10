@@ -52,6 +52,8 @@ the packages, what crosses between them, and where each part of the work runs.
                                           library the platform does not ship - WebView.GTK,
                                           WebView.WinUI - registered by the application's head
   lib/StateUI/StateUI.Conformance         the conformance families every host's tests run
+  lib/StateUI.Head                        StateUIHead: what every head is built with - the
+                                          host STATEUI_HOST names, re-exported
   lib/StateUI.VSCode                      the editor extension: new application,
                                           build, run and debug for every head
 ```

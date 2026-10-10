@@ -10,7 +10,7 @@
 // HOW THIS IS LAID OUT:
 //
 //     GalleryApp.swift   the application - its scenes, what it writes into its
-//                        session, and the one function this module exports
+//                        session, and the function every head calls
 //     Gallery/           the gallery itself: the galleries as a scene
 //                        (GalleryScene.swift), one gallery window
 //                        (GalleryWindow.swift) and the arrangement in it
@@ -45,14 +45,14 @@ struct GalleryApp: Application {
         // style follows the theme by itself. See Styles/AppStyles.swift.
         application.styles = AppStyles.sheet
 
-        // What the gallery KEEPS between launches - `PersistentStateSample`'s
-        // three settings, and nothing else. Listed because a settings store
-        // is read one key at a time and offers no list of what it holds, so
-        // this is the only way the host can have the values in memory before
-        // the first view asks for one - which is why it is written HERE, as
-        // the application is made. Each host keeps them in the platform's
-        // settings store, or in a file of its own where the platform offers an
-        // application none.
+        // What the gallery keeps under its own keys between launches -
+        // `PersistentStateSample`'s three settings; what its scenes keep comes
+        // back with them. Listed because a settings store is read one key at a
+        // time and offers no list of what it holds, so this is the only way
+        // the host can have the values in memory before the first view asks
+        // for one - which is why it is written HERE, as the application is
+        // made. Each host keeps them in the platform's settings store, or in a
+        // file of its own where the platform offers an application none.
         application.persistentKeys = [.visits, .who, .shade]
 
         // On GNOME the gallery opens in the dark theme, the look it wears
@@ -72,15 +72,9 @@ struct GalleryApp: Application {
 }
 // listing: end
 
-/// The one thing this module exports.
-///
-/// The library cannot declare it: the dependency runs app -> library, so the
-/// library has no way to name an application that did not exist when it was
-/// compiled. So the app says which one it is, and a host that loads the app as
-/// a separate native library finds it by this name.
-///
-/// The name is fixed by convention (`stateui_app_register`) so the host can
-/// find it whatever the module is called.
+/// The function every head of this application calls by name before its host
+/// runs - Platforms/<Host>. The library cannot declare it: the dependency runs
+/// app -> library.
 @_cdecl("stateui_app_register")
 @MainActor
 public func stateui_app_register() {

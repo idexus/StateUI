@@ -74,8 +74,8 @@ public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollView
     /// write animates under the element's motion, `$offset.journey.snap(to:)`
     /// jumps, and `$offset.journey.move(to:)` animates under a law of its own.
     /// Handing `$offset` over reads nothing: a body that reads `offset` renders
-    /// on every report, and `.samples($offset, into:, .every(100))` holds a
-    /// reading to ten a second.
+    /// on every report, and `.samples($offset, into: $shown, .every(100))`
+    /// holds a reading to ten a second.
     ///
     /// - Parameter state: the state the offset is carried on.
     /// - Returns: the scroller, moving with that state and reporting into it.

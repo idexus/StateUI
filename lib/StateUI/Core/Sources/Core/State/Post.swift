@@ -12,6 +12,8 @@ extension Binding where Value: Sendable {
     /// soon after - never at once, even on the UI thread. Of values posted before
     /// the job runs, the last one stands.
     ///
+    ///     let results = $results
+    ///
     ///     Task.detached {
     ///         let found = await search(query)
     ///         results.post(found)
@@ -29,6 +31,8 @@ extension Binding where Value: Sendable {
     /// Changes the state from any thread, in a job of `MainActor`'s soon after:
     /// every change posted runs in the order posted, each over what the one
     /// before left - so many tasks counting at once all count.
+    ///
+    ///     let done = $done
     ///
     ///     await withTaskGroup(of: Void.self) { group in
     ///         for chunk in chunks {

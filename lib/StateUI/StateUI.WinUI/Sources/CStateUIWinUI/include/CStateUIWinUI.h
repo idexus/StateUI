@@ -642,8 +642,8 @@ void stateui_winui_field_set_behaviour(StateUIObjectRef field, bool readOnly, bo
 /// The case a field's or an editor's typing takes (StateUI's `TextCase`).
 void stateui_winui_field_set_casing(StateUIObjectRef field, int32_t textCase);
 
-/// How a search box takes words: read only, the case its typing takes (StateUI's `TextCase`), and the words typed
-/// across it as `stateui_winui_field_set_look` has them.
+/// How a search box takes words: read only, the case its typing takes (StateUI's `TextCase`), the words typed across
+/// it as `stateui_winui_field_set_look` has them, and how typing is checked, predicted and keyed.
 void stateui_winui_search_set_box(StateUIObjectRef search, bool readOnly, int32_t textCase, int32_t alignment,
                                   bool spellChecked, bool predicted, int32_t scope);
 
@@ -919,7 +919,7 @@ void stateui_winui_clock(int32_t *time);
 int32_t stateui_winui_time_zone(char *utf8, int32_t capacity);
 
 /// How far `zone` - an IANA identifier, the local zone for null - stands from UTC on a day, in minutes; year 0
-/// for today. Answers false for a zone ICU does not know.
+/// for now. Answers false for a zone ICU does not know.
 bool stateui_winui_utc_offset(char const *zone, int32_t year, int32_t month, int32_t day, int32_t *minutes);
 
 /// Says `utf8` to a screen reader, from `element`, cutting off what it was saying.

@@ -22,7 +22,8 @@ public final class HostEventSubscription {
         self.id = id
     }
 
-    /// Stops the handler from hearing further raises. Idempotent.
+    /// Stops the handler hearing further raises and supersedes its runs under way.
+    /// Idempotent.
     public func cancel() {
         HostEvents.remove(event, id)
     }

@@ -44,10 +44,10 @@ more, `openWindow` one of a kind - and ends with its last
   }
 
   struct GalleryScene: Scene {
-      @State private var style = Style()                      the scene's
+      @State private var theme = Theme()                      the scene's
       var body: some Scene {
-          WindowGroup { MainPage() }.environment(style)       launch, New: one more
-          Window(.fonts) { FontsPanel() }.environment(style)  one
+          WindowGroup { MainPage() }.environment(theme)       launch, New: one more
+          Window(.fonts) { FontsPanel() }.environment(theme)  one
           WindowGroup(.document, for: UUID.self) { $id in DocumentPage(id: id) }
       }
   }
@@ -226,8 +226,9 @@ mechanism; an `.id()` written on the view stays on the view the page shows.
 ```text
   NavigationStack   the root              "root"
                     a pushed page         "<depth>/<route>"
-  ModalStack        a presented page      "<depth>/<sheet>"
-  TabView        a tab's page          "<tab>"
+  ModalStack        the root              "root"
+                    a presented page      "<depth>/<sheet>"
+  TabView           a tab's page          "<tab>"
   SplitView         the two pages         "sidebar", "detail"
 ```
 

@@ -10,7 +10,7 @@
   --stateui-accent: light-dark(#4f46e5, #8b85ff);
   --stateui-surface: light-dark(#ffffff, #111216);
   --stateui-raised: light-dark(#f6f7f9, #191b21);
-  /* A sidebar beside the page lets the window through, a breath lighter or darker, as a desktop's does. */
+  /* A sidebar beside the page lets the window through, a breath lighter or darker. */
   --stateui-sidebar-own: light-dark(rgb(255 255 255 / 0.45), rgb(0 0 0 / 0.22));
   --stateui-text: light-dark(#17181c, #eceef2);
   --stateui-muted: light-dark(#5d6270, #9aa0ad);
@@ -495,7 +495,7 @@ body {
   color: var(--stateui-text);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-/* A field is as wide as its words or its placeholder - as a native one measures - not twenty characters. */
+/* A field is as wide as its words or its placeholder, not twenty characters. */
 .stateui-room input.stateui-field { field-sizing: content; }
 .stateui-room input::placeholder, .stateui-room textarea::placeholder { color: var(--stateui-placeholder, var(--stateui-muted)); }
 .stateui-room textarea { min-height: 88px; line-height: 1.45; resize: vertical; }
@@ -630,7 +630,7 @@ body {
 [data-lets-through] { pointer-events: none; }
 [data-lets-through] > :not([data-lets-through]) { pointer-events: auto; }
 
-/* A picture: as large as itself, its proportions binding neither length - as a native picture view's. */
+/* A picture: as large as itself, its proportions binding neither length. */
 .stateui-picture { contain: size; }
 
 /* A shape: its drawing on a surface over the room its layout gives it, the surface taking no room of its own. */

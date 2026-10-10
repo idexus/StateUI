@@ -1,8 +1,8 @@
 # Architecture
 
-StateUI is a platform-neutral Swift model for native interfaces. Swift owns
-the description tree, identity, state, diffing, and motion laws. A platform
-host owns native objects, platform lifecycle, input callbacks, layout
+StateUI is a platform-neutral Swift model for native interfaces. StateUI's
+core owns the description tree, identity, state, diffing, and motion laws. A
+platform host owns native objects, platform lifecycle, input callbacks, layout
 integration, and display-frame updates.
 
 The model has two reactive paths and one motion axis:
@@ -84,10 +84,10 @@ struct Greeting: View {
 }
 ```
 
-`Text` reads `name`, so an edit rebuilds `Greeting`. The resulting patch
-contains only values and descendants that actually changed. Reader sets are a
-function of the current tree: when a body no longer reads a state, that state
-no longer invalidates it.
+The body reads `name` to build the `Text`, so an edit rebuilds `Greeting`.
+The resulting patch contains only values and descendants that actually
+changed. Reader sets are a function of the current tree: when a body no longer
+reads a state, that state no longer invalidates it.
 
 This path is for structural decisions and authored values:
 
@@ -119,7 +119,8 @@ struct Level: View {
 }
 ```
 
-The slider, scale, and converted label share the state channel. The host
+The slider and the scale share `level`'s state channel; the label shows a
+second state the conversion works out from `level` on the host cycle. The host
 applies a program write to every attachment on its display cycle. A native
 input report lands on the same state. A program write is not echoed as a user
 event; a handler runs only for input or lifecycle reported by the platform.
@@ -148,7 +149,9 @@ This path is for continuous or platform-owned values:
 
 Bindings and handlers may coexist on one control. The host first commits the
 reported value to its state channel, then invokes the handler. The handler
-therefore observes the new state.
+therefore observes the new state. For a binding the host does not carry - a
+part of a state, or one made from closures - the write-back is a handler of
+its own, and handlers run in the order written.
 
 Program writes are silent at the event boundary. This prevents a write such as
 `enabled = true` from pretending that the user toggled the native control.
@@ -162,9 +165,9 @@ callbacks.
 
 ## Journey
 
-A state remains discrete: reading `value` answers its destination immediately.
-For every `Walked` value, `$value.journey` exposes the continuous animation
-between destinations.
+A state remains discrete: reading the state answers its destination
+immediately. For every `Walked` value, `$value.journey` exposes the continuous
+animation between destinations.
 
 | Journey member | Meaning |
 | --- | --- |
@@ -258,7 +261,8 @@ same; only the animation is shortened or removed.
 display cycle and reads and writes state. An engine declared with
 `.engine(tracking:)` answers `.again` while it needs another frame, or `.wait`
 until a tracked state is written; one declared with `.engine(following:)` runs
-once per write.
+on the display cycle after a state it follows is written - once, however many
+writes came - and once after each render that describes its view.
 
 ```swift
 struct FallingDot: View {
@@ -292,14 +296,15 @@ A waiting engine wakes when a state named in `following:` or `tracking:` is
 written, and once after a render that describes its view. An engine's own
 write does not wake itself; it explicitly returns `.again` when it has more
 work. Engines run by ascending priority and stable registration order.
-They do not await, call controls, or create another thread-bound UI model.
+They do not await, ask the host for anything, or touch a control: they run
+inside the frame the platform draws.
 
 ## Application sessions
 
 The structural path is:
 
 ```text
-Application -> Scene -> WindowGroup, Window -> View
+Application -> Scene -> windows -> a view
 ```
 
 Each structural protocol has one composition property. A window shows a view,
@@ -353,8 +358,8 @@ control and is not state.
 
 The invariant across every host is one concept with one owner:
 
-- Swift owns state, reader tracking, identity, tree construction, diffing,
-  conversions, engines, and motion laws;
+- StateUI's core owns state, reader tracking, identity, tree construction,
+  diffing, conversions, engines, and motion laws;
 - the host owns native objects, native layout integration, input reports,
   platform lifecycle, and the display clock;
 - application state owns navigation and presentation choices;

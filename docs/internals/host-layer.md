@@ -48,23 +48,24 @@ The [glossary](../design/glossary.md) maps StateUI's words to the common ones.
 ## What a host provides
 
 A host builds one `HostRuntime`, through
-`HostRuntime(clock:reducesMotion:makeNative:log:)`, and gives the layer what
-only its toolkit has:
+`HostRuntime(clock:reducesMotion:makeNative:log:views:)`, and gives the layer
+what only its toolkit has:
 
 | Seam | What the host gives |
 | --- | --- |
 | `FrameClock` | the toolkit's display link: `now` in milliseconds on one monotonic clock, frames only while `held`, each calling `onFrame` with its time |
 | `makeNative` | a `NativeElement` for each `MountedElement`: its view and everything hung on it, and the tab the user chose or the sidebar shown on screen, where its toolkit knows them |
 | `HostPresenter` | set as `runtime.presenter`: shows what a render changed around the tree - the windows, their pages, their chrome - follows a frame that moved the chrome, and performs an act; the runtime keeps the rest of a turn and a frame |
-| the doorbell | Android, WinUI, GTK: the way a `pump.turn()` is posted to the UI thread from any thread, given to the core at the start (`CoreLink.postTurns`) - for work the UI thread makes, and for a job queued from any thread; AppKit and UIKit hold a `RunLoopTurns`, a turn after every pass of the main run loop |
+| the doorbell | Android, WinUI, GTK: the way a `pump.turn()` is posted to the UI thread from any thread, given to the core at the start (`CoreLink.postTurns`) - for work the UI thread makes, and for a job queued from any thread; AppKit and UIKit hold a `RunLoopTurns`, a turn after every pass of the main run loop; the Web turns as each call from the page ends |
 | `reducesMotion` | whether the user asked the platform for less motion |
 | `log` | where a message the intake refused is said, through `HostLog` |
+| `views` | how many of its own views are alive, counted for the tally; optional |
 | `LayoutChild` | each child a layout measures: its `LayoutValues`, whether it shows, its size for an offered width |
 | `PlacedView` | each view a layout stands at a rectangle |
 | `FramedScroller`, `FrameReporter` | a scroller the frames serve, and an element whose frame the tree reads |
 | a `Registry` | one registration per element contract it realizes, handed to the core by `CoreLink.setRealization` |
 
-Both presenters are held weakly; the host keeps them.
+The presenter is held weakly; the host keeps it.
 [The runtime's parts](../design/host/runtime.md#the-runtimes-parts) and
 [the host layer](../design/host/runtime.md#the-host-layer) draw the seams.
 
@@ -91,8 +92,9 @@ Before the first render, a host hands the core its realization
 values its store holds (`persistentKeys`, `restorePersistent`). It follows the
 language's direction (`MountedTree.followTheLanguagesDirection`), connects its
 first window - one the platform kept, or a new one - through
-`HostRuntime.connectWindow`, and turns the pump once. The doorbell carries
-every turn after.
+`HostRuntime.connectWindow`, and turns the pump once; the doorbell - on Apple
+the turn after each pass of the run loop, on the Web the end of each call from
+the page - carries every turn after.
 
 ### The roads in
 
@@ -138,9 +140,11 @@ A host never:
 - computes again what a type of the layer computes;
 - strongly retains a control after its element leaves.
 
-`RuntimeArchitectureTests` reads every host's sources and refuses each of
-these that the text shows, and a type named for an engine or a channel
-([names](../design/host/runtime.md#names)).
+`RuntimeArchitectureTests` reads the layer's and every host's sources and
+refuses a law sampled, an animation advanced, a cycle run, a render or an act
+taken outside its one owner, a call into the core outside `CoreLink`, a
+control's own write flag, a timer in scrolling, and a type named for an engine
+or a channel ([names](../design/host/runtime.md#names)).
 
 ## The runtime
 
@@ -514,8 +518,9 @@ on every host.
   names it by its first argument. ([Acts](../design/host/runtime.md#acts))
 - **`HostActs`** lists the acts every host performs itself (`performed`): the
   focus, the questions for the user, a word to a screen reader, the time and
-  the zones, the on-screen keyboard, a kept value and a handler's failure; and
-  it reads and answers `currentTime` and `utcOffset`.
+  the zones, the on-screen keyboard, a kept value, a handler's failure and the
+  theme the application holds; and it reads and answers `currentTime` and
+  `utcOffset`.
 - **`HostQuestion`** and **`QuestionQueue`** read a question for the user
   from its act - an alert, a confirmation, a choice, a prompt - and its answer;
   questions show one at a time, each under a ticket of its own.

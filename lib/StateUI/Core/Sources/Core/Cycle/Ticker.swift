@@ -21,7 +21,8 @@
 @MainActor
 public final class Ticker {
     /// What a tick runs. It runs on `@MainActor`, so it may read and write `@State`;
-    /// it may await, and the next tick is scheduled from where it ends.
+    /// it may await; the next tick waits for it to end and keeps the interval's
+    /// beat - an interval after its end where it overran a whole one.
     public typealias Tick = @MainActor () async -> Void
 
     private var storedInterval: Duration
@@ -150,8 +151,9 @@ public final class Ticker {
     ///     repeat, how long before its one tick. A millisecond is the floor.
     ///   - isRepeating: whether it ticks again after each tick. Default true.
     ///   - limit: how many ticks to run for, or nil for no end.
-    ///   - onTick: what each tick runs. It may await, and the next tick is
-    ///     scheduled from where it ends.
+    ///   - onTick: what each tick runs. It may await; the next tick waits for it
+    ///     to end and keeps the interval's beat - an interval after its end where
+    ///     it overran a whole one.
     public init(
         every interval: Duration,
         isRepeating: Bool = true,

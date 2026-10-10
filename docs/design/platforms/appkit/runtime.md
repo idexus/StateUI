@@ -39,8 +39,9 @@ bounds the whole content view, and are applied again on every presentation,
 since the chrome grows with a row of tabs; what the tree leaves unsaid is the
 window's own. The traits ([a window's traits](../../host/tree.md#a-windows-traits))
 are the zoom and minimize buttons, a window the desktop shows through, and
-the floating level while the application is in front. Every window stands
-in the Windows menu.
+the floating level (`.floating`), which keeps the window above other
+windows, other applications' included. Every window stands in the Windows
+menu.
 
 A window with a maximum takes no full screen: AppKit would stand it at its
 maximum in the middle of the screen, the toolbar alone across the top in the
@@ -167,5 +168,5 @@ nearest the user's languages - so an application localized in no language
 written right to left lays out left to right, as AppKit's own controls do. A Mac
 with no battery reports none - full, on mains - and Low Power Mode as the
 battery saver. The network is reachable when its path is satisfied, local when
-interfaces stand but no route leads out; each interface in use - Wi-Fi, wired,
-cellular - is a connection profile.
+interfaces stand but no route leads out; each interface available to the path -
+Wi-Fi, wired, cellular - is a connection profile.

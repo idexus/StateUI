@@ -5,7 +5,7 @@ import StateUI
 /// A row of a grouped list: what it leads to, the line under it, and a
 /// chevron saying it goes somewhere.
 ///
-/// A ROW IS A GRID WITH A TAP ON IT, standing with its neighbours in one
+/// A ROW IS A ZSTACK WITH A TAP ON IT, standing with its neighbours in one
 /// rounded group - the "RowGroup" style - with a hairline between each row and
 /// the one before it.
 ///

@@ -11,7 +11,7 @@ public struct Rect: Equatable, Sendable, HostRepresentable {
     /// The left edge.
     public var x: Double
 
-    /// The top edge, read the same way.
+    /// The top edge.
     public var y: Double
 
     /// How wide.

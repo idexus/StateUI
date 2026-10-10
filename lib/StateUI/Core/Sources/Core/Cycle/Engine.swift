@@ -201,9 +201,16 @@ extension ModifiableElement {
     /// An engine that keeps tracking: it answers on each cycle whether it has more to
     /// do.
     ///
-    ///     .engine { cycle in
-    ///         body.step(cycle.elapsed / 1000) { _ in Point(0, 9.8) }
-    ///         return body.isStill() ? .wait : .again
+    ///     .engine(tracking: $y) { cycle in
+    ///         let journey = $y.journey
+    ///         let seconds = cycle.elapsed / 1_000
+    ///         let displacement = journey.destination - journey.value
+    ///         journey.velocity += (displacement * 40 - journey.velocity * 10) * seconds
+    ///         journey.value += journey.velocity * seconds
+    ///
+    ///         let arrived = abs(displacement) < 0.01 && abs(journey.velocity) < 0.01
+    ///         if arrived { journey.snap(to: journey.destination) }
+    ///         return arrived ? .wait : .again
     ///     }
     ///
     /// `.again` holds the frame clock and runs next cycle; `.wait` lets it go until a

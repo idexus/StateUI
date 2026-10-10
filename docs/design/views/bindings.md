@@ -29,13 +29,16 @@ What the host does with a carried state follows from the value:
 Each twin is one line over one of three helpers of `PropertyContainer` -
 `journey(_:by:)`, `plain(_:by:mode:)` and `words(_:by:mode:)` - and stands
 beside its value form, in the file of the tier or the control it belongs to.
+A composed view's twins read the state in its content instead: a
+`PositionIndicator`'s row is built again as the state changes.
 `plain` takes a `LaneValue` and `words` a `String`, so text cannot take the
 door for numbers ([what a host reads lanes as](../core/state.md#what-a-host-reads-lanes-as)).
 `testEveryValueModifierHasABindingTwin` holds the two forms together: a value
 modifier added without its twin is named there. The few allowed out are listed
 with their reason - a value the host cannot be handed whole (a brush, a
-picture, a date, a shape, a transform), a name rather than a value (a style
-key, a font family, a radio group), a rectangle, and the tiers no view wears.
+picture, a date, a shape, a transform, a law, a run of numbers), a name rather
+than a value (a style key, a font family, a radio group), a rectangle, and the
+tiers no view wears.
 
 ## The image never the value
 
@@ -128,19 +131,23 @@ control says so once and sets nothing.
 
 The date and time pickers carry their value as three lanes: year, month and
 day, or hour, minute and second. A value the platform cannot show - a day
-outside the picker's range, a time longer than a day - is shown as the platform
-clamps or folds it while the state keeps what was written; the user's next
-choice lands the value shown.
+outside the picker's range, a time longer than a day - is shown as the host
+layer holds it - a day past an end of the range at that end, a time added up
+from midnight round the day (`CalendarArithmetic`) - while the state keeps what
+was written; the user's next choice lands the value shown.
 
 ## Both spellings
 
-A two-way control takes its binding in the initializer - the short way to say
-what gives the control its purpose - and in a modifier of the same name, the
-way every other property is written: `TextField($name)` and
-`TextField().text($name)`. The initializer delegates to the modifier, so there
-is one body and neither is the real one. A value modifier written beside the
-initializer's binding wins for the value, while the binding goes on being
-written back to, which is how the two can then disagree.
+A two-way control whose bound value is its purpose takes its binding in the
+initializer - the short way to say what gives the control its purpose - and in
+a modifier of the same name, the way every other property is written:
+`TextField($name)` and `TextField().text($name)`. A picker and a radio button,
+whose initializers take their options and their caption, take it in the
+modifier alone: `Picker(sizes).selectedIndex($size)`. The initializer
+delegates to the modifier, so there is one body and neither is the real one. A
+value modifier written beside the initializer's binding wins for the value,
+while the binding goes on being written back to, which is how the two can then
+disagree.
 
 ## A report lands before its handler
 

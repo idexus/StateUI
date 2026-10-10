@@ -56,8 +56,8 @@
             + on(BorderElementContract.self, border)
     }
 
-    /// The views alive once the host let go of what it may keep a while after it left - MapKit on the Mac keeps a
-    /// map five seconds: stepping the host until no more than `once` are, at most ten seconds.
+    /// The views alive once the host let go of what a toolkit keeps a while after it left: stepping the host until no
+    /// more than `once` are, at most ten seconds.
     /// Design: docs/design/host/conformance.md#nothing-left-behind
     private static func settled(above once: Int, on driver: any HostDriver) -> Int {
         let end = ContinuousClock.now + .seconds(10)

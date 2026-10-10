@@ -69,7 +69,8 @@ public final class Aim<Target>: @MainActor CustomStringConvertible {
     ///
     /// Throws where the aim is on no view or on two, where the host could not
     /// perform the act, and where the answer is not what the contract
-    /// declares.
+    /// declares. In a run a later event, its task's cancellation or its element
+    /// leaving superseded, it throws `CancellationError` and the act never leaves.
     ///
     /// - Parameters:
     ///   - act: the member, written with its contract.

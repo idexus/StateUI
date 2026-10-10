@@ -43,7 +43,8 @@ the container of a switch or a slider (`ToggleSwitchContainerBackground`,
 number box (`TextControlBackground`), of a combo box (`ComboBoxBackground`)
 and of a date or time picker (`DatePickerButtonBackground`,
 `TimePickerButtonBackground`), each in every state - and a panel's
-`Background`, a canvas's included. A layout paints its box, a label its
+`Background`. A canvas clears its surface to its ground as it replays its
+drawing - a brush's first colour alone. A layout paints its box, a label its
 words' ground, a button its face. What paints no ground of its own takes
 none: a figure - a shape, a colour box - and a picture, and the progress bar
 and ring, whose `Background` is their track; their pages in the dictionary

@@ -74,7 +74,7 @@ automation script activates the row without a pointer. Give such a view a
 
 ### Pan and pinch
 
-`PanUpdate` reports status and total displacement from the gesture's start.
+`PanUpdate` reports its phase and total displacement from the gesture's start.
 `PinchUpdate.scale` is relative to the previous report:
 
 ```swift quote

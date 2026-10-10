@@ -69,8 +69,9 @@ more window of that group.
 declares it: a `Window(.kind)` once, a window of a `WindowGroup(.kind, for:)`
 once a value, and one more window of a `WindowGroup` each time it is asked.
 Opening checks the kind is declared and the value's type matches. Whether a
-window may open beside another is the platform's: a desktop and an iPad do, a
-phone does not, and a host that has not said - a test - does.
+window may open beside another is the platform's: a desktop and an iPad do; a
+phone, another tablet and a page in a browser do not; a host that has not
+said - a test - does.
 
 A window's kind, its value's text, whether it hides while another scene is in
 front and whether it floats are written on every build, either way, so none of

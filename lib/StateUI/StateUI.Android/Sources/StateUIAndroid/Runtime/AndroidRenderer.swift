@@ -204,7 +204,6 @@ final class AndroidRenderer {
     /// The colour the activity's window was last painted in behind its pages; nil while it keeps its own.
     private var paintedBackground: Int32?
 
-    /// Names the activity after the first window: the title its chrome shows, the visible page's that names it first.
     /// Paints the activity's window behind its pages as the window's element says, and gives it the theme's own back
     /// once it says none - a window never painted keeps whatever it shows.
     private func showBackground(_ background: HostValue?) {
@@ -218,6 +217,7 @@ final class AndroidRenderer {
         }
     }
 
+    /// Names the activity after the first window: the title its chrome shows, the visible page's that names it first.
     private func showTitle(of window: MountedElement) {
         let title = WindowChrome(window: window, arrangement: presentation.arrangement).title
         guard windowTitle != .some(title) else { return }

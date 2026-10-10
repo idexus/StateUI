@@ -69,7 +69,7 @@ extension TextInputProperties {
         setValue(TextInputContract.placeholder, value)
     }
 
-    /// The colour of that text.
+    /// The placeholder's colour.
     public func placeholderColor(_ value: Color) -> Modified {
         setValue(TextInputContract.placeholderColor, value)
     }

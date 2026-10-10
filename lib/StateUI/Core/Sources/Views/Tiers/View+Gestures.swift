@@ -65,6 +65,7 @@ extension View {
     ///   - direction: which ways to listen for. A view that listens for nothing
     ///     recognizes nothing, so the default is every direction.
     ///   - threshold: how far a swipe must travel to count, in device units.
+    ///   - handler: what to run, given the direction the swipe went.
     public func onSwiped(
         direction: SwipeDirection = .all,
         threshold: Double? = nil,
@@ -144,9 +145,11 @@ extension View {
     ///
     /// The totals are measured from where the pan began.
     ///
-    /// - Parameter touchCount: how many simultaneous pointers the host must
-    ///   require. A host that cannot distinguish that count does not recognize
-    ///   the gesture when the requested count is unsupported.
+    /// - Parameters:
+    ///   - touchCount: how many simultaneous pointers the host must require. A
+    ///     host that cannot distinguish that count does not recognize the
+    ///     gesture when the requested count is unsupported.
+    ///   - handler: what to run on each update, given where the pan stands.
     public func onPanUpdated(
         touchCount: Int? = nil,
         _ handler: @escaping @MainActor (PanUpdate) throws -> Void

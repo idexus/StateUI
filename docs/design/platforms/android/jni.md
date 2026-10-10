@@ -12,10 +12,10 @@ NDK's sysroot carries and the host's C module includes.
 A JNI environment belongs to one thread. The host calls views on the UI thread
 alone, so it keeps one environment: the one the activity's start hands it. The
 looper's doorbell, which does not come through a native method, runs on the
-same thread and uses the same environment. Classes and methods are looked up once, on first use, and held
-for the life of the process; a lookup that fails stops the process with the
-name that is missing, since the application was built without the host's Java
-layer.
+same thread and uses the same environment. Classes and methods are looked up
+once, on first use, and held for the life of the process; a lookup that fails
+stops the process with the name that is missing, since the application was
+built without the host's Java layer.
 
 ## Local references
 
@@ -23,8 +23,9 @@ A reference JNI hands back is local to the native frame it was made in. A
 native method's frame ends when it returns, and its locals with it. The
 looper's callback is not a native method: nothing would ever free what it
 makes, so it runs inside its own frame of local references
-(`PushLocalFrame`/`PopLocalFrame`). A string made for one call is
-freed right after it, so a render that writes many never fills a frame.
+(`PushLocalFrame`/`PopLocalFrame`). A string made for one call is freed
+right after it, or with the frame of local references around that call, so a
+render that writes many never fills a frame.
 
 ## Finding a class
 
@@ -69,16 +70,21 @@ rare script would arrive broken.
 ## Exceptions
 
 A Java exception left pending makes the next JNI call abort the process. Every
-call is followed by a check that describes the exception to logcat, clears it,
-and says which call raised it.
+method call and constructor is followed by a check that describes the
+exception to logcat - its stack names the method - clears it, and logs the
+kind of call that raised it.
 
 ## The natives
 
 The Java layer declares the host's native methods on `StateUIHost`: the
-activity's start and its lifecycle, the display's frame, what the user does
-to a control - a click, a turn, a slider's move and drag, words typed, a
-Return, a menu asked for and its item chosen, a drag between views - a
-question's answer, a document picker's, a document read and a launch taken, a layout's measure and
+activity's start, its configuration, its lifecycle and the way back; the
+display's frame and the window laid out; the environment changing; what the
+user does to a view - a click, a turn, a slider's move and drag, words typed,
+a Return, a tap, a press, a pinch, the pointer, the focus, a scroll, a tab, a
+list, calendar or clock opened, closed or chosen, a canvas touched, a menu
+asked for and its item chosen, a drag between views and files dropped; a web
+view's navigation, history and lost process; a question's answer, a document
+picker's, a document read and a launch taken; a layout's measure and
 arrangement, and what an ItemsView's recycler does with its cells
 ([items](items.md)). The host registers them by name in
 `StateUIAndroid.load(_:)`, which the head's `JNI_OnLoad` calls, so the host's
@@ -89,9 +95,12 @@ at its first call. `NativeProjectTests` holds the two lists equal.
 The Java layer exists where Android wants a subclass or an interface - the
 activity, the layout `ViewGroup`, the views and the drawable the host makes
 of its own, the frame callback, the recycler an ItemsView stands on and its
-cell, and one listener for what the user does to a view
-([controls](controls.md)) - and where one call does what Android asks
-several for: a view's writes, a menu, a dialog, the environment's facts.
+cell, one listener for what the user does to a view
+([controls](controls.md)), a drag listener per view (`StateUIDrags`) and the
+touch watcher (`StateUIWatch`) - and where one call does what Android asks
+several for: a view's writes, a menu, a dialog, the document picker and its
+files (`StateUIFiles`), the kept values (`StateUIStore`), the environment's
+facts.
 What Android tells it is forwarded to a registered Swift function.
 
 ## What a frame writes

@@ -16,12 +16,12 @@ rectangle, a rectangle with rounded corners, or an ellipse, each GSK's
 rounded rectangle. A stroke is drawn in one colour: a gradient's first stop.
 
 A layout that clips cuts what it holds to its outline as it draws it, and
-takes `overflow: hidden`, so a child cut away also takes no click. A layout
+its widget's overflow is hidden (`gtk_widget_set_overflow`), so a child cut
+away also takes no click. A layout
 that does not clip cuts nothing.
 
 A colour box is a panel of one colour, its corners rounded each by its own
 radius; it takes the room its layout gives it and asks for none.
-
 
 ## A view's background
 
@@ -31,6 +31,7 @@ which GTK paints under whatever the widget draws - a field's box is its
 field, as GNOME's applications show one. A brush gives its first colour; a
 layout paints its box with the whole brush. A switch takes none: GTK paints
 its box as the track, so a colour there would recolour the track.
+
 ## A widget's own box
 
 GTK sizes and draws a widget's own box - the room between its edge and its
@@ -84,7 +85,9 @@ rectangles - and words are a Pango layout of the pen's size, placed across and
 down their room and cut to it. A press, its drag and its release reach the
 application through GTK's drag gesture, each where it is in the canvas.
 
-The shapes take their transform the same way, drawn under it on the snapshot.
+A rectangle and an ellipse take their transform the same way, drawn under it
+on the snapshot; a line, a path, a polygon and a polyline are placed with it
+by the host layer's rule (`ShapeArithmetic.placement`).
 
 ## A placed child
 

@@ -143,7 +143,8 @@ final class WebTextInputView: WebDOMView, WebWordsView {
         fit()
     }
 
-    /// An editor growing with its words stands as tall as they are.
+    /// A field counts its words or its placeholder as wide as it is; an editor growing with its words stands as tall
+    /// as they are.
     private func fit() {
         // A field is as wide as its words or its placeholder, not the browser's twenty characters: where the browser
         // sizes no field by its content, the characters it counts say it.

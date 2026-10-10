@@ -21,8 +21,10 @@ and acts it declares, and the binding twins of its values.
 What gives a control its purpose - a label's text, a picker's options, a
 path's outline, an image's source - goes in the initializer; everything else is
 a modifier (composition.md, what goes in the initializer). A two-way control
-takes its binding both ways - in the initializer and in a modifier of the same
-name (bindings.md, both spellings).
+whose bound value is its purpose takes its binding in the initializer and in a
+modifier of the same name; a picker and a radio button, whose initializers take
+their options and their caption, take it in the modifier alone (bindings.md,
+both spellings).
 
 ## Closed vocabularies are numbered here
 
@@ -93,9 +95,9 @@ method on; what it reports travels the other way, into a binding
 made of: an address as the kind and the address, a document as the kind, the
 document and its base address or nothing - three values whether or not there
 is a base address, so the host reads the same places every time and never tells
-the two apart by shape. A navigation's first report on Windows carries no
-reason, the source having been given before the browser existed, so
-`.unknown` there is an ordinary answer rather than a fault.
+the two apart by shape. WebView2 and WebKitGTK do not tell a step back from one
+forward, so a step through the history the program did not ask for reports
+`.unknown` there: an ordinary answer, not a fault.
 
 ## Canvas and path
 

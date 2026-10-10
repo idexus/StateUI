@@ -21,7 +21,7 @@
 /// size, as a scroller needs - a `.height`, or a `.fill` row of a Grid - and the
 /// cards are fitted to it.
 ///
-/// A swipe settles on a card, and `.position($:)` says which; assigning it
+/// A swipe settles on a card, and `.position(_:)` says which; assigning it
 /// moves the run. A tap opens the middle card, handed to `.onItemTapped`. No
 /// view is rebuilt while the run moves: the one render is the card changing.
 public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
@@ -90,10 +90,10 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// Where the middle card is written, when an author lent a binding.
     private var pin: Binding<Int>?
 
-    /// What runs when the middle card changes, beside any binding, by its word on a repeat.
+    /// What runs when the middle card changes, beside any binding, through its gate.
     private var moved: (gate: any Gate, handler: ValueEventHandler<Int>)?
 
-    /// What runs when the user taps the run, by its word on a repeat.
+    /// What runs when the user taps the run, through its gate.
     private var tapped: (gate: any Gate, handler: ValueEventHandler<Items.Element>)?
 
     /// Which shape the cards stand in.
@@ -431,7 +431,8 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         let cards = run
             .placement($placements)
             .frame($room)
-            // The arithmetic runs again whenever the hand or the room moves.
+            // The arithmetic runs again whenever the hand, the room or the run's
+            // laid-out length moves.
             .engine(following: $scrolled, $room, $length) { _ in
                 // A room not yet measured places nothing: every card stands as it is until it is.
                 let measured = room.width > 0 && room.height > 0

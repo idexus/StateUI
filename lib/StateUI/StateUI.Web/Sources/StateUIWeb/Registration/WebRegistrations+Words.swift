@@ -7,7 +7,7 @@
 extension WebRegistrations {
     /// A Text and a Button: their words in their case, their font and colour and the room around them; a text's
     /// lines, alignment, spacing and decorations; a button's picture, its lines, its spacing, its box, whether it
-    /// takes a click, and the click.
+    /// takes a click, the press, its release and the click.
     static func words(_ registry: Registry<WebDOMView>) {
         registry.add(TextContract.self, create: { _ in WebTextView() }) { text in
             text.applies(TextMembers.members) { view, values in applyWords(view, values) }

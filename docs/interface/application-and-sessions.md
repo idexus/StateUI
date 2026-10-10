@@ -125,7 +125,7 @@ struct NotesScene: Scene {
             .environment(library)
         Window(.inspector) { InspectorPage() }
             .environment(library)
-        WindowGroup(.document, for: Int.self) { number in
+        WindowGroup(.document, for: Int.self) { $number in
             DocumentPage(number: number)
         }
     }
@@ -328,8 +328,9 @@ try await scene.close()
 ```
 
 A window opens in the scene declaring its kind, which opens with it where it
-does not stand. Whether a window may open beside another is the platform's: a
-desktop and an iPad open one, a phone answers `.unsupported`.
+does not stand. Whether a window may open beside another is the platform's. A
+desktop and an iPad open one; a phone, an Android tablet and a page in a
+browser answer `.unsupported`.
 `SceneSession.windows` and `ApplicationSession.scenes` are reactive readings.
 A body that reads either is rebuilt when the collection changes.
 
@@ -341,9 +342,10 @@ does not silently start referring to a newer scene after its own scene ends.
 
 Restoration has two inputs with different owners:
 
-- the platform keeps the windows that were open - AppKit and iPadOS by their
-  own restoration, the other hosts in a store of their own - each with its
-  kind, its value's text and its scene's `@State(sceneKey:)` values;
+- the platform keeps the windows that were open - AppKit and UIKit by their
+  own restoration, Android, WinUI and GTK in a store of their own, the Web in
+  the browser's storage for the page's site - each with its kind, its value's
+  text and its scene's `@State(sceneKey:)` values;
 - StateUI brings each back as its kind for its value, in the scene declaring
   it, which opens with it and its kept values where it does not stand.
 

@@ -111,7 +111,9 @@ struct MapSample: SampleContent, ExampleContent {
         VStack {
             Text("`Map` is drawn by the platform's own map where there is one - "
                 + "`MKMapView` on Apple. Elsewhere, the Web included, the application "
-                + "registers its own map with the host, the pins as its children.")
+                + "registers its own map with the host, the pins as its children - this "
+                + "gallery registers one on the Web; where none is registered, the host "
+                + "shows the map's name in its place.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

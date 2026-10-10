@@ -125,8 +125,8 @@ extension State {
         }
 
         /// What every write ends with, this side's and the host's: the readers are asked,
-        /// and nobody where no build read the state. A state has no cadence.
-        /// Design: docs/design/core/journeys.md#readings
+        /// and nobody where no build read the state.
+        /// Design: docs/design/core/invalidation.md#live-readers
         @usableFromInline
         func askForRender() {
             // No build ever read it: nobody to render for, and this costs one load.
@@ -462,10 +462,10 @@ extension State.Storage where Value: StateValue {
         }()
 
         if made == nil {
-            complain("`\(origin ?? "a state")` is carried as a journey - a Slider's "
-                + "or a Stepper's - and was handed to something that carries the "
-                + "value itself. One state has one shape: declare a second state "
-                + "for the other.")
+            complain("`\(origin ?? "a state")` is carried as a journey - an animated "
+                + "driven property's, a slider's, a stepper's or a scroller's - and was "
+                + "handed to something that carries the value itself. One state has one "
+                + "shape: declare a second state for the other.")
         }
 
         return made

@@ -12,7 +12,7 @@ struct TickerSample: SampleContent, ExampleContent {
     static let id = "ticker"
     static let title = "Ticker"
     static let summary = "The same countdown from the library's timer, which ends "
-        + "with the page holding it."
+        + "with whoever holds it."
 
     // listing: TickerSample
     var body: some View {
@@ -72,9 +72,10 @@ struct TickerSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("Starting twice is safe - each run takes a token, and a loop that wakes "
-                + "holding an old one returns. The ticker ends with whoever holds it: "
-                + "leave the page and it stops, as its @State goes. One that should keep "
-                + "counting is held by something that stays.")
+                + "holding an old one returns. The ticker ends with whoever holds it - "
+                + "here the gallery's catalog, which keeps this sample's @State while its "
+                + "window stands, so the countdown goes on behind a page you have left. "
+                + "Stop it in `.onDestroying` where it should not.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -349,7 +349,7 @@ names the window, the way back is the system's back item, the actions are
 toolbar items - a space between two groups, a leading group before the
 flexible space - and those placed in the overflow sit in the toolbar's
 overflow menu. Android's bar has no leading edge beside its navigation button,
-so a leading group stands first among its actions. A tabbed
+so a leading group stands first among its actions. On AppKit, a tabbed
 view on the window's page path shows its tabs in a row beneath the toolbar,
 beside any sidebar, the tabs sharing its width with each picture beside its
 title; one in a sidebar, a sheet or inside another tab is a tab view with its

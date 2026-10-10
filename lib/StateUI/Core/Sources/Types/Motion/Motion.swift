@@ -53,7 +53,8 @@ public struct Motion: Equatable, Sendable {
     /// else `standard`.
     ///
     /// What a write means when it names no motion, so a plain assignment and
-    /// `move(to:)` agree about the motion and differ only in being awaited.
+    /// `move(to:)` agree about the motion and differ only in `move(to:)`
+    /// answering an `Arrival` whose `arrived()` waits.
     public static let inherited = Motion(
         law: .eased, milliseconds: 0, curve: .cubicOut, factor: 0, isInherited: true, isCustom: false)
 

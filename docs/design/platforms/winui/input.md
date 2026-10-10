@@ -100,7 +100,7 @@ handlers, hung once, ask it as they run. A view that can be dragged has
 text, to be copied, and its `DropCompleted` says the drag ended wherever it
 ended. A view taking drops has `AllowDrop`; a drag whose data holds text
 where it takes words, or storage items where it takes files, is accepted
-over it - `DragEnter` and `DragOver` say it is over, `DragLeave` that it went
-- and its `Drop` reads the text, or each item's path and name, holding the
+over it - `DragEnter` and `DragOver` say it is over, `DragLeave` that it
+went - and its `Drop` reads the text, or each item's path and name, holding the
 drop's deferral until they are read. The host layer's rule makes over once
 and no leave after a drop.
