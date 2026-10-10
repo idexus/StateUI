@@ -398,6 +398,9 @@ another axis. `nil` leaves that axis under native
 window ownership, including user resizing and platform restoration. Minimum
 and maximum values constrain resizing; equal minimum and maximum values express
 a fixed dimension. A minimum wins over a smaller maximum on the same axis.
+A maximum bounds maximizing too: a window that has one stands at most that
+large when the user maximizes it or takes it to full screen, as the platform
+shows such a window - so a window meant to fill a large screen sets none.
 Clearing a constraint or operation preference restores the native value the
 host found when it adopted the window. Full-screen hosts may retain geometry
 requests without presenting movable or resizable window chrome.

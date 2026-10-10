@@ -4613,7 +4613,8 @@ enum Listings {
         // Sources/Gallery/MainPage.swift
         // The window's name and its size: `width` and `height` are its size
         // as it opens, the minimum how small the user may drag it before the
-        // layout stops making sense, the maximum how large. On a phone or a
+        // layout stops making sense - and no maximum, so maximized it fills
+        // the largest screen. On a phone or a
         // tablet the system sizes the window and these go unused - and the
         // gallery writes no `x` or `y` on purpose: pinning an app to the same
         // corner of the screen at every launch is worse than letting the
@@ -4625,8 +4626,6 @@ enum Listings {
             dress(window)
             window.minimumWidth = 700
             window.minimumHeight = 500
-            window.maximumWidth = 1600
-            window.maximumHeight = 1200
             window.isMaximizable = true
             window.isMinimizable = true
 
@@ -9457,6 +9456,7 @@ enum Listings {
         @State private var maximizable = true
         @State private var minimizable = true
         @State private var translucent = false
+        @State private var bounded = false
         @State private var width = 0.0
         @State private var height = 0.0
 
@@ -9498,6 +9498,14 @@ enum Listings {
                 option("Minimize", id: "window.minimize", value: $minimizable)
                     .onChanged(minimizable) {
                         window.isMinimizable = minimizable
+                    }
+
+                // A maximum bounds maximizing too: full screen, the window stands
+                // at most this large in the middle of it.
+                option("At most 1200 × 900", id: "window.bounded", value: $bounded)
+                    .onChanged(bounded) {
+                        window.maximumWidth = bounded ? 1200 : nil
+                        window.maximumHeight = bounded ? 900 : nil
                     }
 
                 option("Translucent", id: "window.translucent", value: $translucent)

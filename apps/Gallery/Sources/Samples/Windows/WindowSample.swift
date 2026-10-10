@@ -9,6 +9,7 @@ struct WindowSample: SampleContent, ExampleContent {
     @State private var maximizable = true
     @State private var minimizable = true
     @State private var translucent = false
+    @State private var bounded = false
     @State private var width = 0.0
     @State private var height = 0.0
     // listing: end
@@ -73,6 +74,14 @@ struct WindowSample: SampleContent, ExampleContent {
             option("Minimize", id: "window.minimize", value: $minimizable)
                 .onChanged(minimizable) {
                     window.isMinimizable = minimizable
+                }
+
+            // A maximum bounds maximizing too: full screen, the window stands
+            // at most this large in the middle of it.
+            option("At most 1200 × 900", id: "window.bounded", value: $bounded)
+                .onChanged(bounded) {
+                    window.maximumWidth = bounded ? 1200 : nil
+                    window.maximumHeight = bounded ? 900 : nil
                 }
 
             option("Translucent", id: "window.translucent", value: $translucent)
