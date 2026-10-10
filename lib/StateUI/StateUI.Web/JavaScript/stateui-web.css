@@ -126,8 +126,9 @@ body {
 .stateui-bar > .stateui-bar-actions { grid-column: 3; justify-self: end; }
 
 /* With a split view, five columns whose widths move with its sidebar: the part over the sidebar - the toggle alone
-   while the sidebar is hidden - what leads the detail, the title, the trailing actions, and as much again as the
-   first part, so the title stands centred over the detail beside a sidebar shown and over the whole bar else. */
+   while the sidebar is hidden - what leads the detail, the title, the trailing actions, and a last part as wide as
+   the first while the sidebar is hidden and none beside it shown, so the title stands centred over the detail
+   beside a sidebar shown and over the whole bar else. */
 .stateui-bar[data-sidebar] {
   grid-template-columns: var(--stateui-bar-side) minmax(0, 1fr) auto minmax(0, 1fr) var(--stateui-bar-side);
   column-gap: 0;

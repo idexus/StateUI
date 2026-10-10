@@ -104,7 +104,7 @@
         }
     }
 
-    /// The views holding others, whose `isEnabled` is their branch's.
+    /// The views holding others: their `isEnabled` is their branch's, and they lay their child out in their direction.
     static let layouts: Set<String> = ["Grid", "HStack", "ScrollView", "VStack", "ZStack"]
 
     /// A view is shown or not as the tree says, and hides when the tree says so.

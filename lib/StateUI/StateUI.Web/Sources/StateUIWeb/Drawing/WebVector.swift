@@ -4,8 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// StateUI's drawing as SVG writes it: a path's commands, a rounded rectangle, an ellipse, an affine matrix, and a
-/// gradient's geometry over the room it paints.
+/// StateUI's drawing as SVG writes it: a path's commands, a rounded rectangle, an ellipse, an affine matrix and its
+/// inverse, and a gradient's geometry over the room it paints.
 /// Design: docs/design/platforms/web/drawing.md#a-shape
 enum WebVector {
     /// The host layer's flat commands - move, line, cubic, quadratic, close, each with its points - as SVG's.

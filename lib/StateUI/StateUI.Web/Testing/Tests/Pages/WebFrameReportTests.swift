@@ -8,9 +8,10 @@
 import XCTest
 
 /// A view says where it stands only where the browser lays it out: on a covered tab it says nothing, so the frame it
-/// said last stands - never zeros, which a frame driving a size would turn into a page of no width; and it says where
-/// it went when its layout moves it on the way, its size the same all along. A host runs here,
-/// so the suite runs it in a browser (`test-web.sh --browser`).
+/// said last stands - never zeros, which a frame driving a size would turn into a page of no width; it says where it
+/// went when its layout moves it on the way, its size the same all along; a filling picture says its room, and a
+/// shape whose frame is read is drawn again at its new size. A host runs here, so the suite runs it in a browser
+/// (`test-web.sh --browser`).
 @MainActor
 final class WebFrameReportTests: XCTestCase {
     override func setUp() async throws {

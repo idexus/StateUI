@@ -74,7 +74,7 @@ STATEUI_WEB(listen) void stateui_web_listen(int32_t element, const char *event, 
 /// What the event a listener is hearing carries: 0 how many clicks it counts, 1 and 2 where the pointer is from the
 /// listening element's top left corner; 3 the pointer's number, 4 and 5 where it is on the page, 6 its kind - 0 a
 /// mouse, 1 a pen, 2 a touch - 7 its button; 8 a wheel's turn down, 9 whether a key made it a pinch, 10 a gesture's
-/// scale; 11 and 12 the listening element's size.
+/// scale; 11 and 12 the listening element's size; 13 whether a click on a label passes to its control.
 STATEUI_WEB(event_number) double stateui_web_event_number(int32_t index);
 /// The words the event being heard carries in its `detail`, read by `copy_read`: their length.
 STATEUI_WEB(event_words) int32_t stateui_web_event_words(void);
@@ -147,7 +147,8 @@ STATEUI_WEB(capture_pointer) void stateui_web_capture_pointer(int32_t element);
 /// The event being heard no longer does what the page would do with it: scroll, zoom, select.
 STATEUI_WEB(take_event) void stateui_web_take_event(void);
 
-/// Calls listener `listener` whenever the element's size changes.
+/// Calls listener `listener` whenever the element's size changes - one listener an element: a second call takes the
+/// first's place.
 STATEUI_WEB(observe_size) void stateui_web_observe_size(int32_t element, int32_t listener);
 /// 1 where the browser lays the element out - it stands in the page, in no element shown as nothing - else 0.
 STATEUI_WEB(is_laid_out) int32_t stateui_web_is_laid_out(int32_t element);

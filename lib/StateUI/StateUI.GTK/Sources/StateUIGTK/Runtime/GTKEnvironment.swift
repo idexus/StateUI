@@ -59,7 +59,8 @@ enum GTKEnvironment {
 
     private static var watching = false
 
-    /// Whether libadwaita offers the user an accent to choose - from 1.6 on.
+    /// Whether libadwaita offers the user an accent to choose - from 1.6 on, once its style manager stands: before
+    /// it, GTK knows no class to look in.
     static var offersAccent: Bool {
         let styles = g_type_class_peek(adw_style_manager_get_type())?.assumingMemoryBound(to: GObjectClass.self)
         return styles.map { g_object_class_find_property($0, "accent-color") != nil } ?? false

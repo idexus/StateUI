@@ -57,7 +57,8 @@ extension WebRenderer {
         try? WebBrowser.run("localStorage.clear()")
     }
 
-    /// The host leaves the page: what it was told late settles into no window of the next host's.
+    /// The host leaves the page: what it was told late settles into no window of the next host's, and the page's
+    /// listeners are let go of.
     func leave() {
         runtime.tree.root?.leave()
         runtime.presenter = nil

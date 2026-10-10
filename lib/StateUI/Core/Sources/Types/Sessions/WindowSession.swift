@@ -35,14 +35,14 @@ public final class WindowSession {
     /// What the window is called in native window chrome and system surfaces.
     @State public var title: String? = nil
 
-    /// The horizontal position of the outer frame's top-left corner in the
-    /// host's desktop coordinate space, where the platform lets an
-    /// application place its windows.
+    /// The horizontal position of the outer frame's top-left corner, counted
+    /// from the top-left corner of the work area of the screen the window
+    /// stands on, where the platform lets an application place its windows.
     @State public var x: Double? = nil
 
-    /// The vertical position of the outer frame's top-left corner in the
-    /// host's desktop coordinate space, where the platform lets an
-    /// application place its windows.
+    /// The vertical position of the outer frame's top-left corner, counted
+    /// from the top-left corner of the work area of the screen the window
+    /// stands on, where the platform lets an application place its windows.
     @State public var y: Double? = nil
 
     /// The requested width of the window's content area.

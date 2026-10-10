@@ -6,9 +6,10 @@
 @_spi(Host) import StateUIConformance
 @testable import StateUIWeb
 
-/// The facts the Web driver reads besides a member - the keyboard's focus, what a press reaches, where a view stands,
-/// the question showing, what assistive technology was told, the log, what is kept, the bar - and the bar's actions
-/// chosen and a question answered, as the user does.
+/// The facts the Web driver reads besides a member - the keyboard's focus, what a press reaches, the drawing order,
+/// where a view stands, the colour shown, the question and the file dialog showing, what was launched, the theme,
+/// what assistive technology was told, what is kept, the bar - and the bar's actions chosen, a question answered and
+/// files chosen, as the user does.
 /// Design: docs/design/host/conformance.md#the-driver
 extension WebDriver {
     func focused(_ element: MountedElement) throws -> Bool {

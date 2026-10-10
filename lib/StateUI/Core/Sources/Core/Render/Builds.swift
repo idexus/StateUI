@@ -115,7 +115,7 @@ extension Element {
     ///
     /// Answers the view's name, how many times the closure this is written in has
     /// been described, and which state this description is for -
-    /// `"PlacedSample: 47 builds, for aim"`. A view described because an ancestor
+    /// `"PlacedSample: 3 builds, for grabbing"`. A view described because an ancestor
     /// was says `with its parent`. Reading it causes no render; outside a body it
     /// says nothing is being described.
     ///

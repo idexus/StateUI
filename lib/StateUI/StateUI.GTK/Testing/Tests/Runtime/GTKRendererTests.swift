@@ -24,7 +24,6 @@ struct CounterPage: View {
 
 @MainActor
 final class GTKRendererTests: XCTestCase {
-    /// A page's controls are GTK's, shown in a window: the words it describes are the words GTK holds.
     /// The accent the user chooses is heard where libadwaita offers one to choose: the style manager telling it
     /// changed tells the environment's watcher, as the theme turning does.
     func testAnAccentChangeIsHeard() throws {
@@ -38,6 +37,7 @@ final class GTKRendererTests: XCTestCase {
         }
     }
 
+    /// A page's controls are GTK's, shown in a window: the words it describes are the words GTK holds.
     func testThePageShowsItsControlsInAWindow() {
         onUIThread {
             let host = GTKRenderer.running { CounterPage() }

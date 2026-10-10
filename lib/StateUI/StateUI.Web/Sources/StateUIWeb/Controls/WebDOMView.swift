@@ -25,7 +25,8 @@ class WebDOMView {
     private var offered = DragAndDrop.none
     private var dragListener: Int32?
 
-    /// What runs as the element's size changes, every one: its box drawn again, its drawing, its frame read.
+    /// What runs as the element's size changes, every one: its box drawn again, its drawing, its frame read, a
+    /// scroller's waiting offset moved to.
     private var sizeFollowers: [@MainActor () -> Void] = []
 
     /// The CSS properties this view's element holds, by name, so a value is sent only when it changes.

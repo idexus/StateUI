@@ -99,8 +99,8 @@ final class WebWindowController {
         }
     }
 
-    /// Closes the window, the sheets over it first, the top one first: a sheet is a modal dialog of the page's, which
-    /// would hold every page after it still.
+    /// Closes the window, the sheets over it first, the top one first - a sheet is a modal dialog of the page's, which
+    /// would hold every page after it still - and stops hearing the page's history.
     func close() {
         for entry in sheets.reversed() { entry.sheet.close() }
         sheets = []

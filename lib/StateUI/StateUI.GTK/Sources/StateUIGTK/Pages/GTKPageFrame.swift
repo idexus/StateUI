@@ -22,8 +22,8 @@ final class GTKPageFrame {
     let header: GTKWidget
     private let heading: GTKWidget
 
-    /// The bar's start - the sidebar's toggle, then the leading groups - and its end - the trailing groups, then the
-    /// overflow's menu.
+    /// The bar's start - the sidebar's toggle, then the leading groups - and its end - the trailing groups, the
+    /// overflow's menu, then the main menu.
     private let startBox: GTKWidget
     let endBox: GTKWidget
 
