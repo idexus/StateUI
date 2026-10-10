@@ -274,6 +274,7 @@ struct MainPage: View {
 
     // MARK: - The window's own look
 
+    // listing: MainPage.look
     /// The look the gallery wears in the theme in force: a change of theme,
     /// the system's or the application's, builds the page again in the other.
     private var look: ThemeLook {
@@ -296,4 +297,5 @@ struct MainPage: View {
             && style.look(dark: true).window.material == .platform
         window.background = unsaid ? nil : surface(\.window, .window)
     }
+    // listing: end
 }

@@ -20,7 +20,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
     static let summary = "What the bars, the window and the sidebar are made of, and the theme: "
         + "the platform's own, or yours."
 
-    static var code: String { Listings.joined("AppearanceSample", "Gallery.Looks") }
+    static var code: String { Listings.joined("AppearanceSample", "MainPage.look", "Gallery.Looks") }
 
     // listing: AppearanceSample
     /// The themes the application may hold, in the order they are offered.

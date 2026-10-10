@@ -4698,6 +4698,31 @@ enum Listings {
             }
         }
         """#,
+        "MainPage.look": #"""
+        // Sources/Gallery/MainPage.swift
+        /// The look the gallery wears in the theme in force: a change of theme,
+        /// the system's or the application's, builds the page again in the other.
+        private var look: ThemeLook {
+            style.look(dark: application.info.colorScheme == .dark)
+        }
+
+        /// What a surface of the gallery is made of, a material for each theme as
+        /// its looks say - the platform's own in a theme whose look leaves it.
+        private func surface(_ part: KeyPath<ThemeLook, SurfaceLook>, _ painted: GallerySurface) -> Material {
+            let system = application.info.accentColor
+            return Material(
+                light: style.look(dark: false)[keyPath: part].material(system: system, for: painted),
+                dark: style.look(dark: true)[keyPath: part].material(system: system, for: painted))
+        }
+
+        /// Dresses `window` as the gallery's looks say, one for each theme: what it
+        /// is made of behind its pages - the platform's own where both leave it.
+        private func dress(_ window: WindowSession) {
+            let unsaid = style.look(dark: false).window.material == .platform
+                && style.look(dark: true).window.material == .platform
+            window.background = unsaid ? nil : surface(\.window, .window)
+        }
+        """#,
         "MainPage.modal": #"""
         // Sources/Gallery/MainPage.swift
         // What is over all of it: the pages presented over the split view, the
@@ -9528,7 +9553,6 @@ enum Listings {
         @State private var renames = 0
         @State private var maximizable = true
         @State private var minimizable = true
-        @State private var translucent = false
         @State private var bounded = false
         @State private var width = 0.0
         @State private var height = 0.0
@@ -9581,20 +9605,12 @@ enum Listings {
                         window.maximumHeight = bounded ? 900 : nil
                     }
 
-                option("Translucent", id: "window.translucent", value: $translucent)
-                    .onChanged(translucent) {
-                        window.background = translucent ? .blur(.regular) : nil
-                    }
-
                 Text("Sample frame: \(Int(width)) × \(Int(height))")
             }
             .onFrameChanged(in: .global) { frame in
                 width = frame.width
                 height = frame.height
             }
-            // The switch starts where the window stands: on while it stands on
-            // the blur the switch writes.
-            .onCreated { translucent = window.background == .blur(.regular) }
         }
 
         /// An action that writes the surrounding window session.

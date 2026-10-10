@@ -1,6 +1,6 @@
 import StateUI
 
-/// Native window identity, geometry, constraints, operations and translucency.
+/// Native window identity, geometry, constraints and operations - and what it is made of, as the gallery's look says.
 struct WindowSample: SampleContent, ExampleContent {
     // listing: WindowSample
     @Environment(\.window) private var window
@@ -8,7 +8,6 @@ struct WindowSample: SampleContent, ExampleContent {
     @State private var renames = 0
     @State private var maximizable = true
     @State private var minimizable = true
-    @State private var translucent = false
     @State private var bounded = false
     @State private var width = 0.0
     @State private var height = 0.0
@@ -18,12 +17,13 @@ struct WindowSample: SampleContent, ExampleContent {
     static let title = "Window"
     static let summary = "Change the native window while it stays on screen."
 
-    static var code: String { Listings.joined("MainPage.created", "WindowSample") }
+    static var code: String { Listings.joined("MainPage.created", "MainPage.look", "WindowSample") }
 
     var notes: (any View)? {
         Text("On an iPad and a phone the system sizes and places a window, so the size, the place, the "
-            + "bound, maximizing, minimizing and translucency do nothing there. On GNOME the place, "
-            + "maximizing, minimizing and the bound do nothing, and translucency draws its colour.")
+            + "bound, maximizing and minimizing do nothing there. On GNOME the place, maximizing, "
+            + "minimizing and the bound do nothing. What the window is made of - its background - is "
+            + "the gallery's look, which the Appearance sample chooses.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
@@ -85,11 +85,6 @@ struct WindowSample: SampleContent, ExampleContent {
                     window.maximumHeight = bounded ? 900 : nil
                 }
 
-            option("Translucent", id: "window.translucent", value: $translucent)
-                .onChanged(translucent) {
-                    window.background = translucent ? .blur(.regular) : nil
-                }
-
             Text("Sample frame: \(Int(width)) × \(Int(height))")
                 .fontSize(13)
                 .textColor(Palette.accent)
@@ -99,9 +94,6 @@ struct WindowSample: SampleContent, ExampleContent {
             width = frame.width
             height = frame.height
         }
-        // The switch starts where the window stands: on while it stands on
-        // the blur the switch writes.
-        .onCreated { translucent = window.background == .blur(.regular) }
     }
 
     /// An action that writes the surrounding window session.
