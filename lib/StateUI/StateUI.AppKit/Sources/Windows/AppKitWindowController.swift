@@ -162,10 +162,11 @@ final class AppKitWindowController: NSWindowController {
         case .height:
             return .number(Double(window.contentLayoutRect.height))
         case .x:
-            return .number(Double(window.frame.minX))
+            guard let area = Self.workArea(window) else { return nil }
+            return .number(Double(window.frame.minX - area.minX))
         case .y:
-            guard let screen = window.screen ?? NSScreen.main else { return nil }
-            return .number(Double(screen.visibleFrame.maxY - window.frame.maxY))
+            guard let area = Self.workArea(window) else { return nil }
+            return .number(Double(area.maxY - window.frame.maxY))
         default:
             return nil
         }
@@ -233,10 +234,17 @@ final class AppKitWindowController: NSWindowController {
         }
         guard frame.x != nil || frame.y != nil else { return }
 
+        guard let area = Self.workArea(window) else { return }
         var topLeft = NSPoint(x: window.frame.minX, y: window.frame.maxY)
-        if let x = frame.x { topLeft.x = CGFloat(x) }
-        if let y = frame.y, let screen = window.screen ?? NSScreen.main { topLeft.y = screen.visibleFrame.maxY - y }
+        if let x = frame.x { topLeft.x = area.minX + CGFloat(x) }
+        if let y = frame.y { topLeft.y = area.maxY - CGFloat(y) }
         window.setFrameTopLeftPoint(topLeft)
+    }
+
+    /// The work area of the screen `window` stands on - the screen less its menu bar and the Dock - which a place
+    /// is counted from.
+    static var workArea: (NSWindow) -> NSRect? = { window in
+        (window.screen ?? NSScreen.main)?.visibleFrame
     }
 
     /// Bounds the content area as the tree asks; AppKit bounds the whole content view, which reaches under the title
