@@ -39,9 +39,11 @@ bounds the whole content view, and are applied again on every presentation,
 since the chrome grows with a row of tabs; what the tree leaves unsaid is the
 window's own. The traits ([a window's traits](../../host/tree.md#a-windows-traits))
 are the zoom and minimize buttons, a window the desktop shows through, and
-the floating level (`.floating`), which keeps the window above other
-windows, other applications' included. Every window stands in the Windows
-menu.
+the floating level (`.floating`), which keeps the window above the
+application's other windows. The host layer gives it while the application
+is in front: another application brought forward - by a click on its window
+too - leaves the window at the normal level beneath that one. Every window
+stands in the Windows menu.
 
 A window with a maximum takes no full screen: AppKit would stand it at its
 maximum in the middle of the screen, the toolbar alone across the top in the
