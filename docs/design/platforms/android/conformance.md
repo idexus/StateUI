@@ -123,7 +123,8 @@ view's sidebar toggle to the host's own entry, a document picker's answer to
 the relay's result path, as no picker is shown, and a drag between views and
 documents dropped to the drag listeners' reports, as a test can make no drag
 event. A few reads are the host's or its relay's own: a slider's range,
-which the SeekBar keeps only as steps, a picker's rows, a split view's
+which the SeekBar keeps only as steps, a stepper's value, which its two
+buttons do not hold, a picker's rows, a split view's
 showing sidebar and its colour, an ItemsView's selection mode, a date
 picker's bounds and a date or time picker's format, what the relay keeps of
 a dialog, the document picker it holds and what it launched. The driver
