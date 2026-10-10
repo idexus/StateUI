@@ -37,6 +37,22 @@ final class WebFrameReportTests: XCTestCase {
                        "a covered tab's view said it stood at no size: \(frames.values)")
     }
 
+    /// A picture filling its room says that room as its frame, never the margin it reaches past each edge.
+    func testAFillingPictureSaysItsRoomAsItsFrame() throws {
+        let frames = Received<[Double]>()
+        let host = WebRenderer.running {
+            VStack {
+                Image("test_dot.png").contentMode(.fill).width(60).height(40)
+                    .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+            }
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }
+        host.settle { !frames.values.isEmpty }
+
+        XCTAssertEqual(frames.values.last.map(FrameReport.size), [60, 40], "\(frames.values)")
+    }
+
     /// A shape whose frame the tree reads, its room growing, is drawn again at its new size and says its new frame:
     /// one observer of the element carries both, never one in the other's place.
     func testAShapeWhoseFrameIsReadIsDrawnAgainAtItsNewSize() throws {
