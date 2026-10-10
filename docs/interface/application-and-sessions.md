@@ -70,8 +70,8 @@ own. `application.colorScheme` is `.system` until it is written; `.light` or
 theme in force, which every `Color(light:dark:)` resolves against.
 
 ```swift quote
-Button("Dark") { application.colorScheme = .dark }
-Button("As the system") { application.colorScheme = .system }
+Button("Dark").onClicked { application.colorScheme = .dark }
+Button("As the system").onClicked { application.colorScheme = .system }
 ```
 
 `info.accentColor` is the accent the user chose for the system - on a
@@ -398,9 +398,11 @@ another axis. `nil` leaves that axis under native
 window ownership, including user resizing and platform restoration. Minimum
 and maximum values constrain resizing; equal minimum and maximum values express
 a fixed dimension. A minimum wins over a smaller maximum on the same axis.
-A maximum bounds maximizing too: maximized, a window that has one grows to
-that size at most - and on a Mac it takes no full screen - so a window meant
-to fill a large screen sets none.
+Where a host realizes a maximum - AppKit and WinUI - it bounds maximizing
+too: maximized, a window that has one grows to that size at most, and on a
+Mac it takes no full screen, so a window meant to fill a large screen sets
+none. Elsewhere the platform sizes the window
+([Platform contract](../platform-contract.md)).
 Clearing a constraint or operation preference restores the native value the
 host found when it adopted the window. Full-screen hosts may retain geometry
 requests without presenting movable or resizable window chrome.
@@ -479,7 +481,7 @@ What the page is, the view it shows says by modifier:
 | --- | --- |
 | `.title` | navigation title, and the caption where the page is an item of something else |
 | `.icon` | the page's representative image, commonly a tab icon |
-| `.pageBackground` | flat color behind the whole page, also where the view does not reach |
+| `.pageBackground` | what the whole page is made of behind what it shows - a colour, a gradient, a blur or glass - also where the view does not reach |
 | `.showsNavigationBar` | whether a containing navigation stack shows its bar for this page |
 | `.showsBackButton` | whether that bar offers its native back affordance |
 | `.backButtonTitle` | short title supplied by this page for the page pushed above it |
@@ -601,38 +603,28 @@ line under the title, and its mark; `barBackgroundColor` and
 `barForegroundColor` paint the bar and what stands on it. Each is taken from
 the nearest arrangement on the visible path that declares it, so a stack
 further in paints its own bar or says its own line while it is shown; a
-sidebar and a sheet take nothing from around them. What stands on the bar is
+sidebar takes only what its own split view declares, and a sheet takes nothing
+from around it. What stands on the bar is
 declared the same way: actions with `.toolbar`, `.toolbar(.leading)` at the
 leading edge, and a view in the title's place with `.titleView`
 ([Toolbars](navigation-and-presentation.md#toolbars)).
 
-A desktop host shows the name, the line and the mark where its platform names
-the application - AppKit as text at the trailing edge of the title bar, WinUI
-in its title bar's title, subtitle and icon - while the visible page's title
-still names the window to the system. On a phone and a tablet each bar names
-its page: the line stands under each page's title, and the application's name
-and mark stand nowhere. [BarElement](../controls/tiers/BarElement.md) lists
-each value, and the page of each arrangement wearing it says what each host
-does with it.
+AppKit and WinUI show the name, the line and the mark where their platform
+names the application - AppKit as text at the trailing edge of the title bar,
+WinUI in its title bar's title, subtitle and icon - while the visible page's
+title still names the window to the system. GTK's header bar names its page,
+as each bar on a phone and a tablet does: the line stands under each page's
+title, and the application's name and mark stand nowhere.
+[BarElement](../controls/tiers/BarElement.md) lists each value, and the page
+of each arrangement wearing it says what each host does with it.
 
 ## Reading support status
 
 The types above define StateUI's cross-platform vocabulary. They do not make a
-blanket implementation claim. The platform matrix deliberately verifies these
-groups separately:
-
-- application, scene, window ownership and restoration;
-- window lifecycle handlers;
-- window geometry and native operations;
-- auxiliary-window metadata and policies;
-- core page properties and lifecycle;
-- adaptive page properties and structural slots;
-- the bar an arrangement declares.
-
-A `✅` covers the complete member group in its row. A blank cell means absent,
-partial, or unverified support, even when a related row for the same session is
-checked. This prevents a working lifecycle from being mistaken for working
-geometry, chrome, or presentation policy.
+blanket implementation claim. The platform matrix counts each element's
+members by mark, and the [control dictionary](../controls/README.md) marks
+each member per host; a partial member shows ☑️ or ◐, and an empty cell means
+not realized or not yet run.
 
 Current native evidence for sessions, lifecycle, geometry, and restoration is
 tracked in [Platform contract](../platform-contract.md).

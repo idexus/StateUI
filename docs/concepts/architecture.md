@@ -255,33 +255,43 @@ same; only the animation is shortened or removed.
 ## Custom engines
 
 `Motion.custom` gives the walk to StateUI code. An engine runs inside the host
-display cycle, reads and writes state, and returns `.again` while it needs
-another frame or `.wait` until a followed state is written.
+display cycle and reads and writes state. An engine declared with
+`.engine(tracking:)` answers `.again` while it needs another frame, or `.wait`
+until a tracked state is written; one declared with `.engine(following:)` runs
+once per write.
 
 ```swift
 struct FallingDot: View {
     @State(motion: .custom) private var y = 0.0
 
     var body: some View {
-        ColorBox(.cornflowerBlue)
-            .translationY($y)
-            .engine(tracking: $y) { cycle in
-                let journey = $y.journey
-                let elapsed = cycle.elapsed / 1000
-                journey.velocity += 180 * elapsed
-                journey.value += journey.velocity * elapsed
-                return abs(journey.destination - journey.value) > 0.5
-                    ? .again
-                    : .wait
-            }
+        VStack {
+            ColorBox(.cornflowerBlue)
+                .translationY($y)
+                .engine(tracking: $y) { cycle in
+                    let journey = $y.journey
+                    let elapsed = cycle.elapsed / 1000
+                    let pull = (journey.destination - journey.value) * 180
+                    journey.velocity += (pull - journey.velocity * 24) * elapsed
+                    journey.value += journey.velocity * elapsed
+                    if abs(journey.destination - journey.value) < 0.5,
+                       abs(journey.velocity) < 0.5 {
+                        journey.snap(to: journey.destination)
+                        return .wait
+                    }
+                    return .again
+                }
+
+            Button("Drop").onClicked { y = y == 0 ? 300 : 0 }
+        }
     }
 }
 ```
 
-Only a write to a state named in `following:` or `tracking:` wakes a waiting
-engine. An
-engine's own write does not wake itself; it explicitly returns `.again` when it
-has more work. Engines run by ascending priority and stable registration order.
+A waiting engine wakes when a state named in `following:` or `tracking:` is
+written, and once after a render that describes its view. An engine's own
+write does not wake itself; it explicitly returns `.again` when it has more
+work. Engines run by ascending priority and stable registration order.
 They do not await, call controls, or create another thread-bound UI model.
 
 ## Application sessions

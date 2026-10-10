@@ -132,14 +132,15 @@ StateUI's contract:
 | `device.display` - `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numeric values are `0` and enums `.unknown` until reported |
 | `device.info` - `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` | form factor, open platform name, hardware and system facts; text starts empty and closed values `.unknown` |
 | `locale` - `LocaleInfo` | `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `layoutDirection` | host-normalized language, region, IANA zone, clock and calendar conventions, and the way the language is written; text starts empty, the clock starts 12-hour, the week on Sunday, units metric, and the direction left to right |
-| `application.info` - `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `colorScheme` | manifest identity and live requested appearance; text starts empty and theme `.system` |
+| `application.info` - `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, `accentColor` | manifest identity, live requested appearance and the user's accent; text starts empty, theme `.system` and accent `#0A84FF` until reported |
 | `application.phase` - `ApplicationPhase` | | process-wide visibility state; the host maps lifecycle to `.active`, `.inactive`, or `.background` |
 
 A host may be unable to observe a fact. The documented fallback remains
 visible in that case; an empty string or `.unknown` is data, not a reason to
-guess. A malformed complete update is refused rather than partially
-applied. Closed enum values unknown to the runtime degrade to `.unknown` while
-open vocabulary, such as `device.info.platform`, stays authored text.
+guess. A host reports each fact group as one typed value; a field that does
+not change asks for no render. Closed enum values unknown to the runtime
+degrade to `.unknown` while open vocabulary, such as `device.info.platform`,
+stays authored text.
 
 Each of these is read by its name only: `@Environment var device: Device` stops
 the program as the view is made, naming `@Environment(\.device)`.

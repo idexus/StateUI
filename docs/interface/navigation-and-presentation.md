@@ -112,8 +112,10 @@ by side. On AppKit the sidebar runs the window's full height
 beside the detail, shown and hidden by the system sidebar button in the
 window's toolbar; a window wide enough for both panes opens with the sidebar
 shown, and after that the user and the binding decide. On Windows the
-sidebar opens over the detail from the navigation button beside the back
-button in the title bar, and the same button or a click outside it closes it.
+sidebar stands beside the detail in a wide window, which opens with it shown;
+in a narrow one it opens over the detail from the navigation button beside the
+back button in the title bar, and the same button or a click outside it closes
+it.
 On a phone - iOS and Android alike - the sidebar slides over the detail from
 the leading edge, the detail shaded behind it, and a tap on the shade closes
 it; on an iPad or a wide tablet it stands beside the detail.
@@ -356,7 +358,8 @@ tabs on the top edge of its content.
 Every arrangement accepts a flat `barBackgroundColor` and a `barForegroundColor`
 for its title and native action affordances; a page's bar takes each from the
 nearest arrangement around it that declares one, so a stack further in paints
-its own - a sidebar and a sheet take nothing from around them. The
+its own - a sidebar takes only what its own split view declares, and a sheet
+takes nothing from around it. The
 application's name, the line under the title and its mark are declared the same
 way ([The window's bar](application-and-sessions.md#the-windows-bar)). Native tab
 selectors keep their selected and unselected states, legible over a written
@@ -383,7 +386,7 @@ VStack { … }
                 .isEnabled(hasChanges)
                 .onClicked(.ignoreWhileRunning) { try await save() }
             Menu("Recent") {
-                ForEach(recent) { file in
+                recent.map { file in
                     MenuItem(file.name)
                         .id(file.id)
                         .onClicked { open(file) }

@@ -195,9 +195,8 @@ chosen caption, and a prompt that returns typed text or `nil` on cancellation.
 An accepted empty prompt is `""`, distinct from cancellation.
 
 The host presents a dialog from the page currently visible, including the top
-modal page. `await` determines sequencing: two actions queued together start
-in queue order but may finish independently; awaiting the first before issuing
-the second makes the dependency explicit.
+modal page. Dialogs show one at a time, in the order asked; one asked while
+another is up waits until that one is answered.
 
 ## Files and links
 
@@ -366,14 +365,15 @@ instead. Use an application's events only for provider-owned notifications
 that genuinely have no element identity.
 
 The AppKit host raises such an event in Swift, typed by the same contract the
-subscription is written against, on the main thread - where the platform
-reports it, so a source is wired there:
+subscription is written against, from whatever thread the platform reports
+on; the subscriptions hear it on the UI thread soon after, in the order
+raised:
 
 ```swift quote
 StateUIEvents.raise(NotesContract.importFinished, location)
 ```
 
-A raise nobody hears is an ordinary answer rather than a failure, so a host
+A raise nobody hears is an ordinary one rather than a failure, so a host
 wires its sources unconditionally. The head declares what it raises,
 `StateUIEvents.raises(NotesContract.importFinished)`, and a subscription to an
 event no head declared is said once, as a misspelled name would be.

@@ -13,8 +13,10 @@ here ([Contributing](../../CONTRIBUTING.md)).
 ## A property is one modifier: a value or a state
 
 Every property of a control is one member of its element's contract, set by
-one modifier named for the property. The modifier takes the value itself, or a
-state that carries it:
+one modifier named for the property. A property the host can carry takes the
+value itself, or a state that carries it; one whose value no host carries - a
+font family, an icon - takes its value, which a body that reads a state
+changes:
 
 ```swift
 struct Total: View {
@@ -39,8 +41,8 @@ body is built again, compared, and the host is sent the difference. A state
 handed as `$weight` is carried by the host: a write reaches the native control
 on the host's own cycle and no body is built again; a value that can move
 travels to each new one ([Motion and journeys](motion-and-journeys.md)); and
-what the platform reports lands on the same state. Every property offers both
-paths because every property has the same shape.
+what the platform reports lands on the same state. Every property the host can
+carry offers both paths, because each has the same shape.
 
 **Deliberately rejected:** a modifier without an argument that sets one value
 of a property - `.bold()`, `.italic()`, `.center()`, `.leading()` and their
@@ -205,8 +207,9 @@ on `MainActor`, which every host drains on its own UI thread.
 
 **Deliberately rejected:** Foundation in the library, and its timers, run loops
 and main queue as the library's clock. The library runs on macOS, iOS, Android,
-Windows and Linux, and nothing drains Foundation's timers and run loops on
-Android or Windows ([Foundation boundary](environment.md#foundation-boundary)).
+Windows, Linux and the Web, and nothing drains Foundation's timers and run
+loops on Android or Windows
+([Foundation boundary](environment.md#foundation-boundary)).
 
 ## The same session gives the same patch
 

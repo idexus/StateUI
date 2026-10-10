@@ -35,11 +35,11 @@ vertical values, or four edges. `horizontalAlignment` and `verticalAlignment`
 express start, center, end, or fill behavior in the slot assigned by the
 parent.
 
-An explicit size wins over `.fill`: a view with a `width` keeps that
-width, bounded only by its own minimum and maximum, even in a slot that would
-stretch it. A filling view that stops short of its slot, because of an
-explicit size or a maximum, stands in the middle of the slot. Without either,
-`.fill` takes the whole slot.
+An explicit size wins over `.fill`: a view with a `width` keeps that width,
+held within its own minimum and maximum and the room its slot has, even in a
+slot that would stretch it. A filling view that stops short of its slot,
+because of an explicit size or a maximum, stands in the middle of the slot.
+Without either, `.fill` takes the whole slot.
 
 `layoutDirection` lays a view and everything under it out right to left or
 left to right: a row fills from the right, a view aligned to `.start` stands
@@ -183,12 +183,13 @@ ZStack {
 ```
 
 `.absolute(x, y, width, height)` names an area in device-independent units
-from the stack's top left; `.proportional(x, y, width, height)` names one in
-fractions of its room, so `.proportional(0.5, 0, 0.5, 1)` is its right half
-whatever the stack's size. A child fills its area unless its size or
-alignment says otherwise. A later child is drawn over an earlier one, and
-`zIndex` reorders them without moving anything. The stack needs the room its
-neediest child needs at its natural size.
+from the top left of the room inside the stack's padding;
+`.proportional(x, y, width, height)` names one in fractions of that room, so
+`.proportional(0.5, 0, 0.5, 1)` is its right half whatever the stack's size.
+A child fills its area unless its size or alignment says otherwise. A later
+child is drawn over an earlier one, and `zIndex` reorders them without moving
+anything. The stack needs the room its neediest child needs at its natural
+size.
 
 Layers are for overlays, badges and externally calculated positions. They are
 not a reason to reproduce ordinary stack or grid behavior in application code.
@@ -311,7 +312,8 @@ ForEach(items, id: \.id) { item in
 }
 ```
 
-Use it for finite content in stacks, grids, menus, and drawing structures. A
+Use it for finite content in stacks, grids and other view builders; a menu
+takes an array of items, and a `Canvas` drawing repeats with a plain `for`. A
 plain `for` is intentionally not accepted by `ViewBuilder`, because the
 builder must know stable identity rather than receiving only positions.
 
@@ -503,9 +505,9 @@ or by the item itself where it is `Hashable`. Where a card stands and which
 way it faces is the arrangement's - `.default`, a wheel, `.fan` or `.row` -
 and changing it animates every card to the new shape. `.position($shown)` is
 the card in the middle, counted from 0 and two-way: a swipe writes the card it
-settled on, and a write moves the run. `.onItemTapped` hears a tap with the
-item in the middle, wherever the finger landed, and `.onPositionChanged`
-another card coming to the middle; `.itemSize(width:height:)`,
+settled on, and a write moves the run. `.onItemTapped` hears a tap on the
+card in front, with its item, and `.onPositionChanged` another card coming to
+the middle; `.itemSize(width:height:)`,
 `.isSwipeEnabled`, `.emptyView`, `.shade` and `.fade` say the rest. Give it a
 bounded size, as a scroller needs - a `.height`, or a `.fill` row of a `Grid`.
 No view is built again while the run moves.

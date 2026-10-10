@@ -2,9 +2,10 @@
 
 StateUI handlers may suspend without leaving the platform UI thread. That
 thread is Swift's `MainActor` on every platform: on Apple it is the main queue
-UIKit and AppKit drain, and on Android, Windows, and Linux StateUI makes it a
-queue the host drains on its UI thread. Application code uses ordinary Swift
-concurrency while the host remains the owner of its native event loop.
+UIKit and AppKit drain, and on Android, Windows, Linux and the Web StateUI
+makes it a queue the host drains on its UI thread. Application code uses
+ordinary Swift concurrency while the host remains the owner of its native
+event loop.
 
 ## Handler isolation
 
@@ -139,8 +140,9 @@ targets, and test targets. `@MainActor` names a function whose contract is
 specifically UI-isolated rather than merely caller-inheriting; a package whose
 UI code is already isolated to `@MainActor` runs unchanged.
 
-`DispatchQueue.main` is not the UI thread's queue on Android, Windows, or
-Linux: nothing drains it there. Work for the UI thread goes to `MainActor`.
+`DispatchQueue.main` is not the UI thread's queue on Android, Windows, Linux
+or the Web: nothing drains it there. Work for the UI thread goes to
+`MainActor`.
 
 ## State across tasks
 

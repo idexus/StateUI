@@ -208,9 +208,10 @@ shows verified host support.
 
 `@State(motion: .custom)` fixes who animates the state when it is first
 registered. An engine reads destination, standing value, velocity, and frame
-timing, writes the next standing lanes, and returns `.again` while it needs
-another frame or `.wait` until a followed state changes. An engine's own write
-does not wake it.
+timing, and writes the next standing lanes. One declared with
+`.engine(tracking:)` returns `.again` while it needs another frame or `.wait`
+until a tracked state is written; one declared with `.engine(following:)` runs
+once per write. An engine's own write does not wake it.
 
 See [State and reactivity](state-and-reactivity.md) for conversions, sampling,
 and engine composition, and [Host contract](../internals/host-contract.md) for the native

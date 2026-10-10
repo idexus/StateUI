@@ -307,10 +307,11 @@ Set `STATEUI_INSPECT=1` in the host process to emit the same render record as
 diagnostic text from the first pass. Use this for automated runs or a problem
 that happens before the inspector can be opened. `STATEUI_TALLY=1` writes the
 running totals instead: messages applied, controls made and kept, renders, the
-elements alive and the host's native views alive - the numbers that tell a page
-left in memory from one let go. Both go to the standard error, which an Android
-application sends to logcat; `.scripts/Android/run-app.sh` hands every `STATEUI_` variable of the
-shell that runs it to the application:
+elements alive, the handler runs under way and the host's native views alive -
+the numbers that tell a page left in memory from one let go. Both go to the
+standard error, which an Android application sends to logcat;
+`.scripts/Android/run-app.sh` hands every `STATEUI_` variable of the shell
+that runs it to the application:
 
 ```bash
 STATEUI_TALLY=1 .scripts/Android/run-app.sh apps/Gallery debug emulator-5554
@@ -318,11 +319,12 @@ STATEUI_TALLY=1 .scripts/Android/run-app.sh apps/Gallery debug emulator-5554
 
 ### Complaints
 
-When an application hands the library something it cannot use - an opacity
-of 1.4, a write from a run its element outlived, a kept key the application
-did not list - the library carries on with what it can use and says so once
-per process, on the standard output. An application routes those complaints
-to its own log or crash reporter, each on the thread that complained:
+When an application hands the library something it cannot use - a gallery's
+fade of 1.4, a write from a run that a later event, or its element leaving,
+superseded, a kept key the application did not list - the library carries on
+with what it can use and says so once per process, on the standard output. An
+application routes those complaints to its own log or crash reporter, each on
+the thread that complained:
 
 ```swift
 struct LoggingApp: Application {

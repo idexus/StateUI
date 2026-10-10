@@ -81,9 +81,11 @@ writes update the attached controls through the host-carried path. Read
 `volume` elsewhere only when the tree actually needs its discrete destination.
 
 A binding derived from arbitrary `get` and `set` closures has no StateUI
-storage identity for the host to carry. It still behaves correctly, but it
-takes the described/event path: the getter supplies the property and the
-native report calls the setter.
+storage identity for the host to carry. A switch, check box, radio button,
+picker, date and time pickers, text field, text editor and search field then
+take the described/event path: the getter supplies the property and the
+native report calls the setter. A slider, a stepper and every driven modifier
+refuse it, say so once, and set nothing.
 
 ## Two-way input and event ordering
 
@@ -204,10 +206,11 @@ SearchField($query)
     }
 ```
 
-`cursorPosition` and `selectionLength` describe and report the native caret
-and selection. The host remains responsible for valid positions after native
-text normalization. `maximumLength` limits accepted content; the other choices
-are separate semantic capabilities, each a property of its own:
+`cursorPosition` and `selectionLength` place the native caret and selection;
+the host does not report them back. The host remains responsible for valid
+positions after native text normalization. `maximumLength` limits accepted
+content; the other choices are separate semantic capabilities, each a property
+of its own:
 
 | Modifier | On | Meaning |
 | --- | --- | --- |
@@ -469,7 +472,7 @@ WebView("https://example.com")
 | Android Views | Android's `WebView` |
 | WinUI 3 | WinUI's `WebView2`, over the system's WebView2 runtime - a backend |
 | GTK 4 | WebKitGTK 6.0's `WebKitWebView` - a backend |
-| Web | not yet |
+| Web | the browser's own `<iframe>`, which cannot observe a cross-origin page's navigation or set a user agent |
 
 Where the web engine is a library the platform does not ship with its
 toolkit - WebKitGTK, WebView2's runtime - the web view's realization is a
@@ -599,7 +602,7 @@ one, or a row of a grid that fills.
 groups may hold equal items - and each with a `.header` and a `.footer`;
 `.header` and `.footer` on the list stand before and after everything.
 `.onEndReached(within:)` hears the user come within so many items of the
-end - once, until they scroll away or the list gains items - and
+end - once, until they scroll away or the number of items changes - and
 `.emptyView` stands in the list's place while it has no items.
 
 ## Choosing a control
