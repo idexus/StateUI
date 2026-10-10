@@ -663,7 +663,7 @@ enum SourceTree {
         let lib = repository.appendingPathComponent("lib/StateUI")
         let roots = [
             "StateUI.Host/Sources", "StateUI.AppKit/Sources", "StateUI.UIKit/Sources", "StateUI.Android/Sources",
-            "StateUI.WinUI/Sources", "StateUI.GTK/Sources",
+            "StateUI.WinUI/Sources", "StateUI.GTK/Sources", "StateUI.Web/Sources",
         ]
         var found: [(path: String, text: String)] = []
 
