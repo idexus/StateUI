@@ -190,8 +190,9 @@ in, so an `.engine` under an `if` changes the count, and every engine of that
 element starts over (identity-and-diffing.md).
 
 An engine comes in two forms told apart by their label: `.engine(following:)`,
-which answers nothing and runs once for each write, and `.engine(tracking:)`,
-which answers an `EngineAnswer` and keeps tracking while it says `.again`.
+which answers nothing and runs on the cycle after a followed state is written,
+however many writes came between, and `.engine(tracking:)`, which answers an
+`EngineAnswer` and keeps tracking while it says `.again`.
 Swift cannot rank two parameter-pack overloads against each other for a
 multi-statement closure; two labels leave it nothing to rank, so both take a
 pack. The plain form asks for one state at least - an engine that never

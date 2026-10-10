@@ -116,5 +116,6 @@ from them at the top.
 
 A composed view that holds a class builds its handler closures out of locals -
 the state wrappers, the bindings, the values it needs - rather than capturing
-`self`. A handler closure that captures such a view can leave the main actor,
-where every handler runs.
+`self`, so each closure keeps what it uses and not the whole view with the
+class it holds. A handler is `@MainActor`, as the view is, whichever it
+captures.

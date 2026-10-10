@@ -40,7 +40,7 @@ it says - `stateui-padding-24-8-12-4`, a header bar's colours
 `stateui-bar-b512BD4FF-fFFFFFFFF` - which a widget wears to take it and takes
 off to give it up. The sheet stands above the theme, so its rule wins over
 the theme's own for the same widget. A rule is written the first time its value is
-asked for and stays, the sheet written again in the rules' order; a value
+asked for and stays, the sheet written again sorted by class name; a value
 that moves every frame has its own road, never a rule a frame.
 
 ## The application's pictures

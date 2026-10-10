@@ -13,7 +13,9 @@ measure to the arithmetic's size for the width offered, the placement to the
 arithmetic's rectangles. A child is measured through Android's own
 `measure`, so a text measures its words and a nested layout answers through
 the same arithmetic. Each child is measured again at exactly its rectangle
-before it is placed, as Android expects of every view it lays out.
+before it is placed, as Android expects of every view it lays out; one laid
+out at that size already, with nothing in it asking to be laid out again, is
+only moved there.
 
 ## Points and pixels
 
@@ -34,7 +36,8 @@ that element up to the root and asks Android to lay out again.
 A StateUI layout does not cut its children off at its edges: a child moved,
 turned, or still on its way to a place a patch gave it, is drawn where it
 stands. Android's view groups cut their children off by default, so every
-layout view group is told not to, at its content and at its padding.
+layout view group is told not to, at its content and at its padding - all but
+the scroll view, which cuts what it scrolls off at its edges.
 
 
 ## Scrolling
@@ -61,8 +64,9 @@ rested ([a scroller's movement](../../host/runtime.md#a-scrollers-movement)):
 a finger let go leaves the scroller to throw on, and it rests once it has
 stood still. The tree's offset is written as the program's write, only where
 it differs from where the scroller stands, and waits for the first layout
-when the scroller has none yet; each scroller keeps it within what it can
-reach.
+when the scroller has none yet, by the host layer's rule
+([an offset the tree writes](../../host/layout.md#an-offset-the-tree-writes),
+`WrittenScrollOffset`); each scroller keeps it within what it can reach.
 
 ## Where a view stands
 
@@ -75,6 +79,7 @@ stands on, under the page's stack's bar, or the window content's where no page
 holds it - all in points. The host hears every layout pass and scroll of the window once, and
 asks only the views that are read; a view that did not move says nothing. A
 view reports on a frame rather than inside Android's layout pass, so what a
-handler renders is laid out in a pass of its own. A view no layout has placed
-yet - StateUI's, or Android's giving it a size - says nothing, so its first
-report is where it is laid out.
+handler renders is laid out in a pass of its own. A view not laid out yet, by
+the host layer's rule (`MountedElement.isLaidOut`, [where a view
+stands](../../host/runtime.md#where-a-view-stands)), says nothing, so its
+first report is where it is laid out.

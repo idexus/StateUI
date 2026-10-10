@@ -96,8 +96,9 @@ how far it has come, a pinch's step, the pointer's coming, moving, pressing,
 letting go and leaving - each measured from the view's top left, as every
 host measures it. Which of them an element listens for, how many clicks make
 its tap, the states a drag carries and whether a drag that ended was a swipe
-are the host layer's (`MountedElement.hearing`, `hear`). AppKit drags with one
-pointer: an element asking a pan of more gets no drag recognizer.
+are the host layer's (`MountedElement.hearing`, `hear`), and so is the one
+pointer a drag is heard from: an element asking a pan of more gets no drag
+recognizer.
 
 ## A drag between views
 
@@ -125,7 +126,9 @@ bounds notifications, a scroller's clip among them - and the host layer asks
 each follower on the display's next frame, in the order they were made, as one
 of the user's transactions. The view says its place in its parent, its corner
 in its window and from the window's content, each from the top left. It says
-nothing while it stands in no window or before a layout placed it - StateUI's,
-or AppKit's giving it a size: a view that joins a shown page meets a display
-frame before its layout, and its first report is where it is laid out.
+nothing while it stands in no window or before it is laid out, by the host
+layer's rule (`MountedElement.isLaidOut`, [where a view
+stands](../../host/runtime.md#where-a-view-stands)): a view that joins a shown
+page meets a display frame before its layout, and its first report is where it
+is laid out.
 

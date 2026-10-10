@@ -183,9 +183,9 @@ what is beneath, and the keyboard goes round inside the top card.
 The sheets stand in one layer of the window's root over its rows by their own
 depth (`Canvas.ZIndex` 1, the overlays' 2), never by their place among the
 root's children. The trap: a page stood in a row is put on the end of them,
-so the window arranged anew after a first sheet - a sidebar beside a stack
-once signed in - stood over every sheet presented after it, the veil and
-the card under the page; it showed rarely, only where a sheet had come
+so a window arranged anew after a first sheet - a sidebar beside a stack
+once signed in - would stand over every sheet presented after it, the veil
+and the card under the page; it shows rarely, only where a sheet comes
 before the arrangement.
 
 What the user sees is the top sheet, else the window's arrangement: when that

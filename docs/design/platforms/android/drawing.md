@@ -46,10 +46,11 @@ drawn all the same.
 An engine's placement run stands each child of a ZStack at a
 rectangle of its own and draws it moved, turned, scaled and faded about its
 centre, over whatever the child's own properties say. Android keeps one
-translation, rotation and scale per view, so the host composes the two:
-rotations add, scales multiply, and the view's own translation is turned and
-scaled by the placement's before the placement's is added. That is exact
-while the scales are the same on both axes, which is what a placement draws.
+translation, rotation and scale per view, so the host layer composes the two
+(`HostDrawingTransform.under`): rotations add, scales multiply, and the view's
+own translation is turned and scaled by the placement's before the
+placement's is added. That is exact while the scales are the same on both
+axes, which is what a placement draws.
 The opacities multiply, and the view's own opacity is still what its
 animations start from.
 
@@ -68,8 +69,8 @@ A picture crosses as a file name, and the files are the application's
 `Resources/Images`. Android draws no SVG, so the build draws each SVG three
 times over, in sRGB, as `<name>@3x.png`, and copies every other picture as it
 is, into the APK's `images` assets; only what changed is drawn again. At run
-time a name finds its drawing three times over first, then a file of its
-own name, which is kept at one pixel a point.
+time a name finds a file of its own name first, kept at one pixel a point,
+then its drawing three times over (`PictureArithmetic.drawnFiles`).
 
 An image is measured at its picture's own size in points, read from the
 file's header alone: the size is at the display's density, and Android's own

@@ -11,9 +11,10 @@ is AppKit's: the windows, native window restoration, the page menus in the
 application's menu bar, the pictures, the turn after every pass of the main run loop. It presents what a turn rendered as the runtime's
 `HostPresenter`: the windows kept in step with the tree, a window element
 new to it taking the window the system restored for it where one waits - and
-it performs the acts the application calls. A window's or a scene's phase, and what the user settled
-on a native control after the phases it moved, wait in the pump's queue and
-are rendered in their turn.
+it performs the acts the application calls. A window's or a scene's phase,
+and what the user settled on a native control after the phases it moved, wait
+in the host layer's queue of handlers - a phase through
+`HandlerDispatch.enqueuePhase` - and are rendered in their turn.
 
 ## The window
 

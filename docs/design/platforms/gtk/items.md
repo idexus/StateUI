@@ -70,5 +70,5 @@ GTK brings the item into view, the shortest way; once it is laid out, the
 scrolled window stands where the anchor says, by the host layer's rule
 ([scrolling to an item](../../host/items.md#scrolling-to-an-item)). The item
 is laid out over the next frames, not in the next idle moment - its cell is
-bound before it has a size - so the host looks for it once a frame, for a
-second at most.
+bound before it has a size - so the host looks for it every 16 ms, on a GLib
+timeout, sixty times at most.

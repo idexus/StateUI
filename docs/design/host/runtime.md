@@ -31,7 +31,8 @@ its parts; [the host layer](../../internals/host-layer.md) maps them.
   lib/StateUI/StateUI.UIKit,
   lib/StateUI/StateUI.Android,
   lib/StateUI/StateUI.WinUI,
-  lib/StateUI/StateUI.GTK)
+  lib/StateUI/StateUI.GTK,
+  lib/StateUI/StateUI.Web)
        |
        v
   native views
@@ -101,13 +102,15 @@ back button's words said from a state, which no render follows.
 
 The UI thread takes a turn whenever the core has work: a job on `MainActor`, a
 cycle, a render or an act. On Apple it is taken after each pass of the main run
-loop; elsewhere the doorbell posts it. The turn always runs in the same
-order.
+loop; on the Web as each call from the page ends, and the page is asked to call
+again when work is left (`CoreLink.nextWake`); elsewhere the doorbell posts it.
+The turn always runs in the same order.
 
 ```text
-  Apple: the pass of the main run loop ends     elsewhere: the doorbell
-    |                                             |  posts one turn to the UI thread
-    v                                             v
+  Apple: the main run     the Web: a call      elsewhere: the doorbell posts
+  loop's pass ends        from the page ends   one turn to the UI thread
+    |                       |                    |
+    v                       v                    v
   pump:  run the jobs  ->  a pending cycle  ->  render  ->  acts
                                                   |
                                                   v
@@ -130,13 +133,14 @@ before what comes after it, and the turn goes round again; only then the acts.
 
 ## The doorbell
 
-Where the platform's loop is not Apple's, a host says at its start how a turn is
-posted onto its UI thread from any thread (`CoreLink.postTurns`): WinUI through
-its relay, GTK through GLib, Android onto its looper. The core posts one through
-it whenever work comes - a state written or an act sent on the UI thread, a job
-queued from any thread, a handler's resume or a post - on the thread the work
-came from; no thread of the host's waits. One turn is posted until its drain
-begins. The turn itself is the `Pump`'s.
+Where the platform's loop is neither Apple's nor the browser's, a host says at
+its start how a turn is posted onto its UI thread from any thread
+(`CoreLink.postTurns`): WinUI through its relay, GTK through GLib, Android onto
+its looper. The core posts one through it whenever work comes - a state written
+or an act sent on the UI thread, a job queued from any thread, a handler's
+resume or a post - on the thread the work came from; no thread of the host's
+waits. One turn is posted until its drain begins. The turn itself is the
+`Pump`'s.
 
 ## The turn on Apple
 
@@ -232,14 +236,15 @@ motion; [patches](patches.md) those of the patch intake and the program write;
 
 What a host must do once the layout pass under way is over - a field's caret
 the toolkit's focus undid, a list's changes held while its rows bind, a split
-view's first room - waits in one queue (`HostRuntime.afterLayout`): it runs
-once the pass is over, in the order it came, and work that comes while it runs
-waits for the next. The host asks once to be told a pass is over and then
-takes a turn: GTK at the idle after its layout and paint, WinUI in the next
-turn it posts, as WinUI lays out before its queue's next message. A scroller's
-offset written before its first layout is not this queue's: it waits in the
-scroller (`WrittenScrollOffset`), which applies it in its own arrange, before
-it draws and only once it has a size.
+view's first room - waits, on GTK and WinUI, in one queue
+(`HostRuntime.afterLayout`): it runs once the pass is over, in the order it
+came, and work that comes while it runs waits for the next. The host asks once
+to be told a pass is over and then takes a turn: GTK at the idle after its
+layout and paint, WinUI in the next turn it posts, as WinUI lays out before its
+queue's next message. Android's list holds its changes in its relay until the
+recycler stops laying out. A scroller's offset written before its first layout
+is not this queue's: it waits in the scroller (`WrittenScrollOffset`), which
+applies it in its own arrange, before it draws and only once it has a size.
 
 ## Where a view stands
 
@@ -501,6 +506,10 @@ the turns - a doorbell, the run loop's, the page's entries. A host gives each
 step in its toolkit's terms, and a later start in the same process - Android's
 next activity, WinUI's next launch - reads no kept values again.
 
+Before that order, a host whose UI thread is not Apple's main thread - on
+Android, GTK, WinUI and the Web - claims the thread it starts on as the UI
+thread (`CoreLink.claimUIThread`).
+
 ## Kept values
 
 Every host keeps a value as its words, by one rule (`KeptWord`): a value is
@@ -516,7 +525,8 @@ file of its own, and one codec says what the file holds (`KeptValuesText`): a
 line a key, its name and its words apart by a tab - a tab, a line's end and a
 backslash in either escaped - the keys in order, so the same values write the
 same file. Where the file stands and how it is read and written is the
-host's.
+host's. The Web keeps the codec's text whole, under one key, in the browser's
+storage for its site.
 
 ## The platform's first window
 

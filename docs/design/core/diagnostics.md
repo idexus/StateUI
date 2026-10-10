@@ -2,8 +2,9 @@
 
 Three instruments tell what the core is doing without changing it: the tally
 of renders and live elements, the inspector's record of each render, and the
-complaints a value the library cannot use leaves behind. `debugInfo()`, which
-explains a single build in the author's names, is in invalidation.md.
+complaints the library says where it could not do what it was asked as
+written. `debugInfo()`, which explains a single build in the author's names,
+is in invalidation.md.
 
 ## The tally
 
@@ -61,24 +62,26 @@ passes; the host's report is matched to its pass by generation.
 
 ## Complaints
 
-`complain` says, once, that a value an application handed the library was not
-one it could use, and leaves whatever was used instead to the caller. A
-complaint is never a refusal: every one is written beside a value that carries
-on working, and nothing depends on one being read. It exists because the
-alternative is silence - a value quietly held to what it can be, and an author
-left wondering why the constant they wrote does nothing.
+`complain` says, once, what the library could not do as written - a value held
+to what it can be, a write it refused or dropped, a mistake it can only see
+the sign of (a repeated identity, a write built on a value gone, a kept key no
+list names) - and the caller carries on with what it did instead. The
+complaint itself refuses nothing, and nothing depends on one being read. It
+exists because the alternative is silence - a value quietly held to what it
+can be, and an author left wondering why the constant they wrote does nothing.
 
-Each message is said once per process, because the places that complain are
-modifiers, and a modifier runs on every render: an author who wrote 1.4 where a
-fraction belongs would otherwise be told so as fast as the interface is
+Each message is said once per process, because a place that complains is often
+a modifier, and a modifier runs on every render: an author who wrote 1.4 where
+a fraction belongs would otherwise be told so as fast as the interface is
 described. It goes to standard output, outside the lock: a terminal on macOS,
-the console on iOS, a shell on Windows and Linux, logcat on Android, whose host
-routes the process's output there. An application that wants them elsewhere -
-its own log, a crash reporter - routes them (`Complaints.route`), and each
-comes to it on the thread that complained, outside every handler's run: a
-route posting what it heard to a state is not refused with a run that a
-refusal complained of. What was said is held to a
-thousand different things, so complaints naming ever new values cannot grow
-without end: past it, that is said once, and nothing after it. So a complaint
-is a development aid and may never be the only thing between an application
-and working.
+the console on iOS, a shell on Windows and Linux, logcat on Android, whose
+host routes the process's output there. An application that wants them
+elsewhere - its own log, a crash reporter - routes them (`Complaints.route`),
+and each comes to it on the thread that complained, outside every handler's
+run: a route posting what it heard to a state is not refused with a run that a
+refusal complained of. Every one said is kept in order (`Said`), and an open
+inspector is told of each and lists them. What was said is held to a thousand
+different things, so complaints naming ever new values cannot grow without
+end: past it, that is said once, and nothing after it. So a complaint is a
+development aid and may never be the only thing between an application and
+working.

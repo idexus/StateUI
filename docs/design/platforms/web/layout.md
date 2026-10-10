@@ -73,8 +73,8 @@ resized - sets out from where it no longer is.
 A ZStack whose children a placing run stands - an engine's - stands each
 where the run says: absolutely, in its rectangle, unbounded by its slot - a
 room lower than a card makes the run scale the card, and a slot's
-`max-height` would squash it instead - drawn with the run's
-transform under the child's own (`HostDrawingTransform.under`) and the run's
+`max-height` would squash it instead - drawn with the child's own
+transform under the run's (`HostDrawingTransform.under`) and the run's
 opacity. The matrix turns and scales the child about the middle of the place
 the run gives it, so it is written again whenever that place's size changes,
 not only its turn: a run worked out before its room was measured - a card half
@@ -143,5 +143,6 @@ counts as laid out.
 Lengths are pixels, which CSS measures in the logical units StateUI's points
 are. An inset's sides are CSS's logical sides: its leading side is the inline
 start, so an element laid out right to left - `dir="rtl"` - turns its margin
-and padding by itself. A colour is `rgb()` in sRGB with its alpha; a brush's
-gradient is its first colour until gradients are drawn.
+and padding by itself. A colour is `rgb()` in sRGB with its alpha. A box and a
+shape draw a brush's gradient; a view's plain background, a run's and a bar's
+take its first colour.

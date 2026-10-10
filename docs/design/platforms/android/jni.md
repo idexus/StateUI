@@ -29,11 +29,13 @@ freed right after it, so a render that writes many never fills a frame.
 ## Finding a class
 
 `FindClass` looks in the class loader of the Java method below it on the
-stack. Called from a turn the looper runs, or from a frame's callback, there
-is none of the application's, and it looks in the system's, which knows no
-class of the host's or the application's. The host keeps the application's
-class loader as it starts, and a class `FindClass` cannot find is asked of
-it; so a class looked up for the first time late, from any turn, is found.
+stack. A frame arrives through a native method of the host's Java class
+(`StateUIHost.frame`), so its loader is the application's; a turn the
+doorbell's looper callback runs has no Java method below it, and there
+`FindClass` looks in the system's loader, which knows no class of the host's
+or the application's. The host keeps the application's class loader as it
+starts, and a class `FindClass` cannot find is asked of it; so a class looked
+up for the first time late, from any turn, is found.
 
 ## Global references
 
@@ -78,10 +80,11 @@ to a control - a click, a turn, a slider's move and drag, words typed, a
 Return, a menu asked for and its item chosen, a drag between views - a
 question's answer, a document picker's, a document read and a launch taken, a layout's measure and
 arrangement, and what an ItemsView's recycler does with its cells
-([items](items.md)). The head's `JNI_OnLoad` registers them by name, so the
-host's library exports no other symbol, and a native Java declares that
-Swift does not register fails at load rather than at the first call.
-`NativeProjectTests` holds the two lists equal.
+([items](items.md)). The host registers them by name in
+`StateUIAndroid.load(_:)`, which the head's `JNI_OnLoad` calls, so the host's
+library exports no other symbol. A name Swift registers that Java does not
+declare fails at load; a native Java declares that Swift leaves out fails only
+at its first call. `NativeProjectTests` holds the two lists equal.
 
 The Java layer exists where Android wants a subclass or an interface - the
 activity, the layout `ViewGroup`, the views and the drawable the host makes
@@ -102,8 +105,8 @@ What Android asks for in several calls is one: a placement measures the view
 exactly and lays it out, the whole transform with its pivot is set at once,
 and a measurement answers both sizes. A view that only moves keeps its
 drawing, and a layout moved without a change of size, with nothing in it
-asking to be measured again, leaves its children where they stand. A ring
-of 24 cards an engine places every frame went from 687 crossings to 59.
+asking to be measured again, leaves its children where they stand. A write
+that changes nothing crosses nothing (`AndroidCrossingTests`).
 
 The writes are not gathered into one buffer for the whole frame: Android's
 layout pass reads what the host wrote in the same frame, and a buffer that

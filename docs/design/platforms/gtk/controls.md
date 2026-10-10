@@ -127,10 +127,10 @@ leaves the user's words and caret alone. Words the program writes put the
 caret after them.
 
 `maximumLength` and `textCase` are kept as words go in: GTK holds no case and
-bounds code points, so the entry's `insert-text` takes what goes in in the
-field's case and its first characters that fit, as the contract counts them
-([typed words](../../host/runtime.md#typed-words)) - from a key, a paste and
-a program's write alike. An editor's buffer does the same.
+bounds code points, so the `insert-text` of the entry's own `GtkText` takes
+what goes in in the field's case and its first characters that fit, as the
+contract counts them ([typed words](../../host/runtime.md#typed-words)) - from
+a key, a paste and a program's write alike. An editor's buffer does the same.
 
 A field submits when Enter is pressed in it, through the entry's `activate`.
 A test types by writing the entry's words outside a program's write, which
@@ -205,8 +205,8 @@ chosen one shown on its button. The chosen one is written only where the tree
 changed it or the choices changed, so the user's choice is never argued with,
 and the user's choice is reported onto the state it is carried in. GTK gives a
 drop-down no placeholder and tells no one its list opened or closed, so the
-title and the list's opening and closing are not planned. The words of the
-chosen one - on the drop-down's `button` node - take the tree's font and
+placeholder and the list's opening and closing are not planned. The words of
+the chosen one - on the drop-down's `button` node - take the tree's font and
 colour; the list keeps the theme's. A GNOME drop-down wears no accent: a
 check in its words' colour marks the choice, so a picker takes no tint.
 
@@ -267,7 +267,8 @@ GTK 4.14 gives assistive technology no identifier for a widget: its
 `AccessibleId` is empty for every one, a builder's id and a widget's name
 alike. A hidden state leaves out the element itself and passes its children
 up to its parent, which is what a hidden element asks; an element left out
-with its children needs every widget under it hidden too.
+with its children takes the same state on its own widget alone, and the
+widgets under it keep theirs.
 
 A word said to a screen reader goes through the window's accessible, and only
 where its context is GTK's AT-SPI one: without the accessibility bus GTK

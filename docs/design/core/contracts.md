@@ -131,10 +131,12 @@ host takes the same machinery.
   ElementValues   what a registration reads: each member typed, whether it
                   is carried in (the host's to write - the control is the
                   source), and whether the patch changed it
-  Registration    property(...), applies([...]), raises(...)
+  Registration    property(...), applies([...]), raises(...),
+                  children(Contract, members:) - children the view draws
+                  itself, a map's markers, handed over whole as ChildElements
   Registry        add, add(madeByHost:), everyElementRealizes/Raises,
                   raises (the application's events), makeView, apply,
-                  realization
+                  childTypes, applyChildren, realization
 ```
 
 A member of a contract the element does not wear is refused and said once, at

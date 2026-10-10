@@ -131,7 +131,7 @@ composed view's placeholder included, which is where a key has to sit for the
 differ to see it; a `ForEach` writes its item's identity as the node's `id`. A
 Text, a composed view and a hand-written `Node` in `ModifiedContent(node:)`
 take a segment the same way. A container asks for the nodes in its producer,
-so its views are built no earlier than before.
+so its views are built only when the differ reaches the container.
 
 ## Menus collect without keys
 
@@ -153,8 +153,8 @@ unavailable overload with a message of its own refuses a view written where a
 window belongs and a scene inside a scene. What a window shows is chosen
 inside its view, where an `if` changes what the one window shows while the
 platform's window stays where it is. `ApplicationBuilder` collects the
-application's scenes the same way, a window written there being a scene of its
-own, and refuses a view.
+application's scenes in any number and order, a window written there being a
+scene of its own; it takes no `if`, and refuses a view.
 
 `StyleBuilder` keeps `buildArray`: a style is filed by its target type or its
 key, so there is no identity to lose in a loop, and a sheet may use `for` and

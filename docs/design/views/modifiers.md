@@ -37,9 +37,10 @@ modifiers would return `Modified.Modified`, which nothing can promise is
 place. What a described two-way binding leaves behind is itself a handler - it
 writes the new text back on every edit - and an `.onTextChanged` written after
 it has to run beside it, or the binding would go quietly dead. Every typed
-event modifier comes through here with its member's token. It lives on
-`ModifiableElement`, so nothing reachable from a `Style` can put a handler
-into a bag of values. Each handler keeps runs of its own and its own word on a
+event modifier comes through here with its member's token. The typed event
+modifiers live on `ModifiableElement`, so a style is offered none after the
+dot, and a style keeps only its values and states (`AnyStyle`), so nothing
+else written into its node reaches a control (tiers.md). Each handler keeps runs of its own and its own word on a
 repeat, so the second never waits for the first (core/runs.md).
 
 ## An event payload that does not read
@@ -54,9 +55,10 @@ test of the direction could tell from a real one.
 
 Some modifiers write a child rather than a property: `.contextMenu` appends a
 context menu, `.toolbar` a group of actions, `.titleView` the view in a page's
-title place, `.overlays` the views laid over the window, and `Map.markers`
-writes markers. On an arrangement the child follows its pages, and the host
-keeps it apart from them.
+title place, `.overlays` the views laid over the window, `.menuBar` the
+window's menus while the page shows, and `Map.markers` writes markers. On an
+arrangement the child follows its pages, and the host keeps it apart from
+them.
 They sit after whatever the view lays out, so the view's own children keep the
 positions the differ gave them, and the host finds each by type and leaves it
 out of the arrangement. The slot a `.contextMenu` appended stays last: a
@@ -128,8 +130,11 @@ draws a turn about the vertical axis that way.
 
 ## Accessibility and automation
 
-Four modifiers say what a view is to somebody not looking at it, and they are
-two jobs that do not stand in for one another.
+Six modifiers say what a view is to somebody not looking at it, and they are
+two jobs that do not stand in for one another: an identifier for automation;
+and a label, a hint, a heading level, and whether a screen reader skips the
+view (`isAccessibilityHidden`) or the view and everything in it
+(`automationExcludedWithChildren`).
 
 `accessibilityIdentifier` is a handle nothing reads out: a UI test, a script or
 an agent driving the application asks the platform's automation for it, where

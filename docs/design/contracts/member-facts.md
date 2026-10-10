@@ -23,7 +23,8 @@ StateUI knows are meaningless out of the patch.
 ```text
   a place or a count       gridRow, gridColumn and their spans, tapCount, panTouchCount,
                            selectedIndex, selectedTab, cursorPosition, selectionLength,
-                           maximumLength, maximumLines, zIndex
+                           maximumLength, maximumLines, zIndex; an items view's items,
+                           layout, selection mode, selected items and end distance
   a range or a region      a slider's and a stepper's minimum and maximum, a stepper's step,
                            a map's region, a pin's location
   a placement              area: the layout's own
@@ -31,7 +32,8 @@ StateUI knows are meaningless out of the patch.
   a state's number         panXChannel, panYChannel, scrollOffset
   a list drawn whole       a polygon's or a polyline's points, a stroke's dash pattern
   a gesture's threshold    swipeThreshold
-  where the host puts it   a toolbar item's placement, a toolbar group's side and order
+  where the host puts it   a toolbar item's placement, a toolbar group's side and order,
+                           whether a toolbar item shows its text, a menu bar's order
 ```
 
 `testAPlaceOrACountNeverTravels` holds that the differ honours every member
@@ -47,10 +49,12 @@ its member says `cleared: false`, and losing it builds the whole element
 again instead:
 
 ```text
-  a gesture's settings           allowsDrop, canDrag, dragText, tapCount, panTouchCount,
-                                 swipeDirection, swipeThreshold: they belong to the recognizer
+  a gesture's settings           allowsDrop, canDrag, dragText, droppedFileTypes, tapCount,
+                                 panTouchCount, swipeDirection, swipeThreshold: they belong to
+                                 the recognizer
   a list's items                 a picker's options, which are data
-  where the host puts an item    a toolbar item's placement, a toolbar group's side and order
+  where the host puts an item    a toolbar item's placement, a toolbar group's side and order,
+                                 whether a toolbar item shows its text, a menu bar's order
   a choice                       selectedIndex, selectedTab: clearing would move it
   what keeps a platform window   windowType, windowValue, floatsOnTop, hidesWhenInactive
   where a map opens              region
@@ -62,8 +66,8 @@ only on a screen.
 ## Moves
 
 `moves` names the group of values a property is in, for `.motion(_:_:)`,
-where its value alone cannot say: a size, a place, a transform, spacing or
-text. A colour says its own group through its value, so no colour member
+where its value alone cannot say: opacity, a size, a place, a transform,
+spacing or text. A colour says its own group through its value, so no colour member
 names one. A width or a height that a measured layout works out arrives at
 once rather than animating: carried through a motion, it would lay the page
 out at sizes nobody chose.

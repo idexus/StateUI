@@ -78,7 +78,8 @@ a host is held to.
       |
       +--> the guards      every node built through its contract, every member on its
                            list and a token the library declares, one name one set of
-                           facts, every removed spelling refused at compile time
+                           facts, every road the API closes refused at compile time
+                           beside the one it offers (ContractRoadsTests)
 ```
 
 A tier mirrors a Swift protocol of the same name in `Views`: an element's

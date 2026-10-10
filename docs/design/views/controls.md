@@ -7,7 +7,7 @@ and acts it declares, and the binding twins of its values.
 ## A control is a node and its modifiers
 
 ```text
-  public struct Slider: View, TintElement, SliderProperties {
+  public struct Slider: ElementView, TintElement, SliderProperties {
       public var node: Node                      Node(contract: SliderContract.self)
       init()                                     nothing set: what a Style<Slider> uses
       init(_ value: Double)                      the purpose value, one-way
@@ -15,7 +15,7 @@ and acts it declares, and the binding twins of its values.
       func value(_:) / minimum(_:) / …           properties, from SliderProperties
       func onValueChanged(_:)                    events, through onEvent(member)
   }
-  extension Aim where Target == ItemsView { … } a control's acts, through call(member)
+  extension Aim where Target == Map { … }       a control's acts, through call(member)
 ```
 
 What gives a control its purpose - a label's text, a picker's options, a

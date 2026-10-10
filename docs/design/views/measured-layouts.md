@@ -8,7 +8,8 @@ on the host's frames, so a run of views can follow a finger with no view built.
 ```text
   GalleryView
    ├── ScrollReader: an empty ScrollView over the cards ──────▶ offset state ($scrolled)
-   │     └── PlacedLayout (the cards) ◀── placements state ◀── engine(following: $scrolled, $room)
+   │     │                       .laidOut($length): the run the scroller laid out
+   │     └── PlacedLayout (the cards) ◀── placements state ◀── engine(following: $scrolled, $room, $length)
    │           └── .frame($room) ── the room, fed by the host ──┘   reads $scrolled.journey.value
    └── Turning: an empty view watching the asked position and shape
 ```
@@ -57,9 +58,9 @@ and reports its own frame, so the closure runs again whenever the frame
 settles somewhere new; the measurement arrives through the same channel as
 every other report, and nothing about it exists in the host. Before the first
 report the closure does not run and the reader holds nothing: content built
-for a zero rectangle stood at no size and grew when the frame came - every
-page sized by its reader grew from nothing, and WebKit kept the height of a
-caption it had measured at no width, a list standing short under it.
+for a zero rectangle would stand at no size and grow when the frame came, and
+a web engine keeps the height of a caption it measured at no width, a list
+standing short under it.
 
 ## A frame feed
 

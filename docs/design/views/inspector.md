@@ -22,7 +22,7 @@ first: a complaint comes on any thread, and tells the inspectors on theirs,
 as a landed render does.
 
 ```text
-  InspectorModel (one, shared)       places, folded, paused, revision, selected, complaints shown
+  InspectorModel (one, shared)       places, collapsed, paused, revision, selected, showingComplaints
         │ revision moves at most once per pace
         ▼
   Node.overlay(inspector:of:) ──▶ InspectorPanel   docked in the window whose ⓘ was pressed

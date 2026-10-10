@@ -163,7 +163,8 @@ one way it can be:
 
 ```text
   value       by ==, opened on the first value's type
-  borrowed    a @Binding by the storage it lends, never by the value in it
+  borrowed    a @Binding by the storage it lends and the part of it
+              (StatePart), never by the value in it
   box         a @State or declared @Aim by the storage/box held after adoption
   aim handed  by the box it aims through, never adopted
   slot        an @Environment by the object it resolved to
@@ -178,10 +179,10 @@ It errs toward building: what it cannot see through it does not assume.
 
 `sameWriting` compares the placeholder as the parent wrote it: properties, the
 motion plan, driven ties, the objects `.environment()` provided on it, the
-watched values, and the names of the handlers. What runs as the view comes and
-goes is compared by count, the closures being taken fresh by the carry. A slot
-child, an engine or a reading written on the view makes it build as it always
-did.
+watched values, what the view says of its page, and the names of the handlers.
+What runs as the view comes and goes is compared by count, the closures being
+taken fresh by the carry. A slot child, an engine, a reading or a driven tie
+through a conversion written on the view makes it build as it always did.
 
 A carried view takes the handlers the parent wrote on it afresh, under the ids
 it keeps: the parent's closure ran again, so what those handlers captured is

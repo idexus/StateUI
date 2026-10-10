@@ -56,10 +56,11 @@ header bar, all in logical pixels. The host hears every StateUI panel GTK
 allocates and every scroller's movement, and asks only the views that are
 read, in the order they were made; a view that did not move says nothing. It
 speaks on a frame rather than inside GTK's allocation, so what a handler
-renders is laid out in a pass of its own. A view in no window, or one no
-layout has placed yet - neither StateUI's nor GTK's allocation - stands
-nowhere and says nothing: a frame's tick comes before its layout, so a view
-made just before it would otherwise say it stands at zero.
+renders is laid out in a pass of its own. A view in no window, or one not laid
+out yet by the host layer's rule (`MountedElement.isLaidOut`, [where a view
+stands](../../host/runtime.md#where-a-view-stands)), stands nowhere and says
+nothing: a frame's tick comes before its layout, so a view made just before it
+would otherwise say it stands at zero.
 
 A scroll moves where a view stands in its window with no layout of its own:
 the adjustment changes first, and the viewport moves the document in the

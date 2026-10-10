@@ -30,8 +30,8 @@ for the element. Its events go to the core as every host raises them. What
 only the page's JavaScript reaches, the application's scripts reach: the
 page sets up one object for them, `StateUI`, before any of them runs - its
 `acts`, each answering by a promise, and `tell`, which the module hears as
-soon as it stands to. An act's promise settles a call Swift awaits; what a
-script told before anyone heard is handed to the first hearer, so a script
-need not know when the module started. Only words cross, so an application
-says in them what it hands over and reads back.
+soon as it stands to. An act's promise settles a call Swift awaits; the last
+words a script told under a name are handed to every hearer of it as the
+hearer starts, so a script need not know when the module started. Only words
+cross, so an application says in them what it hands over and reads back.
 

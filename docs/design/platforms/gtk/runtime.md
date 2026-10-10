@@ -10,11 +10,12 @@ API is C, and Swift calls it as it stands ([the C API](c-api.md)).
 
 ## The GTK runtime
 
-`GTKRenderer` owns the runtime's elements, as every runtime does: the core
-link, the intake, the mounted tree whose native halves are `GTKElement`s, the
-pump, the animator and what follows it, the display cycle, and the frame
-clock. It is the runtime's `HostPresenter` - after a render, and a frame that
-moved the chrome, it shows the window.
+`GTKRenderer` holds the host layer's runtime (`HostRuntime`), which holds the
+elements every runtime holds alike: the core link, the intake, the mounted
+tree whose native halves are `GTKElement`s, the pump, the animator and what
+follows it, and the display cycle on GTK's frame clock. It is the runtime's
+`HostPresenter` - after a render, and a frame that moved the chrome, it shows
+the window.
 
 A view is let go of in the turn after its element left: its `deinit` is
 `MainActor`'s, and a release outside a task's context puts it in the UI

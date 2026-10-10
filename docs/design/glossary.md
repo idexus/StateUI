@@ -48,7 +48,7 @@ and this table maps the two.
 | kept value (`persistentKey:`) | persisted state | a state saved in a store and read back at launch |
 | standard environment, provider | environment object | the typed values an application and its host provide down the tree |
 | themed pair, the half in force | light and dark variant, the active variant | a value with one side for each theme, and the side the theme picks |
-| engine | frame callback | application code that runs once per display frame while it follows states |
+| engine | frame callback | application code the display cycle runs on the frame after a state it follows is written or a render describes it, and on every frame while it answers `.again` |
 
 ## Identity and diffing
 

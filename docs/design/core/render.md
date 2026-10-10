@@ -107,19 +107,23 @@ Every handler runs on `MainActor`, inside a task, which gives it somewhere to
 suspend. There are three ways in, one path each:
 
 ```text
-  start(handler)   an event the host dispatched: the payload is read NOW,
-                   then begin(...)
-  run(handler)     a handler a render's walk found, run in a settle pass
-  queue(handler)   a handler found with no settle pass left: Task on MainActor,
-                   a later turn of the UI thread
+  start(registration)  an event the host dispatched: the payload is read NOW,
+                       each of the event's handlers handed to its RunSlot,
+                       which starts a run as its RepeatedEvent says (runs.md)
+  run(fired)           a handler a render's walk found, run in a settle pass
+                       in its element's RunSlot; a farewell (.onDestroying)
+                       through begin, a plain Task.immediate with no run
+  queue(fired)         a handler found with no settle pass left: libraryTask,
+                       a later turn of the UI thread
 ```
 
-`begin` uses `Task.immediate`, which starts the task on the calling thread -
-the host's UI thread, which is `MainActor`'s - so a handler with no `await`
-finishes before the dispatch returns and the host renders what it wrote in
-the same turn. A dispatch runs that handler and nothing else: a job already
-waiting on the UI thread's queue runs when the host drains it, at its turn -
-the same point on every platform, whichever executor `MainActor` is.
+A run starts with `Task.immediate`, which starts the task on the calling
+thread - the host's UI thread, which is `MainActor`'s - so a handler with no
+`await` finishes before the dispatch returns and the host renders what it
+wrote in the same turn. A dispatch runs that event's handlers and nothing
+else: a job already waiting on the UI thread's queue runs when the host drains
+it, at its turn - the same point on every platform, whichever executor
+`MainActor` is.
 
 `dispatch` answers whether a handler was found, not whether it finished. An
 unknown id is an event for an element that has already left the tree, or an

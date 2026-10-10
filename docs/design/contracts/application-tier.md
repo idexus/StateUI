@@ -29,6 +29,7 @@ declares them.
   utcOffset              TimeZoneInfo.utcOffset     minutes, for a zone and a day
   persistValue           a kept state's write       a key's new value, to its store
   persistSceneValue      a scene state's write      a scene key's new value, to the platform's scene record
+  useColorScheme         application.colorScheme    the theme the application shows in
   handlerFailed          the runtime                a handler's escaped error, told to the host
 ```
 

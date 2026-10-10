@@ -41,7 +41,8 @@ of its own look (`MountedElement.textRuns`). A run says only what it says
 itself - its font, its colour, the space between its letters, its lines'
 height, its decorations, what stands behind it - and takes the rest from the
 text around it, as the page's styles inherit. A span is kept for each run by
-its place, so the runs that change are the only ones written.
+its place: every span's words are written again as the runs change, and of its
+look only what changed.
 
 A text's lines break as its line break says: at words or anywhere onto more
 lines, or on one line, cut short where they do not fit; the page cuts words
@@ -143,7 +144,7 @@ through years far before the range, and each would otherwise be taken from
 under the user's keys. A day typed past the range is told at its end, and the
 field shows that end once left; a field left empty shows the day held. The
 calendar opening and closing reach no event of the page's, so `isOpen`,
-`opened` and `closed` stay unrealized.
+`opened` and `closed` are not planned.
 
 ## Indicators
 
@@ -162,10 +163,10 @@ A WebView is the browser's own `<iframe>` over a box with no size of its
 own, as every host's web view: an address it loads, a document
 written in place shown at a `blob:` address of the page's own made for it -
 of the page's own site, a `<base>` before it where the document says where
-its links resolve - told by the same `data:` address every host tells such a
-document by (`WebDocument`). The trap: the browser takes a `srcdoc` written
-again in place of the one before, so a frame of documents written in place
-had no way back; a frame's own navigation is a step in its history. The page hears
+its links resolve - and reported by the `data:` address that holds it
+(`WebDocument`). The trap: the browser takes a `srcdoc` written again in place
+of the one before, so a frame of documents written in place would have no way
+back; a frame's own navigation is a step in its history. The page hears
 the frame's document load, and tells it navigated, for the reason the
 program asked where it asked one (`WebNavigationCause`); a step the frame
 takes - back, forward, the page again - tells its navigation began as it is

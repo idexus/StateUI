@@ -53,7 +53,8 @@ kind is made of.
 ```
 
 Each type numbers its kinds in an internal `Kind` enum, written out by the
-rule above. `Brush.Kind` numbers from 1 rather than 0: the contract asks
+rule above - except `Material`, whose blur and glass continue the brush's
+numbers as 4 and 5. `Brush.Kind` numbers from 1 rather than 0: the contract asks
 only that both sides say the same number. A grid length's `.auto` carries a
 1, so every length is the same two parts and a host reads each one the same
 way.

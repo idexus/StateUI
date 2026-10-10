@@ -10,10 +10,11 @@ frames, the DOM elements, the browser's layout, and the window.
 
 ## The Web runtime
 
-`WebRenderer` owns the runtime's elements, as every runtime does: the core
-link, the intake, the mounted tree whose native halves are `WebElement`s, the
-pump, the animator and what follows it, the display cycle, and the frame
-clock. It is the runtime's `HostPresenter` - after a render it shows the window,
+`WebRenderer` holds the host layer's runtime (`HostRuntime`), which holds the
+elements every runtime holds alike: the core link, the intake, the mounted
+tree whose native halves are `WebElement`s, the pump, the animator and what
+follows it, and the display cycle on the page's frame clock. It is the
+runtime's `HostPresenter` - after a render it shows the window,
 and after a frame's walk it says the page may have moved. An act the host does not perform yet
 fails at once, so a handler awaiting it goes on.
 
@@ -21,10 +22,14 @@ fails at once, so a handler awaiting it goes on.
 
 The page loads the module and calls its `_start`, which runs the head's
 `main`: it names the application and calls `StateUIWeb.run(name:)`. The host
-claims the page's one thread as the UI thread, hands the relay the two functions the page calls it through, tells the core
-what it realizes and what the page stands on, connects the one window and runs
-the first turn - and `main` returns. The module lives on with the page; from
-then on the browser calls it, as the user acts and as the display draws.
+claims the page's one thread as the UI thread, hands the relay the two
+functions the page calls it through, and starts in the order every host keeps
+([starting](../../host/runtime.md#starting)): it tells the core what it
+realizes and what the page stands on, hands it the values kept in the
+browser's storage, brings back the scenes kept when the page was left
+(`SceneKeeper`) - else connects the window launch opens - and runs the first
+turn; then `main` returns. The module lives on with the page; from then on
+the browser calls it, as the user acts and as the display draws.
 
 While the module loads, the page shows the application's name in its
 middle, a ring turning and a bar of how much of the module has come, read

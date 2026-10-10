@@ -16,7 +16,7 @@ timing laws and their groups; `Gestures` what a gesture reports;
 `Environment` the standard providers and their vocabularies; `Sessions` the
 application, scene and window sessions; `Controls` the vocabularies one
 control takes; `Collections` an items view's entries, layout, selection and
-scroll anchor.
+scroll anchor; `Files` a chosen file and the kinds of file a dialog shows.
 
 ## The notes
 
@@ -59,8 +59,9 @@ the member its contract declares, and the differ carries it to the host.
        v
   Node.props   [Prop: PropValue]      what the element says this render
        |
-       |  the differ: styles applied, each .themed value resolved to the
-       |  half in force, the result compared with the last render
+       |  the differ: styles applied, each .themed value and the accent
+       |  resolved to what is in force, the result compared with the last
+       |  render
        v
   HostPatch   (HostValue = PropValue)
        |
@@ -104,6 +105,8 @@ back as the types `ApplicationContract.currentTime` declares.
 | `.values` | parts of different kinds | `Brush`, `GridLength`, `ContainerShape`, `SafeAreaEdges`, `ViewTransform`, a drawing |
 | `.nothing` | a position with no value | an optional argument or payload position |
 | `.themed` | a half for each theme | `Color(light:dark:)`, `ImageSource(light:dark:)`; resolved by the differ, never handed to a host |
+| `.systemColor` | the accent in force and its alpha | `Color.accent`; resolved by the differ, never handed to a host |
+| `.bytes` | bytes as they stand | a file's contents (`[UInt8]`) |
 
 ## A state the host carries
 

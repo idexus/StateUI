@@ -11,10 +11,11 @@ shown.
 ## The parts
 
 The page's colours, its radius and its bar's height are CSS variables on the
-root, given once for the light appearance and again for the dark. The font is
-the system's own. The bar stands over the room, translucent and blurred over
-what scrolls beneath where the application paints it nothing; its buttons are
-round and glassy - a veil of the bar's own foreground colour - and the
+root, each colour one `light-dark()` pair of the light appearance's and the
+dark's. The font is the system's own. The bar stands in the row above the
+room, so nothing scrolls beneath it, translucent and blurred where the
+application paints it nothing; its buttons are round and glassy - a veil of
+the bar's own foreground colour - and the
 buttons of one group of actions share one capsule. The sidebar is a surface of
 its own beside the page, a drawer over it where the page is narrow. Buttons
 and fields take a border, rounded corners and a ring in the accent colour

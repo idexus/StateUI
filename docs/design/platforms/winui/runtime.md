@@ -18,8 +18,9 @@ WinUI's frame clock, and the pump. Its turn is the one every runtime keeps
 when the core needs one, the handlers the render created, and then the acts -
 on the interface their handler has just changed. A turn asked for inside a
 turn runs when it ends, and an event raised while a patch applies waits for
-the patch. What the renderer adds is WinUI's: the window, its sheets and its
-chrome shown after each render, and the acts performed.
+the patch. What the renderer adds is WinUI's, as the runtime's
+`HostPresenter`: the window, its sheets and its chrome shown after each render
+and after a frame that moved the chrome, and the acts performed.
 
 A view is let go of in the turn after its element left: its `deinit` is
 `MainActor`'s, and a release outside a task's context puts it in the UI
@@ -70,8 +71,9 @@ post at its start (`CoreLink.postTurns`), and the core makes it from any
 thread: on the UI thread for work it made - a state written, an act sent - and
 on the thread that queued a job, a handler's resume or a post among them. No
 thread of the host's waits. What a layout pass decides - a split view's first
-room - waits in the doorbell until the pass is over, and runs as the next turn
-posted begins.
+room - waits in the host layer's queue (`HostRuntime.afterLayout`), which asks
+the relay to post a turn; the queue runs as that turn begins, once the pass is
+over ([after a layout pass](../../host/runtime.md#after-a-layout-pass)).
 
 ## One frame
 

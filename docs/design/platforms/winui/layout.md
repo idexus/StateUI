@@ -27,9 +27,9 @@ measures its own children at the widths its arrangement then gives them - a
 control arranged at a width other than the one it was last measured at would
 mark its layout again. Its size at any other width is the arithmetic's, kept
 per width until WinUI measures it again or a change forgets it on the way up.
-Measured at every width asked of it, a layout forgot its sizes each time and
-measured its whole subtree again: some seven hundred sizings for one word six
-grids deep, and 2910 measures - 150 ms of a debug build's frame - for one
+Measured at every width asked of it, a layout would forget its sizes each time
+and measure its whole subtree again: some seven hundred sizings for one word
+six grids deep, and 2910 measures - 150 ms of a debug build's frame - for one
 card of the home page's run turned.
 
 ## A place between passes
@@ -95,11 +95,12 @@ every StateUI layout WinUI arranges and every scroller's movement, and tells
 the host layer every change of an ItemsView's view, which says it - WinUI's
 compositor moves a list's rows and lays nothing out (host/items.md, `The
 view moving`); it asks only the views that are read, in the order they were
-made; a view that did not move says nothing, and one no layout placed yet -
-StateUI's, or WinUI's giving it a size - says nothing either, as a display
-frame can come between its joining and the pass that places it. It speaks on
-a frame rather than inside WinUI's pass, so what a handler renders is laid
-out in a pass of its own.
+made; a view that did not move says nothing, and one not laid out yet, by the
+host layer's rule (`MountedElement.isLaidOut`, [where a view
+stands](../../host/runtime.md#where-a-view-stands)), says nothing either, as a
+display frame can come between its joining and the pass that places it. It
+speaks on a frame rather than inside WinUI's pass, so what a handler renders
+is laid out in a pass of its own.
 
 ## Right to left
 

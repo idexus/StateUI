@@ -40,7 +40,7 @@ The core's sources stand in one folder per topic, one element to a file, and
   |                          | write: Renderer.stateChanged          |     |
   |                          v                                       |     |
   |   Renderer --- render(baseline) ---> Differ                      |     |
-  |     changed, readers,     walk / build / complete                |     |
+  |     written, readers,     walk / build / complete                |     |
   |     generation            keys, adoption, carry, handlers        |     |
   |                           |                                      |     |
   |                           v                                      |     |
@@ -63,15 +63,16 @@ rewrite; it moves on the display cycle with no rebuild at all (reactive path 2).
 
 ## The typed boundary
 
-Every host is Swift in the application's process. It links the core's dynamic
-library and calls `HostBoundary`, behind `@_spi(Host)`: `render(baseline:)`
-answers a typed `HostRender` holding the sparse `HostPatch`, `cycle` a
-`HostCycle`, `takeActCalls` typed `HostActCall`s, and the reports come back
-the same way - `dispatch`, `report`, `reply`, `raise`, one setter per standard
-provider. One process holds one copy of StateUI's types, and nothing
+Every host is Swift in the application's process. On a native platform it
+links the core's dynamic library; a Web build is one WebAssembly module holding
+the application, the core and its host. It calls `HostBoundary`, behind
+`@_spi(Host)`: `render(baseline:)` answers a typed `HostRender` holding the
+sparse `HostPatch`, `cycle` a `HostCycle`, `takeActCalls` typed
+`HostActCall`s, and the reports come back the same way - `dispatch`, `report`,
+`reply`, `raise`, one setter per standard provider. One process holds one copy of StateUI's types, and nothing
 serializes the patch between the core and a host. Code in a platform's own
-language - Java through JNI, C++ behind a C ABI - is a relay beneath the Swift
-host and never calls the core.
+language - Java through JNI, C++ behind a C ABI, JavaScript in the page - is a
+relay beneath the Swift host and never calls the core.
 
 ## A state write from start to finish
 
@@ -86,9 +87,11 @@ host and never calls the core.
      v  Renderer.stateChanged(storage)
   no live reader and no render running? --> refused, counted in the tally
      |
-     |  dirty = true; changed += storage; its name kept for debugInfo()
+     |  dirty = true; the state kept until the render takes it - named
+     |  only when debugInfo() or an inspector asks
      v  UIThreadExecutor.askForTurn()
-  the host turns: as the pass of Apple's run loop ends, at the turn posted elsewhere
+  the host turns: as the pass of Apple's run loop ends, as a call from the page
+  ends on the Web, at the turn posted elsewhere
      |
      v  host turn:  run jobs -> a pending cycle -> RENDER -> take acts
   Renderer.render(baseline: the generation the host holds)

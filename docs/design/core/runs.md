@@ -73,11 +73,12 @@ Work that outlives its element).
 ## The library's own tasks
 
 A task the library starts for itself - a ticker's loop, a sampling's late
-reading, a post's job, a handler a render queued, the inspector's pace - starts
-with no run around it (`libraryTask` clears `HandlerRun.current`), so it belongs
-to no run. Started inside a handler, it would inherit
-that run and be refused once the run is superseded: a ticker started by a run a
-second press cancelled would tick and change nothing.
+reading, a post's job, the delivery of raised events, a handler a render
+queued, the inspector's pace and its notice of a complaint - starts with no run
+around it (`libraryTask` clears `HandlerRun.current`), so it belongs to no run.
+Started inside a handler, it would inherit that run and be refused once the
+run is superseded: a ticker started by a run a second press cancelled would
+tick and change nothing.
 
 ## A write built on a value gone
 

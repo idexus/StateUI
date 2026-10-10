@@ -29,16 +29,16 @@ tier where a list of names would pass quietly.
 A view's background is its layer's colour, a rectangle under its whole frame,
 unless its registration takes the background itself
 (`drawOwnBackground`): a text field fills its own field, a button its own
-face, a colour box its own box. A text field given a colour stands on a line
-(`isBordered`) rather than AppKit's bezel, which on macOS 26 draws its own
-ground over any colour; one given none keeps the rounded bezel, with its
-own ground and its words set in from the edge. A border and a bezel exclude
-each other: `isBordered = false` said after `isBezeled = true` takes the
-bezel away, leaving bare words on whatever lies behind, so the border is
-said first. A search field given a colour stands in its bezel's capsule,
-filled with it: AppKit's bezel ignores `backgroundColor`, so the field
-drops the bezel and its cell sets the magnifier, the words and the cancel
-button in as the bezel does, across the middle of its height - and hands
+face, a colour box its own box. A text field given a colour drops AppKit's
+bezel, which on macOS 26 draws its own ground over any colour, and stands in
+the bezel's rounded shape, filled with it; one given none keeps the rounded
+bezel, with its own ground and its words set in from the edge. A border and a
+bezel exclude each other: `isBordered = false` said after `isBezeled = true`
+takes the bezel away, leaving bare words on whatever lies behind, so the
+border is said first. A search field given a colour stands in its bezel's
+capsule, filled with it: AppKit's bezel ignores `backgroundColor`, so the
+field drops the bezel and its cell sets the magnifier, the words and the
+cancel button in as the bezel does, across the middle of its height - and hands
 the editor that room, which AppKit lays over a bezel-less field's whole
 frame. Each field's
 ring, while it holds the keyboard, goes round the shape it stands in
@@ -51,12 +51,10 @@ A declaration says what the host does, not what a tier offers:
 
 - `panTouchCount` is recorded partial: the host layer hears a one-finger pan
   only, which only a record with its note can say.
-- `allowsDrop`, `canDrag` and `dragText` are absent: AppKit realizes no
-  dragging.
 - `avoidsSafeArea` is absent: this host does not read it.
-- `background` and `isEnabled` are taken by the registrations of the controls
-  that have them. A background is a partial realization on this host, which
-  only a record with its note can say.
+- `background` is taken by the registrations of the controls that have it. A
+  background is a partial realization on this host, which only a record with
+  its note can say.
 
 ## The scroll view
 

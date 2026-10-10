@@ -23,23 +23,24 @@ allowed can be written" a compiler rule rather than a convention.
   ├── VisualElementProperties              └── ModifiableElement      events, lifetime
   │   └── ViewProperties                       └── VisualElement      key, aim, samples,
   │       ├── LayoutProperties                     │                  environment, style
-  │       │   └── StackProperties              └── View           gestures, pan, frame,
+  │       │   └── StackProperties                  └── View           gestures, pan, frame,
   │       ├── ShapeProperties                          │              context menu
-  │       └── TextInputProperties                      ├── Layout
-  └── the mixins, one file each:                       │   └── Stack
-      TextStyleElement  TextualElement  FontElement       ├── Shape
-      TextAlignmentElement  PaddingElement             └── TextInput
-      LineHeightElement  DecorableTextElement
+  │       └── TextInputProperties                      └── ElementView
+  └── the mixins, one file each:                           ├── Layout
+      TextStyleElement  TextualElement  FontElement        │   └── Stack
+      TextAlignmentElement  PaddingElement                 ├── Shape
+      LineHeightElement  DecorableTextElement              └── TextInput
       BorderElement  ImageElement  TintElement
       BarElement  MenuItemElement
 ```
 
-A control conforms on the element side - `View`, `Layout`, `Shape`,
-`TextInput` - which brings the matching property side with it, plus the mixins
-it carries and its own `…Properties` protocol. A `Style<Target>` conforms to
-the property side alone, one conditional conformance per tier its target wears,
-so a style offers exactly the setters its target can carry, and an event, a
-gesture or an `.id()` written on a style does not compile.
+A control conforms on the element side - `ElementView` (a view that is its own
+node), or `Layout`, `Shape`, `TextInput`, which refine it - which brings the
+matching property side with it, plus the mixins it carries and its own
+`…Properties` protocol. A `Style<Target>` conforms to the property side alone,
+one conditional conformance per tier its target wears, so a style offers
+exactly the setters its target can carry, and an event, a gesture or an
+`.id()` written on a style does not compile.
 
 Every modifier returns a modified copy. Nothing mutates in place, so a view is
 a value all the way down and a chain reads in one direction:
@@ -49,22 +50,23 @@ a value all the way down and a chain reads in one direction:
 
 Events are declared on `ModifiableElement`, a `PropertyContainer` that is also
 an `Element`: what can hold a handler is something that exists on screen,
-never a bag of values. `addHandler` lives on this tier and not on
-`PropertyContainer`, so nothing reachable from a `Style` - the library's own
-code included - can put a handler into a bag that cannot carry one. The key,
-the aim and the read-only bindings live on `VisualElement`, and lifetime on
-`ModifiableElement`, where only a control can reach them.
+never a bag of values. The typed event modifiers live on this tier, so a style
+is offered none after the dot; a style keeps only its values and states
+(`AnyStyle`), so nothing else written into its node reaches a control. Menu
+items, which are not views, take `onClicked` through `MenuItemElement`. The
+key, the aim and the read-only bindings live on `VisualElement`, and lifetime
+on `ModifiableElement`, where only a control can reach them.
 
 ## The shared view tier
 
 The shared tier, in `Tiers`, is the hierarchy every view wears - property
-container, modifiable element, visual element, view, layout, stack, shape and
-input view - a file for each, and one more for a larger group of a tier's
-modifiers: a view's gestures, where it sits, what it says about itself.
-`testTheSharedTierIsCoveredOnce` checks the properties declared in those files
-against one case, built from a stack holding a shape, a label and a text
-field, so those properties are covered once rather than in every control's
-case.
+container, modifiable element, visual element, view, element view, layout,
+stack, shape and input view - a file for each, and one more for a larger group
+of a tier's modifiers: a view's gestures, where it sits, what it says about
+itself. `testTheSharedTierIsCoveredOnce` checks the properties declared in
+those files against one case, built from a stack holding a shape, a label and
+a text field, so those properties are covered once rather than in every
+control's case.
 
 ## One file per mixin tier
 

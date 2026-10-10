@@ -184,9 +184,10 @@ was: the box is given it back, and nobody hears it as the user's.
 
 What an element says for assistive technology - its identifier, its label,
 its hint and its heading level - is WinUI's `AutomationProperties`:
-`AutomationId`, `Name`, `HelpText` and `AccessibilityHeadingLevel`, level for level. A word
-the element does not say is cleared, not written empty, so a control's own
-name - a button's caption - stands where no label replaces it.
+`AutomationId`, `Name`, `HelpText` and `HeadingLevel`, level for level up to
+the ninth, which stands for any deeper. A word the element does not say is
+cleared, not written empty, so a control's own name - a button's caption -
+stands where no label replaces it.
 
 Whether it is met at all is its accessibility view: an element hidden is
 `Raw`, which assistive technology skips while it still meets what stands in
@@ -349,8 +350,8 @@ let go (`preserveAspectRatio="none"`).
 
 Every other SVG is handed to WinUI by its file's address. An SVG read from
 memory costs WinUI far more once another window shows it: the Gallery's
-pictures, read so in a second gallery window, held some five gigabytes of
-surfaces shared between the windows, where read from their files they add
+pictures, read so in a second gallery window, would hold some five gigabytes
+of surfaces shared between the windows, where read from their files they add
 megabytes.
 
 ## A web view

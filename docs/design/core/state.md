@@ -254,6 +254,11 @@ reads a store key by key, each with its kind, so the application lists its keys:
 A key the store has nothing under is absent, and the state keeps the value
 written beside its declaration - which is where the default can be seen.
 
+A key a state keeps that the application's `persistentKeys` leaves out is said
+once, when the host reads the list or when a state claims the key after it:
+the host never reads that key at launch, so its value would come back one
+launch late.
+
 A write lands in memory at once and marks the key, whoever makes it: the
 program, a control through the state's binding, or the host reporting what the
 user typed or moved into the control carrying the state - the key is marked by
@@ -268,8 +273,8 @@ render and its save must not wait for the next event.
 One key is one piece of state: two views declaring a key share its storage, so
 a write in one rebuilds the readers in the other. The first state to claim a key
 decides the storage. A storage claimed before the host's read arrives - an
-application's own keyed state is built as the app registers - takes the
-stored value when `hydrate` runs, still ahead of the first view.
+application's own keyed state, made when the host reads `persistentKeys` -
+takes the stored value when `hydrate` runs, still ahead of the first view.
 
 The key's kind must match the value's type, checked when the state is made. The
 label `persistentKey:` is the argument's own type, lowercased, as `motion:` and
@@ -338,5 +343,7 @@ every change.
 `State`, `Binding` and `Journey` are `MainActor`'s, which makes each
 `Sendable` by its type: a binding handed to a task can be posted to, and
 nothing else. Nothing promises more than the compiler checks: what other
-threads share - a mailroom's waiting entries, the executor's queue - stands inside a
-`Mutex`.
+threads share - a mailroom's waiting entries, the executor's queue, the
+application's events raised and waiting, the complaints said - stands inside a
+`Mutex`, and a run's superseded flag is an atomic
+(concurrency.md#what-stands-behind-a-lock).

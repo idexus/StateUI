@@ -58,9 +58,9 @@ wide, which is the same picture on every platform. A three-dimensional turn,
 `rotationX` or `rotationY`, is projected through a camera each platform
 chooses for itself, so a run of cards turned the same way does not look the
 same everywhere. Past a right angle a view would show its back, which a flat
-drawing cannot make, so the turn stops there. The sign of the angle is kept,
-though both sides look the same drawn flat, so arithmetic either side of a
-middle can be written as one line.
+drawing cannot make, so the turn stops there. Either sign is accepted and
+draws the same, so arithmetic either side of a middle can be written as one
+line.
 
 ## Reading the five properties back
 

@@ -135,9 +135,10 @@ two elements.
 The view stays the element it is, one level down, with its state, its inputs
 and whatever was written on it.
 
-The content comes first among the page's children, so a page that gains a
-title view does not look to the differ as though its content moved. The view
-is held as a node - interface, not an input anything compares - so the page is
+The view is the page's one child. What it declares for the page's chrome - a
+title view, a toolbar, menus, overlays - are slot children after the view's
+own (modifiers.md, slot children), so gaining one moves nothing. The view is
+held as a node - interface, not an input anything compares - so the page is
 built with its parent and the view is compared on its own.
 
 ## What a view says of its page
@@ -332,10 +333,10 @@ sheet has gone is the stack's own (`popped`), with how many remain.
 ## The application is named once
 
 `stateUIUseApp` is the one line an application writes outside its interface,
-in a `@_cdecl("stateui_app_register")` function the host calls by name at
-startup. That function lives in the application's own module and cannot move
-into the library: on Android and Windows the application is a separate native
-library, and nothing in it runs until something calls into it by name.
+in `stateui_app_register()`, a `@_cdecl` function in the application's own
+module. Each platform's head calls it at startup: its `main.swift`, or on
+Android `JNI_OnLoad`, which Android calls by name as it loads the
+application's library.
 
 The application is made at its first need - the first render, or the host
 reading the keys it keeps - after anything an earlier one wrote into the

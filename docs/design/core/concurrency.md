@@ -165,9 +165,12 @@ the first job.
 A state is the UI thread's, and so is everything the renderer, a board, the
 stores and a storage keep: none of it stands behind a lock. What another
 thread does touch stands inside a `Mutex` of its own, as the value it holds:
-the executor's queue, its turn flag and the host's way to post a turn, a
-state's posts waiting in its mailroom for the UI thread (state.md#posting) and
-the complaints already said.
+the executor's queue, its turn flag and the host's way to post a turn; a
+state's posts waiting in its mailroom for the UI thread (state.md#posting); the
+application's events raised and waiting (`RaisedEvents`); and the complaints
+said (`Said`). A run's superseded flag and the count of superseded runs are
+atomics, which a write reads from any task under the run; in a debug build
+the stamps of what a run read stand in a `Mutex` beside them.
 
 A `Mutex` is not reentrant: a body that asks for the same lock again
 deadlocks. So what a body takes out - a job to run, a write to book - runs
@@ -181,6 +184,7 @@ The core makes no promise the compiler cannot check: it has no `@unchecked
 Sendable`, no `nonisolated(unsafe)` and no `assumeIsolated`, which
 `UIThreadTests` holds. The renderer, a `State`, a `Binding`, a board and the
 stores are `@MainActor`; what crosses threads is `Sendable` by what it holds -
-the executor and a mailroom, each over a `Mutex`. Where a platform
-calls in on its UI thread, a fact the compiler cannot see, the host says it
-once as the call enters, with `MainActor.assumeIsolated`.
+the executor, a mailroom, the raised events and the complaints said over a
+`Mutex`, a handler's run over atomics. Where a platform calls in on its UI
+thread, a fact the compiler cannot see, the host says it once as the call
+enters, with `MainActor.assumeIsolated`.

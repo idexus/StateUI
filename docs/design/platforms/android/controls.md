@@ -217,7 +217,7 @@ program close the list: `isOpen` set to false leaves it to the user.
 
 A date picker and a time picker are one field of the host's, showing the day
 or the time in the user's locale - "D" and "d" the long and short day, "T" and
-"t" the long and short time, which follows the user's choice of a 24-hour
+"t" the long and short time, "t" following the user's choice of a 24-hour
 clock, any other text a pattern - and opening the platform's own calendar or
 clock, within the bounds the tree gave. A day and a time stand by the host
 layer's rule (`CalendarArithmetic`): a day not in the calendar keeps the day

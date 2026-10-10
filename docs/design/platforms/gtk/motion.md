@@ -11,9 +11,12 @@ A host moves only a value it draws: the GTK host moves what the host layer's
 surface names ([what travels](../../host/motion.md#what-travels)), less what
 GTK paints only at rest (`GTKTransitionSurface.atRest`) - what a class of the
 host's style sheet paints, a class a value, which a value on its way would add
-every frame: a label's padding and background, a button's box, a field's
-font and colours, a slider's tint, the bars' colours; and a window's place and
-size, which the desktop keeps. Those arrive at once.
+every frame: a label's padding and background, a button's box, a radio
+button's padding, a field's font and colours, a slider's tint, the bars'
+colours; and a window's place and size, which the desktop keeps. Those arrive
+at once. Other values a class of the style sheet paints - another view's
+background, a check box's tint, a picker's font and colour - stand outside
+that list and move frame by frame.
 
 A property's animation begins where the element stands: the opacity the host
 last wrote, the value a slider's thumb shows. GTK keeps a widget's opacity in

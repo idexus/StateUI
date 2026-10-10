@@ -52,8 +52,9 @@ under a finger costs the arithmetic and nothing else.
 
 A part of a state (`$room.width`) has no image of its own for the host to write
 into, and a binding made from closures has none either. A driven property
-refuses both with a complaint naming the property; a two-way control falls
-back to its described form instead.
+refuses both with a complaint naming the property, and so do a slider and a
+stepper; every other two-way control falls back to its described form
+instead.
 
 ## Element side only
 
@@ -106,8 +107,8 @@ control, so the driven text is written per control.
 ## Two way controls
 
 A control the user changes - a switch, a check box, a radio button, a picker,
-the date and time pickers, a slider, a stepper, the text fields - takes its
-binding in one of two ways, decided by the binding:
+the date and time pickers, the text fields - takes its binding in one of two
+ways, decided by the binding:
 
 ```text
   $x of a @State or @Binding      handed over: the host sets the control from the state on
@@ -120,6 +121,10 @@ binding in one of two ways, decided by the binding:
                                   binding. The closure that wrote the control is a reader
                                   and renders on every report.
 ```
+
+A slider and a stepper carry their value as a journey and take only a whole
+state. A part of a state or a binding made from closures they refuse: the
+control says so once and sets nothing.
 
 The date and time pickers carry their value as three lanes: year, month and
 day, or hour, minute and second. A value the platform cannot show - a day

@@ -49,11 +49,12 @@ toolbar, menus, title view and overlays. See pages.md.
 
 ## What a view is
 
-Everything a builder collects is an `Element`: something that answers `node`, a
-`Node` read afresh on every render.
+Everything a view builder collects is `Views`: something that answers
+`nodes`, read afresh on every render. A view is one, answering with its one
+`node`.
 
 ```text
-  a control              struct Text: View { var node: Node }
+  a control              struct Text: ElementView { var node: Node }
     Text("Total")         body is its node: Node(Text, props: [text: "Total"])
 
   a container            VStack { … }
@@ -86,8 +87,8 @@ differ turns what they describe into a patch.
   a state is written
      │  its readers: a body, or a container's content closure
      ▼
-  body / content ──▶ ViewBuilder ──▶ [Element], each keyed by its path ("0", "1.some.0")
-     │                                ForEach views keyed by their items
+  body / content ──▶ ViewBuilder ──▶ Views ──nodes──▶ [Node], each keyed by its path
+     │                                ("0", "1.some.0"); ForEach views keyed by their items
      ▼
   a tree of nodes with placeholders and deferred content
      │

@@ -13,9 +13,10 @@ every view the way an object an ancestor provides is, and read by its name.
                      display       width, height, density, orientation, rotation, refreshRate
                      battery       chargeLevel, state, powerSource, energySaverStatus
                      connectivity  networkAccess, connectionProfiles
-  \.locale        LocaleInfo      language, region, name, timeZone, uses24HourClock, firstDayOfWeek, isMetric
+  \.locale        LocaleInfo      language, region, name, timeZone, uses24HourClock, firstDayOfWeek, isMetric,
+                                  layoutDirection
   \.application   ApplicationSession
-                     info          name, packageName, versionString, buildString, colorScheme
+                     info          name, packageName, versionString, buildString, colorScheme, accentColor
                      phase, and what the application writes: styles, motion, kept keys
   \.scene, \.window   the sessions a view stands in
 ```
@@ -42,7 +43,7 @@ The host seeds every provider before the first render, so the first tree
 already knows its form factor and its locale, and writes again whenever the
 platform reports a change. A host writes through `HostBoundary`, one setter
 per provider - `setBatteryInfo`, `setConnectivityInfo`, `setDisplayInfo`,
-`setLocaleInfo`, `setDeviceInfo`, `setApplicationInfo` with `setColorScheme`, and
+`setLocaleInfo`, `setDeviceInfo`, `setApplicationInfo` with `setColorScheme` and `setAccentColor`, and
 `setApplicationPhase` - each with the whole report, typed.
 
 ## Exactly the readers rebuild

@@ -60,19 +60,21 @@ again and a click reaches the one drawn in front. A placed grid's second child
 is its shade, drawn as opaque as the run says.
 
 A test reads what is drawn: the relay renders the element through
-`RenderTargetBitmap` and samples it at the root's rasterization scale. The
-bitmap holds only what is drawn, from the first thing drawn, so a panel with
-no background is painted clear while it is rendered, and the bitmap then
-begins at its corner.
+`RenderTargetBitmap` and samples it at the bitmap's own scale - its pixels
+over the element's size - as a large element's bitmap is rendered smaller
+than the screen shows it. The bitmap holds only what is drawn, from the first
+thing drawn, so a panel with no background is painted clear while it is
+rendered, and the bitmap then begins at its corner.
 
 ## A tipped view
 
 A view is moved, turned and scaled flat by its render transform, about its
-pivot. A tip - `rotationX`, `rotationY`, seen from the host layer's
-perspective distance - is a `Matrix3DProjection` laid over that: the host
-layer's `HostDrawingTransform.tip`, about the pivot the translation moved, so
-the flat drawing, then the projection, is the host layer's whole matrix, as
-every host draws it. A view that tips nothing has no projection.
+pivot. A tip - `rotationX`, `rotationY`, seen from the core's perspective
+distance (`HostDrawingTransform.perspectiveDistance`) - is a
+`Matrix3DProjection` laid over that: the core's `HostDrawingTransform.tip`,
+about the pivot the translation moved, so the flat drawing, then the
+projection, is the transform's whole matrix, as every host draws it. A view
+that tips nothing has no projection.
 
 ## The shapes
 
