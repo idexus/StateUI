@@ -26,9 +26,10 @@ extension MapProperties {
     }
 
     /// Whether the user's own position is drawn on it. That needs the
-    /// platform's location permission: on iOS an app without
-    /// `NSLocationWhenInUseUsageDescription` in its Info.plist is killed the
-    /// moment this turns on, and Android needs the permission granted.
+    /// platform's location permission: without
+    /// `NSLocationWhenInUseUsageDescription` in its Info.plist on iOS, or
+    /// `NSLocationUsageDescription` on macOS, the platform refuses the asking
+    /// and the position is never drawn; Android needs the permission granted.
     public func showsUserLocation(_ value: Bool) -> Modified {
         setValue(MapContract.showsUserLocation, value)
     }
