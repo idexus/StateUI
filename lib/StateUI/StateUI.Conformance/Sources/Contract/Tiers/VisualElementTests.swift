@@ -38,7 +38,7 @@
                 Aspects.holds(VisualElementContract.translationY, on: element, 0, then: -10),
             ]
                 + (answeringByGestures.contains(element) ? [answering(element)] : [])
-                + (layouts.contains(element) ? [disablingItsBranch(element)] : [])
+                + (layouts.contains(element) ? [disablingItsBranch(element), directingItsChild(element)] : [])
                 + (boxes.contains(element) ? [blurredOrGlass(element)] : [])
                 + (element == "VStack" ? [followsAMaterial] : [])
         }
@@ -249,6 +249,36 @@
             try s.perform(.activate, on: s.element("change"))
             try s.settle { try s.held(VisualElementContract.isEnabled, on: inside) == true }
             s.expect(try s.held(VisualElementContract.isEnabled, on: inside), true, "enabled with it")
+        }
+    }
+
+    /// A layout lays its child out in its direction, and again as the direction turns: a child at its start stands
+    /// at its left, then at its right.
+    @MainActor
+    static func directingItsChild(_ layout: String) -> ConformanceCase {
+        ConformanceCase("\(layout).placesItsChildInItsDirection", proves: [
+            Covered(VisualElementContract.layoutDirection, on: layout),
+        ], needs: [Covered(ButtonContract.clicked), Covered(VisualElementContract.frame, on: "ColorBox")]) { s in
+            let room = State(wrappedValue: Rect(x: -1, y: 0, width: 0, height: 0))
+            let direction = State(wrappedValue: LayoutDirection.leftToRight)
+            s.start {
+                VStack {
+                    Specimens.holding(layout, ColorBox(.red).width(60).height(30).horizontalAlignment(.start)
+                        .verticalAlignment(.start).frame(room.projectedValue), [
+                            Write(VisualElementContract.layoutDirection, direction.wrappedValue),
+                            Write(VisualElementContract.width, 200), Write(VisualElementContract.height, 100),
+                        ])
+                    Button("Turn").onClicked { direction.wrappedValue = .rightToLeft }.id("change")
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+
+            s.settle { room.wrappedValue.x == 0 }
+            s.expect(room.wrappedValue, Rect(x: 0, y: 0, width: 60, height: 30), "left to right, at its left")
+            try s.perform(.activate, on: s.element("change"))
+            s.settle { room.wrappedValue.x == 140 }
+            s.expect(room.wrappedValue, Rect(x: 140, y: 0, width: 60, height: 30), "right to left, at its right")
         }
     }
 

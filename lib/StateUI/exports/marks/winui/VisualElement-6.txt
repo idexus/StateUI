@@ -1,4 +1,4 @@
-# revision 7.1
+# revision 8.1
 ActivityIndicator.ignoresInput: not realized
 ActivityIndicator.scale: ✅
 Button.accessibilityHint: ✅
@@ -18,55 +18,50 @@ Grid.maximumWidth: ✅
 Grid.minimumHeight: ✅
 Grid.minimumWidth: ✅
 Grid.rotationY: ✓ read rotationY of Grid: the host's own tip, checked against the projection it laid on the element
-HStack.translationY: ✅
-HStack.zIndex: ✅
-Image.isAccessibilityHidden: ✅
-ItemsView.frameChanged: ✅
-ItemsView.height: ✅
-ItemsView.rotationX: ✓ read rotationX of ItemsView: the host's own tip, checked against the projection it laid on the element
-ItemsView.width: ✅
-Line.isVisible: ✅
-Line.pivotX: ✅
-Map.focus: 🧩
-Map.isFocusedChanged: 🧩
-Map.scaleY: 🧩
-Map.unfocus: 🧩
-Path.automationExcludedWithChildren: ✅
-Picker.frameChanged: ✅
-Picker.maximumHeight: ✅
-Picker.maximumWidth: ✅
-Picker.minimumHeight: ✅
-Picker.minimumWidth: ✅
-Picker.rotationY: ✓ read rotationY of Picker: the host's own tip, checked against the projection it laid on the element
-Polygon.accessibilityHint: ✅
-Polyline.opacity: ✅
-Polyline.pivotY: ✅
-ProgressBar.style: ✅
-ProgressBar.translationX: ✅
-RadioButton.automationExcludedWithChildren: ✅
-Rectangle.ignoresInput: ✅
-Rectangle.scale: ✅
-ScrollView.accessibilityHint: ✅
-SearchField.opacity: ✅
-SearchField.pivotY: ✅
-Slider.translationY: ✅
-Slider.zIndex: ✅
-Stepper.layoutDirection: ✅
-Switch.focus: ✅
-Switch.isFocusedChanged: ✅
-Switch.scaleY: ✅
-Switch.unfocus: ✅
-Text.accessibilityLabel: ✅
-TextEditor.automationExcludedWithChildren: ✅
-TextField.ignoresInput: ✅
-TextField.scale: ✅
+HStack.style: ✅
+HStack.translationX: ✅
+Image.accessibilityHint: ✅
+ItemsView.opacity: ✅
+ItemsView.pivotY: ✅
+Line.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Map.ignoresInput: 🧩
+Map.scale: 🧩
+Path.accessibilityHeading: ✅
+Picker.isEnabled: ✅
+Picker.rotation: ✅
+Polygon.accessibilityHeading: ✅
+Polygon.isEnabled: ✅
+Polyline.layoutDirection: ✓ read layoutDirection of Polyline: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ProgressBar.frame: ✅
+ProgressBar.scaleX: ✅
+RadioButton.accessibilityHeading: ✅
+Rectangle.frameChanged: ✅
+Rectangle.height: ✅
+Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own tip, checked against the projection it laid on the element
+Rectangle.width: ✅
+ScrollView.accessibilityHeading: ✅
+ScrollView.isEnabled: ✅
+SearchField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Slider.frame: ✅
+Slider.scaleX: ✅
+Stepper.isAccessibilityHidden: ✅
+Switch.frameChanged: ✅
+Switch.maximumHeight: ✅
+Switch.maximumWidth: ✅
+Switch.minimumHeight: ✅
+Switch.minimumWidth: ✅
+Switch.rotationY: ✓ read rotationY of Switch: the host's own tip, checked against the projection it laid on the element
+Text.translationY: ✅
+Text.zIndex: ✅
+TextEditor.accessibilityHint: ✅
+TextField.isEnabled: ✅
+TextField.rotation: ✅
 TimePicker.accessibilityHeading: ✅
-VStack.frameChanged: ✅
-VStack.height: ✅
-VStack.rotationX: ✓ read rotationX of VStack: the host's own tip, checked against the projection it laid on the element
-VStack.width: ✅
-WebView.focus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
-WebView.isFocusedChanged: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
-WebView.scaleY: ✅
-WebView.unfocus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
-ZStack.automationExcludedWithChildren: ✅
+VStack.isVisible: ✅
+VStack.pivotX: ✅
+WebView.frameChanged: ✅
+WebView.height: ✅
+WebView.rotationX: ✓ read rotationX of WebView: the host's own tip, checked against the projection it laid on the element
+WebView.width: ✅
+ZStack.accessibilityLabel: ✅
+ZStack.isEnabled: ✅

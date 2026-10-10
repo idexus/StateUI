@@ -38,6 +38,15 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
     /// The offset the tree writes, kept for the first layout where it comes before it.
     private var writtenOffset = WrittenScrollOffset()
 
+    /// The direction its content is laid out in, the element's: the document and the stack holding several children
+    /// take it.
+    override var direction: LayoutDirection {
+        didSet {
+            document.direction = direction
+            wrapper.direction = direction
+        }
+    }
+
     override init() {
         super.init()
         movement.onFramesWanted = { [weak self] in self?.onFramesWanted?() }

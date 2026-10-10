@@ -1,4 +1,4 @@
-# revision 7.1
+# revision 8.1
 ActivityIndicator.translationY: ✅
 ActivityIndicator.zIndex: ✅
 Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
@@ -16,51 +16,51 @@ Ellipse.opacity: ✅
 Ellipse.pivotY: ✅
 Grid.style: ✅
 Grid.translationX: ✅
-HStack.accessibilityHeading: ✅
-Image.isVisible: ✅
-Image.pivotX: ✅
-ItemsView.focus: ✅
-ItemsView.isFocusedChanged: ✅
-ItemsView.scaleY: ✅
-ItemsView.unfocus: ✅
-Line.frameChanged: ✅
-Line.maximumHeight: ✅
-Line.maximumWidth: ✅
-Line.minimumHeight: ✅
-Line.minimumWidth: ✅
-Line.rotationY: ✓ read rotationY of Line: the host's own tip, checked against the projection it laid on the element
-Map.accessibilityLabel: 🧩
-Path.opacity: ✅
-Path.pivotY: ✅
-Picker.style: ✅
-Picker.translationX: ✅
-Polygon.background: – A WinUI shape is its figure alone: it paints no ground around it.
-Polyline.ignoresInput: ✅
-Polyline.scale: ✅
-ProgressBar.accessibilityHint: ✅
-RadioButton.opacity: ✅
-RadioButton.pivotY: ✅
-Rectangle.translationY: ✅
-Rectangle.zIndex: ✅
-ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-SearchField.ignoresInput: ✅
-SearchField.scale: ✅
+HStack.accessibilityHint: ✅
+HStack.layoutDirection: ✅
+Image.background: – WinUI's picture paints the picture alone, no ground around it.
+ItemsView.ignoresInput: ✅
+ItemsView.scale: ✅
+Line.isEnabled: does not apply - read isEnabled of Line - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Line.rotation: ✅
+Map.translationY: 🧩
+Map.zIndex: 🧩
+Path.layoutDirection: ✓ read layoutDirection of Path: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Picker.frame: ✅
+Picker.scaleX: ✅
+Polygon.isAccessibilityHidden: ✅
+Polyline.frameChanged: ✅
+Polyline.height: ✅
+Polyline.rotationX: ✓ read rotationX of Polyline: the host's own tip, checked against the projection it laid on the element
+Polyline.width: ✅
+ProgressBar.accessibilityHeading: ✅
+ProgressBar.isEnabled: ✅
+RadioButton.layoutDirection: ✅
+Rectangle.focus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
+Rectangle.isFocusedChanged: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
+Rectangle.scaleY: ✅
+Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.isAccessibilityHidden: ✅
+SearchField.isEnabled: ✅
+SearchField.rotation: ✅
 Slider.accessibilityHeading: ✅
-Stepper.frameChanged: ✅
-Stepper.height: ✅
-Stepper.rotationX: ✓ read rotationX of Stepper: the host's own tip, checked against the projection it laid on the element
-Stepper.width: ✅
-Switch.accessibilityLabel: ✅
-Text.automationExcludedWithChildren: ✅
-TextEditor.opacity: ✅
-TextEditor.pivotY: ✅
-TextField.translationY: ✅
-TextField.zIndex: ✅
-TimePicker.layoutDirection: ✅
-VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-VStack.scaleY: ✅
-VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-WebView.accessibilityLabel: ✅
-ZStack.opacity: ✅
-ZStack.pivotY: ✅
+Stepper.isVisible: ✅
+Stepper.pivotX: ✅
+Switch.style: ✅
+Switch.translationX: ✅
+Text.accessibilityHeading: ✅
+TextEditor.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+TextField.frame: ✅
+TextField.scaleX: ✅
+TimePicker.isAccessibilityHidden: ✅
+VStack.frameChanged: ✅
+VStack.maximumHeight: ✅
+VStack.maximumWidth: ✅
+VStack.minimumHeight: ✅
+VStack.minimumWidth: ✅
+VStack.rotationY: ✓ read rotationY of VStack: the host's own tip, checked against the projection it laid on the element
+WebView.focus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
+WebView.isFocusedChanged: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
+WebView.scaleY: ✅
+WebView.unfocus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
+ZStack.automationExcludedWithChildren: ✅

@@ -304,6 +304,24 @@ final class LayoutArithmeticTests: XCTestCase {
         }, [84], "a scroller's document")
     }
 
+    /// Right to left, a scroller's child stands from the right of its document: its start, and its leading margin,
+    /// at the right edge.
+    @MainActor
+    func testAScrollersChildRightToLeftStandsFromTheRight() {
+        var child = Child(width: 20, height: 10)
+        child.values.horizontal = 0
+        child.values.vertical = 0
+        child.values.margin = Insets(left: 5, top: 0, right: 0, bottom: 0)
+        let viewport = LayoutSize(width: 100, height: 50)
+
+        XCTAssertEqual(ScrollArithmetic.arrange(
+            child, padding: Insets(0), orientation: .vertical, in: viewport, direction: .rightToLeft).place,
+            Rect(x: 75, y: 0, width: 20, height: 10))
+        XCTAssertEqual(ScrollArithmetic.arrange(
+            child, padding: Insets(0), orientation: .vertical, in: viewport, direction: .leftToRight).place,
+            Rect(x: 5, y: 0, width: 20, height: 10))
+    }
+
     /// A kept size answers for its width until it is forgotten; a pass needs at most a few.
     @MainActor
     func testAMeasurementIsKeptPerOfferedWidth() {

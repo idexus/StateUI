@@ -32,13 +32,15 @@ final class UIKitScrollDocument: UIKitLayoutView {
     /// The document's size in `viewport`.
     func documentSize(in viewport: LayoutSize) -> LayoutSize {
         guard let item = items.first, item.isShown else { return viewport }
-        return ScrollArithmetic.arrange(item, padding: padding, orientation: orientation, in: viewport).document
+        return ScrollArithmetic.arrange(
+            item, padding: padding, orientation: orientation, in: viewport, direction: direction).document
     }
 
     override func arrange(in bounds: Rect) {
         guard let item = items.first, item.isShown else { return }
         let arranged = ScrollArithmetic.arrange(
-            item, padding: padding, orientation: orientation, in: LayoutSize(width: bounds.width, height: bounds.height))
+            item, padding: padding, orientation: orientation, in: LayoutSize(width: bounds.width, height: bounds.height),
+            direction: direction)
         place(item, at: arranged.place)
     }
 }

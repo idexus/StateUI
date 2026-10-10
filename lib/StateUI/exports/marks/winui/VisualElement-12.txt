@@ -1,4 +1,4 @@
-# revision 7.1
+# revision 8.1
 ActivityIndicator.accessibilityLabel: ✅
 Button.isVisible: ✅
 Button.pivotX: ✅
@@ -14,53 +14,51 @@ Ellipse.rotationX: ✓ read rotationX of Ellipse: the host's own tip, checked ag
 Ellipse.width: ✅
 Grid.accessibilityHeading: ✅
 Grid.isEnabled: ✅
-HStack.automationExcludedWithChildren: ✅
-Image.isEnabled: does not apply - read isEnabled of Image - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Image.rotation: ✅
-ItemsView.translationY: ✅
-ItemsView.zIndex: ✅
-Line.frame: ✅
-Line.scaleX: ✅
-Map.accessibilityHeading: 🧩
-Path.frameChanged: ✅
-Path.height: ✅
-Path.rotationX: ✓ read rotationX of Path: the host's own tip, checked against the projection it laid on the element
-Path.width: ✅
-Picker.accessibilityHeading: ✅
-Polygon.isVisible: ✅
-Polygon.pivotX: ✅
-Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-Polyline.scaleY: ✅
-Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-ProgressBar.isAccessibilityHidden: ✅
-RadioButton.frameChanged: ✅
-RadioButton.height: ✅
-RadioButton.rotationX: ✓ read rotationX of RadioButton: the host's own tip, checked against the projection it laid on the element
-RadioButton.width: ✅
-Rectangle.accessibilityLabel: ✅
-ScrollView.isVisible: ✅
-ScrollView.pivotX: ✅
-SearchField.focus: ✅
-SearchField.isFocusedChanged: ✅
-SearchField.scaleY: ✅
-SearchField.unfocus: ✅
-Slider.automationExcludedWithChildren: ✅
-Stepper.ignoresInput: ✅
-Stepper.scale: ✅
+HStack.isAccessibilityHidden: ✅
+Image.isVisible: ✅
+Image.pivotX: ✅
+ItemsView.focus: ✅
+ItemsView.isFocusedChanged: ✅
+ItemsView.scaleY: ✅
+ItemsView.unfocus: ✅
+Line.frameChanged: ✅
+Line.maximumHeight: ✅
+Line.maximumWidth: ✅
+Line.minimumHeight: ✅
+Line.minimumWidth: ✅
+Line.rotationY: ✓ read rotationY of Line: the host's own tip, checked against the projection it laid on the element
+Map.accessibilityLabel: 🧩
+Path.opacity: ✅
+Path.pivotY: ✅
+Picker.style: ✅
+Picker.translationX: ✅
+Polygon.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Polyline.ignoresInput: ✅
+Polyline.scale: ✅
+ProgressBar.accessibilityHint: ✅
+RadioButton.opacity: ✅
+RadioButton.pivotY: ✅
+Rectangle.translationY: ✅
+Rectangle.zIndex: ✅
+ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+SearchField.frameChanged: ✅
+SearchField.maximumHeight: ✅
+SearchField.maximumWidth: ✅
+SearchField.minimumHeight: ✅
+SearchField.minimumWidth: ✅
+SearchField.rotationY: ✓ read rotationY of SearchField: the host's own tip, checked against the projection it laid on the element
+Slider.accessibilityHint: ✅
+Stepper.isEnabled: ✅
+Stepper.rotation: ✅
 Switch.accessibilityHeading: ✅
-Text.layoutDirection: ✅
-TextEditor.frameChanged: ✅
-TextEditor.height: ✅
-TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own tip, checked against the projection it laid on the element
-TextEditor.width: ✅
-TextField.accessibilityLabel: ✅
-TimePicker.opacity: ✅
-TimePicker.pivotY: ✅
-VStack.translationY: ✅
-VStack.zIndex: ✅
-WebView.accessibilityHeading: ✅
-ZStack.frameChanged: ✅
-ZStack.height: ✅
-ZStack.rotationX: ✓ read rotationX of ZStack: the host's own tip, checked against the projection it laid on the element
-ZStack.width: ✅
+Text.automationExcludedWithChildren: ✅
+TextEditor.isVisible: ✅
+TextEditor.pivotX: ✅
+TextField.style: ✅
+TextField.translationX: ✅
+TimePicker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+VStack.frame: ✅
+VStack.scaleX: ✅
+WebView.translationY: ✅
+WebView.zIndex: ✅
+ZStack.layoutDirection: ✓ read layoutDirection of ZStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned

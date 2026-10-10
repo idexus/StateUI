@@ -37,6 +37,15 @@ final class GTKScrollView: GTKLayoutView {
 
     private var bars = (vertical: ScrollIndicatorVisibility.automatic, horizontal: ScrollIndicatorVisibility.automatic)
 
+    /// The direction its content is laid out in, the element's: the document and the stack holding several children
+    /// take it.
+    override var direction: LayoutDirection {
+        didSet {
+            document.direction = direction
+            wrapper.direction = direction
+        }
+    }
+
     override init() {
         super.init()
         movement.onFramesWanted = { [weak self] in self?.onFramesWanted?() }

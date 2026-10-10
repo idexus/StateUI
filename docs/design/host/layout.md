@@ -266,7 +266,8 @@ A layout works its places out left to right, then turns each about the
 middle of its room when it lays out right to left. That one rule is every
 mirror a language written right to left needs: a row fills from the right, a
 column's start stands at the right, a grid's column 0 is the rightmost, a
-ZStack's area counts from the right edge, and padding and margins swap sides.
+ZStack's area counts from the right edge, a scroller's content stands from
+the right of its document, and padding and margins swap sides.
 Nothing vertical changes, and no transform or drawing is turned.
 
 The direction is the element's own `layoutDirection`, or - left at
