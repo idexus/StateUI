@@ -106,6 +106,28 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(bare.tree.root?.first(id: .manual("root"))?.tabsStandInWindow, true, "a modal stack's root")
     }
 
+    /// A page's bar says its title; a sidebar's page that says none - itself, or the root of a stack there - shows the
+    /// application's name, as a sidebar stands under it; any other page says none.
+    func testAnUntitledSidebarShowsTheApplicationsName() throws {
+        let titled = [Prop.title: HostValue.string("Folders")]
+        let runtime = runtime(node("window", .window, children: [
+            node("split", .splitView, children: [
+                node("menu", .navigationStack, children: [node("sidebar", .page)]),
+                node("detail", .page),
+            ]),
+        ])) { _ in }
+        let root = try XCTUnwrap(runtime.tree.root)
+        let title = { (id: String) in root.first(id: .manual(id))?.barTitle(applicationName: "Notes") }
+
+        XCTAssertEqual(title("sidebar"), "Notes", "an untitled sidebar")
+        XCTAssertEqual(title("detail"), "", "an untitled detail")
+
+        let named = self.runtime(node("window", .window, children: [
+            node("split", .splitView, children: [node("sidebar", .page, titled), node("detail", .page)]),
+        ])) { _ in }
+        XCTAssertEqual(named.tree.root?.first(id: .manual("sidebar"))?.barTitle(applicationName: "Notes"), "Folders")
+    }
+
     /// A stack shows its bar over a page that keeps one, and over tabs only where the chosen tab stands in no stack of
     /// its own, whose bar is the one.
     func testAStacksBarShowsOnlyWhereNoStackBelowHasOne() throws {

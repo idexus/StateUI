@@ -22,4 +22,25 @@ extension MountedElement {
     @MainActor public var paintsSidebar: Bool {
         !sidebarMaterial(over: false).isEmpty || !sidebarMaterial(over: true).isEmpty
     }
+
+    /// The words this page's own bar shows as its title: its title, or - a sidebar's page that says none - the
+    /// application's name, as a sidebar stands under it; nothing for any other page that says none.
+    /// Design: docs/design/host/pages.md#a-sidebars-title
+    @MainActor public func barTitle(applicationName: String) -> String {
+        if let title = value(.title)?.string { return title }
+        return standsInSidebar ? applicationName : ""
+    }
+
+    /// Whether this page stands in a split view's sidebar - its first child as written, or a stack's page there.
+    @MainActor var standsInSidebar: Bool {
+        var child = self
+        while let parent = child.parent {
+            switch parent.type {
+            case .navigationStack: child = parent
+            case .splitView: return parent.writingOrder[child.id] == 0
+            default: return false
+            }
+        }
+        return false
+    }
 }

@@ -35,6 +35,23 @@ final class GTKSplitViewTests: XCTestCase {
         }
     }
 
+    /// A sidebar whose page says no title names its pane's bar by the application's name; the detail stays untitled.
+    func testAnUntitledSidebarIsNamedByTheApplication() throws {
+        try onUIThread {
+            // A test process names no application; one does, as GLib gives it.
+            if g_get_application_name() == nil { g_set_application_name("Notes") }
+            let host = GTKRenderer.running {
+                SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+            }
+            let split = try XCTUnwrap(host.views(GTKSplitView.self).first)
+            let name = host.runtime.core.applicationName
+
+            XCTAssertFalse(name.isEmpty, "the host reported the application's name")
+            XCTAssertEqual(split.sidebarFrame?.chrome.title, name)
+            XCTAssertEqual(split.detailFrame?.chrome.title, "")
+        }
+    }
+
     /// A sidebar beside the detail lets the window through its pane, shaded a breath where the split view says no
     /// material; under a material of its own the pane is clear.
     func testASidebarBesideTheDetailLetsTheWindowThrough() throws {

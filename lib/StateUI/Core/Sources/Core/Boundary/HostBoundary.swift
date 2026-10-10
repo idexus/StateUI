@@ -43,6 +43,9 @@
         update(display, \.refreshRate, info.refreshRate)
     }
 
+    /// The application's name, as the host reported it - what a host shows where a sidebar says no title.
+    public static var applicationName: String { StandardEnvironment.application.info.name }
+
     /// Replaces the standard application-manifest report used by builds.
     public static func setApplicationInfo(_ info: HostApplicationInfo) {
         let app = StandardEnvironment.application.info

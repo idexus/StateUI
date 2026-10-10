@@ -39,6 +39,25 @@ final class UIKitSplitViewTests: XCTestCase {
         XCTAssertTrue(menuOpen.wrappedValue, "the program's move is not told back as another")
     }
 
+    /// A sidebar whose page says no title names its column's bar by the application's name; the detail stays
+    /// untitled.
+    @MainActor
+    func testAnUntitledSidebarIsNamedByTheApplication() throws {
+        // The tests' host reports no application; one does as it starts.
+        HostBoundary.setApplicationInfo(HostApplicationInfo(name: "Notes", packageName: "", versionString: "", buildString: ""))
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+        }
+        defer { host.finish() }
+        let split = try XCTUnwrap(host.runtime.tree.root?.first(type: .splitView))
+        let name = host.runtime.core.applicationName
+
+        XCTAssertFalse(name.isEmpty, "the host reported the application's name")
+        let chrome = { (page: MountedElement?) in (page?.native as? UIKitElement)?.chrome.title }
+        XCTAssertEqual(chrome(split.children.first), name)
+        XCTAssertEqual(chrome(split.children.dropFirst().first), "")
+    }
+
     /// A sidebar the application paints stands on UIKit's plain column, which UIKit parts from the detail by its
     /// own separator; the platform's own sidebar stays on UIKit's sidebar material.
     @MainActor

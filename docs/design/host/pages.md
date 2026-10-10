@@ -68,6 +68,14 @@ said as the user's, where the room is at least the platform's own breakpoint
 and it was hidden. After that the user and the application decide. The
 breakpoint is each platform's, a host's parameter.
 
+## A sidebar's title
+
+A sidebar's page names the sidebar's own bar, where a host gives the sidebar
+one; a sidebar's page that says no title shows the application's name there,
+as a sidebar stands under it (`barTitle(applicationName:)`) - the same for a
+page at the root of a stack in the sidebar. Any other page that says no title
+shows none.
+
 ## A sidebar's material
 
 A split view says two materials for its sidebar: what it stands on beside the

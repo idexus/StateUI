@@ -177,6 +177,9 @@
         HostBoundary.setApplicationInfo(info)
     }
 
+    /// The application's name, as the host reported it.
+    public var applicationName: String { HostBoundary.applicationName }
+
     /// Reports the battery.
     public func setBatteryInfo(_ info: HostBatteryInfo) { HostBoundary.setBatteryInfo(info) }
 

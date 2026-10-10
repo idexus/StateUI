@@ -44,7 +44,7 @@ extension UIKitElement {
         }
 
         var chrome = UIKitPageChrome()
-        chrome.title = value(.title)?.string ?? ""
+        chrome.title = element.barTitle(applicationName: host?.runtime.core.applicationName ?? "")
         chrome.subtitle = element.titleArea?.subtitle
         chrome.titleView = element.chromeTitleView?.uiKit.view
         chrome.showsBar = value(.showsNavigationBar)?.bool != false
