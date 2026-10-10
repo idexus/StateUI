@@ -522,6 +522,10 @@ Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
     .height(300)
 ```
 
+Markers drawn from data are each given an id - `places.map { Marker($0.name).id($0.name) }`
+- so a marker put before them leaves the others themselves, each pin and its
+open callout where it stood; without one a marker is matched by its position.
+
 The user pans and zooms the map as the platform lets them, and
 `isScrollEnabled` and `isZoomEnabled` say whether they may. The region in the
 initializer is where the map opens; moving it later is an act through its

@@ -10,7 +10,8 @@
 ///     }
 ///
 /// An `if`, an `if/else` and an array of markers work in one, and a plain `for`
-/// does not. A marker is matched by its position among the map's markers.
+/// does not. A marker is matched by its `.id`, or else by its position among
+/// the map's markers.
 @resultBuilder
 public enum MarkerBuilder {
     /// A single marker written as a statement.

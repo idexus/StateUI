@@ -98,8 +98,8 @@ number is its position: a collection that gains a row at the top renumbers
 every turn below it, and every view would be rebuilt as though it had changed.
 `ForEach` is where repetition is written, and it keys each view by its item;
 where views are not what is repeated - menu entries, toolbar items, runs, markers -
-an array of them stands for the loop: a menu entry or a toolbar item matched
-by its `.id()`, a run or a marker by its position.
+an array of them stands for the loop: a menu entry, a toolbar item or a
+marker matched by its `.id()`, a run by its position.
 
 ## ForEach keys are text
 

@@ -137,6 +137,18 @@ public struct Marker: Element {
         node.write(MarkerContract.label, label)
     }
 
+    /// Who this marker is among the map's others, so a marker put before it
+    /// leaves it itself rather than dressing it as the next place; without one
+    /// it is matched by its position.
+    ///
+    /// - Parameter value: distinct among the map's markers, and the same value
+    ///   across renders.
+    public func id(_ value: some Hashable) -> Self {
+        var copy = self
+        copy.node.identify(value)
+        return copy
+    }
+
     /// The callout's first line, in bold. The initializer takes the same
     /// value and is where a marker usually gets it.
     public func label(_ value: String) -> Self {

@@ -10,6 +10,22 @@ struct MapSample: SampleContent, ExampleContent {
     @State private var traffic = false
     @State private var showsMe = false
     @State private var locked = false
+
+    /// The places the map marks.
+    private static let places = [
+        Place(name: "Wawel Castle", address: "Wawel 5", type: .place, latitude: 50.0540, longitude: 19.9354),
+        Place(name: "Main Market Square", address: "Main Market Square 1/3", type: .searchResult,
+              latitude: 50.0617, longitude: 19.9373),
+    ]
+
+    /// A place on the map: its name, where it stands, and what it is.
+    private struct Place {
+        let name: String
+        let address: String
+        let type: MarkerType
+        let latitude: Double
+        let longitude: Double
+    }
     // listing: end
 
     static let id = "map"
@@ -78,20 +94,19 @@ struct MapSample: SampleContent, ExampleContent {
                 .isZoomEnabled(!locked)
                 .isScrollEnabled(!locked)
                 .markers {
-                    Marker("Wawel Castle")
-                        .subtitle("Wawel 5")
-                        // What the marker stands for, which is what decides the
-                        // icon the platform draws for it.
-                        .type(.place)
-                        .location(latitude: 50.0540, longitude: 19.9354)
-                        .onSelected { said = "pin: Wawel Castle" }
-                        .onDetailsClicked { said = "details: Wawel Castle" }
-
-                    Marker("Main Market Square")
-                        .subtitle("Main Market Square 1/3")
-                        .type(.searchResult)
-                        .location(latitude: 50.0617, longitude: 19.9373)
-                        .onSelected { said = "pin: Main Market Square" }
+                    // Each place its own marker by its name, so a place put
+                    // before the others leaves them themselves.
+                    Self.places.map { place in
+                        Marker(place.name)
+                            .id(place.name)
+                            .subtitle(place.address)
+                            // What the marker stands for, which is what decides
+                            // the icon the platform draws for it.
+                            .type(place.type)
+                            .location(latitude: place.latitude, longitude: place.longitude)
+                            .onSelected { said = "pin: \(place.name)" }
+                            .onDetailsClicked { said = "details: \(place.name)" }
+                    }
                 }
                 .onMapClicked { location in
                     said = "map: \(rounded(location.latitude)), \(rounded(location.longitude))"
