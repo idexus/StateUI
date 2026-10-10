@@ -88,6 +88,22 @@ final class WebLookTests: XCTestCase {
         XCTAssertTrue(least.allSatisfy { $0 == breakpoint }, "the sidebar beside starts past it: \(widths)")
     }
 
+    /// Words on a band the tree paints and gives no colour for them stand dark on a light band, whatever the page's
+    /// own scheme - the window's bar's and a strip of tabs' alike, as the host layer's rule says.
+    func testWordsOnALightBandStandDark() throws {
+        let host = WebRenderer.running {
+            TabView([0, 1]) { tab in Text("Tab \(tab)").title("Tab \(tab)") }
+                .title("Light")
+                .barBackgroundColor(.white)
+        }
+        host.settle { (try? self.look(".stateui-tab-strip > button", "color")) != nil }
+
+        XCTAssertEqual(try look(".stateui-window .stateui-bar", "color"), "rgb(0, 0, 0)", "the window's bar")
+        XCTAssertEqual(
+            try look(".stateui-tab-strip > button:not([aria-selected=true])", "color"), "rgb(0, 0, 0)",
+            "a tab not chosen")
+    }
+
     /// One computed style of the first element `selector` finds on the page.
     private func look(_ selector: String, _ property: String) throws -> String? {
         try WebBrowser.evaluate("getComputedStyle(document.querySelector('\(selector)')).\(property)", on: 0)

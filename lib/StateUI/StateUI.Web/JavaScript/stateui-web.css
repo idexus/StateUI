@@ -440,7 +440,7 @@ body {
   border-bottom: 2px solid transparent;
   border-radius: 0;
   background: transparent;
-  color: var(--stateui-muted);
+  color: var(--stateui-bar-foreground, var(--stateui-muted));
   font-weight: 550;
   white-space: nowrap;
   filter: none;

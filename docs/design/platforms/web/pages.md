@@ -171,7 +171,9 @@ share. The strip scrolls across alone, never down - its line drawn inside it,
 so no tab's underline reaches past it for a finger to drag it by. It wears
 the colour of the bars on its path (`barColors`), and no blur under a clear
 one - the window bar's own look where nothing is said - so under the window's
-bar it stands as one with it. Each tab is a button with the role of a tab - its page's picture, where
+bar it stands as one with it; its words, as the window bar's, are the colour
+the tree writes, else light on a dark band and dark on a light one
+(`BandWords`). Each tab is a button with the role of a tab - its page's picture, where
 it has one, beside its name - the chosen one selected; the chosen page shows and the others stand beside it covered, kept
 as they stood, scrolled where the user left them. A covered page is laid out
 unseen - it takes no touch, no keyboard and no assistive technology - so a

@@ -102,7 +102,8 @@ final class WebWindowBar: WebDOMView {
         style("--stateui-bar-background", WebCSS.fill(chrome.background))
         // A clear bar shows what is behind it as it is: no blur, no deeper colour under it.
         style("--stateui-bar-filter", HostBrush(chrome.background).isClear ? "none" : nil)
-        style("--stateui-bar-foreground", WebCSS.color(chrome.foreground))
+        // Words the tree gives no colour stand light on a dark band and dark on a light one.
+        style("--stateui-bar-foreground", WebCSS.color(BandWords.color(on: chrome.background, written: chrome.foreground)))
 
         var kept: [ObjectIdentifier: WebBarButton] = [:]
         var made: [WebDOMView] = []

@@ -53,11 +53,11 @@ final class WebTabViewTests: XCTestCase {
         let tabs = WebTabView()
         defer { tabs.detach() }
 
-        tabs.showColors(background: Color.transparent.propValue)
+        tabs.showColors(background: Color.transparent.propValue, foreground: nil)
         XCTAssertEqual(WebPage.style(of: tabs.strip.node, "--stateui-bar-background"), "rgb(255 255 255 / 0)")
         XCTAssertEqual(WebPage.style(of: tabs.strip.node, "--stateui-bar-filter"), "none", "a clear bar blurs nothing")
 
-        tabs.showColors(background: nil)
+        tabs.showColors(background: nil, foreground: nil)
         XCTAssertEqual(WebPage.style(of: tabs.strip.node, "--stateui-bar-background"), "", "the bar's own look")
         XCTAssertEqual(WebPage.style(of: tabs.strip.node, "--stateui-bar-filter"), "")
     }
