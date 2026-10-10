@@ -44,6 +44,6 @@ extension ActivityIndicator {
     /// `isAnimating` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func isAnimating(_ state: Binding<Bool>) -> Modified {
-        plain(.isAnimating, by: state)
+        twin(ActivityIndicatorContract.isAnimating, by: state)
     }
 }

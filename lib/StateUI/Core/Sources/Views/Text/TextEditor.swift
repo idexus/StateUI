@@ -77,6 +77,6 @@ extension TextEditor {
     /// `growsWithText` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func growsWithText(_ state: Binding<Bool>) -> Modified {
-        plain(.growsWithText, by: state)
+        twin(TextEditorContract.growsWithText, by: state)
     }
 }

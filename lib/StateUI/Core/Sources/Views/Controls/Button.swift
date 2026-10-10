@@ -175,18 +175,18 @@ extension Button {
     /// `iconPosition` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func iconPosition(_ state: Binding<IconPosition>) -> Modified {
-        plain(.iconPosition, by: state)
+        twin(ButtonContract.iconPosition, by: state)
     }
 
     /// `iconSpacing` from a state, `$x`: the host animates the property to each
     /// new value, and no view is rebuilt for it.
     public func iconSpacing(_ state: Binding<Double>) -> Modified {
-        journey(.iconSpacing, by: state)
+        twin(ButtonContract.iconSpacing, by: state)
     }
 
     /// `lineBreak` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func lineBreak(_ state: Binding<LineBreak>) -> Modified {
-        plain(ButtonContract.lineBreak.token, by: state)
+        twin(ButtonContract.lineBreak, carrying: state)
     }
 }

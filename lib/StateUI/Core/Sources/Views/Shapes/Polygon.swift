@@ -54,6 +54,6 @@ extension Polygon {
     /// `fillRule` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func fillRule(_ state: Binding<FillRule>) -> Modified {
-        plain(PolygonContract.fillRule.token, by: state)
+        twin(PolygonContract.fillRule, carrying: state)
     }
 }

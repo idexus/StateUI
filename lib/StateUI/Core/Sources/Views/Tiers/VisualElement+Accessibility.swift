@@ -59,13 +59,13 @@ extension VisualElement {
     /// `automationExcludedWithChildren` from a state, `$x`: the host sets each
     /// new value as it stands, and no view is rebuilt for it.
     public func automationExcludedWithChildren(_ state: Binding<Bool>) -> Modified {
-        plain(VisualElementContract.automationExcludedWithChildren, by: state)
+        twin(VisualElementContract.automationExcludedWithChildren, by: state)
     }
 
     /// `isAccessibilityHidden` from a state, `$x`: the host sets each new value
     /// as it stands, and no view is rebuilt for it.
     public func isAccessibilityHidden(_ state: Binding<Bool>) -> Modified {
-        plain(VisualElementContract.isAccessibilityHidden, by: state)
+        twin(VisualElementContract.isAccessibilityHidden, by: state)
     }
 
     /// `accessibilityLabel` from a state, `$x`: the host writes each new text,
@@ -77,7 +77,7 @@ extension VisualElement {
     /// `accessibilityHeading` from a state, `$x`: the host sets each new
     /// value as it stands, and no view is rebuilt for it.
     public func accessibilityHeading(_ state: Binding<AccessibilityHeadingLevel>) -> Modified {
-        plain(VisualElementContract.accessibilityHeading, by: state)
+        twin(VisualElementContract.accessibilityHeading, by: state)
     }
 
     /// `accessibilityHint` from a state, `$x`: the host writes each new text,

@@ -17,6 +17,6 @@ extension Stack {
     /// `spacing` from a state, `$x`: the host animates the property to each new
     /// value, and no view is rebuilt for it.
     public func spacing(_ state: Binding<Double>) -> Modified {
-        journey(StackContract.spacing, by: state)
+        twin(StackContract.spacing, by: state)
     }
 }

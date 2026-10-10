@@ -114,18 +114,18 @@ extension ScrollView {
     /// `horizontalScrollIndicator` from a state, `$x`: the host sets each
     /// new value as it stands, and no view is rebuilt for it.
     public func horizontalScrollIndicator(_ state: Binding<ScrollIndicatorVisibility>) -> Modified {
-        plain(.horizontalScrollIndicator, by: state)
+        twin(ScrollViewContract.horizontalScrollIndicator, by: state)
     }
 
     /// `orientation` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func orientation(_ state: Binding<ScrollOrientation>) -> Modified {
-        plain(.orientation, by: state)
+        twin(ScrollViewContract.orientation, by: state)
     }
 
     /// `verticalScrollIndicator` from a state, `$x`: the host sets each new
     /// value as it stands, and no view is rebuilt for it.
     public func verticalScrollIndicator(_ state: Binding<ScrollIndicatorVisibility>) -> Modified {
-        plain(.verticalScrollIndicator, by: state)
+        twin(ScrollViewContract.verticalScrollIndicator, by: state)
     }
 }

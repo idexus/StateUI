@@ -109,6 +109,6 @@ extension Stepper {
     /// `step` from a state, `$x`: the host sets each new value as it stands,
     /// and no view is rebuilt for it.
     public func step(_ state: Binding<Double>) -> Modified {
-        plain(.step, by: state)
+        twin(StepperContract.step, by: state)
     }
 }

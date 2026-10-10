@@ -233,6 +233,21 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertEqual(value.wrappedValue, 2)
     }
 
+    /// A twin over a member that travels is walked as a journey, whatever the member: a grid's spacings and a label's
+    /// line height glide from a state as their described values do.
+    func testATwinOverATravellingMemberIsAJourney() {
+        let rows = State(wrappedValue: 8.0)
+        let columns = State(wrappedValue: 4.0)
+        let line = State(wrappedValue: 20.0)
+
+        let grid = Renders().render(Grid {}.rowSpacing(rows.projectedValue).columnSpacing(columns.projectedValue).node)
+        let text = Renders().render(Text("Words").lineHeight(line.projectedValue).node)
+
+        XCTAssertEqual(grid.driven?[.rowSpacing]?.kind, .property)
+        XCTAssertEqual(grid.driven?[.columnSpacing]?.kind, .property)
+        XCTAssertEqual(text.driven?[.lineHeight]?.kind, .property)
+    }
+
     /// `Slider($volume)` over a plain `Double` is HANDED OVER: the host walks
     /// the value as a journey, the slider reads nothing at build, an
     /// assignment moves the destination alone, and a drag is the host's write

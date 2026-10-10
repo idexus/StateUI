@@ -156,6 +156,6 @@ extension DatePicker {
     /// `isOpen` from a state, `$x`: the host sets each new value as it stands,
     /// and no view is rebuilt for it.
     public func isOpen(_ state: Binding<Bool>) -> Modified {
-        plain(DatePickerContract.isOpen.token, by: state)
+        twin(DatePickerContract.isOpen, carrying: state)
     }
 }

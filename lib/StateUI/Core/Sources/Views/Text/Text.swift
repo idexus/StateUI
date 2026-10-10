@@ -114,6 +114,6 @@ extension Text {
     /// `maximumLines` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func maximumLines(_ state: Binding<Int>) -> Modified {
-        plain(.maximumLines, by: state)
+        twin(TextContract.maximumLines, by: state)
     }
 }

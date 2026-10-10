@@ -37,13 +37,13 @@ extension View {
 
     /// The page's background from a state, `$x`: the host animates its colour to each new value.
     public func pageBackground(_ state: Binding<Color>) -> Modified {
-        pageSays { $0.journey(PageContract.background.token, by: state) }
+        pageSays { $0.twin(PageContract.background, carrying: state) }
     }
 
     /// The page's background from a material state, `$x`: the host shows each
     /// new material as it stands.
     public func pageBackground(_ state: Binding<Material>) -> Modified {
-        pageSays { $0.plain(PageContract.background, by: state) }
+        pageSays { $0.twin(PageContract.background, by: state) }
     }
 
     /// Whether the navigation bar shows while the page is on top of its stack.
@@ -53,7 +53,7 @@ extension View {
 
     /// Whether the navigation bar shows, from a state, `$x`.
     public func showsNavigationBar(_ state: Binding<Bool>) -> Modified {
-        pageSays { $0.plain(PageContract.showsNavigationBar, by: state) }
+        pageSays { $0.twin(PageContract.showsNavigationBar, by: state) }
     }
 
     /// Whether the way back is offered while the page is on top - false for a page the user must finish rather than
@@ -64,7 +64,7 @@ extension View {
 
     /// Whether the way back is offered, from a state, `$x`.
     public func showsBackButton(_ state: Binding<Bool>) -> Modified {
-        pageSays { $0.plain(PageContract.showsBackButton, by: state) }
+        pageSays { $0.twin(PageContract.showsBackButton, by: state) }
     }
 
     /// What the back button reads while the page ABOVE this one is on top - written on the page the user would go

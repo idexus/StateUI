@@ -109,18 +109,18 @@ extension TextField {
     /// `showsClearButton` from a state, `$x`: the host sets each new value as
     /// it stands, and no view is rebuilt for it.
     public func showsClearButton(_ state: Binding<Bool>) -> Modified {
-        plain(.showsClearButton, by: state)
+        twin(TextFieldContract.showsClearButton, by: state)
     }
 
     /// `isPassword` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func isPassword(_ state: Binding<Bool>) -> Modified {
-        plain(.isPassword, by: state)
+        twin(TextFieldContract.isPassword, by: state)
     }
 
     /// `submitLabel` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func submitLabel(_ state: Binding<SubmitLabel>) -> Modified {
-        plain(TextFieldContract.submitLabel.token, by: state)
+        twin(TextFieldContract.submitLabel, carrying: state)
     }
 }

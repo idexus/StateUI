@@ -26,18 +26,18 @@ extension FontElement where Self: VisualElement {
     /// `fontAttributes` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func fontAttributes(_ state: Binding<FontAttributes>) -> Modified {
-        plain(FontElementContract.fontAttributes, by: state)
+        twin(FontElementContract.fontAttributes, by: state)
     }
 
     /// `isFontAutoScalingEnabled` from a state, `$x`: the host sets each new
     /// value as it stands, and no view is rebuilt for it.
     public func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Modified {
-        plain(FontElementContract.isFontAutoScalingEnabled, by: state)
+        twin(FontElementContract.isFontAutoScalingEnabled, by: state)
     }
 
     /// `fontSize` from a state, `$x`: the host animates the property to each
     /// new value, and no view is rebuilt for it.
     public func fontSize(_ state: Binding<Double>) -> Modified {
-        journey(FontElementContract.fontSize, by: state)
+        twin(FontElementContract.fontSize, by: state)
     }
 }

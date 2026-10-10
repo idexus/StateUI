@@ -9,29 +9,37 @@ into the state.
 
 ## Binding twins
 
-What the host does with a carried state follows from the value:
+What the host does with a carried state follows from the value and the
+member it is for:
 
 ```text
   journey   a number, a colour, a thickness,     the host animates the property there under the
-            an inset, a point                    element's motion; $x.journey is the animation,
+            an inset, a point, for a member      element's motion; $x.journey is the animation,
+            that travels
                                                  and .motion(.none) lands it at once. Reading the
                                                  state answers where the value is going.
 
   plain     a Bool, an Int, a member of a        the host sets the property as the value stands,
-            closed vocabulary, and numbers       on its own frames, with nothing animating
-            that never animate: a range's
-            ends, a grid's spacings, a step
+            closed vocabulary, and a number      on its own frames, with nothing animating
+            for a member that does not travel:
+            a range's ends, a step
 
   words     a String                             the host writes the text, as it writes a
                                                  driven text
 ```
 
-Each twin is one line over one of three helpers of `PropertyContainer` -
-`journey(_:by:)`, `plain(_:by:mode:)` and `words(_:by:mode:)` - and stands
-beside its value form, in the file of the tier or the control it belongs to.
+Each twin is one line over `twin(_:by:)` - or `twin(_:carrying:)`, where the
+state carries another type than its member's, a radius into its corners - or
+over `words(_:by:mode:)` for text, and stands beside its value form, in the
+file of the tier or the control it belongs to. `twin` reads the member's
+`travels` fact: a value the host can walk, for a member that travels, is a
+journey, anything else is plain - the contract decides, once, and
+`testEveryTwinIsDecidedByItsContract` refuses a twin written straight over
+`journey` or `plain`. A control's own value carried both ways (`mode: .inOut`)
+and a scroller's offset stand apart.
 A composed view's twins read the state in its content instead: a
 `PositionIndicator`'s row is built again as the state changes.
-`plain` takes a `LaneValue` and `words` a `String`, so text cannot take the
+`twin` takes a `LaneValue` and `words` a `String`, so text cannot take the
 door for numbers ([what a host reads lanes as](../core/state.md#what-a-host-reads-lanes-as)).
 `testEveryValueModifierHasABindingTwin` holds the two forms together: a value
 modifier added without its twin is named there. The few allowed out are listed
