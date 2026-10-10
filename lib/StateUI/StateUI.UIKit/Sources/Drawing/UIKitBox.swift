@@ -90,6 +90,12 @@ struct UIKitBox {
         view.layer.mask = clips && outline != .rectangle ? Self.mask(path, over: bounds, reusing: view.layer.mask) : nil
     }
 
+    /// Whether a touch at `point` reaches what the box holds: anywhere in its bounds, but within its shape where it
+    /// cuts to one.
+    func takes(_ point: CGPoint, in bounds: CGRect) -> Bool {
+        !clips || outline == .rectangle || outline.path(in: bounds).contains(point)
+    }
+
     /// A mask letting through what `path` holds.
     private static func mask(_ path: CGPath, over bounds: CGRect, reusing layer: CALayer?) -> CAShapeLayer {
         let mask = layer as? CAShapeLayer ?? CAShapeLayer()
