@@ -27,6 +27,9 @@
     /// The way the language is written, `.leftToRight` or `.rightToLeft`.
     public let layoutDirection: LayoutDirection
 
+    /// The user's languages as tags, most wanted first; empty where the host says only `language`.
+    public let languages: [String]
+
     /// A complete locale report.
     public init(
         language: String,
@@ -36,7 +39,8 @@
         uses24HourClock: Bool,
         firstDayOfWeek: Weekday,
         isMetric: Bool,
-        layoutDirection: LayoutDirection
+        layoutDirection: LayoutDirection,
+        languages: [String] = []
     ) {
         self.language = language
         self.region = region
@@ -46,5 +50,6 @@
         self.firstDayOfWeek = firstDayOfWeek
         self.isMetric = isMetric
         self.layoutDirection = layoutDirection
+        self.languages = languages
     }
 }

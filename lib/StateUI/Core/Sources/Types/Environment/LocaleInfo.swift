@@ -15,6 +15,10 @@ public final class LocaleInfo {
     /// The locale's full name, such as "en-PL".
     @State public internal(set) var name = ""
 
+    /// The user's languages, most wanted first, each with its script and region where the host says them:
+    /// `["pl-PL", "en-GB"]`. Empty where the host gives only `language`.
+    @State public internal(set) var languages: [LocaleTag] = []
+
     /// The current zone's IANA identifier, such as "Europe/Warsaw". The host
     /// normalizes its native identifier; empty means it has not said.
     @State public internal(set) var timeZone = ""
@@ -37,7 +41,7 @@ public final class LocaleInfo {
     public init(
         language: String = "", region: String = "", name: String = "", timeZone: String = "",
         uses24HourClock: Bool = false, firstDayOfWeek: Weekday = .sunday, isMetric: Bool = true,
-        layoutDirection: LayoutDirection = .leftToRight
+        layoutDirection: LayoutDirection = .leftToRight, languages: [LocaleTag] = []
     ) {
         self.language = language
         self.region = region
@@ -47,5 +51,6 @@ public final class LocaleInfo {
         self.firstDayOfWeek = firstDayOfWeek
         self.isMetric = isMetric
         self.layoutDirection = layoutDirection
+        self.languages = languages
     }
 }

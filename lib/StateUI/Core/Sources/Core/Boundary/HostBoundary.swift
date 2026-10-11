@@ -82,6 +82,7 @@
         update(locale, \.firstDayOfWeek, info.firstDayOfWeek)
         update(locale, \.isMetric, info.isMetric)
         update(locale, \.layoutDirection, info.layoutDirection == .rightToLeft ? .rightToLeft : .leftToRight)
+        update(locale, \.languages, info.languages.map { LocaleTag($0) })
     }
 
     /// The way the user's language is written, as the host last reported it.

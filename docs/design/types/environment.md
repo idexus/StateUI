@@ -13,8 +13,8 @@ every view the way an object an ancestor provides is, and read by its name.
                      display       width, height, density, orientation, rotation, refreshRate
                      battery       chargeLevel, state, powerSource, energySaverStatus
                      connectivity  networkAccess, connectionProfiles
-  \.locale        LocaleInfo      language, region, name, timeZone, uses24HourClock, firstDayOfWeek, isMetric,
-                                  layoutDirection
+  \.locale        LocaleInfo      language, region, name, languages, timeZone, uses24HourClock, firstDayOfWeek,
+                                  isMetric, layoutDirection
   \.application   ApplicationSession
                      info          name, packageName, versionString, buildString, colorScheme, accentColor
                      phase, scenes, and what the application writes: colour scheme, styles, motion, kept keys

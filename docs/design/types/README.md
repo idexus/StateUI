@@ -16,7 +16,9 @@ timing laws and their groups; `Gestures` what a gesture reports;
 `Environment` the standard providers and their vocabularies; `Sessions` the
 application, scene and window sessions; `Controls` the vocabularies one
 control takes; `Collections` an items view's entries, layout, selection and
-scroll anchor; `Files` a chosen file and the kinds of file a dialog shows.
+scroll anchor; `Files` a chosen file and the kinds of file a dialog shows; `Localization`
+language tags, catalogs and their parts, messages and the formats of each
+language.
 
 ## The notes
 
@@ -36,6 +38,8 @@ scroll anchor; `Files` a chosen file and the kinds of file a dialog shows.
   without Foundation.
 - [Gestures](gestures.md) - what a gesture report carries.
 - [The standard environment](environment.md) - what the host knows, as state.
+- [Localization](localization.md) - typed resources in each language, and the
+  formats StateUI writes itself.
 - [Sessions](sessions.md) - the application, a scene and a window as they
   run.
 
