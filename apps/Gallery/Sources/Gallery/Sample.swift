@@ -290,7 +290,7 @@ struct Sample {
         summary = Content.summary
         scrolls = Content.scrolls
         formFactors = Content.formFactors
-        shows = Content.shows
+        shows = { Content.shows($0) }
         fills = Content.fills
         examples = content.examples
     }
