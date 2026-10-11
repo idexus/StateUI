@@ -5,7 +5,7 @@
 // Design: docs/design/types/localization.md#formats-in-swift
 
 extension LanguageConventions {
-    /// The months in the genitive, as a date says them: "30 września 2026".
+    /// The months in the genitive, as a date says them, so the day always comes first: "30 września 2026".
     static let polish = LanguageConventions(
         plural: polishPlural,
         months: [
@@ -13,6 +13,7 @@ extension LanguageConventions {
             "lipca", "sierpnia", "września", "października", "listopada", "grudnia",
         ],
         shortMonths: ["sty", "lut", "mar", "kwi", "maj", "cze", "lip", "sie", "wrz", "paź", "lis", "gru"],
+        dayFirst: true,
         and: "i",
         serialComma: false,
         morning: "AM",

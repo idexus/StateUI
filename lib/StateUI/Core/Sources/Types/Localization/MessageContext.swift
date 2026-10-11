@@ -5,7 +5,8 @@
 /// the same words, so a view and a message write a number alike.
 ///
 /// Words inside a format - months, the "and" of a list - follow the language; digits, separators, the order of a
-/// day's parts and the clock follow the formats (`Localization.formatLocale`).
+/// day's parts and the clock follow the formats (`Localization.formatLocale`), except an order the language's
+/// grammar fixes: a Polish month in the genitive always follows its day.
 ///
 /// Design: docs/design/types/localization.md#formats-in-swift
 public struct MessageContext: Sendable {
@@ -60,7 +61,8 @@ public struct MessageContext: Sendable {
         switch style {
         case .long, .medium:
             let name = (style == .long ? words.months : words.shortMonths)[month]
-            return region.dayFirst ? "\(day.day) \(name) \(day.year)" : "\(name) \(day.day), \(day.year)"
+            return words.dayFirst ?? region.dayFirst
+                ? "\(day.day) \(name) \(day.year)" : "\(name) \(day.day), \(day.year)"
         case .short:
             let form = region.numericDate
             let pad = { (number: Int) in form.padded && number < 10 ? "0\(number)" : "\(number)" }

@@ -5,7 +5,7 @@
 // Design: docs/design/types/localization.md#formats-in-swift
 
 extension LanguageConventions {
-    /// One for 1, other for every other count.
+    /// One for 1, other for every other count; a day in either order, as the region writes it.
     static let english = LanguageConventions(
         plural: { $0 == 1 ? .one : .other },
         months: [
@@ -13,6 +13,7 @@ extension LanguageConventions {
             "July", "August", "September", "October", "November", "December",
         ],
         shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        dayFirst: nil,
         and: "and",
         serialComma: true,
         morning: "AM",

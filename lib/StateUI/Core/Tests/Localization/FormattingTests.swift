@@ -53,6 +53,14 @@ final class FormattingTests: XCTestCase {
         XCTAssertEqual(english.list(["Ania", "Basia", "Celina"]), "Ania, Basia, and Celina")
     }
 
+    func testALanguageWhoseGrammarFixesTheOrderKeepsIt() {
+        let polish = localization(.polish, "en-US")
+
+        XCTAssertEqual(polish.date(day, style: .long), "30 września 2026", "a genitive month follows its day")
+        XCTAssertEqual(polish.date(day, style: .medium), "30 wrz 2026")
+        XCTAssertEqual(polish.date(day, style: .short), "9/30/26", "digits follow the region")
+    }
+
     func testTimesOfDay() {
         let english = localization(.english, "en-US"), polish = localization(.polish, "pl-PL")
         let morning = ClockTime(hour: 7, minute: 30), evening = ClockTime(hour: 19, minute: 5)
