@@ -57,6 +57,7 @@ LifetimeSample.swift 388647e356facd79
 LivingLayoutSample.swift 68b7f8803fa314b5
 LoadingItemsSample.swift 0475570786822801
 LocaleInfoSample.swift cb60aae108d9c73d
+LocalizationSample.swift a5d59545a5caa757
 MapSample.swift 7c9ebbdbf83ac5b7
 MaterialsSample.swift 8aadf9602a22a485
 MenuBarSample.swift 6da4c4a2a2b1f2b9

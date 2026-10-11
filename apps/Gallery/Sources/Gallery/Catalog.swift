@@ -283,9 +283,10 @@ final class Catalog {
                 route: "environment",
                 title: "Environment",
                 summary: "What the host knows - the device, the screen, the locale, the "
-                    + "network and the battery - the application's session, and an object "
-                    + "of your own provided above and resolved below by type; the theme is "
-                    + "under Styles, the scene's and the window's sessions under Scene.",
+                    + "network and the battery - the application's session, an object "
+                    + "of your own provided above and resolved below by type, and a document "
+                    + "in its own language; the theme is under Styles, the scene's and the "
+                    + "window's sessions under Scene.",
                 icon: ImageSource(light: "nav_environment.png", dark: "nav_environment_dark.png"),
                 card: ImageSource("cat_environment.png"),
                 samples: [
@@ -293,6 +294,7 @@ final class Catalog {
                     Sample(DeviceInfoSample()),
                     Sample(DeviceDisplaySample()),
                     Sample(LocaleInfoSample()),
+                    Sample(LocalizationSample()),
                     Sample(ConnectivitySample()),
                     Sample(BatterySample()),
                     Sample(ApplicationSessionSample()),

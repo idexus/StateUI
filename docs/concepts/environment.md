@@ -131,7 +131,7 @@ contract:
 | `device.connectivity` - `Connectivity` | `networkAccess`, `connectionProfiles` | reachability and all active connection kinds; `.unknown` and `[]` until reported |
 | `device.display` - `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numeric values are `0` and enums `.unknown` until reported |
 | `device.info` - `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` | form factor, open platform name, hardware and system facts; text starts empty and closed values `.unknown` |
-| `locale` - `LocaleInfo` | `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `layoutDirection` | host-normalized language, region, IANA zone, clock and calendar conventions, and the way the language is written; text starts empty, the clock starts 12-hour, the week on Sunday, units metric, and the direction left to right |
+| `locale` - `LocaleInfo` | `language`, `region`, `name`, `languages`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `layoutDirection` | host-normalized language, region, the user's languages in order (`LocaleTag`), IANA zone, clock and calendar conventions, and the way the language is written; text starts empty, the list empty, the clock starts 12-hour, the week on Sunday, units metric, and the direction left to right |
 | `application.info` - `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, `accentColor` | manifest identity, live requested appearance and the user's accent; text starts empty, theme `.system` and accent `#0A84FF` until reported |
 | `application.phase` - `ApplicationPhase` | | process-wide visibility state; it starts `.active`, and the host maps lifecycle to `.active`, `.inactive`, or `.background` |
 
@@ -321,6 +321,8 @@ Keep portable interface decisions on StateUI's host-normalized boundary:
 
 - use `LocaleInfo` for the current language, region, clock convention, units,
   and IANA zone;
+- use `Localization` for words, messages and formats in the user's language
+  ([Localization](localization.md)), written in Swift on every platform;
 - use `ClockTime.now()` and `TimeZoneInfo` for portable local-clock and offset
   questions;
 - use `CalendarDate` and `ClockTime` at control and state boundaries;

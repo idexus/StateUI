@@ -36,6 +36,9 @@ design notes beside them.
 - [Environment](concepts/environment.md) covers application objects, the
   facts the library offers by name (`\.application`, `\.scene`, `\.window`,
   `\.device`, `\.locale`), dates, time and time zones.
+- [Localization](concepts/localization.md) covers typed resources in each
+  language, messages and plural forms, formats, and a document in its own
+  language.
 
 ## Build an interface
 
