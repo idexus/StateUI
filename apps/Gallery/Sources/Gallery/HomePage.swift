@@ -159,7 +159,7 @@ struct HomePage: View {
                 .lineWidth(0)
                 .shape(.roundedRectangle(18))
 
-                SectionTitle("\(catalog.sampleCount(on: device.info.formFactor)) SAMPLES "
+                SectionTitle("\(catalog.sampleCount(on: device)) SAMPLES "
                     + "IN \(groups.count) GROUPS")
             }
             .spacing(14)
@@ -220,7 +220,7 @@ struct HomePage: View {
                 // to as many lines as it wants, the count sits under it, and
                 // what changes between cards is how much of the block is
                 // empty underneath rather than how tall it is.
-                Caption(catalog: catalog, position: $chosen, formFactor: device.info.formFactor)
+                Caption(catalog: catalog, position: $chosen)
                     .height(Self.caption)
                     .verticalAlignment(.start)
                     .isVisible(wearing.captions)
@@ -571,8 +571,8 @@ private struct Caption: View {
     /// the one built again when the user swipes.
     @Binding var position: Int
 
-    /// What the device is, for the count - a phone is shown fewer samples.
-    let formFactor: FormFactor
+    /// What the device is and has, for the count - a phone is shown fewer samples.
+    @Environment(\.device) private var device
 
     var body: some View {
         let groups = catalog.groups
@@ -581,7 +581,7 @@ private struct Caption: View {
         // THE NAME IS NOT AMONG THEM: the card carries it, and saying it again
         // a card's width below reads as two things rather than one.
         return VStack {
-            Text("\(group.shown(on: formFactor).count) samples · tap the card to open")
+            Text("\(group.shown(on: device).count) samples · tap the card to open")
                 .fontSize(12)
                 .textColor(Palette.accent)
                 .horizontalTextAlignment(.center)

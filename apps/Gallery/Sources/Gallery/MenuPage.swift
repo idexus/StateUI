@@ -107,7 +107,7 @@ struct MenuPage: View {
             // A row with no fixed place to go: it pushes a sample chosen at
             // random. It needs no type of its own: the same view, with a
             // different handler.
-            MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.info.formFactor) }
+            MenuRow("Surprise me") { nav.surprise(from: catalog, on: device) }
                 .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
         }
         // Clear of the pane's edges, so the chosen row's fill stands inside it.

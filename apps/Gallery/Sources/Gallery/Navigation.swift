@@ -344,9 +344,9 @@ extension Navigation {
     ///
     /// Two assignments: the menu closes and the page goes on the stack, and
     /// the next render is what moves the screen.
-    func surprise(from catalog: Catalog, on formFactor: FormFactor) {
+    func surprise(from catalog: Catalog, on device: Device) {
         guard let sample = catalog.groups
-            .flatMap({ $0.shown(on: formFactor) })
+            .flatMap({ $0.shown(on: device) })
             .randomElement()
         else { return }
 

@@ -547,7 +547,7 @@ final class CatalogTests: XCTestCase {
             }
         }
 
-        XCTAssertEqual(seen.count, catalog.sampleCount(on: .unknown))
+        XCTAssertEqual(seen.count, catalog.sampleCount(on: Device()))
         XCTAssertNil(catalog.sample(id: "nothing-called-this"))
     }
 
@@ -566,10 +566,10 @@ final class CatalogTests: XCTestCase {
         for id in notOnAPhone {
             let sample = try XCTUnwrap(catalog.sample(id: id))
 
-            XCTAssertTrue(sample.isShown(on: .desktop), "\(id) is hidden on a desktop")
-            XCTAssertTrue(sample.isShown(on: .tablet), "\(id) is hidden on a tablet")
-            XCTAssertFalse(sample.isShown(on: .phone), "\(id) is listed on a phone")
-            XCTAssertTrue(sample.isShown(on: .unknown), "a headless test sees everything")
+            XCTAssertTrue(sample.isShown(on: Self.device(.desktop)), "\(id) is hidden on a desktop")
+            XCTAssertTrue(sample.isShown(on: Self.device(.tablet)), "\(id) is hidden on a tablet")
+            XCTAssertFalse(sample.isShown(on: Self.device(.phone)), "\(id) is listed on a phone")
+            XCTAssertTrue(sample.isShown(on: Device()), "a headless test sees everything")
         }
 
         // Every OTHER sample is everywhere: hiding is the exception, and one
@@ -579,10 +579,31 @@ final class CatalogTests: XCTestCase {
 
         for group in catalog.groups {
             for other in group.samples where !hidden.contains(other.id) {
-                XCTAssertTrue(other.isShown(on: .phone),
+                XCTAssertTrue(other.isShown(on: Self.device(.phone)),
                               "\(other.id) is hidden on a phone")
             }
         }
+    }
+
+    /// A sample showing a fact of the device - its display, its network, its battery - is listed only where the host
+    /// reports that fact: where it says nothing, the page would show nothing but placeholders.
+    func testASampleOfAFactTheHostDoesNotReportIsNotListed() throws {
+        let catalog = catalog()
+        let silent = Device(info: DeviceInfo(formFactor: .desktop))
+
+        for id in ["deviceDisplay", "connectivity", "battery"] {
+            let sample = try XCTUnwrap(catalog.sample(id: id))
+            XCTAssertTrue(sample.isShown(on: Self.device(.desktop)), "\(id) is hidden where the host reports it")
+            XCTAssertFalse(sample.isShown(on: silent), "\(id) is listed where the host says nothing of it")
+        }
+        XCTAssertTrue(try XCTUnwrap(catalog.sample(id: "deviceInfo")).isShown(on: silent), "a sample of no such fact")
+    }
+
+    /// A device of `formFactor` whose host reports its display, its network and its battery.
+    private static func device(_ formFactor: FormFactor) -> Device {
+        Device(
+            info: DeviceInfo(formFactor: formFactor), display: DeviceDisplay(width: 1440, height: 900),
+            battery: Battery(state: .charging), connectivity: Connectivity(networkAccess: .internet))
     }
 
     func testEveryGroupIsWrittenOutInFull() {
@@ -1192,7 +1213,7 @@ final class CatalogTests: XCTestCase {
     func testACardPushesTheSampleItNames() async throws {
         let place = Place()
         let group = try XCTUnwrap(catalog(place.nav).groups.first { $0.route == "layout" })
-        let sample = try XCTUnwrap(group.shown(on: .unknown).first)
+        let sample = try XCTUnwrap(group.shown(on: Device()).first)
 
         let renders = Renders()
         let patch = renders.render(GroupPage(group: group, nav: place.nav).node)

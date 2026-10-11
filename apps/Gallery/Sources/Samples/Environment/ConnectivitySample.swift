@@ -12,6 +12,9 @@ struct ConnectivitySample: SampleContent, ExampleContent {
     static let summary = "Whether the internet is reachable and by what - "
         + "updated the moment it changes."
 
+    /// Listed where the host reports it: one that says nothing of it would show placeholders alone.
+    static func shows(_ device: Device) -> Bool { device.connectivity.networkAccess != .unknown }
+
     // listing: ConnectivitySample
     var body: some View {
         // The list is the host's answer as given, and a host may report one

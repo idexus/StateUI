@@ -46,6 +46,11 @@ protocol SampleContent {
     /// saying what is missing than by a dead end.
     static var formFactors: Set<FormFactor> { get }
 
+    /// Whether `device` has what this sample shows: true unless the sample shows a fact the host may not report - one
+    /// about the battery lists only where the host says what the battery is. Read in a body, so a fact reported
+    /// later lists the sample then.
+    @MainActor static func shows(_ device: Device) -> Bool
+
     /// Whether an example is given the WINDOW's height rather than its own -
     /// true for an example that scrolls itself, such as a `ScrollView`,
     /// `GalleryView`, or WebView.
@@ -74,6 +79,9 @@ extension SampleContent {
 
     /// Listed on every kind of device, which is what almost every sample is.
     static var formFactors: Set<FormFactor> { [.phone, .tablet, .desktop, .tv, .watch] }
+
+    /// Showing nothing a host may leave unreported, which is what almost every sample is.
+    @MainActor static func shows(_ device: Device) -> Bool { true }
 }
 
 extension SampleContent where Self: ExampleContent {
@@ -246,6 +254,9 @@ struct Sample {
     let scrolls: Bool
     let formFactors: Set<FormFactor>
 
+    /// Whether a device has what the sample shows (`SampleContent.shows`).
+    let shows: @MainActor (Device) -> Bool
+
     /// Whether an example is given the window's height rather than its own.
     let fills: Bool
 
@@ -255,11 +266,13 @@ struct Sample {
     /// that keeps this catalog.
     let examples: [Example]
 
-    /// Whether a device of `formFactor` lists this sample. An UNKNOWN formFactor - a
-    /// headless test, a host that could not say - lists everything: hiding is
-    /// a courtesy to the user, and a test wants to see it all.
-    func isShown(on formFactor: FormFactor) -> Bool {
-        formFactor == .unknown || formFactors.contains(formFactor)
+    /// Whether `device` lists this sample: one of its form factors, with what it shows. An UNKNOWN formFactor - a
+    /// headless test, a host that could not say - lists everything: hiding is a courtesy to the user, and a test wants
+    /// to see it all.
+    @MainActor
+    func isShown(on device: Device) -> Bool {
+        let formFactor = device.info.formFactor
+        return formFactor == .unknown || (formFactors.contains(formFactor) && shows(device))
     }
 
     /// What the page calls example `index`: "Example" where it is the only one,
@@ -277,6 +290,7 @@ struct Sample {
         summary = Content.summary
         scrolls = Content.scrolls
         formFactors = Content.formFactors
+        shows = Content.shows
         fills = Content.fills
         examples = content.examples
     }

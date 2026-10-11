@@ -102,7 +102,7 @@ struct MainPage: View {
                 if bar.showsSurprise {
                     ToolbarItem("Surprise me")
                         .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
-                        .onClicked { nav.surprise(from: catalog, on: device.info.formFactor) }
+                        .onClicked { nav.surprise(from: catalog, on: device) }
                 }
             }
             // What the window's bar says of the gallery: its name and mark,

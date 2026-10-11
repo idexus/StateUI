@@ -36,12 +36,12 @@ struct SampleGroup {
 
     let samples: [Sample]
 
-    /// The samples a device of `formFactor` lists, through `Sample.isShown(on:)`.
-    /// What every page and count reads, each passing the formFactor it resolved
-    /// with `@Environment(\.device) var device`; `samples` is the whole
-    /// set, which is what the pushed pages and the tests read.
-    func shown(on formFactor: FormFactor) -> [Sample] {
-        samples.filter { $0.isShown(on: formFactor) }
+    /// The samples `device` lists, through `Sample.isShown(on:)`. What every page and count reads, each passing
+    /// the device it resolved with `@Environment(\.device) var device`; `samples` is the whole set, which is what
+    /// the pushed pages and the tests read.
+    @MainActor
+    func shown(on device: Device) -> [Sample] {
+        samples.filter { $0.isShown(on: device) }
     }
 }
 

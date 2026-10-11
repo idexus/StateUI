@@ -13,6 +13,9 @@ struct BatterySample: SampleContent, ExampleContent {
     static let summary = "The host's battery, provided to every view - level, "
         + "state, source and the saver."
 
+    /// Listed where the host reports it: one that says nothing of it would show placeholders alone.
+    static func shows(_ device: Device) -> Bool { device.battery.state != .unknown }
+
     // listing: BatterySample
     var body: some View {
         VStack {
