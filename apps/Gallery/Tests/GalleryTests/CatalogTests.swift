@@ -1517,11 +1517,12 @@ final class CatalogTests: XCTestCase {
                        "the page and its run of cards keep three engines between them")
     }
 
-    /// And the home page's groups answer one, which is the gallery's.
+    /// And the home page's groups answer one, which is the gallery's; the
+    /// banner over them answers its own, opening StateUI's home.
     ///
     /// A `GalleryView` is swiped to choose and tapped to open, so there is ONE
     /// handler however many groups there are - inside the scroller lying over
-    /// the cards, which is the only thing here a finger can reach.
+    /// the cards, which is the only thing there a finger can reach.
     func testTheHomePagesGalleryAnswersATap() throws {
         let (shown, nav) = (catalog(), Place().nav)
         let page = Renders().laid { HomePage(catalog: shown, nav: nav).node }
@@ -1534,8 +1535,8 @@ final class CatalogTests: XCTestCase {
 
         walk(page)
 
-        XCTAssertEqual(carriers, ["ColorBox"],
-                       "the home page's gallery is opened by a tap on the run")
+        XCTAssertEqual(carriers, ["ZStack", "ColorBox"],
+                       "the banner opens StateUI's home, the gallery a tap on the run")
     }
 
     /// Finds what answers a tap and insists there is one per thing listed, each

@@ -76,6 +76,12 @@ struct HomePage: View {
     /// the run, and the entrance, which waits for it to hold still.
     @State private var room = Rect(0, 0, 0, 0)
 
+    /// The library's home opening: the panel and its button go through it, so a tap both hear opens it once.
+    @State private var opening = Gatekeeper(.ignoreWhileRunning)
+
+    /// Where StateUI lives.
+    private static let repository = "https://github.com/idexus/StateUI"
+
     /// Where the entrance has got to - the engine's own step.
     ///
     /// ORDINARY STATE THAT NOTHING DESCRIBES: kept by property name across
@@ -152,7 +158,24 @@ struct HomePage: View {
                     }
                     .spacing(10)
                     .padding(22)
+
+                    // The library's home, at the panel's top right; the whole panel opens it too.
+                    VStack {
+                        Button("Open on GitHub")
+                            .fontSize(13)
+                            .textColor(Palette.onBrand)
+                            .background(Color("#33FFFFFF"))
+                            .stroke(.transparent)
+                            // A radius past half its height rounds its ends whole: a capsule on every host.
+                            .shape(.roundedRectangle(100))
+                            .padding(horizontal: 14, vertical: 6)
+                            .onClicked(gate: opening) { try await Links.launch(Self.repository) }
+                    }
+                    .padding(14)
+                    .horizontalAlignment(.end)
+                    .verticalAlignment(.start)
                 }
+                .onTapped(gate: opening) { try await Links.launch(Self.repository) }
                 .style(.card)
                 .background(Palette.identity)
                 .stroke(.transparent)
