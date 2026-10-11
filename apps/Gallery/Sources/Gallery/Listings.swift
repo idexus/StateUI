@@ -4607,9 +4607,12 @@ enum Listings {
                         }
                 }
 
-                Stepper($count)
-                    .minimum(0)
-                    .maximum(30)
+                HStack {
+                    Stepper($count)
+                        .minimum(0)
+                        .maximum(30)
+                    Text("\(Int(count))")
+                }
 
                 ReportView(fileCount: Int(count), recent: recent, prepared: prepared)
                     .environment(localization)

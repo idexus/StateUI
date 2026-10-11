@@ -36,9 +36,13 @@ struct LocalizationSample: SampleContent, ExampleContent {
             }
             .spacing(8)
 
-            Stepper($count)
-                .minimum(0)
-                .maximum(30)
+            HStack {
+                Stepper($count)
+                    .minimum(0)
+                    .maximum(30)
+                Text("\(Int(count))")
+            }
+            .spacing(8)
 
             ReportView(fileCount: Int(count), recent: recent, prepared: prepared)
                 .environment(localization)
