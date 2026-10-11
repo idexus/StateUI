@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-@_spi(Host) import StateUI
+@_spi(Host) @testable import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIWeb
 import XCTest
@@ -26,6 +26,30 @@ final class WebLookTests: XCTestCase {
 
         XCTAssertEqual(try look("dialog[open] input.stateui-switch", "appearance"), "none", "the page's switch")
         XCTAssertEqual(try look("dialog[open] .stateui-sheet-room button", "touchAction"), "manipulation", "a tap at once")
+    }
+
+    /// A question stands as tall as what it says, its buttons side by side at their own height - also where the
+    /// browser stretches a modal dialog with no height of its own over the window, as WebKit does.
+    func testAQuestionStandsAsTallAsWhatItSays() throws {
+        _ = WebRenderer.running { Text("Beneath") }
+        let call = HostActCall(
+            act: .confirm, arguments: [.string("Delete draft?"), .string("Gone for good"), .string("Delete"), .string("Keep")],
+            completion: nil)
+        let asked = WebQuestion(try XCTUnwrap(HostQuestion(call))) { _, _ in }
+        asked.show()
+        try withExtendedLifetime(asked) {
+            let dialog = "document.querySelector('dialog.stateui-question[open]')"
+            let height = try XCTUnwrap(WebBrowser.number("\(dialog).getBoundingClientRect().height", on: 0))
+            let window = try XCTUnwrap(WebBrowser.number("innerHeight", on: 0))
+            let buttons = try XCTUnwrap(WebBrowser.evaluate(
+                "[...\(dialog).querySelectorAll('button')].map(b => { const r = b.getBoundingClientRect(); return r.top + ',' + r.height; }).join(';')",
+                on: 0))
+            XCTAssertLessThan(height, window / 2, "the dialog as tall as what it says")
+            let places = buttons.split(separator: ";").map { $0.split(separator: ",").compactMap { Double($0) } }
+            XCTAssertEqual(places.count, 2)
+            XCTAssertEqual(places.map { $0[0] }.max(), places.map { $0[0] }.min(), "the buttons side by side")
+            XCTAssertLessThan(places.map { $0[1] }.max() ?? 0, 60, "each at its own height")
+        }
     }
 
     func testAControlOverEveryPageWearsTheStylesheet() throws {

@@ -297,9 +297,11 @@ body {
 }
 @keyframes stateui-rise { from { transform: translateY(24px); opacity: 0; } }
 
-/* A question for the user: the browser's modal dialog, its words over its buttons. */
+/* A question for the user: the browser's modal dialog, its words over its buttons, as tall as they are - WebKit
+   stretches a modal dialog with no height of its own over the window, and its rows and buttons with it. */
 .stateui-question {
   width: min(400px, calc(100vw - 32px));
+  height: fit-content;
   padding: 24px;
   border: 0;
   border-radius: 16px;
@@ -307,7 +309,7 @@ body {
   color: var(--stateui-text);
   box-shadow: var(--stateui-raised-shadow);
 }
-.stateui-question[open] { display: grid; gap: 12px; animation: stateui-rise 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.stateui-question[open] { display: grid; align-content: start; gap: 12px; animation: stateui-rise 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .stateui-question::backdrop { background: var(--stateui-shade); }
 .stateui-question h2 { margin: 0; font-size: 18px; font-weight: 650; }
 .stateui-question p { margin: 0; color: var(--stateui-muted); line-height: 1.45; }
@@ -315,7 +317,7 @@ body {
   font: inherit; width: 100%; min-height: 40px; padding: 8px 12px; border-radius: var(--stateui-radius);
   border: 1px solid var(--stateui-line-strong); background: var(--stateui-surface); color: var(--stateui-text);
 }
-.stateui-question-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.stateui-question-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 4px; }
 .stateui-question[data-kind="choice"] .stateui-question-buttons { flex-direction: column; align-items: stretch; }
 .stateui-question button {
   font: inherit; font-weight: 600; min-height: 40px; padding: 0 18px; border-radius: 999px; cursor: pointer;
