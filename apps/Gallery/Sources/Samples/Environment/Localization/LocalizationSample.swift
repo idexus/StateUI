@@ -49,13 +49,15 @@ struct LocalizationSample: SampleContent, ExampleContent {
 
             Text("Side by side")
                 .fontAttributes(.bold)
-            HStack {
+            Grid {
                 ReportView(fileCount: Int(count), recent: recent, prepared: prepared)
                     .environment(localization.speaking(.english))
                 ReportView(fileCount: Int(count), recent: recent, prepared: prepared)
                     .environment(localization.speaking(.polish))
+                    .gridColumn(1)
             }
-            .spacing(16)
+            .columns(.fill, .fill)
+            .columnSpacing(16)
         }
         .spacing(14)
     }

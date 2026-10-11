@@ -27,12 +27,11 @@ struct ReportView: View {
             Text(res.recent)
                 .fontAttributes(.bold)
             ForEach(recent) { file in
-                HStack {
+                VStack {
                     Text(file.name)
                     Text(localization.date(file.modified, style: .medium))
                         .textColor(Palette.subtle)
                 }
-                .spacing(8)
             }
 
             Text(res.footer)

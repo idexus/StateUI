@@ -4618,12 +4618,14 @@ enum Listings {
                     .environment(localization)
 
                 Text("Side by side")
-                HStack {
+                Grid {
                     ReportView(fileCount: Int(count), recent: recent, prepared: prepared)
                         .environment(localization.speaking(.english))
                     ReportView(fileCount: Int(count), recent: recent, prepared: prepared)
                         .environment(localization.speaking(.polish))
+                        .gridColumn(1)
                 }
+                .columns(.fill, .fill)
             }
         }
 
@@ -4728,7 +4730,7 @@ enum Listings {
 
                     Text(res.recent)
                     ForEach(recent) { file in
-                        HStack {
+                        VStack {
                             Text(file.name)
                             Text(localization.date(file.modified, style: .medium))
                         }
