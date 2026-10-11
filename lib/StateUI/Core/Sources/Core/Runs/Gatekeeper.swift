@@ -4,7 +4,7 @@
 /// A gate kept in a state or a model, shared by every handler and task written with it - from one control, several,
 /// or code - which says whether a run is under way through it.
 ///
-///     @State private var document = SharedGate(.ignoreWhileRunning)
+///     @State private var document = Gatekeeper(.ignoreWhileRunning)
 ///
 ///     Button("Save").isEnabled(!document.isBusy).onClicked(gate: document) { try await model.save() }
 ///     Button("Delete").isEnabled(!document.isBusy).onClicked(gate: document) { try await model.delete() }
@@ -14,7 +14,7 @@
 /// An element leaving ends its own runs alone: the others' through the gate go on.
 /// Design: docs/design/core/runs.md#a-gate
 @MainActor
-public final class SharedGate: Gate {
+public final class Gatekeeper: Gate {
     /// What an event or a task does while a run is under way through the gate.
     public nonisolated let policy: GatePolicy
 

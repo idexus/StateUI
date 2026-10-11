@@ -113,7 +113,7 @@ public struct Button: ElementView, TextualElement, FontElement, PaddingElement, 
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClicked(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClicked(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onClicked(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }
@@ -130,7 +130,7 @@ public struct Button: ElementView, TextualElement, FontElement, PaddingElement, 
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPressed(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPressed(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onPressed(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }
@@ -148,7 +148,7 @@ public struct Button: ElementView, TextualElement, FontElement, PaddingElement, 
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onReleased(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onReleased(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onReleased(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

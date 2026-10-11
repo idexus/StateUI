@@ -206,7 +206,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPositionChanged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPositionChanged(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onPositionChanged(_ handler: @escaping ValueEventHandler<Int>) -> Self {
         fatalError("unavailable")
     }
@@ -237,7 +237,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onItemTapped(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onItemTapped(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onItemTapped(_ handler: @escaping ValueEventHandler<Items.Element>) -> Self {
         fatalError("unavailable")
     }

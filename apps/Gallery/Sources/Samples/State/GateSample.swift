@@ -7,7 +7,7 @@ import StateUI
 struct GateSample: SampleContent {
     static let id = "gates"
     static let title = "Gates"
-    static let summary = "A press while the last still runs - let go, cancelled, queued or run beside it - and a shared gate."
+    static let summary = "A press while the last still runs - let go, cancelled, queued or run beside it - and a gatekeeper."
 
     var examples: [Example] {
         [
@@ -107,7 +107,7 @@ private struct OwnGates: ExampleContent {
 private struct SaveAndDelete: ExampleContent {
     // listing: SaveAndDelete
     /// One gate for both of the document's actions.
-    @State private var document = SharedGate(.ignoreWhileRunning)
+    @State private var document = Gatekeeper(.ignoreWhileRunning)
     @State private var said = "Saved nothing yet."
 
     var body: some View {
@@ -150,7 +150,7 @@ private struct SaveAndDelete: ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("A SharedGate kept in a state is shared by every handler written with it: Save "
+        Text("A Gatekeeper kept in a state is shared by every handler written with it: Save "
             + "and Delete pass through one, so neither runs while the other does, and "
             + "its isBusy dims both and turns the indicator meanwhile.")
             .fontSize(12)
@@ -164,7 +164,7 @@ private struct WorkFromCode: ExampleContent {
     /// A draft that saves through its own gate, whoever asks.
     @MainActor
     final class Draft {
-        let saving = SharedGate(.ignoreWhileRunning)
+        let saving = Gatekeeper(.ignoreWhileRunning)
         @State var saves = 0
 
         /// Saves, unless a save is under way: the gate lets this one go.
@@ -267,7 +267,7 @@ private struct AwaitingEvents: ExampleContent {
 private struct Uploads: ExampleContent {
     // listing: Uploads
     /// Nothing held back, and busy while any upload runs.
-    @State private var uploads = SharedGate(.none)
+    @State private var uploads = Gatekeeper(.none)
     @State private var sent: [String] = []
 
     private let files = ["notes.txt", "photo.png", "song.mp3"]
@@ -293,7 +293,7 @@ private struct Uploads: ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("A shared gate that holds nothing back still says when it is busy: "
+        Text("A gatekeeper that holds nothing back still says when it is busy: "
             + "the uploads run side by side, and the line under them waits for the last.")
             .fontSize(12)
             .textColor(Palette.subtle)

@@ -95,7 +95,7 @@ public struct WebView: ElementView, WebViewProperties {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigating(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigating(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onNavigating(_ handler: @escaping ValueEventHandler<WebNavigation>) -> Self {
         fatalError("unavailable")
     }
@@ -115,7 +115,7 @@ public struct WebView: ElementView, WebViewProperties {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigated(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigated(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onNavigated(_ handler: @escaping ValueEventHandler<WebNavigated>) -> Self {
         fatalError("unavailable")
     }
@@ -133,7 +133,7 @@ public struct WebView: ElementView, WebViewProperties {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onProcessTerminated(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onProcessTerminated(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onProcessTerminated(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

@@ -89,7 +89,7 @@ public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentE
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSelectedIndexChanged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSelectedIndexChanged(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onSelectedIndexChanged(_ handler: @escaping ValueEventHandler<Int>) -> Self {
         fatalError("unavailable")
     }
@@ -107,7 +107,7 @@ public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentE
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onOpened(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onOpened(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onOpened(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }
@@ -125,7 +125,7 @@ public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentE
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClosed(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClosed(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onClosed(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

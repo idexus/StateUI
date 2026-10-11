@@ -123,7 +123,7 @@ public struct ScrollReader: View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onScrollStopped(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onScrollStopped(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onScrollStopped(_ handler: @escaping EventHandler) -> ScrollReader {
         fatalError("unavailable")
     }
@@ -145,7 +145,7 @@ public struct ScrollReader: View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onTapped(_ handler: @escaping EventHandler) -> ScrollReader {
         fatalError("unavailable")
     }
@@ -171,7 +171,7 @@ public struct ScrollReader: View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPanUpdated(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPanUpdated(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onPanUpdated(_ handler: @escaping ValueEventHandler<PanUpdate>) -> ScrollReader {
         fatalError("unavailable")
     }
@@ -207,7 +207,7 @@ public struct ScrollReader: View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(within: area, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(within: area, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onTapped(within area: @escaping (Rect) -> Rect, _ handler: @escaping EventHandler) -> ScrollReader {
         fatalError("unavailable")
     }

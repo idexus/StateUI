@@ -79,7 +79,7 @@ extension VisualElement where Self: StyleTarget {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onVisualStateChanged(states, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onVisualStateChanged(states, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onVisualStateChanged(
         _ states: VisualState<Self>...,
         perform handler: @escaping ValueEventHandler<VisualState<Self>>

@@ -7315,7 +7315,7 @@ enum Listings {
         "SaveAndDelete": #"""
         // Sources/Samples/State/GateSample.swift
         /// One gate for both of the document's actions.
-        @State private var document = SharedGate(.ignoreWhileRunning)
+        @State private var document = Gatekeeper(.ignoreWhileRunning)
         @State private var said = "Saved nothing yet."
 
         var body: some View {
@@ -9193,7 +9193,7 @@ enum Listings {
         "Uploads": #"""
         // Sources/Samples/State/GateSample.swift
         /// Nothing held back, and busy while any upload runs.
-        @State private var uploads = SharedGate(.none)
+        @State private var uploads = Gatekeeper(.none)
         @State private var sent: [String] = []
 
         private let files = ["notes.txt", "photo.png", "song.mp3"]
@@ -9644,7 +9644,7 @@ enum Listings {
         /// A draft that saves through its own gate, whoever asks.
         @MainActor
         final class Draft {
-            let saving = SharedGate(.ignoreWhileRunning)
+            let saving = Gatekeeper(.ignoreWhileRunning)
             @State var saves = 0
 
             /// Saves, unless a save is under way: the gate lets this one go.

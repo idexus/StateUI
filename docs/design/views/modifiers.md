@@ -44,7 +44,7 @@ modifiers live on `ModifiableElement`, so a style is offered none after the
 dot, and a style keeps only its values and states (`AnyStyle`), so nothing
 else written into its node reaches a control (tiers.md). Each handler passes through its own gate - a policy
 given as the gate is the handler's alone - so the second never waits for the first unless both are written with
-one `SharedGate` (core/runs.md).
+one `Gatekeeper` (core/runs.md).
 
 ## An event payload that does not read
 

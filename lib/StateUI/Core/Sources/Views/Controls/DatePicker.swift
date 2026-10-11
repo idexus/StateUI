@@ -111,7 +111,7 @@ public struct DatePicker: ElementView, TextStyleElement, FontElement, DatePicker
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDateChanged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDateChanged(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onDateChanged(_ handler: @escaping ValueEventHandler<CalendarDate>) -> Self {
         fatalError("unavailable")
     }
@@ -129,7 +129,7 @@ public struct DatePicker: ElementView, TextStyleElement, FontElement, DatePicker
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onOpened(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onOpened(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onOpened(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }
@@ -146,7 +146,7 @@ public struct DatePicker: ElementView, TextStyleElement, FontElement, DatePicker
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClosed(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClosed(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onClosed(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

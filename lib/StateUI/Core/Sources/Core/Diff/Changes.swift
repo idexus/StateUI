@@ -81,7 +81,7 @@ extension ModifiableElement {
     }
 
     /// A handler that awaits says what a change does while it runs.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onChanged(value, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onChanged(value, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onChanged<Value: Equatable>(
         _ value: Value,
         _ handler: @escaping EventHandler
@@ -134,7 +134,7 @@ extension ModifiableElement {
     }
 
     /// A handler that awaits says what a change does while it runs.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onChanged(value, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onChanged(value, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onChanged<Value: Equatable>(
         _ value: Value,
         _ handler: @escaping ValueEventHandler<Value, Value>

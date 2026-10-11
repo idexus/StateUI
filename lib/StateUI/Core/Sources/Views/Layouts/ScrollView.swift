@@ -104,7 +104,7 @@ public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollView
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onScrollStopped(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onScrollStopped(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onScrollStopped(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

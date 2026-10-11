@@ -171,7 +171,7 @@ extension ItemsView {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onItemActivated(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onItemActivated(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onItemActivated(_ handler: @escaping ValueEventHandler<ID>) -> Self {
         fatalError("unavailable")
     }
@@ -197,7 +197,7 @@ extension ItemsView {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onEndReached(within: n, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onEndReached(within: n, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onEndReached(within: Int = 0, _ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

@@ -224,7 +224,7 @@ run before it, waits, or runs beside it
 ```swift
 @MainActor
 final class Document {
-    let saving = SharedGate(.ignoreWhileRunning)
+    let saving = Gatekeeper(.ignoreWhileRunning)
 
     func save() async {}
     func autosave() { Task(gate: saving) { await self.save() } }
@@ -254,9 +254,9 @@ struct Toolbar: View {
   awaiting handler without a gate does not compile, and the message says what
   to write; a handler with no `await` takes none.
 - **One gate for everything that touches one thing.** A policy given as the
-  gate is the handler's own; a `SharedGate` is shared by every handler and
+  gate is the handler's own; a `Gatekeeper` is shared by every handler and
   task written with it - two buttons, an autosave - and its `isBusy` is a
-  state a body reads. The type says which kind a gate is: only a shared gate
+  state a body reads. The type says which kind a gate is: only a gatekeeper
   has `isBusy`, and only it takes a task.
 - **One spelling.** Work passes a gate written `gate:` wherever it starts, an
   event or the application's code.
