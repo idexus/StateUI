@@ -566,6 +566,14 @@ A user who prefers `de-CH`, then `pl-PL`, then `en-US` sees Files in Polish.
 Every part on the screen comes whole from that one language, so a word and its
 typeface never come from two variants.
 
+## The library's own words
+
+A dialog shows its own captions where the application gives none:
+`Dialogs.alert` its "OK", `Dialogs.prompt` its "OK" and "Cancel". StateUI says
+them in the system's language - Polish "Anuluj" on a Polish system - as the
+platform's own buttons beside them do. An application that speaks another
+language than the system's passes its own captions from its resources.
+
 ## What a host adds
 
 Every word and number above is worked out in Swift before anything reaches a

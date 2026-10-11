@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// English, and the regions whose formats StateUI writes for it.
+// English, the regions whose formats StateUI writes for it, and StateUI's own words in it.
 // Design: docs/design/types/localization.md#formats-in-swift
 
 extension LanguageConventions {
@@ -18,6 +18,10 @@ extension LanguageConventions {
         serialComma: true,
         morning: "AM",
         evening: "PM")
+}
+
+extension LibraryWords {
+    static let english = LibraryWords(ok: "OK", cancel: "Cancel")
 }
 
 extension RegionConventions {

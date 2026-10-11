@@ -135,6 +135,27 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
+    /// The captions a dialog says by itself speak the system's language, as the platform's own buttons do.
+    func testADialogsOwnCaptionsSpeakTheSystemsLanguage() async throws {
+        HostBoundary.setLocaleInfo(HostLocaleInfo(
+            language: "pl", region: "PL", name: "pl-PL", timeZone: "Europe/Warsaw", uses24HourClock: true,
+            firstDayOfWeek: .monday, isMetric: true, layoutDirection: .leftToRight))
+
+        try await check("prompt", [
+            .string("Rename"), .string(""), .string("OK"), .string("Anuluj"), .nothing, .nothing,
+            InputPurpose.default.propValue, .string(""),
+        ]) {
+            _ = try await Dialogs.prompt("Rename")
+        }
+        try await check("alert", [.string("Zapisano"), .string("Szkic jest bezpieczny"), .string("OK")]) {
+            try await Dialogs.alert("Zapisano", message: "Szkic jest bezpieczny")
+        }
+
+        HostBoundary.setLocaleInfo(HostLocaleInfo(
+            language: "", region: "", name: "", timeZone: "", uses24HourClock: false, firstDayOfWeek: .sunday,
+            isMetric: true, layoutDirection: .leftToRight))
+    }
+
     func testFocusingAViewCrossesWithItsArgumentsInPlace() async throws {
         try await check("focus", [.string("email")]) {
             _ = try await named("email", TextField.self).focus()

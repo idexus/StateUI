@@ -477,9 +477,10 @@ the control it hands an aimed act.
 
 A question - an alert, a confirmation, a choice of actions, a prompt - is
 read from its act the same way on every host (`HostQuestion`): its title and
-message, the accepting caption ("OK" where it names none), the cancelling one
-("Cancel" for a confirmation or a prompt; a choice's only where it names
-one), a choice's dangerous action and its others, a prompt's placeholder,
+message, the accepting caption, the cancelling one (a choice's only where it
+names one) - the core sends the library's own words in the system's language
+where the application names none, so "OK" and "Cancel" here stand only for an
+act that came without them - a choice's dangerous action and its others, a prompt's placeholder,
 bound, purpose and starting words. It answers as its kind does: a
 confirmation yes or no, a choice or a prompt its words where the user
 accepted - a prompt's cut to its bound, by characters - and nothing where

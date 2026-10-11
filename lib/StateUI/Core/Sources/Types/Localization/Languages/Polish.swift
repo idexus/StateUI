@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Polish, and Poland's formats.
+// Polish, Poland's formats, and StateUI's own words in Polish.
 // Design: docs/design/types/localization.md#formats-in-swift
 
 extension LanguageConventions {
@@ -26,6 +26,10 @@ extension LanguageConventions {
         if (2...4).contains(whole % 10), !(12...14).contains(whole % 100) { return .few }
         return .many
     }
+}
+
+extension LibraryWords {
+    static let polish = LibraryWords(ok: "OK", cancel: "Anuluj")
 }
 
 extension RegionConventions {
