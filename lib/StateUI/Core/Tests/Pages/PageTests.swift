@@ -49,6 +49,7 @@ private struct EveryPropertyPage: View {
                         .isDestructive(true)
                         .isEnabled(false)
                         .isOn(true)
+                        .keyboardShortcut("o")
                         .onClicked {}
 
                     Menu("Recent") {
