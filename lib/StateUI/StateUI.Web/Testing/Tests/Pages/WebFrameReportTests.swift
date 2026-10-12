@@ -76,7 +76,7 @@ final class WebFrameReportTests: XCTestCase {
         host.settle { frames.values.last.map(FrameReport.size)?.first == 160 }
 
         let width = "e.querySelector('path').getBBox().width"
-        host.settle { ((try? WebBrowser.number(width, on: shape.node)) ?? 0).map { abs($0 - 160) < 0.5 } ?? false }
+        host.settle { (try? WebBrowser.number(width, on: shape.node)).map { abs($0 - 160) < 0.5 } ?? false }
 
         XCTAssertEqual(frames.values.last.map(FrameReport.size)?.first, 160, "the frame said the old width")
         let drawn = try XCTUnwrap(WebBrowser.number(width, on: shape.node))

@@ -77,8 +77,8 @@ final class AndroidStackViewTests: XCTestCase {
 
     /// A stated width wider than the room its layout gives is measured within that room, as the host layer's rule
     /// says: its words wrap to the width it stands at, so it is as tall as the same words stated that width.
-    func testAStatedWidthIsMeasuredWithinItsRoom() throws {
-        try onMainActor {
+    func testAStatedWidthIsMeasuredWithinItsRoom() {
+        onMainActor {
             let words = "Words enough to wrap onto more than one line at either of these widths, and some more."
             let host = AndroidRenderer.running {
                 VStack {
