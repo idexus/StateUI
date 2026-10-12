@@ -217,7 +217,7 @@ page's with the row's height added.
 
 ## A box
 
-A box - a layout's, a button's, a colour box's, a rectangle's - is read the
+A box - a layout's, a button's, a rectangle's - is read the
 same way on every host (`BoxArithmetic`): its corners' radii stand clockwise
 from the top left, the order toolkits take them in, each never below nothing;
 a corner is round and no more than half the shorter side, so a radius past

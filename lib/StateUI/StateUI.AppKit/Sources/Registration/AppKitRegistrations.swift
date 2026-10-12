@@ -35,7 +35,7 @@ enum AppKitRegistrations {
         return registry
     }()
 
-    /// The elements whose registration draws their background itself - a field, a button, a colour box - under
+    /// The elements whose registration draws their background itself - a field, a button - under
     /// which no layer paints another: a search field's rounded field takes no fill colour, and a square painted
     /// under it would hide its shape.
     /// Design: docs/design/platforms/appkit/registrations.md#a-background

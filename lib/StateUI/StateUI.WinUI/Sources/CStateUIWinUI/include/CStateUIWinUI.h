@@ -736,11 +736,6 @@ void stateui_winui_canvas_set_ground(StateUIObjectRef canvas, uint32_t argb);
 /// The colour the canvas is filled with under its drawing, ARGB; 0 for none - what a test reads.
 uint32_t stateui_winui_canvas_ground(StateUIObjectRef canvas);
 
-/// A ColorBox: a figure filled with one colour, its corners rounded in DIPs - top left, top right, bottom right,
-/// bottom left.
-StateUIObjectRef stateui_winui_color_box_make(int64_t view);
-void stateui_winui_color_box_set(StateUIObjectRef box, uint32_t argb, double const *corners);
-
 /// Renders the element and reads the colour, as ARGB, at each of `count` points given as x and y in DIPs of it -
 /// what a test reads of the screen; whether it rendered.
 bool stateui_winui_pixels(StateUIObjectRef element, double const *points, int32_t count, uint32_t *argb);

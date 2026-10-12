@@ -29,10 +29,6 @@ CheckBox
   isOn
   tint
   toggled()
-ColorBox
-  background
-  color
-  cornerRadius
 DatePicker
   date
   fontAttributes

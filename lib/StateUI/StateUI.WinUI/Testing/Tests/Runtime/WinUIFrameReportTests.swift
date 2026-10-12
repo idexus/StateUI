@@ -16,7 +16,7 @@ final class WinUIFrameReportTests: XCTestCase {
             let heard = Received<[Double]>()
             let host = WinUIRenderer.running {
                 VStack {
-                    ColorBox(.steelBlue).width(120).height(60)
+                    Rectangle().fill(.steelBlue).width(120).height(60)
                         .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
                 }
                 .horizontalAlignment(.start)
@@ -38,7 +38,7 @@ final class WinUIFrameReportTests: XCTestCase {
                 VStack {
                     Text("above").height(20)
                     if shown.wrappedValue {
-                        ColorBox(.steelBlue).width(120).height(60)
+                        Rectangle().fill(.steelBlue).width(120).height(60)
                             .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
                     }
                 }
@@ -60,7 +60,7 @@ final class WinUIFrameReportTests: XCTestCase {
             let host = WinUIRenderer.running {
                 VStack {
                     ItemsView(0..<100) { item in
-                        ColorBox(item == 2 ? .red : .blue).width(120).height(60)
+                        Rectangle().fill(item == 2 ? .red : .blue).width(120).height(60)
                             .onEvent(ViewContract.frameChanged) { if item == 2 { heard.values.append($0) } }
                     }
                     .width(200).height(300)

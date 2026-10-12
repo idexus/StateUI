@@ -5,19 +5,11 @@
 @_spi(Host) import StateUIHost
 
 extension WinUIRegistrations {
-    /// A picture from the application's folder, and the box of colour beside it.
+    /// A picture from the application's folder.
     static func pictures(_ registry: Registry<WinUIView>) {
         registry.add(ImageContract.self, create: { _ in WinUIImageView() }) { image in
             image.applies([ImageContract.source, ImageElementContract.contentMode]) { view, values in
                 view.apply(source: values[ImageContract.source], aspect: values[ImageElementContract.contentMode] ?? .fit)
-            }
-        }
-
-        registry.add(ColorBoxContract.self, create: { _ in WinUIColorBoxView() }) { box in
-            box.applies([ColorBoxContract.color, ColorBoxContract.cornerRadius]) { view, values in
-                view.apply(
-                    color: values[ColorBoxContract.color]?.propValue,
-                    corners: values[ColorBoxContract.cornerRadius]?.propValue)
             }
         }
     }

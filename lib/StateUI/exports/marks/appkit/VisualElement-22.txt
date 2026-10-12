@@ -1,57 +1,54 @@
-# revision 9.1
+# revision 10.1
 ActivityIndicator.rotation: ✓ read rotation of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.isAccessibilityHidden: ✅
 Canvas.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 CheckBox.ignoresInput: ✅
-ColorBox.isVisible: ✅
-ColorBox.scale: ✓ read scale of ColorBox: the host's own transform, checked against the layer it composed itself
-DatePicker.layoutDirection: ✅
-Divider.zIndex: ✅
-Ellipse.tooltip: ✅
-Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
-Grid.isFocusedChanged: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
-Grid.layoutDirection: ✅
-Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
-HStack.rotationX: ✓ read rotationX of HStack: the host's own transform, checked against the layer it composed itself
-Image.tooltip: ✅
-ItemsView.focus: ✅
-ItemsView.isFocusedChanged: ✅
-ItemsView.unfocus: ✅
-Line.pivotY: ✓ read pivotY of Line: the host's own transform, checked against the layer it composed itself
-Map.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-Path.frameChanged: ✅
-Path.maximumHeight: ✅
-Path.maximumWidth: ✅
-Path.minimumHeight: ✅
-Path.minimumWidth: ✅
-Path.translationY: ✓ read translationY of Path: the host's own transform, checked against the layer it composed itself
-Picker.rotationX: ✓ read rotationX of Picker: the host's own transform, checked against the layer it composed itself
-Polygon.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
-Polyline.accessibilityLabel: ✅
-ProgressBar.ignoresInput: ✅
-ProgressBar.isEnabled: ✓ tap on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
-RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own transform, checked against the layer it composed itself
-Rectangle.layoutDirection: ✅
-ScrollView.accessibilityHint: ✅
-SearchField.ignoresInput: ✅
-Slider.isVisible: ✅
-Slider.scale: ✓ read scale of Slider: the host's own transform, checked against the layer it composed itself
-Spacer.pivotX: ✓ read pivotX of Spacer: the host's own transform, checked against the layer it composed itself
-Stepper.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-Switch.zIndex: ✅
-Text.isEnabled: ✅
-Text.scaleY: ✓ read scaleY of Text: the host's own transform, checked against the layer it composed itself
-TextEditor.frameChanged: ✅
-TextEditor.maximumHeight: ✅
-TextEditor.maximumWidth: ✅
-TextEditor.minimumHeight: ✅
-TextEditor.minimumWidth: ✅
-TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.rotationY: ✓ read rotationY of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.layoutDirection: ✅
-VStack.tooltip: ✅
-WebView.frameChanged: ✅
-WebView.height: ✅
-WebView.translationX: ✓ read translationX of WebView: the host's own transform, checked against the layer it composed itself
-WebView.width: ✅
-ZStack.rotationX: ✓ read rotationX of ZStack: the host's own transform, checked against the layer it composed itself
+DatePicker.isVisible: ✅
+DatePicker.scale: ✓ read scale of DatePicker: the host's own transform, checked against the layer it composed itself
+Divider.isAccessibilityHidden: ✅
+Ellipse.pivotX: ✓ read pivotX of Ellipse: the host's own transform, checked against the layer it composed itself
+Grid.tooltip: ✅
+HStack.frameChanged: ✅
+HStack.maximumHeight: ✅
+HStack.maximumWidth: ✅
+HStack.minimumHeight: ✅
+HStack.minimumWidth: ✅
+HStack.translationY: ✓ read translationY of HStack: the host's own transform, checked against the layer it composed itself
+Image.pivotX: ✓ read pivotX of Image: the host's own transform, checked against the layer it composed itself
+ItemsView.tooltip: ✅
+Line.isEnabled: ✅
+Line.scaleY: ✓ read scaleY of Line: the host's own transform, checked against the layer it composed itself
+Map.pivotY: ✓ read pivotY of Map: the host's own transform, checked against the layer it composed itself
+Path.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+Picker.frameChanged: ✅
+Picker.maximumHeight: ✅
+Picker.maximumWidth: ✅
+Picker.minimumHeight: ✅
+Picker.minimumWidth: ✅
+Picker.translationY: ✓ read translationY of Picker: the host's own transform, checked against the layer it composed itself
+Polygon.rotationY: ✓ read rotationY of Polygon: the host's own transform, checked against the layer it composed itself
+Polyline.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+ProgressBar.accessibilityLabel: ✅
+RadioButton.ignoresInput: ✅
+Rectangle.isVisible: ✅
+Rectangle.scale: ✓ read scale of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.layoutDirection: ✅
+SearchField.accessibilityLabel: ✅
+Slider.frame: ✅
+Spacer.opacity: ✅
+Spacer.scaleX: ✓ read scaleX of Spacer: the host's own transform, checked against the layer it composed itself
+Stepper.pivotY: ✓ read pivotY of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.isAccessibilityHidden: ✅
+Text.style: ✅
+TextEditor.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+TextField.ignoresInput: ✅
+TimePicker.isVisible: ✅
+TimePicker.scale: ✓ read scale of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.pivotX: ✓ read pivotX of VStack: the host's own transform, checked against the layer it composed itself
+WebView.zIndex: ✅
+ZStack.frameChanged: ✅
+ZStack.maximumHeight: ✅
+ZStack.maximumWidth: ✅
+ZStack.minimumHeight: ✅
+ZStack.minimumWidth: ✅
+ZStack.translationY: ✓ read translationY of ZStack: the host's own transform, checked against the layer it composed itself

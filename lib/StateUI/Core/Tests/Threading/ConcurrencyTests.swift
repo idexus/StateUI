@@ -93,8 +93,8 @@ final class ConcurrencyTests: XCTestCase {
                         // Two acts in flight at once, from two pool threads -
                         // the shape the gallery's concurrent sample has, and
                         // the one that corrupted the unguarded registry.
-                        async let one: Bool = named("a", ColorBox.self).focus()
-                        async let two: Bool = named("b", ColorBox.self).focus()
+                        async let one: Bool = named("a", Rectangle.self).focus()
+                        async let two: Bool = named("b", Rectangle.self).focus()
                         _ = try await (one, two)
 
                         finished += 1
@@ -145,9 +145,9 @@ final class ConcurrencyTests: XCTestCase {
         let patch = renders.render(
             Button("Go")
                 .onClicked(gate: .none) {
-                    _ = try await named("a", ColorBox.self).focus()
-                    async let restored: Bool = named("a", ColorBox.self).focus()
-                    _ = try await named("b", ColorBox.self).focus()
+                    _ = try await named("a", Rectangle.self).focus()
+                    async let restored: Bool = named("a", Rectangle.self).focus()
+                    _ = try await named("b", Rectangle.self).focus()
                     _ = try await restored
                     reached = true
                 }
@@ -192,7 +192,7 @@ final class ConcurrencyTests: XCTestCase {
 
         let patch = renders.render(
             PressCard(
-                action: { _ = try await named("b", ColorBox.self).focus() }
+                action: { _ = try await named("b", Rectangle.self).focus() }
             ).node)
 
         let id = try XCTUnwrap(patch.events?["clicked"])
@@ -236,9 +236,9 @@ final class ConcurrencyTests: XCTestCase {
         let patch = renders.render(
             Button("Go")
                 .onClicked(gate: .none) {
-                    _ = try await named("a", ColorBox.self).focus()
-                    async let restored: Bool = named("a", ColorBox.self).focus()
-                    _ = try await named("b", ColorBox.self).focus()
+                    _ = try await named("a", Rectangle.self).focus()
+                    async let restored: Bool = named("a", Rectangle.self).focus()
+                    _ = try await named("b", Rectangle.self).focus()
                     _ = try await restored
                     reached = true
                 }
@@ -278,7 +278,7 @@ final class ConcurrencyTests: XCTestCase {
         let patch = renders.render(
             Button("Go")
                 .onClicked(gate: .none) {
-                    _ = try await named("a", ColorBox.self).focus()
+                    _ = try await named("a", Rectangle.self).focus()
                     reached = true
                 }
                 .node)

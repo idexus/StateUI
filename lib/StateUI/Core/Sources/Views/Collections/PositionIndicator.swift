@@ -14,7 +14,7 @@
 /// `.position($shown)` writes it as the user swipes, and `.position(shown)`
 /// here reads it. It serves anything with a place in a sequence.
 ///
-/// StateUI composes it of colour boxes in a row, the same on every platform.
+/// StateUI composes it of rectangles in a row, the same on every platform.
 /// Design: docs/design/views/measured-layouts.md#position-indicator
 public struct PositionIndicator: View {
     /// Each item's own mark, where the items were given; nil for dots.
@@ -74,7 +74,7 @@ public struct PositionIndicator: View {
         }
         let size = indicatorSize.current
         let color = current ? currentIndicatorColor.current : indicatorColor.current
-        let dot = ColorBox(color)
+        let dot = Rectangle().fill(color)
             .cornerRadius(indicatorShape.current == .circle ? size / 2 : 0)
             .width(size)
             .height(size)

@@ -34,7 +34,7 @@
     public static let elements: [any ElementContract.Type] = [
         ActivityIndicatorContract.self, ApplicationContract.self,
         ButtonContract.self, CanvasContract.self, CheckBoxContract.self,
-        ColorBoxContract.self, ContextMenuContract.self, DatePickerContract.self,
+        ContextMenuContract.self, DatePickerContract.self,
         EllipseContract.self, GridContract.self, HStackContract.self, ImageContract.self, ItemsViewContract.self,
         TextContract.self,
         LineContract.self, MapContract.self, MenuBarContract.self,

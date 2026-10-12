@@ -57,12 +57,6 @@ extension ControlDictionary {
             .spacing(8)
             """#),
 
-        (ColorBoxContract.self, #"""
-            ColorBox(.cornflowerBlue)
-                .cornerRadius(8)
-                .height(40)
-            """#),
-
         (ContextMenuContract.self, #"""
             @State var title = "Groceries"
 
@@ -548,7 +542,7 @@ extension ControlDictionary {
 
         (ZStackContract.self, #"""
             ZStack {
-                ColorBox(.cornflowerBlue)
+                Rectangle().fill(.cornflowerBlue)
                 Text("Bottom right")
                     .horizontalAlignment(.end)
                     .verticalAlignment(.end)

@@ -16,13 +16,13 @@ final class AppKitColorTests: XCTestCase {
     func testAnAuthoredColorReachesAppKitInSRGB() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var box = HostPatch(id: .manual("box"), type: .colorBox)
-        box.properties[.color] = .color(red: 128, green: 64, blue: 32, alpha: 255)
+        var box = HostPatch(id: .manual("box"), type: .rectangle)
+        box.properties[.fill] = .color(red: 128, green: 64, blue: 32, alpha: 255)
         renderer.applyForTesting(tree(box))
 
         let native = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("box")) as? AppKitColorBoxView)
-        assertSRGB(native.fillColor, red: 128, green: 64, blue: 32)
+            renderer.viewForTesting(id: .manual("box")) as? AppKitShapeView)
+        assertSRGB(try XCTUnwrap(native.fillForTesting.color), red: 128, green: 64, blue: 32)
     }
 
     @MainActor

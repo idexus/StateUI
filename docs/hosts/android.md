@@ -316,7 +316,7 @@ whose verdict files stand at another revision, or at none - the script
 chooses them - and holds or writes only theirs.
 
 ```bash
-STATEUI_FILTER=testPicker,AndroidColorBoxViewTests .scripts/Android/test-android.sh emulator-5554
+STATEUI_FILTER=testPicker,AndroidShapeViewTests .scripts/Android/test-android.sh emulator-5554
 STATEUI_UPDATE_EXPORTS=1 .scripts/Android/test-android.sh emulator-5554
 STATEUI_UPDATE_EXPORTS=1 STATEUI_STALE_ONLY=1 .scripts/Android/test-android.sh emulator-5554
 STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests

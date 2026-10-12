@@ -1,4 +1,4 @@
-# revision 9.1
+# revision 10.1
 ActivityIndicator.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
@@ -139,41 +139,6 @@ CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transfo
 CheckBox.unfocus: ✅
 CheckBox.width: ✅
 CheckBox.zIndex: ✅
-ColorBox.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
-ColorBox.accessibilityHint: ✅
-ColorBox.accessibilityLabel: ✅
-ColorBox.automationExcludedWithChildren: ✅
-ColorBox.background: ✓ read background of ColorBox: the class of the host's style sheet the widget wears: GTK reads back no background
-ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
-ColorBox.frame: ✅
-ColorBox.frameChanged: ✅
-ColorBox.height: ✅
-ColorBox.ignoresInput: ✅
-ColorBox.isAccessibilityHidden: ✅
-ColorBox.isEnabled: ✅
-ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
-ColorBox.isVisible: ✅
-ColorBox.layoutDirection: ✅
-ColorBox.maximumHeight: ✅
-ColorBox.maximumWidth: ✅
-ColorBox.minimumHeight: ✅
-ColorBox.minimumWidth: ✅
-ColorBox.opacity: ✅
-ColorBox.pivotX: ✓ read pivotX of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.pivotY: ✓ read pivotY of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.rotation: ✓ read rotation of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.rotationX: ✓ read rotationX of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.rotationY: ✓ read rotationY of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.scale: ✓ read scale of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.scaleX: ✓ read scaleX of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.scaleY: ✓ read scaleY of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.style: ✅
-ColorBox.tooltip: ✅
-ColorBox.translationX: ✓ read translationX of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.translationY: ✓ read translationY of ColorBox: the host's own transform: GTK reads back no part of one
-ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
-ColorBox.width: ✅
-ColorBox.zIndex: ✅
 DatePicker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅

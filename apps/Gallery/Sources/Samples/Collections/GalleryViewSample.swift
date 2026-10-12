@@ -54,7 +54,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         // over, which a stack cannot give a child - and a gallery wants it all.
         Grid {
             Grid {
-                ColorBox(Palette.raised)
+                Rectangle().fill(Palette.raised)
                     .cornerRadius(14)
 
                 // THE WHOLE CONTROL: the run made below - one card per item, each
@@ -156,7 +156,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         // corners, which is why the view is the application's to give.
         // A quarter of the fade is left beside it, unless `.fade(_:)` says
         // otherwise.
-        return run.shade(ColorBox(Color("#000000")).cornerRadius(16))
+        return run.shade(Rectangle().fill(Color("#000000")).cornerRadius(16))
     }
 
     /// One card's face - a picture and its name, and nothing at all about where
@@ -213,7 +213,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`Shaded` is `.shade(ColorBox(Color(\"#000000\")).cornerRadius(16))`: "
+            Text("`Shaded` is `.shade(Rectangle().fill(Color(\"#000000\")).cornerRadius(16))`: "
                 + "the cards away from the middle are DARKENED by a view drawn over them "
                 + "rather than faded. Turn it off and watch a far card go transparent - "
                 + "what shows through is the card behind it. The shade is a view because "

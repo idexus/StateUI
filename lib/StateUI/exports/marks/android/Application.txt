@@ -7,7 +7,7 @@ Application.confirm: ✓ read a question: what the relay keeps of the dialog it 
 Application.currentTime: ✅
 Application.currentTimeZone: ✅
 Application.handlerFailed: ✅
-Application.hideOnScreenKeyboard: cannot focus on TextField - Android's driver has no path for it yet
+Application.hideOnScreenKeyboard: ✅
 Application.launchFile: ✓ read a file dialog: the picker the relay holds, which a test never hands the system
 Application.launchLink: ✓ read a file dialog: the picker the relay holds, which a test never hands the system
 Application.openFiles: ✓ read a file dialog: the picker the relay holds, which a test never hands the system

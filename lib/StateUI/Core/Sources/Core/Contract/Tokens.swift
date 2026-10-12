@@ -23,7 +23,6 @@ extension NodeType {
 @_spi(Host) public extension NodeType {
     static let activityIndicator = ActivityIndicatorContract.nodeType
     static let application = ApplicationContract.nodeType
-    static let colorBox = ColorBoxContract.nodeType
     static let button = ButtonContract.nodeType
     static let checkBox = CheckBoxContract.nodeType
     static let page = PageContract.nodeType
@@ -110,12 +109,11 @@ extension NodeType {
     static let shape = BorderElementContract.shape.token
     static let showsClearButton = TextFieldContract.showsClearButton.token
     static let showsText = ToolbarItemContract.showsText.token
-    static let color = ColorBoxContract.color.token
     static let columns = GridContract.columns.token
     static let columnSpacing = GridContract.columnSpacing.token
     static let iconPosition = ButtonContract.iconPosition.token
     static let iconSpacing = ButtonContract.iconSpacing.token
-    static let cornerRadius = ColorBoxContract.cornerRadius.token
+    static let cornerRadius = RectangleContract.cornerRadius.token
     static let selectedTab = TabViewContract.selectedTab.token
     static let cursorPosition = TextInputContract.cursorPosition.token
     static let data = PathContract.data.token

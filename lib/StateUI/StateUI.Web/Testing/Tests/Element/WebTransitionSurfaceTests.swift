@@ -9,9 +9,9 @@ import XCTest
 @MainActor
 final class WebTransitionSurfaceTests: XCTestCase {
     func testTheTransitionSurfaceIsClosedAroundWhatTheHostPresents() {
-        XCTAssertTrue(WebTransitionSurface.presents(.color, on: .colorBox))
-        XCTAssertTrue(WebTransitionSurface.presents(.width, on: .colorBox))
-        XCTAssertTrue(WebTransitionSurface.presents(.cornerRadius, on: .colorBox))
+        XCTAssertTrue(WebTransitionSurface.presents(.fill, on: .rectangle))
+        XCTAssertTrue(WebTransitionSurface.presents(.width, on: .rectangle))
+        XCTAssertTrue(WebTransitionSurface.presents(.cornerRadius, on: .rectangle))
         XCTAssertTrue(WebTransitionSurface.presents(.opacity, on: .text))
         XCTAssertTrue(WebTransitionSurface.presents(.translationX, on: .button))
         XCTAssertTrue(WebTransitionSurface.presents(.value, on: .slider))

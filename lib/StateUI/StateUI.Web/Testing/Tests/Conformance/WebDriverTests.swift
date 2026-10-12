@@ -12,7 +12,7 @@ final class WebDriverTests: XCTestCase {
         let driver = WebDriver()
         for ability in [
             "switchAway on Window", "minimize on Window", "close on Window", "answerFiles on Window",
-            "dragAndDrop on ColorBox", "dragAndDrop on Text",
+            "dragAndDrop on Rectangle", "dragAndDrop on Text",
         ] {
             XCTAssertNotNil(driver.byHost(ability), ability)
         }

@@ -41,7 +41,7 @@ private struct DragPage: View {
     var body: some View {
         VStack {
             Text("x \(Int(x)) \(said)")
-            ColorBox(.steelBlue)
+            Rectangle().fill(.steelBlue)
                 .width(100)
                 .height(100)
                 .panX($x)
@@ -137,7 +137,7 @@ final class GTKGesturesTests: XCTestCase {
     func testADragMovesItsStateAndEndsAsASwipe() throws {
         try onUIThread {
             let host = GTKRenderer.running { DragPage() }
-            let box = try XCTUnwrap(host.views(GTKColorBoxView.self).first)
+            let box = try XCTUnwrap(host.views(GTKShapeView.self).first)
             let drag = try XCTUnwrap(box.listening?.controllers[.drags]?.first)
             let press = try XCTUnwrap(box.listening?.controllers[.pointer]?.last)
 
@@ -158,7 +158,7 @@ final class GTKGesturesTests: XCTestCase {
     func testADragThatWentNowhereItListensForIsNoSwipe() throws {
         try onUIThread {
             let host = GTKRenderer.running { DragPage() }
-            let box = try XCTUnwrap(host.views(GTKColorBoxView.self).first)
+            let box = try XCTUnwrap(host.views(GTKShapeView.self).first)
             let drag = try XCTUnwrap(box.listening?.controllers[.drags]?.first)
 
             GTKTestHost.emit(drag, "drag-begin", [0, 0])
@@ -178,7 +178,7 @@ final class GTKGesturesTests: XCTestCase {
     func testAPinchAndThePointerSayWhereTheyAre() throws {
         try onUIThread {
             let host = GTKRenderer.running { DragPage() }
-            let box = try XCTUnwrap(host.views(GTKColorBoxView.self).first)
+            let box = try XCTUnwrap(host.views(GTKShapeView.self).first)
             let zoom = try XCTUnwrap(box.listening?.controllers[.pinches]?.first)
             let motion = try XCTUnwrap(box.listening?.controllers[.pointer]?.first)
 

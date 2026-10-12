@@ -17,9 +17,9 @@ struct LayeredBoxes: View {
     var body: some View {
         VStack {
             ZStack {
-                ColorBox(.red).width(10).zIndex(blueInFront ? 0 : 1)
-                ColorBox(.blue).width(20).zIndex(blueInFront ? 1 : 0)
-                ColorBox(.green).width(30).zIndex($green)
+                Rectangle().fill(.red).width(10).zIndex(blueInFront ? 0 : 1)
+                Rectangle().fill(.blue).width(20).zIndex(blueInFront ? 1 : 0)
+                Rectangle().fill(.green).width(30).zIndex($green)
             }
             .width(40)
             .height(40)
@@ -45,7 +45,7 @@ final class WinUIZStackViewTests: XCTestCase {
             let host = WinUIRenderer.running(clock: clock) {
                 VStack {
                     PlacedLayout(["back", "front"], id: \.self) { name in
-                        ColorBox(name == "back" ? .red : .blue)
+                        Rectangle().fill(name == "back" ? .red : .blue)
                     }
                     .placement(run.projectedValue)
                     .height(200)
@@ -104,7 +104,7 @@ final class WinUIZStackViewTests: XCTestCase {
         onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
-                    ZStack { ColorBox(.red) }
+                    ZStack { Rectangle().fill(.red) }
                         .padding(10)
                         .background(Color("#00FF00"))
                         .stroke(Color("#0000FF"))
@@ -114,12 +114,12 @@ final class WinUIZStackViewTests: XCTestCase {
                         .width(100)
                         .height(80)
                         .horizontalAlignment(.start)
-                    ZStack { ColorBox(.red) }
+                    ZStack { Rectangle().fill(.red) }
                         .shape(.roundedRectangle(20))
                         .width(100)
                         .height(80)
                         .horizontalAlignment(.start)
-                    ZStack { ColorBox(.red) }
+                    ZStack { Rectangle().fill(.red) }
                         .shape(.roundedRectangle(20))
                         .clipsContent(true)
                         .width(100)
@@ -129,7 +129,7 @@ final class WinUIZStackViewTests: XCTestCase {
             }
 
             let layouts = host.views(WinUIZStackView.self)
-            let boxes = host.views(WinUIColorBoxView.self)
+            let boxes = host.views(WinUIPathView.self)
             XCTAssertEqual(layouts.count, 3)
             guard layouts.count == 3 else { return }
             XCTAssertTrue(layouts[0].frame == (0, 0, 100, 80), "\(layouts[0].frame)")

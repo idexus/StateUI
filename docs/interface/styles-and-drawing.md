@@ -314,6 +314,24 @@ The host maps this description to its native path and paint types. Path data
 and fill rules are StateUI values; platform path objects do not cross the
 boundary.
 
+A rectangle is also the plain block of colour - a bar of a chart, a swatch, a
+placeholder. Its fill and outline take a colour's state, `$x`, as other colour
+properties do: the host moves the colour to each new value and no view is
+rebuilt for it.
+
+```swift
+struct Level: View {
+    @State var tint = Color.cornflowerBlue
+
+    var body: some View {
+        VStack {
+            Rectangle().fill($tint).cornerRadius(6).height(12)
+            Button("Warn").onClicked { tint = .orange }
+        }
+    }
+}
+```
+
 ## Canvas
 
 `Canvas` is the escape hatch for retained, command-based 2D drawing. Its

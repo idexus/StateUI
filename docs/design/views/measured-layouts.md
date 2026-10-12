@@ -274,7 +274,7 @@ platform (modifiers.md, turning out of the screen plane).
 
 ## Position indicator
 
-`PositionIndicator` is StateUI's composition of colour boxes in a row, which
+`PositionIndicator` is StateUI's composition of rectangles in a row, which
 no host receives as a control of its own: UIKit and WinUI have a page
 indicator, AppKit and Android's framework none, and GTK has none outside
 libadwaita's carousel, so one composition serves all of them alike. Its count,

@@ -6,7 +6,7 @@ import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A box with four corners of their own - a rectangle's, a colour box's - drawn by the host layer's rule
+/// A box with four corners of their own - a rectangle's - drawn by the host layer's rule
 /// (`BoxArithmetic`): each corner round and no more than half the shorter side.
 /// Design: docs/design/host/layout.md#a-box
 enum AppKitCorners {

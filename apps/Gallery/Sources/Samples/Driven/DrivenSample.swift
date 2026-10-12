@@ -36,14 +36,14 @@ struct DrivenSample: SampleContent, ExampleContent {
 
             ZStack {
                 Grid {
-                    ColorBox()
-                        .color($tint)
+                    Rectangle()
+                        .fill($tint)
                         .height(6)
                         .cornerRadius(3)
                         .verticalAlignment(.center)
 
-                    ColorBox()
-                        .color(Palette.brand)
+                    Rectangle()
+                        .fill(Palette.brand)
                         .width(20)
                         .height(20)
                         .cornerRadius(10)
@@ -104,7 +104,7 @@ struct DrivenSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("A value the host holds is worn by a property the way a plain value is: "
-                + "`.translationX($offset)`, `.color($tint)`. Send it somewhere from a "
+                + "`.translationX($offset)`, `.fill($tint)`. Send it somewhere from a "
                 + "handler - `offset = 240`, under `$offset.journey.motion` - and the host "
                 + "walks the property there on the display's own frames, which the tree "
                 + "does not have. A journey is part of every `@State` the host can walk, "

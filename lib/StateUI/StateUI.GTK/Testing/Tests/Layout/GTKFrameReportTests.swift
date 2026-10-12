@@ -18,7 +18,7 @@ private struct FramesPage: View {
         VStack {
             Text("said \(said)")
             Text("room \(Int(room.width))x\(Int(room.height))")
-            ColorBox(.steelBlue)
+            Rectangle().fill(.steelBlue)
                 .width(wide ? 200 : 120)
                 .height(60)
                 .frame($room)
@@ -67,7 +67,7 @@ final class GTKFrameReportTests: XCTestCase {
             let heard = Received<[Double]>()
             let host = GTKRenderer.running {
                 VStack {
-                    ColorBox(.steelBlue).width(120).height(60)
+                    Rectangle().fill(.steelBlue).width(120).height(60)
                         .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
                 }
                 .horizontalAlignment(.start)

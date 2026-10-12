@@ -248,10 +248,6 @@ final class ControlTests: XCTestCase {
                 Spacer()
                     .minimumWidth(8)),
 
-            ControlCase("ColorBox", source: "ColorBox.swift",
-                ColorBox(.cornflowerBlue)
-                    .cornerRadius(8)),
-
             ControlCase("Grid", source: "Grid.swift",
                 Grid {
                     Text("Top left")
@@ -279,7 +275,7 @@ final class ControlTests: XCTestCase {
 
             ControlCase("ZStack", source: "ZStack.swift",
                 ZStack {
-                    ColorBox(.cornflowerBlue)
+                    Rectangle().fill(.cornflowerBlue)
                         .area(.proportional(0, 0, 1, 0.5))
 
                     Text("Bottom right")

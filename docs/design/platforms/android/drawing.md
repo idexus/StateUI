@@ -6,7 +6,7 @@ child an engine places, and the application's pictures.
 
 ## A shape and its brush
 
-A layout's own box, a ColorBox and any background that is not one plain colour are
+A layout's own box and any background that is not one plain colour are
 drawn by one drawable of the host's, `StateUIShapeDrawable`: a rectangle, a
 rectangle with rounded corners - a capsule's half its shorter side - or an
 ellipse, filled with a brush and
@@ -93,9 +93,6 @@ fewer, so a size in motion does not read it every frame, and a picture
 shown centred, at its own size, is read whole. Views showing the same
 picture at the same thinning share one bitmap, and the last to leave lets it
 go; only a bar's and a tab's icons are kept for as long as the host runs.
-
-A colour box has nothing to show but its colour: it takes the room its layout
-gives it and asks for none of its own.
 
 ## Shapes
 

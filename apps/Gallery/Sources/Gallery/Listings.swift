@@ -194,7 +194,7 @@ enum Listings {
                 // margin(2x, 2y, 0, 0) shifts a centred view by (x, y).
                 ForEach(Array(Self.marks.enumerated()), id: \.offset) { pair in
                     let (x, y, wide, tall) = pair.element
-                    return ColorBox(Palette.outline)
+                    return Rectangle().fill(Palette.outline)
                         .width(wide)
                         .height(tall)
                         .horizontalAlignment(.center)
@@ -294,7 +294,7 @@ enum Listings {
             _ angle: Binding<Double>,
             length: Double, width: Double, color: Color
         ) -> some View {
-            ColorBox(color)
+            Rectangle().fill(color)
                 .rotation(angle)
                 .width(width)
                 .height(length)
@@ -638,10 +638,6 @@ enum Listings {
                 .textColor(Palette.disabled)
                 .background(Palette.outline)
             }
-
-        // Every ColorBox that names no colour of its own wears the violet.
-        Style<ColorBox>()
-            .color(Palette.accent)
         """#,
         "AppThemeSample": #"""
         // Sources/Samples/Styles/AppThemeSample.swift
@@ -833,8 +829,8 @@ enum Listings {
                     .horizontalAlignment(.center)
 
                 // No `.motion` here: the panel takes the application's.
-                ColorBox()
-                    .color(wide ? Palette.accent : Palette.brand)
+                Rectangle()
+                    .fill(wide ? Palette.accent : Palette.brand)
                     .width(wide ? 300 : 120)
                     .height(60)
                     .horizontalAlignment(.center)
@@ -856,11 +852,11 @@ enum Listings {
                 // differ asks, so the only closure this switch rebuilds is that one.
                 ZStack {
                     // No area: the whole room, filled.
-                    ColorBox(Palette.outline)
+                    Rectangle().fill(Palette.outline)
 
                     // The panel fills the area it names: the right half of the
                     // room, or 120 by 60 at 16, 16 whatever the room's size.
-                    ColorBox(Color("#1E88E5"))
+                    Rectangle().fill(Color("#1E88E5"))
                         .area(proportional ? .proportional(0.5, 0, 0.5, 1) : .absolute(16, 16, 120, 60))
 
                     // Its natural size, where its alignments put it.
@@ -1372,36 +1368,6 @@ enum Listings {
             ["Cheese", "Bacon", "Egg"].enumerated().filter { extras[$0.offset] }.map { $0.element }
         }
         """#,
-        "ColorBoxSample": #"""
-        // Sources/Samples/Layout/ColorBoxSample.swift
-        var body: some View {
-            VStack {
-                HStack {
-                    ColorBox(Palette.accent)
-                        .width(44)
-                        .height(44)
-
-                    ColorBox(Palette.accent)
-                        .width(44)
-                        .height(44)
-
-                    ColorBox(Palette.accent)
-                        .width(44)
-                        .height(44)
-
-                    ColorBox(Color("#E53935"))
-                        .opacity(0.4)
-                        .width(44)
-                        .height(44)
-                }
-                .horizontalAlignment(.center)
-
-                // A one-pixel ColorBox is also the usual divider.
-                ColorBox(Palette.outline)
-                    .height(1)
-            }
-        }
-        """#,
         "ComplaintsSample": #"""
         // Sources/Samples/Fundamentals/ComplaintsSample.swift
         /// What the library said while the page showed, oldest first.
@@ -1477,7 +1443,7 @@ enum Listings {
                     VStack {
                         HStack {
                             ForEach(Array(bars.enumerated()), id: \.offset) { bar in
-                                ColorBox(Palette.onAccent)
+                                Rectangle().fill(Palette.onAccent)
                                     .translationY(bar.element)
                                     .width(14)
                                     .height(46)
@@ -2306,13 +2272,13 @@ enum Listings {
 
                 ZStack {
                     Grid {
-                        ColorBox()
-                            .color($tint)
+                        Rectangle()
+                            .fill($tint)
                             .height(6)
                             .verticalAlignment(.center)
 
-                        ColorBox()
-                            .color(Palette.brand)
+                        Rectangle()
+                            .fill(Palette.brand)
                             .width(20)
                             .height(20)
                             .horizontalAlignment(.start)
@@ -3294,7 +3260,7 @@ enum Listings {
             // over, which a stack cannot give a child - and a gallery wants it all.
             Grid {
                 Grid {
-                    ColorBox(Palette.raised)
+                    Rectangle().fill(Palette.raised)
 
                     // THE WHOLE CONTROL: the run made below - one card per item, each
                     // named by its name - and one word for the shape they stand in.
@@ -3384,7 +3350,7 @@ enum Listings {
             // corners, which is why the view is the application's to give.
             // A quarter of the fade is left beside it, unless `.fade(_:)` says
             // otherwise.
-            return run.shade(ColorBox(Color("#000000")).cornerRadius(16))
+            return run.shade(Rectangle().fill(Color("#000000")).cornerRadius(16))
         }
 
         /// One card's face - a picture and its name, and nothing at all about where
@@ -4149,10 +4115,10 @@ enum Listings {
                     ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
                         HStack {
                             ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
-                                ColorBox()
+                                Rectangle()
                                     .width(7)
                                     .height(14)
-                                    .color(Palette.outline)
+                                    .fill(Palette.outline)
                                     .id(index)
                             }
                         }
@@ -4186,10 +4152,10 @@ enum Listings {
                     ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
                         HStack {
                             ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
-                                ColorBox()
+                                Rectangle()
                                     .width(7)
                                     .height(14)
-                                    .color(Palette.outline)
+                                    .fill(Palette.outline)
                                     .id(index)
                             }
                         }
@@ -4289,13 +4255,13 @@ enum Listings {
                 // Left alone, the child written last is drawn on top; the higher
                 // zIndex is nearer the front, and nothing moves.
                 ZStack {
-                    ColorBox(Color("#E53935"))
+                    Rectangle().fill(Color("#E53935"))
                         .width(150)
                         .height(70)
                         .horizontalAlignment(.start)
                         .zIndex(redInFront ? 1 : 0)
 
-                    ColorBox(Color("#1E88E5"))
+                    Rectangle().fill(Color("#1E88E5"))
                         .width(150)
                         .height(70)
                         .horizontalAlignment(.end)
@@ -4328,7 +4294,7 @@ enum Listings {
                 // Laid out the way `direction` says - at `.inherited`, the way the
                 // view above it is.
                 HStack {
-                    ColorBox(Palette.accent)
+                    Rectangle().fill(Palette.accent)
                         .width(60)
                         .height(20)
 
@@ -5434,8 +5400,8 @@ enum Listings {
         /// One panel, either travelling at the chosen law or arriving at once.
         private func panel(travels: Bool) -> some View {
             // `.motion` is per view: the chosen law, or `.none` to arrive at once.
-            ColorBox()
-                .color(warm ? Palette.accent : Palette.brand)
+            Rectangle()
+                .fill(warm ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
                 .height(wide ? 110 : 56)
                 .horizontalAlignment(.start)
@@ -5445,8 +5411,8 @@ enum Listings {
         /// The same panel with a RULE: everything travels except its size, which
         /// `.size` takes to be its width, its height and its corner radius.
         private func sized() -> some View {
-            ColorBox()
-                .color(warm ? Palette.accent : Palette.brand)
+            Rectangle()
+                .fill(warm ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
                 .height(wide ? 110 : 56)
                 .horizontalAlignment(.start)
@@ -5970,7 +5936,7 @@ enum Listings {
                 // The box fills the ZStack; its corners are cut only while the
                 // ZStack clips what it holds.
                 ZStack {
-                    ColorBox(Palette.accent)
+                    Rectangle().fill(Palette.accent)
                 }
                 .clipsContent(clips)
                 .height(60)
@@ -6073,9 +6039,9 @@ enum Listings {
                 }
                 .samples($fade, into: $shown, .every(100))
 
-                ColorBox()
+                Rectangle()
                     .height(60)
-                    .color(Palette.accent)
+                    .fill(Palette.accent)
                     .opacity($fade)
 
                 HStack {
@@ -6126,7 +6092,7 @@ enum Listings {
                 // A fixed box for it to move inside, so the layout does not follow
                 // the view about.
                 ZStack {
-                    ColorBox(Palette.accent)
+                    Rectangle().fill(Palette.accent)
                         .width(64)
                         .height(64)
                         .horizontalAlignment(.center)
@@ -6255,9 +6221,9 @@ enum Listings {
                         .onToggled { on in shade = on ? .bold : .quiet }
                 }
 
-                ColorBox()
+                Rectangle()
                     .height(48)
-                    .color(shade == .bold ? Palette.accent : Palette.well)
+                    .fill(shade == .bold ? Palette.accent : Palette.well)
             }
         }
         """#,
@@ -6350,11 +6316,11 @@ enum Listings {
                 // pinch makes builds this closure.
                 DebugInfoLabel()
 
-                // The recognizer is on the ZStack; the ColorBox inside it is what
+                // The recognizer is on the ZStack; the rectangle inside it is what
                 // moves. Putting both on one view is what stops a pinch after its
                 // first report - see the notes.
                 ZStack {
-                    ColorBox(Palette.accent)
+                    Rectangle().fill(Palette.accent)
                         .width(80)
                         .height(80)
                         .horizontalAlignment(.center)
@@ -6483,7 +6449,7 @@ enum Listings {
             Grid {
                 Grid {
                     // THE BOARD, under everything.
-                    ColorBox(Palette.raised)
+                    Rectangle().fill(Palette.raised)
 
                     // THE CARDS, and what moves them - the whole of the example.
                     // Nothing here is described again while the ring turns: the
@@ -6521,7 +6487,7 @@ enum Listings {
                     // of its own, because a phone on its side has no height to
                     // spare for one.
                     PlacedLayout(Self.cards, id: \.name) { _ in
-                        ColorBox(Palette.text)
+                        Rectangle().fill(Palette.text)
                     }
                     .placement($dots)
                     .frame($dotRoom)
@@ -6582,7 +6548,7 @@ enum Listings {
             // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn over
             // every card, wearing the card's own corners - which is why it is the
             // application's to give and not the library's to draw.
-            .shade(ColorBox(Color("#000000")).cornerRadius(16))
+            .shade(Rectangle().fill(Color("#000000")).cornerRadius(16))
             .placement($ring)
             .frame($room)
             // THE WHOLE LAYOUT, run on the display's own frames whenever one of
@@ -7850,7 +7816,7 @@ enum Listings {
                 .horizontalAlignment(.center)
 
                 // A rule is decoration: a stop that would waste the user's time.
-                ColorBox(Palette.outline)
+                Rectangle().fill(Palette.outline)
                     .height(1)
                     .isAccessibilityHidden(true)
             }
@@ -8085,24 +8051,24 @@ enum Listings {
             VStack {
                 row("width(120)",
                     // A request, not an instruction: the layout has the last word.
-                    ColorBox(Palette.accent).width(120).height(24))
+                    Rectangle().fill(Palette.accent).width(120).height(24))
 
                 row("maximumWidth(200)",
-                    ColorBox(Palette.accent).height(24).maximumWidth(200))
+                    Rectangle().fill(Palette.accent).height(24).maximumWidth(200))
 
                 row("minimumWidth(160)",
-                    ColorBox(Palette.accent).height(24).minimumWidth(160))
+                    Rectangle().fill(Palette.accent).height(24).minimumWidth(160))
 
                 // The pair is the point: both ask for 80 high, and only the one
                 // without a ceiling on it is allowed to have it.
                 row("height(80), then the same with maximumHeight(32)",
                     HStack {
-                        ColorBox(Palette.outline)
+                        Rectangle().fill(Palette.outline)
                             .width(60)
                             .height(80)
                             .verticalAlignment(.start)
 
-                        ColorBox(Palette.accent)
+                        Rectangle().fill(Palette.accent)
                             .width(60)
                             .height(80)
                             .maximumHeight(32)
@@ -8112,7 +8078,7 @@ enum Listings {
                 // A child drawn past the layout's edge, cut off at it.
                 row("clipsContent(true)",
                     VStack {
-                        ColorBox(Palette.accent)
+                        Rectangle().fill(Palette.accent)
                             .height(24)
                             .translationX(60)
                     }
@@ -8121,7 +8087,7 @@ enum Listings {
 
                 row("clipsContent(false)",
                     VStack {
-                        ColorBox(Palette.accent)
+                        Rectangle().fill(Palette.accent)
                             .height(24)
                             .translationX(60)
                     }
@@ -8470,23 +8436,6 @@ enum Listings {
                         .verticalAlignment(.center)
 
                     Switch($enabled)
-                }
-                .horizontalAlignment(.center)
-
-                SectionTitle("A style for every control of a type")
-
-                // None of these names a colour: a style with no key is implicit,
-                // and every ColorBox wears the one `Style<ColorBox>()` gives.
-                HStack {
-                    ColorBox()
-                        .width(40)
-                        .height(40)
-                    ColorBox()
-                        .width(40)
-                        .height(40)
-                    ColorBox()
-                        .width(40)
-                        .height(40)
                 }
                 .horizontalAlignment(.center)
 
@@ -9247,7 +9196,7 @@ enum Listings {
                         .tooltip(detailed ? "Opens the stacks, grids and placement" : "Layout")
 
                     // Any view takes one, not only a control.
-                    ColorBox(Palette.accent)
+                    Rectangle().fill(Palette.accent)
                         .width(48)
                         .height(48)
                         .tooltip(detailed ? "The colour the gallery marks things with" : "Accent")
@@ -9276,7 +9225,7 @@ enum Listings {
 
                 Grid {
                     // Underneath, and still reachable.
-                    ColorBox(Palette.accent)
+                    Rectangle().fill(Palette.accent)
                         .height(120)
                         .onTapped { below += 1 }
 
@@ -9459,8 +9408,8 @@ enum Listings {
         ///
         /// - Parameter colour: which family this square belongs to.
         /// - Returns: the square, ready to be transformed.
-        private func box(_ colour: Color) -> ColorBox {
-            ColorBox(colour)
+        private func box(_ colour: Color) -> Rectangle {
+            Rectangle().fill(colour)
                 .width(44)
                 .height(44)
         }
@@ -9729,7 +9678,7 @@ enum Listings {
             @Environment(\.window) private var window
 
             var body: some View {
-                ColorBox(Color("#00000000"))
+                Rectangle().fill(Color("#00000000"))
                     .width(0)
                     .height(0)
                     .ignoresInput(true)

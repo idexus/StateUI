@@ -404,7 +404,7 @@ final class StyleTests: XCTestCase {
     private struct Tinted: View {
         let tint: Binding<Color>
 
-        var body: some View { ColorBox().background(tint) }
+        var body: some View { Rectangle().background(tint) }
     }
 
     /// Counts how often the closure writing a label runs.

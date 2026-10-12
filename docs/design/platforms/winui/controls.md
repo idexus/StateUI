@@ -222,8 +222,8 @@ an activity ring, a stepper, a search box and a day's or a time's picker
 draw stay met, `☑️` in the matrix.
 
 Assistive technology meets an element only through its automation peer, and
-WinUI gives a shape, a colour box and a canvas none. A shape and a colour box
-stand in a figure of the relay's, and a canvas is a panel of the relay's;
+WinUI gives a shape and a canvas none. A shape stands in a figure of the
+relay's, and a canvas is a panel of the relay's;
 each answers with the figure's peer - an image, pressed as a tap while the
 view listens for taps - met by itself only while it has a name or says it is
 met, so a decoration says nothing to a screen reader. A menu's item and a

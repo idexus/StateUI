@@ -28,7 +28,7 @@ final class AppKitFrameTests: XCTestCase {
         let heard = Received<[Double]>()
         let renderer = AppKitRenderer.running {
             VStack {
-                ColorBox(.steelBlue).width(120).height(60)
+                Rectangle().fill(.steelBlue).width(120).height(60)
                     .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
             }
             .horizontalAlignment(.start)
@@ -50,7 +50,7 @@ final class AppKitFrameTests: XCTestCase {
             VStack {
                 Text("above").height(20)
                 if shown.wrappedValue {
-                    ColorBox(.steelBlue).width(120).height(60)
+                    Rectangle().fill(.steelBlue).width(120).height(60)
                         .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
                 }
             }
@@ -72,7 +72,7 @@ final class AppKitFrameTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             VStack {
                 ItemsView(0..<100) { item in
-                    ColorBox(item == 2 ? .firebrick : .steelBlue).width(120).height(60)
+                    Rectangle().fill(item == 2 ? .firebrick : .steelBlue).width(120).height(60)
                         .onEvent(ViewContract.frameChanged) { if item == 2 { heard.values.append($0) } }
                 }
                 .width(200).height(300)

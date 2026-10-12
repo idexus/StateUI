@@ -11,7 +11,6 @@
         ButtonTests.self,
         CanvasTests.self,
         CheckBoxTests.self,
-        ColorBoxTests.self,
         DatePickerTests.self,
         EllipseTests.self,
         GridTests.self,

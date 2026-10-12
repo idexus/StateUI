@@ -112,7 +112,7 @@ struct PlacedSample: SampleContent, ExampleContent {
         Grid {
             Grid {
                 // THE BOARD, under everything.
-                ColorBox(Palette.raised)
+                Rectangle().fill(Palette.raised)
                     .cornerRadius(14)
 
                 // THE CARDS, and what moves them - the whole of the example.
@@ -151,7 +151,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                 // of its own, because a phone on its side has no height to
                 // spare for one.
                 PlacedLayout(Self.cards, id: \.name) { _ in
-                    ColorBox(Palette.text)
+                    Rectangle().fill(Palette.text)
                         .cornerRadius(3)
                 }
                 .placement($dots)
@@ -218,7 +218,7 @@ struct PlacedSample: SampleContent, ExampleContent {
         // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn over
         // every card, wearing the card's own corners - which is why it is the
         // application's to give and not the library's to draw.
-        .shade(ColorBox(Color("#000000")).cornerRadius(16))
+        .shade(Rectangle().fill(Color("#000000")).cornerRadius(16))
         .placement($ring)
         .frame($room)
         // THE WHOLE LAYOUT, run on the display's own frames whenever one of

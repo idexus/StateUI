@@ -1,4 +1,4 @@
-# revision 9.1
+# revision 10.1
 ActivityIndicator.accessibilityHeading: ✅
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
@@ -139,41 +139,6 @@ CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transfo
 CheckBox.unfocus: ✅
 CheckBox.width: ✅
 CheckBox.zIndex: ✅
-ColorBox.accessibilityHeading: ✅
-ColorBox.accessibilityHint: ✅
-ColorBox.accessibilityLabel: ✅
-ColorBox.automationExcludedWithChildren: ✅
-ColorBox.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
-ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
-ColorBox.frame: ✅
-ColorBox.frameChanged: ✅
-ColorBox.height: ✅
-ColorBox.ignoresInput: ✅
-ColorBox.isAccessibilityHidden: ✅
-ColorBox.isEnabled: ✅
-ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
-ColorBox.isVisible: ✅
-ColorBox.layoutDirection: ✅
-ColorBox.maximumHeight: ✅
-ColorBox.maximumWidth: ✅
-ColorBox.minimumHeight: ✅
-ColorBox.minimumWidth: ✅
-ColorBox.opacity: ✅
-ColorBox.pivotX: ✓ read pivotX of ColorBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ColorBox.pivotY: ✓ read pivotY of ColorBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ColorBox.rotation: ✓ read rotation of ColorBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ColorBox.rotationX: ✓ read rotationX of ColorBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ColorBox.rotationY: ✓ read rotationY of ColorBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ColorBox.scale: ✓ read scale of ColorBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ColorBox.scaleX: ✓ read scaleX of ColorBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ColorBox.scaleY: ✓ read scaleY of ColorBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ColorBox.style: ✅
-ColorBox.tooltip: ✅
-ColorBox.translationX: ✓ read translationX of ColorBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ColorBox.translationY: ✓ read translationY of ColorBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
-ColorBox.width: ✅
-ColorBox.zIndex: ✅
 DatePicker.accessibilityHeading: ✅
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅

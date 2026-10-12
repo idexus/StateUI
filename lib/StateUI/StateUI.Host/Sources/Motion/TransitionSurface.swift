@@ -60,9 +60,6 @@
         case .datePicker, .timePicker:
             return textControlProperties.contains(property)
 
-        case .colorBox:
-            return boxProperties.contains(property)
-
         case .checkBox:
             return property == .tint
 
@@ -93,7 +90,7 @@
     }
 
     private static let nativeViewTypes: Set<NodeType> = [
-        .activityIndicator, .colorBox, .button,
+        .activityIndicator, .button,
         .checkBox, .datePicker, .textEditor, .ellipse, .textField, .canvas,
         .grid, .hStack, .image, .itemsView, .text, .line,
         .path, .picker, .polygon, .polyline, .progressBar, .radioButton,
@@ -147,8 +144,6 @@
     private static let radioProperties: Set<Prop> = [.padding, .fontSize, .textColor]
 
     private static let pickerProperties: Set<Prop> = [.fontSize, .textColor, .tint]
-
-    private static let boxProperties: Set<Prop> = [.color, .cornerRadius]
 
     private static let sliderProperties: Set<Prop> = [.value, .tint]
 

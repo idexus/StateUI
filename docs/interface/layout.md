@@ -58,7 +58,7 @@ say otherwise - after layout has assigned the view's rectangle, so it changes
 the drawing without changing measurement or arrangement:
 
 ```swift
-ColorBox(.cornflowerBlue)
+Rectangle().fill(.cornflowerBlue)
     .width(80)
     .height(80)
     .transform(.rotate(15).scale(1.1).translate(20, 0))
@@ -198,13 +198,13 @@ the whole room within the stack's padding, or the rectangle it names with
 
 ```swift
 ZStack {
-    ColorBox(.cornflowerBlue)
+    Rectangle().fill(.cornflowerBlue)
 
     Text("Bottom right")
         .horizontalAlignment(.end)
         .verticalAlignment(.end)
 
-    ColorBox(.orange)
+    Rectangle().fill(.orange)
         .area(.proportional(0.5, 0, 0.5, 1))
 }
 .height(240)

@@ -1,8 +1,8 @@
 # revision 1.1
 Stepper: ✅
 Stepper.frameChanged: ✅
-Stepper.maximum: ✅
-Stepper.minimum: ✅
+Stepper.maximum: ❌ 25.0 expected, 24.999999999989246 came - wholly above the value
+Stepper.minimum: ❌ 25.0 expected, 24.999999999989246 came - wholly above the value
 Stepper.step: ✅
-Stepper.value: ✅
-Stepper.valueChanged: ✅
+Stepper.value: ❌ 25.0 expected, 24.999999999989246 came - wholly above the value
+Stepper.valueChanged: ❌ 25.0 expected, 24.999999999989246 came - wholly above the value

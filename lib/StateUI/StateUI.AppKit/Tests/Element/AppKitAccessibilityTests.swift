@@ -37,7 +37,7 @@ final class AppKitAccessibilityTests: XCTestCase {
 
     @MainActor
     func testClearingAuthoredSemanticsRestoresTheNativeDefaults() throws {
-        let untouched = AppKitColorBoxView()
+        let untouched = AppKitShapeView(kind: .rectangle)
         let originalIdentifier = untouched.accessibilityIdentifier()
         let originalLabel = untouched.accessibilityLabel()
         let originalHelp = untouched.accessibilityHelp()
@@ -45,7 +45,7 @@ final class AppKitAccessibilityTests: XCTestCase {
         let originalElement = untouched.isAccessibilityElement()
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var box = HostPatch(id: .manual("box"), type: .colorBox)
+        var box = HostPatch(id: .manual("box"), type: .rectangle)
         box.properties = [
             .accessibilityIdentifier: .string("decoration"),
             .accessibilityLabel: .string("Temporary"),
@@ -56,7 +56,7 @@ final class AppKitAccessibilityTests: XCTestCase {
         renderer.applyForTesting(tree(box))
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("box")))
 
-        var cleared = HostPatch(id: .manual("box"), type: .colorBox)
+        var cleared = HostPatch(id: .manual("box"), type: .rectangle)
         cleared.clearedProperties = [
             .accessibilityIdentifier,
             .accessibilityLabel,
@@ -216,7 +216,7 @@ final class AppKitAccessibilityTests: XCTestCase {
     func testAHiddenViewIsNoElementAndAnUnhiddenContainerIsOne() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var hidden = HostPatch(id: .manual("hidden"), type: .colorBox)
+        var hidden = HostPatch(id: .manual("hidden"), type: .rectangle)
         hidden.properties = [
             .accessibilityLabel: .string("Decoration"),
             .isAccessibilityHidden: .bool(true),

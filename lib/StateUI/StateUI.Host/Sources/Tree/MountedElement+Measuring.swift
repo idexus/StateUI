@@ -19,7 +19,7 @@ extension MountedElement {
 
     /// The properties drawn without changing any measurement; any other one measures the element again.
     public static let unmeasuredProperties = Set<Prop>([
-        .opacity, .background, .textColor, .placeholderColor, .tint, .color, .isEnabled,
+        .opacity, .background, .textColor, .placeholderColor, .tint, .isEnabled,
         .isOn, .value, .minimum, .maximum, .progress, .cursorPosition, .selectionLength,
         .stroke, .fill, .lineWidth, .dash, .dashPhase, .lineCap, .lineJoin,
         .miterLimit, .shape, .cornerRadius, .geometryTransform, .barBackgroundColor, .barForegroundColor,

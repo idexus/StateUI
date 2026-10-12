@@ -1,4 +1,4 @@
-# revision 9.1
+# revision 10.1
 ActivityIndicator.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Button.frameChanged: ✅
 Button.maximumHeight: ✅
@@ -8,50 +8,49 @@ Button.minimumWidth: ✅
 Button.translationY: ✓ read translationY of Button: the host's own transform, checked against the layer it composed itself
 Canvas.rotationY: ✓ read rotationY of Canvas: the host's own transform, checked against the layer it composed itself
 CheckBox.layoutDirection: ✅
-ColorBox.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-DatePicker.focus: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
-DatePicker.isFocusedChanged: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
-DatePicker.unfocus: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
-Divider.rotationX: ✓ read rotationX of Divider: the host's own transform, checked against the layer it composed itself
-Ellipse.isEnabled: ✅
-Ellipse.scaleY: ✓ read scaleY of Ellipse: the host's own transform, checked against the layer it composed itself
-Grid.pivotY: ✓ read pivotY of Grid: the host's own transform, checked against the layer it composed itself
-HStack.accessibilityLabel: ✅
-Image.isEnabled: ✅
-Image.scaleY: ✓ read scaleY of Image: the host's own transform, checked against the layer it composed itself
-ItemsView.pivotY: ✓ read pivotY of ItemsView: the host's own transform, checked against the layer it composed itself
-Line.zIndex: ✅
-Map.frameChanged: ✅
-Map.height: ✅
-Map.translationX: ✓ read translationX of Map: the host's own transform, checked against the layer it composed itself
-Map.width: ✅
-Path.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
-Picker.accessibilityLabel: ✅
-Polygon.frame: ✅
-Polyline.isVisible: ✅
-Polyline.scale: ✓ read scale of Polyline: the host's own transform, checked against the layer it composed itself
-ProgressBar.layoutDirection: ✅
-RadioButton.accessibilityHint: ✅
-Rectangle.focus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
-Rectangle.isFocusedChanged: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
-Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
-ScrollView.opacity: ✅
-ScrollView.scaleX: ✓ read scaleX of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.layoutDirection: ✅
-Slider.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-Spacer.style: ✅
-Stepper.frameChanged: ✅
-Stepper.height: ✅
-Stepper.translationX: ✓ read translationX of Stepper: the host's own transform, checked against the layer it composed itself
-Stepper.width: ✅
-Switch.rotationX: ✓ read rotationX of Switch: the host's own transform, checked against the layer it composed itself
-Text.isAccessibilityHidden: ✅
-TextEditor.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
-TextField.accessibilityHint: ✅
-TimePicker.focus: ✅
-TimePicker.isFocusedChanged: ✅
-TimePicker.unfocus: ✅
-VStack.isEnabled: ✅
-VStack.scaleY: ✓ read scaleY of VStack: the host's own transform, checked against the layer it composed itself
-WebView.automationExcludedWithChildren: ✅
-ZStack.accessibilityLabel: ✅
+DatePicker.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+Divider.frameChanged: ✅
+Divider.maximumHeight: ✅
+Divider.maximumWidth: ✅
+Divider.minimumHeight: ✅
+Divider.minimumWidth: ✅
+Divider.translationY: ✓ read translationY of Divider: the host's own transform, checked against the layer it composed itself
+Ellipse.style: ✅
+Grid.isEnabled: ✅
+Grid.scaleY: ✓ read scaleY of Grid: the host's own transform, checked against the layer it composed itself
+HStack.background: ✅
+Image.style: ✅
+ItemsView.isEnabled: ✅
+ItemsView.scaleY: ✓ read scaleY of ItemsView: the host's own transform, checked against the layer it composed itself
+Line.isAccessibilityHidden: ✅
+Map.zIndex: ✅
+Path.rotationY: ✓ read rotationY of Path: the host's own transform, checked against the layer it composed itself
+Picker.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+Polygon.accessibilityHint: ✅
+Polyline.frame: ✅
+ProgressBar.isVisible: ✅
+ProgressBar.scale: ✓ read scale of ProgressBar: the host's own transform, checked against the layer it composed itself
+RadioButton.layoutDirection: ✅
+Rectangle.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+SearchField.isVisible: ✅
+SearchField.scale: ✓ read scale of SearchField: the host's own transform, checked against the layer it composed itself
+Slider.pivotX: ✓ read pivotX of Slider: the host's own transform, checked against the layer it composed itself
+Spacer.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+Stepper.zIndex: ✅
+Switch.frameChanged: ✅
+Switch.maximumHeight: ✅
+Switch.maximumWidth: ✅
+Switch.minimumHeight: ✅
+Switch.minimumWidth: ✅
+Switch.translationY: ✓ read translationY of Switch: the host's own transform, checked against the layer it composed itself
+Text.rotation: ✓ read rotation of Text: the host's own transform, checked against the layer it composed itself
+TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.layoutDirection: ✅
+TimePicker.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+VStack.background: ✅
+VStack.style: ✅
+WebView.rotationX: ✓ read rotationX of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.background: ✅

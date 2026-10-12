@@ -15,7 +15,7 @@ final class AppKitGestureTests: XCTestCase {
     func testRemovingPointerEventsDetachesTheNativeRecognizer() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var box = HostPatch(id: .manual("box"), type: .colorBox)
+        var box = HostPatch(id: .manual("box"), type: .rectangle)
         box.events = .replace([.pointerEntered: 20])
         renderer.applyForTesting(tree(box))
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("box")))
@@ -23,7 +23,7 @@ final class AppKitGestureTests: XCTestCase {
             native.gestureRecognizers.compactMap { $0 as? AppKitPointerRecognizer }.count,
             1)
 
-        var changed = HostPatch(id: .manual("box"), type: .colorBox)
+        var changed = HostPatch(id: .manual("box"), type: .rectangle)
         changed.events = .replace([:])
         renderer.applyForTesting(changedTree(changed))
 
@@ -39,12 +39,12 @@ final class AppKitGestureTests: XCTestCase {
         let totals = Received<Double>()
         let renderer = AppKitRenderer.running {
             VStack {
-                ColorBox(.red).onPanUpdated(touchCount: 1) { totals.values.append($0.totalX) }
-                ColorBox(.blue).onPanUpdated(touchCount: 2) { totals.values.append($0.totalX) }
+                Rectangle().fill(.red).onPanUpdated(touchCount: 1) { totals.values.append($0.totalX) }
+                Rectangle().fill(.blue).onPanUpdated(touchCount: 2) { totals.values.append($0.totalX) }
             }
         }
         defer { renderer.closeForTesting() }
-        let boxes = renderer.nativeViews(AppKitColorBoxView.self)
+        let boxes = renderer.nativeViews(AppKitShapeView.self)
         XCTAssertEqual(boxes.count, 2)
         guard boxes.count == 2 else { return }
         let onePointer = boxes[0].gestureRecognizers.compactMap { $0 as? AppKitPanRecognizer }

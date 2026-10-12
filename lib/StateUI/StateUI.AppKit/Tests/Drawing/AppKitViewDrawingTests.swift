@@ -111,7 +111,7 @@ final class AppKitViewDrawingTests: XCTestCase {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         func drawnBox(_ id: String, _ properties: [Prop: HostValue]) -> HostPatch {
-            var box = HostPatch(id: .manual(id), type: .colorBox)
+            var box = HostPatch(id: .manual(id), type: .rectangle)
             box.properties = properties.merging([.width: .number(100), .height: .number(60)]) { $1 }
             return box
         }
@@ -156,7 +156,7 @@ final class AppKitViewDrawingTests: XCTestCase {
     }
 
     private func box(id: String = "box", rotation: Double) -> HostPatch {
-        var box = HostPatch(id: .manual(id), type: .colorBox)
+        var box = HostPatch(id: .manual(id), type: .rectangle)
         box.properties[.rotation] = .number(rotation)
         box.properties[.width] = .number(100)
         box.properties[.height] = .number(60)

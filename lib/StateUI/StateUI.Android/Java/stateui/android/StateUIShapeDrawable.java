@@ -14,8 +14,8 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 
 /**
- * A shape filled with a brush and outlined: a layout's own box, a ColorBox's,
- * or a background painted with a gradient. The Swift host says every part.
+ * A shape filled with a brush and outlined: a layout's own box, or a background
+ * painted with a gradient. The Swift host says every part.
  */
 final class StateUIShapeDrawable extends Drawable {
     /** The shape's kinds, as the Swift host numbers them. */

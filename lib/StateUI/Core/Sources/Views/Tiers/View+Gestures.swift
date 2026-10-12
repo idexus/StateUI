@@ -111,7 +111,7 @@ extension View {
     ///
     ///     @State private var turn = 0.0
     ///
-    ///     ColorBox(.transparent).panX($turn)
+    ///     Rectangle().fill(.transparent).panX($turn)
     ///
     /// The distance `onPanUpdated` reports, for an `.engine(following:)` to
     /// follow frame by frame. A drag moves the value on from where it stood, so
@@ -126,7 +126,7 @@ extension View {
     /// Writes how far the view has been dragged down into a state, with no view
     /// rebuilt as it moves; see `panX(_:)`.
     ///
-    ///     ColorBox(.transparent).panY($turn)
+    ///     Rectangle().fill(.transparent).panY($turn)
     ///
     /// - Parameter value: the state the distance is written into.
     /// - Returns: the view, reporting there.
@@ -137,7 +137,7 @@ extension View {
     /// Runs as the view is dragged, from the moment it starts until it is let
     /// go.
     ///
-    ///     ColorBox(.cornflowerBlue)
+    ///     Rectangle().fill(.cornflowerBlue)
     ///         .translationX(offsetX)
     ///         .onPanUpdated { pan in
     ///             if pan.phase == .changed { offsetX = pan.totalX }

@@ -32,11 +32,6 @@ final class AndroidShapeDrawable {
             }
         }
 
-        /// A box's own corners; a rectangle where none are said.
-        init(corners: CornerRadius?) {
-            self = corners == nil ? .rectangle : .rounded(BoxArithmetic.clockwise(corners))
-        }
-
         /// The Java side's kind, and each corner's width and height in pixels, clockwise from the top left: no more
         /// than half the side it rounds of a room `size` pixels, where the size is known.
         func drawn(density: Double, in size: (width: Double, height: Double)?) -> (kind: Int32, radii: [Float]) {

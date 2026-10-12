@@ -48,7 +48,7 @@
     /// The views whose only answer to the hand is the View tier's gestures: what disabling one stops is what it hears
     /// of them.
     static let answeringByGestures: Set<String> = [
-        "ActivityIndicator", "ColorBox", "Ellipse", "Grid", "HStack", "Image", "Line", "Path", "Polygon", "Polyline",
+        "ActivityIndicator", "Ellipse", "Grid", "HStack", "Image", "Line", "Path", "Polygon", "Polyline",
         "ProgressBar", "Rectangle", "Text", "VStack", "ZStack",
     ]
 
@@ -141,7 +141,7 @@
                 VStack {
                     ZStack {
                         Specimens.view(element, [Write(VisualElementContract.zIndex, depth.wrappedValue)])
-                        ColorBox(.blue).id("cover")
+                        Rectangle().fill(.blue).id("cover")
                     }
                     .width(120).height(80).id("layers")
                     Button("Lower").onClicked { depth.wrappedValue = -1 }.id("change")
@@ -259,12 +259,12 @@
     static func directingItsChild(_ layout: String) -> ConformanceCase {
         ConformanceCase("\(layout).placesItsChildInItsDirection", proves: [
             Covered(VisualElementContract.layoutDirection, on: layout),
-        ], needs: [Covered(ButtonContract.clicked), Covered(VisualElementContract.frame, on: "ColorBox")]) { s in
+        ], needs: [Covered(ButtonContract.clicked), Covered(VisualElementContract.frame, on: "Rectangle")]) { s in
             let room = State(wrappedValue: Rect(x: -1, y: 0, width: 0, height: 0))
             let direction = State(wrappedValue: LayoutDirection.leftToRight)
             s.start {
                 VStack {
-                    Specimens.holding(layout, ColorBox(.red).width(60).height(30).horizontalAlignment(.start)
+                    Specimens.holding(layout, Rectangle().fill(.red).width(60).height(30).horizontalAlignment(.start)
                         .verticalAlignment(.start).frame(room.projectedValue), [
                             Write(VisualElementContract.layoutDirection, direction.wrappedValue),
                             Write(VisualElementContract.width, 200), Write(VisualElementContract.height, 100),
@@ -409,7 +409,7 @@
     }
 
     /// What `element` paints at the middle of a box of 80 by 40, where a press is read: a host may hand a view
-    /// only the presses on what it paints - a figure filled across it, a line through it, a box's colour, a picture.
+    /// only the presses on what it paints - a figure filled across it, a line through it, a picture.
     @MainActor
     static func painted(_ element: String) -> [any Worn] {
         let red = Brush.solidColor(.red)
@@ -424,7 +424,6 @@
         case "Polygon": [Write(PolygonContract.points, figure), Write(ShapeContract.fill, red), atItsSize]
         case "Polyline": [Write(PolylineContract.points, figure + [figure[0]]), Write(ShapeContract.fill, red), atItsSize]
         case "Path": [Write(PathContract.data, "M 20 5 L 60 5 L 60 35 L 20 35 Z"), Write(ShapeContract.fill, red), atItsSize]
-        case "ColorBox": [Write(ColorBoxContract.color, Color.red)]
         case "Image": [Write(ImageContract.source, ImageSource("test_dot.png"))]
         default: []
         }

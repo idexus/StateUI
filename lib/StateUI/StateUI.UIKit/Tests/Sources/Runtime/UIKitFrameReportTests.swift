@@ -18,7 +18,7 @@ final class UIKitFrameReportTests: XCTestCase {
         let heard = Received<[Double]>()
         let host = UIKitRenderer.running {
             VStack {
-                ColorBox(.steelBlue).width(120).height(60)
+                Rectangle().fill(.steelBlue).width(120).height(60)
                     .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
             }
             .horizontalAlignment(.start)
@@ -40,7 +40,7 @@ final class UIKitFrameReportTests: XCTestCase {
             VStack {
                 Text("above").height(20)
                 if shown.wrappedValue {
-                    ColorBox(.steelBlue).width(120).height(60)
+                    Rectangle().fill(.steelBlue).width(120).height(60)
                         .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
                 }
             }
@@ -64,7 +64,7 @@ final class UIKitFrameReportTests: XCTestCase {
         let host = UIKitRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 VStack {
-                    ColorBox(.steelBlue).width(120).height(60)
+                    Rectangle().fill(.steelBlue).width(120).height(60)
                         .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
                 }
                 .horizontalAlignment(.start)
@@ -88,9 +88,9 @@ final class UIKitFrameReportTests: XCTestCase {
         let host = UIKitRenderer.running {
             ScrollView {
                 VStack {
-                    ColorBox(.steelBlue).width(120).height(60)
+                    Rectangle().fill(.steelBlue).width(120).height(60)
                         .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
-                    ColorBox(.firebrick).width(120).height(3000)
+                    Rectangle().fill(.firebrick).width(120).height(3000)
                 }
                 .horizontalAlignment(.start)
             }
@@ -117,7 +117,7 @@ final class UIKitFrameReportTests: XCTestCase {
         let host = UIKitRenderer.running {
             VStack {
                 ItemsView(0..<100) { item in
-                    ColorBox(item == 2 ? .firebrick : .steelBlue).width(120).height(60)
+                    Rectangle().fill(item == 2 ? .firebrick : .steelBlue).width(120).height(60)
                         .onEvent(ViewContract.frameChanged) { if item == 2 { heard.values.append($0) } }
                 }
                 .width(200).height(300)

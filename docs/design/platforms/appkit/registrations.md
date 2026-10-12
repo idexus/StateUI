@@ -30,7 +30,7 @@ tier where a list of names would pass quietly.
 A view's background is its layer's colour, a rectangle under its whole frame,
 unless its registration takes the background itself
 (`drawOwnBackground`): a text field fills its own field, a button its own
-face, a colour box its own box. A button's face is its layer - colour,
+face. A button's face is its layer - colour,
 border, corners - but for an oval, which a layer's corners cannot draw: that
 the button draws itself, under its words. A text field given a colour drops AppKit's
 bezel, which on macOS 26 draws its own ground over any colour, and stands in

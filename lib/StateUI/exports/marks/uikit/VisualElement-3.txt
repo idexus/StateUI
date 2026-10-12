@@ -1,60 +1,48 @@
-# revision 9.1
+# revision 10.1
 ActivityIndicator.isEnabled: ✅
 ActivityIndicator.scaleY: ✓ read scaleY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.pivotY: ✓ read pivotY of Button: the host's own transform, checked against the layer it composed itself
 Canvas.isAccessibilityHidden: ✅
 CheckBox.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-ColorBox.ignoresInput: ✅
-ColorBox.isEnabled: ✓ tap on ColorBox: the view's listening handed the recognizer's states, no touch sent
-DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own transform, checked against the layer it composed itself
-Divider.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
-Ellipse.layoutDirection: ✅
-Grid.accessibilityHint: ✅
-HStack.frameChanged: ✅
-HStack.height: ✅
-HStack.translationX: ✓ read translationX of HStack: the host's own transform, checked against the layer it composed itself
-HStack.width: ✅
-Image.layoutDirection: ✅
-ItemsView.accessibilityHint: ✅
-Line.opacity: ✅
-Line.scaleX: ✓ read scaleX of Line: the host's own transform, checked against the layer it composed itself
-Map.pivotX: ✓ read pivotX of Map: the host's own transform, checked against the layer it composed itself
-Path.zIndex: ✅
-Picker.frameChanged: ✅
-Picker.height: ✅
-Picker.translationX: ✓ read translationX of Picker: the host's own transform, checked against the layer it composed itself
-Picker.width: ✅
-Polygon.rotationX: ✓ read rotationX of Polygon: the host's own transform, checked against the layer it composed itself
-Polyline.automationExcludedWithChildren: ✅
-ProgressBar.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-RadioButton.frameChanged: ✅
-RadioButton.maximumHeight: ✅
-RadioButton.maximumWidth: ✅
-RadioButton.minimumHeight: ✅
-RadioButton.minimumWidth: ✅
-RadioButton.translationY: ✓ read translationY of RadioButton: the host's own transform, checked against the layer it composed itself
-Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.background: ✅
-SearchField.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-Slider.ignoresInput: ✅
-Spacer.isVisible: ✅
-Spacer.scale: ✓ read scale of Spacer: the host's own transform, checked against the layer it composed itself
-Stepper.pivotX: ✓ read pivotX of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
-Text.focus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
-Text.isFocusedChanged: – Text takes no keyboard focus here: it refuses it, and nothing is heard
-Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
-TextEditor.zIndex: ✅
-TextField.frameChanged: ✅
-TextField.maximumHeight: ✅
-TextField.maximumWidth: ✅
-TextField.minimumHeight: ✅
-TextField.minimumWidth: ✅
-TextField.translationY: ✓ read translationY of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.layoutDirection: ✅
-WebView.style: ✅
-ZStack.frameChanged: ✅
-ZStack.height: ✅
-ZStack.translationX: ✓ read translationX of ZStack: the host's own transform, checked against the layer it composed itself
-ZStack.width: ✅
+DatePicker.ignoresInput: ✅
+Divider.pivotY: ✓ read pivotY of Divider: the host's own transform, checked against the layer it composed itself
+Ellipse.isVisible: ✅
+Ellipse.scale: ✓ read scale of Ellipse: the host's own transform, checked against the layer it composed itself
+Grid.layoutDirection: ✅
+HStack.zIndex: ✅
+Image.isVisible: ✅
+Image.scale: ✓ read scale of Image: the host's own transform, checked against the layer it composed itself
+ItemsView.layoutDirection: ✅
+Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Map.opacity: ✅
+Map.scaleX: ✓ read scaleX of Map: the host's own transform, checked against the layer it composed itself
+Path.isAccessibilityHidden: ✅
+Picker.zIndex: ✅
+Polygon.frameChanged: ✅
+Polygon.maximumHeight: ✅
+Polygon.maximumWidth: ✅
+Polygon.minimumHeight: ✅
+Polygon.minimumWidth: ✅
+Polygon.translationY: ✓ read translationY of Polygon: the host's own transform, checked against the layer it composed itself
+Polyline.rotationX: ✓ read rotationX of Polyline: the host's own transform, checked against the layer it composed itself
+ProgressBar.automationExcludedWithChildren: ✅
+RadioButton.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+Rectangle.ignoresInput: ✅
+Rectangle.isEnabled: ✓ tap on Rectangle: the view's listening handed the recognizer's states, no touch sent
+ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.automationExcludedWithChildren: ✅
+Slider.accessibilityLabel: ✅
+Spacer.frame: ✅
+Stepper.opacity: ✅
+Stepper.scaleX: ✓ read scaleX of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.pivotY: ✓ read pivotY of Switch: the host's own transform, checked against the layer it composed itself
+Text.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+TextEditor.isAccessibilityHidden: ✅
+TextField.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+TimePicker.ignoresInput: ✅
+VStack.isVisible: ✅
+VStack.scale: ✓ read scale of VStack: the host's own transform, checked against the layer it composed itself
+WebView.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+ZStack.zIndex: ✅

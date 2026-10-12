@@ -34,7 +34,7 @@ final class AppKitMeasurementTests: XCTestCase {
         scroll.layoutSubtreeIfNeeded()
         let measuredBeforeMotion = code.nativeMeasurementCountForTesting
 
-        var growing = HostPatch(id: .manual("box"), type: .colorBox)
+        var growing = HostPatch(id: .manual("box"), type: .rectangle)
         growing.properties[.width] = .number(300)
         growing.transitions[.width] = HostTransition(motion: .eased(200, .linear))
         renderer.applyForTesting(path(to: growing))
@@ -53,7 +53,7 @@ final class AppKitMeasurementTests: XCTestCase {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        var card = HostPatch(id: .manual("card"), type: .colorBox)
+        var card = HostPatch(id: .manual("card"), type: .rectangle)
         card.properties[.width] = .number(120)
         card.properties[.height] = .number(60)
         card.driven = .replace([
@@ -197,7 +197,7 @@ final class AppKitMeasurementTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        var card = HostPatch(id: .manual("card"), type: .colorBox)
+        var card = HostPatch(id: .manual("card"), type: .rectangle)
         card.properties[.opacity] = .number(1)
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.driven = .replace([
@@ -215,7 +215,7 @@ final class AppKitMeasurementTests: XCTestCase {
         let placed = try XCTUnwrap(nativeCard.layer).affineTransform()
         XCTAssertEqual(placed.b, sin(30 * .pi / 180), accuracy: 0.001)
 
-        var fading = HostPatch(id: .manual("card"), type: .colorBox)
+        var fading = HostPatch(id: .manual("card"), type: .rectangle)
         fading.properties[.opacity] = .number(0.4)
         fading.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
         var path = HostPatch(id: .manual("layout"), type: .zStack)
@@ -243,7 +243,7 @@ final class AppKitMeasurementTests: XCTestCase {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        var card = HostPatch(id: .manual("card"), type: .colorBox)
+        var card = HostPatch(id: .manual("card"), type: .rectangle)
         card.properties[.opacity] = .number(1)
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.properties[.height] = .number(120)
@@ -475,7 +475,7 @@ final class AppKitMeasurementTests: XCTestCase {
             return node
         }
 
-        var box = HostPatch(id: .manual("box"), type: .colorBox)
+        var box = HostPatch(id: .manual("box"), type: .rectangle)
         box.properties[.width] = .number(120)
         box.properties[.height] = .number(56)
         box.properties[.horizontalAlignment] = .enumeration(Alignment.start.rawValue)

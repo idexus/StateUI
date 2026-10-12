@@ -83,7 +83,7 @@ struct OverlaidPage: View {
         return VStack {
             Button("Show").onClicked { notice.wrappedValue = true }.id("show")
             Button("Hide").onClicked { notice.wrappedValue = false }.id("hide")
-            ColorBox(.red).height(300).id("beneath")
+            Rectangle().fill(.red).height(300).id("beneath")
         }
         .horizontalAlignment(.start)
         .verticalAlignment(.start)

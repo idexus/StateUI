@@ -159,6 +159,9 @@ final class AppKitShapeView: AppKitHitTestView {
     }
     var dashPhaseForTesting: CGFloat { dashOffset * lineWidth }
     var fillForTesting: AppKitBrush { fill }
+    var cornersForTesting: [Double] {
+        if case .rectangle(let radii) = geometry { radii } else { [] }
+    }
 
     private func configureStroke(on path: NSBezierPath) {
         path.lineWidth = lineWidth

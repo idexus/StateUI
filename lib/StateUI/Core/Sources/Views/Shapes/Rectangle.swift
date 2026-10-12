@@ -8,9 +8,9 @@
 ///         .cornerRadius(8)
 ///         .height(60)
 ///
-/// A `ColorBox` says the same thing in one line and takes one colour; this is the
-/// shape, so it takes a Brush, an outline and everything else the shape tier
-/// declares.
+/// The plainest thing a host draws: a block of colour, a bar of a chart, a
+/// placeholder, a line one point thick. Being a shape, it takes a brush, an
+/// outline and everything else the shape tier declares.
 ///
 /// It has no size of its own: give it a `height`, a `width` or a
 /// layout that stretches it, or it draws nothing.

@@ -1,9 +1,8 @@
 // The gallery's styles: what a control asked for by name looks like.
 //
 // A style with no key applies to every control of its type: every button the
-// gallery shows wears its violet, every field lets the panel behind it through,
-// and a ColorBox naming no colour wears the accent. Every other control keeps
-// its platform's own look.
+// gallery shows wears its violet, and every field lets the panel behind it
+// through. Every other control keeps its platform's own look.
 //
 // Every colour comes through `Palette`, one name per job.
 //
@@ -118,10 +117,6 @@ enum AppStyles {
                     .textColor(Palette.disabled)
                     .background(Palette.outline)
                 }
-
-            // Every ColorBox that names no colour of its own wears the violet.
-            Style<ColorBox>()
-                .color(Palette.accent)
             // listing: end
 
             Style<Button>(.iconButton)

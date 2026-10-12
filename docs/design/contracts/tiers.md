@@ -36,7 +36,7 @@ Swift protocols behind them refine each other.
 ## Who wears what
 
 ```text
-  View               ActivityIndicator, Button, Canvas, CheckBox, ColorBox,
+  View               ActivityIndicator, Button, Canvas, CheckBox,
                      DatePicker, Image, Text, Map, Picker, ProgressBar,
                      RadioButton, ScrollView, Slider, Stepper, Switch,
                      TimePicker, WebView, ItemsView

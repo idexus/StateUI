@@ -76,7 +76,7 @@ final class AndroidGridViewTests: XCTestCase {
             let host = AndroidRenderer.running {
                 Grid {
                     Text("head").height(30)
-                    ColorBox(.red).gridRow(1)
+                    Rectangle().fill(.red).gridRow(1)
                     Text("foot").height(20).gridRow(2)
                 }
                 .rows(.auto, .fill, .auto)
@@ -84,7 +84,7 @@ final class AndroidGridViewTests: XCTestCase {
 
             host.layOut(width: 1080, height: 1920)
 
-            let box = try XCTUnwrap(host.views(AndroidColorBoxView.self).first)
+            let box = try XCTUnwrap(host.views(AndroidShapeView.self).first)
             XCTAssertTrue(box.frame == (0, 60, 1080, 1820), "\(box.frame)")
         }
     }

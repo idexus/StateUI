@@ -179,7 +179,7 @@ final class DrivenPatchTests: XCTestCase {
         let entry = TextField("").placeholderColor(colour.projectedValue)
 
         // And the one modifier that is a control's own rather than a tier's.
-        let box = ColorBox().color(colour.projectedValue)
+        let box = Rectangle().fill(colour.projectedValue)
 
         let page = try page(VStack { card; shape; button; entry; box }.spacing(number.projectedValue).node)
 
@@ -205,7 +205,7 @@ final class DrivenPatchTests: XCTestCase {
             ties(page, .auto(3), .auto(7)),
             tied(["lineWidth"], to: 1, .inOut, .property, .number))
         XCTAssertEqual(ties(page, .auto(3), .auto(8)), tied(["placeholderColor"], to: 2, .inOut, .property, .color))
-        XCTAssertEqual(ties(page, .auto(3), .auto(9)), tied(["color"], to: 2, .inOut, .property, .color))
+        XCTAssertEqual(ties(page, .auto(3), .auto(9)), tied(["fill"], to: 2, .inOut, .property, .color))
     }
 
     /// Text, which has no lanes and no journey: it is written when it changes
@@ -278,7 +278,7 @@ final class DrivenPatchTests: XCTestCase {
 
         let page = try page(VStack {
             Slider().value(level.projectedValue)
-            ColorBox().width(level.projectedValue)
+            Rectangle().width(level.projectedValue)
         }.node)
 
         XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["value"], to: 1, .inOut, .property, .number))
@@ -298,7 +298,7 @@ final class DrivenPatchTests: XCTestCase {
 
         let page = try page(
             PlacedLayout(["a", "b"], id: \.self) { Text($0) }
-                .shade(ColorBox(.black))
+                .shade(Rectangle().fill(.black))
                 .placement(run.projectedValue)
                 .frame(room.projectedValue)
                 .node)

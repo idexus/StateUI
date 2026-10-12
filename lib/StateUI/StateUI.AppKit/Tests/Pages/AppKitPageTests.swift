@@ -732,7 +732,7 @@ final class AppKitPageTests: XCTestCase {
 
         var painted = HostPatch(id: .manual("painted"), type: .page)
         painted.properties = [.background: .color(red: 51, green: 102, blue: 153, alpha: 255)]
-        painted.children = .arranged([HostPatch(id: .manual("content"), type: .colorBox)])
+        painted.children = .arranged([HostPatch(id: .manual("content"), type: .rectangle)])
         renderer.applyForTesting(tree(painted))
 
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("painted")))

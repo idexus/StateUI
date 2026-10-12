@@ -1,7 +1,7 @@
 # Drawing on UIKit
 
 How the UIKit host draws what the tree describes: a view over its place, a
-layout's box, a colour box, and a child a ZStack's run places.
+layout's box, a shape, and a child a ZStack's run places.
 
 ## Drawn over its place
 
@@ -27,10 +27,6 @@ A layout that clips cuts what it holds to its outline - its bounds for a
 rectangle, a mask for any other - and a touch outside the cut reaches none of
 it. A layout that lets a touch through lets one beside every child reach what
 stands under it.
-
-A colour box is a view of one colour, its corners rounded each by its own
-radius as a quarter of an ellipse; it takes the room its layout gives it and
-asks for none.
 
 
 ## A layout's blur or glass

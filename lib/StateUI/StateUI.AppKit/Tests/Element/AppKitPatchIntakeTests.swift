@@ -15,7 +15,7 @@ import XCTest
 final class AppKitPatchIntakeTests: XCTestCase {
     private func stack(_ children: [String]) -> HostPatch {
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
-        stack.children = .arranged(children.map { HostPatch(id: .manual($0), type: .colorBox) })
+        stack.children = .arranged(children.map { HostPatch(id: .manual($0), type: .rectangle) })
         return stack
     }
 

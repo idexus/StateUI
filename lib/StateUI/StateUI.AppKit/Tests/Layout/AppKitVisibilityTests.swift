@@ -106,12 +106,12 @@ final class AppKitVisibilityTests: XCTestCase {
         func rows(firstVisible: Bool) -> HostPatch {
             var stack = HostPatch(id: .manual("stack"), type: .vStack)
             stack.motion = HostLayoutMotion(motion: .eased(200, .linear), lanes: .all)
-            var first = HostPatch(id: .manual("first"), type: .colorBox)
+            var first = HostPatch(id: .manual("first"), type: .rectangle)
             first.properties = [
                 .width: .number(100), .height: .number(40), .isVisible: .bool(firstVisible),
             ]
             first.motion = HostLayoutMotion(motion: .eased(100, .linear), lanes: .all)
-            var second = HostPatch(id: .manual("second"), type: .colorBox)
+            var second = HostPatch(id: .manual("second"), type: .rectangle)
             second.properties = [.width: .number(100), .height: .number(40)]
             stack.children = .arranged([first, second])
             return stack

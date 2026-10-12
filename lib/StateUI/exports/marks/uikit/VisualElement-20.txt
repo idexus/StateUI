@@ -1,4 +1,4 @@
-# revision 9.1
+# revision 10.1
 ActivityIndicator.pivotX: ✓ read pivotX of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Canvas.style: ✅
@@ -6,48 +6,49 @@ CheckBox.frameChanged: ✅
 CheckBox.height: ✅
 CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transform, checked against the layer it composed itself
 CheckBox.width: ✅
-ColorBox.rotationX: ✓ read rotationX of ColorBox: the host's own transform, checked against the layer it composed itself
-DatePicker.automationExcludedWithChildren: ✅
-Divider.focus: – Divider takes no keyboard focus here: it refuses it, and nothing is heard
-Divider.isFocusedChanged: – Divider takes no keyboard focus here: it refuses it, and nothing is heard
-Divider.unfocus: – Divider takes no keyboard focus here: it refuses it, and nothing is heard
-Ellipse.accessibilityLabel: ✅
-Grid.ignoresInput: ✅
-Grid.isEnabled: ✓ tap on Grid: the view's listening handed the recognizer's states, no touch sent
-HStack.pivotY: ✓ read pivotY of HStack: the host's own transform, checked against the layer it composed itself
-Image.accessibilityLabel: ✅
-ItemsView.ignoresInput: ✅
-Line.layoutDirection: ✅
-Map.accessibilityHint: ✅
-Path.isEnabled: ✅
-Path.scaleY: ✓ read scaleY of Path: the host's own transform, checked against the layer it composed itself
-Picker.pivotY: ✓ read pivotY of Picker: the host's own transform, checked against the layer it composed itself
-Polygon.isAccessibilityHidden: ✅
-Polyline.zIndex: ✅
-ProgressBar.frameChanged: ✅
-ProgressBar.height: ✅
-ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own transform, checked against the layer it composed itself
-ProgressBar.width: ✅
-RadioButton.rotation: ✓ read rotation of RadioButton: the host's own transform, checked against the layer it composed itself
-Rectangle.automationExcludedWithChildren: ✅
-ScrollView.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-SearchField.frameChanged: ✅
-SearchField.height: ✅
-SearchField.translationX: ✓ read translationX of SearchField: the host's own transform, checked against the layer it composed itself
-SearchField.width: ✅
-Slider.rotationX: ✓ read rotationX of Slider: the host's own transform, checked against the layer it composed itself
-Spacer.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
-Stepper.accessibilityHint: ✅
-Switch.focus: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
-Switch.isFocusedChanged: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
-Switch.unfocus: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
-Text.isVisible: ✅
-Text.scale: ✓ read scale of Text: the host's own transform, checked against the layer it composed itself
-TextEditor.isEnabled: ✅
-TextEditor.scaleY: ✓ read scaleY of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.rotation: ✓ read rotation of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.automationExcludedWithChildren: ✅
-VStack.accessibilityLabel: ✅
-WebView.opacity: ✅
-WebView.scaleX: ✓ read scaleX of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.pivotY: ✓ read pivotY of ZStack: the host's own transform, checked against the layer it composed itself
+DatePicker.rotationX: ✓ read rotationX of DatePicker: the host's own transform, checked against the layer it composed itself
+Divider.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+Ellipse.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+Grid.accessibilityLabel: ✅
+HStack.isEnabled: ✅
+HStack.scaleY: ✓ read scaleY of HStack: the host's own transform, checked against the layer it composed itself
+Image.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+ItemsView.accessibilityLabel: ✅
+Line.isVisible: ✅
+Line.scale: ✓ read scale of Line: the host's own transform, checked against the layer it composed itself
+Map.layoutDirection: ✅
+Path.style: ✅
+Picker.isEnabled: ✅
+Picker.scaleY: ✓ read scaleY of Picker: the host's own transform, checked against the layer it composed itself
+Polygon.rotation: ✓ read rotation of Polygon: the host's own transform, checked against the layer it composed itself
+Polyline.isAccessibilityHidden: ✅
+ProgressBar.zIndex: ✅
+RadioButton.frameChanged: ✅
+RadioButton.height: ✅
+RadioButton.translationX: ✓ read translationX of RadioButton: the host's own transform, checked against the layer it composed itself
+RadioButton.width: ✅
+Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.automationExcludedWithChildren: ✅
+SearchField.zIndex: ✅
+Slider.frameChanged: ✅
+Slider.maximumHeight: ✅
+Slider.maximumWidth: ✅
+Slider.minimumHeight: ✅
+Slider.minimumWidth: ✅
+Slider.translationY: ✓ read translationY of Slider: the host's own transform, checked against the layer it composed itself
+Spacer.rotationY: ✓ read rotationY of Spacer: the host's own transform, checked against the layer it composed itself
+Stepper.layoutDirection: ✅
+Switch.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+Text.frame: ✅
+TextEditor.style: ✅
+TextField.frameChanged: ✅
+TextField.height: ✅
+TextField.translationX: ✓ read translationX of TextField: the host's own transform, checked against the layer it composed itself
+TextField.width: ✅
+TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.background: ✅
+WebView.focus: ✅
+WebView.isFocusedChanged: ✅
+WebView.unfocus: ✅
+ZStack.isEnabled: ✅
+ZStack.scaleY: ✓ read scaleY of ZStack: the host's own transform, checked against the layer it composed itself

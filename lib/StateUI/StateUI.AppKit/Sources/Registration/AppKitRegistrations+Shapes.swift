@@ -58,17 +58,6 @@ extension AppKitRegistrations {
                     fillRule: values[PolylineContract.fillRule]?.rawValue ?? 0))
             }
         }
-
-        registry.add(ColorBoxContract.self, create: { _ in AppKitColorBoxView() }) { box in
-            box.applies([
-                ColorBoxContract.color, ColorBoxContract.cornerRadius, VisualElementContract.background,
-            ]) { view, values in
-                view.apply(
-                    background: paintedColor(values[VisualElementContract.background]?.propValue),
-                    fill: values[ColorBoxContract.color].flatMap { nsColor($0.propValue) },
-                    corners: values[ColorBoxContract.cornerRadius])
-            }
-        }
     }
 
     /// What every shape wears, whatever shape it is.

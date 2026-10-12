@@ -1,4 +1,4 @@
-# revision 9.1
+# revision 10.1
 ActivityIndicator.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
@@ -139,41 +139,6 @@ CheckBox.translationY: ✅
 CheckBox.unfocus: – CheckBox takes no keyboard focus here: it refuses it, and nothing is heard
 CheckBox.width: ✅
 CheckBox.zIndex: ✅
-ColorBox.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
-ColorBox.accessibilityHint: ✅
-ColorBox.accessibilityLabel: ✅
-ColorBox.automationExcludedWithChildren: ✅
-ColorBox.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
-ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
-ColorBox.frame: ✅
-ColorBox.frameChanged: ✅
-ColorBox.height: ✅
-ColorBox.ignoresInput: not realized
-ColorBox.isAccessibilityHidden: ✅
-ColorBox.isEnabled: ✅
-ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
-ColorBox.isVisible: ✅
-ColorBox.layoutDirection: ✅
-ColorBox.maximumHeight: ✅
-ColorBox.maximumWidth: ✅
-ColorBox.minimumHeight: ✅
-ColorBox.minimumWidth: ✅
-ColorBox.opacity: ✅
-ColorBox.pivotX: ✅
-ColorBox.pivotY: ✅
-ColorBox.rotation: ✅
-ColorBox.rotationX: ✅
-ColorBox.rotationY: ✅
-ColorBox.scale: ✅
-ColorBox.scaleX: ✅
-ColorBox.scaleY: ✅
-ColorBox.style: ✅
-ColorBox.tooltip: ✅
-ColorBox.translationX: ✅
-ColorBox.translationY: ✅
-ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
-ColorBox.width: ✅
-ColorBox.zIndex: ✅
 DatePicker.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅

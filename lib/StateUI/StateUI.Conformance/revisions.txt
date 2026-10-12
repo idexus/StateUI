@@ -41,8 +41,8 @@ DatePicker 2
 TimePicker 2
 Page 4
 PageElement 2
-View 4
-VisualElement 9
+View 5
+VisualElement 10
 Shape 3
 BorderElement 7
 TextInput 2
@@ -50,3 +50,5 @@ Application 3
 TextSpan 2
 Divider 2
 Canvas 2
+PropertyContainer 2
+Rectangle 2

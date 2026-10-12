@@ -1,6 +1,6 @@
 # Drawing on GTK
 
-What the GTK host draws itself: a layout's box, a colour box, and a child
+What the GTK host draws itself: a layout's box, a shape, and a child
 placed by an engine's run. Each is a `StateUIPanel` whose snapshot the host
 answers ([the C API](c-api.md#a-subclass-from-swift)).
 
@@ -19,9 +19,6 @@ A layout that clips cuts what it holds to its outline as it draws it, and
 its widget's overflow is hidden (`gtk_widget_set_overflow`), so a child cut
 away also takes no click. A layout
 that does not clip cuts nothing.
-
-A colour box is a panel of one colour, its corners rounded each by its own
-radius; it takes the room its layout gives it and asks for none.
 
 ## A view's background
 

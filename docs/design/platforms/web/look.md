@@ -43,9 +43,7 @@ first colour; a layout and a button paint theirs as a box
 date or a time is filled where the user writes, as the browser draws a field
 the page colours. The trap: written as the `background` shorthand, the colour
 would clear the picture the page's look draws in a field - a picker's chevron,
-a search field's glass. A ColorBox's colour is a swatch filling its box, so
-its background shows where rounded corners leave the box bare; a web view's
-background shows where the page it shows paints none, and stands white where
+a search field's glass. A web view's background shows where the page it shows paints none, and stands white where
 the application gives none. The browser draws its slider over the slider's
 whole box and paints no background under it, so a slider has none.
 

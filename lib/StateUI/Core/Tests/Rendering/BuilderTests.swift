@@ -220,7 +220,7 @@ final class BuilderTests: XCTestCase {
 
                 if showing {
                     ZStack {
-                        ColorBox(Color("#512BD4")).cornerRadius(10)
+                        Rectangle().fill(Color("#512BD4")).cornerRadius(10)
                     }
                     .gridRow(1)
                 } else {
@@ -243,8 +243,8 @@ final class BuilderTests: XCTestCase {
         XCTAssertNil(patch(third, forType: "Text").flatMap { $0.props["text"] },
                      "a view beside the conditional was re-sent")
 
-        let box = try? XCTUnwrap(patch(third, forType: "ColorBox"))
-        XCTAssertNotNil(box?.props["color"], "the branch came back without its colour")
+        let box = try? XCTUnwrap(patch(third, forType: "Rectangle"))
+        XCTAssertNotNil(box?.props["fill"], "the branch came back without its colour")
         XCTAssertNotNil(box?.props["cornerRadius"], "the branch came back without its shape")
     }
 
@@ -316,7 +316,7 @@ final class BuilderTests: XCTestCase {
                     if turn == chosen {
                         Text("turn \(turn)")
                     } else {
-                        ColorBox(Color("#C8C8C8"))
+                        Rectangle().fill(Color("#C8C8C8"))
                     }
                 }
             }
@@ -339,7 +339,7 @@ final class BuilderTests: XCTestCase {
                        "a loop of 11 reported \(second.children.count) changes for a swap of 2")
 
         let types = second.children.map { $0.type }.sorted()
-        XCTAssertEqual(types, ["ColorBox", "Text"])
+        XCTAssertEqual(types, ["Rectangle", "Text"])
 
         // The chosen one is turn 7's, and it is the element that has stood
         // at turn 7's place since the first render.

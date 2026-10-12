@@ -33,7 +33,7 @@
                 VStack {
                     ZStack {
                         Holding.layout(element, clips: clips.wrappedValue, width: 40, height: 40) {
-                            ColorBox(.red).width(20).height(20).horizontalAlignment(.start).verticalAlignment(.start)
+                            Rectangle().fill(.red).width(20).height(20).horizontalAlignment(.start).verticalAlignment(.start)
                                 .translationX(30).translationY(30)
                         }
                     }
@@ -64,9 +64,9 @@
             s.start {
                 VStack {
                     ZStack {
-                        ColorBox(.blue).id("beneath")
+                        Rectangle().fill(.blue).id("beneath")
                         Holding.layout(element, through: through.wrappedValue) {
-                            ColorBox(.red).width(20).height(20).horizontalAlignment(.start).verticalAlignment(.start)
+                            Rectangle().fill(.red).width(20).height(20).horizontalAlignment(.start).verticalAlignment(.start)
                         }
                     }
                     .width(100).height(100)

@@ -3,7 +3,7 @@
 
 /// How rounded a box's corners are: one radius for all four, or one each.
 ///
-///     ColorBox(.teal).cornerRadius(12)
+///     Rectangle().fill(.teal).cornerRadius(12)
 public enum CornerRadius: Equatable, Sendable, HostRepresentable {
     /// The same radius on all four corners, in device units.
     case uniform(Double)

@@ -18,15 +18,15 @@
     static func takesTheRoomLeft(_ stack: String) -> ConformanceCase {
         ConformanceCase("\(stack).aSpacerTakesTheRoomItsStackLeaves", proves: [
             Covered(SpacerContract.self),
-        ], needs: [Covered(ViewContract.frameChanged, on: "ColorBox")]) { s in
+        ], needs: [Covered(ViewContract.frameChanged, on: "Rectangle")]) { s in
             let last = Received<[Double]>()
             s.start {
                 VStack {
                     Stacked.stack(stack, spacing: 8) {
                         [
-                            ColorBox(.red).width(20).height(20),
+                            Rectangle().fill(.red).width(20).height(20),
                             Spacer(),
-                            ColorBox(.blue).width(20).height(20)
+                            Rectangle().fill(.blue).width(20).height(20)
                                 .onEvent(ViewContract.frameChanged) { last.values.append($0) },
                         ]
                     }

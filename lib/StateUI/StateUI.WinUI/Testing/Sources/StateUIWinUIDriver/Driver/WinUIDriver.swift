@@ -24,7 +24,6 @@ final class WinUIDriver: HostDriver {
     ]
     let platformHasNone = [
         "read isEnabled of Canvas": WinUIDriver.noEnabledState,
-        "read isEnabled of ColorBox": WinUIDriver.noEnabledState,
         "read isEnabled of Divider": WinUIDriver.noEnabledState,
         "read isEnabled of Ellipse": WinUIDriver.noEnabledState,
         "read isEnabled of Grid": WinUIDriver.noEnabledState,

@@ -68,7 +68,6 @@ enum WinUIRealization {
         .partial("SearchField", "automationExcludedWithChildren", missing: Self.partsStayMet),
         .partial("Stepper", "automationExcludedWithChildren", missing: Self.partsStayMet),
         .partial("TimePicker", "automationExcludedWithChildren", missing: Self.partsStayMet),
-        .notPlanned("ColorBox", "background", reason: figurePaintsNoGround),
         .notPlanned("Ellipse", "background", reason: figurePaintsNoGround),
         .notPlanned("Image", "background", reason: "WinUI's picture paints the picture alone, no ground around it."),
         .notPlanned("Line", "background", reason: figurePaintsNoGround),

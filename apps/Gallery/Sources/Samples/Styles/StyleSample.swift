@@ -46,24 +46,6 @@ struct StyleSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalAlignment(.center)
 
-            SectionTitle("A style for every control of a type")
-
-            // None of these names a colour: a style with no key is implicit,
-            // and every ColorBox wears the one `Style<ColorBox>()` gives.
-            HStack {
-                ColorBox()
-                    .width(40)
-                    .height(40)
-                ColorBox()
-                    .width(40)
-                    .height(40)
-                ColorBox()
-                    .width(40)
-                    .height(40)
-            }
-            .spacing(12)
-            .horizontalAlignment(.center)
-
             SectionTitle("A style asked for by name")
 
             // A keyed style is asked for; a keyed style REPLACES the implicit
@@ -95,7 +77,7 @@ struct StyleSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("A style with no key is implicit: every control of its type wears it, "
-                + "as every ColorBox here wears `Style<ColorBox>()`. `Headline` has a key "
+                + "as every button here wears `Style<Button>()`. `Headline` has a key "
                 + "and is asked for by name, and a keyed style REPLACES the implicit one, "
                 + "so it says everything it needs.")
                 .fontSize(12)

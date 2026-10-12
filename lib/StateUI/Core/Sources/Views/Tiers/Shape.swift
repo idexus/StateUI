@@ -79,6 +79,18 @@ extension ShapeProperties {
 }
 
 extension Shape {
+    /// `fill` from a colour state, `$x`: the host animates the colour to each
+    /// new value, and no view is rebuilt for it.
+    public func fill(_ state: Binding<Color>) -> Modified {
+        twin(ShapeContract.fill, carrying: state)
+    }
+
+    /// `stroke` from a colour state, `$x`: the host animates the colour to
+    /// each new value, and no view is rebuilt for it.
+    public func stroke(_ state: Binding<Color>) -> Modified {
+        twin(ShapeContract.stroke, carrying: state)
+    }
+
     /// `contentMode` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func contentMode(_ state: Binding<ContentMode>) -> Modified {

@@ -24,7 +24,7 @@ extension VisualElementProperties {
 
     /// Whether a screen reader skips this view.
     ///
-    ///     ColorBox(.silver).isAccessibilityHidden(true)
+    ///     Rectangle().fill(.silver).isAccessibilityHidden(true)
     ///
     /// For decoration: a rule, a shadow, a picture repeating the words beside
     /// it. Left unsaid, the platform decides, which is nearly always right; say

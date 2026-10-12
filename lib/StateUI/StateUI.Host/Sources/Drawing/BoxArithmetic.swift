@@ -3,7 +3,7 @@
 
 @_spi(Host) import StateUI
 
-/// A box's outline and corners - a layout's, a button's, a colour box's, a rectangle's - as every host draws them.
+/// A box's outline and corners - a layout's, a button's, a rectangle's - as every host draws them.
 /// Design: docs/design/host/layout.md#a-box
 @_spi(Host) public enum BoxArithmetic {
     /// The corners' radii, clockwise from the top left - the order toolkits take them in, where StateUI names the

@@ -23,7 +23,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         if let motion { stack.motion = HostLayoutMotion(motion: motion, lanes: .all) }
         stack.children = .arranged(order.map { name in
-            var box = HostPatch(id: .manual(name), type: .colorBox)
+            var box = HostPatch(id: .manual(name), type: .rectangle)
             box.properties[.width] = .number(100)
             box.properties[.height] = .number(heights[name] ?? 40)
             if name == watched { box.events = .replace([.frameChanged: 7]) }
@@ -124,7 +124,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
 
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.motion = HostLayoutMotion(motion: .eased(200, .linear), lanes: .all)
-        var box = HostPatch(id: .manual("box"), type: .colorBox)
+        var box = HostPatch(id: .manual("box"), type: .rectangle)
         box.properties[.width] = .number(50)
         box.properties[.height] = .number(50)
         box.properties[.horizontalAlignment] = .enumeration(Alignment.end.rawValue)

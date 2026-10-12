@@ -36,7 +36,6 @@ extension SearchField: StyleTarget {}
 extension ActivityIndicator: StyleTarget {}
 extension ProgressBar: StyleTarget {}
 extension Image: StyleTarget {}
-extension ColorBox: StyleTarget {}
 extension Divider: StyleTarget {}
 extension Spacer: StyleTarget {}
 extension Grid: StyleTarget {}

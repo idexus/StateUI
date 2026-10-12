@@ -14,7 +14,6 @@ Text("Account")
 Button("Save")
 Button(icon: "trash.png")
 Image("avatar.png")
-ColorBox(.cornflowerBlue)
 ```
 
 Optional capabilities are modifiers:
@@ -74,7 +73,7 @@ hands the state channel to the host instead:
 @State var volume = 0.5
 
 Slider($volume)
-ColorBox(.cornflowerBlue).scaleX($volume)
+Rectangle().fill(.cornflowerBlue).scaleX($volume)
 ```
 
 Passing `$volume` does not make the body a reader. Native input and program
@@ -397,7 +396,7 @@ VStack {
 }
 ```
 
-StateUI composes it of colour boxes in a row, so it looks and behaves the same
+StateUI composes it of rectangles in a row, so it looks and behaves the same
 on every platform. `maximumVisible` caps the dots, the current one kept among
 them; one lone dot is hidden unless `hidesForSinglePage(false)` asks for it;
 `indicatorShape(.square)` draws squares. Given items,

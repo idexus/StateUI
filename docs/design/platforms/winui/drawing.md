@@ -33,9 +33,6 @@ ellipse of the layout's size, written in the arrangement that gives the size
 and only where it differs from the last. `UIElement.Clip` takes only a plain
 rectangle, and a panel's own corner radius cuts none of its children.
 
-A ColorBox is a figure of the relay's, a `Grid` of one colour, its four
-corners rounded each as the element says; a `Rectangle` rounds all four alike.
-
 ## A view's background
 
 A view's background is the ground under its whole frame, painted the way
@@ -52,7 +49,7 @@ combo box (`ComboBoxBackground`), of a date picker
 `Background`. A canvas clears its surface to its ground as it replays its
 drawing - a brush's first colour alone. A layout paints its box, a label its
 words' ground, a button its face. What paints no ground of its own takes
-none: a figure - a shape, a colour box - and a picture, and the progress bar
+none: a figure - a shape - and a picture, and the progress bar
 and ring, whose `Background` is their track; their pages in the dictionary
 say so.
 

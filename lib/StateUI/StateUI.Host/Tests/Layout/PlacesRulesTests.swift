@@ -90,7 +90,7 @@ final class PlacesRulesTests: XCTestCase {
     /// measure, on any host; what changes a size always does.
     func testOnlyWhatChangesASizeIsMeasuredAgain() {
         let drawn: Set<Prop> = [
-            .opacity, .background, .textColor, .placeholderColor, .tint, .color, .isEnabled,
+            .opacity, .background, .textColor, .placeholderColor, .tint, .isEnabled,
             .isOn, .value, .minimum, .maximum, .progress, .cursorPosition, .selectionLength,
             .stroke, .fill, .lineWidth, .dash, .dashPhase, .lineCap, .lineJoin,
             .miterLimit, .shape, .cornerRadius, .geometryTransform, .barBackgroundColor, .barForegroundColor,

@@ -1535,7 +1535,7 @@ final class CatalogTests: XCTestCase {
 
         walk(page)
 
-        XCTAssertEqual(carriers, ["ZStack", "ColorBox"],
+        XCTAssertEqual(carriers, ["ZStack", "Rectangle"],
                        "the banner opens StateUI's home, the gallery a tap on the run")
     }
 

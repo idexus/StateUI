@@ -13,6 +13,8 @@ final class AndroidShapeViewTests: XCTestCase {
             ("testDrawnGeometryFitsItsRoom", testDrawnGeometryFitsItsRoom),
             ("testAPathsArcBendsToItsTop", testAPathsArcBendsToItsTop),
             ("testAShapeAsksForNoRoom", testAShapeAsksForNoRoom),
+            ("testARectangleDrawsWithinItsCornersOverItsBackground", testARectangleDrawsWithinItsCornersOverItsBackground),
+            ("testACornerRoundsNoMoreThanHalfTheShorterSide", testACornerRoundsNoMoreThanHalfTheShorterSide),
         ]
     }
 
@@ -75,6 +77,50 @@ final class AndroidShapeViewTests: XCTestCase {
             let rectangle = try XCTUnwrap(host.views(AndroidShapeView.self).first)
 
             XCTAssertEqual(rectangle.frame.height, 0)
+        }
+    }
+
+    /// One rounded corner, the bottom left, shows the background there and nowhere else.
+    func testARectangleDrawsWithinItsCornersOverItsBackground() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                Rectangle().fill(Color("#FF0000"))
+                    .cornerRadius(topLeft: 0, topRight: 0, bottomLeft: 20, bottomRight: 0)
+                    .background(Color("#00FF00"))
+                    .width(100)
+                    .height(100)
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+            }
+            host.layOut()
+
+            let shape = try XCTUnwrap(host.views(AndroidShapeView.self).first)
+            let drawn = shape.pixels(at: [(1, 198), (198, 198), (1, 1), (100, 100)])
+            XCTAssertEqual(
+                drawn, [0xFF00_FF00, 0xFFFF_0000, 0xFFFF_0000, 0xFFFF_0000], drawn.map { String($0, radix: 16) }.description)
+        }
+    }
+
+    /// A corner is round and no more than half the shorter side, by the host layer's rule: a radius wider than a
+    /// short rectangle rounds its ends whole, a capsule.
+    func testACornerRoundsNoMoreThanHalfTheShorterSide() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                Rectangle().fill(Color("#FF0000"))
+                    .cornerRadius(100)
+                    .background(Color("#00FF00"))
+                    .width(200)
+                    .height(40)
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+            }
+            host.layOut()
+
+            let shape = try XCTUnwrap(host.views(AndroidShapeView.self).first)
+            let drawn = shape.pixels(at: [(8, 8), (60, 8), (200, 8)])
+            XCTAssertEqual(
+                drawn, [0xFF00_FF00, 0xFFFF_0000, 0xFFFF_0000],
+                "beyond the round corner; within the end an oval would leave empty " + drawn.map { String($0, radix: 16) }.description)
         }
     }
 }

@@ -421,7 +421,7 @@ final class GalleryViewTests: XCTestCase {
 
         let shaded = settled {
             self.gallery(5)
-                .shade(ColorBox(Color("#000000")).cornerRadius(16))
+                .shade(Rectangle().fill(Color("#000000")).cornerRadius(16))
                 .node
         }
 
@@ -470,7 +470,7 @@ final class GalleryViewTests: XCTestCase {
             return (opacity, shade)
         }
 
-        let mask = ColorBox(Color("#000000")).cornerRadius(16)
+        let mask = Rectangle().fill(Color("#000000")).cornerRadius(16)
 
         let whole = farCard { $0.shade(mask) }
         let half = farCard { $0.shade(mask, amount: 0.5) }
@@ -495,7 +495,7 @@ final class GalleryViewTests: XCTestCase {
         func shade(of amount: Double) -> Double {
             placements(settled {
                 self.gallery(5)
-                    .shade(ColorBox(Color("#000000")), amount: amount)
+                    .shade(Rectangle().fill(Color("#000000")), amount: amount)
                     .node
             }).last?.shade ?? -1
         }
@@ -507,7 +507,7 @@ final class GalleryViewTests: XCTestCase {
     /// The distance a card is worth along the run: the content is the room
     /// plus that much per card past the first.
     private func travel(_ patch: HostPatch, cards: Int) -> Double? {
-        guard let width = find(.colorBox, in: patch)?.props[.width]?.number else { return nil }
+        guard let width = find(.rectangle, in: patch)?.props[.width]?.number else { return nil }
 
         return (width - room.width) / Double(cards - 1)
     }
@@ -519,7 +519,7 @@ final class GalleryViewTests: XCTestCase {
         func length(_ count: Int) throws -> Double {
             let showing = laid(Renders(), { self.gallery(count).node })
 
-            return try XCTUnwrap(find(.colorBox, in: showing.patch)?.props[.width]?.number)
+            return try XCTUnwrap(find(.rectangle, in: showing.patch)?.props[.width]?.number)
         }
 
         let two = try length(2)
@@ -609,9 +609,9 @@ final class GalleryViewTests: XCTestCase {
 
         // The run is as long as the wide room asks, and laid out so.
         let longer = renders.render(tree())
-        let length = try XCTUnwrap(find(.colorBox, in: longer)?.props[.width]?.number)
+        let length = try XCTUnwrap(find(.rectangle, in: longer)?.props[.width]?.number)
         XCTAssertEqual(length, wide + 4 * step, accuracy: 0.001)
-        if let laid = find(.colorBox, in: renders.renderFromScratch(tree()))?.driven?[.frame]?.state {
+        if let laid = find(.rectangle, in: renders.renderFromScratch(tree()))?.driven?[.frame]?.state {
             moved(laid, to: [0, 0, length, 300])
         }
         cycle()
@@ -788,7 +788,7 @@ final class GalleryViewTests: XCTestCase {
     /// The box a tap is answered on, if the gallery laid one.
     private func tappable(in patch: HostPatch) -> HostPatch? {
         func walk(_ node: HostPatch) -> HostPatch? {
-            if node.type == .colorBox, node.events?[.tapped] != nil { return node }
+            if node.type == .rectangle, node.events?[.tapped] != nil { return node }
 
             for child in node.children {
                 if let found = walk(child) { return found }
@@ -903,7 +903,7 @@ final class GalleryViewTests: XCTestCase {
             """)
 
         let shaded = placements(
-            laid(Renders(), { self.gallery(3).shade(ColorBox(.black)).node }).whole)
+            laid(Renders(), { self.gallery(3).shade(Rectangle().fill(.black)).node }).whole)
 
         XCTAssertEqual(shaded.first?.shade, 0, "the card in front wears none of it")
         XCTAssertTrue((shaded.last?.shade ?? -1) > 0, "and a card behind it wears some")

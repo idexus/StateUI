@@ -46,7 +46,7 @@ final class UIKitMotionTests: XCTestCase {
         XCTAssertEqual(midway, label.bounds.width, accuracy: 0.5, "its words at the width it is bound for")
     }
 
-    /// A colour box whose colour and width change under a motion stands halfway at half its time, and lands - the
+    /// A rectangle whose fill and width change under a motion stands halfway at half its time, and lands - the
     /// Gallery's Motion sample.
     @MainActor
     func testAColourAndAWidthTravelHalfwayAndLand() throws {
@@ -54,8 +54,8 @@ final class UIKitMotionTests: XCTestCase {
         let wide = State(wrappedValue: false)
         let host = UIKitRenderer.running(clock: clock) {
             VStack {
-                ColorBox()
-                    .color(wide.wrappedValue ? Color(red: 255, green: 0, blue: 0) : Color(red: 0, green: 0, blue: 255))
+                Rectangle()
+                    .fill(wide.wrappedValue ? Color(red: 255, green: 0, blue: 0) : Color(red: 0, green: 0, blue: 255))
                     .width(wide.wrappedValue ? 300 : 100)
                     .height(60)
                     .horizontalAlignment(.start)
@@ -64,7 +64,7 @@ final class UIKitMotionTests: XCTestCase {
             }
         }
         defer { host.finish() }
-        let box = try XCTUnwrap(Self.view(of: "box", in: host) as? UIKitColorBoxView)
+        let box = try XCTUnwrap(Self.view(of: "box", in: host) as? UIKitShapeView)
         XCTAssertEqual(box.bounds.width, 100, accuracy: 0.5)
 
         wide.wrappedValue = true
@@ -93,9 +93,9 @@ final class UIKitMotionTests: XCTestCase {
         let host = UIKitRenderer.running(clock: clock) {
             VStack {
                 if joined.wrappedValue {
-                    ColorBox().color(Color(red: 255, green: 0, blue: 0)).height(40).id("joining")
+                    Rectangle().fill(Color(red: 255, green: 0, blue: 0)).height(40).id("joining")
                 }
-                ColorBox().color(Color(red: 0, green: 0, blue: 255)).height(40).id("below")
+                Rectangle().fill(Color(red: 0, green: 0, blue: 255)).height(40).id("below")
             }
             .motion(.eased(1000, .linear))
         }
@@ -120,10 +120,10 @@ final class UIKitMotionTests: XCTestCase {
         XCTAssertEqual(below.frame.minY - start, 40, accuracy: 1)
     }
 
-    /// The fill the colour box draws, as red, green and blue.
+    /// The fill the rectangle draws, as red, green and blue.
     @MainActor
-    private static func components(of box: UIKitColorBoxView) -> (red: Double, green: Double, blue: Double)? {
-        guard let fill = (box.layer as? CAShapeLayer)?.fillColor.map(UIColor.init(cgColor:)) else { return nil }
+    private static func components(of box: UIKitShapeView) -> (red: Double, green: Double, blue: Double)? {
+        guard let fill = box.fillForTesting.lineColor else { return nil }
         var (red, green, blue, alpha) = (CGFloat(0), CGFloat(0), CGFloat(0), CGFloat(0))
         guard fill.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return nil }
         return (red, green, blue)

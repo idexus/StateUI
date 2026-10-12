@@ -92,7 +92,7 @@ final class WebFrameReportTests: XCTestCase {
         let host = WebRenderer.running {
             VStack {
                 VStack {
-                    ColorBox(.red).width(20).height(20).horizontalAlignment(.start)
+                    Rectangle().fill(.red).width(20).height(20).horizontalAlignment(.start)
                         .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
                 }
                 .padding(wide.wrappedValue ? Insets(left: 20, top: 12, right: 0, bottom: 0) : Insets(left: 10, top: 6, right: 0, bottom: 0))

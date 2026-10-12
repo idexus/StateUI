@@ -31,9 +31,6 @@ CheckBox
   isOn
   tint
   toggled()
-ColorBox
-  color
-  cornerRadius
 DatePicker
   date
   maximumDate

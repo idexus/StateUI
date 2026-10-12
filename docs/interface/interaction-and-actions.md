@@ -81,7 +81,7 @@ automation script activates the row without a pointer. Give such a view a
 @State private var x = 0.0
 @State private var scale = 1.0
 
-ColorBox(.cornflowerBlue)
+Rectangle().fill(.cornflowerBlue)
     .translationX(x)
     .scale(scale)
     .onPanUpdated { update in

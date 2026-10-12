@@ -46,14 +46,6 @@ the same colour. A bare
 colour written out instead would make one property arrive in two shapes and
 leave the host carrying a branch to tell them apart.
 
-## A colour box fills with its colour
-
-A `ColorBox` carries both `color` and `background`, and draws `color`. The
-background is a second surface behind the box, which the corner radius does
-not round and which need not share the box's transform: a rotated box carrying
-both shows the background standing still underneath. A box is given its
-colour through `color`, in a style as much as on the control.
-
 ## Opening a picker
 
 A picker's, a date picker's and a time picker's `isOpen` asks the host to show

@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 ActivityIndicator.area: ✅
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.pointerEntered: ✅
@@ -6,10 +6,10 @@ ActivityIndicator.pointerExited: ✅
 ActivityIndicator.pointerMoved: ✅
 ActivityIndicator.pointerPressed: ✅
 ActivityIndicator.pointerReleased: ✅
-Button.allowsDrop: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-Button.dragLeave: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-Button.dragOver: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-Button.drop: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
+Button.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Button.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Button.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Button.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Button.frameChanged: ✅
 Button.gridColumnSpan: ✅
 Button.gridRowSpan: ✅
@@ -21,171 +21,164 @@ CheckBox.margin: ✅
 CheckBox.swipeDirection: ✅
 CheckBox.swipeThreshold: ✅
 CheckBox.swiped: ✅
-ColorBox.area: ✅
-ColorBox.frameChanged: ✅
-ColorBox.pointerEntered: ✅
-ColorBox.pointerExited: ✅
-ColorBox.pointerMoved: ✅
-ColorBox.pointerPressed: ✅
-ColorBox.pointerReleased: ✅
-DatePicker.allowsDrop: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-DatePicker.dragLeave: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-DatePicker.dragOver: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-DatePicker.drop: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
+DatePicker.area: ✅
 DatePicker.frameChanged: ✅
-DatePicker.gridColumnSpan: ✅
-DatePicker.gridRowSpan: ✅
-Divider.panTouchCount: ✅
-Divider.panUpdated: ✅
-Divider.panXChannel: ✅
-Ellipse.panTouchCount: ✅
-Ellipse.panUpdated: ✅
-Ellipse.panXChannel: ✅
-Grid.frameChanged: ✅
-Grid.margin: ✅
-Grid.swipeDirection: ✅
-Grid.swipeThreshold: ✅
-Grid.swiped: ✅
-HStack.area: ✅
+DatePicker.pointerEntered: ✅
+DatePicker.pointerExited: ✅
+DatePicker.pointerMoved: ✅
+DatePicker.pointerPressed: ✅
+DatePicker.pointerReleased: ✅
+Divider.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Divider.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Divider.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Divider.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Divider.frameChanged: ✅
+Divider.gridColumnSpan: ✅
+Divider.gridRowSpan: ✅
+Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Ellipse.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Ellipse.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Ellipse.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Ellipse.frameChanged: ✅
+Ellipse.gridColumnSpan: ✅
+Ellipse.gridRowSpan: ✅
+Grid.panTouchCount: ✅
+Grid.panUpdated: ✅
+Grid.panXChannel: ✅
 HStack.frameChanged: ✅
-HStack.pointerEntered: ✅
-HStack.pointerExited: ✅
-HStack.pointerMoved: ✅
-HStack.pointerPressed: ✅
-HStack.pointerReleased: ✅
-Image.allowsDrop: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-Image.dragLeave: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-Image.dragOver: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-Image.drop: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
+HStack.margin: ✅
+HStack.swipeDirection: ✅
+HStack.swipeThreshold: ✅
+HStack.swiped: ✅
+Image.area: ✅
 Image.frameChanged: ✅
-Image.gridColumnSpan: ✅
-Image.gridRowSpan: ✅
-ItemsView.panTouchCount: ✅
-ItemsView.panUpdated: ✅
-ItemsView.panXChannel: ✅
-Line.area: ✅
+Image.pointerEntered: ✅
+Image.pointerExited: ✅
+Image.pointerMoved: ✅
+Image.pointerPressed: ✅
+Image.pointerReleased: ✅
+ItemsView.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ItemsView.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ItemsView.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ItemsView.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ItemsView.frameChanged: ✅
+ItemsView.gridColumnSpan: ✅
+ItemsView.gridRowSpan: ✅
 Line.frameChanged: ✅
-Line.pointerEntered: ✅
-Line.pointerExited: ✅
-Line.pointerMoved: ✅
-Line.pointerPressed: ✅
-Line.pointerReleased: ✅
-Map.allowsDrop: 🧩
-Map.dragLeave: 🧩
-Map.dragOver: 🧩
-Map.drop: 🧩
+Line.margin: ✅
+Line.swipeDirection: ✅
+Line.swipeThreshold: ✅
+Line.swiped: ✅
+Map.area: 🧩
 Map.frameChanged: 🧩
-Map.gridColumnSpan: 🧩
-Map.gridRowSpan: 🧩
-Path.frameChanged: ✅
-Path.margin: ✅
-Path.swipeDirection: ✅
-Path.swipeThreshold: ✅
-Path.swiped: ✅
-Picker.area: ✅
+Map.pointerEntered: 🧩
+Map.pointerExited: 🧩
+Map.pointerMoved: 🧩
+Map.pointerPressed: 🧩
+Map.pointerReleased: 🧩
+Path.panTouchCount: ✅
+Path.panUpdated: ✅
+Path.panXChannel: ✅
 Picker.frameChanged: ✅
-Picker.pointerEntered: ✅
-Picker.pointerExited: ✅
-Picker.pointerMoved: ✅
-Picker.pointerPressed: ✅
-Picker.pointerReleased: ✅
-Polygon.allowsDrop: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-Polygon.dragLeave: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-Polygon.dragOver: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-Polygon.drop: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
+Picker.margin: ✅
+Picker.swipeDirection: ✅
+Picker.swipeThreshold: ✅
+Picker.swiped: ✅
+Polygon.area: ✅
 Polygon.frameChanged: ✅
-Polygon.gridColumnSpan: ✅
-Polygon.gridRowSpan: ✅
-Polyline.panTouchCount: ✅
-Polyline.panUpdated: ✅
-Polyline.panXChannel: ✅
-ProgressBar.frameChanged: ✅
-ProgressBar.margin: ✅
-ProgressBar.swipeDirection: ✅
-ProgressBar.swipeThreshold: ✅
-ProgressBar.swiped: ✅
-RadioButton.area: ✅
+Polygon.pointerEntered: ✅
+Polygon.pointerExited: ✅
+Polygon.pointerMoved: ✅
+Polygon.pointerPressed: ✅
+Polygon.pointerReleased: ✅
+Polyline.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Polyline.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Polyline.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Polyline.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Polyline.frameChanged: ✅
+Polyline.gridColumnSpan: ✅
+Polyline.gridRowSpan: ✅
+ProgressBar.panTouchCount: ✅
+ProgressBar.panUpdated: ✅
+ProgressBar.panXChannel: ✅
 RadioButton.frameChanged: ✅
-RadioButton.pointerEntered: ✅
-RadioButton.pointerExited: ✅
-RadioButton.pointerMoved: ✅
-RadioButton.pointerPressed: ✅
-RadioButton.pointerReleased: ✅
-Rectangle.allowsDrop: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-Rectangle.dragLeave: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-Rectangle.dragOver: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-Rectangle.drop: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
+RadioButton.margin: ✅
+RadioButton.swipeDirection: ✅
+RadioButton.swipeThreshold: ✅
+RadioButton.swiped: ✅
+Rectangle.area: ✅
 Rectangle.frameChanged: ✅
-Rectangle.gridColumnSpan: ✅
-Rectangle.gridRowSpan: ✅
-ScrollView.panTouchCount: ✅
-ScrollView.panUpdated: ✅
-ScrollView.panXChannel: ✅
-SearchField.frameChanged: ✅
-SearchField.margin: ✅
-SearchField.swipeDirection: ✅
-SearchField.swipeThreshold: ✅
-SearchField.swiped: ✅
-Slider.area: ✅
+Rectangle.pointerEntered: ✅
+Rectangle.pointerExited: ✅
+Rectangle.pointerMoved: ✅
+Rectangle.pointerPressed: ✅
+Rectangle.pointerReleased: ✅
+ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ScrollView.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ScrollView.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ScrollView.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ScrollView.frameChanged: ✅
+ScrollView.gridColumnSpan: ✅
+ScrollView.gridRowSpan: ✅
+SearchField.panTouchCount: ✅
+SearchField.panUpdated: ✅
+SearchField.panXChannel: ✅
 Slider.frameChanged: ✅
-Slider.pointerEntered: ✅
-Slider.pointerExited: ✅
-Slider.pointerMoved: ✅
-Slider.pointerPressed: ✅
-Slider.pointerReleased: ✅
-Spacer.allowsDrop: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-Spacer.dragLeave: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-Spacer.dragOver: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-Spacer.drop: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
+Slider.margin: ✅
+Slider.swipeDirection: ✅
+Slider.swipeThreshold: ✅
+Slider.swiped: ✅
+Spacer.area: ✅
 Spacer.frameChanged: ✅
-Spacer.gridColumnSpan: ✅
-Spacer.gridRowSpan: ✅
-Stepper.panTouchCount: ✅
-Stepper.panUpdated: ✅
-Stepper.panXChannel: ✅
-Switch.frameChanged: ✅
-Switch.margin: ✅
-Switch.swipeDirection: ✅
-Switch.swipeThreshold: ✅
-Switch.swiped: ✅
-Text.frameChanged: ✅
-Text.margin: ✅
-Text.swipeDirection: ✅
-Text.swipeThreshold: ✅
-Text.swiped: ✅
-TextEditor.area: ✅
+Spacer.pointerEntered: ✅
+Spacer.pointerExited: ✅
+Spacer.pointerMoved: ✅
+Spacer.pointerPressed: ✅
+Spacer.pointerReleased: ✅
+Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Stepper.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Stepper.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Stepper.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Stepper.frameChanged: ✅
+Stepper.gridColumnSpan: ✅
+Stepper.gridRowSpan: ✅
+Switch.panTouchCount: ✅
+Switch.panUpdated: ✅
+Switch.panXChannel: ✅
+Text.panTouchCount: ✅
+Text.panUpdated: ✅
+Text.panXChannel: ✅
 TextEditor.frameChanged: ✅
-TextEditor.pointerEntered: ✅
-TextEditor.pointerExited: ✅
-TextEditor.pointerMoved: ✅
-TextEditor.pointerPressed: ✅
-TextEditor.pointerReleased: ✅
-TextField.allowsDrop: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-TextField.dragLeave: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-TextField.dragOver: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-TextField.drop: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
+TextEditor.margin: ✅
+TextEditor.swipeDirection: ✅
+TextEditor.swipeThreshold: ✅
+TextEditor.swiped: ✅
+TextField.area: ✅
 TextField.frameChanged: ✅
-TextField.gridColumnSpan: ✅
-TextField.gridRowSpan: ✅
-TimePicker.panTouchCount: ✅
-TimePicker.panUpdated: ✅
-TimePicker.panXChannel: ✅
-VStack.frameChanged: ✅
-VStack.margin: ✅
-VStack.swipeDirection: ✅
-VStack.swipeThreshold: ✅
-VStack.swiped: ✅
-WebView.area: ✅
+TextField.pointerEntered: ✅
+TextField.pointerExited: ✅
+TextField.pointerMoved: ✅
+TextField.pointerPressed: ✅
+TextField.pointerReleased: ✅
+TimePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+TimePicker.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+TimePicker.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+TimePicker.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+TimePicker.frameChanged: ✅
+TimePicker.gridColumnSpan: ✅
+TimePicker.gridRowSpan: ✅
+VStack.panTouchCount: ✅
+VStack.panUpdated: ✅
+VStack.panXChannel: ✅
 WebView.frameChanged: ✅
-WebView.pointerEntered: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-WebView.pointerExited: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-WebView.pointerMoved: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-WebView.pointerPressed: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-WebView.pointerReleased: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-ZStack.allowsDrop: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-ZStack.dragLeave: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-ZStack.dragOver: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
-ZStack.drop: ✓ dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began
+WebView.margin: ✅
+WebView.swipeDirection: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.swipeThreshold: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.swiped: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+ZStack.area: ✅
 ZStack.frameChanged: ✅
-ZStack.gridColumnSpan: ✅
-ZStack.gridRowSpan: ✅
+ZStack.pointerEntered: ✅
+ZStack.pointerExited: ✅
+ZStack.pointerMoved: ✅
+ZStack.pointerPressed: ✅
+ZStack.pointerReleased: ✅

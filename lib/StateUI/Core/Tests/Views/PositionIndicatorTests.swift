@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The row of dots is made of colour boxes every host already draws, so there
+// The row of dots is made of rectangles every host already draws, so there
 // is nothing in a host to check it against and everything worth pinning is
 // here.
 
@@ -23,7 +23,7 @@ final class PositionIndicatorTests: XCTestCase {
 
     /// The dots a view describes.
     private func dots(_ view: some View) -> [HostPatch] {
-        nodes(.colorBox, in: Renders().render(VStack { view }.node))
+        nodes(.rectangle, in: Renders().render(VStack { view }.node))
     }
 
     /// As many dots as the count, each the size it is given, the current one in its own colour.
@@ -32,7 +32,7 @@ final class PositionIndicatorTests: XCTestCase {
             .indicatorSize(10))
 
         XCTAssertEqual(row.count, 5)
-        XCTAssertEqual(row.map { $0.properties[.color] }, [Color.gray, .gray, .red, .gray, .gray].map { $0.propValue })
+        XCTAssertEqual(row.map { $0.properties[.fill] }, [Color.gray, .gray, .red, .gray, .gray].map { Brush.solidColor($0).propValue })
         XCTAssertEqual(row.map { $0.properties[.width] }, Array(repeating: .number(10), count: 5))
         XCTAssertEqual(row.map { $0.properties[.height] }, Array(repeating: .number(10), count: 5))
     }
@@ -50,7 +50,7 @@ final class PositionIndicatorTests: XCTestCase {
 
         let row = dots(PositionIndicator().count(12).position(6).maximumVisible(5).currentIndicatorColor(.red))
         XCTAssertEqual(row.count, 5)
-        XCTAssertEqual(row.firstIndex { $0.properties[.color] == Color.red.propValue }, 2)
+        XCTAssertEqual(row.firstIndex { $0.properties[.fill] == Brush.solidColor(.red).propValue }, 2)
     }
 
     /// One lonely dot is hidden unless the row asks for it; no items, no dots.
@@ -67,8 +67,8 @@ final class PositionIndicatorTests: XCTestCase {
             .properties[.cornerRadius]
 
         XCTAssertNotEqual(round, square)
-        XCTAssertEqual(square, dots(ColorBox().cornerRadius(0)).first?.properties[.cornerRadius])
-        XCTAssertEqual(round, dots(ColorBox().cornerRadius(4)).first?.properties[.cornerRadius])
+        XCTAssertEqual(square, dots(Rectangle().cornerRadius(0)).first?.properties[.cornerRadius])
+        XCTAssertEqual(round, dots(Rectangle().cornerRadius(4)).first?.properties[.cornerRadius])
     }
 
     /// Items are their own marks: one each, the current one whole and the others faded.
@@ -87,9 +87,9 @@ final class PositionIndicatorTests: XCTestCase {
         let count = State(wrappedValue: 2)
         let renders = Renders()
         let tree = { VStack { PositionIndicator().count(count.projectedValue) }.node }
-        XCTAssertEqual(nodes(.colorBox, in: renders.render(tree())).count, 2)
+        XCTAssertEqual(nodes(.rectangle, in: renders.render(tree())).count, 2)
 
         count.wrappedValue = 4
-        XCTAssertEqual(nodes(.colorBox, in: renders.renderFromScratch(tree())).count, 4)
+        XCTAssertEqual(nodes(.rectangle, in: renders.renderFromScratch(tree())).count, 4)
     }
 }

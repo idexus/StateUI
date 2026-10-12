@@ -51,8 +51,8 @@ brushes of one shape; anything else snaps. A themed value never moves.
 
 A host moves frame by frame only what its views present and whose values
 travel: `TransitionSurface` names them, element type by element type - a
-view's opacity, background, size and transform; a colour box's colour and
-corners; a label's size and colour of type; a layout's padding and spacing;
+view's opacity, background, size and transform; a rectangle's corners; a
+label's size and colour of type; a layout's padding and spacing;
 a shape's fill and stroke; a window's place. A host's element answers
 `animates(_:)` from it, and the host layer then walks the value and hands
 it each frame's. Every other pair arrives at once, rather than

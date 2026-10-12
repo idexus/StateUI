@@ -15,7 +15,7 @@ final class WinUIScrollViewTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
-                    ScrollView { ColorBox(.red).height(2000) }.height(100)
+                    ScrollView { Rectangle().fill(.red).height(2000) }.height(100)
                 }
                 .height(300)
                 .verticalAlignment(.start)
@@ -31,7 +31,7 @@ final class WinUIScrollViewTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running {
                 ScrollView {
-                    ColorBox(.red).height(400)
+                    Rectangle().fill(.red).height(400)
                 }
                 .padding(10)
                 .shape(.roundedRectangle(20))
