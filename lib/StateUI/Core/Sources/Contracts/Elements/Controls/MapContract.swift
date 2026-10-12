@@ -10,7 +10,7 @@ public enum MapContract: ElementContract {
     public static let layer: ElementLayer = .provider
 
     /// A map is a view.
-    public static let tiers: [any Contract.Type] = [ViewContract.self, KeyboardElementContract.self]
+    public static let tiers: [any Contract.Type] = [ViewContract.self]
 
     /// Whether a drag pans it.
     public static let isScrollEnabled = ElementProperty<Self, Bool>("isScrollEnabled", layer: .native)

@@ -1,72 +1,62 @@
-# revision 10.1
-ActivityIndicator.accessibilityLabel: ✅
-ActivityIndicator.isEnabled: ✅
-Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Canvas.frame: ✅
-Canvas.scale: ✅
-CheckBox.tooltip: ✅
-DatePicker.isEnabled: ✅
-DatePicker.pivotY: ✅
-Divider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Ellipse.translationX: ✅
-Ellipse.zIndex: ✅
-Grid.isAccessibilityHidden: ✅
-HStack.isVisible: ✅
-HStack.layoutDirection: ✓ read layoutDirection of HStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Image.frameChanged: ✅
-Image.height: ✅
-Image.rotation: ✅
-Image.width: ✅
-ItemsView.translationX: ✅
-ItemsView.zIndex: ✅
-Line.frameChanged: ✅
-Line.maximumHeight: ✅
-Line.maximumWidth: ✅
-Line.minimumHeight: ✅
-Line.minimumWidth: ✅
-Line.rotationX: ✓ read rotationX of Line: the host's own tip, checked against the projection it laid on the element
-Map.accessibilityHeading: 🧩
-Map.translationY: 🧩
-Path.frame: ✅
-Path.scale: ✅
-Picker.accessibilityHint: ✅
-Polygon.opacity: ✅
-Polygon.pivotX: ✅
-Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
+# revision 11.1
+ActivityIndicator.accessibilityHint: ✅
+Button.isVisible: ✅
+Button.pivotX: ✅
+Canvas.translationX: ✅
+Canvas.zIndex: ✅
+CheckBox.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+DatePicker.frame: ✅
+DatePicker.scaleX: ✅
+Divider.tooltip: ✅
+Ellipse.isAccessibilityHidden: ✅
+Grid.frameChanged: ✅
+Grid.height: ✅
+Grid.rotationX: ✓ read rotationX of Grid: the host's own tip, checked against the projection it laid on the element
+Grid.width: ✅
+HStack.scaleY: ✅
+HStack.style: ✅
+Image.accessibilityHint: ✅
+ItemsView.isVisible: ✅
+ItemsView.pivotX: ✅
+Line.automationExcludedWithChildren: ✅
+Map.frameChanged: 🧩
+Map.maximumHeight: 🧩
+Map.maximumWidth: 🧩
+Map.minimumHeight: 🧩
+Map.minimumWidth: 🧩
+Map.rotationY: 🧩
+Path.isEnabled: does not apply - read isEnabled of Path - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Path.rotation: ✅
+Picker.accessibilityHeading: ✅
+Picker.translationY: ✅
+Polygon.layoutDirection: ✓ read layoutDirection of Polygon: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Polyline.frame: ✅
 Polyline.scaleX: ✅
-Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-ProgressBar.tooltip: ✅
-RadioButton.opacity: ✅
-RadioButton.pivotX: ✅
-Rectangle.scaleY: ✅
-Rectangle.style: ✅
-ScrollView.accessibilityHeading: ✅
-SearchField.opacity: ✅
-SearchField.pivotX: ✅
-Slider.scaleY: ✅
-Slider.style: ✅
-Spacer.isAccessibilityHidden: ✅
-Stepper.frameChanged: ✅
-Stepper.maximumHeight: ✅
-Stepper.maximumWidth: ✅
-Stepper.minimumHeight: ✅
-Stepper.minimumWidth: ✅
-Stepper.rotationX: ✓ read rotationX of Stepper: the host's own tip, checked against the projection it laid on the element
-Switch.accessibilityLabel: ✅
-Text.automationExcludedWithChildren: ✅
-TextEditor.isVisible: ✅
-TextEditor.layoutDirection: ✅
-TextField.focus: ✅
-TextField.isFocusedChanged: ✅
-TextField.scaleX: ✅
-TextField.unfocus: ✅
-TimePicker.accessibilityHeading: ✅
-VStack.frameChanged: ✅
-VStack.height: ✅
-VStack.rotation: ✅
-VStack.width: ✅
-WebView.ignoresInput: ✅
-WebView.rotationY: ✓ read rotationY of WebView: the host's own tip, checked against the projection it laid on the element
-ZStack.accessibilityHint: ✅
-ZStack.isEnabled: ✅
+ProgressBar.accessibilityHeading: ✅
+RadioButton.isEnabled: ✅
+RadioButton.rotation: ✅
+Rectangle.accessibilityLabel: ✅
+Rectangle.isEnabled: ✅
+ScrollView.layoutDirection: ✓ read layoutDirection of ScrollView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+SearchField.ignoresInput: ✅
+SearchField.scale: ✅
+Slider.accessibilityHeading: ✅
+Spacer.frameChanged: ✅
+Spacer.height: ✅
+Spacer.rotationX: ✓ read rotationX of Spacer: the host's own tip, checked against the projection it laid on the element
+Spacer.width: ✅
+Stepper.accessibilityHint: ✅
+Switch.opacity: ✅
+Switch.pivotY: ✅
+Text.translationX: ✅
+Text.zIndex: ✅
+TextEditor.accessibilityHeading: ✅
+TextEditor.translationY: ✅
+TextField.layoutDirection: ✅
+TimePicker.scaleY: ✅
+TimePicker.style: ✅
+VStack.automationExcludedWithChildren: ✅
+WebView.isVisible: ✅
+WebView.pivotX: ✅
+ZStack.translationX: ✅
+ZStack.zIndex: ✅

@@ -53,7 +53,7 @@ enum AndroidRegistrations {
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(VisualElementContract.isEnabled)
         registry.everyElementRealizes(VisualElementContract.background)
-        registry.everyElementRaises(VisualElementContract.isFocusedChanged)
+        registry.everyElementRaises(FocusElementContract.isFocusedChanged)
     }
 
     /// Puts `TextMembers.members` on a text view: its words in their case, their look, and the room around them.

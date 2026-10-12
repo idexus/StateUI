@@ -12,7 +12,7 @@ public enum CheckBoxContract: ElementContract {
 
     /// A check box is a view, tinted.
     public static let tiers: [any Contract.Type] = [
-        ViewContract.self, TintElementContract.self, KeyboardElementContract.self,
+        ViewContract.self, TintElementContract.self, FocusElementContract.self,
     ]
 
     /// Whether the box is ticked.

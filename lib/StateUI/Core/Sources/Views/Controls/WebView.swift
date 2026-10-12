@@ -45,7 +45,7 @@ extension WebViewProperties {
 /// `browser.goBack()`, `browser.reload()`,
 /// `browser.evaluateJavaScript("…")`; what it reports arrives in a binding,
 /// `.canGoBack($hasBack)`.
-public struct WebView: ElementView, WebViewProperties, KeyboardElement {
+public struct WebView: ElementView, WebViewProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 

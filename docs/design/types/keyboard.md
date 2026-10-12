@@ -57,9 +57,10 @@ takes the top sheet away.
 ## A view's keys
 
 What can hold the keyboard takes the keys it names (`onKeyPressed`,
-`KeyboardElementContract.keysTaken`): a control taking the focus, or a layout
-holding the view that does - the keyboard tier, which a text, a picture or a
-shape never wears, since none of them can ever hold it. A key pressed reaches,
+`KeyboardElementContract.keysTaken`): a control taking the focus - the
+`FocusElement` tier, which wears this one - or a layout holding the view that
+does; a text, a picture or a shape wears neither, since none of them can ever
+hold it. A key pressed reaches,
 out from the view holding the keyboard, the first view in sight and enabled
 taking it (`KeyPresses`); with nothing holding the keyboard, the content of
 the page in front and the views holding it. The view takes the key: neither

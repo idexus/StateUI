@@ -11,7 +11,7 @@ public enum SliderContract: ElementContract {
 
     /// A slider is a view, tinted.
     public static let tiers: [any Contract.Type] = [
-        ViewContract.self, TintElementContract.self, KeyboardElementContract.self,
+        ViewContract.self, TintElementContract.self, FocusElementContract.self,
     ]
 
     /// The thumb was let go.

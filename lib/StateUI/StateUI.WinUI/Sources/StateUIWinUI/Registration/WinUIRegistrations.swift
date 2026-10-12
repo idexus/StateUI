@@ -45,6 +45,6 @@ enum WinUIRegistrations {
         registry.everyElementTakesItsKeys()
         registry.everyElementDragsAndDrops()
         registry.everyElementTakesDroppedFiles()
-        registry.everyElementRaises(VisualElementContract.isFocusedChanged)
+        registry.everyElementRaises(FocusElementContract.isFocusedChanged)
     }
 }

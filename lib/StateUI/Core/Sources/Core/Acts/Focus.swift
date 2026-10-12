@@ -4,7 +4,7 @@
 // Focus and the keyboard, as acts: a view's own aim, or whatever has the keyboard.
 // Design: docs/design/core/acts.md#focus-and-the-keyboard
 
-extension Aim {
+extension Aim where Target: FocusElement {
     /// Puts the keyboard on this view.
     ///
     ///     @Aim(TextField.self) private var email
@@ -18,7 +18,7 @@ extension Aim {
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its view is no longer shown.
     @discardableResult
     public func focus() async throws -> Bool {
-        try await call(VisualElementContract.focus)
+        try await call(FocusElementContract.focus)
     }
 
     /// Takes the focus off this view, which is what closes the keyboard it
@@ -31,7 +31,7 @@ extension Aim {
     ///
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its view is no longer shown.
     public func unfocus() async throws {
-        try await call(VisualElementContract.unfocus)
+        try await call(FocusElementContract.unfocus)
     }
 }
 

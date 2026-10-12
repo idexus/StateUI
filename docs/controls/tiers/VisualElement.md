@@ -29,13 +29,11 @@ How each of them realizes these members is on its own page.
 | `accessibilityLabel` | property | `String` | native |
 | `automationExcludedWithChildren` | property | `Bool` | native |
 | `background` | property | `Material` | adaptive |
-| `focus` | act | `() -> Bool` |  |
 | `frame` | property | `Rect` | structure |
 | `height` | property | `Double` | native |
 | `ignoresInput` | property | `Bool` | native |
 | `isAccessibilityHidden` | property | `Bool` | native |
 | `isEnabled` | property | `Bool` | native |
-| `isFocusedChanged` | event | `Bool` | native |
 | `isVisible` | property | `Bool` | native |
 | `layoutDirection` | property | `LayoutDirection` | native |
 | `maximumHeight` | property | `Double` | native |
@@ -55,6 +53,5 @@ How each of them realizes these members is on its own page.
 | `tooltip` | property | `String` | native |
 | `translationX` | property | `Double` | native |
 | `translationY` | property | `Double` | native |
-| `unfocus` | act | `() -> Void` |  |
 | `width` | property | `Double` | native |
 | `zIndex` | property | `Int` | native |

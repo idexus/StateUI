@@ -42,7 +42,7 @@ extension StepperProperties {
 ///
 /// Given a binding it shows the value and writes every step back. Given a number
 /// it shows that, and `.onValueChanged` is how the step gets anywhere.
-public struct Stepper: ElementView, StepperProperties, KeyboardElement {
+public struct Stepper: ElementView, StepperProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 

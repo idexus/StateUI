@@ -382,11 +382,11 @@ final class ChangesTests: XCTestCase {
     @MainActor
     func testAChangeHandlerMayAwaitAnAct() async throws {
         let renders = Renders()
-        let card = Aim(Text.self)
+        let card = Aim(TextField.self)
         let finished = State(false)
 
         func tree(_ value: Int) -> Node {
-            VStack { Text("\(value)").id("card").aim(card) }
+            VStack { TextField("\(value)").id("card").aim(card) }
                 .onChanged(value, gate: .cancelPrevious) { finished.wrappedValue = try await card.focus() }
                 .node
         }

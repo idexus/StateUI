@@ -26,6 +26,7 @@
         ImageElementContract.self,
         TintElementContract.self,
         KeyboardElementContract.self,
+        FocusElementContract.self,
         BarElementContract.self,
         MenuItemElementContract.self,
         PageElementContract.self,

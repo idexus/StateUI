@@ -99,7 +99,7 @@ final class ContractRoadsTests: XCTestCase {
         Road(
             name: "an aim's identity taken to aim by hand",
             closed: "_ = try Aim(TextField.self).target",
-            open: "try await Aim(TextField.self).call(VisualElementContract.unfocus)"),
+            open: "try await Aim(TextField.self).call(FocusElementContract.unfocus)"),
         Road(
             name: "a list scrolled to an identity of another type",
             closed: #"try await Aim(ItemsView<Int>.self).scrollTo("500")"#,

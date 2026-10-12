@@ -33,9 +33,6 @@ public enum VisualElementContract: Contract {
     public static let background = ElementProperty<Self, Material>(
         "background", layer: .adaptive)
 
-    /// Gives the element the keyboard focus, answering whether it took it.
-    public static let focus = ElementAct<Self, Void, Bool>("focus")
-
     /// The frame the element settled on, fed by the host into a state.
     public static let frame = ElementProperty<Self, Rect>("frame", layer: .structure)
 
@@ -52,10 +49,6 @@ public enum VisualElementContract: Contract {
 
     /// Whether the element answers input.
     public static let isEnabled = ElementProperty<Self, Bool>("isEnabled", layer: .native)
-
-    /// The platform moved the focus onto the element, or off it.
-    public static let isFocusedChanged = ElementEvent<Self, Bool>(
-        "isFocusedChanged", layer: .native)
 
     /// Whether the element is shown.
     public static let isVisible = ElementProperty<Self, Bool>("isVisible", layer: .native)
@@ -127,9 +120,6 @@ public enum VisualElementContract: Contract {
     public static let translationY = ElementProperty<Self, Double>(
         "translationY", layer: .native, moves: .place)
 
-    /// Takes the keyboard focus off the element.
-    public static let unfocus = ElementAct<Self, Void, Void>("unfocus")
-
     /// The width the element asks for.
     public static let width = ElementProperty<Self, Double>(
         "width", layer: .native, moves: .width)
@@ -143,10 +133,10 @@ public enum VisualElementContract: Contract {
     /// The tier's own members.
     public static let members: [any ContractMember] = [
         accessibilityHeading, accessibilityHint, accessibilityLabel,
-        automationExcludedWithChildren, background, focus, frame, height, ignoresInput,
-        isAccessibilityHidden, isEnabled, isFocusedChanged, isVisible, layoutDirection,
+        automationExcludedWithChildren, background, frame, height, ignoresInput,
+        isAccessibilityHidden, isEnabled, isVisible, layoutDirection,
         maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY,
         rotation, rotationX, rotationY, scale, scaleX, scaleY, style, tooltip, translationX,
-        translationY, unfocus, width, zIndex,
+        translationY, width, zIndex,
     ]
 }

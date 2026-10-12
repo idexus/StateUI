@@ -24,11 +24,14 @@ extension VisualState where Target: VisualElement {
     /// While `isEnabled` is false.
     public static var disabled: Self { Self("Disabled") }
 
-    /// While the control has the keyboard focus, or what stands in it does.
-    public static var focused: Self { Self("Focused") }
-
     /// While a mouse or pen is over the control. Never on a touch-only device.
     public static var pointerOver: Self { Self("PointerOver") }
+}
+
+/// The state of a control taking the focus.
+extension VisualState where Target: FocusElement {
+    /// While the control has the keyboard focus, or what stands in it does.
+    public static var focused: Self { Self("Focused") }
 }
 
 /// A Button is held down.

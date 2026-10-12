@@ -43,7 +43,7 @@ extension PickerProperties {
 /// why the list is worth holding. The picker takes `.textColor` but has no
 /// `.text`: the field shows the chosen item or the placeholder.
 public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentElement, TintElement,
-    PickerProperties, KeyboardElement {
+    PickerProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 

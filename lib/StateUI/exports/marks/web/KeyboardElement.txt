@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 Button.keyPressed: ✅
 Button.keysTaken: ✅
 CheckBox.keyPressed: ✅
@@ -11,8 +11,6 @@ HStack.keyPressed: ✅
 HStack.keysTaken: ✅
 ItemsView.keyPressed: ✅
 ItemsView.keysTaken: ✅
-Map.keyPressed: 🧩
-Map.keysTaken: 🧩
 Picker.keyPressed: ✅
 Picker.keysTaken: ✅
 RadioButton.keyPressed: ✅

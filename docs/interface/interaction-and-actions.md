@@ -165,9 +165,10 @@ The differ fills the aim with the element identity after the view has rendered.
 One aim names one view. Calling through an aim that reached no view, was placed
 on two views, or refers to a view that has left fails explicitly.
 
-The type parameter limits methods to the controls that support them. Common
-focus methods exist on every aim; specialized surfaces add methods such as
-history navigation or map movement. `.id(...)` and `.aim(...)` can be used
+The type parameter limits methods to the controls that support them. `focus()`
+and `unfocus()` exist on the aim of a control that takes the focus - a field, a
+button, a list - never on a text or a stack, which cannot; specialized surfaces
+add methods such as history navigation or map movement. `.id(...)` and `.aim(...)` can be used
 together because they answer different questions: identity says which element
 continues, while the aim says where an action goes.
 

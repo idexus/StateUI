@@ -674,6 +674,13 @@ extension ControlDictionary {
                 .tint(.green)
             """#),
 
+        (FocusElementContract.self, #"""
+            @State var editing = false
+
+            TextField("Name")
+                .isFocused($editing)
+            """#),
+
         (KeyboardElementContract.self, #"""
             @State var row = 0
 

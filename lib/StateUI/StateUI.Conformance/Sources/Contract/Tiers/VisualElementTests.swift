@@ -16,7 +16,7 @@
         Specimens.wearing(VisualElementContract.self).flatMap { element in
             [
                 shown(element), opacity(element), enabled(element), sized(element), bounded(element),
-                reachable(element), framed(element), focused(element), styled(element), layered(element),
+                reachable(element), framed(element), styled(element), layered(element),
                 headed(element),
                 Aspects.holds(VisualElementContract.accessibilityLabel, on: element, "Confirm", then: "Save"),
                 Aspects.holds(VisualElementContract.accessibilityHint, on: element, "Saves the form", then: "Saves it all"),
@@ -454,45 +454,6 @@
             try s.perform(.activate, on: s.element("change"))
             s.settle { room.wrappedValue.width == 90 }
             s.expect(room.wrappedValue, Rect(x: 0, y: 0, width: 90, height: 30), "again where the tree moved it")
-        }
-    }
-
-    /// The keyboard put on a view that takes it is heard coming, and heard going as it is taken off. A view that
-    /// refuses it says so and hears nothing - and never takes the focus on that host.
-    @MainActor
-    static func focused(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).theKeyboardComingAndGoingIsHeard", proves: [
-            Covered(VisualElementContract.focus, on: element), Covered(VisualElementContract.unfocus, on: element),
-            Covered(VisualElementContract.isFocusedChanged, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
-            let aim = FocusAim()
-            let heard = Received<Bool>()
-            let took = Received<Bool>()
-            s.start {
-                VStack {
-                    Opened.aimed(Specimens.view(element, [
-                        Hear(VisualElementContract.isFocusedChanged) { heard.values.append($0) },
-                    ]), by: aim)
-                    Button("Focus").onClicked(gate: .ignoreWhileRunning) { took.values.append(try await aim.focus()) }.id("focus")
-                    Button("Unfocus").onClicked(gate: .ignoreWhileRunning) { try await aim.unfocus() }.id("unfocus")
-                }
-            }
-            let view = try s.element("specimen")
-
-            try s.perform(.activate, on: s.element("focus"))
-            s.settle { !took.values.isEmpty && (took.values == [false] || heard.values == [true]) }
-            guard took.values == [true] else {
-                s.expect(heard.values, [], "a view that refused the keyboard hears nothing")
-                s.expect(try s.focused(view), false)
-                throw s.absent("\(element) takes no keyboard focus here: it refuses it, and nothing is heard")
-            }
-            s.expect(heard.values, [true], "the keyboard coming heard")
-            s.expect(try s.focused(view), true)
-
-            try s.perform(.activate, on: s.element("unfocus"))
-            s.settle { heard.values == [true, false] }
-            s.expect(heard.values, [true, false], "and its going")
-            s.expect(try s.focused(view), false)
         }
     }
 

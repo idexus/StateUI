@@ -41,7 +41,7 @@ extension RadioButtonProperties {
 /// acts on `checked` alone. Buttons with no group name are exclusive within
 /// the layout that holds them.
 public struct RadioButton: ElementView, TextualElement, FontElement, PaddingElement,
-    BorderElement, RadioButtonProperties, KeyboardElement {
+    BorderElement, RadioButtonProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 

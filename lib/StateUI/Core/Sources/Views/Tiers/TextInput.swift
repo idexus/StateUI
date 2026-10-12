@@ -7,7 +7,7 @@
 public protocol TextInputProperties: ViewProperties {}
 
 /// A view the user types into.
-public protocol TextInput: ElementView, TextInputProperties, KeyboardElement {}
+public protocol TextInput: ElementView, TextInputProperties, FocusElement {}
 
 extension TextInput {
     /// Fires on every edit, with the whole of the new text. Runs after a

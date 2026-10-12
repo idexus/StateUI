@@ -99,7 +99,7 @@
             },
             ConformanceCase("aBareShortcutGivesWayToAFieldBeingTypedInto", proves: [
                 Covered(ButtonContract.keyboardShortcut),
-            ], needs: [Covered(ButtonContract.clicked), Covered(VisualElementContract.focus, on: "TextField")]) { s in
+            ], needs: [Covered(ButtonContract.clicked), Covered(FocusElementContract.focus, on: "TextField")]) { s in
                 let heard = Received<String>()
                 s.start {
                     VStack {
@@ -144,7 +144,7 @@
             },
             ConformanceCase("returnIsTheFieldsWhileItIsTypedInto", proves: [
                 Covered(ButtonContract.role),
-            ], needs: [Covered(ButtonContract.clicked), Covered(VisualElementContract.focus, on: "TextField")]) { s in
+            ], needs: [Covered(ButtonContract.clicked), Covered(FocusElementContract.focus, on: "TextField")]) { s in
                 let heard = Received<String>()
                 s.start {
                     VStack {

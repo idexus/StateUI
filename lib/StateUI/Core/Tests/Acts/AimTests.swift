@@ -100,11 +100,11 @@ final class AimTests: XCTestCase {
     /// The same, through the public act itself: the throw happens HERE, before
     /// anything is queued, so nothing reaches the host at all.
     func testAnAimOnNoViewThrowsFromTheActItself() async {
-        let panel = Aim(ZStack.self)
+        let field = Aim(TextField.self)
         _ = drainedActs()
 
         do {
-            try await panel.focus()
+            try await field.focus()
             XCTFail("an aim on no view must throw")
         } catch {
             XCTAssertTrue("\(error)".contains("on no view"), "\(error)")

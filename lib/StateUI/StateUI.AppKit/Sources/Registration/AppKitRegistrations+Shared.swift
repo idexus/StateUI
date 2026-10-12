@@ -25,7 +25,7 @@ extension AppKitRegistrations {
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(LayoutContract.letsInputThrough)
-        registry.everyElementRaises(VisualElementContract.isFocusedChanged)
+        registry.everyElementRaises(FocusElementContract.isFocusedChanged)
     }
 }
 

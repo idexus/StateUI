@@ -47,7 +47,7 @@ enum GTKRegistrations {
         registry.everyElementTakesItsKeys()
         registry.everyElementDragsAndDrops()
         registry.everyElementTakesDroppedFiles()
-        registry.everyElementRaises(VisualElementContract.isFocusedChanged)
+        registry.everyElementRaises(FocusElementContract.isFocusedChanged)
     }
 
     /// The acts this host performs: every host's (`HostActs.performed`), the files (`HostActs.files`) and a list

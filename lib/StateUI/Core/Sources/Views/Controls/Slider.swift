@@ -33,7 +33,7 @@ extension SliderProperties {
 /// number it shows that, and `.onValueChanged` is how the drag gets anywhere.
 ///
 /// The range is 0 to 1 until `.minimum` and `.maximum` say otherwise.
-public struct Slider: ElementView, TintElement, SliderProperties, KeyboardElement {
+public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 

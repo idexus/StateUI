@@ -13,7 +13,7 @@ public enum RadioButtonContract: ElementContract {
     /// A radio button is a view with a caption in a font, padded and bordered.
     public static let tiers: [any Contract.Type] = [
         ViewContract.self, TextualElementContract.self, FontElementContract.self, PaddingElementContract.self,
-        BorderElementContract.self, KeyboardElementContract.self,
+        BorderElementContract.self, FocusElementContract.self,
     ]
 
     /// Which set it belongs to: picking one clears every other button of the

@@ -11,7 +11,7 @@ public enum SwitchContract: ElementContract {
 
     /// A switch is a view, tinted.
     public static let tiers: [any Contract.Type] = [
-        ViewContract.self, TintElementContract.self, KeyboardElementContract.self,
+        ViewContract.self, TintElementContract.self, FocusElementContract.self,
     ]
 
     /// Which way it is thrown - true for on.

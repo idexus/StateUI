@@ -49,7 +49,7 @@
     static var keyedThroughTheKeyboard: ConformanceCase {
         ConformanceCase("aKeyReachesTheViewHoldingTheKeyboardFirst", proves: [
             Covered(KeyboardElementContract.keyPressed, on: "TextField"), Covered(KeyboardElementContract.keyPressed, on: "VStack"),
-        ], needs: [Covered(VisualElementContract.focus, on: "TextField")]) { s in
+        ], needs: [Covered(FocusElementContract.focus, on: "TextField")]) { s in
             let heard = Received<String>()
             s.start {
                 VStack {

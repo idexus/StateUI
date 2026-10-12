@@ -27,7 +27,7 @@ extension CheckBoxProperties {
 ///
 /// No caption of its own - a CheckBox is the box and nothing else. Put a
 /// Text beside it, as above.
-public struct CheckBox: ElementView, TintElement, CheckBoxProperties, KeyboardElement {
+public struct CheckBox: ElementView, TintElement, CheckBoxProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 

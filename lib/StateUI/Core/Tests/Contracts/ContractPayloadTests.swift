@@ -22,7 +22,7 @@ final class ContractPayloadTests: XCTestCase {
         let address = PropValue.string("https://example.com")
 
         // What the tiers and mixins report.
-        check(VisualElementContract.isFocusedChanged, [.bool(true)])
+        check(FocusElementContract.isFocusedChanged, [.bool(true)])
         check(ViewContract.dragLeave)
         check(ViewContract.dragOver)
         check(ViewContract.dragStarting)

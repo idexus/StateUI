@@ -283,7 +283,7 @@ extension NodeType {
     static let filesDropped = ViewContract.filesDropped.token
     static let dragEnded = ViewContract.dragEnded.token
     static let frameChanged = ViewContract.frameChanged.token
-    static let isFocusedChanged = VisualElementContract.isFocusedChanged.token
+    static let isFocusedChanged = FocusElementContract.isFocusedChanged.token
     static let keyPressed = KeyboardElementContract.keyPressed.token
     static let showsSidebarChanged = SplitViewContract.showsSidebarChanged.token
     static let mapClicked = MapContract.mapClicked.token
@@ -320,9 +320,9 @@ extension NodeType {
 }
 
 @_spi(Host) public extension Act {
-    static let focus = VisualElementContract.focus.token
+    static let focus = FocusElementContract.focus.token
     static let scrollTo = ItemsViewContract.scrollTo.token
-    static let unfocus = VisualElementContract.unfocus.token
+    static let unfocus = FocusElementContract.unfocus.token
     static let goBack = WebViewContract.goBack.token
     static let goForward = WebViewContract.goForward.token
     static let reload = WebViewContract.reload.token

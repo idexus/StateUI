@@ -113,7 +113,7 @@ extension MenuItemElementTests {
             Covered(MenuItemElementContract.keyboardShortcut, on: element),
         ], needs: [
             Covered(MenuItemElementContract.clicked, on: element),
-            Covered(VisualElementContract.focus, on: "TextField"),
+            Covered(FocusElementContract.focus, on: "TextField"),
         ]) { s in
             let heard = Received<String>()
             s.start { Shortcuts.page(element, heard: heard) }

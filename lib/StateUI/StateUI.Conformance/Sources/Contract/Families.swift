@@ -77,6 +77,7 @@
         ImageElementTests.self,
         TintElementTests.self,
         KeyboardElementTests.self,
+        FocusElementTests.self,
         BarElementTests.self,
         MenuItemElementTests.self,
         PageElementTests.self,

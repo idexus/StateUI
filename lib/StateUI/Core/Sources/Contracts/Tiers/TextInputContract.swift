@@ -8,7 +8,7 @@ public enum TextInputContract: Contract {
     public static let name = "TextInput"
 
     /// A field is a view.
-    public static let tiers: [any Contract.Type] = [ViewContract.self, KeyboardElementContract.self]
+    public static let tiers: [any Contract.Type] = [ViewContract.self, FocusElementContract.self]
 
     /// Where the caret is, in characters from the start.
     public static let cursorPosition = ElementProperty<Self, Int>(
