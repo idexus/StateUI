@@ -123,8 +123,10 @@ The built-in `Walked` values are `Double`, `Point`, `Rect`, `Insets`, and
 made from get/set closures do not own the complete storage image a host needs
 to walk; move the complete state instead.
 
-A move starts as it is sent and returns at once; its `arrived()` awaits the
-outcome:
+A move is a write of the destination, under a law of its choosing: the state
+reads the new value at once and every body that read it is built again, as
+after an assignment, while the host walks the value there on the move's law.
+It returns at once; its `arrived()` awaits the outcome:
 
 ```swift quote
 let arrived = try await $opacity.journey.move(

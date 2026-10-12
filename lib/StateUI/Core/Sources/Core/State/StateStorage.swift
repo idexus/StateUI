@@ -354,6 +354,17 @@ extension State.Storage where Value: Walked {
         noted?(destination)
     }
 
+    /// Takes the destination a movement sent as the state's value, as a write does - the
+    /// readers asked, a kept state keeping it - its journey laid already, on the
+    /// movement's own law.
+    /// Design: docs/design/core/journeys.md#moving-and-waiting
+    func moved(to destination: Value) {
+        noteDestination(destination)
+        askForRender()
+        keep?(destination)
+        if keep != nil { UIThreadExecutor.shared.askForTurn() }
+    }
+
     /// Lets go of the pair a stopped value no longer stands for.
     /// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
     func stoppedWhereItStands() {

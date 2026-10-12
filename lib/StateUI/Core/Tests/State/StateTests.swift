@@ -689,6 +689,31 @@ extension StateTests {
         XCTAssertEqual(fade.wrappedValue, 1, "and the state itself stood at its destination throughout")
     }
 
+    /// A MOVE IS A WRITE OF THE DESTINATION. A body that printed the state is
+    /// built again at once and reads where the value is going, as after an
+    /// assignment - and the journey the host walks is the one the move sent,
+    /// on its own law, not a second one on the value's.
+    func testAMoveIsAWriteOfTheDestination() {
+        let fade = State(1.0)
+        let readers = Builds()
+        let renders = Renders()
+
+        renders.render(stack([
+            Text("walked").opacity(fade.projectedValue).node,
+            Shown { readers.count += 1; _ = fade.get() }.node,
+        ], id: "root"))
+        _ = Renderer.shared.renderHost(baseline: 0)
+        XCTAssertEqual(readers.count, 1)
+
+        fade.projectedValue.journey.move(to: 0.2, .eased(400, .linear))
+        _ = renders.revisit(changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(readers.count, 2, "the body that printed the state was not built again for the move")
+        XCTAssertEqual(fade.get(), 0.2, "and it reads where the value is going")
+        XCTAssertEqual(fade.projectedValue.journey.motion, .eased(400, .linear), "on the move's own law")
+        XCTAssertEqual(fade.projectedValue.journey.value, 1, "the value waits for the host to walk it")
+    }
+
     /// A READING IS OF WHERE THE VALUE HAS GOT TO, never of where it is going.
     ///
     /// This is the whole design in one assertion. A state is at its value the

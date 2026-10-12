@@ -201,7 +201,7 @@ public struct Journey<Value: Walked> {
             [.destination, .completion, .motion], of: travelling,
             forcing: JourneyLanes<Value>.mask(of: .destination) | JourneyLanes<Value>.mask(of: .completion))
 
-        storage.noteDestination(target)
+        storage.moved(to: target)
         return arrival
     }
 
