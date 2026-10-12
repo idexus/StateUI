@@ -26,7 +26,7 @@ ConcurrentAnimationSample.swift 455921219b052977
 ConcurrentStateSample.swift a3edd00bbf02fb9e
 ConnectivitySample.swift 118a24e1aa65b40a
 ContextMenuSample.swift c711855bad71e6f1
-ConverterSample.swift 72fc3d521c24d4dc
+ConverterSample.swift d5ba768dad512071
 Cube3DSample.swift 243ebb48ba5e7144
 DatePickerSample.swift 98ec31b1e84de06c
 DeviceDisplaySample.swift 53321c4e7de882ef

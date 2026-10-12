@@ -1817,7 +1817,7 @@ enum Listings {
                 row("3 · a caption from the conversion") {
                     // A caption from the conversion: words the host writes.
                     Text()
-                        .text($volume.convert { "\(Int($0 * 100))%" })
+                        .text($volume.convert { "\(Int(($0 * 100).rounded()))%" })
                     DebugInfoLabel()
                 }
 
@@ -1856,7 +1856,12 @@ enum Listings {
                         .minimum(20)
                         .maximum(200)
                     Text()
-                        .text($width.convert(with: $height) { w, h in "\(Int(w)) × \(Int(h)) = \(Int(w * h))" })
+                        // The sides as they are shown, whole, and their product - not the product of what
+                        // the sliders hold, which would disagree with the sides it names.
+                        .text($width.convert(with: $height) { w, h in
+                            let (across, down) = (Int(w.rounded()), Int(h.rounded()))
+                            return "\(across) × \(down) = \(across * down)"
+                        })
                     DebugInfoLabel()
                 }
 
@@ -1877,7 +1882,7 @@ enum Listings {
                     // building it.
                     Text()
                         .text(.multi($named, $width, $height)
-                            .convert { "\($0): \(Int($1)) × \(Int($2))" })
+                            .convert { "\($0): \(Int($1.rounded())) × \(Int($2.rounded()))" })
                     DebugInfoLabel()
                 }
             }
