@@ -38,8 +38,8 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>38 ✅ · 1 ☑️ · 35 ✓</td><td>custom <code>NSView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>36 ✅ · 1 ☑️ · 36 ✓ · 1 –</td><td>custom <code>UIView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>59 ✅ · 3 ☑️ · 11 ✓</td><td>custom <code>ViewGroup</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>61 ✅ · 1 ☑️ · 12 ✓</td><td>custom <code>Panel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>51 ✅ · 1 ☑️ · 22 ✓ · 1 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>61 ✅ · 1 ☑️ · 12 ✓ · 1 –</td><td>custom <code>Panel</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>51 ✅ · 1 ☑️ · 22 ✓ · 2 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>54 ✅ · 1 ☑️ · 20 ✓</td><td>flexbox</td></tr></tbody>
 </table>
 
@@ -185,8 +185,8 @@ What every layout has: the screen's unsafe strips it keeps clear of, and whether
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>avoidsSafeArea</code></td><td>property</td><td><code>SafeAreaEdges</code></td><td>adaptive</td><td align="center"></td><td align="center">·</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit, Android Views, WinUI 3, GTK 4, Web: not realized<br>UIKit: cannot read avoidsSafeArea of VStack - UIKit's view places its children where StateUI's layout says; their frames prove it</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>avoidsSafeArea</code></td><td>property</td><td><code>SafeAreaEdges</code></td><td>adaptive</td><td align="center"></td><td align="center">·</td><td align="center"></td><td align="center">–</td><td align="center">–</td><td align="center"></td></tr>
+<tr><td colspan="9">AppKit, Android Views, Web: not realized<br>UIKit: cannot read avoidsSafeArea of VStack - UIKit's view places its children where StateUI's layout says; their frames prove it<br>WinUI 3: A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.<br>GTK 4: A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>clipsContent</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>letsInputThrough</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: cannot read letsInputThrough of VStack - AppKit's driver has no path for it yet<br>UIKit: cannot read letsInputThrough of VStack - UIKit's driver has no path for it yet<br>Android Views, WinUI 3: not realized</td></tr></tbody>

@@ -89,6 +89,7 @@ extension Differ {
                 forget(child)
                 continue
             }
+            saysAPlaceForAnotherLayout(child, under: node.type)
 
             children.append(child)
             patches.append(childPatch)

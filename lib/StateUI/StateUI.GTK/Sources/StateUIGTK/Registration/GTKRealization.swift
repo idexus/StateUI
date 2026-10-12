@@ -35,6 +35,8 @@ enum GTKRealization {
     /// Every record, the tiers' first.
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
+        .notPlanned("Layout", "avoidsSafeArea", reason: "A GNOME window keeps no area of its content clear: its "
+            + "header bar stands above the content, over none of it."),
         .notPlanned("AutomationElement", "accessibilityIdentifier", reason: "GTK 4 tells assistive technology no "
             + "identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget "
             + "made in code."),

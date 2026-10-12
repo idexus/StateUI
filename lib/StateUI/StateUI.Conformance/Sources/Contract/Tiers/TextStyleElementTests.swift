@@ -19,12 +19,13 @@
 /// The words a specimen shows, where it shows words of its own.
 @MainActor
 enum Words {
-    /// What `element`'s specimen wears to show words: its text where it has one, its choices where it chooses.
+    /// What `element`'s specimen wears to show words: its text where it has one, its choices where it chooses;
+    /// nothing where it shows no words of its own - a layout, a date.
     static func on(_ element: String) -> [any Worn] {
-        switch element {
-        case "Picker": [Write(PickerContract.options, ["Some words"]), Write(PickerContract.selectedIndex, 0)]
-        case "DatePicker", "TimePicker": []
-        default: [Write(TextualElementContract.text, "Some words")]
+        if element == "Picker" {
+            return [Write(PickerContract.options, ["Some words"]), Write(PickerContract.selectedIndex, 0)]
         }
+        guard Specimens.wearing(TextualElementContract.self).contains(element) else { return [] }
+        return [Write(TextualElementContract.text, "Some words")]
     }
 }

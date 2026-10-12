@@ -54,6 +54,23 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(lamp.node.props["count"], .number(3))
     }
 
+    /// A library element keeps only what its contract wears: a member another contract declares, written on it by
+    /// the generic road, reaches no host - it is left out and said once - and what it wears stays.
+    func testALibraryElementLeavesOutWhatItsContractDoesNotWear() {
+        let text = Text("Save")
+            .setValue(ButtonContract.role, .primary)
+            .onEvent(SliderContract.valueChanged) { _ in }
+            .setValue(FontElementContract.fontSize, 20)
+
+        let patch = Renders().render(text.id("label").node)
+
+        XCTAssertNil(patch.props["role"])
+        XCTAssertFalse(patch.eventNames.contains("valueChanged"))
+        XCTAssertEqual(patch.props["fontSize"], .number(20))
+        XCTAssertTrue(hasComplained("Text takes no role - its contract does not wear it"))
+        XCTAssertTrue(hasComplained("Text takes no valueChanged - its contract does not wear it"))
+    }
+
     /// What comes back from a host is the declared kind or no value at all -
     /// never a guess, and never a trap on a number that is not one.
     func testAValueBackFromTheHostIsTheDeclaredKindOrNone() {

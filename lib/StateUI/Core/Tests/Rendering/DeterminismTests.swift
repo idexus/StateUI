@@ -265,11 +265,12 @@ final class DeterminismTests: XCTestCase {
         ]
 
         let events: [Event] = [
-            .tapped, .isFocusedChanged, .clicked, .toggled, .frameChanged,
+            .tapped, .isFocusedChanged, .clicked, .pointerEntered, .frameChanged,
         ]
 
+        // A button wears every one of them: a member its contract does not wear would be left out unordered.
         func written(_ order: [(Prop, PropValue)], _ handlers: [Event]) -> String {
-            var node = Node(type: .text)
+            var node = Node(type: .button)
 
             for (key, value) in order {
                 node.props[key] = value

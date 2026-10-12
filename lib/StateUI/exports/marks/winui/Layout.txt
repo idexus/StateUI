@@ -1,13 +1,13 @@
-# revision 1.1
-Grid.avoidsSafeArea: not realized
+# revision 1.2
+Grid.avoidsSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
 Grid.clipsContent: ✅
 Grid.letsInputThrough: not realized
-HStack.avoidsSafeArea: not realized
+HStack.avoidsSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
 HStack.clipsContent: ✅
 HStack.letsInputThrough: not realized
-VStack.avoidsSafeArea: not realized
+VStack.avoidsSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
 VStack.clipsContent: ✅
 VStack.letsInputThrough: not realized
-ZStack.avoidsSafeArea: not realized
+ZStack.avoidsSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
 ZStack.clipsContent: ✅
 ZStack.letsInputThrough: not realized

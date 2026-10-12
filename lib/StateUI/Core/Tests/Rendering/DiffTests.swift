@@ -154,17 +154,31 @@ final class DiffTests: XCTestCase {
         let renders = Renders()
 
         renders.render(Node(type: "Picker", id: "a", props: [
-            "title": .string("pick"),
+            "placeholder": .string("pick"),
             "options": .values([.string("one"), .string("two")]),
         ]))
 
-        let patch = renders.render(Node(type: "Picker", id: "a", props: ["title": .string("pick")]))
+        let patch = renders.render(Node(type: "Picker", id: "a", props: ["placeholder": .string("pick")]))
 
         // A list's items are data: there is no default to put back, so the
         // only honest answer is the control again. See `ElementProperty.cleared`.
         XCTAssertTrue(patch.replace, "nothing can clear items away")
         XCTAssertTrue(patch.cleared.isEmpty, "a complete node has nothing to clear")
-        XCTAssertEqual(patch.props, ["title": .string("pick")], "and it comes back complete")
+        XCTAssertEqual(patch.props, ["placeholder": .string("pick")], "and it comes back complete")
+    }
+
+    /// A place written for a layout a view does not stand in - a grid's row outside a Grid, an area outside a
+    /// ZStack - places nothing, and is said once; in its own layout it is said nothing.
+    func testAPlaceForAnotherLayoutIsSaid() {
+        Renders().render(VStack {
+            Text("row").gridRow(1)
+            Text("area").area(.proportional(0, 0, 1, 1))
+        }.node)
+        Renders().render(Grid { Text("in a grid").gridColumn(1) }.node)
+
+        XCTAssertTrue(hasComplained("Text's gridRow places it in a Grid, and it stands in a VStack"))
+        XCTAssertTrue(hasComplained("Text's area places it in a ZStack, and it stands in a VStack"))
+        XCTAssertFalse(hasComplained("Text's gridColumn places it in a Grid, and it stands in a Grid"))
     }
 
     func testAChangedTypeReplacesTheControl() {

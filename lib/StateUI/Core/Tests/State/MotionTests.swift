@@ -188,10 +188,16 @@ final class MotionTests: XCTestCase {
         // value that would travel if the property were not on the list.
         for property in LibraryContracts.facts.filter({ !$0.value.travels }).keys.sorted() {
             let alone = Renders()
+            // On an element wearing it: one that does not leaves it out.
+            let wearer = LibraryContracts.elements.first { element in
+                element.worn.contains { $0.members.contains { $0.name == property.name } }
+            }
+            let type = wearer?.nodeType ?? TextContract.nodeType
+            let node = { (value: Double) in Node(type: type, id: "l", props: [property: .number(value)]) }
 
-            alone.render(Text("x").setValue(property, .number(0)).id("l").node)
+            alone.render(node(0))
 
-            let moved = alone.render(Text("x").setValue(property, .number(3)).id("l").node)
+            let moved = alone.render(node(3))
 
             XCTAssertEqual(
                 moved.props[property], .number(3),

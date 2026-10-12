@@ -35,6 +35,8 @@ enum WinUIRealization {
     /// Every record, the tiers' first.
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
+        .notPlanned("Layout", "avoidsSafeArea", reason: "A Windows desktop window keeps no area of its content "
+            + "clear: nothing of the window stands over its content."),
         .partial("VisualElement", "background", missing: "An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it."),
         .complete("BarElement", "barBackgroundColor"),
         .complete("BarElement", "barForegroundColor"),
