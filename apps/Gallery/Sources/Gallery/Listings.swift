@@ -5735,6 +5735,38 @@ enum Listings {
                 : "\(place) + \(nav.path.count): \(nav.path.map { "\($0)" }.joined(separator: " › "))"
         }
         """#,
+        "NextFieldSample": #"""
+        // Sources/Samples/Text/NextFieldSample.swift
+        @State private var name = ""
+        @State private var street = ""
+        @State private var city = ""
+        @State private var sent = false
+
+        var body: some View {
+            VStack {
+                Text("Type a name and press Return: each field hands the keyboard to the next.")
+
+                TextField($name)
+                    .placeholder("Name")
+                    .submitLabel(.next)
+
+                Grid {
+                    TextField($street)
+                        .placeholder("Street")
+                        .submitLabel(.next)
+
+                    TextField($city)
+                        .placeholder("City")
+                        .submitLabel(.send)
+                        .onSubmitted { sent = true }
+                        .gridColumn(1)
+                }
+                .columns(.fill, .fill)
+
+                Text(sent ? "Sent to \(name), \(street), \(city)" : "Not sent yet")
+            }
+        }
+        """#,
         "OffsetStrips": #"""
         // Sources/Samples/Layout/ScrollViewSample.swift
         /// Forty numbered lines - the same strip in all three columns below, so the

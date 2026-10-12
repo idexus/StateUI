@@ -66,6 +66,7 @@ ModalSample.swift 556d83b69c24b7b4
 MotionSample.swift c79da448f61f7cda
 MultiWindowSample.swift 00ef905b7c375e25
 NavigationSample.swift 57847136cca3c3d7
+NextFieldSample.swift b365cbd1626b4437
 OnChangedSample.swift 5fda6eb24ca8c3c2
 OutlineSample.swift 7dc9511e8f22b755
 PacedStateSample.swift 1b621c51843cd65d

@@ -50,8 +50,10 @@ enum AppKitRealization {
                     reason: "macOS gives an application no text size of the user's to follow."),
 
         // MARK: Entries - a control's or a part's own, and where it differs from its tier
-        .notPlanned("TextField", "submitLabel", reason: "A Mac has no keyboard on the screen whose return key says anything."),
-        .notPlanned("SearchField", "submitLabel", reason: "A Mac has no keyboard on the screen whose return key says anything."),
+        .partial("TextField", "submitLabel", missing: "The return key's word: a Mac has no keyboard on the screen whose return key says anything; Next "
+            + "hands the keyboard on all the same."),
+        .partial("SearchField", "submitLabel", missing: "The return key's word: a Mac has no keyboard on the screen whose return key says anything; Next "
+            + "hands the keyboard on all the same."),
         .notPlanned("TextField", "showsClearButton", reason: "AppKit's text field has no button of its own that empties it."),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),

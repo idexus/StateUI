@@ -68,9 +68,11 @@ enum GTKRealization {
 
         // MARK: Entries - a control's or a part's own
         .notPlanned("Page", "backButtonTitle", reason: "GNOME's way back in the bar is an arrow, with no words."),
-        .notPlanned("SearchField", "submitLabel", reason: "GTK gives an entry no word for the return key of a keyboard on the screen."),
+        .partial("SearchField", "submitLabel", missing: "The return key's word: GTK gives an entry no word for the return key of a keyboard on the screen; Next "
+            + "hands the keyboard on all the same."),
         .notPlanned("TextField", "showsClearButton", reason: "GTK's entry has no button of its own that empties it."),
-        .notPlanned("TextField", "submitLabel", reason: "GTK gives an entry no word for the return key of a keyboard on the screen."),
+        .partial("TextField", "submitLabel", missing: "The return key's word: GTK gives an entry no word for the return key of a keyboard on the screen; Next "
+            + "hands the keyboard on all the same."),
         .complete("Grid", "background"),
         .complete("HStack", "background"),
         .complete("ScrollView", "background"),

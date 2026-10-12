@@ -7,7 +7,8 @@ public protocol SearchFieldProperties: PropertyContainer {}
 
 extension SearchFieldProperties {
     /// What the keyboard's return key is captioned, `.search` unless said. What
-    /// the key does is `.onSubmitted`.
+    /// the key does is `.onSubmitted`; `.next` hands the keyboard on as well,
+    /// to the next field the page reads.
     public func submitLabel(_ value: SubmitLabel) -> Modified {
         setValue(SearchFieldContract.submitLabel, value)
     }

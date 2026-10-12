@@ -32,6 +32,9 @@ final class AppKitDriver: HostDriver {
             none["read maximumLength of \(field)"] =
                 "AppKit's field keeps no bound: the host cuts what is typed, and typing proves it"
         }
+        for field in ["TextField", "SearchField"] {
+            none["read submitLabel of \(field)"] = "a Mac has no keyboard on the screen whose return key says anything"
+        }
         let shapePaint = [
             "contentMode", "geometryTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
             "lineCap", "lineJoin", "miterLimit",

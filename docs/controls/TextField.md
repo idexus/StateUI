@@ -36,11 +36,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (93)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>49 ✅ · 2 ☑️ · 36 ✓ · 3 –</td><td><code>NSTextField</code> / <code>NSSecureTextField</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>49 ✅ · 3 ☑️ · 36 ✓ · 2 –</td><td><code>NSTextField</code> / <code>NSSecureTextField</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>53 ✅ · 2 ☑️ · 37 ✓ · 1 –</td><td><code>UITextField</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>74 ✅ · 3 ☑️ · 12 ✓ · 2 –</td><td><code>EditText</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>76 ✅ · 2 ☑️ · 12 ✓ · 1 –</td><td><code>TextBox</code> / <code>PasswordBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>64 ✅ · 1 ☑️ · 25 ✓ · 3 –</td><td><code>GtkEntry</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>77 ✅ · 3 ☑️ · 12 ✓</td><td><code>TextBox</code> / <code>PasswordBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>64 ✅ · 2 ☑️ · 25 ✓ · 2 –</td><td><code>GtkEntry</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>71 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;input type=text&gt;</code> / <code>&lt;input type=password&gt;</code></td></tr></tbody>
 </table>
 
@@ -52,12 +52,11 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextFieldContract.
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>isPassword</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">WinUI 3: A PasswordBox has no read-only state, alignment, case, caret or selection: a password field keeps none of these.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>submitLabel</code></td><td>property</td><td><code>SubmitLabel</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: A Mac has no keyboard on the screen whose return key says anything.<br>WinUI 3: WinUI gives a text box no word for the return key of the keyboard on the screen.<br>GTK 4: GTK gives an entry no word for the return key of a keyboard on the screen.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>submitLabel</code></td><td>property</td><td><code>SubmitLabel</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: The return key's word: a Mac has no keyboard on the screen whose return key says anything; Next hands the keyboard on all the same.<br>WinUI 3: The return key's word: WinUI gives a text box no word for the return key of the keyboard on the screen; Next hands the keyboard on all the same.<br>GTK 4: The return key's word: GTK gives an entry no word for the return key of a keyboard on the screen; Next hands the keyboard on all the same.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>showsClearButton</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center"></td><td align="center">–</td><td align="center"></td></tr>
 <tr><td colspan="9">AppKit: AppKit's text field has no button of its own that empties it.<br>Android Views: Android's text field has no button of its own that empties it.<br>WinUI 3, Web: not realized<br>GTK 4: GTK's entry has no button of its own that empties it.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onSubmitted</code> (<code>submitted</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">WinUI 3: cannot submit on TextField - WinUI raises a text box's KeyDown only from the keyboard; Enter is walked on HelloWorld's field</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>onSubmitted</code> (<code>submitted</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [AutomationElement](tiers/AutomationElement.md)

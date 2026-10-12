@@ -13,16 +13,18 @@ import Foundation
 /// Design: docs/design/host/conformance.md#the-driver
 @MainActor
 final class WinUIDriver: HostDriver {
+    /// Why a field holds no word for its return key on WinUI.
+    static let noReturnWord = "WinUI gives a text box no word for the return key of the keyboard on the screen"
+
     /// Why a view that is no control holds no `isEnabled` on WinUI.
     static let noEnabledState =
         "WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it"
 
     let host = "WinUI 3"
-    let cannot = [
-        "submit on TextField":
-            "WinUI raises a text box's KeyDown only from the keyboard; Enter is walked on HelloWorld's field",
-    ]
+    let cannot: [String: String] = [:]
     let platformHasNone = [
+        "read submitLabel of TextField": WinUIDriver.noReturnWord,
+        "read submitLabel of SearchField": WinUIDriver.noReturnWord,
         "read isEnabled of Canvas": WinUIDriver.noEnabledState,
         "read isEnabled of Divider": WinUIDriver.noEnabledState,
         "read isEnabled of Ellipse": WinUIDriver.noEnabledState,
@@ -134,6 +136,14 @@ final class WinUIDriver: HostDriver {
             for _ in 0..<150 where element.value(.text)?.string != words { step() }
         case (.type(let words), let field as WinUITextInputView): type(words, into: field)
         case (.submit, let search as WinUISearchFieldView): stateui_winui_search_submit_as_user(search.handle)
+        case (.submit, let field as WinUITextInputView) where element.type == .textField:
+            // Enter as the system sends it, to the field holding the keyboard: WinUI raises a text box's KeyDown from
+            // the keyboard alone.
+            guard let enter = WinUIKeys.spelled(KeyboardShortcut(.return, modifiers: [])) else {
+                throw DriverCannot(act, on: element)
+            }
+            _ = stateui_winui_focus(field.handle, true)
+            stateui_winui_send_keys(enter.key, enter.modifiers)
         case (.choose(let place), let picker as WinUIPickerView):
             stateui_winui_picker_choose_as_user(picker.handle, Int32(place))
         case (.choose(let place), _) where element.type == .tabView: try chooseTab(place, of: element)

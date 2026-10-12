@@ -222,7 +222,7 @@ of its own:
 | `isSpellCheckEnabled` | every field | whether the platform marks what it takes to be misspelt |
 | `isTextPredictionEnabled` | every field | whether the platform offers the next word |
 | `isPassword` | `TextField` | what is typed hides behind the platform's secure-entry marks |
-| `submitLabel` | `TextField`, `SearchField` | the return key's caption - `.done`, `.go`, `.next`, `.search`, `.send`; what the key does is `.onSubmitted`, whatever it says |
+| `submitLabel` | `TextField`, `SearchField` | the return key's caption - `.done`, `.go`, `.next`, `.search`, `.send`; what the key does is `.onSubmitted`, whatever it says, and `.next` hands the keyboard on to the next field |
 | `showsClearButton` | `TextField` | whether the native button that empties the field shows, where the platform's field has one; it does unless told otherwise |
 
 ```swift
@@ -248,6 +248,24 @@ VStack {
         .inputPurpose(.email)
         .maximumLength(20)
         .onSubmitted { done += 1 }
+}
+```
+
+A field whose return key says Next hands the keyboard on as it is submitted,
+to the next field its page reads: in the order the page is written, across a
+row and then down, past a field hidden or disabled. After the last field the
+keyboard stays where it is. A desktop keyboard's Return does the same, though
+it shows no caption:
+
+```swift
+@State var name = ""
+@State var street = ""
+@State var city = ""
+
+VStack {
+    TextField($name).placeholder("Name").submitLabel(.next)
+    TextField($street).placeholder("Street").submitLabel(.next)
+    TextField($city).placeholder("City").submitLabel(.done)
 }
 ```
 

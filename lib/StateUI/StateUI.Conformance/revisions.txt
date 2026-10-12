@@ -62,3 +62,5 @@ ContextMenu 2
 winui VisualElement 2
 winui Layout 2
 gtk Layout 2
+TextField 2
+SearchField 2

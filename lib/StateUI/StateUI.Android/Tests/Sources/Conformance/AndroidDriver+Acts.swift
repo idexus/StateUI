@@ -39,8 +39,9 @@ extension AndroidDriver {
             (element.native as? AndroidElement)?.changeSidebarVisibility(to: !split.isPresented)
         case (.type(let words), let field as AndroidTextFieldView): Self.type(words, into: field)
         case (.submit, let field as AndroidTextFieldView):
-            // The keyboard's own action, as the field's return key says it: done, or search for a search field.
-            Java.call(field.reference, Self.onEditorAction, .int(element.type == .searchField ? 3 : 6))
+            // The keyboard's own action, as the field's return key says it - done where it says nothing.
+            let action = Java.callInt(field.reference, Self.getImeOptions) & 0xff
+            Java.call(field.reference, Self.onEditorAction, .int(action == 0 ? 6 : action))
         case (.answer(let caption, let words), _):
             let answered = Java.frame {
                 Java.callStaticBool(

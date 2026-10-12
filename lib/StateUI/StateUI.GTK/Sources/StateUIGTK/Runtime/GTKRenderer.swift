@@ -212,6 +212,10 @@ extension GTKRenderer: HostPresenter {
     func perform(_ call: HostActCall) {
         acts.perform(call)
     }
+
+    func focus(_ element: MountedElement) {
+        acts.focus(element)
+    }
 }
 
 extension GTKRenderer {

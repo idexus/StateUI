@@ -1,7 +1,7 @@
-# revision 1.1
+# revision 2.1
 SearchField: ✅
 SearchField.frameChanged: ✅
-SearchField.submitLabel: – WinUI gives a text box no word for the return key of the keyboard on the screen.
+SearchField.submitLabel: ☑️ The return key's word: WinUI gives a text box no word for the return key of the keyboard on the screen; Next hands the keyboard on all the same.
 SearchField.submitted: ✅
 SearchField.text: ✅
 SearchField.textChanged: ✅

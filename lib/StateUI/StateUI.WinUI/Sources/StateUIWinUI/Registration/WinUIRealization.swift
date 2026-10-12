@@ -62,8 +62,10 @@ enum WinUIRealization {
         .notPlanned("Page", "backButtonTitle", reason: "WinUI's way back is an arrow, with no words."),
         .notPlanned("SearchField", "cursorPosition", reason: searchCaret),
         .notPlanned("SearchField", "selectionLength", reason: searchCaret),
-        .notPlanned("SearchField", "submitLabel", reason: "WinUI gives a text box no word for the return key of the keyboard on the screen."),
-        .notPlanned("TextField", "submitLabel", reason: "WinUI gives a text box no word for the return key of the keyboard on the screen."),
+        .partial("SearchField", "submitLabel", missing: "The return key's word: WinUI gives a text box no word for the return key of the keyboard on the screen; Next "
+            + "hands the keyboard on all the same."),
+        .partial("TextField", "submitLabel", missing: "The return key's word: WinUI gives a text box no word for the return key of the keyboard on the screen; Next "
+            + "hands the keyboard on all the same."),
         .notPlanned("ActivityIndicator", "background", reason: "WinUI's progress ring paints its Background as its "
             + "track, no ground under its frame."),
         .partial("Canvas", "background", missing: "A brush fills the canvas with its first colour alone."),

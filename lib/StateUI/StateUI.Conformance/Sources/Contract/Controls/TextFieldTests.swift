@@ -4,8 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `TextFieldContract` on a host: a field greets as it is typed into, a password's words are heard as typed, and
-/// Enter submits it once.
+/// `TextFieldContract` on a host: a field greets as it is typed into, a password's words are heard as typed, Enter
+/// submits it once, and a return saying Next hands the keyboard on.
 @_spi(Host) public enum TextFieldTests: ConformanceFamily {
     public static let name = "TextField"
 
@@ -58,6 +58,7 @@
             },
             Aspects.holds(TextFieldContract.isPassword, on: "TextField", false, then: true),
             Aspects.holds(TextFieldContract.submitLabel, on: "TextField", .done, then: .send),
+            handsTheKeyboardOn(from: "TextField", saying: TextFieldContract.submitLabel),
             Aspects.holds(TextFieldContract.showsClearButton, on: "TextField", true, then: false),
         ]
     }

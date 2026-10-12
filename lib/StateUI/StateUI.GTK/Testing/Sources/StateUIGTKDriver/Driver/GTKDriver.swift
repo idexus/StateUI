@@ -20,6 +20,8 @@ final class GTKDriver: HostDriver {
     /// what StateUI measures, what the host cuts - each proven by its effect in another case - and a clock's format.
     private static func none() -> [String: String] {
         var none = [
+            "read submitLabel of TextField": "GTK gives an entry no word for the return key of a keyboard on the screen",
+            "read submitLabel of SearchField": "GTK gives an entry no word for the return key of a keyboard on the screen",
             "read growsWithText of TextEditor":
                 "an editor's growing is StateUI's measuring, which no property of GTK's holds; its frames prove it",
             "read maximumLength of TextEditor":

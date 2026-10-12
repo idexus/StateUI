@@ -73,6 +73,21 @@ root as key commands asking priority, Android's activity before its views, a
 GTK key controller capturing on the window (`GTKWindowKeys`), WinUI's
 `PreviewKeyDown` on the window's root, and the page's capturing listener.
 
+## The next field
+
+A field whose return says Next (`SubmitLabel.next`) hands the keyboard on as
+it is submitted: the host layer finds the field (`NextField`) - the first text
+field, search field or editor after it on its page, in the order the page is
+written, in sight and enabled - and the host puts the keyboard there with its
+focus act (`HostPresenter.focus`). The order is the tree's, not the screen's:
+it reads a row across and a stack down whatever the language's direction, and
+a page standing inside the field's page is read by none but itself. After the
+last field nothing moves. The submission is raised first, so a handler moving
+the focus itself, later in its turn, has the last word. Return on a desktop
+keyboard does the same though nothing captions it; Android's keyboard would
+search for a next view by its own reckoning, so its listener keeps the Next
+action StateUI's.
+
 ## In a window
 
 What a shortcut reaches is decided once, in the host layer

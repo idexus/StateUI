@@ -36,11 +36,11 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (91)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>48 ✅ · 2 ☑️ · 36 ✓ · 2 –</td><td><code>NSSearchField</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>48 ✅ · 3 ☑️ · 36 ✓ · 1 –</td><td><code>NSSearchField</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>51 ✅ · 2 ☑️ · 37 ✓ · 1 –</td><td><code>UISearchTextField</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>73 ✅ · 3 ☑️ · 12 ✓ · 1 –</td><td>one-line <code>EditText</code> with a search key</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>73 ✅ · 3 ☑️ · 12 ✓ · 3 –</td><td><code>AutoSuggestBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>63 ✅ · 1 ☑️ · 25 ✓ · 2 –</td><td><code>GtkSearchEntry</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>73 ✅ · 4 ☑️ · 12 ✓ · 2 –</td><td><code>AutoSuggestBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>63 ✅ · 2 ☑️ · 25 ✓ · 1 –</td><td><code>GtkSearchEntry</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>70 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;input type=search&gt;</code></td></tr></tbody>
 </table>
 
@@ -50,8 +50,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/SearchFieldContrac
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>submitLabel</code></td><td>property</td><td><code>SubmitLabel</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: A Mac has no keyboard on the screen whose return key says anything.<br>WinUI 3: WinUI gives a text box no word for the return key of the keyboard on the screen.<br>GTK 4: GTK gives an entry no word for the return key of a keyboard on the screen.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>submitLabel</code></td><td>property</td><td><code>SubmitLabel</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: The return key's word: a Mac has no keyboard on the screen whose return key says anything; Next hands the keyboard on all the same.<br>WinUI 3: The return key's word: WinUI gives a text box no word for the return key of the keyboard on the screen; Next hands the keyboard on all the same.<br>GTK 4: The return key's word: GTK gives an entry no word for the return key of a keyboard on the screen; Next hands the keyboard on all the same.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>onSubmitted</code> (<code>submitted</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 

@@ -463,22 +463,22 @@ Every control, and every part an application, its windows and its pages are made
 | [RadioButton](controls/RadioButton.md) | 82 | 43 ✅ · 2 ☑️ · 35 ✓ · 1 – | 38 ✅ · 2 ☑️ · 38 ✓ · 4 – | 62 ✅ · 3 ☑️ · 12 ✓ · 3 – | 69 ✅ · 1 ☑️ · 12 ✓ | 55 ✅ · 1 ☑️ · 25 ✓ · 1 – | 61 ✅ · 1 ☑️ · 20 ✓ |
 | [Rectangle](controls/Rectangle.md) | 77 | 40 ✅ · 2 ☑️ · 35 ✓ | 39 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 3 ☑️ · 10 ✓ | 63 ✅ · 13 ✓ · 1 – | 53 ✅ · 1 ☑️ · 22 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ |
 | [ScrollView](controls/ScrollView.md) | 82 | 39 ✅ · 3 ☑️ · 37 ✓ · 3 – | 38 ✅ · 1 ☑️ · 37 ✓ · 4 – | 63 ✅ · 3 ☑️ · 12 ✓ · 3 – | 66 ✅ · 1 ☑️ · 12 ✓ · 3 – | 57 ✅ · 1 ☑️ · 23 ✓ · 1 – | 58 ✅ · 1 ☑️ · 20 ✓ · 3 – |
-| [SearchField](controls/SearchField.md) | 91 | 48 ✅ · 2 ☑️ · 36 ✓ · 2 – | 51 ✅ · 2 ☑️ · 37 ✓ · 1 – | 73 ✅ · 3 ☑️ · 12 ✓ · 1 – | 73 ✅ · 3 ☑️ · 12 ✓ · 3 – | 63 ✅ · 1 ☑️ · 25 ✓ · 2 – | 70 ✅ · 1 ☑️ · 20 ✓ |
+| [SearchField](controls/SearchField.md) | 91 | 48 ✅ · 3 ☑️ · 36 ✓ · 1 – | 51 ✅ · 2 ☑️ · 37 ✓ · 1 – | 73 ✅ · 3 ☑️ · 12 ✓ · 1 – | 73 ✅ · 4 ☑️ · 12 ✓ · 2 – | 63 ✅ · 2 ☑️ · 25 ✓ · 1 – | 70 ✅ · 1 ☑️ · 20 ✓ |
 | [Slider](controls/Slider.md) | 78 | 39 ✅ · 2 ☑️ · 35 ✓ | 33 ✅ · 2 ☑️ · 39 ✓ · 4 – | 59 ✅ · 3 ☑️ · 12 ✓ · 3 – | 63 ✅ · 1 ☑️ · 12 ✓ | 49 ✅ · 1 ☑️ · 25 ✓ · 3 – | 57 ✅ · 20 ✓ · 1 – |
 | [Spacer](controls/Spacer.md) | 66 | 29 ✅ · 2 ☑️ · 35 ✓ | 28 ✅ · 2 ☑️ · 35 ✓ · 1 – | 52 ✅ · 3 ☑️ · 10 ✓ | 51 ✅ · 1 ☑️ · 13 ✓ | 42 ✅ · 1 ☑️ · 22 ✓ · 1 – | 45 ✅ · 1 ☑️ · 20 ✓ |
 | [Stepper](controls/Stepper.md) | 76 | 39 ✅ · 2 ☑️ · 35 ✓ | 33 ✅ · 2 ☑️ · 37 ✓ · 4 – | 57 ✅ · 3 ☑️ · 12 ✓ · 3 – | 62 ✅ · 2 ☑️ · 12 ✓ | 50 ✅ · 1 ☑️ · 24 ✓ · 1 – | 55 ✅ · 1 ☑️ · 20 ✓ |
 | [Switch](controls/Switch.md) | 74 | 36 ✅ · 2 ☑️ · 35 ✓ · 1 – | 31 ✅ · 2 ☑️ · 37 ✓ · 4 – | 54 ✅ · 3 ☑️ · 12 ✓ · 3 – | 61 ✅ · 1 ☑️ · 12 ✓ | 47 ✅ · 1 ☑️ · 24 ✓ · 2 – | 53 ✅ · 1 ☑️ · 20 ✓ |
 | [Text](controls/Text.md) | 81 | 42 ✅ · 2 ☑️ · 35 ✓ · 1 – | 43 ✅ · 1 ☑️ · 35 ✓ · 1 – | 66 ✅ · 3 ☑️ · 10 ✓ | 68 ✅ · 1 ☑️ · 12 ✓ | 56 ✅ · 1 ☑️ · 23 ✓ · 1 – | 60 ✅ · 1 ☑️ · 20 ✓ |
 | [TextEditor](controls/TextEditor.md) | 90 | 51 ✅ · 2 ☑️ · 36 ✓ · 1 – | 50 ✅ · 2 ☑️ · 37 ✓ · 1 – | 72 ✅ · 3 ☑️ · 12 ✓ · 1 – | 77 ✅ · 1 ☑️ · 12 ✓ | 62 ✅ · 2 ☑️ · 25 ✓ · 1 – | 69 ✅ · 1 ☑️ · 20 ✓ |
-| [TextField](controls/TextField.md) | 93 | 49 ✅ · 2 ☑️ · 36 ✓ · 3 – | 53 ✅ · 2 ☑️ · 37 ✓ · 1 – | 74 ✅ · 3 ☑️ · 12 ✓ · 2 – | 76 ✅ · 2 ☑️ · 12 ✓ · 1 – | 64 ✅ · 1 ☑️ · 25 ✓ · 3 – | 71 ✅ · 1 ☑️ · 20 ✓ |
+| [TextField](controls/TextField.md) | 93 | 49 ✅ · 3 ☑️ · 36 ✓ · 2 – | 53 ✅ · 2 ☑️ · 37 ✓ · 1 – | 74 ✅ · 3 ☑️ · 12 ✓ · 2 – | 77 ✅ · 3 ☑️ · 12 ✓ | 64 ✅ · 2 ☑️ · 25 ✓ · 2 – | 71 ✅ · 1 ☑️ · 20 ✓ |
 | [TimePicker](controls/TimePicker.md) | 82 | 39 ✅ · 2 ☑️ · 36 ✓ · 5 – | 33 ✅ · 1 ☑️ · 37 ✓ · 7 – | 61 ✅ · 3 ☑️ · 13 ✓ · 3 – | 64 ✅ · 2 ☑️ · 12 ✓ | 54 ✅ · 1 ☑️ · 25 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ · 4 – |
 | [VStack](controls/VStack.md) | 76 | 38 ✅ · 1 ☑️ · 35 ✓ | 36 ✅ · 1 ☑️ · 36 ✓ · 1 – | 59 ✅ · 3 ☑️ · 11 ✓ | 61 ✅ · 1 ☑️ · 12 ✓ · 1 – | 51 ✅ · 1 ☑️ · 22 ✓ · 2 – | 54 ✅ · 1 ☑️ · 20 ✓ |
 | [WebView](controls/WebView.md) | 82 | 44 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 2 ☑️ · 38 ✓ · 1 – | 63 ✅ · 3 ☑️ · 12 ✓ · 3 – | 49 ✅ · 13 ✓ · 19 – | 56 ✅ · 1 ☑️ · 24 ✓ · 1 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [ZStack](controls/ZStack.md) | 75 | 37 ✅ · 1 ☑️ · 35 ✓ | 34 ✅ · 1 ☑️ · 37 ✓ · 1 – | 57 ✅ · 3 ☑️ · 12 ✓ | 60 ✅ · 1 ☑️ · 12 ✓ · 1 – | 49 ✅ · 1 ☑️ · 23 ✓ · 2 – | 53 ✅ · 1 ☑️ · 20 ✓ |
-| ✅ |  | 1285 | 1208 | 1943 | 2017 | 1667 | 1798 |
+| ✅ |  | 1285 | 1208 | 1943 | 2018 | 1667 | 1798 |
 | ✓ |  | 1175 | 1210 | 365 | 397 | 748 | 641 |
-| – |  | 27 | 75 | 38 | 39 | 48 | 18 |
-| **Met** | 2576 | **2487** | **2493** | **2346** | **2453** | **2463** | **2457** |
+| – |  | 25 | 75 | 38 | 37 | 46 | 18 |
+| **Met** | 2576 | **2485** | **2493** | **2346** | **2452** | **2461** | **2457** |
 | 🧩 |  | 0 | 0 | 74 | 74 | 74 | 74 |
 
 ### Application structure
@@ -583,7 +583,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Scene](controls/Scene.md) | `activated`, `deactivated`, `stopped`, `windowClosed` | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [ScrollView](controls/ScrollView.md) | `horizontalScrollIndicator`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollIndicator` | 7 | 5 ✅ · 2 ✓ | 5 ✅ | 7 ✅ | 7 ✅ | 7 ✅ | 7 ✅ |
-| [SearchField](controls/SearchField.md) | `submitLabel`, `onSubmitted` (`submitted`) | 2 | 1 ✅ · 1 – | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 1 ✅ · 1 – | 2 ✅ |
+| [SearchField](controls/SearchField.md) | `submitLabel`, `onSubmitted` (`submitted`) | 2 | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 1 ✅ · 1 ☑️ | 1 ✅ · 1 ☑️ | 2 ✅ |
 | [Slider](controls/Slider.md) | `onReleased` (`released`), `onPressed` (`pressed`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 | 4 ✅ | 4 ✅ · 2 ✓ | 6 ✅ | 4 ✅ | 4 ✅ · 2 – | 6 ✅ |
 | [SplitView](controls/SplitView.md) | `showsSidebar`, `showsSidebarChanged`, `sidebarBackground`, `flyoutBackground` | 4 | 3 ✅ · 1 – | 3 ✅ · 1 ✓ | 1 ☑️ · 3 ✓ | 2 ✅ · 2 ☑️ | 2 ✅ · 2 ✓ | 2 ✅ · 2 ☑️ |
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ |
@@ -591,7 +591,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TabView](controls/TabView.md) | `selectedTab`, `selectedTabChanged` | 2 | 1 ✅ · 1 ✓ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Text](controls/Text.md) | `lineBreak`, `maximumLines`, `verticalTextAlignment` | 3 | 2 ✅ | 2 ✅ | 3 ✅ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [TextField](controls/TextField.md) | `isPassword`, `submitLabel`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ · 2 – | 4 ✅ | 3 ✅ · 1 – | 1 ☑️ · 1 – | 2 ✅ · 2 – | 3 ✅ |
+| [TextField](controls/TextField.md) | `isPassword`, `submitLabel`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ · 1 ☑️ · 1 – | 4 ✅ | 3 ✅ · 1 – | 1 ✅ · 2 ☑️ | 2 ✅ · 1 ☑️ · 1 – | 3 ✅ |
 | [TextSpan](controls/TextSpan.md) | `background` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 1 ✅ · 1 ✓ · 4 – | 2 ✅ | 5 ✅ · 1 ✓ | 2 ✅ | 4 ✅ · 1 ✓ | 2 ✅ · 3 – |
 | [ToolbarItem](controls/ToolbarItem.md) | `placement`, `showsText` | 2 | 1 ✅ · 1 – | 1 ✅ · 1 – | 1 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |

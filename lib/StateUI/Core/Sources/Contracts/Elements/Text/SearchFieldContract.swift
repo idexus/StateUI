@@ -15,7 +15,7 @@ public enum SearchFieldContract: ElementContract {
         TextAlignmentElementContract.self,
     ]
 
-    /// What the keyboard's return key is captioned.
+    /// What the keyboard's return key is captioned; Next hands the keyboard on to the next field as it submits.
     public static let submitLabel = ElementProperty<Self, SubmitLabel>("submitLabel", layer: .adaptive)
 
     /// The search was submitted.
