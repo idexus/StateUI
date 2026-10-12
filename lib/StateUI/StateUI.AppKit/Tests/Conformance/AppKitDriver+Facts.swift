@@ -122,7 +122,8 @@ extension AppKitDriver {
     func pictureName(_ shown: NSImage?) -> HostValue? {
         guard let shown else { return nil }
         let names = ["test_dot.png", "test_wide.png", "photo.png"]
-        return names.first { renderer?.image(named: $0) === shown }.map { .string($0) }
+        let picture = shown.glyphSource ?? shown
+        return names.first { renderer?.image(named: $0) === picture }.map { .string($0) }
     }
 
     /// The colour the bar of the window `element` stands in is painted: the band the title bar lets show only while
