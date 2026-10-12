@@ -6,6 +6,7 @@ Canvas.rotationX: ✓ read rotationX of Canvas: the host's own transform, checke
 CheckBox.layoutDirection: ✅
 ColorBox.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 DatePicker.style: ✅
+Divider.style: ✅
 Ellipse.frameChanged: ✅
 Ellipse.isEnabled: ✓ tap on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.maximumHeight: ✅
@@ -21,36 +22,35 @@ ItemsView.isEnabled: ✅
 ItemsView.translationX: ✓ read translationX of ItemsView: the host's own transform, checked against the layer it composed itself
 Line.layoutDirection: ✅
 Map.accessibilityHint: ✅
-Path.style: ✅
-Picker.frameChanged: ✅
-Picker.height: ✅
-Picker.translationY: ✓ read translationY of Picker: the host's own transform, checked against the layer it composed itself
-Picker.width: ✅
-Polygon.scale: ✓ read scale of Polygon: the host's own transform, checked against the layer it composed itself
-Polyline.pivotX: ✓ read pivotX of Polyline: the host's own transform, checked against the layer it composed itself
-ProgressBar.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-RadioButton.style: ✅
-Rectangle.frameChanged: ✅
-Rectangle.isEnabled: ✓ tap on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
-Rectangle.maximumHeight: ✅
-Rectangle.maximumWidth: ✅
-Rectangle.minimumHeight: ✅
-Rectangle.minimumWidth: ✅
-ScrollView.scale: ✓ read scale of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.layoutDirection: ✅
-Slider.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-Stepper.zIndex: ✅
-Switch.ignoresInput: ✅
+Path.frameChanged: ✅
+Path.isEnabled: ✓ tap on Path: handed to the host's recognizer or handler, no NSEvent sent
+Path.maximumHeight: ✅
+Path.maximumWidth: ✅
+Path.minimumHeight: ✅
+Path.minimumWidth: ✅
+Picker.scale: ✓ read scale of Picker: the host's own transform, checked against the layer it composed itself
+Polygon.pivotY: ✓ read pivotY of Polygon: the host's own transform, checked against the layer it composed itself
+Polyline.isAccessibilityHidden: ✅
+ProgressBar.zIndex: ✅
+RadioButton.frameChanged: ✅
+RadioButton.maximumHeight: ✅
+RadioButton.maximumWidth: ✅
+RadioButton.minimumHeight: ✅
+RadioButton.minimumWidth: ✅
+Rectangle.isVisible: ✅
+Rectangle.scaleX: ✓ read scaleX of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.pivotY: ✓ read pivotY of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+Slider.zIndex: ✅
+Spacer.ignoresInput: ✅
+Stepper.opacity: ✅
+Stepper.scaleY: ✓ read scaleY of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.rotationX: ✓ read rotationX of Switch: the host's own transform, checked against the layer it composed itself
 Text.rotationY: ✓ read rotationY of Text: the host's own transform, checked against the layer it composed itself
-TextEditor.opacity: ✅
-TextEditor.scaleY: ✓ read scaleY of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.rotationX: ✓ read rotationX of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.layoutDirection: ✅
-VStack.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-WebView.frameChanged: ✅
-WebView.maximumHeight: ✅
-WebView.maximumWidth: ✅
-WebView.minimumHeight: ✅
-WebView.minimumWidth: ✅
-ZStack.isVisible: ✅
-ZStack.scaleX: ✓ read scaleX of ZStack: the host's own transform, checked against the layer it composed itself
+TextEditor.layoutDirection: ✅
+TextField.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+TimePicker.zIndex: ✅
+VStack.ignoresInput: ✅
+VStack.isEnabled: ✅
+WebView.rotation: ✓ read rotation of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.background: ✅

@@ -203,6 +203,40 @@ DatePicker.swiped: ✅
 DatePicker.tapCount: ✅
 DatePicker.tapped: ✅
 DatePicker.verticalAlignment: ✅
+Divider.allowsDrop: ✓ dragAndDrop on ColorBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Divider.area: ✅
+Divider.canDrag: ✓ dragAndDrop on Divider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Divider.dragEnded: ✓ dragAndDrop on Divider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Divider.dragLeave: ✓ dragAndDrop on ColorBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Divider.dragOver: ✓ dragAndDrop on ColorBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Divider.dragStarting: ✓ dragAndDrop on Divider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Divider.dragText: ✓ dragAndDrop on Divider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Divider.drop: ✓ dragAndDrop on ColorBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Divider.droppedFileTypes: ✓ dropFiles on Divider: the drop target's signal told the driver's files, no drag GTK began
+Divider.filesDropped: ✓ dropFiles on Divider: the drop target's signal told the driver's files, no drag GTK began
+Divider.frameChanged: ✅
+Divider.gridColumn: ✅
+Divider.gridColumnSpan: ✅
+Divider.gridRow: ✅
+Divider.gridRowSpan: ✅
+Divider.horizontalAlignment: ✅
+Divider.margin: ✅
+Divider.panTouchCount: ✅
+Divider.panUpdated: ✅
+Divider.panXChannel: ✅
+Divider.panYChannel: ✅
+Divider.pinchUpdated: ✓ pinch on Divider: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+Divider.pointerEntered: ✅
+Divider.pointerExited: ✅
+Divider.pointerMoved: ✅
+Divider.pointerPressed: ✅
+Divider.pointerReleased: ✅
+Divider.swipeDirection: ✅
+Divider.swipeThreshold: ✅
+Divider.swiped: ✅
+Divider.tapCount: ✅
+Divider.tapped: ✅
+Divider.verticalAlignment: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on ColorBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.area: ✅
 Ellipse.canDrag: ✓ dragAndDrop on Ellipse: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -781,6 +815,40 @@ Slider.swiped: ✅
 Slider.tapCount: ✅
 Slider.tapped: ✅
 Slider.verticalAlignment: ✅
+Spacer.allowsDrop: ✓ dragAndDrop on ColorBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spacer.area: ✅
+Spacer.canDrag: ✓ dragAndDrop on Spacer: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spacer.dragEnded: ✓ dragAndDrop on Spacer: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spacer.dragLeave: ✓ dragAndDrop on ColorBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spacer.dragOver: ✓ dragAndDrop on ColorBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spacer.dragStarting: ✓ dragAndDrop on Spacer: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spacer.dragText: ✓ dragAndDrop on Spacer: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spacer.drop: ✓ dragAndDrop on ColorBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spacer.droppedFileTypes: ✓ dropFiles on Spacer: the drop target's signal told the driver's files, no drag GTK began
+Spacer.filesDropped: ✓ dropFiles on Spacer: the drop target's signal told the driver's files, no drag GTK began
+Spacer.frameChanged: ✅
+Spacer.gridColumn: ✅
+Spacer.gridColumnSpan: ✅
+Spacer.gridRow: ✅
+Spacer.gridRowSpan: ✅
+Spacer.horizontalAlignment: ✅
+Spacer.margin: ✅
+Spacer.panTouchCount: ✅
+Spacer.panUpdated: ✅
+Spacer.panXChannel: ✅
+Spacer.panYChannel: ✅
+Spacer.pinchUpdated: ✓ pinch on Spacer: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+Spacer.pointerEntered: ✅
+Spacer.pointerExited: ✅
+Spacer.pointerMoved: ✅
+Spacer.pointerPressed: ✅
+Spacer.pointerReleased: ✅
+Spacer.swipeDirection: ✅
+Spacer.swipeThreshold: ✅
+Spacer.swiped: ✅
+Spacer.tapCount: ✅
+Spacer.tapped: ✅
+Spacer.verticalAlignment: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on ColorBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.area: ✅
 Stepper.canDrag: ✓ dragAndDrop on Stepper: the drag source's and the drop targets' signals told by the driver, no drag GTK began

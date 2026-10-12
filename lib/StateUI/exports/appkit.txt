@@ -41,6 +41,7 @@ DatePicker
   minimumDate
   textColor
   dateChanged()
+Divider
 Ellipse
   contentMode
   dash
@@ -217,6 +218,7 @@ Slider
   pressed()
   released()
   valueChanged()
+Spacer
 SplitView
   showsSidebar
   sidebarBackground

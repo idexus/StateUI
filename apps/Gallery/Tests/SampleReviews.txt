@@ -92,7 +92,7 @@ ShapesSample.swift 6107589125bcb192
 SizingSample.swift 70709ad782077630
 SliderSample.swift cf5772598d1a84df
 SplitViewSample.swift b40f78a09df11956
-StackLayoutSample.swift ada27eaae5510163
+StackLayoutSample.swift 7c0cf33b6e5cf6aa
 StateClassSample.swift 1aafda814ae33894
 StateSample.swift abfc1c415e278290
 StepperSample.swift 1e633e09e89c353a

@@ -187,6 +187,7 @@ enum JavaAPI {
     static let sheet = Java.staticMethod(
         views, "sheet", "(Landroid/content/Context;Landroid/view/View;)Landroid/widget/FrameLayout;")
     static let rise = Java.staticMethod(views, "rise", "(Landroid/view/ViewGroup;Landroid/view/View;ZJ)V")
+    static let divider = Java.staticMethod(views, "divider", "(Landroid/content/Context;)Landroid/view/View;")
     static let announceForAccessibility = Java.method(view, "announceForAccessibility", "(Ljava/lang/CharSequence;)V")
 
     static let dateField = Java.findClass("stateui/android/StateUIDateField")
@@ -524,6 +525,10 @@ enum ViewConstants {
 
     /// A spec of `mode` and `size`.
     static func spec(_ mode: Int32, _ size: Int32) -> Int32 { mode | (max(0, size) & 0x3FFF_FFFF) }
+
+    /// `spec` where it is exact, else unspecified: a plain view takes all the room a spec offers at most, so one
+    /// that asks for none is offered none.
+    static func exactOnly(_ spec: Int32) -> Int32 { mode(spec) == exactly ? spec : unspecified }
 
     /// `Gravity`'s bits across - `START`, `CENTER_HORIZONTAL`, `END`.
     static func gravity(across alignment: TextAlignment) -> Int32 {

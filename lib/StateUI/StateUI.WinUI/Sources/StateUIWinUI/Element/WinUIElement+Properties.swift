@@ -22,7 +22,7 @@ extension WinUIElement {
                 host?.runtime.reducesMotion() ?? false
             })
         }
-        if element.isDrawnByParent(in: WinUIRegistrations.registry) { return nil }
+        if element.isDrawnByParent(in: WinUIRegistrations.registry) || element.isViewless { return nil }
         if let registered = WinUIRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
@@ -31,8 +31,6 @@ extension WinUIElement {
             if let scroll = registered as? WinUIScrollView { follow(scroll) }
             return registered
         }
-        guard !NodeType.viewlessTypes.contains(type) else { return nil }
-
         switch type {
         case .page, .overlay: return WinUISingleChildView()
         case .navigationStack: return WinUINavigationView()

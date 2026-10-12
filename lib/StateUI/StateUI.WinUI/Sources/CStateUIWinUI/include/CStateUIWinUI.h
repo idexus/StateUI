@@ -387,6 +387,11 @@ int32_t stateui_winui_text(StateUIObjectRef element, char *utf8, int32_t capacit
 StateUIObjectRef stateui_winui_panel_make(int64_t view);
 void stateui_winui_panel_set_children(StateUIObjectRef panel, StateUIObjectRef const *children, int32_t count);
 
+/// What stands in a stack beside its controls: a spacer, an empty panel asking for no room, and a divider, a panel
+/// holding a line in the theme's divider stroke, one pixel thick both ways.
+StateUIObjectRef stateui_winui_spacer_make(void);
+StateUIObjectRef stateui_winui_divider_make(void);
+
 /// How words look on a text block or any control showing them: the font - a size of 0 or less and an empty
 /// family are the platform's - the colour as 0xAARRGGBB, `has` false putting back the platform's, and the room
 /// around them in DIPs.

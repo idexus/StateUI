@@ -10,6 +10,7 @@ CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transfo
 CheckBox.width: ✅
 ColorBox.scale: ✓ read scale of ColorBox: the host's own transform, checked against the layer it composed itself
 DatePicker.pivotX: ✓ read pivotX of DatePicker: the host's own transform, checked against the layer it composed itself
+Divider.pivotX: ✓ read pivotX of Divider: the host's own transform, checked against the layer it composed itself
 Ellipse.isAccessibilityHidden: ✅
 Grid.zIndex: ✅
 HStack.opacity: ✅
@@ -21,35 +22,31 @@ Line.height: ✅
 Line.translationY: ✓ read translationY of Line: the host's own transform, checked against the layer it composed itself
 Line.width: ✅
 Map.rotationY: ✓ read rotationY of Map: the host's own transform, checked against the layer it composed itself
-Path.pivotX: ✓ read pivotX of Path: the host's own transform, checked against the layer it composed itself
-Picker.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
-Polygon.zIndex: ✅
-Polyline.frameChanged: ✅
-Polyline.isEnabled: ✓ tap on Polyline: the view's listening handed the recognizer's states, no touch sent
-Polyline.maximumHeight: ✅
-Polyline.maximumWidth: ✅
-Polyline.minimumHeight: ✅
-Polyline.minimumWidth: ✅
-ProgressBar.scale: ✓ read scale of ProgressBar: the host's own transform, checked against the layer it composed itself
-RadioButton.pivotX: ✓ read pivotX of RadioButton: the host's own transform, checked against the layer it composed itself
-Rectangle.isAccessibilityHidden: ✅
-ScrollView.zIndex: ✅
-SearchField.frameChanged: ✅
-SearchField.height: ✅
-SearchField.translationY: ✓ read translationY of SearchField: the host's own transform, checked against the layer it composed itself
-SearchField.width: ✅
-Slider.scale: ✓ read scale of Slider: the host's own transform, checked against the layer it composed itself
-Stepper.pivotY: ✓ read pivotY of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.automationExcludedWithChildren: ✅
+Path.isAccessibilityHidden: ✅
+Picker.zIndex: ✅
+Polygon.ignoresInput: ✅
+Polyline.isVisible: ✅
+Polyline.scaleX: ✓ read scaleX of Polyline: the host's own transform, checked against the layer it composed itself
+ProgressBar.pivotY: ✓ read pivotY of ProgressBar: the host's own transform, checked against the layer it composed itself
+RadioButton.isAccessibilityHidden: ✅
+Rectangle.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+ScrollView.ignoresInput: ✅
+ScrollView.layoutDirection: ✅
+SearchField.scale: ✓ read scale of SearchField: the host's own transform, checked against the layer it composed itself
+Slider.pivotY: ✓ read pivotY of Slider: the host's own transform, checked against the layer it composed itself
+Spacer.automationExcludedWithChildren: ✅
+Stepper.accessibilityLabel: ✅
+Switch.focus: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
+Switch.isFocusedChanged: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
+Switch.unfocus: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
 Text.style: ✅
-TextEditor.accessibilityLabel: ✅
-TextField.focus: ✅
-TextField.isFocusedChanged: ✅
-TextField.unfocus: ✅
-TimePicker.frameChanged: ✅
-TimePicker.height: ✅
-TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform, checked against the layer it composed itself
-TimePicker.width: ✅
-VStack.scale: ✓ read scale of VStack: the host's own transform, checked against the layer it composed itself
-WebView.isAccessibilityHidden: ✅
-ZStack.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+TextEditor.frameChanged: ✅
+TextEditor.height: ✅
+TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform, checked against the layer it composed itself
+TextEditor.width: ✅
+TextField.scale: ✓ read scale of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.pivotY: ✓ read pivotY of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.automationExcludedWithChildren: ✅
+WebView.frame: ✅
+ZStack.isEnabled: ✅
+ZStack.translationX: ✓ read translationX of ZStack: the host's own transform, checked against the layer it composed itself

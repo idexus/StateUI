@@ -46,3 +46,4 @@ BorderElement 5
 TextInput 2
 Application 3
 TextSpan 2
+Divider 2

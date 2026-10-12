@@ -10,6 +10,8 @@ ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses
 ColorBox.scaleY: ✅
 ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 DatePicker.isAccessibilityHidden: ✅
+Divider.isEnabled: does not apply - read isEnabled of Divider - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Divider.rotation: ✅
 Ellipse.frameChanged: ✅
 Ellipse.maximumHeight: ✅
 Ellipse.maximumWidth: ✅
@@ -26,37 +28,44 @@ ItemsView.translationX: ✅
 Line.ignoresInput: ✅
 Line.scale: ✅
 Map.accessibilityHint: 🧩
-Path.isEnabled: does not apply - read isEnabled of Path - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Path.rotation: ✅
-Picker.translationY: ✅
-Picker.zIndex: ✅
-Polygon.layoutDirection: ✓ read layoutDirection of Polygon: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Polyline.frame: ✅
-Polyline.scaleX: ✅
-ProgressBar.accessibilityHeading: ✅
-RadioButton.isEnabled: ✅
-RadioButton.rotation: ✅
-Rectangle.accessibilityHeading: ✅
-Rectangle.isEnabled: ✅
-ScrollView.layoutDirection: ✓ read layoutDirection of ScrollView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-SearchField.ignoresInput: ✅
-SearchField.scale: ✅
-Slider.accessibilityHeading: ✅
-Stepper.frameChanged: ✅
-Stepper.height: ✅
-Stepper.rotationX: ✓ read rotationX of Stepper: the host's own tip, checked against the projection it laid on the element
-Stepper.width: ✅
-Switch.accessibilityLabel: ✅
+Path.accessibilityHeading: ✅
+Path.isEnabled: ✅
+Picker.layoutDirection: ✅
+Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
+Polygon.isFocusedChanged: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
+Polygon.scaleY: ✅
+Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
+Polyline.isAccessibilityHidden: ✅
+ProgressBar.frameChanged: ✅
+ProgressBar.height: ✅
+ProgressBar.rotationX: ✓ read rotationX of ProgressBar: the host's own tip, checked against the projection it laid on the element
+ProgressBar.width: ✅
+RadioButton.accessibilityHeading: ✅
+Rectangle.isVisible: ✅
+Rectangle.pivotX: ✅
+ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.scaleY: ✅
+ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+SearchField.accessibilityHeading: ✅
+Slider.frameChanged: ✅
+Slider.height: ✅
+Slider.rotationX: ✓ read rotationX of Slider: the host's own tip, checked against the projection it laid on the element
+Slider.width: ✅
+Spacer.accessibilityLabel: ✅
+Stepper.opacity: ✅
+Stepper.pivotY: ✅
+Switch.translationY: ✅
+Switch.zIndex: ✅
 Text.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-TextEditor.opacity: ✅
-TextEditor.pivotY: ✅
-TextField.translationY: ✅
-TextField.zIndex: ✅
-TimePicker.layoutDirection: ✅
-VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-VStack.scaleY: ✅
-VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-WebView.accessibilityHeading: ✅
-ZStack.isVisible: ✅
-ZStack.pivotX: ✅
+TextEditor.layoutDirection: ✅
+TextField.focus: ✅
+TextField.isFocusedChanged: ✅
+TextField.scaleY: ✅
+TextField.unfocus: ✅
+TimePicker.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
+VStack.ignoresInput: ✅
+VStack.scale: ✅
+WebView.style: ✅
+WebView.translationX: ✅
+ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.

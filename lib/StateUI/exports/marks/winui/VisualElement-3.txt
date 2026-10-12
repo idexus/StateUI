@@ -15,6 +15,7 @@ DatePicker.maximumWidth: ✅
 DatePicker.minimumHeight: ✅
 DatePicker.minimumWidth: ✅
 DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own tip, checked against the projection it laid on the element
+Divider.accessibilityHeading: ✅
 Ellipse.accessibilityHint: ✅
 Grid.opacity: ✅
 Grid.pivotY: ✅
@@ -26,44 +27,46 @@ ItemsView.background: ☑️ An element's acrylic is not drawn yet: a blur or gl
 Line.accessibilityHeading: ✅
 Map.isEnabled: 🧩
 Map.rotation: 🧩
-Path.accessibilityHeading: ✅
-Path.isEnabled: ✅
-Picker.layoutDirection: ✅
-Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
-Polygon.isFocusedChanged: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
-Polygon.scaleY: ✅
-Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
-Polyline.isAccessibilityHidden: ✅
-ProgressBar.frameChanged: ✅
-ProgressBar.height: ✅
-ProgressBar.rotationX: ✓ read rotationX of ProgressBar: the host's own tip, checked against the projection it laid on the element
-ProgressBar.width: ✅
-RadioButton.accessibilityHeading: ✅
-Rectangle.isVisible: ✅
-Rectangle.pivotX: ✅
-ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-ScrollView.scaleY: ✅
-ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
-SearchField.accessibilityHeading: ✅
-Slider.frameChanged: ✅
-Slider.height: ✅
-Slider.rotationX: ✓ read rotationX of Slider: the host's own tip, checked against the projection it laid on the element
-Slider.width: ✅
-Stepper.accessibilityLabel: ✅
-Switch.opacity: ✅
-Switch.pivotY: ✅
+Path.isVisible: ✅
+Path.pivotX: ✅
+Picker.focus: ✅
+Picker.isFocusedChanged: ✅
+Picker.scaleY: ✅
+Picker.unfocus: ✅
+Polygon.automationExcludedWithChildren: ✅
+Polyline.frameChanged: ✅
+Polyline.maximumHeight: ✅
+Polyline.maximumWidth: ✅
+Polyline.minimumHeight: ✅
+Polyline.minimumWidth: ✅
+Polyline.rotationY: ✓ read rotationY of Polyline: the host's own tip, checked against the projection it laid on the element
+ProgressBar.accessibilityLabel: ✅
+RadioButton.isVisible: ✅
+RadioButton.pivotX: ✅
+Rectangle.style: ✅
+Rectangle.translationX: ✅
+ScrollView.automationExcludedWithChildren: ✅
+SearchField.frameChanged: ✅
+SearchField.height: ✅
+SearchField.rotationX: ✓ read rotationX of SearchField: the host's own tip, checked against the projection it laid on the element
+SearchField.width: ✅
+Slider.accessibilityLabel: ✅
+Spacer.opacity: ✅
+Spacer.pivotY: ✅
+Stepper.translationY: ✅
+Stepper.zIndex: ✅
+Switch.layoutDirection: ✅
 Text.frame: ✅
 Text.scaleX: ✅
-TextEditor.translationY: ✅
-TextEditor.zIndex: ✅
-TextField.layoutDirection: ✅
-TimePicker.focus: ✅
-TimePicker.isFocusedChanged: ✅
-TimePicker.scaleY: ✅
-TimePicker.unfocus: ✅
-VStack.automationExcludedWithChildren: ✅
-WebView.isVisible: ✅
-WebView.pivotX: ✅
-ZStack.style: ✅
-ZStack.translationX: ✅
+TextEditor.focus: ✅
+TextEditor.isFocusedChanged: ✅
+TextEditor.scaleY: ✅
+TextEditor.unfocus: ✅
+TextField.automationExcludedWithChildren: ✅
+TimePicker.ignoresInput: ✅
+TimePicker.scale: ✅
+VStack.accessibilityHeading: ✅
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+WebView.background: not realized
+ZStack.frame: ✅
+ZStack.scaleX: ✅

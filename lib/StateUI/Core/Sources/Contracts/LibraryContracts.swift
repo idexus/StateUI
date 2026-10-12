@@ -43,7 +43,7 @@
         PickerContract.self, MarkerContract.self, PolygonContract.self, PolylineContract.self,
         ProgressBarContract.self, RadioButtonContract.self,
         RectangleContract.self, SceneContract.self, ScrollViewContract.self,
-        SearchFieldContract.self, SliderContract.self, TextSpanContract.self,
+        SearchFieldContract.self, SliderContract.self, SpacerContract.self, TextSpanContract.self,
         TextSpansContract.self, SplitViewContract.self, StepperContract.self, SwitchContract.self,
         TabViewContract.self, TextEditorContract.self, TextFieldContract.self, TimePickerContract.self,
         TitleViewContract.self, ToolbarItemContract.self, ToolbarItemGroupContract.self,

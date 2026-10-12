@@ -37,6 +37,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testItemsView", testItemsView),
             ("testSearchField", testSearchField),
             ("testSlider", testSlider),
+            ("testSpacer", testSpacer),
             ("testStepper", testStepper),
             ("testSwitch", testSwitch),
             ("testTextEditor", testTextEditor),
@@ -94,6 +95,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testCanvas() throws { try conform(CanvasTests.self) }
     func testCheckBox() throws { try conform(CheckBoxTests.self) }
     func testColorBox() throws { try conform(ColorBoxTests.self) }
+    func testSpacer() throws { try conform(SpacerTests.self) }
     func testDatePicker() throws { try conform(DatePickerTests.self) }
     func testEllipse() throws { try conform(EllipseTests.self) }
     func testGrid() throws { try conform(GridTests.self) }

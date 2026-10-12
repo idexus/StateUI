@@ -12,7 +12,7 @@ extension AndroidElement {
                 host?.runtime.reducesMotion() ?? false
             })
         }
-        if element.isDrawnByParent(in: AndroidRegistrations.registry) { return nil }
+        if element.isDrawnByParent(in: AndroidRegistrations.registry) || element.isViewless { return nil }
         if let registered = AndroidRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
@@ -21,8 +21,6 @@ extension AndroidElement {
             if let scroll = registered as? AndroidScrollView { follow(scroll) }
             return registered
         }
-
-        guard !NodeType.viewlessTypes.contains(type) else { return nil }
 
         switch type {
         case .page, .overlay:

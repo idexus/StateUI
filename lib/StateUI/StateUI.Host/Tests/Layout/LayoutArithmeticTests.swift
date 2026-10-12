@@ -30,6 +30,49 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(Extent.bounded(.nan, minimum: 5, maximum: nil), 5)
     }
 
+    /// A growing child - a spacer - takes the room its siblings leave along the stack, shared alike among several,
+    /// and none where nothing is left; it measures as no room of its own.
+    func testAGrowingChildTakesTheRoomItsSiblingsLeave() {
+        var spacer = Child(width: 0, height: 0)
+        spacer.values.grows = true
+        let row = [Child(width: 20, height: 10), spacer, Child(width: 30, height: 10)]
+
+        let size = StackArithmetic.size(of: row, axis: .horizontal, spacing: 5, padding: Insets(0), width: nil)
+        let places = StackArithmetic.places(
+            of: row, axis: .horizontal, spacing: 5, padding: Insets(0), in: Rect(0, 0, 200, 10),
+            direction: .leftToRight)
+        XCTAssertEqual(size, LayoutSize(width: 60, height: 10))
+        XCTAssertEqual(places[1], Rect(25, 0, 140, 10), "the 200 less the boxes' 50 and the two spacings' 10")
+        XCTAssertEqual(places[2], Rect(170, 0, 30, 10), "the last box stands at the far end")
+
+        let column = [spacer, Child(width: 10, height: 20), spacer]
+        let shared = StackArithmetic.places(
+            of: column, axis: .vertical, spacing: 0, padding: Insets(0), in: Rect(0, 0, 10, 100),
+            direction: .leftToRight)
+        XCTAssertEqual(shared[1], Rect(0, 40, 10, 20), "two spacers share the room alike")
+
+        let tight = StackArithmetic.places(
+            of: row, axis: .horizontal, spacing: 5, padding: Insets(0), in: Rect(0, 0, 40, 10),
+            direction: .leftToRight)
+        XCTAssertEqual(tight[1]?.width, 0, "no room left, none taken")
+
+        var stated = spacer
+        stated.values.width = 12
+        let fixed = StackArithmetic.places(
+            of: [Child(width: 20, height: 10), stated], axis: .horizontal, spacing: 0, padding: Insets(0),
+            in: Rect(0, 0, 200, 10), direction: .leftToRight)
+        XCTAssertEqual(fixed[1]?.width, 12, "a length it states wins over growing")
+    }
+
+    /// A divider has a view of its own in a stack and none in a menu, where it is an entry the menu draws.
+    func testADividerIsViewlessOnlyInAMenu() {
+        XCTAssertFalse(NodeType.isViewless(.divider, under: .vStack))
+        XCTAssertTrue(NodeType.isViewless(.divider, under: .menu))
+        XCTAssertTrue(NodeType.isViewless(.divider, under: .contextMenu))
+        XCTAssertTrue(NodeType.isViewless(.menuItem, under: .vStack))
+        XCTAssertFalse(NodeType.isViewless(.spacer, under: .hStack))
+    }
+
     /// A vertical stack sets shown children one under another; a hidden one takes no room and no spacing.
     @MainActor
     func testAVerticalStackPlacesItsShownChildrenInOrder() {

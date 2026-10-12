@@ -358,6 +358,14 @@ extension ControlDictionary {
                 }
             """#),
 
+        (SpacerContract.self, #"""
+            HStack {
+                Text("Draft")
+                Spacer()
+                Button("Send")
+            }
+            """#),
+
         (SliderContract.self, #"""
             @State var volume = 50.0
 

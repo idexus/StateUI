@@ -9,6 +9,8 @@ ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses
 ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 DatePicker.isEnabled: ✅
 DatePicker.translationX: ✓ read translationX of DatePicker: the host's own transform, checked against the layer it composed itself
+Divider.isEnabled: ✅
+Divider.translationX: ✓ read translationX of Divider: the host's own transform, checked against the layer it composed itself
 Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own transform, checked against the layer it composed itself
 Grid.layoutDirection: ✅
 HStack.zIndex: ✅
@@ -17,34 +19,36 @@ Image.scaleY: ✓ read scaleY of Image: the host's own transform, checked agains
 ItemsView.rotation: ✓ read rotation of ItemsView: the host's own transform, checked against the layer it composed itself
 Line.accessibilityLabel: ✅
 Map.frame: ✅
-Path.isEnabled: ✅
-Path.translationX: ✓ read translationX of Path: the host's own transform, checked against the layer it composed itself
-Picker.rotationX: ✓ read rotationX of Picker: the host's own transform, checked against the layer it composed itself
-Polygon.layoutDirection: ✅
-Polyline.accessibilityHint: ✅
-ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
-ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
-ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
-RadioButton.isEnabled: ✅
-RadioButton.translationX: ✓ read translationX of RadioButton: the host's own transform, checked against the layer it composed itself
-Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.layoutDirection: ✅
-SearchField.accessibilityLabel: ✅
-Slider.focus: ✅
-Slider.isFocusedChanged: ✅
-Slider.unfocus: ✅
-Stepper.frameChanged: ✅
-Stepper.height: ✅
-Stepper.translationY: ✓ read translationY of Stepper: the host's own transform, checked against the layer it composed itself
-Stepper.width: ✅
-Switch.scale: ✓ read scale of Switch: the host's own transform, checked against the layer it composed itself
+Path.rotationY: ✓ read rotationY of Path: the host's own transform, checked against the layer it composed itself
+Picker.layoutDirection: ✅
+Polygon.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+Polyline.style: ✅
+ProgressBar.frameChanged: ✅
+ProgressBar.height: ✅
+ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own transform, checked against the layer it composed itself
+ProgressBar.width: ✅
+RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own transform, checked against the layer it composed itself
+Rectangle.pivotX: ✓ read pivotX of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+SearchField.focus: ✅
+SearchField.isFocusedChanged: ✅
+SearchField.unfocus: ✅
+Slider.frameChanged: ✅
+Slider.height: ✅
+Slider.translationY: ✓ read translationY of Slider: the host's own transform, checked against the layer it composed itself
+Slider.width: ✅
+Spacer.scale: ✓ read scale of Spacer: the host's own transform, checked against the layer it composed itself
+Stepper.pivotY: ✓ read pivotY of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.automationExcludedWithChildren: ✅
 Text.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
-TextEditor.pivotY: ✓ read pivotY of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.automationExcludedWithChildren: ✅
-TimePicker.accessibilityLabel: ✅
-VStack.background: ✅
-VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-WebView.rotationY: ✓ read rotationY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.pivotX: ✓ read pivotX of ZStack: the host's own transform, checked against the layer it composed itself
+TextEditor.accessibilityLabel: ✅
+TextField.focus: ✅
+TextField.isFocusedChanged: ✅
+TextField.unfocus: ✅
+TimePicker.frameChanged: ✅
+TimePicker.height: ✅
+TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform, checked against the layer it composed itself
+TimePicker.width: ✅
+VStack.scale: ✓ read scale of VStack: the host's own transform, checked against the layer it composed itself
+WebView.isAccessibilityHidden: ✅
+ZStack.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.

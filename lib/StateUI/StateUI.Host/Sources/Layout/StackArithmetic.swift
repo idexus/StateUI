@@ -62,20 +62,27 @@
             .map { $0.map { direction.places($0, in: bounds) } }
     }
 
-    /// The places as a layout written left to right has them.
+    /// The places as a layout written left to right has them: each child measured once, a growing one given its
+    /// share of the room the others leave.
+    /// Design: docs/design/host/layout.md#a-spacer
     @MainActor
     private static func leftToRight<Child: LayoutChild>(
         of items: [Child], axis: Axis, spacing: Double, padding: Insets, in bounds: Rect
     ) -> [Rect?] {
         let content = bounds.inset(padding)
+        let cross = axis == .vertical ? content.width : content.height
+        let naturals: [LayoutSize?] = items.map { item in
+            guard item.isShown else { return nil }
+            let margin = item.values.margin
+            return item.size(offered: axis == .vertical ? max(0, cross - margin.left - margin.right) : nil)
+        }
+        let share = growingShare(of: items, naturals: naturals, axis: axis, spacing: spacing, in: content)
         var offset = axis == .vertical ? content.y : content.x
 
-        return items.map { item in
-            guard item.isShown else { return nil }
+        return zip(items, naturals).map { item, natural in
+            guard let natural else { return nil }
             let values = item.values
             let margin = values.margin
-            let cross = axis == .vertical ? content.width : content.height
-            let natural = item.size(offered: axis == .vertical ? max(0, cross - margin.left - margin.right) : nil)
 
             switch axis {
             case .vertical:
@@ -86,7 +93,7 @@
                     available: available, minimum: values.minimumWidth, maximum: values.maximumWidth)
                 let x = Extent.start(
                     option: values.horizontal, extent: width, start: content.x + margin.left, available: available)
-                let height = values.boundedHeight(natural.height)
+                let height = values.boundedHeight(values.grows(along: axis) ? share : natural.height)
                 let place = Rect(x: x, y: offset, width: width, height: height)
                 offset += height + margin.bottom + spacing
                 return place
@@ -99,12 +106,43 @@
                     available: available, minimum: values.minimumHeight, maximum: values.maximumHeight)
                 let y = Extent.start(
                     option: values.vertical, extent: height, start: content.y + margin.top, available: available)
-                let width = values.boundedWidth(natural.width)
+                let width = values.boundedWidth(values.grows(along: axis) ? share : natural.width)
                 let place = Rect(x: offset, y: y, width: width, height: height)
                 offset += width + margin.right + spacing
                 return place
             }
         }
+    }
+
+    /// What each growing child takes along the stack: the room the shown children leave, with their margins and the
+    /// spacing, split alike; none where nothing is left.
+    @MainActor
+    private static func growingShare<Child: LayoutChild>(
+        of items: [Child], naturals: [LayoutSize?], axis: Axis, spacing: Double, in content: Rect
+    ) -> Double {
+        let shown = zip(items, naturals).compactMap { item, natural in natural.map { (item, $0) } }
+        let growing = shown.filter { $0.0.values.grows(along: axis) }.count
+        guard growing > 0 else { return 0 }
+
+        let taken = shown.reduce(0.0) { sum, pair in
+            let (item, natural) = pair
+            let margin = item.values.margin
+            switch axis {
+            case .vertical:
+                return sum + margin.top + margin.bottom + (item.values.grows(along: axis) ? 0 : item.values.boundedHeight(natural.height))
+            case .horizontal:
+                return sum + margin.left + margin.right + (item.values.grows(along: axis) ? 0 : item.values.boundedWidth(natural.width))
+            }
+        }
+        let length = axis == .vertical ? content.height : content.width
+        return max(0, length - taken - spacing * Double(shown.count - 1)) / Double(growing)
+    }
+}
+
+extension LayoutValues {
+    /// Whether the child takes a share of the room along `axis`: it grows and states no length of its own there.
+    public func grows(along axis: StackArithmetic.Axis) -> Bool {
+        grows && (axis == .vertical ? height : width) == nil
     }
 }
 

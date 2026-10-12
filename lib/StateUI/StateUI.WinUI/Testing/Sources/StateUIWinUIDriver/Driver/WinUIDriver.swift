@@ -25,6 +25,7 @@ final class WinUIDriver: HostDriver {
     let platformHasNone = [
         "read isEnabled of Canvas": WinUIDriver.noEnabledState,
         "read isEnabled of ColorBox": WinUIDriver.noEnabledState,
+        "read isEnabled of Divider": WinUIDriver.noEnabledState,
         "read isEnabled of Ellipse": WinUIDriver.noEnabledState,
         "read isEnabled of Grid": WinUIDriver.noEnabledState,
         "read isEnabled of HStack": WinUIDriver.noEnabledState,
@@ -34,6 +35,7 @@ final class WinUIDriver: HostDriver {
         "read isEnabled of Polygon": WinUIDriver.noEnabledState,
         "read isEnabled of Polyline": WinUIDriver.noEnabledState,
         "read isEnabled of Rectangle": WinUIDriver.noEnabledState,
+        "read isEnabled of Spacer": WinUIDriver.noEnabledState,
         "read isEnabled of Text": WinUIDriver.noEnabledState,
         "read isEnabled of VStack": WinUIDriver.noEnabledState,
         "read isEnabled of ZStack": WinUIDriver.noEnabledState,

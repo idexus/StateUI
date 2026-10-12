@@ -203,6 +203,40 @@ DatePicker.translationY: ✓ read translationY of DatePicker: the host's own tra
 DatePicker.unfocus: ✅
 DatePicker.width: ✅
 DatePicker.zIndex: ✅
+Divider.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
+Divider.accessibilityHint: ✅
+Divider.accessibilityLabel: ✅
+Divider.automationExcludedWithChildren: ✅
+Divider.background: ✓ read background of Divider: the class of the host's style sheet the widget wears: GTK reads back no background
+Divider.focus: – Divider takes no keyboard focus here: it refuses it, and nothing is heard
+Divider.frame: ✅
+Divider.frameChanged: ✅
+Divider.height: ✅
+Divider.ignoresInput: ✅
+Divider.isAccessibilityHidden: ✅
+Divider.isEnabled: ✅
+Divider.isFocusedChanged: – Divider takes no keyboard focus here: it refuses it, and nothing is heard
+Divider.isVisible: ✅
+Divider.layoutDirection: ✅
+Divider.maximumHeight: ✅
+Divider.maximumWidth: ✅
+Divider.minimumHeight: ✅
+Divider.minimumWidth: ✅
+Divider.opacity: ✅
+Divider.pivotX: ✓ read pivotX of Divider: the host's own transform: GTK reads back no part of one
+Divider.pivotY: ✓ read pivotY of Divider: the host's own transform: GTK reads back no part of one
+Divider.rotation: ✓ read rotation of Divider: the host's own transform: GTK reads back no part of one
+Divider.rotationX: ✓ read rotationX of Divider: the host's own transform: GTK reads back no part of one
+Divider.rotationY: ✓ read rotationY of Divider: the host's own transform: GTK reads back no part of one
+Divider.scale: ✓ read scale of Divider: the host's own transform: GTK reads back no part of one
+Divider.scaleX: ✓ read scaleX of Divider: the host's own transform: GTK reads back no part of one
+Divider.scaleY: ✓ read scaleY of Divider: the host's own transform: GTK reads back no part of one
+Divider.style: ✅
+Divider.translationX: ✓ read translationX of Divider: the host's own transform: GTK reads back no part of one
+Divider.translationY: ✓ read translationY of Divider: the host's own transform: GTK reads back no part of one
+Divider.unfocus: – Divider takes no keyboard focus here: it refuses it, and nothing is heard
+Divider.width: ✅
+Divider.zIndex: ✅
 Ellipse.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
@@ -781,6 +815,40 @@ Slider.translationY: ✓ read translationY of Slider: the host's own transform: 
 Slider.unfocus: ✅
 Slider.width: ✅
 Slider.zIndex: ✅
+Spacer.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
+Spacer.accessibilityHint: ✅
+Spacer.accessibilityLabel: ✅
+Spacer.automationExcludedWithChildren: ✅
+Spacer.background: ✓ read background of Spacer: the class of the host's style sheet the widget wears: GTK reads back no background
+Spacer.focus: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
+Spacer.frame: ✅
+Spacer.frameChanged: ✅
+Spacer.height: ✅
+Spacer.ignoresInput: ✅
+Spacer.isAccessibilityHidden: ✅
+Spacer.isEnabled: ✅
+Spacer.isFocusedChanged: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
+Spacer.isVisible: ✅
+Spacer.layoutDirection: ✅
+Spacer.maximumHeight: ✅
+Spacer.maximumWidth: ✅
+Spacer.minimumHeight: ✅
+Spacer.minimumWidth: ✅
+Spacer.opacity: ✅
+Spacer.pivotX: ✓ read pivotX of Spacer: the host's own transform: GTK reads back no part of one
+Spacer.pivotY: ✓ read pivotY of Spacer: the host's own transform: GTK reads back no part of one
+Spacer.rotation: ✓ read rotation of Spacer: the host's own transform: GTK reads back no part of one
+Spacer.rotationX: ✓ read rotationX of Spacer: the host's own transform: GTK reads back no part of one
+Spacer.rotationY: ✓ read rotationY of Spacer: the host's own transform: GTK reads back no part of one
+Spacer.scale: ✓ read scale of Spacer: the host's own transform: GTK reads back no part of one
+Spacer.scaleX: ✓ read scaleX of Spacer: the host's own transform: GTK reads back no part of one
+Spacer.scaleY: ✓ read scaleY of Spacer: the host's own transform: GTK reads back no part of one
+Spacer.style: ✅
+Spacer.translationX: ✓ read translationX of Spacer: the host's own transform: GTK reads back no part of one
+Spacer.translationY: ✓ read translationY of Spacer: the host's own transform: GTK reads back no part of one
+Spacer.unfocus: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
+Spacer.width: ✅
+Spacer.zIndex: ✅
 Stepper.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅

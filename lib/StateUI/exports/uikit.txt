@@ -39,6 +39,7 @@ DatePicker
   maximumDate
   minimumDate
   dateChanged()
+Divider
 Ellipse
   contentMode
   dash
@@ -234,6 +235,7 @@ Slider
   pressed()
   released()
   valueChanged()
+Spacer
 Stepper
   maximum
   minimum

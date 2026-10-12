@@ -10,6 +10,8 @@ CheckBox.automationExcludedWithChildren: ✅
 ColorBox.ignoresInput: ✅
 ColorBox.scale: ✅
 DatePicker.accessibilityHint: ✅
+Divider.isVisible: ✅
+Divider.pivotX: ✅
 Ellipse.isEnabled: does not apply - read isEnabled of Ellipse - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Ellipse.rotation: ✅
 Grid.translationY: ✅
@@ -24,43 +26,38 @@ Line.height: ✅
 Line.rotationX: ✓ read rotationX of Line: the host's own tip, checked against the projection it laid on the element
 Line.width: ✅
 Map.accessibilityHeading: 🧩
-Path.isVisible: ✅
-Path.pivotX: ✅
-Picker.focus: ✅
-Picker.isFocusedChanged: ✅
-Picker.scaleY: ✅
-Picker.unfocus: ✅
-Polygon.automationExcludedWithChildren: ✅
-Polyline.frameChanged: ✅
-Polyline.maximumHeight: ✅
-Polyline.maximumWidth: ✅
-Polyline.minimumHeight: ✅
-Polyline.minimumWidth: ✅
-Polyline.rotationY: ✓ read rotationY of Polyline: the host's own tip, checked against the projection it laid on the element
-ProgressBar.accessibilityLabel: ✅
-RadioButton.isVisible: ✅
-RadioButton.pivotX: ✅
-Rectangle.style: ✅
-Rectangle.translationX: ✅
-ScrollView.automationExcludedWithChildren: ✅
-SearchField.frameChanged: ✅
-SearchField.height: ✅
-SearchField.rotationX: ✓ read rotationX of SearchField: the host's own tip, checked against the projection it laid on the element
-SearchField.width: ✅
-Slider.accessibilityLabel: ✅
-Stepper.opacity: ✅
-Stepper.pivotY: ✅
-Switch.translationY: ✅
-Switch.zIndex: ✅
+Path.style: ✅
+Path.translationX: ✅
+Picker.automationExcludedWithChildren: ✅
+Polygon.ignoresInput: ✅
+Polygon.scale: ✅
+Polyline.accessibilityHint: ✅
+ProgressBar.opacity: ✅
+ProgressBar.pivotY: ✅
+RadioButton.style: ✅
+RadioButton.translationX: ✅
+Rectangle.background: – A WinUI shape is its figure alone: it paints no ground around it.
+ScrollView.ignoresInput: ✅
+ScrollView.scale: ✅
+SearchField.accessibilityLabel: ✅
+Slider.opacity: ✅
+Slider.pivotY: ✅
+Spacer.translationY: ✅
+Spacer.zIndex: ✅
+Stepper.layoutDirection: ✅
+Switch.focus: ✅
+Switch.isFocusedChanged: ✅
+Switch.scaleY: ✅
+Switch.unfocus: ✅
 Text.isAccessibilityHidden: ✅
-TextEditor.layoutDirection: ✅
-TextField.focus: ✅
-TextField.isFocusedChanged: ✅
-TextField.scaleY: ✅
-TextField.unfocus: ✅
-TimePicker.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
-VStack.ignoresInput: ✅
-VStack.scale: ✅
-WebView.style: ✅
-WebView.translationX: ✅
-ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+TextEditor.automationExcludedWithChildren: ✅
+TextField.ignoresInput: ✅
+TextField.scale: ✅
+TimePicker.accessibilityHeading: ✅
+VStack.frameChanged: ✅
+VStack.height: ✅
+VStack.rotationX: ✓ read rotationX of VStack: the host's own tip, checked against the projection it laid on the element
+VStack.width: ✅
+WebView.frame: ✅
+WebView.scaleX: ✅
+ZStack.isAccessibilityHidden: ✅

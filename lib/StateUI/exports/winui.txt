@@ -48,6 +48,7 @@ DatePicker
   closed()
   dateChanged()
   opened()
+Divider
 Ellipse
   contentMode
   dash
@@ -219,6 +220,7 @@ Slider
   tint
   value
   valueChanged()
+Spacer
 Stepper
   maximum
   minimum

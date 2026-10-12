@@ -5,6 +5,7 @@ Canvas.accessibilityIdentifier: – GTK 4 tells assistive technology no identifi
 CheckBox.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 ColorBox.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 DatePicker.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
+Divider.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 Ellipse.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 Grid.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 HStack.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
@@ -24,6 +25,7 @@ Rectangle.accessibilityIdentifier: – GTK 4 tells assistive technology no ident
 ScrollView.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 SearchField.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 Slider.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
+Spacer.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 SplitView.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 Stepper.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 Switch.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.

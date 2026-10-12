@@ -27,9 +27,6 @@ final class AndroidColorBoxView: AndroidView {
 
     /// A box has nothing to show but its colour: it takes the room its layout gives it, and asks for none.
     override func measure(width: Int32, height: Int32) -> (width: Int32, height: Int32) {
-        func exact(_ spec: Int32) -> Int32 {
-            ViewConstants.mode(spec) == ViewConstants.exactly ? spec : ViewConstants.unspecified
-        }
-        return super.measure(width: exact(width), height: exact(height))
+        super.measure(width: ViewConstants.exactOnly(width), height: ViewConstants.exactOnly(height))
     }
 }

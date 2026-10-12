@@ -203,6 +203,40 @@ DatePicker.translationY: ✅
 DatePicker.unfocus: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
 DatePicker.width: ✅
 DatePicker.zIndex: ✅
+Divider.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
+Divider.accessibilityHint: ✅
+Divider.accessibilityLabel: ✅
+Divider.automationExcludedWithChildren: ✅
+Divider.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Divider.focus: – Divider takes no keyboard focus here: it refuses it, and nothing is heard
+Divider.frame: ✅
+Divider.frameChanged: ✅
+Divider.height: ✅
+Divider.ignoresInput: not realized
+Divider.isAccessibilityHidden: ✅
+Divider.isEnabled: ✅
+Divider.isFocusedChanged: – Divider takes no keyboard focus here: it refuses it, and nothing is heard
+Divider.isVisible: ✅
+Divider.layoutDirection: ✅
+Divider.maximumHeight: ✅
+Divider.maximumWidth: ✅
+Divider.minimumHeight: ✅
+Divider.minimumWidth: ✅
+Divider.opacity: ✅
+Divider.pivotX: ✅
+Divider.pivotY: ✅
+Divider.rotation: ✅
+Divider.rotationX: ✅
+Divider.rotationY: ✅
+Divider.scale: ✅
+Divider.scaleX: ✅
+Divider.scaleY: ✅
+Divider.style: ✅
+Divider.translationX: ✅
+Divider.translationY: ✅
+Divider.unfocus: – Divider takes no keyboard focus here: it refuses it, and nothing is heard
+Divider.width: ✅
+Divider.zIndex: ✅
 Ellipse.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
@@ -781,6 +815,40 @@ Slider.translationY: ✅
 Slider.unfocus: – Slider takes no keyboard focus here: it refuses it, and nothing is heard
 Slider.width: ✅
 Slider.zIndex: ✅
+Spacer.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
+Spacer.accessibilityHint: ✅
+Spacer.accessibilityLabel: ✅
+Spacer.automationExcludedWithChildren: ✅
+Spacer.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Spacer.focus: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
+Spacer.frame: ✅
+Spacer.frameChanged: ✅
+Spacer.height: ✅
+Spacer.ignoresInput: not realized
+Spacer.isAccessibilityHidden: ✅
+Spacer.isEnabled: ✅
+Spacer.isFocusedChanged: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
+Spacer.isVisible: ✅
+Spacer.layoutDirection: ✅
+Spacer.maximumHeight: ✅
+Spacer.maximumWidth: ✅
+Spacer.minimumHeight: ✅
+Spacer.minimumWidth: ✅
+Spacer.opacity: ✅
+Spacer.pivotX: ✅
+Spacer.pivotY: ✅
+Spacer.rotation: ✅
+Spacer.rotationX: ✅
+Spacer.rotationY: ✅
+Spacer.scale: ✅
+Spacer.scaleX: ✅
+Spacer.scaleY: ✅
+Spacer.style: ✅
+Spacer.translationX: ✅
+Spacer.translationY: ✅
+Spacer.unfocus: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
+Spacer.width: ✅
+Spacer.zIndex: ✅
 Stepper.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅

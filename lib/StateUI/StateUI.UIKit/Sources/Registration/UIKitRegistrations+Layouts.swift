@@ -22,6 +22,11 @@ extension UIKitRegistrations {
             stack.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
+        // A spacer is empty room the stack's arithmetic sizes; a divider in a stack is a separator line.
+        // Design: docs/design/host/layout.md#a-spacer
+        registry.add(SpacerContract.self, create: { _ in UIKitSpacerView() })
+        registry.add(DividerContract.self, create: { _ in UIKitDividerView() })
+
         registry.add(GridContract.self, create: { _ in UIKitGridView() }) { grid in
             grid.applies([
                 GridContract.rows, GridContract.columns,

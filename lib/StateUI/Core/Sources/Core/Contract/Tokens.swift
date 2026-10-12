@@ -46,6 +46,7 @@ extension NodeType {
     static let menuBar = MenuBarContract.nodeType
     static let menuItem = MenuItemContract.nodeType
     static let divider = DividerContract.nodeType
+    static let spacer = SpacerContract.nodeType
     static let modalStack = ModalStackContract.nodeType
     static let navigationStack = NavigationStackContract.nodeType
     static let titleView = TitleViewContract.nodeType

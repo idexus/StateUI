@@ -243,6 +243,10 @@ final class ControlTests: XCTestCase {
                     .progress(0.4)
                     .tint(.cornflowerBlue)),
 
+            ControlCase("Spacer", source: "Spacer.swift",
+                Spacer()
+                    .minimumWidth(8)),
+
             ControlCase("ColorBox", source: "ColorBox.swift",
                 ColorBox(.cornflowerBlue)
                     .cornerRadius(8)),

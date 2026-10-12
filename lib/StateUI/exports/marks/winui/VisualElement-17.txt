@@ -10,6 +10,8 @@ CheckBox.width: ✅
 ColorBox.accessibilityLabel: ✅
 DatePicker.isVisible: ✅
 DatePicker.pivotX: ✅
+Divider.frame: ✅
+Divider.scaleX: ✅
 Ellipse.style: ✅
 Ellipse.translationX: ✅
 Grid.automationExcludedWithChildren: ✅
@@ -21,46 +23,47 @@ ItemsView.accessibilityHint: ✅
 Line.translationY: ✅
 Line.zIndex: ✅
 Map.background: 🧩
-Path.frame: ✅
-Path.scaleX: ✅
-Picker.accessibilityHeading: ✅
-Polygon.frameChanged: ✅
-Polygon.height: ✅
-Polygon.rotationX: ✓ read rotationX of Polygon: the host's own tip, checked against the projection it laid on the element
-Polygon.width: ✅
-Polyline.accessibilityHeading: ✅
-Polyline.isEnabled: ✅
-ProgressBar.layoutDirection: ✅
-RadioButton.frame: ✅
-RadioButton.scaleX: ✅
-Rectangle.isAccessibilityHidden: ✅
-ScrollView.frameChanged: ✅
-ScrollView.height: ✅
-ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own tip, checked against the projection it laid on the element
-ScrollView.width: ✅
-SearchField.translationY: ✅
-SearchField.zIndex: ✅
-Slider.layoutDirection: ✅
-Stepper.focus: ✅
-Stepper.isFocusedChanged: ✅
-Stepper.scaleY: ✅
-Stepper.unfocus: ✅
-Switch.automationExcludedWithChildren: ✅
+Path.isAccessibilityHidden: ✅
+Picker.frameChanged: ✅
+Picker.height: ✅
+Picker.rotationX: ✓ read rotationX of Picker: the host's own tip, checked against the projection it laid on the element
+Picker.width: ✅
+Polygon.accessibilityLabel: ✅
+Polyline.isVisible: ✅
+Polyline.pivotX: ✅
+ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
+ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
+ProgressBar.scaleY: ✅
+ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
+RadioButton.isAccessibilityHidden: ✅
+Rectangle.frameChanged: ✅
+Rectangle.maximumHeight: ✅
+Rectangle.maximumWidth: ✅
+Rectangle.minimumHeight: ✅
+Rectangle.minimumWidth: ✅
+Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own tip, checked against the projection it laid on the element
+ScrollView.accessibilityLabel: ✅
+ScrollView.layoutDirection: ✅
+SearchField.layoutDirection: ✅
+Slider.focus: ✅
+Slider.isFocusedChanged: ✅
+Slider.scaleY: ✅
+Slider.unfocus: ✅
+Spacer.automationExcludedWithChildren: ✅
+Stepper.ignoresInput: ✅
+Stepper.scale: ✅
+Switch.accessibilityHeading: ✅
 Text.isEnabled: does not apply - read isEnabled of Text - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Text.rotation: ✅
-TextEditor.ignoresInput: ✅
-TextEditor.scale: ✅
-TextField.accessibilityHeading: ✅
-TimePicker.frameChanged: ✅
-TimePicker.height: ✅
-TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own tip, checked against the projection it laid on the element
-TimePicker.width: ✅
-VStack.accessibilityLabel: ✅
-VStack.isEnabled: ✅
-WebView.isAccessibilityHidden: ✅
-ZStack.frameChanged: ✅
-ZStack.maximumHeight: ✅
-ZStack.maximumWidth: ✅
-ZStack.minimumHeight: ✅
-ZStack.minimumWidth: ✅
-ZStack.rotationY: ✓ read rotationY of ZStack: the host's own tip, checked against the projection it laid on the element
+TextEditor.frameChanged: ✅
+TextEditor.height: ✅
+TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own tip, checked against the projection it laid on the element
+TextEditor.width: ✅
+TextField.accessibilityLabel: ✅
+TimePicker.opacity: ✅
+TimePicker.pivotY: ✅
+VStack.translationY: ✅
+VStack.zIndex: ✅
+WebView.accessibilityHint: ✅
+ZStack.isEnabled: does not apply - read isEnabled of ZStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+ZStack.rotation: ✅

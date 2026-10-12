@@ -118,6 +118,34 @@ container's children. A state read inside that closure belongs to the
 container's description scope, which can keep invalidation narrower than a
 read in an outer composed view.
 
+### Spacer and Divider
+
+A `Spacer` takes the room its stack's other children leave along the stack's
+axis, shared alike when there are several; a `Divider` is the platform's own
+separator line, drawn across its stack:
+
+```swift
+VStack {
+    HStack {
+        Text("Draft")
+        Spacer()
+        Button("Send")
+    }
+
+    Divider()
+
+    Text("Sent a minute ago")
+}
+.spacing(8)
+.padding(16)
+```
+
+A spacer asks for no room of its own, so a stack only as long as its children
+leaves it none; a spacer given a length along the axis - `.width(12)` in an
+`HStack` - is a gap of exactly that length, and `.minimumWidth` or
+`.maximumWidth` bound one that grows. The same `Divider` inside a menu
+separates its entries.
+
 ## Grid
 
 A grid owns row and column definitions; each child states its cell and spans:

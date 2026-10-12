@@ -20,6 +20,13 @@ DatePicker.frameChanged: ✅
 DatePicker.horizontalAlignment: ✅
 DatePicker.pinchUpdated: ✅
 DatePicker.verticalAlignment: ✅
+Divider.canDrag: ✓ dragAndDrop on Divider: the relay's drag reports told by the driver, no drag WinUI began
+Divider.dragEnded: ✓ dragAndDrop on Divider: the relay's drag reports told by the driver, no drag WinUI began
+Divider.dragStarting: ✓ dragAndDrop on Divider: the relay's drag reports told by the driver, no drag WinUI began
+Divider.dragText: ✓ dragAndDrop on Divider: the relay's drag reports told by the driver, no drag WinUI began
+Divider.frameChanged: ✅
+Divider.gridColumn: ✅
+Divider.gridRow: ✅
 Ellipse.canDrag: ✓ dragAndDrop on Ellipse: the relay's drag reports told by the driver, no drag WinUI began
 Ellipse.dragEnded: ✓ dragAndDrop on Ellipse: the relay's drag reports told by the driver, no drag WinUI began
 Ellipse.dragStarting: ✓ dragAndDrop on Ellipse: the relay's drag reports told by the driver, no drag WinUI began
@@ -48,82 +55,80 @@ Map.frameChanged: 🧩
 Map.horizontalAlignment: 🧩
 Map.pinchUpdated: 🧩
 Map.verticalAlignment: 🧩
-Path.canDrag: ✓ dragAndDrop on Path: the relay's drag reports told by the driver, no drag WinUI began
-Path.dragEnded: ✓ dragAndDrop on Path: the relay's drag reports told by the driver, no drag WinUI began
-Path.dragStarting: ✓ dragAndDrop on Path: the relay's drag reports told by the driver, no drag WinUI began
-Path.dragText: ✓ dragAndDrop on Path: the relay's drag reports told by the driver, no drag WinUI began
-Path.frameChanged: ✅
-Path.gridColumn: ✅
-Path.gridRow: ✅
-Picker.droppedFileTypes: ✓ dropFiles on Picker: the relay's drop report told the driver's files, no drag WinUI began
-Picker.filesDropped: ✓ dropFiles on Picker: the relay's drop report told the driver's files, no drag WinUI began
-Picker.tapCount: ✅
-Picker.tapped: ✅
-Polygon.panYChannel: ✅
+Path.droppedFileTypes: ✓ dropFiles on Path: the relay's drop report told the driver's files, no drag WinUI began
+Path.filesDropped: ✓ dropFiles on Path: the relay's drop report told the driver's files, no drag WinUI began
+Path.tapCount: ✅
+Path.tapped: ✅
+Picker.panYChannel: ✅
+Polygon.frameChanged: ✅
+Polygon.horizontalAlignment: ✅
+Polygon.pinchUpdated: ✅
+Polygon.verticalAlignment: ✅
+Polyline.canDrag: ✓ dragAndDrop on Polyline: the relay's drag reports told by the driver, no drag WinUI began
+Polyline.dragEnded: ✓ dragAndDrop on Polyline: the relay's drag reports told by the driver, no drag WinUI began
+Polyline.dragStarting: ✓ dragAndDrop on Polyline: the relay's drag reports told by the driver, no drag WinUI began
+Polyline.dragText: ✓ dragAndDrop on Polyline: the relay's drag reports told by the driver, no drag WinUI began
 Polyline.frameChanged: ✅
-Polyline.horizontalAlignment: ✅
-Polyline.pinchUpdated: ✅
-Polyline.verticalAlignment: ✅
-ProgressBar.canDrag: ✓ dragAndDrop on ProgressBar: the relay's drag reports told by the driver, no drag WinUI began
-ProgressBar.dragEnded: ✓ dragAndDrop on ProgressBar: the relay's drag reports told by the driver, no drag WinUI began
-ProgressBar.dragStarting: ✓ dragAndDrop on ProgressBar: the relay's drag reports told by the driver, no drag WinUI began
-ProgressBar.dragText: ✓ dragAndDrop on ProgressBar: the relay's drag reports told by the driver, no drag WinUI began
-ProgressBar.frameChanged: ✅
-ProgressBar.gridColumn: ✅
-ProgressBar.gridRow: ✅
-RadioButton.droppedFileTypes: ✓ dropFiles on RadioButton: the relay's drop report told the driver's files, no drag WinUI began
-RadioButton.filesDropped: ✓ dropFiles on RadioButton: the relay's drop report told the driver's files, no drag WinUI began
-RadioButton.tapCount: ✅
-RadioButton.tapped: ✅
-Rectangle.panYChannel: ✅
+Polyline.gridColumn: ✅
+Polyline.gridRow: ✅
+ProgressBar.droppedFileTypes: ✓ dropFiles on ProgressBar: the relay's drop report told the driver's files, no drag WinUI began
+ProgressBar.filesDropped: ✓ dropFiles on ProgressBar: the relay's drop report told the driver's files, no drag WinUI began
+ProgressBar.tapCount: ✅
+ProgressBar.tapped: ✅
+RadioButton.panYChannel: ✅
+Rectangle.frameChanged: ✅
+Rectangle.horizontalAlignment: ✅
+Rectangle.pinchUpdated: ✅
+Rectangle.verticalAlignment: ✅
+ScrollView.canDrag: ✓ dragAndDrop on ScrollView: the relay's drag reports told by the driver, no drag WinUI began
+ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the relay's drag reports told by the driver, no drag WinUI began
+ScrollView.dragStarting: ✓ dragAndDrop on ScrollView: the relay's drag reports told by the driver, no drag WinUI began
+ScrollView.dragText: ✓ dragAndDrop on ScrollView: the relay's drag reports told by the driver, no drag WinUI began
 ScrollView.frameChanged: ✅
-ScrollView.horizontalAlignment: ✅
-ScrollView.pinchUpdated: ✅
-ScrollView.verticalAlignment: ✅
-SearchField.canDrag: ✓ dragAndDrop on SearchField: the relay's drag reports told by the driver, no drag WinUI began
-SearchField.dragEnded: ✓ dragAndDrop on SearchField: the relay's drag reports told by the driver, no drag WinUI began
-SearchField.dragStarting: ✓ dragAndDrop on SearchField: the relay's drag reports told by the driver, no drag WinUI began
-SearchField.dragText: ✓ dragAndDrop on SearchField: the relay's drag reports told by the driver, no drag WinUI began
-SearchField.frameChanged: ✅
-SearchField.gridColumn: ✅
-SearchField.gridRow: ✅
-Slider.droppedFileTypes: ✓ dropFiles on Slider: the relay's drop report told the driver's files, no drag WinUI began
-Slider.filesDropped: ✓ dropFiles on Slider: the relay's drop report told the driver's files, no drag WinUI began
-Slider.tapCount: ✅
-Slider.tapped: ✅
-Stepper.panYChannel: ✅
-Switch.frameChanged: ✅
-Switch.horizontalAlignment: ✅
-Switch.pinchUpdated: ✅
-Switch.verticalAlignment: ✅
+ScrollView.gridColumn: ✅
+ScrollView.gridRow: ✅
+SearchField.droppedFileTypes: ✓ dropFiles on SearchField: the relay's drop report told the driver's files, no drag WinUI began
+SearchField.filesDropped: ✓ dropFiles on SearchField: the relay's drop report told the driver's files, no drag WinUI began
+SearchField.tapCount: ✅
+SearchField.tapped: ✅
+Slider.panYChannel: ✅
+Spacer.frameChanged: ✅
+Spacer.horizontalAlignment: ✅
+Spacer.pinchUpdated: ✅
+Spacer.verticalAlignment: ✅
+Stepper.canDrag: ✓ dragAndDrop on Stepper: the relay's drag reports told by the driver, no drag WinUI began
+Stepper.dragEnded: ✓ dragAndDrop on Stepper: the relay's drag reports told by the driver, no drag WinUI began
+Stepper.dragStarting: ✓ dragAndDrop on Stepper: the relay's drag reports told by the driver, no drag WinUI began
+Stepper.dragText: ✓ dragAndDrop on Stepper: the relay's drag reports told by the driver, no drag WinUI began
+Stepper.frameChanged: ✅
+Stepper.gridColumn: ✅
+Stepper.gridRow: ✅
+Switch.droppedFileTypes: ✓ dropFiles on Switch: the relay's drop report told the driver's files, no drag WinUI began
+Switch.filesDropped: ✓ dropFiles on Switch: the relay's drop report told the driver's files, no drag WinUI began
+Switch.tapCount: ✅
+Switch.tapped: ✅
 Text.droppedFileTypes: ✓ dropFiles on Text: the relay's drop report told the driver's files, no drag WinUI began
 Text.filesDropped: ✓ dropFiles on Text: the relay's drop report told the driver's files, no drag WinUI began
 Text.tapCount: ✅
 Text.tapped: ✅
-TextEditor.canDrag: ✓ dragAndDrop on TextEditor: the relay's drag reports told by the driver, no drag WinUI began
-TextEditor.dragEnded: ✓ dragAndDrop on TextEditor: the relay's drag reports told by the driver, no drag WinUI began
-TextEditor.dragStarting: ✓ dragAndDrop on TextEditor: the relay's drag reports told by the driver, no drag WinUI began
-TextEditor.dragText: ✓ dragAndDrop on TextEditor: the relay's drag reports told by the driver, no drag WinUI began
-TextEditor.frameChanged: ✅
-TextEditor.gridColumn: ✅
-TextEditor.gridRow: ✅
-TextField.droppedFileTypes: ✓ dropFiles on TextField: the relay's drop report told the driver's files, no drag WinUI began
-TextField.filesDropped: ✓ dropFiles on TextField: the relay's drop report told the driver's files, no drag WinUI began
-TextField.tapCount: ✅
-TextField.tapped: ✅
-TimePicker.panYChannel: ✅
-VStack.frameChanged: ✅
-VStack.horizontalAlignment: ✅
-VStack.pinchUpdated: ✅
-VStack.verticalAlignment: ✅
-WebView.canDrag: ✓ dragAndDrop on WebView: the relay's drag reports told by the driver, no drag WinUI began
-WebView.dragEnded: ✓ dragAndDrop on WebView: the relay's drag reports told by the driver, no drag WinUI began
-WebView.dragStarting: ✓ dragAndDrop on WebView: the relay's drag reports told by the driver, no drag WinUI began
-WebView.dragText: ✓ dragAndDrop on WebView: the relay's drag reports told by the driver, no drag WinUI began
-WebView.frameChanged: ✅
-WebView.gridColumn: ✅
-WebView.gridRow: ✅
-ZStack.droppedFileTypes: ✓ dropFiles on ZStack: the relay's drop report told the driver's files, no drag WinUI began
-ZStack.filesDropped: ✓ dropFiles on ZStack: the relay's drop report told the driver's files, no drag WinUI began
-ZStack.tapCount: ✅
-ZStack.tapped: ✅
+TextEditor.panYChannel: ✅
+TextField.frameChanged: ✅
+TextField.horizontalAlignment: ✅
+TextField.pinchUpdated: ✅
+TextField.verticalAlignment: ✅
+TimePicker.canDrag: ✓ dragAndDrop on TimePicker: the relay's drag reports told by the driver, no drag WinUI began
+TimePicker.dragEnded: ✓ dragAndDrop on TimePicker: the relay's drag reports told by the driver, no drag WinUI began
+TimePicker.dragStarting: ✓ dragAndDrop on TimePicker: the relay's drag reports told by the driver, no drag WinUI began
+TimePicker.dragText: ✓ dragAndDrop on TimePicker: the relay's drag reports told by the driver, no drag WinUI began
+TimePicker.frameChanged: ✅
+TimePicker.gridColumn: ✅
+TimePicker.gridRow: ✅
+VStack.droppedFileTypes: ✓ dropFiles on VStack: the relay's drop report told the driver's files, no drag WinUI began
+VStack.filesDropped: ✓ dropFiles on VStack: the relay's drop report told the driver's files, no drag WinUI began
+VStack.tapCount: ✅
+VStack.tapped: ✅
+WebView.panYChannel: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+ZStack.frameChanged: ✅
+ZStack.horizontalAlignment: ✅
+ZStack.pinchUpdated: ✅
+ZStack.verticalAlignment: ✅

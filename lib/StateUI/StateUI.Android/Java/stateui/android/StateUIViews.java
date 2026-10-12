@@ -146,6 +146,19 @@ final class StateUIViews {
         return glyph;
     }
 
+    /** A divider in a stack: a plain view drawn with the theme's list divider, as thick as that line both ways. */
+    static View divider(Context context) {
+        TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.listDivider});
+        Drawable line = theme.getDrawable(0);
+        theme.recycle();
+        View view = new View(context);
+        view.setBackground(line);
+        int thickness = Math.max(1, line == null ? 1 : line.getIntrinsicHeight());
+        view.setMinimumWidth(thickness);
+        view.setMinimumHeight(thickness);
+        return view;
+    }
+
     /** How opaque the theme draws a disabled control. */
     static float disabledAlpha(Context context) {
         TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.disabledAlpha});

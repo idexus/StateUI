@@ -5,6 +5,7 @@ Canvas.accessibilityIdentifier: ✅
 CheckBox.accessibilityIdentifier: ✅
 ColorBox.accessibilityIdentifier: ✅
 DatePicker.accessibilityIdentifier: ✅
+Divider.accessibilityIdentifier: ✅
 Ellipse.accessibilityIdentifier: ✅
 Grid.accessibilityIdentifier: ✅
 HStack.accessibilityIdentifier: ✅
@@ -24,6 +25,7 @@ Rectangle.accessibilityIdentifier: ✅
 ScrollView.accessibilityIdentifier: ✅
 SearchField.accessibilityIdentifier: ✅
 Slider.accessibilityIdentifier: ✅
+Spacer.accessibilityIdentifier: ✅
 SplitView.accessibilityIdentifier: ✅
 Stepper.accessibilityIdentifier: ✅
 Switch.accessibilityIdentifier: ✅

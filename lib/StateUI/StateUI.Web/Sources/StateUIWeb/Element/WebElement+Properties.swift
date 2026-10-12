@@ -13,7 +13,7 @@ extension WebElement {
             items.listen("scroll") { [weak host] in host?.runtime.frames.laidOut() }
             return items
         }
-        if element.isDrawnByParent(in: WebRegistrations.registry) { return nil }
+        if element.isDrawnByParent(in: WebRegistrations.registry) || element.isViewless { return nil }
         if let registered = WebRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
@@ -22,8 +22,6 @@ extension WebElement {
             if let scroll = registered as? WebScrollView { follow(scroll) }
             return registered
         }
-
-        guard !NodeType.viewlessTypes.contains(type) else { return nil }
 
         switch type {
         case .page: return WebLayoutView(tag: "section", arrangement: .single)

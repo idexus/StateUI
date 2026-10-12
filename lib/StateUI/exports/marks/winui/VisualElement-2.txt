@@ -11,6 +11,8 @@ DatePicker.frameChanged: ✅
 DatePicker.height: ✅
 DatePicker.rotationX: ✓ read rotationX of DatePicker: the host's own tip, checked against the projection it laid on the element
 DatePicker.width: ✅
+Divider.translationY: ✅
+Divider.zIndex: ✅
 Ellipse.accessibilityLabel: ✅
 Grid.isVisible: ✅
 Grid.pivotX: ✅
@@ -26,36 +28,43 @@ ItemsView.automationExcludedWithChildren: ✅
 Line.accessibilityHint: ✅
 Map.opacity: 🧩
 Map.pivotY: 🧩
-Path.translationY: ✅
-Path.zIndex: ✅
-Picker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Polygon.frame: ✅
-Polygon.scaleX: ✅
-Polyline.accessibilityHeading: ✅
+Path.layoutDirection: ✓ read layoutDirection of Path: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Picker.frame: ✅
+Picker.scaleX: ✅
+Polygon.isAccessibilityHidden: ✅
+Polyline.frameChanged: ✅
+Polyline.height: ✅
+Polyline.rotationX: ✓ read rotationX of Polyline: the host's own tip, checked against the projection it laid on the element
+Polyline.width: ✅
+ProgressBar.accessibilityHeading: ✅
 ProgressBar.isEnabled: ✅
-ProgressBar.rotation: ✅
-RadioButton.translationY: ✅
-RadioButton.zIndex: ✅
-Rectangle.layoutDirection: ✓ read layoutDirection of Rectangle: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-ScrollView.frame: ✅
-ScrollView.scaleX: ✅
-SearchField.accessibilityHint: ✅
-Slider.isEnabled: ✅
-Slider.rotation: ✅
-Stepper.accessibilityHeading: ✅
-Switch.isVisible: ✅
-Switch.pivotX: ✅
+RadioButton.layoutDirection: ✅
+Rectangle.focus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
+Rectangle.isFocusedChanged: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
+Rectangle.scaleY: ✅
+Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.isAccessibilityHidden: ✅
+SearchField.isEnabled: ✅
+SearchField.rotation: ✅
+Slider.accessibilityHeading: ✅
+Spacer.isVisible: ✅
+Spacer.pivotX: ✅
+Stepper.style: ✅
+Stepper.translationX: ✅
+Switch.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 Text.ignoresInput: ✅
 Text.scale: ✅
-TextEditor.style: ✅
-TextEditor.translationX: ✅
-TextField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-TimePicker.frame: ✅
-TimePicker.scaleX: ✅
-VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-VStack.isAccessibilityHidden: ✅
-WebView.layoutDirection: ✓ read layoutDirection of WebView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
-ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
-ZStack.scaleY: ✅
-ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
+TextEditor.frame: ✅
+TextEditor.scaleX: ✅
+TextField.isAccessibilityHidden: ✅
+TimePicker.frameChanged: ✅
+TimePicker.maximumHeight: ✅
+TimePicker.maximumWidth: ✅
+TimePicker.minimumHeight: ✅
+TimePicker.minimumWidth: ✅
+TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own tip, checked against the projection it laid on the element
+VStack.accessibilityHint: ✅
+VStack.layoutDirection: ✅
+WebView.automationExcludedWithChildren: ✅
+ZStack.ignoresInput: ✅
+ZStack.scale: ✅

@@ -26,6 +26,11 @@ extension AppKitRegistrations {
             }
         }
 
+        // A spacer is empty room the stack's arithmetic sizes; a divider in a stack is the toolkit's line.
+        // Design: docs/design/host/layout.md#a-spacer
+        registry.add(SpacerContract.self, create: { _ in NSView() })
+        registry.add(DividerContract.self, create: { _ in AppKitDividerView() })
+
         // The host makes the scroll view; its registration takes the members alone.
         // Design: docs/design/platforms/appkit/registrations.md#the-scroll-view
         registry.add(ScrollViewContract.self, madeByHost: AppKitScrollView.self) { scroll in

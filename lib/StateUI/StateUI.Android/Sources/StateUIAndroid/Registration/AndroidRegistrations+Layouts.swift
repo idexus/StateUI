@@ -20,6 +20,11 @@ extension AndroidRegistrations {
             stack.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
+        // A spacer is empty room the stack's arithmetic sizes; a divider in a stack is the theme's line.
+        // Design: docs/design/host/layout.md#a-spacer
+        registry.add(SpacerContract.self, create: { _ in AndroidSpacerView() })
+        registry.add(DividerContract.self, create: { _ in AndroidDividerView() })
+
         registry.add(GridContract.self, create: { _ in AndroidGridView() }) { grid in
             grid.applies([
                 GridContract.rows, GridContract.columns,

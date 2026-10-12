@@ -203,6 +203,40 @@ DatePicker.translationY: ✓ read translationY of DatePicker: the host's own tra
 DatePicker.unfocus: ✅
 DatePicker.width: ✅
 DatePicker.zIndex: ✅
+Divider.accessibilityHeading: ✅
+Divider.accessibilityHint: ✅
+Divider.accessibilityLabel: ✅
+Divider.automationExcludedWithChildren: ✅
+Divider.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Divider.focus: – Divider takes no keyboard focus here: it refuses it, and nothing is heard
+Divider.frame: ✅
+Divider.frameChanged: ✅
+Divider.height: ✅
+Divider.ignoresInput: ✅
+Divider.isAccessibilityHidden: ✅
+Divider.isEnabled: ✅
+Divider.isFocusedChanged: – Divider takes no keyboard focus here: it refuses it, and nothing is heard
+Divider.isVisible: ✅
+Divider.layoutDirection: ✅
+Divider.maximumHeight: ✅
+Divider.maximumWidth: ✅
+Divider.minimumHeight: ✅
+Divider.minimumWidth: ✅
+Divider.opacity: ✅
+Divider.pivotX: ✓ read pivotX of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Divider.pivotY: ✓ read pivotY of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Divider.rotation: ✓ read rotation of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Divider.rotationX: ✓ read rotationX of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Divider.rotationY: ✓ read rotationY of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Divider.scale: ✓ read scale of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Divider.scaleX: ✓ read scaleX of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Divider.scaleY: ✓ read scaleY of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Divider.style: ✅
+Divider.translationX: ✓ read translationX of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Divider.translationY: ✓ read translationY of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Divider.unfocus: – Divider takes no keyboard focus here: it refuses it, and nothing is heard
+Divider.width: ✅
+Divider.zIndex: ✅
 Ellipse.accessibilityHeading: ✅
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
@@ -781,6 +815,40 @@ Slider.translationY: ✓ read translationY of Slider: the host's own transform: 
 Slider.unfocus: ✅
 Slider.width: ✅
 Slider.zIndex: ✅
+Spacer.accessibilityHeading: ✅
+Spacer.accessibilityHint: ✅
+Spacer.accessibilityLabel: ✅
+Spacer.automationExcludedWithChildren: ✅
+Spacer.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Spacer.focus: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
+Spacer.frame: ✅
+Spacer.frameChanged: ✅
+Spacer.height: ✅
+Spacer.ignoresInput: ✅
+Spacer.isAccessibilityHidden: ✅
+Spacer.isEnabled: ✅
+Spacer.isFocusedChanged: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
+Spacer.isVisible: ✅
+Spacer.layoutDirection: ✅
+Spacer.maximumHeight: ✅
+Spacer.maximumWidth: ✅
+Spacer.minimumHeight: ✅
+Spacer.minimumWidth: ✅
+Spacer.opacity: ✅
+Spacer.pivotX: ✓ read pivotX of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spacer.pivotY: ✓ read pivotY of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spacer.rotation: ✓ read rotation of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spacer.rotationX: ✓ read rotationX of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spacer.rotationY: ✓ read rotationY of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spacer.scale: ✓ read scale of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spacer.scaleX: ✓ read scaleX of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spacer.scaleY: ✓ read scaleY of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spacer.style: ✅
+Spacer.translationX: ✓ read translationX of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spacer.translationY: ✓ read translationY of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spacer.unfocus: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
+Spacer.width: ✅
+Spacer.zIndex: ✅
 Stepper.accessibilityHeading: ✅
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅

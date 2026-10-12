@@ -8153,6 +8153,8 @@ enum Listings {
         """#,
         "StackLayoutSample": #"""
         // Sources/Samples/Layout/StackLayoutSample.swift
+        @State private var spaced = true
+
         var body: some View {
             VStack {
                 SectionTitle("Vertical")
@@ -8186,6 +8188,37 @@ enum Listings {
 
                     StackCell(text: "fill")
                         .horizontalAlignment(.fill)
+                }
+
+                SectionTitle("Spacer")
+
+                // A spacer takes the room the other children leave.
+                HStack {
+                    StackCell(text: "Draft")
+                    if spaced { Spacer() }
+                    StackCell(text: "Send")
+                }
+
+                HStack {
+                    Switch($spaced)
+
+                    Text("Spacer")
+                        .verticalAlignment(.center)
+                }
+
+                SectionTitle("Divider")
+
+                // The platform's own line, across its stack.
+                VStack {
+                    Text("Inbox")
+                    Divider()
+                    Text("Archive")
+                }
+
+                HStack {
+                    Text("Bold")
+                    Divider()
+                    Text("Italic")
                 }
             }
         }

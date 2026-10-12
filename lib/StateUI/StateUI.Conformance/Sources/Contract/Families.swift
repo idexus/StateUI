@@ -31,6 +31,7 @@
         ItemsViewTests.self,
         SearchFieldTests.self,
         SliderTests.self,
+        SpacerTests.self,
         StepperTests.self,
         SwitchTests.self,
         TextEditorTests.self,

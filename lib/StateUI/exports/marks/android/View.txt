@@ -203,6 +203,40 @@ DatePicker.swiped: ✅
 DatePicker.tapCount: ✅
 DatePicker.tapped: ✅
 DatePicker.verticalAlignment: ✅
+Divider.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Divider.area: ✅
+Divider.canDrag: ✓ dragAndDrop on Divider: the views' drag listeners' reports told by the driver, no drag started
+Divider.dragEnded: ✓ dragAndDrop on Divider: the views' drag listeners' reports told by the driver, no drag started
+Divider.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Divider.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Divider.dragStarting: ✓ dragAndDrop on Divider: the views' drag listeners' reports told by the driver, no drag started
+Divider.dragText: ✓ dragAndDrop on Divider: the views' drag listeners' reports told by the driver, no drag started
+Divider.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Divider.droppedFileTypes: ✓ dropFiles on Divider: the view's drag listener's report told the driver's documents, no drag started
+Divider.filesDropped: ✓ dropFiles on Divider: the view's drag listener's report told the driver's documents, no drag started
+Divider.frameChanged: ✅
+Divider.gridColumn: ✅
+Divider.gridColumnSpan: ✅
+Divider.gridRow: ✅
+Divider.gridRowSpan: ✅
+Divider.horizontalAlignment: ✅
+Divider.margin: ✅
+Divider.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+Divider.panUpdated: ✅
+Divider.panXChannel: ✅
+Divider.panYChannel: ✅
+Divider.pinchUpdated: ✅
+Divider.pointerEntered: ✅
+Divider.pointerExited: ✅
+Divider.pointerMoved: ✅
+Divider.pointerPressed: ✅
+Divider.pointerReleased: ✅
+Divider.swipeDirection: ✅
+Divider.swipeThreshold: ✅
+Divider.swiped: ✅
+Divider.tapCount: ✅
+Divider.tapped: ✅
+Divider.verticalAlignment: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Ellipse.area: ✅
 Ellipse.canDrag: ✓ dragAndDrop on Ellipse: the views' drag listeners' reports told by the driver, no drag started
@@ -781,6 +815,40 @@ Slider.swiped: ✅
 Slider.tapCount: ✅
 Slider.tapped: ✅
 Slider.verticalAlignment: ✅
+Spacer.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Spacer.area: ✅
+Spacer.canDrag: ✓ dragAndDrop on Spacer: the views' drag listeners' reports told by the driver, no drag started
+Spacer.dragEnded: ✓ dragAndDrop on Spacer: the views' drag listeners' reports told by the driver, no drag started
+Spacer.dragLeave: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Spacer.dragOver: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Spacer.dragStarting: ✓ dragAndDrop on Spacer: the views' drag listeners' reports told by the driver, no drag started
+Spacer.dragText: ✓ dragAndDrop on Spacer: the views' drag listeners' reports told by the driver, no drag started
+Spacer.drop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
+Spacer.droppedFileTypes: ✓ dropFiles on Spacer: the view's drag listener's report told the driver's documents, no drag started
+Spacer.filesDropped: ✓ dropFiles on Spacer: the view's drag listener's report told the driver's documents, no drag started
+Spacer.frameChanged: ✅
+Spacer.gridColumn: ✅
+Spacer.gridColumnSpan: ✅
+Spacer.gridRow: ✅
+Spacer.gridRowSpan: ✅
+Spacer.horizontalAlignment: ✅
+Spacer.margin: ✅
+Spacer.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+Spacer.panUpdated: ✅
+Spacer.panXChannel: ✅
+Spacer.panYChannel: ✅
+Spacer.pinchUpdated: ✅
+Spacer.pointerEntered: ✅
+Spacer.pointerExited: ✅
+Spacer.pointerMoved: ✅
+Spacer.pointerPressed: ✅
+Spacer.pointerReleased: ✅
+Spacer.swipeDirection: ✅
+Spacer.swipeThreshold: ✅
+Spacer.swiped: ✅
+Spacer.tapCount: ✅
+Spacer.tapped: ✅
+Spacer.verticalAlignment: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started
 Stepper.area: ✅
 Stepper.canDrag: ✓ dragAndDrop on Stepper: the views' drag listeners' reports told by the driver, no drag started

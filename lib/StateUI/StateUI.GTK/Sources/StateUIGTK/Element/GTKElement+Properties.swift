@@ -8,7 +8,8 @@
 extension GTKElement {
     func makeView() -> GTKView? {
         if type == .itemsView, let host { return GTKItemsView(cells: ItemsCells(element, in: host.runtime)) }
-        if element.isDrawnByParent(in: GTKRegistrations.registry) { return nil }
+        if element.isDrawnByParent(in: GTKRegistrations.registry) || element.isViewless { return nil }
+        if type == .divider { return GTKDividerView(inRow: element.parent?.type == .hStack) }
         if let registered = GTKRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
@@ -17,8 +18,6 @@ extension GTKElement {
             if let scroll = registered as? GTKScrollView { follow(scroll) }
             return registered
         }
-
-        guard !NodeType.viewlessTypes.contains(type) else { return nil }
 
         switch type {
         case .page: return GTKSingleChildView()

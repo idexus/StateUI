@@ -93,6 +93,34 @@ wrapped text is measured at the width it will have; a horizontal stack offers
 none, because the width is what the children decide. A hidden child takes no
 room and no spacing.
 
+## A spacer
+
+A child that grows - a `Spacer` - takes the room the stack's shown children
+leave along its axis: the stack's length less their natural lengths, their
+margins and the spacing, shared alike among the spacers, none where nothing is
+left. It measures as no room of its own, so a stack sized by its children
+leaves it none, and its least and most lengths still bound it. A spacer that
+states its length along the axis grows no more: it is a child of that length
+like any other (`LayoutValues.grows(along:)`). Every host stands an empty view
+there; the arithmetic is the host layer's, so the room a spacer takes is the
+same on every host. The Web hands its stacks to the browser, so there the same
+rule is written as CSS: a spacer is a flex item growing from nothing
+(`flex: 1 1 0`), which the browser shares alike.
+
+## A divider in a stack
+
+A `Divider` is a menu's separator under a menu, a context menu or a menu bar,
+and a view anywhere else (`NodeType.isViewless(_:under:)`): the toolkit's own
+line, across its stack and as thick as the toolkit draws one. A host asks
+whether an element is viewless before it asks its registry for a view, so a
+menu's divider never gets one.
+
+Each host draws the line its toolkit offers: AppKit's separator box, a hairline
+in UIKit's separator colour, the Android theme's list divider, WinUI's divider
+stroke, GTK's separator - turned to run down a row - and the document's rule
+on the Web. A hairline is one pixel, a third of a point on a dense screen, so
+a test reads its thickness unrounded.
+
 ## Grids
 
 A grid has as many rows and columns as it defines, or as its children reach,

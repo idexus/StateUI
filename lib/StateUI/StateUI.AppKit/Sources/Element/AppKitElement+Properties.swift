@@ -9,7 +9,7 @@ import AppKit
 /// The native view: made, and given the element's properties.
 extension AppKitElement {
     func makeView() -> NSView? {
-        if element.isDrawnByParent(in: AppKitRegistrations.registry) { return nil }
+        if element.isDrawnByParent(in: AppKitRegistrations.registry) || element.isViewless { return nil }
         if let registered = AppKitRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
@@ -38,7 +38,7 @@ extension AppKitElement {
 
         case .modalStack, .overlay, .titleView, .toolbarItemGroup, .menuBar, .contextMenu,
              .menu, .menuItem,
-             .divider, .textSpans, .textSpan:
+             .textSpans, .textSpan:
             return nil
 
         case .navigationStack:
