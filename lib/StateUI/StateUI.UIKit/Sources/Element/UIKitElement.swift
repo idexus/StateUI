@@ -42,6 +42,10 @@ final class UIKitElement: NativeElement {
     /// A menu item's or a toolbar item's action, as UIKit was last handed it.
     var menuAction: UIAction?
 
+    /// A menu's entry stating a shortcut, as UIKit was last handed it: a key command, which UIKit shows the shortcut
+    /// beside.
+    var menuCommand: UIKeyCommand?
+
     /// What every action made for this element is identified by: UIKit keeps it in the copies it makes of an action.
     var actionIdentifier: UIAction.Identifier { UIAction.Identifier("stateui.action.\(element.mount)") }
 

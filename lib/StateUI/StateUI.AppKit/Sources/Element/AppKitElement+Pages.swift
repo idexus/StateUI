@@ -114,6 +114,9 @@ enum AppKitMenus {
             string: entry.title, attributes: entry.isDestructive ? [.foregroundColor: NSColor.systemRed] : [:])
 
         item.state = entry.isOn == true ? .on : .off
+        let spelled = entry.keyboardShortcut.map(AppKitKeys.equivalent(of:)) ?? (key: "", modifiers: [])
+        item.keyEquivalent = spelled.key
+        item.keyEquivalentModifierMask = spelled.modifiers
         if entry.kind == .item {
             item.target = element
             item.action = #selector(AppKitElement.clicked(_:))

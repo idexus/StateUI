@@ -93,6 +93,15 @@ final class WebMenu {
         WebRelay.setText(words.node, entry.title)
         WebRelay.insert(words.node, into: button.node, at: entry.icon == nil ? 0 : 1)
         owned.append(words)
+        if let shortcut = entry.keyboardShortcut {
+            // Shown at the item's end; assistive technology hears it from `aria-keyshortcuts`.
+            button.attribute("aria-keyshortcuts", WebKeys.spelled(shortcut, onApple: WebRelay.onApple))
+            let keys = WebDOMView(tag: "kbd")
+            keys.attribute("aria-hidden", "true")
+            WebRelay.setText(keys.node, WebKeys.shown(shortcut, onApple: WebRelay.onApple))
+            WebRelay.insert(keys.node, into: button.node, at: entry.icon == nil ? 1 : 2)
+            owned.append(keys)
+        }
         place(button)
         return button
     }

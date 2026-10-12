@@ -53,7 +53,7 @@ public enum StateUIAppKit {
     /// menus join it as it shows.
     /// Design: docs/design/platforms/appkit/runtime.md#the-menu-bar
     static func mainMenu(newWindow: AnyObject?) -> NSMenu {
-        let main = NSMenu()
+        let main = AppKitMainMenu()
         let name = ProcessInfo.processInfo.processName
 
         let applicationMenu = NSMenu()

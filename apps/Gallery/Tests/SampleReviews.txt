@@ -88,7 +88,7 @@ SearchFieldSample.swift 78f8081ecd423749
 SearchSample.swift 38388654add4726f
 SemanticsSample.swift e16af7b7a2b5ef64
 ShapesSample.swift 6107589125bcb192
-ShortcutSample.swift 61a39ecb73b01015
+ShortcutSample.swift daf4ef581131770c
 SizingSample.swift 1ced92cea7dceeeb
 SliderSample.swift cf5772598d1a84df
 SplitViewSample.swift b40f78a09df11956

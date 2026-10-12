@@ -19,6 +19,11 @@
                 Aspects.holds(MenuItemElementContract.icon, on: element, "test_dot.png", then: "test_wide.png"),
                 Aspects.holds(MenuItemElementContract.isDestructive, on: element, false, then: true),
                 Aspects.holds(MenuItemElementContract.isEnabled, on: element, true, then: false),
+                Aspects.holds(
+                    MenuItemElementContract.keyboardShortcut, on: element, KeyboardShortcut("s"),
+                    then: KeyboardShortcut("s", modifiers: [.primary, .shift])),
+                chosenByItsShortcut(element),
+                givesWayToTyping(element),
             ]
         }
     }
@@ -72,6 +77,99 @@
             s.settle { heard.values == ["item"] }
             s.expect(heard.values, ["item"], "in reach, it runs its handler")
         }
+    }
+}
+
+extension MenuItemElementTests {
+    /// A shortcut chooses the item stating it while its window is in front - a bar's item, a menu bar's entry - and
+    /// one out of reach nothing; a context menu's entry only shows its shortcut, and a press chooses nothing.
+    @MainActor
+    static func chosenByItsShortcut(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aShortcutChoosesTheItemInItsWindow", proves: [
+            Covered(MenuItemElementContract.keyboardShortcut, on: element),
+        ], needs: [Covered(MenuItemElementContract.clicked, on: element)]) { s in
+            let heard = Received<String>()
+            s.start { Shortcuts.page(element, heard: heard) }
+
+            try s.perform(.pressKeys(KeyboardShortcut("s", modifiers: [.primary, .shift])), on: s.element("save"))
+            s.settle { heard.values == ["save"] }
+            s.expect(heard.values, ["save"], "the shortcut chooses its item")
+
+            try s.perform(.pressKeys(KeyboardShortcut("o")), on: s.element("open"))
+            s.turn()
+            s.expect(heard.values, ["save"], "an item out of reach is chosen by nothing")
+            guard element == "MenuItem" else { return }
+
+            try s.perform(.pressKeys(KeyboardShortcut("c")), on: s.element("copy"))
+            s.turn()
+            s.expect(heard.values, ["save"], "a context menu's entry only shows its shortcut")
+        }
+    }
+
+    /// A key held alone is the character a field being typed into writes, not the item's shortcut.
+    @MainActor
+    static func givesWayToTyping(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aBareShortcutGivesWayToAFieldBeingTypedInto", proves: [
+            Covered(MenuItemElementContract.keyboardShortcut, on: element),
+        ], needs: [
+            Covered(MenuItemElementContract.clicked, on: element),
+            Covered(VisualElementContract.focus, on: "TextField"),
+        ]) { s in
+            let heard = Received<String>()
+            s.start { Shortcuts.page(element, heard: heard) }
+            let field = try s.element("field")
+
+            try s.perform(.focus, on: field)
+            try s.settle { try s.focused(field) }
+            try s.perform(.pressKeys(KeyboardShortcut("1", modifiers: [])), on: s.element("one"))
+            s.turn()
+            s.expect(heard.values, [], "the key is the field's, the item stays as it was")
+        }
+    }
+}
+
+/// A page with items of one kind stating shortcuts, each where an application puts it: "Save" on ⌘⇧S or Ctrl+Shift+S,
+/// "Open" out of reach on ⌘O, "One" on 1 alone beside a field - for a menu's entry on the window's menu bar - and a
+/// context menu's "Copy" on ⌘C beside them.
+@MainActor
+enum Shortcuts {
+    static func page(_ element: String, heard: Received<String>) -> ModifiedContent {
+        let content = VStack {
+            Text("Page").id("page")
+            TextField("").id("field")
+            if element == "MenuItem" {
+                Text("Row").contextMenu {
+                    MenuItem("Copy").keyboardShortcut("c").onClicked { heard.values.append("copy") }.id("copy")
+                }
+                .id("row")
+            }
+        }
+        if element == "ToolbarItem" {
+            let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                content.toolbar {
+                    ToolbarItem("Save").keyboardShortcut("s", modifiers: [.primary, .shift])
+                        .onClicked { heard.values.append("save") }.id("save")
+                    ToolbarItem("Open").keyboardShortcut("o").isEnabled(false)
+                        .onClicked { heard.values.append("open") }.id("open")
+                    ToolbarItem("One").keyboardShortcut("1", modifiers: [])
+                        .onClicked { heard.values.append("one") }.id("one")
+                }
+            } destination: { _ in Text("Pushed") }
+            return ModifiedContent(node: stack.node)
+        }
+        let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+            content.menuBar {
+                Menu("File") {
+                    MenuItem("Save").keyboardShortcut("s", modifiers: [.primary, .shift])
+                        .onClicked { heard.values.append("save") }.id("save")
+                    MenuItem("Open").keyboardShortcut("o").isEnabled(false)
+                        .onClicked { heard.values.append("open") }.id("open")
+                    MenuItem("One").keyboardShortcut("1", modifiers: [])
+                        .onClicked { heard.values.append("one") }.id("one")
+                }
+            }
+        } destination: { _ in Text("Pushed") }
+        return ModifiedContent(node: stack.node)
     }
 }
 

@@ -84,6 +84,7 @@ final class GTKDriver: HostDriver {
     private static let recordedMembers = ["padding", "background", "stroke", "lineWidth", "shape", "placeholderColor"]
 
     private static let byHostReasons = [
+        "read keyboardShortcut of ToolbarItem": "the host's own record: a header bar's button shows no shortcut",
         "read sidebarBackground of SplitView":
             "the class of the host's style sheet the sidebar wears: GTK reads back no background",
         "read flyoutBackground of SplitView":
@@ -148,6 +149,14 @@ final class GTKDriver: HostDriver {
     }
 
     func perform(_ act: UserAct, on element: MountedElement) throws {
+        if case .pressKeys(let shortcut) = act, [.toolbarItem, .menuItem].contains(element.type) {
+            // The window's shortcut for the keys, run as its controller runs it for them.
+            guard let window = renderer?.windows.first(where: { window in
+                window.element.map { owner in element.enclosing(type: .window) === owner } == true
+            }) else { throw DriverCannot(act, on: element) }
+            _ = window.shortcuts.runForTesting(shortcut)
+            return
+        }
         if case .pressKeys(let shortcut) = act {
             // The shortcut's own action, run as its controller runs it for the key.
             guard let button = (element.native as? GTKElement)?.view as? GTKButtonView,

@@ -332,7 +332,7 @@ class WinUIView {
     /// Design: docs/design/platforms/winui/pages.md#menus
     func setContextMenu(_ menu: WinUIMenu) {
         menuActions = menu.actions
-        menu.relayed { stateui_winui_set_context_menu(handle, number, $0, $1, $2, $3, $4, $5, $6) }
+        menu.relayed { stateui_winui_set_context_menu(handle, number, $0, $1, $2, $3, $4, $5, $6, $7, $8, $9) }
     }
 
     /// The user holds the view down or lets it go: a scroller taken hold of, a button's press.

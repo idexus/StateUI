@@ -40,6 +40,7 @@ final class WebBarButton: WebDOMView {
         attribute("data-destructive", item.value(.isDestructive)?.bool == true ? "" : nil)
         attribute("data-identifier", item.value(.accessibilityIdentifier)?.string)
         attribute("aria-haspopup", item.type == .menu ? "menu" : nil)
+        attribute("aria-keyshortcuts", item.keyboardShortcut.map { WebKeys.spelled($0, onApple: WebRelay.onApple) })
     }
 
     override func detach() {

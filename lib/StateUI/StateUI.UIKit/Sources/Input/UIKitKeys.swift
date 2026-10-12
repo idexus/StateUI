@@ -12,14 +12,31 @@ import UIKit
 enum UIKitKeys {
     /// The key command pressing `shortcut`, running `action` on the responder that offers it.
     static func command(_ shortcut: KeyboardShortcut, action: Selector) -> UIKeyCommand {
+        let spelled = spelling(of: shortcut)
+        let command = UIKeyCommand(input: spelled.input, modifierFlags: spelled.flags, action: action)
+        command.wantsPriorityOverSystemBehavior = true
+        return command
+    }
+
+    /// A menu's entry stating `shortcut`, shown beside `title` as UIKit shows a key command's: `action` sent up the
+    /// responder chain with `entry`, the number the entry is known by. It asks no priority over text: a key giving way
+    /// to typing types into a field holding the keyboard.
+    static func entry(
+        _ shortcut: KeyboardShortcut, title: String, image: UIImage?, action: Selector, entry: UInt64
+    ) -> UIKeyCommand {
+        let spelled = spelling(of: shortcut)
+        return UIKeyCommand(
+            title: title, image: image, action: action, input: spelled.input, modifierFlags: spelled.flags,
+            propertyList: NSNumber(value: entry))
+    }
+
+    /// The input and the modifier flags spelling `shortcut`.
+    private static func spelling(of shortcut: KeyboardShortcut) -> (input: String, flags: UIKeyModifierFlags) {
         var flags: UIKeyModifierFlags = []
         if shortcut.modifiers.contains(.primary) { flags.insert(.command) }
         if shortcut.modifiers.contains(.shift) { flags.insert(.shift) }
         if shortcut.modifiers.contains(.alt) { flags.insert(.alternate) }
-        let input = shortcut.key.character.map { String($0) } ?? shortcut.key.named.flatMap { named[$0] } ?? ""
-        let command = UIKeyCommand(input: input, modifierFlags: flags, action: action)
-        command.wantsPriorityOverSystemBehavior = true
-        return command
+        return (shortcut.key.character.map { String($0) } ?? shortcut.key.named.flatMap { named[$0] } ?? "", flags)
     }
 
     /// The shortcut a key command presses; nil for an input naming no key StateUI knows.

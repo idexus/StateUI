@@ -52,9 +52,12 @@ final class WinUITitleBarView: WinUIView {
             WinUIStrings.withCStrings(actions.map(\.title)) { titles in
                 WinUIStrings.withCStrings(actions.map { $0.identifier ?? "" }) { identifiers in
                     WinUIStrings.withCStrings(actions.map { WinUIStrings.lines($0.icon) }) { icons in
+                        let spelled = actions.map { $0.shortcut.flatMap(WinUIKeys.spelled) ?? (key: 0, modifiers: 0) }
                         stateui_winui_title_bar_set_actions(
                             handle, titles, identifiers, icons, actions.map(\.showsWords), actions.map(\.isDestructive),
-                            places, leading, actions.map(\.isEnabled), Int32(actions.count))
+                            places, leading, actions.map(\.isEnabled), spelled.map(\.key), spelled.map(\.modifiers),
+                            actions.map { $0.shortcut.map(KeyboardShortcuts.givesWayToTyping) ?? false },
+                            Int32(actions.count))
                     }
                 }
             }

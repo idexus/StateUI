@@ -97,11 +97,31 @@ final class UIKitDriver: HostDriver {
     /// A menu item's action in the menu UIKit is handed now - the menu bar's, or the context menu of the view it
     /// stands under.
     func menuAction(of element: MountedElement) -> UIAction? {
+        builtMenus(around: element)
+        return (element.native as? UIKitElement)?.menuAction
+    }
+
+    /// The key commands among `elements` and in their submenus, in order.
+    static func keyCommands(in elements: [UIMenuElement]) -> [UIKeyCommand] {
+        elements.flatMap { element -> [UIKeyCommand] in
+            if let command = element as? UIKeyCommand { return [command] }
+            return (element as? UIMenu).map { keyCommands(in: $0.children) } ?? []
+        }
+    }
+
+    /// A menu's entry stating a shortcut, as the menu UIKit is handed now holds it: a key command.
+    func menuCommand(of element: MountedElement) -> UIKeyCommand? {
+        builtMenus(around: element)
+        return (element.native as? UIKitElement)?.menuCommand
+    }
+
+    /// Builds the menus `element` stands in, as UIKit asks for them: the menu bar's, or the context menu of the view
+    /// it stands under.
+    private func builtMenus(around element: MountedElement) {
         _ = renderer?.menuBar
         var holder = element.parent
         while let each = holder, (each.native as? UIKitElement)?.view == nil { holder = each.parent }
         _ = (holder?.native as? UIKitElement)?.builtContextMenu
-        return (element.native as? UIKitElement)?.menuAction
     }
 
     /// What the hosts wrote to their log since the driver last started one.
@@ -204,11 +224,18 @@ final class UIKitDriver: HostDriver {
         let view = (element.native as? UIKitElement)?.view
         switch (act, view) {
         case (.pressKeys(let shortcut), _):
-            // The key command the element's window offers for the shortcut, performed as UIKit performs it.
-            guard let root = Self.windowRoot(of: element),
-                  let command = root.keyCommands?.first(where: { UIKitKeys.shortcut(of: $0) == shortcut })
-            else { return }
-            root.pressedShortcut(command)
+            // The key command the element's window offers for the shortcut, performed as UIKit performs it - else a
+            // menu bar's entry's, which UIKit sends up the responder chain to the root after text takes a key typed.
+            guard let root = Self.windowRoot(of: element) else { return }
+            if let command = root.keyCommands?.first(where: { UIKitKeys.shortcut(of: $0) == shortcut }) {
+                root.pressedShortcut(command)
+            } else if let command = Self.keyCommands(in: renderer?.menuBar ?? []).first(where: {
+                          UIKitKeys.shortcut(of: $0) == shortcut
+                      }),
+                      !command.attributes.contains(.disabled),
+                      !(KeyboardShortcuts.givesWayToTyping(shortcut) && UIKitFirstResponder.isTyping) {
+                root.chooseMenuEntry(command)
+            }
         case (.tap(let count), let map as UIKitMapView):
             // A tap on a map is the map's, and the view's where it hears taps too.
             try touch(element) { listening, view in Self.tap(listening, on: view, count: count) }
@@ -313,7 +340,12 @@ final class UIKitDriver: HostDriver {
             try performOnPages(act, on: element)
         case (.activate, _) where element.type == .toolbarItem: try performOnPages(act, on: element)
         case (.activate, _) where element.type == .menuItem:
-            // The item as the menu UIKit is handed shows it, taken where it can be.
+            // The item as the menu UIKit is handed shows it, taken where it can be: a key command up the responder
+            // chain to the window's root, an action to its handler.
+            if let command = menuCommand(of: element) {
+                if !command.attributes.contains(.disabled) { Self.windowRoot(of: element)?.chooseMenuEntry(command) }
+                return
+            }
             guard let action = menuAction(of: element) else { throw DriverCannot(act, on: element) }
             if !action.attributes.contains(.disabled) { UIButton().sendAction(action) }
         case (.tap(let count), _): try touch(element) { listening, view in Self.tap(listening, on: view, count: count) }

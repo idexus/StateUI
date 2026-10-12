@@ -52,6 +52,14 @@ namespace stateui {
     xaml::Media::Brush oval(StateUIBrush const &fill, StateUIBrush const &stroke, double lineWidth, double share,
                             double width, double height);
 
+    /// WinUI's accelerator for `key` and `modifiers` - a VirtualKey and VirtualKeyModifiers - which invokes its
+    /// owner while its window is in front; one giving way to typing invokes nothing while a field the user types
+    /// into holds the keyboard.
+    xaml::Input::KeyboardAccelerator accelerator(int32_t key, int32_t modifiers, bool givesWayToTyping);
+
+    /// The words WinUI shows beside an item for an accelerator - `Ctrl+Shift+S`.
+    winrt::hstring acceleratorText(int32_t key, int32_t modifiers);
+
     /// Whether the view numbered `view` listens for taps; and a press assistive technology made on it, told as
     /// a tap.
     bool hearsTaps(int64_t view);

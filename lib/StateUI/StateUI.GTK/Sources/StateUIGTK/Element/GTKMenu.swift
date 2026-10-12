@@ -76,7 +76,8 @@ final class GTKMenu {
 
     /// Adds an item, or a submenu holding its own entries.
     private func add(_ entry: MenuEntry, to menu: OpaquePointer) {
-        drawn.append((entry.isEnabled ? "" : "!") + entry.title + (entry.kind == .submenu ? "[" : ""))
+        drawn.append((entry.isEnabled ? "" : "!") + entry.title + (entry.keyboardShortcut.map { " \($0)" } ?? "")
+            + (entry.kind == .submenu ? "[" : ""))
         if entry.kind == .submenu {
             let submenu = g_menu_new()!
             add(entry.entries, to: submenu)
@@ -114,6 +115,13 @@ final class GTKMenu {
         g_action_map_add_action(OpaquePointer(actions), action)
         g_object_unref(UnsafeMutableRawPointer(action))
         let item = g_menu_item_new(entry.title, Self.actionGroup + "." + name)!
+        if let shortcut = entry.keyboardShortcut {
+            // Shown beside the words; the keys themselves are the window's (`GTKWindowShortcuts`).
+            let spelled = GTKKeys.spelled(shortcut)
+            let accelerator = gtk_accelerator_name(spelled.keyval, spelled.modifiers)!
+            g_menu_item_set_attribute_value(item, "accel", g_variant_new_string(accelerator))
+            g_free(accelerator)
+        }
         g_menu_append_item(menu, item)
         g_object_unref(UnsafeMutableRawPointer(item))
     }

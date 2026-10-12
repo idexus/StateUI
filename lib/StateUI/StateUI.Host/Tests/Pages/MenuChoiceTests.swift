@@ -31,4 +31,24 @@ final class MenuChoiceTests: XCTestCase {
         XCTAssertNil(entries.first(id: .manual("plain"))?.turnsWhenChosen, "an entry standing neither way is only clicked")
         XCTAssertEqual(MenuEntry.entries(of: entries).map(\.isOn), [true, false, nil])
     }
+
+    /// An entry carries the shortcut its item states, for a host to show beside its words; a submenu and a line carry
+    /// none.
+    func testAnEntryCarriesItsItemsShortcut() throws {
+        let runtime = HostRuntime.still()
+        var save = HostPatch(id: .manual("save"), type: .menuItem)
+        save.properties = [.keyboardShortcut: KeyboardShortcut("s", modifiers: [.primary, .shift]).propValue]
+        var menu = HostPatch(id: .manual("menu"), type: .contextMenu)
+        menu.children = .arranged([
+            save, HostPatch(id: .manual("plain"), type: .menuItem), HostPatch(id: .manual("line"), type: .divider),
+        ])
+        var root = HostPatch(id: .manual("root"), type: .text)
+        root.children = .arranged([menu])
+        runtime.tree.apply(root, complete: true)
+        let entries = try XCTUnwrap(runtime.tree.root?.first(id: .manual("menu")))
+
+        XCTAssertEqual(
+            MenuEntry.entries(of: entries).map(\.keyboardShortcut),
+            [KeyboardShortcut("s", modifiers: [.primary, .shift]), nil, nil])
+    }
 }

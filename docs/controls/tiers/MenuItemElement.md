@@ -30,4 +30,5 @@ How each of them realizes these members is on its own page.
 | `icon` | property | `ImageSource` | adaptive |
 | `isDestructive` | property | `Bool` | adaptive |
 | `isEnabled` | property | `Bool` | native |
+| `keyboardShortcut` | property | `KeyboardShortcut` | native |
 | `text` | property | `String` | native |

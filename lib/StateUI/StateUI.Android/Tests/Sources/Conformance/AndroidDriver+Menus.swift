@@ -84,7 +84,7 @@ extension AndroidDriver {
                 Self.testMenus, Self.heldById, .object(TestContext.context.reference), .object(menu.reference), .int(id)
             ).map { Java.text($0) }
         }
-        guard let lines = held?.split(separator: "\n", omittingEmptySubsequences: false), lines.count == 5 else {
+        guard let lines = held?.split(separator: "\n", omittingEmptySubsequences: false), lines.count == 7 else {
             throw DriverCannot(reading: property, of: element)
         }
         switch property {
@@ -92,6 +92,9 @@ extension AndroidDriver {
         case .isEnabled: return (lines[1] == "1").propValue
         case .isDestructive: return (lines[2] == "1").propValue
         case .isOn: return (lines[4] == "1").propValue
+        case .keyboardShortcut:
+            guard let key = Int32(lines[5]), key != 0, let meta = Int32(lines[6]) else { return HostValue.nothing }
+            return AndroidKeys.shortcut(code: 0, character: key, meta: meta)?.propValue
         case .icon: throw DriverCannot("read a picture's name", because: "Android's item keeps its picture, not its name")
         default: throw DriverCannot(reading: property, of: element)
         }

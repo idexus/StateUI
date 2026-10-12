@@ -233,7 +233,7 @@ extern "C" int32_t stateui_winui_title_bar_words(StateUIObjectRef handle) {
 extern "C" void stateui_winui_title_bar_set_actions(
     StateUIObjectRef handle, char const *const *texts, char const *const *identifiers, char const *const *icons,
     bool const *words, bool const *destructive, int32_t const *groups, int32_t leadingGroups, bool const *enabled,
-    int32_t count
+    int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t count
 ) {
     try {
         auto bar = borrow<controls::TitleBar>(handle);
@@ -264,6 +264,7 @@ extern "C" void stateui_winui_title_bar_set_actions(
             if (destructive[index])
                 markDestructive(button, {L"AppBarButtonForeground", L"AppBarButtonForegroundPointerOver",
                                          L"AppBarButtonForegroundPressed"});
+            if (keys[index] != 0) button.KeyboardAccelerators().Append(accelerator(keys[index], modifiers[index], givesWay[index]));
             button.Click(guarded("handling Click", [view, index](IInspectable const &, xaml::RoutedEventArgs const &) {
                 callbacks.chosen(view, index);
             }));

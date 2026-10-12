@@ -57,5 +57,25 @@ final class AppKitMenuBarTests: XCTestCase {
         XCTAssertEqual(Array(main.items.map(\.title).dropFirst()), ["File", "Edit", "Window"])
         XCTAssertEqual(file.items.map(\.title), ["New Window"])
     }
+
+    /// A page's entry stands on the bar with its shortcut whole - its key and every key held with it - so the bar
+    /// shows and answers ⌘⇧S, not ⌘S.
+    @MainActor
+    func testAPagesEntryStandsOnTheBarWithItsShortcutWhole() throws {
+        let renderer = AppKitRenderer.running {
+            Text("Page").menuBar {
+                Menu("Format") { MenuItem("Save As").keyboardShortcut("s", modifiers: [.primary, .shift]) }
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let main = StateUIAppKit.mainMenu(newWindow: nil)
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+
+        renderer.installPageMenus(controller.pageMenus, into: main)
+        defer { renderer.installPageMenus([], into: main) }
+        let format = try XCTUnwrap(main.items.first { $0.title == "Format" }?.submenu)
+        XCTAssertEqual(format.items.first?.keyEquivalent, "s")
+        XCTAssertEqual(format.items.first?.keyEquivalentModifierMask, [.command, .shift])
+    }
 }
 #endif

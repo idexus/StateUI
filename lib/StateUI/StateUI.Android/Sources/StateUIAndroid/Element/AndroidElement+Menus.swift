@@ -13,7 +13,8 @@ extension AndroidElement {
             text: value(.text)?.string ?? "",
             picture: value(.icon)?.string.flatMap { $0.isEmpty ? nil : $0 },
             isEnabled: element.isEffectivelyEnabled,
-            isDestructive: value(.isDestructive)?.bool == true)
+            isDestructive: value(.isDestructive)?.bool == true,
+            shortcut: element.keyboardShortcut)
     }
 
     /// Offers the view's context menu while it carries a menu slot: the slot's entries, written as the user
@@ -45,7 +46,7 @@ extension AndroidElement {
                 items.append(element)
                 return .item(AndroidMenu.Item(
                     text: entry.title, isEnabled: entry.isEnabled, isDestructive: entry.isDestructive,
-                    isOn: entry.isOn))
+                    isOn: entry.isOn, shortcut: entry.keyboardShortcut))
             case .submenu:
                 return .menu(entry.title, isEnabled: entry.isEnabled, menuEntries(entry.entries, items: &items))
             case .separator:

@@ -493,9 +493,10 @@ extension WinUIDriver {
         switch name {
         case "text": return .string(shown[place].caption)
         case "isEnabled": return shown[place].enabled.propValue
-        case "accessibilityIdentifier", "icon", "isDestructive", "isOn":
+        case "accessibilityIdentifier", "icon", "isDestructive", "isOn", "keyboardShortcut":
             guard kind == .menuItem else { return nil }
-            let what = ["icon": "icon", "isDestructive": "destructive", "isOn": "checked"][name] ?? "identifier"
+            let what = ["icon": "icon", "isDestructive": "destructive", "isOn": "checked", "keyboardShortcut": "shortcut"][name]
+                ?? "identifier"
             let items = WinUIStrings.read { stateui_winui_menus_items(owner.handle, what, $0, $1) }
                 .split(separator: ";", omittingEmptySubsequences: false).map(String.init)
             let index = menuPlace(of: element)?.index ?? 0
@@ -503,6 +504,7 @@ extension WinUIDriver {
             switch name {
             case "icon": return Self.picture(items[index], named: element)
             case "isDestructive", "isOn": return (items[index] == "1").propValue
+            case "keyboardShortcut": return Self.shortcut(items[index])
             default: return .string(items[index])
             }
         default: return nil
@@ -525,8 +527,16 @@ extension WinUIDriver {
         case "isDestructive": return (try action("destructive") == "1").propValue
         case "showsText": return (try action("wordsShown") == "1").propValue
         case "accessibilityIdentifier": return .string(try action("identifier"))
+        case "keyboardShortcut": return Self.shortcut(try action("shortcut"))
         default: return nil
         }
+    }
+
+    /// The shortcut an accelerator's key and modifiers spell, read as "key,modifiers"; nothing for none.
+    private static func shortcut(_ read: String) -> HostValue? {
+        let numbers = read.split(separator: ",").compactMap { Int32($0) }
+        guard numbers.count == 2 else { return HostValue.nothing }
+        return WinUIKeys.shortcut(key: numbers[0], modifiers: numbers[1])?.propValue
     }
 
     /// The bar `page`'s window shows: its groups at each edge and what stands behind "more", each action by its

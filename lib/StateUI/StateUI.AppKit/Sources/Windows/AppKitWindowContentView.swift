@@ -35,6 +35,13 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
         return band
     }()
 
+    /// What takes a key equivalent no view of the window took - a bar's item stating it.
+    var unclaimedKey: ((NSEvent) -> Bool)?
+
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        super.performKeyEquivalent(with: event) || unclaimedKey?(event) == true
+    }
+
     /// The window's drags between views, where this view is the window's root.
     /// Design: docs/design/platforms/appkit/input.md#a-drag-between-views
     var drops: AppKitDrops? {

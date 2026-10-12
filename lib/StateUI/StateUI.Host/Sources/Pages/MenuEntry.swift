@@ -44,6 +44,10 @@
     /// Whether an item stands checked, or not; nil for one standing neither way, which shows no mark.
     public let isOn: Bool?
 
+    /// The shortcut an item states, shown beside its words; nil for none, and for a submenu or a line.
+    /// Design: docs/design/types/keyboard.md#on-each-platform
+    public let keyboardShortcut: KeyboardShortcut?
+
     /// A submenu's entries, in order.
     public let entries: [MenuEntry]
 
@@ -89,6 +93,7 @@
         isDestructive = element?.value(.isDestructive)?.bool == true
         identifier = element?.value(.accessibilityIdentifier)?.string
         isOn = kind == .item ? element?.value(.isOn)?.bool : nil
+        keyboardShortcut = kind == .item ? element?.keyboardShortcut : nil
         self.entries = entries
     }
 }

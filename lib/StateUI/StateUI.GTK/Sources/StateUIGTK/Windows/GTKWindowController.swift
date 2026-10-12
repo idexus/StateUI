@@ -23,15 +23,23 @@ final class GTKWindowController {
     /// A sheet for each page the window's modal stack presents, the last on top.
     private(set) var sheets: [(element: MountedElement, sheet: GTKSheet)] = []
 
+    /// The shortcuts of the window's bar items and menu bar entries.
+    let shortcuts: GTKWindowShortcuts
+
+    private weak var runtime: HostRuntime?
+
     init(_ element: MountedElement, application: UnsafeMutablePointer<GtkApplication>) {
         self.element = element
         window = GTKWindow(application: application)
+        shortcuts = GTKWindowShortcuts(on: window.widget)
+        shortcuts.onPressed = { [weak self] in self?.choose(by: $0) == true }
     }
 
     /// Shows what the element asks for now. The host layer tells the page the user sees and the window made before
     /// the window is first shown.
     func present(_ element: MountedElement, in runtime: HostRuntime) {
         self.element = element
+        self.runtime = runtime
         let changes = presentation.show(element, in: runtime.lifecycle)
         if let traits = changes.traits { window.setBackground(traits.background.painted) }
         if let frame = changes.frame { window.request(frame) }
@@ -89,6 +97,18 @@ final class GTKWindowController {
         }
         let title = WindowChrome(window: element, arrangement: presentation.arrangement).title
         window.setTitle(title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string)
+        shortcuts.hold(KeyboardShortcuts.stated(under: element))
+    }
+
+    /// A bar's item or a menu bar's entry chosen by a shortcut pressed in the window, unless it gives way to typing
+    /// while a field is typed into; a button's shortcut is its own controller's. Whether one took it.
+    private func choose(by shortcut: KeyboardShortcut) -> Bool {
+        guard let element, let runtime,
+              let target = KeyboardShortcuts.target(of: shortcut, under: element), target.type != .button,
+              !(KeyboardShortcuts.givesWayToTyping(shortcut) && GTKKeys.typing(in: window.widget))
+        else { return false }
+        target.chosen(in: runtime)
+        return true
     }
 
     /// Goes the way back the window offers (`WindowPresentation.wayBack`), as the user does: a stack's top page goes

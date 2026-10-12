@@ -524,17 +524,21 @@ int32_t stateui_winui_window_sheets(StateUIObjectRef window);
 
 /// A view's context menu: `count` entries, each `kinds`' 0 an item, 1 a separator, 2 a submenu opening, 3 it closing,
 /// with its caption, whether it can be chosen, the identifier automation finds it by (empty for none), the files its
-/// picture may stand in - each ended by a line feed, empty for none - and whether choosing it destroys something; an
-/// item's choice told through `menuChosen` by its place among the items. None takes the menu away.
+/// picture may stand in - each ended by a line feed, empty for none - whether choosing it destroys something, and an
+/// item's shortcut, its key 0 for none (`stateui_winui_set_shortcut`), shown beside it; an item's choice told through
+/// `menuChosen` by its place among the items. None takes the menu away.
 void stateui_winui_set_context_menu(StateUIObjectRef element, int64_t view, int32_t const *kinds,
                                     char const *const *titles, bool const *enabled, char const *const *identifiers,
-                                    char const *const *icons, bool const *destructive, int32_t count);
+                                    char const *const *icons, bool const *destructive, int32_t const *keys,
+                                    int32_t const *modifiers, bool const *givesWay, int32_t count);
 
-/// A window's menu bar: WinUI's MenuBar, written as a context menu is, each menu at the top one of the bar's own.
+/// A window's menu bar: WinUI's MenuBar, written as a context menu is, each menu at the top one of the bar's own, an
+/// item's shortcut pressing it while the window is in front.
 StateUIObjectRef stateui_winui_menu_bar_make(int64_t view);
 void stateui_winui_menu_bar_set(StateUIObjectRef bar, int64_t view, int32_t const *kinds, char const *const *titles,
                                 bool const *enabled, char const *const *identifiers, char const *const *icons,
-                                bool const *destructive, int32_t count);
+                                bool const *destructive, int32_t const *keys, int32_t const *modifiers,
+                                bool const *givesWay, int32_t count);
 
 /// Paints a menu bar as one of the window's bars: its background, its menus' words - `words` 1 light, 2 dark, 0 the
 /// theme's - and the platform's own again where none is given.
@@ -550,8 +554,9 @@ int32_t stateui_winui_menus(StateUIObjectRef element, char *utf8, int32_t capaci
 void stateui_winui_menus_choose(StateUIObjectRef element, int32_t index);
 
 /// What those menus' items, submenus' included, hold of `what` - "identifier" the one automation finds each by, "icon"
-/// the file its picture shows, "destructive" 1 where its words stand in the theme's critical colour - in their
-/// order, ";" between, in UTF-8: what a test reads; the length it needs.
+/// the file its picture shows, "destructive" 1 where its words stand in the theme's critical colour, "shortcut" its
+/// accelerator's key and modifiers, "," between - in their order, ";" between, in UTF-8: what a test reads; the
+/// length it needs.
 int32_t stateui_winui_menus_items(StateUIObjectRef element, char const *what, char *utf8, int32_t capacity);
 
 /// A picker: WinUI's ComboBox - its choices, the one chosen (-1 for none, written only where `writeSelected`) told
@@ -818,12 +823,14 @@ void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, char c
 /// The page's actions on a window's chrome, in reading order: each one's words, the identifier automation finds it
 /// by (empty for none), the files its picture may stand in - each ended by a line feed, empty for none - whether its
 /// words stand beside its picture, whether choosing it destroys something, its group's place - the first
-/// `leadingGroups` at the bar's leading edge, the others at its trailing edge, -1 behind "more" - and whether it
-/// can be chosen. A group stands apart from the one before it; a press tells the action's place in the list.
+/// `leadingGroups` at the bar's leading edge, the others at its trailing edge, -1 behind "more" - whether it
+/// can be chosen, and its shortcut's key and modifiers (`stateui_winui_set_shortcut`), key 0 for none. A group stands
+/// apart from the one before it; a press tells the action's place in the list.
 void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const *texts,
                                          char const *const *identifiers, char const *const *icons, bool const *words,
                                          bool const *destructive, int32_t const *groups, int32_t leadingGroups,
-                                         bool const *enabled, int32_t count);
+                                         bool const *enabled, int32_t const *keys, int32_t const *modifiers,
+                                         bool const *givesWay, int32_t count);
 
 /// What a test reads: whether a title bar's words stand light (1), dark (2), or as the theme has them (0).
 int32_t stateui_winui_title_bar_words(StateUIObjectRef bar);

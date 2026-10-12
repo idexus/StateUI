@@ -50,6 +50,45 @@ namespace {
     }
 }
 
+xaml::Input::KeyboardAccelerator stateui::accelerator(int32_t key, int32_t modifiers, bool givesWayToTyping) {
+    xaml::Input::KeyboardAccelerator made;
+    made.Key(static_cast<VirtualKey>(key));
+    made.Modifiers(static_cast<VirtualKeyModifiers>(modifiers));
+    if (givesWayToTyping) {
+        made.Invoked(guarded("handling Invoked",
+            [](xaml::Input::KeyboardAccelerator const &, xaml::Input::KeyboardAcceleratorInvokedEventArgs const &args) {
+            // Handled here, the accelerator invokes nothing: the key is the field's.
+            auto owner = args.Element().try_as<xaml::UIElement>();
+            if (owner && typing(owner)) args.Handled(true);
+        }));
+    }
+    return made;
+}
+
+winrt::hstring stateui::acceleratorText(int32_t key, int32_t modifiers) {
+    std::wstring words;
+    // The modifiers' bits are VirtualKeyModifiers': Control 1, Menu (Alt) 2, Shift 4.
+    if (modifiers & 1) words += L"Ctrl+";
+    if (modifiers & 2) words += L"Alt+";
+    if (modifiers & 4) words += L"Shift+";
+    if ((key >= 'A' && key <= 'Z') || (key >= '0' && key <= '9')) {
+        words += static_cast<wchar_t>(key);
+    } else if (key >= VK_F1 && key <= VK_F12) {
+        words += L"F" + std::to_wstring(key - VK_F1 + 1);
+    } else {
+        switch (key) {
+        case VK_RETURN: words += L"Enter"; break;
+        case VK_ESCAPE: words += L"Esc"; break;
+        case VK_BACK: words += L"Backspace"; break;
+        case VK_UP: words += L"Up"; break;
+        case VK_DOWN: words += L"Down"; break;
+        case VK_LEFT: words += L"Left"; break;
+        case VK_RIGHT: words += L"Right"; break;
+        }
+    }
+    return winrt::hstring(words);
+}
+
 extern "C" void stateui_winui_set_shortcut(
     StateUIObjectRef handle, int32_t key, int32_t modifiers, bool givesWayToTyping
 ) {
@@ -58,18 +97,7 @@ extern "C" void stateui_winui_set_shortcut(
         auto accelerators = element.KeyboardAccelerators();
         accelerators.Clear();
         if (key == 0) return;
-        xaml::Input::KeyboardAccelerator accelerator;
-        accelerator.Key(static_cast<VirtualKey>(key));
-        accelerator.Modifiers(static_cast<VirtualKeyModifiers>(modifiers));
-        if (givesWayToTyping) {
-            accelerator.Invoked(guarded("handling Invoked",
-                [](xaml::Input::KeyboardAccelerator const &, xaml::Input::KeyboardAcceleratorInvokedEventArgs const &args) {
-                // Handled here, the accelerator presses nothing: the key is the field's.
-                auto owner = args.Element().try_as<xaml::UIElement>();
-                if (owner && typing(owner)) args.Handled(true);
-            }));
-        }
-        accelerators.Append(accelerator);
+        accelerators.Append(accelerator(key, modifiers, givesWayToTyping));
     } catch (...) {
         report("giving a control its shortcut");
     }

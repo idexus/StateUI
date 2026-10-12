@@ -17,14 +17,15 @@ enum AndroidMenu {
     }
 
     /// An item: its words and picture, whether it can be chosen, whether it cannot be undone, whether it stands
-    /// checked or not, whether it stands on the bar beside the title rather than in a menu, whether it shows its
-    /// words there beside its picture, and the bar's group it stands in.
+    /// checked or not, the shortcut it shows, whether it stands on the bar beside the title rather than in a menu,
+    /// whether it shows its words there beside its picture, and the bar's group it stands in.
     struct Item: Equatable {
         var text: String
         var picture: String?
         var isEnabled = true
         var isDestructive = false
         var isOn: Bool?
+        var shortcut: KeyboardShortcut?
         var onBar = false
         var withText = false
         var group = 0
@@ -68,7 +69,7 @@ enum AndroidMenu {
                 kinds.append(
                     (item.isEnabled ? 0 : disabled) | (item.isDestructive ? destructive : 0) | (item.onBar ? onBar : 0)
                         | (item.withText ? withText : 0) | (item.isOn != nil ? checkable : 0)
-                        | (item.isOn == true ? checked : 0))
+                        | (item.isOn == true ? checked : 0) | (item.shortcut.map(shown) ?? 0))
                 texts.append(item.text)
                 pictures.append(item.picture)
             case .menu(let text, let isEnabled, let inner):
@@ -83,7 +84,16 @@ enum AndroidMenu {
         }
     }
 
+    /// A shortcut as an item's entry carries it: the character its key writes in the upper half, and the
+    /// modifiers held with it; none for a key writing no character, which Android's menu shows none of.
+    private static func shown(_ shortcut: KeyboardShortcut) -> Int32 {
+        guard let scalar = shortcut.key.character?.unicodeScalars.first?.value, scalar <= 0x7FFF else { return 0 }
+        return Int32(scalar) << 16 | (shortcut.modifiers.contains(.primary) ? control : 0)
+            | (shortcut.modifiers.contains(.shift) ? shift : 0) | (shortcut.modifiers.contains(.alt) ? alt : 0)
+    }
+
     private static let menu: Int32 = 1, end: Int32 = 2, separator: Int32 = 3
     private static let disabled: Int32 = 4, destructive: Int32 = 8, onBar: Int32 = 16, withText: Int32 = 32
     private static let checkable: Int32 = 64, checked: Int32 = 128
+    private static let control: Int32 = 256, shift: Int32 = 512, alt: Int32 = 1024
 }

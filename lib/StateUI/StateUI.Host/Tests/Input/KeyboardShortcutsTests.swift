@@ -41,6 +41,21 @@ final class KeyboardShortcutsTests: XCTestCase {
         XCTAssertFalse(KeyboardShortcuts.acts(try XCTUnwrap(root.first(id: .manual("entry")))))
     }
 
+    /// The shortcuts a menu bar's entries state are found apart from the window's others: a toolkit whose main menu
+    /// holds them keeps them off the window.
+    func testAMenuBarsEntriesShortcutsAreFoundApart() throws {
+        let export = KeyboardShortcut("e", modifiers: [.primary, .shift])
+        var file = HostPatch(id: .manual("file"), type: .menu)
+        file.children = .arranged([element("export", .menuItem, export)])
+        var bar = HostPatch(id: .manual("bar"), type: .menuBar)
+        bar.children = .arranged([file])
+        let runtime = mount([element("save", .button, save), bar])
+        let root = try XCTUnwrap(runtime.tree.root)
+
+        XCTAssertEqual(KeyboardShortcuts.onMenuBar(under: root), [export], "a button's is not the bar's")
+        XCTAssertEqual(KeyboardShortcuts.stated(under: root), [save, export])
+    }
+
     /// A shortcut two elements in sight state is said; one stated once is not.
     func testAShortcutStatedTwiceIsFound() throws {
         let runtime = mount([

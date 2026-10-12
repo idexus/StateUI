@@ -60,6 +60,25 @@ hands the host each key no view takes - after the views, as Android's own
 shortcuts come after them. Both reach their element through the host layer's
 choice.
 
+A menu bar's entry and a bar's item are held the same way where the toolkit
+holds a shortcut on one: AppKit's key equivalent on the menu's item, WinUI's
+accelerator on the menu bar's item and on the bar's button, UIKit's key command
+in the main menu - which the window's root then leaves out of its own. Where
+the toolkit holds none - AppKit's toolbar item, GTK's menus and header bar,
+Android's bar - the window holds them: AppKit's content view after its key
+equivalents, a GTK shortcut controller on the window (`GTKWindowShortcuts`),
+Android's keys no view takes; the host layer then chooses the item. A key
+giving way to typing passes over a menu bar too: AppKit offers the bar every
+key before the field, so the bar (`AppKitMainMenu`) answers no key giving way
+while a field is typed into.
+
+A context menu's entry only shows its shortcut, in each toolkit's own place
+for it: AppKit's key equivalent, Android's alphabetic or numeric shortcut,
+GTK's `accel` attribute, WinUI's accelerator text over a disabled
+accelerator, the page's `kbd` beside `aria-keyshortcuts`. The window never
+presses it. UIKit's entry is a key command there too, but UIKit shows a key
+command's shortcut in the main menu alone, none in a context menu.
+
 A character no key of the letters or digits writes - punctuation - has no
 virtual key of its own on WinUI and no key code on Android: there it presses
 nothing.

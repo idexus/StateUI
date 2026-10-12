@@ -337,6 +337,17 @@
         return nil
     }
 
+    /// The element numbered `sought` in this subtree, this one first; nil where none is.
+    public func first(mount sought: UInt64) -> MountedElement? {
+        if mount == sought { return self }
+
+        for child in held {
+            if let found = child.first(mount: sought) { return found }
+        }
+
+        return nil
+    }
+
     /// Every element with key `sought` in this subtree.
     public func all(id sought: ElementID) -> [MountedElement] {
         var found = id == sought ? [self] : []

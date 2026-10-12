@@ -272,6 +272,7 @@ body {
 .stateui-menu > button:disabled { opacity: 0.45; cursor: default; }
 .stateui-menu > button[data-destructive] { color: #d92d20; }
 .stateui-menu > button[aria-haspopup]::after { content: "›"; margin-inline-start: auto; opacity: 0.6; }
+.stateui-menu > button kbd { margin-inline-start: auto; padding-inline-start: 24px; font: inherit; opacity: 0.6; }
 .stateui-menu > button img { width: 18px; height: 18px; }
 .stateui-menu > [role="menuitemcheckbox"]::before { content: ""; width: 1em; text-align: center; }
 .stateui-menu > [role="menuitemcheckbox"][aria-checked="true"]::before { content: "✓"; }

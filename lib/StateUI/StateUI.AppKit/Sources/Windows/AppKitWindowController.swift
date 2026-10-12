@@ -200,6 +200,7 @@ final class AppKitWindowController: NSWindowController {
         if window.contentView !== content {
             content.frame = NSRect(origin: .zero, size: window.contentLayoutRect.size)
             content.autoresizingMask = [.width, .height]
+            content.unclaimedKey = { [weak self] in self?.choosesABarItem(by: $0) ?? false }
             window.contentView = content
         }
         synchronizeModals(presentation.sheets.map(\.appKit))
@@ -295,6 +296,22 @@ final class AppKitWindowController: NSWindowController {
         } else if presentsWindow {
             window.orderFront(nil)
         }
+    }
+}
+
+extension AppKitWindowController {
+    /// A key equivalent no view took choosing the bar's item stating it (`KeyboardShortcuts`): AppKit holds no
+    /// shortcut on a toolbar's item. A button's and a menu bar entry's are AppKit's own.
+    /// Design: docs/design/types/keyboard.md#on-each-platform
+    func choosesABarItem(by event: NSEvent) -> Bool {
+        guard let element, let runtime = host?.runtime,
+              let shortcut = AppKitKeys.shortcut(
+                key: event.charactersIgnoringModifiers ?? "", modifiers: event.modifierFlags),
+              let target = KeyboardShortcuts.target(of: shortcut, under: element), target.type == .toolbarItem
+        else { return false }
+        if window?.firstResponder is NSText, KeyboardShortcuts.givesWayToTyping(shortcut) { return false }
+        target.chosen(in: runtime)
+        return true
     }
 }
 

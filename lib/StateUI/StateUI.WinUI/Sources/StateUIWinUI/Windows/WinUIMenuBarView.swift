@@ -26,7 +26,7 @@ final class WinUIMenuBarView: WinUIView {
         guard !menu.draws(like: shown) else { return }
 
         shown = menu
-        menu.relayed { stateui_winui_menu_bar_set(handle, number, $0, $1, $2, $3, $4, $5, $6) }
+        menu.relayed { stateui_winui_menu_bar_set(handle, number, $0, $1, $2, $3, $4, $5, $6, $7, $8, $9) }
     }
 
     /// Paints the bar as one of the window's bars: in the bars' colour, its menus' words in theirs - the colour

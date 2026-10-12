@@ -92,11 +92,17 @@ final class UIKitWindowController {
     func present(_ element: MountedElement, in runtime: HostRuntime) {
         let changes = presentation.show(element, in: runtime.lifecycle)
         root.shortcuts = { [weak element] typing in
-            element.map { KeyboardShortcuts.stated(under: $0, typing: typing) } ?? []
+            guard let element else { return [] }
+            let onMenuBar = KeyboardShortcuts.onMenuBar(under: element)
+            return KeyboardShortcuts.stated(under: element, typing: typing).filter { !onMenuBar.contains($0) }
         }
         root.onShortcut = { [weak runtime, weak element] shortcut in
             guard let runtime, let element else { return }
             KeyboardShortcuts.press(shortcut, under: element, in: runtime)
+        }
+        root.onMenuEntry = { [weak runtime, weak element] mount in
+            guard let runtime, let entry = element?.first(mount: mount), entry.isEffectivelyEnabled else { return }
+            entry.chosen(in: runtime)
         }
         if let traits = changes.traits {
             background = traits.background.painted.flatMap(UIColor.init(stateUI:))
@@ -174,6 +180,14 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
 
     @objc func pressedShortcut(_ command: UIKeyCommand) {
         UIKitKeys.shortcut(of: command).map { onShortcut?($0) }
+    }
+
+    /// What a menu's entry stating a shortcut does, chosen from its menu or pressed on the menu bar: the entry the
+    /// command is known by chosen.
+    var onMenuEntry: ((UInt64) -> Void)?
+
+    @objc func chooseMenuEntry(_ command: UIKeyCommand) {
+        (command.propertyList as? NSNumber).map { onMenuEntry?($0.uint64Value) }
     }
 
     /// The sheets last asked for before the window stood on screen, or while a sheet moved: UIKit presents over a

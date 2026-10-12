@@ -40,15 +40,29 @@ enum UIKitMenus {
     /// The menus held out of reach - each by its entries, as UIKit holds no menu out of reach itself.
     private static let outOfReach = NSHashTable<UIMenu>.weakObjects()
 
-    private static func action(_ entry: MenuEntry, inReach: Bool) -> UIAction {
+    /// An entry's action - a key command where it states a shortcut, which UIKit shows beside its words and sends up
+    /// the responder chain to the window's root, chosen or pressed.
+    private static func action(_ entry: MenuEntry, inReach: Bool) -> UIMenuElement {
         let element = entry.element?.uiKit
+        var attributes: UIMenuElement.Attributes = []
+        if !entry.isEnabled || !inReach { attributes.insert(.disabled) }
+        if entry.isDestructive { attributes.insert(.destructive) }
+        if let shortcut = entry.keyboardShortcut, let mount = entry.element?.mount {
+            let command = UIKitKeys.entry(
+                shortcut, title: entry.title, image: entry.icon.flatMap(UIKitRenderer.image(named:)),
+                action: #selector(UIKitRootViewController.chooseMenuEntry(_:)), entry: mount)
+            command.attributes = attributes
+            command.state = entry.isOn == true ? .on : .off
+            command.accessibilityIdentifier = entry.identifier
+            element?.menuCommand = command
+            element?.menuAction = nil
+            return command
+        }
+        element?.menuCommand = nil
         let action = UIAction(
             title: entry.title, image: entry.icon.flatMap(UIKitRenderer.image(named:)),
             identifier: element?.actionIdentifier
         ) { [weak element] _ in element?.choose() }
-        var attributes: UIMenuElement.Attributes = []
-        if !entry.isEnabled || !inReach { attributes.insert(.disabled) }
-        if entry.isDestructive { attributes.insert(.destructive) }
         action.attributes = attributes
         action.state = entry.isOn == true ? .on : .off
         action.accessibilityIdentifier = entry.identifier
@@ -58,13 +72,18 @@ enum UIKitMenus {
 
     /// A menu as the suite writes it: each entry by its caption, "!" before one that cannot be chosen, "-" between
     /// two groups, a submenu's entries in brackets after its caption, ";" between; `identified`, each action and menu
-    /// with its identifier after an "@".
+    /// with its identifier after an "@", and a key command with its shortcut and the entry it is known by.
     static func said(_ elements: [UIMenuElement], identified: Bool = false) -> String {
         var parts: [String] = []
         for element in elements {
             if let action = element as? UIAction {
                 parts.append((action.attributes.contains(.disabled) ? "!" : "") + action.title
                     + (identified ? "@" + action.identifier.rawValue : ""))
+            } else if let command = element as? UIKeyCommand {
+                let shortcut = UIKitKeys.shortcut(of: command).map { " \($0)" } ?? ""
+                let entry = (command.propertyList as? NSNumber).map { "@\($0)" } ?? ""
+                parts.append((command.attributes.contains(.disabled) ? "!" : "") + command.title
+                    + (identified ? shortcut + entry : ""))
             } else if let menu = element as? UIMenu {
                 let children = said(menu.children, identified: identified)
                 if menu.options.contains(.displayInline) {

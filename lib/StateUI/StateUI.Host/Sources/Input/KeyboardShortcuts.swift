@@ -46,6 +46,12 @@
         return found
     }
 
+    /// Every shortcut the entries of a menu bar under `root` state, once each: what a toolkit whose menu bar holds its
+    /// entries' shortcuts itself keeps off the window.
+    public static func onMenuBar(under root: MountedElement) -> Set<KeyboardShortcut> {
+        Set(actors(under: root).filter { $0.enclosing(type: .menuBar) != nil }.compactMap(\.keyboardShortcut))
+    }
+
     /// A pressed `shortcut` reaching the element under `root` it acts on: a button clicked, an item chosen
     /// (`MountedElement.chosen`) - unless it gives way to typing while a field holds the keyboard (`typing`).
     /// Whether one took it.

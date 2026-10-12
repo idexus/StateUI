@@ -295,12 +295,18 @@ extension AppKitDriver {
     /// window's key equivalents, then the main menu's, then to the view holding the keyboard, as AppKit offers it.
     private func pressKeys(_ shortcut: KeyboardShortcut, on element: MountedElement, _ view: NSView?) throws {
         let spelled = AppKitKeys.equivalent(of: shortcut)
-        guard let window = view?.window ?? NSApp.windows.first(where: \.isVisible),
+        let controller = try? controller(of: element)
+        guard let window = view?.window ?? controller?.window ?? NSApp.windows.first(where: \.isVisible),
               let event = NSEvent.keyEvent(
                 with: .keyDown, location: .zero, modifierFlags: spelled.modifiers, timestamp: 0,
                 windowNumber: window.windowNumber, context: nil, characters: spelled.key,
                 charactersIgnoringModifiers: spelled.key, isARepeat: false, keyCode: 0)
         else { throw DriverCannot(.pressKeys(shortcut), on: element) }
+        // The window in front: its page's menus on the menu bar, as AppKit puts them there for the key window - and
+        // off it again, so no later window finds them.
+        if NSApp.mainMenu == nil { NSApp.mainMenu = StateUIAppKit.mainMenu(newWindow: nil) }
+        controller?.host?.installPageMenus(controller?.pageMenus ?? [])
+        defer { controller?.host?.installPageMenus([]) }
         if window.performKeyEquivalent(with: event) || NSApp.mainMenu?.performKeyEquivalent(with: event) == true { return }
         window.sendEvent(event)
     }

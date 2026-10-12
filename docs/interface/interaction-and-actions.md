@@ -411,6 +411,42 @@ a page out of sight - beneath a stack's top, behind another tab - takes none.
 Two controls in one window stating the same shortcut is said in debug: which of
 them acts is then not yours to choose.
 
+A menu bar's entry and a bar's item take a shortcut the same way, and the
+shortcut chooses them as a click does; a menu shows it beside the entry's
+words:
+
+```swift
+struct Document: View {
+    @State private var exported = 0
+
+    var body: some View {
+        Text("Exported \(exported) times")
+            .contextMenu {
+                MenuItem("Export…")
+                    .keyboardShortcut("e", modifiers: [.primary, .shift])
+                    .onClicked { exported += 1 }
+            }
+            .menuBar {
+                Menu("File") {
+                    MenuItem("Export…")
+                        .keyboardShortcut("e", modifiers: [.primary, .shift])
+                        .onClicked { exported += 1 }
+                }
+                .id(StandardMenu.file)
+            }
+            .toolbar {
+                ToolbarItem("Mark")
+                    .keyboardShortcut("m")
+                    .onClicked { exported += 1 }
+            }
+    }
+}
+```
+
+A context menu's entry only shows its shortcut, telling the user the keys of
+the command it repeats; pressing them chooses the menu bar's entry, never the
+context menu's.
+
 ## Tooltips
 
 `tooltip` gives any view words the platform shows beside it while the pointer

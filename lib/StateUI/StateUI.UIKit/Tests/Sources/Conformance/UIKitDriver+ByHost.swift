@@ -28,7 +28,7 @@ extension UIKitDriver {
         case "endContent":
             return "the navigation delegate told, no web process ended"
         case "pressKeys":
-            return "the window's key command performed, no key pressed"
+            return "the window's or the main menu's key command performed, no key pressed"
         case "choose" where taken.element == "ItemsView", "activate" where taken.element == "an item of ItemsView":
             return "the collection's delegate told, no touch"
         case "open" where taken.element == "Marker":
@@ -41,6 +41,7 @@ extension UIKitDriver {
         case "read selectedIndex of Picker", "read options of Picker", "read title of Picker":
             return "the host's own choice, not the menu's"
         case "read the menu of Window": return "the host's menu bar entries, not UIKit's main menu"
+        case "read keyboardShortcut of ToolbarItem": return "the host's own record; UIKit holds no shortcut on a bar's item"
         case "read sidebarBackground of SplitView":
             return "the split view's material for a sidebar beside the detail, which an iPhone's room never shows"
         case "read what the screen reader said": return "the host's own list of what it announced"

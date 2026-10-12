@@ -8010,39 +8010,54 @@ enum Listings {
 
         var body: some View {
             VStack {
-                Text("Press Command or Control with S, then with Shift and S, then 1 alone.")
+                Text("Press Command or Control with S, with Shift and S, with Shift and E, then 1 or 2 alone.")
 
                 HStack {
                     // Command on Apple's platforms, Control elsewhere.
                     Button("Save")
                         .keyboardShortcut("s")
-                        .onClicked {
-                            saved += 1
-                            last = "Save"
-                        }
+                        .onClicked { pressed("Save") }
 
                     Button("Save As")
                         .keyboardShortcut("s", modifiers: [.primary, .shift])
-                        .onClicked {
-                            saved += 1
-                            last = "Save As"
-                        }
+                        .onClicked { pressed("Save As") }
 
                     // A key alone is a shortcut too.
                     Button("First")
                         .keyboardShortcut("1", modifiers: [])
-                        .onClicked {
-                            saved += 1
-                            last = "First"
-                        }
+                        .onClicked { pressed("First") }
                 }
 
-                // While this field is typed into, 1 writes a 1.
+                // While this field is typed into, 1 and 2 write themselves.
                 TextField($note)
                     .placeholder("Type here")
 
                 Text("Pressed \(saved) time\(saved == 1 ? "" : "s"), last: \(last)")
+                    // A context menu shows the shortcut; the menu bar's entry acts on it.
+                    .contextMenu {
+                        MenuItem("Export…")
+                            .keyboardShortcut("e", modifiers: [.primary, .shift])
+                            .onClicked { pressed("Export from the context menu") }
+                    }
             }
+            .menuBar {
+                Menu("File") {
+                    MenuItem("Export…")
+                        .keyboardShortcut("e", modifiers: [.primary, .shift])
+                        .onClicked { pressed("Export") }
+                }
+                .id(StandardMenu.file)
+            }
+            .toolbar {
+                ToolbarItem("Mark")
+                    .keyboardShortcut("2", modifiers: [])
+                    .onClicked { pressed("Mark") }
+            }
+        }
+
+        private func pressed(_ name: String) {
+            saved += 1
+            last = name
         }
         """#,
         "SizingSample": #"""

@@ -189,6 +189,7 @@ extension AppKitRenderer {
             title: source.title,
             action: source.action,
             keyEquivalent: source.keyEquivalent)
+        item.keyEquivalentModifierMask = source.keyEquivalentModifierMask
         item.target = source.target
         item.setAccessibilityIdentifier(source.accessibilityIdentifier())
         item.attributedTitle = source.attributedTitle

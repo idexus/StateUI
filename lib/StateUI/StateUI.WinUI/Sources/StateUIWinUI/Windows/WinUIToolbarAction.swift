@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
+
 /// One action a window's chrome performs for the arrangement it shows.
 @MainActor
 struct WinUIToolbarAction {
@@ -12,6 +14,8 @@ struct WinUIToolbarAction {
     var isDestructive = false
     /// Whether its words stand beside its picture (`MountedElement.showsActionWords`).
     var showsWords = true
+    /// The keys pressing it while its window is in front; nil for none.
+    var shortcut: KeyboardShortcut?
     /// The mount of the toolbar item it stands for; none for the way back.
     var mount: UInt64?
     let perform: () -> Void
@@ -19,6 +23,6 @@ struct WinUIToolbarAction {
     /// Whether two actions draw the same button. What an action performs is taken again on every composition.
     func draws(like other: WinUIToolbarAction) -> Bool {
         title == other.title && isEnabled == other.isEnabled && identifier == other.identifier && icon == other.icon
-            && isDestructive == other.isDestructive && showsWords == other.showsWords
+            && isDestructive == other.isDestructive && showsWords == other.showsWords && shortcut == other.shortcut
     }
 }

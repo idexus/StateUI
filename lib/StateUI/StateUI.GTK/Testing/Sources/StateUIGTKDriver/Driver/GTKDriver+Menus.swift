@@ -47,6 +47,12 @@ extension GTKDriver {
         switch property {
         case .text: return Self.attribute(holder, index, "label").map { $0.propValue }
         case .isEnabled: return (g_action_group_get_action_enabled(OpaquePointer(menu.actions), name) != 0).propValue
+        case .keyboardShortcut:
+            guard let accelerator = Self.attribute(holder, index, "accel") else { return HostValue.nothing }
+            var keyval: guint = 0
+            var modifiers = GdkModifierType(rawValue: 0)
+            guard gtk_accelerator_parse(accelerator, &keyval, &modifiers) != 0 else { return nil }
+            return GTKKeys.shortcut(keyval: keyval, modifiers: modifiers)?.propValue
         case .isOn:
             guard let state = g_action_group_get_action_state(OpaquePointer(menu.actions), name) else { return false.propValue }
             defer { g_variant_unref(state) }

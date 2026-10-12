@@ -31,6 +31,20 @@ enum WebKeys {
         return parts.joined(separator: "+")
     }
 
+    /// The shortcut as a menu shows it beside an entry's words - `⇧⌘S` on Apple's platforms, `Ctrl+Shift+S` elsewhere.
+    static func shown(_ shortcut: KeyboardShortcut, onApple: Bool) -> String {
+        let key = shortcut.key.character.map { String($0).uppercased() } ?? shortcut.key.named.flatMap { names[$0] } ?? ""
+        if onApple {
+            return (shortcut.modifiers.contains(.alt) ? "⌥" : "") + (shortcut.modifiers.contains(.shift) ? "⇧" : "")
+                + (shortcut.modifiers.contains(.primary) ? "⌘" : "") + key
+        }
+        var parts: [String] = []
+        if shortcut.modifiers.contains(.primary) { parts.append("Ctrl") }
+        if shortcut.modifiers.contains(.alt) { parts.append("Alt") }
+        if shortcut.modifiers.contains(.shift) { parts.append("Shift") }
+        return (parts + [key]).joined(separator: "+")
+    }
+
     /// The shortcut `aria-keyshortcuts` names; nil for words naming none.
     static func shortcut(spelled: String, onApple: Bool) -> KeyboardShortcut? {
         var held: KeyModifiers = []

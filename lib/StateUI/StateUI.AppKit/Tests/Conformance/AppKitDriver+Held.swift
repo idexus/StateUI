@@ -147,6 +147,8 @@ extension AppKitDriver {
             case .text: return item.title.propValue
             case .isEnabled: return item.isEnabled.propValue
             case .isOn: return (item.state == .on).propValue
+            case .keyboardShortcut:
+                return AppKitKeys.shortcut(key: item.keyEquivalent, modifiers: item.keyEquivalentModifierMask)?.propValue
             case .accessibilityIdentifier: return item.accessibilityIdentifier().propValue
             case .icon: return pictureName(item.image)
             case .isDestructive:
@@ -171,6 +173,7 @@ extension AppKitDriver {
             case .text: return item.label.propValue
             case .isEnabled: return item.isEnabled.propValue
             case .icon: return pictureName(item.image)
+            case .keyboardShortcut: return element.value(.keyboardShortcut)
             default: break
             }
         }

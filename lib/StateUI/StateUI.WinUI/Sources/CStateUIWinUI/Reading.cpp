@@ -301,6 +301,12 @@ namespace {
             if (held == "wordsShown") return flag(button.LabelPosition() != controls::CommandBarLabelPosition::Collapsed);
             if (held == "destructive") return flag(isDestructive(button, L"AppBarButtonForeground"));
             if (held == "identifier") return narrow(xaml::Automation::AutomationProperties::GetAutomationId(button));
+            if (held == "shortcut") {
+                if (button.KeyboardAccelerators().Size() == 0) return std::string();
+                auto first = button.KeyboardAccelerators().GetAt(0);
+                return std::to_string(static_cast<int32_t>(first.Key())) + ","
+                    + std::to_string(static_cast<int32_t>(first.Modifiers()));
+            }
             return std::nullopt;
         }
         return std::nullopt;
