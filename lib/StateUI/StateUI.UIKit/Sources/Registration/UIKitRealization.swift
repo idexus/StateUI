@@ -30,6 +30,7 @@ enum UIKitRealization {
         .notPlanned("BarElement", "barTitle",
                     reason: "A UIKit bar is each page's own and names that page; an application names itself in none."),
         .complete("Button", "keyboardShortcut"),
+        .partial("Button", "role", missing: "UIKit draws no destructive look on a button standing alone, only in its menus and bars."),
         .complete("MenuItem", "isOn"),
         .partial("MenuItem", "keyboardShortcut", missing: "UIKit shows a shortcut in the main menu alone, none in a context menu."),
         .complete("MenuItem", "toggled"),

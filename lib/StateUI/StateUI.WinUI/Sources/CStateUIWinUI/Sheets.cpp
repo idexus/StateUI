@@ -45,13 +45,6 @@ namespace {
     }
 }
 
-bool stateui::showsSheets(controls::Grid const &root) {
-    for (auto const &child : root.Children())
-        if (auto grid = child.try_as<controls::Grid>(); grid && winrt::unbox_value_or<winrt::hstring>(grid.Tag(), L"") == L"sheets")
-            return grid.Children().Size() > 0;
-    return false;
-}
-
 extern "C" StateUIObjectRef stateui_winui_sheet_make(void) {
     try {
         // The veil: across the window, so nothing beneath it takes a click.

@@ -28,10 +28,23 @@
         stating(shortcut, under: root).first { $0.isEffectivelyEnabled }
     }
 
-    /// Whether `shortcut` gives way to typing: a character's key held with neither the platform's own key nor Alt -
-    /// alone, or with Shift - is the character a field holding the keyboard writes, not a shortcut there.
+    /// Whether `shortcut` gives way to typing: a character's key or Return held with neither the platform's own key
+    /// nor Alt - alone, or with Shift - is what a field holding the keyboard takes, a character or the end of what
+    /// was typed, not a shortcut there.
     public static func givesWayToTyping(_ shortcut: KeyboardShortcut) -> Bool {
-        shortcut.key.character != nil && shortcut.modifiers.isDisjoint(with: [.primary, .alt])
+        (shortcut.key.character != nil || shortcut.key.named == .return)
+            && shortcut.modifiers.isDisjoint(with: [.primary, .alt])
+    }
+
+    /// The shortcut a button presses on: the one it states, else its role's - Return for its window's main action,
+    /// Escape for the way out.
+    public static func pressing(stated: KeyboardShortcut?, role: ButtonRole?) -> KeyboardShortcut? {
+        if let stated { return stated }
+        switch role {
+        case .primary: return KeyboardShortcut(.return, modifiers: [])
+        case .cancel: return KeyboardShortcut(.escape, modifiers: [])
+        case .destructive, nil: return nil
+        }
     }
 
     /// Every shortcut the elements in sight under `root` state, once each, in reading order - those giving way to
@@ -111,9 +124,12 @@
 }
 
 @_spi(Host) extension MountedElement {
-    /// The shortcut this element states; nil for none.
+    /// The shortcut this element presses on: the one it states, else its role's (`KeyboardShortcuts.pressing`);
+    /// nil for none.
     public var keyboardShortcut: KeyboardShortcut? {
-        value(.keyboardShortcut).flatMap(KeyboardShortcut.init(propValue:))
+        KeyboardShortcuts.pressing(
+            stated: value(.keyboardShortcut).flatMap(KeyboardShortcut.init(propValue:)),
+            role: value(.role).flatMap(ButtonRole.init(propValue:)))
     }
 
     /// Whether the element stands where the user meets it: it and everything holding it shown, on the page each

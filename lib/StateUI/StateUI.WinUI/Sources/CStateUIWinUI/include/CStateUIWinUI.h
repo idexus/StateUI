@@ -490,6 +490,11 @@ void stateui_winui_button_set_room(StateUIObjectRef button, double height);
 /// Puts other words on a button that shows some, in the place they stand.
 void stateui_winui_button_set_words(StateUIObjectRef button, char const *words);
 
+/// A window's main action: WinUI's accent button style where `accent`, the platform's plain one else; and whether a
+/// button wears it - what a test reads.
+void stateui_winui_button_set_accent(StateUIObjectRef button, bool accent);
+bool stateui_winui_button_accent(StateUIObjectRef button);
+
 /// Puts a control in its template's visual state `state` - "PointerOver", "Pressed", "Normal" - as the pointer
 /// would; whether the template has it. What a test does.
 bool stateui_winui_go_to_state(StateUIObjectRef control, char const *state);

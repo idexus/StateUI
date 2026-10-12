@@ -116,6 +116,7 @@ final class Catalog {
                 card: ImageSource("cat_basicinput.png"),
                 samples: [
                     Sample(ButtonSample()),
+                    Sample(ButtonRoleSample()),
                     Sample(IconButtonSample()),
                     Sample(SwitchSample()),
                     Sample(CheckBoxSample()),

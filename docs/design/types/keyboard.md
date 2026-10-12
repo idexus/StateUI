@@ -25,16 +25,34 @@ number - and its modifiers' bits.
 ## A key typed
 
 A shortcut needs no modifier: `keyboardShortcut("1", modifiers: [])` presses
-its button on the key alone. Such a key is also what a field writes, so a
-character's key held with neither the platform's own key nor Alt - alone, or
-with Shift - gives way to typing (`KeyboardShortcuts.givesWayToTyping`): while
-a field the user types into holds the keyboard, the key types there and the
-shortcut does not act. A key writing no character - Escape, the arrows, F5 -
-and a shortcut held with the platform's own key or Alt act whatever holds the
-keyboard. Android, GTK and WinUI hand a key to the view holding the keyboard
+its button on the key alone. Such a key is also what a field takes, so a
+character's key or Return held with neither the platform's own key nor Alt -
+alone, or with Shift - gives way to typing (`KeyboardShortcuts.givesWayToTyping`):
+while a field the user types into holds the keyboard, the key types there, or
+Return ends what was typed, and the shortcut does not act. Another key writing
+no character - Escape, the arrows, F5 - and a shortcut held with the platform's
+own key or Alt act whatever holds the keyboard. Android, GTK and WinUI hand a key to the view holding the keyboard
 first; AppKit offers it to the window's key equivalents first, UIKit to its key
 commands and the page to its listener - so each host asks whether a field is
 being typed into before a shortcut giving way acts.
+
+## A button's role
+
+A button's role gives it a key where it states none
+(`KeyboardShortcuts.pressing`): Return for its window's main action, Escape
+for the way out, none for a destructive action. The role's key is then the
+button's shortcut everywhere a shortcut is - stated twice when two buttons in
+sight share it, giving way to typing as any Return does - so every host
+presses it through the shortcut it already holds. A control holding the
+keyboard takes the key first where its toolkit gives it one: a focused button
+on Android, GTK, WinUI and the page presses itself on Return, as their
+keyboard's own way through a window does. The look is each toolkit's
+own: AppKit's accent bezel and destructive mark, UIKit's button role, the
+platform's coloured button on Android, WinUI's accent style, libadwaita's
+suggested and destructive classes, and the page's own accent and colour. WinUI
+invokes one accelerator for a key and finds the window's own Escape first, so
+its window hands Escape to the host, which presses the way out in sight, else
+takes the top sheet away.
 
 ## In a window
 

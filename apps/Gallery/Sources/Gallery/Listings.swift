@@ -1298,6 +1298,43 @@ enum Listings {
             }
         }
         """#,
+        "ButtonRoleSample": #"""
+        // Sources/Samples/BasicInput/ButtonRoleSample.swift
+        @State private var name = ""
+        @State private var last = "nothing yet"
+
+        var body: some View {
+            VStack {
+                Text("Press Return or Escape; in the field, Return ends the name instead.")
+
+                TextField($name)
+                    .placeholder("Name")
+                    .onSubmitted { last = "the name \(name)" }
+
+                HStack {
+                    // Drawn as the platform marks an action that destroys something.
+                    Button("Delete")
+                        .style(.platform)
+                        .role(.destructive)
+                        .onClicked { last = "Delete" }
+
+                    // Escape presses the way out.
+                    Button("Cancel")
+                        .style(.platform)
+                        .role(.cancel)
+                        .onClicked { last = "Cancel" }
+
+                    // Return presses the main action, drawn with the platform's emphasis.
+                    Button("Save")
+                        .style(.platform)
+                        .role(.primary)
+                        .onClicked { last = "Save" }
+                }
+
+                Text("Last: \(last)")
+            }
+        }
+        """#,
         "ButtonSample": #"""
         // Sources/Samples/BasicInput/ButtonSample.swift
         @State private var counter = 0

@@ -74,7 +74,7 @@ final class WinUITitleBarView: WinUIView {
         switch index {
         case -1: if let sheet = chrome.sheet { sheet.back() } else { chrome.back?.perform() }
         case -2: chrome.sidebarToggle?()
-        case -3: chrome.sheet?.dismiss()
+        case -3: if chrome.escape?() != true { chrome.sheet?.dismiss() }
         default: if drawn.indices.contains(index), drawn[index].isEnabled { drawn[index].perform() }
         }
     }

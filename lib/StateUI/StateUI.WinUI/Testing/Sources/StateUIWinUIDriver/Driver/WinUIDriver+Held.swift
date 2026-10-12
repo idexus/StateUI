@@ -170,6 +170,11 @@ extension WinUIDriver {
             return .string(try read(view, "automationName"))
         case "accessibilityLabel": return .string(view.automationWords.name)
         case "accessibilityHint": return .string(view.automationWords.help)
+        case "role" where view is WinUIButtonView:
+            // The accent WinUI holds for the main action; the host's own record for the roles it draws no look for.
+            let button = view as! WinUIButtonView
+            if stateui_winui_button_accent(button.handle) { return ButtonRole.primary.propValue }
+            return button.role.flatMap { $0 == .primary ? nil : $0.propValue } ?? HostValue.nothing
         case "keyboardShortcut":
             var key: Int32 = 0, modifiers: Int32 = 0
             guard stateui_winui_shortcut(view.answering.handle, &key, &modifiers) else { return nil }

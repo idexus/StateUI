@@ -21,6 +21,9 @@ extension WebDriver {
         case (.opacity, _): return try WebBrowser.number("Number(getComputedStyle(e).opacity)", on: e)?.propValue
         case (.tooltip, _): return try WebBrowser.evaluate("e.getAttribute('title')", on: e)?.propValue
         case (.keyboardShortcut, _): return try shortcut(on: e)
+        case (.role, _):
+            let roles: [String: ButtonRole] = ["primary": .primary, "cancel": .cancel, "destructive": .destructive]
+            return try WebBrowser.evaluate("e.dataset.role ?? null", on: e).flatMap { roles[$0] }?.propValue
         case (.isEnabled, _):
             return try (!WebBrowser.truth("""
                 e.matches(":disabled") || e.getAttribute("aria-disabled") === "true" \

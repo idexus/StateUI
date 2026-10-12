@@ -32,13 +32,13 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (90)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>47 ✅ · 2 ☑️ · 37 ✓ · 2 –</td><td><code>NSButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>47 ✅ · 1 ☑️ · 37 ✓ · 4 –</td><td><code>UIButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>66 ✅ · 3 ☑️ · 11 ✓ · 4 –</td><td><code>Button</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>77 ✅ · 1 ☑️ · 12 ✓</td><td><code>Button</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>63 ✅ · 2 ☑️ · 24 ✓ · 1 –</td><td><code>GtkButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>69 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;button&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (91)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>47 ✅ · 3 ☑️ · 37 ✓ · 2 –</td><td><code>NSButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>47 ✅ · 2 ☑️ · 37 ✓ · 4 –</td><td><code>UIButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>66 ✅ · 3 ☑️ · 12 ✓ · 4 –</td><td><code>Button</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>77 ✅ · 2 ☑️ · 12 ✓</td><td><code>Button</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>64 ✅ · 2 ☑️ · 24 ✓ · 1 –</td><td><code>GtkButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>70 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;button&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ButtonContract.swift`.
@@ -61,6 +61,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ButtonContract
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onReleased</code> (<code>released</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>role</code></td><td>property</td><td><code>ButtonRole</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✓</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: AppKit draws no destructive look on a button standing alone; it marks one for the system.<br>UIKit: UIKit draws no destructive look on a button standing alone, only in its menus and bars.<br>Android Views: only through the host's own: pressKeys on Button: the key event no view took handed to the host as the application's activity hands it<br>WinUI 3: WinUI has no look for the way out or a destructive action, only the main action's accent.</td></tr></tbody>
 </table>
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)

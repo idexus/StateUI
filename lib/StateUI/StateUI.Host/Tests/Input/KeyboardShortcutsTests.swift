@@ -67,14 +67,18 @@ final class KeyboardShortcutsTests: XCTestCase {
         XCTAssertEqual(KeyboardShortcut(.return, modifiers: [.primary, .shift]).description, "primary+shift+return")
     }
 
-    /// A character's key alone or with Shift is what a field being typed into takes; held with the platform's own
-    /// key or Alt, or a key writing no character, it stays a shortcut there.
+    /// A character's key or Return, alone or with Shift, is what a field being typed into takes; held with the
+    /// platform's own key or Alt, or another key writing no character, it stays a shortcut there.
     func testABareCharactersShortcutGivesWayToTyping() throws {
         XCTAssertTrue(KeyboardShortcuts.givesWayToTyping(KeyboardShortcut("1", modifiers: [])))
         XCTAssertTrue(KeyboardShortcuts.givesWayToTyping(KeyboardShortcut("a", modifiers: [.shift])))
+        XCTAssertTrue(KeyboardShortcuts.givesWayToTyping(KeyboardShortcut(.return, modifiers: [])))
+        XCTAssertTrue(KeyboardShortcuts.givesWayToTyping(KeyboardShortcut(.return, modifiers: [.shift])))
+        XCTAssertFalse(KeyboardShortcuts.givesWayToTyping(KeyboardShortcut(.return)))
         XCTAssertFalse(KeyboardShortcuts.givesWayToTyping(KeyboardShortcut("s")))
         XCTAssertFalse(KeyboardShortcuts.givesWayToTyping(KeyboardShortcut("s", modifiers: [.alt])))
         XCTAssertFalse(KeyboardShortcuts.givesWayToTyping(KeyboardShortcut(.f5, modifiers: [])))
+        XCTAssertFalse(KeyboardShortcuts.givesWayToTyping(KeyboardShortcut(.escape, modifiers: [])))
 
         let one = KeyboardShortcut("1", modifiers: [])
         let runtime = mount([element("one", .button, one), element("save", .button, save)])
@@ -82,6 +86,27 @@ final class KeyboardShortcutsTests: XCTestCase {
         XCTAssertEqual(KeyboardShortcuts.stated(under: root), [one, save])
         XCTAssertEqual(KeyboardShortcuts.stated(under: root, typing: true), [save], "the bare one is the field's")
         XCTAssertFalse(KeyboardShortcuts.press(one, under: root, in: runtime, typing: true))
+    }
+
+    /// A button's role gives it a key unless it states one of its own: Return its window's main action, Escape the
+    /// way out, none an action destroying something.
+    func testARolesKeyPressesTheButtonUnlessItStatesOne() throws {
+        func button(_ id: String, _ role: ButtonRole, _ shortcut: KeyboardShortcut? = nil) -> HostPatch {
+            var made = element(id, .button, shortcut)
+            made.properties[.role] = role.propValue
+            return made
+        }
+        let returnKey = KeyboardShortcut(.return, modifiers: []), escape = KeyboardShortcut(.escape, modifiers: [])
+        let runtime = mount([
+            button("save", .primary), button("cancel", .cancel), button("delete", .destructive),
+            button("send", .primary, KeyboardShortcut("s")),
+        ])
+        let root = try XCTUnwrap(runtime.tree.root)
+
+        XCTAssertEqual(KeyboardShortcuts.stated(under: root), [returnKey, escape, save])
+        XCTAssertEqual(KeyboardShortcuts.target(of: returnKey, under: root)?.id, .manual("save"))
+        XCTAssertEqual(KeyboardShortcuts.target(of: escape, under: root)?.id, .manual("cancel"))
+        XCTAssertEqual(KeyboardShortcuts.stated(under: root, typing: true), [escape, save], "Return is the field's")
     }
 
     /// A page beneath a stack's top is out of sight: its shortcuts reach nothing.

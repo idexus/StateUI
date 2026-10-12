@@ -80,6 +80,7 @@ extension NodeType {
     static let accessibilityHint = VisualElementContract.accessibilityHint.token
     static let tooltip = VisualElementContract.tooltip.token
     static let keyboardShortcut = ButtonContract.keyboardShortcut.token
+    static let role = ButtonContract.role.token
     static let accessibilityIdentifier = PropertyContainerContract.accessibilityIdentifier.token
     static let accessibilityLabel = VisualElementContract.accessibilityLabel.token
     static let subtitle = MarkerContract.subtitle.token

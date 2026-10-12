@@ -50,6 +50,15 @@ extension UIKitRegistrations {
                     shape: values[BorderElementContract.shape]?.propValue)
             }
             button.property(ButtonContract.lineBreak) { view, breaking in view.setLineBreak(breaking ?? .wordWrap) }
+            // UIKit's own role; its key is the window root's (`KeyboardShortcuts.pressing`).
+            button.property(ButtonContract.role) { view, role in
+                view.role = switch role {
+                case .primary: .primary
+                case .cancel: .cancel
+                case .destructive: .destructive
+                case nil: .normal
+                }
+            }
             button.raises(ButtonContract.clicked)
             button.raises(ButtonContract.pressed)
             button.raises(ButtonContract.released)

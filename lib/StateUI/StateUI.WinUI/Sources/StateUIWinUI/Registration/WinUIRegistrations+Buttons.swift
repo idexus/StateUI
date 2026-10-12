@@ -38,8 +38,13 @@ extension WinUIRegistrations {
                     spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
             }
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
-            // WinUI's own accelerator, which presses the button while its window is in front.
-            button.property(ButtonContract.keyboardShortcut) { view, shortcut in view.setShortcut(shortcut) }
+            // WinUI's own accelerator - the one stated, else the role's - pressing the button while its window is in
+            // front, and the role's look: the accent style for the main action.
+            button.applies([ButtonContract.keyboardShortcut, ButtonContract.role]) { view, values in
+                let role = values[ButtonContract.role]
+                view.setShortcut(KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role))
+                view.setRole(role)
+            }
             button.property(VisualElementContract.isEnabled) { view, enabled in
                 view.setEnabled(enabled ?? true)
             }

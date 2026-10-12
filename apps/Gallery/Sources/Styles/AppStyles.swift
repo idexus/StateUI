@@ -49,6 +49,9 @@ extension StyleKey where Target == HStack {
 extension StyleKey where Target == Button {
     /// A button that is only its icon.
     static let iconButton = StyleKey("IconButton")
+
+    /// The platform's own button, the gallery's violet left off: what shows a role as each platform draws it.
+    static let platform = StyleKey("Platform")
 }
 
 extension StyleKey where Target == RatingBar {
@@ -118,6 +121,8 @@ enum AppStyles {
                     .background(Palette.outline)
                 }
             // listing: end
+
+            Style<Button>(.platform)
 
             Style<Button>(.iconButton)
                 .opacity(1)

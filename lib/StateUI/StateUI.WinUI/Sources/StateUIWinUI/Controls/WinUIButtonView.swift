@@ -9,6 +9,17 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/controls.md#a-button
 @MainActor
 final class WinUIButtonView: WinUIView {
+    /// The role the tree gave the button; nil for none.
+    private(set) var role: ButtonRole?
+
+    /// What the button stands for: the window's main action wears WinUI's accent style. WinUI has no look for the way
+    /// out or for a destructive action.
+    func setRole(_ role: ButtonRole?) {
+        guard role != self.role else { return }
+        self.role = role
+        stateui_winui_button_set_accent(handle, role == .primary)
+    }
+
     override var takesDirection: Bool { true }
 
     /// What the button does when the user clicks it, holds it down and lets it go.

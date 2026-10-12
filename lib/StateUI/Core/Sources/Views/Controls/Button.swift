@@ -107,6 +107,17 @@ public struct Button: ElementView, TextualElement, FontElement, PaddingElement, 
         setValue(ButtonContract.keyboardShortcut, KeyboardShortcut(key, modifiers: modifiers))
     }
 
+    /// What the button stands for in its window: `.primary`, its main action, drawn with the platform's emphasis and
+    /// pressed by Return; `.cancel`, the way out, pressed by Escape; `.destructive`, an action that destroys
+    /// something. A shortcut the button states takes the place of its role's key, and a field being typed into
+    /// keeps Return.
+    ///
+    ///     Button("Cancel").role(.cancel)
+    ///     Button("Save").role(.primary)
+    public func role(_ role: ButtonRole) -> Self {
+        setValue(ButtonContract.role, role)
+    }
+
     // MARK: Events
 
     /// Runs when the button is pressed AND released on it - the ordinary one - all

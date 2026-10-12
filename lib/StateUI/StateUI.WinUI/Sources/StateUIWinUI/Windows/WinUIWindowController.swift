@@ -112,6 +112,9 @@ final class WinUIWindowController {
         chrome.background = composed.background
         chrome.foreground = composed.foreground
         chrome.menuBar = WinUIMenu(menus: composed.menus.menus)
+        chrome.escape = { [weak element] in
+            element.map { KeyboardShortcuts.press(KeyboardShortcut(.escape, modifiers: []), under: $0, in: runtime) } ?? false
+        }
         if !presentation.sheets.isEmpty {
             chrome.sheet = (
                 back: { [weak self] in self?.goBack(in: runtime) },

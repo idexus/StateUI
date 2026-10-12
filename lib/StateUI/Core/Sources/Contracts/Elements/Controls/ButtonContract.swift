@@ -40,8 +40,12 @@ public enum ButtonContract: ElementContract {
     /// The press ended, wherever the pointer ended up.
     public static let released = ElementEvent<Self, Void>("released", layer: .native)
 
+    /// What the button stands for in its window - its main action, the way out, or one destroying something - drawn
+    /// as each platform draws it; Return presses the main action and Escape the way out.
+    public static let role = ElementProperty<Self, ButtonRole>("role", layer: .adaptive)
+
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        clicked, icon, iconPosition, iconSpacing, keyboardShortcut, lineBreak, pressed, released,
+        clicked, icon, iconPosition, iconSpacing, keyboardShortcut, lineBreak, pressed, released, role,
     ]
 }

@@ -99,6 +99,31 @@ final class StateUIViews {
     }
 
     /** Words in `color`, dimmed while their view is disabled, as the theme's own colours are. */
+    /** The background of the platform's coloured button, which a window's main action wears. */
+    static Drawable colouredBackground(Context context) {
+        TypedArray style = context.obtainStyledAttributes(
+                null, new int[] {android.R.attr.background}, 0, android.R.style.Widget_DeviceDefault_Button_Colored);
+        Drawable background = style.getDrawable(0);
+        style.recycle();
+        return background;
+    }
+
+    /** The words' colours of the platform's coloured button: its style's own, else its text appearance's. */
+    static ColorStateList colouredWords(Context context) {
+        // Attributes in ascending order, as obtainStyledAttributes reads them.
+        TypedArray style = context.obtainStyledAttributes(
+                null, new int[] {android.R.attr.textAppearance, android.R.attr.textColor}, 0,
+                android.R.style.Widget_DeviceDefault_Button_Colored);
+        ColorStateList words = style.getColorStateList(1);
+        int appearance = style.getResourceId(0, 0);
+        style.recycle();
+        if (words != null || appearance == 0) return words;
+        TypedArray look = context.obtainStyledAttributes(appearance, new int[] {android.R.attr.textColor});
+        words = look.getColorStateList(0);
+        look.recycle();
+        return words;
+    }
+
     static ColorStateList textColors(Context context, int color) {
         int dimmed = (Math.round(Color.alpha(color) * disabledAlpha(context)) << 24) | (color & 0xFFFFFF);
         return new ColorStateList(

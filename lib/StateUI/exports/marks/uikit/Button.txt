@@ -1,4 +1,4 @@
-# revision 3.1
+# revision 4.1
 Button: ✅
 Button.clicked: ✅
 Button.frameChanged: ✅
@@ -9,4 +9,5 @@ Button.keyboardShortcut: ✅
 Button.lineBreak: ✅
 Button.pressed: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
 Button.released: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
+Button.role: ☑️ UIKit draws no destructive look on a button standing alone, only in its menus and bars.
 Text.text: ✅

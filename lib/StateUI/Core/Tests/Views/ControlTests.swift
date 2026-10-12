@@ -129,6 +129,7 @@ final class ControlTests: XCTestCase {
                     .iconPosition(.leading)
                     .iconSpacing(8)
                     .keyboardShortcut("i", modifiers: [.primary, .shift])
+                    .role(.primary)
                     .onClicked {}
                     .onPressed {}
                     .onReleased {}),

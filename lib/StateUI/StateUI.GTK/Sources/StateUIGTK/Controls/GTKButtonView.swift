@@ -40,6 +40,15 @@ final class GTKButtonView: GTKView {
     /// The shortcut the button states, which its controller's action asks of before it presses.
     private var stated: KeyboardShortcut?
 
+    /// libadwaita's class for the button's role; nil for none.
+    private var roleClass: String?
+
+    /// What the button stands for, as libadwaita draws it: the suggested action, or a destructive one; the way out
+    /// has no look of its own.
+    func setRole(_ role: ButtonRole?) {
+        swapClass(&roleClass, to: role == .primary ? "suggested-action" : role == .destructive ? "destructive-action" : nil)
+    }
+
     /// The keys pressing the button while its window is in front: GTK's own shortcut, global to the window,
     /// activating the button; nil for none.
     /// Design: docs/design/types/keyboard.md#on-each-platform

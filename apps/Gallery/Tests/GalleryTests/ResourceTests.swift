@@ -40,12 +40,15 @@ final class ResourceTests: XCTestCase {
     }
 
     /// A style with no setters is a style that does nothing, and the way to end
-    /// up with one is a closure that forgot to return what it was given.
+    /// up with one is a closure that forgot to return what it was given - but for
+    /// a keyed one whose type has an implicit style: it takes that style off.
     func testEveryStyleActuallySetsSomething() {
+        let implicit = Set(styles.filter { $0.key == nil }.map(\.target.name))
         for style in styles {
             let key = style.key ?? style.target.name
+            let takesOff = style.key != nil && implicit.contains(style.target.name)
 
-            XCTAssertFalse(style.props.isEmpty, "\(key) sets nothing")
+            XCTAssertFalse(style.props.isEmpty && !takesOff, "\(key) sets nothing")
 
             for state in style.states {
                 XCTAssertFalse(state.setters.isEmpty, "\(key) in \(state.name) sets nothing")

@@ -488,6 +488,11 @@ body {
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
+/* A button's role: the main action in the accent, a destructive one in the colour a question's has. */
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-button[data-role="primary"] {
+  background: var(--stateui-accent); border-color: transparent; color: white;
+}
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-button[data-role="destructive"] { color: #d92d20; }
 /* A button's picture stands beside its words, the two in its middle; alone, it fills the button. */
 .stateui-button { display: inline-flex; align-items: center; justify-content: center; }
 .stateui-button > span { min-width: 0; }

@@ -81,12 +81,39 @@ final class AndroidButtonView: AndroidTextualView {
     /// look shows.
     private var drawn: (shape: AndroidShapeDrawable, mask: AndroidShapeDrawable)?
 
-    /// One shape under the platform's pressed ripple, or the theme's background where nothing is said.
+    /// The platform's coloured button - its background and words' colours - which the window's main action wears;
+    /// nil for the theme's plain one.
+    private var coloured: (background: JavaObject, words: JavaObject)?
+
+    /// What the button stands for: the window's main action wears the platform's coloured button, its background
+    /// where the button draws no look of its own and its words' colours where none is written. Android has no
+    /// look for the way out or for a destructive action.
+    /// Design: docs/design/platforms/android/controls.md#a-buttons-look
+    func setRole(_ role: ButtonRole?) {
+        self.role = role
+        guard (role == .primary) != (coloured != nil) else { return }
+        coloured = role == .primary ? Java.frame {
+            let context = AndroidRenderer.context
+            let background = Java.callStaticObject(JavaAPI.views, JavaAPI.colouredBackground, .object(context))
+            let words = Java.callStaticObject(JavaAPI.views, JavaAPI.colouredWords, .object(context))
+            return background.flatMap { background in words.map { (JavaObject(background), JavaObject($0)) } }
+        } : nil
+        drawLook()
+        setTextColor(writtenTextColor)
+    }
+
+    /// The role the tree gave the button; nil for none.
+    private(set) var role: ButtonRole?
+
+    override var plainWordColours: JavaObject { coloured?.words ?? super.plainWordColours }
+
+    /// One shape under the platform's pressed ripple, or the theme's background - the coloured button's for the
+    /// main action - where nothing is said.
     /// Design: docs/design/platforms/android/controls.md#a-buttons-look
     private func drawLook() {
         guard look.fill != nil || look.stroke != nil || look.shape != .rectangle else {
             drawn = nil
-            return showBackground(nil)
+            return showBackground(coloured?.background)
         }
 
         let corners = look.shape

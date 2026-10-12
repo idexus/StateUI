@@ -1,4 +1,4 @@
-# revision 3.1
+# revision 4.1
 Button: ✅
 Button.clicked: ✅
 Button.frameChanged: ✅
@@ -9,4 +9,5 @@ Button.keyboardShortcut: ✅
 Button.lineBreak: ✅
 Button.pressed: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.released: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
+Button.role: ☑️ AppKit draws no destructive look on a button standing alone; it marks one for the system.
 Text.text: ✅

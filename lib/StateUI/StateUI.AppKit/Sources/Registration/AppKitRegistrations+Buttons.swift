@@ -69,11 +69,16 @@ extension AppKitRegistrations {
                     lineBreakMode: breaking,
                     enabled: values[VisualElementContract.isEnabled] ?? true)
             }
-            // AppKit's own key equivalent: the button presses itself while its window is in front.
-            button.property(ButtonContract.keyboardShortcut) { view, shortcut in
+            // AppKit's own key equivalent - the one stated, else the role's - pressing the button while its window is
+            // in front, and the role's look: the accent for the main action, AppKit's mark for a destructive one.
+            button.applies([ButtonContract.keyboardShortcut, ButtonContract.role]) { view, values in
+                let role = values[ButtonContract.role]
+                let shortcut = KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role)
                 let spelled = shortcut.map(AppKitKeys.equivalent(of:)) ?? (key: "", modifiers: [])
                 view.keyEquivalent = spelled.key
                 view.keyEquivalentModifierMask = spelled.modifiers
+                view.bezelColor = role == .primary ? .controlAccentColor : nil
+                view.hasDestructiveAction = role == .destructive
             }
             button.raises(ButtonContract.clicked)
             button.raises(ButtonContract.pressed)

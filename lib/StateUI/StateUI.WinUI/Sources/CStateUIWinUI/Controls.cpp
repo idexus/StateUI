@@ -138,9 +138,12 @@ extern "C" void stateui_winui_button_set_look(
         auto fill = faded(1);
         if (fill) button.Background(fill);
         else button.ClearValue(controls::Control::BackgroundProperty());
-        keep(L"ButtonBackground", fill);
-        keep(L"ButtonBackgroundPointerOver", faded(underPointer));
-        keep(L"ButtonBackgroundPressed", faded(pressed));
+        // The accent's style reads its own keys: a main action's button wears the look written for it too.
+        for (std::wstring style : {L"", L"Accent"}) {
+            keep((style + L"ButtonBackground").c_str(), fill);
+            keep((style + L"ButtonBackgroundPointerOver").c_str(), faded(underPointer));
+            keep((style + L"ButtonBackgroundPressed").c_str(), faded(pressed));
+        }
 
         auto outline = lineWidth > 0 && !drawsOval ? brush(stroke) : xaml::Media::Brush{nullptr};
         if (outline) {
@@ -152,14 +155,39 @@ extern "C" void stateui_winui_button_set_look(
             button.ClearValue(controls::Control::BorderBrushProperty());
             button.ClearValue(controls::Control::BorderThicknessProperty());
         }
-        keep(L"ButtonBorderBrush", outline);
-        keep(L"ButtonBorderBrushPointerOver", outline);
-        keep(L"ButtonBorderBrushPressed", outline);
+        for (std::wstring style : {L"", L"Accent"}) {
+            keep((style + L"ButtonBorderBrush").c_str(), outline);
+            keep((style + L"ButtonBorderBrushPointerOver").c_str(), outline);
+            keep((style + L"ButtonBorderBrushPressed").c_str(), outline);
+        }
 
         if (cornerRadius >= 0) button.CornerRadius({cornerRadius, cornerRadius, cornerRadius, cornerRadius});
         else button.ClearValue(controls::Control::CornerRadiusProperty());
     } catch (...) {
         report("dressing a button");
+    }
+}
+
+extern "C" void stateui_winui_button_set_accent(StateUIObjectRef handle, bool accent) {
+    try {
+        auto button = borrow<controls::Button>(handle);
+        auto style = accent
+            ? xaml::Application::Current().Resources().TryLookup(winrt::box_value(L"AccentButtonStyle")).try_as<xaml::Style>()
+            : nullptr;
+        if (style) button.Style(style);
+        else button.ClearValue(xaml::FrameworkElement::StyleProperty());
+    } catch (...) {
+        report("giving a button the accent");
+    }
+}
+
+extern "C" bool stateui_winui_button_accent(StateUIObjectRef handle) {
+    try {
+        auto style = borrow<controls::Button>(handle).Style();
+        return style && style == xaml::Application::Current().Resources().TryLookup(winrt::box_value(L"AccentButtonStyle"));
+    } catch (...) {
+        report("reading a button's accent");
+        return false;
     }
 }
 

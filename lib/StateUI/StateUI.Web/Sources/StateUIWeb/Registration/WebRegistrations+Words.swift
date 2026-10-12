@@ -63,9 +63,15 @@ extension WebRegistrations {
                     shape: values[BorderElementContract.shape]?.propValue)
             }
             button.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            // The page holds a shortcut on no control: the window's keys reach it, and assistive technology is told.
-            button.property(ButtonContract.keyboardShortcut) { view, shortcut in
+            // The page holds a shortcut on no control - the one stated, else the role's: the window's keys reach it,
+            // and assistive technology is told. The role is the document's own for the main action, a submit, and
+            // the page's look for each.
+            button.applies([ButtonContract.keyboardShortcut, ButtonContract.role]) { view, values in
+                let role = values[ButtonContract.role]
+                let shortcut = KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role)
                 view.attribute("aria-keyshortcuts", shortcut.map { WebKeys.spelled($0, onApple: WebRelay.onApple) })
+                view.attribute("type", role == .primary ? "submit" : "button")
+                view.attribute("data-role", role.map { ["primary", "cancel", "destructive"][Int($0.rawValue)] })
             }
             button.raises(ButtonContract.clicked)
             button.raises(ButtonContract.pressed)

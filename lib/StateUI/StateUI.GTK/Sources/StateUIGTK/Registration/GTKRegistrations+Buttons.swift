@@ -36,7 +36,13 @@ extension GTKRegistrations {
                     spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
             }
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
-            button.property(ButtonContract.keyboardShortcut) { view, shortcut in view.setShortcut(shortcut) }
+            // GTK's own shortcut - the one stated, else the role's - and the role's look, libadwaita's classes for the
+            // suggested action and a destructive one.
+            button.applies([ButtonContract.keyboardShortcut, ButtonContract.role]) { view, values in
+                let role = values[ButtonContract.role]
+                view.setShortcut(KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role))
+                view.setRole(role)
+            }
             button.property(VisualElementContract.isEnabled) { view, enabled in
                 view.setEnabled(enabled ?? true)
             }

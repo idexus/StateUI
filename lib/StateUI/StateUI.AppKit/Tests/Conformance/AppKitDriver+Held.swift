@@ -30,6 +30,12 @@ extension AppKitDriver {
         case .keyboardShortcut where view is NSButton:
             let button = view as! NSButton
             return AppKitKeys.shortcut(key: button.keyEquivalent, modifiers: button.keyEquivalentModifierMask)?.propValue
+        case .role where view is NSButton:
+            // As AppKit holds it: the destructive mark, the main action's accent, the way out's Escape.
+            let button = view as! NSButton
+            if button.hasDestructiveAction { return ButtonRole.destructive.propValue }
+            if button.bezelColor == .controlAccentColor { return ButtonRole.primary.propValue }
+            return button.keyEquivalent == "\u{1b}" ? ButtonRole.cancel.propValue : HostValue.nothing
         case .fontSize, .fontAttributes, .fontFamily, .textColor:
             return try words(property, view)
         case .background:

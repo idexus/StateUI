@@ -143,9 +143,6 @@ namespace stateui {
     /// WinUI's input scope the relay numbers `scope` (`WinUIInputScope`): the on-screen keyboard a field brings up.
     xaml::Input::InputScope inputScope(int32_t scope);
 
-    /// Whether the window whose root is `root` presents sheets over its pages.
-    bool showsSheets(controls::Grid const &root);
-
     /// Keeps what the screen reader was told, which a test reads back (`stateui_winui_announced`).
     void announced(std::string const &words);
 

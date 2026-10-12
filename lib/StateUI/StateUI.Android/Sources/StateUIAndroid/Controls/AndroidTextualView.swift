@@ -120,18 +120,25 @@ class AndroidTextualView: AndroidView {
         withExtendedLifetime(at) { Java.call(reference, JavaAPI.setEllipsize, .object(at?.reference)) }
     }
 
-    /// The words' colour; nil puts back the platform's.
+    /// The words' colour; nil puts back the platform's (`plainWordColours`).
     func setTextColor(_ color: HostValue?) {
-        let made = madeWith
+        writtenTextColor = color
         if let argb = color.flatMap(Self.argb) {
             let colors = Java.callStaticObject(
                 JavaAPI.views, JavaAPI.textColors, .object(AndroidRenderer.context), .int(argb))
             Java.call(reference, JavaAPI.setTextColors, .object(colors))
             Java.release(local: colors)
         } else {
-            Java.call(reference, JavaAPI.setTextColors, .object(made.colors.reference))
+            let plain = plainWordColours
+            withExtendedLifetime(plain) { Java.call(reference, JavaAPI.setTextColors, .object(plain.reference)) }
         }
     }
+
+    /// The colour the tree wrote for the words; nil for none.
+    private(set) var writtenTextColor: HostValue?
+
+    /// The words' colours where none is written: the platform's, as the view was made.
+    var plainWordColours: JavaObject { madeWith.colors }
 
     /// The room around the words, in points; nil puts back the platform's.
     func setPadding(_ insets: Insets?) {

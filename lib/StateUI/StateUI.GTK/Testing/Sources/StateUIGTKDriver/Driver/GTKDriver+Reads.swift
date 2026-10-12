@@ -21,6 +21,14 @@ extension GTKDriver {
         if property == .keyboardShortcut, let shortcut = (view as? GTKButtonView)?.shortcutForTesting {
             return .some(GTKKeys.shortcut(keyval: shortcut.keyval, modifiers: shortcut.modifiers)?.propValue)
         }
+        if property == .role, let button = view as? GTKButtonView {
+            // As the classes libadwaita draws a role by; the way out wears none, its Escape its only mark.
+            let has = { (name: String) in gtk_widget_has_css_class(button.widget, name) != 0 }
+            if has("suggested-action") { return .some(ButtonRole.primary.propValue) }
+            if has("destructive-action") { return .some(ButtonRole.destructive.propValue) }
+            let shortcut = button.shortcutForTesting.flatMap { GTKKeys.shortcut(keyval: $0.keyval, modifiers: $0.modifiers) }
+            return .some(shortcut == KeyboardShortcut(.escape, modifiers: []) ? ButtonRole.cancel.propValue : HostValue.nothing)
+        }
         if property == .tooltip {
             return .some(view.flatMap { gtk_widget_get_tooltip_text($0.widget) }.map { String(cString: $0) }?.propValue)
         }

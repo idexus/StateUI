@@ -402,7 +402,8 @@ struct Editor: View {
 A shortcut is a `Key` - a character, `"s"`, or one of `.return`, `.escape`,
 `.delete`, the arrows and `.f1` to `.f12` - with the keys held with it, or with
 none: `keyboardShortcut("1", modifiers: [])` presses a button on the key `1`
-alone, except while a field is being typed into, where the `1` is written.
+alone, except while a field is being typed into, where the `1` is written -
+and Return there ends what was typed.
 `.primary` alone is held unless the shortcut says otherwise: Command on Apple's
 platforms, Control on Windows, Linux and Android, so one `keyboardShortcut("s")`
 is ⌘S on the Mac and Ctrl+S elsewhere; `.shift` and `.alt` add Shift and
@@ -446,6 +447,40 @@ struct Document: View {
 A context menu's entry only shows its shortcut, telling the user the keys of
 the command it repeats; pressing them chooses the menu bar's entry, never the
 context menu's.
+
+### A button's role
+
+A role says what a button stands for in its window, and gives it a key:
+
+```swift
+struct Rename: View {
+    @State private var name = ""
+    @State private var renamed = false
+
+    var body: some View {
+        VStack {
+            TextField($name)
+                .onSubmitted { renamed = true }
+            HStack {
+                Button("Cancel")
+                    .role(.cancel)
+                    .onClicked { name = "" }
+                Button("Rename")
+                    .role(.primary)
+                    .onClicked { renamed = true }
+            }
+        }
+    }
+}
+```
+
+`.primary` is the window's main action: drawn with the platform's emphasis and
+pressed by Return. `.cancel` is the way out, pressed by Escape. `.destructive`
+marks an action that destroys something, in the platform's colour for one
+where it has one; a platform with no look for a role keeps its plain button. A
+shortcut the button states takes the place of its role's key. Return belongs
+to a field being typed into - it ends the words there, and `.onSubmitted`
+hears it - so the main action takes Return while no field holds the keyboard.
 
 ## Tooltips
 

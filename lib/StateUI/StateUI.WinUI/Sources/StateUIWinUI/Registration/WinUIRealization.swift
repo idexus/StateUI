@@ -48,6 +48,7 @@ enum WinUIRealization {
         .complete("MenuItemElement", "isDestructive"),
         .complete("MenuItemElement", "isEnabled"),
         .complete("MenuItemElement", "keyboardShortcut"),
+        .partial("Button", "role", missing: "WinUI has no look for the way out or a destructive action, only the main action's accent."),
         .complete("MenuItemElement", "text"),
         .complete("PageElement", "icon"),
         .complete("PageElement", "title"),

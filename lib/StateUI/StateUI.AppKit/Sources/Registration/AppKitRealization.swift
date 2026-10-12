@@ -57,6 +57,7 @@ enum AppKitRealization {
             + "initializer that sets nothing, which a list of some items has not."),
         .partial("Button", "contentMode", missing: "AppKit's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
         .complete("Button", "padding"),
+        .partial("Button", "role", missing: "AppKit draws no destructive look on a button standing alone; it marks one for the system."),
         .complete("Text", "accessibilityIdentifier"),
         .complete("Text", "tracking"),
         .complete("Text", "fontAttributes"),

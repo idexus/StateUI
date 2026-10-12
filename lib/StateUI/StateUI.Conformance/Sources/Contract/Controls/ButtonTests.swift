@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// `ButtonContract` on a host: each click heard once, a press heard as it goes down and as it is let go, the
-/// button's icon, where it stands, how far from the words, and how the words break, and the keyboard's shortcut
-/// pressing it.
+/// button's icon, where it stands, how far from the words, and how the words break, the keyboard's shortcut
+/// pressing it, and its role - drawn, and its key pressing it.
 @_spi(Host) public enum ButtonTests: ConformanceFamily {
     public static let name = "Button"
 
@@ -114,6 +114,51 @@
                 try s.settle { try s.focused(field) }
                 try s.perform(.pressKeys(KeyboardShortcut("1", modifiers: [])), on: s.element("one"))
                 s.expect(heard.values, [], "the key is the field's, the button stays as it was")
+            },
+            Aspects.holds(ButtonContract.role, on: "Button", .primary, then: .destructive,
+                          with: [Write(TextualElementContract.text, "Go")]),
+            ConformanceCase("aRolesKeyPressesTheButtonUnlessItStatesOne", proves: [
+                Covered(ButtonContract.role), Covered(ButtonContract.keyboardShortcut),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let heard = Received<String>()
+                s.start {
+                    VStack {
+                        Button("Cancel").role(.cancel).onClicked { heard.values.append("cancel") }.id("cancel")
+                        Button("Save").role(.primary).onClicked { heard.values.append("save") }.id("save")
+                        Button("Send").role(.primary).keyboardShortcut("e").onClicked { heard.values.append("send") }
+                            .id("send")
+                    }
+                }
+
+                try s.perform(.pressKeys(KeyboardShortcut(.return, modifiers: [])), on: s.element("save"))
+                s.settle { heard.values == ["save"] }
+                s.expect(heard.values, ["save"], "Return presses the main action")
+
+                try s.perform(.pressKeys(KeyboardShortcut(.escape, modifiers: [])), on: s.element("cancel"))
+                s.settle { heard.values == ["save", "cancel"] }
+                s.expect(heard.values, ["save", "cancel"], "Escape presses the way out")
+
+                try s.perform(.pressKeys(KeyboardShortcut("e")), on: s.element("send"))
+                s.settle { heard.values == ["save", "cancel", "send"] }
+                s.expect(heard.values, ["save", "cancel", "send"], "a shortcut stated takes the place of the role's key")
+            },
+            ConformanceCase("returnIsTheFieldsWhileItIsTypedInto", proves: [
+                Covered(ButtonContract.role),
+            ], needs: [Covered(ButtonContract.clicked), Covered(VisualElementContract.focus, on: "TextField")]) { s in
+                let heard = Received<String>()
+                s.start {
+                    VStack {
+                        TextField("").id("field")
+                        Button("Save").role(.primary).onClicked { heard.values.append("save") }.id("save")
+                    }
+                }
+                let field = try s.element("field")
+
+                try s.perform(.focus, on: field)
+                try s.settle { try s.focused(field) }
+                try s.perform(.pressKeys(KeyboardShortcut(.return, modifiers: [])), on: s.element("save"))
+                s.turn()
+                s.expect(heard.values, [], "Return ends what was typed, the button stays as it was")
             },
             Aspects.holds(ButtonContract.lineBreak, on: "Button", .wordWrap, then: .tailTruncation,
                           with: [Write(TextualElementContract.text, "Words enough to break across more than one line")]),
