@@ -18,9 +18,12 @@
         return radii.map { $0.isFinite ? max(0, $0) : 0 }
     }
 
-    /// A corner's radius in a room `width` by `height`: no more than half the side it rounds.
+    /// A corner's radius in a room `width` by `height`, alike across and down: round, and no more than half the
+    /// shorter side - so a radius past half a wide box's height rounds its ends whole, a capsule, never an oval.
+    /// Design: docs/design/host/layout.md#a-box
     public static func fitted(_ radius: Double, width: Double, height: Double) -> (width: Double, height: Double) {
-        (min(radius, width / 2), min(radius, height / 2))
+        let kept = min(radius, width / 2, height / 2)
+        return (kept, kept)
     }
 
     /// The outline the tree's `value` asks for: a rectangle where it asks none, a rounded one's radius never below

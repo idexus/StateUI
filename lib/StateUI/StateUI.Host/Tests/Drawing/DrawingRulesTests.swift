@@ -121,13 +121,14 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertNil(PropValue.number(1).argb)
     }
 
-    /// Corners stand clockwise from the top left, never below nothing, and no corner rounds more than half its
-    /// side.
+    /// Corners stand clockwise from the top left, never below nothing, and each is round, no more than half the
+    /// shorter side: a radius past half the height rounds a wide box's ends whole, a capsule.
     func testABoxsCornersStandClockwiseAndFitTheirRoom() {
         XCTAssertEqual(BoxArithmetic.clockwise(.corners(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: -4)),
                        [1, 2, 0, 3])
         XCTAssertEqual(BoxArithmetic.clockwise(nil), [0, 0, 0, 0])
-        XCTAssertTrue(BoxArithmetic.fitted(30, width: 100, height: 20) == (30, 10))
+        XCTAssertTrue(BoxArithmetic.fitted(30, width: 100, height: 20) == (10, 10), "a capsule, not an oval")
+        XCTAssertTrue(BoxArithmetic.fitted(6, width: 100, height: 20) == (6, 6))
     }
 
     /// An outline is a rectangle where the tree asks none, a rounded one's radius never below nothing; it is drawn

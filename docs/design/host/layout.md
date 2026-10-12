@@ -220,7 +220,9 @@ page's with the row's height added.
 A box - a layout's, a button's, a colour box's, a rectangle's - is read the
 same way on every host (`BoxArithmetic`): its corners' radii stand clockwise
 from the top left, the order toolkits take them in, each never below nothing;
-a corner rounds no more than half the side it rounds; its outline is a
+a corner is round and no more than half the shorter side, so a radius past
+half a wide box's height rounds its ends whole - a capsule, not an oval; its
+outline is a
 rectangle where the tree asks none, a rounded one's radius never below
 nothing; and the outline is drawn one wide where the tree gives it a colour
 and no width, and not at all without a colour. A fill is read as the tree

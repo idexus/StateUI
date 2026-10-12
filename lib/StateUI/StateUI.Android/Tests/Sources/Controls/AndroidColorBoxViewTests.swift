@@ -11,7 +11,7 @@ final class AndroidColorBoxViewTests: XCTestCase {
         [
             ("testABoxDrawsItsColourWithinItsCornersOverItsBackground", testABoxDrawsItsColourWithinItsCornersOverItsBackground),
             ("testABoxAsksForNoRoom", testABoxAsksForNoRoom),
-            ("testACornerRoundsNoMoreThanHalfTheSideItRounds", testACornerRoundsNoMoreThanHalfTheSideItRounds),
+            ("testACornerRoundsNoMoreThanHalfTheShorterSide", testACornerRoundsNoMoreThanHalfTheShorterSide),
         ]
     }
 
@@ -36,9 +36,9 @@ final class AndroidColorBoxViewTests: XCTestCase {
         }
     }
 
-    /// A corner rounds no more than half the side it rounds, by the host layer's rule: a radius wider than a short
-    /// box rounds it in a quarter of an ellipse, long across and half the box tall.
-    func testACornerRoundsNoMoreThanHalfTheSideItRounds() throws {
+    /// A corner is round and no more than half the shorter side, by the host layer's rule: a radius wider than a
+    /// short box rounds its ends whole, a capsule.
+    func testACornerRoundsNoMoreThanHalfTheShorterSide() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
                 ColorBox(Color("#FF0000"))
@@ -52,8 +52,10 @@ final class AndroidColorBoxViewTests: XCTestCase {
             host.layOut()
 
             let box = try XCTUnwrap(host.views(AndroidColorBoxView.self).first)
-            let drawn = box.pixels(at: [(60, 8), (200, 8)])
-            XCTAssertEqual(drawn, [0xFF00_FF00, 0xFFFF_0000], drawn.map { String($0, radix: 16) }.description)
+            let drawn = box.pixels(at: [(8, 8), (60, 8), (200, 8)])
+            XCTAssertEqual(
+                drawn, [0xFF00_FF00, 0xFFFF_0000, 0xFFFF_0000],
+                "beyond the round corner; within the end an oval would leave empty " + drawn.map { String($0, radix: 16) }.description)
         }
     }
 
