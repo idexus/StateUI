@@ -31,7 +31,8 @@ namespace {
     }
 
     /// Writes a menu's flat entries into the lists they belong to: an item (0), a separator (1), a submenu opening
-    /// (2) and closing (3). On a bar, a menu at the top is one of the bar's own.
+    /// (2) and closing (3), an item standing unchecked (4) or checked (5). On a bar, a menu at the top is one of the
+    /// bar's own.
     struct Writer {
         int64_t view;
         controls::MenuBar bar{nullptr};
@@ -55,8 +56,11 @@ namespace {
                 return;
             }
             switch (kind) {
-            case 0: {
-                controls::MenuFlyoutItem item;
+            case 0:
+            case 4:
+            case 5: {
+                controls::MenuFlyoutItem item = kind == 0 ? controls::MenuFlyoutItem() : controls::ToggleMenuFlyoutItem();
+                if (kind != 0) item.as<controls::ToggleMenuFlyoutItem>().IsChecked(kind == 5);
                 item.Text(text(title));
                 item.IsEnabled(enabled);
                 identify(item, identifier);
@@ -206,7 +210,9 @@ extern "C" void stateui_winui_menus_choose(StateUIObjectRef handle, int32_t inde
     try {
         for (auto const &entries : menus(as<xaml::UIElement>(handle))) {
             if (auto chosen = item(entries, index)) {
-                pattern<provider::IInvokeProvider>(chosen, PatternInterface::Invoke).Invoke();
+                // A checked item's peer offers toggling, as assistive technology chooses it, and no invoking.
+                if (auto invoke = pattern<provider::IInvokeProvider>(chosen, PatternInterface::Invoke)) invoke.Invoke();
+                else pattern<provider::IToggleProvider>(chosen, PatternInterface::Toggle).Toggle();
                 return;
             }
         }
@@ -232,6 +238,10 @@ extern "C" int32_t stateui_winui_menus_items(StateUIObjectRef handle, char const
                     else if (asked == "icon") text += iconFile(item.Icon());
                     else if (asked == "destructive")
                         text += isDestructive(item, L"MenuFlyoutItemForeground") ? L"1" : L"0";
+                    else if (asked == "checked") {
+                        auto toggle = item.try_as<controls::ToggleMenuFlyoutItem>();
+                        text += toggle && toggle.IsChecked() ? L"1" : L"0";
+                    }
                 }
             }
         };

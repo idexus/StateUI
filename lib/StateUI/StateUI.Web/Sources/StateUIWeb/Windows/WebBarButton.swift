@@ -21,7 +21,7 @@ final class WebBarButton: WebDOMView {
         WebRelay.insert(words.node, into: node, at: 1)
         listen("click") { [weak self] in
             guard let self, let item, let element = item.native as? WebElement else { return }
-            guard item.type == .menu else { return element.send(.clicked, []) }
+            guard item.type == .menu else { return element.choose() }
             WebMenu(MenuEntry.entries(of: item)).show(under: self)
         }
     }

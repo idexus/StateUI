@@ -64,7 +64,7 @@ extension UIKitElement {
             title: item.value(.text)?.string ?? "", icon: item.value(.icon)?.string,
             isEnabled: item.isEffectivelyEnabled, isDestructive: item.value(.isDestructive)?.bool == true,
             identifier: item.value(.accessibilityIdentifier)?.string,
-            perform: { [weak item] in item?.uiKit.send(.clicked, []) }, element: item.uiKit)
+            perform: { [weak item] in item?.uiKit.choose() }, element: item.uiKit)
     }
 
     /// Writes the bar of every page in this arrangement and every one it holds.

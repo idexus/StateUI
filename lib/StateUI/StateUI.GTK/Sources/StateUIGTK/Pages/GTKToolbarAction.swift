@@ -33,7 +33,7 @@ struct GTKToolbarAction {
 
     /// Tells the item it was chosen.
     func perform() {
-        item?.gtk.send(.clicked, [])
+        item?.gtk.choose()
     }
 
     /// Whether two actions draw the same button. The item an action stands for is taken again on every composition.

@@ -58,6 +58,7 @@ extension WebDriver {
         case .text: return try WebBrowser.evaluate("[...e.querySelectorAll('span')].pop()?.textContent ?? null", on: item)?.propValue
         case .isEnabled: return try (!WebBrowser.truth("e.disabled", on: item)).propValue
         case .isDestructive: return try WebBrowser.truth("e.hasAttribute('data-destructive')", on: item).propValue
+        case .isOn: return try WebBrowser.truth("e.getAttribute('aria-checked') === 'true'", on: item).propValue
         case .accessibilityIdentifier: return .some(try WebBrowser.evaluate("e.dataset.identifier ?? null", on: item)?.propValue)
         case .icon: return .some(try picture("e.querySelector('img')", on: item))
         default: return nil

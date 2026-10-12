@@ -453,6 +453,26 @@ Text(document.title)
     }
 ```
 
+An item may stand for a setting: given `isOn`, it shows the platform's check,
+and given a binding, choosing it turns the state over before its `onClicked`
+runs:
+
+```swift
+struct Page: View {
+    @State private var showsRuler = false
+
+    var body: some View {
+        Text("Draft")
+            .contextMenu {
+                MenuItem("Show Ruler").isOn($showsRuler)
+            }
+    }
+}
+```
+
+`.onToggled` hears each turn with the way it turned to. An item that says
+neither way shows no check and is only clicked.
+
 Menu and toolbar structures are reconciled by identity like other ordered
 children. A platform without that surface may omit its presentation; never put
 the only route to an essential action behind a context menu. Consult

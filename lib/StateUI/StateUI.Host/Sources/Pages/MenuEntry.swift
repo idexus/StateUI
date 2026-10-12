@@ -41,6 +41,9 @@
     /// The identifier a test and assistive technology find it by, where one is said.
     public let identifier: String?
 
+    /// Whether an item stands checked, or not; nil for one standing neither way, which shows no mark.
+    public let isOn: Bool?
+
     /// A submenu's entries, in order.
     public let entries: [MenuEntry]
 
@@ -85,6 +88,7 @@
         isEnabled = element?.isEffectivelyEnabled ?? true
         isDestructive = element?.value(.isDestructive)?.bool == true
         identifier = element?.value(.accessibilityIdentifier)?.string
+        isOn = kind == .item ? element?.value(.isOn)?.bool : nil
         self.entries = entries
     }
 }

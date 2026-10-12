@@ -48,6 +48,7 @@ private struct EveryPropertyPage: View {
                         .icon(ImageSource("mark.png"))
                         .isDestructive(true)
                         .isEnabled(false)
+                        .isOn(true)
                         .onClicked {}
 
                     Menu("Recent") {

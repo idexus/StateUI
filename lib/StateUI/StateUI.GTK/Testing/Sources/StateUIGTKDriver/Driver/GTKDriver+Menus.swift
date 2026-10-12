@@ -39,13 +39,18 @@ extension GTKDriver {
         _ = gtk_widget_activate_action_variant(widget, GTKMenu.actionGroup + "." + name, nil)
     }
 
-    /// What the menu showing the item `element` holds of it: its caption, and whether it can be chosen.
+    /// What the menu showing the item `element` holds of it: its caption, whether it can be chosen, and whether it
+    /// stands checked.
     func menuItemHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
         guard let (_, menu, name) = menuItem(element), let (holder, index) = Self.item(of: name, in: g_menu_model(menu.model))
         else { throw DriverCannot(reading: property, of: element) }
         switch property {
         case .text: return Self.attribute(holder, index, "label").map { $0.propValue }
         case .isEnabled: return (g_action_group_get_action_enabled(OpaquePointer(menu.actions), name) != 0).propValue
+        case .isOn:
+            guard let state = g_action_group_get_action_state(OpaquePointer(menu.actions), name) else { return false.propValue }
+            defer { g_variant_unref(state) }
+            return (g_variant_get_boolean(state) != 0).propValue
         default: throw DriverCannot(reading: property, of: element)
         }
     }

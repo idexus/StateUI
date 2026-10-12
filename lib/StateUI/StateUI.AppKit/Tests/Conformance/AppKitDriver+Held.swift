@@ -143,6 +143,7 @@ extension AppKitDriver {
             switch property {
             case .text: return item.title.propValue
             case .isEnabled: return item.isEnabled.propValue
+            case .isOn: return (item.state == .on).propValue
             case .accessibilityIdentifier: return item.accessibilityIdentifier().propValue
             case .icon: return pictureName(item.image)
             case .isDestructive:

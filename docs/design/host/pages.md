@@ -230,3 +230,17 @@ own, each entry with its caption, its picture, whether the user can choose
 it, whether choosing it destroys something and its identifier; a menu bar
 holds only its menus. A host builds its toolkit's menu
 from the walk, and an item's element hears it chosen.
+
+## A checked entry
+
+An item may stand checked or not (`MenuItemContract.isOn`), which each host
+shows as its toolkit marks a setting - a check beside it. Choosing such an
+item is one rule on every host (`MountedElement.chosen`): it turns the other
+way first - `toggled` with the way it turned to, written through a binding -
+and then it is clicked. An item that says neither way is only clicked, and
+shows no mark.
+
+A menu is walked from the tree, never a channel of its own, so the two-way
+`isOn($state)` reads its state where the menu is built: the state turning
+builds that body again, and the walk shows the new mark on every host the
+same way a caption changing does.

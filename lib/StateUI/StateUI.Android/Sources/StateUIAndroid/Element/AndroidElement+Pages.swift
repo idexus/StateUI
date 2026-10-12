@@ -172,7 +172,7 @@ extension AndroidElement {
         bar.items = items
         bar.onMenuChose = { [weak bar] index in
             guard let bar, bar.items.indices.contains(index) else { return }
-            bar.items[index].android.send(.clicked, [])
+            bar.items[index].android.choose()
         }
         bar.onNavigation = { [weak self] in
             guard let self else { return }

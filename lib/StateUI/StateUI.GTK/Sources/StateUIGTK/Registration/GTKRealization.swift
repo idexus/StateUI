@@ -45,6 +45,8 @@ enum GTKRealization {
         .complete("MenuBar", "order"),
         .complete("Menu", "isEnabled"),
         .complete("Menu", "text"),
+        .complete("MenuItem", "isOn"),
+        .complete("MenuItem", "toggled"),
         .complete("MenuItemElement", "clicked"),
         .complete("MenuItemElement", "icon"),
         .complete("MenuItemElement", "isEnabled"),

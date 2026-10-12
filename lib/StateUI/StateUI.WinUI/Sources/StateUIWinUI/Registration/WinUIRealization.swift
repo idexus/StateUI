@@ -41,6 +41,8 @@ enum WinUIRealization {
         .complete("BarElement", "barIcon"),
         .complete("BarElement", "barSubtitle"),
         .complete("BarElement", "barTitle"),
+        .complete("MenuItem", "isOn"),
+        .complete("MenuItem", "toggled"),
         .complete("MenuItemElement", "clicked"),
         .complete("MenuItemElement", "icon"),
         .complete("MenuItemElement", "isDestructive"),

@@ -7,7 +7,8 @@ import CStateUIGTK
 
 /// A menu as GTK's menus hold one: the host layer's walk of its entries (`MenuEntry`) as a `GMenu` - the entries
 /// between two separators a section, a submenu a link - each item an action of the group the menu hands the widget
-/// it stands on, enabled where the item can be chosen. GNOME's menus show words alone: no picture, no warning.
+/// it stands on, enabled where the item can be chosen; an item standing checked or not an action with a state,
+/// which GTK draws with its check. GNOME's menus show words alone: no picture, no warning.
 /// Design: docs/design/platforms/gtk/pages.md#menus
 @MainActor
 final class GTKMenu {
@@ -32,6 +33,9 @@ final class GTKMenu {
     /// The elements its items run, in order.
     private var runs: [ObjectIdentifier?] = []
 
+    /// Whether each item stands checked, in order; nil for one standing neither way.
+    private var checks: [Bool?] = []
+
     /// How many submenus it holds, each with the action it opens by.
     private var submenus = 0
 
@@ -54,7 +58,7 @@ final class GTKMenu {
     /// Whether the menu stands as `other` does: the same entries, captions and items that can be chosen, each run by
     /// the same element.
     func stands(like other: GTKMenu?) -> Bool {
-        drawn == other?.drawn && runs == other?.runs
+        drawn == other?.drawn && runs == other?.runs && checks == other?.checks
     }
 
     /// Adds `entries` to `menu`, a section between each two separators.
@@ -92,7 +96,9 @@ final class GTKMenu {
             return
         }
         let name = "e\(items.count)"
-        let action = g_simple_action_new(name, nil)!
+        checks.append(entry.isOn)
+        let action = entry.isOn.map { g_simple_action_new_stateful(name, nil, g_variant_new_boolean($0 ? 1 : 0))! }
+            ?? g_simple_action_new(name, nil)!
         g_simple_action_set_enabled(action, entry.isEnabled ? 1 : 0)
         let element = entry.element
         items[name] = { [weak element] in element }
@@ -103,7 +109,7 @@ final class GTKMenu {
         Self.chosen[number] = { [weak element] in element }
         connectSignal(UnsafeMutableRawPointer(action), "activate", number: number) {
             (_: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?, data: gpointer?) in
-            MainActor.assumeIsolated { GTKMenu.chosen[viewNumber(data)]?()?.gtk.send(.clicked, []) }
+            MainActor.assumeIsolated { GTKMenu.chosen[viewNumber(data)]?()?.gtk.choose() }
         }
         g_action_map_add_action(OpaquePointer(actions), action)
         g_object_unref(UnsafeMutableRawPointer(action))

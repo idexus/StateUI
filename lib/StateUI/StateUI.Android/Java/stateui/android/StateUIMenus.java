@@ -27,10 +27,10 @@ final class StateUIMenus {
     static final int ITEM = 0, MENU = 1, END = 2, SEPARATOR = 3, KIND = 3;
 
     /**
-     * An entry's flags: not enabled, destructive, standing on the bar beside the title where room allows, and
-     * showing its words there beside its picture where room allows.
+     * An entry's flags: not enabled, destructive, standing on the bar beside the title where room allows, showing
+     * its words there beside its picture where room allows, standing checked or not, and checked.
      */
-    static final int DISABLED = 4, DESTRUCTIVE = 8, ON_BAR = 16, WITH_TEXT = 32;
+    static final int DISABLED = 4, DESTRUCTIVE = 8, ON_BAR = 16, WITH_TEXT = 32, CHECKABLE = 64, CHECKED = 128;
 
     private StateUIMenus() {}
 
@@ -69,6 +69,10 @@ final class StateUIMenus {
                         added.setIcon(drawable);
                     }
                     added.setEnabled((entry & DISABLED) == 0);
+                    if ((entry & CHECKABLE) != 0) {
+                        added.setCheckable(true);
+                        added.setChecked((entry & CHECKED) != 0);
+                    }
                     int withText = (entry & WITH_TEXT) != 0 ? MenuItem.SHOW_AS_ACTION_WITH_TEXT : 0;
                     added.setShowAsAction(
                             (entry & ON_BAR) != 0 ? MenuItem.SHOW_AS_ACTION_IF_ROOM | withText : MenuItem.SHOW_AS_ACTION_NEVER);

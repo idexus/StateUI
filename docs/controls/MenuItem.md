@@ -36,20 +36,24 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [MenuItemElement](t
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (6)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>5 ✅ · 1 ☑️</td><td><code>NSMenu</code> / <code>NSMenuItem</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>6 ✅</td><td><code>UIMenu</code> / <code>UIAction</code>; <code>UIContextMenuInteraction</code>; <code>UIMenuBuilder</code> menu bar</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>4 ✅ · 2 –</td><td><code>ContextMenu</code> / <code>SubMenu</code> / <code>MenuItem</code>; a menu bar's menus in the <code>Toolbar</code> overflow</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>6 ✅</td><td><code>MenuFlyout</code> / <code>MenuBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>3 ✅ · 3 –</td><td><code>GMenu</code> in a <code>GtkPopoverMenu</code>; a menu bar as a <code>GtkMenuButton</code> main menu</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>6 ✅</td><td>ARIA <code>menu</code> in a <code>popover</code>; a menu bar's menus under the bar's More button</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (8)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>7 ✅ · 1 ☑️</td><td><code>NSMenu</code> / <code>NSMenuItem</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>8 ✅</td><td><code>UIMenu</code> / <code>UIAction</code>; <code>UIContextMenuInteraction</code>; <code>UIMenuBuilder</code> menu bar</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 2 –</td><td><code>ContextMenu</code> / <code>SubMenu</code> / <code>MenuItem</code>; a menu bar's menus in the <code>Toolbar</code> overflow</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>8 ✅</td><td><code>MenuFlyout</code> / <code>MenuBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>5 ✅ · 3 –</td><td><code>GMenu</code> in a <code>GtkPopoverMenu</code>; a menu bar as a <code>GtkMenuButton</code> main menu</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>8 ✅</td><td>ARIA <code>menu</code> in a <code>popover</code>; a menu bar's menus under the bar's More button</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/MenuItemContract.swift`.
 
 ## MenuItem's own members
 
-MenuItem declares no members of its own.
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>isOn</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>onToggled</code> (<code>toggled</code>)</td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

@@ -84,13 +84,14 @@ extension AndroidDriver {
                 Self.testMenus, Self.heldById, .object(TestContext.context.reference), .object(menu.reference), .int(id)
             ).map { Java.text($0) }
         }
-        guard let lines = held?.split(separator: "\n", omittingEmptySubsequences: false), lines.count == 4 else {
+        guard let lines = held?.split(separator: "\n", omittingEmptySubsequences: false), lines.count == 5 else {
             throw DriverCannot(reading: property, of: element)
         }
         switch property {
         case .text: return String(lines[0]).propValue
         case .isEnabled: return (lines[1] == "1").propValue
         case .isDestructive: return (lines[2] == "1").propValue
+        case .isOn: return (lines[4] == "1").propValue
         case .icon: throw DriverCannot("read a picture's name", because: "Android's item keeps its picture, not its name")
         default: throw DriverCannot(reading: property, of: element)
         }

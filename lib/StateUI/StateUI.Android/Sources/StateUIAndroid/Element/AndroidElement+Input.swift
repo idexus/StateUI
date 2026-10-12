@@ -12,6 +12,12 @@ extension AndroidElement {
         element.send(event, values, in: host.runtime)
     }
 
+    /// A menu's entry or a bar's item chosen (`MountedElement.chosen`).
+    func choose() {
+        guard let host else { return }
+        element.chosen(in: host.runtime)
+    }
+
     /// A value the user changed in the view, by the host layer's rule (`reportUserChange`): a radio button's
     /// peers turned off on their own buttons.
     func report(_ property: Prop, _ event: Event, _ value: HostValue) {

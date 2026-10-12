@@ -40,6 +40,8 @@ private struct BarredPage: View {
                         .icon("nav_media.png")
                         .isDestructive(false)
                         .isEnabled(true)
+                        .isOn(false)
+                        .onToggled { _ in }
                         .onClicked {}
                     Divider().id("sep")
                     Menu("Recent") {

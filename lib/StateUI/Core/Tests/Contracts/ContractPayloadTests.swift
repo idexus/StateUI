@@ -69,6 +69,7 @@ final class ContractPayloadTests: XCTestCase {
         check(PickerContract.opened)
         check(PickerContract.selectedIndexChanged, [.number(-1)])
         check(MarkerContract.selected)
+        check(MenuItemContract.toggled, [.bool(true)])
         check(MarkerContract.detailsClicked)
         check(RadioButtonContract.toggled, [.bool(false)])
         check(SceneContract.activated)

@@ -84,7 +84,8 @@ public final class TestMenus {
 
     /**
      * What the item of `id` holds, a line each: its words, then 1 or 0 for whether it can be chosen, whether its
-     * words are in the theme's error colour and whether it has a picture; null where the menu holds no such item.
+     * words are in the theme's error colour, whether it has a picture and whether it stands checked; null where the
+     * menu holds no such item.
      */
     public static String held(Context context, Menu menu, int id) {
         MenuItem item = menu.findItem(id);
@@ -94,7 +95,7 @@ public final class TestMenus {
         attributes.recycle();
         CharSequence title = item.getTitle();
         return title + "\n" + (item.isEnabled() ? 1 : 0) + "\n" + (colour(title) == error ? 1 : 0)
-                + "\n" + (item.getIcon() != null ? 1 : 0);
+                + "\n" + (item.getIcon() != null ? 1 : 0) + "\n" + (item.isChecked() ? 1 : 0);
     }
 
     /** Chooses the item whose words are `text`, in `menu` or a submenu of it, as a touch does; whether it ran. */

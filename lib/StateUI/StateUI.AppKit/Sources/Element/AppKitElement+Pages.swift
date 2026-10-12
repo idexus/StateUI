@@ -113,6 +113,7 @@ enum AppKitMenus {
         item.attributedTitle = NSAttributedString(
             string: entry.title, attributes: entry.isDestructive ? [.foregroundColor: NSColor.systemRed] : [:])
 
+        item.state = entry.isOn == true ? .on : .off
         if entry.kind == .item {
             item.target = element
             item.action = #selector(AppKitElement.clicked(_:))

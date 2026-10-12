@@ -489,16 +489,16 @@ extension WinUIDriver {
         switch name {
         case "text": return .string(shown[place].caption)
         case "isEnabled": return shown[place].enabled.propValue
-        case "accessibilityIdentifier", "icon", "isDestructive":
+        case "accessibilityIdentifier", "icon", "isDestructive", "isOn":
             guard kind == .menuItem else { return nil }
-            let what = name == "icon" ? "icon" : name == "isDestructive" ? "destructive" : "identifier"
+            let what = ["icon": "icon", "isDestructive": "destructive", "isOn": "checked"][name] ?? "identifier"
             let items = WinUIStrings.read { stateui_winui_menus_items(owner.handle, what, $0, $1) }
                 .split(separator: ";", omittingEmptySubsequences: false).map(String.init)
             let index = menuPlace(of: element)?.index ?? 0
             guard items.indices.contains(index) else { return nil }
             switch name {
             case "icon": return Self.picture(items[index], named: element)
-            case "isDestructive": return (items[index] == "1").propValue
+            case "isDestructive", "isOn": return (items[index] == "1").propValue
             default: return .string(items[index])
             }
         default: return nil

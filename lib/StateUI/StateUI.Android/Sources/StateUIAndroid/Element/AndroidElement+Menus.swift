@@ -29,7 +29,7 @@ extension AndroidElement {
             AndroidMenu.fill(menu, view: view, Self.menuEntries(MenuEntry.entries(of: slot.element), items: &items))
             view.onMenuChose = { index in
                 guard items.indices.contains(index) else { return }
-                items[index].android.send(.clicked, [])
+                items[index].android.choose()
             }
         }
     }
@@ -44,7 +44,8 @@ extension AndroidElement {
                 element.android.menuPlace = items.count
                 items.append(element)
                 return .item(AndroidMenu.Item(
-                    text: entry.title, isEnabled: entry.isEnabled, isDestructive: entry.isDestructive))
+                    text: entry.title, isEnabled: entry.isEnabled, isDestructive: entry.isDestructive,
+                    isOn: entry.isOn))
             case .submenu:
                 return .menu(entry.title, isEnabled: entry.isEnabled, menuEntries(entry.entries, items: &items))
             case .separator:

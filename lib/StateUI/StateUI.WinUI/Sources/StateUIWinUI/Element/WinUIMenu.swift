@@ -53,14 +53,15 @@ struct WinUIMenu {
         }
     }
 
-    /// The relay's kinds: an item 0, a separator 1, a submenu opening 2 and closing 3.
+    /// The relay's kinds: an item 0, a separator 1, a submenu opening 2 and closing 3, an item standing unchecked 4
+    /// or checked 5.
     private mutating func add(_ entries: [MenuEntry]) {
         for entry in entries {
             switch entry.kind {
             case .item:
-                append(0, entry.title, entry.isEnabled, entry.identifier,
+                append(entry.isOn.map { $0 ? 5 : 4 } ?? 0, entry.title, entry.isEnabled, entry.identifier,
                        icon: entry.icon.map(PictureArithmetic.files(for:)) ?? [], destructive: entry.isDestructive)
-                actions.append { [weak element = entry.element] in element?.winUI.send(.clicked, []) }
+                actions.append { [weak element = entry.element] in element?.winUI.choose() }
             case .separator:
                 append(1, "", true, nil)
             case .submenu:

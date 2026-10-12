@@ -45,11 +45,12 @@ enum UIKitMenus {
         let action = UIAction(
             title: entry.title, image: entry.icon.flatMap(UIKitRenderer.image(named:)),
             identifier: element?.actionIdentifier
-        ) { [weak element] _ in element?.send(.clicked, []) }
+        ) { [weak element] _ in element?.choose() }
         var attributes: UIMenuElement.Attributes = []
         if !entry.isEnabled || !inReach { attributes.insert(.disabled) }
         if entry.isDestructive { attributes.insert(.destructive) }
         action.attributes = attributes
+        action.state = entry.isOn == true ? .on : .off
         action.accessibilityIdentifier = entry.identifier
         element?.menuAction = action
         return action

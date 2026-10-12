@@ -58,7 +58,7 @@ final class WebMenu {
             button.listen("click") { [weak self] in
                 guard let self, entry.isEnabled else { return }
                 takeDown()
-                (entry.element?.native as? WebElement)?.send(.clicked, [])
+                (entry.element?.native as? WebElement)?.choose()
             }
         case .submenu:
             let button = item(entry)
@@ -77,7 +77,9 @@ final class WebMenu {
     private func item(_ entry: MenuEntry) -> WebDOMView {
         let button = WebDOMView(tag: "button")
         button.attribute("type", "button")
-        button.attribute("role", "menuitem")
+        // An item standing checked or not is the document's checkbox item, its mark drawn before its words.
+        button.attribute("role", entry.isOn == nil ? "menuitem" : "menuitemcheckbox")
+        button.attribute("aria-checked", entry.isOn.map { $0 ? "true" : "false" })
         button.attribute("data-identifier", entry.identifier)
         button.attribute("data-destructive", entry.isDestructive ? "" : nil)
         button.attribute("disabled", entry.isEnabled ? nil : "")

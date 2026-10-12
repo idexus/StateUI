@@ -1683,6 +1683,7 @@ enum Listings {
         // Sources/Samples/Navigation/ContextMenuSample.swift
         @State private var items = ["Alpha", "Beta", "Gamma"]
         @State private var chosen = "nothing yet"
+        @State private var large = false
 
         var body: some View {
             VStack {
@@ -1712,6 +1713,10 @@ enum Listings {
                                         }
                                 }
 
+                                // A setting: its check follows the state, and
+                                // choosing it turns the state over.
+                                MenuItem("Large text").isOn($large)
+
                                 Divider()
 
                                 MenuItem("Remove")
@@ -1732,6 +1737,7 @@ enum Listings {
                     .onClicked {
                         items = ["Alpha", "Beta", "Gamma"]
                         chosen = "nothing yet"
+                        large = false
                     }
             }
         }
