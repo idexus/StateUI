@@ -84,7 +84,10 @@ UIKit tells it once the move ends, so a render while the pages go still
 describes them: the stack does not show them again, which would undo the
 user's way back. A page comes in already wearing its bar: UIKit takes the
 bar's look as the move starts, and a layout in the same turn - a sidebar
-going away - can start it before the window's chrome is composed.
+going away - can start it before the window's chrome is composed. A page
+shown without a move - the top replaced by another - is laid out at once: a
+move begun in the same turn, a sidebar going away, then carries it from its
+place, where UIKit would lay it out within that move and grow it from nothing.
 
 ## Tabs
 
