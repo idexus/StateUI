@@ -17,7 +17,8 @@ extension WebElement {
         if let registered = WebRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
-            reporting: { [weak self] property, event, value in self?.report(property, event, value) }
+            reporting: { [weak self] property, event, value in self?.report(property, event, value) },
+            made: element.made
         ) {
             if let scroll = registered as? WebScrollView { follow(scroll) }
             return registered

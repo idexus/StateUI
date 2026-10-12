@@ -35,6 +35,9 @@ final class StateUIHost {
     /** A button was clicked. */
     static native void clicked(long view);
 
+    /** A view was held down long: whether the view took the long press. */
+    static native boolean longClicked(long view);
+
     /** A tab was chosen, by its place among the tabs. */
     static native void tabSelected(long view, int tab);
 

@@ -82,10 +82,16 @@
         self.parent = parent
         mount = tree.allocateMount()
         native = nil
+        made = patch
         native = tree.makeNative(self)
+        made = nil
         tree.tally?.made += 1
         apply(patch)
     }
+
+    /// The patch the element is made from while its native half is made - what a toolkit making another control of
+    /// what the element holds reads (`Reports.made`); nil after.
+    public private(set) var made: HostPatch?
 
     /// Applies a patch of this element.
     public func apply(_ patch: HostPatch) {

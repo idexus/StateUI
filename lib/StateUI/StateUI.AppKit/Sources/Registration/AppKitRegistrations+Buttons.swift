@@ -16,8 +16,11 @@ extension AppKitRegistrations {
     /// native cell's own measurement, which is the host's arithmetic and not a
     /// value written onto a control.
     static func buttons(_ registry: Registry<NSView>) {
-        registry.add(ButtonContract.self, create: { reports in
-            let button = AppKitButtonView()
+        registry.add(ButtonContract.self, create: { reports -> NSControl in
+            // A button holding a menu is AppKit's combo button, made so from the first; another kind is made again.
+            let kind = ButtonMenu.kind(made: reports.made)
+            let button: NSControl & AppKitButtonFace = kind == .plain
+                ? AppKitButtonView() : AppKitMenuButtonView(splits: kind == .split)
             button.onClicked = { reports.raise(ButtonContract.clicked) }
             button.onPressed = { reports.raise(ButtonContract.pressed) }
             button.onReleased = { reports.raise(ButtonContract.released) }
@@ -32,7 +35,8 @@ extension AppKitRegistrations {
                 BorderElementContract.lineWidth, VisualElementContract.isEnabled,
                 FontElementContract.fontFamily, FontElementContract.fontSize,
                 FontElementContract.fontAttributes, TrackingElementContract.tracking,
-            ]) { view, values in
+            ]) { control, values in
+                guard let view = control as? any AppKitButtonFace else { return }
                 // Each value is read into a name of its own: twelve arguments
                 // of `flatMap` and `??` in one call is more than the type
                 // checker will take.
@@ -71,14 +75,10 @@ extension AppKitRegistrations {
             }
             // AppKit's own key equivalent - the one stated, else the role's - pressing the button while its window is
             // in front, and the role's look: the accent for the main action, AppKit's mark for a destructive one.
-            button.applies([ButtonContract.keyboardShortcut, ButtonContract.role]) { view, values in
+            button.applies([ButtonContract.keyboardShortcut, ButtonContract.role]) { control, values in
                 let role = values[ButtonContract.role]
                 let shortcut = KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role)
-                let spelled = shortcut.map(AppKitKeys.equivalent(of:)) ?? (key: "", modifiers: [])
-                view.keyEquivalent = spelled.key
-                view.keyEquivalentModifierMask = spelled.modifiers
-                view.bezelColor = role == .primary ? .controlAccentColor : nil
-                view.hasDestructiveAction = role == .destructive
+                (control as? any AppKitButtonFace)?.applyKeys(shortcut, role: role)
             }
             button.raises(ButtonContract.clicked)
             button.raises(ButtonContract.pressed)

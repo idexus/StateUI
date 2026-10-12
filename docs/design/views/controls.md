@@ -137,6 +137,26 @@ and `.accessibilityIdentifier` on a menu entry or a toolbar item; they belong
 in one place - a page's toolbar, a menu, a map - and are matched there by
 their `.id()` or their position.
 
+## A button's menu
+
+`Button.menu { … }` writes a slot, `ButtonMenu`, after the button's children,
+holding what a menu holds; written again it stands in for the last. What the
+button is follows from what it holds (`ButtonMenuKind`): no menu, a button; a
+menu and no `.onClicked`, a button whose click opens the menu; both, a split
+button, its click its own action and its menu apart. Each toolkit makes a
+control of its own of each kind - AppKit's combo button, unified or split;
+GTK's menu button or libadwaita's split button; WinUI's DropDownButton or
+SplitButton - and a control is made once, so the differ makes a button of
+another kind again (`Node+ButtonMenu.swift`), and a host reads the kind it
+makes from the patch the element is made from (`Reports.made`). UIKit's
+button takes a menu either way: a tap opens it, or, beside an action, a held
+finger does. Android's and the browser's have no split button: a click or tap
+opens the menu where the button has no action, else a long press or the
+user's asking for a menu does. A button holding a menu offers no context menu
+of its own: on AppKit and WinUI the button's menu and the view's are one
+property. AppKit's combo button takes a caption, a picture, a font and being
+enabled, and no colour of its words, spacing of its letters or box of its own.
+
 ## Radio groups
 
 A radio button's group is a name - every button in the set writes the same one

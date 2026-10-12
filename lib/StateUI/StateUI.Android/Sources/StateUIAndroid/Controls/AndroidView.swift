@@ -292,6 +292,11 @@ class AndroidView {
         onTapped?()
     }
 
+    /// The user held the view down long: whether the view took it - else Android goes on to its context menu.
+    func longClicked() -> Bool {
+        false
+    }
+
     /// What the view writes into its context menu as the user opens it; nil where it offers none.
     private(set) var onMenuOpening: ((jobject) -> Void)?
 

@@ -12,7 +12,8 @@
     private struct Entry {
         /// Makes the element's view, its reports handed to the functions given
         /// - nil where the registration made something that is no `View`.
-        let make: (@escaping (Event, [HostValue]) -> Void, @escaping (Prop, Event, HostValue) -> Void) -> View?
+        let make: (@escaping (Event, [HostValue]) -> Void, @escaping (Prop, Event, HostValue) -> Void, HostPatch?)
+            -> View?
 
         /// Puts the changed properties it takes on the view, each read through
         /// the functions given, and answers them.
@@ -58,8 +59,8 @@
         create: @escaping (Reports<Realized>) -> Made,
         members: (Registration<Realized, Made>) -> Void = { _ in }
     ) {
-        register(contract, members: members) { send, carry in
-            let made = create(Reports(sending: send, reporting: carry))
+        register(contract, members: members) { send, carry, patch in
+            let made = create(Reports(sending: send, reporting: carry, made: patch))
 
             guard let view = made as? View else {
                 complain("\(Realized.name)'s registration made a \(type(of: made)), which is no "
@@ -96,7 +97,7 @@
         madeByHost view: Made.Type,
         members: (Registration<Realized, Made>) -> Void
     ) {
-        register(contract, members: members) { _, _ in nil }
+        register(contract, members: members) { _, _, _ in nil }
     }
 
     /// One contract's registration, entered under its node type: `members` says
@@ -106,7 +107,7 @@
         _ contract: Realized.Type,
         members: (Registration<Realized, Made>) -> Void,
         making make: @escaping (
-            @escaping (Event, [HostValue]) -> Void, @escaping (Prop, Event, HostValue) -> Void
+            @escaping (Event, [HostValue]) -> Void, @escaping (Prop, Event, HostValue) -> Void, HostPatch?
         ) -> View?
     ) {
         let registration = Registration<Realized, Made>()
@@ -195,13 +196,15 @@
     ///   - send: given each event the view raises, and what it carries.
     ///   - carry: given each value the user changed in the view: the property, the
     ///     event to raise for it, and the value.
+    ///   - made: the patch the element is made from, which its reports hand on.
     /// - Returns: the view, or nil.
     public func makeView(
         for type: NodeType,
         sending send: @escaping (Event, [HostValue]) -> Void,
-        reporting carry: @escaping (Prop, Event, HostValue) -> Void
+        reporting carry: @escaping (Prop, Event, HostValue) -> Void,
+        made: HostPatch? = nil
     ) -> View? {
-        entries[type].flatMap { $0.make(send, carry) }
+        entries[type].flatMap { $0.make(send, carry, made) }
     }
 
     /// Puts what changed - a patch's properties, or a display frame's moving

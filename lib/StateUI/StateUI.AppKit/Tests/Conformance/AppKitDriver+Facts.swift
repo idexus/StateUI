@@ -20,6 +20,14 @@ extension AppKitDriver {
         return Self.said(view.menu?.items ?? [])
     }
 
+    /// The menu of the combo button standing for `button`.
+    func buttonMenu(of button: MountedElement) throws -> String {
+        guard let combo = (button.native as? AppKitElement)?.view as? AppKitMenuButtonView else {
+            throw DriverCannot("read the menu \(button.type.name) opens")
+        }
+        return Self.said(combo.menu.items)
+    }
+
     /// The bar the window of `page` shows, read from its toolbar: the actions before the first flexible space and
     /// after the last, each run between two spaces a group, then the overflow's actions.
     func bar(of page: MountedElement) throws -> String {

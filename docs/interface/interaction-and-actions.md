@@ -483,6 +483,33 @@ shortcut the button states takes the place of its role's key. Return belongs
 to a field being typed into - it ends the words there, and `.onSubmitted`
 hears it - so the main action takes Return while no field holds the keyboard.
 
+### A button's menu
+
+A button can hold a menu, written as a menu is:
+
+```swift
+struct Document: View {
+    @State private var last = ""
+
+    var body: some View {
+        HStack {
+            Button("Share").menu {
+                MenuItem("Mail").onClicked { last = "mail" }
+                MenuItem("Message").onClicked { last = "message" }
+            }
+            Button("Save")
+                .onClicked { last = "saved" }
+                .menu { MenuItem("Save as…").onClicked { last = "saved as" } }
+        }
+    }
+}
+```
+
+With no `.onClicked`, a click opens the menu. With one, the button splits: its
+click is its own action and its menu stands apart, behind an arrow where the
+platform draws a split button and behind a long press or a right click where
+it draws none. A button holding a menu offers no context menu of its own.
+
 ### A view's keys
 
 A control taking the focus, and a layout holding one, hears the keys it names

@@ -29,6 +29,15 @@ extension UIKitElement {
         contextMenuSlot.map { UIKitMenus.menu(MenuEntry.entries(of: $0)) }
     }
 
+    /// Gives a button holding a menu UIKit's menu for it: opened by a tap where the button has no click of its own,
+    /// else held down while a tap runs the button's action - UIKit draws no split button.
+    func configureButtonMenu() {
+        guard let button = view as? UIKitButtonView else { return }
+        let kind = ButtonMenu.kind(of: element)
+        button.menu = kind == .plain ? nil : UIKitMenus.menu(ButtonMenu.entries(of: element))
+        button.showsMenuAsPrimaryAction = kind == .menu
+    }
+
     /// The slot the view's context menu stands in, a child of its own.
     private var contextMenuSlot: MountedElement? {
         element.children.first { $0.type == .contextMenu }

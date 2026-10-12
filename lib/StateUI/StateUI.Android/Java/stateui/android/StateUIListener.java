@@ -17,7 +17,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 /** What the user does to one view, forwarded to the Swift view by its number. */
-final class StateUIListener implements View.OnClickListener, CompoundButton.OnCheckedChangeListener,
+final class StateUIListener implements View.OnClickListener, View.OnLongClickListener,
+        CompoundButton.OnCheckedChangeListener,
         SeekBar.OnSeekBarChangeListener, TextWatcher, TextView.OnEditorActionListener,
         View.OnScrollChangeListener, View.OnTouchListener, View.OnHoverListener, View.OnCreateContextMenuListener,
         View.OnFocusChangeListener,
@@ -37,6 +38,11 @@ final class StateUIListener implements View.OnClickListener, CompoundButton.OnCh
     @Override
     public void onClick(View clicked) {
         StateUIHost.clicked(view);
+    }
+
+    @Override
+    public boolean onLongClick(View held) {
+        return StateUIHost.longClicked(view);
     }
 
     @Override

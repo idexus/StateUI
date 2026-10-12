@@ -15,6 +15,7 @@ BindingReaderSample.swift 22bbc364e59f8b8f
 BoundPropertiesSample.swift aaaa7f05c3ae73d2
 BrushSample.swift 36be7fa820ad3d49
 BuilderSample.swift 4e5175b72803442d
+ButtonMenuSample.swift 21eec59d34898b13
 ButtonRoleSample.swift b88b8f5f3ef6c764
 ButtonSample.swift 4b6ac2242b903c97
 CanvasSample.swift 52db70adead39b9b

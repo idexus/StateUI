@@ -35,6 +35,21 @@ extension AndroidElement {
         }
     }
 
+    /// Gives a button holding a menu its menu: its entries written as it opens, each item chosen heard by its element.
+    func configureButtonMenu() {
+        guard let button = view as? AndroidButtonView else { return }
+        let kind = ButtonMenu.kind(of: element)
+        button.setMenu(kind) { [weak self, weak button] menu in
+            guard let self, let button else { return }
+            var items: [MountedElement] = []
+            AndroidMenu.fill(menu, view: button, Self.menuEntries(ButtonMenu.entries(of: element), items: &items))
+            button.onMenuChose = { index in
+                guard items.indices.contains(index) else { return }
+                items[index].android.choose()
+            }
+        }
+    }
+
     /// The entries the host layer walks, each item's element appended to `items` in the order the menu numbers
     /// them and told its place there; Android's menus draw no pictures.
     static func menuEntries(_ entries: [MenuEntry], items: inout [MountedElement]) -> [AndroidMenu.Entry] {

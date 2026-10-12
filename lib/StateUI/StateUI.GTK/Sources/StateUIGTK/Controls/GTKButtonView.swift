@@ -18,12 +18,27 @@ final class GTKButtonView: GTKView {
     /// The gesture a press and its end come through, wherever it ends.
     let press: OpaquePointer
 
-    /// A button, or one that stays pressed in while what it turns on is on.
-    init(toggles: Bool = false) {
+    /// The kind of control its menu makes the button: GTK's button, its menu button, or libadwaita's split button.
+    let menuKind: ButtonMenuKind
+
+    /// A button, or one that stays pressed in while what it turns on is on - or, holding a menu, GTK's menu button
+    /// opening it, or libadwaita's split button, its click its own and its menu behind the arrow.
+    /// Design: docs/design/views/controls.md#a-buttons-menu
+    init(toggles: Bool = false, menu kind: ButtonMenuKind = .plain) {
         press = gtk_gesture_drag_new()!
-        super.init { _ in toggles ? gtk_toggle_button_new() : gtk_button_new() }
-        connect("clicked") { _, data in
-            MainActor.assumeIsolated { GTKView.find(viewNumber(data))?.clicked() }
+        menuKind = kind
+        super.init { _ in
+            switch kind {
+            case .plain: toggles ? gtk_toggle_button_new() : gtk_button_new()
+            case .menu: gtk_menu_button_new()
+            case .split: adw_split_button_new()
+            }
+        }
+        if kind == .menu { gtk_menu_button_set_always_show_arrow(widget.opaque, 1) }
+        if kind != .menu {
+            connect("clicked") { _, data in
+                MainActor.assumeIsolated { GTKView.find(viewNumber(data))?.clicked() }
+            }
         }
         connectSignal(UnsafeMutableRawPointer(press), "drag-begin", number: number) { (_, _: Double, _: Double, data) in
             MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKButtonView)?.onPressed?() }
@@ -117,9 +132,48 @@ final class GTKButtonView: GTKView {
     private var position = IconPosition.leading
     private var spacing: Double?
 
+    /// What the button shows: its caption's label, its picture, or the two in a box.
+    private var child: GTKWidget? {
+        switch menuKind {
+        case .plain: gtk_button_get_child(widget.of(GtkButton.self))
+        case .menu: gtk_menu_button_get_child(widget.opaque)
+        case .split: adw_split_button_get_child(widget.opaque)
+        }
+    }
+
+    private func setChild(_ child: GTKWidget?) {
+        switch menuKind {
+        case .plain: gtk_button_set_child(widget.of(GtkButton.self), child)
+        case .menu: gtk_menu_button_set_child(widget.opaque, child)
+        case .split: adw_split_button_set_child(widget.opaque, child)
+        }
+    }
+
+    /// Words alone: GTK's own label for a button, a label of the host's on one holding a menu.
+    private func setLabel(_ text: String) {
+        guard menuKind != .plain else { return gtk_button_set_label(widget.of(GtkButton.self), text) }
+        if let label = child, Self.isLabel(label) { return gtk_label_set_text(label.opaque, text) }
+        setChild(gtk_label_new(text))
+    }
+
+    /// The menu a button holding one opens, its actions on the button.
+    private(set) var menu: GTKMenu?
+
+    /// Gives a button holding a menu `menu`, where it stands otherwise than the one it shows.
+    func setMenu(_ menu: GTKMenu) {
+        if menuKind == .plain || self.menu.map(menu.stands(like:)) == true { return }
+        self.menu = menu
+        if menuKind == .menu {
+            gtk_menu_button_set_menu_model(widget.opaque, g_menu_model(menu.model))
+        } else {
+            adw_split_button_set_menu_model(widget.opaque, g_menu_model(menu.model))
+        }
+        gtk_widget_insert_action_group(widget, GTKMenu.actionGroup, OpaquePointer(menu.actions))
+    }
+
     /// The caption's label beside the picture, or the one GTK makes for words alone; nil for a picture alone.
     var captionLabel: OpaquePointer? {
-        guard let child = gtk_button_get_child(widget.of(GtkButton.self)) else { return nil }
+        guard let child else { return nil }
         if Self.isLabel(child) { return child.opaque }
         var each = gtk_widget_get_first_child(child)
         while let widget = each, !Self.isLabel(widget) { each = gtk_widget_get_next_sibling(widget) }
@@ -129,7 +183,7 @@ final class GTKButtonView: GTKView {
     /// The box holding the picture and the caption; nil where the button shows one alone.
     var pictureAndCaption: GTKWidget? {
         guard picture != nil, !caption.isEmpty else { return nil }
-        return gtk_button_get_child(widget.of(GtkButton.self))
+        return child
     }
 
     /// The caption.
@@ -137,7 +191,7 @@ final class GTKButtonView: GTKView {
         let hadWords = !caption.isEmpty
         caption = text
         guard picture != nil else {
-            gtk_button_set_label(widget.of(GtkButton.self), text)
+            setLabel(text)
             return writeWords()
         }
         if hadWords == text.isEmpty { return compose() }
@@ -165,7 +219,7 @@ final class GTKButtonView: GTKView {
             picture = nil
             gtk_widget_remove_css_class(widget, "image-button")
             gtk_widget_remove_css_class(widget, "image-text-button")
-            gtk_button_set_label(widget.of(GtkButton.self), caption)
+            setLabel(caption)
             return writeWords()
         }
         let picture = self.picture ?? GTKImageView()
@@ -178,11 +232,11 @@ final class GTKButtonView: GTKView {
     /// Stands the picture alone, or with the caption in a box of their own in the button's middle, however wide it is.
     private func compose() {
         guard let picture else { return }
-        gtk_button_set_child(widget.of(GtkButton.self), nil)
+        setChild(nil)
         let alone = caption.isEmpty
         gtk_widget_remove_css_class(widget, alone ? "image-text-button" : "image-button")
         gtk_widget_add_css_class(widget, alone ? "image-button" : "image-text-button")
-        guard !alone else { return gtk_button_set_child(widget.of(GtkButton.self), picture.widget) }
+        guard !alone else { return setChild(picture.widget) }
 
         let across = position == .leading || position == .trailing
         let box = gtk_box_new(across ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL, Int32((spacing ?? 6).rounded()))!
@@ -193,7 +247,7 @@ final class GTKButtonView: GTKView {
         for part in first ? [picture.widget, label] : [label, picture.widget] {
             gtk_box_append(box.of(GtkBox.self), part)
         }
-        gtk_button_set_child(widget.of(GtkButton.self), box)
+        setChild(box)
         writeWords()
     }
 
@@ -235,10 +289,10 @@ final class GTKButtonView: GTKView {
             let content = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6)!
             gtk_box_append(content.of(GtkBox.self), image)
             gtk_box_append(content.of(GtkBox.self), gtk_label_new(caption))
-            gtk_button_set_child(widget.of(GtkButton.self), content)
+            setChild(content)
             gtk_widget_add_css_class(widget, "image-text-button")
         } else {
-            gtk_button_set_child(widget.of(GtkButton.self), image)
+            setChild(image)
             gtk_widget_add_css_class(widget, "image-button")
             gtk_widget_set_tooltip_text(widget, caption)
         }
@@ -260,7 +314,7 @@ final class GTKButtonView: GTKView {
     /// The picture and the caption stand in the button's direction too.
     override func setDirection(_ direction: GtkTextDirection) {
         super.setDirection(direction)
-        if let content = gtk_button_get_child(widget.of(GtkButton.self)) { gtk_widget_set_direction(content, direction) }
+        if let child { gtk_widget_set_direction(child, direction) }
     }
 
     override func clicked() {

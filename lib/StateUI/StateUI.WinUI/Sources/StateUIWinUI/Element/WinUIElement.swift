@@ -63,7 +63,7 @@ final class WinUIElement: NativeElement {
         configureLayoutMotion()
         arrangeChildren()
         arrangePages(changed: changed)
-        if type == .contextMenu { parent?.contextMenuChanged = true }
+        if type == .contextMenu || type == .buttonMenu { parent?.contextMenuChanged = true }
         // Its menu's entries are in reach with the view.
         if changed.contains(.isEnabled), hadContextMenu { contextMenuChanged = true }
         refreshContextMenu()

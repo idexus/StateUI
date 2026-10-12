@@ -21,6 +21,10 @@
     /// in, and to the element's handler for the event.
     private let carry: (Prop, Event, HostValue) -> Void
 
+    /// What the element is made from - its first patch, with the children and the handlers it begins with - where
+    /// a toolkit makes another control of what the element holds, as a button holding a menu; nil where unknown.
+    public let made: HostPatch?
+
     /// The reports of one element: `send` finds the element's handler for an event,
     /// `carry` writes the user's value where the element carries it and raises the
     /// event with it.
@@ -28,12 +32,15 @@
     /// - Parameters:
     ///   - send: given the event's key and what it carries.
     ///   - carry: given the property's key, the event's key, and the value.
+    ///   - made: the patch the element is made from.
     public init(
         sending send: @escaping (Event, [HostValue]) -> Void,
-        reporting carry: @escaping (Prop, Event, HostValue) -> Void
+        reporting carry: @escaping (Prop, Event, HostValue) -> Void,
+        made: HostPatch? = nil
     ) {
         self.send = send
         self.carry = carry
+        self.made = made
     }
 
     /// Raises one of the element's own events with the values its contract

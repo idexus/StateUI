@@ -8,7 +8,8 @@ extension GTKRegistrations {
     /// A Button: its caption, its picture and their look, whether it takes a press, the press and the click.
     static func buttons(_ registry: Registry<GTKView>) {
         registry.add(ButtonContract.self, create: { reports in
-            let button = GTKButtonView()
+            // A button holding a menu is GTK's menu button or libadwaita's split button, made so from the first.
+            let button = GTKButtonView(menu: ButtonMenu.kind(made: reports.made))
             button.onClicked = { reports.raise(ButtonContract.clicked) }
             button.onPressed = { reports.raise(ButtonContract.pressed) }
             button.onReleased = { reports.raise(ButtonContract.released) }

@@ -57,6 +57,15 @@ extension ControlDictionary {
             .spacing(8)
             """#),
 
+        (ButtonMenuContract.self, #"""
+            @State var sent = ""
+
+            Button("Share").menu {
+                MenuItem("Mail").onClicked { sent = "mail" }
+                MenuItem("Message").onClicked { sent = "message" }
+            }
+            """#),
+
         (ContextMenuContract.self, #"""
             @State var title = "Groceries"
 

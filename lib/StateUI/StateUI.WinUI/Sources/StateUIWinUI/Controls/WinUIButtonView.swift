@@ -33,8 +33,22 @@ final class WinUIButtonView: WinUIView {
     private var words = ""
     private var look = Shown()
 
-    init() {
-        super.init { number in stateui_winui_button_make(number) }
+    /// The kind of control its menu makes the button: WinUI's Button, its DropDownButton, or its SplitButton.
+    let menuKind: ButtonMenuKind
+
+    /// A button - or, holding a menu, WinUI's DropDownButton opening it, or its SplitButton, its click its own and
+    /// its menu behind the arrow.
+    /// Design: docs/design/views/controls.md#a-buttons-menu
+    init(menu kind: ButtonMenuKind = .plain) {
+        menuKind = kind
+        super.init { number in stateui_winui_button_make(number, kind == .split ? 2 : kind == .menu ? 1 : 0) }
+    }
+
+    /// The menu a button holding one opens; its items' actions are the view's.
+    func setMenu(_ menu: WinUIMenu) {
+        guard menuKind != .plain else { return }
+        menuActions = menu.actions
+        menu.relayed { stateui_winui_button_set_menu(handle, number, $0, $1, $2, $3, $4, $5, $6, $7, $8, $9) }
     }
 
     /// The caption.

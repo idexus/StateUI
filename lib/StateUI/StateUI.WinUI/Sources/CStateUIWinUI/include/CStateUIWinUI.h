@@ -469,7 +469,16 @@ void stateui_winui_text_set_alignment(StateUIObjectRef text, int32_t horizontal)
 void stateui_winui_text_set_spacing(StateUIObjectRef text, int32_t tracking, double lineHeight);
 void stateui_winui_text_set_decorations(StateUIObjectRef text, bool underline, bool strikethrough);
 
-StateUIObjectRef stateui_winui_button_make(int64_t view);
+/// A button of `kind`: 0 WinUI's Button, 1 its DropDownButton opening its flyout, 2 its SplitButton - its click its
+/// own and its flyout behind the arrow.
+StateUIObjectRef stateui_winui_button_make(int64_t view, int32_t kind);
+
+/// A button's menu, written as a context menu is (`stateui_winui_set_context_menu`): the flyout a DropDownButton or
+/// a SplitButton opens.
+void stateui_winui_button_set_menu(StateUIObjectRef button, int64_t view, int32_t const *kinds,
+                                   char const *const *titles, bool const *enabled, char const *const *identifiers,
+                                   char const *const *icons, bool const *destructive, int32_t const *keys,
+                                   int32_t const *modifiers, bool const *givesWay, int32_t count);
 
 /// The words a button or a radio button shows.
 void stateui_winui_set_caption(StateUIObjectRef control, char const *utf8);

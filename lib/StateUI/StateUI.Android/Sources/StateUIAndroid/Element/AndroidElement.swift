@@ -64,6 +64,7 @@ final class AndroidElement: NativeElement {
         arrangeChildren()
         arrangePages(changed: changed)
         configureContextMenu()
+        configureButtonMenu()
         host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: readsFrame)
     }
 

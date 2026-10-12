@@ -28,6 +28,15 @@ extension AndroidDriver {
         return Self.said(menu, menusOnly: false)
     }
 
+    /// The menu Android's button standing for `button` pops up, written as it opens.
+    func buttonMenu(of button: MountedElement) throws -> String {
+        guard let view = (button.native as? AndroidElement)?.view as? AndroidButtonView, let opening = view.menuOpening
+        else { throw DriverCannot("read the menu \(button.type.name) opens") }
+        let menu = TestMenus.empty()
+        opening(menu.reference)
+        return Self.said(menu, menusOnly: false)
+    }
+
     /// A menu's entry or a bar's action chosen as a touch chooses it: nothing where it cannot be chosen.
     func choose(_ element: MountedElement) throws {
         let (menu, id) = try nativeItem(element)
@@ -100,14 +109,18 @@ extension AndroidDriver {
         }
     }
 
-    /// The native menu `element` stands in and its item's id: the context menu of the view holding it, opened
-    /// afresh, else the bar whose items it is among.
+    /// The native menu `element` stands in and its item's id: the context menu or the button's menu of the view
+    /// holding it, opened afresh, else the bar whose items it is among.
     private func nativeItem(_ element: MountedElement) throws -> (menu: JavaObject, id: Int32) {
         var each = element.parent
-        while let slot = each, slot.type != .contextMenu { each = slot.parent }
-        if let holder = each?.parent, let view = (holder.native as? AndroidElement)?.view {
+        while let slot = each, slot.type != .contextMenu, slot.type != .buttonMenu { each = slot.parent }
+        if let slot = each, let holder = slot.parent, let view = (holder.native as? AndroidElement)?.view {
             let menu = TestMenus.empty()
-            view.menuOpening(menu.reference)
+            if slot.type == .buttonMenu {
+                (view as? AndroidButtonView)?.menuOpening?(menu.reference)
+            } else {
+                view.menuOpening(menu.reference)
+            }
             guard let place = (element.native as? AndroidElement)?.menuPlace else {
                 throw DriverCannot("find \(element.type.name) in its menu")
             }

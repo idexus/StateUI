@@ -80,6 +80,14 @@ extension UIKitDriver {
         return UIKitMenus.said(native.builtContextMenu?.children ?? [])
     }
 
+    /// The menu UIKit's button standing for `button` holds.
+    func buttonMenu(of button: MountedElement) throws -> String {
+        guard let view = (button.native as? UIKitElement)?.view as? UIKitButtonView, let menu = view.menu else {
+            throw DriverCannot("read the menu \(button.type.name) opens")
+        }
+        return UIKitMenus.said(menu.children)
+    }
+
     /// The question UIKit's alert shows now, as it shows it.
     func question(over element: MountedElement) throws -> Question? {
         guard let shown = renderer?.actToolkit.showing else { return nil }

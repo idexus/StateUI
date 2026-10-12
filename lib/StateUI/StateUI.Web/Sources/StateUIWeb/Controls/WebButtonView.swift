@@ -20,7 +20,22 @@ final class WebButtonView: WebDOMView, WebWordsView {
         attribute("type", "button")
         attribute("class", "stateui-button")
         WebRelay.insert(words.node, into: node, at: 0)
-        listen("click") { [weak self] in self?.onClicked() }
+        listen("click") { [weak self] in
+            guard let self else { return }
+            if let opensMenu { opensMenu() } else { onClicked() }
+        }
+    }
+
+    /// What opens the button's menu where a click opens it; nil where the click is the button's own.
+    private var opensMenu: (() -> Void)?
+
+    /// Makes the button open its menu - by `open` - with a click where `opensOnClick`, else as the user asks for a
+    /// menu, a right click or a finger held, its click its own: the browser draws no split button.
+    /// Design: docs/design/views/controls.md#a-buttons-menu
+    func holdMenu(opensOnClick: Bool, _ open: @escaping () -> Void) {
+        attribute("aria-haspopup", "menu")
+        attribute("data-menu", opensOnClick ? "opens" : "splits")
+        if opensOnClick { opensMenu = open } else { listen("menu") { open() } }
     }
 
     func setText(_ text: String) {
@@ -65,6 +80,7 @@ final class WebButtonView: WebDOMView, WebWordsView {
     override var isControl: Bool { true }
 
     override func detach() {
+        opensMenu = nil
         picture?.detach()
         words.detach()
         super.detach()

@@ -31,6 +31,11 @@ struct WinUIMenu {
         add(menus)
     }
 
+    /// `entries`, as the host layer walks them: a button's menu.
+    init(entries: [MenuEntry]) {
+        add(entries)
+    }
+
     /// Whether the menu has no entries.
     var isEmpty: Bool { kinds.isEmpty }
 

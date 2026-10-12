@@ -138,6 +138,12 @@
         return try driver.menu(of: element)
     }
 
+    /// The menu `button` opens (`HostDriver.buttonMenu(of:)`).
+    public func buttonMenu(of button: MountedElement) throws -> String {
+        note("read the menu \(button.type.name) opens")
+        return try driver.buttonMenu(of: button)
+    }
+
     /// The bar `page` shows as the user meets it (`HostDriver.bar(of:)`).
     public func bar(of page: MountedElement) throws -> String {
         note("read the bar of \(page.type.name)")

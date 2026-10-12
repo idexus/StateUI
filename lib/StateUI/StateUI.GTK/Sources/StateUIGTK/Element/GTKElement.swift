@@ -60,6 +60,7 @@ final class GTKElement: NativeElement {
         arrangeChildren()
         arrangePages(changed: changed)
         offerContextMenu()
+        offerButtonMenu()
         if let view { host?.runtime.frames.follow(self, order: view.number, reads: readsFrame) }
     }
 

@@ -8,7 +8,7 @@ import AppKit
 
 /// The native AppKit button behind StateUI's `Button` - a caption, an icon or both.
 @MainActor
-final class AppKitButtonView: NSButton, AppKitPictureResolving {
+final class AppKitButtonView: NSButton, AppKitButtonFace {
     var onPressed: (() -> Void)?
     var onReleased: (() -> Void)?
     var onClicked: (() -> Void)?
@@ -67,6 +67,16 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         wantsLayer = backgroundColor != nil || strokeColor != nil || shape != .rectangle
         isBordered = backgroundColor == nil && strokeColor == nil
         paintBox()
+    }
+
+    /// AppKit's own key equivalent - the shortcut given - and the role's look: the accent for the main action,
+    /// AppKit's mark for a destructive one.
+    func applyKeys(_ shortcut: KeyboardShortcut?, role: ButtonRole?) {
+        let spelled = shortcut.map(AppKitKeys.equivalent(of:)) ?? (key: "", modifiers: [])
+        keyEquivalent = spelled.key
+        keyEquivalentModifierMask = spelled.modifiers
+        bezelColor = role == .primary ? .controlAccentColor : nil
+        hasDestructiveAction = role == .destructive
     }
 
     /// The shape the box follows: a layer's corners round a rectangle, the button draws an oval itself.

@@ -118,6 +118,27 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
         setValue(ButtonContract.role, role)
     }
 
+    /// A menu the button opens, holding what a menu holds - `MenuItem`, `Menu`, `MenuSeparator`. With no
+    /// `.onClicked` a click opens it; with one the button splits: its click is its own action, and its menu opens
+    /// from a part of its own, as the platform draws a split button.
+    ///
+    ///     Button("Share").menu {
+    ///         MenuItem("Mail").onClicked { mail() }
+    ///         MenuItem("Message").onClicked { message() }
+    ///     }
+    ///
+    ///     Button("Save")
+    ///         .onClicked { save() }
+    ///         .menu { MenuItem("Save as…").onClicked { saveAs() } }
+    public func menu(@MenuBuilder _ entries: () -> [Element]) -> Self {
+        modified {
+            // The button's one menu, after its own children; written again, it stands in for the last.
+            // Design: docs/design/views/modifiers.md#slot-children
+            $0.children.removeAll { $0.type == .buttonMenu }
+            $0.children.append(Node(contract: ButtonMenuContract.self, children: entries().map { $0.node }))
+        }
+    }
+
     // MARK: Events
 
     /// Runs when the button is pressed AND released on it - the ordinary one - all

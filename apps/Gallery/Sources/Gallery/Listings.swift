@@ -1298,6 +1298,34 @@ enum Listings {
             }
         }
         """#,
+        "ButtonMenuSample": #"""
+        // Sources/Samples/BasicInput/ButtonMenuSample.swift
+        @State private var last = "nothing yet"
+
+        var body: some View {
+            VStack {
+                Text("Share opens its menu. Save saves with a click, and offers more in its menu.")
+
+                HStack {
+                    Button("Share").menu {
+                        MenuItem("Mail").onClicked { last = "Share by mail" }
+                        MenuItem("Message").onClicked { last = "Share by message" }
+                        MenuSeparator()
+                        MenuItem("Copy link").onClicked { last = "Link copied" }
+                    }
+
+                    Button("Save")
+                        .onClicked { last = "Saved" }
+                        .menu {
+                            MenuItem("Save as…").onClicked { last = "Saved as" }
+                            MenuItem("Save a copy").onClicked { last = "Saved a copy" }
+                        }
+                }
+
+                Text("Last: \(last)")
+            }
+        }
+        """#,
         "ButtonRoleSample": #"""
         // Sources/Samples/BasicInput/ButtonRoleSample.swift
         @State private var name = ""

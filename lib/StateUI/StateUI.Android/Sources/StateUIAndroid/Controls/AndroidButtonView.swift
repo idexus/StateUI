@@ -50,10 +50,43 @@ final class AndroidButtonView: AndroidTextualView {
         Java.call(reference, JavaAPI.setMinimumHeight, .int(height))
     }
 
-    /// A click is the button's own event, and a tap as any view's.
+    /// A click is the button's own event, and a tap as any view's; a button whose click opens its menu opens it.
     override func clicked() {
-        onClicked?()
+        if menuKind == .menu { showMenu() } else { onClicked?() }
         super.clicked()
+    }
+
+    /// The kind of control its menu makes the button, and what its menu writes into a menu as it opens.
+    private(set) var menuKind = ButtonMenuKind.plain
+    private(set) var menuOpening: ((jobject) -> Void)?
+
+    /// Gives the button its menu: opened by a click where the button has no click of its own, else held down long -
+    /// Android's Views draw no split button.
+    /// Design: docs/design/views/controls.md#a-buttons-menu
+    func setMenu(_ kind: ButtonMenuKind, _ opening: ((jobject) -> Void)?) {
+        if kind == .split, menuKind != .split { listen(JavaAPI.setOnLongClickListener) }
+        if kind != .split, menuKind == .split { Java.call(reference, JavaAPI.setOnLongClickListener, .object(nil)) }
+        menuKind = kind
+        menuOpening = kind == .plain ? nil : opening
+    }
+
+    /// A long press opens a split button's menu.
+    override func longClicked() -> Bool {
+        guard menuKind == .split else { return false }
+        showMenu()
+        return true
+    }
+
+    /// Android's menu popping up at the button, its entries written as it opens.
+    private func showMenu() {
+        guard let menuOpening else { return }
+        Java.frame {
+            guard let popup = Java.callStaticObject(JavaAPI.menus, JavaAPI.popUpMenu, .object(reference)),
+                  let items = Java.callObject(popup, JavaAPI.popupMenuItems)
+            else { return }
+            menuOpening(items)
+            Java.call(popup, JavaAPI.showPopupMenu)
+        }
     }
 
     override func held(_ holding: Bool) {
@@ -236,6 +269,7 @@ final class AndroidButtonView: AndroidTextualView {
         onClicked = nil
         onPressed = nil
         onReleased = nil
+        menuOpening = nil
         letGoOfIcon()
     }
 

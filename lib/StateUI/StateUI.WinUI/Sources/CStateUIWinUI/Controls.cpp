@@ -37,7 +37,9 @@ controls::TextBlock stateui::labelWords(StateUIObjectRef handle) {
 }
 
 controls::TextBlock stateui::captionOf(IInspectable const &element) {
-    auto button = element.try_as<controls::Button>();
+    // A button's, or a split button's, which shows its words as a button does.
+    auto button = element.try_as<controls::Button>() || element.try_as<controls::SplitButton>()
+        ? element.try_as<controls::ContentControl>() : nullptr;
     if (!button) return nullptr;
     auto content = button.Content();
     if (auto block = content.try_as<controls::TextBlock>()) return block;
@@ -97,9 +99,17 @@ extern "C" void stateui_winui_text_set_vertical(StateUIObjectRef handle, int32_t
     }
 }
 
-extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view) {
+extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view, int32_t kind) {
     try {
-        controls::Button button;
+        if (kind == 2) {
+            controls::SplitButton split;
+            split.Click(guarded("handling Click",
+                [view](controls::SplitButton const &, controls::SplitButtonClickEventArgs const &) {
+                    callbacks.clicked(view);
+                }));
+            return detach(split);
+        }
+        controls::Button button = kind == 1 ? controls::DropDownButton() : controls::Button();
         button.Click(guarded("handling Click",
             [view](IInspectable const &, xaml::RoutedEventArgs const &) { callbacks.clicked(view); }));
         // Held down by a pointer or a key, and let go: what WinUI's own pressed look follows.
@@ -120,8 +130,11 @@ extern "C" void stateui_winui_button_set_look(
     bool drawsOval, double width, double height, double underPointer, double pressed
 ) {
     try {
-        auto button = borrow<controls::Button>(handle);
+        // A Button or a SplitButton: one QueryInterface finds the control either way.
+        auto button = as<controls::Control>(handle);
         auto resources = button.Resources();
+        // A split button's style reads keys of its own.
+        std::wstring kind = button.try_as<controls::SplitButton>() ? L"SplitButton" : L"Button";
         auto keep = [&](wchar_t const *key, xaml::Media::Brush const &value) {
             auto name = winrt::box_value(key);
             if (resources.HasKey(name)) resources.Remove(name);
@@ -140,9 +153,9 @@ extern "C" void stateui_winui_button_set_look(
         else button.ClearValue(controls::Control::BackgroundProperty());
         // The accent's style reads its own keys: a main action's button wears the look written for it too.
         for (std::wstring style : {L"", L"Accent"}) {
-            keep((style + L"ButtonBackground").c_str(), fill);
-            keep((style + L"ButtonBackgroundPointerOver").c_str(), faded(underPointer));
-            keep((style + L"ButtonBackgroundPressed").c_str(), faded(pressed));
+            keep((style + kind + L"Background").c_str(), fill);
+            keep((style + kind + L"BackgroundPointerOver").c_str(), faded(underPointer));
+            keep((style + kind + L"BackgroundPressed").c_str(), faded(pressed));
         }
 
         auto outline = lineWidth > 0 && !drawsOval ? brush(stroke) : xaml::Media::Brush{nullptr};
@@ -156,9 +169,9 @@ extern "C" void stateui_winui_button_set_look(
             button.ClearValue(controls::Control::BorderThicknessProperty());
         }
         for (std::wstring style : {L"", L"Accent"}) {
-            keep((style + L"ButtonBorderBrush").c_str(), outline);
-            keep((style + L"ButtonBorderBrushPointerOver").c_str(), outline);
-            keep((style + L"ButtonBorderBrushPressed").c_str(), outline);
+            keep((style + kind + L"BorderBrush").c_str(), outline);
+            keep((style + kind + L"BorderBrushPointerOver").c_str(), outline);
+            keep((style + kind + L"BorderBrushPressed").c_str(), outline);
         }
 
         if (cornerRadius >= 0) button.CornerRadius({cornerRadius, cornerRadius, cornerRadius, cornerRadius});
@@ -170,7 +183,9 @@ extern "C" void stateui_winui_button_set_look(
 
 extern "C" void stateui_winui_button_set_accent(StateUIObjectRef handle, bool accent) {
     try {
-        auto button = borrow<controls::Button>(handle);
+        // WinUI writes the accent for its Button alone.
+        auto button = as<IInspectable>(handle).try_as<controls::Button>();
+        if (!button) return;
         auto style = accent
             ? xaml::Application::Current().Resources().TryLookup(winrt::box_value(L"AccentButtonStyle")).try_as<xaml::Style>()
             : nullptr;
@@ -183,7 +198,7 @@ extern "C" void stateui_winui_button_set_accent(StateUIObjectRef handle, bool ac
 
 extern "C" bool stateui_winui_button_accent(StateUIObjectRef handle) {
     try {
-        auto style = borrow<controls::Button>(handle).Style();
+        auto style = as<controls::Control>(handle).Style();
         return style && style == xaml::Application::Current().Resources().TryLookup(winrt::box_value(L"AccentButtonStyle"));
     } catch (...) {
         report("reading a button's accent");
@@ -204,7 +219,7 @@ extern "C" void stateui_winui_button_set_content(
     bool wraps, bool trims
 ) {
     try {
-        auto button = borrow<controls::Button>(handle);
+        auto button = as<controls::ContentControl>(handle);
         auto picture = pictureImage(icons);
         auto caption = text(words);
         controls::TextBlock block{nullptr};
@@ -263,7 +278,7 @@ extern "C" void stateui_winui_button_set_content(
 
 extern "C" void stateui_winui_button_set_room(StateUIObjectRef handle, double height) {
     try {
-        auto button = borrow<controls::Button>(handle);
+        auto button = as<controls::ContentControl>(handle);
         auto both = button.Content().try_as<controls::StackPanel>();
         if (!both) return;
         controls::Viewbox box{nullptr};
@@ -304,7 +319,7 @@ extern "C" bool stateui_winui_go_to_state(StateUIObjectRef handle, char const *s
 
 extern "C" void stateui_winui_button_invoke(StateUIObjectRef handle) {
     try {
-        pattern<provider::IInvokeProvider>(borrow<controls::Button>(handle), PatternInterface::Invoke).Invoke();
+        pattern<provider::IInvokeProvider>(as<xaml::UIElement>(handle), PatternInterface::Invoke).Invoke();
     } catch (...) {
         report("pressing a button");
     }

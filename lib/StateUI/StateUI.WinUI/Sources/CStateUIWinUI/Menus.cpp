@@ -129,12 +129,22 @@ namespace {
         return nullptr;
     }
 
-    /// The entries of each menu an element offers: its context menu's, or each of a bar's menus.
+    /// The menu an element offers: a button's flyout, which it opens, else its context menu.
+    controls::MenuFlyout offered(xaml::UIElement const &element) {
+        if (auto split = element.try_as<controls::SplitButton>()) {
+            if (auto flyout = split.Flyout().try_as<controls::MenuFlyout>()) return flyout;
+        } else if (auto button = element.try_as<controls::Button>()) {
+            if (auto flyout = button.Flyout().try_as<controls::MenuFlyout>()) return flyout;
+        }
+        return element.ContextFlyout().try_as<controls::MenuFlyout>();
+    }
+
+    /// The entries of each menu an element offers: its button's or context menu's, or each of a bar's menus.
     std::vector<Entries> menus(xaml::UIElement const &element) {
         std::vector<Entries> found;
         if (auto bar = element.try_as<controls::MenuBar>()) {
             for (auto const &menu : bar.Items()) found.push_back(menu.Items());
-        } else if (auto flyout = element.ContextFlyout().try_as<controls::MenuFlyout>()) {
+        } else if (auto flyout = offered(element)) {
             found.push_back(flyout.Items());
         }
         return found;
@@ -162,6 +172,26 @@ extern "C" void stateui_winui_set_context_menu(
         holdHitArea(element, view);
     } catch (...) {
         report("giving a view its context menu");
+    }
+}
+
+extern "C" void stateui_winui_button_set_menu(
+    StateUIObjectRef handle, int64_t view, int32_t const *kinds, char const *const *titles, bool const *enabled,
+    char const *const *identifiers, char const *const *icons, bool const *destructive, int32_t const *keys,
+    int32_t const *modifiers, bool const *givesWay, int32_t count
+) {
+    try {
+        controls::MenuFlyout flyout;
+        Writer writer{view, nullptr, {flyout.Items()}};
+        for (int32_t index = 0; index < count; ++index) {
+            writer.write(kinds[index], titles[index], enabled[index], identifiers[index], icons[index],
+                         destructive[index], keys[index], modifiers[index], givesWay[index]);
+        }
+        auto element = as<IInspectable>(handle);
+        if (auto split = element.try_as<controls::SplitButton>()) split.Flyout(flyout);
+        else if (auto button = element.try_as<controls::Button>()) button.Flyout(flyout);
+    } catch (...) {
+        report("giving a button its menu");
     }
 }
 
@@ -201,7 +231,7 @@ extern "C" int32_t stateui_winui_menus(StateUIObjectRef handle, char *utf8, int3
                 if (!text.empty()) text += L";";
                 text += (menu.IsEnabled() ? L"" : L"!") + std::wstring(menu.Title()) + L"[" + described(menu.Items()) + L"]";
             }
-        } else if (auto flyout = element.ContextFlyout().try_as<controls::MenuFlyout>()) {
+        } else if (auto flyout = offered(element)) {
             text = described(flyout.Items());
         }
         auto bytes = winrt::to_string(text);

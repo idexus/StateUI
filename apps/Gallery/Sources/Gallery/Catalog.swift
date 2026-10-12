@@ -117,6 +117,7 @@ final class Catalog {
                 samples: [
                     Sample(ButtonSample()),
                     Sample(ButtonRoleSample()),
+                    Sample(ButtonMenuSample()),
                     Sample(IconButtonSample()),
                     Sample(SwitchSample()),
                     Sample(CheckBoxSample()),

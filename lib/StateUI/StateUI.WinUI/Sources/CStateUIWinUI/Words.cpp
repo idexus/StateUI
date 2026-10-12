@@ -121,11 +121,14 @@ extern "C" void stateui_winui_set_foreground(StateUIObjectRef handle, bool has, 
             [&](controls::Control const &control) {
                 if (has) control.Foreground(brush);
                 else control.ClearValue(controls::Control::ForegroundProperty());
-                // A button's template draws its words in its own colour under the pointer and pressed.
-                if (!control.try_as<controls::Button>()) return;
+                // A button's template draws its words in its own colour under the pointer and pressed; a split
+                // button's reads keys of its own.
+                auto split = control.try_as<controls::SplitButton>() != nullptr;
+                if (!control.try_as<controls::Button>() && !split) return;
                 auto resources = control.Resources();
-                for (auto key : {L"ButtonForeground", L"ButtonForegroundPointerOver", L"ButtonForegroundPressed"}) {
-                    auto name = winrt::box_value(key);
+                std::wstring kind = split ? L"SplitButton" : L"Button";
+                for (std::wstring state : {L"", L"PointerOver", L"Pressed"}) {
+                    auto name = winrt::box_value(kind + L"Foreground" + state);
                     if (resources.HasKey(name)) resources.Remove(name);
                     if (has) resources.Insert(name, brush);
                 }

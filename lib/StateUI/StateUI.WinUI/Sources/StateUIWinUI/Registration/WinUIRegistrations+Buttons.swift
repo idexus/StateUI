@@ -8,7 +8,8 @@ extension WinUIRegistrations {
     /// A Button: its caption, its picture and its look, whether it takes a press, the press, its release and the click.
     static func buttons(_ registry: Registry<WinUIView>) {
         registry.add(ButtonContract.self, create: { reports in
-            let button = WinUIButtonView()
+            // A button holding a menu is WinUI's DropDownButton or SplitButton, made so from the first.
+            let button = WinUIButtonView(menu: ButtonMenu.kind(made: reports.made))
             button.onClicked = { reports.raise(ButtonContract.clicked) }
             button.onPressed = { reports.raise(ButtonContract.pressed) }
             button.onReleased = { reports.raise(ButtonContract.released) }

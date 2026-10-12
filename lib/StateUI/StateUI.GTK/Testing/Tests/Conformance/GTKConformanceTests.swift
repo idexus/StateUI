@@ -50,6 +50,7 @@ final class GTKConformanceTests: XCTestCase {
     func testZStack() { conform(ZStackTests.self) }
     func testApplication() { conform(ApplicationTests.self) }
     func testContextMenu() { conform(ContextMenuTests.self) }
+    func testButtonMenu() { conform(ButtonMenuTests.self) }
     func testMenu() { conform(MenuTests.self) }
     func testMenuBar() { conform(MenuBarTests.self) }
     func testMenuItem() { conform(MenuItemTests.self) }

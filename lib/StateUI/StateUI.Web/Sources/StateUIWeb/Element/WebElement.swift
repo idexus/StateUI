@@ -24,6 +24,7 @@ final class WebElement: NativeElement {
 
     /// Whether the view listens for the user's asking for its context menu.
     var listensForMenu = false
+    var listensForButtonMenu = false
 
     /// Whether the view listens for the keyboard coming into it and leaving it.
     var listensForFocus = false
@@ -64,6 +65,7 @@ final class WebElement: NativeElement {
         arrangeChildren()
         listenForTheUser()
         offerContextMenu()
+        offerButtonMenu()
         followFrame()
     }
 

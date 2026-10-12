@@ -13,7 +13,8 @@ extension AppKitElement {
         if let registered = AppKitRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
-            reporting: { [weak self] property, event, value in self?.report(property, event, value) }
+            reporting: { [weak self] property, event, value in self?.report(property, event, value) },
+            made: element.made
         ) {
             // A picture crosses as a file NAME, and the files are the
             // renderer's: it holds the resource directory and the cache over

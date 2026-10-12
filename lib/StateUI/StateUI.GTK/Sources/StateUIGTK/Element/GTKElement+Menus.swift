@@ -26,4 +26,12 @@ extension GTKElement {
             view.contextMenu = GTKContextMenu(menu, on: view.widget)
         }
     }
+
+    /// Gives the button a button's menu stands on - the button this element is, or the one its menu or an entry of
+    /// it stands under - the menu's entries.
+    func offerButtonMenu() {
+        let owner = NodeType.menuTypes.contains(type) ? element.enclosing(type: .buttonMenu)?.parent : element
+        guard let owner, let button = owner.gtk.view as? GTKButtonView, button.menuKind != .plain else { return }
+        button.setMenu(GTKMenu(ButtonMenu.entries(of: owner)))
+    }
 }

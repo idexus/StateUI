@@ -89,7 +89,7 @@ extension View {
     ///         }
     ///
     /// The same entries a menu bar takes - `MenuItem`, `Menu`
-    /// and `Divider` - attached to a view instead of to a page.
+    /// and `MenuSeparator` - attached to a view instead of to a page.
     ///
     /// The menu stays hidden until the user asks for it, so do not put the
     /// only way to perform an essential action behind it.

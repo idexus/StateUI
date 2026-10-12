@@ -69,6 +69,9 @@
     /// caption, ";" between; empty for none.
     func menu(of element: MountedElement) throws -> String
 
+    /// The menu `button` opens (`Button.menu`), written as `menu(of:)` writes one.
+    func buttonMenu(of button: MountedElement) throws -> String
+
     /// The bar `page` shows as the user meets it: the leading groups, "|", the trailing groups, "|", the actions in
     /// the overflow - a group its actions' ids in brackets, in reading order, "!" before one that cannot be chosen.
     func bar(of page: MountedElement) throws -> String
@@ -146,6 +149,10 @@ extension HostDriver {
 
     public func menu(of element: MountedElement) throws -> String {
         throw DriverCannot("read the menu of \(element.type.name)")
+    }
+
+    public func buttonMenu(of button: MountedElement) throws -> String {
+        throw DriverCannot("read the menu \(button.type.name) opens")
     }
 
     public func bar(of page: MountedElement) throws -> String {

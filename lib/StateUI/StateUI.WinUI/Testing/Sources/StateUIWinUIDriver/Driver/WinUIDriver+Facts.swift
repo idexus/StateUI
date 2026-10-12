@@ -23,6 +23,14 @@ extension WinUIDriver {
         return view.menus
     }
 
+    /// The flyout WinUI's DropDownButton or SplitButton standing for `button` opens.
+    func buttonMenu(of button: MountedElement) throws -> String {
+        guard let view = (button.native as? WinUIElement)?.view as? WinUIButtonView, view.menuKind != .plain else {
+            throw DriverCannot("read the menu \(button.type.name) opens")
+        }
+        return view.menus
+    }
+
     func focused(_ element: MountedElement) throws -> Bool {
         guard let view = (element.native as? WinUIElement)?.view else { throw DriverCannot("read the focus of \(element.type.name)") }
         return stateui_winui_focused(view.handle)
@@ -136,11 +144,13 @@ extension WinUIDriver {
     /// place among that menu's items, as WinUI chooses them.
     func menuPlace(of element: MountedElement) -> (owner: WinUIView, index: Int)? {
         var menu = element
-        while let parent = menu.parent, parent.type != .contextMenu, parent.type != .page { menu = parent }
+        while let parent = menu.parent, ![.contextMenu, .buttonMenu, .page].contains(parent.type) { menu = parent }
         guard let top = menu.parent else { return nil }
         let items = Self.flat(top).filter { $0.type == .menuItem }
         let index = items.firstIndex { $0 === element } ?? 0
-        if top.type == .contextMenu, let owner = (top.parent?.native as? WinUIElement)?.view { return (owner, index) }
+        if top.type == .contextMenu || top.type == .buttonMenu, let owner = (top.parent?.native as? WinUIElement)?.view {
+            return (owner, index)
+        }
         guard let bar = renderer?.window?.menuBar else { return nil }
         return (bar, index)
     }
@@ -153,7 +163,7 @@ extension WinUIDriver {
     /// The place of `element` among the entries of its kind in its menu, in order.
     static func place(of element: MountedElement, among kind: NodeType) -> Int {
         var top = element
-        while let parent = top.parent, parent.type != .contextMenu, parent.type != .page { top = parent }
+        while let parent = top.parent, ![.contextMenu, .buttonMenu, .page].contains(parent.type) { top = parent }
         return flat(top.parent ?? top).filter { $0.type == kind }.firstIndex { $0 === element } ?? 0
     }
 

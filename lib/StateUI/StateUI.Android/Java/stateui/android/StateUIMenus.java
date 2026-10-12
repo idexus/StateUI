@@ -15,6 +15,8 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.View;
+import android.widget.PopupMenu;
 import java.util.ArrayDeque;
 
 /**
@@ -37,6 +39,11 @@ final class StateUIMenus {
     static final int CONTROL = 256, SHIFT = 512, ALT = 1024;
 
     private StateUIMenus() {}
+
+    /** A menu popping up at `anchor`, its entries written before it shows: a button's menu. */
+    static PopupMenu popUp(View anchor) {
+        return new PopupMenu(anchor.getContext(), anchor);
+    }
 
     /**
      * Adds the entries to `menu`: a submenu's entries follow it up to its END, and a separator starts a new

@@ -32,6 +32,15 @@ extension GTKDriver {
         return Self.said(model, actions: shown.menu.actions)
     }
 
+    /// The menu the button standing for `button` opens, as its model holds it.
+    func buttonMenu(of button: MountedElement) throws -> String {
+        guard let view = (button.native as? GTKElement)?.view as? GTKButtonView, view.menuKind != .plain else {
+            throw DriverCannot("read the menu \(button.type.name) opens")
+        }
+        guard let menu = view.menu else { return "" }
+        return Self.said(g_menu_model(menu.model), actions: menu.actions)
+    }
+
     /// Chooses the item `element` as the user does: the action its menu runs, which GTK refuses where it cannot be
     /// chosen. Whether a menu shows it.
     func chooseMenuItem(_ element: MountedElement) throws {
@@ -76,11 +85,12 @@ extension GTKDriver {
         return nil
     }
 
-    /// The widget whose menu shows the item `element` - a view its context menu, a main menu's button - the menu,
-    /// and the name of its action.
+    /// The widget whose menu shows the item `element` - a view its context menu, a main menu's button, a button its
+    /// own menu - the menu, and the name of its action.
     private func menuItem(_ element: MountedElement) -> (GTKWidget, GTKMenu, String)? {
         let shown: [(GTKWidget, GTKMenu)] = frames().compactMap { frame in frame.mainMenu.map { ($0.button, $0.menu) } }
             + (renderer?.views(GTKView.self) ?? []).compactMap { view in view.contextMenu.map { (view.widget, $0.menu) } }
+            + (renderer?.views(GTKButtonView.self) ?? []).compactMap { button in button.menu.map { (button.widget, $0) } }
         for (widget, menu) in shown {
             if let name = menu.items.first(where: { $0.value() === element })?.key { return (widget, menu, name) }
         }

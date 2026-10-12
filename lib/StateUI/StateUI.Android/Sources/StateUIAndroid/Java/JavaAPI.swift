@@ -43,6 +43,8 @@ enum JavaAPI {
     static let invalidate = Java.method(view, "invalidate", "()V")
     static let setOnClickListener = Java.method(
         view, "setOnClickListener", "(Landroid/view/View$OnClickListener;)V")
+    static let setOnLongClickListener = Java.method(
+        view, "setOnLongClickListener", "(Landroid/view/View$OnLongClickListener;)V")
     static let requestLayout = Java.method(view, "requestLayout", "()V")
     static let measure = Java.method(view, "measure", "(II)V")
     static let layout = Java.method(view, "layout", "(IIII)V")
@@ -447,6 +449,10 @@ enum JavaAPI {
     static let fillMenu = Java.staticMethod(
         menus, "fill",
         "(Landroid/content/Context;Landroid/view/Menu;J[I[Ljava/lang/String;[Landroid/graphics/Bitmap;I)V")
+    static let popUpMenu = Java.staticMethod(menus, "popUp", "(Landroid/view/View;)Landroid/widget/PopupMenu;")
+    static let popupMenu = Java.findClass("android/widget/PopupMenu")
+    static let popupMenuItems = Java.method(popupMenu, "getMenu", "()Landroid/view/Menu;")
+    static let showPopupMenu = Java.method(popupMenu, "show", "()V")
 
     static let androidActivity = Java.findClass("android/app/Activity")
     static let activity = Java.findClass("stateui/android/StateUIActivity")
