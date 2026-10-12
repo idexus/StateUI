@@ -98,7 +98,8 @@ public struct Key: Hashable, Sendable, ExpressibleByExtendedGraphemeClusterLiter
 extension Key: HostRepresentable {
     /// The key as it crosses: a character as text, another key by its number.
     public var propValue: PropValue {
-        character.map { .string(String($0)) } ?? .enumeration(named?.rawValue ?? 0)
+        if let character { return .string(String(character)) }
+        return .enumeration(named?.rawValue ?? 0)
     }
 
     /// The key back from what crossed.
