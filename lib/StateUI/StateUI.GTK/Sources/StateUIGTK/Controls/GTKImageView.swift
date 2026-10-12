@@ -82,7 +82,13 @@ final class GTKImageView: GTKPanelView {
 
         guard let pixbuf = gdk_pixbuf_new_from_file_at_scale(path, Int32(wanted.width), Int32(wanted.height), 1, nil)
         else { return }
-        replaceTexture(with: gdk_texture_new_for_pixbuf(pixbuf))
+        // The pixbuf's own pixels, eight bits a channel, its alpha straight where it has one.
+        let pixels = gdk_pixbuf_read_pixel_bytes(pixbuf)
+        let format = gdk_pixbuf_get_has_alpha(pixbuf) != 0 ? GDK_MEMORY_R8G8B8A8 : GDK_MEMORY_R8G8B8
+        replaceTexture(with: gdk_memory_texture_new(
+            gdk_pixbuf_get_width(pixbuf), gdk_pixbuf_get_height(pixbuf), format, pixels,
+            gsize(gdk_pixbuf_get_rowstride(pixbuf))))
+        g_bytes_unref(pixels)
         g_object_unref(UnsafeMutableRawPointer(pixbuf))
         drawn = wanted
         gtk_widget_queue_draw(widget)

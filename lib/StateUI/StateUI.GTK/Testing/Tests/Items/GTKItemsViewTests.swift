@@ -11,18 +11,23 @@ import XCTest
 @MainActor
 final class GTKItemsViewTests: XCTestCase {
     /// A row stands as tall as its entry, so only the rows its view holds are shown: at their least, a StateUI
-    /// panel's nothing, every row GTK binds would stand in view at once.
+    /// panel's nothing, every row GTK binds would stand in view at once. The entry is measured beside the list, as
+    /// the machine's font sets its words.
     func testARowStandsAsTallAsItsEntry() throws {
         try onUIThread {
             let host = GTKRenderer.running {
-                VStack { ItemsView(0..<100) { Text("Item \($0)").padding(12) }.width(300).height(300) }
+                VStack {
+                    Text("Item 0").padding(12)
+                    ItemsView(0..<100) { Text("Item \($0)").padding(12) }.width(300).height(300)
+                }
             }
+            let entry = try XCTUnwrap(host.views(GTKTextView.self).first)
             let list = try XCTUnwrap(host.views(GTKItemsView.self).first)
-            host.settle { list.shownRows.contains(42) }
-            let rows = list.shownRows
+            host.settle { entry.frame.height > 0 && list.shownRows.contains(Int32(entry.frame.height)) }
+            let (tall, rows) = (entry.frame.height, list.shownRows)
 
-            XCTAssertEqual(rows.count, 7, "as many as 300 holds")
-            XCTAssertEqual(Set(rows), [42], "each as tall as its entry")
+            XCTAssertEqual(Set(rows), [Int32(tall)], "each as tall as its entry")
+            XCTAssertEqual(rows.count, Int((300 / tall).rounded(.up)), "as many as 300 holds, the last cut short")
         }
     }
 }

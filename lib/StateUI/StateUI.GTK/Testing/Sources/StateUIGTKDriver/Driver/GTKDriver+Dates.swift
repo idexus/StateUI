@@ -20,7 +20,7 @@ extension GTKDriver {
             guard let native = g_date_time_new_local(Int32(day.year), Int32(day.month), Int32(day.day), 12, 0, 0) else {
                 return false
             }
-            gtk_calendar_select_day(dates.calendar.opaque, native)
+            stateui_calendar_set_date(dates.calendar.opaque, native)
             g_date_time_unref(native)
         // The user moves the hour and the minute each; the clock is set at once, and its minute's wheel tells it.
         case (.pickTime(let time), let times as GTKTimePickerView):

@@ -65,7 +65,7 @@ final class GTKDatePickerView: GTKPopoverPickerView {
         guard day != date, let native = g_date_time_new_local(Int32(day.year), Int32(day.month), Int32(day.day), 12, 0, 0)
         else { return }
         defer { g_date_time_unref(native) }
-        gtk_calendar_select_day(calendar.opaque, native)
+        stateui_calendar_set_date(calendar.opaque, native)
         write()
     }
 

@@ -106,37 +106,41 @@ and x64, started with no Swift on the search path.
 
 ## A Linux machine: GTK 4, Web
 
-Last verified 2026-10-05.
+Last verified 2026-10-12.
 
 | | |
 | --- | --- |
 | Machine | a Parallels virtual machine on Apple silicon: aarch64, 2 cores, 16 GB |
-| System | Ubuntu 24.04.5 LTS, Linux 7.0.0; GNOME Shell 46 on Wayland |
-| Swift | the swift.org toolchain `swift-6.4.0-RELEASE`, installed by swiftly |
-| Editor | VS Code 1.140.0; the StateUI extension 0.5.1, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.4.1 |
-| Node.js | 22.23.3, for building and testing the extension, the Web host's own suite and the conformance run's controller |
+| System | Ubuntu 26.04.1 LTS, Linux 7.0.0; GNOME Shell 50.1 on Wayland |
+| Swift | the swift.org toolchain `swift-6.4.0-RELEASE` for Ubuntu 26.04, installed by swiftly |
+| Editor | VS Code 1.141.0; the StateUI extension 0.5.1, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.4.1 |
+| Node.js | 22.23.3 from nodejs.org, first on the user's `PATH`, for building and testing the extension, the Web host's own suite and the conformance run's controller; Ubuntu's own is 22.22.1 |
 
 ### GTK 4
 
+The host's own suite and every conformance family.
+
 | | |
 | --- | --- |
-| GTK | 4.14.5 |
-| libadwaita | 1.5.0 |
+| GTK | 4.22.4 |
+| libadwaita | 1.9.1 |
 | WebKitGTK | 2.52.6 (`webkitgtk-6.0`), for the web view's backend |
-| Pictures | gdk-pixbuf 2.42.10, with librsvg 2.58.0's SVG loader |
-| GLib | 2.80.0 |
-| Graphics | Mesa 25.2.8 on the machine's virtio-gpu; the tests draw with GTK's cairo renderer, an application with its GL one |
+| Pictures | gdk-pixbuf 2.44.5, with librsvg 2.61.3's SVG loader |
+| GLib | 2.88.0 |
+| Graphics | Mesa 26.0.8 on the machine's virtio-gpu; the tests draw with GTK's cairo renderer, an application with its GL one |
+
+SwiftPM says `prohibited flag(s): -pthread` for the GTK libraries here:
+Ubuntu 26.04's `lcms2.pc`, which libadwaita reaches, adds `-pthread` to its
+flags, and SwiftPM leaves the flag out.
 
 ### Web
 
-HelloWorld and the Gallery served and run; the host's own suite in Node, and
-the conformance suite in a headless browser (`test-web.sh --browser`).
+The host's own suite in Node and the conformance suite in a headless browser
+(`test-web.sh --browser`); HelloWorld and the Gallery were last served and run
+here on Ubuntu 24.04, on 2026-10-05.
 
 | | |
 | --- | --- |
 | Swift SDK | `swift-6.4.0-RELEASE_wasm` |
-| Server | Python 3.12.3 |
-| Browser | Firefox 157.0; Chromium 154.0.8037.57 from the snap, headless, for the conformance suite |
-
-Ubuntu 24.04's own Node.js is 18, below the extension's 20; Node.js 22 from
-nodejs.org stands first on the user's `PATH`.
+| Server | Python 3.14.4 |
+| Browser | Firefox 157.0.1; Chromium 155.0.8059.39 from the snap, headless, for the conformance suite |
