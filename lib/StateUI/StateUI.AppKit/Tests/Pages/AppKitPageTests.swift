@@ -643,7 +643,7 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(control.segmentDistribution, .fillEqually)
         XCTAssertEqual(control.label(forSegment: 0), "Home")
         XCTAssertEqual(control.image(forSegment: 0)?.isTemplate, true)
-        XCTAssertEqual(control.image(forSegment: 0)?.size.height, AppKitTabRow.glyphHeight)
+        XCTAssertEqual(control.image(forSegment: 0)?.size.height, NSImage.glyphHeight)
         XCTAssertNil(control.image(forSegment: 1))
         XCTAssertFalse(picture.isTemplate)
         XCTAssertEqual(picture.size, NSSize(width: 48, height: 48))

@@ -82,9 +82,9 @@ final class AppKitContextMenuTests: XCTestCase {
         XCTAssertNil(native.menu)
     }
 
-    /// An entry shows its icon, can be disabled, is drawn as destructive when
-    /// it is one, and carries its accessibility identifier; a menu is
-    /// disabled as a whole.
+    /// An entry shows its icon at a glyph's height, can be disabled, is drawn
+    /// as destructive when it is one, and carries its accessibility
+    /// identifier; a menu is disabled as a whole.
     @MainActor
     func testAnEntrysIconStateAndIdentifierReachItsNativeItem() throws {
         let renderer = testRenderer(resourceDirectory: TestPictures.directory, presentsWindows: false)
@@ -113,7 +113,7 @@ final class AppKitContextMenuTests: XCTestCase {
         let items = try XCTUnwrap(renderer.viewForTesting(id: .manual("row"))?.menu).items
         XCTAssertEqual(items.map(\.title), ["Delete", "Move"])
         guard items.count == 2 else { return }
-        XCTAssertNotNil(items[0].image)
+        XCTAssertEqual(items[0].image?.size.height, NSImage.glyphHeight, "a picture at a menu's glyph height")
         XCTAssertFalse(items[0].isEnabled)
         XCTAssertEqual(
             items[0].attributedTitle?.attribute(.foregroundColor, at: 0, effectiveRange: nil)

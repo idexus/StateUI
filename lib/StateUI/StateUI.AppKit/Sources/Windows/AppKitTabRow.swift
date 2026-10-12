@@ -43,9 +43,6 @@ struct AppKitTabsPlacement {
 /// beneath it.
 @MainActor
 final class AppKitTabRow: NSView {
-    /// How tall a tab's glyph stands beside a label in the system font.
-    static let glyphHeight = (NSFont.systemFontSize * 1.25).rounded()
-
     /// The room between the tabs and the row's edges across a split view
     /// column, which AppKit pads itself.
     static let columnInsets = NSEdgeInsets()
@@ -92,7 +89,7 @@ final class AppKitTabRow: NSView {
             control.segmentCount = next.titles.count
             for index in next.titles.indices {
                 control.setLabel(next.titles[index], forSegment: index)
-                control.setImage(next.images[index].map(Self.glyph), forSegment: index)
+                control.setImage(next.images[index].map { $0.glyph(tinted: true) }, forSegment: index)
             }
         }
 
@@ -121,18 +118,6 @@ final class AppKitTabRow: NSView {
 
     private var rowHeight: CGFloat {
         insets.top + control.fittingSize.height + insets.bottom
-    }
-
-    /// A tab's picture as a glyph: a template the system tints with the
-    /// control's state, at a glyph's height. The tab's own picture is left as
-    /// it is.
-    private static func glyph(_ image: NSImage) -> NSImage {
-        guard let copy = image.copy() as? NSImage else { return image }
-        copy.isTemplate = true
-        let size = PictureArithmetic.glyph(
-            LayoutSize(width: image.size.width, height: image.size.height), height: glyphHeight)
-        copy.size = NSSize(width: size.width, height: size.height)
-        return copy
     }
 
     /// The user chose a tab.
