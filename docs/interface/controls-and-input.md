@@ -148,17 +148,17 @@ and the tier pages it links list each with its mark per host:
   span - take `textCase`, which draws the words `.uppercase` or `.lowercase`
   while the text stays as written; a field turns what is typed into the case
   and reports it so;
-- text-styled controls take `textColor` and `tracking`, the space between
-  letters; those in a font take `fontSize`, `fontFamily` - the name the
+- text-styled controls take `textColor`; a label, a button and a span take
+  `tracking`, the space between letters, too; those in a font take `fontSize`, `fontFamily` - the name the
   application registered the font under - `fontAttributes`, which is `.bold`,
   `.italic`, `[.bold, .italic]` or `.none`, and `isFontAutoScalingEnabled`,
   on unless said, which makes the text follow the user's text-size setting -
   iOS's text size, Android's font size, Windows' text size, GNOME's text
   scaling and the browser's font size; a Mac has none to follow;
-- aligned controls take `horizontalTextAlignment` and
-  `verticalTextAlignment`: `.start`, `.center` or `.end`;
+- aligned controls take `horizontalTextAlignment`, and a label
+  `verticalTextAlignment` too: `.start`, `.center` or `.end`;
 - a label and a span take `textDecorations` - `.underline`, `.strikethrough`,
-  or both - and `lineHeight`, a multiple of the font's own;
+  or both - and a label `lineHeight`, a multiple of the font's own;
 - a label's own properties control wrapping and maximum lines. `lineBreak` is
   `.wordWrap`, the default, `.characterWrap`, which breaks inside a word, or
   `.noWrap`; `.headTruncation`, `.tailTruncation` and `.middleTruncation` keep

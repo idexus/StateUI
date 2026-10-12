@@ -33,9 +33,9 @@ extension WinUIDriver {
     }
 
     /// The elements whose views stand left to right in WinUI whatever their direction (`WinUIView.directionHolder`):
-    /// the layouts, the drawings, and a web view, whose page says its own.
+    /// the layouts and a stack's parts, the drawings, and a web view, whose page says its own.
     static let standsLeftToRight: Set<String> = [
-        "ActivityIndicator", "Canvas", "Ellipse", "Grid", "HStack", "Image", "Line", "Path", "Polygon",
-        "Polyline", "Rectangle", "ScrollView", "VStack", "WebView", "ZStack",
+        "ActivityIndicator", "Canvas", "Divider", "Ellipse", "Grid", "HStack", "Image", "Line", "Path", "Polygon",
+        "Polyline", "Rectangle", "ScrollView", "Spacer", "VStack", "WebView", "ZStack",
     ]
 }

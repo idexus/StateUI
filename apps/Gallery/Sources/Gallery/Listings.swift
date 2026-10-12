@@ -1721,7 +1721,7 @@ enum Listings {
                                 // choosing it turns the state over.
                                 MenuItem("Large text").isOn($large)
 
-                                Divider()
+                                MenuSeparator()
 
                                 MenuItem("Remove")
                                     .icon(ImageSource(light: "menu_remove.png", dark: "menu_remove_dark.png"))
@@ -7662,7 +7662,7 @@ enum Listings {
         var body: some View {
             VStack {
                 // The list below is filtered from `query`, so every keystroke builds
-                // this closure; the fields themselves are handed the state.
+                // this closure; the field itself is handed the state.
                 DebugInfoLabel()
 
                 // Every keystroke lands on `query`; `.onSubmitted` hears the
@@ -7681,11 +7681,6 @@ enum Listings {
                 Text(searched.isEmpty
                     ? "Type to narrow the list, then press the keyboard's search key."
                     : "Searched for: \(searched)")
-
-                SectionTitle("In the accent")
-
-                SearchField($query)
-                    .placeholder("Search the list")
             }
         }
 

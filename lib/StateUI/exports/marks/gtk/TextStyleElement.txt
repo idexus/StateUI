@@ -1,21 +1,11 @@
-# revision 1.1
+# revision 2.1
 Button.textColor: ✅
-Button.tracking: ✅
 DatePicker.textColor: ✅
-DatePicker.tracking: not realized
 Picker.textColor: ✅
-Picker.tracking: not realized
 RadioButton.textColor: ✅
-RadioButton.tracking: not realized
 SearchField.textColor: ✅
-SearchField.tracking: not realized
 Text.textColor: ✅
-Text.tracking: ✅
 TextEditor.textColor: ✅
-TextEditor.tracking: not realized
 TextField.textColor: ✅
-TextField.tracking: not realized
 TextSpan.textColor: ✅
-TextSpan.tracking: ✅
 TimePicker.textColor: ✅
-TimePicker.tracking: not realized

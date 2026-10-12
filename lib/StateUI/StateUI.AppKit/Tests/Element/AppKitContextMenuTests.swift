@@ -20,7 +20,7 @@ final class AppKitContextMenuTests: XCTestCase {
         var duplicate = HostPatch(id: .manual("duplicate"), type: .menuItem)
         duplicate.properties[.text] = .string("Duplicate")
         duplicate.events = .replace([.clicked: 40])
-        let separator = HostPatch(id: .manual("separator"), type: .divider)
+        let separator = HostPatch(id: .manual("separator"), type: .menuSeparator)
         var top = HostPatch(id: .manual("top"), type: .menuItem)
         top.properties[.text] = .string("To the top")
         var move = HostPatch(id: .manual("move"), type: .menu)

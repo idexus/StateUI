@@ -100,6 +100,7 @@ final class ControlTests: XCTestCase {
                     .lineBreak(.tailTruncation)
                     .lineHeight(1.5)
                     .maximumLines(2)
+                    .verticalTextAlignment(.end)
                     .textDecorations([.underline, .strikethrough])
                     // The runs go here rather than in a case of their own: a
                     // TextSpan is not a view, so it has no case, and Text.swift
@@ -206,9 +207,6 @@ final class ControlTests: XCTestCase {
                     .isOn(true)
                     .groupName("size")
                     .textCase(.uppercase)
-                    .stroke(.gray)
-                    .lineWidth(1)
-                    .shape(.roundedRectangle(8))
                     .onToggled { _ in }),
 
             ControlCase("Slider", source: "Slider.swift",
@@ -231,7 +229,6 @@ final class ControlTests: XCTestCase {
             ControlCase("SearchField", source: "SearchField.swift",
                 SearchField("al")
                     .submitLabel(.search)
-                    .tint(.gray)
                     .onTextChanged { _ in }
                     .onSubmitted {}),
 
@@ -248,6 +245,8 @@ final class ControlTests: XCTestCase {
             ControlCase("Spacer", source: "Spacer.swift",
                 Spacer()
                     .minimumWidth(8)),
+
+            ControlCase("Divider", source: "Divider.swift", Divider()),
 
             ControlCase("Grid", source: "Grid.swift",
                 Grid {
@@ -470,7 +469,6 @@ final class ControlTests: XCTestCase {
                         .fontAttributes(.bold)
                         .isFontAutoScalingEnabled(false)
                         .horizontalTextAlignment(.center)
-                        .verticalTextAlignment(.end)
                         // What the view says about itself: a handle for a
                         // driver, and three things a screen reader says.
                         .accessibilityIdentifier("tiers")

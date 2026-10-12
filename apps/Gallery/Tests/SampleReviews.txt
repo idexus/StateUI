@@ -24,7 +24,7 @@ ComplaintsSample.swift ccb58f7f38490263
 ConcurrentAnimationSample.swift 455921219b052977
 ConcurrentStateSample.swift a3edd00bbf02fb9e
 ConnectivitySample.swift 118a24e1aa65b40a
-ContextMenuSample.swift 2f7e6b24a5506faa
+ContextMenuSample.swift c711855bad71e6f1
 ConverterSample.swift 72fc3d521c24d4dc
 Cube3DSample.swift 243ebb48ba5e7144
 DatePickerSample.swift 98ec31b1e84de06c
@@ -86,7 +86,7 @@ RemovingRowSample.swift 3737dc3829abfd1c
 SameInputsSample.swift 81df5dd2956f2b56
 ScenesSample.swift 841c7adf2c09246f
 ScrollViewSample.swift 8ccc1f4a10956470
-SearchFieldSample.swift 78f8081ecd423749
+SearchFieldSample.swift 8353b3cb851595d0
 SearchSample.swift 38388654add4726f
 SemanticsSample.swift e16af7b7a2b5ef64
 ShapesSample.swift 6107589125bcb192

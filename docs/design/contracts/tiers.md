@@ -19,13 +19,14 @@ Swift protocols behind them refine each other.
   |   |       |-- FilledShape            what fills the area it encloses
   |   |       '-- CorneredShape          how its corners join
   |   |-- PaddingElement                 space inside an element
-  |   '-- TextAlignmentElement           where text sits in its element
+  |   '-- TextAlignmentElement           where text sits across its element
   '-- MenuItemElement                    an item the user chooses: caption, icon, action, shortcut
 
-  TextStyleElement                       text colour, space between letters
+  TextStyleElement                       text colour
   '-- TextualElement                     the words and their case
   FontElement                            family, size, weight and slant, text-size scaling
   LineHeightElement                      space between lines
+  TrackingElement                        space between letters
   DecorableTextElement                   underline and strikethrough
   BorderElement                          the shape of an element's own box, and its outline
   ImageElement                           how a picture fills its room
@@ -43,9 +44,9 @@ Swift protocols behind them refine each other.
 
 ```text
   View               ActivityIndicator, Button, Canvas, CheckBox,
-                     DatePicker, Image, Text, Map, Picker, ProgressBar,
-                     RadioButton, ScrollView, Slider, Stepper, Switch,
-                     TimePicker, WebView, ItemsView
+                     DatePicker, Divider, Image, Text, Map, Picker,
+                     ProgressBar, RadioButton, ScrollView, Slider, Spacer,
+                     Stepper, Switch, TimePicker, WebView, ItemsView
   Layout             Grid, ZStack
   Stack              HStack, VStack
   TextInput          SearchField, TextEditor, TextField
@@ -55,6 +56,8 @@ Swift protocols behind them refine each other.
   AutomationElement  every View, MenuItem, ToolbarItem, NavigationStack,
                      TabView, SplitView
   MenuItemElement    MenuItem, ToolbarItem
+  TrackingElement    Text, Button, TextSpan
+  LineHeightElement  Text
   KeyboardElement    every Layout and every FocusElement
   FocusElement       Button, CheckBox, DatePicker, ItemsView, Picker,
                      RadioButton, ScrollView, Slider, Stepper, Switch,
@@ -62,7 +65,7 @@ Swift protocols behind them refine each other.
   PageElement        Page, NavigationStack, TabView, SplitView
   BarElement         NavigationStack, TabView, SplitView, ModalStack
   text tiers only    TextSpan
-  no tier            Application, Scene, Window, Menu, Divider, ContextMenu,
+  no tier            Application, Scene, Window, Menu, MenuSeparator, ContextMenu,
                      Overlay, Marker, and the slots and collections
 ```
 

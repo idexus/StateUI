@@ -661,7 +661,7 @@ final class StyleTests: XCTestCase {
                 let name = block.prefix { $0 != " " && $0 != ":" && $0 != "{" }
 
                 guard name.hasSuffix("Properties") || name == "PropertyContainer"
-                        || name == "PaddingElement" || name == "TextStyleElement"
+                        || name == "PaddingElement" || name == "TextStyleElement" || name == "TrackingElement"
                         || name == "TextualElement" || name == "FontElement"
                         || name == "TextAlignmentElement" || name == "BarElement"
                 else { continue }

@@ -40,7 +40,8 @@ final class MenuChoiceTests: XCTestCase {
         save.properties = [.keyboardShortcut: KeyboardShortcut("s", modifiers: [.primary, .shift]).propValue]
         var menu = HostPatch(id: .manual("menu"), type: .contextMenu)
         menu.children = .arranged([
-            save, HostPatch(id: .manual("plain"), type: .menuItem), HostPatch(id: .manual("line"), type: .divider),
+            save, HostPatch(id: .manual("plain"), type: .menuItem),
+            HostPatch(id: .manual("line"), type: .menuSeparator),
         ])
         var root = HostPatch(id: .manual("root"), type: .text)
         root.children = .arranged([menu])

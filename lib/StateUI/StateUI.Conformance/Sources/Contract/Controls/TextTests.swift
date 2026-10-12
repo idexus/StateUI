@@ -4,14 +4,15 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `TextContract` on a host: a label shows its words, wraps or cuts them as the tree says, and shows no more lines
-/// than its maximum.
+/// `TextContract` on a host: a label shows its words, wraps or cuts them as the tree says, shows no more lines than
+/// its maximum, and stands its words down its room where the tree aligns them.
 @_spi(Host) public enum TextTests: ConformanceFamily {
     public static let name = "Text"
 
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("Text"),
+            Aspects.holds(TextContract.verticalTextAlignment, on: "Text", .start, then: .end, with: Words.on("Text")),
             ConformanceCase("aTextShowsItsWords", proves: [
                 Covered(TextualElementContract.text, on: "Text"),
             ]) { s in

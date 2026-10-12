@@ -109,11 +109,10 @@ rule is written as CSS: a spacer is a flex item growing from nothing
 
 ## A divider in a stack
 
-A `Divider` is a menu's separator under a menu, a context menu or a menu bar,
-and a view anywhere else (`NodeType.isViewless(_:under:)`): the toolkit's own
-line, across its stack and as thick as the toolkit draws one. A host asks
-whether an element is viewless before it asks its registry for a view, so a
-menu's divider never gets one.
+A `Divider` is a view: the toolkit's own line, across its stack and as thick
+as the toolkit draws one. A line between a menu's entries is a
+`MenuSeparator`, one of the entries a menu draws itself
+(`NodeType.viewlessTypes`), so it never gets a view.
 
 Each host draws the line its toolkit offers: AppKit's separator box, a hairline
 in UIKit's separator colour, the Android theme's list divider, WinUI's divider

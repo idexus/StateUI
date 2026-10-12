@@ -9,10 +9,10 @@ public enum SearchFieldContract: ElementContract {
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native
 
-    /// A search field is an input of text in a font, aligned and tinted.
+    /// A search field is an input of text in a font, aligned.
     public static let tiers: [any Contract.Type] = [
         TextInputContract.self, TextualElementContract.self, FontElementContract.self,
-        TextAlignmentElementContract.self, TintElementContract.self,
+        TextAlignmentElementContract.self,
     ]
 
     /// What the keyboard's return key is captioned.

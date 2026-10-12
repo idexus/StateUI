@@ -1,4 +1,4 @@
-# revision 11.1
+# revision 11.2
 ActivityIndicator.scaleY: ✅
 ActivityIndicator.style: ✅
 Button.isAccessibilityHidden: ✅
@@ -42,7 +42,7 @@ SearchField.opacity: ✅
 SearchField.pivotY: ✅
 Slider.accessibilityHeading: ✅
 Slider.translationY: ✅
-Spacer.layoutDirection: ✅
+Spacer.layoutDirection: ✓ read layoutDirection of Spacer: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Stepper.scaleY: ✅
 Stepper.style: ✅
 Switch.automationExcludedWithChildren: ✅

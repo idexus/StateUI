@@ -1030,7 +1030,7 @@ final class AppKitPageTests: XCTestCase {
         var save = HostPatch(id: .manual("save"), type: .menuItem)
         save.properties[.text] = .string("Save")
         save.events = .replace([.clicked: 60])
-        let separator = HostPatch(id: .manual("separator"), type: .divider)
+        let separator = HostPatch(id: .manual("separator"), type: .menuSeparator)
         var recentFile = HostPatch(id: .manual("recent-file"), type: .menuItem)
         recentFile.properties[.text] = .string("notes.txt")
         var recent = HostPatch(id: .manual("recent"), type: .menu)

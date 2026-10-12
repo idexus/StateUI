@@ -1,4 +1,4 @@
-# revision 7.1
+# revision 8.1
 Button.background: ✅
 Button.lineWidth: ✅
 Button.shape: ✅
@@ -11,9 +11,6 @@ HStack.background: ✅
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
-RadioButton.lineWidth: not realized
-RadioButton.shape: not realized
-RadioButton.stroke: not realized
 ScrollView.background: ✅
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅

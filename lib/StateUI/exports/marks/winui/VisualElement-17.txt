@@ -1,4 +1,4 @@
-# revision 11.1
+# revision 11.2
 ActivityIndicator.background: – WinUI's progress ring paints its Background as its track, no ground under its frame.
 Button.ignoresInput: ✅
 Button.scale: ✅
@@ -8,7 +8,7 @@ CheckBox.height: ✅
 CheckBox.rotationX: ✓ read rotationX of CheckBox: the host's own tip, checked against the projection it laid on the element
 CheckBox.width: ✅
 DatePicker.accessibilityHint: ✅
-Divider.layoutDirection: ✅
+Divider.layoutDirection: ✓ read layoutDirection of Divider: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Ellipse.opacity: ✅
 Ellipse.pivotY: ✅
 Grid.translationX: ✅

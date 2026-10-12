@@ -1,4 +1,4 @@
-# revision 11.1
+# revision 11.2
 ActivityIndicator.frame: ✅
 ActivityIndicator.scaleX: ✅
 Button.accessibilityHeading: ✅

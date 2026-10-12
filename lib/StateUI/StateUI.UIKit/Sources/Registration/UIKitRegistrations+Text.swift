@@ -29,17 +29,17 @@ extension UIKitRegistrations {
             }
             label.applies([
                 TextAlignmentElementContract.horizontalTextAlignment,
-                TextAlignmentElementContract.verticalTextAlignment,
+                TextContract.verticalTextAlignment,
             ]) { view, values in
                 view.setAlignment(
                     horizontal: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start,
-                    vertical: values[TextAlignmentElementContract.verticalTextAlignment] ?? .start)
+                    vertical: values[TextContract.verticalTextAlignment] ?? .start)
             }
             label.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
             label.property(VisualElementContract.background) { view, background in
                 view.setBackground(background?.propValue)
             }
-            label.property(TextStyleElementContract.tracking) { view, spacing in
+            label.property(TrackingElementContract.tracking) { view, spacing in
                 view.setLook { $0.letterSpacing = spacing ?? 0 }
             }
             label.property(LineHeightElementContract.lineHeight) { view, height in

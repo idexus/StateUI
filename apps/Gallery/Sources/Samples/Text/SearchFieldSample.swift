@@ -15,7 +15,7 @@ struct SearchFieldSample: SampleContent, ExampleContent {
     var body: some View {
         VStack {
             // The list below is filtered from `query`, so every keystroke builds
-            // this closure; the fields themselves are handed the state.
+            // this closure; the field itself is handed the state.
             DebugInfoLabel()
 
             // Every keystroke lands on `query`; `.onSubmitted` hears the
@@ -41,14 +41,6 @@ struct SearchFieldSample: SampleContent, ExampleContent {
                 : "Searched for: \(searched)")
                 .fontSize(12)
                 .textColor(Palette.subtle)
-
-            SectionTitle("In the accent")
-
-            SearchField($query)
-                .accessibilityIdentifier("searchBar.query.styled")
-                .accessibilityLabel("Search the list, coloured")
-                .placeholder("Search the list")
-                .tint(Palette.accent)
         }
         .spacing(12)
     }
@@ -62,8 +54,8 @@ struct SearchFieldSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("The same query, drawn twice. Type something: where the platform draws "
-                + "a clear button, it appears once there is text to clear.")
+            Text("Type something: where the platform draws a clear button, it appears once "
+                + "there is text to clear.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

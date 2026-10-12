@@ -51,6 +51,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testMenuBar", testMenuBar),
             ("testMenuItem", testMenuItem),
             ("testDivider", testDivider),
+            ("testMenuSeparator", testMenuSeparator),
             ("testModalStack", testModalStack),
             ("testNavigationStack", testNavigationStack),
             ("testOverlay", testOverlay),
@@ -79,6 +80,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testFontElement", testFontElement),
             ("testTextAlignmentElement", testTextAlignmentElement),
             ("testLineHeightElement", testLineHeightElement),
+            ("testTrackingElement", testTrackingElement),
             ("testDecorableTextElement", testDecorableTextElement),
             ("testPaddingElement", testPaddingElement),
             ("testBorderElement", testBorderElement),
@@ -131,6 +133,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testMenuBar() throws { try conform(MenuBarTests.self) }
     func testMenuItem() throws { try conform(MenuItemTests.self) }
     func testDivider() throws { try conform(DividerTests.self) }
+    func testMenuSeparator() throws { try conform(MenuSeparatorTests.self) }
     func testModalStack() throws { try conform(ModalStackTests.self) }
     func testNavigationStack() throws { try conform(NavigationStackTests.self) }
     func testOverlay() throws { try conform(OverlayTests.self) }
@@ -159,6 +162,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testFontElement() throws { try conform(FontElementTests.self) }
     func testTextAlignmentElement() throws { try conform(TextAlignmentElementTests.self) }
     func testLineHeightElement() throws { try conform(LineHeightElementTests.self) }
+    func testTrackingElement() throws { try conform(TrackingElementTests.self) }
     func testDecorableTextElement() throws { try conform(DecorableTextElementTests.self) }
     func testPaddingElement() throws { try conform(PaddingElementTests.self) }
     func testBorderElement() throws { try conform(BorderElementTests.self) }

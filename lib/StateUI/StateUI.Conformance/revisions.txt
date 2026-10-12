@@ -44,13 +44,19 @@ PageElement 2
 View 5
 VisualElement 11
 Shape 4
-BorderElement 7
+BorderElement 8
 TextInput 2
 Application 3
 TextSpan 2
-Divider 2
+Divider 3
 Canvas 2
 Rectangle 2
 Stepper 2
 KeyboardElement 2
 LineHeightElement 2
+TextAlignmentElement 2
+Text 2
+TextStyleElement 2
+TintElement 2
+ContextMenu 2
+winui VisualElement 2

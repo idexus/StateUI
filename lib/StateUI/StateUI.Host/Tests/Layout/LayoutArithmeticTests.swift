@@ -64,13 +64,13 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(fixed[1]?.width, 12, "a length it states wins over growing")
     }
 
-    /// A divider has a view of its own in a stack and none in a menu, where it is an entry the menu draws.
-    func testADividerIsViewlessOnlyInAMenu() {
-        XCTAssertFalse(NodeType.isViewless(.divider, under: .vStack))
-        XCTAssertTrue(NodeType.isViewless(.divider, under: .menu))
-        XCTAssertTrue(NodeType.isViewless(.divider, under: .contextMenu))
-        XCTAssertTrue(NodeType.isViewless(.menuItem, under: .vStack))
-        XCTAssertFalse(NodeType.isViewless(.spacer, under: .hStack))
+    /// A divider is a stack's view; a menu's separator, like its entries, is one the menu draws.
+    func testAMenusSeparatorIsViewlessAndADividerIsAView() {
+        XCTAssertFalse(NodeType.viewlessTypes.contains(.divider))
+        XCTAssertTrue(NodeType.viewlessTypes.contains(.menuSeparator))
+        XCTAssertTrue(NodeType.menuTypes.contains(.menuSeparator))
+        XCTAssertTrue(NodeType.viewlessTypes.contains(.menuItem))
+        XCTAssertFalse(NodeType.viewlessTypes.contains(.spacer))
     }
 
     /// A vertical stack sets shown children one under another; a hidden one takes no room and no spacing.

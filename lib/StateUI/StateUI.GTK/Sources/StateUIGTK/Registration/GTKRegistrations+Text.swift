@@ -18,10 +18,10 @@ extension GTKRegistrations {
             label.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
                 view.setAlignment(horizontal: alignment ?? .start)
             }
-            label.property(TextAlignmentElementContract.verticalTextAlignment) { view, alignment in
+            label.property(TextContract.verticalTextAlignment) { view, alignment in
                 view.setAlignment(vertical: alignment ?? .start)
             }
-            label.property(TextStyleElementContract.tracking) { view, spacing in
+            label.property(TrackingElementContract.tracking) { view, spacing in
                 view.setLook { $0.letterSpacing = spacing ?? 0 }
             }
             label.property(LineHeightElementContract.lineHeight) { view, height in

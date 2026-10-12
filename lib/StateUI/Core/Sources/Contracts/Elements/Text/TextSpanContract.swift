@@ -11,7 +11,8 @@ public enum TextSpanContract: ElementContract {
 
     /// A run is text in a font, decorated - and no view: no line of its own, and nothing automation finds.
     public static let tiers: [any Contract.Type] = [
-        TextualElementContract.self, FontElementContract.self, DecorableTextElementContract.self,
+        TextualElementContract.self, FontElementContract.self, TrackingElementContract.self,
+        DecorableTextElementContract.self,
     ]
 
     /// What is drawn behind the run - a highlight over part of a line.

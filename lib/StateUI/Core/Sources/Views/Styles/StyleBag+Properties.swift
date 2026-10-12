@@ -19,6 +19,7 @@ extension StyleBag: FontElement where Target: FontElement {}
 extension StyleBag: TintElement where Target: TintElement {}
 extension StyleBag: TextAlignmentElement where Target: TextAlignmentElement {}
 extension StyleBag: LineHeightElement where Target: LineHeightElement {}
+extension StyleBag: TrackingElement where Target: TrackingElement {}
 extension StyleBag: DecorableTextElement where Target: DecorableTextElement {}
 extension StyleBag: BorderElement where Target: BorderElement {}
 extension StyleBag: ImageElement where Target: ImageElement {}

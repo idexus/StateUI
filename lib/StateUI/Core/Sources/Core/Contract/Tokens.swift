@@ -45,6 +45,7 @@ extension NodeType {
     static let menuBar = MenuBarContract.nodeType
     static let menuItem = MenuItemContract.nodeType
     static let divider = DividerContract.nodeType
+    static let menuSeparator = MenuSeparatorContract.nodeType
     static let spacer = SpacerContract.nodeType
     static let modalStack = ModalStackContract.nodeType
     static let navigationStack = NavigationStackContract.nodeType
@@ -105,7 +106,7 @@ extension NodeType {
     static let barSubtitle = BarElementContract.barSubtitle.token
     static let barTitle = BarElementContract.barTitle.token
     static let canDrag = ViewContract.canDrag.token
-    static let tracking = TextStyleElementContract.tracking.token
+    static let tracking = TrackingElementContract.tracking.token
     static let selectedItems = ItemsViewContract.selectedItems.token
     static let selectionMode = ItemsViewContract.selectionMode.token
     static let shape = BorderElementContract.shape.token
@@ -242,7 +243,7 @@ extension NodeType {
     static let value = SliderContract.value.token
     static let verticalAlignment = ViewContract.verticalAlignment.token
     static let verticalScrollIndicator = ScrollViewContract.verticalScrollIndicator.token
-    static let verticalTextAlignment = TextAlignmentElementContract.verticalTextAlignment.token
+    static let verticalTextAlignment = TextContract.verticalTextAlignment.token
     static let width = VisualElementContract.width.token
     static let windowType = WindowContract.windowType.token
     static let windowValue = WindowContract.windowValue.token

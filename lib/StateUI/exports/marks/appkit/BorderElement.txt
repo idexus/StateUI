@@ -1,4 +1,4 @@
-# revision 7.1
+# revision 8.1
 Button.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
 Button.lineWidth: ✅
 Button.shape: ✅
@@ -11,9 +11,6 @@ HStack.background: ✅
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
-RadioButton.lineWidth: not realized
-RadioButton.shape: not realized
-RadioButton.stroke: not realized
 ScrollView.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅

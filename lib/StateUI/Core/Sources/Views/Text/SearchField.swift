@@ -29,9 +29,7 @@ extension SearchFieldProperties {
 /// Given a binding the field shows the value and writes every edit back; given a
 /// plain string it shows that, and `.onTextChanged` is how what is typed gets
 /// anywhere.
-public struct SearchField: TextInput, TextualElement, FontElement, TextAlignmentElement, TintElement,
-    SearchFieldProperties
-{
+public struct SearchField: TextInput, TextualElement, FontElement, TextAlignmentElement, SearchFieldProperties {
     /// The node this control describes.
     public var node: Node
 

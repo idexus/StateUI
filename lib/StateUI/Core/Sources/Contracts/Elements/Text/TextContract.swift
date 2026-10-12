@@ -13,8 +13,8 @@ public enum TextContract: ElementContract {
     /// padded.
     public static let tiers: [any Contract.Type] = [
         ViewContract.self, TextualElementContract.self, FontElementContract.self,
-        TextAlignmentElementContract.self, LineHeightElementContract.self, DecorableTextElementContract.self,
-        PaddingElementContract.self,
+        TextAlignmentElementContract.self, LineHeightElementContract.self, TrackingElementContract.self,
+        DecorableTextElementContract.self, PaddingElementContract.self,
     ]
 
     /// What happens to text too long for the space: it wraps, or it is cut and
@@ -25,6 +25,11 @@ public enum TextContract: ElementContract {
     public static let maximumLines = ElementProperty<Self, Int>(
         "maximumLines", layer: .native, travels: false)
 
+    /// Where the text sits down its element - a field's or a picker's text
+    /// sits where its control puts it.
+    public static let verticalTextAlignment = ElementProperty<Self, TextAlignment>(
+        "verticalTextAlignment", layer: .native)
+
     /// The element's own members.
-    public static let members: [any ContractMember] = [lineBreak, maximumLines]
+    public static let members: [any ContractMember] = [lineBreak, maximumLines, verticalTextAlignment]
 }

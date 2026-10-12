@@ -129,6 +129,8 @@ extension ControlDictionary {
             Text("A description long enough to wrap onto a second line, and stop there.")
                 .maximumLines(2)
                 .lineBreak(.tailTruncation)
+                .verticalTextAlignment(.center)
+                .height(80)
             """#),
 
         (LineContract.self, #"""
@@ -185,11 +187,19 @@ extension ControlDictionary {
             """#),
 
         (DividerContract.self, #"""
+            VStack {
+                Text("Inbox")
+                Divider()
+                Text("Archive")
+            }
+            """#),
+
+        (MenuSeparatorContract.self, #"""
             Text("Report.pdf")
                 .contextMenu {
                     MenuItem("Open")
                     MenuItem("Rename")
-                    Divider()
+                    MenuSeparator()
                     MenuItem("Delete").isDestructive(true)
                 }
             """#),
@@ -634,6 +644,10 @@ extension ControlDictionary {
         (TextStyleElementContract.self, #"""
             Text("Overdue")
                 .textColor(.firebrick)
+            """#),
+
+        (TrackingElementContract.self, #"""
+            Button("Continue")
                 .tracking(1.5)
             """#),
 
@@ -644,10 +658,10 @@ extension ControlDictionary {
             """#),
 
         (TextAlignmentElementContract.self, #"""
-            Text("In the middle")
-                .horizontalTextAlignment(.center)
-                .verticalTextAlignment(.center)
-                .height(80)
+            @State var amount = ""
+
+            TextField($amount)
+                .horizontalTextAlignment(.end)
             """#),
 
         (LineHeightElementContract.self, #"""

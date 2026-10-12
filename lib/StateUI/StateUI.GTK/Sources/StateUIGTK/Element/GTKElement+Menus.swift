@@ -10,7 +10,7 @@ extension GTKElement {
     /// Offers the menu a context menu declares on the view it stands on: the view this element is, or the one a menu
     /// or an entry of it stands under. A menu of no entries is none.
     func offerContextMenu() {
-        let inMenu = NodeType.menuTypes.contains(type) || type == .divider && element.isViewless
+        let inMenu = NodeType.menuTypes.contains(type)
         let owner = inMenu ? element.enclosing(type: .contextMenu)?.parent : element
         guard let owner, let view = owner.gtk.view else { return }
 

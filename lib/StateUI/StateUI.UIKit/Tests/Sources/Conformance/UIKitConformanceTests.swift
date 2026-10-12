@@ -50,6 +50,7 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testMenuBar() { conform(MenuBarTests.self) }
     @MainActor func testMenuItem() { conform(MenuItemTests.self) }
     @MainActor func testDivider() { conform(DividerTests.self) }
+    @MainActor func testMenuSeparator() { conform(MenuSeparatorTests.self) }
     @MainActor func testModalStack() { conform(ModalStackTests.self) }
     @MainActor func testNavigationStack() { conform(NavigationStackTests.self) }
     @MainActor func testOverlay() { conform(OverlayTests.self) }
@@ -113,6 +114,7 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testFontElement() { conform(FontElementTests.self) }
     @MainActor func testTextAlignmentElement() { conform(TextAlignmentElementTests.self) }
     @MainActor func testLineHeightElement() { conform(LineHeightElementTests.self) }
+    @MainActor func testTrackingElement() { conform(TrackingElementTests.self) }
     @MainActor func testDecorableTextElement() { conform(DecorableTextElementTests.self) }
     @MainActor func testPaddingElement() { conform(PaddingElementTests.self) }
     @MainActor func testBorderElement() { conform(BorderElementTests.self) }

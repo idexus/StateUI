@@ -48,7 +48,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                             // choosing it turns the state over.
                             MenuItem("Large text").isOn($large)
 
-                            Divider()
+                            MenuSeparator()
 
                             MenuItem("Remove")
                                 .icon(ImageSource(light: "menu_remove.png", dark: "menu_remove_dark.png"))

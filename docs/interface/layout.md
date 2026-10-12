@@ -143,8 +143,8 @@ VStack {
 A spacer asks for no room of its own, so a stack only as long as its children
 leaves it none; a spacer given a length along the axis - `.width(12)` in an
 `HStack` - is a gap of exactly that length, and `.minimumWidth` or
-`.maximumWidth` bound one that grows. The same `Divider` inside a menu
-separates its entries.
+`.maximumWidth` bound one that grows. A line between a menu's entries is a
+`MenuSeparator`.
 
 ## Grid
 

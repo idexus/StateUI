@@ -1,0 +1,4 @@
+# revision 1.1
+Button.tracking: ✅
+Text.tracking: ✅
+TextSpan.tracking: ✅

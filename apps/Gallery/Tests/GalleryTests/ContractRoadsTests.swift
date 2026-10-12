@@ -239,6 +239,30 @@ final class ContractRoadsTests: XCTestCase {
             name: "a name for automation on a style",
             closed: #"_ = Style<Button>().accessibilityIdentifier("save")"#,
             open: #"_ = Button("Save").accessibilityIdentifier("save")"#),
+        Road(
+            name: "a field's words aligned down its box",
+            closed: #"_ = TextField("Name").verticalTextAlignment(.center)"#,
+            open: #"_ = Text("Name").verticalTextAlignment(.center)"#),
+        Road(
+            name: "the letters of a field's words spaced",
+            closed: #"_ = TextField("Name").tracking(1)"#,
+            open: #"_ = Text("Name").tracking(1)"#),
+        Road(
+            name: "an accent on a search field",
+            closed: #"_ = SearchField("Name").tint(.red)"#,
+            open: #"_ = CheckBox(true).tint(.red)"#),
+        Road(
+            name: "an outline around a radio button",
+            closed: #"_ = RadioButton("Small").stroke(.gray)"#,
+            open: #"_ = Button("Small").stroke(.gray)"#),
+        Road(
+            name: "a stack's line in a menu",
+            closed: #"_ = Menu("File") { MenuItem("New"); Divider() }"#,
+            open: #"_ = Menu("File") { MenuItem("New"); MenuSeparator() }"#),
+        Road(
+            name: "a menu's separator in a stack",
+            closed: "_ = VStack { MenuSeparator() }",
+            open: "_ = VStack { Divider() }"),
     ]
 
     /// Each closed road fails to compile, and the open road beside it compiles.

@@ -4,17 +4,14 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `TextStyleElementContract` on a host: words stand in the colour and with the spacing between their letters the
-/// tree gives them, and those it changes them to - on every element wearing the tier.
+/// `TextStyleElementContract` on a host: words stand in the colour the tree gives them, and the one it changes them
+/// to - on every element wearing the tier.
 @_spi(Host) public enum TextStyleElementTests: ConformanceFamily {
     public static let name = "TextStyleElement"
 
     public static var cases: [ConformanceCase] {
-        Specimens.wearing(TextStyleElementContract.self).flatMap { element in
-            [
-                Aspects.holds(TextStyleElementContract.textColor, on: element, .red, then: .blue, with: Words.on(element)),
-                Aspects.holds(TextStyleElementContract.tracking, on: element, 0, then: 2, with: Words.on(element)),
-            ]
+        Specimens.wearing(TextStyleElementContract.self).map { element in
+            Aspects.holds(TextStyleElementContract.textColor, on: element, .red, then: .blue, with: Words.on(element))
         }
     }
 }

@@ -11,7 +11,7 @@ Switch($on)
     .tint(.green)
 ```
 
-Worn by: [ActivityIndicator](../ActivityIndicator.md) · [CheckBox](../CheckBox.md) · [Picker](../Picker.md) · [ProgressBar](../ProgressBar.md) · [SearchField](../SearchField.md) · [Slider](../Slider.md) · [Switch](../Switch.md)
+Worn by: [ActivityIndicator](../ActivityIndicator.md) · [CheckBox](../CheckBox.md) · [Picker](../Picker.md) · [ProgressBar](../ProgressBar.md) · [Slider](../Slider.md) · [Switch](../Switch.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/TintElementContract.swift`.
 

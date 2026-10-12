@@ -17,15 +17,15 @@ extension WebRegistrations {
             text.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
                 view.setAlignment(horizontal: alignment ?? .start)
             }
-            text.property(TextAlignmentElementContract.verticalTextAlignment) { view, alignment in
+            text.property(TextContract.verticalTextAlignment) { view, alignment in
                 view.setAlignment(vertical: alignment ?? .start)
             }
             text.applies([
-                TextStyleElementContract.tracking, LineHeightElementContract.lineHeight,
+                TrackingElementContract.tracking, LineHeightElementContract.lineHeight,
                 DecorableTextElementContract.textDecorations,
             ]) { view, values in
                 var look = TextLook()
-                look.letterSpacing = values[TextStyleElementContract.tracking] ?? 0
+                look.letterSpacing = values[TrackingElementContract.tracking] ?? 0
                 look.lineHeight = values[LineHeightElementContract.lineHeight]
                 look.decorations = values[DecorableTextElementContract.textDecorations] ?? .none
                 view.setSpacing(look)
@@ -49,7 +49,7 @@ extension WebRegistrations {
                     spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
             }
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLines(lineBreak) }
-            button.property(TextStyleElementContract.tracking) { view, spacing in
+            button.property(TrackingElementContract.tracking) { view, spacing in
                 view.style("letter-spacing", WebCSS.letterSpacing(spacing ?? 0))
             }
             button.applies([

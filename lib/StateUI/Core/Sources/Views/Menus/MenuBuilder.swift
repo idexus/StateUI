@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// Collects the entries of a menu written as consecutive statements: a
-/// `MenuItem`, a `Menu` opening one level down and a `Divider`.
+/// `MenuItem`, a `Menu` opening one level down and a `MenuSeparator`.
 ///
 ///     Menu("View") {
 ///         MenuItem("Zoom in").onClicked { zoom(+1) }
@@ -29,7 +29,7 @@ public enum MenuBuilder {
     }
 
     /// A line between entries.
-    public static func buildExpression(_ expression: Divider) -> [Element] {
+    public static func buildExpression(_ expression: MenuSeparator) -> [Element] {
         [expression]
     }
 

@@ -84,7 +84,7 @@ extension View {
     ///     Text(item.name)
     ///         .contextMenu {
     ///             MenuItem("Rename").onClicked { rename(item) }
-    ///             Divider()
+    ///             MenuSeparator()
     ///             MenuItem("Delete").isDestructive(true).onClicked { remove(item) }
     ///         }
     ///

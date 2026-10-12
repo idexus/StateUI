@@ -51,6 +51,7 @@ final class WebConformanceTests: XCTestCase {
     func testMenuBar() { conform(MenuBarTests.self) }
     func testMenuItem() { conform(MenuItemTests.self) }
     func testDivider() { conform(DividerTests.self) }
+    func testMenuSeparator() { conform(MenuSeparatorTests.self) }
     func testModalStack() { conform(ModalStackTests.self) }
     func testNavigationStack() { conform(NavigationStackTests.self) }
     func testOverlay() { conform(OverlayTests.self) }
@@ -79,6 +80,7 @@ final class WebConformanceTests: XCTestCase {
     func testFontElement() { conform(FontElementTests.self) }
     func testTextAlignmentElement() { conform(TextAlignmentElementTests.self) }
     func testLineHeightElement() { conform(LineHeightElementTests.self) }
+    func testTrackingElement() { conform(TrackingElementTests.self) }
     func testDecorableTextElement() { conform(DecorableTextElementTests.self) }
     func testPaddingElement() { conform(PaddingElementTests.self) }
     func testBorderElement() { conform(BorderElementTests.self) }

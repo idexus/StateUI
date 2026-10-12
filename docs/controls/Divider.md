@@ -2,16 +2,14 @@
 
 # Divider
 
-A line between entries, grouping the ones before it apart from the ones after: a menu's separator, or a native line across a stack.
+A native line across a stack, grouping the views before it apart from the ones after.
 
 ```swift
-Text("Report.pdf")
-    .contextMenu {
-        MenuItem("Open")
-        MenuItem("Rename")
-        Divider()
-        MenuItem("Delete").isDestructive(true)
-    }
+VStack {
+    Text("Inbox")
+    Divider()
+    Text("Archive")
+}
 ```
 
 Layer: `native`. Every base host presents it with its native toolkit.
@@ -36,15 +34,15 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (66)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>29 ✅ · 2 ☑️ · 35 ✓</td><td>a separator <code>NSMenuItem</code> in a menu; an <code>NSBox</code> separator in a stack</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>28 ✅ · 2 ☑️ · 35 ✓ · 1 –</td><td>a group break in a menu; a hairline <code>UIView</code> in the separator colour in a stack</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>52 ✅ · 3 ☑️ · 10 ✓</td><td>a group divider in a menu; a <code>View</code> in the theme's list divider in a stack</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>52 ✅ · 1 ☑️ · 12 ✓</td><td><code>MenuFlyoutSeparator</code>; a line in <code>DividerStrokeColorDefaultBrush</code> in a stack</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>42 ✅ · 1 ☑️ · 22 ✓ · 1 –</td><td>a section break in a <code>GMenu</code>; a <code>GtkSeparator</code> in a stack</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>45 ✅ · 1 ☑️ · 20 ✓</td><td><code>role=separator</code> in a menu; <code>&lt;hr&gt;</code> in a stack</td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>29 ✅ · 2 ☑️ · 35 ✓</td><td>an <code>NSBox</code> separator</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>28 ✅ · 2 ☑️ · 35 ✓ · 1 –</td><td>a hairline <code>UIView</code> in the separator colour</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>52 ✅ · 3 ☑️ · 10 ✓</td><td>a <code>View</code> in the theme's list divider</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>51 ✅ · 1 ☑️ · 13 ✓</td><td>a line in <code>DividerStrokeColorDefaultBrush</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>42 ✅ · 1 ☑️ · 22 ✓ · 1 –</td><td>a <code>GtkSeparator</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>45 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;hr&gt;</code></td></tr></tbody>
 </table>
 
-Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/DividerContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/DividerContract.swift`.
 
 ## Divider's own members
 
@@ -81,7 +79,8 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tbody><tr></tr><tr><td rowspan="2"><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">WinUI 3: cannot read isEnabled of Divider - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isVisible</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>layoutDirection</code></td><td>property</td><td><code>LayoutDirection</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>layoutDirection</code></td><td>property</td><td><code>LayoutDirection</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">WinUI 3: only through the host's own: read layoutDirection of Divider: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>maximumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>maximumWidth</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>minimumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

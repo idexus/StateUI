@@ -1,6 +1,7 @@
-# revision 1.1
+# revision 2.1
 Text: ✅
 Text.frameChanged: ✅
 Text.lineBreak: ✅
 Text.maximumLines: ✅
 Text.text: ✅
+Text.verticalTextAlignment: cannot read verticalTextAlignment of Text - AppKit's driver has no path for it yet
