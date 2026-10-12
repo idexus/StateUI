@@ -40,6 +40,12 @@ struct StepperSample: SampleContent, ExampleContent {
                 .step(5)
                 .horizontalAlignment(.center)
                 .onValueChanged { value in servings = value }
+
+            // One write: the value is the new one at once, the motion under
+            // the steppers is smooth, and each shows its steps alone on the way.
+            Button(servings < 7 ? "Twelve" : "One")
+                .horizontalAlignment(.center)
+                .onClicked { servings = servings < 7 ? 12 : 1 }
         }
         .spacing(12)
     }
@@ -55,6 +61,12 @@ struct StepperSample: SampleContent, ExampleContent {
 
             Text("The second holds the same value, stepped by five: `step` is how far "
                 + "one tap goes, and `minimum` and `maximum` are where the buttons stop.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Send it far: the value is the new one at once and moves smoothly "
+                + "underneath, and a stepper shows only its steps on the way - never a "
+                + "number between two.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

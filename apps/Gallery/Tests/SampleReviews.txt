@@ -95,7 +95,7 @@ SplitViewSample.swift b40f78a09df11956
 StackLayoutSample.swift 7c0cf33b6e5cf6aa
 StateClassSample.swift 1aafda814ae33894
 StateSample.swift abfc1c415e278290
-StepperSample.swift 1e633e09e89c353a
+StepperSample.swift a1eb96147d1526c6
 StyleSample.swift 92a6d00ba740a004
 SwipeSample.swift 66a58baed064554c
 SwitchSample.swift ac0d645ed37aa2e9

@@ -628,6 +628,15 @@ again: the control stood clamped at the old range's end - a state's value
 outside it, or one travelling to the value written with the range - and a
 range widened over that value shows it rather than the end it stood at.
 
+A stepper shows its steps alone (`ElementValues.shownStep`,
+`ValueArithmetic.stepped`). Its presentation is discrete; the journey a state
+carries its value on is not. So it shows a step of where its value is headed
+- the destination and every step from it within the range - the nearest to
+where the journey stands, between there and the destination: never a value
+between two steps, one behind where the journey set out, or one past where it
+lands; at rest, its value itself. The destination comes with the journey
+(`ElementValues.destination`).
+
 ## A day and a time
 
 A picker holds a day and a time by one arithmetic on every host

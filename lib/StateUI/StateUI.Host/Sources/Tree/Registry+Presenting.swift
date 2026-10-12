@@ -13,6 +13,7 @@ extension Registry {
         apply(
             changed, to: view, of: element.type,
             reading: { [element] in element.presented($0) },
-            carriedIn: { [element] in element.driven[$0]?.mode == .in })
+            carriedIn: { [element] in element.driven[$0]?.mode == .in },
+            heading: { [element] in element.destination($0) })
     }
 }

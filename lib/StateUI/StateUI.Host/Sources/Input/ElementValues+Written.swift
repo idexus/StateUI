@@ -16,3 +16,17 @@ extension ElementValues {
         return tree
     }
 }
+
+extension ElementValues where Realized == StepperContract {
+    /// The value a stepper shows - the tree's where it changed, else `standing` - as one of its steps alone: a step
+    /// of where its value is headed (`ValueArithmetic.stepped`), never what a journey stands at between two.
+    /// Design: docs/design/host/runtime.md#a-value-in-a-range
+    public func shownStep(standing: Double) -> Double {
+        let ends = ValueArithmetic.range(self[StepperContract.minimum] ?? 0, self[StepperContract.maximum] ?? 100)
+        let value = written(
+            StepperContract.value, within: [StepperContract.minimum, StepperContract.maximum], standing: standing)
+        return ValueArithmetic.stepped(
+            value, toward: destination(StepperContract.value) ?? value, step: self[StepperContract.step] ?? 1,
+            lower: ends.lower, upper: ends.upper)
+    }
+}

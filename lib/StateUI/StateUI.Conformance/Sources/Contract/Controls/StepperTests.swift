@@ -103,6 +103,28 @@
                 s.expect(try s.held(StepperContract.value, on: control), 15, "the value its state holds, no longer at an end")
                 s.expect(level.wrappedValue, 15)
             },
+            ConformanceCase("itShowsItsStepsAlone", proves: [
+                Covered(StepperContract.value), Covered(StepperContract.step),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let count = State(wrappedValue: 2.0)
+                s.start {
+                    VStack {
+                        Stepper(count.projectedValue).minimum(0).maximum(10).step(2).id("stepper")
+                        Button("Far").onClicked { count.wrappedValue = 9.2 }.id("far")
+                    }
+                }
+                let stepper = try s.element("stepper")
+                var shown: [Double] = []
+                try s.perform(.activate, on: s.element("far"))
+                try s.settle {
+                    let standing = try s.held(StepperContract.value, on: stepper) ?? .nan
+                    if shown.last != standing { shown.append(standing) }
+                    return standing == 9.2
+                }
+                // Every step of 9.2 from where it set out, and nothing between them.
+                s.expect(shown.filter { ![2, 3.2, 5.2, 7.2, 9.2].contains($0) }, [], "shown on its way")
+                s.expect(shown.last, 9.2, "the value it was given, at rest")
+            },
             ConformanceCase("aRangeMovedPastItsValueTakesTheValueWrittenWithIt", proves: [
                 Covered(StepperContract.value), Covered(StepperContract.minimum), Covered(StepperContract.maximum),
                 Covered(StepperContract.valueChanged),

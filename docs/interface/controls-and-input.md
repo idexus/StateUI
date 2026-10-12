@@ -333,6 +333,11 @@ to each new value, and `.isAnimating($loading)` one it sets as it stands. Both
 take `.tint`. Nothing about either is the user's to change, so neither reports
 anything back.
 
+A stepper shows only its steps. A state sent far - `$done.journey.move(to: 5)`
+- travels smoothly underneath, and the stepper shows each step of where it is
+headed on the way, never a number between two; at rest it shows the value
+itself.
+
 ## Dates and times
 
 Date and time controls use StateUI value types rather than Foundation types:

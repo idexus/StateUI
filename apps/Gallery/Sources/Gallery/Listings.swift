@@ -8403,6 +8403,12 @@ enum Listings {
                     .step(5)
                     .horizontalAlignment(.center)
                     .onValueChanged { value in servings = value }
+
+                // One write: the value is the new one at once, the motion under
+                // the steppers is smooth, and each shows its steps alone on the way.
+                Button(servings < 7 ? "Twelve" : "One")
+                    .horizontalAlignment(.center)
+                    .onClicked { servings = servings < 7 ? 12 : 1 }
             }
         }
         """#,

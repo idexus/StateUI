@@ -499,6 +499,15 @@
         return drivenValues[property] ?? tree?.core.value(for: binding)
     }
 
+    /// Where `property` is headed: the destination of the journey its state carries it on; nil where no state does.
+    public func destination(_ property: Prop) -> HostValue? {
+        guard let binding = driven[property], binding.mode != .in, binding.kind == .property,
+              let carried = carriedValue(property),
+              let journey = HostBoundary.journey(from: tree?.presentedValue(for: binding, from: carried) ?? carried)
+        else { return nil }
+        return Self.value(of: journey.destination, as: binding.laneKind)
+    }
+
     /// The value `property` settles at: the bound state's, else the described one.
     public func resolvedValue(_ property: Prop) -> HostValue? {
         guard let binding = driven[property], binding.mode != .in else {

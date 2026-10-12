@@ -12,6 +12,9 @@
     /// Whether a key's value is carried IN - the host's to write.
     private let carried: (Prop) -> Bool
 
+    /// Where a key's value is headed: the destination of the journey a state carries it on.
+    private let heading: (Prop) -> HostValue?
+
     /// The properties that changed.
     private let changes: Set<Prop>
 
@@ -24,14 +27,29 @@
     ///     it - nil where it is not described.
     ///   - carried: whether a key's value is carried in - written by the host
     ///     and only read back by this side. Nothing carried in by default.
+    ///   - heading: where a key's value is headed - the destination of the
+    ///     journey a state carries it on, nil where none does.
     public init(
         changed: Set<Prop>,
         reading read: @escaping (Prop) -> HostValue?,
-        carriedIn carried: @escaping (Prop) -> Bool = { _ in false }
+        carriedIn carried: @escaping (Prop) -> Bool = { _ in false },
+        heading: @escaping (Prop) -> HostValue? = { _ in nil }
     ) {
         self.read = read
         self.carried = carried
+        self.heading = heading
         changes = changed
+    }
+
+    /// Where a member's value is headed: the destination of the journey a
+    /// state carries it on, else its current value - nil where it is not
+    /// described, or crossed as another kind.
+    ///
+    /// - Parameter member: the property, written with its contract.
+    public func destination<Owner: Contract, Value: HostRepresentable>(
+        _ member: ElementProperty<Owner, Value>
+    ) -> Value? {
+        (heading(member.token) ?? read(member.token)).flatMap(Value.init(propValue:))
     }
 
     /// Whether this member's value is the HOST'S to write - a field fed from

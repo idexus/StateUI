@@ -49,9 +49,7 @@ extension AppKitRegistrations {
                 StepperContract.step, VisualElementContract.isEnabled,
             ]) { view, values in
                 view.apply(
-                    value: values.written(
-                        StepperContract.value, within: [StepperContract.minimum, StepperContract.maximum],
-                        standing: view.doubleValue),
+                    value: values.shownStep(standing: view.doubleValue),
                     minimum: values[StepperContract.minimum] ?? 0,
                     maximum: values[StepperContract.maximum] ?? 100,
                     step: values[StepperContract.step] ?? 1,

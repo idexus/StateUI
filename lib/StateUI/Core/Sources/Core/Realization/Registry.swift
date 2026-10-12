@@ -16,7 +16,9 @@
 
         /// Puts the changed properties it takes on the view, each read through
         /// the functions given, and answers them.
-        let apply: (View, Set<Prop>, @escaping (Prop) -> HostValue?, @escaping (Prop) -> Bool) -> Set<Prop>
+        let apply: (
+            View, Set<Prop>, @escaping (Prop) -> HostValue?, @escaping (Prop) -> Bool, @escaping (Prop) -> HostValue?
+        ) -> Set<Prop>
 
         /// Every member registered.
         let members: Set<HostRealizedMember>
@@ -123,7 +125,7 @@
 
         entries[Realized.nodeType] = Entry(
             make: make,
-            apply: { view, changed, read, carried in
+            apply: { view, changed, read, carried, heading in
                 guard let made = view as? Made else { return [] }
 
                 var applied: Set<Prop> = []
@@ -135,7 +137,8 @@
                     applied.insert(key)
                 }
 
-                let values = ElementValues<Realized>(changed: changed, reading: read, carriedIn: carried)
+                let values = ElementValues<Realized>(
+                    changed: changed, reading: read, carriedIn: carried, heading: heading)
 
                 for whole in wholes where !whole.keys.isDisjoint(with: changed) {
                     whole.apply(made, values)
@@ -216,6 +219,8 @@
     ///   - read: the element's current value for a key, as the host presents
     ///     it.
     ///   - carried: whether a key's value is carried in - the host's to write.
+    ///   - heading: where a key's value is headed - the destination of the
+    ///     journey a state carries it on, nil where none does.
     /// - Returns: the properties a registration took.
     @discardableResult
     public func apply(
@@ -223,9 +228,10 @@
         to view: View,
         of type: NodeType,
         reading read: @escaping (Prop) -> HostValue?,
-        carriedIn carried: @escaping (Prop) -> Bool = { _ in false }
+        carriedIn carried: @escaping (Prop) -> Bool = { _ in false },
+        heading: @escaping (Prop) -> HostValue? = { _ in nil }
     ) -> Set<Prop> {
-        entries[type]?.apply(view, changed, read, carried) ?? []
+        entries[type]?.apply(view, changed, read, carried, heading) ?? []
     }
 
     /// The node types of the children the view of a `type` draws itself, in registration order - a child of one
