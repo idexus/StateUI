@@ -15,7 +15,7 @@ public enum RectangleContract: ElementContract {
 
     /// How rounded the corners are: one radius for all four, or one each.
     public static let cornerRadius = ElementProperty<Self, CornerRadius>(
-        "cornerRadius", layer: .native, moves: .size)
+        "cornerRadius", layer: .native, moves: .shape)
 
     /// The element's own members.
     public static let members: [any ContractMember] = [cornerRadius]

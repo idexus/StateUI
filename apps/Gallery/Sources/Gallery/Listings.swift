@@ -5507,7 +5507,8 @@ enum Listings {
         }
 
         /// The same panel with a RULE: everything travels except its size, which
-        /// `.size` takes to be its width, its height and its corner radius.
+        /// `.size` takes to be its width and its height - its corners are its
+        /// shape, and travel with the rest.
         private func sized() -> some View {
             Rectangle()
                 .fill(warm ? Palette.accent : Palette.brand)

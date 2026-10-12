@@ -81,7 +81,8 @@ merged over that plan.
 | `.color` | every color-valued property |
 | `.width` | requested, minimum and maximum width, and the widths a layout gives its children |
 | `.height` | requested, minimum and maximum height, and the heights a layout gives its children |
-| `.size` | width and height plus outline and corner sizes |
+| `.size` | width and height |
+| `.shape` | corner radius and outline width |
 | `.place` | host-arranged position and translation |
 | `.transform` | scale, rotation, and anchors |
 | `.spacing` | padding, margin, stack spacing, and grid spacing |

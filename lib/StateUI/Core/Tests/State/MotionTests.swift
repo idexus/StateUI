@@ -315,6 +315,34 @@ final class MotionTests: XCTestCase {
         XCTAssertNotNil(patch.transitions[.background], "the colour still travels")
     }
 
+    /// A shape's corners and outline are its shape, not its size: a size held
+    /// still leaves them travelling, and a rule naming the shape holds them.
+    func testAShapesCornersAndOutlineAreItsShapeNotItsSize() {
+        func panel(_ wide: Bool, still: MotionValues) -> Node {
+            Rectangle()
+                .width(wide ? 300 : 120)
+                .cornerRadius(wide ? 28 : 8)
+                .lineWidth(wide ? 4 : 1)
+                .motion(.none, still)
+                .id("p")
+                .node
+        }
+
+        let sizeStill = Renders()
+        sizeStill.render(panel(false, still: .size))
+        let resized = sizeStill.render(panel(true, still: .size))
+        XCTAssertNil(resized.transitions[.width], "the size arrives")
+        XCTAssertNotNil(resized.transitions[.cornerRadius], "the corners travel")
+        XCTAssertNotNil(resized.transitions[.lineWidth], "the outline travels")
+
+        let shapeStill = Renders()
+        shapeStill.render(panel(false, still: .shape))
+        let reshaped = shapeStill.render(panel(true, still: .shape))
+        XCTAssertNotNil(reshaped.transitions[.width], "the size travels")
+        XCTAssertNil(reshaped.transitions[.cornerRadius], "the corners arrive")
+        XCTAssertNil(reshaped.transitions[.lineWidth], "the outline arrives")
+    }
+
     /// And a rule may say a motion rather than none.
     func testARuleMaySayADifferentMotionRatherThanNone() {
         let renders = Renders()

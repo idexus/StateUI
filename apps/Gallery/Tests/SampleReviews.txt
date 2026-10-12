@@ -64,7 +64,7 @@ MapSample.swift 7c9ebbdbf83ac5b7
 MaterialsSample.swift 8aadf9602a22a485
 MenuBarSample.swift 6da4c4a2a2b1f2b9
 ModalSample.swift 556d83b69c24b7b4
-MotionSample.swift c79da448f61f7cda
+MotionSample.swift 0aa9769ea1601754
 MultiWindowSample.swift 00ef905b7c375e25
 NavigationSample.swift 57847136cca3c3d7
 NextFieldSample.swift b365cbd1626b4437

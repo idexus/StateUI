@@ -14,7 +14,7 @@ public enum BorderElementContract: Contract {
     public static let stroke = ElementProperty<Self, Brush>("stroke", layer: .stateUI)
 
     /// How wide the outline is drawn, in device units.
-    public static let lineWidth = ElementProperty<Self, Double>("lineWidth", layer: .stateUI, moves: .size)
+    public static let lineWidth = ElementProperty<Self, Double>("lineWidth", layer: .stateUI, moves: .shape)
 
     /// The tier's own members.
     public static let members: [any ContractMember] = [shape, stroke, lineWidth]

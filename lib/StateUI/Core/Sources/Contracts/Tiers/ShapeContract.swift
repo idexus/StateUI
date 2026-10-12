@@ -31,7 +31,7 @@ public enum ShapeContract: Contract {
 
     /// How thick the outline is.
     public static let lineWidth = ElementProperty<Self, Double>(
-        "lineWidth", layer: .stateUI, moves: .size)
+        "lineWidth", layer: .stateUI, moves: .shape)
 
     /// The tier's own members.
     public static let members: [any ContractMember] = [
