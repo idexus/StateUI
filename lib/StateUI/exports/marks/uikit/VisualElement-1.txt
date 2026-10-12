@@ -2,7 +2,7 @@
 ActivityIndicator.isVisible: ✅
 ActivityIndicator.scale: ✓ read scale of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.layoutDirection: ✅
-Canvas.tooltip: ✅
+Canvas.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 CheckBox.style: ✅
 ColorBox.frameChanged: ✅
 ColorBox.height: ✅

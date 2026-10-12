@@ -163,11 +163,11 @@ container is not.
 ## A tooltip
 
 `tooltip` is words for a sighted user with a pointer: what a view does, shown
-beside it while the pointer rests there. Every toolkit holds one on any view -
-AppKit's `toolTip`, UIKit's tool tip interaction, Android's tooltip text,
-WinUI's `ToolTipService`, GTK's tooltip text, the Web's `title` - and shows it
-its own way, after its own delay; Android also shows it after a long press, and
-an iPhone, with nothing to point, shows none. It is no accessible name: a
+beside it while the pointer rests there. AppKit's `toolTip`, Android's tooltip
+text, WinUI's `ToolTipService`, GTK's tooltip text and the Web's `title` hold
+one on any view and show it their own way, after their own delay; Android also
+after a long press. UIKit shows a tool tip on the Mac and on visionOS only, so
+on an iPhone and an iPad the member is `–`. It is no accessible name: a
 control with no words of its own still takes an `accessibilityLabel`, as a
 tooltip is not what a screen reader is sure to read.
 

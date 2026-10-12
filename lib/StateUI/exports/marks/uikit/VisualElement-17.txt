@@ -5,7 +5,7 @@ Canvas.ignoresInput: ✅
 CheckBox.isVisible: ✅
 CheckBox.scale: ✓ read scale of CheckBox: the host's own transform, checked against the layer it composed itself
 ColorBox.pivotX: ✓ read pivotX of ColorBox: the host's own transform, checked against the layer it composed itself
-DatePicker.tooltip: ✅
+DatePicker.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Divider.frameChanged: ✅
 Divider.maximumHeight: ✅
 Divider.maximumWidth: ✅
@@ -28,7 +28,7 @@ Polyline.frame: ✅
 ProgressBar.isVisible: ✅
 ProgressBar.scale: ✓ read scale of ProgressBar: the host's own transform, checked against the layer it composed itself
 RadioButton.layoutDirection: ✅
-Rectangle.tooltip: ✅
+Rectangle.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
@@ -46,7 +46,7 @@ Switch.translationY: ✓ read translationY of Switch: the host's own transform, 
 Text.rotation: ✓ read rotation of Text: the host's own transform, checked against the layer it composed itself
 TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own transform, checked against the layer it composed itself
 TextField.layoutDirection: ✅
-TimePicker.tooltip: ✅
+TimePicker.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 VStack.background: ✅
 VStack.style: ✅
 WebView.rotationX: ✓ read rotationX of WebView: the host's own transform, checked against the layer it composed itself

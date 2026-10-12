@@ -8,7 +8,7 @@ Button.minimumWidth: ✅
 Button.translationY: ✓ read translationY of Button: the host's own transform, checked against the layer it composed itself
 Canvas.rotationY: ✓ read rotationY of Canvas: the host's own transform, checked against the layer it composed itself
 CheckBox.layoutDirection: ✅
-ColorBox.tooltip: ✅
+ColorBox.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 DatePicker.focus: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
 DatePicker.isFocusedChanged: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
 DatePicker.unfocus: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
@@ -38,7 +38,7 @@ Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, an
 ScrollView.opacity: ✅
 ScrollView.scaleX: ✓ read scaleX of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.layoutDirection: ✅
-Slider.tooltip: ✅
+Slider.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Spacer.style: ✅
 Stepper.frameChanged: ✅
 Stepper.height: ✅

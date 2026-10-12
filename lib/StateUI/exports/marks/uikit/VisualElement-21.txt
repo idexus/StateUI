@@ -18,7 +18,7 @@ HStack.rotation: ✓ read rotation of HStack: the host's own transform, checked 
 Image.accessibilityHint: ✅
 ItemsView.frame: ✅
 Line.pivotX: ✓ read pivotX of Line: the host's own transform, checked against the layer it composed itself
-Map.tooltip: ✅
+Map.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Path.frameChanged: ✅
 Path.height: ✅
 Path.translationX: ✓ read translationX of Path: the host's own transform, checked against the layer it composed itself
@@ -43,7 +43,7 @@ SearchField.minimumWidth: ✅
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform, checked against the layer it composed itself
 Slider.rotationY: ✓ read rotationY of Slider: the host's own transform, checked against the layer it composed itself
 Spacer.layoutDirection: ✅
-Stepper.tooltip: ✅
+Stepper.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Switch.style: ✅
 Text.opacity: ✅
 Text.scaleX: ✓ read scaleX of Text: the host's own transform, checked against the layer it composed itself

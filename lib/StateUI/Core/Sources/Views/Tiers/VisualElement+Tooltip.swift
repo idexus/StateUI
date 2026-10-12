@@ -13,7 +13,8 @@ extension VisualElementProperties {
     ///         .tooltip("Moves the file to the bin")
     ///
     /// Each platform shows them its own way - while the pointer rests, or
-    /// after a long press where the platform offers that; an iPhone shows none.
+    /// after a long press where the platform offers that; an iPhone and an
+    /// iPad show none.
     public func tooltip(_ text: String) -> Modified { setValue(VisualElementContract.tooltip, text) }
 
     /// `tooltip` from a state, `$x`: the host writes each new text, and no

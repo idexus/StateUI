@@ -389,9 +389,9 @@ Button(icon: "trash.png")
     .tooltip("Moves the file to the bin")
 ```
 
-The Mac, Windows, Linux, the Web and an iPad with a pointer show it after
-their own delay, and Android after a long press too. An iPhone shows none, so
-nothing a view needs to be used is said only in its tooltip. A tooltip is no
+The Mac, Windows, Linux and the Web show it after their own delay, and Android
+after a long press too. An iPhone and an iPad show none, so nothing a view
+needs to be used is said only in its tooltip. A tooltip is no
 accessible name: a button that is only a picture still carries an
 `accessibilityLabel`.
 

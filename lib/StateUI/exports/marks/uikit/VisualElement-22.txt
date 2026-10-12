@@ -7,13 +7,13 @@ ColorBox.isVisible: ✅
 ColorBox.scale: ✓ read scale of ColorBox: the host's own transform, checked against the layer it composed itself
 DatePicker.layoutDirection: ✅
 Divider.zIndex: ✅
-Ellipse.tooltip: ✅
+Ellipse.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.isFocusedChanged: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.layoutDirection: ✅
 Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.rotationX: ✓ read rotationX of HStack: the host's own transform, checked against the layer it composed itself
-Image.tooltip: ✅
+Image.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 ItemsView.focus: – ItemsView takes no keyboard focus here: it refuses it, and nothing is heard
 ItemsView.isFocusedChanged: – ItemsView takes no keyboard focus here: it refuses it, and nothing is heard
 ItemsView.unfocus: – ItemsView takes no keyboard focus here: it refuses it, and nothing is heard
@@ -49,7 +49,7 @@ TextEditor.minimumWidth: ✅
 TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform, checked against the layer it composed itself
 TextField.rotationY: ✓ read rotationY of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.layoutDirection: ✅
-VStack.tooltip: ✅
+VStack.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 WebView.frameChanged: ✅
 WebView.height: ✅
 WebView.translationX: ✓ read translationX of WebView: the host's own transform, checked against the layer it composed itself

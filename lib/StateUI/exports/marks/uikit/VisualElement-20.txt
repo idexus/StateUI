@@ -1,6 +1,6 @@
 # revision 9.1
 ActivityIndicator.pivotX: ✓ read pivotX of ActivityIndicator: the host's own transform, checked against the layer it composed itself
-Button.tooltip: ✅
+Button.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Canvas.style: ✅
 CheckBox.frameChanged: ✅
 CheckBox.height: ✅

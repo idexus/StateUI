@@ -37,7 +37,6 @@ enum UIKitRegistrations {
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(VisualElementContract.isEnabled)
         registry.everyElementMeetsAssistiveTechnology()
-        registry.everyElementShowsItsTooltip()
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
         registry.everyElementHearsTheUser()

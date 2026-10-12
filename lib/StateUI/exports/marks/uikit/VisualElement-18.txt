@@ -23,7 +23,7 @@ Map.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every lev
 Path.isVisible: ✅
 Path.scale: ✓ read scale of Path: the host's own transform, checked against the layer it composed itself
 Picker.layoutDirection: ✅
-Polygon.tooltip: ✅
+Polygon.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard

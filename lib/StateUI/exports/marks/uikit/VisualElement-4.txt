@@ -11,7 +11,7 @@ DatePicker.isVisible: ✅
 DatePicker.scale: ✓ read scale of DatePicker: the host's own transform, checked against the layer it composed itself
 Divider.isAccessibilityHidden: ✅
 Ellipse.pivotX: ✓ read pivotX of Ellipse: the host's own transform, checked against the layer it composed itself
-Grid.tooltip: ✅
+Grid.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 HStack.frameChanged: ✅
 HStack.maximumHeight: ✅
 HStack.maximumWidth: ✅
@@ -19,7 +19,7 @@ HStack.minimumHeight: ✅
 HStack.minimumWidth: ✅
 HStack.translationY: ✓ read translationY of HStack: the host's own transform, checked against the layer it composed itself
 Image.pivotX: ✓ read pivotX of Image: the host's own transform, checked against the layer it composed itself
-ItemsView.tooltip: ✅
+ItemsView.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Line.isEnabled: ✅
 Line.scaleY: ✓ read scaleY of Line: the host's own transform, checked against the layer it composed itself
 Map.pivotY: ✓ read pivotY of Map: the host's own transform, checked against the layer it composed itself

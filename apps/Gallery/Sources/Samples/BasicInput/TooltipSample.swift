@@ -60,7 +60,7 @@ struct TooltipSample: SampleContent, ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("An iPhone shows no tooltips; Android shows one after a long press too.")
+        Text("An iPhone and an iPad show no tooltips; Android shows one after a long press too.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

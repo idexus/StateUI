@@ -15,7 +15,7 @@ Ellipse.minimumHeight: ✅
 Ellipse.minimumWidth: ✅
 Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform, checked against the layer it composed itself
 Grid.rotationX: ✓ read rotationX of Grid: the host's own transform, checked against the layer it composed itself
-HStack.tooltip: ✅
+HStack.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Image.frameChanged: ✅
 Image.maximumHeight: ✅
 Image.maximumWidth: ✅
@@ -26,7 +26,7 @@ ItemsView.rotationX: ✓ read rotationX of ItemsView: the host's own transform, 
 Line.accessibilityLabel: ✅
 Map.ignoresInput: ✅
 Path.pivotX: ✓ read pivotX of Path: the host's own transform, checked against the layer it composed itself
-Picker.tooltip: ✅
+Picker.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Polygon.style: ✅
 Polyline.isEnabled: ✅
 Polyline.scaleY: ✓ read scaleY of Polyline: the host's own transform, checked against the layer it composed itself
@@ -54,4 +54,4 @@ VStack.minimumHeight: ✅
 VStack.minimumWidth: ✅
 VStack.translationY: ✓ read translationY of VStack: the host's own transform, checked against the layer it composed itself
 WebView.layoutDirection: ✅
-ZStack.tooltip: ✅
+ZStack.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.

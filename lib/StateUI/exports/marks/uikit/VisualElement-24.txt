@@ -21,7 +21,7 @@ Path.frame: ✅
 Picker.isVisible: ✅
 Picker.scale: ✓ read scale of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.pivotX: ✓ read pivotX of Polygon: the host's own transform, checked against the layer it composed itself
-Polyline.tooltip: ✅
+Polyline.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard

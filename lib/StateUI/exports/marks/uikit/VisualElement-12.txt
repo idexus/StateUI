@@ -33,7 +33,7 @@ Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and no
 Polyline.opacity: ✅
 Polyline.scaleX: ✓ read scaleX of Polyline: the host's own transform, checked against the layer it composed itself
 ProgressBar.pivotX: ✓ read pivotX of ProgressBar: the host's own transform, checked against the layer it composed itself
-RadioButton.tooltip: ✅
+RadioButton.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Rectangle.style: ✅
 ScrollView.isEnabled: ✅
 ScrollView.scaleY: ✓ read scaleY of ScrollView: the host's own transform, checked against the layer it composed itself
@@ -49,7 +49,7 @@ Stepper.translationY: ✓ read translationY of Stepper: the host's own transform
 Switch.rotationY: ✓ read rotationY of Switch: the host's own transform, checked against the layer it composed itself
 Text.automationExcludedWithChildren: ✅
 TextEditor.layoutDirection: ✅
-TextField.tooltip: ✅
+TextField.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 TimePicker.style: ✅
 VStack.frameChanged: ✅
 VStack.height: ✅

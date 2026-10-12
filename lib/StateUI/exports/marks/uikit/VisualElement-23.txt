@@ -24,7 +24,7 @@ ProgressBar.frame: ✅
 RadioButton.isVisible: ✅
 RadioButton.scale: ✓ read scale of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.pivotX: ✓ read pivotX of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.tooltip: ✅
+ScrollView.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 SearchField.frame: ✅
 Slider.opacity: ✅
 Slider.scaleX: ✓ read scaleX of Slider: the host's own transform, checked against the layer it composed itself

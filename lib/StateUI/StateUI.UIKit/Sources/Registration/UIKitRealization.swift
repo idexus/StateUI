@@ -99,6 +99,7 @@ enum UIKitRealization {
         .notPlanned("ToolbarItem", "showsText", reason: "A UIKit bar button shows its picture or its words, never both."),
         .complete("ToolbarItemGroup", "order"),
         .complete("ToolbarItemGroup", "side"),
+        .notPlanned("VisualElement", "tooltip", reason: "UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none."),
         .complete("Window", "activated"),
         .complete("Window", "created"),
         .complete("Window", "deactivated"),

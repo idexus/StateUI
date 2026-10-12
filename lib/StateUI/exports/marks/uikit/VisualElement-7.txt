@@ -21,7 +21,7 @@ ItemsView.automationExcludedWithChildren: ✅
 Line.ignoresInput: ✅
 Line.isEnabled: ✓ tap on Line: the view's listening handed the recognizer's states, no touch sent
 Map.rotationY: ✓ read rotationY of Map: the host's own transform, checked against the layer it composed itself
-Path.tooltip: ✅
+Path.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Picker.focus: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
 Picker.isFocusedChanged: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
 Picker.unfocus: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
@@ -46,7 +46,7 @@ Spacer.translationY: ✓ read translationY of Spacer: the host's own transform, 
 Stepper.rotationY: ✓ read rotationY of Stepper: the host's own transform, checked against the layer it composed itself
 Switch.layoutDirection: ✅
 Text.accessibilityLabel: ✅
-TextEditor.tooltip: ✅
+TextEditor.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 TextField.style: ✅
 TimePicker.frameChanged: ✅
 TimePicker.height: ✅

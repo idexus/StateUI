@@ -11,7 +11,7 @@ ColorBox.minimumHeight: ✅
 ColorBox.minimumWidth: ✅
 ColorBox.translationY: ✓ read translationY of ColorBox: the host's own transform, checked against the layer it composed itself
 DatePicker.rotationX: ✓ read rotationX of DatePicker: the host's own transform, checked against the layer it composed itself
-Divider.tooltip: ✅
+Divider.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Ellipse.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
 Grid.accessibilityLabel: ✅
 HStack.isEnabled: ✅
@@ -42,7 +42,7 @@ Slider.minimumWidth: ✅
 Slider.translationY: ✓ read translationY of Slider: the host's own transform, checked against the layer it composed itself
 Spacer.rotationY: ✓ read rotationY of Spacer: the host's own transform, checked against the layer it composed itself
 Stepper.layoutDirection: ✅
-Switch.tooltip: ✅
+Switch.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Text.frame: ✅
 TextEditor.style: ✅
 TextField.frameChanged: ✅

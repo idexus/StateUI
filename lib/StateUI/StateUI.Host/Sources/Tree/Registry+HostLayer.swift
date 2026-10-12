@@ -53,7 +53,7 @@ extension Registry {
         everyElementRealizes(VisualElementContract.automationExcludedWithChildren)
     }
 
-    /// The words a view shows while the pointer rests on it, which every toolkit holds on any view.
+    /// The words a view shows while the pointer rests on it, which a toolkit showing tooltips holds on any view.
     /// Design: docs/design/views/modifiers.md#a-tooltip
     public func everyElementShowsItsTooltip() {
         everyElementRealizes(VisualElementContract.tooltip)
