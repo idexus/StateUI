@@ -17,15 +17,15 @@ struct TooltipSample: SampleContent, ExampleContent {
                 .fontSize(14)
 
             HStack {
-                // A button that is a picture names itself twice: to a
-                // screen reader, and to the eye under the pointer.
+                // A button that is only a picture says what it does
+                // to the eye under the pointer.
                 Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                     .style(.iconButton)
                     .contentMode(.fit)
                     .width(48)
                     .height(48)
                     .padding(10)
-                    .accessibilityLabel("Media")   // listing: keep
+                    .accessibilityLabel("Media")
                     .tooltip(detailed ? "Opens the pictures, films and sounds" : "Media")
 
                 Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
@@ -34,7 +34,7 @@ struct TooltipSample: SampleContent, ExampleContent {
                     .width(48)
                     .height(48)
                     .padding(10)
-                    .accessibilityLabel("Layout")   // listing: keep
+                    .accessibilityLabel("Layout")
                     .tooltip(detailed ? "Opens the stacks, grids and placement" : "Layout")
 
                 // Any view takes one, not only a control.

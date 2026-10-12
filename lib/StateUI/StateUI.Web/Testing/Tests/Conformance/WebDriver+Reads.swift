@@ -20,6 +20,10 @@ extension WebDriver {
             return try WebBrowser.truth("e.isConnected && e.checkVisibility({ visibilityProperty: true })", on: e).propValue
         case (.opacity, _): return try WebBrowser.number("Number(getComputedStyle(e).opacity)", on: e)?.propValue
         case (.tooltip, _): return try WebBrowser.evaluate("e.getAttribute('title')", on: e)?.propValue
+        case (.keyboardShortcut, _):
+            let onApple = try WebBrowser.truth("/Mac|iPhone|iPad|iPod/.test(navigator.platform ?? '')", on: 0)
+            return try WebBrowser.evaluate("e.getAttribute('aria-keyshortcuts')", on: e)
+                .flatMap { WebKeys.shortcut(spelled: $0, onApple: onApple) }?.propValue
         case (.isEnabled, _):
             return try (!WebBrowser.truth("""
                 e.matches(":disabled") || e.getAttribute("aria-disabled") === "true" \

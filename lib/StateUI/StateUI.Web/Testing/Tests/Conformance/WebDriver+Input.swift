@@ -12,6 +12,19 @@ import WASILibc
 /// give, the DOM's own call a control answers: a slider's value, a list's choice, a day picked.
 /// Design: docs/design/platforms/web/input.md
 extension WebDriver {
+    /// A shortcut pressed while the page has the keyboard: the key-down the browser raises for it, on the body.
+    private func pressKeys(_ shortcut: KeyboardShortcut) throws {
+        let onApple = try WebBrowser.truth("/Mac|iPhone|iPad|iPod/.test(navigator.platform ?? '')", on: 0)
+        let key = shortcut.key.character.map { String($0) } ?? shortcut.key.named.flatMap { WebKeys.names[$0] } ?? ""
+        let code = shortcut.key.character.map { $0.isNumber ? "Digit\($0)" : "Key\(String($0).uppercased())" } ?? key
+        let primary = shortcut.modifiers.contains(.primary)
+        try WebBrowser.run("""
+            document.body.dispatchEvent(new KeyboardEvent("keydown", { key: "\(key)", code: "\(code)", bubbles: true,
+              cancelable: true, metaKey: \(primary && onApple), ctrlKey: \(primary && !onApple),
+              shiftKey: \(shortcut.modifiers.contains(.shift)), altKey: \(shortcut.modifiers.contains(.alt)) }))
+            """)
+    }
+
     func perform(_ act: UserAct, on element: MountedElement) throws {
         if element.type == .toolbarItem, act == .activate { return try chooseAction(element) }
         if element.type == .menuItem, act == .activate { return try choose(element) }
@@ -21,6 +34,7 @@ extension WebDriver {
         if case .answerFiles(let names) = act { return try answerFiles(names, on: element) }
         if case .dragAndDrop(let target, let across) = act { return try dragAndDrop(element, onto: target, across: across) }
         if case .dropFiles(let names) = act { return try dropFiles(names, on: element) }
+        if case .pressKeys(let shortcut) = act { return try pressKeys(shortcut) }
         // The browser's way back, over the page's own entry: from one it did not put there, the user leaves the site.
         if act == .goBack {
             guard try WebBrowser.truth("history.state?.stateui === true && (history.back(), true)", on: 0) else {

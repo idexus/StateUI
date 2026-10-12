@@ -38,6 +38,8 @@ extension WinUIRegistrations {
                     spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
             }
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
+            // WinUI's own accelerator, which presses the button while its window is in front.
+            button.property(ButtonContract.keyboardShortcut) { view, shortcut in view.setShortcut(shortcut) }
             button.property(VisualElementContract.isEnabled) { view, enabled in
                 view.setEnabled(enabled ?? true)
             }

@@ -150,6 +150,9 @@ enum WebRelay {
         utf8(event) { stateui_web_listen(element, $0, $1, listener) }
     }
 
+    /// The number at `index` of the event being heard - what a listener of its kind is told.
+    static func eventNumber(_ index: Int) -> Double { stateui_web_event_number(Int32(index)) }
+
     /// How many clicks the event being heard counts.
     static var eventClicks: Int { Int(stateui_web_event_number(0)) }
 
@@ -316,6 +319,9 @@ enum WebRelay {
     static func capturePointer(_ element: Int32) {
         stateui_web_capture_pointer(element)
     }
+
+    /// Whether the page stands on one of Apple's platforms, whose shortcuts Command takes.
+    static var onApple: Bool { stateui_web_apple() != 0 }
 
     /// The event being heard no longer does what the page would do with it.
     static func takeEvent() {

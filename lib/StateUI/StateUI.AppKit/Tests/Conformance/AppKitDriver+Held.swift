@@ -27,6 +27,9 @@ extension AppKitDriver {
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "AppKit marks a heading, not its level")
         case .tooltip: return view.toolTip.propValue
+        case .keyboardShortcut where view is NSButton:
+            let button = view as! NSButton
+            return AppKitKeys.shortcut(key: button.keyEquivalent, modifiers: button.keyEquivalentModifierMask)?.propValue
         case .fontSize, .fontAttributes, .fontFamily, .textColor:
             return try words(property, view)
         case .background:

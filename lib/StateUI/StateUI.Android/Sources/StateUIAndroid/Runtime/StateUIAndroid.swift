@@ -78,6 +78,11 @@ enum JavaNatives {
                 AndroidView.find(number)?.clicked()
             }
         }
+        let keyPressed: @convention(c) (Environment, jclass?, jint, jint, jint) -> jboolean = { _, _, code, character, meta in
+            MainActor.assumeIsolated {
+                AndroidRenderer.shared?.pressed(code: code, character: character, meta: meta) == true ? 1 : 0
+            }
+        }
         let menuChose: @convention(c) (Environment, jclass?, jlong, jint) -> Void = { _, _, number, item in
             MainActor.assumeIsolated {
                 AndroidView.find(number)?.menuChose(Int(item))
@@ -323,6 +328,7 @@ enum JavaNatives {
             ("frame", "(J)V", unsafeBitCast(frame, to: UnsafeMutableRawPointer.self)),
             ("clicked", "(J)V", unsafeBitCast(clicked, to: UnsafeMutableRawPointer.self)),
             ("menuChose", "(JI)V", unsafeBitCast(menuChose, to: UnsafeMutableRawPointer.self)),
+            ("keyPressed", "(III)Z", unsafeBitCast(keyPressed, to: UnsafeMutableRawPointer.self)),
             ("gestured", "(JIIFFF)V", unsafeBitCast(gestured, to: UnsafeMutableRawPointer.self)),
             ("pressed", "(JIFF)Z", unsafeBitCast(pressed, to: UnsafeMutableRawPointer.self)),
             ("focusChanged", "(JZ)V", unsafeBitCast(focusChanged, to: UnsafeMutableRawPointer.self)),

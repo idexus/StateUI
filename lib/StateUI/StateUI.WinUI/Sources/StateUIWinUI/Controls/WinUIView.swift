@@ -147,6 +147,12 @@ class WinUIView {
         }
     }
 
+    /// The keys pressing the view while its window is in front: WinUI's own accelerator on it; nil for none.
+    func setShortcut(_ shortcut: KeyboardShortcut?) {
+        let spelled = shortcut.flatMap(WinUIKeys.spelled) ?? (key: 0, modifiers: 0)
+        stateui_winui_set_shortcut(handle, spelled.key, spelled.modifiers)
+    }
+
     /// The words WinUI shows over the view while the pointer rests on it; nil shows none.
     func setTooltip(_ text: String?) {
         stateui_winui_set_tooltip(handle, text)

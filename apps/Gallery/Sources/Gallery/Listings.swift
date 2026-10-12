@@ -8035,6 +8035,36 @@ enum Listings {
             }
         }
         """#,
+        "ShortcutSample": #"""
+        // Sources/Samples/BasicInput/ShortcutSample.swift
+        @State private var saved = 0
+        @State private var last = "nothing yet"
+
+        var body: some View {
+            VStack {
+                Text("Press Command or Control with S, then with Shift and S.")
+
+                HStack {
+                    // Command on Apple's platforms, Control elsewhere.
+                    Button("Save")
+                        .keyboardShortcut("s")
+                        .onClicked {
+                            saved += 1
+                            last = "Save"
+                        }
+
+                    Button("Save As")
+                        .keyboardShortcut("s", modifiers: [.primary, .shift])
+                        .onClicked {
+                            saved += 1
+                            last = "Save As"
+                        }
+                }
+
+                Text("Pressed \(saved) time\(saved == 1 ? "" : "s"), last: \(last)")
+            }
+        }
+        """#,
         "SizingSample": #"""
         // Sources/Samples/Layout/SizingSample.swift
         var body: some View {
@@ -9186,14 +9216,13 @@ enum Listings {
                 Text("Rest the pointer on a button or on the swatch.")
 
                 HStack {
-                    // A button that is a picture names itself twice: to a
-                    // screen reader, and to the eye under the pointer.
+                    // A button that is only a picture says what it does
+                    // to the eye under the pointer.
                     Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                         .style(.iconButton)
                         .contentMode(.fit)
                         .width(48)
                         .height(48)
-                        .accessibilityLabel("Media")
                         .tooltip(detailed ? "Opens the pictures, films and sounds" : "Media")
 
                     Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
@@ -9201,7 +9230,6 @@ enum Listings {
                         .contentMode(.fit)
                         .width(48)
                         .height(48)
-                        .accessibilityLabel("Layout")
                         .tooltip(detailed ? "Opens the stacks, grids and placement" : "Layout")
 
                     // Any view takes one, not only a control.

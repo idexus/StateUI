@@ -22,6 +22,8 @@ final class AndroidDriver: HostDriver {
     /// another case.
     private static func none() -> [String: String] {
         var none = [
+            "read keyboardShortcut of Button":
+                "Android keeps no shortcut on a view: the activity hands the host each key no view takes, as a pressed shortcut proves",
             "read growsWithText of TextEditor":
                 "an editor's growing is StateUI's measuring, which no property of Android's holds; its frames prove it",
         ]

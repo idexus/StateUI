@@ -91,3 +91,11 @@ final class Said: Sendable {
         held.withLock { $0.said.contains { $0.contains(words) } }
     }
 }
+
+@_spi(Host) extension Complaints {
+    /// Says `message` once a process, as the library says what an application handed it that it cannot use: what a
+    /// host finds wrong with the tree it was given.
+    public static func say(_ message: String) {
+        complain(message)
+    }
+}

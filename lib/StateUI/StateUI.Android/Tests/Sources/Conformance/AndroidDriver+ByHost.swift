@@ -11,6 +11,8 @@ extension AndroidDriver {
         switch Ability(ability).act {
         case "switchAway", "switchBack", "bringToFront", "minimize", "restore", "close":
             if Ability(ability).element == "Window" { return "the host told the activity's phase, no activity moved" }
+        case "pressKeys":
+            return "the key handed to the host as the activity hands one no view took, no key event"
         case "toggle" where Ability(ability).element == "SplitView":
             return "the host's own entry the scrim's tap and the bar's button call"
         case "dragAndDrop":

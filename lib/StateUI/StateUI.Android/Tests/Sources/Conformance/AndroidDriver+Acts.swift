@@ -84,6 +84,11 @@ extension AndroidDriver {
             TestTouches.hover(view, action: Self.hoverEnter, x: Self.pixels(point.x), y: Self.pixels(point.y))
             TestTouches.hover(view, action: Self.hoverMove, x: Self.pixels(point.x), y: Self.pixels(point.y))
         case (.leave, let view?): TestTouches.hover(view, action: Self.hoverExit, x: 0, y: 0)
+        case (.pressKeys(let shortcut), _):
+            // A key no view took, as the activity hands it on.
+            guard let pressed = AndroidKeys.pressed(shortcut) else { throw DriverCannot(act, on: element) }
+            let character = shortcut.key.character?.unicodeScalars.first.map { Int32($0.value) } ?? 0
+            _ = renderer?.pressed(code: pressed.code, character: character, meta: pressed.meta)
         case (.goBack, _) where element.type == .window || element.type == .navigationStack:
             // The system's back, as the activity hands it on; what it reached, the case reads.
             _ = renderer?.goBack()

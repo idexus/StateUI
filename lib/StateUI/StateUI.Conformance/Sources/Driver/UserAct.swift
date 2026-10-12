@@ -75,6 +75,8 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     case answerFiles([String])
     /// A web view's content ended, as the platform ends it when its process goes.
     case endContent
+    /// A keyboard shortcut pressed while the element's window is in front.
+    case pressKeys(KeyboardShortcut)
 
     /// The act's name, as a driver says what it cannot do.
     public var description: String {
@@ -112,6 +114,7 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .answer: "answer"
         case .answerFiles: "answerFiles"
         case .endContent: "endContent"
+        case .pressKeys: "pressKeys"
         }
     }
 }

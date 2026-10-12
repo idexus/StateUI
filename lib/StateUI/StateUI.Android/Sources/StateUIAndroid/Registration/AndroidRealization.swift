@@ -38,6 +38,7 @@ enum AndroidRealization {
         .complete("BarElement", "barSubtitle"),
         .notPlanned("BarElement", "barTitle",
                     reason: "An Android bar is its stack's own and names its page; an application names itself in none."),
+        .complete("Button", "keyboardShortcut"),
         .complete("MenuItem", "isOn"),
         .complete("MenuItem", "toggled"),
         .complete("MenuItemElement", "clicked"),

@@ -28,6 +28,9 @@ public enum ButtonContract: ElementContract {
     /// The gap between the icon and the caption, in device units.
     public static let iconSpacing = ElementProperty<Self, Double>("iconSpacing", layer: .adaptive)
 
+    /// Keys that press the button from the keyboard while its window is in front.
+    public static let keyboardShortcut = ElementProperty<Self, KeyboardShortcut>("keyboardShortcut", layer: .native)
+
     /// What happens to a caption too long for the button.
     public static let lineBreak = ElementProperty<Self, LineBreak>("lineBreak", layer: .native)
 
@@ -39,6 +42,6 @@ public enum ButtonContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        clicked, icon, iconPosition, iconSpacing, lineBreak, pressed, released,
+        clicked, icon, iconPosition, iconSpacing, keyboardShortcut, lineBreak, pressed, released,
     ]
 }

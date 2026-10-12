@@ -4,8 +4,9 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `ButtonContract` on a host: each click heard once, a press heard as it goes down and as it is let go, and the
-/// button's icon, where it stands, how far from the words, and how the words break.
+/// `ButtonContract` on a host: each click heard once, a press heard as it goes down and as it is let go, the
+/// button's icon, where it stands, how far from the words, and how the words break, and the keyboard's shortcut
+/// pressing it.
 @_spi(Host) public enum ButtonTests: ConformanceFamily {
     public static let name = "Button"
 
@@ -68,6 +69,28 @@
             Aspects.holds(ButtonContract.iconSpacing, on: "Button", 4, then: 12, with: [
                 Write(TextualElementContract.text, "Go"), Write(ButtonContract.icon, "test_dot.png"),
             ]),
+            Aspects.holds(
+                ButtonContract.keyboardShortcut, on: "Button", KeyboardShortcut("s"),
+                then: KeyboardShortcut(.return, modifiers: [.primary, .shift])),
+            ConformanceCase("aShortcutPressesTheButton", proves: [
+                Covered(ButtonContract.keyboardShortcut),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let heard = Received<String>()
+                s.start {
+                    VStack {
+                        Button("Save").keyboardShortcut("s").onClicked { heard.values.append("save") }.id("save")
+                        Button("Open").keyboardShortcut("o").isEnabled(false).onClicked { heard.values.append("open") }
+                            .id("open")
+                    }
+                }
+
+                try s.perform(.pressKeys(KeyboardShortcut("s")), on: s.element("save"))
+                s.settle { heard.values == ["save"] }
+                s.expect(heard.values, ["save"], "the shortcut presses its button")
+
+                try s.perform(.pressKeys(KeyboardShortcut("o")), on: s.element("open"))
+                s.expect(heard.values, ["save"], "a disabled button's shortcut presses nothing")
+            },
             Aspects.holds(ButtonContract.lineBreak, on: "Button", .wordWrap, then: .tailTruncation,
                           with: [Write(TextualElementContract.text, "Words enough to break across more than one line")]),
         ]

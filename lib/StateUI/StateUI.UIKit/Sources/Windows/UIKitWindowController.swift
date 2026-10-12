@@ -91,6 +91,11 @@ final class UIKitWindowController {
     /// sees.
     func present(_ element: MountedElement, in runtime: HostRuntime) {
         let changes = presentation.show(element, in: runtime.lifecycle)
+        root.shortcuts = { [weak element] in element.map(KeyboardShortcuts.stated(under:)) ?? [] }
+        root.onShortcut = { [weak runtime, weak element] shortcut in
+            guard let runtime, let element else { return }
+            KeyboardShortcuts.press(shortcut, under: element, in: runtime)
+        }
         if let traits = changes.traits {
             background = traits.background.painted.flatMap(UIColor.init(stateUI:))
             window?.backgroundColor = background
@@ -154,6 +159,19 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
 
     /// What the window does when the user took the top sheet away, handed how many stay.
     var onSheetDismissed: ((Int) -> Void)?
+
+    /// The shortcuts the window's tree states, and what a pressed one does: UIKit holds a key command on a
+    /// responder, not on a control, so the window's root offers every one of them.
+    var shortcuts: () -> [KeyboardShortcut] = { [] }
+    var onShortcut: ((KeyboardShortcut) -> Void)?
+
+    override var keyCommands: [UIKeyCommand]? {
+        shortcuts().map { UIKitKeys.command($0, action: #selector(pressedShortcut(_:))) }
+    }
+
+    @objc func pressedShortcut(_ command: UIKeyCommand) {
+        UIKitKeys.shortcut(of: command).map { onShortcut?($0) }
+    }
 
     /// The sheets last asked for before the window stood on screen, or while a sheet moved: UIKit presents over a
     /// controller only once it stands, and over none whose sheet is still coming or going.

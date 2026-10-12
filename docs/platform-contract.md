@@ -444,7 +444,7 @@ Every control, and every part an application, its windows and its pages are made
 | Control | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](controls/ActivityIndicator.md) | 71 | 29 ✅ · 2 ☑️ · 36 ✓ · 4 – | 30 ✅ · 2 ☑️ · 35 ✓ · 4 – | 54 ✅ · 3 ☑️ · 10 ✓ · 3 – | 52 ✅ · 1 ☑️ · 13 ✓ · 4 – | 44 ✅ · 1 ☑️ · 22 ✓ · 4 – | 47 ✅ · 1 ☑️ · 20 ✓ · 3 – |
-| [Button](controls/Button.md) | 89 | 45 ✅ · 3 ☑️ · 37 ✓ · 2 – | 46 ✅ · 1 ☑️ · 37 ✓ · 4 – | 66 ✅ · 3 ☑️ · 10 ✓ · 4 – | 76 ✅ · 1 ☑️ · 12 ✓ | 62 ✅ · 2 ☑️ · 24 ✓ · 1 – | 68 ✅ · 1 ☑️ · 20 ✓ |
+| [Button](controls/Button.md) | 90 | 46 ✅ · 3 ☑️ · 37 ✓ · 2 – | 47 ✅ · 1 ☑️ · 37 ✓ · 4 – | 66 ✅ · 3 ☑️ · 11 ✓ · 4 – | 77 ✅ · 1 ☑️ · 12 ✓ | 63 ✅ · 2 ☑️ · 24 ✓ · 1 – | 69 ✅ · 1 ☑️ · 20 ✓ |
 | [Canvas](controls/Canvas.md) | 73 | 30 ✅ · 2 ☑️ · 38 ✓ · 3 – | 29 ✅ · 2 ☑️ · 38 ✓ · 4 – | 56 ✅ · 3 ☑️ · 10 ✓ · 3 – | 55 ✅ · 14 ✓ · 3 – | 46 ✅ · 1 ☑️ · 22 ✓ · 4 – | 49 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [CheckBox](controls/CheckBox.md) | 72 | 35 ✅ · 2 ☑️ · 35 ✓ | 30 ✅ · 2 ☑️ · 36 ✓ · 4 – | 55 ✅ · 3 ☑️ · 10 ✓ · 3 – | 59 ✅ · 1 ☑️ · 12 ✓ | 47 ✅ · 1 ☑️ · 23 ✓ · 1 – | 51 ✅ · 1 ☑️ · 20 ✓ |
 | [ColorBox](controls/ColorBox.md) | 71 | 31 ✅ · 1 ☑️ · 35 ✓ · 3 – | 30 ✅ · 2 ☑️ · 35 ✓ · 4 – | 54 ✅ · 3 ☑️ · 10 ✓ · 3 – | 54 ✅ · 13 ✓ · 4 – | 44 ✅ · 1 ☑️ · 22 ✓ · 4 – | 47 ✅ · 1 ☑️ · 20 ✓ · 3 – |
@@ -477,10 +477,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 77 | 36 ✅ · 1 ☑️ · 35 ✓ · 3 – | 35 ✅ · 1 ☑️ · 35 ✓ · 4 – | 58 ✅ · 3 ☑️ · 10 ✓ · 3 – | 59 ✅ · 1 ☑️ · 12 ✓ · 3 – | 50 ✅ · 1 ☑️ · 21 ✓ · 4 – | 52 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [WebView](controls/WebView.md) | 80 | 42 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 2 ☑️ · 36 ✓ · 1 – | 63 ✅ · 3 ☑️ · 10 ✓ · 3 – | 47 ✅ · 13 ✓ · 19 – | 56 ✅ · 1 ☑️ · 22 ✓ · 1 – | 53 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [ZStack](controls/ZStack.md) | 76 | 35 ✅ · 1 ☑️ · 35 ✓ · 3 – | 34 ✅ · 1 ☑️ · 35 ✓ · 4 – | 57 ✅ · 3 ☑️ · 10 ✓ · 3 – | 58 ✅ · 1 ☑️ · 12 ✓ · 3 – | 49 ✅ · 1 ☑️ · 21 ✓ · 4 – | 51 ✅ · 1 ☑️ · 20 ✓ · 3 – |
-| ✅ |  | 1261 | 1241 | 1997 | 2039 | 1709 | 1810 |
-| ✓ |  | 1160 | 1208 | 336 | 408 | 733 | 661 |
+| ✅ |  | 1262 | 1242 | 1997 | 2040 | 1710 | 1811 |
+| ✓ |  | 1160 | 1208 | 337 | 408 | 733 | 661 |
 | – |  | 88 | 133 | 96 | 90 | 103 | 72 |
-| **Met** | 2681 | **2509** | **2582** | **2429** | **2537** | **2545** | **2543** |
+| **Met** | 2682 | **2510** | **2583** | **2430** | **2538** | **2546** | **2544** |
 | 🧩 |  | 0 | 0 | 77 | 77 | 77 | 77 |
 
 ### Application structure
@@ -554,7 +554,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | Element | Members | Count | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](controls/ActivityIndicator.md) | `isAnimating` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`) | 7 | 4 ✅ · 2 ✓ · 1 – | 5 ✅ · 2 ✓ | 4 ✅ | 7 ✅ | 6 ✅ · 1 ✓ | 7 ✅ |
+| [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `keyboardShortcut`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`) | 8 | 5 ✅ · 2 ✓ · 1 – | 6 ✅ · 2 ✓ | 4 ✅ · 1 ✓ | 8 ✅ | 7 ✅ · 1 ✓ | 8 ✅ |
 | [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawing`, `onPressed` (`pressed`), `onReleased` (`released`) | 4 | 1 ✅ · 3 ✓ | 1 ✅ · 3 ✓ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 1 ✅ · 1 ✓ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ColorBox](controls/ColorBox.md) | `color`, `cornerRadius` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
@@ -640,16 +640,16 @@ realizes the element and each of its members.
 `isAnimating`, `isDestructive`, `isEnabled`, `isFontAutoScalingEnabled`,
 `isMaximizable`, `isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isReadOnly`,
 `isScrollEnabled`, `isSpellCheckEnabled`, `isTextPredictionEnabled`,
-`isVisible`, `isZoomEnabled`, `items`, `itemsLayout`, `label`,
-`layoutDirection`, `letsInputThrough`, `lineBreak`, `lineCap`, `lineHeight`,
-`lineJoin`, `lineWidth`, `location`, `mapType`, `margin`, `maximum`,
-`maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`, `maximumWidth`,
-`minimum`, `minimumDate`, `minimumHeight`, `minimumWidth`, `miterLimit`,
-`opacity`, `options`, `order`, `orientation`, `padding`, `panTouchCount`,
-`panXChannel`, `panYChannel`, `pivotX`, `pivotY`, `placeholder`,
-`placeholderColor`, `placement`, `points`, `progress`, `region`, `rotation`,
-`rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
-`scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
+`isVisible`, `isZoomEnabled`, `items`, `itemsLayout`, `keyboardShortcut`,
+`label`, `layoutDirection`, `letsInputThrough`, `lineBreak`, `lineCap`,
+`lineHeight`, `lineJoin`, `lineWidth`, `location`, `mapType`, `margin`,
+`maximum`, `maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`,
+`maximumWidth`, `minimum`, `minimumDate`, `minimumHeight`, `minimumWidth`,
+`miterLimit`, `opacity`, `options`, `order`, `orientation`, `padding`,
+`panTouchCount`, `panXChannel`, `panYChannel`, `pivotX`, `pivotY`,
+`placeholder`, `placeholderColor`, `placement`, `points`, `progress`, `region`,
+`rotation`, `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`,
+`scaleY`, `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
 `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
 `showsClearButton`, `showsNavigationBar`, `showsSidebar`, `showsText`,
 `showsTraffic`, `showsUserLocation`, `side`, `sidebarBackground`, `source`,

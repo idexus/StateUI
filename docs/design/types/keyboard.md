@@ -1,0 +1,51 @@
+# The keyboard
+
+A keyboard shortcut is a key pressed with the keys held with it, written on
+the control it acts as: `Button("Save").keyboardShortcut("s")`. It presses a
+button and chooses a bar's item or a menu bar's entry while its window is in
+front; on a context menu's entry the platform only shows it beside the words.
+
+## A key
+
+`Key` is a character's key, written as the character - `"s"`, a literal of
+one character, so `"save"` does not compile - or one of a closed set of keys
+writing none: Return, Escape, Delete, the four arrows and F1 to F12, numbered
+by StateUI. A letter is its key whatever its case: Shift is a modifier, so
+`"S"` is the key `"s"`, and a shortcut holding Shift says so in its modifiers.
+
+## Modifiers
+
+`KeyModifiers` holds the platform's own key, `.primary` - Command on Apple's
+platforms, Control elsewhere - Shift and `.alt`, Option on Apple's platforms.
+`.primary` alone is what a shortcut holds unless it says otherwise, so the
+same `keyboardShortcut("s")` is ⌘S on the Mac and Ctrl+S on Windows and Linux.
+A shortcut crosses as its key - a character as text, another key by its
+number - and its modifiers' bits.
+
+## In a window
+
+What a shortcut reaches is decided once, in the host layer
+(`KeyboardShortcuts`): the elements it acts on are buttons, bars' items and
+the entries of a menu bar, standing in sight - shown, on the top page of a
+stack, the chosen tab, the sheet over the others - and enabled; the first in
+reading order takes a pressed one. A shortcut two elements in sight state in
+one window is said once, as the patch stating it is applied, since which acts
+is then not the application's choice. A pressed shortcut clicks a button and
+chooses an item as the user choosing it does (`MountedElement.chosen`).
+
+## On each platform
+
+Each host spells a shortcut in its toolkit's words and lets the toolkit hold
+it where the toolkit holds one on a control: AppKit's key equivalent and its
+modifier mask on the button, GTK's shortcut controller with a window-wide
+scope activating the button, WinUI's keyboard accelerator on it, and the
+page's `aria-keyshortcuts` beside its own key-down listener. UIKit holds a key
+command on a responder, not on a control, so a window's root offers one for
+every shortcut its tree states; Android holds none on a view, so the activity
+hands the host each key no view takes - after the views, as Android's own
+shortcuts come after them. Both reach their element through the host layer's
+choice.
+
+A character no key of the letters or digits writes - punctuation - has no
+virtual key of its own on WinUI and no key code on Android: there it presses
+nothing.

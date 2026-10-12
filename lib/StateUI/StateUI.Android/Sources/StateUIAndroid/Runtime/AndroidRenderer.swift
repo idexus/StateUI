@@ -300,6 +300,15 @@ final class AndroidRenderer {
         return .pop(stack)
     }
 
+    /// A key pressed that no view took, reaching the element of the window stating it as a shortcut; whether one
+    /// took it.
+    func pressed(code: Int32, character: Int32, meta: Int32) -> Bool {
+        guard let shortcut = AndroidKeys.shortcut(code: code, character: character, meta: meta),
+              let window = runtime.tree.root?.first(type: .window)
+        else { return false }
+        return KeyboardShortcuts.press(shortcut, under: window, in: runtime)
+    }
+
     /// Goes `way` back in the first window.
     func goBack(_ way: WayBack) {
         guard let window = runtime.tree.root?.first(type: .window) else { return }

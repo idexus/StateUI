@@ -63,6 +63,10 @@ extension WebRegistrations {
                     shape: values[BorderElementContract.shape]?.propValue)
             }
             button.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            // The page holds a shortcut on no control: the window's keys reach it, and assistive technology is told.
+            button.property(ButtonContract.keyboardShortcut) { view, shortcut in
+                view.attribute("aria-keyshortcuts", shortcut.map { WebKeys.spelled($0, onApple: WebRelay.onApple) })
+            }
             button.raises(ButtonContract.clicked)
             button.raises(ButtonContract.pressed)
             button.raises(ButtonContract.released)

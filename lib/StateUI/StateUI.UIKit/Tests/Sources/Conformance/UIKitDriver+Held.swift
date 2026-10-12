@@ -27,6 +27,12 @@ extension UIKitDriver {
             return (!view.isAccessibilityElement && view.accessibilityElementsHidden).propValue
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "UIKit marks a heading, not its level")
+        case .keyboardShortcut:
+            // The key command the window offers that reaches this element.
+            guard let native, let root = UIKitDriver.windowRoot(of: native.element) else { return nil }
+            let window = native.element.enclosing(type: .window) ?? native.element
+            return root.keyCommands?.compactMap { UIKitKeys.shortcut(of: $0) }
+                .first { KeyboardShortcuts.target(of: $0, under: window) === native.element }?.propValue
         case .fontSize, .fontAttributes, .fontFamily, .textColor, .tracking, .lineHeight, .textDecorations:
             return try words(property, view)
         case .isFontAutoScalingEnabled:

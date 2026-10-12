@@ -128,6 +128,7 @@ final class ControlTests: XCTestCase {
                     .icon("tab_list.png")
                     .iconPosition(.leading)
                     .iconSpacing(8)
+                    .keyboardShortcut("i", modifiers: [.primary, .shift])
                     .onClicked {}
                     .onPressed {}
                     .onReleased {}),

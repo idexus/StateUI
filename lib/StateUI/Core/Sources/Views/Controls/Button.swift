@@ -97,6 +97,16 @@ public struct Button: ElementView, TextualElement, FontElement, PaddingElement, 
         self = Button().text(text)
     }
 
+    /// Keys that press the button from the keyboard while its window is in
+    /// front: `key` with `modifiers` - the platform's Command or Control
+    /// unless said otherwise.
+    ///
+    ///     Button("Save").keyboardShortcut("s")
+    ///     Button("Send").keyboardShortcut(.return, modifiers: [])
+    public func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Self {
+        setValue(ButtonContract.keyboardShortcut, KeyboardShortcut(key, modifiers: modifiers))
+    }
+
     // MARK: Events
 
     /// Runs when the button is pressed AND released on it - the ordinary one - all

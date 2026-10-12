@@ -147,6 +147,9 @@ STATEUI_WEB(capture_pointer) void stateui_web_capture_pointer(int32_t element);
 /// The event being heard no longer does what the page would do with it: scroll, zoom, select.
 STATEUI_WEB(take_event) void stateui_web_take_event(void);
 
+/// Whether the page stands on one of Apple's platforms, whose shortcuts Command takes.
+STATEUI_WEB(apple) int32_t stateui_web_apple(void);
+
 /// Calls listener `listener` whenever the element's size changes - one listener an element: a second call takes the
 /// first's place.
 STATEUI_WEB(observe_size) void stateui_web_observe_size(int32_t element, int32_t listener);

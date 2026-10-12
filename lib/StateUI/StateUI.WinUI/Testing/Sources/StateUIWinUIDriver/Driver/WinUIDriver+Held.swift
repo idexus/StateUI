@@ -170,6 +170,10 @@ extension WinUIDriver {
             return .string(try read(view, "automationName"))
         case "accessibilityLabel": return .string(view.automationWords.name)
         case "accessibilityHint": return .string(view.automationWords.help)
+        case "keyboardShortcut":
+            var key: Int32 = 0, modifiers: Int32 = 0
+            guard stateui_winui_shortcut(view.answering.handle, &key, &modifiers) else { return nil }
+            return WinUIKeys.shortcut(key: key, modifiers: modifiers)?.propValue
         case "tooltip":
             let words = WinUIStrings.read { stateui_winui_tooltip(view.handle, $0, $1) }
             return words.isEmpty ? nil : .string(words)

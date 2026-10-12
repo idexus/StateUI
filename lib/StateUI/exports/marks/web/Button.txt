@@ -1,10 +1,11 @@
-# revision 1.1
+# revision 2.1
 Button: ✅
 Button.clicked: ✅
 Button.frameChanged: ✅
 Button.icon: ✅
 Button.iconPosition: ✅
 Button.iconSpacing: ✅
+Button.keyboardShortcut: ✅
 Button.lineBreak: ✅
 Button.pressed: ✅
 Button.released: ✅

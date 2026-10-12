@@ -29,6 +29,7 @@ enum UIKitRealization {
         .complete("BarElement", "barSubtitle"),
         .notPlanned("BarElement", "barTitle",
                     reason: "A UIKit bar is each page's own and names that page; an application names itself in none."),
+        .complete("Button", "keyboardShortcut"),
         .complete("MenuItem", "isOn"),
         .complete("MenuItem", "toggled"),
         .complete("MenuItemElement", "clicked"),

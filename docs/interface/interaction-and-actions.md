@@ -378,6 +378,37 @@ wires its sources unconditionally. The head declares what it raises,
 `StateUIEvents.raises(NotesContract.importFinished)`, and a subscription to an
 event no head declared is said once, as a misspelled name would be.
 
+## Keyboard shortcuts
+
+A button presses from the keyboard while its window is in front:
+
+```swift
+struct Editor: View {
+    @State private var saved = 0
+
+    var body: some View {
+        HStack {
+            Button("Save")
+                .keyboardShortcut("s")
+                .onClicked { saved += 1 }
+            Button("Send")
+                .keyboardShortcut(.return, modifiers: [])
+                .onClicked { saved += 1 }
+        }
+    }
+}
+```
+
+A shortcut is a `Key` - a character, `"s"`, or one of `.return`, `.escape`,
+`.delete`, the arrows and `.f1` to `.f12` - with the keys held with it.
+`.primary` alone is held unless the shortcut says otherwise: Command on Apple's
+platforms, Control on Windows, Linux and Android, so one `keyboardShortcut("s")`
+is ⌘S on the Mac and Ctrl+S elsewhere; `.shift` and `.alt` add Shift and
+Option or Alt. A disabled button's shortcut presses nothing, and a button on
+a page out of sight - beneath a stack's top, behind another tab - takes none.
+Two controls in one window stating the same shortcut is said in debug: which of
+them acts is then not yours to choose.
+
 ## Tooltips
 
 `tooltip` gives any view words the platform shows beside it while the pointer

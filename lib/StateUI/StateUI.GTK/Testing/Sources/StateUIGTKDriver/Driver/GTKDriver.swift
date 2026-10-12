@@ -67,6 +67,7 @@ final class GTKDriver: HostDriver {
 
     /// What the driver reaches past GTK, through the host's own entry or record - ✓.
     func byHost(_ ability: String) -> String? {
+        if Ability(ability).act == "pressKeys" { return "the shortcut controller's action run, no key event" }
         if Ability(ability).readsATransform { return "the host's own transform: GTK reads back no part of one" }
         if ability.hasPrefix("read background of "), ["Grid", "HStack", "VStack", "ZStack"].contains(Ability(ability).element) {
             return "the brush the host draws the box with: GTK reads back no drawing"
@@ -147,6 +148,14 @@ final class GTKDriver: HostDriver {
     }
 
     func perform(_ act: UserAct, on element: MountedElement) throws {
+        if case .pressKeys(let shortcut) = act {
+            // The shortcut's own action, run as its controller runs it for the key.
+            guard let button = (element.native as? GTKElement)?.view as? GTKButtonView,
+                  let held = button.shortcutForTesting,
+                  GTKKeys.shortcut(keyval: held.keyval, modifiers: held.modifiers) == shortcut
+            else { throw DriverCannot(act, on: element) }
+            return button.runShortcutForTesting()
+        }
         if case .dragAndDrop(let target, let across) = act { return try dragAndDrop(element, onto: target, across: across) }
         if case .dropFiles(let names) = act {
             guard let drop = (element.native as? GTKElement)?.view?.dragAndDrop, drop.offered.takesFiles else {

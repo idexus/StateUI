@@ -69,6 +69,12 @@ extension AppKitRegistrations {
                     lineBreakMode: breaking,
                     enabled: values[VisualElementContract.isEnabled] ?? true)
             }
+            // AppKit's own key equivalent: the button presses itself while its window is in front.
+            button.property(ButtonContract.keyboardShortcut) { view, shortcut in
+                let spelled = shortcut.map(AppKitKeys.equivalent(of:)) ?? (key: "", modifiers: [])
+                view.keyEquivalent = spelled.key
+                view.keyEquivalentModifierMask = spelled.modifiers
+            }
             button.raises(ButtonContract.clicked)
             button.raises(ButtonContract.pressed)
             button.raises(ButtonContract.released)

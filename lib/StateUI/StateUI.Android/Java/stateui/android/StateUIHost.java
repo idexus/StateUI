@@ -41,6 +41,9 @@ final class StateUIHost {
     /** One of a view's menu items was chosen - a bar's action, a context menu's item - by its place among them. */
     static native void menuChose(long view, int item);
 
+    /** A key pressed that no view took: whether a shortcut a button or an item states took it. */
+    static native boolean keyPressed(int code, int character, int meta);
+
     /** The user asks for a view's context menu - a long press, a secondary click - for Swift to write into `menu`. */
     static native void menuOpening(long view, Menu menu);
 

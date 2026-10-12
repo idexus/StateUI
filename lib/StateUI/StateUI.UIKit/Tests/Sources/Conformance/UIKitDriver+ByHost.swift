@@ -27,6 +27,8 @@ extension UIKitDriver {
             return "the host told the scene's phase, no scene moved"
         case "endContent":
             return "the navigation delegate told, no web process ended"
+        case "pressKeys":
+            return "the window's key command performed, no key pressed"
         case "choose" where taken.element == "ItemsView", "activate" where taken.element == "an item of ItemsView":
             return "the collection's delegate told, no touch"
         case "open" where taken.element == "Marker":

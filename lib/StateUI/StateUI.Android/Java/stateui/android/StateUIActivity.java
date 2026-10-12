@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.system.ErrnoException;
 import android.system.Os;
+import android.view.KeyEvent;
 import android.widget.FrameLayout;
 import android.window.OnBackInvokedCallback;
 import android.window.OnBackInvokedDispatcher;
@@ -85,6 +86,14 @@ public class StateUIActivity extends Activity {
     @Override
     protected void onActivityResult(int request, int result, Intent data) {
         if (!StateUIFiles.result(this, request, result, data)) super.onActivityResult(request, result, data);
+    }
+
+    /** A key the views do not take reaches a shortcut the tree states, as Android's own shortcuts come after them. */
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (super.dispatchKeyEvent(event)) return true;
+        return event.getAction() == KeyEvent.ACTION_DOWN
+                && StateUIHost.keyPressed(event.getKeyCode(), event.getUnicodeChar(0), event.getMetaState());
     }
 
     /** Before the system's own predictive back: the host goes back, or the activity does as it always does. */

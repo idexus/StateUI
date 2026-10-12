@@ -18,6 +18,9 @@ extension GTKDriver {
         if property == .isFontAutoScalingEnabled { return scalesHolds(element, view) }
         if element.type == .textSpan { return spanHolds(property, element) }
         if let assisted = accessibilityHolds(property, element, view) { return assisted }
+        if property == .keyboardShortcut, let shortcut = (view as? GTKButtonView)?.shortcutForTesting {
+            return .some(GTKKeys.shortcut(keyval: shortcut.keyval, modifiers: shortcut.modifiers)?.propValue)
+        }
         if property == .tooltip {
             return .some(view.flatMap { gtk_widget_get_tooltip_text($0.widget) }.map { String(cString: $0) }?.propValue)
         }

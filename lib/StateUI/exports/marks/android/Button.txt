@@ -1,10 +1,11 @@
-# revision 1.1
+# revision 2.1
 Button: ✅
 Button.clicked: ✅
 Button.frameChanged: ✅
 Button.icon: cannot read icon of Button - Android's driver has no path for it yet
 Button.iconPosition: cannot read iconPosition of Button - Android's driver has no path for it yet
 Button.iconSpacing: cannot read iconSpacing of Button - Android's driver has no path for it yet
+Button.keyboardShortcut: ✓ pressKeys on Button: the key handed to the host as the activity hands one no view took, no key event
 Button.lineBreak: ✅
 Button.pressed: ✅
 Button.released: ✅

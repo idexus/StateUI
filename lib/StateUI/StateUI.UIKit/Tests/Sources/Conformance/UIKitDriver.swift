@@ -203,6 +203,12 @@ final class UIKitDriver: HostDriver {
         if element.type == .marker { return try performOnMarker(act, element) }
         let view = (element.native as? UIKitElement)?.view
         switch (act, view) {
+        case (.pressKeys(let shortcut), _):
+            // The key command the element's window offers for the shortcut, performed as UIKit performs it.
+            guard let root = Self.windowRoot(of: element),
+                  let command = root.keyCommands?.first(where: { UIKitKeys.shortcut(of: $0) == shortcut })
+            else { return }
+            root.pressedShortcut(command)
         case (.tap(let count), let map as UIKitMapView):
             // A tap on a map is the map's, and the view's where it hears taps too.
             try touch(element) { listening, view in Self.tap(listening, on: view, count: count) }
@@ -448,6 +454,13 @@ final class UIKitDriver: HostDriver {
             throw DriverCannot(reading: property, of: element)
         default: throw DriverCannot(reading: property, of: element)
         }
+    }
+
+    /// The root of the window `element` stands in, which offers the window's key commands.
+    static func windowRoot(of element: MountedElement) -> UIKitRootViewController? {
+        var each: MountedElement? = element
+        while let current = each, (current.native as? UIKitElement)?.view?.window == nil { each = current.parent }
+        return (each?.native as? UIKitElement)?.view?.window?.rootViewController as? UIKitRootViewController
     }
 }
 

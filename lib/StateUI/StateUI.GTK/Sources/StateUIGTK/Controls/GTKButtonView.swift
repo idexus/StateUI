@@ -34,6 +34,51 @@ final class GTKButtonView: GTKView {
         gtk_widget_add_controller(widget, press)
     }
 
+    /// The controller holding the button's keyboard shortcut, across its whole window; nil until it states one.
+    private(set) var shortcuts: OpaquePointer?
+
+    /// The keys pressing the button while its window is in front: GTK's own shortcut, global to the window,
+    /// activating the button; nil for none.
+    /// Design: docs/design/types/keyboard.md#on-each-platform
+    func setShortcut(_ shortcut: KeyboardShortcut?) {
+        let controller = shortcuts ?? {
+            let made = gtk_shortcut_controller_new()!
+            gtk_shortcut_controller_set_scope(made, GTK_SHORTCUT_SCOPE_GLOBAL)
+            gtk_widget_add_controller(widget, made)
+            return made
+        }()
+        shortcuts = controller
+        while g_list_model_get_n_items(controller) > 0, let first = g_list_model_get_item(controller, 0) {
+            gtk_shortcut_controller_remove_shortcut(controller, OpaquePointer(first))
+            g_object_unref(first)
+        }
+        guard let shortcut else { return }
+        let spelled = GTKKeys.spelled(shortcut)
+        let activates = gtk_activate_action_get()
+        g_object_ref(UnsafeMutableRawPointer(activates))
+        gtk_shortcut_controller_add_shortcut(
+            controller, gtk_shortcut_new(gtk_keyval_trigger_new(spelled.keyval, spelled.modifiers), activates))
+    }
+
+    /// The key value and mask of the shortcut the button's controller holds; nil for none - what a test reads.
+    var shortcutForTesting: (keyval: guint, modifiers: GdkModifierType)? {
+        guard let shortcut = heldShortcut, let trigger = gtk_shortcut_get_trigger(shortcut) else { return nil }
+        return (gtk_keyval_trigger_get_keyval(trigger), gtk_keyval_trigger_get_modifiers(trigger))
+    }
+
+    /// Runs the action of the shortcut the button's controller holds, as the controller runs it for its key.
+    func runShortcutForTesting() {
+        guard let shortcut = heldShortcut else { return }
+        _ = gtk_shortcut_action_activate(gtk_shortcut_get_action(shortcut), GTK_SHORTCUT_ACTION_EXCLUSIVE, widget, nil)
+    }
+
+    private var heldShortcut: OpaquePointer? {
+        guard let shortcuts, g_list_model_get_n_items(shortcuts) > 0, let first = g_list_model_get_item(shortcuts, 0)
+        else { return nil }
+        g_object_unref(first)
+        return OpaquePointer(first)
+    }
+
     /// How the caption's words look.
     private(set) var look = TextLook()
 

@@ -38,6 +38,7 @@ extension AppKitDriver {
         case (.choose(let place), let items as AppKitItemsView): items.chooseForTesting(place)
         case (.scroll(let target), let items as AppKitItemsView): items.scrollForTesting(to: target)
         case (.activate, _): try activate(element, view)
+        case (.pressKeys(let shortcut), _): try pressKeys(shortcut, on: element, view)
         case (.toggle, let toggle as AppKitSwitchView): _ = toggle.accessibilityPerformPress()
         case (.toggle, let check as AppKitCheckBoxView): check.performClick(nil)
         case (.toggle, let radio as AppKitRadioButtonView): radio.performClick(nil)
@@ -289,6 +290,19 @@ extension AppKitDriver {
         _ = drops.entered(at: view.convert(NSPoint(x: view.bounds.midX, y: view.bounds.midY), to: nil), carrying: carried, in: root)
         _ = drops.dropped(carried)
     }
+
+    /// A shortcut pressed while the element's window is in front: the key-down AppKit makes of it, offered to the
+    /// window's key equivalents and then the main menu's, as AppKit offers it.
+    private func pressKeys(_ shortcut: KeyboardShortcut, on element: MountedElement, _ view: NSView?) throws {
+        let spelled = AppKitKeys.equivalent(of: shortcut)
+        guard let window = view?.window ?? NSApp.windows.first(where: \.isVisible),
+              let event = NSEvent.keyEvent(
+                with: .keyDown, location: .zero, modifierFlags: spelled.modifiers, timestamp: 0,
+                windowNumber: window.windowNumber, context: nil, characters: spelled.key,
+                charactersIgnoringModifiers: spelled.key, isARepeat: false, keyCode: 0)
+        else { throw DriverCannot(.pressKeys(shortcut), on: element) }
+        if !window.performKeyEquivalent(with: event) { _ = NSApp.mainMenu?.performKeyEquivalent(with: event) }
+    }
 }
 
 extension NSPoint {
@@ -296,6 +310,5 @@ extension NSPoint {
     init(_ point: Point) {
         self.init(x: point.x, y: point.y)
     }
-
 }
 #endif

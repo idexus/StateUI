@@ -80,6 +80,9 @@ final class WebRenderer {
             WebRelay.listener { [weak self] in self?.runtime.ending() },
         ]
         WebRelay.listenToPage(changed: pageListeners[0], leaving: pageListeners[1])
+        let shortcuts = WebRelay.listener { [weak self] in self?.pressedShortcut() }
+        pageListeners.append(shortcuts)
+        WebRelay.listen(WebRelay.body, "shortcut", shortcuts)
         runtime.start(
             realizing: WebRegistrations.registry.realization, unrealized: WebRealization.unmade,
             environment: {
@@ -92,6 +95,17 @@ final class WebRenderer {
             // The scenes kept when the page was left come back; else the window launch opens.
             windows: { scenes.restore(WebKeptValues.readScenes(applicationName), in: runtime) },
             turns: entryEnded)
+    }
+
+    /// A key pressed in the page reaching the element of the window stating it as a shortcut; where one takes it,
+    /// the browser does nothing more with the key.
+    private func pressedShortcut() {
+        let told = (0...2).map { Int32(WebRelay.eventNumber($0)) }
+        guard let shortcut = WebKeys.shortcut(named: told[0], character: told[1], held: told[2]),
+              let window = runtime.tree.root?.first(type: .window),
+              KeyboardShortcuts.press(shortcut, under: window, in: runtime)
+        else { return }
+        WebRelay.takeEvent()
     }
 
     /// Every call from the page ends with a turn, and asks the page to call again where work is left or a job kept

@@ -118,6 +118,10 @@ final class WinUIDriver: HostDriver {
         case (.choose(let place), let items as WinUIItemsView): items.chooseForTesting(place)
         case (.scroll(let target), let items as WinUIItemsView): scroll(items, to: target)
         case (.activate, _): try activate(element, view)
+        case (.pressKeys(let shortcut), _):
+            // The keys sent as the system sends them, to the window in front.
+            guard let spelled = WinUIKeys.spelled(shortcut) else { throw DriverCannot(act, on: element) }
+            stateui_winui_send_keys(spelled.key, spelled.modifiers)
         case (.toggle, let toggle as WinUIToggleView): toggle.toggle()
         case (.toggle, _) where element.type == .splitView: try window().titleBar.chose(-2)
         case (.slide(let value), let slider as WinUISliderView): slider.move(to: value)
