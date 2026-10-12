@@ -66,10 +66,10 @@ suite in Node, and the conformance suite in a headless browser
 ### GTK 4, in Docker
 
 The GTK host's own suite and every conformance family, as CI runs them,
-on the Mac (2026-10-06): Docker Desktop 29.8 (linux/arm64), swift.org's
-`swift:6.4.0-noble` with the packages `.github/workflows/gtk.yml` installs -
-GTK 4.14.5, libadwaita 1.5.0, WebKitGTK 2.52.6 (`webkitgtk-6.0`), GLib
-2.80.0 - drawn on Xvfb with a session bus, the build in a volume of its own.
+on the Mac (2026-10-12): Docker Desktop (linux/arm64), swift.org's
+`swift:6.4.0-resolute` with the packages `.github/workflows/gtk.yml` installs -
+GTK 4.22.4, libadwaita 1.9.1, WebKitGTK 2.52.6 (`webkitgtk-6.0`), GLib
+2.88.0 - drawn on Xvfb with a session bus, the build in a volume of its own.
 It stands for CI, not for a desktop: X11, no portals, no GNOME Shell.
 
 ## A Windows machine: WinUI 3

@@ -14,13 +14,3 @@ static const GDBusProxyFlags STATEUI_DBUS_PROXY_FLAGS_NONE = G_DBUS_PROXY_FLAGS_
 static const GDBusProxyFlags STATEUI_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START = G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START;
 static const GFileTest STATEUI_FILE_TEST_IS_REGULAR = G_FILE_TEST_IS_REGULAR;
 static const GFileCreateFlags STATEUI_FILE_CREATE_NONE = G_FILE_CREATE_NONE;
-
-// GTK 4.20 sets a calendar's date under a new name, the old one deprecated: the call stands here under one name on
-// every GTK.
-static inline void stateui_calendar_set_date(GtkCalendar *calendar, GDateTime *date) {
-#if GTK_CHECK_VERSION(4, 20, 0)
-    gtk_calendar_set_date(calendar, date);
-#else
-    gtk_calendar_select_day(calendar, date);
-#endif
-}
