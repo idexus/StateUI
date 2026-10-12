@@ -145,7 +145,8 @@ final class ControlTests: XCTestCase {
                     .submitLabel(.done)
                     .showsClearButton(true)
                     .onTextChanged { _ in }
-                    .onSubmitted {}),
+                    .onSubmitted {}
+                    .onKeyPressed(.upArrow) { _ in }),
 
             ControlCase("TextEditor", source: "TextEditor.swift",
                 TextEditor("Notes")

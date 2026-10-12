@@ -81,6 +81,13 @@ extension Registry {
         everyElementRaises(ViewContract.pointerReleased)
     }
 
+    /// The keys a view takes (`View.onKeyPressed`) reaching it as the host layer routes them (`KeyPresses`), the host
+    /// offering each key of its windows before the view holding the keyboard does.
+    public func everyElementTakesItsKeys() {
+        everyElementRealizes(KeyboardElementContract.keysTaken)
+        everyElementRaises(KeyboardElementContract.keyPressed)
+    }
+
     /// Every element's view is dragged between views and takes what is dropped on it, by the host layer's rules
     /// (`DragAndDrop`, `DropTarget`).
     /// Design: docs/design/host/runtime.md#a-drag-between-views

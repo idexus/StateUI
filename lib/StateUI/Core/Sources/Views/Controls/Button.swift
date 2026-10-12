@@ -61,7 +61,7 @@ extension ButtonProperties where Self: View {
 /// `.onClicked(gate: .ignoreWhileRunning) { items = try await load() }` - and
 /// the interface goes on updating while it is suspended.
 public struct Button: ElementView, TextualElement, FontElement, PaddingElement, BorderElement, ImageElement,
-    ButtonProperties {
+    ButtonProperties, KeyboardElement {
     /// The node this control describes.
     public var node: Node
 

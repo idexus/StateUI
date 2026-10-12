@@ -90,10 +90,15 @@ extension AndroidDriver {
                 throw DriverCannot(act, on: element)
             }
         case (.pressKeys(let shortcut), _):
-            // The key as the activity hands it on: to the views first, then - none taking it - to the host.
+            // The key as the activity hands it on: to a view taking it, then to the views, then - none taking it -
+            // to the host's shortcuts; its going up after.
             guard let pressed = AndroidKeys.pressed(shortcut) else { throw DriverCannot(act, on: element) }
-            guard !TestWindow.dispatch(code: pressed.code, meta: pressed.meta) else { return }
             let character = shortcut.key.character?.unicodeScalars.first.map { Int32($0.value) } ?? 0
+            if renderer?.taken(down: true, code: pressed.code, character: character, meta: pressed.meta) == true {
+                _ = renderer?.taken(down: false, code: pressed.code, character: character, meta: pressed.meta)
+                return
+            }
+            guard !TestWindow.dispatch(code: pressed.code, meta: pressed.meta) else { return }
             _ = renderer?.pressed(code: pressed.code, character: character, meta: pressed.meta)
         case (.goBack, _) where element.type == .window || element.type == .navigationStack:
             // The system's back, as the activity hands it on; what it reached, the case reads.

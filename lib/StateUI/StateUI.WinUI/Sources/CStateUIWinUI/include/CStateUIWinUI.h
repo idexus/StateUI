@@ -205,6 +205,10 @@ typedef struct {
 
     /// An ItemsView's view changed: the places of the first and the last entry in it.
     void (*itemsShowing)(int64_t view, int32_t first, int32_t last);
+
+    /// A key went down in the window whose chrome is `view`, before the element holding the focus has it - its
+    /// VirtualKey and VirtualKeyModifiers: whether a view taking it took it.
+    bool (*keyTaken)(int64_t view, int32_t key, int32_t modifiers);
 } StateUIWinUICallbacks;
 
 /// What the environment is, in groups, each read at once.

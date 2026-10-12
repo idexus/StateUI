@@ -44,6 +44,9 @@ final class StateUIHost {
     /** A key pressed that no view took: whether a shortcut a button or an item states took it. */
     static native boolean keyPressed(int code, int character, int meta);
 
+    /** A key going down or up, before any view has it: whether a view taking it took it, its going up with it. */
+    static native boolean keyTaken(boolean down, int code, int character, int meta);
+
     /** The user asks for a view's context menu - a long press, a secondary click - for Swift to write into `menu`. */
     static native void menuOpening(long view, Menu menu);
 

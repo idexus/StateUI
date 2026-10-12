@@ -307,8 +307,12 @@ extension AppKitDriver {
         if NSApp.mainMenu == nil { NSApp.mainMenu = StateUIAppKit.mainMenu(newWindow: nil) }
         controller?.host?.installPageMenus(controller?.pageMenus ?? [])
         defer { controller?.host?.installPageMenus([]) }
-        if window.performKeyEquivalent(with: event) || NSApp.mainMenu?.performKeyEquivalent(with: event) == true { return }
-        window.sendEvent(event)
+        // The application's key monitor first, as AppKit hands it every key: one a view takes ends there.
+        guard let offered = AppKitWindow.offered(event) else { return }
+        if window.performKeyEquivalent(with: offered) || NSApp.mainMenu?.performKeyEquivalent(with: offered) == true {
+            return
+        }
+        window.sendEvent(offered)
     }
 }
 

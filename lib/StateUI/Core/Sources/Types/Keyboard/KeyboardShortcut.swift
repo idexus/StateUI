@@ -23,25 +23,15 @@ public struct KeyboardShortcut: Hashable, Sendable, HostRepresentable, CustomStr
 
     /// The shortcut as it crosses.
     public var propValue: PropValue {
-        let pressed: PropValue
-        if let character = key.character {
-            pressed = .string(String(character))
-        } else {
-            pressed = .enumeration(key.named?.rawValue ?? 0)
-        }
-        return .values([pressed, .enumeration(modifiers.rawValue)])
+        .values([key.propValue, .enumeration(modifiers.rawValue)])
     }
 
     /// The shortcut back from what crossed.
     public init?(propValue: PropValue) {
-        guard case .values(let parts) = propValue, parts.count == 2, case .enumeration(let held) = parts[1] else {
-            return nil
-        }
-        switch parts[0] {
-        case .string(let text) where text.count == 1: key = Key(text.first!)
-        case .enumeration(let number): guard let named = NamedKey(rawValue: number) else { return nil }; key = Key(named)
-        default: return nil
-        }
+        guard case .values(let parts) = propValue, parts.count == 2, case .enumeration(let held) = parts[1],
+              let pressed = Key(propValue: parts[0])
+        else { return nil }
+        key = pressed
         modifiers = KeyModifiers(rawValue: held)
     }
 

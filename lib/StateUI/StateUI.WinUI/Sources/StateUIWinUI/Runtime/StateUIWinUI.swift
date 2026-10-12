@@ -178,6 +178,11 @@ enum WinUICallbacks {
             },
             itemsShowing: { view, first, last in
                 MainActor.assumeIsolated { WinUIItemsList.owner(of: view)?.showing(Int(first)...Int(last)) }
+            },
+            keyTaken: { view, key, modifiers in
+                MainActor.assumeIsolated {
+                    (WinUIView.find(view) as? WinUITitleBarView)?.takesKey(key: key, modifiers: modifiers) == true
+                }
             })
     }
 }

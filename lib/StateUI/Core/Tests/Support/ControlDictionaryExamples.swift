@@ -674,6 +674,17 @@ extension ControlDictionary {
                 .tint(.green)
             """#),
 
+        (KeyboardElementContract.self, #"""
+            @State var row = 0
+
+            VStack {
+                Text("Row \(row)")
+            }
+            .onKeyPressed(.upArrow, .downArrow) { key in
+                row += key == .upArrow ? -1 : 1
+            }
+            """#),
+
         (BarElementContract.self, #"""
             struct MainPage: View {
                 @State private var path: [Int] = []

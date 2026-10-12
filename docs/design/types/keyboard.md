@@ -54,6 +54,24 @@ invokes one accelerator for a key and finds the window's own Escape first, so
 its window hands Escape to the host, which presses the way out in sight, else
 takes the top sheet away.
 
+## A view's keys
+
+What can hold the keyboard takes the keys it names (`onKeyPressed`,
+`KeyboardElementContract.keysTaken`): a control taking the focus, or a layout
+holding the view that does - the keyboard tier, which a text, a picture or a
+shape never wears, since none of them can ever hold it. A key pressed reaches,
+out from the view holding the keyboard, the first view in sight and enabled
+taking it (`KeyPresses`); with nothing holding the keyboard, the content of
+the page in front and the views holding it. The view takes the key: neither
+the field holding the keyboard nor a shortcut gets it. A key held with the
+platform's own key or Alt is a shortcut's; Shift is the key's. Every host
+offers a window's keys before the view holding the keyboard has them:
+AppKit's one key monitor, before AppKit dispatches a key (`AppKitWindow`) -
+a window's own key equivalents never see an arrow a field holds - UIKit's window
+root as key commands asking priority, Android's activity before its views, a
+GTK key controller capturing on the window (`GTKWindowKeys`), WinUI's
+`PreviewKeyDown` on the window's root, and the page's capturing listener.
+
 ## In a window
 
 What a shortcut reaches is decided once, in the host layer

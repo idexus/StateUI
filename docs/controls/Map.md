@@ -25,7 +25,7 @@ StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map
 
 Layer: `provider`. An optional provider supplies it: a package, or the application that registers it with its hosts.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md)
+Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [KeyboardElement](tiers/KeyboardElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -44,16 +44,16 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (77)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>36 ✅ · 2 ☑️ · 36 ✓ · 3 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>35 ✅ · 2 ☑️ · 36 ✓ · 4 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">🧩</td><td>77 🧩</td><td>the application's own, registered</td></tr>
+<thead><tr><th>Host</th><th>Created</th><th>Members (79)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>38 ✅ · 2 ☑️ · 36 ✓ · 3 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>35 ✅ · 2 ☑️ · 38 ✓ · 4 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">🧩</td><td>79 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">WinUI 3</td><td align="center">🧩</td><td>77 🧩</td><td>the application's own, registered</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">WinUI 3</td><td align="center">🧩</td><td>79 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">GTK 4</td><td align="center">🧩</td><td>77 🧩</td><td>the application's own, registered</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">GTK 4</td><td align="center">🧩</td><td>79 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">🧩</td><td>77 🧩</td><td>the application's own, registered</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">🧩</td><td>79 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
 </table>
 
@@ -241,4 +241,16 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: tap on Map: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on Map: the view's listening handed the recognizer's states, no touch sent<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
+</table>
+
+## From [KeyboardElement](tiers/KeyboardElement.md)
+
+An element that can hold the keyboard - a control taking the focus, or a layout holding the view that does - and so hear the keys it takes.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>keyPressed</code></td><td>event</td><td><code>Key</code></td><td>native</td><td align="center">✅</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
+<tr><td colspan="9">UIKit: only through the host's own: pressKeys on Map: the window's or the main menu's key command performed, no key pressed<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>keysTaken</code></td><td>property</td><td><code>[Key]</code></td><td>structure</td><td align="center">✅</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
+<tr><td colspan="9">UIKit: only through the host's own: pressKeys on Map: the window's or the main menu's key command performed, no key pressed<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 </table>

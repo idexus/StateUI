@@ -100,6 +100,16 @@ final class UIKitWindowController {
             guard let runtime, let element else { return }
             KeyboardShortcuts.press(shortcut, under: element, in: runtime)
         }
+        root.keys = { [weak self, weak element] in
+            guard let self, let element else { return [] }
+            return KeyPresses.taken(focused: Self.keyboardHolder(under: element), front: presentation.frontPage)
+        }
+        root.onKey = { [weak self, weak runtime, weak element] pressed in
+            guard let self, let runtime, let element else { return }
+            KeyPresses.press(
+                pressed.key, modifiers: pressed.modifiers, focused: Self.keyboardHolder(under: element),
+                front: presentation.frontPage, in: runtime)
+        }
         root.onMenuEntry = { [weak runtime, weak element] mount in
             guard let runtime, let entry = element?.first(mount: mount), entry.isEffectivelyEnabled else { return }
             entry.chosen(in: runtime)
@@ -127,6 +137,14 @@ final class UIKitWindowController {
         window?.windowScene?.title = title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string
         // Every page shows the window's background where it paints none of its own, the arrangement in place.
         if changes.traits != nil { window?.rootViewController?.showPageBackgrounds() }
+    }
+
+    /// The element under `element` holding the keyboard: the deepest whose view holds the first responder.
+    private static func keyboardHolder(under element: MountedElement) -> MountedElement? {
+        guard let responder = UIKitFirstResponder.find() as? UIView else { return nil }
+        return KeyPresses.holder(under: element) { held in
+            (held.native as? UIKitElement)?.view.map { responder === $0 || responder.isDescendant(of: $0) } ?? false
+        }
     }
 
     /// The menus of the page the user sees - the top sheet's, else the arrangement's - as the host layer composes
@@ -174,8 +192,20 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
     var shortcuts: (_ typing: Bool) -> [KeyboardShortcut] = { _ in [] }
     var onShortcut: ((KeyboardShortcut) -> Void)?
 
+    /// The keys the views holding the keyboard take (`KeyPresses`), and what a pressed one does: offered before the
+    /// window's shortcuts, alone and with Shift.
+    var keys: () -> [Key] = { [] }
+    var onKey: ((KeyboardShortcut) -> Void)?
+
     override var keyCommands: [UIKeyCommand]? {
-        shortcuts(UIKitFirstResponder.isTyping).map { UIKitKeys.command($0, action: #selector(pressedShortcut(_:))) }
+        let taken = keys().flatMap { key in [KeyModifiers(), .shift].map { KeyboardShortcut(key, modifiers: $0) } }
+        return taken.map { UIKitKeys.command($0, action: #selector(pressedKey(_:))) }
+            + shortcuts(UIKitFirstResponder.isTyping).filter { !taken.contains($0) }
+                .map { UIKitKeys.command($0, action: #selector(pressedShortcut(_:))) }
+    }
+
+    @objc func pressedKey(_ command: UIKeyCommand) {
+        UIKitKeys.shortcut(of: command).map { onKey?($0) }
     }
 
     @objc func pressedShortcut(_ command: UIKeyCommand) {

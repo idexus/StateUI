@@ -13,7 +13,7 @@ public enum ItemsViewContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A collection is a view.
-    public static let tiers: [any Contract.Type] = [ViewContract.self]
+    public static let tiers: [any Contract.Type] = [ViewContract.self, KeyboardElementContract.self]
 
     /// Every item, header and footer it shows, by identity, in order.
     public static let items = ElementProperty<Self, ItemsEntries>("items", layer: .native, travels: false)

@@ -13,7 +13,7 @@ TimePicker($alarm)
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md)
+Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [KeyboardElement](tiers/KeyboardElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -32,13 +32,13 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (81)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>37 ✅ · 2 ☑️ · 36 ✓ · 5 –</td><td><code>NSDatePicker</code> showing hour and minute</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>33 ✅ · 1 ☑️ · 35 ✓ · 7 –</td><td><code>UIDatePicker</code> in time mode</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>61 ✅ · 3 ☑️ · 11 ✓ · 3 –</td><td><code>TextView</code> opening a <code>TimePickerDialog</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>62 ✅ · 2 ☑️ · 12 ✓</td><td><code>TimePicker</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>54 ✅ · 1 ☑️ · 23 ✓ · 1 –</td><td>an hour's and a minute's <code>GtkSpinButton</code> in a <code>GtkMenuButton</code>'s <code>GtkPopover</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>54 ✅ · 1 ☑️ · 20 ✓ · 4 –</td><td><code>&lt;input type=time&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (83)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>39 ✅ · 2 ☑️ · 36 ✓ · 5 –</td><td><code>NSDatePicker</code> showing hour and minute</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>33 ✅ · 1 ☑️ · 37 ✓ · 7 –</td><td><code>UIDatePicker</code> in time mode</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>61 ✅ · 3 ☑️ · 13 ✓ · 3 –</td><td><code>TextView</code> opening a <code>TimePickerDialog</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>64 ✅ · 2 ☑️ · 12 ✓</td><td><code>TimePicker</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>54 ✅ · 1 ☑️ · 25 ✓ · 1 –</td><td>an hour's and a minute's <code>GtkSpinButton</code> in a <code>GtkMenuButton</code>'s <code>GtkPopover</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>56 ✅ · 1 ☑️ · 20 ✓ · 4 –</td><td><code>&lt;input type=time&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/TimePickerContract.swift`.
@@ -224,4 +224,16 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 <tr><td colspan="9">UIKit: UIKit's date picker draws its words in its own font and colour: it takes neither.<br>Android Views: cannot read a family - Android's typeface keeps no family's name</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>fontSize</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: UIKit's date picker draws its words in its own font and colour: it takes neither.</td></tr></tbody>
+</table>
+
+## From [KeyboardElement](tiers/KeyboardElement.md)
+
+An element that can hold the keyboard - a control taking the focus, or a layout holding the view that does - and so hear the keys it takes.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>keyPressed</code></td><td>event</td><td><code>Key</code></td><td>native</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: only through the host's own: pressKeys on TimePicker: the window's or the main menu's key command performed, no key pressed<br>Android Views: only through the host's own: pressKeys on TimePicker: the key event no view took handed to the host as the application's activity hands it<br>GTK 4: only through the host's own: pressKeys on TimePicker: the shortcut controller's action run, no key event</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>keysTaken</code></td><td>property</td><td><code>[Key]</code></td><td>structure</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: only through the host's own: pressKeys on TimePicker: the window's or the main menu's key command performed, no key pressed<br>Android Views: only through the host's own: pressKeys on TimePicker: the key event no view took handed to the host as the application's activity hands it<br>GTK 4: only through the host's own: pressKeys on TimePicker: the shortcut controller's action run, no key event</td></tr></tbody>
 </table>

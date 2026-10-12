@@ -13,7 +13,7 @@ VStack {
 .clipsContent(true)
 ```
 
-Wears: [View](View.md) · [PaddingElement](PaddingElement.md) · [BorderElement](BorderElement.md)
+Wears: [View](View.md) · [PaddingElement](PaddingElement.md) · [BorderElement](BorderElement.md) · [KeyboardElement](KeyboardElement.md)
 
 Worn by: [Grid](../Grid.md) · [HStack](../HStack.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)
 

@@ -26,13 +26,18 @@ final class GTKWindowController {
     /// The shortcuts of the window's bar items and menu bar entries.
     let shortcuts: GTKWindowShortcuts
 
+    /// The keys a view takes, before the widget holding the focus has them.
+    let keys: GTKWindowKeys
+
     private weak var runtime: HostRuntime?
 
     init(_ element: MountedElement, application: UnsafeMutablePointer<GtkApplication>) {
         self.element = element
         window = GTKWindow(application: application)
         shortcuts = GTKWindowShortcuts(on: window.widget)
+        keys = GTKWindowKeys(on: window.widget)
         shortcuts.onPressed = { [weak self] in self?.choose(by: $0) == true }
+        keys.onPressed = { [weak self] in self?.take($0) == true }
     }
 
     /// Shows what the element asks for now. The host layer tells the page the user sees and the window made before
@@ -98,6 +103,19 @@ final class GTKWindowController {
         let title = WindowChrome(window: element, arrangement: presentation.arrangement).title
         window.setTitle(title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string)
         shortcuts.hold(KeyboardShortcuts.stated(under: element))
+    }
+
+    /// A key a view takes, sent to it (`KeyPresses`): out from the view holding the focus, else from the page in
+    /// front. Whether one took it.
+    private func take(_ pressed: KeyboardShortcut) -> Bool {
+        guard let element, let runtime else { return false }
+        let focus = gtk_widget_get_root(window.widget).flatMap { gtk_root_get_focus($0) }
+        let holder = KeyPresses.holder(under: element) { held in
+            guard let focus, let widget = (held.native as? GTKElement)?.view?.widget else { return false }
+            return focus == widget || gtk_widget_is_ancestor(focus, widget) != 0
+        }
+        return KeyPresses.press(
+            pressed.key, modifiers: pressed.modifiers, focused: holder, front: presentation.frontPage, in: runtime)
     }
 
     /// A bar's item or a menu bar's entry chosen by a shortcut pressed in the window, unless it gives way to typing

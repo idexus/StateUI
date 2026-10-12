@@ -10,7 +10,7 @@ public enum WebViewContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A web view is a view.
-    public static let tiers: [any Contract.Type] = [ViewContract.self]
+    public static let tiers: [any Contract.Type] = [ViewContract.self, KeyboardElementContract.self]
 
     /// Whether there is a page behind this one changed, to the value it
     /// carries.

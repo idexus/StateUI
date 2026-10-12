@@ -110,6 +110,7 @@ final class WinUIConformanceTests: XCTestCase {
     func testBorderElement() { conform(BorderElementTests.self) }
     func testImageElement() { conform(ImageElementTests.self) }
     func testTintElement() { conform(TintElementTests.self) }
+    func testKeyboardElement() { conform(KeyboardElementTests.self) }
     func testBarElement() { conform(BarElementTests.self) }
     func testMenuItemElement() { conform(MenuItemElementTests.self) }
     func testPageElement() { conform(PageElementTests.self) }

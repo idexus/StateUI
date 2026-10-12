@@ -11,7 +11,9 @@ public enum CheckBoxContract: ElementContract {
     public static let layer: ElementLayer = .adaptive
 
     /// A check box is a view, tinted.
-    public static let tiers: [any Contract.Type] = [ViewContract.self, TintElementContract.self]
+    public static let tiers: [any Contract.Type] = [
+        ViewContract.self, TintElementContract.self, KeyboardElementContract.self,
+    ]
 
     /// Whether the box is ticked.
     public static let isOn = ElementProperty<Self, Bool>("isOn", layer: .native)

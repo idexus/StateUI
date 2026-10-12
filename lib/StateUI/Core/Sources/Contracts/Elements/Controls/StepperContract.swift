@@ -10,7 +10,7 @@ public enum StepperContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A stepper is a view.
-    public static let tiers: [any Contract.Type] = [ViewContract.self]
+    public static let tiers: [any Contract.Type] = [ViewContract.self, KeyboardElementContract.self]
 
     /// The highest it goes.
     public static let maximum = ElementProperty<Self, Double>("maximum", layer: .native, travels: false)

@@ -15,7 +15,7 @@ Stepper($servings)
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md)
+Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [KeyboardElement](tiers/KeyboardElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -34,13 +34,13 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (74)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>37 ✅ · 2 ☑️ · 35 ✓</td><td><code>NSStepper</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>33 ✅ · 2 ☑️ · 35 ✓ · 4 –</td><td><code>UIStepper</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>57 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td>custom <code>LinearLayout</code> of two <code>Button</code>s</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>60 ✅ · 2 ☑️ · 12 ✓</td><td><code>NumberBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>50 ✅ · 1 ☑️ · 22 ✓ · 1 –</td><td><code>GtkSpinButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>53 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;input role=spinbutton&gt;</code> between two <code>&lt;button&gt;</code>s</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (76)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>39 ✅ · 2 ☑️ · 35 ✓</td><td><code>NSStepper</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>33 ✅ · 2 ☑️ · 37 ✓ · 4 –</td><td><code>UIStepper</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>57 ✅ · 3 ☑️ · 12 ✓ · 3 –</td><td>custom <code>LinearLayout</code> of two <code>Button</code>s</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>62 ✅ · 2 ☑️ · 12 ✓</td><td><code>NumberBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>50 ✅ · 1 ☑️ · 24 ✓ · 1 –</td><td><code>GtkSpinButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>55 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;input role=spinbutton&gt;</code> between two <code>&lt;button&gt;</code>s</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/StepperContract.swift`.
@@ -191,4 +191,16 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: tap on Stepper: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on Stepper: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [KeyboardElement](tiers/KeyboardElement.md)
+
+An element that can hold the keyboard - a control taking the focus, or a layout holding the view that does - and so hear the keys it takes.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>keyPressed</code></td><td>event</td><td><code>Key</code></td><td>native</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: only through the host's own: pressKeys on Stepper: the window's or the main menu's key command performed, no key pressed<br>Android Views: only through the host's own: pressKeys on Stepper: the key event no view took handed to the host as the application's activity hands it<br>GTK 4: only through the host's own: pressKeys on Stepper: the shortcut controller's action run, no key event</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>keysTaken</code></td><td>property</td><td><code>[Key]</code></td><td>structure</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: only through the host's own: pressKeys on Stepper: the window's or the main menu's key command performed, no key pressed<br>Android Views: only through the host's own: pressKeys on Stepper: the key event no view took handed to the host as the application's activity hands it<br>GTK 4: only through the host's own: pressKeys on Stepper: the shortcut controller's action run, no key event</td></tr></tbody>
 </table>

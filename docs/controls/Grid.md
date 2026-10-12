@@ -22,7 +22,7 @@ Grid {
 
 Layer: `stateUI`. StateUI decides its geometry, its arrangement or its composition - in the core or the shared host layer - and a host draws what was decided.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Layout](tiers/Layout.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md)
+Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Layout](tiers/Layout.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [KeyboardElement](tiers/KeyboardElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -41,13 +41,13 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (80)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>39 ✅ · 1 ☑️ · 35 ✓ · 3 –</td><td>custom <code>NSView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>38 ✅ · 1 ☑️ · 35 ✓ · 4 –</td><td>custom <code>UIView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>61 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>62 ✅ · 1 ☑️ · 12 ✓ · 3 –</td><td>custom <code>Panel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>53 ✅ · 1 ☑️ · 21 ✓ · 4 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>55 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td>CSS grid</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (82)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>41 ✅ · 1 ☑️ · 35 ✓ · 3 –</td><td>custom <code>NSView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>38 ✅ · 1 ☑️ · 37 ✓ · 4 –</td><td>custom <code>UIView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>61 ✅ · 3 ☑️ · 12 ✓ · 3 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>64 ✅ · 1 ☑️ · 12 ✓ · 3 –</td><td>custom <code>Panel</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>53 ✅ · 1 ☑️ · 23 ✓ · 4 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>57 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td>CSS grid</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/GridContract.swift`.
@@ -229,4 +229,16 @@ What an element draws of its own box: the shape its background, its outline and 
 <tbody><tr></tr><tr><td><code>shape</code></td><td>property</td><td><code>ContainerShape</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>stroke</code></td><td>property</td><td><code>Brush</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>lineWidth</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [KeyboardElement](tiers/KeyboardElement.md)
+
+An element that can hold the keyboard - a control taking the focus, or a layout holding the view that does - and so hear the keys it takes.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>keyPressed</code></td><td>event</td><td><code>Key</code></td><td>native</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: only through the host's own: pressKeys on Grid: the window's or the main menu's key command performed, no key pressed<br>Android Views: only through the host's own: pressKeys on Grid: the key event no view took handed to the host as the application's activity hands it<br>GTK 4: only through the host's own: pressKeys on Grid: the shortcut controller's action run, no key event</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>keysTaken</code></td><td>property</td><td><code>[Key]</code></td><td>structure</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: only through the host's own: pressKeys on Grid: the window's or the main menu's key command performed, no key pressed<br>Android Views: only through the host's own: pressKeys on Grid: the key event no view took handed to the host as the application's activity hands it<br>GTK 4: only through the host's own: pressKeys on Grid: the shortcut controller's action run, no key event</td></tr></tbody>
 </table>

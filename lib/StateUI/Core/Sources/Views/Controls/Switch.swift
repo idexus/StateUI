@@ -22,7 +22,7 @@ extension SwitchProperties {
 ///
 /// A `CheckBox` asks the same question in the shape a form uses; a
 /// `RadioButton` is what to reach for once there are more than two answers.
-public struct Switch: ElementView, TintElement, SwitchProperties {
+public struct Switch: ElementView, TintElement, SwitchProperties, KeyboardElement {
     /// The node this control describes.
     public var node: Node
 

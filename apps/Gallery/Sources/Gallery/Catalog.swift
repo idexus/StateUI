@@ -129,6 +129,7 @@ final class Catalog {
                     Sample(SemanticsSample()),
                     Sample(TooltipSample()),
                     Sample(ShortcutSample()),
+                    Sample(KeyPressSample()),
                 ]),
 
             SampleGroup(

@@ -3,6 +3,7 @@
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+import CStateUIWinUI
 
 /// One window element shown in a WinUI window: what the host layer says it shows - its arrangement of pages, its
 /// sheets, its overlays, its frame and its chrome - turned into WinUI's, in step with the element as the tree changes.
@@ -112,6 +113,14 @@ final class WinUIWindowController {
         chrome.background = composed.background
         chrome.foreground = composed.foreground
         chrome.menuBar = WinUIMenu(menus: composed.menus.menus)
+        chrome.takeKey = { [weak self, weak element] pressed in
+            guard let self, let element else { return false }
+            let holder = KeyPresses.holder(under: element) { held in
+                (held.native as? WinUIElement)?.view.map { stateui_winui_focused($0.handle) } ?? false
+            }
+            return KeyPresses.press(
+                pressed.key, modifiers: pressed.modifiers, focused: holder, front: presentation.frontPage, in: runtime)
+        }
         chrome.escape = { [weak element] in
             element.map { KeyboardShortcuts.press(KeyboardShortcut(.escape, modifiers: []), under: $0, in: runtime) } ?? false
         }

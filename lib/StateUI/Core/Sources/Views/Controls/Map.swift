@@ -55,7 +55,7 @@ extension MapProperties {
 /// The platform's own map draws it where the platform ships one; elsewhere
 /// the application registers its own map with the host, and until it does
 /// the host shows its unsupported-control marker instead.
-public struct Map: ElementView, MapProperties {
+public struct Map: ElementView, MapProperties, KeyboardElement {
     /// The node this control describes.
     public var node: Node
 

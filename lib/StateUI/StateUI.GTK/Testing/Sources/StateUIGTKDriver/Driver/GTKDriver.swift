@@ -157,12 +157,21 @@ final class GTKDriver: HostDriver {
             _ = window.shortcuts.runForTesting(shortcut)
             return
         }
+        if case .pressKeys(let shortcut) = act,
+           let window = renderer?.windows.first(where: { window in
+               window.element.map { owner in element === owner || element.enclosing(type: .window) === owner } == true
+           }),
+           window.keys.pressForTesting(shortcut) {
+            // A key a view takes, as the window's capturing controller hears it before any widget.
+            return
+        }
         if case .pressKeys(let shortcut) = act {
-            // The shortcut's own action, run as its controller runs it for the key.
+            // The shortcut's own action, run as its controller runs it for the key; a key nothing takes goes on to
+            // the widget, which the driver does not follow.
             guard let button = (element.native as? GTKElement)?.view as? GTKButtonView,
                   let held = button.shortcutForTesting,
                   GTKKeys.shortcut(keyval: held.keyval, modifiers: held.modifiers) == shortcut
-            else { throw DriverCannot(act, on: element) }
+            else { return }
             return button.runShortcutForTesting()
         }
         if case .dragAndDrop(let target, let across) = act { return try dragAndDrop(element, onto: target, across: across) }

@@ -300,6 +300,27 @@ final class AndroidRenderer {
         return .pop(stack)
     }
 
+    /// A key going down or up before any view has it: down, sent to a view taking it (`KeyPresses`) - out from the
+    /// view holding the keyboard, else from the page in front - and kept, so its going up is taken too. Whether one
+    /// took it.
+    func taken(down: Bool, code: Int32, character: Int32, meta: Int32) -> Bool {
+        guard down else { return takenKeys.remove(code) != nil }
+        guard let pressed = AndroidKeys.shortcut(code: code, character: character, meta: meta),
+              let window = runtime.tree.root?.first(type: .window)
+        else { return false }
+        let holder = KeyPresses.holder(under: window) { held in
+            (held.native as? AndroidElement)?.view.map { Java.callBool($0.reference, JavaAPI.hasFocus) } ?? false
+        }
+        guard KeyPresses.press(
+            pressed.key, modifiers: pressed.modifiers, focused: holder, front: presentation.frontPage, in: runtime)
+        else { return false }
+        takenKeys.insert(code)
+        return true
+    }
+
+    /// The keys a view took as they went down, whose going up is taken with them.
+    private var takenKeys: Set<Int32> = []
+
     /// A key pressed that no view took, reaching the element of the window stating it as a shortcut; whether one
     /// took it.
     func pressed(code: Int32, character: Int32, meta: Int32) -> Bool {

@@ -28,6 +28,7 @@ enum JavaAPI {
     static let setBackgroundColor = Java.method(view, "setBackgroundColor", "(I)V")
     static let getBackground = Java.method(view, "getBackground", "()Landroid/graphics/drawable/Drawable;")
     static let setBackground = Java.method(view, "setBackground", "(Landroid/graphics/drawable/Drawable;)V")
+    static let hasFocus = Java.method(view, "hasFocus", "()Z")
     static let colorDrawable = Java.findClass("android/graphics/drawable/ColorDrawable")
     static let newColorDrawable = Java.method(colorDrawable, "<init>", "(I)V")
     static let setPadding = Java.method(view, "setPadding", "(IIII)V")

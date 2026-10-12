@@ -81,6 +81,7 @@ extension NodeType {
     static let tooltip = VisualElementContract.tooltip.token
     static let keyboardShortcut = ButtonContract.keyboardShortcut.token
     static let role = ButtonContract.role.token
+    static let keysTaken = KeyboardElementContract.keysTaken.token
     static let accessibilityIdentifier = PropertyContainerContract.accessibilityIdentifier.token
     static let accessibilityLabel = VisualElementContract.accessibilityLabel.token
     static let subtitle = MarkerContract.subtitle.token
@@ -283,6 +284,7 @@ extension NodeType {
     static let dragEnded = ViewContract.dragEnded.token
     static let frameChanged = ViewContract.frameChanged.token
     static let isFocusedChanged = VisualElementContract.isFocusedChanged.token
+    static let keyPressed = KeyboardElementContract.keyPressed.token
     static let showsSidebarChanged = SplitViewContract.showsSidebarChanged.token
     static let mapClicked = MapContract.mapClicked.token
     static let navigated = WebViewContract.navigated.token

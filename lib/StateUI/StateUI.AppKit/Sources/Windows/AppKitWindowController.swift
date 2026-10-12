@@ -142,7 +142,7 @@ final class AppKitWindowController: NSWindowController {
     }
 
     static func makeWindow() -> NSWindow {
-        NSWindow(
+        AppKitWindow(
             contentRect: NSRect(x: 0, y: 0, width: 560, height: 440),
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
             backing: .buffered,
@@ -201,6 +201,9 @@ final class AppKitWindowController: NSWindowController {
             content.frame = NSRect(origin: .zero, size: window.contentLayoutRect.size)
             content.autoresizingMask = [.width, .height]
             content.unclaimedKey = { [weak self] in self?.choosesABarItem(by: $0) ?? false }
+            (window as? AppKitWindow)?.takesKey = { [weak self, weak window] key, modifiers in
+                self?.takesKey(key, modifiers, in: window) ?? false
+            }
             window.contentView = content
         }
         synchronizeModals(presentation.sheets.map(\.appKit))
@@ -303,6 +306,19 @@ extension AppKitWindowController {
     /// A key equivalent no view took choosing the bar's item stating it (`KeyboardShortcuts`): AppKit holds no
     /// shortcut on a toolbar's item. A button's and a menu bar entry's are AppKit's own.
     /// Design: docs/design/types/keyboard.md#on-each-platform
+    /// A key a view takes, pressed in this window or a sheet over it, handed to that view (`KeyPresses`): out from the
+    /// view holding the keyboard, else from the page in front. Whether one took it.
+    func takesKey(_ key: String, _ modifiers: NSEvent.ModifierFlags, in window: NSWindow?) -> Bool {
+        guard let element, let runtime = host?.runtime, let pressed = AppKitKeys.shortcut(key: key, modifiers: modifiers)
+        else { return false }
+        let responder = window?.firstResponder
+        let holder = KeyPresses.holder(under: element) { held in
+            (held.native as? AppKitElement)?.view.map { AppKitFocus.holds($0, responder) } ?? false
+        }
+        return KeyPresses.press(
+            pressed.key, modifiers: pressed.modifiers, focused: holder, front: presentation.frontPage, in: runtime)
+    }
+
     func choosesABarItem(by event: NSEvent) -> Bool {
         guard let element, let runtime = host?.runtime,
               let shortcut = AppKitKeys.shortcut(

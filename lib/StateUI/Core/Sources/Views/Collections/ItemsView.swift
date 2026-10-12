@@ -19,7 +19,7 @@
 ///
 /// An item names itself by `String(describing:)` of its identity, so two items
 /// must describe differently.
-public struct ItemsView<ID: Hashable>: View {
+public struct ItemsView<ID: Hashable>: View, KeyboardElement {
     /// The items, their identities and their views - one source a build.
     private let source: ItemsSource<ID>
 

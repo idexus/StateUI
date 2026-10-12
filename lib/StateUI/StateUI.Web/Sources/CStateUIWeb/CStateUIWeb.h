@@ -261,6 +261,9 @@ STATEUI_WEB(focus) int32_t stateui_web_focus(int32_t element);
 /// Takes the focus off the element or the one in it holding it.
 STATEUI_WEB(unfocus) void stateui_web_unfocus(int32_t element);
 
+/// Whether the element, or one in it, holds the focus.
+STATEUI_WEB(holds_focus) int32_t stateui_web_holds_focus(int32_t element);
+
 /// What the browser keeps under the key for this page's site, read in two steps: its length in bytes, then
 /// `copy_read`; `store` keeps the words in its place, and answers whether it could.
 STATEUI_WEB(stored) int32_t stateui_web_stored(const char *key, int32_t length);

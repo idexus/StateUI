@@ -227,8 +227,9 @@ final class UIKitDriver: HostDriver {
             // The key command the element's window offers for the shortcut, performed as UIKit performs it - else a
             // menu bar's entry's, which UIKit sends up the responder chain to the root after text takes a key typed.
             guard let root = Self.windowRoot(of: element) else { return }
-            if let command = root.keyCommands?.first(where: { UIKitKeys.shortcut(of: $0) == shortcut }) {
-                root.pressedShortcut(command)
+            if let command = root.keyCommands?.first(where: { UIKitKeys.shortcut(of: $0) == shortcut }),
+               let action = command.action {
+                _ = root.perform(action, with: command)
             } else if let command = Self.keyCommands(in: renderer?.menuBar ?? []).first(where: {
                           UIKitKeys.shortcut(of: $0) == shortcut
                       }),

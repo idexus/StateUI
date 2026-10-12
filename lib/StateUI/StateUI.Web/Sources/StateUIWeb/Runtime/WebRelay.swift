@@ -453,6 +453,9 @@ enum WebRelay {
         stateui_web_unfocus(element)
     }
 
+    /// Whether `element`, or one in it, holds the focus.
+    static func holdsFocus(_ element: Int32) -> Bool { stateui_web_holds_focus(element) != 0 }
+
     /// What the browser keeps under `key` for the page's site; "" for nothing.
     static func stored(_ key: String) -> String {
         copyRead(length: utf8(key) { stateui_web_stored($0, $1) })

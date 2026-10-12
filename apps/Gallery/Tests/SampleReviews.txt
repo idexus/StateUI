@@ -50,6 +50,7 @@ InteropActsSample.swift 498078bedb056915
 InteropControlSample.swift d9ee8e8afdae8f1f
 InteropEventsSample.swift 2b7359f44b689fdd
 ItemsViewSample.swift e5506411f3a34526
+KeyPressSample.swift 56c3fa94875fbba4
 KeyboardSample.swift 06a0fae1aeddb219
 LayoutDirectionSample.swift 92b2274aeed9d657
 LifecycleSample.swift caa20ca61c9dedcd

@@ -108,6 +108,21 @@ namespace {
         accelerate(VirtualKey::Left, VirtualKeyModifiers::Menu);
         accelerate(VirtualKey::GoBack, VirtualKeyModifiers::None);
 
+        // A key a view takes reaches it before the element holding the focus has it: the host decides.
+        grid.PreviewKeyDown(guarded("handling PreviewKeyDown",
+            [chrome](IInspectable const &, xaml::Input::KeyRoutedEventArgs const &args) {
+            using winrt::Microsoft::UI::Input::InputKeyboardSource;
+            using winrt::Windows::UI::Core::CoreVirtualKeyStates;
+            auto down = [](VirtualKey key) {
+                auto state = static_cast<uint32_t>(InputKeyboardSource::GetKeyStateForCurrentThread(key));
+                return (state & static_cast<uint32_t>(CoreVirtualKeyStates::Down)) != 0;
+            };
+            // VirtualKeyModifiers' bits: Control 1, Menu (Alt) 2, Shift 4.
+            int32_t modifiers = (down(VirtualKey::Control) ? 1 : 0) | (down(VirtualKey::Menu) ? 2 : 0)
+                | (down(VirtualKey::Shift) ? 4 : 0);
+            if (callbacks.keyTaken(chrome, static_cast<int32_t>(args.Key()), modifiers)) args.Handled(true);
+        }));
+
         // Escape is the window's: WinUI invokes one accelerator for a key, and the root's is found before a
         // control's, so the host decides - the way out in sight presses, else the top sheet goes.
         xaml::Input::KeyboardAccelerator escape;

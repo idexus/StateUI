@@ -40,6 +40,7 @@ enum UIKitRegistrations {
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
         registry.everyElementHearsTheUser()
+        registry.everyElementTakesItsKeys()
         registry.everyElementDragsAndDrops()
         registry.everyElementTakesDroppedFiles()
         registry.everyElementRaises(VisualElementContract.isFocusedChanged)

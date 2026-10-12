@@ -69,6 +69,11 @@ final class WinUITitleBarView: WinUIView {
         if previous.center !== chrome.center { stateui_winui_title_bar_set_title_view(handle, chrome.center?.handle) }
     }
 
+    /// A key went down in the window, before the element holding the focus has it: whether a view took it.
+    func takesKey(key: Int32, modifiers: Int32) -> Bool {
+        WinUIKeys.shortcut(key: key, modifiers: modifiers).map { chrome.takeKey?($0) == true } ?? false
+    }
+
     /// The user pressed the way back (-1), the sidebar's toggle (-2), Escape (-3), or an action by its place.
     override func chose(_ index: Int) {
         switch index {

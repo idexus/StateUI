@@ -13,7 +13,7 @@ Button("Pressed \(count) times")
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextualElement](tiers/TextualElement.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [ImageElement](tiers/ImageElement.md)
+Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextualElement](tiers/TextualElement.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [ImageElement](tiers/ImageElement.md) · [KeyboardElement](tiers/KeyboardElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -32,13 +32,13 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (91)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>47 ✅ · 3 ☑️ · 37 ✓ · 2 –</td><td><code>NSButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>47 ✅ · 2 ☑️ · 37 ✓ · 4 –</td><td><code>UIButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>66 ✅ · 3 ☑️ · 12 ✓ · 4 –</td><td><code>Button</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>77 ✅ · 2 ☑️ · 12 ✓</td><td><code>Button</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>64 ✅ · 2 ☑️ · 24 ✓ · 1 –</td><td><code>GtkButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>70 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;button&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (93)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>49 ✅ · 3 ☑️ · 37 ✓ · 2 –</td><td><code>NSButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>47 ✅ · 2 ☑️ · 39 ✓ · 4 –</td><td><code>UIButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>66 ✅ · 3 ☑️ · 14 ✓ · 4 –</td><td><code>Button</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>79 ✅ · 2 ☑️ · 12 ✓</td><td><code>Button</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>64 ✅ · 2 ☑️ · 26 ✓ · 1 –</td><td><code>GtkButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>72 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;button&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ButtonContract.swift`.
@@ -265,4 +265,16 @@ How a picture fills the room it was given.
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>contentMode</code></td><td>property</td><td><code>ContentMode</code></td><td>native</td><td align="center">·</td><td align="center"></td><td align="center">·</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: cannot read contentMode of Button - AppKit's button has no covering scale, as the register records: a fill shows fitted<br>UIKit: not realized<br>Android Views: cannot read contentMode of Button - Android's driver has no path for it yet<br>GTK 4: only through the host's own: read contentMode of Button: how the host's own panel fills its room: GTK's snapshot holds no aspect</td></tr></tbody>
+</table>
+
+## From [KeyboardElement](tiers/KeyboardElement.md)
+
+An element that can hold the keyboard - a control taking the focus, or a layout holding the view that does - and so hear the keys it takes.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>keyPressed</code></td><td>event</td><td><code>Key</code></td><td>native</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: only through the host's own: pressKeys on Button: the window's or the main menu's key command performed, no key pressed<br>Android Views: only through the host's own: pressKeys on Button: the key event no view took handed to the host as the application's activity hands it<br>GTK 4: only through the host's own: pressKeys on Button: the shortcut controller's action run, no key event</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>keysTaken</code></td><td>property</td><td><code>[Key]</code></td><td>structure</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: only through the host's own: pressKeys on Button: the window's or the main menu's key command performed, no key pressed<br>Android Views: only through the host's own: pressKeys on Button: the key event no view took handed to the host as the application's activity hands it<br>GTK 4: only through the host's own: pressKeys on Button: the shortcut controller's action run, no key event</td></tr></tbody>
 </table>

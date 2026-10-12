@@ -482,6 +482,40 @@ shortcut the button states takes the place of its role's key. Return belongs
 to a field being typed into - it ends the words there, and `.onSubmitted`
 hears it - so the main action takes Return while no field holds the keyboard.
 
+### A view's keys
+
+A control taking the focus, and a layout holding one, hears the keys it names
+while it holds the keyboard:
+
+```swift
+struct Search: View {
+    @State private var query = ""
+    @State private var row = 0
+
+    var body: some View {
+        VStack {
+            TextField($query)
+            Text("Row \(row)")
+        }
+        .onKeyPressed(.upArrow, .downArrow, .escape) { key in
+            if key == .escape {
+                query = ""
+            } else {
+                row += key == .upArrow ? -1 : 1
+            }
+        }
+    }
+}
+```
+
+The nearest view naming a key takes it, out from the one holding the
+keyboard; with nothing holding it, the page's content does. A taken key
+reaches nothing else - the field above keeps its caret where it was - and
+every other key goes on as before. A text, a picture or a shape never holds
+the keyboard, so it offers no `onKeyPressed`. A key held with the platform's
+own key or Alt belongs to shortcuts. `.onKeyPressed(.escape, gate:
+.ignoreWhileRunning) { _ in try await close() }` takes a handler that awaits.
+
 ## Tooltips
 
 `tooltip` gives any view words the platform shows beside it while the pointer

@@ -179,6 +179,7 @@ final class LibraryContractTests: XCTestCase {
         XCTAssertEqual(ViewContract.worn.map { $0.name }, ["View", "VisualElement", "PropertyContainer"])
         XCTAssertEqual(StackContract.worn.map { $0.name }, [
             "Stack", "Layout", "View", "VisualElement", "PropertyContainer", "PaddingElement", "BorderElement",
+            "KeyboardElement",
         ])
     }
 

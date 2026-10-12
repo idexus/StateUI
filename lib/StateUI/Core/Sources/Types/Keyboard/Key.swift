@@ -95,6 +95,37 @@ public struct Key: Hashable, Sendable, ExpressibleByExtendedGraphemeClusterLiter
     public static let f12 = Key(.f12)
 }
 
+extension Key: HostRepresentable {
+    /// The key as it crosses: a character as text, another key by its number.
+    public var propValue: PropValue {
+        character.map { .string(String($0)) } ?? .enumeration(named?.rawValue ?? 0)
+    }
+
+    /// The key back from what crossed.
+    public init?(propValue: PropValue) {
+        switch propValue {
+        case .string(let text) where text.count == 1: self.init(text.first!)
+        case .enumeration(let number):
+            guard let named = NamedKey(rawValue: number) else { return nil }
+            self.init(named)
+        default: return nil
+        }
+    }
+
+    /// `keys` once each, in StateUI's order - the keys writing no character by their number, then the characters -
+    /// as a patch carries them.
+    @_spi(Host) public static func ordered(_ keys: some Sequence<Key>) -> [Key] {
+        Set(keys).sorted {
+            switch ($0.named, $1.named) {
+            case let (first?, second?): first.rawValue < second.rawValue
+            case (.some, nil): true
+            case (nil, .some): false
+            case (nil, nil): String($0.character ?? " ") < String($1.character ?? " ")
+            }
+        }
+    }
+}
+
 /// The keys that write no character, as a host reads them.
 @_spi(Host) public enum NamedKey: Int32, Sendable, CaseIterable {
     /// Return, or Enter.

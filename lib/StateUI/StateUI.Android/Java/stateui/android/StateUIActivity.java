@@ -88,9 +88,15 @@ public class StateUIActivity extends Activity {
         if (!StateUIFiles.result(this, request, result, data)) super.onActivityResult(request, result, data);
     }
 
-    /** A key the views do not take reaches a shortcut the tree states, as Android's own shortcuts come after them. */
+    /**
+     * A key a view takes reaches it before any view does - its going up with it; a key the views do not take reaches
+     * a shortcut the tree states, as Android's own shortcuts come after them.
+     */
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        int action = event.getAction();
+        if (action != KeyEvent.ACTION_MULTIPLE && StateUIHost.keyTaken(action == KeyEvent.ACTION_DOWN,
+                event.getKeyCode(), event.getUnicodeChar(0), event.getMetaState())) return true;
         if (super.dispatchKeyEvent(event)) return true;
         return event.getAction() == KeyEvent.ACTION_DOWN
                 && StateUIHost.keyPressed(event.getKeyCode(), event.getUnicodeChar(0), event.getMetaState());
