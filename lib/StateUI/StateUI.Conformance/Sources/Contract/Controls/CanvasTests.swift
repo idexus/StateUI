@@ -81,6 +81,31 @@
                 try s.settle { try s.color(of: canvas, at: Point(20, 20)) == .blue }
                 s.expect(try s.color(of: canvas, at: Point(20, 20)), .blue)
             },
+            ConformanceCase("aDrawingTheTreeEmptiesLeavesTheCanvasBare", proves: [
+                Covered(CanvasContract.drawing),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let drawn = State(wrappedValue: true)
+                s.start {
+                    VStack {
+                        Canvas {
+                            if drawn.wrappedValue {
+                                Draw.fillColor(.red)
+                                Draw.fillRectangle(x: 0, y: 0, width: 40, height: 40)
+                            }
+                        }
+                        .width(40).height(40).id("canvas")
+                        Button("Clear").onClicked { drawn.wrappedValue = false }.id("change")
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+                let canvas = try s.element("canvas")
+                try s.settle { try s.color(of: canvas, at: Point(20, 20)) == .red }
+
+                try s.perform(.activate, on: s.element("change"))
+                try s.settle { try s.color(of: canvas, at: Point(20, 20)) == nil }
+                s.expect(try s.color(of: canvas, at: Point(20, 20)), nil, "a drawing of nothing leaves nothing drawn")
+            },
             ConformanceCase("aPressIsHeardWhereItWent", proves: [
                 Covered(CanvasContract.pressed), Covered(CanvasContract.dragged), Covered(CanvasContract.released),
             ]) { s in
