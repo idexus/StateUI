@@ -22,7 +22,7 @@ Grid {
 
 Layer: `stateUI`. StateUI decides its geometry, its arrangement or its composition - in the core or the shared host layer - and a host draws what was decided.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Layout](tiers/Layout.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [KeyboardElement](tiers/KeyboardElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Layout](tiers/Layout.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [KeyboardElement](tiers/KeyboardElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -62,9 +62,9 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/GridContract.sw
 <tbody><tr></tr><tr><td><code>rows</code></td><td>property</td><td><code>[GridLength]</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
-## From [PropertyContainer](tiers/PropertyContainer.md)
+## From [AutomationElement](tiers/AutomationElement.md)
 
-What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
+What an element the platform's automation meets has - a drawn element, a menu's entry or a bar's item, an arrangement of pages: the name automation finds it by.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>

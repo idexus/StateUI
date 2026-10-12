@@ -347,7 +347,7 @@ the tier.
 ## Shared view members
 
 A property or event of the three tiers every view wears -
-[PropertyContainer](controls/tiers/PropertyContainer.md),
+[AutomationElement](controls/tiers/AutomationElement.md),
 [VisualElement](controls/tiers/VisualElement.md) and
 [View](controls/tiers/View.md) - is named here and marked on the page of each
 view: every view realizes it apart, and one may have what another lacks. The
@@ -363,7 +363,7 @@ of its own; no case gives them a verdict of their own, so no page marks them:
 <!-- shared:begin -->
 | Member | Tier | Kind |
 | --- | --- | --- |
-| `accessibilityIdentifier` | [PropertyContainer](controls/tiers/PropertyContainer.md) | property |
+| `accessibilityIdentifier` | [AutomationElement](controls/tiers/AutomationElement.md) | property |
 | `accessibilityHeading` | [VisualElement](controls/tiers/VisualElement.md) | property |
 | `accessibilityHint` | [VisualElement](controls/tiers/VisualElement.md) | property |
 | `accessibilityLabel` | [VisualElement](controls/tiers/VisualElement.md) | property |
@@ -446,12 +446,12 @@ Every control, and every part an application, its windows and its pages are made
 | [CheckBox](controls/CheckBox.md) | 74 | 37 ✅ · 2 ☑️ · 35 ✓ | 30 ✅ · 2 ☑️ · 38 ✓ · 4 – | 55 ✅ · 3 ☑️ · 12 ✓ · 3 – | 61 ✅ · 1 ☑️ · 12 ✓ | 47 ✅ · 1 ☑️ · 25 ✓ · 1 – | 53 ✅ · 1 ☑️ · 20 ✓ |
 | [DatePicker](controls/DatePicker.md) | 85 | 41 ✅ · 2 ☑️ · 36 ✓ · 5 – | 32 ✅ · 1 ☑️ · 37 ✓ · 10 – | 61 ✅ · 3 ☑️ · 15 ✓ · 3 – | 69 ✅ · 3 ☑️ · 12 ✓ | 55 ✅ · 2 ☑️ · 26 ✓ · 1 – | 58 ✅ · 1 ☑️ · 20 ✓ · 4 – |
 | [Divider](controls/Divider.md) | 66 | 29 ✅ · 2 ☑️ · 35 ✓ | 28 ✅ · 2 ☑️ · 35 ✓ · 1 – | 52 ✅ · 3 ☑️ · 10 ✓ | 52 ✅ · 1 ☑️ · 12 ✓ | 42 ✅ · 1 ☑️ · 22 ✓ · 1 – | 45 ✅ · 1 ☑️ · 20 ✓ |
-| [Ellipse](controls/Ellipse.md) | 76 | 37 ✅ · 2 ☑️ · 35 ✓ · 2 – | 38 ✅ · 2 ☑️ · 35 ✓ · 1 – | 60 ✅ · 3 ☑️ · 10 ✓ · 2 – | 62 ✅ · 13 ✓ · 1 – | 50 ✅ · 1 ☑️ · 22 ✓ · 3 – | 55 ✅ · 1 ☑️ · 20 ✓ |
+| [Ellipse](controls/Ellipse.md) | 74 | 37 ✅ · 2 ☑️ · 35 ✓ | 36 ✅ · 2 ☑️ · 35 ✓ · 1 – | 60 ✅ · 3 ☑️ · 10 ✓ | 60 ✅ · 13 ✓ · 1 – | 50 ✅ · 1 ☑️ · 22 ✓ · 1 – | 53 ✅ · 1 ☑️ · 20 ✓ |
 | [Grid](controls/Grid.md) | 79 | 41 ✅ · 1 ☑️ · 35 ✓ | 38 ✅ · 1 ☑️ · 37 ✓ · 1 – | 61 ✅ · 3 ☑️ · 12 ✓ | 64 ✅ · 1 ☑️ · 12 ✓ | 53 ✅ · 1 ☑️ · 23 ✓ · 1 – | 57 ✅ · 1 ☑️ · 20 ✓ |
 | [HStack](controls/HStack.md) | 76 | 38 ✅ · 1 ☑️ · 35 ✓ | 35 ✅ · 1 ☑️ · 37 ✓ · 1 – | 58 ✅ · 3 ☑️ · 12 ✓ | 61 ✅ · 1 ☑️ · 12 ✓ | 50 ✅ · 1 ☑️ · 23 ✓ · 1 – | 54 ✅ · 1 ☑️ · 20 ✓ |
 | [Image](controls/Image.md) | 69 | 31 ✅ · 2 ☑️ · 35 ✓ | 30 ✅ · 2 ☑️ · 35 ✓ · 1 – | 53 ✅ · 3 ☑️ · 10 ✓ | 54 ✅ · 13 ✓ · 1 – | 44 ✅ · 1 ☑️ · 22 ✓ · 1 – | 47 ✅ · 1 ☑️ · 20 ✓ |
 | [ItemsView](controls/ItemsView.md) | 81 | 39 ✅ · 2 ☑️ · 39 ✓ | 33 ✅ · 2 ☑️ · 41 ✓ · 4 – | 63 ✅ · 3 ☑️ · 13 ✓ | 67 ✅ · 1 ☑️ · 12 ✓ | 54 ✅ · 1 ☑️ · 23 ✓ · 1 – | 58 ✅ · 1 ☑️ · 21 ✓ |
-| [Line](controls/Line.md) | 80 | 41 ✅ · 2 ☑️ · 35 ✓ · 2 – | 42 ✅ · 2 ☑️ · 35 ✓ · 1 – | 64 ✅ · 3 ☑️ · 10 ✓ · 2 – | 66 ✅ · 13 ✓ · 1 – | 54 ✅ · 1 ☑️ · 22 ✓ · 3 – | 59 ✅ · 1 ☑️ · 20 ✓ |
+| [Line](controls/Line.md) | 77 | 40 ✅ · 2 ☑️ · 35 ✓ | 39 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 3 ☑️ · 10 ✓ | 63 ✅ · 13 ✓ · 1 – | 53 ✅ · 1 ☑️ · 22 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ |
 | [Map](controls/Map.md) | 74 | 36 ✅ · 2 ☑️ · 36 ✓ | 35 ✅ · 2 ☑️ · 36 ✓ · 1 – | 74 🧩 | 74 🧩 | 74 🧩 | 74 🧩 |
 | [Path](controls/Path.md) | 77 | 40 ✅ · 2 ☑️ · 35 ✓ | 39 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 3 ☑️ · 10 ✓ | 63 ✅ · 13 ✓ · 1 – | 53 ✅ · 1 ☑️ · 22 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ |
 | [Picker](controls/Picker.md) | 87 | 43 ✅ · 2 ☑️ · 36 ✓ · 1 – | 36 ✅ · 2 ☑️ · 40 ✓ · 4 – | 61 ✅ · 3 ☑️ · 13 ✓ · 3 – | 72 ✅ · 1 ☑️ · 12 ✓ | 53 ✅ · 1 ☑️ · 24 ✓ · 7 – | 59 ✅ · 1 ☑️ · 20 ✓ · 3 – |
@@ -473,10 +473,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 76 | 38 ✅ · 1 ☑️ · 35 ✓ | 36 ✅ · 1 ☑️ · 36 ✓ · 1 – | 59 ✅ · 3 ☑️ · 11 ✓ | 61 ✅ · 1 ☑️ · 12 ✓ | 51 ✅ · 1 ☑️ · 22 ✓ · 1 – | 54 ✅ · 1 ☑️ · 20 ✓ |
 | [WebView](controls/WebView.md) | 82 | 44 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 2 ☑️ · 38 ✓ · 1 – | 63 ✅ · 3 ☑️ · 12 ✓ · 3 – | 49 ✅ · 13 ✓ · 19 – | 56 ✅ · 1 ☑️ · 24 ✓ · 1 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [ZStack](controls/ZStack.md) | 75 | 37 ✅ · 1 ☑️ · 35 ✓ | 34 ✅ · 1 ☑️ · 37 ✓ · 1 – | 57 ✅ · 3 ☑️ · 12 ✓ | 60 ✅ · 1 ☑️ · 12 ✓ | 49 ✅ · 1 ☑️ · 23 ✓ · 1 – | 53 ✅ · 1 ☑️ · 20 ✓ |
-| ✅ |  | 1286 | 1213 | 1944 | 2024 | 1668 | 1803 |
+| ✅ |  | 1285 | 1208 | 1943 | 2019 | 1667 | 1798 |
 | ✓ |  | 1175 | 1210 | 365 | 395 | 748 | 641 |
-| – |  | 31 | 75 | 42 | 35 | 48 | 18 |
-| **Met** | 2596 | **2492** | **2498** | **2351** | **2454** | **2464** | **2462** |
+| – |  | 27 | 75 | 38 | 35 | 44 | 18 |
+| **Met** | 2591 | **2487** | **2493** | **2346** | **2449** | **2459** | **2457** |
 | 🧩 |  | 0 | 0 | 74 | 74 | 74 | 74 |
 
 ### Application structure
@@ -496,7 +496,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Scene](controls/Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [SplitView](controls/SplitView.md) | 12 | 9 ✅ · 1 ☑️ · 1 – | 9 ✅ · 1 ✓ · 2 – | 5 ✅ · 2 ☑️ · 3 ✓ · 2 – | 10 ✅ · 2 ☑️ | 6 ✅ · 2 ✓ · 4 – | 9 ✅ · 2 ☑️ · 1 – |
 | [TabView](controls/TabView.md) | 10 | 7 ✅ · 1 ☑️ · 1 ✓ | 8 ✅ · 2 – | 7 ✅ · 1 ☑️ · 2 – | 10 ✅ | 6 ✅ · 4 – | 9 ✅ · 1 – |
-| [TextSpan](controls/TextSpan.md) | 12 | 9 ✅ · 1 – | 10 ✅ | 8 ✅ · 1 – | 9 ✅ · 1 – | 10 ✅ | 10 ✅ |
+| [TextSpan](controls/TextSpan.md) | 10 | 9 ✅ · 1 – | 10 ✅ | 8 ✅ · 1 – | 9 ✅ · 1 – | 10 ✅ | 10 ✅ |
 | [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ToolbarItem](controls/ToolbarItem.md) | 9 | 5 ✅ · 1 ✓ · 1 – | 7 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 9 ✅ | 7 ✅ · 1 ✓ · 1 – | 9 ✅ |
@@ -505,7 +505,7 @@ Every control, and every part an application, its windows and its pages are made
 | ✅ |  | 93 | 85 | 69 | 118 | 81 | 93 |
 | ✓ |  | 20 | 19 | 16 | 2 | 16 | 9 |
 | – |  | 3 | 17 | 26 | 2 | 27 | 19 |
-| **Met** | 133 | **116** | **121** | **111** | **122** | **124** | **121** |
+| **Met** | 131 | **116** | **121** | **111** | **122** | **124** | **121** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -524,13 +524,15 @@ its layer are on the element's page in [the control dictionary](controls/README.
 
 | Tier | Members | Count |
 | --- | --- | --- |
-| [PropertyContainer](controls/tiers/PropertyContainer.md) | `accessibilityIdentifier` | 1 |
+| [AutomationElement](controls/tiers/AutomationElement.md) | `accessibilityIdentifier` | 1 |
 | [VisualElement](controls/tiers/VisualElement.md) | `accessibilityHeading`, `accessibilityHint`, `accessibilityLabel`, `automationExcludedWithChildren`, `background`, `frame`, `height`, `ignoresInput`, `isAccessibilityHidden`, `isEnabled`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `style`, `tooltip`, `translationX`, `translationY`, `width`, `zIndex` | 31 |
 | [View](controls/tiers/View.md) | `allowsDrop`, `area`, `canDrag`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `dragStarting`, `dragText`, `onDrop` (`drop`), `droppedFileTypes`, `onDragEnded` (`dragEnded`), `onDrop` (`filesDropped`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `horizontalAlignment`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 34 |
 | [Layout](controls/tiers/Layout.md) | `avoidsSafeArea`, `clipsContent`, `letsInputThrough` | 3 |
 | [Stack](controls/tiers/Stack.md) | `spacing` | 1 |
 | [TextInput](controls/tiers/TextInput.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 10 |
-| [Shape](controls/tiers/Shape.md) | `contentMode`, `fill`, `geometryTransform`, `stroke`, `dashPhase`, `dash`, `lineCap`, `lineJoin`, `miterLimit`, `lineWidth` | 10 |
+| [Shape](controls/tiers/Shape.md) | `contentMode`, `geometryTransform`, `stroke`, `dashPhase`, `dash`, `lineCap`, `lineWidth` | 7 |
+| [FilledShape](controls/tiers/FilledShape.md) | `fill` | 1 |
+| [CorneredShape](controls/tiers/CorneredShape.md) | `lineJoin`, `miterLimit` | 2 |
 | [TextualElement](controls/tiers/TextualElement.md) | `text`, `textCase` | 2 |
 | [TextStyleElement](controls/tiers/TextStyleElement.md) | `tracking`, `textColor` | 2 |
 | [FontElement](controls/tiers/FontElement.md) | `fontAttributes`, `isFontAutoScalingEnabled`, `fontFamily`, `fontSize` | 4 |

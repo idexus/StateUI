@@ -35,6 +35,9 @@ enum GTKRealization {
     /// Every record, the tiers' first.
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
+        .notPlanned("AutomationElement", "accessibilityIdentifier", reason: "GTK 4 tells assistive technology no "
+            + "identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget "
+            + "made in code."),
         .complete("BarElement", "barBackgroundColor"),
         .complete("BarElement", "barForegroundColor"),
         .complete("BarElement", "barSubtitle"),
@@ -55,9 +58,6 @@ enum GTKRealization {
         .notPlanned("PageElement", "icon",
                     reason: "GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions."),
         .complete("PageElement", "title"),
-        .notPlanned("PropertyContainer", "accessibilityIdentifier", reason: "GTK 4 tells assistive technology no "
-            + "identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget "
-            + "made in code."),
         .partial("VisualElement", "accessibilityHeading", missing: "GTK fixes a widget's role once it is shown: a view "
             + "becomes a heading, or stops being one, only as it is made; its level changes."),
         .partial("VisualElement", "background", missing: "A brush fills the view with its first colour alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's colour standing in, its tint over it."),

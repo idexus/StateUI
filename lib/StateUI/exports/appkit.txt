@@ -11,6 +11,7 @@ Button
   keyboardShortcut
   lineBreak
   lineWidth
+  role
   shape
   stroke
   text
@@ -46,9 +47,7 @@ Ellipse
   fill
   geometryTransform
   lineCap
-  lineJoin
   lineWidth
-  miterLimit
   stroke
 Grid
   columnSpacing
@@ -77,12 +76,9 @@ Line
   contentMode
   dash
   dashPhase
-  fill
   geometryTransform
   lineCap
-  lineJoin
   lineWidth
-  miterLimit
   stroke
   x1
   x2
@@ -309,6 +305,7 @@ WebView
   isAccessibilityHidden
   isEnabled
   isVisible
+  keysTaken
   letsInputThrough
   margin
   maximumHeight
@@ -344,6 +341,7 @@ WebView
   filesDropped()
   frameChanged()
   isFocusedChanged()
+  keyPressed()
   panUpdated()
   pinchUpdated()
   pointerEntered()

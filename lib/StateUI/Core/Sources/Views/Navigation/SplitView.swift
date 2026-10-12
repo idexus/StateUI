@@ -51,7 +51,7 @@
 /// a host with room for both pages may open with the sidebar showing. The
 /// sidebar page's title names the sidebar's bar; a sidebar page with none
 /// shows the application's name there.
-public struct SplitView: ElementView, Arrangement, BarElement {
+public struct SplitView: ElementView, Arrangement, BarElement, AutomationElement {
     /// The node this page describes.
     public var node: Node
 

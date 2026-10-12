@@ -13,7 +13,7 @@ public enum SplitViewContract: ElementContract {
     /// A split view declares the bar over what it shows, is shown as a page
     /// with a title and an icon, and automation finds it by its name.
     public static let tiers: [any Contract.Type] = [
-        BarElementContract.self, PageElementContract.self, PropertyContainerContract.self,
+        BarElementContract.self, PageElementContract.self, AutomationElementContract.self,
     ]
 
     /// Whether the sidebar is showing.

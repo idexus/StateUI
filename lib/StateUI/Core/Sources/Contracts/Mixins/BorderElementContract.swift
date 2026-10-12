@@ -7,9 +7,6 @@ public enum BorderElementContract: Contract {
     /// The tier's name.
     public static let name = "BorderElement"
 
-    /// A border is carried as values in the tree.
-    public static let tiers: [any Contract.Type] = [PropertyContainerContract.self]
-
     /// The shape the element's background, its outline and - where it clips - what it holds follow.
     public static let shape = ElementProperty<Self, ContainerShape>("shape", layer: .stateUI)
 

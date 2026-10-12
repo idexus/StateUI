@@ -7,9 +7,6 @@ public enum KeyboardElementContract: Contract {
     /// The tier's name.
     public static let name = "KeyboardElement"
 
-    /// The keys and their handler are carried in the tree.
-    public static let tiers: [any Contract.Type] = [PropertyContainerContract.self]
-
     /// A key the element takes (`keysTaken`) was pressed while it held the keyboard, or held the view that did.
     public static let keyPressed = ElementEvent<Self, Key>("keyPressed", layer: .native)
 

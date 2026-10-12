@@ -1,4 +1,4 @@
-# revision 2.1
+# revision 1.1
 ActivityIndicator.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 Button.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 Canvas.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
@@ -32,7 +32,6 @@ TabView.accessibilityIdentifier: – GTK 4 tells assistive technology no identif
 Text.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 TextEditor.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 TextField.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
-TextSpan.accessibilityIdentifier: not realized
 TimePicker.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 ToolbarItem.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.
 VStack.accessibilityIdentifier: – GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.

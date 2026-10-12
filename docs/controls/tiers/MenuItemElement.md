@@ -16,7 +16,7 @@ Text(saved ? "Saved" : "Draft")
     }
 ```
 
-Wears: [PropertyContainer](PropertyContainer.md)
+Wears: [AutomationElement](AutomationElement.md)
 
 Worn by: [MenuItem](../MenuItem.md) · [ToolbarItem](../ToolbarItem.md)
 

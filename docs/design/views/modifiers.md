@@ -146,8 +146,10 @@ view (`isAccessibilityHidden`) or the view and everything in it
 `accessibilityIdentifier` is a handle nothing reads out: a UI test, a script or
 an agent driving the application asks the platform's automation for it, where
 the alternative is a coordinate read off a picture. It is on
-`PropertyContainer` because a toolbar item and a menu entry carry one as much
-as a view does, so the button in a page's bar can be named. It stays stable
+`AutomationElement`, which a view, a toolbar item, a menu entry and a page
+arrangement wear, so the button in a page's bar can be named; a text run,
+which automation never meets, and a `Style`, which would give every control
+it dresses one name, are offered none. It stays stable
 across renders and unique on the page: an id that moves with the state is one
 nothing can wait for, and two things sharing one leave the driver to guess.
 

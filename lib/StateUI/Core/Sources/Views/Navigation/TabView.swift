@@ -44,7 +44,7 @@
 /// Each tab must be a distinct value whose values describe differently
 /// (`String(describing:)`). A page is keyed by its tab alone, so tabs can be
 /// reordered without their pages being rebuilt.
-public struct TabView: ElementView, Arrangement, BarElement {
+public struct TabView: ElementView, Arrangement, BarElement, AutomationElement {
     /// The node this page describes.
     public var node: Node
 

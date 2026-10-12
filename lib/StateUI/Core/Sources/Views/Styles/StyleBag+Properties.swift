@@ -10,6 +10,8 @@ extension StyleBag: ViewProperties where Target: View {}
 extension StyleBag: LayoutProperties where Target: Layout {}
 extension StyleBag: StackProperties where Target: Stack {}
 extension StyleBag: ShapeProperties where Target: Shape {}
+extension StyleBag: FilledShapeProperties where Target: FilledShape {}
+extension StyleBag: CorneredShapeProperties where Target: CorneredShape {}
 extension StyleBag: PaddingElement where Target: PaddingElement {}
 extension StyleBag: TextStyleElement where Target: TextStyleElement {}
 extension StyleBag: TextualElement where Target: TextualElement {}

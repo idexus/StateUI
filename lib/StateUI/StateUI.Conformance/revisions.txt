@@ -43,14 +43,14 @@ Page 4
 PageElement 2
 View 5
 VisualElement 11
-Shape 3
+Shape 4
 BorderElement 7
 TextInput 2
 Application 3
 TextSpan 2
 Divider 2
 Canvas 2
-PropertyContainer 2
 Rectangle 2
 Stepper 2
 KeyboardElement 2
+LineHeightElement 2

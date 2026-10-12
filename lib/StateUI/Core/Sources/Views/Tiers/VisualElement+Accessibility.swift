@@ -53,7 +53,7 @@ extension VisualElement {
     /// `accessibilityIdentifier` from a state, `$x`: the host writes each new
     /// text, and no view is rebuilt for it.
     public func accessibilityIdentifier(_ state: Binding<String>) -> Modified {
-        words(PropertyContainerContract.accessibilityIdentifier, by: state)
+        words(AutomationElementContract.accessibilityIdentifier, by: state)
     }
 
     /// `automationExcludedWithChildren` from a state, `$x`: the host sets each

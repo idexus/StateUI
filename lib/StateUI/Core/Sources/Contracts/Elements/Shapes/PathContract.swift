@@ -11,7 +11,7 @@ public enum PathContract: ElementContract {
     public static let layer: ElementLayer = .stateUI
 
     /// A path is a shape.
-    public static let tiers: [any Contract.Type] = [ShapeContract.self]
+    public static let tiers: [any Contract.Type] = [FilledShapeContract.self, CorneredShapeContract.self]
 
     /// The outline, in SVG path syntax.
     public static let data = ElementProperty<Self, String>("data", layer: .stateUI)

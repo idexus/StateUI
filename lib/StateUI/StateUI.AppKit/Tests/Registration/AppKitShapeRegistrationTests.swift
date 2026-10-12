@@ -36,8 +36,8 @@ final class AppKitShapeRegistrationTests: XCTestCase {
     }
 
     /// What the shapes SHARE is recorded on every one of them, from the single
-    /// tier they wear - and an element that wears no such tier claims none of
-    /// it.
+    /// tier they wear; a fill only on a shape enclosing an area, and a line,
+    /// which encloses none, claims none.
     @MainActor
     func testTheSharedStrokeAndFillAreRecordedOnEveryShape() {
         let realization = AppKitRegistrations.registry.realization
@@ -47,9 +47,10 @@ final class AppKitShapeRegistrationTests: XCTestCase {
                 realization.members.contains(
                     HostRealizedMember(element: shape, owner: "Shape", member: "stroke")),
                 "\(shape) draws the stroke its tier declares")
-            XCTAssertTrue(
+            XCTAssertEqual(
                 realization.members.contains(
-                    HostRealizedMember(element: shape, owner: "Shape", member: "fill")),
+                    HostRealizedMember(element: shape, owner: "FilledShape", member: "fill")),
+                shape != "Line",
                 "\(shape) draws the fill its tier declares")
         }
     }

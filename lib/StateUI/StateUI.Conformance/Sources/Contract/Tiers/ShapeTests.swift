@@ -4,17 +4,16 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `ShapeContract` on a host: a shape is filled and outlined as the tree says, the fill the tree changes it to
-/// drawn, and every way its outline is drawn - its width, dashes, ends, joins - its placement in its room and its
-/// transform held as the tree gives them; each case made for every shape.
+/// `ShapeContract` on a host: a shape is outlined as the tree says, and every way its outline is drawn - its width,
+/// dashes, ends - its placement in its room and its transform held as the tree gives them; each case made for every
+/// shape.
 @_spi(Host) public enum ShapeTests: ConformanceFamily {
     public static let name = "Shape"
 
     public static var cases: [ConformanceCase] {
         Specimens.wearing(ShapeContract.self).flatMap { element in
             [
-                filled(element), outlined(element), placedByItsAspect(element), movedByItsTransform(element),
-                Aspects.holds(ShapeContract.fill, on: element, .solidColor(.red), then: .solidColor(.blue), with: figure(element)),
+                outlined(element), placedByItsAspect(element), movedByItsTransform(element),
                 Aspects.holds(ShapeContract.stroke, on: element, .solidColor(.red), then: .solidColor(.blue), with: figure(element)),
                 Aspects.holds(
                     ShapeContract.lineWidth, on: element, 2, then: 6,
@@ -22,40 +21,9 @@
                 Aspects.holds(ShapeContract.dash, on: element, [3, 2], then: [1, 1], with: stroked(element)),
                 Aspects.holds(ShapeContract.dashPhase, on: element, 0, then: 2.5, with: stroked(element)),
                 Aspects.holds(ShapeContract.lineCap, on: element, .flat, then: .round, with: stroked(element)),
-                Aspects.holds(ShapeContract.lineJoin, on: element, .miter, then: .bevel, with: stroked(element)),
-                Aspects.holds(ShapeContract.miterLimit, on: element, 10, then: 4, with: stroked(element)),
                 Aspects.holds(ShapeContract.contentMode, on: element, .fit, then: .stretch, with: figure(element)),
                 Aspects.holds(ShapeContract.geometryTransform, on: element, .identity, then: .rotate(45), with: figure(element)),
             ] + outlineCases(element)
-        }
-    }
-
-    /// A shape is filled in its colour inside its figure, and in the colour the tree changes it to; a line, which
-    /// encloses nothing, shows no fill.
-    @MainActor
-    static func filled(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).isFilledInItsColour", proves: [
-            Covered(ShapeContract.fill, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
-            let blue = State(wrappedValue: false)
-            s.start {
-                Specimens.page(element, figure(element) + [
-                    Write(ShapeContract.fill, Brush.solidColor(blue.wrappedValue ? .blue : .red)),
-                    Write(VisualElementContract.width, 40), Write(VisualElementContract.height, 40),
-                ], beside: [Button("Blue").onClicked { blue.wrappedValue = true }.id("change")])
-            }
-            let shape = try s.specimen(element)
-            let inside = Point(20, 20)
-            guard element != "Line" else {
-                s.turn()
-                return s.expect(try s.color(of: shape, at: inside), nil, "a line encloses nothing to fill")
-            }
-            try s.settle { try s.color(of: shape, at: inside) == .red }
-            s.expect(try s.color(of: shape, at: inside), .red)
-
-            try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.color(of: shape, at: inside) == .blue }
-            s.expect(try s.color(of: shape, at: inside), .blue, "the colour the tree changed it to")
         }
     }
 
@@ -88,7 +56,7 @@
             let stretched = State(wrappedValue: false)
             let paint: [any Worn] = element == "Line" || element == "Polyline"
                 ? [Write(ShapeContract.stroke, Brush.solidColor(.red)), Write(ShapeContract.lineWidth, 4)]
-                : [Write(ShapeContract.fill, Brush.solidColor(.red))]
+                : [Write(FilledShapeContract.fill, Brush.solidColor(.red))]
             s.start {
                 Specimens.page(element, small(element) + paint + [
                     Write(ShapeContract.contentMode, stretched.wrappedValue ? ContentMode.stretch : .fit),
@@ -122,7 +90,7 @@
             let line = element == "Line"
             let paint: [any Worn] = line
                 ? [Write(ShapeContract.stroke, Brush.solidColor(.red)), Write(ShapeContract.lineWidth, 4)]
-                : [Write(ShapeContract.fill, Brush.solidColor(.red))]
+                : [Write(FilledShapeContract.fill, Brush.solidColor(.red))]
             s.start {
                 Specimens.page(element, figure(element) + paint + [
                     Write(ShapeContract.geometryTransform, moved.wrappedValue

@@ -16,7 +16,7 @@ Text()
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [TextualElement](tiers/TextualElement.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [LineHeightElement](tiers/LineHeightElement.md) · [DecorableTextElement](tiers/DecorableTextElement.md)
+Inherits: [TextualElement](tiers/TextualElement.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [DecorableTextElement](tiers/DecorableTextElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -35,7 +35,7 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [TextualElement](ti
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (12)</th><th>Realization</th></tr></thead>
+<thead><tr><th>Host</th><th>Created</th><th>Members (10)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>9 ✅ · 1 –</td><td><code>NSTextField</code> label; <code>NSAttributedString</code> runs</td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>10 ✅</td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>8 ✅ · 1 –</td><td><code>TextView</code>; <code>SpannableStringBuilder</code> spans</td></tr></tbody>
@@ -51,16 +51,6 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextSpanContract.s
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-</table>
-
-## From [PropertyContainer](tiers/PropertyContainer.md)
-
-What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
-
-<table>
-<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityIdentifier</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4, Web: not realized</td></tr></tbody>
 </table>
 
 ## From [TextualElement](tiers/TextualElement.md)
@@ -96,16 +86,6 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 <tbody><tr></tr><tr><td rowspan="2"><code>fontFamily</code></td><td>property</td><td><code>Name</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">Android Views: cannot read a family - Android's typeface keeps no family's name</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>fontSize</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-</table>
-
-## From [LineHeightElement](tiers/LineHeightElement.md)
-
-How far apart the lines of text are.
-
-<table>
-<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>lineHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4, Web: not realized</td></tr></tbody>
 </table>
 
 ## From [DecorableTextElement](tiers/DecorableTextElement.md)

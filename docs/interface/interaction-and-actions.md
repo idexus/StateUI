@@ -553,7 +553,9 @@ Use `isAccessibilityHidden` and
 semantics require it.
 
 `accessibilityIdentifier` is an external stable identifier for UI automation. It is not
-the tree's `.id`, and assigning one does not change StateUI identity.
+the tree's `.id`, and assigning one does not change StateUI identity. A view, a
+menu's entry, a bar's item and a page arrangement take one; a run of text and a
+style do not, as automation never meets a run and a style dresses many controls.
 
 Announce an important asynchronous change that has no visible focused element:
 

@@ -10,8 +10,6 @@ Text("Total")
     .fontAttributes(.bold)
 ```
 
-Wears: [PropertyContainer](PropertyContainer.md)
-
 Worn by: [Button](../Button.md) · [DatePicker](../DatePicker.md) · [Picker](../Picker.md) · [RadioButton](../RadioButton.md) · [SearchField](../SearchField.md) · [Text](../Text.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TextSpan](../TextSpan.md) · [TimePicker](../TimePicker.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/FontElementContract.swift`.

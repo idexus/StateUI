@@ -68,13 +68,15 @@ final class GTKConformanceTests: XCTestCase {
     func testToolbarItem() { conform(ToolbarItemTests.self) }
     func testToolbarItemGroup() { conform(ToolbarItemGroupTests.self) }
     func testWindow() { conform(WindowTests.self) }
-    func testPropertyContainer() { conform(PropertyContainerTests.self) }
+    func testAutomationElement() { conform(AutomationElementTests.self) }
     func testVisualElement() { conform(VisualElementTests.self) }
     func testView() { conform(ViewTests.self) }
     func testLayout() { conform(LayoutTests.self) }
     func testStack() { conform(StackTests.self) }
     func testTextInput() { conform(TextInputTests.self) }
     func testShape() { conform(ShapeTests.self) }
+    func testFilledShape() { conform(FilledShapeTests.self) }
+    func testCorneredShape() { conform(CorneredShapeTests.self) }
     func testTextualElement() { conform(TextualElementTests.self) }
     func testTextStyleElement() { conform(TextStyleElementTests.self) }
     func testFontElement() { conform(FontElementTests.self) }

@@ -82,8 +82,7 @@ public struct Text: ElementView, TextualElement, FontElement, TextAlignmentEleme
 ///
 /// Not a view: a run has text and font properties and nothing else, and it
 /// goes only in a Text's `spans`.
-public struct TextSpan: ModifiableElement, TextualElement, FontElement,
-    LineHeightElement, DecorableTextElement {
+public struct TextSpan: ModifiableElement, TextualElement, FontElement, DecorableTextElement {
     /// The node this run describes.
     public var node: Node
 

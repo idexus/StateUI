@@ -552,7 +552,7 @@ extension ControlDictionary {
 
         // MARK: - Tiers
 
-        (PropertyContainerContract.self, #"""
+        (AutomationElementContract.self, #"""
             Button("Save")
                 .accessibilityIdentifier("editor.save")
             """#),
@@ -603,12 +603,27 @@ extension ControlDictionary {
             """#),
 
         (ShapeContract.self, #"""
-            Rectangle()
-                .fill(.gold)
+            Line()
+                .x2(120)
                 .stroke(.black)
                 .lineWidth(2)
                 .dash([4, 2])
+                .lineCap(.round)
+            """#),
+
+        (FilledShapeContract.self, #"""
+            Ellipse()
+                .fill(.gold)
+                .stroke(.black)
+                .width(40)
                 .height(40)
+            """#),
+
+        (CorneredShapeContract.self, #"""
+            Polygon([Point(0, 40), Point(20, 0), Point(40, 40)])
+                .stroke(.black)
+                .lineWidth(6)
+                .lineJoin(.round)
             """#),
 
         (TextualElementContract.self, #"""

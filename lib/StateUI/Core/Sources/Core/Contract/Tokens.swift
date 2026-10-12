@@ -82,7 +82,7 @@ extension NodeType {
     static let keyboardShortcut = ButtonContract.keyboardShortcut.token
     static let role = ButtonContract.role.token
     static let keysTaken = KeyboardElementContract.keysTaken.token
-    static let accessibilityIdentifier = PropertyContainerContract.accessibilityIdentifier.token
+    static let accessibilityIdentifier = AutomationElementContract.accessibilityIdentifier.token
     static let accessibilityLabel = VisualElementContract.accessibilityLabel.token
     static let subtitle = MarkerContract.subtitle.token
     static let allowsDrop = ViewContract.allowsDrop.token
@@ -123,7 +123,7 @@ extension NodeType {
     static let dragText = ViewContract.dragText.token
     static let droppedFileTypes = ViewContract.droppedFileTypes.token
     static let drawing = CanvasContract.drawing.token
-    static let fill = ShapeContract.fill.token
+    static let fill = FilledShapeContract.fill.token
     static let fillRule = PolygonContract.fillRule.token
     static let floatsOnTop = WindowContract.floatsOnTop.token
     static let layoutDirection = VisualElementContract.layoutDirection.token
@@ -220,8 +220,8 @@ extension NodeType {
     static let dashPhase = ShapeContract.dashPhase.token
     static let dash = ShapeContract.dash.token
     static let lineCap = ShapeContract.lineCap.token
-    static let lineJoin = ShapeContract.lineJoin.token
-    static let miterLimit = ShapeContract.miterLimit.token
+    static let lineJoin = CorneredShapeContract.lineJoin.token
+    static let miterLimit = CorneredShapeContract.miterLimit.token
     static let lineWidth = ShapeContract.lineWidth.token
     static let style = VisualElementContract.style.token
     static let swipeDirection = ViewContract.swipeDirection.token

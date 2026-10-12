@@ -20,14 +20,6 @@ extension ShapeProperties {
         setValue(ShapeContract.geometryTransform, value)
     }
 
-    /// What the inside of the shape is painted with.
-    ///
-    ///     Ellipse().fill(.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)]))
-    public func fill(_ value: Brush) -> Modified { setValue(ShapeContract.fill, value) }
-
-    /// The same, in one colour - `.fill(.solidColor(colour))` said shortly.
-    public func fill(_ value: Color) -> Modified { fill(.solidColor(value)) }
-
     /// What the outline is painted with.
     public func stroke(_ value: Brush) -> Modified { setValue(ShapeContract.stroke, value) }
 
@@ -61,17 +53,6 @@ extension ShapeProperties {
         setValue(ShapeContract.lineCap, value)
     }
 
-    /// How two segments meet at a corner.
-    public func lineJoin(_ value: LineJoin) -> Modified {
-        setValue(ShapeContract.lineJoin, value)
-    }
-
-    /// How far a sharp corner may reach before it is cut off, in multiples of
-    /// the stroke thickness.
-    public func miterLimit(_ value: Double) -> Modified {
-        setValue(ShapeContract.miterLimit, value)
-    }
-
     /// What the shape does with the room it is given - the `ContentMode` an Image
     /// takes too. `.fit`, the default, scales the drawing to fit and keeps its
     /// proportions; `.center` keeps the size its own numbers say.
@@ -79,12 +60,6 @@ extension ShapeProperties {
 }
 
 extension Shape {
-    /// `fill` from a colour state, `$x`: the host animates the colour to each
-    /// new value, and no view is rebuilt for it.
-    public func fill(_ state: Binding<Color>) -> Modified {
-        twin(ShapeContract.fill, carrying: state)
-    }
-
     /// `stroke` from a colour state, `$x`: the host animates the colour to
     /// each new value, and no view is rebuilt for it.
     public func stroke(_ state: Binding<Color>) -> Modified {
@@ -107,18 +82,6 @@ extension Shape {
     /// stands, and no view is rebuilt for it.
     public func lineCap(_ state: Binding<LineCap>) -> Modified {
         twin(ShapeContract.lineCap, by: state)
-    }
-
-    /// `lineJoin` from a state, `$x`: the host sets each new value as it
-    /// stands, and no view is rebuilt for it.
-    public func lineJoin(_ state: Binding<LineJoin>) -> Modified {
-        twin(ShapeContract.lineJoin, by: state)
-    }
-
-    /// `miterLimit` from a state, `$x`: the host animates the property to
-    /// each new value, and no view is rebuilt for it.
-    public func miterLimit(_ state: Binding<Double>) -> Modified {
-        twin(ShapeContract.miterLimit, by: state)
     }
 
     /// `lineWidth` from a state, `$x`: the host animates the property to each

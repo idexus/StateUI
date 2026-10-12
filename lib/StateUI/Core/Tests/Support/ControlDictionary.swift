@@ -477,7 +477,7 @@ struct ControlDictionary {
     func sharedTable() -> String {
         var lines = [Self.row(["Member", "Tier", "Kind"]), Self.row(["---", "---", "---"])]
         let everyView: [any Contract.Type] = [
-            PropertyContainerContract.self, VisualElementContract.self, ViewContract.self,
+            AutomationElementContract.self, VisualElementContract.self, ViewContract.self,
         ]
 
         for tier in everyView {

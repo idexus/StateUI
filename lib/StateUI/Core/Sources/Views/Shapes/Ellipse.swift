@@ -14,7 +14,7 @@
 /// A round avatar or a status dot is this control sized square. For a rounded
 /// RECTANGLE, use a `Rectangle` with a `cornerRadius`, or a layout with a
 /// `.shape`.
-public struct Ellipse: Shape {
+public struct Ellipse: FilledShape {
     /// The node this control describes.
     public var node: Node
 

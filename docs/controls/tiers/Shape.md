@@ -2,15 +2,15 @@
 
 # Shape
 
-What every drawn shape has: what fills it, the line around it, how it fits its room, and a transform of its own drawing.
+What every drawn shape has: the line along it, how it fits its room, and a transform of its own drawing.
 
 ```swift
-Rectangle()
-    .fill(.gold)
+Line()
+    .x2(120)
     .stroke(.black)
     .lineWidth(2)
     .dash([4, 2])
-    .height(40)
+    .lineCap(.round)
 ```
 
 Wears: [View](View.md)
@@ -24,12 +24,9 @@ How each of them realizes these members is on its own page.
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
 | `contentMode` | property | `ContentMode` | native |
-| `fill` | property | `Brush` | stateUI |
 | `geometryTransform` | property | `ViewTransform` | native |
 | `stroke` | property | `Brush` | stateUI |
 | `dashPhase` | property | `Double` | stateUI |
 | `dash` | property | `[Double]` | stateUI |
 | `lineCap` | property | `LineCap` | stateUI |
-| `lineJoin` | property | `LineJoin` | stateUI |
-| `miterLimit` | property | `Double` | stateUI |
 | `lineWidth` | property | `Double` | stateUI |

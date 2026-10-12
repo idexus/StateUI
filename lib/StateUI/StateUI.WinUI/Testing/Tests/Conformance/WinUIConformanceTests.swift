@@ -68,7 +68,7 @@ final class WinUIConformanceTests: XCTestCase {
     func testToolbarItem() { conform(ToolbarItemTests.self) }
     func testToolbarItemGroup() { conform(ToolbarItemGroupTests.self) }
     func testWindow() { conform(WindowTests.self) }
-    func testPropertyContainer() { conform(PropertyContainerTests.self) }
+    func testAutomationElement() { conform(AutomationElementTests.self) }
     func testVisualElement1() { conform(VisualElementTests.self, part: Conformance.Part(1, of: 18)) }
     func testVisualElement2() { conform(VisualElementTests.self, part: Conformance.Part(2, of: 18)) }
     func testVisualElement3() { conform(VisualElementTests.self, part: Conformance.Part(3, of: 18)) }
@@ -100,6 +100,8 @@ final class WinUIConformanceTests: XCTestCase {
     func testTextInput() { conform(TextInputTests.self) }
     func testShape1() { conform(ShapeTests.self, part: Conformance.Part(1, of: 2)) }
     func testShape2() { conform(ShapeTests.self, part: Conformance.Part(2, of: 2)) }
+    func testFilledShape() { conform(FilledShapeTests.self) }
+    func testCorneredShape() { conform(CorneredShapeTests.self) }
     func testTextualElement() { conform(TextualElementTests.self) }
     func testTextStyleElement() { conform(TextStyleElementTests.self) }
     func testFontElement() { conform(FontElementTests.self) }

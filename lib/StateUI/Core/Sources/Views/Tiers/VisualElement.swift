@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// A control backed by a node, and drawn.
-public protocol VisualElement: ModifiableElement, VisualElementProperties {}
+public protocol VisualElement: ModifiableElement, VisualElementProperties, AutomationElement {}
 
 /// The properties every drawn control has: the value half of
 /// `VisualElement`, shared by the control and its `Style`.

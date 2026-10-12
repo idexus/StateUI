@@ -1,4 +1,4 @@
-# revision 2.1
+# revision 1.1
 ActivityIndicator.accessibilityIdentifier: ✅
 Button.accessibilityIdentifier: ✅
 Canvas.accessibilityIdentifier: ✅
@@ -11,8 +11,8 @@ HStack.accessibilityIdentifier: ✅
 Image.accessibilityIdentifier: ✅
 ItemsView.accessibilityIdentifier: ✅
 Line.accessibilityIdentifier: ✅
-Map.accessibilityIdentifier: 🧩
-MenuItem.accessibilityIdentifier: ✅
+Map.accessibilityIdentifier: ✅
+MenuItem.accessibilityIdentifier: ☑️ Only an entry of a context menu carries it; an entry the page puts in the menu bar does not.
 NavigationStack.accessibilityIdentifier: ✅
 Path.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅
@@ -32,9 +32,8 @@ TabView.accessibilityIdentifier: ✅
 Text.accessibilityIdentifier: ✅
 TextEditor.accessibilityIdentifier: ✅
 TextField.accessibilityIdentifier: ✅
-TextSpan.accessibilityIdentifier: not realized
 TimePicker.accessibilityIdentifier: ✅
-ToolbarItem.accessibilityIdentifier: ✅
+ToolbarItem.accessibilityIdentifier: not realized
 VStack.accessibilityIdentifier: ✅
 WebView.accessibilityIdentifier: ✅
 ZStack.accessibilityIdentifier: ✅

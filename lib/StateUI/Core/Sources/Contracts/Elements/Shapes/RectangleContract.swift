@@ -11,7 +11,7 @@ public enum RectangleContract: ElementContract {
     public static let layer: ElementLayer = .stateUI
 
     /// A rectangle is a shape.
-    public static let tiers: [any Contract.Type] = [ShapeContract.self]
+    public static let tiers: [any Contract.Type] = [FilledShapeContract.self, CorneredShapeContract.self]
 
     /// How rounded the corners are: one radius for all four, or one each.
     public static let cornerRadius = ElementProperty<Self, CornerRadius>(

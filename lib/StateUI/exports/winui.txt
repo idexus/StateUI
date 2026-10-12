@@ -14,6 +14,7 @@ Button
   lineBreak
   lineWidth
   padding
+  role
   shape
   stroke
   text
@@ -54,9 +55,7 @@ Ellipse
   fill
   geometryTransform
   lineCap
-  lineJoin
   lineWidth
-  miterLimit
   stroke
 Grid
   clipsContent
@@ -92,12 +91,9 @@ Line
   contentMode
   dash
   dashPhase
-  fill
   geometryTransform
   lineCap
-  lineJoin
   lineWidth
-  miterLimit
   stroke
   x1
   x2
@@ -338,6 +334,7 @@ ZStack
   isAccessibilityHidden
   isEnabled
   isVisible
+  keysTaken
   margin
   maximumHeight
   maximumWidth
@@ -372,6 +369,7 @@ ZStack
   filesDropped()
   frameChanged()
   isFocusedChanged()
+  keyPressed()
   panUpdated()
   pinchUpdated()
   pointerEntered()

@@ -65,13 +65,15 @@ final class AndroidConformanceTests: XCTestCase {
             ("testToolbarItem", testToolbarItem),
             ("testToolbarItemGroup", testToolbarItemGroup),
             ("testWindow", testWindow),
-            ("testPropertyContainer", testPropertyContainer),
+            ("testAutomationElement", testAutomationElement),
             ("testVisualElement", testVisualElement),
             ("testView", testView),
             ("testLayout", testLayout),
             ("testStack", testStack),
             ("testTextInput", testTextInput),
             ("testShape", testShape),
+            ("testFilledShape", testFilledShape),
+            ("testCorneredShape", testCorneredShape),
             ("testTextualElement", testTextualElement),
             ("testTextStyleElement", testTextStyleElement),
             ("testFontElement", testFontElement),
@@ -143,13 +145,15 @@ final class AndroidConformanceTests: XCTestCase {
     func testToolbarItem() throws { try conform(ToolbarItemTests.self) }
     func testToolbarItemGroup() throws { try conform(ToolbarItemGroupTests.self) }
     func testWindow() throws { try conform(WindowTests.self) }
-    func testPropertyContainer() throws { try conform(PropertyContainerTests.self) }
+    func testAutomationElement() throws { try conform(AutomationElementTests.self) }
     func testVisualElement() throws { try conform(VisualElementTests.self) }
     func testView() throws { try conform(ViewTests.self) }
     func testLayout() throws { try conform(LayoutTests.self) }
     func testStack() throws { try conform(StackTests.self) }
     func testTextInput() throws { try conform(TextInputTests.self) }
     func testShape() throws { try conform(ShapeTests.self) }
+    func testFilledShape() throws { try conform(FilledShapeTests.self) }
+    func testCorneredShape() throws { try conform(CorneredShapeTests.self) }
     func testTextualElement() throws { try conform(TextualElementTests.self) }
     func testTextStyleElement() throws { try conform(TextStyleElementTests.self) }
     func testFontElement() throws { try conform(FontElementTests.self) }

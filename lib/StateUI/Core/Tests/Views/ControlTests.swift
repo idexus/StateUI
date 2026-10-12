@@ -113,7 +113,6 @@ final class ControlTests: XCTestCase {
                             .fontAttributes(.bold)
                             .isFontAutoScalingEnabled(false)
                             .tracking(0.5)
-                            .lineHeight(1.2)
                             .textDecorations(.underline)
 
                         TextSpan("counter").textColor(.steelBlue)
@@ -436,10 +435,10 @@ final class ControlTests: XCTestCase {
             // placement lives - on the child, not the grid.
             ControlCase("Elements", sources: SourceTree.sharedTier,
                 VStack {
-                    // The Shape tier, which all six shapes share - so it is
+                    // The Shape tiers, which the shapes share - so they are
                     // checked here rather than in each of their cases, exactly
                     // as the font tier is.
-                    Ellipse()
+                    Rectangle()
                         .fill(.radialGradient([
                             GradientStop(.white, 0),
                             GradientStop(.steelBlue, 1),

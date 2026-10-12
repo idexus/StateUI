@@ -9,28 +9,34 @@ Swift protocols behind them refine each other.
 ## The tier tree
 
 ```text
-  PropertyContainer                      the name automation finds an element by
-  |-- VisualElement                      size, visibility, transform, input, focus, accessibility
+  AutomationElement                      the name automation finds an element by
+  |-- VisualElement                      size, visibility, transform, input, accessibility
   |   |-- View                           place in a layout, margin, gestures, drag and drop, frame
   |   |   |-- Layout  (+ PaddingElement, BorderElement) safe area, clipping, own box, input through empty space
   |   |   |   '-- Stack              spacing between children
   |   |   |-- TextInput                  text limits, caret, keyboard, placeholder
-  |   |   '-- Shape                      fill, stroke, a transform of its own drawing
+  |   |   '-- Shape                      stroke, dashes and ends, a transform of its own drawing
+  |   |       |-- FilledShape            what fills the area it encloses
+  |   |       '-- CorneredShape          how its corners join
   |   |-- PaddingElement                 space inside an element
   |   '-- TextAlignmentElement           where text sits in its element
-  |-- TextStyleElement                   text colour, space between letters
-  |   '-- TextualElement                    the words and their case
-  |-- FontElement                        family, size, weight and slant, text-size scaling
-  |-- LineHeightElement                  space between lines
-  |-- DecorableTextElement               underline and strikethrough
-  |-- BorderElement                      the shape of an element's own box, and its outline
-  |-- ImageElement                       how a picture fills its room
-  |-- TintElement                        a control's one accent colour
-  '-- MenuItemElement                    an item the user chooses: caption, icon, action
+  '-- MenuItemElement                    an item the user chooses: caption, icon, action, shortcut
 
-  PageElement                            a title and an icon; wears nothing
-  BarElement                             an arrangement's bar: colours, title area;
-                                         wears nothing
+  TextStyleElement                       text colour, space between letters
+  '-- TextualElement                     the words and their case
+  FontElement                            family, size, weight and slant, text-size scaling
+  LineHeightElement                      space between lines
+  DecorableTextElement                   underline and strikethrough
+  BorderElement                          the shape of an element's own box, and its outline
+  ImageElement                           how a picture fills its room
+  TintElement                            a control's one accent colour
+  KeyboardElement                        keys taken while it holds the keyboard
+  '-- FocusElement                       the keyboard put on it and taken off
+  PageElement                            a title and an icon
+  BarElement                             an arrangement's bar: colours, title area
+
+  Each tier on the second list wears nothing above it: a text run wears the text tiers, and no name automation
+  finds it by.
 ```
 
 ## Who wears what
@@ -44,7 +50,15 @@ Swift protocols behind them refine each other.
   Stack              HStack, VStack
   TextInput          SearchField, TextEditor, TextField
   Shape              Ellipse, Line, Path, Polygon, Polyline, Rectangle
+  FilledShape        Ellipse, Path, Polygon, Polyline, Rectangle
+  CorneredShape      Path, Polygon, Polyline, Rectangle
+  AutomationElement  every View, MenuItem, ToolbarItem, NavigationStack,
+                     TabView, SplitView
   MenuItemElement    MenuItem, ToolbarItem
+  KeyboardElement    every Layout and every FocusElement
+  FocusElement       Button, CheckBox, DatePicker, ItemsView, Picker,
+                     RadioButton, ScrollView, Slider, Stepper, Switch,
+                     TimePicker, WebView, every TextInput
   PageElement        Page, NavigationStack, TabView, SplitView
   BarElement         NavigationStack, TabView, SplitView, ModalStack
   text tiers only    TextSpan

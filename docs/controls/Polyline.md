@@ -12,7 +12,7 @@ Polyline([Point(0, 30), Point(20, 5), Point(40, 25), Point(60, 0)])
 
 Layer: `stateUI`. StateUI decides its geometry, its arrangement or its composition - in the core or the shared host layer - and a host draws what was decided.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Shape](tiers/Shape.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Shape](tiers/Shape.md) · [FilledShape](tiers/FilledShape.md) · [CorneredShape](tiers/CorneredShape.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -50,9 +50,9 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Shapes/PolylineContract
 <tbody><tr></tr><tr><td><code>points</code></td><td>property</td><td><code>[Point]</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
-## From [PropertyContainer](tiers/PropertyContainer.md)
+## From [AutomationElement](tiers/AutomationElement.md)
 
-What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
+What an element the platform's automation meets has - a drawn element, a menu's entry or a bar's item, an arrangement of pages: the name automation finds it by.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
@@ -183,18 +183,34 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 ## From [Shape](tiers/Shape.md)
 
-What every drawn shape has: what fills it, the line around it, how it fits its room, and a transform of its own drawing.
+What every drawn shape has: the line along it, how it fits its room, and a transform of its own drawing.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>contentMode</code></td><td>property</td><td><code>ContentMode</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>fill</code></td><td>property</td><td><code>Brush</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>geometryTransform</code></td><td>property</td><td><code>ViewTransform</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>stroke</code></td><td>property</td><td><code>Brush</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>dashPhase</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>dash</code></td><td>property</td><td><code>[Double]</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>lineCap</code></td><td>property</td><td><code>LineCap</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>lineWidth</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [FilledShape](tiers/FilledShape.md)
+
+A shape enclosing an area its fill paints - every shape but a line.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>fill</code></td><td>property</td><td><code>Brush</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [CorneredShape](tiers/CorneredShape.md)
+
+A shape whose outline turns corners - a rectangle, a polygon, a polyline, a path; neither a line nor an ellipse.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>lineJoin</code></td><td>property</td><td><code>LineJoin</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>miterLimit</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>lineWidth</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>

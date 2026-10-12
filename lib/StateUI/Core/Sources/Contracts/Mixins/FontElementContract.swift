@@ -7,9 +7,6 @@ public enum FontElementContract: Contract {
     /// The tier's name.
     public static let name = "FontElement"
 
-    /// A font is carried as values in the tree.
-    public static let tiers: [any Contract.Type] = [PropertyContainerContract.self]
-
     /// Whether the text is bold, italic, or both.
     public static let fontAttributes = ElementProperty<Self, FontAttributes>("fontAttributes", layer: .native)
 

@@ -20,7 +20,7 @@ struct MainPage: View {
 
 Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [BarElement](tiers/BarElement.md) · [PageElement](tiers/PageElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [BarElement](tiers/BarElement.md) · [PageElement](tiers/PageElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -58,9 +58,9 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Navigation/NavigationSt
 <tr><td colspan="9">AppKit: only through the host's own: goBack on NavigationStack: the host's toolbar or sheet entry called, no toolbar item or sheet touched</td></tr></tbody>
 </table>
 
-## From [PropertyContainer](tiers/PropertyContainer.md)
+## From [AutomationElement](tiers/AutomationElement.md)
 
-What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
+What an element the platform's automation meets has - a drawn element, a menu's entry or a bar's item, an arrangement of pages: the name automation finds it by.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>

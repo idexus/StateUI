@@ -65,7 +65,7 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testToolbarItem() { conform(ToolbarItemTests.self) }
     @MainActor func testToolbarItemGroup() { conform(ToolbarItemGroupTests.self) }
     @MainActor func testWindow() { conform(WindowTests.self) }
-    @MainActor func testPropertyContainer() { conform(PropertyContainerTests.self) }
+    @MainActor func testAutomationElement() { conform(AutomationElementTests.self) }
     @MainActor func testVisualElement1() { conform(VisualElementTests.self, part: Conformance.Part(1, of: 24)) }
     @MainActor func testVisualElement2() { conform(VisualElementTests.self, part: Conformance.Part(2, of: 24)) }
     @MainActor func testVisualElement3() { conform(VisualElementTests.self, part: Conformance.Part(3, of: 24)) }
@@ -107,6 +107,8 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testShape1() { conform(ShapeTests.self, part: Conformance.Part(1, of: 3)) }
     @MainActor func testShape2() { conform(ShapeTests.self, part: Conformance.Part(2, of: 3)) }
     @MainActor func testShape3() { conform(ShapeTests.self, part: Conformance.Part(3, of: 3)) }
+    @MainActor func testFilledShape() { conform(FilledShapeTests.self) }
+    @MainActor func testCorneredShape() { conform(CorneredShapeTests.self) }
     @MainActor func testTextualElement() { conform(TextualElementTests.self) }
     @MainActor func testTextStyleElement() { conform(TextStyleElementTests.self) }
     @MainActor func testFontElement() { conform(FontElementTests.self) }

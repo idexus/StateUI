@@ -45,7 +45,7 @@ extension Registry {
     /// its identifier where the toolkit gives an accessible one - `identifying` - its label, hint and heading level,
     /// and whether it is met at all.
     public func everyElementMeetsAssistiveTechnology(identifying: Bool = true) {
-        if identifying { everyElementRealizes(PropertyContainerContract.accessibilityIdentifier) }
+        if identifying { everyElementRealizes(AutomationElementContract.accessibilityIdentifier) }
         everyElementRealizes(VisualElementContract.accessibilityLabel)
         everyElementRealizes(VisualElementContract.accessibilityHint)
         everyElementRealizes(VisualElementContract.accessibilityHeading)

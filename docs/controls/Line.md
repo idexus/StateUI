@@ -14,7 +14,7 @@ Line()
 
 Layer: `stateUI`. StateUI decides its geometry, its arrangement or its composition - in the core or the shared host layer - and a host draws what was decided.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Shape](tiers/Shape.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Shape](tiers/Shape.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -33,13 +33,13 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (80)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>41 ✅ · 2 ☑️ · 35 ✓ · 2 –</td><td>custom <code>NSView</code> drawing <code>NSBezierPath</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>42 ✅ · 2 ☑️ · 35 ✓ · 1 –</td><td>custom <code>UIView</code> masked by a <code>CAShapeLayer</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>64 ✅ · 3 ☑️ · 10 ✓ · 2 –</td><td>custom <code>View</code> drawing <code>Path</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>66 ✅ · 13 ✓ · 1 –</td><td><code>Shapes.Path</code> in a custom <code>Grid</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>54 ✅ · 1 ☑️ · 22 ✓ · 3 –</td><td><code>GskPath</code> in a snapshot</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>59 ✅ · 1 ☑️ · 20 ✓</td><td>inline SVG <code>&lt;path&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (77)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>40 ✅ · 2 ☑️ · 35 ✓</td><td>custom <code>NSView</code> drawing <code>NSBezierPath</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>39 ✅ · 2 ☑️ · 35 ✓ · 1 –</td><td>custom <code>UIView</code> masked by a <code>CAShapeLayer</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>63 ✅ · 3 ☑️ · 10 ✓</td><td>custom <code>View</code> drawing <code>Path</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>63 ✅ · 13 ✓ · 1 –</td><td><code>Shapes.Path</code> in a custom <code>Grid</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>53 ✅ · 1 ☑️ · 22 ✓ · 1 –</td><td><code>GskPath</code> in a snapshot</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>56 ✅ · 1 ☑️ · 20 ✓</td><td>inline SVG <code>&lt;path&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Shapes/LineContract.swift`.
@@ -54,9 +54,9 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Shapes/LineContract.swi
 <tbody><tr></tr><tr><td><code>y2</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
-## From [PropertyContainer](tiers/PropertyContainer.md)
+## From [AutomationElement](tiers/AutomationElement.md)
 
-What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
+What an element the platform's automation meets has - a drawn element, a menu's entry or a bar's item, an arrangement of pages: the name automation finds it by.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
@@ -187,20 +187,15 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 ## From [Shape](tiers/Shape.md)
 
-What every drawn shape has: what fills it, the line around it, how it fits its room, and a transform of its own drawing.
+What every drawn shape has: the line along it, how it fits its room, and a transform of its own drawing.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>contentMode</code></td><td>property</td><td><code>ContentMode</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>fill</code></td><td>property</td><td><code>Brush</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>geometryTransform</code></td><td>property</td><td><code>ViewTransform</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>stroke</code></td><td>property</td><td><code>Brush</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>dashPhase</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>dash</code></td><td>property</td><td><code>[Double]</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>lineCap</code></td><td>property</td><td><code>LineCap</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>lineJoin</code></td><td>property</td><td><code>LineJoin</code></td><td>stateUI</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit, Android Views, GTK 4: a line has no corner its outline joins at</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>miterLimit</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit, Android Views, GTK 4: a line has no corner its outline joins at</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>lineWidth</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>

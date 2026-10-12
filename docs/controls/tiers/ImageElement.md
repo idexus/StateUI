@@ -10,8 +10,6 @@ Button(icon: "trash.png")
     .accessibilityLabel("Delete")
 ```
 
-Wears: [PropertyContainer](PropertyContainer.md)
-
 Worn by: [Button](../Button.md) · [Image](../Image.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/ImageElementContract.swift`.

@@ -9,9 +9,7 @@ Text("A paragraph long enough to wrap onto several lines, read more easily with 
     .lineHeight(1.4)
 ```
 
-Wears: [PropertyContainer](PropertyContainer.md)
-
-Worn by: [Text](../Text.md) · [TextSpan](../TextSpan.md)
+Worn by: [Text](../Text.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/LineHeightElementContract.swift`.
 

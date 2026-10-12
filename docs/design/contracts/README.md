@@ -36,7 +36,7 @@ a property and its value meet in the compiler and nothing is spelled twice.
       members    lineBreak      ElementProperty<Self, LineBreak>
                  maximumLines   ElementProperty<Self, Int>     travels: false
 
-  TextContract.worn    Text, View, VisualElement, PropertyContainer, TextualElement,
+  TextContract.worn    Text, View, VisualElement, AutomationElement, TextualElement,
                         TextStyleElement, FontElement, TextAlignmentElement, ...
                         each once, in the order met - depth first,
                         in declaration order
@@ -89,9 +89,10 @@ A tier mirrors a Swift protocol of the same name in `Views`: an element's
 view conforms to the protocols whose tiers its contract wears, and a
 protocol's modifiers write the tier's members. A tier wears the tiers its
 protocol refines, so `View` wears `VisualElement`, which wears
-`PropertyContainer`. Two tiers stand apart: `PageElement` has no protocol -
-a view's page modifiers write its members - and `BarElementContract` wears
-nothing, though `BarElement` refines `PropertyContainer`.
+`AutomationElement`. `PropertyContainer`, the protocol of anything holding
+values - a control, a `Style`, a `TextSpan` - has no tier: it promises no
+member, so a mixin refining it alone wears nothing. `PageElement` has no
+protocol - a view's page modifiers write its members.
 
 ## The contracts of the library
 

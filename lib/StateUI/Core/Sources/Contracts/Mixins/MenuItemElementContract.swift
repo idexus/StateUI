@@ -7,8 +7,8 @@ public enum MenuItemElementContract: Contract {
     /// The tier's name.
     public static let name = "MenuItemElement"
 
-    /// An item carries values in the tree.
-    public static let tiers: [any Contract.Type] = [PropertyContainerContract.self]
+    /// An item is found by automation.
+    public static let tiers: [any Contract.Type] = [AutomationElementContract.self]
 
     /// The item was chosen.
     public static let clicked = ElementEvent<Self, Void>("clicked", layer: .native)

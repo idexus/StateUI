@@ -15,8 +15,6 @@ VStack {
 .lineWidth(1)
 ```
 
-Wears: [PropertyContainer](PropertyContainer.md)
-
 Worn by: [Button](../Button.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [RadioButton](../RadioButton.md) · [ScrollView](../ScrollView.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/BorderElementContract.swift`.

@@ -11,7 +11,7 @@
 ///         .icon("trash.png")
 ///         .isDestructive(true)
 ///         .onClicked { delete() }
-public protocol MenuItemElement: PropertyContainer {}
+public protocol MenuItemElement: AutomationElement {}
 
 extension MenuItemElement {
     /// What the item says. Usually given in the initializer instead.

@@ -1,0 +1,9 @@
+# revision 1.1
+Path.lineJoin: ✅
+Path.miterLimit: ✅
+Polygon.lineJoin: ✅
+Polygon.miterLimit: ✅
+Polyline.lineJoin: ✅
+Polyline.miterLimit: ✅
+Rectangle.lineJoin: ✅
+Rectangle.miterLimit: ✅

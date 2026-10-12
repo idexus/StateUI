@@ -35,12 +35,12 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [CheckBox](CheckBox.md) | 74 | 37 ✅ · 2 ☑️ · 35 ✓ | 30 ✅ · 2 ☑️ · 38 ✓ · 4 – | 55 ✅ · 3 ☑️ · 12 ✓ · 3 – | 61 ✅ · 1 ☑️ · 12 ✓ | 47 ✅ · 1 ☑️ · 25 ✓ · 1 – | 53 ✅ · 1 ☑️ · 20 ✓ |
 | [DatePicker](DatePicker.md) | 85 | 41 ✅ · 2 ☑️ · 36 ✓ · 5 – | 32 ✅ · 1 ☑️ · 37 ✓ · 10 – | 61 ✅ · 3 ☑️ · 15 ✓ · 3 – | 69 ✅ · 3 ☑️ · 12 ✓ | 55 ✅ · 2 ☑️ · 26 ✓ · 1 – | 58 ✅ · 1 ☑️ · 20 ✓ · 4 – |
 | [Divider](Divider.md) | 66 | 29 ✅ · 2 ☑️ · 35 ✓ | 28 ✅ · 2 ☑️ · 35 ✓ · 1 – | 52 ✅ · 3 ☑️ · 10 ✓ | 52 ✅ · 1 ☑️ · 12 ✓ | 42 ✅ · 1 ☑️ · 22 ✓ · 1 – | 45 ✅ · 1 ☑️ · 20 ✓ |
-| [Ellipse](Ellipse.md) | 76 | 37 ✅ · 2 ☑️ · 35 ✓ · 2 – | 38 ✅ · 2 ☑️ · 35 ✓ · 1 – | 60 ✅ · 3 ☑️ · 10 ✓ · 2 – | 62 ✅ · 13 ✓ · 1 – | 50 ✅ · 1 ☑️ · 22 ✓ · 3 – | 55 ✅ · 1 ☑️ · 20 ✓ |
+| [Ellipse](Ellipse.md) | 74 | 37 ✅ · 2 ☑️ · 35 ✓ | 36 ✅ · 2 ☑️ · 35 ✓ · 1 – | 60 ✅ · 3 ☑️ · 10 ✓ | 60 ✅ · 13 ✓ · 1 – | 50 ✅ · 1 ☑️ · 22 ✓ · 1 – | 53 ✅ · 1 ☑️ · 20 ✓ |
 | [Grid](Grid.md) | 79 | 41 ✅ · 1 ☑️ · 35 ✓ | 38 ✅ · 1 ☑️ · 37 ✓ · 1 – | 61 ✅ · 3 ☑️ · 12 ✓ | 64 ✅ · 1 ☑️ · 12 ✓ | 53 ✅ · 1 ☑️ · 23 ✓ · 1 – | 57 ✅ · 1 ☑️ · 20 ✓ |
 | [HStack](HStack.md) | 76 | 38 ✅ · 1 ☑️ · 35 ✓ | 35 ✅ · 1 ☑️ · 37 ✓ · 1 – | 58 ✅ · 3 ☑️ · 12 ✓ | 61 ✅ · 1 ☑️ · 12 ✓ | 50 ✅ · 1 ☑️ · 23 ✓ · 1 – | 54 ✅ · 1 ☑️ · 20 ✓ |
 | [Image](Image.md) | 69 | 31 ✅ · 2 ☑️ · 35 ✓ | 30 ✅ · 2 ☑️ · 35 ✓ · 1 – | 53 ✅ · 3 ☑️ · 10 ✓ | 54 ✅ · 13 ✓ · 1 – | 44 ✅ · 1 ☑️ · 22 ✓ · 1 – | 47 ✅ · 1 ☑️ · 20 ✓ |
 | [ItemsView](ItemsView.md) | 81 | 39 ✅ · 2 ☑️ · 39 ✓ | 33 ✅ · 2 ☑️ · 41 ✓ · 4 – | 63 ✅ · 3 ☑️ · 13 ✓ | 67 ✅ · 1 ☑️ · 12 ✓ | 54 ✅ · 1 ☑️ · 23 ✓ · 1 – | 58 ✅ · 1 ☑️ · 21 ✓ |
-| [Line](Line.md) | 80 | 41 ✅ · 2 ☑️ · 35 ✓ · 2 – | 42 ✅ · 2 ☑️ · 35 ✓ · 1 – | 64 ✅ · 3 ☑️ · 10 ✓ · 2 – | 66 ✅ · 13 ✓ · 1 – | 54 ✅ · 1 ☑️ · 22 ✓ · 3 – | 59 ✅ · 1 ☑️ · 20 ✓ |
+| [Line](Line.md) | 77 | 40 ✅ · 2 ☑️ · 35 ✓ | 39 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 3 ☑️ · 10 ✓ | 63 ✅ · 13 ✓ · 1 – | 53 ✅ · 1 ☑️ · 22 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ |
 | [Map](Map.md) | 74 | 36 ✅ · 2 ☑️ · 36 ✓ | 35 ✅ · 2 ☑️ · 36 ✓ · 1 – | 74 🧩 | 74 🧩 | 74 🧩 | 74 🧩 |
 | [Path](Path.md) | 77 | 40 ✅ · 2 ☑️ · 35 ✓ | 39 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 3 ☑️ · 10 ✓ | 63 ✅ · 13 ✓ · 1 – | 53 ✅ · 1 ☑️ · 22 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ |
 | [Picker](Picker.md) | 87 | 43 ✅ · 2 ☑️ · 36 ✓ · 1 – | 36 ✅ · 2 ☑️ · 40 ✓ · 4 – | 61 ✅ · 3 ☑️ · 13 ✓ · 3 – | 72 ✅ · 1 ☑️ · 12 ✓ | 53 ✅ · 1 ☑️ · 24 ✓ · 7 – | 59 ✅ · 1 ☑️ · 20 ✓ · 3 – |
@@ -62,10 +62,10 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 76 | 38 ✅ · 1 ☑️ · 35 ✓ | 36 ✅ · 1 ☑️ · 36 ✓ · 1 – | 59 ✅ · 3 ☑️ · 11 ✓ | 61 ✅ · 1 ☑️ · 12 ✓ | 51 ✅ · 1 ☑️ · 22 ✓ · 1 – | 54 ✅ · 1 ☑️ · 20 ✓ |
 | [WebView](WebView.md) | 82 | 44 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 2 ☑️ · 38 ✓ · 1 – | 63 ✅ · 3 ☑️ · 12 ✓ · 3 – | 49 ✅ · 13 ✓ · 19 – | 56 ✅ · 1 ☑️ · 24 ✓ · 1 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [ZStack](ZStack.md) | 75 | 37 ✅ · 1 ☑️ · 35 ✓ | 34 ✅ · 1 ☑️ · 37 ✓ · 1 – | 57 ✅ · 3 ☑️ · 12 ✓ | 60 ✅ · 1 ☑️ · 12 ✓ | 49 ✅ · 1 ☑️ · 23 ✓ · 1 – | 53 ✅ · 1 ☑️ · 20 ✓ |
-| ✅ |  | 1286 | 1213 | 1944 | 2024 | 1668 | 1803 |
+| ✅ |  | 1285 | 1208 | 1943 | 2019 | 1667 | 1798 |
 | ✓ |  | 1175 | 1210 | 365 | 395 | 748 | 641 |
-| – |  | 31 | 75 | 42 | 35 | 48 | 18 |
-| **Met** | 2596 | **2492** | **2498** | **2351** | **2454** | **2464** | **2462** |
+| – |  | 27 | 75 | 38 | 35 | 44 | 18 |
+| **Met** | 2591 | **2487** | **2493** | **2346** | **2449** | **2459** | **2457** |
 | 🧩 |  | 0 | 0 | 74 | 74 | 74 | 74 |
 <!-- controls:end -->
 
@@ -89,7 +89,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Scene](Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [SplitView](SplitView.md) | 12 | 9 ✅ · 1 ☑️ · 1 – | 9 ✅ · 1 ✓ · 2 – | 5 ✅ · 2 ☑️ · 3 ✓ · 2 – | 10 ✅ · 2 ☑️ | 6 ✅ · 2 ✓ · 4 – | 9 ✅ · 2 ☑️ · 1 – |
 | [TabView](TabView.md) | 10 | 7 ✅ · 1 ☑️ · 1 ✓ | 8 ✅ · 2 – | 7 ✅ · 1 ☑️ · 2 – | 10 ✅ | 6 ✅ · 4 – | 9 ✅ · 1 – |
-| [TextSpan](TextSpan.md) | 12 | 9 ✅ · 1 – | 10 ✅ | 8 ✅ · 1 – | 9 ✅ · 1 – | 10 ✅ | 10 ✅ |
+| [TextSpan](TextSpan.md) | 10 | 9 ✅ · 1 – | 10 ✅ | 8 ✅ · 1 – | 9 ✅ · 1 – | 10 ✅ | 10 ✅ |
 | [TextSpans](TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ToolbarItem](ToolbarItem.md) | 9 | 5 ✅ · 1 ✓ · 1 – | 7 ✅ · 1 ✓ · 1 – | 6 ✅ · 1 – | 9 ✅ | 7 ✅ · 1 ✓ · 1 – | 9 ✅ |
@@ -98,7 +98,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | ✅ |  | 93 | 85 | 69 | 118 | 81 | 93 |
 | ✓ |  | 20 | 19 | 16 | 2 | 16 | 9 |
 | – |  | 3 | 17 | 26 | 2 | 27 | 19 |
-| **Met** | 133 | **116** | **121** | **111** | **122** | **124** | **121** |
+| **Met** | 131 | **116** | **121** | **111** | **122** | **124** | **121** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- structure:end -->
 
@@ -107,13 +107,15 @@ The scene, the window and the page an application is made of, the arrangements a
 Members many elements share, declared once.
 
 <!-- tiers:begin -->
-- [PropertyContainer](tiers/PropertyContainer.md) - What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
+- [AutomationElement](tiers/AutomationElement.md) - What an element the platform's automation meets has - a drawn element, a menu's entry or a bar's item, an arrangement of pages: the name automation finds it by.
 - [VisualElement](tiers/VisualElement.md) - What every drawn element has: its size and its bounds, how it is shown and turned, whether it answers input and holds the keyboard focus, the visual states it enters, and what a screen reader says about it.
 - [View](tiers/View.md) - What every view a layout positions has: where it sits in its layout, the space kept around it, and the gestures, drags and frame reports it answers.
 - [Layout](tiers/Layout.md) - What every layout has: the screen's unsafe strips it keeps clear of, and whether its children are clipped or let input through.
 - [Stack](tiers/Stack.md) - What both stacks have: the space between their children.
 - [TextInput](tiers/TextInput.md) - What every field a user types into has: the text's limits and caret, the keyboard it asks for, and the placeholder shown while it is empty.
-- [Shape](tiers/Shape.md) - What every drawn shape has: what fills it, the line around it, how it fits its room, and a transform of its own drawing.
+- [Shape](tiers/Shape.md) - What every drawn shape has: the line along it, how it fits its room, and a transform of its own drawing.
+- [FilledShape](tiers/FilledShape.md) - A shape enclosing an area its fill paints - every shape but a line.
+- [CorneredShape](tiers/CorneredShape.md) - A shape whose outline turns corners - a rectangle, a polygon, a polyline, a path; neither a line nor an ellipse.
 - [TextualElement](tiers/TextualElement.md) - What every element showing words has: the words, and the case they are drawn in.
 - [TextStyleElement](tiers/TextStyleElement.md) - How text looks wherever it is drawn: its colour and the space between its letters.
 - [FontElement](tiers/FontElement.md) - The font text is drawn in: its family, its size, its weight and slant, and whether it follows the user's text-size setting.

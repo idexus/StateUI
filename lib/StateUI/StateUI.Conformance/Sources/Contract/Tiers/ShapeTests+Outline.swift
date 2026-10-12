@@ -4,14 +4,14 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// How a shape's outline is drawn, read off what the host draws: its dashes and where they start, its ends, and the
-/// joins of its corners - each case made for every shape, a corner's on a shape that has one.
+/// How a shape's outline is drawn, read off what the host draws: its dashes, where they start, and its ends - each
+/// case made for every shape.
 /// Design: docs/design/host/conformance.md#a-drawing-read-by-its-colours
 extension ShapeTests {
     /// The outline cases.
     @MainActor
     static func outlineCases(_ element: String) -> [ConformanceCase] {
-        [dashed(element), dashShifted(element), capped(element), joined(element), limited(element)]
+        [dashed(element), dashShifted(element), capped(element)]
     }
 
     /// A dashed outline leaves gaps along its run, which a solid one does not.
@@ -78,54 +78,6 @@ extension ShapeTests {
         }
     }
 
-    /// A corner is mitred to a point, and cut across once the tree bevels it.
-    @MainActor
-    static func joined(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).joinsItsCornersAsTheTreeSays", proves: [
-            Covered(ShapeContract.lineJoin, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
-            let bevelled = State(wrappedValue: false)
-            s.start {
-                Specimens.page(element, outlined(element, width: 8) + [
-                    Write(ShapeContract.lineJoin, bevelled.wrappedValue ? LineJoin.bevel : .miter),
-                    Write(ShapeContract.miterLimit, 10.0),
-                ], beside: [Button("Bevel").onClicked { bevelled.wrappedValue = true }.id("change")])
-            }
-            guard let tip = Self.cornerTip(element) else { throw s.absent(Self.cornerless(element)) }
-            let shape = try s.specimen(element)
-            try s.settle { try s.shows(.red, on: shape, at: tip) }
-            s.expect(try s.color(of: shape, at: tip), shows: .red, "a mitred corner reaches its point")
-
-            try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.color(of: shape, at: tip) == nil }
-            s.expect(try s.color(of: shape, at: tip), nil, "a bevelled one is cut across")
-        }
-    }
-
-    /// A mitred corner is cut across where its point would reach past the limit the tree sets.
-    @MainActor
-    static func limited(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).limitsItsMitresAsTheTreeSays", proves: [
-            Covered(ShapeContract.miterLimit, on: element),
-        ], needs: [Covered(ShapeContract.lineJoin, on: element), Covered(ButtonContract.clicked)]) { s in
-            let limited = State(wrappedValue: false)
-            s.start {
-                Specimens.page(element, outlined(element, width: 8) + [
-                    Write(ShapeContract.lineJoin, LineJoin.miter),
-                    Write(ShapeContract.miterLimit, limited.wrappedValue ? 1.0 : 10.0),
-                ], beside: [Button("Limit").onClicked { limited.wrappedValue = true }.id("change")])
-            }
-            guard let tip = Self.cornerTip(element) else { throw s.absent(Self.cornerless(element)) }
-            let shape = try s.specimen(element)
-            try s.settle { try s.shows(.red, on: shape, at: tip) }
-            s.expect(try s.color(of: shape, at: tip), shows: .red, "a right angle's mitre within ten")
-
-            try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.color(of: shape, at: tip) == nil }
-            s.expect(try s.color(of: shape, at: tip), nil, "cut across past a limit of one")
-        }
-    }
-
     /// `element` outlined in red, `width` wide, filled with nothing, 40 by 40, a figure with a corner set in from its
     /// room where it has points of its own.
     @MainActor
@@ -173,20 +125,5 @@ extension ShapeTests {
             }
         default: return (10...30).map { Point(Double($0), 8) }
         }
-    }
-
-    /// A point just inside the outer side of a corner, eight wide, that a mitre covers and a bevel leaves bare; nil
-    /// for a shape with no corner.
-    static func cornerTip(_ element: String) -> Point? {
-        switch element {
-        case "Line", "Ellipse": nil
-        case "Rectangle": Point(0, 0)
-        default: Point(35, 5)
-        }
-    }
-
-    /// Why a shape's corners prove nothing: it has none.
-    static func cornerless(_ element: String) -> String {
-        "\(element == "Line" ? "a line" : "an ellipse") has no corner its outline joins at"
     }
 }

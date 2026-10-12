@@ -7,9 +7,6 @@ public enum TextStyleElementContract: Contract {
     /// The tier's name.
     public static let name = "TextStyleElement"
 
-    /// Text carries values in the tree.
-    public static let tiers: [any Contract.Type] = [PropertyContainerContract.self]
-
     /// The space between the letters.
     public static let tracking = ElementProperty<Self, Double>(
         "tracking", layer: .native, moves: .text)

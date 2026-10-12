@@ -293,10 +293,13 @@ vocabulary:
 - `Path` with path data;
 - `Polygon` and `Polyline` with `Point` values.
 
-Common shape modifiers include `fill`, `stroke`, `lineWidth` and the dash
-settings, `contentMode`, and `geometryTransform`. Geometry-specific modifiers
-such as a rectangle's corner radius or line endpoints remain on the matching
-shape.
+Every shape takes `stroke`, `lineWidth`, the dash settings and `lineCap`,
+`contentMode`, and `geometryTransform`. A shape enclosing an area - every
+shape but `Line` - takes `fill`, and a shape whose outline turns corners -
+`Rectangle`, `Polygon`, `Polyline`, `Path` - takes `lineJoin` and
+`miterLimit`. Neither is offered where it would draw nothing: a line's
+`fill` does not compile. Geometry-specific modifiers such as a rectangle's
+corner radius or line endpoints remain on the matching shape.
 
 ```swift
 Rectangle()

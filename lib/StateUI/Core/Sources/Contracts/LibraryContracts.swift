@@ -8,13 +8,15 @@
 @_spi(Host) public enum LibraryContracts {
     /// The tiers, in the dictionary's order.
     public static let tiers: [any Contract.Type] = [
-        PropertyContainerContract.self,
+        AutomationElementContract.self,
         VisualElementContract.self,
         ViewContract.self,
         LayoutContract.self,
         StackContract.self,
         TextInputContract.self,
         ShapeContract.self,
+        FilledShapeContract.self,
+        CorneredShapeContract.self,
         TextualElementContract.self,
         TextStyleElementContract.self,
         FontElementContract.self,

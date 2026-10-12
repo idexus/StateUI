@@ -11,7 +11,7 @@ public enum EllipseContract: ElementContract {
     public static let layer: ElementLayer = .stateUI
 
     /// An ellipse is a shape.
-    public static let tiers: [any Contract.Type] = [ShapeContract.self]
+    public static let tiers: [any Contract.Type] = [FilledShapeContract.self]
 
     /// The element's own members.
     public static let members: [any ContractMember] = []

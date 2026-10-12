@@ -1,0 +1,6 @@
+# revision 1.1
+Ellipse.fill: ✅
+Path.fill: ✅
+Polygon.fill: ✅
+Polyline.fill: ✅
+Rectangle.fill: ✅

@@ -8,7 +8,8 @@ import XCTest
 ///
 /// A member is reached through its contract, never by a token and a list of
 /// values; a view stands where a view stands, never among a text's runs or a
-/// map's markers; a scene is made of windows, and an application of scenes. Each closed road is written here
+/// map's markers; a scene is made of windows, and an application of scenes; a
+/// modifier is offered only where it can be honoured. Each closed road is written here
 /// the way an application would write it, and must NOT compile against the
 /// library's public module; the open road beside it must. The pair is what makes
 /// the refusal mean something: the two listings differ in that one spelling, so
@@ -200,6 +201,44 @@ final class ContractRoadsTests: XCTestCase {
             name: "a view standing in a menu",
             closed: #"_ = Menu("File") { Text("New") }"#,
             open: #"_ = Menu("File") { MenuItem("New") }"#),
+        Road(
+            name: "keys taken by a view that never holds the keyboard",
+            closed: #"_ = Text("Row").onKeyPressed(.upArrow) { _ in }"#,
+            open: #"_ = VStack { Text("Row") }.onKeyPressed(.upArrow) { _ in }"#),
+        Road(
+            name: "the keyboard heard on a view that never takes it",
+            closed: """
+                @State var focused = false
+                _ = Text("Name").isFocused($focused)
+                """,
+            open: """
+                @State var focused = false
+                _ = TextField("Name").isFocused($focused)
+                """),
+        Road(
+            name: "the keyboard put on a view that never takes it",
+            closed: "_ = try await Aim(Text.self).focus()",
+            open: "_ = try await Aim(TextField.self).focus()"),
+        Road(
+            name: "a fill inside a line",
+            closed: "_ = Line().x2(40).fill(.red)",
+            open: "_ = Polyline([Point(0, 0), Point(40, 0)]).fill(.red)"),
+        Road(
+            name: "a corner's join on an ellipse",
+            closed: "_ = Ellipse().lineJoin(.round)",
+            open: "_ = Rectangle().lineJoin(.round)"),
+        Road(
+            name: "a line's height on a run of text",
+            closed: #"_ = Text().spans { TextSpan("Hi").lineHeight(1.2) }"#,
+            open: #"_ = Text().spans { TextSpan("Hi") }.lineHeight(1.2)"#),
+        Road(
+            name: "a name for automation on a run of text",
+            closed: #"_ = Text().spans { TextSpan("Hi").accessibilityIdentifier("greeting") }"#,
+            open: #"_ = Text().spans { TextSpan("Hi") }.accessibilityIdentifier("greeting")"#),
+        Road(
+            name: "a name for automation on a style",
+            closed: #"_ = Style<Button>().accessibilityIdentifier("save")"#,
+            open: #"_ = Button("Save").accessibilityIdentifier("save")"#),
     ]
 
     /// Each closed road fails to compile, and the open road beside it compiles.

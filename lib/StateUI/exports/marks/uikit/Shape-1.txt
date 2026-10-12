@@ -1,41 +1,27 @@
-# revision 3.1
-Ellipse.contentMode: does not apply - read contentMode of Ellipse - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
+# revision 4.1
 Ellipse.dashPhase: ✅
-Ellipse.fill: ✅
-Ellipse.geometryTransform: ✅
+Ellipse.geometryTransform: does not apply - read geometryTransform of Ellipse - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
 Ellipse.lineCap: ✅
 Ellipse.lineWidth: ✅
-Ellipse.miterLimit: – an ellipse has no corner its outline joins at
-Line.contentMode: ✅
+Ellipse.stroke: ✅
+Line.contentMode: does not apply - read contentMode of Line - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
 Line.dash: ✅
 Line.dashPhase: ✅
-Line.lineJoin: – a line has no corner its outline joins at
-Line.miterLimit: ✅
-Line.stroke: ✅
+Line.geometryTransform: ✅
+Path.contentMode: ✅
 Path.dash: ✅
-Path.fill: ✅
-Path.geometryTransform: does not apply - read geometryTransform of Path - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
 Path.lineCap: ✅
-Path.lineJoin: ✅
 Path.lineWidth: ✅
-Path.stroke: ✅
-Polygon.contentMode: does not apply - read contentMode of Polygon - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
 Polygon.dashPhase: ✅
-Polygon.fill: ✅
-Polygon.geometryTransform: ✅
+Polygon.geometryTransform: does not apply - read geometryTransform of Polygon - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
 Polygon.lineCap: ✅
 Polygon.lineWidth: ✅
-Polygon.miterLimit: ✅
-Polyline.contentMode: ✅
+Polygon.stroke: ✅
+Polyline.contentMode: does not apply - read contentMode of Polyline - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
 Polyline.dash: ✅
 Polyline.dashPhase: ✅
-Polyline.lineJoin: ✅
-Polyline.miterLimit: ✅
-Polyline.stroke: ✅
+Polyline.geometryTransform: ✅
+Rectangle.contentMode: ✅
 Rectangle.dash: ✅
-Rectangle.fill: ✅
-Rectangle.geometryTransform: does not apply - read geometryTransform of Rectangle - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
 Rectangle.lineCap: ✅
-Rectangle.lineJoin: ✅
 Rectangle.lineWidth: ✅
-Rectangle.stroke: ✅

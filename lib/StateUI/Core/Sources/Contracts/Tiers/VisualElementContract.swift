@@ -8,8 +8,8 @@ public enum VisualElementContract: Contract {
     /// The tier's name.
     public static let name = "VisualElement"
 
-    /// Every drawn element carries values in the tree.
-    public static let tiers: [any Contract.Type] = [PropertyContainerContract.self]
+    /// Every drawn element is found by automation.
+    public static let tiers: [any Contract.Type] = [AutomationElementContract.self]
 
     /// How deep a heading the element is, for a user moving by headings.
     public static let accessibilityHeading = ElementProperty<Self, AccessibilityHeadingLevel>(

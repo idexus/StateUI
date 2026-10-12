@@ -14,7 +14,7 @@ Button("Send")
     .accessibilityHint("Sends the message")
 ```
 
-Wears: [PropertyContainer](PropertyContainer.md)
+Wears: [AutomationElement](AutomationElement.md)
 
 Worn by: [ActivityIndicator](../ActivityIndicator.md) · [Button](../Button.md) · [Canvas](../Canvas.md) · [CheckBox](../CheckBox.md) · [DatePicker](../DatePicker.md) · [Divider](../Divider.md) · [Ellipse](../Ellipse.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [Image](../Image.md) · [ItemsView](../ItemsView.md) · [Line](../Line.md) · [Map](../Map.md) · [Path](../Path.md) · [Picker](../Picker.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [ProgressBar](../ProgressBar.md) · [RadioButton](../RadioButton.md) · [Rectangle](../Rectangle.md) · [ScrollView](../ScrollView.md) · [SearchField](../SearchField.md) · [Slider](../Slider.md) · [Spacer](../Spacer.md) · [Stepper](../Stepper.md) · [Switch](../Switch.md) · [Text](../Text.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TimePicker](../TimePicker.md) · [VStack](../VStack.md) · [WebView](../WebView.md) · [ZStack](../ZStack.md)
 

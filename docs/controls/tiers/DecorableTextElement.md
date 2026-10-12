@@ -9,8 +9,6 @@ Text("Was 20, now 15")
     .textDecorations(.strikethrough)
 ```
 
-Wears: [PropertyContainer](PropertyContainer.md)
-
 Worn by: [Text](../Text.md) · [TextSpan](../TextSpan.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/DecorableTextElementContract.swift`.

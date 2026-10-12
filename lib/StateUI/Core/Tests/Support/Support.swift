@@ -766,7 +766,7 @@ enum SourceTree {
         "PropertyContainer.swift", "ModifiableElement.swift", "VisualElement.swift",
         "VisualElement+Properties.swift", "VisualElement+Accessibility.swift", "View.swift",
         "View+Placement.swift", "View+Gestures.swift", "Layout.swift", "Stack.swift",
-        "Shape.swift", "TextInput.swift",
+        "Shape.swift", "FilledShape.swift", "CorneredShape.swift", "TextInput.swift",
     ]
 
     /// The files under Views/ that describe controls, by name: a file's folder

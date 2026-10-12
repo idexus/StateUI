@@ -1,4 +1,4 @@
-# revision 2.1
+# revision 1.1
 ActivityIndicator.accessibilityIdentifier: ✅
 Button.accessibilityIdentifier: ✅
 Canvas.accessibilityIdentifier: ✅
@@ -32,7 +32,6 @@ TabView.accessibilityIdentifier: ✅
 Text.accessibilityIdentifier: ✅
 TextEditor.accessibilityIdentifier: ✅
 TextField.accessibilityIdentifier: ✅
-TextSpan.accessibilityIdentifier: not realized
 TimePicker.accessibilityIdentifier: ✅
 ToolbarItem.accessibilityIdentifier: ✅
 VStack.accessibilityIdentifier: ✅
