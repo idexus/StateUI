@@ -472,9 +472,10 @@ void stateui_winui_set_caption(StateUIObjectRef control, char const *utf8);
 
 /// A button's look: what fills it - the platform's for none, kept `underPointer` and `pressed` of its opacity under
 /// the pointer and pressed - its outline `lineWidth` DIPs wide, and its corners' radius, less than 0 for the
-/// platform's.
+/// platform's; or, `drawsOval`, an oval `width` by `height` DIPs holding its fill and its outline.
 void stateui_winui_button_set_look(StateUIObjectRef button, StateUIBrush background, StateUIBrush stroke,
-                                   double lineWidth, double cornerRadius, double underPointer, double pressed);
+                                   double lineWidth, double cornerRadius, bool drawsOval, double width,
+                                   double height, double underPointer, double pressed);
 
 /// What a button shows: its words - wrapped onto more lines or cut short with an ellipsis where they do not fit,
 /// else on one line - and the picture the first of the files `icons` names that the pictures hold (each ended by

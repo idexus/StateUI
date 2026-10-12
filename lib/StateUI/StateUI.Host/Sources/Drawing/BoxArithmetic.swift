@@ -26,14 +26,14 @@
     }
 
     /// The radius `outline`'s corners round by in a room `width` by `height`: none for a rectangle, a rounded one's
-    /// as far as the room holds it, half the shorter side for a capsule - and for an oval, where a toolkit rounds
-    /// only corners.
+    /// as far as the room holds it, half the shorter side for a capsule; none for an oval, which has no corner and
+    /// is drawn as an oval.
     /// Design: docs/design/host/layout.md#a-box
     public static func cornerRadius(of outline: ContainerShape, width: Double, height: Double) -> Double {
         switch outline {
-        case .rectangle: 0
+        case .rectangle, .ellipse: 0
         case .roundedRectangle(let radius): fitted(radius, width: width, height: height)
-        case .capsule, .ellipse: min(width, height) / 2
+        case .capsule: min(width, height) / 2
         }
     }
 

@@ -65,6 +65,17 @@ pressed: its fill is drawn a little fainter each time, as WinUI's own buttons
 are, its words and outline as they are - WinUI's template otherwise draws
 those states in the platform's colours.
 
+## An oval button
+
+A button's corners round by one radius each, so its own border draws no oval.
+An oval button's background is a brush of the host's, a
+`XamlCompositionBrushBase` whose surface the compositor draws: an ellipse of
+the button's size, filled and outlined inside its edge, the button's own
+border none. It is written where the button's look is, in the lightweight
+resources under the pointer and pressed too, its fill fainter there, and
+again at each size the button takes. Its fill is one colour - a gradient's
+first.
+
 ## Runs of words
 
 A label's spans are its words, run by run: each a `Run` among the text

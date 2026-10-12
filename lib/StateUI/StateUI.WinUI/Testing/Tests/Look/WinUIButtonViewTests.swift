@@ -121,17 +121,19 @@ final class WinUIButtonViewTests: XCTestCase {
         }
     }
 
-    /// An oval button is a capsule at its size: its corners round by half its shorter side, however wide it is.
-    func testAnOvalButtonRoundsItsCornersByHalfItsShorterSide() {
+    /// An oval button's own border and corners stand none: the oval its background draws is its only outline, no
+    /// capsule over it.
+    func testAnOvalButtonWearsNoBorderOrCornersOfItsOwn() {
         onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
-                    Button().shape(.ellipse).width(60).height(40).horizontalAlignment(.start)
+                    Button().shape(.ellipse).stroke(.red).lineWidth(2).width(60).height(40).horizontalAlignment(.start)
                 }
             }
             let button = host.views(WinUIButtonView.self)[0]
-            host.settle { Self.read(button, "cornerRadius").hasPrefix("20") }
-            XCTAssertTrue(Self.read(button, "cornerRadius").hasPrefix("20"), Self.read(button, "cornerRadius"))
+            host.settle { Self.read(button, "borderThickness").hasPrefix("0") }
+            XCTAssertTrue(Self.read(button, "borderThickness").hasPrefix("0"), Self.read(button, "borderThickness"))
+            XCTAssertTrue(Self.read(button, "cornerRadius").hasPrefix("0"), Self.read(button, "cornerRadius"))
         }
     }
 

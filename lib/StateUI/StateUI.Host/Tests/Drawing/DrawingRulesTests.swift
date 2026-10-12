@@ -132,7 +132,7 @@ final class DrawingRulesTests: XCTestCase {
     }
 
     /// A box's corners round by none for a rectangle, by a rounded one's radius as far as the room holds it, and by
-    /// half the shorter side for a capsule at every size - for an oval too, where a toolkit rounds only corners.
+    /// half the shorter side for a capsule at every size; an oval has none - it is no capsule.
     func testAnOutlineRoundsItsCornersByItsRoom() {
         XCTAssertEqual(BoxArithmetic.cornerRadius(of: .rectangle, width: 100, height: 20), 0)
         XCTAssertEqual(BoxArithmetic.cornerRadius(of: .roundedRectangle(30), width: 100, height: 20), 10)
@@ -140,7 +140,7 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(BoxArithmetic.cornerRadius(of: .capsule, width: 100, height: 20), 10)
         XCTAssertEqual(BoxArithmetic.cornerRadius(of: .capsule, width: 100, height: 60), 30, "it follows the size")
         XCTAssertEqual(BoxArithmetic.cornerRadius(of: .capsule, width: 30, height: 80), 15, "a tall one's ends")
-        XCTAssertEqual(BoxArithmetic.cornerRadius(of: .ellipse, width: 100, height: 20), 10)
+        XCTAssertEqual(BoxArithmetic.cornerRadius(of: .ellipse, width: 100, height: 20), 0, "an oval, no capsule")
     }
 
     /// An outline is a rectangle where the tree asks none, a rounded one's radius never below nothing; it is drawn

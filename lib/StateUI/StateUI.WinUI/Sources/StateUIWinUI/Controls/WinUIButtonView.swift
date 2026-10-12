@@ -89,8 +89,8 @@ final class WinUIButtonView: WinUIView {
     }
 
     /// What fills the button, its outline and its shape; nil for the platform's own. Its corners round as far as
-    /// its size holds them (`BoxArithmetic.cornerRadius`) - a capsule's, and an oval's, which a button's corners
-    /// cannot draw, by half its shorter side.
+    /// its size holds them (`BoxArithmetic.cornerRadius`), a capsule's by half its shorter side; an oval, which a
+    /// button's corners cannot draw, is a brush holding the fill and the outline at its size.
     func setLook(background: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
         let outlined = shape.map(BoxArithmetic.outline)
         let (fill, outline) = (WinUIBrush(background), WinUIBrush(stroke))
@@ -103,7 +103,8 @@ final class WinUIButtonView: WinUIView {
             fill.withRelayBrush(over: size) { fill in
                 outline.withRelayBrush(over: size) { outline in
                     stateui_winui_button_set_look(
-                        handle, fill, outline, width, radius, PressedFill.underPointer, PressedFill.pressed)
+                        handle, fill, outline, width, radius, outlined == .ellipse, size.width, size.height,
+                        PressedFill.underPointer, PressedFill.pressed)
                 }
             }
         }

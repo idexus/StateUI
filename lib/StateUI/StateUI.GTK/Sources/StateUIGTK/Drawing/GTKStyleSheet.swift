@@ -44,10 +44,10 @@ enum GTKStyleSheet {
     }
 
     /// The class drawing a button's box: its fill - a little fainter under the pointer and fainter again pressed,
-    /// which the theme's own states would otherwise lose under it - its outline and its corners' radius; nil where
-    /// nothing is given.
-    static func box(fill: GdkRGBA?, stroke: GdkRGBA?, lineWidth: Double?, radius: Double?) -> String? {
-        guard fill != nil || stroke != nil || radius != nil else { return nil }
+    /// which the theme's own states would otherwise lose under it - its outline and its shape; nil where nothing is
+    /// given.
+    static func box(fill: GdkRGBA?, stroke: GdkRGBA?, lineWidth: Double?, shape: ContainerShape?) -> String? {
+        guard fill != nil || stroke != nil || shape != nil else { return nil }
         var name = "stateui-box"
         var body = ""
         var states = ""
@@ -59,9 +59,17 @@ enum GTKStyleSheet {
             name += "-s" + hex(stroke) + "-w" + css(lineWidth).replacing(".", with: "_")
             body += "border: \(css(lineWidth))px solid \(css(stroke)); "
         }
-        if let radius {
-            name += "-r" + css(radius).replacing(".", with: "_")
-            body += "border-radius: \(css(radius))px; "
+        if let shape {
+            let (part, corners) = switch shape {
+            case .rectangle: ("0", "0")
+            case .roundedRectangle(let radius): (css(radius).replacing(".", with: "_"), css(radius) + "px")
+            // GTK cuts corners wider than the box down alike, to half its shorter side: a capsule at any size.
+            case .capsule: ("capsule", "9999px")
+            // A share of the box's own sides, across and down: an oval.
+            case .ellipse: ("oval", "50%")
+            }
+            name += "-r" + part
+            body += "border-radius: \(corners); "
         }
         if var fill {
             let alpha = fill.alpha

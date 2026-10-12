@@ -151,15 +151,13 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         documentSurface.fittingContentSize(width: availableWidth)
     }
 
-    /// The scroller's own box: its outline and the shape it cuts what it shows to, on its layer - a colour's
-    /// outline on a rectangle or a rounded one; an oval cuts and draws none.
+    /// The scroller's own box: its outline in a colour and the shape it cuts what it shows to, on its layer - an
+    /// oval's outline a shape over what it shows.
     /// Design: docs/design/platforms/appkit/views.md#a-layouts-own-box
     func setBox(stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
         boxShape = BoxArithmetic.outline(shape)
         let width = BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth)
-        // An oval cuts by a mask, under which a layer's border would show only as slivers: it draws none.
-        boxOutline = boxShape == .ellipse
-            ? nil : AppKitBrush(stroke).lineColor.flatMap { width > 0 ? ($0.cgColor, CGFloat(width)) : nil }
+        boxOutline = AppKitBrush(stroke).lineColor.flatMap { width > 0 ? ($0.cgColor, CGFloat(width)) : nil }
         paintBox()
     }
 
@@ -170,6 +168,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
 
     private var boxShape = ContainerShape.rectangle
     private var boxOutline: (colour: CGColor, width: CGFloat)?
+    private var ovalOutline: CAShapeLayer?
 
     // AppKit repaints a scroller's layer as it displays it, its colour and outline cleared: the box is put back
     // each time.
@@ -182,8 +181,9 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         wantsLayer = true
         guard let layer else { return }
         layer.backgroundColor = boxBackground?.cgColor
-        layer.borderColor = boxOutline?.colour
-        layer.borderWidth = boxOutline?.width ?? 0
+        let oval = boxShape == .ellipse
+        layer.borderColor = oval ? nil : boxOutline?.colour
+        layer.borderWidth = oval ? 0 : boxOutline?.width ?? 0
         cutToShape()
     }
 
@@ -191,6 +191,32 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         guard let layer else { return }
         layer.masksToBounds = true
         boxShape.cut(layer)
+        outlineOval(on: layer)
+    }
+
+    /// An oval's outline, which a layer's border under the oval's mask would show only as slivers: a shape over
+    /// what the scroller shows, inside its edge.
+    private func outlineOval(on layer: CALayer) {
+        guard boxShape == .ellipse, let outline = boxOutline else {
+            ovalOutline?.removeFromSuperlayer()
+            ovalOutline = nil
+            return
+        }
+        let line = ovalOutline ?? CAShapeLayer()
+        if ovalOutline == nil {
+            line.zPosition = 1
+            line.fillColor = nil
+            layer.addSublayer(line)
+            ovalOutline = line
+        }
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        line.frame = layer.bounds
+        line.path = CGPath(
+            ellipseIn: layer.bounds.insetBy(dx: outline.width / 2, dy: outline.width / 2), transform: nil)
+        line.strokeColor = outline.colour
+        line.lineWidth = outline.width
+        CATransaction.commit()
     }
 
     override func layout() {

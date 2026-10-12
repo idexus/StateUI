@@ -55,20 +55,26 @@ final class UIKitButtonView: UIButton {
         configuration?.imagePadding = spacing ?? 8
     }
 
-    /// What fills the button's box, its outline and its shape (`BoxArithmetic`).
+    /// What fills the button's box, its outline and its shape (`BoxArithmetic`): the configuration's background,
+    /// but for an oval, which its corners cannot draw - a face of the button's own then.
     func setBox(background: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?) {
-        configuration?.background.backgroundColor = background.flatMap(UIColor.init(stateUI:))
+        let fill = background.flatMap(UIColor.init(stateUI:))
         let outline = BoxArithmetic.outlineWidth(stroke: stroke, width: width)
-        configuration?.background.strokeWidth = outline
-        configuration?.background.strokeColor = outline > 0 ? UIKitBrush(stroke).lineColor : nil
-        switch BoxArithmetic.outline(shape) {
-        case .rectangle:
+        let line = outline > 0 ? UIKitBrush(stroke).lineColor : nil
+        let outlined = BoxArithmetic.outline(shape)
+        let oval = outlined == .ellipse
+        configuration?.background.customView = oval ? UIKitOvalFace(fill: fill, stroke: line, width: outline) : nil
+        configuration?.background.backgroundColor = oval ? .clear : fill
+        configuration?.background.strokeWidth = oval ? 0 : outline
+        configuration?.background.strokeColor = oval ? .clear : line
+        switch outlined {
+        case .rectangle, .ellipse:
             configuration?.cornerStyle = .fixed
             configuration?.background.cornerRadius = 0
         case .roundedRectangle(let radius):
             configuration?.cornerStyle = .fixed
             configuration?.background.cornerRadius = radius
-        case .capsule, .ellipse:
+        case .capsule:
             configuration?.cornerStyle = .capsule
         }
     }

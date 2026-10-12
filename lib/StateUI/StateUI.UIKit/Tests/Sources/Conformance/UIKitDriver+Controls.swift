@@ -112,7 +112,8 @@ extension UIKitDriver {
         case .stroke: return box.strokeColor.map { Brush.solidColor(color($0)).propValue }
         case .lineWidth: return Double(box.strokeWidth).propValue
         case .shape:
-            if configuration.cornerStyle == .capsule { return ContainerShape.ellipse.propValue }
+            if box.customView is UIKitOvalFace { return ContainerShape.ellipse.propValue }
+            if configuration.cornerStyle == .capsule { return ContainerShape.capsule.propValue }
             let radius = Double(box.cornerRadius)
             return (radius > 0 ? ContainerShape.roundedRectangle(radius) : .rectangle).propValue
         case .iconPosition:

@@ -63,9 +63,13 @@ extension GTKDriver {
         case .stroke: return part("s").flatMap(color).map { Brush.solidColor($0).propValue }
         case .lineWidth: return part("w").flatMap { number(Substring($0)) }.map(\.propValue)
         default:
-            guard let radius = part("r").flatMap({ number(Substring($0)) }) else { return nil }
-            let shape: ContainerShape = radius >= 9999 ? .ellipse : radius == 0 ? .rectangle : .roundedRectangle(radius)
-            return shape.propValue
+            guard let corners = part("r") else { return nil }
+            let shape: ContainerShape? = switch corners {
+            case "capsule": .capsule
+            case "oval": .ellipse
+            default: number(Substring(corners)).map { $0 == 0 ? .rectangle : .roundedRectangle($0) }
+            }
+            return shape?.propValue
         }
     }
 

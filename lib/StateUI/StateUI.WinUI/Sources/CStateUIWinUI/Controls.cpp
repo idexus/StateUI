@@ -117,7 +117,7 @@ extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view) {
 
 extern "C" void stateui_winui_button_set_look(
     StateUIObjectRef handle, StateUIBrush background, StateUIBrush stroke, double lineWidth, double cornerRadius,
-    double underPointer, double pressed
+    bool drawsOval, double width, double height, double underPointer, double pressed
 ) {
     try {
         auto button = borrow<controls::Button>(handle);
@@ -128,22 +128,26 @@ extern "C" void stateui_winui_button_set_look(
             if (value) resources.Insert(name, value);
         };
         // Under the pointer and pressed, the fill is drawn a little fainter each time, as WinUI's own buttons draw it.
-        auto fill = brush(background);
-        auto faded = [&](double opacity) {
+        // An oval, which the button's corners cannot draw, is a brush of its own holding the outline too.
+        auto faded = [&](double opacity) -> xaml::Media::Brush {
+            if (drawsOval) return oval(background, stroke, lineWidth, opacity, width, height);
             auto made = brush(background);
             if (made) made.Opacity(opacity);
             return made;
         };
+        auto fill = faded(1);
         if (fill) button.Background(fill);
         else button.ClearValue(controls::Control::BackgroundProperty());
         keep(L"ButtonBackground", fill);
         keep(L"ButtonBackgroundPointerOver", faded(underPointer));
         keep(L"ButtonBackgroundPressed", faded(pressed));
 
-        auto outline = lineWidth > 0 ? brush(stroke) : xaml::Media::Brush{nullptr};
+        auto outline = lineWidth > 0 && !drawsOval ? brush(stroke) : xaml::Media::Brush{nullptr};
         if (outline) {
             button.BorderBrush(outline);
             button.BorderThickness({lineWidth, lineWidth, lineWidth, lineWidth});
+        } else if (drawsOval) {
+            button.BorderThickness({0, 0, 0, 0});
         } else {
             button.ClearValue(controls::Control::BorderBrushProperty());
             button.ClearValue(controls::Control::BorderThicknessProperty());

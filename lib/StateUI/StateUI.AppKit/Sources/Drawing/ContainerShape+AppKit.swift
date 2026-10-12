@@ -36,11 +36,6 @@ extension ContainerShape {
         mask.path = CGPath(ellipseIn: bounds, transform: nil)
         layer.mask = mask
     }
-
-    /// Rounds `layer`'s corners along the outline - an oval as a capsule, which is what a layer's corners draw.
-    func round(_ layer: CALayer) {
-        layer.cornerRadius = cornerRadius(in: layer.bounds)
-    }
 }
 
 #endif

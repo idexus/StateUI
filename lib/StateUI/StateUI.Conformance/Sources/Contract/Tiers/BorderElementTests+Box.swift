@@ -77,7 +77,8 @@ extension BorderElementTests {
         }
     }
 
-    /// A box outlined as an ellipse leaves its corners bare, which a rectangle's outline covers.
+    /// A wide box outlined as an ellipse leaves bare a point near its top that a rectangle's outline covers - and a
+    /// capsule's too, whose top runs straight there: an oval, not a capsule, its outline drawn on its top.
     @MainActor
     static func boxShaped(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).outlinesItsBoxInItsShape", proves: [
@@ -86,20 +87,25 @@ extension BorderElementTests {
             let round = State(wrappedValue: false)
             s.start {
                 VStack {
-                    Specimens.view(element, room + outline(width: 4) + [
+                    Specimens.view(element, outline(width: 4) + [
+                        Write(VisualElementContract.width, 120), Write(VisualElementContract.height, 40),
+                        Write(ViewContract.horizontalAlignment, Alignment.start),
                         Write(BorderElementContract.shape, round.wrappedValue ? ContainerShape.ellipse : .rectangle),
                     ])
                     Button("Round").onClicked { round.wrappedValue = true }.id("change")
                 }
             }
             let layout = try s.specimen(element)
-            let corner = Point(1, 1)
-            try s.settle { try s.shows(.red, on: layout, at: corner) }
+            let (corner, top) = (Point(1, 1), Point(25, 1))
+            try s.settle { try s.shows(.red, on: layout, at: top) }
             s.expect(try s.color(of: layout, at: corner), shows: .red, "a rectangle's corner")
+            s.expect(try s.color(of: layout, at: top), shows: .red, "and its top")
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.color(of: layout, at: corner) == nil }
-            s.expect(try s.color(of: layout, at: corner), nil, "an ellipse leaves it bare")
+            try s.settle { try s.color(of: layout, at: top) == nil }
+            s.expect(try s.color(of: layout, at: corner), nil, "an ellipse leaves its corner bare")
+            s.expect(try s.color(of: layout, at: top), nil, "and the top a capsule's would cover")
+            s.expect(try s.color(of: layout, at: Point(60, 1)), shows: .red, "its outline drawn on the oval's top")
         }
     }
 

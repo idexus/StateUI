@@ -206,16 +206,10 @@ final class GTKButtonView: GTKView {
     /// sheet; what is nil stays the platform's.
     /// Design: docs/design/platforms/gtk/controls.md#a-buttons-box
     func setBox(fill: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
-        let radius: Double? = switch shape.map(BoxArithmetic.outline) {
-        case .roundedRectangle(let radius)?: radius
-        case .capsule?, .ellipse?: 9999
-        case .rectangle?: 0
-        case nil: nil
-        }
         let drawn = GTKStyleSheet.box(
             fill: fill.flatMap { GTKBrush($0).firstColor }, stroke: stroke.flatMap { GTKBrush($0).firstColor },
             lineWidth: stroke == nil ? nil : BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth),
-            radius: radius)
+            shape: shape.map(BoxArithmetic.outline))
         guard drawn != boxClass else { return }
         if let boxClass { gtk_widget_remove_css_class(widget, boxClass) }
         if let drawn { gtk_widget_add_css_class(widget, drawn) }

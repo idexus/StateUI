@@ -60,7 +60,8 @@ A scroller's box is its layer's alone: a colour behind what it shows, a
 colour's outline on a rectangle or a rounded one, and the cut of what it shows
 to its shape, always. AppKit repaints a scroller's layer as it displays it and
 clears its colour and outline, so the scroller puts them back each time it
-updates its layer. An oval scroller cuts and draws no outline.
+updates its layer. An oval scroller's outline is a shape layer over what it
+shows: under the oval's mask a layer's border would show only as slivers.
 
 ## A sidebar's material
 

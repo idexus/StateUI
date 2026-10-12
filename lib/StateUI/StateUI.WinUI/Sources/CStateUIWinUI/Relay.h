@@ -47,6 +47,11 @@ namespace stateui {
     /// WinUI's own brush for a brush as the host hands it; null for none.
     xaml::Media::Brush brush(StateUIBrush const &brush);
 
+    /// A brush painting an oval `width` by `height`: `fill`'s first colour keeping `share` of its opacity inside,
+    /// `stroke`'s first colour `lineWidth` wide inside its edge.
+    xaml::Media::Brush oval(StateUIBrush const &fill, StateUIBrush const &stroke, double lineWidth, double share,
+                            double width, double height);
+
     /// Whether the view numbered `view` listens for taps; and a press assistive technology made on it, told as
     /// a tap.
     bool hearsTaps(int64_t view);

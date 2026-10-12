@@ -63,28 +63,56 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
 
         outlineShape = shape
         fill = backgroundColor
+        outline = strokeColor.map { ($0, CGFloat(lineWidth)) }
         wantsLayer = backgroundColor != nil || strokeColor != nil || shape != .rectangle
-        paintFill()
-        layer?.borderColor = strokeColor?.cgColor
-        layer?.borderWidth = strokeColor == nil ? 0 : lineWidth
-        if let layer { shape.round(layer) }
         isBordered = backgroundColor == nil && strokeColor == nil
+        paintBox()
     }
 
-    /// The shape the corners follow - an oval rounded into a capsule, which is what a layer's corners can draw.
+    /// The shape the box follows: a layer's corners round a rectangle, the button draws an oval itself.
     private var outlineShape = ContainerShape.rectangle
 
     /// The button's own fill, where it is given one, which the user's reach makes fainter.
     private var fill: NSColor?
 
+    /// The button's own outline, its colour and width, where it is given one.
+    private var outline: (color: NSColor, width: CGFloat)?
+
     /// The share of its opacity the fill keeps: all of it, less under the pointer, less still pressed.
     /// Design: docs/design/host/layout.md#a-box
     private var reach = 1.0 {
-        didSet { if reach != oldValue { paintFill() } }
+        didSet { if reach != oldValue { paintBox() } }
     }
 
-    private func paintFill() {
-        layer?.backgroundColor = fill.map { $0.withAlphaComponent($0.alphaComponent * reach).cgColor }
+    private var reachedFill: NSColor? {
+        fill.map { $0.withAlphaComponent($0.alphaComponent * reach) }
+    }
+
+    /// Paints the box on the layer - its fill, outline and corners - or, for an oval, which a layer's corners cannot
+    /// draw, asks for the button to draw it.
+    private func paintBox() {
+        guard let layer else { return }
+        let oval = outlineShape == .ellipse
+        layer.backgroundColor = oval ? nil : reachedFill?.cgColor
+        layer.borderColor = oval ? nil : outline?.color.cgColor
+        layer.borderWidth = oval ? 0 : outline?.width ?? 0
+        layer.cornerRadius = oval ? 0 : outlineShape.cornerRadius(in: bounds)
+        if oval { needsDisplay = true }
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        if outlineShape == .ellipse {
+            let inset = (outline?.width ?? 0) / 2
+            let oval = NSBezierPath(ovalIn: bounds.insetBy(dx: inset, dy: inset))
+            reachedFill?.setFill()
+            if reachedFill != nil { oval.fill() }
+            if let outline {
+                outline.color.setStroke()
+                oval.lineWidth = outline.width
+                oval.stroke()
+            }
+        }
+        super.draw(dirtyRect)
     }
 
     /// AppKit offers a key to the window's key equivalents before the view holding the keyboard: one giving way to
@@ -101,7 +129,7 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
 
     override func layout() {
         super.layout()
-        if let layer { outlineShape.round(layer) }
+        paintBox()
     }
 
     override func updateTrackingAreas() {

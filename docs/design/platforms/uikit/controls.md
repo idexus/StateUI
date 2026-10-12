@@ -70,7 +70,9 @@ UIKit's own font, which follows the user always - `–` in the matrix.
 
 A Button is UIKit's button, its configuration what the tree says: its words
 and their look, an icon beside them, the box behind them - its colour, its
-outline and its shape, an oval a capsule - and the room inside it.
+outline and its shape - an oval a face of the button's own, the
+configuration's background view, which its corners cannot draw - and the room
+inside it.
 
 ## Accessibility
 
