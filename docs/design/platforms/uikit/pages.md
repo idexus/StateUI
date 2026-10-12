@@ -108,10 +108,13 @@ column, and each column says the room's own width, so the tabs, sheets and
 bars inside stand as a phone's.
 
 A sidebar the application paints ([a sidebar's
-material](../../host/pages.md#a-sidebars-material)) stands on UIKit's plain
-column (`primaryBackgroundStyle` `.none`), which UIKit parts from the detail
-by its own separator; on UIKit's sidebar material - the platform's own
-sidebar - the columns stand with none. A blur or glass for the sidebar's
+material](../../host/pages.md#a-sidebars-material)) stands apart from the
+detail by a line of UIKit's separator colour, one point down its column's
+edge, the host's own: it stands on UIKit's sidebar material like the
+platform's own sidebar, which UIKit parts by no line. UIKit's plain column
+(`primaryBackgroundStyle` `.none`) would part them by its own, but the detail
+of a plain column takes its new width at once as the sidebar shows or hides,
+where under the sidebar material it slides with it. A blur or glass for the sidebar's
 place is UIKit's own effect under what the sidebar page shows - a blur's tint
 washed over it, glass tinted in itself - beside the detail and over it alike;
 a colour is the page's own background.

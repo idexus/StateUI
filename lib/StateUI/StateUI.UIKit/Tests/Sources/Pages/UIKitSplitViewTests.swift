@@ -58,8 +58,9 @@ final class UIKitSplitViewTests: XCTestCase {
         XCTAssertEqual(chrome(split.children.dropFirst().first), "")
     }
 
-    /// A sidebar the application paints stands on UIKit's plain column, which UIKit parts from the detail by its
-    /// own separator; the platform's own sidebar stays on UIKit's sidebar material.
+    /// A sidebar the application paints stands apart from the detail by a line of UIKit's separator colour down its
+    /// edge, and on UIKit's sidebar material all the same - under which the detail's column slides with the sidebar
+    /// as it shows and hides; UIKit's plain column parts them by its own line, and its detail jumps to its width.
     @MainActor
     func testASidebarTheApplicationPaintsStandsApartFromTheDetail() throws {
         let painted = State(wrappedValue: true)
@@ -72,12 +73,16 @@ final class UIKitSplitViewTests: XCTestCase {
             }
         }
         defer { host.finish() }
-        let split = { Self.controller(of: .splitView, in: host) as? UISplitViewController }
+        let split = { Self.controller(of: .splitView, in: host) as? UIKitSplitViewController }
         host.settle { split()?.view.window != nil }
-        XCTAssertEqual(split()?.primaryBackgroundStyle, UISplitViewController.BackgroundStyle.none, "the plain column")
+        XCTAssertEqual(split()?.primaryBackgroundStyle, .sidebar, "UIKit's sidebar material, its columns sliding together")
+        let sidebar = try XCTUnwrap(split()?.viewController(for: .primary)?.view)
+        XCTAssertTrue(split()?.separator.superview === sidebar, "a line down the sidebar's edge")
+        XCTAssertEqual(split()?.separator.backgroundColor, .opaqueSeparator)
 
         painted.wrappedValue = false
-        host.settle { split()?.primaryBackgroundStyle == .sidebar }
+        host.settle { split()?.separator.superview == nil }
+        XCTAssertNil(split()?.separator.superview, "the platform's own sidebar draws no line of the host's")
         XCTAssertEqual(split()?.primaryBackgroundStyle, .sidebar, "the platform's own sidebar")
     }
 

@@ -29,14 +29,38 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
     /// Whether the host is moving the columns itself, which UIKit's telling of it does not report back.
     private var movingItself = false
 
-    /// Whether the application paints the sidebar: it then stands on UIKit's plain column, which UIKit parts from
-    /// the detail by its own separator, rather than on UIKit's sidebar material, which stands with none.
+    /// Whether the application paints the sidebar: a line of UIKit's separator colour then parts it from the detail
+    /// (`separator`). It stands on UIKit's sidebar material all the same, under which the detail's column slides
+    /// with the sidebar; on UIKit's plain column, which parts them by its own line, the detail jumps to its width.
     /// Design: docs/design/platforms/uikit/pages.md#a-split-view
     var paintsSidebar = false {
         didSet {
             guard paintsSidebar != oldValue else { return }
-            primaryBackgroundStyle = paintsSidebar ? .none : .sidebar
+            placeSeparator()
         }
+    }
+
+    /// The line down a painted sidebar's edge beside the detail, one point of UIKit's separator colour.
+    let separator: UIView = {
+        let line = UIView()
+        line.backgroundColor = .opaqueSeparator
+        line.isUserInteractionEnabled = false
+        line.translatesAutoresizingMaskIntoConstraints = false
+        return line
+    }()
+
+    /// Stands the line down the edge of the sidebar's column while the application paints it, and takes it away
+    /// while not.
+    private func placeSeparator() {
+        separator.removeFromSuperview()
+        guard paintsSidebar, let sidebar = viewController(for: .primary)?.view else { return }
+        sidebar.addSubview(separator)
+        NSLayoutConstraint.activate([
+            separator.trailingAnchor.constraint(equalTo: sidebar.trailingAnchor),
+            separator.topAnchor.constraint(equalTo: sidebar.topAnchor),
+            separator.bottomAnchor.constraint(equalTo: sidebar.bottomAnchor),
+            separator.widthAnchor.constraint(equalToConstant: 1),
+        ])
     }
 
     init() {
@@ -55,6 +79,7 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
     func show(sidebar: UIViewController?, detail: UIViewController?) {
         if sidebar !== shown.sidebar { setViewController(sidebar, for: .primary) }
         if detail !== shown.detail { setViewController(detail, for: .secondary) }
+        if sidebar !== shown.sidebar { placeSeparator() }
         shown = (sidebar, detail)
         giveTheColumnsTheRoomsWidth()
     }
@@ -84,6 +109,12 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         adaptToTheRoom()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // Over whatever the sidebar's page stands it in since.
+        separator.superview?.bringSubviewToFront(separator)
     }
 
     /// The room's width class: the split view's own always says wide.
