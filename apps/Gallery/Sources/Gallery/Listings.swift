@@ -8039,10 +8039,11 @@ enum Listings {
         // Sources/Samples/BasicInput/ShortcutSample.swift
         @State private var saved = 0
         @State private var last = "nothing yet"
+        @State private var note = ""
 
         var body: some View {
             VStack {
-                Text("Press Command or Control with S, then with Shift and S.")
+                Text("Press Command or Control with S, then with Shift and S, then 1 alone.")
 
                 HStack {
                     // Command on Apple's platforms, Control elsewhere.
@@ -8059,7 +8060,19 @@ enum Listings {
                             saved += 1
                             last = "Save As"
                         }
+
+                    // A key alone is a shortcut too.
+                    Button("First")
+                        .keyboardShortcut("1", modifiers: [])
+                        .onClicked {
+                            saved += 1
+                            last = "First"
+                        }
                 }
+
+                // While this field is typed into, 1 writes a 1.
+                TextField($note)
+                    .placeholder("Type here")
 
                 Text("Pressed \(saved) time\(saved == 1 ? "" : "s"), last: \(last)")
             }

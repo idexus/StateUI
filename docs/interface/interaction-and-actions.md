@@ -400,7 +400,9 @@ struct Editor: View {
 ```
 
 A shortcut is a `Key` - a character, `"s"`, or one of `.return`, `.escape`,
-`.delete`, the arrows and `.f1` to `.f12` - with the keys held with it.
+`.delete`, the arrows and `.f1` to `.f12` - with the keys held with it, or with
+none: `keyboardShortcut("1", modifiers: [])` presses a button on the key `1`
+alone, except while a field is being typed into, where the `1` is written.
 `.primary` alone is held unless the shortcut says otherwise: Command on Apple's
 platforms, Control on Windows, Linux and Android, so one `keyboardShortcut("s")`
 is ⌘S on the Mac and Ctrl+S elsewhere; `.shift` and `.alt` add Shift and

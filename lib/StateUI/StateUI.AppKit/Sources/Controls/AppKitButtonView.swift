@@ -87,6 +87,18 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         layer?.backgroundColor = fill.map { $0.withAlphaComponent($0.alphaComponent * reach).cgColor }
     }
 
+    /// AppKit offers a key to the window's key equivalents before the view holding the keyboard: one giving way to
+    /// typing is passed over while a field is being typed into, so the key types (`KeyboardShortcuts`).
+    /// Design: docs/design/types/keyboard.md#a-key-typed
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        if window?.firstResponder is NSText,
+           let shortcut = AppKitKeys.shortcut(key: keyEquivalent, modifiers: keyEquivalentModifierMask),
+           KeyboardShortcuts.givesWayToTyping(shortcut) {
+            return false
+        }
+        return super.performKeyEquivalent(with: event)
+    }
+
     override func layout() {
         super.layout()
         if let layer { outlineShape.round(layer) }

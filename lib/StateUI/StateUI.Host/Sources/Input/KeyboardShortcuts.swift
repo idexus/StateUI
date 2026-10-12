@@ -28,20 +28,32 @@
         stating(shortcut, under: root).first { $0.isEffectivelyEnabled }
     }
 
-    /// Every shortcut the elements in sight under `root` state, once each, in reading order: what a window offers
-    /// a toolkit holding its shortcuts on the window rather than on each control.
-    public static func stated(under root: MountedElement) -> [KeyboardShortcut] {
+    /// Whether `shortcut` gives way to typing: a character's key held with neither the platform's own key nor Alt -
+    /// alone, or with Shift - is the character a field holding the keyboard writes, not a shortcut there.
+    public static func givesWayToTyping(_ shortcut: KeyboardShortcut) -> Bool {
+        shortcut.key.character != nil && shortcut.modifiers.isDisjoint(with: [.primary, .alt])
+    }
+
+    /// Every shortcut the elements in sight under `root` state, once each, in reading order - those giving way to
+    /// typing left out while a field holds the keyboard (`typing`): what a window offers a toolkit holding its
+    /// shortcuts on the window rather than on each control.
+    public static func stated(under root: MountedElement, typing: Bool = false) -> [KeyboardShortcut] {
         var found: [KeyboardShortcut] = []
         for shortcut in actors(under: root).compactMap(\.keyboardShortcut) where !found.contains(shortcut) {
+            if typing, givesWayToTyping(shortcut) { continue }
             found.append(shortcut)
         }
         return found
     }
 
     /// A pressed `shortcut` reaching the element under `root` it acts on: a button clicked, an item chosen
-    /// (`MountedElement.chosen`). Whether one took it.
+    /// (`MountedElement.chosen`) - unless it gives way to typing while a field holds the keyboard (`typing`).
+    /// Whether one took it.
     @discardableResult
-    public static func press(_ shortcut: KeyboardShortcut, under root: MountedElement, in runtime: HostRuntime) -> Bool {
+    public static func press(
+        _ shortcut: KeyboardShortcut, under root: MountedElement, in runtime: HostRuntime, typing: Bool = false
+    ) -> Bool {
+        if typing, givesWayToTyping(shortcut) { return false }
         guard let target = target(of: shortcut, under: root) else { return false }
         if target.type == .button { target.send(.clicked, [], in: runtime) } else { target.chosen(in: runtime) }
         return true

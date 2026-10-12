@@ -388,9 +388,10 @@ int32_t stateui_winui_text(StateUIObjectRef element, char *utf8, int32_t capacit
 /// words it holds, the length they need returned, their end not counted.
 void stateui_winui_set_tooltip(StateUIObjectRef element, char const *utf8);
 
-/// A control's keyboard shortcut - a virtual key, 0 for none, and the VirtualKeyModifiers held with it - and the
-/// shortcut it holds, whether it holds one; and a key with its modifiers sent as the system sends keys.
-void stateui_winui_set_shortcut(StateUIObjectRef element, int32_t key, int32_t modifiers);
+/// A control's keyboard shortcut - a virtual key, 0 for none, the VirtualKeyModifiers held with it, and whether it
+/// gives way to a field being typed into - and the shortcut it holds, whether it holds one; and a key with its
+/// modifiers sent as the system sends keys.
+void stateui_winui_set_shortcut(StateUIObjectRef element, int32_t key, int32_t modifiers, bool givesWayToTyping);
 bool stateui_winui_shortcut(StateUIObjectRef element, int32_t *key, int32_t *modifiers);
 void stateui_winui_send_keys(int32_t key, int32_t modifiers);
 int32_t stateui_winui_tooltip(StateUIObjectRef element, char *utf8, int32_t capacity);

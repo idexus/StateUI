@@ -77,6 +77,20 @@ enum TestWindow {
         }
     }
 
+    /// Presses the key `code` held with `meta` and lets it go, as the window hands a key on: whether a view took it.
+    static func dispatch(code: Int32, meta: Int32) -> Bool {
+        var took = false
+        for action: Int32 in [0, 1] {
+            let event = Java.new(TestJava.keyEvent, TestJava.newHeldKeyEvent, .long(0), .long(0), .int(action), .int(code),
+                                 .int(0), .int(meta))
+            withExtendedLifetime(event) {
+                let taken = Java.callBool(TestContext.window.reference, dispatchKeyEvent, .object(event.reference))
+                if action == 0 { took = taken }
+            }
+        }
+        return took
+    }
+
     private static let dispatchKeyEvent = Java.method(
         Java.findClass("android/app/Activity"), "dispatchKeyEvent", "(Landroid/view/KeyEvent;)Z")
 
@@ -154,6 +168,7 @@ enum TestJava {
     static let mapPoints = Java.method(matrix, "mapPoints", "([F)V")
     static let keyEvent = Java.findClass("android/view/KeyEvent")
     static let newKeyEvent = Java.method(keyEvent, "<init>", "(II)V")
+    static let newHeldKeyEvent = Java.method(keyEvent, "<init>", "(JJIIII)V")
     static let dispatchKeyEvent = Java.method(JavaAPI.view, "dispatchKeyEvent", "(Landroid/view/KeyEvent;)Z")
     static let getChildAt = Java.method(JavaAPI.viewGroup, "getChildAt", "(I)Landroid/view/View;")
     static let getClipToOutline = Java.method(JavaAPI.view, "getClipToOutline", "()Z")

@@ -91,7 +91,9 @@ final class UIKitWindowController {
     /// sees.
     func present(_ element: MountedElement, in runtime: HostRuntime) {
         let changes = presentation.show(element, in: runtime.lifecycle)
-        root.shortcuts = { [weak element] in element.map(KeyboardShortcuts.stated(under:)) ?? [] }
+        root.shortcuts = { [weak element] typing in
+            element.map { KeyboardShortcuts.stated(under: $0, typing: typing) } ?? []
+        }
         root.onShortcut = { [weak runtime, weak element] shortcut in
             guard let runtime, let element else { return }
             KeyboardShortcuts.press(shortcut, under: element, in: runtime)
@@ -160,13 +162,14 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
     /// What the window does when the user took the top sheet away, handed how many stay.
     var onSheetDismissed: ((Int) -> Void)?
 
-    /// The shortcuts the window's tree states, and what a pressed one does: UIKit holds a key command on a
-    /// responder, not on a control, so the window's root offers every one of them.
-    var shortcuts: () -> [KeyboardShortcut] = { [] }
+    /// The shortcuts the window's tree states - those giving way to typing left out while a field is typed into
+    /// - and what a pressed one does: UIKit holds a key command on a responder, not on a control, so the window's
+    /// root offers every one of them.
+    var shortcuts: (_ typing: Bool) -> [KeyboardShortcut] = { _ in [] }
     var onShortcut: ((KeyboardShortcut) -> Void)?
 
     override var keyCommands: [UIKeyCommand]? {
-        shortcuts().map { UIKitKeys.command($0, action: #selector(pressedShortcut(_:))) }
+        shortcuts(UIKitFirstResponder.isTyping).map { UIKitKeys.command($0, action: #selector(pressedShortcut(_:))) }
     }
 
     @objc func pressedShortcut(_ command: UIKeyCommand) {

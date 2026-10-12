@@ -100,10 +100,10 @@ final class WebRenderer {
     /// A key pressed in the page reaching the element of the window stating it as a shortcut; where one takes it,
     /// the browser does nothing more with the key.
     private func pressedShortcut() {
-        let told = (0...2).map { Int32(WebRelay.eventNumber($0)) }
+        let told = (0...3).map { Int32(WebRelay.eventNumber($0)) }
         guard let shortcut = WebKeys.shortcut(named: told[0], character: told[1], held: told[2]),
               let window = runtime.tree.root?.first(type: .window),
-              KeyboardShortcuts.press(shortcut, under: window, in: runtime)
+              KeyboardShortcuts.press(shortcut, under: window, in: runtime, typing: told[3] != 0)
         else { return }
         WebRelay.takeEvent()
     }

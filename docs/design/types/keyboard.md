@@ -22,6 +22,20 @@ same `keyboardShortcut("s")` is ⌘S on the Mac and Ctrl+S on Windows and Linux.
 A shortcut crosses as its key - a character as text, another key by its
 number - and its modifiers' bits.
 
+## A key typed
+
+A shortcut needs no modifier: `keyboardShortcut("1", modifiers: [])` presses
+its button on the key alone. Such a key is also what a field writes, so a
+character's key held with neither the platform's own key nor Alt - alone, or
+with Shift - gives way to typing (`KeyboardShortcuts.givesWayToTyping`): while
+a field the user types into holds the keyboard, the key types there and the
+shortcut does not act. A key writing no character - Escape, the arrows, F5 -
+and a shortcut held with the platform's own key or Alt act whatever holds the
+keyboard. Android, GTK and WinUI hand a key to the view holding the keyboard
+first; AppKit offers it to the window's key equivalents first, UIKit to its key
+commands and the page to its listener - so each host asks whether a field is
+being typed into before a shortcut giving way acts.
+
 ## In a window
 
 What a shortcut reaches is decided once, in the host layer

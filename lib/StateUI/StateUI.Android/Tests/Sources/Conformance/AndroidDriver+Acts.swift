@@ -84,9 +84,15 @@ extension AndroidDriver {
             TestTouches.hover(view, action: Self.hoverEnter, x: Self.pixels(point.x), y: Self.pixels(point.y))
             TestTouches.hover(view, action: Self.hoverMove, x: Self.pixels(point.x), y: Self.pixels(point.y))
         case (.leave, let view?): TestTouches.hover(view, action: Self.hoverExit, x: 0, y: 0)
+        case (.focus, let view?):
+            // The keyboard brought to the view as a tap on a field brings it: Android's own request for the focus.
+            guard Java.callStaticBool(JavaAPI.views, JavaAPI.focus, .object(view.reference), .bool(true)) else {
+                throw DriverCannot(act, on: element)
+            }
         case (.pressKeys(let shortcut), _):
-            // A key no view took, as the activity hands it on.
+            // The key as the activity hands it on: to the views first, then - none taking it - to the host.
             guard let pressed = AndroidKeys.pressed(shortcut) else { throw DriverCannot(act, on: element) }
+            guard !TestWindow.dispatch(code: pressed.code, meta: pressed.meta) else { return }
             let character = shortcut.key.character?.unicodeScalars.first.map { Int32($0.value) } ?? 0
             _ = renderer?.pressed(code: pressed.code, character: character, meta: pressed.meta)
         case (.goBack, _) where element.type == .window || element.type == .navigationStack:

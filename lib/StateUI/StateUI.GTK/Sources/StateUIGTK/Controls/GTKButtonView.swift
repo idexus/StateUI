@@ -37,6 +37,9 @@ final class GTKButtonView: GTKView {
     /// The controller holding the button's keyboard shortcut, across its whole window; nil until it states one.
     private(set) var shortcuts: OpaquePointer?
 
+    /// The shortcut the button states, which its controller's action asks of before it presses.
+    private var stated: KeyboardShortcut?
+
     /// The keys pressing the button while its window is in front: GTK's own shortcut, global to the window,
     /// activating the button; nil for none.
     /// Design: docs/design/types/keyboard.md#on-each-platform
@@ -52,12 +55,22 @@ final class GTKButtonView: GTKView {
             gtk_shortcut_controller_remove_shortcut(controller, OpaquePointer(first))
             g_object_unref(first)
         }
+        stated = shortcut
         guard let shortcut else { return }
         let spelled = GTKKeys.spelled(shortcut)
-        let activates = gtk_activate_action_get()
-        g_object_ref(UnsafeMutableRawPointer(activates))
+        let presses = gtk_callback_action_new({ _, _, data in
+            MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKButtonView)?.shortcutPressed() == true ? 1 : 0 }
+        }, UnsafeMutableRawPointer(bitPattern: Int(number)), nil)
         gtk_shortcut_controller_add_shortcut(
-            controller, gtk_shortcut_new(gtk_keyval_trigger_new(spelled.keyval, spelled.modifiers), activates))
+            controller, gtk_shortcut_new(gtk_keyval_trigger_new(spelled.keyval, spelled.modifiers), presses))
+    }
+
+    /// The button pressed by its shortcut, where it can be - unless the shortcut gives way to typing while a field
+    /// is typed into, when the key goes on to the field. Whether it took the key.
+    private func shortcutPressed() -> Bool {
+        guard gtk_widget_is_sensitive(widget) != 0 else { return false }
+        if let stated, KeyboardShortcuts.givesWayToTyping(stated), GTKKeys.typing(in: widget) { return false }
+        return gtk_widget_activate(widget) != 0
     }
 
     /// The key value and mask of the shortcut the button's controller holds; nil for none - what a test reads.

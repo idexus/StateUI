@@ -89,7 +89,7 @@ SearchFieldSample.swift 78f8081ecd423749
 SearchSample.swift 38388654add4726f
 SemanticsSample.swift c81f2aff2ba31cbb
 ShapesSample.swift 6107589125bcb192
-ShortcutSample.swift 4830bcbe503d4745
+ShortcutSample.swift 61a39ecb73b01015
 SizingSample.swift 70709ad782077630
 SliderSample.swift cf5772598d1a84df
 SplitViewSample.swift b40f78a09df11956

@@ -36,6 +36,15 @@ enum GTKKeys {
         return KeyboardShortcut(key, modifiers: held)
     }
 
+    /// Whether a field holding the keyboard in `widget`'s window is being typed into.
+    @MainActor
+    static func typing(in widget: GTKWidget) -> Bool {
+        guard let root = gtk_widget_get_root(widget), let held = gtk_root_get_focus(root) else { return false }
+        return [gtk_text_get_type(), gtk_text_view_get_type()].contains {
+            g_type_check_instance_is_a(held.of(GTypeInstance.self), $0) != 0
+        }
+    }
+
     /// GDK's key value for each key writing no character.
     private static let named: [NamedKey: guint] = [
         .return: 0xff0d, .escape: 0xff1b, .delete: 0xff08, .upArrow: 0xff52, .downArrow: 0xff54,

@@ -12,14 +12,15 @@ import WASILibc
 /// give, the DOM's own call a control answers: a slider's value, a list's choice, a day picked.
 /// Design: docs/design/platforms/web/input.md
 extension WebDriver {
-    /// A shortcut pressed while the page has the keyboard: the key-down the browser raises for it, on the body.
+    /// A shortcut pressed while the page has the keyboard: the key-down the browser raises for it, on what holds the
+    /// keyboard.
     private func pressKeys(_ shortcut: KeyboardShortcut) throws {
         let onApple = try WebBrowser.truth("/Mac|iPhone|iPad|iPod/.test(navigator.platform ?? '')", on: 0)
         let key = shortcut.key.character.map { String($0) } ?? shortcut.key.named.flatMap { WebKeys.names[$0] } ?? ""
         let code = shortcut.key.character.map { $0.isNumber ? "Digit\($0)" : "Key\(String($0).uppercased())" } ?? key
         let primary = shortcut.modifiers.contains(.primary)
         try WebBrowser.run("""
-            document.body.dispatchEvent(new KeyboardEvent("keydown", { key: "\(key)", code: "\(code)", bubbles: true,
+            (document.activeElement ?? document.body).dispatchEvent(new KeyboardEvent("keydown", { key: "\(key)", code: "\(code)", bubbles: true,
               cancelable: true, metaKey: \(primary && onApple), ctrlKey: \(primary && !onApple),
               shiftKey: \(shortcut.modifiers.contains(.shift)), altKey: \(shortcut.modifiers.contains(.alt)) }))
             """)

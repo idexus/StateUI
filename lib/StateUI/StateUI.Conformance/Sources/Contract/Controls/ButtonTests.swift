@@ -81,6 +81,8 @@
                         Button("Save").keyboardShortcut("s").onClicked { heard.values.append("save") }.id("save")
                         Button("Open").keyboardShortcut("o").isEnabled(false).onClicked { heard.values.append("open") }
                             .id("open")
+                        Button("One").keyboardShortcut("1", modifiers: []).onClicked { heard.values.append("one") }
+                            .id("one")
                     }
                 }
 
@@ -90,6 +92,28 @@
 
                 try s.perform(.pressKeys(KeyboardShortcut("o")), on: s.element("open"))
                 s.expect(heard.values, ["save"], "a disabled button's shortcut presses nothing")
+
+                try s.perform(.pressKeys(KeyboardShortcut("1", modifiers: [])), on: s.element("one"))
+                s.settle { heard.values == ["save", "one"] }
+                s.expect(heard.values, ["save", "one"], "a key held with nothing is a shortcut too")
+            },
+            ConformanceCase("aBareShortcutGivesWayToAFieldBeingTypedInto", proves: [
+                Covered(ButtonContract.keyboardShortcut),
+            ], needs: [Covered(ButtonContract.clicked), Covered(VisualElementContract.focus, on: "TextField")]) { s in
+                let heard = Received<String>()
+                s.start {
+                    VStack {
+                        TextField("").id("field")
+                        Button("One").keyboardShortcut("1", modifiers: []).onClicked { heard.values.append("one") }
+                            .id("one")
+                    }
+                }
+                let field = try s.element("field")
+
+                try s.perform(.focus, on: field)
+                try s.settle { try s.focused(field) }
+                try s.perform(.pressKeys(KeyboardShortcut("1", modifiers: [])), on: s.element("one"))
+                s.expect(heard.values, [], "the key is the field's, the button stays as it was")
             },
             Aspects.holds(ButtonContract.lineBreak, on: "Button", .wordWrap, then: .tailTruncation,
                           with: [Write(TextualElementContract.text, "Words enough to break across more than one line")]),
