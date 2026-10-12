@@ -378,6 +378,23 @@ wires its sources unconditionally. The head declares what it raises,
 `StateUIEvents.raises(NotesContract.importFinished)`, and a subscription to an
 event no head declared is said once, as a misspelled name would be.
 
+## Tooltips
+
+`tooltip` gives any view words the platform shows beside it while the pointer
+rests on it:
+
+```swift
+Button(icon: "trash.png")
+    .accessibilityLabel("Delete")
+    .tooltip("Moves the file to the bin")
+```
+
+The Mac, Windows, Linux, the Web and an iPad with a pointer show it after
+their own delay, and Android after a long press too. An iPhone shows none, so
+nothing a view needs to be used is said only in its tooltip. A tooltip is no
+accessible name: a button that is only a picture still carries an
+`accessibilityLabel`.
+
 ## Accessibility and automation
 
 Accessibility modifiers describe meaning, not test-only metadata:

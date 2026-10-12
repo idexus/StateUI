@@ -45,6 +45,7 @@ enum WebRegistrations {
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
         registry.everyElementMeetsAssistiveTechnology(identifying: true)
+        registry.everyElementShowsItsTooltip()
         registry.everyElementHearsTheUser()
         registry.everyElementDragsAndDrops()
         registry.everyElementTakesDroppedFiles()

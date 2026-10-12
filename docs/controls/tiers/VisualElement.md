@@ -52,6 +52,7 @@ How each of them realizes these members is on its own page.
 | `scaleX` | property | `Double` | native |
 | `scaleY` | property | `Double` | native |
 | `style` | property | `Name` | structure |
+| `tooltip` | property | `String` | native |
 | `translationX` | property | `Double` | native |
 | `translationY` | property | `Double` | native |
 | `unfocus` | act | `() -> Void` |  |

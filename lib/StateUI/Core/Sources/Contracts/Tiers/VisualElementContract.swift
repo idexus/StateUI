@@ -134,6 +134,9 @@ public enum VisualElementContract: Contract {
     public static let width = ElementProperty<Self, Double>(
         "width", layer: .native, moves: .width)
 
+    /// The words the platform shows beside the element while the pointer rests on it.
+    public static let tooltip = ElementProperty<Self, String>("tooltip", layer: .native)
+
     /// Which of its overlapping siblings in a grid or a ZStack the element is drawn over.
     public static let zIndex = ElementProperty<Self, Int>("zIndex", layer: .native, travels: false)
 
@@ -143,7 +146,7 @@ public enum VisualElementContract: Contract {
         automationExcludedWithChildren, background, focus, frame, height, ignoresInput,
         isAccessibilityHidden, isEnabled, isFocusedChanged, isVisible, layoutDirection,
         maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY,
-        rotation, rotationX, rotationY, scale, scaleX, scaleY, style, translationX,
+        rotation, rotationX, rotationY, scale, scaleX, scaleY, style, tooltip, translationX,
         translationY, unfocus, width, zIndex,
     ]
 }

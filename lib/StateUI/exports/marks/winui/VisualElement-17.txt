@@ -1,69 +1,73 @@
-# revision 8.1
-ActivityIndicator.background: – WinUI's progress ring paints its Background as its track, no ground under its frame.
-Button.ignoresInput: ✅
-Button.scale: ✅
-Canvas.accessibilityHeading: ✅
-CheckBox.frameChanged: ✅
-CheckBox.height: ✅
-CheckBox.rotationX: ✓ read rotationX of CheckBox: the host's own tip, checked against the projection it laid on the element
-CheckBox.width: ✅
-ColorBox.accessibilityLabel: ✅
-DatePicker.isVisible: ✅
-DatePicker.pivotX: ✅
-Divider.frame: ✅
-Divider.scaleX: ✅
-Ellipse.style: ✅
-Ellipse.translationX: ✅
-Grid.automationExcludedWithChildren: ✅
-HStack.opacity: ✅
-HStack.pivotY: ✅
-Image.ignoresInput: ✅
-Image.scale: ✅
-ItemsView.accessibilityHint: ✅
-Line.translationY: ✅
-Line.zIndex: ✅
-Map.background: 🧩
-Path.isAccessibilityHidden: ✅
-Picker.frameChanged: ✅
-Picker.height: ✅
-Picker.rotationX: ✓ read rotationX of Picker: the host's own tip, checked against the projection it laid on the element
-Picker.width: ✅
-Polygon.accessibilityLabel: ✅
+# revision 9.1
+ActivityIndicator.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
+Button.frameChanged: ✅
+Button.maximumHeight: ✅
+Button.maximumWidth: ✅
+Button.minimumHeight: ✅
+Button.minimumWidth: ✅
+Button.rotationX: ✓ read rotationX of Button: the host's own tip, checked against the projection it laid on the element
+Canvas.accessibilityLabel: ✅
+CheckBox.isVisible: ✅
+CheckBox.layoutDirection: ✅
+ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
+ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
+ColorBox.scaleX: ✅
+ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
+DatePicker.tooltip: ✅
+Divider.accessibilityHeading: ✅
+Divider.translationY: ✅
+Ellipse.isEnabled: does not apply - read isEnabled of Ellipse - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Ellipse.pivotY: ✅
+Grid.scaleY: ✅
+Grid.style: ✅
+HStack.accessibilityLabel: ✅
+HStack.isEnabled: ✅
+Image.accessibilityHeading: ✅
+ItemsView.isEnabled: ✅
+ItemsView.pivotY: ✅
+Line.isAccessibilityHidden: ✅
+Map.frameChanged: 🧩
+Map.height: 🧩
+Map.rotation: 🧩
+Map.width: 🧩
+Path.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Picker.ignoresInput: ✅
+Picker.rotationY: ✓ read rotationY of Picker: the host's own tip, checked against the projection it laid on the element
+Polygon.accessibilityHint: ✅
 Polyline.isVisible: ✅
-Polyline.pivotX: ✅
-ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
-ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
-ProgressBar.scaleY: ✅
-ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
-RadioButton.isAccessibilityHidden: ✅
-Rectangle.frameChanged: ✅
-Rectangle.maximumHeight: ✅
-Rectangle.maximumWidth: ✅
-Rectangle.minimumHeight: ✅
-Rectangle.minimumWidth: ✅
-Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own tip, checked against the projection it laid on the element
-ScrollView.accessibilityLabel: ✅
-ScrollView.layoutDirection: ✅
-SearchField.layoutDirection: ✅
-Slider.focus: ✅
-Slider.isFocusedChanged: ✅
-Slider.scaleY: ✅
-Slider.unfocus: ✅
-Spacer.automationExcludedWithChildren: ✅
-Stepper.ignoresInput: ✅
-Stepper.scale: ✅
-Switch.accessibilityHeading: ✅
-Text.isEnabled: does not apply - read isEnabled of Text - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Text.rotation: ✅
-TextEditor.frameChanged: ✅
-TextEditor.height: ✅
-TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own tip, checked against the projection it laid on the element
-TextEditor.width: ✅
-TextField.accessibilityLabel: ✅
-TimePicker.opacity: ✅
-TimePicker.pivotY: ✅
-VStack.translationY: ✅
-VStack.zIndex: ✅
-WebView.accessibilityHint: ✅
-ZStack.isEnabled: does not apply - read isEnabled of ZStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-ZStack.rotation: ✅
+Polyline.layoutDirection: ✓ read layoutDirection of Polyline: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+ProgressBar.frame: ✅
+ProgressBar.scale: ✅
+RadioButton.accessibilityHint: ✅
+Rectangle.opacity: ✅
+Rectangle.pivotX: ✅
+ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.scaleX: ✅
+ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+SearchField.accessibilityHint: ✅
+Slider.opacity: ✅
+Slider.pivotX: ✅
+Spacer.scaleY: ✅
+Spacer.style: ✅
+Stepper.isAccessibilityHidden: ✅
+Switch.frameChanged: ✅
+Switch.maximumHeight: ✅
+Switch.maximumWidth: ✅
+Switch.minimumHeight: ✅
+Switch.minimumWidth: ✅
+Switch.rotationX: ✓ read rotationX of Switch: the host's own tip, checked against the projection it laid on the element
+Text.translationX: ✅
+Text.zIndex: ✅
+TextEditor.accessibilityLabel: ✅
+TextField.isVisible: ✅
+TextField.layoutDirection: ✅
+TimePicker.focus: ✅
+TimePicker.isFocusedChanged: ✅
+TimePicker.scaleX: ✅
+TimePicker.unfocus: ✅
+VStack.accessibilityHeading: ✅
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+WebView.automationExcludedWithChildren: ✅
+ZStack.ignoresInput: ✅
+ZStack.rotationY: ✓ read rotationY of ZStack: the host's own tip, checked against the projection it laid on the element

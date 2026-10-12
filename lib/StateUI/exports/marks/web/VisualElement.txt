@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.accessibilityHeading: ✅
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
@@ -28,6 +28,7 @@ ActivityIndicator.scale: ✓ read scale of ActivityIndicator: the host's own tra
 ActivityIndicator.scaleX: ✓ read scaleX of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ActivityIndicator.scaleY: ✓ read scaleY of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ActivityIndicator.style: ✅
+ActivityIndicator.tooltip: ✅
 ActivityIndicator.translationX: ✓ read translationX of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ActivityIndicator.translationY: ✓ read translationY of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ActivityIndicator.unfocus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
@@ -62,6 +63,7 @@ Button.scale: ✓ read scale of Button: the host's own transform: the page holds
 Button.scaleX: ✓ read scaleX of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Button.scaleY: ✓ read scaleY of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Button.style: ✅
+Button.tooltip: ✅
 Button.translationX: ✓ read translationX of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Button.translationY: ✓ read translationY of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Button.unfocus: ✅
@@ -96,6 +98,7 @@ Canvas.scale: ✓ read scale of Canvas: the host's own transform: the page holds
 Canvas.scaleX: ✓ read scaleX of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Canvas.scaleY: ✓ read scaleY of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Canvas.style: ✅
+Canvas.tooltip: ✅
 Canvas.translationX: ✓ read translationX of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Canvas.translationY: ✓ read translationY of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
@@ -130,6 +133,7 @@ CheckBox.scale: ✓ read scale of CheckBox: the host's own transform: the page h
 CheckBox.scaleX: ✓ read scaleX of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 CheckBox.scaleY: ✓ read scaleY of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 CheckBox.style: ✅
+CheckBox.tooltip: ✅
 CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 CheckBox.unfocus: ✅
@@ -164,6 +168,7 @@ ColorBox.scale: ✓ read scale of ColorBox: the host's own transform: the page h
 ColorBox.scaleX: ✓ read scaleX of ColorBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ColorBox.scaleY: ✓ read scaleY of ColorBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ColorBox.style: ✅
+ColorBox.tooltip: ✅
 ColorBox.translationX: ✓ read translationX of ColorBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ColorBox.translationY: ✓ read translationY of ColorBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
@@ -198,6 +203,7 @@ DatePicker.scale: ✓ read scale of DatePicker: the host's own transform: the pa
 DatePicker.scaleX: ✓ read scaleX of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 DatePicker.scaleY: ✓ read scaleY of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 DatePicker.style: ✅
+DatePicker.tooltip: ✅
 DatePicker.translationX: ✓ read translationX of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 DatePicker.translationY: ✓ read translationY of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 DatePicker.unfocus: ✅
@@ -232,6 +238,7 @@ Divider.scale: ✓ read scale of Divider: the host's own transform: the page hol
 Divider.scaleX: ✓ read scaleX of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Divider.scaleY: ✓ read scaleY of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Divider.style: ✅
+Divider.tooltip: ✅
 Divider.translationX: ✓ read translationX of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Divider.translationY: ✓ read translationY of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Divider.unfocus: – Divider takes no keyboard focus here: it refuses it, and nothing is heard
@@ -266,6 +273,7 @@ Ellipse.scale: ✓ read scale of Ellipse: the host's own transform: the page hol
 Ellipse.scaleX: ✓ read scaleX of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Ellipse.scaleY: ✓ read scaleY of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Ellipse.style: ✅
+Ellipse.tooltip: ✅
 Ellipse.translationX: ✓ read translationX of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Ellipse.unfocus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
@@ -300,6 +308,7 @@ Grid.scale: ✓ read scale of Grid: the host's own transform: the page holds one
 Grid.scaleX: ✓ read scaleX of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Grid.scaleY: ✓ read scaleY of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Grid.style: ✅
+Grid.tooltip: ✅
 Grid.translationX: ✓ read translationX of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Grid.translationY: ✓ read translationY of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
@@ -334,6 +343,7 @@ HStack.scale: ✓ read scale of HStack: the host's own transform: the page holds
 HStack.scaleX: ✓ read scaleX of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 HStack.scaleY: ✓ read scaleY of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 HStack.style: ✅
+HStack.tooltip: ✅
 HStack.translationX: ✓ read translationX of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 HStack.translationY: ✓ read translationY of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 HStack.unfocus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
@@ -368,6 +378,7 @@ Image.scale: ✓ read scale of Image: the host's own transform: the page holds o
 Image.scaleX: ✓ read scaleX of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Image.scaleY: ✓ read scaleY of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Image.style: ✅
+Image.tooltip: ✅
 Image.translationX: ✓ read translationX of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Image.translationY: ✓ read translationY of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
@@ -402,6 +413,7 @@ ItemsView.scale: ✓ read scale of ItemsView: the host's own transform: the page
 ItemsView.scaleX: ✓ read scaleX of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ItemsView.scaleY: ✓ read scaleY of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ItemsView.style: not realized
+ItemsView.tooltip: ✅
 ItemsView.translationX: ✓ read translationX of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ItemsView.translationY: ✓ read translationY of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ItemsView.unfocus: ✅
@@ -436,6 +448,7 @@ Line.scale: ✓ read scale of Line: the host's own transform: the page holds one
 Line.scaleX: ✓ read scaleX of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Line.scaleY: ✓ read scaleY of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Line.style: ✅
+Line.tooltip: ✅
 Line.translationX: ✓ read translationX of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Line.translationY: ✓ read translationY of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
@@ -470,6 +483,7 @@ Map.scale: 🧩
 Map.scaleX: 🧩
 Map.scaleY: 🧩
 Map.style: 🧩
+Map.tooltip: 🧩
 Map.translationX: 🧩
 Map.translationY: 🧩
 Map.unfocus: 🧩
@@ -504,6 +518,7 @@ Path.scale: ✓ read scale of Path: the host's own transform: the page holds one
 Path.scaleX: ✓ read scaleX of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Path.scaleY: ✓ read scaleY of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Path.style: ✅
+Path.tooltip: ✅
 Path.translationX: ✓ read translationX of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Path.translationY: ✓ read translationY of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
@@ -538,6 +553,7 @@ Picker.scale: ✓ read scale of Picker: the host's own transform: the page holds
 Picker.scaleX: ✓ read scaleX of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Picker.scaleY: ✓ read scaleY of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Picker.style: ✅
+Picker.tooltip: ✅
 Picker.translationX: ✓ read translationX of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Picker.translationY: ✓ read translationY of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Picker.unfocus: ✅
@@ -572,6 +588,7 @@ Polygon.scale: ✓ read scale of Polygon: the host's own transform: the page hol
 Polygon.scaleX: ✓ read scaleX of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polygon.scaleY: ✓ read scaleY of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polygon.style: ✅
+Polygon.tooltip: ✅
 Polygon.translationX: ✓ read translationX of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polygon.translationY: ✓ read translationY of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
@@ -606,6 +623,7 @@ Polyline.scale: ✓ read scale of Polyline: the host's own transform: the page h
 Polyline.scaleX: ✓ read scaleX of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polyline.scaleY: ✓ read scaleY of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polyline.style: ✅
+Polyline.tooltip: ✅
 Polyline.translationX: ✓ read translationX of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polyline.translationY: ✓ read translationY of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
@@ -640,6 +658,7 @@ ProgressBar.scale: ✓ read scale of ProgressBar: the host's own transform: the 
 ProgressBar.scaleX: ✓ read scaleX of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ProgressBar.scaleY: ✓ read scaleY of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ProgressBar.style: ✅
+ProgressBar.tooltip: ✅
 ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
@@ -674,6 +693,7 @@ RadioButton.scale: ✓ read scale of RadioButton: the host's own transform: the 
 RadioButton.scaleX: ✓ read scaleX of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 RadioButton.scaleY: ✓ read scaleY of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 RadioButton.style: ✅
+RadioButton.tooltip: ✅
 RadioButton.translationX: ✓ read translationX of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 RadioButton.translationY: ✓ read translationY of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 RadioButton.unfocus: ✅
@@ -708,6 +728,7 @@ Rectangle.scale: ✓ read scale of Rectangle: the host's own transform: the page
 Rectangle.scaleX: ✓ read scaleX of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.style: ✅
+Rectangle.tooltip: ✅
 Rectangle.translationX: ✓ read translationX of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
@@ -742,6 +763,7 @@ ScrollView.scale: ✓ read scale of ScrollView: the host's own transform: the pa
 ScrollView.scaleX: ✓ read scaleX of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ScrollView.scaleY: ✓ read scaleY of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ScrollView.style: ✅
+ScrollView.tooltip: ✅
 ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
@@ -776,6 +798,7 @@ SearchField.scale: ✓ read scale of SearchField: the host's own transform: the 
 SearchField.scaleX: ✓ read scaleX of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 SearchField.scaleY: ✓ read scaleY of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 SearchField.style: ✅
+SearchField.tooltip: ✅
 SearchField.translationX: ✓ read translationX of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 SearchField.unfocus: ✅
@@ -810,6 +833,7 @@ Slider.scale: ✓ read scale of Slider: the host's own transform: the page holds
 Slider.scaleX: ✓ read scaleX of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Slider.scaleY: ✓ read scaleY of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Slider.style: ✅
+Slider.tooltip: ✅
 Slider.translationX: ✓ read translationX of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Slider.translationY: ✓ read translationY of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Slider.unfocus: ✅
@@ -844,6 +868,7 @@ Spacer.scale: ✓ read scale of Spacer: the host's own transform: the page holds
 Spacer.scaleX: ✓ read scaleX of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Spacer.scaleY: ✓ read scaleY of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Spacer.style: ✅
+Spacer.tooltip: ✅
 Spacer.translationX: ✓ read translationX of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Spacer.translationY: ✓ read translationY of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Spacer.unfocus: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
@@ -878,6 +903,7 @@ Stepper.scale: ✓ read scale of Stepper: the host's own transform: the page hol
 Stepper.scaleX: ✓ read scaleX of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Stepper.scaleY: ✓ read scaleY of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Stepper.style: ✅
+Stepper.tooltip: ✅
 Stepper.translationX: ✓ read translationX of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Stepper.translationY: ✓ read translationY of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Stepper.unfocus: ✅
@@ -912,6 +938,7 @@ Switch.scale: ✓ read scale of Switch: the host's own transform: the page holds
 Switch.scaleX: ✓ read scaleX of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Switch.scaleY: ✓ read scaleY of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Switch.style: ✅
+Switch.tooltip: ✅
 Switch.translationX: ✓ read translationX of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Switch.translationY: ✓ read translationY of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Switch.unfocus: ✅
@@ -946,6 +973,7 @@ Text.scale: ✓ read scale of Text: the host's own transform: the page holds one
 Text.scaleX: ✓ read scaleX of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Text.scaleY: ✓ read scaleY of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Text.style: ✅
+Text.tooltip: ✅
 Text.translationX: ✓ read translationX of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Text.translationY: ✓ read translationY of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
@@ -980,6 +1008,7 @@ TextEditor.scale: ✓ read scale of TextEditor: the host's own transform: the pa
 TextEditor.scaleX: ✓ read scaleX of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextEditor.scaleY: ✓ read scaleY of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextEditor.style: ✅
+TextEditor.tooltip: ✅
 TextEditor.translationX: ✓ read translationX of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextEditor.unfocus: ✅
@@ -1014,6 +1043,7 @@ TextField.scale: ✓ read scale of TextField: the host's own transform: the page
 TextField.scaleX: ✓ read scaleX of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextField.scaleY: ✓ read scaleY of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextField.style: ✅
+TextField.tooltip: ✅
 TextField.translationX: ✓ read translationX of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextField.translationY: ✓ read translationY of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextField.unfocus: ✅
@@ -1048,6 +1078,7 @@ TimePicker.scale: ✓ read scale of TimePicker: the host's own transform: the pa
 TimePicker.scaleX: ✓ read scaleX of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TimePicker.scaleY: ✓ read scaleY of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TimePicker.style: ✅
+TimePicker.tooltip: ✅
 TimePicker.translationX: ✓ read translationX of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TimePicker.unfocus: ✅
@@ -1082,6 +1113,7 @@ VStack.scale: ✓ read scale of VStack: the host's own transform: the page holds
 VStack.scaleX: ✓ read scaleX of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 VStack.scaleY: ✓ read scaleY of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 VStack.style: ✅
+VStack.tooltip: ✅
 VStack.translationX: ✓ read translationX of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 VStack.translationY: ✓ read translationY of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
@@ -1116,6 +1148,7 @@ WebView.scale: ✓ read scale of WebView: the host's own transform: the page hol
 WebView.scaleX: ✓ read scaleX of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 WebView.scaleY: ✓ read scaleY of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 WebView.style: ✅
+WebView.tooltip: ✅
 WebView.translationX: ✓ read translationX of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 WebView.translationY: ✓ read translationY of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 WebView.unfocus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
@@ -1150,6 +1183,7 @@ ZStack.scale: ✓ read scale of ZStack: the host's own transform: the page holds
 ZStack.scaleX: ✓ read scaleX of ZStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ZStack.scaleY: ✓ read scaleY of ZStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ZStack.style: ✅
+ZStack.tooltip: ✅
 ZStack.translationX: ✓ read translationX of ZStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ZStack.translationY: ✓ read translationY of ZStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard

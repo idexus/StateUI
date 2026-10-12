@@ -35,13 +35,13 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (78)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>36 ✅ · 2 ☑️ · 39 ✓</td><td><code>NSCollectionView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>33 ✅ · 2 ☑️ · 39 ✓ · 3 –</td><td><code>UICollectionView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>62 ✅ · 3 ☑️ · 11 ✓</td><td>AndroidX <code>RecyclerView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>64 ✅ · 1 ☑️ · 12 ✓</td><td><code>ItemsView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>53 ✅ · 1 ☑️ · 21 ✓ · 1 –</td><td><code>GtkListView</code> / <code>GtkGridView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>55 ✅ · 1 ☑️ · 21 ✓</td><td>ARIA <code>list</code> or <code>listbox</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (79)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>37 ✅ · 2 ☑️ · 39 ✓</td><td><code>NSCollectionView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>34 ✅ · 2 ☑️ · 39 ✓ · 3 –</td><td><code>UICollectionView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>63 ✅ · 3 ☑️ · 11 ✓</td><td>AndroidX <code>RecyclerView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>65 ✅ · 1 ☑️ · 12 ✓</td><td><code>ItemsView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>54 ✅ · 1 ☑️ · 21 ✓ · 1 –</td><td><code>GtkListView</code> / <code>GtkGridView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>56 ✅ · 1 ☑️ · 21 ✓</td><td>ARIA <code>list</code> or <code>listbox</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Collections/ItemsViewContract.swift`.
@@ -124,6 +124,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read scaleY of ItemsView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleY of ItemsView: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read scaleY of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
 <tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4, Web: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>tooltip</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read translationX of ItemsView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read translationX of ItemsView: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read translationX of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>

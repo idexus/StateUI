@@ -179,6 +179,11 @@ class GTKView {
         gtk_widget_set_sensitive(widget, enabled ? 1 : 0)
     }
 
+    /// The words GTK shows over the widget while the pointer rests on it; nil shows none.
+    func setTooltip(_ text: String?) {
+        gtk_widget_set_tooltip_text(widget, text)
+    }
+
     /// Asks GTK to measure this widget again, and every widget above it.
     func invalidateMeasure() {
         gtk_widget_queue_resize(widget)

@@ -31,13 +31,13 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (83)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>41 ✅ · 2 ☑️ · 35 ✓ · 4 –</td><td><code>NSTextField</code> label; <code>NSAttributedString</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>43 ✅ · 1 ☑️ · 35 ✓ · 3 –</td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>65 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td><code>TextView</code>; <code>SpannableStringBuilder</code> spans</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>67 ✅ · 1 ☑️ · 12 ✓ · 3 –</td><td><code>TextBlock</code>; <code>Run</code> inlines</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>55 ✅ · 1 ☑️ · 23 ✓ · 4 –</td><td><code>GtkLabel</code>; <code>PangoAttrList</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>59 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;span&gt;</code>; <code>&lt;span&gt;</code> runs</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (84)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>42 ✅ · 2 ☑️ · 35 ✓ · 4 –</td><td><code>NSTextField</code> label; <code>NSAttributedString</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>44 ✅ · 1 ☑️ · 35 ✓ · 3 –</td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>66 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td><code>TextView</code>; <code>SpannableStringBuilder</code> spans</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>68 ✅ · 1 ☑️ · 12 ✓ · 3 –</td><td><code>TextBlock</code>; <code>Run</code> inlines</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>56 ✅ · 1 ☑️ · 23 ✓ · 4 –</td><td><code>GtkLabel</code>; <code>PangoAttrList</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>60 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;span&gt;</code>; <code>&lt;span&gt;</code> runs</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextContract.swift`.
@@ -107,6 +107,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tbody><tr></tr><tr><td rowspan="2"><code>scaleY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read scaleY of Text: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleY of Text: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read scaleY of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>tooltip</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read translationX of Text: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read translationX of Text: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read translationX of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>

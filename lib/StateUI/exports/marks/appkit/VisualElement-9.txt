@@ -1,54 +1,49 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.style: ✅
-Button.frameChanged: ✅
-Button.height: ✅
-Button.translationY: ✓ read translationY of Button: the host's own transform, checked against the layer it composed itself
-Button.width: ✅
-Canvas.scale: ✓ read scale of Canvas: the host's own transform, checked against the layer it composed itself
-CheckBox.pivotY: ✓ read pivotY of CheckBox: the host's own transform, checked against the layer it composed itself
-ColorBox.automationExcludedWithChildren: ✅
-DatePicker.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-Divider.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-Ellipse.frame: ✅
-Grid.opacity: ✅
-Grid.scaleY: ✓ read scaleY of Grid: the host's own transform, checked against the layer it composed itself
-HStack.layoutDirection: ✅
-Image.zIndex: ✅
-ItemsView.frameChanged: ✅
-ItemsView.maximumHeight: ✅
-ItemsView.maximumWidth: ✅
-ItemsView.minimumHeight: ✅
-ItemsView.minimumWidth: ✅
-Line.pivotY: ✓ read pivotY of Line: the host's own transform, checked against the layer it composed itself
-Map.isAccessibilityHidden: ✅
-Path.frame: ✅
-Picker.opacity: ✅
-Picker.scaleY: ✓ read scaleY of Picker: the host's own transform, checked against the layer it composed itself
-Polygon.rotationX: ✓ read rotationX of Polygon: the host's own transform, checked against the layer it composed itself
-Polyline.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
-ProgressBar.accessibilityLabel: ✅
-RadioButton.frame: ✅
-Rectangle.isEnabled: ✅
-Rectangle.translationX: ✓ read translationX of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own transform, checked against the layer it composed itself
+Button.isEnabled: ✅
+Button.scaleY: ✓ read scaleY of Button: the host's own transform, checked against the layer it composed itself
+Canvas.rotation: ✓ read rotation of Canvas: the host's own transform, checked against the layer it composed itself
+CheckBox.automationExcludedWithChildren: ✅
+ColorBox.accessibilityLabel: ✅
+DatePicker.ignoresInput: ✅
+Divider.pivotY: ✓ read pivotY of Divider: the host's own transform, checked against the layer it composed itself
+Ellipse.isVisible: ✅
+Ellipse.scale: ✓ read scale of Ellipse: the host's own transform, checked against the layer it composed itself
+Grid.layoutDirection: ✅
+HStack.zIndex: ✅
+Image.isVisible: ✅
+Image.scale: ✓ read scale of Image: the host's own transform, checked against the layer it composed itself
+ItemsView.layoutDirection: ✅
+Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Map.opacity: ✅
+Map.scaleX: ✓ read scaleX of Map: the host's own transform, checked against the layer it composed itself
+Path.isAccessibilityHidden: ✅
+Picker.zIndex: ✅
+Polygon.frameChanged: ✅
+Polygon.maximumHeight: ✅
+Polygon.maximumWidth: ✅
+Polygon.minimumHeight: ✅
+Polygon.minimumWidth: ✅
+Polygon.translationY: ✓ read translationY of Polygon: the host's own transform, checked against the layer it composed itself
+Polyline.rotationX: ✓ read rotationX of Polyline: the host's own transform, checked against the layer it composed itself
+ProgressBar.automationExcludedWithChildren: ✅
+RadioButton.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+Rectangle.ignoresInput: ✅
+Rectangle.isEnabled: ✓ tap on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
+ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.automationExcludedWithChildren: ✅
 Slider.accessibilityLabel: ✅
-Spacer.focus: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
-Spacer.isFocusedChanged: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
-Spacer.unfocus: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
-Stepper.frameChanged: ✅
-Stepper.height: ✅
-Stepper.translationY: ✓ read translationY of Stepper: the host's own transform, checked against the layer it composed itself
-Stepper.width: ✅
-Switch.scale: ✓ read scale of Switch: the host's own transform, checked against the layer it composed itself
-Text.isVisible: ✅
-Text.scaleX: ✓ read scaleX of Text: the host's own transform, checked against the layer it composed itself
-TextEditor.pivotY: ✓ read pivotY of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.automationExcludedWithChildren: ✅
-TimePicker.accessibilityLabel: ✅
-VStack.background: ✅
-VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-WebView.rotationY: ✓ read rotationY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.pivotX: ✓ read pivotX of ZStack: the host's own transform, checked against the layer it composed itself
+Spacer.frame: ✅
+Stepper.opacity: ✅
+Stepper.scaleX: ✓ read scaleX of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.pivotY: ✓ read pivotY of Switch: the host's own transform, checked against the layer it composed itself
+Text.tooltip: ✅
+TextEditor.isAccessibilityHidden: ✅
+TextField.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+TimePicker.ignoresInput: ✅
+VStack.isVisible: ✅
+VStack.scale: ✓ read scale of VStack: the host's own transform, checked against the layer it composed itself
+WebView.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+ZStack.zIndex: ✅

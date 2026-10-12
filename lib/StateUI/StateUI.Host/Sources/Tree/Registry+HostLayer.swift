@@ -53,6 +53,12 @@ extension Registry {
         everyElementRealizes(VisualElementContract.automationExcludedWithChildren)
     }
 
+    /// The words a view shows while the pointer rests on it, which every toolkit holds on any view.
+    /// Design: docs/design/views/modifiers.md#a-tooltip
+    public func everyElementShowsItsTooltip() {
+        everyElementRealizes(VisualElementContract.tooltip)
+    }
+
     /// Where a view stands, said as the tree reads it (`MountedElement.reportFrame`), and what the user does to it
     /// with a finger, a pen or the mouse (`MountedElement.hear`).
     public func everyElementHearsTheUser() {

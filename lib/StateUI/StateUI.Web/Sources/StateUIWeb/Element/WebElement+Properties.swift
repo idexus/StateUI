@@ -55,6 +55,7 @@ extension WebElement {
             case .isVisible: view.setShown(element.standsShown)
             case .background: view.setBackground(element.value(.background))
             case .ignoresInput: view.style("pointer-events", element.value(.ignoresInput)?.bool == true ? "none" : nil)
+            case .tooltip: view.attribute("title", element.string(.tooltip))
             default: break
             }
         }

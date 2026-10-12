@@ -26,6 +26,7 @@ extension AppKitDriver {
             return accessibility(property, native.accessibilityTarget(of: view), view)
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "AppKit marks a heading, not its level")
+        case .tooltip: return view.toolTip.propValue
         case .fontSize, .fontAttributes, .fontFamily, .textColor:
             return try words(property, view)
         case .background:

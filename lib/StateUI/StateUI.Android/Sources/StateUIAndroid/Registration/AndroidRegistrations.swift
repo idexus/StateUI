@@ -42,6 +42,7 @@ enum AndroidRegistrations {
     /// What `AndroidElement` puts on every view wearing each member's contract, by the host layer's rules.
     static func shared(_ registry: Registry<AndroidView>) {
         registry.everyElementMeetsAssistiveTechnology()
+        registry.everyElementShowsItsTooltip()
         registry.everyElementHearsTheUser()
         registry.everyElementDragsAndDrops()
         registry.everyElementTakesDroppedFiles()

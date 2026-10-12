@@ -35,13 +35,13 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (92)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>46 ✅ · 2 ☑️ · 36 ✓ · 3 –</td><td><code>NSTextField</code> / <code>NSSecureTextField</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>53 ✅ · 2 ☑️ · 35 ✓</td><td><code>UITextField</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>73 ✅ · 3 ☑️ · 10 ✓ · 2 –</td><td><code>EditText</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>73 ✅ · 2 ☑️ · 12 ✓ · 1 –</td><td><code>TextBox</code> / <code>PasswordBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>63 ✅ · 1 ☑️ · 23 ✓ · 3 –</td><td><code>GtkEntry</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>68 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;input type=text&gt;</code> / <code>&lt;input type=password&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (93)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>47 ✅ · 2 ☑️ · 36 ✓ · 3 –</td><td><code>NSTextField</code> / <code>NSSecureTextField</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>54 ✅ · 2 ☑️ · 35 ✓</td><td><code>UITextField</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>74 ✅ · 3 ☑️ · 10 ✓ · 2 –</td><td><code>EditText</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>74 ✅ · 2 ☑️ · 12 ✓ · 1 –</td><td><code>TextBox</code> / <code>PasswordBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>64 ✅ · 1 ☑️ · 23 ✓ · 3 –</td><td><code>GtkEntry</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>69 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;input type=text&gt;</code> / <code>&lt;input type=password&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextFieldContract.swift`.
@@ -115,6 +115,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tbody><tr></tr><tr><td rowspan="2"><code>scaleY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read scaleY of TextField: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleY of TextField: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read scaleY of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>tooltip</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read translationX of TextField: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read translationX of TextField: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read translationX of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>

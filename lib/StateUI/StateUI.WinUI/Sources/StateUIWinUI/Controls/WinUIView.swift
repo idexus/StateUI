@@ -147,6 +147,11 @@ class WinUIView {
         }
     }
 
+    /// The words WinUI shows over the view while the pointer rests on it; nil shows none.
+    func setTooltip(_ text: String?) {
+        stateui_winui_set_tooltip(handle, text)
+    }
+
     /// Whether clicks and touches go through the view to what is behind it.
     func setIgnoresInput(_ ignores: Bool) {
         stateui_winui_set_hit_testable(handle, !ignores)

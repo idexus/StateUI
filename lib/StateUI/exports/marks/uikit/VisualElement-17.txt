@@ -1,52 +1,53 @@
-# revision 8.1
-ActivityIndicator.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
-Button.accessibilityLabel: ✅
-Canvas.focus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
-Canvas.isFocusedChanged: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
-Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
-CheckBox.frameChanged: ✅
-CheckBox.height: ✅
-CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transform, checked against the layer it composed itself
-CheckBox.width: ✅
-ColorBox.scale: ✓ read scale of ColorBox: the host's own transform, checked against the layer it composed itself
-DatePicker.pivotX: ✓ read pivotX of DatePicker: the host's own transform, checked against the layer it composed itself
-Divider.pivotX: ✓ read pivotX of Divider: the host's own transform, checked against the layer it composed itself
-Ellipse.isAccessibilityHidden: ✅
-Grid.zIndex: ✅
-HStack.opacity: ✅
-HStack.scaleY: ✓ read scaleY of HStack: the host's own transform, checked against the layer it composed itself
-Image.layoutDirection: ✅
-ItemsView.accessibilityHint: ✅
-Line.frameChanged: ✅
-Line.height: ✅
-Line.translationY: ✓ read translationY of Line: the host's own transform, checked against the layer it composed itself
-Line.width: ✅
-Map.rotationY: ✓ read rotationY of Map: the host's own transform, checked against the layer it composed itself
-Path.isAccessibilityHidden: ✅
-Picker.zIndex: ✅
-Polygon.ignoresInput: ✅
-Polyline.isVisible: ✅
-Polyline.scaleX: ✓ read scaleX of Polyline: the host's own transform, checked against the layer it composed itself
-ProgressBar.pivotY: ✓ read pivotY of ProgressBar: the host's own transform, checked against the layer it composed itself
-RadioButton.isAccessibilityHidden: ✅
-Rectangle.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-ScrollView.ignoresInput: ✅
-ScrollView.layoutDirection: ✅
+# revision 9.1
+ActivityIndicator.automationExcludedWithChildren: ✅
+Button.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+Canvas.ignoresInput: ✅
+CheckBox.isVisible: ✅
+CheckBox.scale: ✓ read scale of CheckBox: the host's own transform, checked against the layer it composed itself
+ColorBox.pivotX: ✓ read pivotX of ColorBox: the host's own transform, checked against the layer it composed itself
+DatePicker.tooltip: ✅
+Divider.frameChanged: ✅
+Divider.maximumHeight: ✅
+Divider.maximumWidth: ✅
+Divider.minimumHeight: ✅
+Divider.minimumWidth: ✅
+Divider.translationY: ✓ read translationY of Divider: the host's own transform, checked against the layer it composed itself
+Ellipse.style: ✅
+Grid.isEnabled: ✅
+Grid.scaleY: ✓ read scaleY of Grid: the host's own transform, checked against the layer it composed itself
+HStack.background: ✅
+Image.style: ✅
+ItemsView.isEnabled: ✅
+ItemsView.scaleY: ✓ read scaleY of ItemsView: the host's own transform, checked against the layer it composed itself
+Line.isAccessibilityHidden: ✅
+Map.zIndex: ✅
+Path.rotationY: ✓ read rotationY of Path: the host's own transform, checked against the layer it composed itself
+Picker.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+Polygon.accessibilityHint: ✅
+Polyline.frame: ✅
+ProgressBar.isVisible: ✅
+ProgressBar.scale: ✓ read scale of ProgressBar: the host's own transform, checked against the layer it composed itself
+RadioButton.layoutDirection: ✅
+Rectangle.tooltip: ✅
+ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+SearchField.isVisible: ✅
 SearchField.scale: ✓ read scale of SearchField: the host's own transform, checked against the layer it composed itself
-Slider.pivotY: ✓ read pivotY of Slider: the host's own transform, checked against the layer it composed itself
-Spacer.automationExcludedWithChildren: ✅
-Stepper.accessibilityLabel: ✅
-Switch.focus: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
-Switch.isFocusedChanged: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
-Switch.unfocus: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
-Text.style: ✅
-TextEditor.frameChanged: ✅
-TextEditor.height: ✅
-TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform, checked against the layer it composed itself
-TextEditor.width: ✅
-TextField.scale: ✓ read scale of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.pivotY: ✓ read pivotY of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.automationExcludedWithChildren: ✅
-WebView.frame: ✅
-ZStack.isEnabled: ✅
-ZStack.translationX: ✓ read translationX of ZStack: the host's own transform, checked against the layer it composed itself
+Slider.pivotX: ✓ read pivotX of Slider: the host's own transform, checked against the layer it composed itself
+Spacer.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+Stepper.zIndex: ✅
+Switch.frameChanged: ✅
+Switch.maximumHeight: ✅
+Switch.maximumWidth: ✅
+Switch.minimumHeight: ✅
+Switch.minimumWidth: ✅
+Switch.translationY: ✓ read translationY of Switch: the host's own transform, checked against the layer it composed itself
+Text.rotation: ✓ read rotation of Text: the host's own transform, checked against the layer it composed itself
+TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.layoutDirection: ✅
+TimePicker.tooltip: ✅
+VStack.background: ✅
+VStack.style: ✅
+WebView.rotationX: ✓ read rotationX of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.background: ✅

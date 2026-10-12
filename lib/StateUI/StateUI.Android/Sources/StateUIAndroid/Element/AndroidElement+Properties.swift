@@ -60,6 +60,7 @@ extension AndroidElement {
                 // Android blurs nothing behind a view: a blur's or glass's colour stands in, its tint over it.
                 case .background: view.setBackground(HostMaterial(value(.background)).painted)
                 case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
+                case .tooltip: view.setTooltip(element.string(.tooltip))
                 default: break
                 }
             }

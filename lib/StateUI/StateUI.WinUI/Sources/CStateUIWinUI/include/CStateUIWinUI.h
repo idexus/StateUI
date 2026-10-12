@@ -384,6 +384,11 @@ bool stateui_winui_animations_enabled(void);
 /// The words a text block or a button's caption shows, in UTF-8; the length they need, their end not counted.
 int32_t stateui_winui_text(StateUIObjectRef element, char *utf8, int32_t capacity);
 
+/// The words WinUI shows over the element while the pointer rests on it, in UTF-8 - null shows none - and the
+/// words it holds, the length they need returned, their end not counted.
+void stateui_winui_set_tooltip(StateUIObjectRef element, char const *utf8);
+int32_t stateui_winui_tooltip(StateUIObjectRef element, char *utf8, int32_t capacity);
+
 StateUIObjectRef stateui_winui_panel_make(int64_t view);
 void stateui_winui_panel_set_children(StateUIObjectRef panel, StateUIObjectRef const *children, int32_t count);
 

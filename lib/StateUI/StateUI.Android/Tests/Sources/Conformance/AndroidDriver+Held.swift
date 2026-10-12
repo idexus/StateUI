@@ -171,6 +171,11 @@ extension AndroidDriver {
             return (Java.callInt(reference, JavaAPI.getImportantForAccessibility) == 4).propValue
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "Android marks a heading, not its level")
+        case .tooltip:
+            return Java.frame {
+                Java.callObject(reference, JavaAPI.getTooltipText).flatMap { Java.callObject($0, JavaAPI.toString) }
+                    .map { Java.text($0) }
+            }.propValue
         default: return controlHolds(property, view)
         }
     }

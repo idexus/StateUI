@@ -1,76 +1,75 @@
-# revision 8.1
-ActivityIndicator.translationY: ✅
+# revision 9.1
+ActivityIndicator.translationX: ✅
 ActivityIndicator.zIndex: ✅
-Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Canvas.frame: ✅
-Canvas.scaleX: ✅
-CheckBox.isAccessibilityHidden: ✅
-ColorBox.frameChanged: ✅
-ColorBox.maximumHeight: ✅
-ColorBox.maximumWidth: ✅
-ColorBox.minimumHeight: ✅
-ColorBox.minimumWidth: ✅
-ColorBox.rotationY: ✓ read rotationY of ColorBox: the host's own tip, checked against the projection it laid on the element
-DatePicker.accessibilityLabel: ✅
-Divider.layoutDirection: ✅
-Ellipse.opacity: ✅
-Ellipse.pivotY: ✅
-Grid.style: ✅
-Grid.translationX: ✅
-HStack.accessibilityHint: ✅
-HStack.layoutDirection: ✅
-Image.background: – WinUI's picture paints the picture alone, no ground around it.
-ItemsView.ignoresInput: ✅
-ItemsView.scale: ✅
-Line.isEnabled: does not apply - read isEnabled of Line - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Line.rotation: ✅
-Map.translationY: 🧩
-Map.zIndex: 🧩
-Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
-Path.isFocusedChanged: – Path takes no keyboard focus here: it refuses it, and nothing is heard
-Path.scaleY: ✅
-Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
-Picker.isAccessibilityHidden: ✅
-Polygon.frameChanged: ✅
-Polygon.maximumHeight: ✅
-Polygon.maximumWidth: ✅
-Polygon.minimumHeight: ✅
-Polygon.minimumWidth: ✅
+Button.isAccessibilityHidden: ✅
+Canvas.frameChanged: ✅
+Canvas.maximumHeight: ✅
+Canvas.maximumWidth: ✅
+Canvas.minimumHeight: ✅
+Canvas.minimumWidth: ✅
+Canvas.rotationX: ✓ read rotationX of Canvas: the host's own tip, checked against the projection it laid on the element
+CheckBox.accessibilityLabel: ✅
+ColorBox.isVisible: ✅
+ColorBox.layoutDirection: ✓ read layoutDirection of ColorBox: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+DatePicker.frame: ✅
+DatePicker.scale: ✅
+Divider.frameChanged: ✅
+Divider.height: ✅
+Divider.rotation: ✅
+Divider.width: ✅
+Ellipse.tooltip: ✅
+Grid.opacity: ✅
+Grid.pivotX: ✅
+HStack.frameChanged: ✅
+HStack.maximumHeight: ✅
+HStack.maximumWidth: ✅
+HStack.minimumHeight: ✅
+HStack.minimumWidth: ✅
+HStack.rotationX: ✓ read rotationX of HStack: the host's own tip, checked against the projection it laid on the element
+Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
+Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
+Image.scaleX: ✅
+Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
+ItemsView.tooltip: ✅
+Line.scaleY: ✅
+Line.style: ✅
+Map.accessibilityHeading: 🧩
+Path.accessibilityHeading: ✅
+Path.translationY: ✅
+Picker.automationExcludedWithChildren: ✅
+Polygon.ignoresInput: ✅
 Polygon.rotationY: ✓ read rotationY of Polygon: the host's own tip, checked against the projection it laid on the element
 Polyline.accessibilityLabel: ✅
-ProgressBar.isVisible: ✅
-ProgressBar.pivotX: ✅
-RadioButton.focus: ✅
-RadioButton.isFocusedChanged: ✅
-RadioButton.scaleY: ✅
-RadioButton.unfocus: ✅
-Rectangle.automationExcludedWithChildren: ✅
-ScrollView.frameChanged: ✅
-ScrollView.maximumHeight: ✅
-ScrollView.maximumWidth: ✅
-ScrollView.minimumHeight: ✅
-ScrollView.minimumWidth: ✅
-ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own tip, checked against the projection it laid on the element
-SearchField.accessibilityHeading: ✅
-Slider.isVisible: ✅
-Slider.pivotX: ✅
-Spacer.style: ✅
-Spacer.translationX: ✅
-Stepper.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Switch.frame: ✅
-Switch.scaleX: ✅
-Text.accessibilityHeading: ✅
-TextEditor.isAccessibilityHidden: ✅
-TextField.frameChanged: ✅
-TextField.maximumHeight: ✅
-TextField.maximumWidth: ✅
-TextField.minimumHeight: ✅
-TextField.minimumWidth: ✅
-TextField.rotationY: ✓ read rotationY of TextField: the host's own tip, checked against the projection it laid on the element
-TimePicker.accessibilityHint: ✅
-VStack.isEnabled: does not apply - read isEnabled of VStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-VStack.rotation: ✅
-WebView.ignoresInput: ✅
-WebView.scale: ✅
-ZStack.accessibilityHeading: ✅
-ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Polyline.isEnabled: ✅
+ProgressBar.background: – WinUI's progress bar paints its Background as its track, no ground under its frame.
+RadioButton.ignoresInput: ✅
+RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own tip, checked against the projection it laid on the element
+Rectangle.accessibilityHint: ✅
+ScrollView.isVisible: ✅
+ScrollView.layoutDirection: ✓ read layoutDirection of ScrollView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+SearchField.ignoresInput: ✅
+SearchField.rotationY: ✓ read rotationY of SearchField: the host's own tip, checked against the projection it laid on the element
+Slider.accessibilityHint: ✅
+Spacer.opacity: ✅
+Spacer.pivotX: ✅
+Stepper.scaleY: ✅
+Stepper.style: ✅
+Switch.isAccessibilityHidden: ✅
+Text.isEnabled: does not apply - read isEnabled of Text - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Text.pivotY: ✅
+TextEditor.frameChanged: ✅
+TextEditor.maximumHeight: ✅
+TextEditor.maximumWidth: ✅
+TextEditor.minimumHeight: ✅
+TextEditor.minimumWidth: ✅
+TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own tip, checked against the projection it laid on the element
+TextField.accessibilityLabel: ✅
+TimePicker.isVisible: ✅
+TimePicker.layoutDirection: ✅
+VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+VStack.scaleX: ✅
+VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+WebView.translationX: ✅
+WebView.zIndex: ✅
+ZStack.automationExcludedWithChildren: ✅

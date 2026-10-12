@@ -34,6 +34,7 @@ enum WinUIRegistrations {
     /// on every element WinUI shows - each view drawn moved, turned, scaled and tipped over its place.
     static func shared(_ registry: Registry<WinUIView>) {
         registry.everyElementMeetsAssistiveTechnology()
+        registry.everyElementShowsItsTooltip()
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(VisualElementContract.isEnabled)

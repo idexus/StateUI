@@ -19,6 +19,7 @@ extension WebDriver {
         case (.isVisible, _):
             return try WebBrowser.truth("e.isConnected && e.checkVisibility({ visibilityProperty: true })", on: e).propValue
         case (.opacity, _): return try WebBrowser.number("Number(getComputedStyle(e).opacity)", on: e)?.propValue
+        case (.tooltip, _): return try WebBrowser.evaluate("e.getAttribute('title')", on: e)?.propValue
         case (.isEnabled, _):
             return try (!WebBrowser.truth("""
                 e.matches(":disabled") || e.getAttribute("aria-disabled") === "true" \

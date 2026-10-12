@@ -33,13 +33,13 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (84)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>40 ✅ · 2 ☑️ · 36 ✓ · 1 –</td><td><code>NSPopUpButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>36 ✅ · 2 ☑️ · 38 ✓ · 3 –</td><td>pop-up <code>UIButton</code> menu</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>60 ✅ · 3 ☑️ · 11 ✓ · 3 –</td><td><code>Spinner</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>69 ✅ · 1 ☑️ · 12 ✓</td><td><code>ComboBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>52 ✅ · 1 ☑️ · 22 ✓ · 7 –</td><td><code>GtkDropDown</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>56 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;select&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (85)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>41 ✅ · 2 ☑️ · 36 ✓ · 1 –</td><td><code>NSPopUpButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>37 ✅ · 2 ☑️ · 38 ✓ · 3 –</td><td>pop-up <code>UIButton</code> menu</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>61 ✅ · 3 ☑️ · 11 ✓ · 3 –</td><td><code>Spinner</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>70 ✅ · 1 ☑️ · 12 ✓</td><td><code>ComboBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>53 ✅ · 1 ☑️ · 22 ✓ · 7 –</td><td><code>GtkDropDown</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>57 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;select&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PickerContract.swift`.
@@ -121,6 +121,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tbody><tr></tr><tr><td rowspan="2"><code>scaleY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read scaleY of Picker: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleY of Picker: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read scaleY of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>tooltip</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read translationX of Picker: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read translationX of Picker: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read translationX of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>

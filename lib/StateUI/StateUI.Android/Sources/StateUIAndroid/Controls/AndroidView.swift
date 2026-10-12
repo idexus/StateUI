@@ -203,6 +203,11 @@ class AndroidView {
         Java.call(reference, JavaAPI.setEnabled, .bool(enabled))
     }
 
+    /// The words Android shows over the view after a long press, or while a pointer rests on it; nil shows none.
+    func setTooltip(_ text: String?) {
+        Java.frame { Java.call(reference, JavaAPI.setTooltipText, .object(text.flatMap(Java.string))) }
+    }
+
     /// The view's background: a colour, or a brush drawn over its bounds; nil puts back the platform's.
     func setBackground(_ value: HostValue?) {
         guard let value else { return showBackground(nil) }

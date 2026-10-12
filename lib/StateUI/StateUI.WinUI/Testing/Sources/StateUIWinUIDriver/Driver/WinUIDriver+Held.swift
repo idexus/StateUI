@@ -170,6 +170,9 @@ extension WinUIDriver {
             return .string(try read(view, "automationName"))
         case "accessibilityLabel": return .string(view.automationWords.name)
         case "accessibilityHint": return .string(view.automationWords.help)
+        case "tooltip":
+            let words = WinUIStrings.read { stateui_winui_tooltip(view.handle, $0, $1) }
+            return words.isEmpty ? nil : .string(words)
         case "accessibilityIdentifier": return .string(view.automationWords.identifier)
         case "accessibilityHeading": return (AccessibilityHeadingLevel(rawValue: view.automationFacts.heading) ?? AccessibilityHeadingLevel.none).propValue
         case "isAccessibilityHidden":

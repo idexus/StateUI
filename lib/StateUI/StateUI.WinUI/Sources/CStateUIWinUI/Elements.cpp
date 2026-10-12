@@ -399,3 +399,29 @@ extern "C" int32_t stateui_winui_text(StateUIObjectRef handle, char *utf8, int32
         return 0;
     }
 }
+
+extern "C" void stateui_winui_set_tooltip(StateUIObjectRef handle, char const *utf8) {
+    try {
+        auto element = as<xaml::DependencyObject>(handle);
+        if (utf8) controls::ToolTipService::SetToolTip(element, winrt::box_value(text(utf8)));
+        else element.ClearValue(controls::ToolTipService::ToolTipProperty());
+    } catch (...) {
+        report("giving a view its tooltip");
+    }
+}
+
+extern "C" int32_t stateui_winui_tooltip(StateUIObjectRef handle, char *utf8, int32_t capacity) {
+    try {
+        auto held = controls::ToolTipService::GetToolTip(as<xaml::DependencyObject>(handle));
+        auto bytes = winrt::to_string(winrt::unbox_value_or<winrt::hstring>(held, L""));
+        if (utf8 && capacity > 0) {
+            auto count = std::min<size_t>(bytes.size(), static_cast<size_t>(capacity - 1));
+            std::memcpy(utf8, bytes.data(), count);
+            utf8[count] = 0;
+        }
+        return static_cast<int32_t>(bytes.size());
+    } catch (...) {
+        report("reading a tooltip");
+        return 0;
+    }
+}

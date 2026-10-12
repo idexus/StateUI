@@ -44,16 +44,16 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (76)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>35 ✅ · 2 ☑️ · 36 ✓ · 3 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>35 ✅ · 2 ☑️ · 36 ✓ · 3 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">🧩</td><td>76 🧩</td><td>the application's own, registered</td></tr>
+<thead><tr><th>Host</th><th>Created</th><th>Members (77)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>36 ✅ · 2 ☑️ · 36 ✓ · 3 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>36 ✅ · 2 ☑️ · 36 ✓ · 3 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">🧩</td><td>77 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">WinUI 3</td><td align="center">🧩</td><td>76 🧩</td><td>the application's own, registered</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">WinUI 3</td><td align="center">🧩</td><td>77 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">GTK 4</td><td align="center">🧩</td><td>76 🧩</td><td>the application's own, registered</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">GTK 4</td><td align="center">🧩</td><td>77 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">🧩</td><td>76 🧩</td><td>the application's own, registered</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">🧩</td><td>77 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
 </table>
 
@@ -152,6 +152,8 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tbody><tr></tr><tr><td rowspan="2"><code>scaleY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read scaleY of Map: the host's own transform, checked against the layer it composed itself<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
+<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>tooltip</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read translationX of Map: the host's own transform, checked against the layer it composed itself<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>

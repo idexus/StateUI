@@ -32,13 +32,13 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (70)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>29 ✅ · 2 ☑️ · 35 ✓ · 4 –</td><td><code>NSProgressIndicator</code> bar</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>30 ✅ · 2 ☑️ · 35 ✓ · 3 –</td><td><code>UIProgressView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>53 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td>horizontal <code>ProgressBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>54 ✅ · 12 ✓ · 4 –</td><td><code>ProgressBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>42 ✅ · 1 ☑️ · 23 ✓ · 4 –</td><td><code>GtkProgressBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>46 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;progress&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (71)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>30 ✅ · 2 ☑️ · 35 ✓ · 4 –</td><td><code>NSProgressIndicator</code> bar</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>31 ✅ · 2 ☑️ · 35 ✓ · 3 –</td><td><code>UIProgressView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>54 ✅ · 3 ☑️ · 10 ✓ · 3 –</td><td>horizontal <code>ProgressBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>55 ✅ · 12 ✓ · 4 –</td><td><code>ProgressBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>43 ✅ · 1 ☑️ · 23 ✓ · 4 –</td><td><code>GtkProgressBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>47 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;progress&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ProgressBarContract.swift`.
@@ -107,6 +107,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tbody><tr></tr><tr><td rowspan="2"><code>scaleY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read scaleY of ProgressBar: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleY of ProgressBar: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read scaleY of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>tooltip</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read translationX of ProgressBar: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read translationX of ProgressBar: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read translationX of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>

@@ -190,6 +190,7 @@ extension AppKitElement {
         }
 
         drawing?.own = element.drawingTransform
+        if changed.contains(.tooltip) { view.toolTip = string(.tooltip) }
         // Last, so the words meet the control as configured above - a text
         // field may just have swapped in a password field.
         applyAccessibility(to: view)

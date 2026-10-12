@@ -1,70 +1,70 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.frame: ✅
-ActivityIndicator.scaleX: ✅
-Button.accessibilityHeading: ✅
-Canvas.frameChanged: ✅
-Canvas.height: ✅
-Canvas.rotationX: ✓ read rotationX of Canvas: the host's own tip, checked against the projection it laid on the element
-Canvas.width: ✅
-CheckBox.accessibilityLabel: ✅
-ColorBox.opacity: ✅
-ColorBox.pivotY: ✅
-DatePicker.style: ✅
-DatePicker.translationX: ✅
-Divider.isAccessibilityHidden: ✅
-Ellipse.background: – A WinUI shape is its figure alone: it paints no ground around it.
-Grid.ignoresInput: ✅
-Grid.scale: ✅
-HStack.translationY: ✅
-HStack.zIndex: ✅
-Image.accessibilityHeading: ✅
-ItemsView.isEnabled: ✅
-ItemsView.rotation: ✅
-Line.layoutDirection: ✓ read layoutDirection of Line: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Map.frame: 🧩
-Map.scaleX: 🧩
-Path.frameChanged: ✅
-Path.maximumHeight: ✅
-Path.maximumWidth: ✅
-Path.minimumHeight: ✅
-Path.minimumWidth: ✅
-Path.rotationY: ✓ read rotationY of Path: the host's own tip, checked against the projection it laid on the element
-Picker.accessibilityLabel: ✅
-Polygon.opacity: ✅
+ActivityIndicator.scale: ✅
+Button.accessibilityHint: ✅
+Canvas.opacity: ✅
+Canvas.pivotX: ✅
+CheckBox.scaleY: ✅
+CheckBox.style: ✅
+ColorBox.isAccessibilityHidden: ✅
+DatePicker.frameChanged: ✅
+DatePicker.height: ✅
+DatePicker.rotation: ✅
+DatePicker.width: ✅
+Divider.isVisible: ✅
+Divider.layoutDirection: ✅
+Ellipse.accessibilityHeading: ✅
+Ellipse.translationY: ✅
+Grid.automationExcludedWithChildren: ✅
+HStack.opacity: ✅
+HStack.pivotX: ✅
+Image.frameChanged: ✅
+Image.maximumHeight: ✅
+Image.maximumWidth: ✅
+Image.minimumHeight: ✅
+Image.minimumWidth: ✅
+Image.rotationX: ✓ read rotationX of Image: the host's own tip, checked against the projection it laid on the element
+ItemsView.accessibilityHeading: ✅
+ItemsView.translationY: ✅
+Line.ignoresInput: ✅
+Line.rotationY: ✓ read rotationY of Line: the host's own tip, checked against the projection it laid on the element
+Map.accessibilityLabel: 🧩
+Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
+Path.isFocusedChanged: – Path takes no keyboard focus here: it refuses it, and nothing is heard
+Path.scaleX: ✅
+Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
+Picker.tooltip: ✅
+Polygon.isEnabled: does not apply - read isEnabled of Polygon - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Polygon.pivotY: ✅
+Polyline.scaleY: ✅
 Polyline.style: ✅
-Polyline.translationX: ✅
-ProgressBar.automationExcludedWithChildren: ✅
-RadioButton.frameChanged: ✅
-RadioButton.maximumHeight: ✅
-RadioButton.maximumWidth: ✅
-RadioButton.minimumHeight: ✅
-RadioButton.minimumWidth: ✅
-RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own tip, checked against the projection it laid on the element
-Rectangle.accessibilityHint: ✅
-ScrollView.opacity: ✅
-ScrollView.pivotY: ✅
-SearchField.focus: ✅
-SearchField.isFocusedChanged: ✅
-SearchField.scaleY: ✅
-SearchField.unfocus: ✅
-Slider.automationExcludedWithChildren: ✅
-Spacer.ignoresInput: ✅
-Spacer.scale: ✅
-Stepper.accessibilityHeading: ✅
-Switch.frameChanged: ✅
-Switch.height: ✅
-Switch.rotationX: ✓ read rotationX of Switch: the host's own tip, checked against the projection it laid on the element
-Switch.width: ✅
-Text.accessibilityHeading: ✅
-Text.isEnabled: ✅
-TextEditor.accessibilityLabel: ✅
-TextField.opacity: ✅
-TextField.pivotY: ✅
-TimePicker.translationY: ✅
-TimePicker.zIndex: ✅
-VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-WebView.isEnabled: – WinUI's WebView2 is no control: it keeps no enabled state, and its page takes the user's hand whatever the tree says.
-WebView.rotation: ✅
-ZStack.accessibilityHeading: ✅
-ZStack.isEnabled: ✅
+ProgressBar.accessibilityHeading: ✅
+RadioButton.isEnabled: ✅
+RadioButton.pivotY: ✅
+Rectangle.translationX: ✅
+Rectangle.zIndex: ✅
+ScrollView.isAccessibilityHidden: ✅
+SearchField.isEnabled: ✅
+SearchField.pivotY: ✅
+Slider.translationX: ✅
+Slider.zIndex: ✅
+Spacer.automationExcludedWithChildren: ✅
+Stepper.ignoresInput: ✅
+Stepper.rotationY: ✓ read rotationY of Stepper: the host's own tip, checked against the projection it laid on the element
+Switch.accessibilityHint: ✅
+Text.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+TextEditor.opacity: ✅
+TextEditor.pivotX: ✅
+TextField.scaleY: ✅
+TextField.style: ✅
+TimePicker.isAccessibilityHidden: ✅
+VStack.frameChanged: ✅
+VStack.maximumHeight: ✅
+VStack.maximumWidth: ✅
+VStack.minimumHeight: ✅
+VStack.minimumWidth: ✅
+VStack.rotationX: ✓ read rotationX of VStack: the host's own tip, checked against the projection it laid on the element
+WebView.frame: ✅
+WebView.scale: ✅
+ZStack.layoutDirection: ✅
+ZStack.tooltip: ✅

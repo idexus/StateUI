@@ -40,6 +40,7 @@ enum GTKRegistrations {
         registry.everyElementRealizes(VisualElementContract.background)
         // GTK 4 identifies no accessible made in code: it is met by its role, its label and its place.
         registry.everyElementMeetsAssistiveTechnology(identifying: false)
+        registry.everyElementShowsItsTooltip()
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
         registry.everyElementHearsTheUser()

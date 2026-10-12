@@ -1,58 +1,47 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.zIndex: ✅
 Button.frameChanged: ✅
-Button.maximumHeight: ✅
-Button.maximumWidth: ✅
-Button.minimumHeight: ✅
-Button.minimumWidth: ✅
-Canvas.isVisible: ✅
-Canvas.scaleX: ✓ read scaleX of Canvas: the host's own transform, checked against the layer it composed itself
-CheckBox.rotation: ✓ read rotation of CheckBox: the host's own transform, checked against the layer it composed itself
-ColorBox.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
-DatePicker.accessibilityLabel: ✅
-Divider.accessibilityLabel: ✅
-Ellipse.focus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
-Ellipse.isFocusedChanged: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
-Ellipse.unfocus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
-Grid.isEnabled: ✅
-Grid.translationX: ✓ read translationX of Grid: the host's own transform, checked against the layer it composed itself
-HStack.pivotX: ✓ read pivotX of HStack: the host's own transform, checked against the layer it composed itself
-Image.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-ItemsView.ignoresInput: ✅
-Line.rotation: ✓ read rotation of Line: the host's own transform, checked against the layer it composed itself
-Map.automationExcludedWithChildren: ✅
-Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
-Path.isFocusedChanged: – Path takes no keyboard focus here: it refuses it, and nothing is heard
-Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
-Picker.isEnabled: ✅
-Picker.translationX: ✓ read translationX of Picker: the host's own transform, checked against the layer it composed itself
-Polygon.rotationY: ✓ read rotationY of Polygon: the host's own transform, checked against the layer it composed itself
-Polyline.layoutDirection: ✅
-ProgressBar.accessibilityHint: ✅
-RadioButton.focus: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
-RadioButton.isFocusedChanged: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
-RadioButton.unfocus: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
-Rectangle.frameChanged: ✅
-Rectangle.height: ✅
-Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform, checked against the layer it composed itself
-Rectangle.width: ✅
-ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own transform, checked against the layer it composed itself
+Button.height: ✅
+Button.translationX: ✓ read translationX of Button: the host's own transform, checked against the layer it composed itself
+Button.width: ✅
+Canvas.rotationX: ✓ read rotationX of Canvas: the host's own transform, checked against the layer it composed itself
+CheckBox.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+ColorBox.accessibilityHint: ✅
+DatePicker.frame: ✅
+Divider.rotation: ✓ read rotation of Divider: the host's own transform, checked against the layer it composed itself
+Ellipse.opacity: ✅
+Ellipse.scaleX: ✓ read scaleX of Ellipse: the host's own transform, checked against the layer it composed itself
+Grid.pivotX: ✓ read pivotX of Grid: the host's own transform, checked against the layer it composed itself
+HStack.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+Image.opacity: ✅
+Image.scaleX: ✓ read scaleX of Image: the host's own transform, checked against the layer it composed itself
+ItemsView.pivotX: ✓ read pivotX of ItemsView: the host's own transform, checked against the layer it composed itself
+Line.style: ✅
+Map.isEnabled: ✅
+Map.scaleY: ✓ read scaleY of Map: the host's own transform, checked against the layer it composed itself
+Path.automationExcludedWithChildren: ✅
+Picker.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
+Polygon.ignoresInput: ✅
+Polygon.isEnabled: ✓ tap on Polygon: the view's listening handed the recognizer's states, no touch sent
+Polyline.rotationY: ✓ read rotationY of Polyline: the host's own transform, checked against the layer it composed itself
+ProgressBar.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
+RadioButton.accessibilityLabel: ✅
+Rectangle.frame: ✅
+ScrollView.isVisible: ✅
+ScrollView.scale: ✓ read scale of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
 Slider.accessibilityHint: ✅
-Spacer.style: ✅
-Stepper.frameChanged: ✅
-Stepper.maximumHeight: ✅
-Stepper.maximumWidth: ✅
-Stepper.minimumHeight: ✅
-Stepper.minimumWidth: ✅
-Switch.isVisible: ✅
-Switch.scaleX: ✓ read scaleX of Switch: the host's own transform, checked against the layer it composed itself
-Text.opacity: ✅
-Text.scaleY: ✓ read scaleY of Text: the host's own transform, checked against the layer it composed itself
-TextEditor.rotation: ✓ read rotation of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
-TimePicker.accessibilityHint: ✅
-VStack.background: ✅
-VStack.style: ✅
-WebView.scale: ✓ read scale of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.pivotY: ✓ read pivotY of ZStack: the host's own transform, checked against the layer it composed itself
+Spacer.focus: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
+Spacer.isFocusedChanged: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
+Spacer.unfocus: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
+Stepper.isEnabled: ✅
+Stepper.scaleY: ✓ read scaleY of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.rotation: ✓ read rotation of Switch: the host's own transform, checked against the layer it composed itself
+Text.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
+TextEditor.automationExcludedWithChildren: ✅
+TextField.accessibilityLabel: ✅
+TimePicker.frame: ✅
+VStack.opacity: ✅
+VStack.scaleX: ✓ read scaleX of VStack: the host's own transform, checked against the layer it composed itself
+WebView.isAccessibilityHidden: ✅
+ZStack.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.

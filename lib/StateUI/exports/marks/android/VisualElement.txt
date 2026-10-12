@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
@@ -28,6 +28,7 @@ ActivityIndicator.scale: ✅
 ActivityIndicator.scaleX: ✅
 ActivityIndicator.scaleY: ✅
 ActivityIndicator.style: ✅
+ActivityIndicator.tooltip: ✅
 ActivityIndicator.translationX: ✅
 ActivityIndicator.translationY: ✅
 ActivityIndicator.unfocus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
@@ -62,6 +63,7 @@ Button.scale: ✅
 Button.scaleX: ✅
 Button.scaleY: ✅
 Button.style: ✅
+Button.tooltip: ✅
 Button.translationX: ✅
 Button.translationY: ✅
 Button.unfocus: – Button takes no keyboard focus here: it refuses it, and nothing is heard
@@ -96,6 +98,7 @@ Canvas.scale: ✅
 Canvas.scaleX: ✅
 Canvas.scaleY: ✅
 Canvas.style: ✅
+Canvas.tooltip: ✅
 Canvas.translationX: ✅
 Canvas.translationY: ✅
 Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
@@ -130,6 +133,7 @@ CheckBox.scale: ✅
 CheckBox.scaleX: ✅
 CheckBox.scaleY: ✅
 CheckBox.style: ✅
+CheckBox.tooltip: ✅
 CheckBox.translationX: ✅
 CheckBox.translationY: ✅
 CheckBox.unfocus: – CheckBox takes no keyboard focus here: it refuses it, and nothing is heard
@@ -164,6 +168,7 @@ ColorBox.scale: ✅
 ColorBox.scaleX: ✅
 ColorBox.scaleY: ✅
 ColorBox.style: ✅
+ColorBox.tooltip: ✅
 ColorBox.translationX: ✅
 ColorBox.translationY: ✅
 ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
@@ -198,6 +203,7 @@ DatePicker.scale: ✅
 DatePicker.scaleX: ✅
 DatePicker.scaleY: ✅
 DatePicker.style: ✅
+DatePicker.tooltip: ✅
 DatePicker.translationX: ✅
 DatePicker.translationY: ✅
 DatePicker.unfocus: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
@@ -232,6 +238,7 @@ Divider.scale: ✅
 Divider.scaleX: ✅
 Divider.scaleY: ✅
 Divider.style: ✅
+Divider.tooltip: ✅
 Divider.translationX: ✅
 Divider.translationY: ✅
 Divider.unfocus: – Divider takes no keyboard focus here: it refuses it, and nothing is heard
@@ -266,6 +273,7 @@ Ellipse.scale: ✅
 Ellipse.scaleX: ✅
 Ellipse.scaleY: ✅
 Ellipse.style: ✅
+Ellipse.tooltip: ✅
 Ellipse.translationX: ✅
 Ellipse.translationY: ✅
 Ellipse.unfocus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
@@ -300,6 +308,7 @@ Grid.scale: ✅
 Grid.scaleX: ✅
 Grid.scaleY: ✅
 Grid.style: ✅
+Grid.tooltip: ✅
 Grid.translationX: ✅
 Grid.translationY: ✅
 Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
@@ -334,6 +343,7 @@ HStack.scale: ✅
 HStack.scaleX: ✅
 HStack.scaleY: ✅
 HStack.style: ✅
+HStack.tooltip: ✅
 HStack.translationX: ✅
 HStack.translationY: ✅
 HStack.unfocus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
@@ -368,6 +378,7 @@ Image.scale: ✅
 Image.scaleX: ✅
 Image.scaleY: ✅
 Image.style: ✅
+Image.tooltip: ✅
 Image.translationX: ✅
 Image.translationY: ✅
 Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
@@ -402,6 +413,7 @@ ItemsView.scale: ✅
 ItemsView.scaleX: ✅
 ItemsView.scaleY: ✅
 ItemsView.style: not realized
+ItemsView.tooltip: ✅
 ItemsView.translationX: ✅
 ItemsView.translationY: ✅
 ItemsView.unfocus: ✅
@@ -436,6 +448,7 @@ Line.scale: ✅
 Line.scaleX: ✅
 Line.scaleY: ✅
 Line.style: ✅
+Line.tooltip: ✅
 Line.translationX: ✅
 Line.translationY: ✅
 Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
@@ -470,6 +483,7 @@ Map.scale: 🧩
 Map.scaleX: 🧩
 Map.scaleY: 🧩
 Map.style: 🧩
+Map.tooltip: 🧩
 Map.translationX: 🧩
 Map.translationY: 🧩
 Map.unfocus: 🧩
@@ -504,6 +518,7 @@ Path.scale: ✅
 Path.scaleX: ✅
 Path.scaleY: ✅
 Path.style: ✅
+Path.tooltip: ✅
 Path.translationX: ✅
 Path.translationY: ✅
 Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
@@ -538,6 +553,7 @@ Picker.scale: ✅
 Picker.scaleX: ✅
 Picker.scaleY: ✅
 Picker.style: ✅
+Picker.tooltip: ✅
 Picker.translationX: ✅
 Picker.translationY: ✅
 Picker.unfocus: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
@@ -572,6 +588,7 @@ Polygon.scale: ✅
 Polygon.scaleX: ✅
 Polygon.scaleY: ✅
 Polygon.style: ✅
+Polygon.tooltip: ✅
 Polygon.translationX: ✅
 Polygon.translationY: ✅
 Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
@@ -606,6 +623,7 @@ Polyline.scale: ✅
 Polyline.scaleX: ✅
 Polyline.scaleY: ✅
 Polyline.style: ✅
+Polyline.tooltip: ✅
 Polyline.translationX: ✅
 Polyline.translationY: ✅
 Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
@@ -640,6 +658,7 @@ ProgressBar.scale: ✅
 ProgressBar.scaleX: ✅
 ProgressBar.scaleY: ✅
 ProgressBar.style: ✅
+ProgressBar.tooltip: ✅
 ProgressBar.translationX: ✅
 ProgressBar.translationY: ✅
 ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
@@ -674,6 +693,7 @@ RadioButton.scale: ✅
 RadioButton.scaleX: ✅
 RadioButton.scaleY: ✅
 RadioButton.style: ✅
+RadioButton.tooltip: ✅
 RadioButton.translationX: ✅
 RadioButton.translationY: ✅
 RadioButton.unfocus: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
@@ -708,6 +728,7 @@ Rectangle.scale: ✅
 Rectangle.scaleX: ✅
 Rectangle.scaleY: ✅
 Rectangle.style: ✅
+Rectangle.tooltip: ✅
 Rectangle.translationX: ✅
 Rectangle.translationY: ✅
 Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
@@ -742,6 +763,7 @@ ScrollView.scale: ✅
 ScrollView.scaleX: ✅
 ScrollView.scaleY: ✅
 ScrollView.style: ✅
+ScrollView.tooltip: ✅
 ScrollView.translationX: ✅
 ScrollView.translationY: ✅
 ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
@@ -776,6 +798,7 @@ SearchField.scale: ✅
 SearchField.scaleX: ✅
 SearchField.scaleY: ✅
 SearchField.style: ✅
+SearchField.tooltip: ✅
 SearchField.translationX: ✅
 SearchField.translationY: ✅
 SearchField.unfocus: ✅
@@ -810,6 +833,7 @@ Slider.scale: ✅
 Slider.scaleX: ✅
 Slider.scaleY: ✅
 Slider.style: ✅
+Slider.tooltip: ✅
 Slider.translationX: ✅
 Slider.translationY: ✅
 Slider.unfocus: – Slider takes no keyboard focus here: it refuses it, and nothing is heard
@@ -844,6 +868,7 @@ Spacer.scale: ✅
 Spacer.scaleX: ✅
 Spacer.scaleY: ✅
 Spacer.style: ✅
+Spacer.tooltip: ✅
 Spacer.translationX: ✅
 Spacer.translationY: ✅
 Spacer.unfocus: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
@@ -878,6 +903,7 @@ Stepper.scale: ✅
 Stepper.scaleX: ✅
 Stepper.scaleY: ✅
 Stepper.style: ✅
+Stepper.tooltip: ✅
 Stepper.translationX: ✅
 Stepper.translationY: ✅
 Stepper.unfocus: – Stepper takes no keyboard focus here: it refuses it, and nothing is heard
@@ -912,6 +938,7 @@ Switch.scale: ✅
 Switch.scaleX: ✅
 Switch.scaleY: ✅
 Switch.style: ✅
+Switch.tooltip: ✅
 Switch.translationX: ✅
 Switch.translationY: ✅
 Switch.unfocus: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
@@ -946,6 +973,7 @@ Text.scale: ✅
 Text.scaleX: ✅
 Text.scaleY: ✅
 Text.style: ✅
+Text.tooltip: ✅
 Text.translationX: ✅
 Text.translationY: ✅
 Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
@@ -980,6 +1008,7 @@ TextEditor.scale: ✅
 TextEditor.scaleX: ✅
 TextEditor.scaleY: ✅
 TextEditor.style: ✅
+TextEditor.tooltip: ✅
 TextEditor.translationX: ✅
 TextEditor.translationY: ✅
 TextEditor.unfocus: ✅
@@ -1014,6 +1043,7 @@ TextField.scale: ✅
 TextField.scaleX: ✅
 TextField.scaleY: ✅
 TextField.style: ✅
+TextField.tooltip: ✅
 TextField.translationX: ✅
 TextField.translationY: ✅
 TextField.unfocus: ✅
@@ -1048,6 +1078,7 @@ TimePicker.scale: ✅
 TimePicker.scaleX: ✅
 TimePicker.scaleY: ✅
 TimePicker.style: ✅
+TimePicker.tooltip: ✅
 TimePicker.translationX: ✅
 TimePicker.translationY: ✅
 TimePicker.unfocus: – TimePicker takes no keyboard focus here: it refuses it, and nothing is heard
@@ -1082,6 +1113,7 @@ VStack.scale: ✅
 VStack.scaleX: ✅
 VStack.scaleY: ✅
 VStack.style: ✅
+VStack.tooltip: ✅
 VStack.translationX: ✅
 VStack.translationY: ✅
 VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
@@ -1116,6 +1148,7 @@ WebView.scale: ✅
 WebView.scaleX: ✅
 WebView.scaleY: ✅
 WebView.style: ✅
+WebView.tooltip: ✅
 WebView.translationX: ✅
 WebView.translationY: ✅
 WebView.unfocus: – WebView takes no keyboard focus here: it refuses it, and nothing is heard
@@ -1150,6 +1183,7 @@ ZStack.scale: ✅
 ZStack.scaleX: ✅
 ZStack.scaleY: ✅
 ZStack.style: ✅
+ZStack.tooltip: ✅
 ZStack.translationX: ✅
 ZStack.translationY: ✅
 ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard

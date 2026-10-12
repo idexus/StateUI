@@ -375,6 +375,7 @@ ZStack
   swipeDirection
   swipeThreshold
   tapCount
+  tooltip
   translationX
   translationY
   verticalAlignment

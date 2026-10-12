@@ -27,6 +27,7 @@ extension UIKitDriver {
             return (!view.isAccessibilityElement && view.accessibilityElementsHidden).propValue
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "UIKit marks a heading, not its level")
+        case .tooltip: return view.tooltip.propValue
         case .fontSize, .fontAttributes, .fontFamily, .textColor, .tracking, .lineHeight, .textDecorations:
             return try words(property, view)
         case .isFontAutoScalingEnabled:

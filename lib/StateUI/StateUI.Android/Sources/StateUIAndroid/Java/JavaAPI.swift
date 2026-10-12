@@ -11,6 +11,8 @@ enum JavaAPI {
 
     static let view = Java.findClass("android/view/View")
     static let newView = Java.method(view, "<init>", "(Landroid/content/Context;)V")
+    static let setTooltipText = Java.method(view, "setTooltipText", "(Ljava/lang/CharSequence;)V")
+    static let getTooltipText = Java.method(view, "getTooltipText", "()Ljava/lang/CharSequence;")
     static let viewGroup = Java.findClass("android/view/ViewGroup")
     static let setVisibility = Java.method(view, "setVisibility", "(I)V")
     static let getVisibility = Java.method(view, "getVisibility", "()I")

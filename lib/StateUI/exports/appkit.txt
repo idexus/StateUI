@@ -333,6 +333,7 @@ WebView
   swipeDirection
   swipeThreshold
   tapCount
+  tooltip
   translationX
   translationY
   verticalAlignment

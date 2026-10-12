@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 ActivityIndicator.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
@@ -28,6 +28,7 @@ ActivityIndicator.scale: ✓ read scale of ActivityIndicator: the host's own tra
 ActivityIndicator.scaleX: ✓ read scaleX of ActivityIndicator: the host's own transform: GTK reads back no part of one
 ActivityIndicator.scaleY: ✓ read scaleY of ActivityIndicator: the host's own transform: GTK reads back no part of one
 ActivityIndicator.style: ✅
+ActivityIndicator.tooltip: ✅
 ActivityIndicator.translationX: ✓ read translationX of ActivityIndicator: the host's own transform: GTK reads back no part of one
 ActivityIndicator.translationY: ✓ read translationY of ActivityIndicator: the host's own transform: GTK reads back no part of one
 ActivityIndicator.unfocus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
@@ -62,6 +63,7 @@ Button.scale: ✓ read scale of Button: the host's own transform: GTK reads back
 Button.scaleX: ✓ read scaleX of Button: the host's own transform: GTK reads back no part of one
 Button.scaleY: ✓ read scaleY of Button: the host's own transform: GTK reads back no part of one
 Button.style: ✅
+Button.tooltip: ✅
 Button.translationX: ✓ read translationX of Button: the host's own transform: GTK reads back no part of one
 Button.translationY: ✓ read translationY of Button: the host's own transform: GTK reads back no part of one
 Button.unfocus: ✅
@@ -96,6 +98,7 @@ Canvas.scale: ✓ read scale of Canvas: the host's own transform: GTK reads back
 Canvas.scaleX: ✓ read scaleX of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.scaleY: ✓ read scaleY of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.style: ✅
+Canvas.tooltip: ✅
 Canvas.translationX: ✓ read translationX of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.translationY: ✓ read translationY of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
@@ -130,6 +133,7 @@ CheckBox.scale: ✓ read scale of CheckBox: the host's own transform: GTK reads 
 CheckBox.scaleX: ✓ read scaleX of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.scaleY: ✓ read scaleY of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.style: ✅
+CheckBox.tooltip: ✅
 CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.unfocus: ✅
@@ -164,6 +168,7 @@ ColorBox.scale: ✓ read scale of ColorBox: the host's own transform: GTK reads 
 ColorBox.scaleX: ✓ read scaleX of ColorBox: the host's own transform: GTK reads back no part of one
 ColorBox.scaleY: ✓ read scaleY of ColorBox: the host's own transform: GTK reads back no part of one
 ColorBox.style: ✅
+ColorBox.tooltip: ✅
 ColorBox.translationX: ✓ read translationX of ColorBox: the host's own transform: GTK reads back no part of one
 ColorBox.translationY: ✓ read translationY of ColorBox: the host's own transform: GTK reads back no part of one
 ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
@@ -198,6 +203,7 @@ DatePicker.scale: ✓ read scale of DatePicker: the host's own transform: GTK re
 DatePicker.scaleX: ✓ read scaleX of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.scaleY: ✓ read scaleY of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.style: ✅
+DatePicker.tooltip: ✅
 DatePicker.translationX: ✓ read translationX of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.translationY: ✓ read translationY of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.unfocus: ✅
@@ -232,6 +238,7 @@ Divider.scale: ✓ read scale of Divider: the host's own transform: GTK reads ba
 Divider.scaleX: ✓ read scaleX of Divider: the host's own transform: GTK reads back no part of one
 Divider.scaleY: ✓ read scaleY of Divider: the host's own transform: GTK reads back no part of one
 Divider.style: ✅
+Divider.tooltip: ✅
 Divider.translationX: ✓ read translationX of Divider: the host's own transform: GTK reads back no part of one
 Divider.translationY: ✓ read translationY of Divider: the host's own transform: GTK reads back no part of one
 Divider.unfocus: – Divider takes no keyboard focus here: it refuses it, and nothing is heard
@@ -266,6 +273,7 @@ Ellipse.scale: ✓ read scale of Ellipse: the host's own transform: GTK reads ba
 Ellipse.scaleX: ✓ read scaleX of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.scaleY: ✓ read scaleY of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.style: ✅
+Ellipse.tooltip: ✅
 Ellipse.translationX: ✓ read translationX of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.unfocus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
@@ -300,6 +308,7 @@ Grid.scale: ✓ read scale of Grid: the host's own transform: GTK reads back no 
 Grid.scaleX: ✓ read scaleX of Grid: the host's own transform: GTK reads back no part of one
 Grid.scaleY: ✓ read scaleY of Grid: the host's own transform: GTK reads back no part of one
 Grid.style: ✅
+Grid.tooltip: ✅
 Grid.translationX: ✓ read translationX of Grid: the host's own transform: GTK reads back no part of one
 Grid.translationY: ✓ read translationY of Grid: the host's own transform: GTK reads back no part of one
 Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
@@ -334,6 +343,7 @@ HStack.scale: ✓ read scale of HStack: the host's own transform: GTK reads back
 HStack.scaleX: ✓ read scaleX of HStack: the host's own transform: GTK reads back no part of one
 HStack.scaleY: ✓ read scaleY of HStack: the host's own transform: GTK reads back no part of one
 HStack.style: ✅
+HStack.tooltip: ✅
 HStack.translationX: ✓ read translationX of HStack: the host's own transform: GTK reads back no part of one
 HStack.translationY: ✓ read translationY of HStack: the host's own transform: GTK reads back no part of one
 HStack.unfocus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
@@ -368,6 +378,7 @@ Image.scale: ✓ read scale of Image: the host's own transform: GTK reads back n
 Image.scaleX: ✓ read scaleX of Image: the host's own transform: GTK reads back no part of one
 Image.scaleY: ✓ read scaleY of Image: the host's own transform: GTK reads back no part of one
 Image.style: ✅
+Image.tooltip: ✅
 Image.translationX: ✓ read translationX of Image: the host's own transform: GTK reads back no part of one
 Image.translationY: ✓ read translationY of Image: the host's own transform: GTK reads back no part of one
 Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
@@ -402,6 +413,7 @@ ItemsView.scale: ✓ read scale of ItemsView: the host's own transform: GTK read
 ItemsView.scaleX: ✓ read scaleX of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.scaleY: ✓ read scaleY of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.style: not realized
+ItemsView.tooltip: ✅
 ItemsView.translationX: ✓ read translationX of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.translationY: ✓ read translationY of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.unfocus: ✅
@@ -436,6 +448,7 @@ Line.scale: ✓ read scale of Line: the host's own transform: GTK reads back no 
 Line.scaleX: ✓ read scaleX of Line: the host's own transform: GTK reads back no part of one
 Line.scaleY: ✓ read scaleY of Line: the host's own transform: GTK reads back no part of one
 Line.style: ✅
+Line.tooltip: ✅
 Line.translationX: ✓ read translationX of Line: the host's own transform: GTK reads back no part of one
 Line.translationY: ✓ read translationY of Line: the host's own transform: GTK reads back no part of one
 Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
@@ -470,6 +483,7 @@ Map.scale: 🧩
 Map.scaleX: 🧩
 Map.scaleY: 🧩
 Map.style: 🧩
+Map.tooltip: 🧩
 Map.translationX: 🧩
 Map.translationY: 🧩
 Map.unfocus: 🧩
@@ -504,6 +518,7 @@ Path.scale: ✓ read scale of Path: the host's own transform: GTK reads back no 
 Path.scaleX: ✓ read scaleX of Path: the host's own transform: GTK reads back no part of one
 Path.scaleY: ✓ read scaleY of Path: the host's own transform: GTK reads back no part of one
 Path.style: ✅
+Path.tooltip: ✅
 Path.translationX: ✓ read translationX of Path: the host's own transform: GTK reads back no part of one
 Path.translationY: ✓ read translationY of Path: the host's own transform: GTK reads back no part of one
 Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
@@ -538,6 +553,7 @@ Picker.scale: ✓ read scale of Picker: the host's own transform: GTK reads back
 Picker.scaleX: ✓ read scaleX of Picker: the host's own transform: GTK reads back no part of one
 Picker.scaleY: ✓ read scaleY of Picker: the host's own transform: GTK reads back no part of one
 Picker.style: ✅
+Picker.tooltip: ✅
 Picker.translationX: ✓ read translationX of Picker: the host's own transform: GTK reads back no part of one
 Picker.translationY: ✓ read translationY of Picker: the host's own transform: GTK reads back no part of one
 Picker.unfocus: ✅
@@ -572,6 +588,7 @@ Polygon.scale: ✓ read scale of Polygon: the host's own transform: GTK reads ba
 Polygon.scaleX: ✓ read scaleX of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.scaleY: ✓ read scaleY of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.style: ✅
+Polygon.tooltip: ✅
 Polygon.translationX: ✓ read translationX of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.translationY: ✓ read translationY of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
@@ -606,6 +623,7 @@ Polyline.scale: ✓ read scale of Polyline: the host's own transform: GTK reads 
 Polyline.scaleX: ✓ read scaleX of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.scaleY: ✓ read scaleY of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.style: ✅
+Polyline.tooltip: ✅
 Polyline.translationX: ✓ read translationX of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.translationY: ✓ read translationY of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
@@ -640,6 +658,7 @@ ProgressBar.scale: ✓ read scale of ProgressBar: the host's own transform: GTK 
 ProgressBar.scaleX: ✓ read scaleX of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.scaleY: ✓ read scaleY of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.style: ✅
+ProgressBar.tooltip: ✅
 ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
@@ -674,6 +693,7 @@ RadioButton.scale: ✓ read scale of RadioButton: the host's own transform: GTK 
 RadioButton.scaleX: ✓ read scaleX of RadioButton: the host's own transform: GTK reads back no part of one
 RadioButton.scaleY: ✓ read scaleY of RadioButton: the host's own transform: GTK reads back no part of one
 RadioButton.style: ✅
+RadioButton.tooltip: ✅
 RadioButton.translationX: ✓ read translationX of RadioButton: the host's own transform: GTK reads back no part of one
 RadioButton.translationY: ✓ read translationY of RadioButton: the host's own transform: GTK reads back no part of one
 RadioButton.unfocus: ✅
@@ -708,6 +728,7 @@ Rectangle.scale: ✓ read scale of Rectangle: the host's own transform: GTK read
 Rectangle.scaleX: ✓ read scaleX of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.style: ✅
+Rectangle.tooltip: ✅
 Rectangle.translationX: ✓ read translationX of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
@@ -742,6 +763,7 @@ ScrollView.scale: ✓ read scale of ScrollView: the host's own transform: GTK re
 ScrollView.scaleX: ✓ read scaleX of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.scaleY: ✓ read scaleY of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.style: ✅
+ScrollView.tooltip: ✅
 ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.unfocus: ✅
@@ -776,6 +798,7 @@ SearchField.scale: ✓ read scale of SearchField: the host's own transform: GTK 
 SearchField.scaleX: ✓ read scaleX of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.scaleY: ✓ read scaleY of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.style: ✅
+SearchField.tooltip: ✅
 SearchField.translationX: ✓ read translationX of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.unfocus: ✅
@@ -810,6 +833,7 @@ Slider.scale: ✓ read scale of Slider: the host's own transform: GTK reads back
 Slider.scaleX: ✓ read scaleX of Slider: the host's own transform: GTK reads back no part of one
 Slider.scaleY: ✓ read scaleY of Slider: the host's own transform: GTK reads back no part of one
 Slider.style: ✅
+Slider.tooltip: ✅
 Slider.translationX: ✓ read translationX of Slider: the host's own transform: GTK reads back no part of one
 Slider.translationY: ✓ read translationY of Slider: the host's own transform: GTK reads back no part of one
 Slider.unfocus: ✅
@@ -844,6 +868,7 @@ Spacer.scale: ✓ read scale of Spacer: the host's own transform: GTK reads back
 Spacer.scaleX: ✓ read scaleX of Spacer: the host's own transform: GTK reads back no part of one
 Spacer.scaleY: ✓ read scaleY of Spacer: the host's own transform: GTK reads back no part of one
 Spacer.style: ✅
+Spacer.tooltip: ✅
 Spacer.translationX: ✓ read translationX of Spacer: the host's own transform: GTK reads back no part of one
 Spacer.translationY: ✓ read translationY of Spacer: the host's own transform: GTK reads back no part of one
 Spacer.unfocus: – Spacer takes no keyboard focus here: it refuses it, and nothing is heard
@@ -878,6 +903,7 @@ Stepper.scale: ✓ read scale of Stepper: the host's own transform: GTK reads ba
 Stepper.scaleX: ✓ read scaleX of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.scaleY: ✓ read scaleY of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.style: ✅
+Stepper.tooltip: ✅
 Stepper.translationX: ✓ read translationX of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.translationY: ✓ read translationY of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.unfocus: ✅
@@ -912,6 +938,7 @@ Switch.scale: ✓ read scale of Switch: the host's own transform: GTK reads back
 Switch.scaleX: ✓ read scaleX of Switch: the host's own transform: GTK reads back no part of one
 Switch.scaleY: ✓ read scaleY of Switch: the host's own transform: GTK reads back no part of one
 Switch.style: ✅
+Switch.tooltip: ✅
 Switch.translationX: ✓ read translationX of Switch: the host's own transform: GTK reads back no part of one
 Switch.translationY: ✓ read translationY of Switch: the host's own transform: GTK reads back no part of one
 Switch.unfocus: ✅
@@ -946,6 +973,7 @@ Text.scale: ✓ read scale of Text: the host's own transform: GTK reads back no 
 Text.scaleX: ✓ read scaleX of Text: the host's own transform: GTK reads back no part of one
 Text.scaleY: ✓ read scaleY of Text: the host's own transform: GTK reads back no part of one
 Text.style: ✅
+Text.tooltip: ✅
 Text.translationX: ✓ read translationX of Text: the host's own transform: GTK reads back no part of one
 Text.translationY: ✓ read translationY of Text: the host's own transform: GTK reads back no part of one
 Text.unfocus: – Text takes no keyboard focus here: it refuses it, and nothing is heard
@@ -980,6 +1008,7 @@ TextEditor.scale: ✓ read scale of TextEditor: the host's own transform: GTK re
 TextEditor.scaleX: ✓ read scaleX of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.scaleY: ✓ read scaleY of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.style: ✅
+TextEditor.tooltip: ✅
 TextEditor.translationX: ✓ read translationX of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.unfocus: ✅
@@ -1014,6 +1043,7 @@ TextField.scale: ✓ read scale of TextField: the host's own transform: GTK read
 TextField.scaleX: ✓ read scaleX of TextField: the host's own transform: GTK reads back no part of one
 TextField.scaleY: ✓ read scaleY of TextField: the host's own transform: GTK reads back no part of one
 TextField.style: ✅
+TextField.tooltip: ✅
 TextField.translationX: ✓ read translationX of TextField: the host's own transform: GTK reads back no part of one
 TextField.translationY: ✓ read translationY of TextField: the host's own transform: GTK reads back no part of one
 TextField.unfocus: ✅
@@ -1048,6 +1078,7 @@ TimePicker.scale: ✓ read scale of TimePicker: the host's own transform: GTK re
 TimePicker.scaleX: ✓ read scaleX of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.scaleY: ✓ read scaleY of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.style: ✅
+TimePicker.tooltip: ✅
 TimePicker.translationX: ✓ read translationX of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.unfocus: ✅
@@ -1082,6 +1113,7 @@ VStack.scale: ✓ read scale of VStack: the host's own transform: GTK reads back
 VStack.scaleX: ✓ read scaleX of VStack: the host's own transform: GTK reads back no part of one
 VStack.scaleY: ✓ read scaleY of VStack: the host's own transform: GTK reads back no part of one
 VStack.style: ✅
+VStack.tooltip: ✅
 VStack.translationX: ✓ read translationX of VStack: the host's own transform: GTK reads back no part of one
 VStack.translationY: ✓ read translationY of VStack: the host's own transform: GTK reads back no part of one
 VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
@@ -1116,6 +1148,7 @@ WebView.scale: ✓ read scale of WebView: the host's own transform: GTK reads ba
 WebView.scaleX: ✓ read scaleX of WebView: the host's own transform: GTK reads back no part of one
 WebView.scaleY: ✓ read scaleY of WebView: the host's own transform: GTK reads back no part of one
 WebView.style: ✅
+WebView.tooltip: ✅
 WebView.translationX: ✓ read translationX of WebView: the host's own transform: GTK reads back no part of one
 WebView.translationY: ✓ read translationY of WebView: the host's own transform: GTK reads back no part of one
 WebView.unfocus: ✅
@@ -1150,6 +1183,7 @@ ZStack.scale: ✓ read scale of ZStack: the host's own transform: GTK reads back
 ZStack.scaleX: ✓ read scaleX of ZStack: the host's own transform: GTK reads back no part of one
 ZStack.scaleY: ✓ read scaleY of ZStack: the host's own transform: GTK reads back no part of one
 ZStack.style: ✅
+ZStack.tooltip: ✅
 ZStack.translationX: ✓ read translationX of ZStack: the host's own transform: GTK reads back no part of one
 ZStack.translationY: ✓ read translationY of ZStack: the host's own transform: GTK reads back no part of one
 ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard

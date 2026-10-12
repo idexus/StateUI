@@ -126,6 +126,7 @@ final class Catalog {
                     Sample(ProgressBarSample()),
                     Sample(ActivityIndicatorSample()),
                     Sample(SemanticsSample()),
+                    Sample(TooltipSample()),
                 ]),
 
             SampleGroup(
