@@ -127,8 +127,20 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(BoxArithmetic.clockwise(.corners(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: -4)),
                        [1, 2, 0, 3])
         XCTAssertEqual(BoxArithmetic.clockwise(nil), [0, 0, 0, 0])
-        XCTAssertTrue(BoxArithmetic.fitted(30, width: 100, height: 20) == (10, 10), "a capsule, not an oval")
-        XCTAssertTrue(BoxArithmetic.fitted(6, width: 100, height: 20) == (6, 6))
+        XCTAssertEqual(BoxArithmetic.fitted(30, width: 100, height: 20), 10, "a capsule, not an oval")
+        XCTAssertEqual(BoxArithmetic.fitted(6, width: 100, height: 20), 6)
+    }
+
+    /// A box's corners round by none for a rectangle, by a rounded one's radius as far as the room holds it, and by
+    /// half the shorter side for a capsule at every size - for an oval too, where a toolkit rounds only corners.
+    func testAnOutlineRoundsItsCornersByItsRoom() {
+        XCTAssertEqual(BoxArithmetic.cornerRadius(of: .rectangle, width: 100, height: 20), 0)
+        XCTAssertEqual(BoxArithmetic.cornerRadius(of: .roundedRectangle(30), width: 100, height: 20), 10)
+        XCTAssertEqual(BoxArithmetic.cornerRadius(of: .roundedRectangle(6), width: 100, height: 20), 6)
+        XCTAssertEqual(BoxArithmetic.cornerRadius(of: .capsule, width: 100, height: 20), 10)
+        XCTAssertEqual(BoxArithmetic.cornerRadius(of: .capsule, width: 100, height: 60), 30, "it follows the size")
+        XCTAssertEqual(BoxArithmetic.cornerRadius(of: .capsule, width: 30, height: 80), 15, "a tall one's ends")
+        XCTAssertEqual(BoxArithmetic.cornerRadius(of: .ellipse, width: 100, height: 20), 10)
     }
 
     /// An outline is a rectangle where the tree asks none, a rounded one's radius never below nothing; it is drawn
@@ -137,6 +149,7 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(BoxArithmetic.outline(nil), .rectangle)
         XCTAssertEqual(BoxArithmetic.outline(.values([.enumeration(1), .number(-3)])), .roundedRectangle(0))
         XCTAssertEqual(BoxArithmetic.outline(.values([.enumeration(2)])), .ellipse)
+        XCTAssertEqual(BoxArithmetic.outline(.values([.enumeration(3)])), .capsule)
         XCTAssertEqual(BoxArithmetic.outlineWidth(stroke: red, width: nil), 1)
         XCTAssertEqual(BoxArithmetic.outlineWidth(stroke: nil, width: 4), 0)
         XCTAssertEqual(BoxArithmetic.outlineWidth(stroke: red, width: -2), 0)

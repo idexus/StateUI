@@ -9,17 +9,11 @@ import UIKit
 /// A box's outline as a path - the host layer's reading of it (`BoxArithmetic`).
 /// Design: docs/design/host/layout.md#a-box
 extension ContainerShape {
-    /// The outline within `rect`, a corner no more than half the side it rounds.
+    /// The outline within `rect`, its corners rounded as far as the room holds them.
     func path(in rect: CGRect) -> CGPath {
-        switch self {
-        case .rectangle:
-            return CGPath(rect: rect, transform: nil)
-        case .roundedRectangle(let radius):
-            let fitted = BoxArithmetic.fitted(radius, width: rect.width, height: rect.height)
-            return .rounded(rect, corners: Array(repeating: CGSize(width: fitted.width, height: fitted.height), count: 4))
-        case .ellipse:
-            return CGPath(ellipseIn: rect, transform: nil)
-        }
+        if self == .ellipse { return CGPath(ellipseIn: rect, transform: nil) }
+        let radius = BoxArithmetic.cornerRadius(of: self, width: rect.width, height: rect.height)
+        return .rounded(rect, corners: Array(repeating: CGSize(width: radius, height: radius), count: 4))
     }
 }
 

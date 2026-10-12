@@ -43,7 +43,7 @@ final class UIKitColorBoxView: UIView {
         super.layoutSubviews()
         let corners = radii.map { radius in
             let fitted = BoxArithmetic.fitted(radius, width: bounds.width, height: bounds.height)
-            return CGSize(width: fitted.width, height: fitted.height)
+            return CGSize(width: fitted, height: fitted)
         }
         CATransaction.begin()
         CATransaction.setDisableActions(true)

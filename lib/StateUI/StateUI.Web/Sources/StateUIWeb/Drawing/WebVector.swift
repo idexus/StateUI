@@ -36,7 +36,8 @@ enum WebVector {
     static func rounded(_ room: Rect, radii: [Double]) -> String {
         let corners = (0..<4).map { index in
             let radius = index < radii.count && radii[index].isFinite ? max(0, radii[index]) : 0
-            return BoxArithmetic.fitted(radius, width: room.width, height: room.height)
+            let fitted = BoxArithmetic.fitted(radius, width: room.width, height: room.height)
+            return (width: fitted, height: fitted)
         }
         let (x, y, right, bottom) = (room.x, room.y, room.x + room.width, room.y + room.height)
         let n: (Double) -> String = WebCSS.number

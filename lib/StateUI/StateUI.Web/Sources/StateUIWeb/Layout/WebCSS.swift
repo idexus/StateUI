@@ -79,6 +79,8 @@ enum WebCSS {
         switch outline {
         case .rectangle: nil
         case .roundedRectangle(let radius): pixels(radius)
+        // A radius past the box's size is cut down by the browser to half its shorter side, whatever its size.
+        case .capsule: "9999px"
         case .ellipse: "50%"
         }
     }

@@ -5,14 +5,15 @@
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
 
-/// An outline - a rectangle, one with rounded corners, or an ellipse (`BoxArithmetic.outline`) - as the relay takes
-/// it.
+/// An outline - a rectangle, one with rounded corners, a capsule, or an ellipse (`BoxArithmetic.outline`) - as the
+/// relay takes it.
 extension ContainerShape {
-    /// The outline's kind, and a rounded rectangle's radius.
-    var relay: (outline: StateUIOutline, radius: Double) {
+    /// The outline's kind, and its corners' radius at a size `width` by `height` (`BoxArithmetic.cornerRadius`).
+    func relay(width: Double, height: Double) -> (outline: StateUIOutline, radius: Double) {
         switch self {
         case .rectangle: (StateUIOutlineRectangle, 0)
-        case .roundedRectangle(let radius): (StateUIOutlineRounded, radius)
+        case .roundedRectangle, .capsule:
+            (StateUIOutlineRounded, BoxArithmetic.cornerRadius(of: self, width: width, height: height))
         case .ellipse: (StateUIOutlineEllipse, 0)
         }
     }

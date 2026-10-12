@@ -68,7 +68,7 @@ final class UIKitButtonView: UIButton {
         case .roundedRectangle(let radius):
             configuration?.cornerStyle = .fixed
             configuration?.background.cornerRadius = radius
-        case .ellipse:
+        case .capsule, .ellipse:
             configuration?.cornerStyle = .capsule
         }
     }

@@ -110,7 +110,7 @@ class WinUILayoutView: WinUIView {
         } else {
             let ellipse = outline == .ellipse
             if boxView?.isEllipse != ellipse { boxView = WinUIShapeView(ellipse: ellipse) }
-            boxView?.paint(radius: outline.relay.radius, fill: fill, stroke: stroke, width: width)
+            boxView?.paint(outline: outline, fill: fill, stroke: stroke, width: width)
         }
         setChildren(held)
         invalidateArrange()
@@ -201,7 +201,8 @@ class WinUILayoutView: WinUIView {
         guard wanted?.0 != cut?.outline || wanted?.1 != cut?.width || wanted?.2 != cut?.height else { return }
 
         cut = wanted
-        stateui_winui_set_clip(handle, box.clips, outline.relay.outline, outline.relay.radius, width, height)
+        let relay = outline.relay(width: width, height: height)
+        stateui_winui_set_clip(handle, box.clips, relay.outline, relay.radius, width, height)
     }
 
     /// The room the children take for the width offered, in DIPs.

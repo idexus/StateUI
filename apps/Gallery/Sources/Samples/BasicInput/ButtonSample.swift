@@ -29,7 +29,7 @@ struct ButtonSample: SampleContent, ExampleContent {
                 .textColor(Palette.accent)
                 .stroke(Palette.accent)
                 .lineWidth(1)
-                .shape(.ellipse)
+                .shape(.capsule)   // listing: keep
                 .padding(horizontal: 20, vertical: 10)
                 .horizontalAlignment(.center)
                 .onClicked { counter += 1 }

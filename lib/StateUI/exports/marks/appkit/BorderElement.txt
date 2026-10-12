@@ -1,4 +1,4 @@
-# revision 5.1
+# revision 6.1
 Button.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
 Button.lineWidth: ✅
 Button.shape: ☑️ AppKit rounds an oval button into a capsule: a layer's corners draw no oval.

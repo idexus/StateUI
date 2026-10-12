@@ -208,7 +208,7 @@ final class GTKButtonView: GTKView {
     func setBox(fill: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
         let radius: Double? = switch shape.map(BoxArithmetic.outline) {
         case .roundedRectangle(let radius)?: radius
-        case .ellipse?: 9999
+        case .capsule?, .ellipse?: 9999
         case .rectangle?: 0
         case nil: nil
         }

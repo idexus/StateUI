@@ -456,8 +456,11 @@ VStack {
 .clipsContent(true)
 ```
 
-`shape` is `.rectangle`, `.roundedRectangle(radius)` or `.ellipse`. The outline
-is drawn inside the layout's bounds and never pushes its children in; that is
+`shape` is `.rectangle`, `.roundedRectangle(radius)`, `.capsule` or `.ellipse`.
+A corner rounds no more than half the shorter side, so a radius larger than
+that rounds a wide box's ends whole; `.capsule` asks for exactly that at any
+size - a pill-shaped button or tag keeps round ends as its words grow. The
+outline is drawn inside the layout's bounds and never pushes its children in; that is
 the padding's work. `clipsContent(true)` cuts what the layout holds to the
 shape, so a picture in a rounded card has rounded corners; without it the shape
 is drawn and nothing is cut. A dashed outline belongs to a shape: lay a

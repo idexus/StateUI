@@ -102,9 +102,8 @@ final class AndroidShapeView: AndroidView {
         let room = placedSize.map { (Double($0.width) - strokePixels, Double($0.height) - strokePixels) }
         let fitted = corners.flatMap { radius -> [Float] in
             let pixels = radius * density
-            guard let room else { return [Float(pixels), Float(pixels)] }
-            let corner = BoxArithmetic.fitted(pixels, width: room.0, height: room.1)
-            return [Float(corner.width), Float(corner.height)]
+            let corner = room.map { BoxArithmetic.fitted(pixels, width: $0.0, height: $0.1) } ?? pixels
+            return [Float(corner), Float(corner)]
         }
         guard fitted != toldCorners else { return }
         toldCorners = fitted

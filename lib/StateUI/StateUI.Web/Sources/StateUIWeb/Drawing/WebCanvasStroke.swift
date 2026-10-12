@@ -90,7 +90,7 @@ struct WebCanvasStroke {
     /// A rectangle, its corners rounded by `radius` as far as the rectangle holds.
     static func rounded(_ room: Rect, radius: Double) -> [HostCurveCommand] {
         let kept = BoxArithmetic.fitted(max(0, radius), width: room.width, height: room.height)
-        return outline(room, corner: kept)
+        return outline(room, corner: (kept, kept))
     }
 
     /// The ellipse a rectangle holds.

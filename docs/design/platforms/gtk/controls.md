@@ -44,7 +44,8 @@ changed nothing GTK 4.14 measures; the driver doubles `gtk-xft-dpi` itself.
 
 A button the tree gives a fill, an outline or a shape wears a class of the
 host's style sheet drawing them - the fill as its background, the outline as
-its border, the shape as its corners' radius, an ellipse as round ends - and
+its border, the shape as its corners' radius, a capsule - and an ellipse, which
+a border's corners cannot draw - as round ends - and
 what the tree says nothing of stays the theme's. The sheet stands above the
 theme, so its fill would stand under the pointer and pressed too: the class
 draws the fill a little fainter under the pointer and fainter again pressed,

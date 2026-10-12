@@ -166,8 +166,7 @@ struct HomePage: View {
                             .textColor(Palette.onBrand)
                             .background(Color("#33FFFFFF"))
                             .stroke(.transparent)
-                            // A radius past half its height rounds its ends whole: a capsule on every host.
-                            .shape(.roundedRectangle(100))
+                            .shape(.capsule)
                             .padding(horizontal: 14, vertical: 6)
                             .onClicked(gate: opening) { try await Links.launch(Self.repository) }
                     }

@@ -13,7 +13,10 @@ holds the shape as a view of its own, the first child of the layout's panel;
 the panel measures it in every pass, so no pass is left unsettled, and places
 it over the layout's whole size in each arrangement. A box that paints nothing
 is let go of, and one whose outline turns from a rectangle into an ellipse is
-made again, the two being different elements.
+made again, the two being different elements. Swift fits the radius to the
+box's size ([a box](../../host/layout.md#a-box)), a capsule's at half its
+shorter side, and paints it again at each new size, so the `Rectangle` is told
+the radius it draws; a button's corners are fitted the same way.
 
 A brush crosses as its parts ([brushes](../../types/brushes.md)) and becomes
 WinUI's own: a `SolidColorBrush`, or a `LinearGradientBrush` or

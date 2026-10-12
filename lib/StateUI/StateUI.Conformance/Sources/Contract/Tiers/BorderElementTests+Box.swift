@@ -21,7 +21,9 @@ extension BorderElementTests {
     @MainActor
     static func boxCases(_ element: String) -> [ConformanceCase] {
         guard drawnBoxes.contains(element) else { return [] }
-        return [boxFilled(element), boxOutlined(element), boxWidened(element), boxShaped(element)]
+        return [
+            boxFilled(element), boxOutlined(element), boxWidened(element), boxShaped(element), boxCapsuled(element),
+        ]
     }
 
     /// A layout's box is filled in its background.
@@ -101,13 +103,35 @@ extension BorderElementTests {
         }
     }
 
-    /// A box of 60 by 40 at the top left.
+    /// A box outlined as a capsule rounds its ends by half its shorter side at every size: 40 high, its top runs
+    /// straight from 20 in; 100 high, its end reaches over the same point.
     @MainActor
-    private static var room: [any Worn] {
-        [
-            Write(VisualElementContract.width, 60), Write(VisualElementContract.height, 40),
-            Write(ViewContract.horizontalAlignment, Alignment.start),
-        ]
+    static func boxCapsuled(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).roundsItsEndsWholeAsACapsule", proves: [
+            Covered(BorderElementContract.shape, on: element),
+        ], needs: [Covered(BorderElementContract.stroke, on: element), Covered(ButtonContract.clicked)]) { s in
+            let tall = State(wrappedValue: false)
+            s.start {
+                VStack {
+                    Specimens.view(element, outline(width: 4) + [
+                        Write(VisualElementContract.width, 120),
+                        Write(VisualElementContract.height, tall.wrappedValue ? 100 : 40),
+                        Write(ViewContract.horizontalAlignment, Alignment.start),
+                        Write(BorderElementContract.shape, ContainerShape.capsule),
+                    ])
+                    Button("Grow").onClicked { tall.wrappedValue = true }.id("change")
+                }
+            }
+            let layout = try s.specimen(element)
+            let top = Point(25, 1)
+            try s.settle { try s.shows(.red, on: layout, at: top) }
+            s.expect(try s.color(of: layout, at: top), shows: .red, "40 high, its top runs straight there")
+            s.expect(try s.color(of: layout, at: Point(1, 1)), nil, "its corner left bare")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.color(of: layout, at: top) == nil }
+            s.expect(try s.color(of: layout, at: top), nil, "100 high, its end reaches over it")
+        }
     }
 
     /// An outline in red, `width` wide.

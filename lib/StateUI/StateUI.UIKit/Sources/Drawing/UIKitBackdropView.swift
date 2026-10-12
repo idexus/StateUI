@@ -83,11 +83,8 @@ final class UIKitBackdropView: UIVisualEffectView {
         }
         wash = painted
         switch outline {
-        case .rectangle:
-            layer.cornerRadius = 0
-            layer.mask = nil
-        case .roundedRectangle(let radius):
-            layer.cornerRadius = min(radius, min(bounds.width, bounds.height) / 2)
+        case .rectangle, .roundedRectangle, .capsule:
+            layer.cornerRadius = BoxArithmetic.cornerRadius(of: outline, width: bounds.width, height: bounds.height)
             layer.cornerCurve = .continuous
             layer.mask = nil
         case .ellipse:

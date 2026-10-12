@@ -44,7 +44,7 @@ PageElement 2
 View 4
 VisualElement 9
 Shape 3
-BorderElement 5
+BorderElement 6
 TextInput 2
 Application 3
 TextSpan 2

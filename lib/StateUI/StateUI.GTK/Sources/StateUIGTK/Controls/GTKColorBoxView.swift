@@ -32,7 +32,7 @@ final class GTKColorBoxView: GTKPanelView {
 
         let corners = radii.map { radius in
             let fitted = BoxArithmetic.fitted(radius, width: width, height: height)
-            return graphene_size_t(width: Float(fitted.width), height: Float(fitted.height))
+            return graphene_size_t(width: Float(fitted), height: Float(fitted))
         }
         var outline = GTKOutline.rounded(bounds, corners: corners)
         gtk_snapshot_push_rounded_clip(snapshot, &outline)

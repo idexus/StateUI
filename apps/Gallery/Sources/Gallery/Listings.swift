@@ -1320,6 +1320,7 @@ enum Listings {
                 Button("Outlined")
                     .stroke(Palette.accent)
                     .lineWidth(1)
+                    .shape(.capsule)
                     .horizontalAlignment(.center)
                     .onClicked { counter += 1 }
 

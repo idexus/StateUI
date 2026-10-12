@@ -12,8 +12,8 @@ size, a radial one a circle reaching as far across as down
 ([brushes](../../types/brushes.md#geometry-in-fractions)) - inside the
 outline, then the outline's stroke inside its edge, so the
 stroke never spills over the place the layout was given. The outline is a
-rectangle, a rectangle with rounded corners, or an ellipse, each GSK's
-rounded rectangle. A stroke is drawn in one colour: a gradient's first stop.
+rectangle, a rectangle with rounded corners, a capsule or an ellipse, each
+GSK's rounded rectangle. A stroke is drawn in one colour: a gradient's first stop.
 
 A layout that clips cuts what it holds to its outline as it draws it, and
 its widget's overflow is hidden (`gtk_widget_set_overflow`), so a child cut

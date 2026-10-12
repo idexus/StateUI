@@ -18,12 +18,23 @@
         return radii.map { $0.isFinite ? max(0, $0) : 0 }
     }
 
-    /// A corner's radius in a room `width` by `height`, alike across and down: round, and no more than half the
-    /// shorter side - so a radius past half a wide box's height rounds its ends whole, a capsule, never an oval.
+    /// A corner's radius in a room `width` by `height`: round, and no more than half the shorter side - so a radius
+    /// past half a wide box's height rounds its ends whole, a capsule, never an oval.
     /// Design: docs/design/host/layout.md#a-box
-    public static func fitted(_ radius: Double, width: Double, height: Double) -> (width: Double, height: Double) {
-        let kept = min(radius, width / 2, height / 2)
-        return (kept, kept)
+    public static func fitted(_ radius: Double, width: Double, height: Double) -> Double {
+        min(radius, width / 2, height / 2)
+    }
+
+    /// The radius `outline`'s corners round by in a room `width` by `height`: none for a rectangle, a rounded one's
+    /// as far as the room holds it, half the shorter side for a capsule - and for an oval, where a toolkit rounds
+    /// only corners.
+    /// Design: docs/design/host/layout.md#a-box
+    public static func cornerRadius(of outline: ContainerShape, width: Double, height: Double) -> Double {
+        switch outline {
+        case .rectangle: 0
+        case .roundedRectangle(let radius): fitted(radius, width: width, height: height)
+        case .capsule, .ellipse: min(width, height) / 2
+        }
     }
 
     /// The outline the tree's `value` asks for: a rectangle where it asks none, a rounded one's radius never below
@@ -33,6 +44,7 @@
         switch kind {
         case 1: return .roundedRectangle(max(0, parts.count > 1 ? parts[1].number ?? 0 : 0))
         case 2: return .ellipse
+        case 3: return .capsule
         default: return .rectangle
         }
     }

@@ -224,7 +224,10 @@ a corner is round and no more than half the shorter side, so a radius past
 half a wide box's height rounds its ends whole - a capsule, not an oval; its
 outline is a
 rectangle where the tree asks none, a rounded one's radius never below
-nothing; and the outline is drawn one wide where the tree gives it a colour
+nothing; a capsule's corners round by half the shorter side at whatever size
+the box takes, and an oval's too where a toolkit rounds only corners - one
+radius for a box's size, `BoxArithmetic.cornerRadius`, which a host asks again
+as the size changes; and the outline is drawn one wide where the tree gives it a colour
 and no width, and not at all without a colour. A fill is read as the tree
 sends it (`HostBrush`): a bare colour is one colour, a gradient's stops stand
 between 0 and 1, a gradient given no geometry runs top to bottom, or from

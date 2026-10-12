@@ -1,4 +1,4 @@
-# revision 5.1
+# revision 6.1
 Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 Button.lineWidth: ✅
 Button.shape: ✅

@@ -8,7 +8,8 @@ child an engine places, and the application's pictures.
 
 A layout's own box, a ColorBox and any background that is not one plain colour are
 drawn by one drawable of the host's, `StateUIShapeDrawable`: a rectangle, a
-rectangle with rounded corners, or an ellipse, filled with a brush and
+rectangle with rounded corners - a capsule's half its shorter side - or an
+ellipse, filled with a brush and
 outlined in one colour. The Swift host tells it every part as the host layer
 reads a box ([a box](../../host/layout.md#a-box)) - the shape's kind, each
 corner's width and height in pixels, the brush's kind, its stops' colours and
@@ -22,9 +23,8 @@ places the view, and for a layout's own box where Android places it too. A
 plain colour stays the view's own colour background; a background cleared
 gives back the one the view was made with.
 
-A corner rounds no more than half the side it rounds within the outline,
-so a radius wider than a short box rounds it in a quarter of an ellipse.
-Swift fits the corners to the size its view is placed at, and again each
+A corner is round and no more than half the shorter side within the
+outline, so a radius wider than a short box rounds its ends whole. Swift fits the corners to the size its view is placed at, and again each
 time that size changes; the drawable draws them as given. A view clipping
 to the shape cuts with one radius, the top left corner's narrower way, as an
 outline takes it.

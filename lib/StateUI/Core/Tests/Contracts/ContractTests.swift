@@ -100,6 +100,7 @@ final class ContractTests: XCTestCase {
     func testAKindCrossesInFrontOfItsParts() {
         XCTAssertEqual(ContainerShape.roundedRectangle(12).propValue, .values([.enumeration(1), .number(12)]))
         XCTAssertEqual(ContainerShape.ellipse.propValue, .values([.enumeration(2)]))
+        XCTAssertEqual(ContainerShape.capsule.propValue, .values([.enumeration(3)]))
         XCTAssertEqual(
             [GridLength.auto, .fixed(100)].propValue,
             .values([.values([.enumeration(2), .number(1)]), .values([.enumeration(0), .number(100)])]))
@@ -173,6 +174,7 @@ final class ContractTests: XCTestCase {
             Location(latitude: 52.25, longitude: 21.01),
             CalendarDate(year: 2026, month: 9, day: 15), ClockTime(hour: 9, minute: 30, second: 5),
             ContainerShape.rectangle, ContainerShape.roundedRectangle(12), ContainerShape.ellipse,
+            ContainerShape.capsule,
             [GridLength.auto, .proportional(2), .fixed(100)] as [GridLength],
             [Draw.fillColor(.gold)] as [DrawCommand],
             WindowType("document"),

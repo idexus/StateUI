@@ -103,7 +103,7 @@ final class GTKShapeView: GTKPanelView {
             let corners = [radii[0], radii[1], radii[2], radii[3]].map { radius in
                 let kept = BoxArithmetic.fitted(
                     radius.isFinite ? max(0, radius) : 0, width: Double(room.size.width), height: Double(room.size.height))
-                return graphene_size_t(width: Float(kept.width), height: Float(kept.height))
+                return graphene_size_t(width: Float(kept), height: Float(kept))
             }
             var outline = GTKOutline.rounded(room, corners: corners)
             gsk_path_builder_add_rounded_rect(builder, &outline)

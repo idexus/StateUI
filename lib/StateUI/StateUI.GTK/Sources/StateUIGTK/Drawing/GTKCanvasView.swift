@@ -177,7 +177,7 @@ final class GTKCanvasView: GTKPanelView {
     /// A rectangle, its corners rounded by `radius` as far as the rectangle holds.
     private static func rounded(_ room: Rect, radius: Double) -> OpaquePointer {
         let kept = BoxArithmetic.fitted(max(0, radius), width: room.width, height: room.height)
-        let corner = graphene_size_t(width: Float(kept.width), height: Float(kept.height))
+        let corner = graphene_size_t(width: Float(kept), height: Float(kept))
         return outline(room, corner: corner)
     }
 
