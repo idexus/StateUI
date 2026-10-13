@@ -45,15 +45,19 @@ extension AppKitRegistrations {
                 // checker will take.
                 let caption = (values[TextualElementContract.textCase] ?? .none)
                     .applied(to: values[TextualElementContract.text] ?? "")
-                let icon: NSImage? = values[ButtonContract.icon]
-                    .flatMap { HostPicture($0.propValue) }.flatMap { view.picture?($0) }
+                let source = values[ButtonContract.icon].flatMap { HostPicture($0.propValue) }
+                let icon: NSImage? = source.flatMap { view.picture?($0) }
                 let position: NSControl.ImagePosition = caption.isEmpty
                     ? .imageOnly
                     : Self.imagePosition(values[ButtonContract.iconPosition] ?? .leading)
-                // Beside words a picture stands at its own size, smaller where the button is.
-                let scaling: NSImageScaling = caption.isEmpty
-                    ? Self.imageScaling(values[ImageElementContract.contentMode] ?? .fit)
-                    : .scaleProportionallyDown
+                // Beside words a picture stands at its own size, smaller where the button is; so does an icon alone.
+                let scaling: NSImageScaling = if caption.isEmpty, case .icon? = source {
+                    .scaleProportionallyDown
+                } else if caption.isEmpty {
+                    Self.imageScaling(values[ImageElementContract.contentMode] ?? .fit)
+                } else {
+                    .scaleProportionallyDown
+                }
                 let textColor: NSColor = values[TextStyleElementContract.textColor]
                     .flatMap { nsColor($0.propValue) } ?? .controlTextColor
                 let background = paintedColor(values[VisualElementContract.background]?.propValue)

@@ -207,7 +207,8 @@ given, on each side, half of what the picture, the gap and the words leave
 button's, so it is left out of what the button measures. A picture above or
 below its words is already in the middle with them. Beside its words a
 picture stands at its own size, smaller where the button is, never stretched
-over them; alone it fills the room as its aspect says.
+over them; alone it fills the room as its aspect says - but an icon, which
+stands at its own size alone too, as the platform's icon buttons do.
 
 ## A row beside a page
 

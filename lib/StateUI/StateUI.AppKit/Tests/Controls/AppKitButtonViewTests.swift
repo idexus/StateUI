@@ -256,6 +256,22 @@ final class AppKitButtonViewTests: XCTestCase {
         XCTAssertEqual(arrow.value(forKey: "accessibilityEnabled") as? Bool, true, "the arrow offered")
     }
 
+    /// An icon alone in a button stands at its own size, smaller where the button is: an icon is never stretched
+    /// over the room a picture would fill.
+    @MainActor
+    func testAnIconAloneIsNeverDrawnLarger() throws {
+        let renderer = AppKitRenderer.running {
+            HStack { Button(icon: .icon(.settings)).accessibilityLabel("Settings") }
+        }
+        defer { renderer.closeForTesting() }
+        let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
+        button.frame = NSRect(x: 0, y: 0, width: 60, height: 60)
+
+        let image = try XCTUnwrap(button.image)
+        let drawn = try XCTUnwrap(button.cell as? NSButtonCell).imageRect(forBounds: button.bounds)
+        XCTAssertLessThanOrEqual(drawn.height, image.size.height + 0.5, "\(drawn) for \(image.size)")
+    }
+
     /// An icon beside its button's words stands at its own size, smaller where the button is: a tall button does
     /// not stretch it over the words.
     @MainActor
