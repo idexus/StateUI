@@ -73,6 +73,14 @@ line where the tree says nothing. A pointer taking hold of it is its press,
 and its release comes once - lifted, called off, or gone off the button; a
 slider's are heard the same.
 
+## A button's menu
+
+A button opening a menu says so (`aria-haspopup`) and wears a `▾` after its
+words. The browser draws no split button, so a split button is one `<button>`
+whose last part, its arrow - a `▾` set off by a line - opens the menu; a click
+there is the arrow's, never the button's. A right click or a finger held opens
+the menu too, as on any view offering one.
+
 ## A field
 
 A TextField is an `<input>`, a SearchField a search `<input>` and a TextEditor

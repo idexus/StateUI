@@ -77,10 +77,13 @@ extension WebDriver {
     }
 
     /// Opens the menu `element` offers: the window's behind the bar's More, a view's with the mouse's other button,
-    /// a button's - where `button` - with a click where its click opens it.
+    /// a button's - where `button` - with a click where its click opens it, a split button's with a click on its arrow.
     private func open(menuOf element: MountedElement, button: Bool = false) throws {
         if element.type == .window {
             return try click(try bar(over: element), part: "button[aria-label=More]")
+        }
+        if button, ButtonMenu.kind(of: element) == .split {
+            return try click(try self.view(of: element, reading: .frame).node, part: ".stateui-split-arrow")
         }
         let view = try self.view(of: element, reading: .frame)
         let box = try box(of: view.node)
