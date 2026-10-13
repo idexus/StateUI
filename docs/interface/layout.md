@@ -178,6 +178,10 @@ Grid {
 | `.fill` | one share of remaining room |
 | `.proportional(2)` | two shares of remaining room |
 
+Rows or columns alike are written once, with their count:
+`.rows(.fill, .auto(count: 2), .fill(count: 5), .fixed(80))` is nine rows, and
+`.columns(.fill(count: 4))` four equal columns. Each spelling takes `count:`.
+
 A grid's own width, where its room does not decide it, is the least at which
 each proportional track holds its content at its share: shares stand as
 written, and words that fit in their column stand on one line.

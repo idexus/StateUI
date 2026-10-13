@@ -29,8 +29,8 @@ struct IconSample: SampleContent, ExampleContent {
                     .gridRow(place / 4)
                 }
             }
-            .columns(.fill, .fill, .fill, .fill)
-            .rows(.auto, .auto, .auto, .auto, .auto, .auto, .auto, .auto)
+            .columns(.fill(count: 4))
+            .rows(.auto(count: 8))
             .rowSpacing(12)
 
             SectionTitle("In the button's colour")

@@ -3893,8 +3893,8 @@ enum Listings {
                         .gridRow(place / 4)
                     }
                 }
-                .columns(.fill, .fill, .fill, .fill)
-                .rows(.auto, .auto, .auto, .auto, .auto, .auto, .auto, .auto)
+                .columns(.fill(count: 4))
+                .rows(.auto(count: 8))
 
                 SectionTitle("In the button's colour")
 
@@ -9951,7 +9951,7 @@ enum Listings {
                 Text(answer)
                     .gridRow(4)
             }
-            .rows(.auto, .fill, .auto, .auto, .auto)
+            .rows(.auto, .fill, .auto(count: 3))
         }
         """#,
         "WindowBarSample": #"""

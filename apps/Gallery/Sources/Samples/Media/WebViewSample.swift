@@ -96,7 +96,7 @@ private struct WebBrowserPart: ExampleContent {
                 .textColor(Palette.subtle)
                 .gridRow(4)
         }
-        .rows(.auto, .fill, .auto, .auto, .auto)
+        .rows(.auto, .fill, .auto(count: 3))
         .rowSpacing(12)
     }
     // listing: end
