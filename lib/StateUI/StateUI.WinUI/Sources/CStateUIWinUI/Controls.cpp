@@ -143,14 +143,11 @@ extern "C" void stateui_winui_button_set_look(
     try {
         // A Button or a SplitButton: one QueryInterface finds the control either way.
         auto button = as<controls::Control>(handle);
-        auto resources = button.Resources();
-        // A split button's style reads keys of its own.
+        // A split button's style reads keys of its own; what its template reads is written as one, so a brush that
+        // comes or goes has its template read it again.
         std::wstring kind = button.try_as<controls::SplitButton>() ? L"SplitButton" : L"Button";
-        auto keep = [&](wchar_t const *key, xaml::Media::Brush const &value) {
-            auto name = winrt::box_value(key);
-            if (resources.HasKey(name)) resources.Remove(name);
-            if (value) resources.Insert(name, value);
-        };
+        std::vector<std::pair<std::wstring, xaml::Media::Brush>> brushes;
+        auto keep = [&](std::wstring const &key, xaml::Media::Brush const &value) { brushes.emplace_back(key, value); };
         // Under the pointer and pressed, the fill is drawn a little fainter each time, as WinUI's own buttons draw it.
         // An oval, which the button's corners cannot draw, is a brush of its own holding the outline too.
         auto faded = [&](double opacity) -> xaml::Media::Brush {
@@ -164,9 +161,9 @@ extern "C" void stateui_winui_button_set_look(
         else button.ClearValue(controls::Control::BackgroundProperty());
         // The accent's style reads its own keys: a main action's button wears the look written for it too.
         for (std::wstring style : {L"", L"Accent"}) {
-            keep((style + kind + L"Background").c_str(), fill);
-            keep((style + kind + L"BackgroundPointerOver").c_str(), faded(underPointer));
-            keep((style + kind + L"BackgroundPressed").c_str(), faded(pressed));
+            keep(style + kind + L"Background", fill);
+            keep(style + kind + L"BackgroundPointerOver", faded(underPointer));
+            keep(style + kind + L"BackgroundPressed", faded(pressed));
         }
 
         auto outline = lineWidth > 0 && !drawsOval ? brush(stroke) : xaml::Media::Brush{nullptr};
@@ -180,10 +177,11 @@ extern "C" void stateui_winui_button_set_look(
             button.ClearValue(controls::Control::BorderThicknessProperty());
         }
         for (std::wstring style : {L"", L"Accent"}) {
-            keep((style + kind + L"BorderBrush").c_str(), outline);
-            keep((style + kind + L"BorderBrushPointerOver").c_str(), outline);
-            keep((style + kind + L"BorderBrushPressed").c_str(), outline);
+            keep(style + kind + L"BorderBrush", outline);
+            keep(style + kind + L"BorderBrushPointerOver", outline);
+            keep(style + kind + L"BorderBrushPressed", outline);
         }
+        writeResources(button, brushes);
 
         if (cornerRadius >= 0) button.CornerRadius({cornerRadius, cornerRadius, cornerRadius, cornerRadius});
         else button.ClearValue(controls::Control::CornerRadiusProperty());

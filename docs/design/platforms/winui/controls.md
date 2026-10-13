@@ -63,7 +63,12 @@ changing writes them again in their place.
 A button drawn in the application's colours keeps them under the pointer and
 pressed: its fill is drawn a little fainter each time, as WinUI's own buttons
 are, its words and outline as they are - WinUI's template otherwise draws
-those states in the platform's colours.
+those states in the platform's colours. They are written as a control's
+accent is ([a control's accent](#a-controls-accent)): its template reads
+them as it is applied, so a colour that comes or goes has its theme read
+again, and a button whose style leaves - the colours, the outline, the room -
+stands as one that never wore it. The room the tree says nothing of is the
+template's own padding, not none.
 
 ## A button's menu
 

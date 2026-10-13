@@ -409,11 +409,11 @@ StateUIObjectRef stateui_winui_spacer_make(void);
 StateUIObjectRef stateui_winui_divider_make(void);
 
 /// How words look on a text block or any control showing them: the font - a size of 0 or less, a weight of 0 and
-/// an empty family are the platform's, a weight 100 to 900 - the colour as 0xAARRGGBB, `has` false putting back
-/// the platform's, and the room around them in DIPs.
+/// an empty family are the platform's, a weight 100 to 900 - the colour as 0xAARRGGBB and the room around them in
+/// DIPs, each with `has` false putting back the platform's.
 void stateui_winui_set_font(StateUIObjectRef element, double size, int32_t weight, bool italic, char const *family);
 void stateui_winui_set_foreground(StateUIObjectRef element, bool has, uint32_t argb);
-void stateui_winui_set_padding(StateUIObjectRef element, double left, double top, double right, double bottom);
+void stateui_winui_set_padding(StateUIObjectRef element, bool has, double left, double top, double right, double bottom);
 
 /// The room between the letters of a text block's or a control's words, in thousandths of an em.
 void stateui_winui_set_character_spacing(StateUIObjectRef element, int32_t thousandths);

@@ -74,30 +74,41 @@ final class UIKitButtonView: UIButton {
         configuration?.imagePadding = spacing ?? 8
     }
 
-    /// The outline the button's box follows, its corners rounded as the button is laid out.
-    private var boxShape = ContainerShape.rectangle
+    /// The outline the button's box follows, its corners rounded as the button is laid out; nil where the tree
+    /// says none, the platform's own corners standing.
+    private var boxShape: ContainerShape?
 
     /// What fills the button's box, its outline and its shape (`BoxArithmetic`): the configuration's background,
     /// but for an oval, which its corners cannot draw - a face of the button's own then. A capsule's corners are half
     /// its shorter side, as everywhere: UIKit's own capsule makes a button showing a picture alone a circle, whatever
-    /// its padding.
+    /// its padding. What the tree leaves unsaid is the platform's own button's: an empty fill there is the tint's.
     func setBox(background: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?) {
         let fill = background.flatMap(UIColor.init(stateUI:))
         let outline = BoxArithmetic.outlineWidth(stroke: stroke, width: width)
         let line = outline > 0 ? UIKitBrush(stroke).lineColor : nil
         let outlined = BoxArithmetic.outline(shape)
         let oval = outlined == .ellipse
-        configuration?.background.customView = oval ? UIKitOvalFace(fill: fill, stroke: line, width: outline) : nil
-        configuration?.background.backgroundColor = oval ? .clear : fill
-        configuration?.background.strokeWidth = oval ? 0 : outline
-        configuration?.background.strokeColor = oval ? .clear : line
-        boxShape = outlined
-        configuration?.cornerStyle = .fixed
+        let own = UIButton.Configuration.plain()
+        var box = own.background
+        if oval {
+            box.customView = UIKitOvalFace(fill: fill, stroke: line, width: outline)
+            box.backgroundColor = .clear
+        } else {
+            if let fill { box.backgroundColor = fill }
+            if let line {
+                box.strokeWidth = outline
+                box.strokeColor = line
+            }
+        }
+        configuration?.background = box
+        boxShape = shape == nil ? nil : outlined
+        configuration?.cornerStyle = boxShape == nil ? own.cornerStyle : .fixed
         roundCorners()
     }
 
     /// Rounds the box's corners as its outline says in the button's bounds.
     private func roundCorners() {
+        guard let boxShape else { return }
         let radius = CGFloat(BoxArithmetic.cornerRadius(of: boxShape, width: bounds.width, height: bounds.height))
         if configuration?.background.cornerRadius != radius { configuration?.background.cornerRadius = radius }
     }

@@ -53,10 +53,10 @@ extension WinUIView {
         stateui_winui_set_foreground(handle, argb != nil, argb ?? 0)
     }
 
-    /// The room kept around the words, in DIPs.
+    /// The room kept around the words, in DIPs; nil puts back the platform's.
     func setPadding(_ padding: Insets?) {
         let room = padding ?? Insets(0)
-        stateui_winui_set_padding(handle, room.left, room.top, room.right, room.bottom)
+        stateui_winui_set_padding(handle, padding != nil, room.left, room.top, room.right, room.bottom)
     }
 
     /// How the words look, as WinUI holds it.

@@ -81,7 +81,9 @@ configuration's background view, which its corners cannot draw - and the room
 inside it. Its corners are rounded as it is laid out, by the host layer's
 radius (`BoxArithmetic`): a capsule's half its shorter side. UIKit's own
 capsule makes a button showing a picture alone a circle as wide as it is high,
-whatever room the tree gives it beside the picture.
+whatever room the tree gives it beside the picture. What the tree leaves
+unsaid is a plain configuration's own: an empty fill there is the tint's, so a
+button whose style leaves takes the plain box again, never an empty one.
 
 ## A button's menu
 

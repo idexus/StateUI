@@ -127,25 +127,31 @@ extern "C" void stateui_winui_set_foreground(StateUIObjectRef handle, bool has, 
                 // button's reads keys of its own.
                 auto split = control.try_as<controls::SplitButton>() != nullptr;
                 if (!control.try_as<controls::Button>() && !split) return;
-                auto resources = control.Resources();
                 std::wstring kind = split ? L"SplitButton" : L"Button";
-                for (std::wstring state : {L"", L"PointerOver", L"Pressed"}) {
-                    auto name = winrt::box_value(kind + L"Foreground" + state);
-                    if (resources.HasKey(name)) resources.Remove(name);
-                    if (has) resources.Insert(name, brush);
-                }
+                std::vector<std::pair<std::wstring, xaml::Media::Brush>> brushes;
+                for (std::wstring state : {L"", L"PointerOver", L"Pressed"})
+                    brushes.emplace_back(kind + L"Foreground" + state, brush);
+                writeResources(control, brushes);
             });
     } catch (...) {
         report("colouring words");
     }
 }
 
-extern "C" void stateui_winui_set_padding(StateUIObjectRef handle, double left, double top, double right, double bottom) {
+extern "C" void stateui_winui_set_padding(
+    StateUIObjectRef handle, bool has, double left, double top, double right, double bottom
+) {
     try {
         xaml::Thickness room{left, top, right, bottom};
         either(handle,
-            [&](controls::TextBlock const &block) { block.Padding(room); },
-            [&](controls::Control const &control) { control.Padding(room); });
+            [&](controls::TextBlock const &block) {
+                if (has) block.Padding(room);
+                else block.ClearValue(controls::TextBlock::PaddingProperty());
+            },
+            [&](controls::Control const &control) {
+                if (has) control.Padding(room);
+                else control.ClearValue(controls::Control::PaddingProperty());
+            });
     } catch (...) {
         report("setting the room around words");
     }
