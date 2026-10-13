@@ -3865,7 +3865,11 @@ enum Listings {
                 SectionTitle("Made as bytes")
 
                 HStack {
-                    Image(ImageSource(bytes: MadePicture.rings(side: 48, hue: hue)))
+                    // Three pixels a point, shown as large as the icons above.
+                    Image(ImageSource(bytes: MadePicture.rings(side: 72, hue: hue)))
+                        .width(24)
+                        .height(24)
+                        .verticalAlignment(.center)
 
                     Button("Make another")
                         .onClicked { hue = (hue + 0.17).truncatingRemainder(dividingBy: 1) }
