@@ -45,8 +45,8 @@ final class GTKButtonViewTests: XCTestCase {
 
     /// A button opening a menu and a split button wear their box as one face: the fill from edge to edge, no button
     /// of the theme's standing inside it.
-    func testAMenuButtonsBoxIsOneFace() throws {
-        try onUIThread {
+    func testAMenuButtonsBoxIsOneFace() {
+        onUIThread {
             let host = GTKRenderer.running {
                 VStack {
                     Button("Share").menu { MenuItem("Mail") }
@@ -78,8 +78,8 @@ final class GTKButtonViewTests: XCTestCase {
 
     /// A button holding a menu stands as tall as a plain one beside it, the platform's own or the same box and
     /// padding given to each.
-    func testAMenuButtonStandsAsTallAsAPlainOne() throws {
-        try onUIThread {
+    func testAMenuButtonStandsAsTallAsAPlainOne() {
+        onUIThread {
             let host = GTKRenderer.running {
                 HStack {
                     Button("Go").onClicked {}
