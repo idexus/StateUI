@@ -30,6 +30,7 @@
     private let stateChannels: StateChannels
     private let describedMotion: DescribedMotion
     private let layoutMotion: LayoutMotion
+    private let sidebarSlide: SidebarSlide
     private let reducesMotion: () -> Bool
 
     /// Whether the core's last cycle said it has more to do.
@@ -47,6 +48,7 @@
         stateChannels: StateChannels,
         describedMotion: DescribedMotion,
         layoutMotion: LayoutMotion,
+        sidebarSlide: SidebarSlide,
         reducesMotion: @escaping () -> Bool
     ) {
         self.core = core
@@ -55,6 +57,7 @@
         self.stateChannels = stateChannels
         self.describedMotion = describedMotion
         self.layoutMotion = layoutMotion
+        self.sidebarSlide = sidebarSlide
         self.reducesMotion = reducesMotion
     }
 
@@ -111,6 +114,7 @@
         stateChannels.follow(steps)
         describedMotion.follow(steps)
         layoutMotion.follow(steps)
+        sidebarSlide.follow(steps)
         collectStateChannels()
 
         for output in describedMotion.takeOutputs() {

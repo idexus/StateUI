@@ -50,6 +50,8 @@ final class WinUISplitView: WinUILayoutView {
             guard let self, open != isPresented else { return }
             isPresented = open
             onPresentationChanged?(open)
+            // A pane closed of WinUI's accord stays open while it slides out.
+            if !open { slide() }
         }
         setChildren([sidebar])
     }
@@ -77,12 +79,37 @@ final class WinUISplitView: WinUILayoutView {
         configure()
     }
 
+    /// The runtime's sliding sidebars and this split's mount among them; nil shows and hides the sidebar at once.
+    var slides: (slide: SidebarSlide, mount: UInt64)?
+
+    /// The pane's whole width, read as the sidebar first slides: the theme's, as WinUI opens it.
+    private var paneWidth: Double?
+
     /// Applies the tree's value without echoing it back as a user's change.
     func present(_ presented: Bool) {
         guard presented != isPresented else { return }
 
         isPresented = presented
-        configure()
+        slide()
+    }
+
+    /// Slides the sidebar in or out by the pane's width, frame by frame, the detail beside it taking every width
+    /// between; one not placed yet stands at once.
+    /// Design: docs/design/platforms/winui/pages.md#a-split-view
+    private func slide() {
+        guard let slides, arranged != nil else { return configure() }
+        let width = paneWidth ?? sidebar.paneWidth
+        paneWidth = width
+        if isPresented { configure() }
+        slides.slide.slide(slides.mount, from: isPresented ? 0 : 1, shown: isPresented) { [weak self] shown, rested in
+            guard let self else { return }
+            sidebar.slide(pane: SidebarSlide.paneWidth(shown, of: width), width: width)
+            // Out, the pane closes, and stands at its whole width for the next time it opens.
+            if rested, !isPresented {
+                configure()
+                sidebar.slide(pane: width, width: width)
+            }
+        }
     }
 
     /// What WinUI's split view asked, never its pages' own sizes: WinUI measures them in the room it gives them.
@@ -153,6 +180,7 @@ final class WinUISplitView: WinUILayoutView {
     override func detach() {
         super.detach()
         onPresentationChanged = nil
+        slides.map { $0.slide.forget($0.mount) }
         sidebar.detach()
     }
 }

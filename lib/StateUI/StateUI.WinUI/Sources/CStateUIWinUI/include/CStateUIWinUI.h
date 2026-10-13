@@ -873,6 +873,13 @@ StateUIObjectRef stateui_winui_split_make(int64_t view);
 void stateui_winui_split_set(StateUIObjectRef split, StateUIObjectRef pane, StateUIObjectRef content,
                              StateUIObjectRef row, bool open, bool beside);
 
+/// The whole width of a split view's pane, in DIPs: the theme's, as WinUI opens it.
+double stateui_winui_split_pane_width(StateUIObjectRef split);
+
+/// A split view's pane `pane` DIPs wide on its way in or out, its sidebar standing at its whole `width`, its trailing
+/// edge at the pane's.
+void stateui_winui_split_slide(StateUIObjectRef split, double pane, double width);
+
 /// Stands a split view's pane on a ground for each place: beside the detail and over it. A ground's kind is 0 for WinUI's own, 1 for the colour `argb`, 2 for the in-app acrylic in the
 /// colour `argb`, its luminosity hiding `opacity` of what is behind it and its tint `tintOpacity`.
 void stateui_winui_split_set_pane_grounds(StateUIObjectRef split, int32_t besideKind, uint32_t besideArgb,

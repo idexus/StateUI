@@ -90,6 +90,18 @@ again keeps its running animation, and a new place bends a running one from
 where it has reached, at its speed. Layout motion holds each child's view
 weakly: a view the tree dropped is not kept alive for its place.
 
+## A sidebar sliding
+
+A host whose toolkit moves a split view's pane by itself - the detail beside it
+laid out once at its end width - slides the sidebar on the runtime's frames
+instead (`SidebarSlide`): how far it has come, 0 hidden and 1 shown, eased
+over a quarter of a second, the pane that wide each frame and the detail
+taking every width between, as a sidebar beside its detail slides where the
+toolkit lays out as it goes. The sidebar's page stands at its whole width, its
+trailing edge at the pane's. A slide turned back bends from where it stands,
+and with less motion it arrives at once. A split not placed yet stands at
+once: a window opens with its sidebar where it is.
+
 ## Words at their destination
 
 A child whose place travels is told where it is bound as it sets out

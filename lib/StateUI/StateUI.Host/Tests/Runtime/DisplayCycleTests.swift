@@ -21,6 +21,7 @@ final class DisplayCycleTests: XCTestCase {
             stateChannels: channels,
             describedMotion: described,
             layoutMotion: LayoutMotion(animator: animator, now: { 0 }, reducesMotion: { false }),
+            sidebarSlide: SidebarSlide(animator: animator, now: { 0 }, reducesMotion: { false }),
             reducesMotion: { false })
         let presenter = CountingPresenter()
         cycle.presenter = presenter

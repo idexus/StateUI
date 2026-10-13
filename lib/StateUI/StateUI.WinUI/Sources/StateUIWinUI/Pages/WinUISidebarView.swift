@@ -26,6 +26,14 @@ final class WinUISidebarView: WinUIView {
         stateui_winui_split_set(handle, sidebar?.handle, detail?.handle, row?.handle, open, beside)
     }
 
+    /// The pane's whole width, in DIPs: the theme's, as WinUI opens it.
+    var paneWidth: Double { stateui_winui_split_pane_width(handle) }
+
+    /// Stands the pane `pane` DIPs wide on its way in or out, the sidebar at its whole `width`.
+    func slide(pane: Double, width: Double) {
+        stateui_winui_split_slide(handle, pane, width)
+    }
+
     override func presented(_ open: Bool) {
         guard !ProgramWrite.isWriting else { return }
         onPresented?(open)

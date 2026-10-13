@@ -61,6 +61,10 @@ namespace {
     /// the chosen tab is taken away - is heard by nobody.
     bool settingTabs = false;
 
+    /// Whether the program is closing a split's pane: a pane WinUI would close of its own accord is kept open while
+    /// the host slides it out, which this close ends.
+    bool closingPane = false;
+
     winrt::Windows::UI::Color color(uint32_t argb) {
         return {static_cast<uint8_t>(argb >> 24), static_cast<uint8_t>(argb >> 16), static_cast<uint8_t>(argb >> 8),
                 static_cast<uint8_t>(argb)};
@@ -298,6 +302,11 @@ extern "C" StateUIObjectRef stateui_winui_split_make(int64_t view) {
     try {
         controls::SplitView split;
         split.DisplayMode(controls::SplitViewDisplayMode::Overlay);
+        // The host slides the pane in and out by its width, frame by frame, the detail beside it following: WinUI's
+        // own animation of it - which moves the pane alone - takes no time, by the theme resources it reads.
+        for (auto key : {L"SplitViewPaneAnimationOpenDuration", L"SplitViewPaneAnimationOpenPreDuration",
+                         L"SplitViewPaneAnimationCloseDuration"})
+            split.Resources().Insert(winrt::box_value(key), winrt::box_value(L"0:0:0"));
         auto card = detailCard();
         card.Child(rows({true, false}));
         split.Content(card);
@@ -309,7 +318,10 @@ extern "C" StateUIObjectRef stateui_winui_split_make(int64_t view) {
             callbacks.presented(view, true);
         }));
         split.PaneClosing(guarded("handling PaneClosing",
-            [view](controls::SplitView const &, controls::SplitViewPaneClosingEventArgs const &) {
+            [view](controls::SplitView const &sender, controls::SplitViewPaneClosingEventArgs const &args) {
+            // Closing of WinUI's accord - a click beside a pane over the detail - the pane stays open while the host
+            // slides it out, and the host closes it once it has.
+            if (!closingPane && sender.OpenPaneLength() > 0.5) args.Cancel(true);
             callbacks.presented(view, false);
         }));
         split.PaneClosed(guarded("handling PaneClosed", [](controls::SplitView const &sender, IInspectable const &) {
@@ -342,9 +354,38 @@ extern "C" void stateui_winui_split_set(
         // A pane over the detail collapses its sidebar once it has closed; one beside it tells no closing, and a
         // view WinUI has not loaded, or a new sidebar, tells nothing.
         if (open || anew || beside || !split.IsLoaded()) showSidebar(split, open);
-        if (split.IsPaneOpen() != open) split.IsPaneOpen(open);
+        if (split.IsPaneOpen() != open) {
+            closingPane = !open;
+            split.IsPaneOpen(open);
+            closingPane = false;
+        }
     } catch (...) {
+        closingPane = false;
         report("setting a split view");
+    }
+}
+
+extern "C" double stateui_winui_split_pane_width(StateUIObjectRef handle) {
+    try {
+        return borrow<controls::SplitView>(handle).OpenPaneLength();
+    } catch (...) {
+        report("reading a split view's pane");
+        return 0;
+    }
+}
+
+extern "C" void stateui_winui_split_slide(StateUIObjectRef handle, double pane, double width) {
+    try {
+        auto split = borrow<controls::SplitView>(handle);
+        if (split.OpenPaneLength() != pane) split.OpenPaneLength(pane);
+        // The sidebar at its whole width, its trailing edge at the pane's: what stands past the pane's leading edge
+        // stands past the window's.
+        if (auto sidebar = split.Pane().try_as<xaml::FrameworkElement>()) {
+            if (sidebar.Width() != width) sidebar.Width(width);
+            sidebar.HorizontalAlignment(xaml::HorizontalAlignment::Right);
+        }
+    } catch (...) {
+        report("sliding a split view's pane");
     }
 }
 

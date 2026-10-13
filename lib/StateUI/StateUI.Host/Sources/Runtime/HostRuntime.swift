@@ -27,6 +27,9 @@
     /// A layout's children travelling to their new places.
     public let layoutMotion: LayoutMotion
 
+    /// Split views' sidebars sliding in and out, where a host slides them itself.
+    public let sidebarSlide: SidebarSlide
+
     /// One display frame's order: the user's reports, the animations, the core's cycle, a walk, a render.
     public let displayCycle: DisplayCycle
 
@@ -69,9 +72,11 @@
         stateChannels = StateChannels(animator: animator)
         describedMotion = DescribedMotion(animator: animator)
         layoutMotion = LayoutMotion(animator: animator, now: clock.now, reducesMotion: reducesMotion)
+        sidebarSlide = SidebarSlide(animator: animator, now: clock.now, reducesMotion: reducesMotion)
         displayCycle = DisplayCycle(
             core: core, clock: clock, animator: animator, stateChannels: stateChannels,
-            describedMotion: describedMotion, layoutMotion: layoutMotion, reducesMotion: reducesMotion)
+            describedMotion: describedMotion, layoutMotion: layoutMotion, sidebarSlide: sidebarSlide,
+            reducesMotion: reducesMotion)
         var diagnostics = DiagnosticText.environment
         diagnostics.views = views
         tree = MountedTree(
@@ -85,6 +90,7 @@
         tree.tellPhase = { [weak pump] handler in pump?.handlers.enqueuePhase(handler) }
         clock.onFrame = { [weak self] now in self?.displayCycle.frame(now: now) }
         layoutMotion.onStart = { [weak self] in self?.displayCycle.hold() }
+        sidebarSlide.onStart = { [weak self] in self?.displayCycle.hold() }
         tree.onAnimation = { [weak self] in self?.displayCycle.hold() }
     }
 

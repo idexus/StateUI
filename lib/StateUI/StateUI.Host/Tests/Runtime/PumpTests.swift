@@ -204,7 +204,8 @@ private final class TurnRuntime: TurnPresenter, FrameClock {
         let layoutMotion = LayoutMotion(animator: animator, now: now, reducesMotion: { false })
         displayCycle = DisplayCycle(
             core: core, clock: self, animator: animator, stateChannels: stateChannels,
-            describedMotion: describedMotion, layoutMotion: layoutMotion, reducesMotion: { false })
+            describedMotion: describedMotion, layoutMotion: layoutMotion,
+            sidebarSlide: SidebarSlide(animator: animator, now: now, reducesMotion: { false }), reducesMotion: { false })
         tree = MountedTree(
             core: core, intake: intake, stateChannels: stateChannels, describedMotion: describedMotion,
             layoutMotion: layoutMotion, now: now, reducesMotion: { false },
