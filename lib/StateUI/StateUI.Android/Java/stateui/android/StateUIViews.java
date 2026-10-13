@@ -188,11 +188,11 @@ final class StateUIViews {
     }
 
     /**
-     * The platform's drawable `name` fitted into a square `side` pixels across, kept as a mask - an icon; null
-     * where the platform has none such.
+     * The application's drawable `name` - an icon the host puts among its resources - fitted into a square `side`
+     * pixels across, kept as a mask; null where it has none such.
      */
     static Bitmap icon(Context context, String name, int side) {
-        int id = context.getResources().getIdentifier(name, "drawable", "android");
+        int id = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
         Drawable drawable = id == 0 || side <= 0 ? null : context.getDrawable(id);
         if (drawable == null) return null;
         float width = Math.max(1, drawable.getIntrinsicWidth());

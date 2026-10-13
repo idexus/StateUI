@@ -64,6 +64,10 @@ build_head () {
   fi
   "$rasterizer" "$app/Resources/Images" "$build/assets/images" >&2 || return 1
 
+  # The host's own resources - the icons it draws, Material Symbols - stand in every APK's.
+  mkdir -p "$build/res/drawable"
+  cp "$repository_dir/lib/StateUI/StateUI.Android/Resources/drawable/"*.xml "$build/res/drawable/" || return 1
+
   # The launcher icon is drawn from Resources/AppIcon, into the APK's resources; the test head has none.
   local icon_drawer="$build/tools/draw-app-icon"
   if [[ -d "$app/Resources/AppIcon" ]]; then

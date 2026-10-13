@@ -71,7 +71,7 @@ enum AndroidPictures {
     static func size(of picture: HostPicture) -> (width: Int32, height: Int32)? {
         switch picture {
         case .file(let name): asset(named: name)?.size
-        case .icon(let icon): icon.androidDrawable == nil ? nil : (iconPixels, iconPixels)
+        case .icon: (iconPixels, iconPixels)
         case .bytes(let bytes): bounds(.bytes(bytes)).map { scaled($0, from: onePixelAPoint) }
         }
     }
@@ -125,15 +125,13 @@ enum AndroidPictures {
         }
     }
 
-    /// `icon` drawn from the platform's drawable at Android's icon size, as a mask the view showing it colours.
+    /// `icon` drawn from its drawable at Android's icon size, as a mask the view showing it colours.
     /// Design: docs/design/platforms/android/drawing.md#icons
     private static func drawn(_ icon: Icon) -> JavaObject? {
-        guard let name = icon.androidDrawable else { return nil }
-
-        return Java.frame {
+        Java.frame {
             guard let mask = Java.callStaticObject(
                 JavaAPI.views, JavaAPI.iconMask,
-                .object(AndroidRenderer.context), .object(Java.string(name)), .int(iconPixels))
+                .object(AndroidRenderer.context), .object(Java.string(icon.androidDrawable)), .int(iconPixels))
             else { return nil }
 
             Java.call(mask, JavaAPI.setBitmapDensity, .int(displayDensity))

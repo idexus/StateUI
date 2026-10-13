@@ -96,14 +96,15 @@ go; only a bar's and a tab's icons are kept for as long as the host runs.
 
 ## Icons
 
-An icon is the platform's own drawable (`android.R.drawable`), which every
-Android ships, drawn into a square of Android's icon size, 24 points, and
-kept as a mask of how opaque each pixel is (`ALPHA_8`). What shows it
-colours it: an image and a bar in the theme's colour for controls' icons
-(`colorControlNormal`), a button in its words' colour, again whenever they
-change. The bitmap kept holds no colour, so a change of theme leaves none
-behind. Android ships no drawable for some icons (`Icon.androidDrawable`);
-the register says which, and they show nothing.
+An icon is its Material Symbols drawable - the icons of Android's own
+applications, which Android itself does not ship - put by the host among every
+application's resources (`Resources/drawable/stateui_icon_*.xml`, copied into
+the APK's as it is built; THIRD-PARTY-NOTICES), drawn into a square of
+Android's icon size, 24 points, and kept as a mask of how opaque each pixel is
+(`ALPHA_8`). What shows it colours it: an image and a bar in the theme's
+colour for controls' icons (`colorControlNormal`), a button in its words'
+colour, again whenever they change. The bitmap kept holds no colour, so a
+change of theme leaves none behind.
 
 A picture's bytes are read as a file is, at one pixel a point, their size
 from their header; nothing keeps them once no view shows them.

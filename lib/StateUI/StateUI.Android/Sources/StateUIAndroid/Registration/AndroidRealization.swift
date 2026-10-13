@@ -47,15 +47,13 @@ enum AndroidRealization {
         .complete("MenuItemElement", "isDestructive"),
         .complete("MenuItemElement", "isEnabled"),
         .complete("MenuItemElement", "text"),
-        .partial("PageElement", "icon", missing: Self.someIcons),
+        .complete("PageElement", "icon"),
         .complete("PageElement", "title"),
         .partial("VisualElement", "accessibilityHeading", missing: "Android marks a heading, not its level: every level is a heading."),
         .partial("View", "panTouchCount", missing: "The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off."),
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
-        .partial("Button", "icon", missing: Self.someIcons),
-        .partial("Image", "source", missing: Self.someIcons),
         .partial("Button", "contentMode", missing: "Android's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
         .notPlanned("Button", "zIndex", reason: "Android draws a raised button over the flat views beside it whatever their depth: its elevation is the native button's own."),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
@@ -109,7 +107,7 @@ enum AndroidRealization {
         .complete("TabView", "selectedTabChanged"),
         .notPlanned("ToolbarItem", "accessibilityIdentifier",
                     reason: "An Android bar action is a menu entry, which holds no identifier: automation finds it by its title."),
-        .partial("ToolbarItem", "icon", missing: Self.someIcons),
+        .complete("ToolbarItem", "icon"),
         .complete("ToolbarItem", "keyboardShortcut"),
         .complete("ToolbarItem", "placement"),
         .partial("ToolbarItem", "showsText", missing: "Android shows the words beside the picture only where the bar has room: an upright phone keeps the picture alone."),
@@ -135,9 +133,6 @@ enum AndroidRealization {
 
     /// What Android leaves out of a blur.
     private static let blursNothing = "Android blurs nothing behind a view: a blur or glass shows its colour."
-
-    /// What a picture misses: the icons Android ships no drawable for.
-    private static let someIcons = "Android ships no drawable for \(Icon.missingOnAndroid): such an icon shows nothing."
 
     /// The window's place and size, which Android gives an activity itself.
     private static let windowRoom: [HostRecord] = {

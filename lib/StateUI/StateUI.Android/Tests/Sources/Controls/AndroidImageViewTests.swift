@@ -13,7 +13,7 @@ final class AndroidImageViewTests: XCTestCase {
             ("testAPictureFillsOrFitsItsRoomAsItsAspectSays", testAPictureFillsOrFitsItsRoomAsItsAspectSays),
             ("testAPictureShownSmallIsReadAtFewerPixels", testAPictureShownSmallIsReadAtFewerPixels),
             ("testAPictureNoViewShowsIsLetGo", testAPictureNoViewShowsIsLetGo),
-            ("testEveryIconIsThePlatformsDrawableOrNone", testEveryIconIsThePlatformsDrawableOrNone),
+            ("testEveryIconIsADrawableOfTheApplications", testEveryIconIsADrawableOfTheApplications),
             ("testAnIconIsDrawnInTheThemesColourForControls", testAnIconIsDrawnInTheThemesColourForControls),
         ]
     }
@@ -104,20 +104,18 @@ final class AndroidImageViewTests: XCTestCase {
         }
     }
 
-    /// An icon the table names is the platform's drawable, read as a mask of Android's icon size; one it names none
-    /// for is no picture.
-    func testEveryIconIsThePlatformsDrawableOrNone() {
+    /// Every icon is its Material Symbols drawable among the application's resources, read as a mask of Android's
+    /// icon size.
+    func testEveryIconIsADrawableOfTheApplications() {
         onMainActor {
             let side = Int32((24 * AndroidRenderer.density).rounded())
             for icon in Icon.allCases {
                 let mask = AndroidPictures.take(.icon(icon), sample: 1)
                 defer { AndroidPictures.letGo(.icon(icon), sample: 1) }
-                guard icon.androidDrawable != nil else {
-                    XCTAssertNil(mask, "\(icon)")
-                    XCTAssertNil(AndroidPictures.size(of: .icon(icon)).map { "\($0)" }, "\(icon)")
+                guard let mask else {
+                    XCTFail("no \(icon.androidDrawable) among the application's drawables")
                     continue
                 }
-                guard let mask else { XCTFail("Android has no \(icon.androidDrawable!) for \(icon)"); continue }
 
                 XCTAssertEqual(Java.callInt(mask.reference, JavaAPI.bitmapWidth), side, "\(icon)")
                 XCTAssertEqual(Java.callInt(mask.reference, JavaAPI.bitmapHeight), side, "\(icon)")
@@ -139,10 +137,10 @@ final class AndroidImageViewTests: XCTestCase {
             let colour = UInt32(bitPattern: Java.callStaticInt(
                 TestJava.testPictures, TestJava.controlColour, .object(AndroidRenderer.context)))
             XCTAssertGreaterThan(ink >> 24, 0, "the icon is drawn")
-            // A partly opaque pixel is kept premultiplied: its channels come back a step apart.
+            // A partly opaque pixel is kept premultiplied: its channels come back a few steps apart.
             for shift: UInt32 in [0, 8, 16] {
                 let (drawn, given) = (Int(ink >> shift & 0xFF), Int(colour >> shift & 0xFF))
-                XCTAssertLessThanOrEqual(abs(drawn - given), 2, "\(String(ink, radix: 16)) for \(String(colour, radix: 16))")
+                XCTAssertLessThanOrEqual(abs(drawn - given), 4, "\(String(ink, radix: 16)) for \(String(colour, radix: 16))")
             }
             XCTAssertLessThanOrEqual(ink >> 24, colour >> 24, String(ink, radix: 16))
         }

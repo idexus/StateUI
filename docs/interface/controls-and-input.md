@@ -450,12 +450,11 @@ encoded bytes. `Image` and a button's `icon` consume it without exposing a
 platform image type.
 
 An icon is chosen by its meaning from a closed set, `Icon`, and each host draws
-it as its platform draws its own - an SF Symbol, an Android drawable, a Segoe
-Fluent Icons glyph, the GTK theme's symbolic icon - in the colour of what holds
-it, at the platform's icon size where nothing gives it room. Where a platform
-ships no icon for one, the [platform contract](../platform-contract.md) says
-so. Bytes are a picture encoded whole - a PNG or a JPEG the application
-downloaded or made - shown at one pixel a point:
+it as its platform draws its own - an SF Symbol, a Material Symbol on Android,
+a Segoe Fluent Icons glyph, the GTK theme's symbolic icon - in the colour of
+what holds it, at the platform's icon size where nothing gives it room. Bytes
+are a picture encoded whole - a PNG or a JPEG the application downloaded or
+made - shown at one pixel a point:
 
 ```swift
 let downloaded: [UInt8] = []

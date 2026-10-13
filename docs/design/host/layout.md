@@ -283,13 +283,13 @@ pictures there at that size, and one at its file's size stands far taller.
 A picture is a file, an icon or bytes (`HostPicture`), read alike on every
 host from the member's value. An icon is one of a closed set (`Icon`), each
 drawn as its platform draws its own: an SF Symbol on AppKit and UIKit
-(`Icon.sfSymbol`, which both share), a drawable Android ships, a glyph of
-Segoe Fluent Icons on WinUI, the theme's symbolic icon on GTK, and on the Web
-a drawing of StateUI's own. An icon takes the colour of what it stands in -
-the words beside it, its bar's, the theme's - and, where nothing gives it
-room, the platform's own icon size. Where a platform ships no icon for one,
-its host's register says so. Bytes are a picture encoded whole - a PNG, a
-JPEG - read where they are given, at one pixel a point.
+(`Icon.sfSymbol`, which both share), Material Symbols on Android - its own
+applications' icons, which the host brings, as Android ships none - a glyph
+of Segoe Fluent Icons on WinUI, the theme's symbolic icon on GTK, and on the
+Web a drawing of StateUI's own. An icon takes the colour of what it stands in
+- the words beside it, its bar's, the theme's - and, where nothing gives it
+room, the platform's own icon size. Bytes are a picture encoded whole - a
+PNG, a JPEG - read where they are given, at one pixel a point.
 
 ## A shape's own geometry
 

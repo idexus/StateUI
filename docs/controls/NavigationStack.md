@@ -42,7 +42,7 @@ See [the dictionary](README.md) for how a mark is given.
 <thead><tr><th>Host</th><th>Created</th><th>Members (9)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 1 ✓</td><td>custom <code>NSView</code> stack; title, back and actions in the window's <code>NSToolbar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>7 ✅ · 2 –</td><td><code>UINavigationController</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>5 ✅ · 2 ☑️ · 2 –</td><td>custom <code>ViewGroup</code> stack + <code>Toolbar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 2 –</td><td>custom <code>ViewGroup</code> stack + <code>Toolbar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>9 ✅</td><td>custom <code>Panel</code> stack; title, back and actions in the window's <code>TitleBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>5 ✅ · 4 –</td><td><code>AdwNavigationView</code> of <code>AdwNavigationPage</code>s</td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>8 ✅ · 1 –</td><td><code>&lt;div&gt;</code> stack; one History API entry to go back</td></tr></tbody>
@@ -90,7 +90,7 @@ What a page shows about itself where another container presents it as an item - 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read icon of NavigationStack - AppKit's driver has no path for it yet<br>Android Views: Android ships no drawable for <code>.remove</code>, <code>.checkmark</code>, <code>.home</code>, <code>.back</code>, <code>.forward</code>, <code>.menu</code>, <code>.copy</code>, <code>.heart</code>, <code>.person</code>, <code>.link</code>: such an icon shows nothing.<br>GTK 4: GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: cannot read icon of NavigationStack - AppKit's driver has no path for it yet<br>GTK 4: GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
