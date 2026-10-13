@@ -63,8 +63,8 @@ final class WinUIButtonViewTests: XCTestCase {
 
     /// A destructive action's words stand in the theme's critical colour where the tree colours them not; a colour
     /// the tree states wins.
-    func testADestructiveButtonsWordsStandInTheCriticalColour() throws {
-        try onUIThread {
+    func testADestructiveButtonsWordsStandInTheCriticalColour() {
+        onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
                     Button("Delete").role(.destructive).width(120).height(40).horizontalAlignment(.start)
