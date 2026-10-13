@@ -96,6 +96,37 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// A sidebar over the detail opens as WinUI opens it, at its whole width, and slides out by its width, frame by
+    /// frame, its pane closing once none wide.
+    func testASidebarOverTheDetailSlidesOut() throws {
+        try onUIThread {
+            let open = State(wrappedValue: false)
+            let host = WinUIRenderer.running {
+                SplitView(open.projectedValue) {
+                    Text("Menu words").title("Menu")
+                } detail: {
+                    Text("Detail words")
+                }
+            }
+            let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
+            host.settle { Self.words(split.sidebar, "paneBeside") == "0" }
+
+            open.wrappedValue = true
+            host.settle { Self.words(split.sidebar, "paneOpen") == "1" }
+            XCTAssertEqual(Double(Self.words(split.sidebar, "paneLength")) ?? 0, 320, accuracy: 0.5, "whole, as it opens")
+
+            open.wrappedValue = false
+            var lengths: [Double] = []
+            for _ in 0..<60 {
+                host.step()
+                let length = Double(Self.words(split.sidebar, "paneLength")) ?? -1
+                if lengths.last != length { lengths.append(length) }
+            }
+            XCTAssertTrue(lengths.contains { $0 > 1 && $0 < 319 }, "it slid out through \(lengths)")
+            XCTAssertEqual(Self.words(split.sidebar, "paneOpen"), "0", "and closed")
+        }
+    }
+
     /// The sidebar's page stands in the pane's height from the first start: a footer under a scroller of many rows
     /// stands inside the window. WinUI lays the pane's content out once in a row sized to what it holds, before the
     /// relay gives that row the pane's height; a StateUI layout inside kept the places of that first layout, and the

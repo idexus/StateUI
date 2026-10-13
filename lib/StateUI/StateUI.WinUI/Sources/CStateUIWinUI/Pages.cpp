@@ -309,7 +309,10 @@ extern "C" StateUIObjectRef stateui_winui_split_make(int64_t view) {
             callbacks.presented(view, true);
         }));
         split.PaneClosing(guarded("handling PaneClosing",
-            [view](controls::SplitView const &, controls::SplitViewPaneClosingEventArgs const &) {
+            [view](controls::SplitView const &sender, controls::SplitViewPaneClosingEventArgs const &args) {
+            // Closing of WinUI's accord - a click beside a pane over the detail - the pane stays open while the host
+            // slides it out; the host closes a pane none wide.
+            if (sender.OpenPaneLength() > 0.5) args.Cancel(true);
             callbacks.presented(view, false);
         }));
         split.PaneClosed(guarded("handling PaneClosed", [](controls::SplitView const &sender, IInspectable const &) {

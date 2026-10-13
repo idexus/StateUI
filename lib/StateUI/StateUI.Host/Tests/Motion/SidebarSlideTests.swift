@@ -46,6 +46,36 @@ final class SidebarSlideTests: XCTestCase {
         XCTAssertEqual(seen.last, 0)
     }
 
+    /// Shown, it eases out - fast first, slow as it arrives; hidden, it eases in - slow first, fast as it goes.
+    func testShownItEasesOutHiddenItEasesIn() {
+        var opening: [Double] = []
+        slide.slide(1, from: 0, shown: true) { shown, _ in opening.append(shown) }
+        frame(at: SidebarSlide.milliseconds / 2)
+        XCTAssertGreaterThan(opening.last ?? 0, 0.5, "in, more than half the way at half the time")
+
+        frame(at: SidebarSlide.milliseconds * 2)
+        var closing: [Double] = []
+        slide.slide(1, from: 1, shown: false) { shown, _ in closing.append(shown) }
+        frame(at: SidebarSlide.milliseconds * 2.5)
+        XCTAssertGreaterThan(closing.last ?? 0, 0.5, "out, less than half the way at half the time")
+    }
+
+    /// A frame coming late - the first ones of a page measured at new widths - moves a slide one longest frame's
+    /// way, not the whole time it was late: the slide slows rather than skipping.
+    func testALateFrameSlowsTheSlideRatherThanSkippingIt() {
+        var seen: [Double] = []
+        slide.slide(1, from: 0, shown: true) { shown, _ in seen.append(shown) }
+        clock = SidebarSlide.milliseconds * 3
+        slide.pace(now: clock)
+        slide.follow(animator.advance(to: clock))
+
+        let expected = Animation(
+            from: [0], destination: [1], velocity: [0], motion: .eased(UInt(SidebarSlide.milliseconds), .cubicOut),
+            began: 0).position(at: SidebarSlide.longestFrame).value[0]
+        XCTAssertEqual(seen.last ?? 0, expected, accuracy: 1e-9, "one longest frame's way")
+        XCTAssertTrue(animator.isMoving, "still on its way")
+    }
+
     func testLessMotionArrivesAtOnce() {
         let still = SidebarSlide(animator: animator, now: { 0 }, reducesMotion: { true })
         var seen: [(Double, Bool)] = []

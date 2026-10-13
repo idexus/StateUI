@@ -51,6 +51,8 @@ final class WinUISplitView: WinUILayoutView {
             guard let self, open != isPresented else { return }
             isPresented = open
             onPresentationChanged?(open)
+            // A pane WinUI closes of its own accord stays open while it slides out.
+            if !open { slide() }
         }
         setChildren([sidebar])
     }
@@ -95,12 +97,12 @@ final class WinUISplitView: WinUILayoutView {
         slide()
     }
 
-    /// Slides a sidebar beside the detail in or out by the pane's width, frame by frame, the detail taking every width
-    /// between; one over the detail - which keeps its width - WinUI slides itself, and one not placed yet stands at
+    /// Slides the sidebar in or out by the pane's width, frame by frame, the detail beside it taking every width
+    /// between; WinUI slides one in over the detail itself, which keeps its width; one not placed yet stands at
     /// once.
     /// Design: docs/design/platforms/winui/pages.md#a-split-view
     private func slide() {
-        guard let slides, arranged != nil, beside else { return configure() }
+        guard let slides, arranged != nil, beside || !isPresented else { return configure() }
         sliding = true
         if isPresented { configure() }
         slides.slide.slide(slides.mount, from: isPresented ? 0 : 1, shown: isPresented) { [weak self] shown, rested in
@@ -153,14 +155,15 @@ final class WinUISplitView: WinUILayoutView {
         configure()
     }
 
-    /// Shows the pages, the pane open or closed as the sidebar is - beside the detail a closed pane none wide, the
-    /// width its slide opens from; over it at its whole width, as WinUI slides it - and the pane's grounds.
+    /// Shows the pages, the pane open or closed as the sidebar is - a closed pane none wide, the width a slide opens
+    /// from and nothing a close WinUI tells late could keep open; an open one, unless it slides, at its whole width
+    /// before it opens - and the pane's grounds.
     private func configure() {
         ProgramWrite.perform {
+            if !sliding { sidebar.slide(pane: isPresented ? paneWidth : 0, width: paneWidth) }
             sidebar.set(
                 sidebar: pages.first?.view, detail: pages.dropFirst().first?.view, row: detailRow,
                 open: isPresented, beside: beside)
-            if !sliding { sidebar.slide(pane: isPresented || !beside ? paneWidth : 0, width: paneWidth) }
         }
         paintPane()
     }

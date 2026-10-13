@@ -15,14 +15,19 @@
     /// What each sliding split does with how far its sidebar has come and whether it rests there, by its mount.
     private var followers: [UInt64: (_ shown: Double, _ rested: Bool) -> Void] = [:]
 
-    /// How far each sliding sidebar stood at its last frame.
+    /// How far each sliding sidebar stood at its last frame, and when that frame was.
     private var standing: [UInt64: Double] = [:]
+    private var lastFrame: [UInt64: Double] = [:]
 
     /// Called when a slide starts, so the frame clock is held while it runs.
     public var onStart: () -> Void = {}
 
     /// How long a sidebar takes to slide in or out, in milliseconds: as long as the Web's columns take.
     public static let milliseconds = 320.0
+
+    /// The longest time one frame moves a slide, in milliseconds: a later frame - the first ones of a page measured
+    /// at new widths - slows the slide rather than skipping it.
+    public static let longestFrame = 50.0
 
     /// Slides on `animator`, on `now`'s time; with less motion each slide arrives at once.
     public init(animator: Animator, now: @escaping () -> Double, reducesMotion: @escaping () -> Bool) {
@@ -38,9 +43,10 @@
         let destination = shown ? 1.0 : 0.0
         let position = animator.animation(for: key)?.position(at: now())
         let start = position?.value.first ?? standing[mount] ?? from
+        // Coming in it slows as it arrives; going out it starts slow and leaves fast.
         let animation = Animation(
             from: [start], destination: [destination], velocity: [position?.velocity.first ?? 0],
-            motion: .eased(UInt(Self.milliseconds)), began: now())
+            motion: .eased(UInt(Self.milliseconds), shown ? .cubicOut : .cubicIn), began: now())
 
         guard !reducesMotion(), !animation.arrives else {
             forget(mount)
@@ -50,8 +56,28 @@
         animator.start(animation, for: key)
         followers[mount] = follow
         standing[mount] = start
+        lastFrame[mount] = animation.began
         follow(start, false)
         onStart()
+    }
+
+    /// Holds each slide to at most one longest frame's way since its last frame, as a frame comes at `now` and
+    /// before the animator advances.
+    public func pace(now: Double) {
+        for (mount, last) in lastFrame {
+            let key = AnimationTarget.slide(mount)
+            guard let animation = animator.animation(for: key) else {
+                lastFrame[mount] = nil
+                continue
+            }
+            let late = now - last - Self.longestFrame
+            if late > 0 {
+                animator.start(Animation(
+                    from: animation.from, destination: animation.destination, velocity: animation.velocity,
+                    motion: animation.motion, began: animation.began + late), for: key)
+            }
+            lastFrame[mount] = now
+        }
     }
 
     /// Tells each sliding split how far its sidebar has come.
@@ -70,6 +96,7 @@
         animator.halt(.slide(mount))
         followers[mount] = nil
         standing[mount] = nil
+        lastFrame[mount] = nil
     }
 
     /// The pane's width `shown` of the way to its whole `width`.

@@ -74,6 +74,7 @@
         states.merge(reported) { _, reported in reported }
 
         let reducesMotion = reducesMotion()
+        sidebarSlide.pace(now: now)
         follow(animator.advance(to: now, reducesMotion: reducesMotion))
 
         let cycle = core.cycle(now: now, reducesMotion: reducesMotion)
@@ -92,6 +93,7 @@
 
     /// Advances every animation to `now` and presents what moved.
     public func advanceAnimations(now: Double, reducesMotion: Bool) {
+        sidebarSlide.pace(now: now)
         follow(animator.advance(to: now, reducesMotion: reducesMotion))
         present()
     }

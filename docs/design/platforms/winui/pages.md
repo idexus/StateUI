@@ -122,8 +122,11 @@ sidebar sliding](../../host/motion.md#a-sidebar-sliding)): the pane's
 pane's whole width - the theme's `SplitViewOpenPaneThemeLength` - against its
 trailing edge, and a closed pane stands none wide, the width its slide opens
 from, where WinUI's own animation of opening and closing has nothing to move.
-A pane over the detail, which keeps its width, WinUI slides itself, at its
-whole width.
+A pane over the detail, which keeps its width, WinUI slides in itself at its
+whole width; the host slides it out, as WinUI's own takes a tenth of a second.
+A pane WinUI closes of its own accord - a click beside a pane over the detail -
+stays open while it slides out: the host closes only a pane none wide, so no
+close WinUI tells late can keep one open.
 
 Whether the sidebar shows is StateUI's binding, which follows what WinUI
 shows: the pane closing of WinUI's accord - a click beside it, the window's
