@@ -62,7 +62,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
                 .horizontalAlignment(wide ? .fill : .center)
                 .onClicked { taps += 1 }
 
-            Picker(Self.sides, selection: $side) { "\($0)".capitalized }
+            Picker(Self.sides, selection: $side) { "\($0)".titled }
                 .placeholder("Picture")
                 .horizontalAlignment(.center)
 

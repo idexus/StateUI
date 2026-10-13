@@ -80,7 +80,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 .maximum(1)
                 .tint(Palette.accent)
 
-            Picker(CubeColor.allCases, selection: $color) { "\($0)".capitalized }
+            Picker(CubeColor.allCases, selection: $color) { "\($0)".titled }
                 .accessibilityIdentifier("cube3D.color")
                 .accessibilityLabel("Color")
                 .placeholder("Color")

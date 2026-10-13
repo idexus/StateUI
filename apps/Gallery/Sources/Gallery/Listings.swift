@@ -2017,7 +2017,7 @@ enum Listings {
                     .minimum(0.2)
                     .maximum(1)
 
-                Picker(CubeColor.allCases, selection: $color) { "\($0)".capitalized }
+                Picker(CubeColor.allCases, selection: $color) { "\($0)".titled }
                     .placeholder("Color")
 
                 HStack {
@@ -3812,7 +3812,7 @@ enum Listings {
                     .horizontalAlignment(wide ? .fill : .center)
                     .onClicked { taps += 1 }
 
-                Picker(Self.sides, selection: $side) { "\($0)".capitalized }
+                Picker(Self.sides, selection: $side) { "\($0)".titled }
                     .placeholder("Picture")
                     .horizontalAlignment(.center)
 
@@ -6430,7 +6430,7 @@ enum Listings {
                 // closure - and a write of OURS raises no event at all.
                 DebugInfoLabel()
 
-                Picker(Size.allCases, selection: $size) { "\($0)".capitalized }
+                Picker(Size.allCases, selection: $size) { "\($0)".titled }
                     .placeholder("Size")
                     // Settable, so a button elsewhere can open the list. The two
                     // events answer the user and the platform - never this
@@ -6444,10 +6444,10 @@ enum Listings {
                     .horizontalAlignment(.center)
 
                 // The same choice, offered as segments and as radio buttons.
-                Picker(Size.allCases, selection: $size) { "\($0)".capitalized }
+                Picker(Size.allCases, selection: $size) { "\($0)".titled }
                     .presentation(.segmented)
 
-                Picker(Size.allCases, selection: $size) { "\($0)".capitalized }
+                Picker(Size.allCases, selection: $size) { "\($0)".titled }
                     .presentation(.radio)
 
                 Text(size.map { "Chosen: \($0)" } ?? "Nothing chosen")

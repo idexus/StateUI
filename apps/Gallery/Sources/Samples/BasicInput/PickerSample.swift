@@ -26,7 +26,7 @@ struct PickerSample: SampleContent, ExampleContent {
             // closure - and a write of OURS raises no event at all.
             DebugInfoLabel()
 
-            Picker(Size.allCases, selection: $size) { "\($0)".capitalized }
+            Picker(Size.allCases, selection: $size) { "\($0)".titled }
                 .accessibilityIdentifier("picker.size")
                 .accessibilityLabel("Size")
                 .placeholder("Size")
@@ -42,12 +42,12 @@ struct PickerSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
 
             // The same choice, offered as segments and as radio buttons.
-            Picker(Size.allCases, selection: $size) { "\($0)".capitalized }
+            Picker(Size.allCases, selection: $size) { "\($0)".titled }
                 .accessibilityIdentifier("picker.segments")
                 .accessibilityLabel("Size as segments")
                 .presentation(.segmented)
 
-            Picker(Size.allCases, selection: $size) { "\($0)".capitalized }
+            Picker(Size.allCases, selection: $size) { "\($0)".titled }
                 .accessibilityIdentifier("picker.radio")
                 .accessibilityLabel("Size as radio buttons")
                 .presentation(.radio)
