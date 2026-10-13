@@ -77,6 +77,12 @@ before that cut remain, with each derived style still winning over its base.
 This makes a malformed cycle finite and deterministic, but a cycle does not
 express a useful precedence and should be removed.
 
+Every control also has the key `.platform`: the platform's own look, wearing
+no style of the sheet - neither the implicit one nor any other. A control
+chooses its style as it is built, and `nil` wears the implicit one, so
+`.style(plain ? .platform : nil)` switches between the platform's look and the
+application's.
+
 A property written directly on a control wins over a style. A recognized keyed
 style for the same target replaces that target's implicit style, so it must
 inherit from or state every value it requires. A key under which no style of

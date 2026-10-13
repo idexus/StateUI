@@ -553,6 +553,40 @@ final class StyleTests: XCTestCase {
                        .name("Headline"))
     }
 
+    /// The platform's own look wears no style of the sheet - not the implicit one, not one filed under its key -
+    /// for every control a style reaches.
+    func testThePlatformsLookWearsNoStyleOfTheSheet() {
+        let sheet = StyleSheet {
+            Style<Button>().fontSize(14)
+            Style<Button>(.platform).fontSize(32)
+            Style<Text>().fontSize(15)
+            Style<ZStack>().opacity(0.5)
+        }
+
+        let button = Renders().render(Button("Delete").style(.platform).node, styles: sheet)
+        let text = Renders().render(Text("Hi").style(.platform).node, styles: sheet)
+        let stack = Renders().render(ZStack {}.style(.platform).node, styles: sheet)
+
+        XCTAssertNil(button.props["fontSize"])
+        XCTAssertNil(button.props["style"], "the key consumed")
+        XCTAssertNil(text.props["fontSize"])
+        XCTAssertNil(stack.props["opacity"])
+    }
+
+    /// No key wears the implicit style, as a control chooses between them while it is built, and takes back a key
+    /// written before it.
+    func testNoKeyWearsTheImplicitStyle() {
+        let sheet = StyleSheet {
+            Style<Text>().fontSize(14)
+            Style<Text>(.headline).fontSize(32)
+        }
+        let plain: Bool = true
+
+        let patch = Renders().render(Text("Hi").style(.headline).style(plain ? nil : .headline).node, styles: sheet)
+
+        XCTAssertEqual(patch.props["fontSize"], .number(14))
+    }
+
     // MARK: - Where they live
 
     /// The application's sheet reaches the controls under its window, and

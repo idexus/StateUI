@@ -5,6 +5,7 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
     // listing: ButtonMenuSample
     @State private var last = "nothing yet"
     @State private var showsArrow = true
+    @State private var platformLook = false
     // listing: end
 
     static let id = "buttonMenu"
@@ -13,12 +14,15 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
 
     // listing: ButtonMenuSample
     var body: some View {
-        VStack {
+        // The platform's own buttons, or the gallery's every button wears.
+        let look: StyleKey<Button>? = platformLook ? .platform : nil
+
+        return VStack {
             Text("Share opens its menu. Save saves, its arrow offers more. Hold Open for a recent file.")
                 .fontSize(14)
 
             HStack {
-                Button("Share").menu {
+                Button("Share").style(look).menu {
                     MenuItem("Mail").onClicked { last = "Share by mail" }
                     MenuItem("Message").onClicked { last = "Share by message" }
                     MenuSeparator()
@@ -26,6 +30,7 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
                 }
 
                 Button("Save")
+                    .style(look)
                     .onClicked { last = "Saved" }
                     .menu {
                         MenuItem("Save as…").onClicked { last = "Saved as" }
@@ -33,6 +38,7 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
                     }
 
                 Button("Open")
+                    .style(look)
                     .onClicked { last = "Opened" }
                     .menu(.held) {
                         MenuItem("Report.txt").onClicked { last = "Opened Report.txt" }
@@ -43,6 +49,7 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
 
             HStack {
                 Button(icon: .icon(.more))
+                    .style(look)
                     .accessibilityLabel("More")
                     .menu {
                         MenuItem("Rename").onClicked { last = "Renamed" }
@@ -55,6 +62,15 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
                     .verticalAlignment(.center)
 
                 Text("Arrow")
+                    .verticalAlignment(.center)
+            }
+            .spacing(12)
+
+            HStack {
+                Switch($platformLook)
+                    .accessibilityLabel("Platform look")
+
+                Text("Platform look")
                     .verticalAlignment(.center)
             }
             .spacing(12)

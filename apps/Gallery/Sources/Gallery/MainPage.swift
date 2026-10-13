@@ -110,9 +110,9 @@ struct MainPage: View {
             // title the line the Window bar sample types.
             .barTitle("StateUI")
             .barSubtitle(bar.subtitle)
-            // On Windows a mark on the title bar reads as a button: the name
-            // stands alone there.
-            #if !WINUI
+            // A mark on Windows' title bar reads as a button: the name stands
+            // alone there.
+            #if APPKIT || UIKIT || GTK || ANDROID || WEB
             .barIcon("stateui_mark.png")
             #endif
             // listing: end

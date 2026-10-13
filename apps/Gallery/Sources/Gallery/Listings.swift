@@ -628,7 +628,7 @@ enum Listings {
         // Every button the gallery shows wears its violet - a style with no
         // key is every button's - in its platform's shape: a capsule on
         // Apple's platforms and the Web, rounded on Windows, GNOME and
-        // Android.
+        // Android; and lower on the desktop, where a pointer presses it.
         Style<Button>()
             .textColor(Palette.onAccent)
             .background(Palette.accent)
@@ -638,7 +638,11 @@ enum Listings {
             #else
             .shape(.capsule)
             #endif
+            #if APPKIT || WINUI || GTK
+            .padding(horizontal: 16, vertical: 6)
+            #else
             .padding(horizontal: 16, vertical: 11)
+            #endif
             .visualState(.disabled) { $0
                 .textColor(Palette.disabled)
                 .background(Palette.outline)
@@ -1305,13 +1309,17 @@ enum Listings {
         // Sources/Samples/BasicInput/ButtonMenuSample.swift
         @State private var last = "nothing yet"
         @State private var showsArrow = true
+        @State private var platformLook = false
 
         var body: some View {
-            VStack {
+            // The platform's own buttons, or the gallery's every button wears.
+            let look: StyleKey<Button>? = platformLook ? .platform : nil
+
+            return VStack {
                 Text("Share opens its menu. Save saves, its arrow offers more. Hold Open for a recent file.")
 
                 HStack {
-                    Button("Share").menu {
+                    Button("Share").style(look).menu {
                         MenuItem("Mail").onClicked { last = "Share by mail" }
                         MenuItem("Message").onClicked { last = "Share by message" }
                         MenuSeparator()
@@ -1319,6 +1327,7 @@ enum Listings {
                     }
 
                     Button("Save")
+                        .style(look)
                         .onClicked { last = "Saved" }
                         .menu {
                             MenuItem("Save as…").onClicked { last = "Saved as" }
@@ -1326,6 +1335,7 @@ enum Listings {
                         }
 
                     Button("Open")
+                        .style(look)
                         .onClicked { last = "Opened" }
                         .menu(.held) {
                             MenuItem("Report.txt").onClicked { last = "Opened Report.txt" }
@@ -1335,6 +1345,7 @@ enum Listings {
 
                 HStack {
                     Button(icon: .icon(.more))
+                        .style(look)
                         .menu {
                             MenuItem("Rename").onClicked { last = "Renamed" }
                             MenuItem("Delete").onClicked { last = "Deleted" }
@@ -1345,6 +1356,13 @@ enum Listings {
                         .verticalAlignment(.center)
 
                     Text("Arrow")
+                        .verticalAlignment(.center)
+                }
+
+                HStack {
+                    Switch($platformLook)
+
+                    Text("Platform look")
                         .verticalAlignment(.center)
                 }
 
@@ -4965,9 +4983,9 @@ enum Listings {
         // title the line the Window bar sample types.
         .barTitle("StateUI")
         .barSubtitle(bar.subtitle)
-        // On Windows a mark on the title bar reads as a button: the name
-        // stands alone there.
-        #if !WINUI
+        // A mark on Windows' title bar reads as a button: the name stands
+        // alone there.
+        #if APPKIT || UIKIT || GTK || ANDROID || WEB
         .barIcon("stateui_mark.png")
         #endif
         """#,

@@ -50,8 +50,6 @@ extension StyleKey where Target == Button {
     /// A button that is only its icon.
     static let iconButton = StyleKey("IconButton")
 
-    /// The platform's own button, the gallery's violet left off: what shows a role as each platform draws it.
-    static let platform = StyleKey("Platform")
 }
 
 extension StyleKey where Target == RatingBar {
@@ -111,7 +109,7 @@ enum AppStyles {
             // Every button the gallery shows wears its violet - a style with no
             // key is every button's - in its platform's shape: a capsule on
             // Apple's platforms and the Web, rounded on Windows, GNOME and
-            // Android.
+            // Android; and lower on the desktop, where a pointer presses it.
             Style<Button>()
                 .textColor(Palette.onAccent)
                 .background(Palette.accent)
@@ -121,14 +119,16 @@ enum AppStyles {
                 #else
                 .shape(.capsule)
                 #endif
+                #if APPKIT || WINUI || GTK
+                .padding(horizontal: 16, vertical: 6)
+                #else
                 .padding(horizontal: 16, vertical: 11)
+                #endif
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
                     .background(Palette.outline)
                 }
             // listing: end
-
-            Style<Button>(.platform)
 
             Style<Button>(.iconButton)
                 .opacity(1)

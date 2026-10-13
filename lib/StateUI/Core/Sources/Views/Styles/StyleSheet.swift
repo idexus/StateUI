@@ -74,11 +74,13 @@ public struct StyleSheet {
         return result
     }
 
-    /// The style a node wears: the keyed one it asks for where that is for its
-    /// type, or else the one every control of its type gets.
+    /// The style a node wears: none where it asks for the platform's own look,
+    /// the keyed one it asks for where that is for its type, or else the one
+    /// every control of its type gets.
     func style(for node: Node) -> AnyStyle? {
-        if let key = node.props[VisualElementContract.style.token]?.name,
-           let at = keyed[Filed(target: node.type, name: key)] {
+        let key = node.props[VisualElementContract.style.token]?.name
+        if key == platformStyleName { return nil }
+        if let key, let at = keyed[Filed(target: node.type, name: key)] {
             return written[at]
         }
 
