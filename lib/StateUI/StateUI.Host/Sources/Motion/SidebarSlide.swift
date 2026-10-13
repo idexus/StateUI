@@ -38,7 +38,11 @@
 
     /// Slides the sidebar of the split mounted as `mount` in where `shown`, else out, from where it stands - `from`
     /// where it stands still - telling `follow` at once and each frame how far it has come and whether it rests.
-    public func slide(_ mount: UInt64, from: Double, shown: Bool, follow: @escaping (Double, Bool) -> Void) {
+    /// Where the toolkit slides the sidebar itself, the slide `following` its motion keeps the toolkit's time.
+    public func slide(
+        _ mount: UInt64, from: Double, shown: Bool, following toolkit: Motion? = nil,
+        follow: @escaping (Double, Bool) -> Void
+    ) {
         let key = AnimationTarget.slide(mount)
         let destination = shown ? 1.0 : 0.0
         let position = animator.animation(for: key)?.position(at: now())
@@ -46,7 +50,7 @@
         // Either way it slows as it arrives.
         let animation = Animation(
             from: [start], destination: [destination], velocity: [position?.velocity.first ?? 0],
-            motion: .eased(UInt(Self.milliseconds), .cubicOut), began: now())
+            motion: toolkit ?? .eased(UInt(Self.milliseconds), .cubicOut), began: now())
 
         guard !reducesMotion(), !animation.arrives else {
             forget(mount)
@@ -56,7 +60,7 @@
         animator.start(animation, for: key)
         followers[mount] = follow
         standing[mount] = start
-        lastFrame[mount] = animation.began
+        lastFrame[mount] = toolkit == nil ? animation.began : nil
         follow(start, false)
         onStart()
     }

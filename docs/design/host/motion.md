@@ -105,6 +105,16 @@ milliseconds' way: a frame coming later - the first ones of a page measured
 at new widths - slows the slide rather than skipping it. A split not placed
 yet stands at once: a window opens with its sidebar where it is.
 
+Where the toolkit slides the sidebar itself but gives the detail its end
+width at once, the slide follows the toolkit's own motion and keeps its
+time - never slowed, as the toolkit's sidebar is not - and the detail's
+page stands as far from its edge as the sidebar has come. One split's slide
+is a `SplitSlide`: the width its column last stood at, where it is going,
+and three steps a host fills in with its toolkit's calls - as it begins, at
+each frame the pane's width and the page's, and where it rests. A toggle
+asked while it slides turns it back from where it is going, not from where
+the toolkit last stood.
+
 ## Words at their destination
 
 A child whose place travels is told where it is bound as it sets out

@@ -117,6 +117,7 @@ extension UIKitElement {
             guard let split = controller as? UIKitSplitViewController else { return }
             split.show(sidebar: children.first?.controller, detail: children.dropFirst().first?.controller)
             split.onPresentationChanged = { [weak self] presented in self?.sidebarChanged(to: presented) }
+            if let host { split.slide(on: host.runtime.sidebarSlide, mount: element.mount) }
             if changed.contains(.showsSidebar) { split.present(value(.showsSidebar)?.bool == true) }
             if !changed.isDisjoint(with: MountedElement.sidebarMaterials) {
                 split.paintsSidebar = element.paintsSidebar
@@ -132,6 +133,7 @@ extension UIKitElement {
         (controller as? UIKitNavigationController)?.onPopped = nil
         (controller as? UIKitTabBarController)?.onSelection = nil
         (controller as? UIKitSplitViewController)?.onPresentationChanged = nil
+        (controller as? UIKitSplitViewController)?.stopSliding()
     }
 
     /// The user took the stack's top pages away: the stack is told how many stay, as the index of its top.

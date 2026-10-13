@@ -136,6 +136,18 @@ entering its window it settles a display mode of its own before the first
 layout, which is no user's move; and its sidebar button item is handed out
 bare - the one on the bar is UIKit's own.
 
+Beside a wide detail the detail's column spans the whole room under the
+sidebar and never moves, and UIKit gives its page the safe area of where the
+sidebar is going at once. So the detail's shown pages follow the slide
+themselves ([a sidebar sliding](../../host/motion.md#a-sidebar-sliding)): as
+the display mode changes, a `SplitSlide` follows UIKit's own spring - its
+time, never slowed - and each frame stands every shown page's content as far
+from its leading edge as the sidebar has come, in place of the safe area's
+inset; resting, the page takes its safe area again. The sidebar's column
+moves under UIKit's presentation modifiers, with no animation to read, so a
+page following where the column is drawn stands a frame behind it: the
+slide follows the spring, not the column.
+
 ## Sheets
 
 A modal stack standing as the window's page is UIKit's page sheets, each presented over the one

@@ -6,8 +6,8 @@
 import XCTest
 
 /// A sidebar sliding in and out frame by frame: how far it has come climbs to where it is going and rests there, a
-/// slide turned back bends from where it stands, less motion arrives at once, and the pane and the page stand as
-/// far as it has come.
+/// slide turned back bends from where it stands, one following a toolkit's slide keeps its motion and its time, less
+/// motion arrives at once, and the pane and the page stand as far as it has come.
 @MainActor
 final class SidebarSlideTests: XCTestCase {
     private var clock = 0.0
@@ -74,6 +74,21 @@ final class SidebarSlideTests: XCTestCase {
             began: 0).position(at: SidebarSlide.longestFrame).value[0]
         XCTAssertEqual(seen.last ?? 0, expected, accuracy: 1e-9, "one longest frame's way")
         XCTAssertTrue(animator.isMoving, "still on its way")
+    }
+
+    /// Following a toolkit's own slide, it moves by the toolkit's motion and keeps its time: a late frame is not
+    /// slowed, as the toolkit's sidebar is not.
+    func testASlideFollowingAToolkitKeepsItsMotionAndItsTime() {
+        let toolkit = Motion.spring(response: 340)
+        var seen: [Double] = []
+        slide.slide(1, from: 0, shown: true, following: toolkit) { shown, _ in seen.append(shown) }
+        clock = 120
+        slide.pace(now: clock)
+        slide.follow(animator.advance(to: clock))
+
+        let expected = Animation(from: [0], destination: [1], velocity: [0], motion: toolkit, began: 0)
+            .position(at: 120).value[0]
+        XCTAssertEqual(seen.last ?? 0, expected, accuracy: 1e-9, "where the toolkit's sidebar stands")
     }
 
     func testLessMotionArrivesAtOnce() {

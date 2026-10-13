@@ -29,6 +29,13 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
     /// Whether the host is moving the columns itself, which UIKit's telling of it does not report back.
     private var movingItself = false
 
+    /// UIKit's slide of the sidebar beside the detail, which the detail's pages follow; nil before the split is
+    /// mounted.
+    private(set) var slide: SplitSlide?
+
+    /// The pages a slide stood apart from the sidebar, cleared as it rests.
+    private let slidPages = NSHashTable<UIKitPageController>.weakObjects()
+
     /// Whether the application paints the sidebar: a line of UIKit's separator colour then parts it from the detail
     /// (`separator`). It stands on UIKit's sidebar material all the same, under which the detail's column slides
     /// with the sidebar; on UIKit's plain column, which parts them by its own line, the detail jumps to its width.
@@ -160,6 +167,7 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
     func splitViewController(
         _ split: UISplitViewController, willChangeTo displayMode: UISplitViewController.DisplayMode
     ) {
+        if narrow == false { slideTheDetail(shown: displayMode != .secondaryOnly) }
         let presented = displayMode != .secondaryOnly
         // What UIKit settles on before the room is known is its own start, not the user's.
         guard presented != isPresented, !movingItself, narrow != nil else { return }
@@ -167,4 +175,57 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
         onPresentationChanged?(presented)
     }
 }
+extension UIKitSplitViewController {
+    /// The motion UIKit slides a sidebar beside its detail by: a spring answering in 340 ms, at rest without
+    /// overshooting.
+    /// Design: docs/design/platforms/uikit/pages.md#a-split-view
+    static let sidebarMotion = Motion.spring(response: 340)
+
+    /// Follows UIKit's slide of the sidebar on `sidebarSlide`, the split mounted as `mount`: as UIKit gives the detail
+    /// at once the safe area of where the sidebar is going, the detail's shown pages stand as far from their leading
+    /// edge as the sidebar has come, frame by frame in UIKit's motion, so they narrow and widen with it.
+    /// Design: docs/design/platforms/uikit/pages.md#a-split-view
+    func slide(on sidebarSlide: SidebarSlide, mount: UInt64) {
+        guard slide == nil else { return }
+        let slide = SplitSlide(slide: sidebarSlide, mount: mount, width: 320, following: Self.sidebarMotion)
+        slide.stand = { [weak self] pane, _ in self?.standTheDetail(pane, rested: false) }
+        slide.rest = { [weak self] _ in self?.standTheDetail(0, rested: true) }
+        self.slide = slide
+    }
+
+    /// UIKit sets out to slide the sidebar in where `shown`, else out.
+    private func slideTheDetail(shown: Bool) {
+        guard let slide, let width = viewController(for: .primary)?.view.bounds.width else { return }
+        slide.columnStood(width)
+        slide.slide(to: shown)
+    }
+
+    /// Stands the detail's shown pages `inset` from their leading edge, or by their safe area once the slide rests.
+    private func standTheDetail(_ inset: Double, rested: Bool) {
+        let pages = viewController(for: .secondary).map(Self.shownPages) ?? []
+        for page in pages { slidPages.add(page) }
+        // Each page lays out once in the frame's layout pass, however often the frame tells it.
+        for page in slidPages.allObjects { page.slidingInset = rested ? nil : inset }
+        if rested { slidPages.removeAllObjects() }
+    }
+
+    /// Ends a slide where it stands, each page by its safe area again, as the split leaves the tree.
+    func stopSliding() {
+        slide?.forget()
+        standTheDetail(0, rested: true)
+    }
+
+    /// The pages a controller shows now: a stack's top, a tabbed view's chosen tab, or the page itself.
+    private static func shownPages(in controller: UIViewController) -> [UIKitPageController] {
+        if let page = controller as? UIKitPageController { return [page] }
+        if let stack = controller as? UINavigationController {
+            return stack.topViewController.map(shownPages) ?? []
+        }
+        if let tabs = controller as? UITabBarController {
+            return tabs.selectedViewController.map(shownPages) ?? []
+        }
+        return controller.children.flatMap(shownPages)
+    }
+}
+
 #endif
