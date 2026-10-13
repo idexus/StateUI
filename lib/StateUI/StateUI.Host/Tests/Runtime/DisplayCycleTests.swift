@@ -90,9 +90,7 @@ final class DisplayCycleTests: XCTestCase {
     func testTheCyclesTimeNeverRunsBack() {
         let runtime = HostRuntime.still()
         var seen: [Double] = []
-        runtime.sidebarSlide.slide(1, from: 0, shown: true, following: .eased(200, .linear)) { shown, _ in
-            seen.append(shown)
-        }
+        runtime.sidebarSlide.slide(1, from: 0, shown: true) { shown, _ in seen.append(shown) }
         runtime.displayCycle.frame(now: 100)
         runtime.displayCycle.drain(now: 130)
         runtime.displayCycle.frame(now: 116)
