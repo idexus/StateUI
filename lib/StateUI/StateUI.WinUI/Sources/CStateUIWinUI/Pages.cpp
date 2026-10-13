@@ -365,12 +365,15 @@ extern "C" void stateui_winui_split_set(
     }
 }
 
-extern "C" double stateui_winui_split_pane_width(StateUIObjectRef handle) {
+extern "C" double stateui_winui_split_pane_width(StateUIObjectRef) {
     try {
-        return borrow<controls::SplitView>(handle).OpenPaneLength();
+        // The theme's width, which a SplitView's style opens its pane at; the pane's own is the slide's.
+        auto key = winrt::box_value(L"SplitViewOpenPaneThemeLength");
+        auto width = xaml::Application::Current().Resources().TryLookup(key);
+        return winrt::unbox_value_or<double>(width, 320);
     } catch (...) {
         report("reading a split view's pane");
-        return 0;
+        return 320;
     }
 }
 

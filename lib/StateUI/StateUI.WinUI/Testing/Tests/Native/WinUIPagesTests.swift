@@ -73,6 +73,29 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// A sidebar slid out stays closed: its pane does not open again, empty, once WinUI tells it closed.
+    func testASidebarSlidOutStaysClosed() throws {
+        try onUIThread {
+            let open = State(wrappedValue: true)
+            let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
+                SplitView(open.projectedValue) {
+                    Text("Menu words").title("Menu")
+                } detail: {
+                    Text("Detail words")
+                }
+            }
+            let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
+            host.settle { Self.words(split.sidebar, "paneOpen") == "1" }
+
+            // As the user hides it, by the toggle on the window's title bar.
+            let window = try XCTUnwrap(host.window)
+            window.titleBar.chose(-2)
+            for _ in 0..<120 { host.step() }
+            XCTAssertEqual(Self.words(split.sidebar, "paneOpen"), "0", "the pane closed")
+            XCTAssertFalse(open.wrappedValue, "and the binding says so")
+        }
+    }
+
     /// The sidebar's page stands in the pane's height from the first start: a footer under a scroller of many rows
     /// stands inside the window. WinUI lays the pane's content out once in a row sized to what it holds, before the
     /// relay gives that row the pane's height; a StateUI layout inside kept the places of that first layout, and the

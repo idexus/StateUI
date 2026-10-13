@@ -46,6 +46,7 @@ final class WinUISplitView: WinUILayoutView {
     override init() {
         super.init()
         sidebar.placingLayout = self
+        paneWidth = sidebar.paneWidth
         sidebar.onPresented = { [weak self] open in
             guard let self, open != isPresented else { return }
             isPresented = open
@@ -82,8 +83,11 @@ final class WinUISplitView: WinUILayoutView {
     /// The runtime's sliding sidebars and this split's mount among them; nil shows and hides the sidebar at once.
     var slides: (slide: SidebarSlide, mount: UInt64)?
 
-    /// The pane's whole width, read as the sidebar first slides: the theme's, as WinUI opens it.
-    private var paneWidth: Double?
+    /// The pane's whole width: the theme's, as WinUI opens it, read before anything changes it.
+    private var paneWidth = 0.0
+
+    /// Whether the sidebar is sliding in or out, its pane as wide as the slide has come.
+    private var sliding = false
 
     /// Applies the tree's value without echoing it back as a user's change.
     func present(_ presented: Bool) {
@@ -98,17 +102,15 @@ final class WinUISplitView: WinUILayoutView {
     /// Design: docs/design/platforms/winui/pages.md#a-split-view
     private func slide() {
         guard let slides, arranged != nil else { return configure() }
-        let width = paneWidth ?? sidebar.paneWidth
-        paneWidth = width
+        sliding = true
         if isPresented { configure() }
         slides.slide.slide(slides.mount, from: isPresented ? 0 : 1, shown: isPresented) { [weak self] shown, rested in
             guard let self else { return }
-            sidebar.slide(pane: SidebarSlide.paneWidth(shown, of: width), width: width)
-            // Out, the pane closes, and stands at its whole width for the next time it opens.
-            if rested, !isPresented {
-                configure()
-                sidebar.slide(pane: width, width: width)
-            }
+            sidebar.slide(pane: SidebarSlide.paneWidth(shown, of: paneWidth), width: paneWidth)
+            guard rested else { return }
+            sliding = false
+            // Out, the pane closes.
+            if !isPresented { configure() }
         }
     }
 
@@ -152,11 +154,14 @@ final class WinUISplitView: WinUILayoutView {
         configure()
     }
 
+    /// Shows the pages, the pane open or closed as the sidebar is - a closed pane none wide, so no close WinUI tells
+    /// late finds it open and keeps it so - and the pane's grounds.
     private func configure() {
         ProgramWrite.perform {
             sidebar.set(
                 sidebar: pages.first?.view, detail: pages.dropFirst().first?.view, row: detailRow,
                 open: isPresented, beside: beside)
+            if !sliding { sidebar.slide(pane: isPresented ? paneWidth : 0, width: paneWidth) }
         }
         paintPane()
     }

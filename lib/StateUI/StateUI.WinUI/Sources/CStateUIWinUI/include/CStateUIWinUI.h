@@ -873,7 +873,7 @@ StateUIObjectRef stateui_winui_split_make(int64_t view);
 void stateui_winui_split_set(StateUIObjectRef split, StateUIObjectRef pane, StateUIObjectRef content,
                              StateUIObjectRef row, bool open, bool beside);
 
-/// The whole width of a split view's pane, in DIPs: the theme's, as WinUI opens it.
+/// The whole width of a split view's pane, in DIPs: the theme's, as WinUI's style opens it.
 double stateui_winui_split_pane_width(StateUIObjectRef split);
 
 /// A split view's pane `pane` DIPs wide on its way in or out, its sidebar standing at its whole `width`, its trailing
