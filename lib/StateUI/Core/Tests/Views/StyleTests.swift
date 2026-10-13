@@ -580,11 +580,11 @@ final class StyleTests: XCTestCase {
             Style<Text>().fontSize(14)
             Style<Text>(.headline).fontSize(32)
         }
-        let plain: Bool = true
+        for (plain, size) in [(true, 14.0), (false, 32.0)] {
+            let patch = Renders().render(Text("Hi").style(.headline).style(plain ? nil : .headline).node, styles: sheet)
 
-        let patch = Renders().render(Text("Hi").style(.headline).style(plain ? nil : .headline).node, styles: sheet)
-
-        XCTAssertEqual(patch.props["fontSize"], .number(14))
+            XCTAssertEqual(patch.props["fontSize"], .number(size), plain ? "the implicit style" : "the key")
+        }
     }
 
     /// A style for a role stands over the one every button wears: it says only what the role changes, and a button
