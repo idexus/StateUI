@@ -77,7 +77,9 @@ inside it.
 ## A button's menu
 
 A button whose tap opens its menu shows the menu as its primary action and
-wears UIKit's menu indicator beside its words. UIKit draws no split button,
+wears an arrow pointing down after its words, inside its padding - a mark,
+the whole button taking the tap. UIKit's own menu indicator points up and
+down, which says a choice of values, as a picker's. UIKit draws no split button,
 so a split button keeps its tap and holds an arrow of its own: a `UIButton`
 with a chevron at its trailing edge, the whole height, set off by a line,
 opening the menu with a tap; the button keeps room for it inside its padding,

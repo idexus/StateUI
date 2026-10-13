@@ -20,12 +20,21 @@ final class UIKitButtonView: UIButton {
     /// The room between the button's edge and what it shows, as the tree gives it.
     private var padding = UIButton.Configuration.plain().contentInsets
 
-    /// A split button's arrow, a button of UIKit's own at the trailing edge set off by a line, opening the menu; nil
-    /// for any other button.
-    private var arrow: (button: UIButton, line: UIView)?
+    /// The arrow of a button holding a menu: a split button's at its trailing edge set off by a line, opening the
+    /// menu; a mark after the words of a button whose tap opens it. Nil for a plain button.
+    private var arrow: Arrow?
 
-    /// How wide a split button's arrow stands.
+    /// An arrow pointing down, a button of UIKit's own, and the line setting a split button's apart.
+    private struct Arrow {
+        let button: UIButton
+        let line: UIView
+        var splits: Bool
+    }
+
+    /// How wide a split button's arrow stands, and how wide the mark after the words, a gap before it.
     private static let arrowWidth: CGFloat = 32
+    private static let markWidth: CGFloat = 12
+    private static let markGap: CGFloat = 6
 
     init() {
         super.init(frame: .zero)
@@ -97,18 +106,22 @@ final class UIKitButtonView: UIButton {
         showPadding()
     }
 
-    /// Offers `menu`: opened by a tap where `opensOnTap`, UIKit's menu indicator beside the words, else by a split
+    /// Offers `menu`: opened by a tap where `opensOnTap`, an arrow pointing down after the words, else by a split
     /// button's arrow, the tap the button's own; nil offers none.
     /// Design: docs/design/platforms/uikit/controls.md#a-buttons-menu
     func offer(_ menu: UIMenu?, opensOnTap: Bool) {
         let opens = opensOnTap && menu != nil
         self.menu = opens ? menu : nil
         showsMenuAsPrimaryAction = opens
-        configuration?.indicator = opens ? .popup : .none
-        if let menu, !opensOnTap {
-            let arrow = self.arrow ?? makeArrow()
-            arrow.button.menu = menu
+        if let menu {
+            var arrow = self.arrow ?? makeArrow()
+            arrow.splits = !opensOnTap
+            arrow.button.menu = opensOnTap ? nil : menu
+            arrow.button.isUserInteractionEnabled = !opensOnTap
+            arrow.button.isAccessibilityElement = !opensOnTap
+            arrow.line.isHidden = opensOnTap
             self.arrow = arrow
+            setNeedsLayout()
         } else if let arrow {
             arrow.button.removeFromSuperview()
             arrow.line.removeFromSuperview()
@@ -118,13 +131,13 @@ final class UIKitButtonView: UIButton {
         showLook()
     }
 
-    /// The menu the button offers - opened by its tap, or by its arrow; nil for none.
+    /// The menu the button offers - opened by its tap, or by a split button's arrow; nil for none.
     var offeredMenu: UIMenu? {
         menu ?? arrow?.button.menu
     }
 
     /// A split button's arrow: a chevron opening the menu with a tap, and the line setting it off.
-    private func makeArrow() -> (button: UIButton, line: UIView) {
+    private func makeArrow() -> Arrow {
         var face = UIButton.Configuration.plain()
         face.image = UIImage(systemName: "chevron.down", withConfiguration: UIImage.SymbolConfiguration(scale: .small))
         face.contentInsets = .zero
@@ -135,15 +148,22 @@ final class UIKitButtonView: UIButton {
         line.isUserInteractionEnabled = false
         addSubview(line)
         addSubview(button)
-        return (button, line)
+        return Arrow(button: button, line: line, splits: true)
     }
 
-    /// Stands a split button's arrow at the trailing edge, the whole height, and its line beside it.
+    /// Stands a split button's arrow at the trailing edge, the whole height, and its line beside it; a mark inside the
+    /// padding after the words.
     override func layoutSubviews() {
         super.layoutSubviews()
         guard let arrow else { return }
-        let width = Self.arrowWidth
         let leading = effectiveUserInterfaceLayoutDirection == .rightToLeft
+        guard arrow.splits else {
+            let width = Self.markWidth
+            let edge = leading ? padding.trailing : bounds.width - padding.trailing - width
+            arrow.button.frame = CGRect(x: edge, y: 0, width: width, height: bounds.height)
+            return
+        }
+        let width = Self.arrowWidth
         arrow.button.frame = CGRect(x: leading ? 0 : bounds.width - width, y: 0, width: width, height: bounds.height)
         let thickness = 1 / max(traitCollection.displayScale, 1)
         let inset = (bounds.height / 4).rounded()
@@ -155,7 +175,7 @@ final class UIKitButtonView: UIButton {
     /// The room inside the button, a split button's arrow kept clear of its words.
     private func showPadding() {
         var room = padding
-        if arrow != nil { room.trailing += Self.arrowWidth }
+        if let arrow { room.trailing += arrow.splits ? Self.arrowWidth : Self.markWidth + Self.markGap }
         configuration?.contentInsets = room
     }
 
@@ -173,10 +193,9 @@ final class UIKitButtonView: UIButton {
 
     private func showLook() {
         configuration?.titleTextAttributesTransformer = look.titleTransformer(color: tintColor)
-        // An icon is drawn in the words' colour where the tree writes one, with words or alone; so are the menu's marks.
+        // An icon is drawn in the words' colour where the tree writes one, with words or alone; so is the arrow.
         let words = look.color.flatMap(UIColor.init(stateUI:))
         configuration?.imageColorTransformer = words.map { color in UIConfigurationColorTransformer { _ in color } }
-        configuration?.indicatorColorTransformer = configuration?.imageColorTransformer
         guard let arrow else { return }
         arrow.button.configuration?.baseForegroundColor = words
         arrow.line.backgroundColor = (words ?? tintColor).withAlphaComponent(0.35)

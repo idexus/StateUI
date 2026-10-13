@@ -11,16 +11,23 @@ import XCTest
 /// tap is the button's - UIKit draws no split button.
 @MainActor
 final class UIKitButtonMenuTests: XCTestCase {
-    /// A button whose tap opens its menu wears UIKit's menu indicator.
-    func testAButtonOpeningAMenuWearsTheIndicator() throws {
+    /// A button whose tap opens its menu wears an arrow pointing down after its words - a mark, the whole button
+    /// taking the tap - not UIKit's up-and-down indicator, which says a choice.
+    func testAButtonOpeningAMenuWearsAnArrowDown() throws {
         let host = UIKitRenderer.running {
-            Button("Share").menu { MenuItem("Mail") }
+            Button("Share").menu { MenuItem("Mail") }.padding(horizontal: 16, vertical: 8)
         }
         defer { host.finish() }
 
         let button = try XCTUnwrap(host.views(UIKitButtonView.self).first)
         XCTAssertTrue(button.showsMenuAsPrimaryAction)
-        XCTAssertEqual(button.configuration?.indicator, .popup)
+        XCTAssertNotEqual(button.configuration?.indicator, .popup)
+        button.frame = CGRect(x: 0, y: 0, width: 140, height: 44)
+        button.layoutIfNeeded()
+        let arrow = try XCTUnwrap(button.subviews.compactMap { $0 as? UIButton }.first)
+        XCTAssertFalse(arrow.isUserInteractionEnabled, "the button takes the tap")
+        XCTAssertNil(arrow.menu)
+        XCTAssertEqual(arrow.frame.maxX, button.bounds.maxX - 16, accuracy: 0.5, "inside the padding: \(arrow.frame)")
     }
 
     /// A split button's tap is its own, and an arrow at its trailing edge - a button of its own, inside the room the
