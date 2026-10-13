@@ -4983,11 +4983,7 @@ enum Listings {
         // title the line the Window bar sample types.
         .barTitle("StateUI")
         .barSubtitle(bar.subtitle)
-        // A mark on Windows' title bar reads as a button: the name stands
-        // alone there.
-        #if APPKIT || UIKIT || GTK || ANDROID || WEB
-        .barIcon("stateui_mark.png")
-        #endif
+        .barIcon(Self.mark)
         """#,
         "MainPage.created": #"""
         // Sources/Gallery/MainPage.swift

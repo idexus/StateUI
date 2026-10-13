@@ -20,6 +20,15 @@ import StateUI
 /// chrome says - which is what lets a test build the whole arrangement without
 /// reaching into a running application.
 struct MainPage: View {
+    /// The gallery's mark on the window's bar: none on Windows, where a mark on the title bar reads as a button.
+    private static var mark: ImageSource {
+        #if WINUI
+        ""
+        #else
+        "stateui_mark.png"
+        #endif
+    }
+
     /// Which kind of device this is, from the standard environment - answered by
     /// the host before the first render, so the first window build already knows
     /// whether this is a desktop, which leaves the menu open after a choice.
@@ -110,11 +119,7 @@ struct MainPage: View {
             // title the line the Window bar sample types.
             .barTitle("StateUI")
             .barSubtitle(bar.subtitle)
-            // A mark on Windows' title bar reads as a button: the name stands
-            // alone there.
-            #if APPKIT || UIKIT || GTK || ANDROID || WEB
-            .barIcon("stateui_mark.png")
-            #endif
+            .barIcon(Self.mark)
             // listing: end
             // The bars of both panes, as the gallery's look says.
             .bars(look.bars, in: look.barColour, system: application.info.accentColor)
