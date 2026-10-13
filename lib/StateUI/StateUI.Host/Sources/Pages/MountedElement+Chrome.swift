@@ -28,7 +28,7 @@ extension MountedElement {
 
     /// Whether this action's words stand on its bar: beside its picture where it says so, and always where it has none.
     public var showsActionWords: Bool {
-        (value(.icon)?.string ?? "").isEmpty || value(.showsText)?.bool == true
+        HostPicture(value(.icon)) == nil || value(.showsText)?.bool == true
     }
 
     /// The colours this element's bar is painted in, and what stands on it in: each the nearest declared on its path,
@@ -43,7 +43,7 @@ extension MountedElement {
     public var titleArea: WindowChrome.TitleArea? {
         let words = { (value: HostValue?) in value?.string.flatMap { $0.isEmpty ? nil : $0 } }
         let area = WindowChrome.TitleArea(
-            title: words(barValue(.barTitle)), subtitle: words(barValue(.barSubtitle)), icon: words(barValue(.barIcon)))
+            title: words(barValue(.barTitle)), subtitle: words(barValue(.barSubtitle)), icon: HostPicture(barValue(.barIcon)))
         return area.title == nil && area.subtitle == nil && area.icon == nil ? nil : area
     }
 

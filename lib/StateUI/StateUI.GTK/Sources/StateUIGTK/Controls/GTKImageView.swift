@@ -5,17 +5,22 @@
 @_spi(Host) import StateUIHost
 import CStateUIGTK
 
-/// An Image: a panel drawing a picture from the application's folder, its own size, filling the room it is given
-/// as the aspect says.
+/// An Image: a panel drawing a picture - from the application's folder, the theme's icon, or bytes - its own size,
+/// filling the room it is given as the aspect says.
 /// Design: docs/design/platforms/gtk/controls.md#pictures
 @MainActor
 final class GTKImageView: GTKPanelView {
-    /// The picture shown, by file name, and whether it was found.
-    private(set) var file = ""
+    /// The picture shown, and whether it was found.
+    private(set) var picture: HostPicture?
     private(set) var found = false
 
     /// How the picture fills its room.
     private(set) var aspect = ContentMode.fit
+
+    /// The colour written for the words an icon stands beside; nil draws it in the colour the theme gives them.
+    var wordsColor: GdkRGBA? {
+        didSet { if case .icon = picture { gtk_widget_queue_draw(widget) } }
+    }
 
     /// The file read, its own size in logical pixels, and whether it is an SVG, drawn at the size it shows at.
     private var path: String?
@@ -30,21 +35,33 @@ final class GTKImageView: GTKPanelView {
         if let texture { g_object_unref(UnsafeMutableRawPointer(texture)) }
     }
 
-    /// Shows the picture `source` names, filling its room as `aspect` says.
-    func apply(source: ImageSource?, aspect: ContentMode) {
-        file = source?.file ?? ""
+    /// Shows `picture`, filling its room as `aspect` says.
+    func apply(picture: HostPicture?, aspect: ContentMode) {
+        self.picture = picture
         self.aspect = aspect
-        path = GTKPictures.path(of: file)
-        found = path != nil
-        if !found, !file.isEmpty { GTKRenderer.log.error("no picture \(file) among the application's pictures") }
+        path = picture?.file.flatMap(GTKPictures.path(of:))
+        replaceTexture(with: nil)
+        drawn = nil
 
         var width: Int32 = 0
         var height: Int32 = 0
-        if let path { _ = gdk_pixbuf_get_file_info(path, &width, &height) }
+        switch picture {
+        case .file:
+            if let path { _ = gdk_pixbuf_get_file_info(path, &width, &height) }
+        case .bytes(let bytes):
+            // Read at once, at one pixel a logical pixel.
+            replaceTexture(with: GTKPictures.texture(of: bytes))
+            if let texture { (width, height) = (gdk_texture_get_width(texture), gdk_texture_get_height(texture)) }
+        case .icon:
+            // The theme's icon size, which GTK draws its own icons at.
+            (width, height) = (Self.iconSize, Self.iconSize)
+        case nil:
+            break
+        }
+        found = picture == nil || width > 0
+        if !found { GTKRenderer.log.error("no picture \(picture?.identity ?? "") among the application's pictures") }
         size = LayoutSize(width: Double(max(width, 0)), height: Double(max(height, 0)))
         isVector = path?.lowercased().hasSuffix(".svg") == true
-        replaceTexture(with: nil)
-        drawn = nil
         placingLayout?.invalidateMeasurements()
         gtk_widget_queue_resize(widget)
     }
@@ -100,6 +117,9 @@ final class GTKImageView: GTKPanelView {
     }
 
     override func draw(_ snapshot: OpaquePointer, width: Double, height: Double) {
+        if case .icon(let icon) = picture {
+            return drawIcon(icon, snapshot, in: place(in: LayoutSize(width: width, height: height)))
+        }
         read(for: LayoutSize(width: width, height: height))
         guard let texture else { return }
 
@@ -112,6 +132,31 @@ final class GTKImageView: GTKPanelView {
         gtk_snapshot_push_clip(snapshot, &room)
         gtk_snapshot_append_texture(snapshot, texture, &bounds)
         gtk_snapshot_pop(snapshot)
+    }
+
+    /// The size, in logical pixels, GTK draws an icon at: `GTK_ICON_SIZE_NORMAL`'s.
+    static let iconSize: Int32 = 16
+
+    /// Draws `icon`, the theme's symbolic one, filling `place` in the colour of the words the image stands among -
+    /// the colour written for them, else the theme's.
+    /// Design: docs/design/platforms/gtk/drawing.md#icons
+    private func drawIcon(_ icon: Icon, _ snapshot: OpaquePointer, in place: Rect) {
+        guard place.width > 0, place.height > 0 else { return }
+        let theme = gtk_icon_theme_get_for_display(gtk_widget_get_display(widget))
+        let scale = max(gtk_widget_get_scale_factor(widget), 1)
+        let side = Int32(min(place.width, place.height).rounded(.up))
+        guard let paintable = gtk_icon_theme_lookup_icon(
+            theme, icon.themeName, nil, side, scale, GTK_TEXT_DIR_NONE, GtkIconLookupFlags(rawValue: 0))
+        else { return }
+        defer { g_object_unref(UnsafeMutableRawPointer(paintable)) }
+
+        var color = wordsColor ?? GdkRGBA()
+        if wordsColor == nil { gtk_widget_get_color(widget, &color) }
+        var corner = graphene_point_t(x: Float(place.x), y: Float(place.y))
+        gtk_snapshot_save(snapshot)
+        gtk_snapshot_translate(snapshot, &corner)
+        gtk_symbolic_paintable_snapshot_symbolic(paintable, snapshot, place.width, place.height, &color, 1)
+        gtk_snapshot_restore(snapshot)
     }
 
     private func replaceTexture(with texture: OpaquePointer?) {

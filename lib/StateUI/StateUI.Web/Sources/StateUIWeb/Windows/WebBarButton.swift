@@ -29,9 +29,9 @@ final class WebBarButton: WebDOMView {
     func show(_ item: MountedElement) {
         self.item = item
         let text = item.value(.text)?.string ?? ""
-        let icon = item.value(.icon)?.string ?? ""
-        picture.apply(source: icon.isEmpty ? nil : ImageSource(icon), aspect: .fit)
-        picture.setShown(!icon.isEmpty)
+        let icon = HostPicture(item.value(.icon))
+        picture.apply(picture: icon, aspect: .fit)
+        picture.setShown(icon != nil)
         WebRelay.setText(words.node, text)
         words.setShown(item.showsActionWords)
         attribute("aria-label", text)

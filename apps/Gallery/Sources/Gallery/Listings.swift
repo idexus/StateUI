@@ -3824,6 +3824,56 @@ enum Listings {
             }
         }
         """#,
+        "IconSample": #"""
+        // Sources/Samples/Media/IconSample.swift
+        /// The hue of the picture the application makes.
+        @State private var hue = 0.6
+
+        var body: some View {
+            VStack {
+                Grid {
+                    ForEach(Array(Icon.allCases.enumerated()), id: \.offset) { place, icon in
+                        VStack {
+                            Image(.icon(icon))
+                                .width(24)
+                                .height(24)
+                                .horizontalAlignment(.center)
+
+                            Text("\(icon)")
+                                .textStyle(.caption)
+                        }
+                        .gridColumn(place % 4)
+                        .gridRow(place / 4)
+                    }
+                }
+                .columns(.fill, .fill, .fill, .fill)
+                .rows(.auto, .auto, .auto, .auto, .auto, .auto, .auto, .auto)
+
+                SectionTitle("In the button's colour")
+
+                HStack {
+                    Button("Share")
+                        .icon(.icon(.share))
+
+                    Button("Delete")
+                        .icon(.icon(.delete))
+                        .role(.destructive)
+
+                    Button(icon: .icon(.settings))
+                }
+
+                SectionTitle("Made as bytes")
+
+                HStack {
+                    Image(ImageSource(bytes: MadePicture.rings(side: 48, hue: hue)))
+
+                    Button("Make another")
+                        .onClicked { hue = (hue + 0.17).truncatingRemainder(dividingBy: 1) }
+                        .verticalAlignment(.center)
+                }
+            }
+        }
+        """#,
         "IdentitySample": #"""
         // Sources/Samples/Fundamentals/IdentitySample.swift
         @State private var items = ["Alpha", "Beta", "Gamma"]

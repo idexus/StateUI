@@ -54,6 +54,19 @@ of logical pixels across: GTK reads the file - an SVG through gdk-pixbuf's
 loader - at that size times the display's scale, and again when the scale
 changes.
 
+## Icons
+
+An icon is the theme's symbolic icon, by its freedesktop or Adwaita name
+(`Icon.themeName`). An image stands it at the theme's normal icon size, 16
+logical pixels, where nothing gives it room, and fills the room it is placed
+in by its aspect: the theme gives the icon at that size times the display's
+scale, and the image draws it in the colour of the words around it, so a
+button's, a heading's and the dark theme's colours reach it. On a bar it is
+a `GtkImage` of the icon's name, which GTK colours itself.
+
+A picture's bytes are read into a texture as they are given, at one pixel a
+logical pixel.
+
 ## The shapes
 
 Each of the six shapes is a panel drawing its geometry with GSK's own paths

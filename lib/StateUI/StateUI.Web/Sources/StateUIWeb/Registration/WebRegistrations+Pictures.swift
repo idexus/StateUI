@@ -9,7 +9,9 @@ extension WebRegistrations {
     static func pictures(_ registry: Registry<WebDOMView>) {
         registry.add(ImageContract.self, create: { _ in WebImageView() }) { image in
             image.applies([ImageContract.source, ImageElementContract.contentMode]) { view, values in
-                view.apply(source: values[ImageContract.source], aspect: values[ImageElementContract.contentMode] ?? .fit)
+                view.apply(
+                    picture: HostPicture(values[ImageContract.source], dark: false),
+                    aspect: values[ImageElementContract.contentMode] ?? .fit)
             }
         }
     }

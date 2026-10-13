@@ -11,7 +11,7 @@ import UIKit
 @MainActor
 struct UIKitBarAction {
     let title: String
-    let icon: String?
+    let icon: HostPicture?
     let isEnabled: Bool
     let isDestructive: Bool
     let identifier: String?
@@ -27,13 +27,13 @@ struct UIKitBarAction {
 
     /// Its picture: one of the application's at a bar's icon size, else none.
     private var image: UIImage? {
-        icon.flatMap { UIKitRenderer.glyph(named: $0, height: Self.glyphHeight) }
+        icon.flatMap { UIKitRenderer.glyph($0, height: Self.glyphHeight) }
     }
 
     /// A button of the bar.
     var barItem: UIBarButtonItem {
         let item = UIBarButtonItem(primaryAction: menuAction)
-        item.landscapeImagePhone = icon.flatMap { UIKitRenderer.glyph(named: $0, height: Self.lowGlyphHeight) }
+        item.landscapeImagePhone = icon.flatMap { UIKitRenderer.glyph($0, height: Self.lowGlyphHeight) }
         item.isEnabled = isEnabled
         item.accessibilityIdentifier = identifier
         if isDestructive { item.tintColor = .systemRed }

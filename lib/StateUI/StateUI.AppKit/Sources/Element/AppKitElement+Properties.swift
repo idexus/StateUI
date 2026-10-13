@@ -22,7 +22,7 @@ extension AppKitElement {
             // renderer to ask, so a view that draws pictures is given the way
             // to resolve one here, where it is made.
             if let drawing = registered as? any AppKitPictureResolving {
-                drawing.picture = { [weak self] name in self?.image(named: name) }
+                drawing.picture = { [weak self] picture in self?.host?.image(picture) }
             }
 
             return registered
@@ -222,7 +222,7 @@ extension AppKitElement {
 
     /// Resolves an image-valued property through the host's resource policy.
     func image(_ property: Prop) -> NSImage? {
-        string(property).flatMap { image(named: $0) }
+        HostPicture(value(property)).flatMap { host?.image($0) }
     }
 
     func enumeration(_ property: Prop) -> Int32? {

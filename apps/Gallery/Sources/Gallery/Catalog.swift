@@ -239,12 +239,13 @@ final class Catalog {
             SampleGroup(
                 route: "media",
                 title: "Media",
-                summary: "Pictures from the app's resources, a page of the web, and the "
-                    + "world on a map.",
+                summary: "Pictures from the app's resources, the platform's icons, a page of "
+                    + "the web, and the world on a map.",
                 icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"),
                 card: ImageSource("cat_media.png"),
                 samples: [
                     Sample(ImageSample()),
+                    Sample(IconSample()),
                     Sample(WebViewSample()),
                     Sample(MapSample()),
                 ]),

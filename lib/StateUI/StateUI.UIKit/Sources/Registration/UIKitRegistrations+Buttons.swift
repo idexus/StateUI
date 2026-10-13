@@ -32,7 +32,7 @@ extension UIKitRegistrations {
             }
             button.applies([ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing]) { view, values in
                 view.setIcon(
-                    values[ButtonContract.icon].flatMap { $0.isEmpty ? nil : UIKitRenderer.image(named: $0.file) },
+                    HostPicture(values[ButtonContract.icon], dark: false).flatMap(UIKitRenderer.image),
                     position: values[ButtonContract.iconPosition] ?? .leading,
                     spacing: values[ButtonContract.iconSpacing])
             }

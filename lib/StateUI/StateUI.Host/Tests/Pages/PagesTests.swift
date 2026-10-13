@@ -624,7 +624,7 @@ final class PagesTests: XCTestCase {
         let file = try XCTUnwrap(menus.first).entries
         XCTAssertEqual(file.map(\.kind), [.item, .separator, .item, .submenu])
         XCTAssertEqual(file.map(\.title), ["Open", "", "Erase", "Recent"])
-        XCTAssertEqual(file.map(\.icon), ["folder", nil, nil, nil], "an empty picture is none")
+        XCTAssertEqual(file.map(\.icon), [.file("folder"), nil, nil, nil], "an empty picture is none")
         XCTAssertEqual(file.map(\.isDestructive), [false, false, true, false])
         XCTAssertEqual(file.last?.entries.map(\.isEnabled), [false])
     }

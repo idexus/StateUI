@@ -15,7 +15,7 @@ final class AppKitMenuButtonView: NSComboButton, AppKitButtonFace {
     var onPressed: (() -> Void)?
     var onReleased: (() -> Void)?
     var onClicked: (() -> Void)?
-    var picture: ((String) -> NSImage?)?
+    var picture: ((HostPicture) -> NSImage?)?
 
     /// The keys pressing the button, which AppKit's combo button holds none of: its window offers them here.
     private var shortcut: KeyboardShortcut?

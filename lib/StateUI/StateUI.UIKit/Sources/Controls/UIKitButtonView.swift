@@ -100,6 +100,9 @@ final class UIKitButtonView: UIButton {
 
     private func showLook() {
         configuration?.titleTextAttributesTransformer = look.titleTransformer(color: tintColor)
+        // An icon is drawn in the words' colour where the tree writes one, with words or alone.
+        let words = look.color.flatMap(UIColor.init(stateUI:))
+        configuration?.imageColorTransformer = words.map { color in UIConfigurationColorTransformer { _ in color } }
     }
 }
 #endif

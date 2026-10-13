@@ -11,7 +11,7 @@ extension AndroidElement {
     var menuItem: AndroidMenu.Item {
         AndroidMenu.Item(
             text: value(.text)?.string ?? "",
-            picture: value(.icon)?.string.flatMap { $0.isEmpty ? nil : $0 },
+            picture: HostPicture(value(.icon)),
             isEnabled: element.isEffectivelyEnabled,
             isDestructive: value(.isDestructive)?.bool == true,
             shortcut: element.keyboardShortcut)

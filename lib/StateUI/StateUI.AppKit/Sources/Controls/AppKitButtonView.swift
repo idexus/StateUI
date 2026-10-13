@@ -15,7 +15,7 @@ final class AppKitButtonView: NSButton, AppKitButtonFace {
 
     /// Resolves an icon's file name against the application's resources - the
     /// host's to answer, since the files and the cache over them are its.
-    var picture: ((String) -> NSImage?)?
+    var picture: ((HostPicture) -> NSImage?)?
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)

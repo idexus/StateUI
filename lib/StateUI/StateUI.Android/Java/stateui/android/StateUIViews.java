@@ -5,9 +5,9 @@ package stateui.android;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -164,11 +164,50 @@ final class StateUIViews {
      * A bar's or a tab's picture at Android's icon size: 24 dp tall, as wide as its shape makes it, whatever
      * size the picture is drawn at elsewhere.
      */
-    static BitmapDrawable glyph(Resources resources, Bitmap picture) {
-        BitmapDrawable glyph = new BitmapDrawable(resources, picture);
-        float tall = 24 * resources.getDisplayMetrics().density;
+    static BitmapDrawable glyph(Context context, Bitmap picture) {
+        BitmapDrawable glyph = picture(context, picture);
+        float tall = 24 * context.getResources().getDisplayMetrics().density;
         glyph.setTargetDensity(Math.round(picture.getDensity() * tall / Math.max(1, picture.getHeight())));
         return glyph;
+    }
+
+    /** A picture to draw: an icon - a mask, `isMask` - in the theme's colour for controls, any other as it is. */
+    static BitmapDrawable picture(Context context, Bitmap picture) {
+        BitmapDrawable drawable = new BitmapDrawable(context.getResources(), picture);
+        if (isMask(picture)) {
+            TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.colorControlNormal});
+            drawable.setTintList(theme.getColorStateList(0));
+            theme.recycle();
+        }
+        return drawable;
+    }
+
+    /** Whether `picture` is an icon: only how opaque each pixel is, drawn in the colour of what shows it. */
+    static boolean isMask(Bitmap picture) {
+        return picture.getConfig() == Bitmap.Config.ALPHA_8;
+    }
+
+    /**
+     * The platform's drawable `name` fitted into a square `side` pixels across, kept as a mask - an icon; null
+     * where the platform has none such.
+     */
+    static Bitmap icon(Context context, String name, int side) {
+        int id = context.getResources().getIdentifier(name, "drawable", "android");
+        Drawable drawable = id == 0 || side <= 0 ? null : context.getDrawable(id);
+        if (drawable == null) return null;
+        float width = Math.max(1, drawable.getIntrinsicWidth());
+        float height = Math.max(1, drawable.getIntrinsicHeight());
+        float scale = Math.min(side / width, side / height);
+        int drawnWidth = Math.round(width * scale);
+        int drawnHeight = Math.round(height * scale);
+        int left = (side - drawnWidth) / 2;
+        int top = (side - drawnHeight) / 2;
+        Bitmap drawn = Bitmap.createBitmap(side, side, Bitmap.Config.ARGB_8888);
+        drawable.setBounds(left, top, left + drawnWidth, top + drawnHeight);
+        drawable.draw(new Canvas(drawn));
+        Bitmap mask = drawn.extractAlpha();
+        drawn.recycle();
+        return mask;
     }
 
     /** A divider in a stack: a plain view drawn with the theme's list divider, as thick as that line both ways. */
@@ -199,6 +238,7 @@ final class StateUIViews {
      */
     static void setIcon(TextView view, Bitmap picture, int position, int gap, int width, int height) {
         Drawable icon = picture == null ? null : new BitmapDrawable(view.getResources(), picture);
+        if (icon != null && isMask(picture)) icon.setTintList(view.getTextColors());
         boolean alone = view.getText().length() == 0;
         Drawable beside = alone ? null : icon;
 

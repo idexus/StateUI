@@ -69,7 +69,7 @@ final class StateUIMenus {
                     Bitmap picture = pictures == null ? null : pictures[text];
                     text++;
                     if (picture != null) {
-                        BitmapDrawable drawable = StateUIViews.glyph(context.getResources(), picture);
+                        BitmapDrawable drawable = StateUIViews.glyph(context, picture);
                         boolean destructive = (entry & DESTRUCTIVE) != 0 && (entry & DISABLED) == 0;
                         if (destructive) {
                             drawable.setTint(error);

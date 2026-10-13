@@ -140,6 +140,13 @@ final class AndroidButtonView: AndroidTextualView {
 
     override var plainWordColours: JavaObject { coloured?.words ?? super.plainWordColours }
 
+    /// The words' colour, which an icon is drawn in too.
+    override func setTextColor(_ color: HostValue?) {
+        super.setTextColor(color)
+        shownIcon = nil
+        showIcon(room: placedSize)
+    }
+
     /// One shape under the platform's pressed ripple, or the theme's background - the coloured button's for the
     /// main action - where nothing is said.
     /// Design: docs/design/platforms/android/controls.md#a-buttons-look
@@ -172,12 +179,12 @@ final class AndroidButtonView: AndroidTextualView {
 
     /// The picture beside the words `spacing` points away - the platform's gap for nil - or alone where
     /// there are none, filling its room as `aspect` says.
-    func setIcon(_ source: ImageSource?, position: IconPosition, spacing: Double?, aspect: ContentMode) {
-        let file = source?.file ?? ""
-        if file != icon.file {
+    func setIcon(_ source: HostPicture?, position: IconPosition, spacing: Double?, aspect: ContentMode) {
+        if source != icon.source {
             letGoOfIcon()
-            icon.file = file
-            icon.picture = file.isEmpty ? nil : AndroidPictures.take(named: file, sample: 1)
+            icon.source = source
+            icon.size = source.flatMap(AndroidPictures.size(of:))
+            icon.picture = source.flatMap { AndroidPictures.take($0, sample: 1) }
         }
         icon.position = position
         icon.spacing = spacing
@@ -201,13 +208,30 @@ final class AndroidButtonView: AndroidTextualView {
         super.layout(place)
     }
 
-    /// Measured as if the side room were not there: as wide again as it adds, less what it adds.
+    /// Measured as if the side room were not there: as wide again as it adds, less what it adds. With no words it
+    /// holds its icon at its own size inside its padding, which Android, drawing it over the button, measures not.
     override func measure(width: Int32, height: Int32) -> (width: Int32, height: Int32) {
-        guard sideRoom > 0 else { return super.measure(width: width, height: height) }
-        let mode = width & ViewConstants.modes
-        let widened = mode == ViewConstants.unspecified ? width : mode | ((width & ~ViewConstants.modes) + 2 * sideRoom)
-        let measured = super.measure(width: widened, height: height)
-        return (measured.width - 2 * sideRoom, measured.height)
+        let measured: (width: Int32, height: Int32)
+        if sideRoom > 0 {
+            let mode = width & ViewConstants.modes
+            let widened = mode == ViewConstants.unspecified ? width : mode | ((width & ~ViewConstants.modes) + 2 * sideRoom)
+            let wide = super.measure(width: widened, height: height)
+            measured = (wide.width - 2 * sideRoom, wide.height)
+        } else {
+            measured = super.measure(width: width, height: height)
+        }
+        guard !hasWords, let size = icon.size else { return measured }
+
+        func holding(_ spec: Int32, _ measured: Int32, _ least: Int32) -> Int32 {
+            switch ViewConstants.mode(spec) {
+            case ViewConstants.exactly: measured
+            case ViewConstants.atMost: min(max(measured, least), ViewConstants.size(spec))
+            default: max(measured, least)
+            }
+        }
+        let across = Java.callInt(reference, JavaAPI.getPaddingLeft) + Java.callInt(reference, JavaAPI.getPaddingRight)
+        let down = Java.callInt(reference, JavaAPI.getPaddingTop) + Java.callInt(reference, JavaAPI.getPaddingBottom)
+        return (holding(width, measured.width, size.width + across), holding(height, measured.height, size.height + down))
     }
 
     /// Stands the icon beside the words in the middle with them, on a button `width` pixels wide.
@@ -278,7 +302,7 @@ final class AndroidButtonView: AndroidTextualView {
     private func showIcon(room: (width: Int32, height: Int32)?) {
         let alone = hasWords ? (width: Int32(0), height: Int32(0)) : iconSizeAlone(in: room)
         let shown = Icon.Shown(
-            file: icon.file, position: icon.position, spacing: icon.spacing, words: hasWords,
+            source: icon.source, position: icon.position, spacing: icon.spacing, words: hasWords,
             width: alone.width, height: alone.height)
         guard shown != shownIcon else { return }
         shownIcon = shown
@@ -298,8 +322,7 @@ final class AndroidButtonView: AndroidTextualView {
 
     /// The icon's size shown alone: the room inside the padding, filled as the aspect says.
     private func iconSizeAlone(in room: (width: Int32, height: Int32)?) -> (width: Int32, height: Int32) {
-        guard let room, !icon.file.isEmpty, let size = AndroidPictures.size(named: icon.file),
-              size.width > 0, size.height > 0
+        guard let room, let size = icon.size, size.width > 0, size.height > 0
         else { return (0, 0) }
 
         let inside = (
@@ -321,7 +344,7 @@ final class AndroidButtonView: AndroidTextualView {
 
     /// Lets go of the icon's picture.
     private func letGoOfIcon() {
-        if icon.picture != nil { AndroidPictures.letGo(named: icon.file, sample: 1) }
+        if let source = icon.source, icon.picture != nil { AndroidPictures.letGo(source, sample: 1) }
         icon.picture = nil
     }
 
@@ -335,7 +358,8 @@ final class AndroidButtonView: AndroidTextualView {
 
     /// A button's icon.
     private struct Icon {
-        var file = ""
+        var source: HostPicture?
+        var size: (width: Int32, height: Int32)?
         var position: IconPosition = .leading
         var spacing: Double?
         var aspect: ContentMode = .fit
@@ -343,7 +367,7 @@ final class AndroidButtonView: AndroidTextualView {
 
         /// What an icon shows as: its picture, where, and its size alone in pixels.
         struct Shown: Equatable {
-            let file: String
+            let source: HostPicture?
             let position: IconPosition
             let spacing: Double?
             let words: Bool

@@ -94,6 +94,20 @@ shown centred, at its own size, is read whole. Views showing the same
 picture at the same thinning share one bitmap, and the last to leave lets it
 go; only a bar's and a tab's icons are kept for as long as the host runs.
 
+## Icons
+
+An icon is the platform's own drawable (`android.R.drawable`), which every
+Android ships, drawn into a square of Android's icon size, 24 points, and
+kept as a mask of how opaque each pixel is (`ALPHA_8`). What shows it
+colours it: an image and a bar in the theme's colour for controls' icons
+(`colorControlNormal`), a button in its words' colour, again whenever they
+change. The bitmap kept holds no colour, so a change of theme leaves none
+behind. Android ships no drawable for some icons (`Icon.androidDrawable`);
+the register says which, and they show nothing.
+
+A picture's bytes are read as a file is, at one pixel a point, their size
+from their header; nothing keeps them once no view shows them.
+
 ## Shapes
 
 A shape is one view of the host's, drawn on its own canvas: a rectangle or an

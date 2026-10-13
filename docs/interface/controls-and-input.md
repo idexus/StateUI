@@ -444,9 +444,31 @@ belongs in the application boundary; see [Environment](../concepts/environment.m
 
 ## Images and media providers
 
-`ImageSource` names an application resource and can choose light and dark
-variants. `Image` and a button's `icon` consume it without exposing a platform
-image type.
+`ImageSource` is one of three pictures: an application resource, which can
+choose light and dark variants; one of the platform's own icons; or a picture's
+encoded bytes. `Image` and a button's `icon` consume it without exposing a
+platform image type.
+
+An icon is chosen by its meaning from a closed set, `Icon`, and each host draws
+it as its platform draws its own - an SF Symbol, an Android drawable, a Segoe
+Fluent Icons glyph, the GTK theme's symbolic icon - in the colour of what holds
+it, at the platform's icon size where nothing gives it room. Where a platform
+ships no icon for one, the [platform contract](../platform-contract.md) says
+so. Bytes are a picture encoded whole - a PNG or a JPEG the application
+downloaded or made - shown at one pixel a point:
+
+```swift
+let downloaded: [UInt8] = []
+
+Image(.icon(.star))
+    .width(24)
+    .height(24)
+
+Button("Share")
+    .icon(.icon(.share))
+
+Image(ImageSource(bytes: downloaded))
+```
 
 A button carries a picture in one of two ways. When the picture is its whole
 purpose, it goes in the initializer: `Button(icon:)`. Beside a caption it is the

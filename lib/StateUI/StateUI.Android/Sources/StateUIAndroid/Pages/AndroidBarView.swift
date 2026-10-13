@@ -14,7 +14,7 @@ final class AndroidBarView: AndroidView {
         case none
         case back
         /// The sidebar's picture, or none to show the platform's own.
-        case sidebar(String?)
+        case sidebar(HostPicture?)
     }
 
     /// What the bar says and shows: its title and the line under it, its colours, its actions, and the page's menus
@@ -91,12 +91,12 @@ final class AndroidBarView: AndroidView {
     }
 
     private func showNavigation(_ navigation: Navigation, tint: Int32) {
-        let (kind, picture, description): (Int32, String?, String) = switch navigation {
+        let (kind, picture, description): (Int32, HostPicture?, String) = switch navigation {
         case .none: (0, nil, "")
         case .back: (1, nil, "Back")
         case .sidebar(let picture): (2, picture, "Menu")
         }
-        let bitmap = picture.flatMap(AndroidPictures.bitmap(named:))
+        let bitmap = picture.flatMap(AndroidPictures.bitmap)
         let words = Java.string(description)
         withExtendedLifetime(bitmap) {
             Java.call(

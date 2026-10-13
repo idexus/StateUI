@@ -205,7 +205,9 @@ control that draws its picture at its own edge and its words in the middle is
 given, on each side, half of what the picture, the gap and the words leave
 (`ButtonArithmetic.sideRoom`) as more padding where it is placed; it is not the
 button's, so it is left out of what the button measures. A picture above or
-below its words is already in the middle with them.
+below its words is already in the middle with them. Beside its words a
+picture stands at its own size, smaller where the button is, never stretched
+over them; alone it fills the room as its aspect says.
 
 ## A row beside a page
 
@@ -275,6 +277,19 @@ stretched over the whole of it. A picture on a bar or a tab stands at the
 platform's icon height, as wide as its shape makes it, whatever size it is
 drawn at elsewhere (`PictureArithmetic.glyph`): the platform draws its own
 pictures there at that size, and one at its file's size stands far taller.
+
+## An icon
+
+A picture is a file, an icon or bytes (`HostPicture`), read alike on every
+host from the member's value. An icon is one of a closed set (`Icon`), each
+drawn as its platform draws its own: an SF Symbol on AppKit and UIKit
+(`Icon.sfSymbol`, which both share), a drawable Android ships, a glyph of
+Segoe Fluent Icons on WinUI, the theme's symbolic icon on GTK, and on the Web
+a drawing of StateUI's own. An icon takes the colour of what it stands in -
+the words beside it, its bar's, the theme's - and, where nothing gives it
+room, the platform's own icon size. Where a platform ships no icon for one,
+its host's register says so. Bytes are a picture encoded whole - a PNG, a
+JPEG - read where they are given, at one pixel a point.
 
 ## A shape's own geometry
 

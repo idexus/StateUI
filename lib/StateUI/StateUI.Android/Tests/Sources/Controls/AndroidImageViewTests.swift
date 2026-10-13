@@ -13,6 +13,8 @@ final class AndroidImageViewTests: XCTestCase {
             ("testAPictureFillsOrFitsItsRoomAsItsAspectSays", testAPictureFillsOrFitsItsRoomAsItsAspectSays),
             ("testAPictureShownSmallIsReadAtFewerPixels", testAPictureShownSmallIsReadAtFewerPixels),
             ("testAPictureNoViewShowsIsLetGo", testAPictureNoViewShowsIsLetGo),
+            ("testEveryIconIsThePlatformsDrawableOrNone", testEveryIconIsThePlatformsDrawableOrNone),
+            ("testAnIconIsDrawnInTheThemesColourForControls", testAnIconIsDrawnInTheThemesColourForControls),
         ]
     }
 
@@ -101,4 +103,57 @@ final class AndroidImageViewTests: XCTestCase {
             XCTAssertEqual(AndroidPictures.keptCount, before, "and let go when the view leaves")
         }
     }
+
+    /// An icon the table names is the platform's drawable, read as a mask of Android's icon size; one it names none
+    /// for is no picture.
+    func testEveryIconIsThePlatformsDrawableOrNone() {
+        onMainActor {
+            let side = Int32((24 * AndroidRenderer.density).rounded())
+            for icon in Icon.allCases {
+                let mask = AndroidPictures.take(.icon(icon), sample: 1)
+                defer { AndroidPictures.letGo(.icon(icon), sample: 1) }
+                guard icon.androidDrawable != nil else {
+                    XCTAssertNil(mask, "\(icon)")
+                    XCTAssertNil(AndroidPictures.size(of: .icon(icon)).map { "\($0)" }, "\(icon)")
+                    continue
+                }
+                guard let mask else { XCTFail("Android has no \(icon.androidDrawable!) for \(icon)"); continue }
+
+                XCTAssertEqual(Java.callInt(mask.reference, JavaAPI.bitmapWidth), side, "\(icon)")
+                XCTAssertEqual(Java.callInt(mask.reference, JavaAPI.bitmapHeight), side, "\(icon)")
+                XCTAssertTrue(Java.callStaticBool(JavaAPI.views, TestJava.isMask, .object(mask.reference)), "\(icon)")
+            }
+        }
+    }
+
+    /// An icon's mask is drawn in the colour the theme gives controls' icons: its colour, no more opaque.
+    func testAnIconIsDrawnInTheThemesColourForControls() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                Image(.icon(.add)).horizontalAlignment(.start).verticalAlignment(.start)
+            }
+            host.layOut()
+
+            let image = try XCTUnwrap(host.views(AndroidImageView.self).first)
+            let ink = UInt32(bitPattern: Java.callStaticInt(TestJava.testPictures, TestJava.imageInk, .object(image.reference)))
+            let colour = UInt32(bitPattern: Java.callStaticInt(
+                TestJava.testPictures, TestJava.controlColour, .object(AndroidRenderer.context)))
+            XCTAssertGreaterThan(ink >> 24, 0, "the icon is drawn")
+            // A partly opaque pixel is kept premultiplied: its channels come back a step apart.
+            for shift: UInt32 in [0, 8, 16] {
+                let (drawn, given) = (Int(ink >> shift & 0xFF), Int(colour >> shift & 0xFF))
+                XCTAssertLessThanOrEqual(abs(drawn - given), 2, "\(String(ink, radix: 16)) for \(String(colour, radix: 16))")
+            }
+            XCTAssertLessThanOrEqual(ink >> 24, colour >> 24, String(ink, radix: 16))
+        }
+    }
+}
+
+extension TestJava {
+    static let isMask = Java.staticMethod(JavaAPI.views, "isMask", "(Landroid/graphics/Bitmap;)Z")
+    static let testPictures = Java.findClass("stateui/android/test/TestPictures")
+    static let imageInk = Java.staticMethod(testPictures, "imageInk", "(Landroid/widget/ImageView;)I")
+    static let iconInk = Java.staticMethod(testPictures, "iconInk", "(Landroid/widget/TextView;)I")
+    static let aloneInk = Java.staticMethod(testPictures, "aloneInk", "(Landroid/widget/TextView;)I")
+    static let controlColour = Java.staticMethod(testPictures, "controlColour", "(Landroid/content/Context;)I")
 }

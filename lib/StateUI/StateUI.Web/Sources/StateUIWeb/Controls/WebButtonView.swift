@@ -53,7 +53,7 @@ final class WebButtonView: WebDOMView, WebWordsView {
     /// The picture beside the words - before them, after, above or below, `spacing` apart, 8 where nil - or alone,
     /// filling the button as `aspect` says; none shows the words alone.
     func setIcon(_ source: ImageSource?, position: IconPosition, spacing: Double?, aspect: ContentMode) {
-        guard let source, !source.file.isEmpty else {
+        guard let source = HostPicture(source, dark: false) else {
             picture?.detach()
             picture = nil
             attribute("data-alone", nil)
@@ -62,7 +62,7 @@ final class WebButtonView: WebDOMView, WebWordsView {
         let shown = picture ?? WebImageView()
         if picture == nil { WebRelay.insert(shown.node, into: node, at: 0) }
         picture = shown
-        shown.apply(source: source, aspect: aspect)
+        shown.apply(picture: source, aspect: aspect)
         let direction: String? = switch position {
         case .leading: nil
         case .trailing: "row-reverse"

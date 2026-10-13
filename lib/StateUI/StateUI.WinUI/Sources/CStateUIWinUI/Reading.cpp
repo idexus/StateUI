@@ -124,8 +124,7 @@ namespace {
         if (both)
             for (auto const &child : both.Children())
                 if (auto found = child.try_as<controls::Viewbox>()) box = found;
-        auto picture = box ? box.Child().try_as<controls::Image>() : nullptr;
-        if (what == "icon") return picture ? winrt::to_string(sourceFile(picture.Source())) : "";
+        if (what == "icon") return box && box.Child() ? winrt::to_string(shownName(box.Child())) : "";
         if (what == "stretch") return box ? number(static_cast<int32_t>(box.Stretch())) : "";
         if (what == "iconSpacing") return both ? number(both.Spacing()) : "";
         if (what == "iconPosition") {
@@ -389,7 +388,13 @@ namespace {
             if (!box) return std::string();
             return painted(box, what.substr(4));
         }
-        if (auto image = object.try_as<controls::Image>()) {
+        if (auto frame = object.try_as<controls::Border>(); frame && frame.Child().try_as<controls::Viewbox>()) {
+            if (what == "stretch") return number(static_cast<int32_t>(frame.Child().as<controls::Viewbox>().Stretch()));
+            if (what == "source") return winrt::to_string(shownName(frame.Child().as<controls::Viewbox>().Child()));
+        }
+        auto image = object.try_as<controls::Image>();
+        if (auto frame = object.try_as<controls::Border>(); !image && frame) image = frame.Child().try_as<controls::Image>();
+        if (image) {
             if (what == "stretch") return number(static_cast<int32_t>(image.Stretch()));
             if (what == "source") return narrow(winrt::unbox_value_or<winrt::hstring>(image.Tag(), L""));
         }

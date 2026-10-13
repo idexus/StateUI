@@ -13,8 +13,8 @@ final class WebImageView: WebDOMView {
     /// The files the picture's name may stand for, those not tried yet, in order.
     private var candidates: [String] = []
 
-    /// The picture's name as last given.
-    private var file: String?
+    /// The picture as last given, by its identity.
+    private var given: String?
 
     /// The file shown now, and how it fills its room.
     private var shown: String?
@@ -31,19 +31,45 @@ final class WebImageView: WebDOMView {
         listen("load") { [weak self] in self?.sizeAsLoaded() }
     }
 
-    /// Shows the picture `source` names, fitted as `aspect` says; the same name again is shown anew only where the
-    /// aspect turns to or from stretched.
-    func apply(source: ImageSource?, aspect: ContentMode) {
+    /// Shows `picture`, fitted as `aspect` says - a file served beside the page, an icon of the Web's own as a mask
+    /// over the words' colour, or bytes as a `data:` URL; the same picture again is shown anew only where the aspect
+    /// turns to or from stretched.
+    func apply(picture: HostPicture?, aspect: ContentMode) {
         style("object-fit", Self.fit(aspect))
         let restretched = (aspect == .stretch) != (self.aspect == .stretch)
         let refilled = (aspect == .fill) != (self.aspect == .fill)
         self.aspect = aspect
         if refilled { for name in Self.reached { style(name, laid[name] ?? nil) } }
-        guard source?.file != file else { return restretched ? showFile() : () }
-        file = source?.file
-        attribute("data-source", file)
-        candidates = source.map { PictureArithmetic.files(for: $0.file) } ?? []
-        tryNext()
+        guard picture?.identity != given else { return restretched ? showFile() : () }
+        given = picture?.identity
+        attribute("data-source", picture?.file ?? picture.map { if case .icon(let icon) = $0 { "icon:\(icon)" } else { "" } })
+        mask(picture.flatMap { if case .icon(let icon) = $0 { icon } else { nil } })
+        switch picture {
+        case .icon:
+            candidates = []
+            shown = nil
+            attribute("src", WebIcons.room)
+        case .bytes(let bytes):
+            candidates = []
+            shown = nil
+            attribute("src", WebPictureData.url(bytes))
+        case .file(let file):
+            candidates = PictureArithmetic.files(for: file)
+            tryNext()
+        case nil:
+            candidates = []
+            tryNext()
+        }
+    }
+
+    /// Wears `icon` as a mask over the colour of the words around it; nil wears none.
+    private func mask(_ icon: Icon?) {
+        let url = icon.map(WebIcons.url)
+        for name in ["mask-image", "-webkit-mask-image"] { style(name, url) }
+        for name in ["mask-size", "-webkit-mask-size"] { style(name, icon == nil ? nil : "contain") }
+        for name in ["mask-repeat", "-webkit-mask-repeat"] { style(name, icon == nil ? nil : "no-repeat") }
+        for name in ["mask-position", "-webkit-mask-position"] { style(name, icon == nil ? nil : "center") }
+        style("background-color", icon == nil ? nil : "currentColor")
     }
 
     /// The picture's own size, which the view stands at where its layout gives it none - its proportions binding

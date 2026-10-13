@@ -187,7 +187,7 @@ extension AppKitWindowController {
         titleCluster.apply(
             title: area.title ?? "",
             subtitle: area.subtitle ?? "",
-            image: area.icon.flatMap { host?.image(named: $0) },
+            image: area.icon.flatMap { host?.image($0) },
             foreground: foreground)
         // AppKit gives a trailing accessory the toolbar row's height and
         // centres it there; only the width is the cluster's own.

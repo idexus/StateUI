@@ -21,7 +21,7 @@ enum AndroidMenu {
     /// whether it shows its words there beside its picture, and the bar's group it stands in.
     struct Item: Equatable {
         var text: String
-        var picture: String?
+        var picture: HostPicture?
         var isEnabled = true
         var isDestructive = false
         var isOn: Bool?
@@ -47,11 +47,11 @@ enum AndroidMenu {
     static func encoded(_ entries: [Entry], _ write: (_ kinds: jobject?, _ texts: jobject?, _ pictures: jobject?) -> Void) {
         var kinds: [Int32] = []
         var texts: [String] = []
-        var pictures: [String?] = []
+        var pictures: [HostPicture?] = []
         encode(entries, kinds: &kinds, texts: &texts, pictures: &pictures)
 
         Java.frame {
-            let bitmaps = pictures.map { $0.flatMap(AndroidPictures.bitmap(named:)) }
+            let bitmaps = pictures.map { $0.flatMap(AndroidPictures.bitmap) }
             let words = Java.array(of: JavaAPI.string, texts.map { Java.string($0) })
             let images = bitmaps.contains { $0 != nil } ? Java.array(of: JavaAPI.bitmap, bitmaps.map { $0?.reference }) : nil
             withExtendedLifetime(bitmaps) { write(Java.ints(kinds), words, images) }
@@ -61,7 +61,7 @@ enum AndroidMenu {
     /// Each entry as `StateUIMenus` reads it: an int of its kind and flags, and a text and picture for each
     /// item and submenu.
     private static func encode(
-        _ entries: [Entry], kinds: inout [Int32], texts: inout [String], pictures: inout [String?]
+        _ entries: [Entry], kinds: inout [Int32], texts: inout [String], pictures: inout [HostPicture?]
     ) {
         for entry in entries {
             switch entry {

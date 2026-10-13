@@ -291,8 +291,6 @@ enum JavaAPI {
     static let setImageBitmap = Java.method(imageView, "setImageBitmap", "(Landroid/graphics/Bitmap;)V")
     static let setImageDrawable = Java.method(imageView, "setImageDrawable", "(Landroid/graphics/drawable/Drawable;)V")
     static let bitmapDrawable = Java.findClass("android/graphics/drawable/BitmapDrawable")
-    static let newBitmapDrawable = Java.method(
-        bitmapDrawable, "<init>", "(Landroid/content/res/Resources;Landroid/graphics/Bitmap;)V")
     static let setTargetDensity = Java.method(bitmapDrawable, "setTargetDensity", "(I)V")
     static let setScaleType = Java.method(imageView, "setScaleType", "(Landroid/widget/ImageView$ScaleType;)V")
     static let setCropToPadding = Java.method(imageView, "setCropToPadding", "(Z)V")
@@ -308,6 +306,8 @@ enum JavaAPI {
     static let decodeStream = Java.staticMethod(
         bitmapFactory, "decodeStream",
         "(Ljava/io/InputStream;Landroid/graphics/Rect;Landroid/graphics/BitmapFactory$Options;)Landroid/graphics/Bitmap;")
+    static let decodeByteArray = Java.staticMethod(
+        bitmapFactory, "decodeByteArray", "([BIILandroid/graphics/BitmapFactory$Options;)Landroid/graphics/Bitmap;")
     static let bitmapOptions = Java.findClass("android/graphics/BitmapFactory$Options")
     static let newBitmapOptions = Java.method(bitmapOptions, "<init>", "()V")
     static let inDensity = Java.field(bitmapOptions, "inDensity", "I")
@@ -480,6 +480,10 @@ enum JavaAPI {
     static let colouredWords = Java.staticMethod(
         views, "colouredWords", "(Landroid/content/Context;)Landroid/content/res/ColorStateList;")
     static let setIcon = Java.staticMethod(views, "setIcon", "(Landroid/widget/TextView;Landroid/graphics/Bitmap;IIII)V")
+    static let iconMask = Java.staticMethod(
+        views, "icon", "(Landroid/content/Context;Ljava/lang/String;I)Landroid/graphics/Bitmap;")
+    static let pictureDrawable = Java.staticMethod(
+        views, "picture", "(Landroid/content/Context;Landroid/graphics/Bitmap;)Landroid/graphics/drawable/BitmapDrawable;")
     static let transformView = Java.staticMethod(views, "transform", "(Landroid/view/View;FFFFFFFFF)V")
     static let slideView = Java.staticMethod(views, "slide", "(Landroid/view/View;FFJI)V")
 

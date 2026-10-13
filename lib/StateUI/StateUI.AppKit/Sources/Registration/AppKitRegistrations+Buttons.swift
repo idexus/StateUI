@@ -43,12 +43,14 @@ extension AppKitRegistrations {
                 let caption = (values[TextualElementContract.textCase] ?? .none)
                     .applied(to: values[TextualElementContract.text] ?? "")
                 let icon: NSImage? = values[ButtonContract.icon]
-                    .flatMap { $0.isEmpty ? nil : view.picture?($0.file) }
+                    .flatMap { HostPicture($0.propValue) }.flatMap { view.picture?($0) }
                 let position: NSControl.ImagePosition = caption.isEmpty
                     ? .imageOnly
                     : Self.imagePosition(values[ButtonContract.iconPosition] ?? .leading)
-                let scaling: NSImageScaling = Self.imageScaling(
-                    values[ImageElementContract.contentMode] ?? .fit)
+                // Beside words a picture stands at its own size, smaller where the button is.
+                let scaling: NSImageScaling = caption.isEmpty
+                    ? Self.imageScaling(values[ImageElementContract.contentMode] ?? .fit)
+                    : .scaleProportionallyDown
                 let textColor: NSColor = values[TextStyleElementContract.textColor]
                     .flatMap { nsColor($0.propValue) } ?? .controlTextColor
                 let background = paintedColor(values[VisualElementContract.background]?.propValue)
@@ -96,7 +98,7 @@ extension AppKitRegistrations {
         }
     }
 
-    /// How an icon fills the room it is given.
+    /// How an icon standing alone fills the room it is given.
     ///
     /// `.fit` and `.fill` come out the same: a native button has no covering
     /// scale, which is what this host's declaration says about `contentMode`

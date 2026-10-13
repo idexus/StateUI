@@ -118,7 +118,7 @@ enum AppKitMenus {
         item.title = entry.title
         item.isEnabled = entry.isEnabled
         item.setAccessibilityIdentifier(entry.identifier)
-        item.image = entry.icon.flatMap { element.image(named: $0) }?.glyph(tinted: false)
+        item.image = entry.icon.flatMap { element.host?.image($0) }?.glyph(tinted: false)
         item.attributedTitle = NSAttributedString(
             string: entry.title, attributes: entry.isDestructive ? [.foregroundColor: NSColor.systemRed] : [:])
 

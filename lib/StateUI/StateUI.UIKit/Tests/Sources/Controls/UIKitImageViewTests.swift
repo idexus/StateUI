@@ -32,6 +32,45 @@ final class UIKitImageViewTests: XCTestCase {
         XCTAssertEqual(images[0].image?.scale, 3, "the SVG's drawing, three pixels a point")
     }
 
+    /// An icon is the SF Symbol drawn in the colour of the words around it, not the accent; a file keeps its own.
+    @MainActor
+    func testAnIconIsDrawnInTheWordsColour() {
+        let host = UIKitRenderer.running {
+            VStack {
+                Image(.icon(.add))
+                Image("test_dot.png")
+            }
+        }
+        defer { host.finish() }
+
+        let images = host.views(UIKitImageView.self)
+        XCTAssertTrue(images[0].image?.isSymbolImage == true)
+        XCTAssertEqual(images[0].tintColor, .label)
+        XCTAssertNotEqual(images[1].tintColor, .label)
+    }
+
+    /// A button's icon is drawn in its words' colour where the tree writes one - with its words or alone.
+    @MainActor
+    func testAButtonsIconTakesItsWordsColour() throws {
+        let host = UIKitRenderer.running {
+            VStack {
+                Button("Share").icon(.icon(.share)).textColor(Color("#FF0000"))
+                Button(icon: .icon(.settings)).textColor(Color("#FF0000"))
+                Button("Plain").icon(.icon(.add))
+            }
+        }
+        defer { host.finish() }
+
+        let buttons = host.views(UIKitButtonView.self)
+        for button in buttons.prefix(2) {
+            let transform = try XCTUnwrap(button.configuration?.imageColorTransformer)
+            var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+            transform(.blue).getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+            XCTAssertEqual([red, green, blue], [1, 0, 0])
+        }
+        XCTAssertNil(buttons[2].configuration?.imageColorTransformer, "the platform's colour where none is written")
+    }
+
     /// SVGs a second window shows cost it little: the pictures of the first window, shown again in a scene of their
     /// own, add megabytes. An iPad gives an application a second scene.
     @MainActor

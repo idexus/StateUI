@@ -29,8 +29,8 @@
     /// The caption; empty for a separator.
     public let title: String
 
-    /// The picture shown with the caption, by name, where one is said.
-    public let icon: String?
+    /// The picture shown with the caption, where one is said.
+    public let icon: HostPicture?
 
     /// Whether the user can choose it.
     public let isEnabled: Bool
@@ -88,7 +88,7 @@
         self.kind = kind
         self.element = element
         title = element?.value(.text)?.string ?? ""
-        icon = element?.value(.icon)?.string.flatMap { $0.isEmpty ? nil : $0 }
+        icon = HostPicture(element?.value(.icon))
         isEnabled = element?.isEffectivelyEnabled ?? true
         isDestructive = element?.value(.isDestructive)?.bool == true
         identifier = element?.value(.accessibilityIdentifier)?.string

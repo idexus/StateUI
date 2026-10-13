@@ -181,6 +181,16 @@ final class AppKitRenderer {
         return loaded
     }
 
+    /// The native image for a picture: a file of the application's, the SF Symbol for an icon, or the bytes decoded
+    /// at a point a pixel. A symbol is a template, drawn in the colour of what holds it.
+    func image(_ picture: HostPicture) -> NSImage? {
+        switch picture {
+        case .file(let name): image(named: name)
+        case .icon(let icon): NSImage(systemSymbolName: icon.sfSymbol, accessibilityDescription: nil)
+        case .bytes(let bytes): NSImage(data: Data(bytes))
+        }
+    }
+
     /// The picture `name` stands for: the file of the name, else its drawing, by the host layer's rule.
     func loadImage(named name: String) -> NSImage? {
         for file in PictureArithmetic.files(for: name) {

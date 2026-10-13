@@ -53,7 +53,8 @@ UIKit's own tab icon size, each as wide as its shape makes it
 (`PictureArithmetic.glyph`); on a phone on its side, whose bars stand
 lower, both stand 18 points tall (`landscapeImagePhone`). The picture keeps
 its pixels and is drawn smaller: at its file's size it stands far taller
-than the system's own pictures beside it.
+than the system's own pictures beside it. An icon is its SF Symbol
+(`Icon.sfSymbol`), a template image the bar colours as it does its own.
 
 ## A page's background
 

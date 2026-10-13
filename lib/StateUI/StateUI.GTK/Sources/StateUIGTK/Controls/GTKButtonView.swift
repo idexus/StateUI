@@ -213,8 +213,8 @@ final class GTKButtonView: GTKView {
     /// The picture `source` names beside the caption - before it, after it, above or below it, `spacing` apart,
     /// libadwaita's 6 where it is nil - or in its place where there are no words, filling the room as `aspect`
     /// says; none shows the caption alone.
-    func setPicture(_ source: ImageSource?, position: IconPosition, spacing: Double?, aspect: ContentMode) {
-        guard let source, !source.isEmpty else {
+    func setPicture(_ source: HostPicture?, position: IconPosition, spacing: Double?, aspect: ContentMode) {
+        guard let source else {
             guard picture != nil else { return }
             picture = nil
             gtk_widget_remove_css_class(widget, "image-button")
@@ -224,7 +224,7 @@ final class GTKButtonView: GTKView {
         }
         let picture = self.picture ?? GTKImageView()
         self.picture = picture
-        picture.apply(source: source, aspect: aspect)
+        picture.apply(picture: source, aspect: aspect)
         (self.position, self.spacing) = (position, spacing)
         compose()
     }
@@ -236,7 +236,10 @@ final class GTKButtonView: GTKView {
         let alone = caption.isEmpty
         gtk_widget_remove_css_class(widget, alone ? "image-text-button" : "image-button")
         gtk_widget_add_css_class(widget, alone ? "image-button" : "image-text-button")
-        guard !alone else { return setChild(picture.widget) }
+        guard !alone else {
+            setChild(picture.widget)
+            return writeWords()
+        }
 
         let across = position == .leading || position == .trailing
         let box = gtk_box_new(across ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL, Int32((spacing ?? 6).rounded()))!
@@ -251,8 +254,9 @@ final class GTKButtonView: GTKView {
         writeWords()
     }
 
-    /// Writes the look and the break on the label the button shows its caption in.
+    /// Writes the look and the break on the label the button shows its caption in, and its colour on the icon.
     private func writeWords() {
+        picture?.wordsColor = look.color.flatMap(GTKBrush.rgba)
         guard let label = captionLabel else { return }
         let list = pango_attr_list_new()!
         look.insert(into: list)
@@ -283,8 +287,8 @@ final class GTKButtonView: GTKView {
     /// caption the button's name to assistive technology, and its tooltip while it is not shown. Whether there was
     /// such a picture.
     @discardableResult
-    func setIcon(_ name: String, size: Int32, caption: String, showsCaption: Bool = false) -> Bool {
-        guard let image = GTKPictures.icon(named: name, size: size) else { return false }
+    func setIcon(_ picture: HostPicture, size: Int32, caption: String, showsCaption: Bool = false) -> Bool {
+        guard let image = GTKPictures.icon(picture, size: size) else { return false }
         if showsCaption {
             let content = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6)!
             gtk_box_append(content.of(GtkBox.self), image)

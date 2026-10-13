@@ -95,7 +95,8 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
             attributes.recycle();
             if (icon != null && tint != 0) icon.mutate().setTint(tint);
         } else if (kind == SIDEBAR) {
-            icon = picture != null ? StateUIViews.glyph(getResources(), picture) : menuGlyph(tint);
+            icon = picture != null ? StateUIViews.glyph(getContext(), picture) : menuGlyph(tint);
+            if (picture != null && tint != 0 && StateUIViews.isMask(picture)) icon.setTint(tint);
         }
         setNavigationIcon(icon);
         setNavigationContentDescription(icon == null ? null : description);

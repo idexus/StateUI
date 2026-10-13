@@ -21,7 +21,8 @@ extension AndroidRegistrations {
                 ImageElementContract.contentMode,
             ]) { view, values in
                 view.setIcon(
-                    values[ButtonContract.icon], position: values[ButtonContract.iconPosition] ?? .leading,
+                    HostPicture(values[ButtonContract.icon], dark: false),
+                    position: values[ButtonContract.iconPosition] ?? .leading,
                     spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
             }
             button.applies([

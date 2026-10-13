@@ -264,7 +264,7 @@ final class GTKDriver: HostDriver {
         case (.text, let editor as GTKTextEditorView): return editor.text.propValue
         case (.text, let button as GTKButtonView): return button.text.propValue
         case (.icon, let button as GTKButtonView), (.source, let button as GTKButtonView):
-            return button.picture.flatMap { $0.found ? ImageSource($0.file).propValue : nil }
+            return button.picture.flatMap { $0.found ? $0.picture?.value : nil }
         case (.iconPosition, let button as GTKButtonView): return Self.position(in: button)?.propValue
         case (.iconSpacing, let button as GTKButtonView):
             return button.pictureAndCaption.map { Double(gtk_box_get_spacing($0.of(GtkBox.self))).propValue }
@@ -272,7 +272,7 @@ final class GTKDriver: HostDriver {
         case (.contentMode, let button as GTKButtonView): return button.picture?.aspect.propValue
         case (.tint, let spinner as GTKActivityIndicatorView): return Self.color(of: spinner.widget).propValue
         case (.tint, let view?): return view.tint.map { Self.color($0).propValue }
-        case (.source, let image as GTKImageView): return image.found ? ImageSource(image.file).propValue : nil
+        case (.source, let image as GTKImageView): return image.found ? image.picture?.value : nil
         case (.contentMode, let image as GTKImageView): return image.aspect.propValue
         case (.text, let check as GTKCheckView): return check.text.propValue
         case (.showsSidebar, let split as GTKSplitView): return split.showsSidebar.propValue

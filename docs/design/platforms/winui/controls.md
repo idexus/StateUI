@@ -378,6 +378,22 @@ shared, a second window adds megabytes. The relay keeps each source weakly,
 with its file, which is how a picture's file is read back. WinUI's renderer
 draws no SVG text: a picture's words are outlines.
 
+## Icons
+
+A picture crosses to the relay as lines: the files a name stands for, an
+icon as `glyph:` and its code point in Segoe Fluent Icons
+(`Icon.fluentGlyph`), or bytes as `bytes:` and their base64
+(`WinUIPictures`). An icon is a `FontIcon` - a `FontIconSource` on a title
+bar - drawn in the theme's font for symbols and coloured by what holds it,
+as WinUI's own icons are.
+
+An Image stands its picture in a border: an `Image` for a file or bytes, or
+for an icon a `FontIcon` in a `Viewbox`, which fits it to the room by the
+aspect; an icon's own size is the font's, 20 DIPs. Assistive technology
+meets the image or the icon, and what it was told of one stays with the
+other as the picture turns. Bytes are read from memory into a bitmap, whose
+size is known once WinUI has read it, as a file's is.
+
 ## A web view
 
 A WebView on WinUI is a backend, `lib/Backends/WebView.WinUI`: WinUI's

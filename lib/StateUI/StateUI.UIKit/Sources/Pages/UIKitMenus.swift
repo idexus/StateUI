@@ -49,7 +49,7 @@ enum UIKitMenus {
         if entry.isDestructive { attributes.insert(.destructive) }
         if let shortcut = entry.keyboardShortcut, let mount = entry.element?.mount {
             let command = UIKitKeys.entry(
-                shortcut, title: entry.title, image: entry.icon.flatMap(UIKitRenderer.image(named:)),
+                shortcut, title: entry.title, image: entry.icon.flatMap(UIKitRenderer.image),
                 action: #selector(UIKitRootViewController.chooseMenuEntry(_:)), entry: mount)
             command.attributes = attributes
             command.state = entry.isOn == true ? .on : .off
@@ -60,7 +60,7 @@ enum UIKitMenus {
         }
         element?.menuCommand = nil
         let action = UIAction(
-            title: entry.title, image: entry.icon.flatMap(UIKitRenderer.image(named:)),
+            title: entry.title, image: entry.icon.flatMap(UIKitRenderer.image),
             identifier: element?.actionIdentifier
         ) { [weak element] _ in element?.choose() }
         action.attributes = attributes

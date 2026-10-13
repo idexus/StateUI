@@ -1,9 +1,9 @@
 # revision 2.1
-NavigationStack.icon: ✅
+NavigationStack.icon: ☑️ Android ships no drawable for `.remove`, `.checkmark`, `.home`, `.back`, `.forward`, `.menu`, `.copy`, `.heart`, `.person`, `.link`: such an icon shows nothing.
 NavigationStack.title: ✅
-Page.icon: ✅
+Page.icon: ☑️ Android ships no drawable for `.remove`, `.checkmark`, `.home`, `.back`, `.forward`, `.menu`, `.copy`, `.heart`, `.person`, `.link`: such an icon shows nothing.
 Page.title: ✅
-SplitView.icon: ✅
+SplitView.icon: ☑️ Android ships no drawable for `.remove`, `.checkmark`, `.home`, `.back`, `.forward`, `.menu`, `.copy`, `.heart`, `.person`, `.link`: such an icon shows nothing.
 SplitView.title: ✅
-TabView.icon: ✅
+TabView.icon: ☑️ Android ships no drawable for `.remove`, `.checkmark`, `.home`, `.back`, `.forward`, `.menu`, `.copy`, `.heart`, `.person`, `.link`: such an icon shows nothing.
 TabView.title: ✅

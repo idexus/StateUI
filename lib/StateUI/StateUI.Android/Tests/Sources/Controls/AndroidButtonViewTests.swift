@@ -20,6 +20,8 @@ final class AndroidButtonViewTests: XCTestCase {
             ("testADisabledLookDimsAsTheThemesControlsDo", testADisabledLookDimsAsTheThemesControlsDo),
             ("testAFingerDownAndUpArePressedAndReleased", testAFingerDownAndUpArePressedAndReleased),
             ("testAFamilyChangesTheTypeface", testAFamilyChangesTheTypeface),
+            ("testAnIconIsDrawnInItsWordsColour", testAnIconIsDrawnInItsWordsColour),
+            ("testAnIconAloneIsDrawnInTheWordsColour", testAnIconAloneIsDrawnInTheWordsColour),
         ]
     }
 
@@ -265,5 +267,43 @@ final class AndroidButtonViewTests: XCTestCase {
             Java.callInt(reference, JavaAPI.getPaddingLeft) + Java.callInt(reference, JavaAPI.getPaddingRight),
             Java.callInt(reference, JavaAPI.getPaddingTop) + Java.callInt(reference, JavaAPI.getPaddingBottom)
         )
+    }
+
+    /// An icon beside a button's words is drawn in their colour.
+    func testAnIconIsDrawnInItsWordsColour() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                Button("Add").icon(.icon(.add)).textColor(Color("#FF0000"))
+            }
+            host.layOut()
+
+            let button = try XCTUnwrap(host.views(AndroidButtonView.self).first)
+            let ink = UInt32(bitPattern: Java.callStaticInt(
+                TestJava.testPictures, TestJava.iconInk, .object(button.reference)))
+            XCTAssertGreaterThan(ink >> 24, 0, "the icon is drawn")
+            XCTAssertEqual(ink & 0xFF_FFFF, 0xFF_0000, String(ink, radix: 16))
+        }
+    }
+
+    /// An icon standing alone in a button with no words gives the button its size - the icon's own inside the
+    /// padding - and is drawn in the colour its words would take.
+    func testAnIconAloneIsDrawnInTheWordsColour() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                Button(icon: .icon(.settings)).textColor(Color("#FF0000"))
+                    .horizontalAlignment(.start).verticalAlignment(.start)
+            }
+            host.layOut()
+
+            let button = try XCTUnwrap(host.views(AndroidButtonView.self).first)
+            XCTAssertGreaterThanOrEqual(button.frame.width, 24, "\(button.frame)")
+            XCTAssertGreaterThanOrEqual(button.frame.height, 24, "\(button.frame)")
+            let ink = UInt32(bitPattern: Java.callStaticInt(
+                TestJava.testPictures, TestJava.aloneInk, .object(button.reference)))
+            let padding = [JavaAPI.getPaddingLeft, JavaAPI.getPaddingTop, JavaAPI.getPaddingRight, JavaAPI.getPaddingBottom]
+                .map { Java.callInt(button.reference, $0) }
+            XCTAssertGreaterThan(ink >> 24, 0, "the icon is drawn: \(button.frame) padding \(padding)")
+            XCTAssertEqual(ink & 0xFF_FFFF, 0xFF_0000, String(ink, radix: 16))
+        }
     }
 }

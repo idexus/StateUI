@@ -45,6 +45,7 @@ GeometryReaderSample.swift 4e6226814b27d935
 GridSample.swift 1d69d1724bef8435
 HostTimeSample.swift 869b30037733de10
 IconButtonSample.swift 0af5b21d299babec
+IconSample.swift 186a6dd65c7b98b2
 IdentitySample.swift 3161e5c1e7445fbf
 ImageSample.swift b31a1a7de284fb82
 InteropActsSample.swift 498078bedb056915

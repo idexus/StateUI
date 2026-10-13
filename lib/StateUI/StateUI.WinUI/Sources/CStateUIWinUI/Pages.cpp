@@ -189,7 +189,7 @@ extern "C" void stateui_winui_title_bar_set(
         auto bar = borrow<controls::TitleBar>(handle);
         if (bar.Title() != text(title)) bar.Title(text(title));
         if (bar.Subtitle() != text(subtitle)) bar.Subtitle(text(subtitle));
-        if (sourceFile(bar.IconSource()) != pictureFile(icon)) bar.IconSource(pictureIconSource(icon));
+        if (sourceFile(bar.IconSource()) != pictureName(icon)) bar.IconSource(pictureIconSource(icon));
         bar.IsBackButtonVisible(back);
         bar.IsPaneToggleButtonVisible(paneToggle);
         if (hasBackground) bar.Background(media::SolidColorBrush(color(background)));
@@ -443,11 +443,12 @@ extern "C" void stateui_winui_tabs_set(
             if (index >= static_cast<int32_t>(items.Size())) items.Append(controls::SelectorBarItem());
             auto item = items.GetAt(index);
             if (item.Text() != text(titles[index])) item.Text(text(titles[index]));
-            if (iconFile(item.Icon()) != pictureFile(icons[index])) {
+            if (iconFile(item.Icon()) != pictureName(icons[index])) {
                 // The row stands a tab's picture at its own size: as tall as the theme's tab icons, as wide as its
-                // shape makes it.
+                // shape makes it; an icon's glyph as tall.
                 auto icon = pictureIcon(icons[index]);
                 if (icon) icon.Height(tabIconHeight);
+                if (auto glyph = icon ? icon.try_as<controls::FontIcon>() : nullptr) glyph.FontSize(tabIconHeight);
                 item.Icon(icon);
             }
         }

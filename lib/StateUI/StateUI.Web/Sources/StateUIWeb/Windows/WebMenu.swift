@@ -85,7 +85,7 @@ final class WebMenu {
         button.attribute("disabled", entry.isEnabled ? nil : "")
         if let icon = entry.icon {
             let picture = WebImageView()
-            picture.apply(source: ImageSource(icon), aspect: .fit)
+            picture.apply(picture: icon, aspect: .fit)
             WebRelay.insert(picture.node, into: button.node, at: 0)
             owned.append(picture)
         }

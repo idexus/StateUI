@@ -127,6 +127,72 @@ final class GTKImageViewTests: XCTestCase {
         }
     }
 
+    /// Every icon is one the theme holds, by its symbolic name.
+    func testEveryIconIsTheThemes() throws {
+        try onUIThread {
+            let host = GTKRenderer.running { VStack { Text("Icons") } }
+            let text = try XCTUnwrap(host.views(GTKTextualView.self).first)
+            let theme = gtk_icon_theme_get_for_display(gtk_widget_get_display(text.widget))
+            for icon in Icon.allCases {
+                XCTAssertNotEqual(gtk_icon_theme_has_icon(theme, icon.themeName), 0, "no \(icon.themeName) for \(icon)")
+            }
+        }
+    }
+
+    /// An icon is the theme's symbolic one, filling its room in the colour of the words around it.
+    func testAnIconIsDrawnInTheWordsColour() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                VStack { Image(.icon(.add)).width(32).height(32) }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+            }
+            let image = try XCTUnwrap(host.views(GTKImageView.self).first)
+            host.settle { image.frame.width == 32 }
+
+            var color = GdkRGBA()
+            gtk_widget_get_color(image.widget, &color)
+            // The icon's lines are thin: its most opaque pixel among a grid's, a pixel apart.
+            var points: [(Double, Double)] = []
+            for y in 0..<32 { for x in 0..<32 { points.append((Double(x), Double(y))) } }
+            let drawn = image.pixels(at: points).max { $0 >> 24 < $1 >> 24 } ?? 0
+            let alpha = Double(drawn >> 24)
+            XCTAssertGreaterThan(alpha, 0, "the icon is drawn")
+            // The pixel is premultiplied: each channel over its alpha is the words' own.
+            for (shift, channel) in [(16, color.red), (8, color.green), (0, color.blue)] {
+                let own = Double(drawn >> UInt32(shift) & 0xFF) / max(alpha, 1)
+                XCTAssertEqual(own, Double(channel), accuracy: 0.03, String(drawn, radix: 16))
+            }
+        }
+    }
+
+    /// A button's icon, with its words or alone, is drawn in the colour written for the words.
+    func testAButtonsIconTakesTheWordsWrittenColour() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                VStack {
+                    Button("Share").icon(.icon(.share)).textColor(Color("#FF0000"))
+                    Button(icon: .icon(.settings)).textColor(Color("#FF0000"))
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            let buttons = host.views(GTKButtonView.self)
+            host.settle { buttons.allSatisfy { ($0.picture?.frame.width ?? 0) > 0 } }
+
+            for button in buttons {
+                let picture = try XCTUnwrap(button.picture)
+                var points: [(Double, Double)] = []
+                for y in 0..<Int(picture.frame.height) { for x in 0..<Int(picture.frame.width) { points.append((Double(x), Double(y))) } }
+                let drawn = picture.pixels(at: points).max { $0 >> 24 < $1 >> 24 } ?? 0
+                let alpha = Double(drawn >> 24)
+                XCTAssertGreaterThan(alpha, 0, "the icon is drawn")
+                XCTAssertEqual(Double(drawn >> 16 & 0xFF) / max(alpha, 1), 1, accuracy: 0.03, String(drawn, radix: 16))
+                XCTAssertEqual(Double(drawn & 0xFF) / max(alpha, 1), 0, accuracy: 0.03, String(drawn, radix: 16))
+            }
+        }
+    }
+
     /// The colours at `points` of the test's wide picture drawn as `aspect` says in a room `width` by `height`,
     /// read from the layout holding it, from the room's corner.
     private func drawn(

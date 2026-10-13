@@ -11,8 +11,8 @@ struct GTKToolbarAction {
     weak var item: MountedElement?
     let title: String
 
-    /// The picture the button shows, by file name; nil for the title alone.
-    var icon: String? = nil
+    /// The picture the button shows; nil for the title alone.
+    var icon: HostPicture? = nil
 
     /// Whether the title stands beside the picture.
     var showsTitle = false
@@ -25,7 +25,7 @@ struct GTKToolbarAction {
     init(_ item: MountedElement) {
         self.item = item
         title = item.value(.text)?.string ?? ""
-        icon = item.value(.icon)?.string
+        icon = HostPicture(item.value(.icon))
         showsTitle = item.showsActionWords
         isEnabled = item.isEffectivelyEnabled
         isDestructive = item.value(.isDestructive)?.bool == true

@@ -33,7 +33,8 @@ extension GTKRegistrations {
                 ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing, ImageElementContract.contentMode,
             ]) { view, values in
                 view.setPicture(
-                    values[ButtonContract.icon], position: values[ButtonContract.iconPosition] ?? .leading,
+                    HostPicture(values[ButtonContract.icon], dark: false),
+                    position: values[ButtonContract.iconPosition] ?? .leading,
                     spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
             }
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }

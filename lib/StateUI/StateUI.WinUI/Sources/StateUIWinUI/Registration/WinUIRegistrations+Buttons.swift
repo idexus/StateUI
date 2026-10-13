@@ -34,7 +34,7 @@ extension WinUIRegistrations {
                 ImageElementContract.contentMode,
             ]) { view, values in
                 view.setIcon(
-                    values[ButtonContract.icon].flatMap { $0.isEmpty ? nil : PictureArithmetic.files(for: $0.file) } ?? [],
+                    WinUIPictures.lines(HostPicture(values[ButtonContract.icon], dark: false)),
                     position: values[ButtonContract.iconPosition] ?? .leading,
                     spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
             }

@@ -5,13 +5,13 @@
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
 
-/// An Image: a WinUI `Image` showing a picture from the application's folder at its own size, filling the room
-/// it is given as the aspect says.
+/// An Image: a WinUI `Image` showing a picture from the application's folder or bytes at its own size, or a
+/// `FontIcon` showing an icon, filling the room it is given as the aspect says.
 /// Design: docs/design/platforms/winui/controls.md#pictures
 @MainActor
 final class WinUIImageView: WinUIView {
-    /// The picture shown, by file name, and whether it was found.
-    private(set) var file = ""
+    /// The picture shown, and whether it was found.
+    private(set) var picture: HostPicture?
     private(set) var found = false
 
     /// How the picture fills its room.
@@ -27,17 +27,17 @@ final class WinUIImageView: WinUIView {
         super.init { _ in stateui_winui_image_make() }
     }
 
-    /// Shows the picture `source` names, filling its room as `aspect` says. Its layout is told itself: WinUI hears
-    /// nothing from a picture that asks it for no room.
-    func apply(source: ImageSource?, aspect: ContentMode) {
-        file = source?.file ?? ""
+    /// Shows `picture`, filling its room as `aspect` says. Its layout is told itself: WinUI hears nothing from a
+    /// picture that asks it for no room.
+    func apply(picture: HostPicture?, aspect: ContentMode) {
+        self.picture = picture
         self.aspect = aspect
         var size = [0.0, 0.0]
-        let files = PictureArithmetic.files(for: file)
-        found = WinUIStrings.withCStrings(files) { names in
-            stateui_winui_image_set(handle, names, Int32(files.count), aspect.rawValue, &size)
+        let lines = WinUIPictures.lines(picture)
+        found = WinUIStrings.withCStrings(lines) { names in
+            stateui_winui_image_set(handle, names, Int32(lines.count), aspect.rawValue, &size)
         }
-        if !found { WinUIRenderer.log.error("no picture \(file) among the application's pictures") }
+        if !found { WinUIRenderer.log.error("no picture \(picture?.identity ?? "") among the application's pictures") }
         declared = size[0] > 0 && size[1] > 0 ? LayoutSize(width: size[0], height: size[1]) : nil
         drawn = nil
         if let placed { draw(in: placed) }

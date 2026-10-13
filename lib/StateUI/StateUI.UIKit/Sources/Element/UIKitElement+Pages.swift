@@ -61,7 +61,7 @@ extension UIKitElement {
     /// A page's action as the bar takes it.
     private static func action(_ item: MountedElement) -> UIKitBarAction {
         UIKitBarAction(
-            title: item.value(.text)?.string ?? "", icon: item.value(.icon)?.string,
+            title: item.value(.text)?.string ?? "", icon: HostPicture(item.value(.icon)),
             isEnabled: item.isEffectivelyEnabled, isDestructive: item.value(.isDestructive)?.bool == true,
             identifier: item.value(.accessibilityIdentifier)?.string,
             perform: { [weak item] in item?.uiKit.choose() }, element: item.uiKit)
@@ -106,7 +106,7 @@ extension UIKitElement {
             guard let tabs = controller as? UIKitTabBarController else { return }
             tabs.show(
                 children.compactMap { tab in
-                    tab.controller.map { ($0, tab.value(.title)?.string ?? "", tab.value(.icon)?.string) }
+                    tab.controller.map { ($0, tab.value(.title)?.string ?? "", HostPicture(tab.value(.icon))) }
                 },
                 requested: value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }

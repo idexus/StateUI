@@ -71,7 +71,7 @@ struct WinUIMenu {
             switch entry.kind {
             case .item:
                 append(entry.isOn.map { $0 ? 5 : 4 } ?? 0, entry.title, entry.isEnabled, entry.identifier,
-                       icon: entry.icon.map(PictureArithmetic.files(for:)) ?? [], destructive: entry.isDestructive,
+                       icon: WinUIPictures.lines(entry.icon), destructive: entry.isDestructive,
                        shortcut: entry.keyboardShortcut)
                 actions.append { [weak element = entry.element] in element?.winUI.choose() }
             case .separator:

@@ -11,7 +11,9 @@ keeps the cache over it, so one name is loaded once however many views draw
 it. A registration is made once for the whole process and has no renderer to
 ask, so the host hands every view it makes, through `AppKitPictureResolving`,
 the means to resolve a name. A name the application has no file for resolves
-to nothing.
+to nothing. An icon resolves to its SF Symbol (`Icon.sfSymbol`), a template
+image in the colour of the control holding it, and bytes to the image they
+encode.
 
 ## Accessibility on the control
 

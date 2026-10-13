@@ -92,6 +92,45 @@ final class WinUIImageViewTests: XCTestCase {
     }
 }
 
+extension WinUIImageViewTests {
+    /// An icon is its Segoe Fluent Icons glyph, in a FontIcon; the words assistive technology meets of the picture
+    /// stay as it turns from an icon to a file and back.
+    func testAnIconIsAGlyphAndKeepsThePicturesWords() throws {
+        try onUIThread {
+            let icon = State(wrappedValue: true)
+            let host = WinUIRenderer.running {
+                VStack {
+                    Image(icon.wrappedValue ? .icon(.add) : ImageSource("test_dot.png")).accessibilityLabel("Add")
+                    Button("Flip").onClicked { icon.wrappedValue.toggle() }
+                }
+            }
+            let image = try XCTUnwrap(host.views(WinUIImageView.self).first)
+            let flip = try XCTUnwrap(host.views(WinUIButtonView.self).first)
+            XCTAssertEqual(Self.held(image, "source"), "glyph:E710")
+            XCTAssertEqual(image.automationWords.name, "Add")
+
+            flip.invoke()
+            host.settle { Self.held(image, "source") == "test_dot.png" }
+            XCTAssertEqual(Self.held(image, "source"), "test_dot.png")
+            XCTAssertEqual(image.automationWords.name, "Add")
+
+            flip.invoke()
+            host.settle { Self.held(image, "source") == "glyph:E710" }
+            XCTAssertEqual(Self.held(image, "source"), "glyph:E710")
+            XCTAssertEqual(image.automationWords.name, "Add")
+        }
+    }
+
+    /// What WinUI holds of `view`'s property named `what`, by the relay's reader.
+    @MainActor private static func held(_ view: WinUIView, _ what: String) -> String {
+        let length = stateui_winui_read(view.handle, what, nil, 0)
+        guard length >= 0 else { return "" }
+        var bytes = [CChar](repeating: 0, count: Int(length) + 1)
+        _ = stateui_winui_read(view.handle, what, &bytes, Int32(bytes.count))
+        return String(decoding: bytes.prefix(Int(length)).map { UInt8(bitPattern: $0) }, as: UTF8.self)
+    }
+}
+
 /// An application whose first window shows a run of SVGs and opens a second window showing them again.
 private struct PicturesApplication: Application {
     var body: some Scene { PicturesScene() }

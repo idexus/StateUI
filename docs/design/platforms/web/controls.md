@@ -250,3 +250,12 @@ offered as radio buttons is a column of the browser's radio buttons in their
 labels (`.stateui-radio`). Both are `WebChoiceGroupView`, which checks the
 tree's choice without an event and tells the user's.
 
+## Icons
+
+A browser ships no icons, so the Web's are StateUI's own: one stroke drawn
+on a 24-point square for each `Icon` (`WebIcons`), worn as a CSS mask over
+the colour of the words around it, so an icon takes a button's or a bar's
+colour and the theme's. Its `<img>` shows a drawing of nothing 24 points
+square, which gives the icon its size. A picture from bytes is a `data:` URL,
+its type read from its own first bytes (`WebPictureData`).
+

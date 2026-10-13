@@ -62,7 +62,7 @@ extension AndroidElement {
         row.tabs = children.map { tab in
             AndroidTabView.Tab(
                 title: tab.value(.title)?.string ?? "",
-                picture: tab.value(.icon)?.string.flatMap { $0.isEmpty ? nil : $0 })
+                picture: HostPicture(tab.value(.icon)))
         }
         let colors = element.barColors
         row.background = colors.background
@@ -162,7 +162,7 @@ extension AndroidElement {
             content.navigation = .back
         } else if let split = enclosingSplit, let sidebar = split.children.first,
                   (split.view as? AndroidSplitView)?.overlays == true {
-            content.navigation = .sidebar(sidebar.value(.icon)?.string)
+            content.navigation = .sidebar(HostPicture(sidebar.value(.icon)))
         }
 
         navigation.setShowsBar(element.children.last?.showsTheStacksBar ?? true)

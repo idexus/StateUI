@@ -59,11 +59,11 @@
         /// The line under the title; nil for none.
         public let subtitle: String?
 
-        /// The picture beside the title, by name; nil for none.
-        public let icon: String?
+        /// The picture beside the title; nil for none.
+        public let icon: HostPicture?
 
         /// An area saying `title`, `subtitle` and `icon`.
-        public init(title: String?, subtitle: String?, icon: String?) {
+        public init(title: String?, subtitle: String?, icon: HostPicture?) {
             self.title = title
             self.subtitle = subtitle
             self.icon = icon
