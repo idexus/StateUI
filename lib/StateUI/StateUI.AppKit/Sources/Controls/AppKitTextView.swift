@@ -18,7 +18,7 @@ enum AppKitVerticalTextAlignment: Int32, Equatable {
 final class AppKitTextView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
     AppKitMeasurementCaching {
     private let textField: NSTextField = AppKitLabel(labelWithString: "")
-    let measurements = MeasurementCache()
+    let measurements = MeasurementCache(holdsWhenWider: true)
 
     private(set) var padding = NSEdgeInsets()
     private(set) var horizontalTextAlignment: NSTextAlignment = .left

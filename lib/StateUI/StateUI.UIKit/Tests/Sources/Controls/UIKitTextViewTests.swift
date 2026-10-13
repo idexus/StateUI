@@ -55,6 +55,24 @@ final class UIKitTextViewTests: XCTestCase {
         XCTAssertTrue(label.layer.needsDisplay(), "narrower, its height the same")
     }
 
+    /// Words measured without a width are not measured again in a wider room - a long listing in a scroller laid
+    /// out as wide as its document each frame a page widens - but are in a narrower one, and once their words change.
+    @MainActor
+    func testWordsMeasuredWithoutAWidthAreNotMeasuredAgainInAWiderRoom() {
+        let label = UIKitTextView()
+        label.setText("Some words, long enough to wrap onto a second line in a narrow room")
+        let unbounded = CGFloat.greatestFiniteMagnitude
+        let natural = label.sizeThatFits(CGSize(width: unbounded, height: unbounded))
+        XCTAssertEqual(label.sizeThatFits(CGSize(width: natural.width + 200, height: unbounded)), natural)
+        XCTAssertEqual(label.sizeThatFits(CGSize(width: natural.width + 300, height: unbounded)), natural)
+        XCTAssertEqual(label.nativeMeasurementCountForTesting, 1, "measured once")
+
+        XCTAssertGreaterThan(label.sizeThatFits(CGSize(width: 120, height: unbounded)).height, natural.height)
+        label.setText("Other words")
+        _ = label.sizeThatFits(CGSize(width: natural.width + 200, height: unbounded))
+        XCTAssertEqual(label.nativeMeasurementCountForTesting, 3, "a narrower room, then new words, are measured")
+    }
+
     /// A label's background fills its whole box, the room around its words included - a colour, and a brush.
     @MainActor
     func testATextsBackgroundFillsItsBox() {

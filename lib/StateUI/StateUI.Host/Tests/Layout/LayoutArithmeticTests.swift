@@ -380,6 +380,31 @@ final class LayoutArithmeticTests: XCTestCase {
         _ = size(10)
         XCTAssertEqual(measured, 3)
     }
+
+    /// Words measured without a width stand the same in any room at least as wide: a long listing in a scroller,
+    /// laid out as wide as its document each frame a page widens, is measured once.
+    @MainActor
+    func testWordsMeasuredWithoutAWidthHoldInAnyWiderRoom() {
+        let cache = MeasurementCache(holdsWhenWider: true)
+        var measured = 0
+        func size(_ width: Double?) -> LayoutSize {
+            cache.size(offering: width) {
+                measured += 1
+                return LayoutSize(width: min(width ?? 537, 537), height: width.map { $0 < 537 ? 40 : 20 } ?? 20)
+            }
+        }
+
+        XCTAssertEqual(size(nil), LayoutSize(width: 537, height: 20))
+        XCTAssertEqual(size(756), LayoutSize(width: 537, height: 20))
+        XCTAssertEqual(size(1024), LayoutSize(width: 537, height: 20))
+        XCTAssertEqual(size(537), LayoutSize(width: 537, height: 20))
+        XCTAssertEqual(measured, 1, "measured once, without a width")
+        XCTAssertEqual(size(400), LayoutSize(width: 400, height: 40), "a narrower room breaks the words")
+        XCTAssertEqual(measured, 2)
+        XCTAssertEqual(
+            MeasurementCache().size(offering: 756) { LayoutSize(width: 756, height: 1) }.width, 756,
+            "a layout's size is its own at every width")
+    }
 }
 
 /// A child of a stated natural size; one that wraps is as wide as that on one line, and a line taller for each

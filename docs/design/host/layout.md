@@ -68,6 +68,18 @@ arranges the parent again, and one that is only drawn - an opacity, a colour,
 a toggle's state, a transform, what assistive technology meets - measures
 nothing.
 
+## Words in a wider room
+
+Words measured with no width offered stand on their natural lines, and in
+any room at least that wide they stand the same: no line breaks earlier. So
+a label's kept answers hold its natural size for every wider width
+(`MeasurementCache(holdsWhenWider:)`), and only a narrower room asks its
+toolkit again. A page whose width changes every frame - a sidebar sliding
+beside it - measures its words once, not once a frame at each new width:
+measuring large words is the costliest call a toolkit makes, and a frame that
+makes it at every width stalls. A view that is not words keeps one answer a
+width.
+
 ## A child measured
 
 A layout measures a child the same way on every host: at its stated width,

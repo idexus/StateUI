@@ -19,6 +19,11 @@ final class UIKitTextView: UILabel, UIKitLabel {
     /// What fills the label's box behind its words: a colour, or a brush; nothing where the tree says none.
     private var fill = UIKitBrush()
 
+    /// The words' sizes as measured for each width offered; the size measured without one holds in any wider room.
+    /// Design: docs/design/host/layout.md#words-in-a-wider-room
+    private let measurements = MeasurementCache(holdsWhenWider: true)
+    private(set) var nativeMeasurementCountForTesting = 0
+
     /// The size the words were last drawn for: UIKit does not always draw a label again when its width alone
     /// changes, and its old drawing stands stretched to the new box until something else has it drawn.
     /// Design: docs/design/platforms/uikit/controls.md#a-labels-words
@@ -39,6 +44,7 @@ final class UIKitTextView: UILabel, UIKitLabel {
     /// The room between the label's edge and its words.
     func setPadding(_ insets: Insets?) {
         padding = insets.map(UIEdgeInsets.init) ?? .zero
+        measurements.invalidate()
         invalidateIntrinsicContentSize()
         setNeedsDisplay()
     }
@@ -49,11 +55,25 @@ final class UIKitTextView: UILabel, UIKitLabel {
         textAlignment = shown.alignment(in: effectiveUserInterfaceLayoutDirection)
         lineBreakMode = shown.lineBreakMode
         numberOfLines = shown.lines
+        measurements.invalidate()
         invalidateIntrinsicContentSize()
         setNeedsDisplay()
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
+        // A layout measures with no bound below: the words' size for the width offered, kept.
+        guard size.height >= .greatestFiniteMagnitude else { return fitted(size) }
+        let width = size.width < .greatestFiniteMagnitude ? Double(size.width) : nil
+        let measured = measurements.size(offering: width) {
+            let words = self.fitted(size)
+            return LayoutSize(width: words.width, height: words.height)
+        }
+        return CGSize(width: measured.width, height: measured.height)
+    }
+
+    /// The words' size within `size`, the padding around them.
+    private func fitted(_ size: CGSize) -> CGSize {
+        nativeMeasurementCountForTesting += 1
         let room = CGSize(
             width: size.width.isFinite ? max(0, size.width - padding.left - padding.right) : size.width,
             height: size.height.isFinite ? max(0, size.height - padding.top - padding.bottom) : size.height)
