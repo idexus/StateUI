@@ -19,21 +19,18 @@ let host = ["AppKit", "UIKit", "Android", "WinUI", "GTK", "Web"]
 let settings: [SwiftSetting] = [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
     + (host.map { [.define($0.uppercased())] } ?? [])
 
-// The application's Swift, which every host compiles, holds each file to the
-// modules it imports itself: a member Foundation adds, written where no import
-// of it stands, fails on every host, not on the Web alone.
-let everyHost: [SwiftSetting] = settings + [.enableUpcomingFeature("MemberImportVisibility")]
-
 var products: [Product] = [
     // Dynamic, so a head and its host share one StateUI runtime; on the Web one module holds them all.
     .library(name: "GalleryUI", type: host == "Web" ? nil : .dynamic, targets: ["GalleryUI"]),
 ]
 
 var targets: [Target] = [
+    // The application's Swift, which every host compiles, holds each file to the modules it imports itself: a member
+    // Foundation adds, written where no import of it stands, fails on every host, not on the Web alone.
     .target(
         name: "GalleryUI",
         dependencies: [.product(name: "StateUI", package: "StateUIRoot")],
-        path: "Sources", swiftSettings: everyHost),
+        path: "Sources", swiftSettings: settings + [.enableUpcomingFeature("MemberImportVisibility")]),
     .testTarget(
         name: "GalleryTests",
         dependencies: ["GalleryUI", .product(name: "StateUI", package: "StateUIRoot")],
