@@ -222,7 +222,7 @@ final class CompleteContractTests: XCTestCase {
         "WindowSession.swift": ["Window"],
         "View+PageValues.swift": ["Page"],
         "PlacedLayout.swift": ["ZStack"],
-        "StyleSheet.swift": ["VisualElement"],
+        "StyleSheet.swift": ["VisualElement", "Button"],
     ]
 
     /// The contracts a source names by its protocols and extensions -
