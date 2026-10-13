@@ -91,6 +91,13 @@ display cycle, in this order, in every runtime:
 A user's own change drains steps 2 to 5 at once, so the followers and
 the engines move on the user's frame.
 
+The cycle's time never runs back. The display stamps each frame with the time
+of its last refresh, and a turn between frames - a report, a handler, the
+environment - drains on the runtime's own time, which is later. A frame
+stamped before the last drain runs at that drain's time instead: an animation
+advanced by the drain would otherwise step back on the frame after it, and
+forward again on the next.
+
 In step 4 a host only presents each element's moved values; what they ask
 of the elements around it is decided once, for every host
 (`MountedElement.presentFrame`): the element presents itself again; its

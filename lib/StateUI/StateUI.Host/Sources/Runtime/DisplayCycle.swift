@@ -36,6 +36,11 @@
     /// Whether the core's last cycle said it has more to do.
     private var continues = false
 
+    /// The latest time the cycle ran at. The display's frames come stamped on its clock and a turn between them on
+    /// the runtime's own; neither takes the cycle back.
+    /// Design: docs/design/host/runtime.md#one-frame
+    private var time = -Double.infinity
+
     /// The frame's batch: bound states' values, and moved properties per mounted element.
     private var states: [Int32: HostStateValue] = [:]
     private var properties: [UInt64: Set<Prop>] = [:]
@@ -63,6 +68,7 @@
 
     /// One frame: the user's reports, the animations, the core's cycle, one walk, the hold, a render.
     public func frame(now: Double) {
+        let now = onward(now)
         presenter?.commitUserReports(now: now)
         drain(now: now)
         presenter?.renderIfNeeded()
@@ -71,6 +77,7 @@
     /// Advances the animations, runs the core's cycle, presents what moved and holds the clock.
     /// `reported` holds states the user changed, worn by every other bound control in the same walk.
     public func drain(now: Double, reported: [Int32: HostStateValue] = [:]) {
+        let now = onward(now)
         states.merge(reported) { _, reported in reported }
 
         let reducesMotion = reducesMotion()
@@ -93,6 +100,7 @@
 
     /// Advances every animation to `now` and presents what moved.
     public func advanceAnimations(now: Double, reducesMotion: Bool) {
+        let now = onward(now)
         sidebarSlide.pace(now: now)
         follow(animator.advance(to: now, reducesMotion: reducesMotion))
         present()
@@ -102,6 +110,12 @@
     public func presentStateChannels() {
         collectStateChannels()
         present()
+    }
+
+    /// `now`, or the cycle's latest time where `now` stands before it.
+    private func onward(_ now: Double) -> Double {
+        time = max(time, now)
+        return time
     }
 
     /// Holds the frame clock while an animation or the core's cycle moves, or the presenter wants frames.
