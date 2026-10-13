@@ -17,10 +17,13 @@ extension AppKitRegistrations {
     /// value written onto a control.
     static func buttons(_ registry: Registry<NSView>) {
         registry.add(ButtonContract.self, create: { reports -> NSControl in
-            // A button holding a menu is AppKit's combo button, made so from the first; another kind is made again.
-            let kind = ButtonMenu.kind(made: reports.made)
-            let button: NSControl & AppKitButtonFace = kind == .plain
-                ? AppKitButtonView() : AppKitMenuButtonView(splits: kind == .split)
+            // A button holding a menu is AppKit's pull-down or split button, made so from the first; another kind is
+            // made again.
+            let button: NSControl & AppKitButtonFace = switch ButtonMenu.kind(made: reports.made) {
+            case .plain: AppKitButtonView()
+            case .menu: AppKitPullDownButtonView()
+            case .split: AppKitSplitButtonView()
+            }
             button.onClicked = { reports.raise(ButtonContract.clicked) }
             button.onPressed = { reports.raise(ButtonContract.pressed) }
             button.onReleased = { reports.raise(ButtonContract.released) }

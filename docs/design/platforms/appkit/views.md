@@ -107,11 +107,14 @@ so a wide button's icon stands far from its words.
 
 ## A button's menu
 
-A button holding a menu is AppKit's combo button: unified where its click
-opens the menu, split where its click acts and its arrow opens the menu. The
-host sets a new menu on it each time its entries change: a split button
-offers its arrow only for a menu set on it, and its own menu, filled in place,
-leaves the arrow drawn and dead.
+A button whose click opens its menu is AppKit's pull-down button: its arrow
+points down and the menu opens under the press at once, its first item the
+button's own caption and picture, never offered. AppKit's unified combo button
+opens its menu only when held. A button with a click of its own and a menu is
+the split combo button, its arrow opening the menu. The host sets a new menu
+on either each time its entries change: a split button offers its arrow only
+for a menu set on it, and its own menu, filled in place, leaves the arrow
+drawn and dead.
 
 ## A radio button's set
 

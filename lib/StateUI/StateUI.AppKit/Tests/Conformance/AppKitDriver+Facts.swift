@@ -20,12 +20,12 @@ extension AppKitDriver {
         return Self.said(view.menu?.items ?? [])
     }
 
-    /// The menu of the combo button standing for `button`.
+    /// The menu of the pull-down or split button standing for `button`.
     func buttonMenu(of button: MountedElement) throws -> String {
-        guard let combo = (button.native as? AppKitElement)?.view as? AppKitMenuButtonView else {
+        guard let offering = (button.native as? AppKitElement)?.view as? AppKitMenuOffering else {
             throw DriverCannot("read the menu \(button.type.name) opens")
         }
-        return Self.said(combo.menu.items)
+        return Self.said(offering.offeredItems)
     }
 
     /// The bar the window of `page` shows, read from its toolbar: the actions before the first flexible space and

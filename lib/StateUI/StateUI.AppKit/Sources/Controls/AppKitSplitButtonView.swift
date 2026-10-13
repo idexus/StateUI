@@ -6,12 +6,12 @@ import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// AppKit's combo button behind a `Button` holding a menu: unified, its click opening the menu, or split, its click
-/// its own action and its menu behind the arrow. It takes a button's caption, picture, font and whether it can be
-/// pressed; AppKit's combo button takes no colour of its words, spacing between their letters or box of its own.
-/// Design: docs/design/views/controls.md#a-buttons-menu
+/// AppKit's split combo button behind a `Button` with a click of its own and a menu: its click its action, its menu
+/// behind the arrow. It takes a button's caption, picture, font and whether it can be pressed; AppKit's combo button
+/// takes no colour of its words, spacing between their letters or box of its own.
+/// Design: docs/design/platforms/appkit/views.md#a-buttons-menu
 @MainActor
-final class AppKitMenuButtonView: NSComboButton, AppKitButtonFace {
+final class AppKitSplitButtonView: NSComboButton, AppKitButtonFace, AppKitMenuOffering {
     var onPressed: (() -> Void)?
     var onReleased: (() -> Void)?
     var onClicked: (() -> Void)?
@@ -20,16 +20,16 @@ final class AppKitMenuButtonView: NSComboButton, AppKitButtonFace {
     /// The keys pressing the button, which AppKit's combo button holds none of: its window offers them here.
     private var shortcut: KeyboardShortcut?
 
-    init(splits: Bool) {
+    init() {
         super.init(frame: .zero)
-        style = splits ? .split : .unified
+        style = .split
         target = self
         action = #selector(clicked(_:))
     }
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("AppKitMenuButtonView is created in code")
+        fatalError("AppKitSplitButtonView is created in code")
     }
 
     func apply(
@@ -59,18 +59,16 @@ final class AppKitMenuButtonView: NSComboButton, AppKitButtonFace {
         menu = offered
     }
 
-    /// The window offers its key equivalents to every view: the button's keys press it - its action where it splits,
-    /// its menu where a click opens one - as AppKit's own button takes its key equivalent.
+    var offeredItems: [NSMenuItem] { menu.items }
+
+    /// The window offers its key equivalents to every view: the button's keys press it, its action, as AppKit's own
+    /// button takes its key equivalent.
     override func performKeyEquivalent(with event: NSEvent) -> Bool {
         let held = event.modifierFlags.intersection([.command, .shift, .option])
         let pressed = AppKitKeys.shortcut(key: event.charactersIgnoringModifiers ?? "", modifiers: held)
         guard isEnabled, let shortcut, pressed == shortcut else { return super.performKeyEquivalent(with: event) }
         if window?.firstResponder is NSText, KeyboardShortcuts.givesWayToTyping(shortcut) { return false }
-        if style == .split {
-            clicked(self)
-        } else {
-            menu.popUp(positioning: nil, at: NSPoint(x: 0, y: bounds.height + 4), in: self)
-        }
+        clicked(self)
         return true
     }
 

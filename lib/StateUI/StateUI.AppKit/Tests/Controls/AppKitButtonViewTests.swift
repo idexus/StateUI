@@ -214,6 +214,23 @@ final class AppKitButtonViewTests: XCTestCase {
         XCTAssertEqual(scaling("covering"), .scaleProportionallyUpOrDown)
     }
 
+    /// A button whose click opens its menu is AppKit's pull-down button: its arrow pointing down, the menu open at
+    /// once under the press, its first item the button's own caption.
+    @MainActor
+    func testAButtonOpeningAMenuPullsItDown() throws {
+        let renderer = AppKitRenderer.running {
+            Button("Share").menu {
+                MenuItem("Mail")
+                MenuItem("Message")
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let button = try XCTUnwrap(renderer.nativeViews(NSPopUpButton.self).first)
+        XCTAssertTrue(button.pullsDown)
+        XCTAssertEqual(button.menu?.items.map(\.title), ["Share", "Mail", "Message"])
+        XCTAssertEqual(button.title, "Share")
+    }
+
     /// A split button's arrow opens its menu: AppKit's combo button offers its arrow only for a menu set on it.
     @MainActor
     func testASplitButtonsArrowIsOffered() throws {
@@ -224,7 +241,7 @@ final class AppKitButtonViewTests: XCTestCase {
             }
         }
         defer { renderer.closeForTesting() }
-        let button = try XCTUnwrap(renderer.nativeViews(AppKitMenuButtonView.self).first)
+        let button = try XCTUnwrap(renderer.nativeViews(AppKitSplitButtonView.self).first)
         XCTAssertEqual(button.style, .split)
         XCTAssertEqual(button.menu.items.map(\.title), ["Save as", "Save a copy"])
 
