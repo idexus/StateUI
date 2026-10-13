@@ -105,6 +105,14 @@ A button keeps its icon beside its words, the two together in the middle
 AppKit puts the icon at the button's edge and the words alone in the middle,
 so a wide button's icon stands far from its words.
 
+## A button's menu
+
+A button holding a menu is AppKit's combo button: unified where its click
+opens the menu, split where its click acts and its arrow opens the menu. The
+host sets a new menu on it each time its entries change: a split button
+offers its arrow only for a menu set on it, and its own menu, filled in place,
+leaves the arrow drawn and dead.
+
 ## A radio button's set
 
 StateUI owns a radio button's set - its name, across the whole window - and

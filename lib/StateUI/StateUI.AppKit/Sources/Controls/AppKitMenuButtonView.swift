@@ -48,11 +48,15 @@ final class AppKitMenuButtonView: NSComboButton, AppKitButtonFace {
         self.shortcut = shortcut
     }
 
-    /// The menu's entries, AppKit's items for them standing on their elements.
+    /// The menu's entries, AppKit's items for them standing on their elements, in a menu set on the button: a split
+    /// button offers its arrow only for a menu set on it, never for its own one filled in place.
+    /// Design: docs/design/platforms/appkit/views.md#a-buttons-menu
     func offer(_ items: [NSMenuItem]) {
-        menu.autoenablesItems = false
         menu.removeAllItems()
-        for item in items { menu.addItem(item) }
+        let offered = NSMenu()
+        offered.autoenablesItems = false
+        for item in items { offered.addItem(item) }
+        menu = offered
     }
 
     /// The window offers its key equivalents to every view: the button's keys press it - its action where it splits,

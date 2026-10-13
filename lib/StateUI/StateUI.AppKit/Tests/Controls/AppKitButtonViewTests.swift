@@ -214,6 +214,31 @@ final class AppKitButtonViewTests: XCTestCase {
         XCTAssertEqual(scaling("covering"), .scaleProportionallyUpOrDown)
     }
 
+    /// A split button's arrow opens its menu: AppKit's combo button offers its arrow only for a menu set on it.
+    @MainActor
+    func testASplitButtonsArrowIsOffered() throws {
+        let renderer = AppKitRenderer.running {
+            Button("Save").onClicked {}.menu {
+                MenuItem("Save as")
+                MenuItem("Save a copy")
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let button = try XCTUnwrap(renderer.nativeViews(AppKitMenuButtonView.self).first)
+        XCTAssertEqual(button.style, .split)
+        XCTAssertEqual(button.menu.items.map(\.title), ["Save as", "Save a copy"])
+
+        func parts(of element: Any) -> [NSObject] {
+            let children = ((element as? NSObject)?.value(forKey: "accessibilityChildren") as? [Any]) ?? []
+            return children.compactMap { $0 as? NSObject } + children.flatMap { parts(of: $0) }
+        }
+        let all = parts(of: button)
+        let arrow = try XCTUnwrap(
+            all.first { $0.value(forKey: "accessibilityRole") as? NSAccessibility.Role == .menuButton },
+            "\(all.map { "\($0.value(forKey: "accessibilityRole") ?? "-")" })")
+        XCTAssertEqual(arrow.value(forKey: "accessibilityEnabled") as? Bool, true, "the arrow offered")
+    }
+
     /// An icon beside its button's words stands at its own size, smaller where the button is: a tall button does
     /// not stretch it over the words.
     @MainActor
