@@ -65,9 +65,25 @@ class WinUILayoutView: WinUIView {
         items.map(\.view)
     }
 
-    /// Holds the views this layout shows now.
+    /// Holds the views this layout shows now, under the title heading it where a page or a tab view is headed.
     func holdChildren() {
-        setChildren(heldViews())
+        setChildren((heading.map { [$0.view] } ?? []) + heldViews())
+    }
+
+    /// The title heading the page or tab view this layout is; nil for none.
+    private(set) var heading: WinUIPageHeading?
+
+    /// Heads the page or tab view with `title`, its content under it; nil takes the heading away.
+    /// Design: docs/design/platforms/winui/pages.md#a-pages-heading
+    func setHeading(_ title: String?) {
+        guard title != heading?.view.text else { return }
+        if let title, let heading {
+            heading.view.setText(title)
+        } else {
+            heading = title.map(WinUIPageHeading.init)
+            holdChildren()
+        }
+        invalidateMeasurements()
     }
 
     /// Holds `views` in the panel in this order, the one it draws them in, over the box.

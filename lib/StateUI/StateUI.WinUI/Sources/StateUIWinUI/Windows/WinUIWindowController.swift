@@ -22,13 +22,14 @@ final class WinUIWindowController {
     /// The sheets the window shows, one for each page its modal stack presents, the last on top.
     private var sheets: [(element: MountedElement, sheet: WinUISheetView)] = []
 
-    /// The page heading its content with its title, while the chrome names the application in its place.
-    private weak var headed: WinUISingleChildView?
+    /// The page or tab view heading its content with its title, while the chrome names the application in its
+    /// place.
+    private weak var headed: WinUILayoutView?
 
-    /// Heads `page` with its title, and the page headed before it no more.
+    /// Heads `page` - a page, or a tab view naming the window - with its title, and the one headed before it no more.
     /// Design: docs/design/platforms/winui/pages.md#a-pages-heading
     private func head(_ page: MountedElement?) {
-        let view = page?.winUI.view as? WinUISingleChildView
+        let view = page?.winUI.view as? WinUILayoutView
         if headed !== view { headed?.setHeading(nil) }
         headed = view
         view?.setHeading(page?.value(.title)?.string.flatMap { $0.isEmpty ? nil : $0 })

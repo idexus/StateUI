@@ -86,10 +86,10 @@ Where the window's chrome names the application - a title area declared on the
 visible path - the page that would name the window is headed by its own
 title, as Windows' own applications head a page under a title bar naming the
 application: a row across the top of the page's room in WinUI's title style,
-24 DIPs from its top and sides, the page's content under it. The window heads
+24 DIPs from its top and sides, the page's content under it - a tab view
+naming the window by its own title is headed over its tabs. The window heads
 one page at a time, the one its chrome composes from, and takes the heading
-from the page it headed before. A tab view names its tabs in its own row and
-is headed by nothing.
+from the one it headed before.
 
 ## The way back
 

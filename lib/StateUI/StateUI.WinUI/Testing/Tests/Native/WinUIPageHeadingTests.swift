@@ -32,10 +32,35 @@ final class WinUIPageHeadingTests: XCTestCase {
 
             let sample = { host.views(WinUITextView.self).first { $0.text == "Sample words" }?.placed }
             host.settle { sample() != nil }
-            let page = try XCTUnwrap(host.views(WinUISingleChildView.self).first { $0.heading != nil })
+            let page = try XCTUnwrap(host.views(WinUILayoutView.self).first { $0.heading != nil })
             let heading = try XCTUnwrap(page.heading?.view.placed)
             let words = try XCTUnwrap(sample())
             XCTAssertGreaterThanOrEqual(words.y, heading.y + heading.height, "the content under the heading")
+        }
+    }
+
+    /// A tab view naming the window is headed by its title, its tabs' page under it.
+    func testATabViewNamingTheWindowIsHeadedOverItsTabs() throws {
+        try onUIThread {
+            let path = State(wrappedValue: [Int]())
+            let host = WinUIRenderer.running {
+                NavigationStack(path.projectedValue) {
+                    Text("Home words").title("Home")
+                } destination: { _ in
+                    TabView([1, 2]) { number in Text("Example words").title("Example \(number)") }.title("Items")
+                }
+                .barTitle("StateUI")
+            }
+            path.wrappedValue = [1]
+            host.settle { Self.headings(host) == ["Items"] }
+            XCTAssertEqual(Self.headings(host), ["Items"])
+
+            let tabs = try XCTUnwrap(host.views(WinUITabView.self).first)
+            let heading = { tabs.heading?.view.placed }
+            let page = { tabs.heldViews().last?.placed }
+            host.settle { heading() != nil && page() != nil }
+            let placed = try XCTUnwrap(heading())
+            XCTAssertGreaterThanOrEqual(try XCTUnwrap(page()).y, placed.y + placed.height, "the tab's page under it")
         }
     }
 
@@ -57,6 +82,6 @@ final class WinUIPageHeadingTests: XCTestCase {
     /// The titles heading pages now.
     @MainActor
     private static func headings(_ host: WinUIRenderer) -> [String] {
-        host.views(WinUISingleChildView.self).compactMap { $0.heading?.view.text }
+        host.views(WinUILayoutView.self).compactMap { $0.heading?.view.text }
     }
 }
