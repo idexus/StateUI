@@ -36,6 +36,7 @@ final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
     override func layout() {
         super.layout()
         if barColor != nil { needsDisplay = true }
+        layOutReporting(item?.view)
     }
 
     override func draw(_ dirtyRect: NSRect) {

@@ -138,6 +138,10 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
         page?.fittingSize ?? .zero
     }
 
+    /// Lets what reads a frame say where it stands, once the window is laid out and before it draws; whether
+    /// anything did.
+    var reportsLaidOut: () -> Bool = { false }
+
     override func layout() {
         super.layout()
         if let material {
@@ -151,6 +155,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
         page?.frame = pageSpansTitleBar ? bounds : safeAreaRect
         overlaySurface.frame = safeAreaRect
         overlaySurface.layoutSubtreeIfNeeded()
+        layOutReporting(page)
     }
 }
 

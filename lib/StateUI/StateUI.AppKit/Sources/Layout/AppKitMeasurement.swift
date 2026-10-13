@@ -66,6 +66,17 @@ protocol AppKitMeasurementCaching: AnyObject {
 @MainActor
 protocol AppKitRoom: NSView {}
 
+extension AppKitRoom {
+    /// Lays `page` out and lets what reads a frame say where it stands, laying it out again where anything did:
+    /// what a frame read changes is drawn in the frame that measured it.
+    /// Design: docs/design/host/runtime.md#where-a-view-stands
+    func layOutReporting(_ page: NSView?) {
+        page?.layoutSubtreeIfNeeded()
+        guard let content = window?.contentView as? AppKitWindowContentView, content.reportsLaidOut() else { return }
+        page?.layoutSubtreeIfNeeded()
+    }
+}
+
 @MainActor
 extension NSView {
     /// Forgets the measurement of this view and of every ancestor whose size

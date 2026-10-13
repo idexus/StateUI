@@ -94,6 +94,34 @@ final class AppKitFrameTests: XCTestCase {
         XCTAssertEqual(Array(after.prefix(4)), Array(before.prefix(4)), "where it was in its cell")
     }
 
+    /// A split view's pane its split view alone resized - the divider moving, as each frame of the sidebar's slide
+    /// moves it - lets what reads a frame in it say where it stands in that layout pass, before the window draws: no
+    /// display frame comes between.
+    @MainActor
+    func testAViewInAPaneTheSplitViewResizedSaysWhereItStandsInThatPass() throws {
+        let heard = Received<[Double]>()
+        let shown = State(wrappedValue: true)
+        let renderer = AppKitRenderer.running {
+            SplitView(shown.projectedValue) {
+                Text("Menu")
+            } detail: {
+                Rectangle().fill(.steelBlue)
+                    .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let split = try XCTUnwrap(renderer.nativeViews(AppKitSplitView.self).first)
+        settle(renderer) { split.isEffectivelyPresentedForTesting && !heard.values.isEmpty }
+        renderer.displayFrameForTesting()
+        let before = try XCTUnwrap(heard.values.last?[2])
+        let divider = split.splitController.splitViewItems[0].viewController.view.frame.maxX
+
+        split.splitController.splitView.setPosition(divider + 40, ofDividerAt: 0)
+        split.splitController.splitView.layoutSubtreeIfNeeded()
+
+        XCTAssertLessThan(try XCTUnwrap(heard.values.last?[2]), before, "said in the pass that narrowed it")
+    }
+
     @MainActor
     func testFrameReportUsesParentWindowAndSafeAreaCoordinates() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)

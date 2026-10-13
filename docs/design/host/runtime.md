@@ -278,7 +278,12 @@ asks the browser whether the element has a box.
 The Web, as each call from the page ends and before the browser draws, lets
 what was laid out say it at once (`FrameFollowers.reportLaidOut`), so a
 size worked out from a frame is drawn in the frame that measured it; a
-scroller still says what it did on the display's frame.
+scroller still says what it did on the display's frame. AppKit does the
+same in each room's layout pass - the window's content, a split view's
+pane - laying the page out, letting it say, and laying it out again where
+anything did (`layOutReporting`): a split view sliding its sidebar lays out
+only its panes, and a report left to the display's next frame stood the
+page's content in the last frame's width every other frame.
 
 ## A scroller's movement
 
