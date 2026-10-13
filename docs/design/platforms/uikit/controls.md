@@ -74,6 +74,15 @@ outline and its shape - an oval a face of the button's own, the
 configuration's background view, which its corners cannot draw - and the room
 inside it.
 
+## A button's menu
+
+A button whose tap opens its menu shows the menu as its primary action and
+wears UIKit's menu indicator beside its words. UIKit draws no split button,
+so a split button keeps its tap and holds an arrow of its own: a `UIButton`
+with a chevron at its trailing edge, the whole height, set off by a line,
+opening the menu with a tap; the button keeps room for it inside its padding,
+so its words never run under the arrow, which takes the words' colour.
+
 ## Accessibility
 
 What VoiceOver meets of a view is what the tree says of it - its label, hint

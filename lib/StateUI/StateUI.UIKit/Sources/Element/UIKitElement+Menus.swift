@@ -30,12 +30,11 @@ extension UIKitElement {
     }
 
     /// Gives a button holding a menu UIKit's menu for it: opened by a tap where the button has no click of its own,
-    /// else held down while a tap runs the button's action - UIKit draws no split button.
+    /// else by the arrow of a split button, its tap running the button's action.
     func configureButtonMenu() {
         guard let button = view as? UIKitButtonView else { return }
         let kind = ButtonMenu.kind(of: element)
-        button.menu = kind == .plain ? nil : UIKitMenus.menu(ButtonMenu.entries(of: element))
-        button.showsMenuAsPrimaryAction = kind == .menu
+        button.offer(kind == .plain ? nil : UIKitMenus.menu(ButtonMenu.entries(of: element)), opensOnTap: kind == .menu)
     }
 
     /// The slot the view's context menu stands in, a child of its own.

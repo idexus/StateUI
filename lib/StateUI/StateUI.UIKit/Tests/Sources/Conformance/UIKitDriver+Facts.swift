@@ -82,7 +82,7 @@ extension UIKitDriver {
 
     /// The menu UIKit's button standing for `button` holds.
     func buttonMenu(of button: MountedElement) throws -> String {
-        guard let view = (button.native as? UIKitElement)?.view as? UIKitButtonView, let menu = view.menu else {
+        guard let view = (button.native as? UIKitElement)?.view as? UIKitButtonView, let menu = view.offeredMenu else {
             throw DriverCannot("read the menu \(button.type.name) opens")
         }
         return UIKitMenus.said(menu.children)
