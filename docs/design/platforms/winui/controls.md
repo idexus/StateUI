@@ -387,21 +387,22 @@ it drawn at the size it shows at in its room, in its own proportions, at the
 display's scale - again only for more pixels, so a size in motion does not
 draw it every frame - and WinUI's `Stretch` fits it, fills with it, or
 centres it. A centred SVG gives the image its declared size, in the middle
-of the room. A stretched picture keeps no proportions, and WinUI draws a
-stretched SVG at its room's size, where the SVG would keep its own and leave
-bands: the relay hands WinUI the picture from memory with its proportions
-let go (`preserveAspectRatio="none"`).
+of the room. A stretched picture keeps no proportions and is drawn at its
+room's size: WinUI fits an SVG into its pixels in the SVG's own proportions,
+leaving bands, so the relay reads a copy of it that has given them up - and
+its own size with them (`preserveAspectRatio="none"`, width and height
+`100%`) - written once among the system's temporary files.
 
-Every SVG is read from memory, once for each file, the pixels it is drawn at
-and whether its proportions are let go, and that one source is shared by
-every picture, button and icon showing it in every window: a picture drawn
-at a new size takes the source for that size. Read by its file's address,
-WinUI draws an SVG short and cut under a turn with an uneven scale - a
-wheel's side cards - and read from memory once for every picture, the
-Gallery's pictures in a second window held some five gigabytes of surfaces;
-shared, a second window adds megabytes. The relay keeps each source weakly,
-with its file, which is how a picture's file is read back. WinUI's renderer
-draws no SVG text: a picture's words are outlines.
+Every SVG is read by its file's address, once for each file, the pixels it
+is drawn at and whether its proportions are let go, and that one source is
+shared by every picture, button and icon showing it in every window: a
+picture drawn at a new size takes the source for that size. An SVG read from
+memory costs a surface as large as the window - the Gallery's Home held some
+2.7 GB that way, 64 MB read by address - and drawn at its size, an SVG read
+by address stands whole under a turn with an uneven scale, a wheel's side
+cards (`testEverySVGIsReadByItsFilesAddress`). The relay keeps each source
+weakly, with its file, which is how a picture's file is read back. WinUI's
+renderer draws no SVG text: a picture's words are outlines.
 
 ## Icons
 

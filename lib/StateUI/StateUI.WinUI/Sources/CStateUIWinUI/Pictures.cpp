@@ -113,15 +113,20 @@ namespace {
         return {static_cast<float>(width), static_cast<float>(height)};
     }
 
-    /// Makes the picture `text` draws give up its proportions, filling whatever room it is drawn in.
+    /// Makes the picture `text` draws fill whatever room it is drawn in: its proportions given up, and its own size
+    /// too, which WinUI fits into the room in its proportions whatever the picture says of them.
     void letGoOfProportions(std::string &text) {
-        auto [start, span] = root(text);
-        if (start == std::string::npos) return;
-        auto tag = text.substr(start, span);
-        if (auto at = attribute(tag, "preserveAspectRatio"); at != std::string::npos)
-            text.replace(start + at, tag.find(tag[at - 1], at) - at, "none");
-        else
-            text.insert(start + 4, " preserveAspectRatio=\"none\"");
+        std::pair<char const *, char const *> const values[] = {
+            {"preserveAspectRatio", "none"}, {"width", "100%"}, {"height", "100%"}};
+        for (auto const &[name, value] : values) {
+            auto [start, span] = root(text);
+            if (start == std::string::npos) return;
+            auto tag = text.substr(start, span);
+            if (auto at = attribute(tag, name); at != std::string::npos)
+                text.replace(start + at, tag.find(tag[at - 1], at) - at, value);
+            else
+                text.insert(start + 4, std::string(" ") + name + "=\"" + value + "\"");
+        }
     }
 
     std::string contents(std::wstring const &path) {
@@ -143,13 +148,6 @@ namespace {
         winrt::check_hresult(CreateRandomAccessStreamOverStream(
             memory.get(), BSOS_DEFAULT, winrt::guid_of<decltype(stream)>(), winrt::put_abi(stream)));
         return stream;
-    }
-
-    /// An SVG source drawing `text`, read from memory.
-    imaging::SvgImageSource drawing(std::string const &text) {
-        imaging::SvgImageSource source;
-        source.SetSourceAsync(memoryStream(text.data(), text.size()));
-        return source;
     }
 
     /// A bitmap of a picture's own `bytes`, read from memory; its size is known once it is read.
@@ -217,9 +215,31 @@ namespace {
     /// The SVG sources standing, each read once and shared by every picture and window showing it.
     std::map<Drawn, winrt::weak_ref<imaging::SvgImageSource>> drawn;
 
+    /// Where the SVG `file` stands with its proportions let go: a copy of its text with `preserveAspectRatio="none"`
+    /// on its root, written once for the process among the system's temporary files, named by the picture's path.
+    std::wstring stretchedCopy(std::wstring const &file) {
+        static std::map<std::wstring, std::wstring> copies;
+        if (auto found = copies.find(file); found != copies.end()) return found->second;
+        auto text = contents(pictures() + file);
+        letGoOfProportions(text);
+        wchar_t temporary[MAX_PATH] = {};
+        GetTempPathW(MAX_PATH, temporary);
+        std::wstring folder = std::wstring(temporary) + L"StateUI\\";
+        CreateDirectoryW(folder.c_str(), nullptr);
+        auto copy = folder + std::to_wstring(GetCurrentProcessId()) + L"-"
+            + std::to_wstring(std::hash<std::wstring>{}(pictures() + file)) + L".svg";
+        FILE *written = nullptr;
+        if (_wfopen_s(&written, copy.c_str(), L"wb") == 0 && written) {
+            std::fwrite(text.data(), 1, text.size(), written);
+            std::fclose(written);
+        }
+        copies[file] = copy;
+        return copy;
+    }
+
     /// The SVG `file` drawn at `width` x `height` pixels - WinUI's own size for none - its proportions let go where
-    /// `stretched`: read from memory, as WinUI draws an SVG read by its address short under a turn with an uneven
-    /// scale, and one source for each, so a second window showing it draws no surface of its own.
+    /// `stretched`: read by its file's address, as an SVG read from memory takes a surface the window's size, and
+    /// one source for each, shared by every picture and window showing it.
     /// Design: docs/design/platforms/winui/controls.md#pictures
     imaging::SvgImageSource svg(std::wstring const &file, uint32_t width = 0, uint32_t height = 0, bool stretched = false) {
         Drawn key{file, width, height, stretched};
@@ -227,9 +247,7 @@ namespace {
             if (auto source = found->second.get()) return source;
         for (auto each = drawn.begin(); each != drawn.end();) each = each->second.get() ? std::next(each) : drawn.erase(each);
 
-        auto text = contents(pictures() + file);
-        if (stretched) letGoOfProportions(text);
-        auto source = drawing(text);
+        imaging::SvgImageSource source(address(stretched ? stretchedCopy(file) : pictures() + file));
         if (width > 0 && height > 0) {
             source.RasterizePixelWidth(width);
             source.RasterizePixelHeight(height);
@@ -509,6 +527,24 @@ extern "C" void stateui_winui_image_size(StateUIObjectRef handle, double *size) 
     }
 }
 
+extern "C" void stateui_winui_svgs_read(StateUIObjectRef handle, int32_t *counts) {
+    counts[0] = counts[1] = 0;
+    try {
+        // Every picture and icon under the element, its SVG source read by its file's address or not.
+        std::function<void(xaml::DependencyObject const &)> walk = [&](xaml::DependencyObject const &node) {
+            imaging::SvgImageSource source{nullptr};
+            if (auto image = node.try_as<controls::Image>()) source = image.Source().try_as<imaging::SvgImageSource>();
+            if (auto icon = node.try_as<controls::ImageIcon>()) source = icon.Source().try_as<imaging::SvgImageSource>();
+            if (source) ++counts[source.UriSource() ? 0 : 1];
+            for (int32_t index = 0, count = xaml::Media::VisualTreeHelper::GetChildrenCount(node); index < count; ++index)
+                walk(xaml::Media::VisualTreeHelper::GetChild(node, index));
+        };
+        walk(as<xaml::DependencyObject>(handle));
+    } catch (...) {
+        report("counting the SVGs an element shows");
+    }
+}
+
 extern "C" void stateui_winui_image_draw(StateUIObjectRef handle, double width, double height) {
     try {
         // The source of its file drawn at that size, which every picture showing it at that size shares.
@@ -518,7 +554,8 @@ extern "C" void stateui_winui_image_draw(StateUIObjectRef handle, double width, 
         if (!isSvg(file)) return;
         auto scale = image.XamlRoot() ? image.XamlRoot().RasterizationScale() : 1.0;
         image.Source(svg(file, static_cast<uint32_t>(std::ceil(width * scale)),
-                         static_cast<uint32_t>(std::ceil(height * scale))));
+                         static_cast<uint32_t>(std::ceil(height * scale)),
+                         image.Stretch() == xaml::Media::Stretch::Fill));
     } catch (...) {
         report("drawing a picture");
     }

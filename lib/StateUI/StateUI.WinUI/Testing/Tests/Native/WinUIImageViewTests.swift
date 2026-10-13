@@ -29,6 +29,29 @@ final class WinUIImageViewTests: XCTestCase {
         }
     }
 
+    /// Every SVG a window shows - a picture, one stretched, a button's - is read by its file's address: one read from
+    /// memory costs a surface the window's size, gigabytes for a page of pictures.
+    func testEverySVGIsReadByItsFilesAddress() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                VStack {
+                    Image("test_wide.svg").width(80).height(40)
+                    Image("test_halves.svg").contentMode(.stretch).width(60).height(60)
+                    Button("Go").icon("test_wide.svg")
+                }
+            }
+            let content = try XCTUnwrap(host.window?.content)
+            var counts = [Int32](repeating: 0, count: 2)
+            host.settle {
+                stateui_winui_svgs_read(content.handle, &counts)
+                return counts[0] + counts[1] >= 3
+            }
+
+            XCTAssertEqual(counts[1], 0, "an SVG read from memory")
+            XCTAssertEqual(counts[0], 3, "every picture read by its address")
+        }
+    }
+
     /// The bytes this process holds of its own.
     private static func privateBytes() -> Int {
         let size = DWORD(MemoryLayout<PROCESS_MEMORY_COUNTERS_EX>.size)
