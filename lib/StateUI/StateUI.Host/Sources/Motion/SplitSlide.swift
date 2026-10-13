@@ -21,7 +21,8 @@
     /// Where the sidebar is going while it slides; nil while it stands.
     public private(set) var target: Bool?
 
-    /// What the host does as a slide sets out from rest, the sidebar going in where `shows`.
+    /// What the host does as a slide sets out from rest, the sidebar going in where `shows` - the slide already
+    /// under way, so what it lays out then stands the column where the slide will.
     public var begin: (_ shows: Bool) -> Void = { _ in }
 
     /// What the host does each frame: stands the column `pane` wide and the sidebar's page `page` wide, its trailing
@@ -57,8 +58,9 @@
 
     /// Slides the sidebar in where `shown`, else out, from where it stands.
     public func slide(to shown: Bool) {
-        if target == nil { begin(shown) }
+        let setsOut = target == nil
         target = shown
+        if setsOut { begin(shown) }
         let width = width
         slide.slide(mount, from: shown ? 0 : 1, shown: shown, following: toolkit) { [weak self] progress, rested in
             guard let self else { return }

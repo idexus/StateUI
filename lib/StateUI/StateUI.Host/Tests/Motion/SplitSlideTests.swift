@@ -47,6 +47,16 @@ final class SplitSlideTests: XCTestCase {
         XCTAssertFalse(split.carries(true), "at rest the tree says what it says")
     }
 
+    /// A host setting out finds the slide already under way, so what it lays out then stands the column where the
+    /// slide will, not at rest.
+    func testAHostSettingOutFindsTheSlideUnderWay() {
+        let split = split()
+        var underWay: Bool?
+        split.begin = { _ in underWay = split.carries(true) }
+        split.slide(to: true)
+        XCTAssertEqual(underWay, true)
+    }
+
     func testASlideTurnedBackGoesTheOtherWayFromWhereItStands() {
         let split = split()
         XCTAssertTrue(split.toggled(shown: false), "a folded sidebar toggles in")

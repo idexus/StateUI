@@ -116,9 +116,10 @@ closed: shown as the pane starts to open, collapsed once it has closed, and
 at once beside the detail.
 
 WinUI's `SplitView` animates its pane alone and lays a detail beside it out at
-its end width at once, so the host slides a pane beside the detail itself ([a
-sidebar sliding](../../host/motion.md#a-sidebar-sliding)): the pane's
-`OpenPaneLength` follows the slide each frame, the sidebar standing at the
+its end width at once, so the host slides a pane beside the detail itself, by
+the host layer's `SplitSlide` ([a sidebar sliding](../../host/motion.md#a-sidebar-sliding)):
+the pane opens as the slide sets out, its `OpenPaneLength` follows the slide
+each frame, and it closes as a slide out rests, the sidebar standing at the
 pane's whole width - the theme's `SplitViewOpenPaneThemeLength` - against its
 trailing edge, and a closed pane stands none wide, the width its slide opens
 from, where WinUI's own animation of opening and closing has nothing to move.

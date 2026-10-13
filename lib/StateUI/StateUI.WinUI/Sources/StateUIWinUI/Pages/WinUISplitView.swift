@@ -52,7 +52,7 @@ final class WinUISplitView: WinUILayoutView {
             isPresented = open
             onPresentationChanged?(open)
             // A pane WinUI closes of its own accord stays open while it slides out.
-            if !open { slide() }
+            if !open { slideToPresentation() }
         }
         setChildren([sidebar])
     }
@@ -80,39 +80,38 @@ final class WinUISplitView: WinUILayoutView {
         configure()
     }
 
-    /// The runtime's sliding sidebars and this split's mount among them; nil shows and hides the sidebar at once.
-    var slides: (slide: SidebarSlide, mount: UInt64)?
+    /// The sidebar's slide on the runtime's frames; nil before the split is in the tree, when it shows and hides at
+    /// once.
+    private(set) var slide: SplitSlide?
 
     /// The pane's whole width: the theme's, as WinUI opens it, read before anything changes it.
     private var paneWidth = 0.0
 
-    /// Whether the sidebar is sliding in or out, its pane as wide as the slide has come.
-    private var sliding = false
+    /// Slides the sidebar on `sidebarSlide`, the split mounted as `mount`: in, its pane opens at none wide; each frame
+    /// it stands as wide as the slide has come, the detail beside it taking every width between; out, it closes.
+    func slide(on sidebarSlide: SidebarSlide, mount: UInt64) {
+        guard slide == nil else { return }
+        let slide = SplitSlide(slide: sidebarSlide, mount: mount, width: paneWidth)
+        slide.begin = { [weak self] shows in if shows { self?.configure() } }
+        slide.stand = { [weak self] pane, page in self?.sidebar.slide(pane: pane, width: page) }
+        slide.rest = { [weak self] shown in if !shown { self?.configure() } }
+        self.slide = slide
+    }
 
     /// Applies the tree's value without echoing it back as a user's change.
     func present(_ presented: Bool) {
         guard presented != isPresented else { return }
 
         isPresented = presented
-        slide()
+        slideToPresentation()
     }
 
-    /// Slides the sidebar in or out by the pane's width, frame by frame, the detail beside it taking every width
-    /// between; WinUI slides one in over the detail itself, which keeps its width; one not placed yet stands at
-    /// once.
+    /// Slides the sidebar in or out by the pane's width, frame by frame; WinUI slides one in over the detail itself,
+    /// which keeps its width; one not placed yet stands at once.
     /// Design: docs/design/platforms/winui/pages.md#a-split-view
-    private func slide() {
-        guard let slides, arranged != nil, beside || !isPresented else { return configure() }
-        sliding = true
-        if isPresented { configure() }
-        slides.slide.slide(slides.mount, from: isPresented ? 0 : 1, shown: isPresented) { [weak self] shown, rested in
-            guard let self else { return }
-            sidebar.slide(pane: SidebarSlide.paneWidth(shown, of: paneWidth), width: paneWidth)
-            guard rested else { return }
-            sliding = false
-            // Out, the pane closes.
-            if !isPresented { configure() }
-        }
+    private func slideToPresentation() {
+        guard let slide, arranged != nil, beside || !isPresented else { return configure() }
+        slide.slide(to: isPresented)
     }
 
     /// What WinUI's split view asked, never its pages' own sizes: WinUI measures them in the room it gives them.
@@ -160,7 +159,7 @@ final class WinUISplitView: WinUILayoutView {
     /// before it opens - and the pane's grounds.
     private func configure() {
         ProgramWrite.perform {
-            if !sliding { sidebar.slide(pane: isPresented ? paneWidth : 0, width: paneWidth) }
+            if slide?.target == nil { sidebar.slide(pane: isPresented ? paneWidth : 0, width: paneWidth) }
             sidebar.set(
                 sidebar: pages.first?.view, detail: pages.dropFirst().first?.view, row: detailRow,
                 open: isPresented, beside: beside)
@@ -187,7 +186,7 @@ final class WinUISplitView: WinUILayoutView {
     override func detach() {
         super.detach()
         onPresentationChanged = nil
-        slides.map { $0.slide.forget($0.mount) }
+        slide?.forget()
         sidebar.detach()
     }
 }
