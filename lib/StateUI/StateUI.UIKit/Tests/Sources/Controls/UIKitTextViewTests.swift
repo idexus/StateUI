@@ -35,8 +35,9 @@ final class UIKitTextViewTests: XCTestCase {
     /// A label resized draws its words again, whatever its height comes to: words drawn for one width and stretched
     /// to another break their lines anew only when something else has them drawn.
     @MainActor
-    func testALabelResizedDrawsItsWordsAgain() {
-        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 1100, height: 400))
+    func testALabelResizedDrawsItsWordsAgain() throws {
+        let window = UIWindow(windowScene: try XCTUnwrap(TestScene.scene))
+        window.frame = CGRect(x: 0, y: 0, width: 1100, height: 400)
         window.isHidden = false
         defer { window.isHidden = true }
         let label = UIKitTextView()
