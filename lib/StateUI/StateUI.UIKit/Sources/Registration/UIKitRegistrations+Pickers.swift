@@ -10,29 +10,36 @@ extension UIKitRegistrations {
     /// A Picker - its choices and the one chosen, which the user chooses too - and a DatePicker and a TimePicker:
     /// the day or the time picked, in the range the tree gives.
     static func pickers(_ registry: Registry<UIView>) {
-        registry.add(PickerContract.self, create: { reports in
-            let picker = UIKitPickerView()
+        // Each presentation is another control: the picker is made as the one it is made with.
+        registry.add(PickerContract.self, create: { reports -> UIView in
+            let picker: any UIKitChoosing = switch PickerChoices.presentation(made: reports.made) {
+            case .menu: UIKitPickerView()
+            case .segmented: UIKitSegmentedPickerView()
+            case .radio: UIKitRadioPickerView()
+            }
             picker.onChosen = { place in
                 reports.report(PickerContract.selectedIndex, place, as: PickerContract.selectedIndexChanged)
             }
             picker.onOpened = { reports.raise(PickerContract.opened) }
             picker.onClosed = { reports.raise(PickerContract.closed) }
             return picker
-        }, members: { picker in
+        }, members: { (picker: Registration<PickerContract, UIView>) in
             picker.applies([PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder]) { view, values in
-                view.setChoices(
+                (view as! any UIKitChoosing).setChoices(
                     values[PickerContract.options] ?? [], chosen: values[PickerContract.selectedIndex] ?? -1,
                     writeChosen: values.changed(PickerContract.selectedIndex), title: values[PickerContract.placeholder])
             }
             picker.applies(TextMembers.lookMembers + [TextAlignmentElementContract.horizontalTextAlignment]) { view, values in
-                view.setLook(
+                (view as! any UIKitChoosing).setLook(
                     TextMembers.look(of: values),
                     alignment: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start)
             }
             picker.property(TintElementContract.tint) { view, tint in
-                view.setTint(tint.flatMap { UIColor(stateUI: $0.propValue) })
+                (view as! any UIKitChoosing).setTint(tint.flatMap { UIColor(stateUI: $0.propValue) })
             }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
+            picker.property(VisualElementContract.isEnabled) { view, enabled in
+                (view as! any UIKitChoosing).isEnabled = enabled ?? true
+            }
             picker.raises(PickerContract.selectedIndexChanged)
             picker.raises(PickerContract.opened)
             picker.raises(PickerContract.closed)

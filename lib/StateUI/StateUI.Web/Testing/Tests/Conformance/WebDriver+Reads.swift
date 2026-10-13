@@ -64,6 +64,10 @@ extension WebDriver {
         case (.selectedIndex, is WebPickerView):
             return .some(try WebBrowser.number("e.selectedIndex - 1", on: e).flatMap { $0 < 0 ? nil : Int($0).propValue })
         case (.options, is WebPickerView): return try words("[...e.options].slice(1).map((o) => o.text)", on: e).propValue
+        case (.options, is WebChoiceGroupView): return try words("[...e.children].map((c) => c.textContent)", on: e).propValue
+        case (.selectedIndex, is WebChoiceGroupView):
+            let checked = "[...e.children].findIndex((c) => c.getAttribute('aria-checked') === 'true' || !!c.querySelector('input:checked'))"
+            return .some(try WebBrowser.number(checked, on: e).flatMap { $0 < 0 ? nil : Int($0).propValue })
         case (.placeholder, is WebPickerView): return .some(try WebBrowser.evaluate("e.options[0].text || null", on: e)?.propValue)
         case (.source, let image as WebImageView): return .some(try source(of: image))
         case (.contentMode, is WebImageView): return try contentMode(of: e)

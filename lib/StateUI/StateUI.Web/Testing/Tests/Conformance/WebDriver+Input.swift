@@ -65,6 +65,8 @@ extension WebDriver {
             try WebBrowser.run("e.focus()", on: e)
             press("Enter")
         case (.focus, _): try WebBrowser.run("(e.matches('input, select, textarea, button') ? e : e.querySelector('input, select, textarea, button') ?? e).focus()", on: e)
+        case (.choose(let place), is WebChoiceGroupView):
+            try WebBrowser.run("e.children[\(place)].click()", on: e)
         case (.choose(let place), is WebPickerView):
             // The title's option stands first.
             try WebBrowser.run("e.selectedIndex = \(place + 1); e.dispatchEvent(new Event('change', { bubbles: true }))", on: e)

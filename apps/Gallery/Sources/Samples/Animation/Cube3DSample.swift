@@ -6,7 +6,7 @@ import StateUI
 struct Cube3DSample: SampleContent, ExampleContent {
     // listing: Cube3DSample
     @State private var size = 0.6
-    @State private var color = 0
+    @State private var color = CubeColor.teal
     @State private var spinning = true
     // listing: end
 
@@ -41,12 +41,6 @@ struct Cube3DSample: SampleContent, ExampleContent {
 
     static var code: String { Listings.joined("Cube3D", "Cube3DSample") }
 
-    // listing: Cube3DSample
-    /// The names the picker offers, in the order `CubeColor` declares them -
-    /// so the chosen index IS the vocabulary's member number.
-    static let colors = ["Teal", "Amber", "Violet"]
-    // listing: end
-
     #if APPKIT
     static let hostCode = HostCode(in: InteropHost.name, marked: "Cube3DSample.AppKit.swift", "Cube3DSample.AppKit.metal")
     #elseif UIKIT
@@ -68,7 +62,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
 
             Cube3D()
                 .size($size)
-                .color(CubeColor(rawValue: Int32(color)) ?? .teal)
+                .color(color)
                 .isSpinning($spinning)
                 .accessibilityIdentifier("cube3D.cube")
                 .accessibilityLabel("Cube")
@@ -86,10 +80,9 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 .maximum(1)
                 .tint(Palette.accent)
 
-            Picker(Self.colors)
+            Picker(CubeColor.allCases, selection: $color) { "\($0)".capitalized }
                 .accessibilityIdentifier("cube3D.color")
                 .accessibilityLabel("Color")
-                .selectedIndex($color)
                 .placeholder("Color")
 
             HStack {

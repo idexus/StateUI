@@ -102,6 +102,17 @@ extension AndroidDriver {
             return try Self.fieldHolds(property, of: picker)
         case (.fontFamily, is AndroidPickerView):
             throw DriverCannot("read a family", because: "Android's typeface keeps no family's name")
+        case (.options, let picker as AndroidPickerView) where picker.presentation != .menu:
+            return Java.frame {
+                guard let words = Java.callStaticObject(Self.testPicker, Self.radios, .object(picker.reference)) else {
+                    return [String]()
+                }
+                return (0..<Java.jni.GetArrayLength(Java.env, words)).map { index in
+                    Java.jni.GetObjectArrayElement(Java.env, words, index).map { Java.text($0) } ?? ""
+                }
+            }.propValue
+        case (.selectedIndex, let picker as AndroidPickerView) where picker.presentation != .menu:
+            return Int(Java.callStaticInt(Self.testPicker, Self.checkedRadio, .object(picker.reference))).propValue
         case (.options, let picker as AndroidPickerView): return Array(Self.rows(of: picker).dropFirst()).propValue
         case (.placeholder, let picker as AndroidPickerView): return Self.rows(of: picker).first?.propValue
         case (.selectedIndex, let picker as AndroidPickerView):

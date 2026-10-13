@@ -58,7 +58,7 @@ extension AppKitDriver {
         case (.type(let words), let editor as AppKitTextEditorView): try type(words, into: editor.textView)
         case (.submit, let field as AppKitTextFieldView): try submit(field.textField)
         case (.submit, let search as AppKitSearchFieldView): try submit(search)
-        case (.choose(let place), let picker as AppKitPickerView): picker.chooseForTesting(index: place)
+        case (.choose(let place), let picker as any AppKitChoosing): picker.chooseForTesting(index: place)
         case (.choose(let place), let tabs as AppKitTabView): try choose(place, of: tabs, element)
         case (.open, let picker as AppKitPickerView): picker.menuWillOpen(NSMenu())
         case (.close, let picker as AppKitPickerView): picker.menuDidClose(NSMenu())

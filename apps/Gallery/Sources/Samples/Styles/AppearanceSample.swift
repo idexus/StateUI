@@ -33,15 +33,16 @@ struct AppearanceSample: SampleContent, ExampleContent {
         // new place.
         let application = self.application
         let themes = Self.themes
-        let theme = themes.firstIndex { $0.scheme == application.colorScheme } ?? 0
 
         return VStack {
             // The theme first: which of the two looks below the gallery wears.
             SectionTitle("The theme")
-            Picker(themes.map(\.name))
+            Picker(themes.map(\.scheme),
+                   selection: Binding(get: { application.colorScheme }, set: { application.colorScheme = $0 })) { scheme in
+                themes.first { $0.scheme == scheme }?.name ?? ""
+            }
                 .accessibilityIdentifier("appearance.theme")
                 .accessibilityLabel("Theme")
-                .selectedIndex(Binding(get: { theme }, set: { application.colorScheme = themes[$0].scheme }))
 
             // A look for each theme: the gallery wears the one of the theme in
             // force, and changes with it. Side by side where there is room,
@@ -132,18 +133,15 @@ private struct LookColumn: View {
             Text("The bars")
                 .fontSize(12)
                 .textColor(Palette.subtle)
-            Picker(bars.map(\.name))
+            Picker(bars, selection: Binding(get: { look.bars }, set: { style[keyPath: key].bars = $0 })) { $0.name }
                 .accessibilityIdentifier("appearance.\(name).bars")
                 .accessibilityLabel("Bars, \(name)")
-                .selectedIndex(Binding(
-                    get: { bars.firstIndex(of: look.bars) ?? 0 }, set: { style[keyPath: key].bars = bars[$0] }))
-            Picker(accents.map(\.name))
+            Picker(accents, selection: Binding(get: { look.barColour }, set: { style[keyPath: key].barColour = $0 })) {
+                $0.name
+            }
                 .accessibilityIdentifier("appearance.\(name).barColour")
                 .accessibilityLabel("Bars' colour, \(name)")
                 .isEnabled(look.bars == .tinted || look.bars == .colour)
-                .selectedIndex(Binding(
-                    get: { accents.firstIndex(of: look.barColour) ?? 0 },
-                    set: { style[keyPath: key].barColour = accents[$0] }))
 
             SurfacePickers(title: "The window", label: "Window", theme: name, surface: surface(\.window))
             SurfacePickers(title: "The sidebar", label: "Sidebar", theme: name, surface: surface(\.sidebar))
@@ -173,26 +171,23 @@ private struct SurfacePickers: View {
             Text(title)
                 .fontSize(12)
                 .textColor(Palette.subtle)
-            Picker(materials.map(\.name))
+            Picker(materials, selection: Binding(get: { look.material }, set: { surface.wrappedValue.material = $0 })) {
+                $0.name
+            }
                 .accessibilityIdentifier(id)
                 .accessibilityLabel("\(label), \(theme)")
-                .selectedIndex(Binding(
-                    get: { materials.firstIndex(of: look.material) ?? 0 },
-                    set: { surface.wrappedValue.material = materials[$0] }))
-            Picker(accents.map(\.name))
+            Picker(accents, selection: Binding(get: { look.colour }, set: { surface.wrappedValue.colour = $0 })) {
+                $0.name
+            }
                 .accessibilityIdentifier("\(id)Colour")
                 .accessibilityLabel("\(label)'s colour, \(theme)")
                 .isEnabled(look.material.showsColour)
-                .selectedIndex(Binding(
-                    get: { accents.firstIndex(of: look.colour) ?? 0 },
-                    set: { surface.wrappedValue.colour = accents[$0] }))
-            Picker(["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"])
+            Picker(blurs, selection: Binding(get: { look.blur }, set: { surface.wrappedValue.blur = $0 })) { blur in
+                ["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"][blurs.firstIndex(of: blur) ?? 0]
+            }
                 .accessibilityIdentifier("\(id)Blur")
                 .accessibilityLabel("\(label)'s blur, \(theme)")
                 .isEnabled(look.material.showsBlur)
-                .selectedIndex(Binding(
-                    get: { blurs.firstIndex(of: look.blur) ?? 0 },
-                    set: { surface.wrappedValue.blur = blurs[$0] }))
         }
         .spacing(10)
     }

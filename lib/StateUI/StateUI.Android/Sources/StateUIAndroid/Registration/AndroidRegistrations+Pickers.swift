@@ -8,8 +8,9 @@ extension AndroidRegistrations {
     /// A Picker: its options, the choice and the title shown without one, its list opened and closed, and
     /// the words' look.
     static func pickers(_ registry: Registry<AndroidView>) {
+        // Each presentation is another control: the picker is made as the one it is made with.
         registry.add(PickerContract.self, create: { reports in
-            let picker = AndroidPickerView()
+            let picker = AndroidPickerView(presentation: PickerChoices.presentation(made: reports.made))
             picker.onChosen = { index in
                 reports.report(PickerContract.selectedIndex, index, as: PickerContract.selectedIndexChanged)
             }

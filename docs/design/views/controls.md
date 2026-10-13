@@ -65,6 +65,30 @@ is no `today` to hand, since the host's clock answers a time of day with no
 date beside it, so a page whose limit is the current day holds that day in
 state.
 
+## A picker chooses a value
+
+A picker chooses one of its values, not a place in its list: `Picker(items,
+selection: $value) { caption }` crosses as the values' captions (`options`) and
+the chosen value's place among them (`selectedIndex`), worked out again at
+each build, so the list can change its order and the choice stays the value
+it was. A choice the user makes comes back as its place and lands on the
+state as the value standing there; a place outside the list changes nothing.
+The state is read where the picker is built, so a choice builds that body
+again - the host cannot carry an application's own value. Nothing is chosen
+while the state holds nil, or a value the list does not hold, and the
+placeholder shows. A value needs only to be `Equatable`; it shows by its
+description unless the picker is given a caption.
+
+## A picker's presentation
+
+`.presentation(.menu/.segmented/.radio)` says how a picker offers its values:
+the platform's pop-up or drop-down field, a row of segments, or a radio button
+for each. Each is another control, so another presentation makes the picker
+anew (`remakes`), and a host makes the one the picker is made with
+(`PickerChoices.presentation(made:)`). A list opens only from a menu: on
+segments and radio buttons `isOpen` asks for nothing, and `onOpened` and
+`onClosed` never come.
+
 ## Where a map opens
 
 Where a map opens belongs in its initializer rather than in an act from

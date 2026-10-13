@@ -325,3 +325,14 @@ where the tree gives none. The
 size and weight the tree gives stand over the style's (`TextLook.standing`),
 and both reach a label and a run as Pango attributes and a field as its words'
 class.
+
+## A picker's segments and radio buttons
+
+A picker offered as segments is a row of GTK's toggle buttons in a box of the
+`linked` class, which libadwaita draws as one strip; one offered as radio
+buttons is a column of its check buttons, which a group draws as radio
+buttons (`GTKChoiceGroupView`). Each set is one group, so GTK keeps one
+active; a button turned on tells the choice, and the program's writes are
+dropped as every program write is. The words' class stands on the box, and
+GTK's CSS hands the font and colour on to the buttons.
+

@@ -226,7 +226,7 @@ final class GTKDriver: HostDriver {
         case (.focus, let view?): gtk_widget_grab_focus(view.widget)
         case (.choose(let place), let tabs as GTKTabView): try tabs.choose(place, on: element)
         case (.toggle, let split as GTKSplitView): split.toggleAsUser()
-        case (.choose(let place), let picker as GTKPickerView): gtk_drop_down_set_selected(picker.widget.opaque, guint(place))
+        case (.choose(let place), let picker as any GTKChoosing): picker.choose(place)
         case (.scroll(let offset), let items as GTKItemsView): try scroll(items, to: offset, on: element, act)
         case (.scroll(let offset), let scrollView as GTKScrollView): try scroll(scrollView, to: offset, on: element, act)
         case (.pressDown, let canvas as GTKCanvasView), (.drag, let canvas as GTKCanvasView),
@@ -283,11 +283,8 @@ final class GTKDriver: HostDriver {
                     .map { Material.color(Self.color($0)).propValue }
             }
             return split.sidebarWidgetForTesting.flatMap(Self.fill).map { Material.color($0).propValue }
-        case (.selectedIndex, let picker as GTKPickerView): return picker.chosen.map(\.propValue)
-        case (.options, let picker as GTKPickerView):
-            guard let model = gtk_drop_down_get_model(picker.widget.opaque) else { return [String]().propValue }
-            return (0..<g_list_model_get_n_items(model)).map { String(cString: gtk_string_list_get_string(model, $0)) }
-                .propValue
+        case (.selectedIndex, let picker as any GTKChoosing): return picker.chosen.map(\.propValue)
+        case (.options, let picker as any GTKChoosing): return picker.offered.propValue
         case (.selectionMode, let items as GTKItemsView): return items.choiceMode.map { $0.propValue }
         case (.selectedItems, let items as GTKItemsView): return items.chosenIdentities.propValue
         // Shown in its window: GTK maps a widget only while it and everything around it show there.

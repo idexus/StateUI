@@ -86,6 +86,8 @@ enum AndroidRealization {
         .complete("Scene", "deactivated"),
         .complete("Scene", "stopped"),
         .complete("TextSpan", "background"),
+        .partial("Picker", "presentation", missing: "Android has no segmented control: `.segmented` is a radio group "
+            + "in a row."),
         .complete("TextSpan", "fontAttributes"),
         .complete("TextSpan", "fontWeight"),
         .complete("TextSpan", "textStyle"),

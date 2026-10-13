@@ -240,9 +240,9 @@ final class AppKitDriver: HostDriver {
         case (.text, let button as AppKitButtonView): return button.title.propValue
         case (.text, let check as AppKitCheckBoxView): return check.title.propValue
         case (.text, let radio as AppKitRadioButtonView): return radio.title.propValue
-        case (.selectedIndex, let picker as AppKitPickerView):
+        case (.selectedIndex, let picker as any AppKitChoosing):
             return picker.indexOfSelectedItem >= 0 ? picker.indexOfSelectedItem.propValue : nil
-        case (.options, let picker as AppKitPickerView): return picker.itemTitles.propValue
+        case (.options, let picker as any AppKitChoosing): return picker.itemTitles.propValue
         case (.placeholder, let picker as AppKitPickerView): return picker.title.propValue
         case (.tint, let picker as AppKitPickerView): return picker.contentTintForTesting.map { Self.color($0).propValue }
         case (.tint, let check as AppKitCheckBoxView): return check.contentTintColor.map { Self.color($0).propValue }

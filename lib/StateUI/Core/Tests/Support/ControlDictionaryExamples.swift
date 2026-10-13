@@ -271,11 +271,11 @@ extension ControlDictionary {
             """#),
 
         (PickerContract.self, #"""
-            @State var size = 1
+            @State var size: String? = "Medium"
 
-            Picker(["Small", "Medium", "Large"])
-                .selectedIndex($size)
+            Picker(["Small", "Medium", "Large"], selection: $size)
                 .placeholder("Size")
+                .presentation(.segmented)
             """#),
 
         (MarkerContract.self, #"""

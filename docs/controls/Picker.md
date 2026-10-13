@@ -5,11 +5,11 @@
 One choice out of a list.
 
 ```swift
-@State var size = 1
+@State var size: String? = "Medium"
 
-Picker(["Small", "Medium", "Large"])
-    .selectedIndex($size)
+Picker(["Small", "Medium", "Large"], selection: $size)
     .placeholder("Size")
+    .presentation(.segmented)
 ```
 
 Layer: `native`. Every base host presents it with its native toolkit.
@@ -33,13 +33,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (87)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>45 ✅ · 2 ☑️ · 36 ✓ · 1 –</td><td><code>NSPopUpButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>38 ✅ · 2 ☑️ · 40 ✓ · 4 –</td><td>pop-up <code>UIButton</code> menu</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>63 ✅ · 3 ☑️ · 13 ✓ · 3 –</td><td><code>Spinner</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>74 ✅ · 1 ☑️ · 12 ✓</td><td><code>ComboBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>55 ✅ · 1 ☑️ · 24 ✓ · 7 –</td><td><code>GtkDropDown</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>61 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;select&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (88)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>46 ✅ · 2 ☑️ · 36 ✓ · 1 –</td><td><code>NSPopUpButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>38 ✅ · 3 ☑️ · 40 ✓ · 4 –</td><td>pop-up <code>UIButton</code> menu</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>63 ✅ · 4 ☑️ · 13 ✓ · 3 –</td><td><code>Spinner</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>75 ✅ · 1 ☑️ · 12 ✓</td><td><code>ComboBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>56 ✅ · 1 ☑️ · 24 ✓ · 7 –</td><td><code>GtkDropDown</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>62 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;select&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PickerContract.swift`.
@@ -58,9 +58,11 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PickerContract
 <tr><td colspan="9">UIKit: only through the host's own: read options of Picker: the host's own choice, not the menu's<br>Android Views: only through the host's own: read options of Picker: the rows the relay keeps, not the spinner's</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>placeholder</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">GTK 4: GTK's drop-down shows a choice or nothing: it has no words standing for none.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>presentation</code></td><td>property</td><td><code>PickerPresentation</code></td><td>native</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: UIKit has no radio buttons: <code>.radio</code> is a column of its buttons, each marked by a filled or an empty circle.<br>Android Views: Android has no segmented control: <code>.segmented</code> is a radio group in a row.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>selectedIndex</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: only through the host's own: choose on Picker: the host's choice called, not the menu's action</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onSelectedIndexChanged</code> (<code>selectedIndexChanged</code>)</td><td>event</td><td><code>Int</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>selectedIndexChanged</code></td><td>event</td><td><code>Int</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: choose on Picker: the host's action called, not the pop-up's<br>UIKit: only through the host's own: choose on Picker: the host's choice called, not the menu's action</td></tr></tbody>
 </table>
 

@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 Picker: ✅
 Picker.closed: – The browser says nothing as a picker's list or calendar closes.
 Picker.frameChanged: ✅
@@ -6,6 +6,7 @@ Picker.isOpen: – The browser opens a picker's list or calendar only at the use
 Picker.opened: – The browser says nothing as a picker's list or calendar opens.
 Picker.options: ✅
 Picker.placeholder: ✅
+Picker.presentation: ✅
 Picker.selectedIndex: ✅
 Picker.selectedIndexChanged: ✅
 Text.text: ✅

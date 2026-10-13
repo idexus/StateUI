@@ -581,10 +581,11 @@ void stateui_winui_menus_choose(StateUIObjectRef element, int32_t index);
 /// length it needs.
 int32_t stateui_winui_menus_items(StateUIObjectRef element, char const *what, char *utf8, int32_t capacity);
 
-/// A picker: WinUI's ComboBox - its choices, the one chosen (-1 for none, written only where `writeSelected`) told
-/// through `chosen`, its placeholder while none is, its choices across it (StateUI's `TextAlignment`), and its list
-/// opening and closing told through `presented`.
-StateUIObjectRef stateui_winui_picker_make(int64_t view);
+/// A picker: WinUI's ComboBox (`kind` 0), a SelectorBar of segments (1) or RadioButtons (2) - its choices, the one
+/// chosen (-1 for none, written only where `writeSelected`) told through `chosen`; a ComboBox's placeholder while
+/// none is, its choices across it (StateUI's `TextAlignment`), and its list opening and closing told through
+/// `presented`.
+StateUIObjectRef stateui_winui_picker_make(int64_t view, int32_t kind);
 void stateui_winui_picker_set_options(StateUIObjectRef picker, char const *const *options, int32_t count);
 void stateui_winui_picker_set(StateUIObjectRef picker, int32_t selected, bool writeSelected, char const *title);
 void stateui_winui_picker_set_alignment(StateUIObjectRef picker, int32_t alignment);

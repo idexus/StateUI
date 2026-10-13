@@ -5,12 +5,11 @@ struct IconButtonSample: SampleContent, ExampleContent {
     // listing: IconButtonSample
     @State private var taps = 0
     @State private var pressed = false
-    @State private var side = 0
+    @State private var side = IconPosition.leading
     @State private var gap = 8.0
     @State private var wide = false
 
-    static let sides = ["Leading", "Top", "Trailing", "Bottom"]
-    static let positions: [IconPosition] = [.leading, .top, .trailing, .bottom]
+    static let sides: [IconPosition] = [.leading, .top, .trailing, .bottom]
     // listing: end
 
     static let id = "iconButton"
@@ -58,13 +57,12 @@ struct IconButtonSample: SampleContent, ExampleContent {
             // between them as the slider says - together, however wide.
             Button("Media")
                 .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
-                .iconPosition(Self.positions[side])
+                .iconPosition(side)
                 .iconSpacing(gap)
                 .horizontalAlignment(wide ? .fill : .center)
                 .onClicked { taps += 1 }
 
-            Picker(Self.sides)
-                .selectedIndex($side)
+            Picker(Self.sides, selection: $side) { "\($0)".capitalized }
                 .placeholder("Picture")
                 .horizontalAlignment(.center)
 

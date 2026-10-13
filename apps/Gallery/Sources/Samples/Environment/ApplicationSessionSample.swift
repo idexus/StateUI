@@ -15,13 +15,14 @@ struct ApplicationSessionSample: SampleContent, ExampleContent {
     static let summary = "The application's session, read and written like any state - here the motion values take by default."
 
     // listing: ApplicationSessionSample
-    static let laws = ["Standard", "Spring", "None"]
+    static let laws: [Motion] = [.standard, .spring(response: 320, damping: 0.6), .none]
 
-    static func law(_ index: Int) -> Motion {
-        switch index {
-        case 1: .spring(response: 320, damping: 0.6)
-        case 2: .none
-        default: .standard
+    /// What the picker calls a law.
+    static func name(_ law: Motion) -> String {
+        switch law {
+        case .standard: "Standard"
+        case .none: "None"
+        default: "Spring"
         }
     }
 
@@ -38,9 +39,8 @@ struct ApplicationSessionSample: SampleContent, ExampleContent {
 
             // One write for the whole application: every value without a
             // motion of its own takes it.
-            Picker(Self.laws)
-                .onSelectedIndexChanged { application.motion = Self.law($0) }
-                .selectedIndex(Self.laws.indices.first { Self.law($0) == application.motion } ?? 0)
+            Picker(Self.laws, selection: Binding(get: { application.motion }, set: { application.motion = $0 }),
+                   caption: Self.name)
                 .horizontalAlignment(.center)
 
             // No `.motion` here: the panel takes the application's.

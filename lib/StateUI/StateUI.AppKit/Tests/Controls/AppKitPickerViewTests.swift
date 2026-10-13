@@ -129,38 +129,41 @@ final class AppKitPickerViewTests: XCTestCase {
         XCTAssertEqual(events, ["opened", "closed"])
     }
 
-    /// The captions a picker offers become its native items, whether its
-    /// initializer or its modifier gave them.
+    /// A picker's values become the native items of the control its presentation makes: a pop-up button's, a
+    /// segmented control's segments, a column of radio buttons.
     @MainActor
-    func testAPickersOptionsComeThroughTheHost() throws {
+    func testEachPresentationMakesItsOwnControl() throws {
+        let size = State<String?>(wrappedValue: nil)
         let renderer = AppKitRenderer.running {
             VStack {
-                Picker(["Small", "Medium", "Large"])
-                Picker().options(["One", "Two"])
+                Picker(["Small", "Medium", "Large"], selection: size.projectedValue)
+                Picker(["One", "Two"], selection: size.projectedValue).presentation(.segmented)
+                Picker(["A", "B", "C"], selection: size.projectedValue).presentation(.radio)
             }
         }
         defer { renderer.closeForTesting() }
-        let pickers = renderer.nativeViews(AppKitPickerView.self)
 
-        XCTAssertEqual(
-            pickers.map { $0.itemTitles }, [["Small", "Medium", "Large"], ["One", "Two"]])
+        XCTAssertEqual(renderer.nativeViews(AppKitPickerView.self).map(\.itemTitles), [["Small", "Medium", "Large"]])
+        XCTAssertEqual(renderer.nativeViews(AppKitSegmentedPickerView.self).map(\.itemTitles), [["One", "Two"]])
+        XCTAssertEqual(renderer.nativeViews(AppKitRadioPickerView.self).map(\.itemTitles), [["A", "B", "C"]])
     }
 
-    /// The item a user chooses reaches the page's `onSelectedIndexChanged`
-    /// as its index.
+    /// The item a user chooses lands on the state as the value at its place, in every presentation.
     @MainActor
-    func testTheUsersChoiceReachesThePickersHandler() throws {
-        let chosen = Received<Int>()
+    func testTheUsersChoiceLandsAsItsValue() throws {
+        let size = State<String?>(wrappedValue: nil)
         let renderer = AppKitRenderer.running {
-            Picker(["Small", "Medium", "Large"])
-                .onSelectedIndexChanged { chosen.values.append($0) }
+            VStack {
+                Picker(["Small", "Medium", "Large"], selection: size.projectedValue)
+                Picker(["Small", "Medium", "Large"], selection: size.projectedValue).presentation(.radio)
+            }
         }
         defer { renderer.closeForTesting() }
-        let picker = try XCTUnwrap(renderer.nativeViews(AppKitPickerView.self).first)
 
-        picker.chooseForTesting(index: 2)
-
-        XCTAssertEqual(chosen.values, [2])
+        try XCTUnwrap(renderer.nativeViews(AppKitPickerView.self).first).chooseForTesting(index: 2)
+        XCTAssertEqual(size.wrappedValue, "Large")
+        try XCTUnwrap(renderer.nativeViews(AppKitRadioPickerView.self).first).chooseForTesting(index: 0)
+        XCTAssertEqual(size.wrappedValue, "Small")
     }
 
     /// A picker told to open asks its native menu to open, once it stands in a
@@ -173,7 +176,7 @@ final class AppKitPickerViewTests: XCTestCase {
         defer { AppKitPickerView.opensMenuForTesting = nil }
 
         let renderer = AppKitRenderer.running {
-            Picker(["Small", "Medium", "Large"]).isOpen(true)
+            Picker(["Small", "Medium", "Large"], selection: State<String?>(wrappedValue: nil).projectedValue).isOpen(true)
         }
         defer { renderer.closeForTesting() }
         let picker = try XCTUnwrap(renderer.nativeViews(AppKitPickerView.self).first)
@@ -196,7 +199,7 @@ final class AppKitPickerViewTests: XCTestCase {
         defer { AppKitPickerView.opensMenuForTesting = nil }
 
         let renderer = AppKitRenderer.running {
-            Picker(["Small", "Medium", "Large"]).isOpen(true)
+            Picker(["Small", "Medium", "Large"], selection: State<String?>(wrappedValue: nil).projectedValue).isOpen(true)
         }
         defer { renderer.closeForTesting() }
         let picker = try XCTUnwrap(renderer.nativeViews(AppKitPickerView.self).first)

@@ -9,15 +9,20 @@ import AppKit
 extension AppKitRegistrations {
     /// A choice, a day and a time: what the user picks, reported by member.
     static func pickers(_ registry: Registry<NSView>) {
-        registry.add(PickerContract.self, create: { reports in
-            let picker = AppKitPickerView()
+        // Each presentation is another control: the picker is made as the one it is made with.
+        registry.add(PickerContract.self, create: { reports -> NSView in
+            let picker: any AppKitChoosing = switch PickerChoices.presentation(made: reports.made) {
+            case .menu: AppKitPickerView()
+            case .segmented: AppKitSegmentedPickerView()
+            case .radio: AppKitRadioPickerView()
+            }
             picker.onSelectionChanged = { index in
                 reports.report(PickerContract.selectedIndex, index, as: PickerContract.selectedIndexChanged)
             }
             picker.onOpened = { reports.raise(PickerContract.opened) }
             picker.onClosed = { reports.raise(PickerContract.closed) }
             return picker
-        }, members: { picker in
+        }, members: { (picker: Registration<PickerContract, NSView>) in
             picker.applies([
                 PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder,
                 PickerContract.isOpen, FontElementContract.fontFamily, FontElementContract.fontSize,
@@ -25,7 +30,7 @@ extension AppKitRegistrations {
                 TintElementContract.tint, TextAlignmentElementContract.horizontalTextAlignment,
                 VisualElementContract.isEnabled,
             ]) { view, values in
-                view.apply(
+                (view as! any AppKitChoosing).apply(
                     items: values[PickerContract.options] ?? [],
                     selectedIndex: values[PickerContract.selectedIndex] ?? -1,
                     writeSelection: values.changed(PickerContract.selectedIndex),

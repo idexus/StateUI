@@ -234,8 +234,11 @@ enum JavaAPI {
 
     static let picker = Java.findClass("stateui/android/StateUIPicker")
     static let newPicker = Java.method(picker, "<init>", "(Landroid/content/Context;J)V")
-    static let setChoices = Java.method(picker, "setChoices", "([Ljava/lang/String;Ljava/lang/String;IZ)V")
-    static let setPickerLook = Java.method(picker, "setLook", "(FIILandroid/graphics/Typeface;I)V")
+    static let choices = Java.findClass("stateui/android/StateUIChoices")
+    static let newChoices = Java.method(choices, "<init>", "(Landroid/content/Context;JZ)V")
+    static let choosing = Java.findClass("stateui/android/StateUIChoosing")
+    static let setChoices = Java.method(choosing, "setChoices", "([Ljava/lang/String;Ljava/lang/String;IZ)V")
+    static let setPickerLook = Java.method(choosing, "setLook", "(FIILandroid/graphics/Typeface;I)V")
     static let openList = Java.method(picker, "openList", "()V")
     static let setBackgroundTintList = Java.method(
         view, "setBackgroundTintList", "(Landroid/content/res/ColorStateList;)V")

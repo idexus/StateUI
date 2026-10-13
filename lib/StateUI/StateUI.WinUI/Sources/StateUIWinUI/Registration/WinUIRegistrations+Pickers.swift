@@ -8,8 +8,9 @@ extension WinUIRegistrations {
     /// A Picker: its choices and the one chosen, what it says while none is, its words' look, and its list, which the
     /// user opens, closes and chooses from.
     static func pickers(_ registry: Registry<WinUIView>) {
+        // Each presentation is another control: the picker is made as the one it is made with.
         registry.add(PickerContract.self, create: { reports in
-            let picker = WinUIPickerView()
+            let picker = WinUIPickerView(presentation: PickerChoices.presentation(made: reports.made))
             picker.onChosen = { index in
                 reports.report(PickerContract.selectedIndex, index, as: PickerContract.selectedIndexChanged)
             }

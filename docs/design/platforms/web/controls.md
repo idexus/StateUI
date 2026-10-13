@@ -241,3 +241,12 @@ A browser lets the user select any words, a platform's label none: a Text
 stands `user-select: none` unless the tree makes its words selectable, and
 `text` then.
 
+## A picker's segments and radio buttons
+
+A browser has no segmented control, so a picker offered as segments is the
+Web's own: a `radiogroup` of buttons, each a `radio` in ARIA, standing in one
+rounded frame with the one chosen in the accent (`.stateui-segment`). One
+offered as radio buttons is a column of the browser's radio buttons in their
+labels (`.stateui-radio`). Both are `WebChoiceGroupView`, which checks the
+tree's choice without an event and tells the user's.
+

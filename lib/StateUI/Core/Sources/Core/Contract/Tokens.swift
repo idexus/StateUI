@@ -133,6 +133,7 @@ extension NodeType {
     static let fontAttributes = FontElementContract.fontAttributes.token
     static let fontWeight = FontElementContract.fontWeight.token
     static let isSelectable = TextContract.isSelectable.token
+    static let presentation = PickerContract.presentation.token
     static let textStyle = FontElementContract.textStyle.token
     static let isFontAutoScalingEnabled = FontElementContract.isFontAutoScalingEnabled.token
     static let fontFamily = FontElementContract.fontFamily.token

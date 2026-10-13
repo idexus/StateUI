@@ -150,9 +150,11 @@ was written; the user's next choice lands the value shown.
 A two-way control whose bound value is its purpose takes its binding in the
 initializer - the short way to say what gives the control its purpose - and in
 a modifier of the same name, the way every other property is written:
-`TextField($name)` and `TextField().text($name)`. A picker and a radio button,
-whose initializers take their options and their caption, take it in the
-modifier alone: `Picker(sizes).selectedIndex($size)`. The initializer
+`TextField($name)` and `TextField().text($name)`. A radio button, whose
+initializer takes its caption, takes it in the modifier alone:
+`RadioButton("Medium").isOn($medium)`; a picker takes its values and the state
+holding the chosen one together, in its initializer alone:
+`Picker(sizes, selection: $size)`. The initializer
 delegates to the modifier, so there is one body and neither is the real one. A
 value modifier written beside the initializer's binding wins for the value,
 while the binding goes on being written back to, which is how the two can then

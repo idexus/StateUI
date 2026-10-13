@@ -21,7 +21,7 @@ import android.widget.TextView;
  * A Picker: Android's dropdown spinner. Its first row is the title, which the closed field shows while
  * nothing is chosen and the open list leaves out, so a choice is the row after its index.
  */
-final class StateUIPicker extends Spinner implements AdapterView.OnItemSelectedListener {
+final class StateUIPicker extends Spinner implements StateUIChoosing, AdapterView.OnItemSelectedListener {
     private final long view;
     private final Rows rows = new Rows();
 
@@ -53,7 +53,8 @@ final class StateUIPicker extends Spinner implements AdapterView.OnItemSelectedL
      * The options - null where they stay - the title shown while nothing is chosen, and, where `writesChoice`,
      * the chosen index, -1 for none.
      */
-    void setChoices(String[] options, String title, int chosen, boolean writesChoice) {
+    @Override
+    public void setChoices(String[] options, String title, int chosen, boolean writesChoice) {
         if (options != null) this.options = options;
         this.title = title;
         rows.notifyDataSetChanged();
@@ -68,7 +69,8 @@ final class StateUIPicker extends Spinner implements AdapterView.OnItemSelectedL
      * font scale applies to them and its density-independent ones where not; their colour - 0 for the theme's -
      * their face, and where they stand.
      */
-    void setLook(float size, int unit, int color, Typeface face, int alignment) {
+    @Override
+    public void setLook(float size, int unit, int color, Typeface face, int alignment) {
         textSize = size;
         textUnit = unit;
         textColor = color;

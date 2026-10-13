@@ -78,6 +78,8 @@ enum UIKitRealization {
         .complete("Page", "navigatedTo"),
         .complete("Page", "navigatingFrom"),
         .complete("Page", "title"),
+        .partial("Picker", "presentation", missing: "UIKit has no radio buttons: `.radio` is a column of its buttons, "
+            + "each marked by a filled or an empty circle."),
         .complete("RadioButton", "groupName"),
         .complete("Scene", "activated"),
         .complete("Scene", "deactivated"),

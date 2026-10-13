@@ -498,7 +498,7 @@ enum Listings {
         """#,
         "AnimationSample": #"""
         // Sources/Samples/Animation/AnimationSample.swift
-        @State private var curve = 0
+        @State private var curve = Easing.linear
 
         /// The four values the card is drawn from, one per thing a button moves.
         ///
@@ -511,12 +511,12 @@ enum Listings {
         @State private var scale = 1.0
         @State private var angle = 0.0
 
-        static let curves = ["Linear", "Cubic in-out", "Bounce out", "Back out"]
+        static let curves: [Easing] = [.linear, .cubicInOut, .bounceOut, .backOut]
 
         var body: some View {
             VStack {
-                // The picker is handed `$curve`, which reads nothing at build,
-                // and the four journeys are the host's - so this stands at one.
+                // A curve chosen builds this closure once; the four journeys are
+                // the host's, so a button pressed builds nothing.
                 DebugInfoLabel()
 
                 ZStack {
@@ -532,8 +532,7 @@ enum Listings {
                 .stroke(Palette.accent)
                 .horizontalAlignment(.center)
 
-                Picker(Self.curves)
-                    .selectedIndex($curve)
+                Picker(Self.curves, selection: $curve, caption: Self.name)
                     .placeholder("Easing")
 
                 HStack {
@@ -543,8 +542,8 @@ enum Listings {
                     // whatever happened instead, which is what lets Stop leave the
                     // card where it stood.
                     button("Fade") {
-                        let landed = try await $fade.journey.move(to: 0.1, .eased(400, easing)).arrived()
-                        if landed { try await $fade.journey.move(to: 1, .eased(400, easing)).arrived() }
+                        let landed = try await $fade.journey.move(to: 0.1, .eased(400, curve)).arrived()
+                        if landed { try await $fade.journey.move(to: 1, .eased(400, curve)).arrived() }
                     }
 
                     // ONE movement, because the card only ever moves sideways. A
@@ -552,13 +551,13 @@ enum Listings {
                     // beside this one before either is awaited, so the two land
                     // together.
                     button("Move") {
-                        let landed = try await $shift.journey.move(to: 60, .eased(400, easing)).arrived()
-                        if landed { try await $shift.journey.move(to: 0, .eased(400, easing)).arrived() }
+                        let landed = try await $shift.journey.move(to: 60, .eased(400, curve)).arrived()
+                        if landed { try await $shift.journey.move(to: 0, .eased(400, curve)).arrived() }
                     }
 
                     button("Scale") {
-                        let landed = try await $scale.journey.move(to: 1.4, .eased(400, easing)).arrived()
-                        if landed { try await $scale.journey.move(to: 1, .eased(400, easing)).arrived() }
+                        let landed = try await $scale.journey.move(to: 1.4, .eased(400, curve)).arrived()
+                        if landed { try await $scale.journey.move(to: 1, .eased(400, curve)).arrived() }
                     }
 
                     // A movement goes TO a value, never BY one, so a full turn is
@@ -566,7 +565,7 @@ enum Listings {
                     // headed, which is what makes the next press carry on from
                     // there rather than start over.
                     button("Spin") {
-                        try await $angle.journey.move(to: angle + 360, .eased(700, easing)).arrived()
+                        try await $angle.journey.move(to: angle + 360, .eased(700, curve)).arrived()
                     }
                 }
                 .horizontalAlignment(.center)
@@ -590,13 +589,13 @@ enum Listings {
                 .onClicked(gate: .cancelPrevious, act)
         }
 
-        /// The curve the picker is on.
-        private var easing: Easing {
+        /// What the picker calls a curve.
+        static func name(_ curve: Easing) -> String {
             switch curve {
-            case 1: return .cubicInOut
-            case 2: return .bounceOut
-            case 3: return .backOut
-            default: return .linear
+            case .cubicInOut: "Cubic in-out"
+            case .bounceOut: "Bounce out"
+            case .backOut: "Back out"
+            default: "Linear"
             }
         }
         """#,
@@ -683,13 +682,14 @@ enum Listings {
             // new place.
             let application = self.application
             let themes = Self.themes
-            let theme = themes.firstIndex { $0.scheme == application.colorScheme } ?? 0
 
             return VStack {
                 // The theme first: which of the two looks below the gallery wears.
                 SectionTitle("The theme")
-                Picker(themes.map(\.name))
-                    .selectedIndex(Binding(get: { theme }, set: { application.colorScheme = themes[$0].scheme }))
+                Picker(themes.map(\.scheme),
+                       selection: Binding(get: { application.colorScheme }, set: { application.colorScheme = $0 })) { scheme in
+                    themes.first { $0.scheme == scheme }?.name ?? ""
+                }
 
                 // A look for each theme: the gallery wears the one of the theme in
                 // force, and changes with it. Side by side where there is room,
@@ -745,14 +745,11 @@ enum Listings {
                         .onClicked { style[keyPath: choice] = .own }
 
                     Text("The bars")
-                    Picker(bars.map(\.name))
-                        .selectedIndex(Binding(
-                            get: { bars.firstIndex(of: look.bars) ?? 0 }, set: { style[keyPath: key].bars = bars[$0] }))
-                    Picker(accents.map(\.name))
+                    Picker(bars, selection: Binding(get: { look.bars }, set: { style[keyPath: key].bars = $0 })) { $0.name }
+                    Picker(accents, selection: Binding(get: { look.barColour }, set: { style[keyPath: key].barColour = $0 })) {
+                        $0.name
+                    }
                         .isEnabled(look.bars == .tinted || look.bars == .colour)
-                        .selectedIndex(Binding(
-                            get: { accents.firstIndex(of: look.barColour) ?? 0 },
-                            set: { style[keyPath: key].barColour = accents[$0] }))
 
                     SurfacePickers(title: "The window", label: "Window", theme: name, surface: surface(\.window))
                     SurfacePickers(title: "The sidebar", label: "Sidebar", theme: name, surface: surface(\.sidebar))
@@ -779,20 +776,17 @@ enum Listings {
 
                 return VStack {
                     Text(title)
-                    Picker(materials.map(\.name))
-                        .selectedIndex(Binding(
-                            get: { materials.firstIndex(of: look.material) ?? 0 },
-                            set: { surface.wrappedValue.material = materials[$0] }))
-                    Picker(accents.map(\.name))
+                    Picker(materials, selection: Binding(get: { look.material }, set: { surface.wrappedValue.material = $0 })) {
+                        $0.name
+                    }
+                    Picker(accents, selection: Binding(get: { look.colour }, set: { surface.wrappedValue.colour = $0 })) {
+                        $0.name
+                    }
                         .isEnabled(look.material.showsColour)
-                        .selectedIndex(Binding(
-                            get: { accents.firstIndex(of: look.colour) ?? 0 },
-                            set: { surface.wrappedValue.colour = accents[$0] }))
-                    Picker(["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"])
+                    Picker(blurs, selection: Binding(get: { look.blur }, set: { surface.wrappedValue.blur = $0 })) { blur in
+                        ["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"][blurs.firstIndex(of: blur) ?? 0]
+                    }
                         .isEnabled(look.material.showsBlur)
-                        .selectedIndex(Binding(
-                            get: { blurs.firstIndex(of: look.blur) ?? 0 },
-                            set: { surface.wrappedValue.blur = blurs[$0] }))
                 }
             }
         }
@@ -804,13 +798,14 @@ enum Listings {
 
         @State private var wide = false
 
-        static let laws = ["Standard", "Spring", "None"]
+        static let laws: [Motion] = [.standard, .spring(response: 320, damping: 0.6), .none]
 
-        static func law(_ index: Int) -> Motion {
-            switch index {
-            case 1: .spring(response: 320, damping: 0.6)
-            case 2: .none
-            default: .standard
+        /// What the picker calls a law.
+        static func name(_ law: Motion) -> String {
+            switch law {
+            case .standard: "Standard"
+            case .none: "None"
+            default: "Spring"
             }
         }
 
@@ -824,9 +819,8 @@ enum Listings {
 
                 // One write for the whole application: every value without a
                 // motion of its own takes it.
-                Picker(Self.laws)
-                    .onSelectedIndexChanged { application.motion = Self.law($0) }
-                    .selectedIndex(Self.laws.indices.first { Self.law($0) == application.motion } ?? 0)
+                Picker(Self.laws, selection: Binding(get: { application.motion }, set: { application.motion = $0 }),
+                       caption: Self.name)
                     .horizontalAlignment(.center)
 
                 // No `.motion` here: the panel takes the application's.
@@ -1075,9 +1069,9 @@ enum Listings {
         /// Words the host writes.
         @State private var hint = "Type here"   // words: the host writes them
 
-        /// A choice the host sets AND reports: the picker is handed `$choice`
+        /// A value the host sets AND reports: the slider is handed `$level`
         /// both ways, and nothing here reads it.
-        @State private var choice = 1   // a choice: set and reported
+        @State private var level = 0.25   // a value: set and reported
 
         /// A toggle the host sets and reports - and one row READS it, which is
         /// the one row that renders.
@@ -1128,13 +1122,12 @@ enum Listings {
 
                 button("Another hint") { hint = hint == "Type here" ? "Your name" : "Type here" }
 
-                row("5 · a choice, both ways - selectedIndex($choice)") {
-                    Picker(["S", "M", "L"])
-                        .selectedIndex($choice)
+                row("5 · a value, both ways - Slider($level)") {
+                    Slider($level)
                     DebugInfoLabel()
                 }
 
-                button("Choose L") { choice = 2 }
+                button("To the middle") { level = 0.5 }
 
                 row("6 · a member the host sets - horizontalAlignment($side)") {
                     Text("Where am I?")
@@ -2004,12 +1997,8 @@ enum Listings {
         "Cube3DSample": #"""
         // Sources/Samples/Animation/Cube3DSample.swift
         @State private var size = 0.6
-        @State private var color = 0
+        @State private var color = CubeColor.teal
         @State private var spinning = true
-
-        /// The names the picker offers, in the order `CubeColor` declares them -
-        /// so the chosen index IS the vocabulary's member number.
-        static let colors = ["Teal", "Amber", "Violet"]
 
         var body: some View {
             VStack {
@@ -2017,7 +2006,7 @@ enum Listings {
 
                 Cube3D()
                     .size($size)
-                    .color(CubeColor(rawValue: Int32(color)) ?? .teal)
+                    .color(color)
                     .isSpinning($spinning)
                     .horizontalAlignment(.center)
 
@@ -2028,8 +2017,7 @@ enum Listings {
                     .minimum(0.2)
                     .maximum(1)
 
-                Picker(Self.colors)
-                    .selectedIndex($color)
+                Picker(CubeColor.allCases, selection: $color) { "\($0)".capitalized }
                     .placeholder("Color")
 
                 HStack {
@@ -3780,12 +3768,11 @@ enum Listings {
         // Sources/Samples/BasicInput/IconButtonSample.swift
         @State private var taps = 0
         @State private var pressed = false
-        @State private var side = 0
+        @State private var side = IconPosition.leading
         @State private var gap = 8.0
         @State private var wide = false
 
-        static let sides = ["Leading", "Top", "Trailing", "Bottom"]
-        static let positions: [IconPosition] = [.leading, .top, .trailing, .bottom]
+        static let sides: [IconPosition] = [.leading, .top, .trailing, .bottom]
 
         var body: some View {
             VStack {
@@ -3820,13 +3807,12 @@ enum Listings {
                 // between them as the slider says - together, however wide.
                 Button("Media")
                     .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
-                    .iconPosition(Self.positions[side])
+                    .iconPosition(side)
                     .iconSpacing(gap)
                     .horizontalAlignment(wide ? .fill : .center)
                     .onClicked { taps += 1 }
 
-                Picker(Self.sides)
-                    .selectedIndex($side)
+                Picker(Self.sides, selection: $side) { "\($0)".capitalized }
                     .placeholder("Picture")
                     .horizontalAlignment(.center)
 
@@ -5161,7 +5147,7 @@ enum Listings {
         "MaterialsSample": #"""
         // Sources/Samples/Styles/MaterialsSample.swift
         /// Which of the blurs the blurred panel wears.
-        @State private var thickness = 2
+        @State private var thickness = Blur.regular
 
         /// Whether the blur wears the gallery's colour as a tint.
         @State private var tinted = false
@@ -5182,7 +5168,7 @@ enum Listings {
         ]
 
         var body: some View {
-            let chosen = Self.blurs[thickness].blur
+            let chosen = thickness
             let blur = tinted ? chosen.tint(Palette.accent.opacity(0.25)) : chosen
             let glass = (clear ? Glass.clear : .regular).isInteractive(interactive)
 
@@ -5215,8 +5201,9 @@ enum Listings {
                 }
                 .clipsContent(true)
 
-                Picker(Self.blurs.map(\.name))
-                    .selectedIndex($thickness)
+                Picker(Self.blurs.map(\.blur), selection: $thickness) { blur in
+                    Self.blurs.first { $0.blur == blur }?.name ?? ""
+                }
                 SwitchRow("Tinted blur", $tinted)
                 SwitchRow("Clear glass", $clear)
                 SwitchRow("Glass answers the touch", $interactive)
@@ -6427,22 +6414,23 @@ enum Listings {
         """#,
         "PickerSample": #"""
         // Sources/Samples/BasicInput/PickerSample.swift
-        @State private var size = 1
-        @State private var changes = 0
+        /// The values on offer.
+        enum Size: CaseIterable, Equatable {
+            case small, medium, large
+        }
+
+        /// The value chosen, nil while none is.
+        @State private var size: Size? = .medium
         @State private var opened = 0
         @State private var showing = false
 
-        static let sizes = ["Small", "Medium", "Large"]
-
         var body: some View {
             VStack {
-                // The choice and the two counts are read here, so a pick builds
-                // this closure - and a write of OURS raises no event at all.
+                // The choice and the count are read here, so a pick builds this
+                // closure - and a write of OURS raises no event at all.
                 DebugInfoLabel()
 
-                Picker(Self.sizes)
-                    .onSelectedIndexChanged { _ in changes += 1 }
-                    .selectedIndex($size)
+                Picker(Size.allCases, selection: $size) { "\($0)".capitalized }
                     .placeholder("Size")
                     // Settable, so a button elsewhere can open the list. The two
                     // events answer the user and the platform - never this
@@ -6455,14 +6443,17 @@ enum Listings {
                     .onClicked { showing = true }
                     .horizontalAlignment(.center)
 
-                Text(chosen)
+                // The same choice, offered as segments and as radio buttons.
+                Picker(Size.allCases, selection: $size) { "\($0)".capitalized }
+                    .presentation(.segmented)
 
-                Text("Changed \(changes)x, opened \(opened)x")
+                Picker(Size.allCases, selection: $size) { "\($0)".capitalized }
+                    .presentation(.radio)
+
+                Text(size.map { "Chosen: \($0)" } ?? "Nothing chosen")
+
+                Text("Opened \(opened)x")
             }
-        }
-
-        private var chosen: String {
-            size >= 0 && size < Self.sizes.count ? "Chosen: \(Self.sizes[size])" : "Nothing chosen"
         }
         """#,
         "PinchSample": #"""

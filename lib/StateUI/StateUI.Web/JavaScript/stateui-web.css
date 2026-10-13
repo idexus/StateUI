@@ -570,6 +570,14 @@ body {
 .stateui-toggle[aria-disabled] { cursor: default; }
 .stateui-radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; -webkit-user-select: none; }
 .stateui-radio[aria-disabled] { opacity: 0.45; cursor: default; }
+/* A picker's segments: a row of buttons in one rounded frame, the one chosen in the accent; its radio buttons, a
+   column. */
+.stateui-segments { display: inline-flex; border: 1px solid var(--stateui-line-strong); border-radius: 8px; overflow: hidden; }
+.stateui-segment { appearance: none; border: 0; margin: 0; padding: 6px 14px; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.stateui-segment + .stateui-segment { border-inline-start: 1px solid var(--stateui-line-strong); }
+.stateui-segment[aria-checked="true"] { background: var(--stateui-accent); color: #ffffff; }
+.stateui-segment:disabled { opacity: 0.45; cursor: default; }
+.stateui-radios { display: inline-flex; flex-direction: column; gap: 6px; }
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) select {
   appearance: none;
   -webkit-appearance: none;

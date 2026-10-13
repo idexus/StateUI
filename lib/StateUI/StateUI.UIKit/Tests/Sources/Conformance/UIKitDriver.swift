@@ -287,7 +287,7 @@ final class UIKitDriver: HostDriver {
             scroll.scrollViewWillBeginDragging(scroll.scroller)
             scroll.scroller.contentOffset = CGPoint(x: target.x, y: target.y)
             scroll.scrollViewDidEndDragging(scroll.scroller, willDecelerate: false)
-        case (.choose(let place), let picker as UIKitPickerView): picker.userChose(place)
+        case (.choose(let place), let picker as any UIKitChoosing): picker.userChose(place)
         case (.endContent, let web as UIKitWebView):
             // As WebKit tells it when the page's process dies.
             web.navigationDelegate?.webViewWebContentProcessDidTerminate?(web)
@@ -442,8 +442,8 @@ final class UIKitDriver: HostDriver {
             return alignments.first { $0.0 == picker.contentHorizontalAlignment }?.1.propValue
         case (.tint, let picker as UIKitPickerView):
             return picker.configuration?.indicatorColorTransformer.map { Self.color($0(.label)).propValue }
-        case (.selectedIndex, let picker as UIKitPickerView): return picker.chosen.map(\.propValue)
-        case (.options, let picker as UIKitPickerView): return picker.choices.propValue
+        case (.selectedIndex, let picker as any UIKitChoosing): return (picker.chosen ?? -1).propValue
+        case (.options, let picker as any UIKitChoosing): return picker.choices.propValue
         case (.placeholder, let picker as UIKitPickerView): return picker.title.propValue
         case (.date, let picker as UIKitDatePickerView): return picker.day.propValue
         case (.time, let picker as UIKitTimePickerView): return picker.time.propValue

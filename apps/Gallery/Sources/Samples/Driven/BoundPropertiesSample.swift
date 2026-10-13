@@ -1,7 +1,7 @@
 import StateUI
 
 /// EVERY PROPERTY CAN BE HANDED A BINDING: a font size, a colour, a flag, a
-/// placeholder, a choice, a toggle - each a plain `@State` handed on as `$x`,
+/// placeholder, a slider's value, a toggle - each a plain `@State` handed on as `$x`,
 /// each carried by the host, and each row wearing its own build count so the
 /// cost is on the screen: a write renders nobody, unless somebody reads.
 struct BoundPropertiesSample: SampleContent, ExampleContent {
@@ -22,9 +22,9 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
     /// Words the host writes.
     @State private var hint = "Type here"   // words: the host writes them
 
-    /// A choice the host sets AND reports: the picker is handed `$choice`
+    /// A value the host sets AND reports: the slider is handed `$level`
     /// both ways, and nothing here reads it.
-    @State private var choice = 1   // a choice: set and reported
+    @State private var level = 0.25   // a value: set and reported
 
     /// A toggle the host sets and reports - and one row READS it, which is
     /// the one row that renders.
@@ -88,15 +88,14 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
 
             button("Another hint") { hint = hint == "Type here" ? "Your name" : "Type here" }
 
-            row("5 · a choice, both ways - selectedIndex($choice)") {
-                Picker(["S", "M", "L"])
-                    .accessibilityIdentifier("boundProperties.choice")
-                    .accessibilityLabel("Size")
-                    .selectedIndex($choice)
+            row("5 · a value, both ways - Slider($level)") {
+                Slider($level)
+                    .accessibilityIdentifier("boundProperties.level")
+                    .accessibilityLabel("Level")
                 DebugInfoLabel()
             }
 
-            button("Choose L") { choice = 2 }
+            button("To the middle") { level = 0.5 }
 
             row("6 · a member the host sets - horizontalAlignment($side)") {
                 Text("Where am I?")
@@ -128,7 +127,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
             Text("Every property here is handed a plain `@State` as `$x`, and the host "
                 + "carries it: a number and a colour are WALKED there under the "
                 + "element's law, a flag is SET as it stands, words are WRITTEN, and a "
-                + "choice or a toggle is set from the state and landed on it when the "
+                + "slider's value or a toggle is set from the state and landed on it when the "
                 + "user moves it. A MEMBER - an alignment, a keyboard, a line break - "
                 + "crosses as its number and the host resolves it. "
                 + "Every row wears its own build count, and only row 7 climbs: it is the "

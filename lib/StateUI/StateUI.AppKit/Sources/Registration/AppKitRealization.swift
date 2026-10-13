@@ -97,6 +97,7 @@ enum AppKitRealization {
         .complete("Page", "navigatedTo"),
         .complete("Page", "navigatingFrom"),
         .complete("Page", "title"),
+        .complete("Picker", "presentation"),
         .complete("RadioButton", "groupName"),
         .complete("RadioButton", "padding"),
         .complete("Scene", "activated"),

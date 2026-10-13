@@ -93,7 +93,7 @@ final class DrivenPatchTests: XCTestCase {
     /// THE FIVE SHAPES A BINDING TAKES ON A PROPERTY, as a host is handed them: a journey
     /// from a plain number (`fontSize($size)`), a plain flag the host sets
     /// (`isVisible($shown)`), words (`placeholder($hint)`), a plain choice the
-    /// host sets and reports (`selectedIndex($size)`, `isOn($on)`), and a
+    /// host sets and reports (`isOn($on)`), and a
     /// MEMBER (`horizontalAlignment($side)`), which crosses as its number and is
     /// resolved by the host into the platform's own member. A host is held to
     /// landing each of them.
@@ -101,7 +101,6 @@ final class DrivenPatchTests: XCTestCase {
         let size = State(wrappedValue: 14.0)
         let shown = State(wrappedValue: true)
         let hint = State(wrappedValue: "Type here")
-        let choice = State(wrappedValue: 1)
         let on = State(wrappedValue: false)
         let side = State(wrappedValue: Alignment.center)
 
@@ -113,8 +112,6 @@ final class DrivenPatchTests: XCTestCase {
                     .horizontalAlignment(side.projectedValue)
                 TextField()
                     .placeholder(hint.projectedValue)
-                Picker(["S", "M", "L"])
-                    .selectedIndex(choice.projectedValue)
                 Switch(on.projectedValue)
             }
             .node)
@@ -126,8 +123,7 @@ final class DrivenPatchTests: XCTestCase {
                 .merging(tied(["horizontalAlignment"], to: 2, .out, .plain, .choice)) { $1 }
                 .merging(tied(["isVisible"], to: 3, .out, .plain, .boolean)) { $1 })
         XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["placeholder"], to: 4, .out, .text, nil))
-        XCTAssertEqual(ties(page, .auto(3), .auto(6)), tied(["selectedIndex"], to: 5, .inOut, .plain, .number))
-        XCTAssertEqual(ties(page, .auto(3), .auto(7)), tied(["isOn"], to: 6, .inOut, .plain, .boolean))
+        XCTAssertEqual(ties(page, .auto(3), .auto(6)), tied(["isOn"], to: 5, .inOut, .plain, .boolean))
     }
 
     /// Every one of the thirty twins, on one element each of the tiers they

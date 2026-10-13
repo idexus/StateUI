@@ -111,6 +111,7 @@ enum WinUIRealization {
         .complete("Scene", "windowClosed"),
         .complete("TextSpan", "background"),
         .complete("TextSpan", "tracking"),
+        .complete("Picker", "presentation"),
         .complete("TextSpan", "fontAttributes"),
         .complete("TextSpan", "fontWeight"),
         .complete("TextSpan", "textStyle"),

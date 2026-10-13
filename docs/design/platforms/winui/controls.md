@@ -419,3 +419,16 @@ for it: `.display` Display's 68, `.title` Title's 28, `.subtitle` Subtitle's
 style's (`TextLook.standing`), and every element showing words - a text
 block, a button, a field - takes them as its `FontSize` and `FontWeight`; a
 weight of none clears the element's own back to the theme's.
+
+## A picker's segments and radio buttons
+
+A picker offered as segments is WinUI's `SelectorBar`, an item for each
+value; one offered as radio buttons is its `RadioButtons`. The relay makes
+the one the picker's presentation asks for (`stateui_winui_picker_make`'s
+kind) and tells its choice through the same callback as a `ComboBox`'s; the
+program's choice is written as every program write is, so it is never told
+back - and `RadioButtons` applies it a turn after the write, once its buttons
+stand, and tells it as a change, so a change to the choice standing is no
+user's. Only a `ComboBox` has a list to open, a placeholder and choices across
+it.
+

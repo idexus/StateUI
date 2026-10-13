@@ -458,7 +458,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Line](controls/Line.md) | 77 | 40 ✅ · 2 ☑️ · 35 ✓ | 39 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 3 ☑️ · 10 ✓ | 63 ✅ · 13 ✓ · 1 – | 53 ✅ · 1 ☑️ · 22 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ |
 | [Map](controls/Map.md) | 74 | 36 ✅ · 2 ☑️ · 36 ✓ | 35 ✅ · 2 ☑️ · 36 ✓ · 1 – | 74 🧩 | 74 🧩 | 74 🧩 | 74 🧩 |
 | [Path](controls/Path.md) | 77 | 40 ✅ · 2 ☑️ · 35 ✓ | 39 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 3 ☑️ · 10 ✓ | 63 ✅ · 13 ✓ · 1 – | 53 ✅ · 1 ☑️ · 22 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ |
-| [Picker](controls/Picker.md) | 87 | 45 ✅ · 2 ☑️ · 36 ✓ · 1 – | 38 ✅ · 2 ☑️ · 40 ✓ · 4 – | 63 ✅ · 3 ☑️ · 13 ✓ · 3 – | 74 ✅ · 1 ☑️ · 12 ✓ | 55 ✅ · 1 ☑️ · 24 ✓ · 7 – | 61 ✅ · 1 ☑️ · 20 ✓ · 3 – |
+| [Picker](controls/Picker.md) | 88 | 46 ✅ · 2 ☑️ · 36 ✓ · 1 – | 38 ✅ · 3 ☑️ · 40 ✓ · 4 – | 63 ✅ · 4 ☑️ · 13 ✓ · 3 – | 75 ✅ · 1 ☑️ · 12 ✓ | 56 ✅ · 1 ☑️ · 24 ✓ · 7 – | 62 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [Polygon](controls/Polygon.md) | 78 | 41 ✅ · 2 ☑️ · 35 ✓ | 40 ✅ · 2 ☑️ · 35 ✓ · 1 – | 64 ✅ · 3 ☑️ · 10 ✓ | 64 ✅ · 13 ✓ · 1 – | 54 ✅ · 1 ☑️ · 22 ✓ · 1 – | 57 ✅ · 1 ☑️ · 20 ✓ |
 | [Polyline](controls/Polyline.md) | 78 | 41 ✅ · 2 ☑️ · 35 ✓ | 40 ✅ · 2 ☑️ · 35 ✓ · 1 – | 64 ✅ · 3 ☑️ · 10 ✓ | 64 ✅ · 13 ✓ · 1 – | 54 ✅ · 1 ☑️ · 22 ✓ · 1 – | 57 ✅ · 1 ☑️ · 20 ✓ |
 | [ProgressBar](controls/ProgressBar.md) | 68 | 30 ✅ · 2 ☑️ · 35 ✓ · 1 – | 30 ✅ · 2 ☑️ · 35 ✓ · 1 – | 54 ✅ · 3 ☑️ · 10 ✓ | 55 ✅ · 12 ✓ · 1 – | 43 ✅ · 1 ☑️ · 23 ✓ · 1 – | 47 ✅ · 1 ☑️ · 20 ✓ |
@@ -477,10 +477,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 76 | 38 ✅ · 1 ☑️ · 35 ✓ | 36 ✅ · 1 ☑️ · 36 ✓ · 1 – | 59 ✅ · 3 ☑️ · 11 ✓ | 61 ✅ · 1 ☑️ · 12 ✓ · 1 – | 51 ✅ · 1 ☑️ · 22 ✓ · 2 – | 54 ✅ · 1 ☑️ · 20 ✓ |
 | [WebView](controls/WebView.md) | 82 | 44 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 2 ☑️ · 38 ✓ · 1 – | 63 ✅ · 3 ☑️ · 12 ✓ · 3 – | 49 ✅ · 13 ✓ · 19 – | 56 ✅ · 1 ☑️ · 24 ✓ · 1 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [ZStack](controls/ZStack.md) | 75 | 37 ✅ · 1 ☑️ · 35 ✓ | 34 ✅ · 1 ☑️ · 37 ✓ · 1 – | 57 ✅ · 3 ☑️ · 12 ✓ | 60 ✅ · 1 ☑️ · 12 ✓ · 1 – | 49 ✅ · 1 ☑️ · 23 ✓ · 2 – | 53 ✅ · 1 ☑️ · 20 ✓ |
-| ✅ |  | 1304 | 1223 | 1962 | 2037 | 1686 | 1817 |
+| ✅ |  | 1305 | 1223 | 1962 | 2038 | 1687 | 1818 |
 | ✓ |  | 1175 | 1210 | 365 | 397 | 748 | 641 |
 | – |  | 25 | 79 | 38 | 37 | 46 | 18 |
-| **Met** | 2595 | **2504** | **2512** | **2365** | **2471** | **2480** | **2476** |
+| **Met** | 2596 | **2505** | **2512** | **2365** | **2472** | **2481** | **2477** |
 | 🧩 |  | 0 | 0 | 74 | 74 | 74 | 74 |
 
 ### Application structure
@@ -578,7 +578,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [NavigationStack](controls/NavigationStack.md) | `popped` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `background`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsNavigationBar`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 9 | 7 ✅ | 9 ✅ | 8 ✅ · 1 – | 8 ✅ · 1 – | 7 ✅ · 1 – | 8 ✅ |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `placeholder`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`) | 7 | 3 ✅ · 1 ✓ | 1 ✅ · 3 ✓ | 3 ✅ · 1 ✓ | 7 ✅ | 3 ✅ · 4 – | 4 ✅ · 3 – |
+| [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `placeholder`, `presentation`, `selectedIndex`, `selectedIndexChanged` | 8 | 4 ✅ · 1 ✓ | 1 ✅ · 1 ☑️ · 3 ✓ | 3 ✅ · 1 ☑️ · 1 ✓ | 8 ✅ | 4 ✅ · 4 – | 5 ✅ · 3 – |
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Polyline](controls/Polyline.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ProgressBar](controls/ProgressBar.md) | `progress` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
@@ -653,13 +653,13 @@ realizes the element and each of its members.
 `maximumLines`, `maximumWidth`, `minimum`, `minimumDate`, `minimumHeight`,
 `minimumWidth`, `miterLimit`, `opacity`, `options`, `order`, `orientation`,
 `padding`, `panTouchCount`, `panXChannel`, `panYChannel`, `pivotX`, `pivotY`,
-`placeholder`, `placeholderColor`, `placement`, `points`, `progress`, `region`,
-`role`, `rotation`, `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`,
-`scaleX`, `scaleY`, `scrollOffset`, `selectedIndex`, `selectedItems`,
-`selectedTab`, `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
-`showsClearButton`, `showsNavigationBar`, `showsSidebar`, `showsText`,
-`showsTraffic`, `showsUserLocation`, `side`, `sidebarBackground`, `source`,
-`spacing`, `step`, `stroke`, `style`, `submitLabel`, `subtitle`,
+`placeholder`, `placeholderColor`, `placement`, `points`, `presentation`,
+`progress`, `region`, `role`, `rotation`, `rotationX`, `rotationY`, `rows`,
+`rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollOffset`, `selectedIndex`,
+`selectedItems`, `selectedTab`, `selectionLength`, `selectionMode`, `shape`,
+`showsBackButton`, `showsClearButton`, `showsNavigationBar`, `showsSidebar`,
+`showsText`, `showsTraffic`, `showsUserLocation`, `side`, `sidebarBackground`,
+`source`, `spacing`, `step`, `stroke`, `style`, `submitLabel`, `subtitle`,
 `swipeDirection`, `swipeThreshold`, `tapCount`, `text`, `textCase`, `textColor`,
 `textDecorations`, `textStyle`, `time`, `tint`, `title`, `tooltip`, `tracking`,
 `translationX`, `translationY`, `type`, `userAgent`, `value`,

@@ -340,7 +340,7 @@ Choice controls follow the same binding rule:
 ```swift
 @State var accepted = false
 @State var level = 0.25
-@State var index = 0
+@State var size = "Medium"
 
 VStack {
     CheckBox($accepted)
@@ -349,8 +349,32 @@ VStack {
         .minimum(0)
         .maximum(1)
 
-    Picker(["Small", "Medium", "Large"])
-        .selectedIndex($index)
+    Picker(["Small", "Medium", "Large"], selection: $size)
+}
+```
+
+A picker chooses a value, not a place in its list: the state holds one of
+the values - an application's own enum, a model - and each shows by its
+caption, its description unless the picker is given one. The list can change
+its order and the choice stays the value it was; a state that may hold
+nothing is optional, and the placeholder shows while it is nil. A picker
+offers its values as the platform's menu unless it says otherwise -
+`.segmented`, a row of segments for a few short values, or `.radio`, a radio
+button for each:
+
+```swift
+enum Span: CaseIterable, Equatable { case day, week, month }
+
+@State var span = Span.week
+@State var plan: String? = nil
+
+VStack {
+    Picker(Span.allCases, selection: $span) { "\($0)".capitalized }
+        .presentation(.segmented)
+
+    Picker(["Free", "Team", "Business"], selection: $plan)
+        .placeholder("Choose a plan")
+        .presentation(.radio)
 }
 ```
 

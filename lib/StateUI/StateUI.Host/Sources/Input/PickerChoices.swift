@@ -24,3 +24,12 @@
         return (changed ? choices : nil, changed || choiceChanged, choices.indices.contains(chosen) ? chosen : nil)
     }
 }
+
+extension PickerChoices {
+    /// How a picker made from `patch` offers its values - the control it is made as: a menu unless it says
+    /// otherwise.
+    /// Design: docs/design/views/controls.md#a-pickers-presentation
+    public static func presentation(made patch: HostPatch?) -> PickerPresentation {
+        patch?.properties[.presentation]?.enumeration.flatMap(PickerPresentation.init(rawValue:)) ?? .menu
+    }
+}
