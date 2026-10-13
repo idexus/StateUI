@@ -22,6 +22,18 @@ final class WinUIWindowController {
     /// The sheets the window shows, one for each page its modal stack presents, the last on top.
     private var sheets: [(element: MountedElement, sheet: WinUISheetView)] = []
 
+    /// The page heading its content with its title, while the chrome names the application in its place.
+    private weak var headed: WinUISingleChildView?
+
+    /// Heads `page` with its title, and the page headed before it no more.
+    /// Design: docs/design/platforms/winui/pages.md#a-pages-heading
+    private func head(_ page: MountedElement?) {
+        let view = page?.winUI.view as? WinUISingleChildView
+        if headed !== view { headed?.setHeading(nil) }
+        headed = view
+        view?.setHeading(page?.value(.title)?.string.flatMap { $0.isEmpty ? nil : $0 })
+    }
+
     init(_ element: MountedElement) {
         self.element = element
         window.useTheme(HostThemes.held)
@@ -124,6 +136,7 @@ final class WinUIWindowController {
         chrome.escape = { [weak element] in
             element.map { KeyboardShortcuts.press(KeyboardShortcut(.escape, modifiers: []), under: $0, in: runtime) } ?? false
         }
+        head(composed.titleArea == nil ? nil : presentation.arrangement?.titledPage)
         if !presentation.sheets.isEmpty {
             chrome.sheet = (
                 back: { [weak self] in self?.goBack(in: runtime) },

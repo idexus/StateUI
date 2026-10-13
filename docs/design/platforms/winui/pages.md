@@ -80,6 +80,17 @@ A navigation stack shows its top page across its whole frame; the pages below
 are kept by their elements and held by no view, so each keeps what it showed
 for when the user comes back to it. Its bar is the window's chrome.
 
+## A page's heading
+
+Where the window's chrome names the application - a title area declared on the
+visible path - the page that would name the window is headed by its own
+title, as Windows' own applications head a page under a title bar naming the
+application: a row across the top of the page's room in WinUI's title style,
+24 DIPs from its top and sides, the page's content under it. The window heads
+one page at a time, the one its chrome composes from, and takes the heading
+from the page it headed before. A tab view names its tabs in its own row and
+is headed by nothing.
+
 ## The way back
 
 The way back is the chrome's back button, the mouse's back button, Alt+Left
