@@ -16,7 +16,7 @@ BoundPropertiesSample.swift e66327a0735f386e
 BrushSample.swift 36be7fa820ad3d49
 BuilderSample.swift 1dacedcf10e81593
 ButtonMenuSample.swift 7af63f7efe0c91b9
-ButtonRoleSample.swift b88b8f5f3ef6c764
+ButtonRoleSample.swift 361912c0899f9d4d
 ButtonSample.swift 4b6ac2242b903c97
 CanvasSample.swift 52db70adead39b9b
 CheckBoxSample.swift a6e9da46d0ccfb97
@@ -102,7 +102,7 @@ StackLayoutSample.swift 7c0cf33b6e5cf6aa
 StateClassSample.swift 1aafda814ae33894
 StateSample.swift abfc1c415e278290
 StepperSample.swift a1eb96147d1526c6
-StyleSample.swift 3b8ed0ea010d3556
+StyleSample.swift 90e7546aa26671e5
 SwipeSample.swift 66a58baed064554c
 SwitchSample.swift ac0d645ed37aa2e9
 TabsSample.swift 3ac016081c395c3c

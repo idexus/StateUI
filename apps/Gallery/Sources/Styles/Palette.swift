@@ -101,4 +101,14 @@ enum Palette {
 
     /// Behind the row under the pointer.
     static let hovered = Color(light: Color("#0A000000"), dark: Color("#0FFFFFFF"))
+
+    // MARK: Roles
+
+    /// The words of an action that destroys something.
+    // listing: Palette.sample
+    static let danger = Color(light: AppColors.red, dark: AppColors.redLight)
+
+    /// What such an action stands on: its red let faintly through.
+    static let dangerWash = Color(light: Color("#1FD92D20"), dark: Color("#33FF8A80"))
+    // listing: end
 }

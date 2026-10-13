@@ -5,15 +5,19 @@ struct ButtonRoleSample: SampleContent, ExampleContent {
     // listing: ButtonRoleSample
     @State private var name = ""
     @State private var last = "nothing yet"
+    @State private var platformLook = false
     // listing: end
 
     static let id = "buttonRole"
     static let title = "Button role"
-    static let summary = "The window's main action, its way out and a destructive one, as the platform draws them."
+    static let summary = "The window's main action, its way out and a destructive one, each looking its role."
 
     // listing: ButtonRoleSample
     var body: some View {
-        VStack {
+        // The gallery's style for each role, or the platform's own look.
+        let look: StyleKey<Button>? = platformLook ? .platform : nil
+
+        return VStack {
             Text("Press Return or Escape; in the field, Return ends the name instead.")
                 .fontSize(14)
 
@@ -22,23 +26,32 @@ struct ButtonRoleSample: SampleContent, ExampleContent {
                 .onSubmitted { last = "the name \(name)" }
 
             HStack {
-                // Drawn as the platform marks an action that destroys something.
+                // Marked as an action that destroys something.
                 Button("Delete")
-                    .style(.platform)
+                    .style(look)
                     .role(.destructive)
                     .onClicked { last = "Delete" }
 
                 // Escape presses the way out.
                 Button("Cancel")
-                    .style(.platform)
+                    .style(look)
                     .role(.cancel)
                     .onClicked { last = "Cancel" }
 
-                // Return presses the main action, drawn with the platform's emphasis.
+                // Return presses the main action.
                 Button("Save")
-                    .style(.platform)
+                    .style(look)
                     .role(.primary)
                     .onClicked { last = "Save" }
+            }
+            .spacing(12)
+
+            HStack {
+                Switch($platformLook)
+                    .accessibilityLabel("Platform look")
+
+                Text("Platform look")
+                    .verticalAlignment(.center)
             }
             .spacing(12)
 
@@ -51,8 +64,9 @@ struct ButtonRoleSample: SampleContent, ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("A shortcut the button states takes the place of its role's key. Where a platform has no look for a "
-            + "role, the button keeps its plain one. These buttons wear the platform's own look, not the gallery's.")
+        Text("A shortcut the button states takes the place of its role's key. The gallery styles each role over "
+            + "its every button's style; Platform look shows the platform's own, and where it has no look for a "
+            + "role, the button keeps its plain one.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

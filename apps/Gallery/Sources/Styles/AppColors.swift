@@ -42,6 +42,14 @@ enum AppColors {
     /// The violet lifted for a dark background.
     static let violetLight = Color("#A78BFA")
 
+    // MARK: Red
+
+    /// The red of an action that destroys something.
+    static let red = Color("#D92D20")
+
+    /// The red lifted for a dark background.
+    static let redLight = Color("#FF8A80")
+
     // MARK: Sample colours
 
     /// A near-black ink, violet-tinted - what the animated caption starts in.

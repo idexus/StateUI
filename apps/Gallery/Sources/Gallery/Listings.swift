@@ -647,6 +647,16 @@ enum Listings {
                 .textColor(Palette.disabled)
                 .background(Palette.outline)
             }
+
+        // A button's role chooses a style over the one above: it says
+        // only what the role changes. The main action keeps the violet;
+        // the way out steps back, and what destroys something is red.
+        Style<Button>(role: .cancel)
+            .textColor(Palette.text)
+            .background(Palette.selected)
+        Style<Button>(role: .destructive)
+            .textColor(Palette.danger)
+            .background(Palette.dangerWash)
         """#,
         "AppThemeSample": #"""
         // Sources/Samples/Styles/AppThemeSample.swift
@@ -1374,9 +1384,13 @@ enum Listings {
         // Sources/Samples/BasicInput/ButtonRoleSample.swift
         @State private var name = ""
         @State private var last = "nothing yet"
+        @State private var platformLook = false
 
         var body: some View {
-            VStack {
+            // The gallery's style for each role, or the platform's own look.
+            let look: StyleKey<Button>? = platformLook ? .platform : nil
+
+            return VStack {
                 Text("Press Return or Escape; in the field, Return ends the name instead.")
 
                 TextField($name)
@@ -1384,23 +1398,30 @@ enum Listings {
                     .onSubmitted { last = "the name \(name)" }
 
                 HStack {
-                    // Drawn as the platform marks an action that destroys something.
+                    // Marked as an action that destroys something.
                     Button("Delete")
-                        .style(.platform)
+                        .style(look)
                         .role(.destructive)
                         .onClicked { last = "Delete" }
 
                     // Escape presses the way out.
                     Button("Cancel")
-                        .style(.platform)
+                        .style(look)
                         .role(.cancel)
                         .onClicked { last = "Cancel" }
 
-                    // Return presses the main action, drawn with the platform's emphasis.
+                    // Return presses the main action.
                     Button("Save")
-                        .style(.platform)
+                        .style(look)
                         .role(.primary)
                         .onClicked { last = "Save" }
+                }
+
+                HStack {
+                    Switch($platformLook)
+
+                    Text("Platform look")
+                        .verticalAlignment(.center)
                 }
 
                 Text("Last: \(last)")
@@ -6314,6 +6335,11 @@ enum Listings {
         static let disabled = Color(light: Color("#40000000"), dark: Color("#40FFFFFF"))
 
         static let outline = Color(light: Color("#1F000000"), dark: Color("#1FFFFFFF"))
+
+        static let danger = Color(light: AppColors.red, dark: AppColors.redLight)
+
+        /// What such an action stands on: its red let faintly through.
+        static let dangerWash = Color(light: Color("#1FD92D20"), dark: Color("#33FF8A80"))
         """#,
         "PanSample": #"""
         // Sources/Samples/Gestures/PanSample.swift
@@ -8715,17 +8741,21 @@ enum Listings {
         "StyleSample": #"""
         // Sources/Samples/Styles/StyleSample.swift
         @State private var enabled = true
+        @State private var platformLook = false
 
         var body: some View {
-            VStack {
+            // The gallery's styles, or the platform's own look.
+            let look: StyleKey<Button>? = platformLook ? .platform : nil
+
+            return VStack {
                 DebugInfoLabel()
 
                 // Neither of these says anything of its own look: the violet, the
                 // corners and the padding come from Style<Button> in AppStyles.swift,
                 // which every button wears.
                 HStack {
-                    Button("Save")
-                    Button("Cancel")
+                    Button("Save").style(look)
+                    Button("Cancel").style(look)
                 }
                 .horizontalAlignment(.center)
 
@@ -8733,6 +8763,7 @@ enum Listings {
                 // the control enter one is what .onVisualStateChanged is for, next
                 // door in the Visual states sample.
                 Button(enabled ? "Enabled" : "Disabled")
+                    .style(look)
                     .isEnabled(enabled)
                     .horizontalAlignment(.center)
                     .onClicked {}
@@ -8742,6 +8773,24 @@ enum Listings {
                         .verticalAlignment(.center)
 
                     Switch($enabled)
+                }
+                .horizontalAlignment(.center)
+
+                HStack {
+                    Text("Platform look")
+                        .verticalAlignment(.center)
+
+                    Switch($platformLook)
+                }
+                .horizontalAlignment(.center)
+
+                SectionTitle("A style for a role")
+
+                // Each wears the style its role chooses, over the one every button
+                // wears: the role's style says only what the role changes.
+                HStack {
+                    Button("Keep").style(look).role(.cancel)
+                    Button("Delete").style(look).role(.destructive)
                 }
                 .horizontalAlignment(.center)
 

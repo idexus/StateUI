@@ -587,6 +587,52 @@ final class StyleTests: XCTestCase {
         XCTAssertEqual(patch.props["fontSize"], .number(14))
     }
 
+    /// A style for a role stands over the one every button wears: it says only what the role changes, and a button
+    /// of no role, or of another, wears the implicit style alone.
+    func testAStyleForARoleStandsOverTheOneEveryButtonWears() {
+        let sheet = StyleSheet {
+            Style<Button>(role: .destructive).textColor(.red).visualState(.disabled) { $0.opacity(0.4) }
+            Style<Button>().fontSize(14).textColor(.black).visualState(.pressed) { $0.opacity(0.8) }
+        }
+
+        let delete = Renders().render(Button("Delete").role(.destructive).node, styles: sheet)
+        let cancel = Renders().render(Button("Cancel").role(.cancel).node, styles: sheet)
+        let plain = Renders().render(Button("Save").node, styles: sheet)
+
+        XCTAssertEqual(delete.props["textColor"], Color.red.propValue, "the role's own")
+        XCTAssertEqual(delete.props["fontSize"], .number(14), "and the implicit style's rest, written after it")
+        XCTAssertEqual(
+            styled(Button("Delete").role(.destructive).node, with: sheet).visualStates.map(\.name),
+            ["Pressed", "Disabled"], "the states of both")
+        XCTAssertEqual(cancel.props["textColor"], Color.black.propValue, "another role wears the implicit style")
+        XCTAssertEqual(plain.props["textColor"], Color.black.propValue)
+    }
+
+    /// A style asked for by its key replaces the role's too, and the platform's look wears neither.
+    func testAKeyedStyleOrThePlatformsLookTakesNoRoleStyle() {
+        let sheet = StyleSheet {
+            Style<Button>().fontSize(14)
+            Style<Button>(role: .destructive).textColor(.red)
+            Style<Button>(.cta).fontSize(20)
+        }
+
+        let keyed = Renders().render(Button("Delete").role(.destructive).style(.cta).node, styles: sheet)
+        let platform = Renders().render(Button("Delete").role(.destructive).style(.platform).node, styles: sheet)
+
+        XCTAssertEqual(keyed.props["fontSize"], .number(20))
+        XCTAssertNil(keyed.props["textColor"], "nothing of the role's")
+        XCTAssertNil(platform.props["textColor"])
+        XCTAssertNil(platform.props["fontSize"])
+    }
+
+    /// A role style changed in a sheet written again reaches the button: the sheet's sameness reads the role.
+    func testTwoSheetsDifferingInARoleAreNotTheSame() {
+        let one = StyleSheet { Style<Button>(role: .destructive).textColor(.red) }
+        let other = StyleSheet { Style<Button>(role: .cancel).textColor(.red) }
+
+        XCTAssertFalse(StyleSheet.same(one, other))
+    }
+
     // MARK: - Where they live
 
     /// The application's sheet reaches the controls under its window, and

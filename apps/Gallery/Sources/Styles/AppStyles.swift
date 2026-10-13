@@ -128,6 +128,16 @@ enum AppStyles {
                     .textColor(Palette.disabled)
                     .background(Palette.outline)
                 }
+
+            // A button's role chooses a style over the one above: it says
+            // only what the role changes. The main action keeps the violet;
+            // the way out steps back, and what destroys something is red.
+            Style<Button>(role: .cancel)
+                .textColor(Palette.text)
+                .background(Palette.selected)
+            Style<Button>(role: .destructive)
+                .textColor(Palette.danger)
+                .background(Palette.dangerWash)
             // listing: end
 
             Style<Button>(.iconButton)

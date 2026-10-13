@@ -77,6 +77,44 @@ before that cut remain, with each derived style still winning over its base.
 This makes a malformed cycle finite and deterministic, but a cycle does not
 express a useful precedence and should be removed.
 
+A button's role chooses a style too. `Style<Button>(role:)` is the style every
+button of that role wears, standing over the implicit button style: it states
+only what the role changes, and everything else comes from the style every
+button wears.
+
+```swift
+@MainActor
+enum RoleStyles {
+    static var sheet: StyleSheet {
+        StyleSheet {
+            Style<Button>()
+                .textColor(.white)
+                .background(.cornflowerBlue)
+                .shape(.roundedRectangle(8))
+
+            Style<Button>(role: .destructive)
+                .background(.firebrick)
+
+            Style<Button>(role: .cancel)
+                .textColor(.cornflowerBlue)
+                .background(.transparent)
+        }
+    }
+}
+
+struct DeleteOrKeep: View {
+    var body: some View {
+        HStack {
+            Button("Keep").role(.cancel)
+            Button("Delete").role(.destructive)
+        }
+    }
+}
+```
+
+A button asking for a keyed style, or for the platform's own look, wears none
+of its role's style.
+
 Every control also has the key `.platform`: the platform's own look, wearing
 no style of the sheet - neither the implicit one nor any other. A control
 chooses its style as it is built, and `nil` wears the implicit one, so

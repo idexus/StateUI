@@ -23,6 +23,9 @@ public struct StyleSheet {
     /// Where the ones asked for by name are.
     private var keyed: [Filed: Int] = [:]
 
+    /// Where the ones a button's role gets are, by its role.
+    private var roles: [ButtonRole: Int] = [:]
+
     /// A keyed style's place: its control's type and its key's name, as a key is typed by its control.
     private struct Filed: Hashable {
         let target: NodeType
@@ -39,6 +42,8 @@ public struct StyleSheet {
         for (index, style) in written.enumerated() {
             if let key = style.key {
                 keyed[Filed(target: style.target, name: key)] = index
+            } else if let role = style.role {
+                roles[role] = index
             } else {
                 implicit[style.target] = index
             }
@@ -49,6 +54,14 @@ public struct StyleSheet {
 
         for index in written.indices {
             written[index] = StyleSheet.flatten(written[index], from: unflattened, keyed: keyed)
+        }
+
+        // A role's style stands over the implicit one, wherever either was written.
+        // Design: docs/design/views/styles.md#a-style-for-a-role
+        for index in roles.values {
+            guard let base = implicit[written[index].target].map({ written[$0] }) else { continue }
+            written[index].props = base.props.merging(written[index].props) { _, mine in mine }
+            written[index].states = merged(base.states, with: written[index].states)
         }
     }
 
@@ -75,12 +88,16 @@ public struct StyleSheet {
     }
 
     /// The style a node wears: none where it asks for the platform's own look,
-    /// the keyed one it asks for where that is for its type, or else the one
-    /// every control of its type gets.
+    /// the keyed one it asks for where that is for its type, a button's role's,
+    /// or else the one every control of its type gets.
     func style(for node: Node) -> AnyStyle? {
         let key = node.props[VisualElementContract.style.token]?.name
         if key == platformStyleName { return nil }
         if let key, let at = keyed[Filed(target: node.type, name: key)] {
+            return written[at]
+        }
+        if node.type == ButtonContract.nodeType, let worn = node.props[ButtonContract.role.token],
+            let role = ButtonRole(propValue: worn), let at = roles[role] {
             return written[at]
         }
 
@@ -101,6 +118,7 @@ public struct StyleSheet {
         one.count == other.count && zip(one, other).allSatisfy { mine, theirs in
             mine.target == theirs.target
                 && mine.key == theirs.key
+                && mine.role == theirs.role
                 && mine.props == theirs.props
                 && mine.states == theirs.states
         }
