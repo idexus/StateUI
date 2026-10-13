@@ -242,6 +242,8 @@ body {
   position: fixed;
   inset: auto;
   margin: 0;
+  /* Each entry as tall as it is: WebKit spreads a grid held to a max-height over its rows. */
+  grid-auto-rows: min-content;
   min-width: 200px;
   max-width: min(320px, calc(100vw - 16px));
   max-height: calc(100dvh - 16px);
