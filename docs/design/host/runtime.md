@@ -394,7 +394,10 @@ tall, turned by quarters from its natural orientation - none on one that
 turns with nothing. When any of it changes, one step
 follows on every host (`HostRuntime.environmentChanged`): the core is told
 what stands now, the tree follows the language's direction, and one turn
-renders what it all changed.
+renders what it all changed. A report that repeats what stands - and
+platforms repeat themselves often, a network monitor several times a frame -
+changes nothing and takes no turn: a turn between frames would move
+whatever moves once more.
 
 ## The theme in force
 

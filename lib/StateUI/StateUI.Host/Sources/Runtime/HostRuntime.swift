@@ -152,12 +152,17 @@
     }
 
     /// What the application stands on changed - the theme, the locale, the power, the network: `report` tells the
-    /// core what stands now, the tree follows the language's direction, and a turn renders what it all changed.
+    /// core what stands now, the tree follows the language's direction, and a turn renders what it all changed. A
+    /// report that repeats what stands takes no turn; answers whether it changed anything.
     /// Design: docs/design/host/runtime.md#the-environment
-    public func environmentChanged(_ report: () -> Void) {
+    @discardableResult
+    public func environmentChanged(_ report: () -> Void) -> Bool {
+        let changes = core.environmentChanges
         report()
+        guard core.environmentChanges != changes else { return false }
         tree.followTheLanguagesDirection()
         pump.turn()
+        return true
     }
 
     /// The toolkit told what `window` does now. It settles a turn later, with whatever else the toolkit tells in

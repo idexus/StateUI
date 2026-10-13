@@ -117,8 +117,14 @@
     private static func update<Provider: AnyObject, Value: Equatable>(
         _ provider: Provider, _ field: ReferenceWritableKeyPath<Provider, Value>, _ value: Value
     ) {
-        if provider[keyPath: field] != value { provider[keyPath: field] = value }
+        guard provider[keyPath: field] != value else { return }
+        provider[keyPath: field] = value
+        environmentChanges += 1
     }
+
+    /// How many fields the host's reports have changed so far: a report repeating what stands leaves it.
+    /// Design: docs/design/types/environment.md#a-report-that-repeats-itself
+    public private(set) static var environmentChanges = 0
 
     /// The typed keys the host reads before the first application render - the application, made at its first
     /// need, lists them as it is made.

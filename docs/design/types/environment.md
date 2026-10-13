@@ -60,7 +60,9 @@ A setter writes only the fields that differ from what the provider holds.
 Platforms report far more often than anything changes - Android on every
 battery broadcast, macOS on every power-source notice - and a write asks for a
 render even when it writes what was there, so a repeated report would rebuild
-every reader for nothing.
+every reader for nothing. The setters count the fields they change
+(`HostBoundary.environmentChanges`), and a host's report that changed none
+takes no turn ([the environment](../host/runtime.md#the-environment)).
 
 ## One door and the bottom of the scope
 

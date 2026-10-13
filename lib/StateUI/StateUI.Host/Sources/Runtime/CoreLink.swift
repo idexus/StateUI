@@ -183,6 +183,9 @@
     /// Reports the battery.
     public func setBatteryInfo(_ info: HostBatteryInfo) { HostBoundary.setBatteryInfo(info) }
 
+    /// How many fields the host's reports have changed so far: a report repeating what stands leaves it.
+    public var environmentChanges: Int { HostBoundary.environmentChanges }
+
     /// Reports the network.
     public func setConnectivityInfo(_ info: HostConnectivityInfo) {
         HostBoundary.setConnectivityInfo(info)
