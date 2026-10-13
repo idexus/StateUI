@@ -46,8 +46,8 @@ final class SidebarSlideTests: XCTestCase {
         XCTAssertEqual(seen.last, 0)
     }
 
-    /// Shown, it eases out - fast first, slow as it arrives; hidden, it eases in - slow first, fast as it goes.
-    func testShownItEasesOutHiddenItEasesIn() {
+    /// Either way it eases out: fast first, slow as it arrives.
+    func testItEasesOutEitherWay() {
         var opening: [Double] = []
         slide.slide(1, from: 0, shown: true) { shown, _ in opening.append(shown) }
         frame(at: SidebarSlide.milliseconds / 2)
@@ -57,7 +57,7 @@ final class SidebarSlideTests: XCTestCase {
         var closing: [Double] = []
         slide.slide(1, from: 1, shown: false) { shown, _ in closing.append(shown) }
         frame(at: SidebarSlide.milliseconds * 2.5)
-        XCTAssertGreaterThan(closing.last ?? 0, 0.5, "out, less than half the way at half the time")
+        XCTAssertLessThan(closing.last ?? 1, 0.5, "out, more than half the way at half the time")
     }
 
     /// A frame coming late - the first ones of a page measured at new widths - moves a slide one longest frame's

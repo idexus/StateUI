@@ -43,10 +43,10 @@
         let destination = shown ? 1.0 : 0.0
         let position = animator.animation(for: key)?.position(at: now())
         let start = position?.value.first ?? standing[mount] ?? from
-        // Coming in it slows as it arrives; going out it starts slow and leaves fast.
+        // Either way it slows as it arrives.
         let animation = Animation(
             from: [start], destination: [destination], velocity: [position?.velocity.first ?? 0],
-            motion: .eased(UInt(Self.milliseconds), shown ? .cubicOut : .cubicIn), began: now())
+            motion: .eased(UInt(Self.milliseconds), .cubicOut), began: now())
 
         guard !reducesMotion(), !animation.arrives else {
             forget(mount)
