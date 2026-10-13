@@ -32,6 +32,29 @@ final class UIKitTextViewTests: XCTestCase {
         XCTAssertEqual(selectable.sizeThatFits(room).height, height, accuracy: 2, "measured as it was")
     }
 
+    /// A label resized draws its words again, whatever its height comes to: words drawn for one width and stretched
+    /// to another break their lines anew only when something else has them drawn.
+    @MainActor
+    func testALabelResizedDrawsItsWordsAgain() {
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 1100, height: 400))
+        window.isHidden = false
+        defer { window.isHidden = true }
+        let label = UIKitTextView()
+        label.setLook { $0.size = 13 }
+        label.setText(
+            "Each hand is a box whose bottom sits at the face's centre - its pivot - turned about that point, so "
+                + "a hand drawn upright points at twelve.")
+        window.addSubview(label)
+        label.frame = CGRect(x: 20, y: 20, width: 984, height: 31.5)
+        window.layoutIfNeeded()
+        label.layer.displayIfNeeded()
+        XCTAssertFalse(label.layer.needsDisplay())
+
+        label.bounds.size = CGSize(width: 664, height: 31.5)
+        label.layoutIfNeeded()
+        XCTAssertTrue(label.layer.needsDisplay(), "narrower, its height the same")
+    }
+
     /// A label's background fills its whole box, the room around its words included - a colour, and a brush.
     @MainActor
     func testATextsBackgroundFillsItsBox() {

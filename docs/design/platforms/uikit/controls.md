@@ -55,6 +55,12 @@ a colour or a brush - fills its whole box, that room included, painted
 before the words: they are the label's own drawing, which a layer laid over
 it would cover.
 
+A label resized draws its words again, whatever its height comes to. UIKit
+does not always do so when the width alone changes - a label measured for
+its new width first, its line count the same - and its old drawing then
+stands stretched to the new box, its lines breaking anew only when something
+else has it drawn, half a second later in a sidebar's slide.
+
 ## The user's text size
 
 Words follow the user's text size (`isFontAutoScalingEnabled`, on unless

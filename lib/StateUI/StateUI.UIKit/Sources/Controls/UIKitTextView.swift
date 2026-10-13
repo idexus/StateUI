@@ -19,6 +19,11 @@ final class UIKitTextView: UILabel, UIKitLabel {
     /// What fills the label's box behind its words: a colour, or a brush; nothing where the tree says none.
     private var fill = UIKitBrush()
 
+    /// The size the words were last drawn for: UIKit does not always draw a label again when its width alone
+    /// changes, and its old drawing stands stretched to the new box until something else has it drawn.
+    /// Design: docs/design/platforms/uikit/controls.md#a-labels-words
+    private var drawnSize: CGSize?
+
     init() {
         super.init(frame: .zero)
         font = .stateUI(TextLook())
@@ -71,7 +76,13 @@ final class UIKitTextView: UILabel, UIKitLabel {
         setNeedsDisplay()
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if bounds.size != drawnSize { setNeedsDisplay() }
+    }
+
     override func draw(_ rect: CGRect) {
+        drawnSize = bounds.size
         if let context = UIGraphicsGetCurrentContext(), let painted = fill.layer(over: bounds, reusing: nil) {
             painted.render(in: context)
         }
