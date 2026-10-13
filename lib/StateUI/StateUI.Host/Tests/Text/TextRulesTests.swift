@@ -33,21 +33,80 @@ final class TextRulesTests: XCTestCase {
         XCTAssertEqual(TextMembers.look(fixed)?.scales, false, "the look where only its scaling changed")
     }
 
-    /// A weight and a slant the tree gives - none of them included - are the tree's: a toolkit whose theme draws
-    /// words bold draws them regular then; given nothing, the theme's own stand.
-    func testAWeightTheTreeGivesIsTheTrees() {
+    /// A slant the tree gives - upright included - is the tree's: a toolkit whose theme draws words italic draws
+    /// them upright then; given nothing, the theme's own stands.
+    func testASlantTheTreeGivesIsTheTrees() {
         let none = ElementValues<ButtonContract>(changed: [.fontAttributes]) {
             $0 == .fontAttributes ? FontAttributes.none.propValue : nil
         }
-        XCTAssertTrue(TextMembers.look(of: none).attributesGiven, "none given")
+        XCTAssertTrue(TextMembers.look(of: none).attributesGiven, "upright given")
         XCTAssertFalse(TextMembers.look(of: ElementValues<ButtonContract>(changed: []) { _ in nil }).attributesGiven)
 
         var run = TextLook()
         run.attributesGiven = true
         var label = TextLook()
-        label.attributes = .bold
-        XCTAssertEqual(run.over(label).attributes, .none, "a run given none stands regular over a bold label")
-        XCTAssertEqual(TextLook().over(label).attributes, .bold, "a run given nothing takes its label's")
+        label.attributes = .italic
+        XCTAssertEqual(run.over(label).attributes, .none, "a run given upright stands upright in an italic label")
+        XCTAssertEqual(TextLook().over(label).attributes, .italic, "a run given nothing takes its label's")
+    }
+
+    /// A style and a weight are read from the tree, changed or not, and a run takes its label's where it says none.
+    func testAStyleAndAWeightAreTheTreesOrTheLabels() throws {
+        let held: [Prop: HostValue] = [.textStyle: TextStyle.title.propValue, .fontWeight: FontWeight.semibold.propValue]
+        let look = try XCTUnwrap(TextMembers.look(ElementValues<TextContract>(changed: [.textStyle]) { held[$0] }))
+        XCTAssertEqual(look.style, .title)
+        XCTAssertEqual(look.weight, .semibold)
+        XCTAssertNotNil(TextMembers.look(ElementValues<TextContract>(changed: [.fontWeight]) { held[$0] }),
+                        "the look where only its weight changed")
+
+        var run = TextLook()
+        run.weight = .bold
+        XCTAssertEqual(run.over(look).style, .title, "a run given no style takes its label's")
+        XCTAssertEqual(run.over(look).weight, .bold, "a run's own weight")
+        XCTAssertEqual(TextLook().over(look).weight, .semibold, "a run given no weight takes its label's")
+    }
+
+    /// A label takes a new look's font, scaling and colour and keeps its own spacing, lines and decorations.
+    func testALabelTakesAFontAndAColourKeepingItsLines() {
+        var shown = TextLook()
+        shown.letterSpacing = 2
+        shown.lineHeight = 1.5
+        shown.decorations = .underline
+        var look = TextLook()
+        look.style = .caption
+        look.size = 11
+        look.weight = .medium
+        look.attributes = .italic
+        look.attributesGiven = true
+        look.family = "Menlo"
+        look.color = Color.red.propValue
+        look.scales = false
+        shown.adopt(fontAndColorOf: look)
+
+        var expected = look
+        expected.letterSpacing = 2
+        expected.lineHeight = 1.5
+        expected.decorations = .underline
+        XCTAssertEqual(shown, expected)
+    }
+
+    /// The size and the weight the tree gives stand over the style's; where it gives none, the style's stand, and
+    /// with no style, the host's own.
+    func testTheTreesSizeAndWeightStandOverTheStyles() {
+        var look = TextLook()
+        look.style = .title
+        XCTAssertTrue(look.standing(styleSize: 28, styleWeight: .semibold) == (28, .semibold), "the style's")
+        look.size = 13
+        look.weight = .regular
+        XCTAssertTrue(look.standing(styleSize: 28, styleWeight: .semibold) == (13, .regular), "the tree's")
+        XCTAssertTrue(TextLook().standing(styleSize: nil, styleWeight: nil) == (nil, nil), "the host's own")
+    }
+
+    /// A weight is weighed by its number, 400 to 700, and a font's number reads as the weight nearest it.
+    func testAWeightIsWeighedByItsNumber() {
+        XCTAssertEqual(FontWeight.allCases.map(\.number), [400, 500, 600, 700])
+        XCTAssertEqual([100, 400, 449, 450, 451, 510, 590, 650, 700, 900].map { FontWeight(nearest: Double($0)) },
+                       [.regular, .regular, .regular, .regular, .medium, .medium, .semibold, .semibold, .bold, .bold])
     }
 
     /// Words follow the user's text size unless the tree says not: a run scales only where neither it nor its label

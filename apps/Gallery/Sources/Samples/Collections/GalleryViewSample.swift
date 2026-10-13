@@ -170,7 +170,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
 
                 Text(card.name)
                     .fontSize(18)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
                     .textColor(Palette.onBrand)
                     .lineBreak(.tailTruncation)
                     .padding(horizontal: 12, vertical: 10)

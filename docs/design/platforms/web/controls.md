@@ -225,3 +225,12 @@ siblings. Its frame is its room still: the box the browser lays out reaches
 past it (`WebDOMView.reach`), and the place read back, as everything measured
 of the picture, is that box less its reach - read whole, the picture stood two
 pixels up and left of its room, its own top left corner clipped away.
+
+## A text style
+
+A browser has no type ramp of its own, so the Web's is the host's: `.display`
+at 34 CSS pixels, `.title` at 26, `.subtitle` at 20, each semibold, `.headline`
+at the page's 15 in semibold, `.body` at the page's 15 and `.caption` at 12.
+The size and weight the tree gives stand over the style's
+(`TextLook.standing`); a size stands in rems where the words scale, so the
+browser's text size grows it, and a weight is CSS's `font-weight` number.

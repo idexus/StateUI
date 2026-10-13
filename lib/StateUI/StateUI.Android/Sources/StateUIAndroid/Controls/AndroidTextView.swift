@@ -57,17 +57,17 @@ final class AndroidTextView: AndroidTextualView {
             spans.append(Java.new(JavaAPI.foregroundSpan, JavaAPI.newForegroundSpan, .int(argb)))
         }
         let runScales = look.scales && scales
-        if let size = look.size ?? (runScales == scales ? nil : labelPoints) {
+        let (ownSize, weight) = look.standing(styleSize: look.style?.androidSize, styleWeight: look.style?.androidWeight)
+        if let size = ownSize ?? (runScales == scales ? nil : labelPoints) {
             let held = runScales ? Int32((size * points.scaled).rounded()) : Int32(size.rounded())
             spans.append(Java.new(JavaAPI.sizeSpan, JavaAPI.newSizeSpan, .int(held), .bool(!runScales)))
         }
-        let style = look.attributes.rawValue & 3
-        if let family = look.family, let face = Java.callStaticObject(
-            JavaAPI.typeface, JavaAPI.createTypeface, .object(Java.string(family)), .int(style)) {
+        let italic = look.attributes.contains(.italic)
+        if let face = AndroidTypeface.local(family: look.family, weight: weight, italic: italic) {
             spans.append(Java.new(JavaAPI.typefaceSpan, JavaAPI.newTypefaceSpan, .object(face)))
         }
-        if style != 0 {
-            spans.append(Java.new(JavaAPI.styleSpan, JavaAPI.newStyleSpan, .int(style)))
+        if weight == nil, italic {
+            spans.append(Java.new(JavaAPI.styleSpan, JavaAPI.newStyleSpan, .int(AndroidTypeface.italicStyle)))
         }
         if let argb = look.background.flatMap(Self.argb) {
             spans.append(Java.new(JavaAPI.backgroundSpan, JavaAPI.newBackgroundSpan, .int(argb)))

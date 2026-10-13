@@ -229,11 +229,8 @@ extension WinUIDriver {
         case "fontSize": return Double(try read(view, "fontSize"))?.propValue
         case "fontFamily": return Name(try read(view, "fontFamily")).propValue
         case "isFontAutoScalingEnabled": return (try read(view, "textScales") == "1").propValue
-        case "fontAttributes":
-            var attributes: FontAttributes = []
-            if (Int(try read(view, "fontWeight")) ?? 400) >= 600 { attributes.insert(.bold) }
-            if try read(view, "italic") == "1" { attributes.insert(.italic) }
-            return attributes.propValue
+        case "fontWeight": return FontWeight(nearest: Double(try read(view, "fontWeight")) ?? 400).propValue
+        case "fontAttributes": return (try read(view, "italic") == "1" ? FontAttributes.italic : .none).propValue
         case "tracking":
             // Thousandths of an em on WinUI: back in DIPs, to the tenth WinUI keeps.
             let size = Double(try read(view, "fontSize")) ?? 14
@@ -467,11 +464,8 @@ extension WinUIDriver {
         case "textColor": return run[0] == 0 ? nil : Self.color(UInt32(run[0])).propValue
         case "background": return run[5] == 0 ? nil : Self.color(UInt32(run[5])).propValue
         case "fontSize": return run[1] == 0 ? nil : run[1].propValue
-        case "fontAttributes":
-            var attributes: FontAttributes = []
-            if run[2] >= 600 { attributes.insert(.bold) }
-            if run[3] != 0 { attributes.insert(.italic) }
-            return attributes.propValue
+        case "fontWeight": return FontWeight(nearest: run[2]).propValue
+        case "fontAttributes": return (run[3] != 0 ? FontAttributes.italic : .none).propValue
         case "textDecorations": return TextDecorations(rawValue: Int32(run[4])).propValue
         case "fontFamily":
             let families = try read(label, "runFamilies").split(separator: "\u{1F}", omittingEmptySubsequences: false)

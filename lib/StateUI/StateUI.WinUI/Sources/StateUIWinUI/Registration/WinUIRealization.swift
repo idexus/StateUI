@@ -112,6 +112,8 @@ enum WinUIRealization {
         .complete("TextSpan", "background"),
         .complete("TextSpan", "tracking"),
         .complete("TextSpan", "fontAttributes"),
+        .complete("TextSpan", "fontWeight"),
+        .complete("TextSpan", "textStyle"),
         .complete("TextSpan", "fontFamily"),
         .complete("TextSpan", "fontSize"),
         .notPlanned("TextSpan", "isFontAutoScalingEnabled",

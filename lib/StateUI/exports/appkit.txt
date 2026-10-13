@@ -6,6 +6,7 @@ Button
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   icon
   iconPosition
   keyboardShortcut
@@ -17,6 +18,7 @@ Button
   text
   textCase
   textColor
+  textStyle
   tracking
   clicked()
   pressed()
@@ -35,9 +37,11 @@ DatePicker
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   maximumDate
   minimumDate
   textColor
+  textStyle
   dateChanged()
 Divider
 Ellipse
@@ -115,12 +119,14 @@ Picker
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   horizontalTextAlignment
   isOpen
   options
   placeholder
   selectedIndex
   textColor
+  textStyle
   tint
   closed()
   opened()
@@ -157,10 +163,12 @@ RadioButton
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   isOn
   text
   textCase
   textColor
+  textStyle
   toggled()
 Rectangle
   contentMode
@@ -189,6 +197,7 @@ SearchField
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   horizontalTextAlignment
   inputPurpose
   isReadOnly
@@ -201,6 +210,7 @@ SearchField
   text
   textCase
   textColor
+  textStyle
   submitted()
   textChanged()
 Slider
@@ -230,6 +240,7 @@ TextEditor
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   growsWithText
   horizontalTextAlignment
   inputPurpose
@@ -243,6 +254,7 @@ TextEditor
   text
   textCase
   textColor
+  textStyle
   textChanged()
 TextField
   background
@@ -250,6 +262,7 @@ TextField
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   horizontalTextAlignment
   inputPurpose
   isPassword
@@ -263,13 +276,16 @@ TextField
   text
   textCase
   textColor
+  textStyle
   submitted()
   textChanged()
 TimePicker
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   textColor
+  textStyle
   time
   timeChanged()
 VStack

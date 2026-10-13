@@ -6,6 +6,7 @@ Button
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   icon
   iconPosition
   iconSpacing
@@ -19,6 +20,7 @@ Button
   text
   textCase
   textColor
+  textStyle
   tracking
   clicked()
   pressed()
@@ -124,12 +126,14 @@ Picker
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   horizontalTextAlignment
   isFontAutoScalingEnabled
   options
   placeholder
   selectedIndex
   textColor
+  textStyle
   tint
   closed()
   opened()
@@ -167,12 +171,14 @@ RadioButton
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   isFontAutoScalingEnabled
   isOn
   padding
   text
   textCase
   textColor
+  textStyle
   toggled()
 Rectangle
   contentMode
@@ -204,6 +210,7 @@ SearchField
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   horizontalTextAlignment
   inputPurpose
   isFontAutoScalingEnabled
@@ -218,6 +225,7 @@ SearchField
   text
   textCase
   textColor
+  textStyle
   submitted()
   textChanged()
 Slider
@@ -244,6 +252,7 @@ Text
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   horizontalTextAlignment
   isFontAutoScalingEnabled
   lineBreak
@@ -254,6 +263,7 @@ Text
   textCase
   textColor
   textDecorations
+  textStyle
   tracking
   verticalTextAlignment
 TextEditor
@@ -261,6 +271,7 @@ TextEditor
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   growsWithText
   horizontalTextAlignment
   inputPurpose
@@ -275,12 +286,14 @@ TextEditor
   text
   textCase
   textColor
+  textStyle
   textChanged()
 TextField
   cursorPosition
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   horizontalTextAlignment
   inputPurpose
   isFontAutoScalingEnabled
@@ -297,6 +310,7 @@ TextField
   text
   textCase
   textColor
+  textStyle
   submitted()
   textChanged()
 TimePicker

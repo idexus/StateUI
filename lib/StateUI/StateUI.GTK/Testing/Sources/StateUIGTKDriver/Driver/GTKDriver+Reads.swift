@@ -198,11 +198,11 @@ extension GTKDriver {
         case .textColor: return Self.color(of: widget).propValue
         case .fontSize: return (Double(pango_font_description_get_size(description)) / Double(PANGO_SCALE)).propValue
         case .fontFamily: return .some(pango_font_description_get_family(description).map { Name(String(cString: $0)).propValue })
+        case .fontWeight:
+            return FontWeight(nearest: Double(pango_font_description_get_weight(description).rawValue)).propValue
         case .fontAttributes:
-            var attributes: FontAttributes = []
-            if pango_font_description_get_weight(description).rawValue >= PANGO_WEIGHT_BOLD.rawValue { attributes.insert(.bold) }
-            if pango_font_description_get_style(description) == PANGO_STYLE_ITALIC { attributes.insert(.italic) }
-            return attributes.propValue
+            let italic = pango_font_description_get_style(description) == PANGO_STYLE_ITALIC
+            return (italic ? FontAttributes.italic : .none).propValue
         default: return nil
         }
     }
@@ -218,7 +218,7 @@ extension GTKDriver {
         case .horizontalTextAlignment: return Self.alignment(gtk_label_get_xalign(label)).propValue
         case .verticalTextAlignment: return Self.alignment(gtk_label_get_yalign(label)).propValue
         case .tracking: return run.holds(property) ?? 0.0.propValue
-        case .lineHeight, .textDecorations, .fontSize, .fontAttributes, .fontFamily, .textColor:
+        case .lineHeight, .textDecorations, .fontSize, .fontWeight, .fontAttributes, .fontFamily, .textColor:
             if let held = run.holds(property) { return held }
             return wordsHolds(property, widget)
         default: return nil
@@ -419,13 +419,11 @@ private struct PangoRun {
             return first(PANGO_ATTR_FAMILY).map {
                 Name(String(cString: $0.withMemoryRebound(to: PangoAttrString.self, capacity: 1) { $0.pointee.value })).propValue
             }
+        case .fontWeight:
+            return first(PANGO_ATTR_WEIGHT).map { FontWeight(nearest: Double(Self.number($0))).propValue }
         case .fontAttributes:
-            var attributes: FontAttributes = []
-            if let weight = first(PANGO_ATTR_WEIGHT).map(Self.number), weight >= Int32(PANGO_WEIGHT_BOLD.rawValue) {
-                attributes.insert(.bold)
-            }
-            if first(PANGO_ATTR_STYLE).map(Self.number) == Int32(PANGO_STYLE_ITALIC.rawValue) { attributes.insert(.italic) }
-            return first(PANGO_ATTR_WEIGHT) == nil && first(PANGO_ATTR_STYLE) == nil ? nil : attributes.propValue
+            let italic = first(PANGO_ATTR_STYLE).map(Self.number) == Int32(PANGO_STYLE_ITALIC.rawValue)
+            return first(PANGO_ATTR_STYLE) == nil ? nil : (italic ? FontAttributes.italic : .none).propValue
         case .textColor: return color(PANGO_ATTR_FOREGROUND, PANGO_ATTR_FOREGROUND_ALPHA)?.propValue
         case .background: return color(PANGO_ATTR_BACKGROUND, PANGO_ATTR_BACKGROUND_ALPHA).map { Material.color($0).propValue }
         case .tracking:

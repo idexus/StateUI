@@ -47,11 +47,14 @@ final class WinUITextView: WinUITextualView {
                     let background = look.background?.argb
                     // The space between the letters in ems of the run's own size, its label's where it says none.
                     let shown = look.over(self.look)
-                    let spacing = shown.letterSpacing(inEmsOf: shown.size ?? Self.platformFontSize)
+                    let (size, weight) = look.standing(
+                        styleSize: look.style?.winUISize, styleWeight: look.style?.winUIWeight)
+                    let shownSize = shown.standing(styleSize: shown.style?.winUISize, styleWeight: nil).size
+                    let spacing = shown.letterSpacing(inEmsOf: shownSize ?? Self.platformFontSize)
                     return StateUIWordsRun(
-                        text: texts[index], color: color ?? 0, background: background ?? 0, size: look.size ?? 0,
+                        text: texts[index], color: color ?? 0, background: background ?? 0, size: size ?? 0,
                         hasColor: color != nil, hasBackground: background != nil,
-                        bold: look.attributes.contains(.bold), italic: look.attributes.contains(.italic),
+                        weight: Int32(weight?.number ?? 0), italic: look.attributes.contains(.italic),
                         underline: look.decorations.contains(.underline),
                         strikethrough: look.decorations.contains(.strikethrough), family: families[index],
                         spacing: Int32((spacing * 1000).rounded()))

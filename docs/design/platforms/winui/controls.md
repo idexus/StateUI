@@ -409,3 +409,13 @@ links resolve against, else at one the backend gives it, under
 `https://page.stateui.invalid/`, which no network answers. WebView2 leaves a
 `data:` address unfinished, sent to it or taken back to - `NavigateToString`
 goes to one - and every navigation after it.
+
+## A text style
+
+Words in a text style stand at the size and weight of WinUI's text block style
+for it: `.display` Display's 68, `.title` Title's 28, `.subtitle` Subtitle's
+20 and `.headline` BodyStrong's 14, each semibold, `.body` Body's 14 and
+`.caption` Caption's 12. The size and weight the tree gives stand over the
+style's (`TextLook.standing`), and every element showing words - a text
+block, a button, a field - takes them as its `FontSize` and `FontWeight`; a
+weight of none clears the element's own back to the theme's.

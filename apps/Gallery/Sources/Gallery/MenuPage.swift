@@ -70,7 +70,7 @@ struct MenuPage: View {
 
             Text("StateUI")
                 .fontSize(20)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .tracking(-0.3)
                 .verticalAlignment(.center)
         }

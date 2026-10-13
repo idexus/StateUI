@@ -18,7 +18,7 @@ final class GTKButtonViewTests: XCTestCase {
                 VStack {
                     Button("Save")
                         .fontSize(20)
-                        .fontAttributes(.bold)
+                        .fontWeight(.bold)
                         .textColor(Color("#FFFFFF"))
                         .background(Color("#0000FF"))
                         .stroke(Color("#FF0000"))

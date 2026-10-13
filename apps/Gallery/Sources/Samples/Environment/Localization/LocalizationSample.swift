@@ -48,7 +48,7 @@ struct LocalizationSample: SampleContent, ExampleContent {
                 .environment(localization)
 
             Text("Side by side")
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
             Grid {
                 ReportView(fileCount: Int(count), recent: recent, prepared: prepared)
                     .environment(localization.speaking(.english))

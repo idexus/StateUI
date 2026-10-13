@@ -83,7 +83,10 @@ extension AndroidDriver {
         case (.isFontAutoScalingEnabled, let text as AndroidTextualView):
             return try Self.scales(Java.callStaticInt(Self.testText, Self.scales, .object(text.reference)))
         case (.fontAttributes, let text as AndroidTextualView):
-            return FontAttributes(rawValue: Java.callStaticInt(Self.testText, Self.style, .object(text.reference)) & 3)
+            return FontAttributes(rawValue: Java.callStaticInt(Self.testText, Self.style, .object(text.reference)) & 2)
+                .propValue
+        case (.fontWeight, let text as AndroidTextualView):
+            return FontWeight(nearest: Double(Java.callStaticInt(Self.testText, Self.weight, .object(text.reference))))
                 .propValue
         case (.textColor, let text as AndroidTextualView):
             return Self.color(UInt32(bitPattern: Java.callInt(text.reference, Self.getCurrentTextColor))).propValue
@@ -92,6 +95,7 @@ extension AndroidDriver {
             guard held >> 32 == 1 else { throw DriverCannot("read a background of no one colour") }
             return StandIns.material(painted: Self.color(UInt32(truncatingIfNeeded: held))).propValue
         case (.fontSize, let picker as AndroidPickerView), (.fontAttributes, let picker as AndroidPickerView),
+             (.fontWeight, let picker as AndroidPickerView),
              (.isFontAutoScalingEnabled, let picker as AndroidPickerView),
              (.textColor, let picker as AndroidPickerView), (.horizontalTextAlignment, let picker as AndroidPickerView):
             return try Self.fieldHolds(property, of: picker)
@@ -120,7 +124,9 @@ extension AndroidDriver {
             case .isFontAutoScalingEnabled:
                 return try? Self.scales(Java.callStaticInt(testText, scales, .object(row)))
             case .fontAttributes:
-                return FontAttributes(rawValue: Java.callStaticInt(testText, style, .object(row)) & 3).propValue
+                return FontAttributes(rawValue: Java.callStaticInt(testText, style, .object(row)) & 2).propValue
+            case .fontWeight:
+                return FontWeight(nearest: Double(Java.callStaticInt(testText, weight, .object(row)))).propValue
             case .textColor: return color(UInt32(bitPattern: Java.callInt(row, getCurrentTextColor))).propValue
             default:
                 // Gravity's horizontal bits: centre 1, start or left 3, end or right 5.
@@ -233,6 +239,7 @@ extension AndroidDriver {
     static let testText = Java.findClass("stateui/android/test/TestText")
     static let points = Java.staticMethod(testText, "points", "(Landroid/widget/TextView;)F")
     static let style = Java.staticMethod(testText, "style", "(Landroid/widget/TextView;)I")
+    static let weight = Java.staticMethod(testText, "weight", "(Landroid/widget/TextView;)I")
     static let scales = Java.staticMethod(testText, "scales", "(Landroid/widget/TextView;)I")
 
     /// Whether a size follows the user's font scale, as the test reads it: 1, 0, or -1 where Android cannot say.

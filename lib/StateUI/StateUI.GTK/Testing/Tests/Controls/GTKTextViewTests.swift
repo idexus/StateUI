@@ -46,7 +46,7 @@ final class GTKTextViewTests: XCTestCase {
                 VStack {
                     Text("words")
                         .fontSize(20)
-                        .fontAttributes([.bold, .italic])
+                        .fontWeight(.bold).fontAttributes(.italic)
                         .fontFamily("monospace")
                         .textColor(Color("#FF0000"))
                         .tracking(2)
@@ -147,7 +147,7 @@ final class GTKTextViewTests: XCTestCase {
                     Text()
                         .spans {
                             TextSpan("let ").textColor(Color("#FF0000"))
-                            TextSpan("x").fontSize(20).fontAttributes([.bold, .italic])
+                            TextSpan("x").fontSize(20).fontWeight(.bold).fontAttributes(.italic)
                             TextSpan(" = 1").textDecorations(.underline).background(Color("#FFFF00"))
                         }
                 }

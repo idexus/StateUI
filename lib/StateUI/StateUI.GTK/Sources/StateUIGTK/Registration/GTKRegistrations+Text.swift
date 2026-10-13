@@ -38,14 +38,7 @@ extension GTKRegistrations {
     static func applyText<Realized: ElementContract>(_ view: any GTKWordsView, _ values: ElementValues<Realized>) {
         if let words = TextMembers.words(values) { view.setText(words) }
         if let look = TextMembers.look(values) {
-            view.setLook { shown in
-                shown.size = look.size
-                shown.attributes = look.attributes
-                shown.attributesGiven = look.attributesGiven
-                shown.family = look.family
-                shown.color = look.color
-                shown.scales = look.scales
-            }
+            view.setLook { $0.adopt(fontAndColorOf: look) }
         }
         if values.changed(PaddingElementContract.padding) {
             view.setPadding(values[PaddingElementContract.padding])

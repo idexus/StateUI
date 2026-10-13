@@ -194,6 +194,10 @@ enum PatchDump {
             return spelled(member, as: LineBreak.self)
         case Prop.textCase.name:
             return spelled(member, as: TextCase.self)
+        case Prop.textStyle.name:
+            return spelled(member, as: TextStyle.self)
+        case Prop.fontWeight.name:
+            return spelled(member, as: FontWeight.self)
         case Prop.contentMode.name:
             return spelled(member, as: ContentMode.self)
         case Prop.iconPosition.name:
@@ -236,7 +240,6 @@ enum PatchDump {
         case Prop.fontAttributes.name:
             return spelled(member, asBitsOf: [
                 ("none", FontAttributes.none.rawValue),
-                ("bold", FontAttributes.bold.rawValue),
                 ("italic", FontAttributes.italic.rawValue),
             ])
         case Prop.textDecorations.name:

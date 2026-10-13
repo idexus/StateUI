@@ -19,7 +19,7 @@ struct SecondTabPage: View {
 
                 Text("Second")
                     .fontSize(26)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
 
                 Button("Show the first tab")
                     .horizontalAlignment(.center)

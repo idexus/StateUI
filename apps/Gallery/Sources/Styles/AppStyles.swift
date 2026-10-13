@@ -74,7 +74,7 @@ enum AppStyles {
             // size at the default spacing reads loose.
             Style<Text>(.headline)
                 .fontSize(32)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .tracking(-0.5)
                 .horizontalAlignment(.center)
                 .horizontalTextAlignment(.center)

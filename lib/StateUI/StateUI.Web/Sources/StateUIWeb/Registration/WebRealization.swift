@@ -70,6 +70,8 @@ enum WebRealization {
         .complete("TabView", "selectedTabChanged"),
         .complete("TextSpan", "background"),
         .complete("TextSpan", "fontAttributes"),
+        .complete("TextSpan", "fontWeight"),
+        .complete("TextSpan", "textStyle"),
         .complete("TextSpan", "fontFamily"),
         .complete("TextSpan", "fontSize"),
         .complete("TextSpan", "isFontAutoScalingEnabled"),

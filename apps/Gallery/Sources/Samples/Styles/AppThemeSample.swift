@@ -21,7 +21,7 @@ struct AppThemeSample: SampleContent, ExampleContent {
 
             Text("\(app.info.colorScheme)")
                 .fontSize(34)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
 
             // LOGIC on the theme - a different WORD, not a colour.

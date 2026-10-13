@@ -34,7 +34,7 @@ winui WebView 2
 Button 4
 winui Button 2
 MenuItemElement 3
-FontElement 2
+FontElement 3
 winui MenuItemElement 2
 winui PageElement 2
 DatePicker 2

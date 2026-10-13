@@ -50,11 +50,12 @@ final class AndroidPickerView: AndroidView {
     /// How the words look (`TextMembers.look`) - each the theme's where it says nothing - and where they stand across
     /// the field.
     func setLook(_ look: TextLook, alignment: TextAlignment) {
-        let (size, color) = (look.size, look.color)
+        let (size, weight) = look.standing(styleSize: look.style?.androidSize, styleWeight: look.style?.androidWeight)
+        let color = look.color
         Java.frame {
-            let style = look.attributes.rawValue & 3
-            let face = Java.callStaticObject(
-                JavaAPI.typeface, JavaAPI.createTypeface, .object(look.family.flatMap(Java.string)), .int(style))
+            let italic = look.attributes.contains(.italic)
+            let face = AndroidTypeface.local(family: look.family, weight: weight, italic: italic) ?? Java.callStaticObject(
+                JavaAPI.typeface, JavaAPI.createTypeface, .object(nil), .int(italic ? AndroidTypeface.italicStyle : 0))
             let unit = look.scales ? ViewConstants.scaledPixels : ViewConstants.independentPixels
             Java.call(
                 reference, JavaAPI.setPickerLook, .float(Float(size ?? 0)), .int(unit),

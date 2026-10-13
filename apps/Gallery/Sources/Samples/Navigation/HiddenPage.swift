@@ -20,7 +20,7 @@ struct HiddenPage: View {
 
                 Text("Not in the list")
                     .fontSize(26)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
 
                 Text("The menu lists this page only when the Split view sample's "
                     + "switch says so.")

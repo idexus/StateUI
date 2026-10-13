@@ -36,7 +36,7 @@ extension AppKitDriver {
             if button.hasDestructiveAction { return ButtonRole.destructive.propValue }
             if button.bezelColor == .controlAccentColor { return ButtonRole.primary.propValue }
             return button.keyEquivalent == "\u{1b}" ? ButtonRole.cancel.propValue : HostValue.nothing
-        case .fontSize, .fontAttributes, .fontFamily, .textColor:
+        case .fontSize, .fontWeight, .fontAttributes, .fontFamily, .textColor:
             return try words(property, view)
         case .background:
             // A layout's blur or glass is a view of its own; a field and an editor fill their own; every other view
@@ -102,7 +102,7 @@ extension AppKitDriver {
         }
     }
 
-    /// A control's words as AppKit draws them: their font's size, bold and italic, family, and their colour.
+    /// A control's words as AppKit draws them: their font's size, weight, slant and family, and their colour.
     private static func words(_ property: Prop, _ view: NSView) throws -> HostValue? {
         // A label draws its words in the attributes of its text; a control, in its own font and colour; a view
         // wrapping one, in its control's.
@@ -117,12 +117,10 @@ extension AppKitDriver {
         switch property {
         case .fontSize: return Double(font.pointSize).propValue
         case .fontFamily: return font.familyName.map { Name($0) }.propValue
+        case .fontWeight: return FontWeight(appKit: font.weight).propValue
         case .fontAttributes:
-            let traits = NSFontManager.shared.traits(of: font)
-            var attributes: FontAttributes = []
-            if traits.contains(.boldFontMask) { attributes.insert(.bold) }
-            if traits.contains(.italicFontMask) { attributes.insert(.italic) }
-            return attributes.propValue
+            let italic = NSFontManager.shared.traits(of: font).contains(.italicFontMask)
+            return (italic ? FontAttributes.italic : .none).propValue
         case .textColor:
             if let written = attributes?[.foregroundColor] as? NSColor { return color(written).propValue }
             if let field = control as? NSTextField, let written = field.textColor { return color(written).propValue }

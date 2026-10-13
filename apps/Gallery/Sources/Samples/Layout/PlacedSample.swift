@@ -255,7 +255,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                     // wrapped would change the picture's height with it.
                     Text(card.name)
                         .fontSize(18)
-                        .fontAttributes(.bold)
+                        .fontWeight(.bold)
                         .textColor(Palette.onBrand)
                         .lineBreak(.tailTruncation)
 

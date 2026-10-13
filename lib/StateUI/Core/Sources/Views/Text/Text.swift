@@ -28,7 +28,7 @@ extension TextProperties {
 ///
 ///     Text("Total")
 ///         .fontSize(20)
-///         .fontAttributes(.bold)
+///         .fontWeight(.bold)
 ///         .horizontalTextAlignment(.center)
 public struct Text: ElementView, TextualElement, FontElement, TextAlignmentElement,
     PaddingElement, LineHeightElement, TrackingElement, DecorableTextElement, TextProperties {
@@ -83,7 +83,7 @@ public struct Text: ElementView, TextualElement, FontElement, TextAlignmentEleme
 ///
 ///     TextSpan("Sold out")
 ///         .textColor(.firebrick)
-///         .fontAttributes(.bold)
+///         .fontWeight(.bold)
 ///
 /// Not a view: a run has text and font properties and nothing else, and it
 /// goes only in a Text's `spans`.

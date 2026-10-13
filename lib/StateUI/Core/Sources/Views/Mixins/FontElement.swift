@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// How the text of a control is set in type - its size, its family, its
-/// weight.
+/// How the text of a control is set in type - its step of the platform's type
+/// ramp, its size, its family, its weight and its slant.
 public protocol FontElement: PropertyContainer {}
 
 extension FontElement {
@@ -12,10 +12,23 @@ extension FontElement {
     /// Which font, by the alias the app registered it under - not the file name.
     public func fontFamily(_ value: String) -> Modified { setValue(FontElementContract.fontFamily, Name(value)) }
 
-    /// Bold, italic, or both.
+    /// Italic, or upright.
     ///
-    ///     Text("Total").fontAttributes([.bold, .italic])
+    ///     Text("Total").fontAttributes(.italic)
     public func fontAttributes(_ value: FontAttributes) -> Modified { setValue(FontElementContract.fontAttributes, value) }
+
+    /// How heavy the strokes are - regular, medium, semibold or bold - over the
+    /// weight of the text's style.
+    ///
+    ///     Text("3 unread").fontWeight(.semibold)
+    public func fontWeight(_ value: FontWeight) -> Modified { setValue(FontElementContract.fontWeight, value) }
+
+    /// The step of the platform's type ramp the text is set in: the platform's
+    /// own size and weight for it, growing with the user's text size. A
+    /// `fontSize` or `fontWeight` stands over the style's.
+    ///
+    ///     Text("Inbox").textStyle(.title)
+    public func textStyle(_ value: TextStyle) -> Modified { setValue(FontElementContract.textStyle, value) }
 
     /// Whether the text grows with the system's text-size setting. On by
     /// default.
@@ -27,6 +40,18 @@ extension FontElement where Self: VisualElement {
     /// stands, and no view is rebuilt for it.
     public func fontAttributes(_ state: Binding<FontAttributes>) -> Modified {
         twin(FontElementContract.fontAttributes, by: state)
+    }
+
+    /// `fontWeight` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func fontWeight(_ state: Binding<FontWeight>) -> Modified {
+        twin(FontElementContract.fontWeight, by: state)
+    }
+
+    /// `textStyle` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func textStyle(_ state: Binding<TextStyle>) -> Modified {
+        twin(FontElementContract.textStyle, by: state)
     }
 
     /// `isFontAutoScalingEnabled` from a state, `$x`: the host sets each new

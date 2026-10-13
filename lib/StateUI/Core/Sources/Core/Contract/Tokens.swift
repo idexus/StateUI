@@ -131,6 +131,8 @@ extension NodeType {
     static let layoutDirection = VisualElementContract.layoutDirection.token
     static let letsInputThrough = LayoutContract.letsInputThrough.token
     static let fontAttributes = FontElementContract.fontAttributes.token
+    static let fontWeight = FontElementContract.fontWeight.token
+    static let textStyle = FontElementContract.textStyle.token
     static let isFontAutoScalingEnabled = FontElementContract.isFontAutoScalingEnabled.token
     static let fontFamily = FontElementContract.fontFamily.token
     static let fontSize = FontElementContract.fontSize.token

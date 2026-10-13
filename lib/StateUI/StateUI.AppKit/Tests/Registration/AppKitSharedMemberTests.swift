@@ -49,7 +49,7 @@ final class AppKitSharedMemberTests: XCTestCase {
     }
 
     /// A control that sets text sets it in the size, the family, and the
-    /// weight and slant that `fontSize`, `fontFamily` and `fontAttributes` say.
+    /// weight and slant that `fontSize`, `fontFamily`, `fontWeight` and `fontAttributes` say.
     @MainActor
     func testEveryTextControlSetsItsTextInTheWrittenFont() throws {
         let controls: [(NodeType, [Prop: HostValue], @MainActor (NSView) -> NSFont?)] = [
@@ -74,7 +74,8 @@ final class AppKitSharedMemberTests: XCTestCase {
             control.properties = properties.merging([
                 .fontSize: .number(21),
                 .fontFamily: .name("Menlo"),
-                .fontAttributes: .enumeration(FontAttributes([.bold, .italic]).rawValue),
+                .fontWeight: FontWeight.bold.propValue,
+                .fontAttributes: FontAttributes.italic.propValue,
             ]) { $1 }
             renderer.applyForTesting(tree(control))
 

@@ -32,13 +32,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (82)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>39 ✅ · 2 ☑️ · 36 ✓ · 5 –</td><td><code>NSDatePicker</code> showing hour and minute</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>33 ✅ · 1 ☑️ · 37 ✓ · 7 –</td><td><code>UIDatePicker</code> in time mode</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>61 ✅ · 3 ☑️ · 13 ✓ · 3 –</td><td><code>TextView</code> opening a <code>TimePickerDialog</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>64 ✅ · 2 ☑️ · 12 ✓</td><td><code>TimePicker</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>54 ✅ · 1 ☑️ · 25 ✓ · 1 –</td><td>an hour's and a minute's <code>GtkSpinButton</code> in a <code>GtkMenuButton</code>'s <code>GtkPopover</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>56 ✅ · 1 ☑️ · 20 ✓ · 4 –</td><td><code>&lt;input type=time&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (84)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>41 ✅ · 2 ☑️ · 36 ✓ · 5 –</td><td><code>NSDatePicker</code> showing hour and minute</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>33 ✅ · 1 ☑️ · 37 ✓ · 9 –</td><td><code>UIDatePicker</code> in time mode</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>63 ✅ · 3 ☑️ · 13 ✓ · 3 –</td><td><code>TextView</code> opening a <code>TimePickerDialog</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>66 ✅ · 2 ☑️ · 12 ✓</td><td><code>TimePicker</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>56 ✅ · 1 ☑️ · 25 ✓ · 1 –</td><td>an hour's and a minute's <code>GtkSpinButton</code> in a <code>GtkMenuButton</code>'s <code>GtkPopover</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>58 ✅ · 1 ☑️ · 20 ✓ · 4 –</td><td><code>&lt;input type=time&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/TimePickerContract.swift`.
@@ -204,11 +204,15 @@ How text looks wherever it is drawn: its colour.
 
 ## From [FontElement](tiers/FontElement.md)
 
-The font text is drawn in: its family, its size, its weight and slant, and whether it follows the user's text-size setting.
+The font text is drawn in: its step of the platform's type ramp, its family, its size, its weight and slant, and whether it follows the user's text-size setting.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>fontAttributes</code></td><td>property</td><td><code>FontAttributes</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: UIKit's date picker draws its words in its own font and colour: it takes neither.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>fontWeight</code></td><td>property</td><td><code>FontWeight</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: UIKit's date picker draws its words in its own font and colour: it takes neither.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>textStyle</code></td><td>property</td><td><code>TextStyle</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: UIKit's date picker draws its words in its own font and colour: it takes neither.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isFontAutoScalingEnabled</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: macOS gives an application no text size of the user's to follow.<br>UIKit: UIKit's date picker draws its words in its own font, which follows the user's text size always.</td></tr></tbody>

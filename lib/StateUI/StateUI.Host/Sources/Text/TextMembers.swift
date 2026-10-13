@@ -13,9 +13,13 @@
 
     /// What the words' look is made of, which `look` reads: the font, whether it follows the user's text size, and
     /// the words' colour.
-    public static let lookMembers: [any ContractMember] = [
-        FontElementContract.fontSize, FontElementContract.fontAttributes, FontElementContract.fontFamily,
-        FontElementContract.isFontAutoScalingEnabled, TextStyleElementContract.textColor,
+    public static let lookMembers: [any ContractMember] =
+        fontMembers + [FontElementContract.isFontAutoScalingEnabled, TextStyleElementContract.textColor]
+
+    /// What the words' font is made of: its style, size, weight, slant and family.
+    public static let fontMembers: [any ContractMember] = [
+        FontElementContract.textStyle, FontElementContract.fontSize, FontElementContract.fontWeight,
+        FontElementContract.fontAttributes, FontElementContract.fontFamily,
     ]
 
     /// The words in their case, where the words or their case changed; nil where neither did.
@@ -29,7 +33,8 @@
 
     /// The look the font, its scaling and the colour give the words, where one of them changed; nil where none did.
     public static func look<Realized>(_ values: ElementValues<Realized>) -> TextLook? {
-        guard values.changed(FontElementContract.fontSize) || values.changed(FontElementContract.fontAttributes)
+        guard values.changed(FontElementContract.textStyle) || values.changed(FontElementContract.fontWeight)
+            || values.changed(FontElementContract.fontSize) || values.changed(FontElementContract.fontAttributes)
             || values.changed(FontElementContract.fontFamily) || values.changed(TextStyleElementContract.textColor)
             || values.changed(FontElementContract.isFontAutoScalingEnabled)
         else { return nil }
@@ -39,7 +44,9 @@
     /// The look the font and the colour give the words, whether or not they changed.
     public static func look<Realized>(of values: ElementValues<Realized>) -> TextLook {
         var look = TextLook()
+        look.style = values[FontElementContract.textStyle]
         look.size = values[FontElementContract.fontSize]
+        look.weight = values[FontElementContract.fontWeight]
         look.attributes = values[FontElementContract.fontAttributes] ?? .none
         look.attributesGiven = values[FontElementContract.fontAttributes] != nil
         look.family = values[FontElementContract.fontFamily]?.text

@@ -21,7 +21,7 @@ public protocol ViewProperties: VisualElementProperties {}
 ///         }
 ///
 ///         var body: some View {
-///             Text(title).fontSize(28).fontAttributes(.bold)
+///             Text(title).fontSize(28).fontWeight(.bold)
 ///         }
 ///     }
 ///

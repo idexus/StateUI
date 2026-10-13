@@ -22,7 +22,7 @@ struct SwatchPage: View {
 
             Text("Swatch \(number)")
                 .fontSize(20)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalAlignment(.center)
 
             HStack {

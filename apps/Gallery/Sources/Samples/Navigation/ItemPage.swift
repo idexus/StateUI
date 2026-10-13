@@ -24,7 +24,7 @@ struct ItemPage: View {
 
                 Text(item.isEmpty ? "Nothing selected" : item)
                     .fontSize(28)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
                     .horizontalTextAlignment(.center)
 
                 Text("Pushed by `path.append(.item(\"\(item)\"))`.")

@@ -4,28 +4,23 @@
 // A flag set, its bits numbered by StateUI: append a flag, never insert one.
 // Design: docs/design/types/vocabularies.md#flag-sets-carry-bits
 
-/// Whether text is drawn bold, italic, or both.
+/// Whether text is drawn italic.
 ///
-///     Text("Total").fontAttributes(.bold)
-///     Text("Total").fontAttributes([.bold, .italic])
+///     Text("Total").fontAttributes(.italic)
 ///
-/// Only the weight and the slant: the family is `.fontFamily` and the size
-/// `.fontSize`, each its own modifier as it is its own property.
+/// Only the slant: the weight is `.fontWeight`, the family `.fontFamily` and
+/// the size `.fontSize`, each its own modifier as it is its own property.
 public struct FontAttributes: OptionSet, Sendable {
     /// The flag bits.
     public let rawValue: Int32
 
-    /// From the raw bits. `.bold`, `.italic` and `[.bold, .italic]` are the
-    /// ordinary way in.
+    /// From the raw bits. `.italic` is the ordinary way in.
     public init(rawValue: Int32) {
         self.rawValue = rawValue
     }
 
-    /// Neither bold nor italic.
+    /// Upright.
     public static let none = FontAttributes([])
-
-    /// Drawn bold.
-    public static let bold = FontAttributes(rawValue: 1 << 0)
 
     /// Drawn italic.
     public static let italic = FontAttributes(rawValue: 1 << 1)

@@ -28,12 +28,10 @@ extension UIKitDriver {
                 return Double((words.attributes(at: range.location, effectiveRange: nil)[.font] as? UIFont ?? label.font!).pointSize)
             }.propValue
         case .fontFamily: return Name(font.familyName).propValue
+        case .fontWeight: return FontWeight(uiKit: font.weight).propValue
         case .fontAttributes:
-            let traits = font.fontDescriptor.symbolicTraits
-            var held: FontAttributes = []
-            if traits.contains(.traitBold) { held.insert(.bold) }
-            if traits.contains(.traitItalic) { held.insert(.italic) }
-            return held.propValue
+            let italic = font.fontDescriptor.symbolicTraits.contains(.traitItalic)
+            return (italic ? FontAttributes.italic : .none).propValue
         case .textColor: return Self.color(attributes[.foregroundColor] as? UIColor ?? label.textColor).propValue
         case .background: return (attributes[.backgroundColor] as? UIColor).map { Self.color($0).propValue }
         case .tracking: return ((attributes[.kern] as? NSNumber)?.doubleValue ?? 0).propValue

@@ -20,14 +20,14 @@ changes:
 
 ```swift
 struct Total: View {
-    @State private var weight: FontAttributes = .bold
+    @State private var weight: FontWeight = .bold
     @State private var alignment: Alignment = .center
     @State private var fade = 1.0
 
     var body: some View {
         VStack {
-            Text("Total").fontAttributes(.bold)
-            Text("Total").fontAttributes($weight)
+            Text("Total").fontWeight(.bold)
+            Text("Total").fontWeight($weight)
             Text("Total").horizontalAlignment($alignment)
             Text("Total").opacity($fade)
         }
@@ -57,7 +57,7 @@ like.
   the native control is made again, its focus, caret and selection go with
   it, and nothing moves from one look to the other.
 - It cannot say no. Removing `.bold()` is the only way back, while
-  `.fontAttributes(.none)` is one more value of the same member.
+  `.fontWeight(.regular)` is one more value of the same member.
 - It is a second spelling of one member. The contract, the hosts, the
   conformance cases and the [platform matrix](../platform-contract.md) all
   speak member by member; one member reached by several modifiers, each

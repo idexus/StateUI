@@ -121,7 +121,7 @@ caused by the user. Do not duplicate the assignment in the handler.
 Text()
     .spans {
         TextSpan("let ").textColor(.purple)
-        TextSpan("count").fontAttributes(.bold)
+        TextSpan("count").fontWeight(.bold)
         TextSpan(" = 0")
     }
 ```
@@ -149,9 +149,13 @@ and the tier pages it links list each with its mark per host:
   while the text stays as written; a field turns what is typed into the case
   and reports it so;
 - text-styled controls take `textColor`; a label, a button and a span take
-  `tracking`, the space between letters, too; those in a font take `fontSize`, `fontFamily` - the name the
-  application registered the font under - `fontAttributes`, which is `.bold`,
-  `.italic`, `[.bold, .italic]` or `.none`, and `isFontAutoScalingEnabled`,
+  `tracking`, the space between letters, too; those in a font take
+  `textStyle` - `.display`, `.title`, `.subtitle`, `.headline`, `.body` or
+  `.caption`, each the platform's own size and weight - `fontSize` and
+  `fontWeight` - `.regular`, `.medium`, `.semibold` or `.bold` - which stand
+  over the style's, `fontFamily` - the name the application registered the
+  font under - `fontAttributes`, which is `.italic` or `.none`, and
+  `isFontAutoScalingEnabled`,
   on unless said, which makes the text follow the user's text-size setting -
   iOS's text size, Android's font size, Windows' text size, GNOME's text
   scaling and the browser's font size; a Mac has none to follow;
@@ -189,6 +193,30 @@ VStack {
         .isFontAutoScalingEnabled(false)
 }
 ```
+
+### A text style and a weight
+
+A text style says what the words are - a page's title, a section's, running
+text, a note under it - and each platform says how large and heavy that is on
+its own type ramp, growing it with the user's text size where the words
+scale. There are six, from the largest: `.display`, `.title`, `.subtitle`,
+`.headline` - the body's size, heavier - `.body`, and `.caption`. A weight is
+`.regular`, `.medium`, `.semibold` or `.bold`, the font's weights 400 to 700.
+A size or a weight the words give stand over their style's:
+
+```swift
+VStack {
+    Text("Inbox").textStyle(.title)
+    Text("Today").textStyle(.subtitle)
+    Text("3 unread").textStyle(.headline)
+    Text("The words of a message, as the platform sets running text.")
+    Text("Sent from the Mac").textStyle(.caption)
+    Text("A quieter title").textStyle(.title).fontWeight(.regular)
+}
+```
+
+A style is a member like any other: a run takes its own, a field and a
+button take theirs, and `.textStyle($style)` hands one over from a state.
 
 ## Text entry, caret, and selection
 
@@ -592,7 +620,7 @@ struct ContactsPage: View {
         Grid {
             ItemsView(contacts, id: \.name) { contact in
                 VStack {
-                    Text(contact.name).fontAttributes(.bold)
+                    Text(contact.name).fontWeight(.bold)
                     Text(contact.phone)
                 }
                 .padding(horizontal: 14, vertical: 10)

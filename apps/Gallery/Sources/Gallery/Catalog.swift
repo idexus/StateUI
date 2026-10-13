@@ -143,6 +143,7 @@ final class Catalog {
                 card: ImageSource("cat_text.png"),
                 samples: [
                     Sample(TextSample()),
+                    Sample(TextStyleSample()),
                     Sample(TextSpanSample()),
                     Sample(TextFieldSample()),
                     Sample(NextFieldSample()),

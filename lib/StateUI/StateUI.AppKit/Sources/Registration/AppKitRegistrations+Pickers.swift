@@ -21,7 +21,7 @@ extension AppKitRegistrations {
             picker.applies([
                 PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder,
                 PickerContract.isOpen, FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes, TextStyleElementContract.textColor,
+                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TextStyleElementContract.textColor,
                 TintElementContract.tint, TextAlignmentElementContract.horizontalTextAlignment,
                 VisualElementContract.isEnabled,
             ]) { view, values in
@@ -30,11 +30,7 @@ extension AppKitRegistrations {
                     selectedIndex: values[PickerContract.selectedIndex] ?? -1,
                     writeSelection: values.changed(PickerContract.selectedIndex),
                     title: values[PickerContract.placeholder],
-                    font: appKitFont(
-                        family: values[FontElementContract.fontFamily]?.text,
-                        size: values[FontElementContract.fontSize],
-                        attributes: values[FontElementContract.fontAttributes],
-                        fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
+                    font: Self.font(values),
                     textColor: values[TextStyleElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
                     tint: values[TintElementContract.tint].flatMap { nsColor($0.propValue) },
@@ -57,7 +53,7 @@ extension AppKitRegistrations {
             picker.applies([
                 DatePickerContract.date, DatePickerContract.minimumDate, DatePickerContract.maximumDate,
                 FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes, TextStyleElementContract.textColor,
+                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TextStyleElementContract.textColor,
                 VisualElementContract.isEnabled,
             ]) { view, values in
                 dress(view, values)
@@ -74,7 +70,7 @@ extension AppKitRegistrations {
         }, members: { picker in
             picker.applies([
                 TimePickerContract.time, FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes, TextStyleElementContract.textColor,
+                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TextStyleElementContract.textColor,
                 VisualElementContract.isEnabled,
             ]) { view, values in
                 dress(view, values)

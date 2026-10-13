@@ -29,7 +29,7 @@ struct MissingPage: View {
         VStack {
             Text("Nothing called \"\(id)\"")
                 .fontSize(20)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
 
             Text("The route asked for a page the catalog does not have.")

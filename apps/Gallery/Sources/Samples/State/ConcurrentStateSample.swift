@@ -32,7 +32,7 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
 
             Text("\(total)")
                 .fontSize(56)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .textColor(total == 0 ? Palette.subtle : Palette.accent)
                 .horizontalTextAlignment(.center)
 

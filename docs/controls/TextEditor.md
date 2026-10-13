@@ -33,13 +33,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (90)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>51 ✅ · 2 ☑️ · 36 ✓ · 1 –</td><td><code>NSTextView</code> in an <code>NSScrollView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>50 ✅ · 2 ☑️ · 37 ✓ · 1 –</td><td><code>UITextView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>72 ✅ · 3 ☑️ · 12 ✓ · 1 –</td><td>multi-line <code>EditText</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>77 ✅ · 1 ☑️ · 12 ✓</td><td>multi-line <code>TextBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>62 ✅ · 2 ☑️ · 25 ✓ · 1 –</td><td><code>GtkTextView</code> in a <code>GtkScrolledWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>69 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;textarea&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (92)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>53 ✅ · 2 ☑️ · 36 ✓ · 1 –</td><td><code>NSTextView</code> in an <code>NSScrollView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>52 ✅ · 2 ☑️ · 37 ✓ · 1 –</td><td><code>UITextView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>74 ✅ · 3 ☑️ · 12 ✓ · 1 –</td><td>multi-line <code>EditText</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>79 ✅ · 1 ☑️ · 12 ✓</td><td>multi-line <code>TextBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>64 ✅ · 2 ☑️ · 25 ✓ · 1 –</td><td><code>GtkTextView</code> in a <code>GtkScrolledWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>71 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;textarea&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextEditorContract.swift`.
@@ -224,11 +224,13 @@ How text looks wherever it is drawn: its colour.
 
 ## From [FontElement](tiers/FontElement.md)
 
-The font text is drawn in: its family, its size, its weight and slant, and whether it follows the user's text-size setting.
+The font text is drawn in: its step of the platform's type ramp, its family, its size, its weight and slant, and whether it follows the user's text-size setting.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>fontAttributes</code></td><td>property</td><td><code>FontAttributes</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>fontWeight</code></td><td>property</td><td><code>FontWeight</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>textStyle</code></td><td>property</td><td><code>TextStyle</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isFontAutoScalingEnabled</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: macOS gives an application no text size of the user's to follow.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>fontFamily</code></td><td>property</td><td><code>Name</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>

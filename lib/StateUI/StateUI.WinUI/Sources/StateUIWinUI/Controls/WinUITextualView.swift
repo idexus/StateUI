@@ -38,10 +38,9 @@ class WinUITextualView: WinUIView {
         WinUIView.words(of: handle)
     }
 
-    /// The font, remembering its size for the spacing measured against it.
-    func setTextFont(size: Double?, attributes: FontAttributes?, family: String?) {
-        setFont(size: size, attributes: attributes, family: family)
-        look.size = size.flatMap { $0 > 0 ? $0 : nil }
+    /// The font a look gives, remembering its size for the spacing measured against it.
+    func setTextFont(_ look: TextLook) {
+        self.look.size = setFont(look).flatMap { $0 > 0 ? $0 : nil }
         writeSpacing()
     }
 

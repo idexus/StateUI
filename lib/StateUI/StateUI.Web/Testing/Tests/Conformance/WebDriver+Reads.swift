@@ -218,11 +218,11 @@ extension WebDriver {
         case .fontFamily:
             let family = try WebBrowser.evaluate("\(style).fontFamily.split(',')[0].trim().replace(/^[\"']|[\"']$/g, '')", on: e)
             return .some(family.map { Name($0).propValue })
+        case .fontWeight:
+            return FontWeight(nearest: try WebBrowser.number("Number(\(style).fontWeight)", on: e) ?? 400).propValue
         case .fontAttributes:
-            var attributes: FontAttributes = []
-            if try WebBrowser.number("Number(\(style).fontWeight)", on: e) ?? 400 >= 700 { attributes.insert(.bold) }
-            if try WebBrowser.truth("\(style).fontStyle === 'italic'", on: e) { attributes.insert(.italic) }
-            return attributes.propValue
+            let italic = try WebBrowser.truth("\(style).fontStyle === 'italic'", on: e)
+            return (italic ? FontAttributes.italic : .none).propValue
         case .textDecorations:
             var decorations: TextDecorations = []
             let lines = try WebBrowser.evaluate("\(style).textDecorationLine", on: e) ?? ""

@@ -245,8 +245,7 @@ extension AppKitElement {
         let result = NSMutableAttributedString()
         for run in runs {
             let runLook = run.look.over(look)
-            let font = appKitFont(
-                family: runLook.family, size: runLook.size, attributes: runLook.attributes, fallback: fallbackFont)
+            let font = appKitFont(runLook, fallback: fallbackFont)
             result.append(NSAttributedString(
                 string: run.text, attributes: appKitAttributes(runLook, font: font, fallbackColor: .labelColor)))
         }

@@ -35,13 +35,13 @@ Inherits: [TextualElement](tiers/TextualElement.md) · [TextStyleElement](tiers/
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (10)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>9 ✅ · 1 –</td><td><code>NSTextField</code> label; <code>NSAttributedString</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>10 ✅</td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>8 ✅ · 1 –</td><td><code>TextView</code>; <code>SpannableStringBuilder</code> spans</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>9 ✅ · 1 –</td><td><code>TextBlock</code>; <code>Run</code> inlines</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>10 ✅</td><td><code>GtkLabel</code>; <code>PangoAttrList</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>10 ✅</td><td><code>&lt;span&gt;</code>; <code>&lt;span&gt;</code> runs</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (12)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>11 ✅ · 1 –</td><td><code>NSTextField</code> label; <code>NSAttributedString</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>12 ✅</td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>10 ✅ · 1 –</td><td><code>TextView</code>; <code>SpannableStringBuilder</code> spans</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>11 ✅ · 1 –</td><td><code>TextBlock</code>; <code>Run</code> inlines</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>12 ✅</td><td><code>GtkLabel</code>; <code>PangoAttrList</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>12 ✅</td><td><code>&lt;span&gt;</code>; <code>&lt;span&gt;</code> runs</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextSpanContract.swift`.
@@ -74,11 +74,13 @@ How text looks wherever it is drawn: its colour.
 
 ## From [FontElement](tiers/FontElement.md)
 
-The font text is drawn in: its family, its size, its weight and slant, and whether it follows the user's text-size setting.
+The font text is drawn in: its step of the platform's type ramp, its family, its size, its weight and slant, and whether it follows the user's text-size setting.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>fontAttributes</code></td><td>property</td><td><code>FontAttributes</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>fontWeight</code></td><td>property</td><td><code>FontWeight</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>textStyle</code></td><td>property</td><td><code>TextStyle</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isFontAutoScalingEnabled</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: macOS gives an application no text size of the user's to follow.<br>WinUI 3: WinUI scales a text's runs with the text: a run has no text scaling of its own.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>fontFamily</code></td><td>property</td><td><code>Name</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>

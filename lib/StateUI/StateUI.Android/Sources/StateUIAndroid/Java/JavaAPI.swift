@@ -96,6 +96,8 @@ enum JavaAPI {
     static let typeface = Java.findClass("android/graphics/Typeface")
     static let createTypeface = Java.staticMethod(
         typeface, "create", "(Ljava/lang/String;I)Landroid/graphics/Typeface;")
+    static let createWeightedTypeface = Java.staticMethod(
+        typeface, "create", "(Landroid/graphics/Typeface;IZ)Landroid/graphics/Typeface;")
     static let setAllCaps = Java.method(textView, "setAllCaps", "(Z)V")
 
     static let setMaxLines = Java.method(textView, "setMaxLines", "(I)V")

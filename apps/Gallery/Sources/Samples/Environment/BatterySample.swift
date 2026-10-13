@@ -27,7 +27,7 @@ struct BatterySample: SampleContent, ExampleContent {
                 ? "the host has not said"
                 : "\(Int(device.battery.chargeLevel * 100))%")
                 .fontSize(34)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
 
             Text("state · \(device.battery.state)")

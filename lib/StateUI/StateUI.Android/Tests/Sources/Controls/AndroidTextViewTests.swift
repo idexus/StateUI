@@ -24,7 +24,7 @@ final class AndroidTextViewTests: XCTestCase {
                     Text()
                         .spans {
                             TextSpan("small ").textColor(.red).fontSize(12)
-                            TextSpan("large").fontSize(36).fontAttributes(.bold)
+                            TextSpan("large").fontSize(36).fontWeight(.bold)
                         }
                         .horizontalAlignment(.start)
                     Text("small large").fontSize(12).horizontalAlignment(.start)

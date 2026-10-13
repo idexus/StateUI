@@ -20,12 +20,12 @@ struct ReportView: View {
             Text(res.heading)
                 .fontSize(res.headingStyle.size) // listing: keep
                 .lineHeight(res.headingStyle.lineHeight) // listing: keep
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
             Text(localization.text(res.prepared, prepared))
             Text(localization.text(res.fileCount, fileCount))
 
             Text(res.recent)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
             ForEach(recent) { file in
                 VStack {
                     Text(file.name)

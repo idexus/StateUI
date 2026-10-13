@@ -147,7 +147,7 @@ struct HomePage: View {
 
                         Text("StateUI Gallery")
                             .fontSize(34)
-                            .fontAttributes(.bold)
+                            .fontWeight(.bold)
                             .tracking(-0.5)
                             .textColor(Palette.onBrand)
 
@@ -263,9 +263,9 @@ struct HomePage: View {
                     .spans {
                         TextSpan("Copyright © 2026 Paweł Krzywdziński and Contributors · ")
                             .fontSize(11).textColor(Palette.subtle)
-                        TextSpan("StateUI").fontAttributes(.bold).fontSize(11).textColor(Palette.subtle)
+                        TextSpan("StateUI").fontWeight(.bold).fontSize(11).textColor(Palette.subtle)
                         TextSpan(" is a trademark of Paweł Krzywdziński. ").fontSize(11).textColor(Palette.subtle)
-                        TextSpan("Swift").fontAttributes(.bold).fontSize(11).textColor(Palette.subtle)
+                        TextSpan("Swift").fontWeight(.bold).fontSize(11).textColor(Palette.subtle)
                         TextSpan(" is a trademark of Apple Inc.").fontSize(11).textColor(Palette.subtle)
                     }
                     .fontSize(11)
@@ -668,7 +668,7 @@ private struct GroupFace: View {
                 Grid {
                     Text(title)
                         .fontSize(18)
-                        .fontAttributes(.bold)
+                        .fontWeight(.bold)
                         .textColor(Palette.onBrand)
                         .lineBreak(.tailTruncation)
                         .padding(horizontal: 12, vertical: 10)

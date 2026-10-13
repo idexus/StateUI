@@ -7,7 +7,7 @@
 ///     ItemsView(groups: shelves.map { shelf in
 ///         Section(shelf.items) { Text($0) }
 ///             .id(shelf.name)
-///             .header(Text(shelf.name).fontAttributes(.bold))
+///             .header(Text(shelf.name).fontWeight(.bold))
 ///     })
 ///
 /// Each group names itself with `.id`, so two groups may hold equal items; a

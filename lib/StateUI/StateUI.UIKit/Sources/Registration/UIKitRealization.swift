@@ -85,6 +85,8 @@ enum UIKitRealization {
         .complete("Scene", "windowClosed"),
         .complete("TextSpan", "background"),
         .complete("TextSpan", "fontAttributes"),
+        .complete("TextSpan", "fontWeight"),
+        .complete("TextSpan", "textStyle"),
         .complete("TextSpan", "fontFamily"),
         .complete("TextSpan", "fontSize"),
         .complete("TextSpan", "isFontAutoScalingEnabled"),
@@ -135,7 +137,7 @@ enum UIKitRealization {
 
     /// The words of a day's and a time's picker, which UIKit draws in its own look.
     private static let pickerWords: [HostRecord] = ["DatePicker", "TimePicker"].flatMap { picker in
-        ["fontAttributes", "fontFamily", "fontSize", "textColor"].map { member in
+        ["fontAttributes", "fontFamily", "fontSize", "fontWeight", "textColor", "textStyle"].map { member in
             .notPlanned(picker, member, reason: "UIKit's date picker draws its words in its own font and colour: it takes neither.")
         } + [
             .notPlanned(picker, "isFontAutoScalingEnabled",

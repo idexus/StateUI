@@ -70,7 +70,7 @@ private struct DetailPage: View {
 private struct SettingsPage: View {
     var body: some View {
         VStack {
-            Text("Settings").fontAttributes(.bold)
+            Text("Settings").fontWeight(.bold)
             Switch(true).onToggled { _ in }
         }
         .title("Settings")

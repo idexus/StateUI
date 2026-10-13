@@ -16,7 +16,7 @@ struct ModalPage: View {
 
             Text("Native modal page")
                 .fontSize(20)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
 
             Text("The host chooses the presentation that belongs to this platform.")

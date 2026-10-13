@@ -312,3 +312,16 @@ behind and ahead, said as the history changes; and the end of its web
 process. A script's answer is the JSON WebKit writes its value in, read by
 the host layer's rule. WebKit's calls are declared by the backend itself
 over untyped pointers, as GTK's headers belong to the host's own module.
+
+## A text style
+
+Words in a text style stand at the size and weight libadwaita gives its style
+class for it: `.display` `title-1`, `.title` `title-2`, `.subtitle`
+`title-4`, `.headline` `heading`, `.body` `body` and `.caption` `caption`.
+The numbers are the theme's own: a label of each class, never shown, is read
+for them each time (`GTKTypeRamp`), so they follow the desktop's font, and a
+style's weight stands at the theme's own number - 800 for the largest titles -
+where the tree gives none. The
+size and weight the tree gives stand over the style's (`TextLook.standing`),
+and both reach a label and a run as Pango attributes and a field as its words'
+class.

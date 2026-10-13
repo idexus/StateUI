@@ -29,7 +29,7 @@ struct HostTimeSample: SampleContent, ExampleContent {
 
             Text("Here: \(zone.isEmpty ? "…" : zone)")
                 .fontSize(17)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
 
             Text(season)
                 .fontSize(13)

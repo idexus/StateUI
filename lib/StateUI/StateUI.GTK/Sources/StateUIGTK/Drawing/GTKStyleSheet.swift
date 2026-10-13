@@ -141,14 +141,15 @@ enum GTKStyleSheet {
     static func words(_ look: TextLook, placeholder: GdkRGBA?, in part: String = "") -> String? {
         var name = "stateui-words"
         var body = ""
+        let (size, weight) = look.gtkStanding
         // In typographic points where the words scale, which the desktop's text scale applies to; in pixels where not.
-        if let size = look.size ?? (look.scales ? nil : GTKEnvironment.fontSize), size > 0 {
+        if let size = size ?? (look.scales ? nil : GTKEnvironment.fontSize), size > 0 {
             name += "-s" + css(size).replacing(".", with: "_") + (look.scales ? "" : "x")
             body += look.scales ? "font-size: \(css(TextLook.typographic(size)))pt; " : "font-size: \(css(size))px; "
         }
-        if look.attributes.contains(.bold) || look.attributesGiven {
-            name += look.attributes.contains(.bold) ? "-b" : "-r"
-            body += look.attributes.contains(.bold) ? "font-weight: bold; " : "font-weight: normal; "
+        if let weight {
+            name += "-w\(weight)"
+            body += "font-weight: \(weight); "
         }
         if look.attributes.contains(.italic) || look.attributesGiven {
             name += look.attributes.contains(.italic) ? "-i" : "-u"

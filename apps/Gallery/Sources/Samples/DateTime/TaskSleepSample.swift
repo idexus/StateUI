@@ -25,7 +25,7 @@ struct TaskSleepSample: SampleContent, ExampleContent {
 
             Text("\(remaining)")
                 .fontSize(64)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .textColor(remaining == 0 ? Palette.subtle : Palette.accent)
                 .horizontalTextAlignment(.center)
 

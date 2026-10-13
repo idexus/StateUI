@@ -97,3 +97,17 @@ forward or a load again the program asks for carries that as its cause; a
 page still coming, which WebKit reloads without asking, is asked for again.
 A script's value is written as JSON and answers as text by the host layer's
 rule, as on every host ([the host layer's web rules](../../host/web.md)).
+
+## A text style
+
+Words in a text style stand in UIKit's font for it at the platform's own text
+size (`UIFont.preferredFont(forTextStyle:compatibleWith:)` at `.large`):
+`.display` the large title, `.title` the first title, `.subtitle` the second,
+`.headline`, `.body` and `.caption` the first caption. The size and weight
+the tree gives stand over the style's (`TextLook.standing`); the font is the
+system's at the size and weight that stand, or the named family with that
+weight in its descriptor. Where the words scale, the style's own metrics grow
+them with the user's text size (`UIFontMetrics(forTextStyle:)`), so a title
+grows as UIKit grows its titles; words with no style grow as the body does.
+A day's and a time's picker draw their words in UIKit's own font and take no
+style.

@@ -32,7 +32,7 @@ struct ConnectivitySample: SampleContent, ExampleContent {
 
             Text(device.connectivity.networkAccess == .internet ? "online" : "offline")
                 .fontSize(34)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
 
             Text("access · \(device.connectivity.networkAccess)")

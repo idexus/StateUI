@@ -56,18 +56,14 @@ extension AppKitRegistrations {
             radio.applies([
                 RadioButtonContract.isOn, TextualElementContract.text, TextualElementContract.textCase,
                 FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes, TextStyleElementContract.textColor,
+                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TextStyleElementContract.textColor,
                 VisualElementContract.isEnabled,
             ]) { view, values in
                 view.apply(
                     checked: values[RadioButtonContract.isOn] ?? false,
                     text: (values[TextualElementContract.textCase] ?? .none)
                         .applied(to: values[TextualElementContract.text] ?? ""),
-                    font: appKitFont(
-                        family: values[FontElementContract.fontFamily]?.text,
-                        size: values[FontElementContract.fontSize],
-                        attributes: values[FontElementContract.fontAttributes],
-                        fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
+                    font: Self.font(values),
                     textColor: values[TextStyleElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
                     enabled: values[VisualElementContract.isEnabled] ?? true)

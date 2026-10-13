@@ -10,8 +10,11 @@ import CStateUIAndroid
 class AndroidTextualView: AndroidView {
     private var made: (size: Float, colors: JavaObject)?
 
-    /// Bold and italic, as last set.
+    /// The slant, as last set.
     private(set) var fontAttributes: FontAttributes?
+
+    /// The weight, as last set; nil for the platform's.
+    private(set) var fontWeight: FontWeight?
 
     /// The family the words are drawn in; nil for the platform's.
     private(set) var fontFamily: String?
@@ -42,11 +45,14 @@ class AndroidTextualView: AndroidView {
         return Java.text(string)
     }
 
-    /// How the words look (`TextMembers.look`): their size, weight, slant, family and colour, each the
-    /// platform's own where the look says nothing.
+    /// How the words look (`TextMembers.look`): their style's size and weight on the platform's type scale, under
+    /// the size and weight they give, their slant, family and colour, each the platform's own where the look says
+    /// nothing.
     func setLook(_ look: TextLook) {
         scales = look.scales
-        setFontSize(look.size)
+        let (size, weight) = look.standing(styleSize: look.style?.androidSize, styleWeight: look.style?.androidWeight)
+        setFontSize(size)
+        fontWeight = weight
         fontAttributes = look.attributes
         fontFamily = look.family
         applyTypeface()
@@ -88,19 +94,15 @@ class AndroidTextualView: AndroidView {
         Java.call(reference, JavaAPI.setLetterSpacing, .float(Float(look.letterSpacing(inEmsOf: size))))
     }
 
-    /// Bold and italic, in the bits `FontAttributes` and `Typeface` share.
-    func setFontAttributes(_ attributes: FontAttributes?) {
-        fontAttributes = attributes
-        applyTypeface()
-    }
-
-    private func applyTypeface() {
-        let style = (fontAttributes?.rawValue ?? 0) & 3
-        let name = fontFamily.flatMap(Java.string)
-        let face = name.flatMap { Java.callStaticObject(JavaAPI.typeface, JavaAPI.createTypeface, .object($0), .int(style)) }
+    /// Draws the words in the family, weight and slant last set again - after anything that put back the
+    /// platform's typeface.
+    func applyTypeface() {
+        let italic = fontAttributes?.contains(.italic) == true
+        let face = AndroidTypeface.local(family: fontFamily, weight: fontWeight, italic: italic)
+        // A weighted face carries its slant; the platform's takes it from the style bits.
+        let style = fontWeight == nil && italic ? AndroidTypeface.italicStyle : 0
         Java.call(reference, JavaAPI.setTypeface, .object(face), .int(style))
         Java.release(local: face)
-        Java.release(local: name)
     }
 
     /// How the words break, and how many lines show: a line cut or truncated is one line, and only a

@@ -20,7 +20,7 @@ struct SectionTitle: View {
             // lands on these, and on nothing that merely looks bold.
             .accessibilityHeading(.h2)
             .fontSize(13)
-            .fontAttributes(.bold)
+            .fontWeight(.bold)
             .textColor(Palette.subtle)
             .verticalAlignment(.center)
     }
@@ -41,7 +41,7 @@ struct ExampleTitle: View {
         Text(text)
             .accessibilityHeading(.h2)
             .fontSize(17)
-            .fontAttributes(.bold)
+            .fontWeight(.bold)
             .verticalAlignment(.center)
     }
 }

@@ -101,7 +101,7 @@ struct MaterialsSample: SampleContent, ExampleContent {
         ZStack {
             Text(name)
                 .fontSize(13)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalAlignment(.center)
                 .verticalAlignment(.center)
         }

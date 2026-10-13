@@ -82,11 +82,7 @@ enum AppKitRegistrations {
 
     /// The font a field draws in, composed from the members it wears.
     static func font<Realized: ElementContract>(_ values: ElementValues<Realized>) -> NSFont {
-        appKitFont(
-            family: values[FontElementContract.fontFamily]?.text,
-            size: values[FontElementContract.fontSize],
-            attributes: values[FontElementContract.fontAttributes],
-            fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize))
+        appKitFont(TextMembers.look(of: values), fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize))
     }
 }
 

@@ -173,8 +173,8 @@ final class GTKTextInputViewTests: XCTestCase {
             let host = GTKRenderer.running {
                 VStack {
                     TextField("").placeholder("MMM").placeholderColor(Color("#FF0000")).fontSize(40)
-                        .fontAttributes(.bold).width(200)
-                    TextField("MMM").textColor(Color("#0000FF")).fontSize(40).fontAttributes(.bold).width(200)
+                        .fontWeight(.bold).width(200)
+                    TextField("MMM").textColor(Color("#0000FF")).fontSize(40).fontWeight(.bold).width(200)
                     TextField("MMM").width(200)
                 }
                 .horizontalAlignment(.start)

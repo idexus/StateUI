@@ -39,7 +39,7 @@ struct TextSpanSample: SampleContent, ExampleContent {
 
                     TextSpan("out")
                         .fontSize(17)
-                        .fontAttributes(.bold)
+                        .fontWeight(.bold)
                         .textColor(Palette.onAccent)
                         .background(Palette.accent)
                 }
@@ -50,7 +50,7 @@ struct TextSpanSample: SampleContent, ExampleContent {
                         TextSpan(word + " ")
                             .fontSize(17)
                             .textColor(index == highlighted ? Palette.accent : Palette.text)
-                            .fontAttributes(index == highlighted ? .bold : .none)
+                            .fontWeight(index == highlighted ? .bold : .regular)
                     }
                 }
 

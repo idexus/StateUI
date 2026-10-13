@@ -21,7 +21,7 @@ struct OnChangedSample: SampleContent, ExampleContent {
 
             Text("\(Int(celsius)) °C")
                 .fontSize(34)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalAlignment(.center)
 
             Slider($celsius)

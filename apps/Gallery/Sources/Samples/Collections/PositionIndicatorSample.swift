@@ -22,7 +22,7 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
 
             Text(Self.steps[step])
                 .fontSize(20)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
 
             PositionIndicator()

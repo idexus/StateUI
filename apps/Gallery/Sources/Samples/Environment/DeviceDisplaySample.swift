@@ -24,7 +24,7 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
 
             Text("\(Int(device.display.width)) × \(Int(device.display.height)) px")
                 .fontSize(28)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
 
             Text(device.display.density > 0

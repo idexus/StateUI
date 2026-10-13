@@ -39,14 +39,14 @@ private struct LayerRows: ExampleContent {
             boxed("Layer one · a get") {
                 Text("Counter \(counter)")
                     .fontSize(20)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
                 DebugInfoLabel()   // climbs, "for counter"
             }
 
             boxed("Layer two · a channel") {
                 Text($counter.convert { "Counter \($0)" })
                     .fontSize(20)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
                 DebugInfoLabel()   // stays: "1 build, first time"
             }
         }
@@ -198,7 +198,7 @@ private struct Described: View {
             HStack {
                 Text("Counter \(counter)")
                     .fontSize(13)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
                     .margin(horizontal: 6, vertical: 0)
 
                 Text(took(began, leaves))
@@ -247,7 +247,7 @@ private struct Channelled: View {
             HStack {
                 Text($counter.convert { "Counter \($0)" })
                     .fontSize(13)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
                     .margin(horizontal: 6, vertical: 0)
 
                 Text(took(began, leaves))

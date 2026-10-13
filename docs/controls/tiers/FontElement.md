@@ -2,12 +2,12 @@
 
 # FontElement
 
-The font text is drawn in: its family, its size, its weight and slant, and whether it follows the user's text-size setting.
+The font text is drawn in: its step of the platform's type ramp, its family, its size, its weight and slant, and whether it follows the user's text-size setting.
 
 ```swift
 Text("Total")
     .fontSize(20)
-    .fontAttributes(.bold)
+    .fontWeight(.bold)
 ```
 
 Worn by: [Button](../Button.md) · [DatePicker](../DatePicker.md) · [Picker](../Picker.md) · [RadioButton](../RadioButton.md) · [SearchField](../SearchField.md) · [Text](../Text.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TextSpan](../TextSpan.md) · [TimePicker](../TimePicker.md)
@@ -19,6 +19,8 @@ How each of them realizes these members is on its own page.
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
 | `fontAttributes` | property | `FontAttributes` | native |
+| `fontWeight` | property | `FontWeight` | native |
+| `textStyle` | property | `TextStyle` | native |
 | `isFontAutoScalingEnabled` | property | `Bool` | adaptive |
 | `fontFamily` | property | `Name` | native |
 | `fontSize` | property | `Double` | native |

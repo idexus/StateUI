@@ -50,7 +50,7 @@ struct EngineSample: SampleContent, ExampleContent {
                 Text()
                     .text($reading)
                     .fontSize(44)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
                     .horizontalTextAlignment(.center)
                     .horizontalAlignment(.center)
             }

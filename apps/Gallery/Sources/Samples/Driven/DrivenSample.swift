@@ -67,7 +67,7 @@ struct DrivenSample: SampleContent, ExampleContent {
             Text()
                 .text($offset.journey.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
                 .fontSize(28)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalAlignment(.center)
 
             // Off ordinary state: described again each time the switch is

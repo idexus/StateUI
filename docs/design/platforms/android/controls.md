@@ -320,3 +320,15 @@ its listener only what no part takes, so its gestures see the touches and the
 hovering first, before the parts do (`StateUIWatch`): a drag or a pinch under
 way takes the rest of the touch from the parts, which are told it was called
 off, and a touch no part takes stays the view's where its element listens.
+
+## A text style
+
+Android Views' type scale is the platform's Material one: `.display` stands
+at Display 1's 34 points, `.title` at the Headline's 24, `.subtitle` at the
+Title's 20 in medium, `.headline` at Body 2's 14 in medium, `.body` at Body
+1's 14 and `.caption` at 12 (`AndroidTypeface`). The size and weight the tree
+gives stand over the style's (`TextLook.standing`). A weight is a typeface of
+the family - the platform's where it names none - at the weight's number
+(`Typeface.create(Typeface, int, boolean)`), which carries the slant; with no
+weight, the view's style bits slant the platform's face. A run's weight is a
+`TypefaceSpan` of such a typeface.

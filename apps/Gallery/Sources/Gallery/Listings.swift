@@ -606,7 +606,7 @@ enum Listings {
         // size at the default spacing reads loose.
         Style<Text>(.headline)
             .fontSize(32)
-            .fontAttributes(.bold)
+            .fontWeight(.bold)
             .tracking(-0.5)
             .horizontalAlignment(.center)
             .horizontalTextAlignment(.center)
@@ -651,6 +651,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text("\(app.info.colorScheme)")
+                    .fontWeight(.bold)
 
                 // LOGIC on the theme - a different WORD, not a colour.
                 // A colour that differs by theme is Color(light:dark:),
@@ -969,6 +970,7 @@ enum Listings {
                 Text(device.battery.chargeLevel <= 0
                     ? "the host has not said"
                     : "\(Int(device.battery.chargeLevel * 100))%")
+                    .fontWeight(.bold)
 
                 Text("state · \(device.battery.state)")
                 Text("source · \(device.battery.powerSource)")
@@ -1262,6 +1264,7 @@ enum Listings {
                 // either way, so what has been typed in it survives the toggle.
                 if signedIn {
                     Text("Signed in")
+                        .fontWeight(.bold)
                 }
 
                 TextField($note)
@@ -1288,6 +1291,7 @@ enum Listings {
                 ForEach(0..<5) { turn in
                     if turn == chosen {
                         Text("turn \(turn) - chosen")
+                            .fontWeight(.bold)
                     } else {
                         Button("turn \(turn)")
                             .horizontalAlignment(.start)
@@ -1632,6 +1636,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text("\(total)")
+                    .fontWeight(.bold)
 
                 // The proof: after a run, the count equals what was asked for.
                 Text(running
@@ -1701,6 +1706,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text(device.connectivity.networkAccess == .internet ? "online" : "offline")
+                    .fontWeight(.bold)
 
                 Text("access · \(device.connectivity.networkAccess)")
                 Text("via · \(profiles.isEmpty ? "nothing reported" : profiles)")
@@ -2083,6 +2089,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text("\(Int(device.display.width)) × \(Int(device.display.height)) px")
+                    .fontWeight(.bold)
 
                 Text(device.display.density > 0
                     ? "\(Int(device.display.width / device.display.density)) × "
@@ -2113,6 +2120,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text("\(app.info.name) \(app.info.versionString) (\(app.info.buildString))")
+                    .fontWeight(.bold)
 
                 Text(app.info.packageName)
 
@@ -2367,6 +2375,7 @@ enum Listings {
                 // nothing here reads anything.
                 Text()
                     .text($offset.journey.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
+                    .fontWeight(.bold)
                     .horizontalAlignment(.center)
 
                 // Off ordinary state: described again each time the switch is
@@ -2436,6 +2445,7 @@ enum Listings {
                     // Off a driven state: written ten times a second, never described.
                     Text()
                         .text($reading)
+                        .fontWeight(.bold)
                         .horizontalAlignment(.center)
                 }
                 .style(.card)
@@ -3433,6 +3443,7 @@ enum Listings {
                         .contentMode(.fill)
 
                     Text(card.name)
+                        .fontWeight(.bold)
                         .lineBreak(.tailTruncation)
                         .verticalAlignment(.end)
                 }
@@ -3523,6 +3534,7 @@ enum Listings {
                     // them - so a settled frame builds the reader AND the page.
                     GeometryReader { frame in
                         Text("\(Int(frame.width)) × \(Int(frame.height))")
+                            .fontWeight(.bold)
                             .horizontalAlignment(.center)
                             .verticalAlignment(.center)
                     }
@@ -3573,6 +3585,7 @@ enum Listings {
                 // Columns at least 100 wide: as many as the width holds.
                 ItemsView(0..<120) { number in
                     Text("\(number)")
+                        .fontWeight(.bold)
                         .height(72)
                         .background(Self.hues[number % Self.hues.count])
                 }
@@ -3669,7 +3682,8 @@ enum Listings {
                         Text(item)
                     }
                     .id(shelf.name)
-                    .header(Text(shelf.name))
+                    .header(Text(shelf.name)
+                        .fontWeight(.bold))
 
                     return counts
                         ? group.footer(Text("\(shelf.items.count) items"))
@@ -3700,6 +3714,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text("Here: \(zone.isEmpty ? "…" : zone)")
+                    .fontWeight(.bold)
 
                 Text(season)
 
@@ -4224,6 +4239,7 @@ enum Listings {
 
                     HStack {
                         Text("Counter \(counter)")
+                            .fontWeight(.bold)
 
                         Text(took(began, leaves))
                             .height(15)
@@ -4261,6 +4277,7 @@ enum Listings {
 
                     HStack {
                         Text($counter.convert { "Counter \($0)" })
+                            .fontWeight(.bold)
 
                         Text(took(began, leaves))
                             .height(15)
@@ -4320,11 +4337,13 @@ enum Listings {
 
                 boxed("Layer one · a get") {
                     Text("Counter \(counter)")
+                        .fontWeight(.bold)
                     DebugInfoLabel()   // climbs, "for counter"
                 }
 
                 boxed("Layer two · a channel") {
                     Text($counter.convert { "Counter \($0)" })
+                        .fontWeight(.bold)
                     DebugInfoLabel()   // stays: "1 build, first time"
                 }
             }
@@ -4641,6 +4660,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text(locale.name.isEmpty ? "the host has not said" : locale.name)
+                    .fontWeight(.bold)
 
                 Text("language · \(locale.language)")
                 Text("region · \(locale.region.isEmpty ? "none" : locale.region)")
@@ -4689,6 +4709,7 @@ enum Listings {
                     .environment(localization)
 
                 Text("Side by side")
+                    .fontWeight(.bold)
                 Grid {
                     ReportView(fileCount: Int(count), recent: recent, prepared: prepared)
                         .environment(localization.speaking(.english))
@@ -4796,10 +4817,12 @@ enum Listings {
                     Text(res.heading)
                         .fontSize(res.headingStyle.size)
                         .lineHeight(res.headingStyle.lineHeight)
+                        .fontWeight(.bold)
                     Text(localization.text(res.prepared, prepared))
                     Text(localization.text(res.fileCount, fileCount))
 
                     Text(res.recent)
+                        .fontWeight(.bold)
                     ForEach(recent) { file in
                         VStack {
                             Text(file.name)
@@ -4830,7 +4853,8 @@ enum Listings {
                             .verticalAlignment(.center)
                     }
                 }
-                .header(Text("N and N², a thousand times"))
+                .header(Text("N and N², a thousand times")
+                    .fontWeight(.bold))
                 .footer(Text("That is all of them."))
                 .selection($chosen)
                 .gridRow(0)
@@ -5212,6 +5236,7 @@ enum Listings {
         private func words(_ name: String) -> ZStack {
             ZStack {
                 Text(name)
+                    .fontWeight(.bold)
                     .horizontalAlignment(.center)
                     .verticalAlignment(.center)
             }
@@ -5345,6 +5370,7 @@ enum Listings {
                         .verticalAlignment(.center)
 
                     Text("StateUI")
+                        .fontWeight(.bold)
                         .tracking(-0.3)
                         .verticalAlignment(.center)
                 }
@@ -5412,6 +5438,7 @@ enum Listings {
                     SectionTitle("Over everything")
 
                     Text("Native modal page")
+                        .fontWeight(.bold)
 
                     Text("The host chooses the presentation that belongs to this platform.")
 
@@ -5823,6 +5850,7 @@ enum Listings {
         @MainActor
         private func columnTitle(_ text: String) -> Text {
             Text(text)
+                .fontWeight(.bold)
         }
 
         /// The spelling that makes a column what it is, under its reading.
@@ -6011,6 +6039,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text("\(Int(celsius)) °C")
+                    .fontWeight(.bold)
                     .horizontalAlignment(.center)
 
                 Slider($celsius)
@@ -6715,6 +6744,7 @@ enum Listings {
                         // ONE LINE, whatever the card's width: a caption that
                         // wrapped would change the picture's height with it.
                         Text(card.name)
+                            .fontWeight(.bold)
                             .lineBreak(.tailTruncation)
 
                         Text("Placed by arithmetic")
@@ -6864,6 +6894,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text(status)
+                    .fontWeight(.bold)
 
                 Text("\(rounds) round(s)")
 
@@ -6933,6 +6964,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text(Self.steps[step])
+                    .fontWeight(.bold)
 
                 PositionIndicator()
                     .count(Self.steps.count)
@@ -7350,6 +7382,7 @@ enum Listings {
                 ZStack {
                     VStack {
                         Text("\(name) is \(value)")
+                            .fontWeight(.bold)
 
                         // WHY THIS VIEW IS BEING DESCRIBED, on the screen it is
                         // about: the view's name, how many times, and the state
@@ -7540,8 +7573,10 @@ enum Listings {
             var body: some View {
                 VStack {
                     Text("Built with \(caption)")
+                        .fontWeight(.bold)
 
                     Text(value)
+                        .fontWeight(.bold)
 
                     DebugInfoLabel()
                 }
@@ -7556,8 +7591,10 @@ enum Listings {
             var body: some View {
                 VStack {
                     Text("Reads the count")
+                        .fontWeight(.bold)
 
                     Text("\(count)")
+                        .fontWeight(.bold)
 
                     DebugInfoLabel()
                 }
@@ -7889,10 +7926,12 @@ enum Listings {
                 // user jumping through the page can land.
                 VStack {
                     Text("Drawn large")
+                        .fontWeight(.bold)
 
                     // Read as a heading: somewhere a user jumping through the page
                     // can land.
                     Text("A heading, and drawn the same")
+                        .fontWeight(.bold)
                         .accessibilityHeading(.h1)
                 }
 
@@ -7921,6 +7960,7 @@ enum Listings {
                     ZStack {
                         VStack {
                             Text("Walked")
+                                .fontWeight(.bold)
 
                             Text("Both lines are read")
                         }
@@ -7932,6 +7972,7 @@ enum Listings {
                     ZStack {
                         VStack {
                             Text("Skipped")
+                                .fontWeight(.bold)
 
                             Text("Neither line is read")
                         }
@@ -8743,6 +8784,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text("\(remaining)")
+                    .fontWeight(.bold)
 
                 ProgressBar(total == 0 ? 0 : Double(remaining) / Double(total))
 
@@ -8925,7 +8967,7 @@ enum Listings {
 
                 Text("Bold")
                     .fontSize(16)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
 
                 Text("Italic, and coloured")
                     .fontSize(16)
@@ -9017,7 +9059,7 @@ enum Listings {
 
                         TextSpan("out")
                             .fontSize(17)
-                            .fontAttributes(.bold)
+                            .fontWeight(.bold)
                             .textColor(Palette.onAccent)
                             .background(Palette.accent)
                     }
@@ -9028,7 +9070,7 @@ enum Listings {
                             TextSpan(word + " ")
                                 .fontSize(17)
                                 .textColor(index == highlighted ? Palette.accent : Palette.text)
-                                .fontAttributes(index == highlighted ? .bold : .none)
+                                .fontWeight(index == highlighted ? .bold : .regular)
                         }
                     }
 
@@ -9048,6 +9090,38 @@ enum Listings {
             .spacing(12)
         }
         """#,
+        "TextStyleSample": #"""
+        // Sources/Samples/Text/TextStyleSample.swift
+        /// The step a line stands at, moved by the buttons and handed to the line as a state.
+        @State private var style = TextStyle.title
+
+        var body: some View {
+            VStack {
+                Text("Display").textStyle(.display)
+                Text("Title").textStyle(.title)
+                Text("Subtitle").textStyle(.subtitle)
+                Text("Headline").textStyle(.headline)
+                Text("Body").textStyle(.body)
+                Text("Caption").textStyle(.caption)
+
+                HStack {
+                    Text("Regular").fontWeight(.regular)
+                    Text("Medium").fontWeight(.medium)
+                    Text("Semibold").fontWeight(.semibold)
+                    Text("Bold").fontWeight(.bold)
+                }
+
+                Text("A title, at a weight of its own").textStyle(.title).fontWeight(.regular)
+
+                Text("Stepped through the ramp").textStyle($style)
+
+                HStack {
+                    Button("Larger").onClicked { style = TextStyle(rawValue: style.rawValue - 1) ?? .display }
+                    Button("Smaller").onClicked { style = TextStyle(rawValue: style.rawValue + 1) ?? .caption }
+                }
+            }
+        }
+        """#,
         "TickerSample": #"""
         // Sources/Samples/DateTime/TickerSample.swift
         /// `@State` keeps the instance across renders; a tick asks for the render
@@ -9062,6 +9136,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text("\((ticker.limit ?? 0) - ticker.ticks)")
+                    .fontWeight(.bold)
 
                 ProgressBar(remaining)
 
@@ -9160,6 +9235,7 @@ enum Listings {
             var body: some View {
                 VStack {
                     Text("Layer \(depth)")
+                        .fontWeight(.bold)
 
                     Text("Shared \(shared) time(s)")
 
@@ -9933,6 +10009,7 @@ enum Listings {
                         .verticalAlignment(.center)
 
                     Text(value)
+                        .fontWeight(.bold)
                         .verticalAlignment(.center)
                 }
                 .horizontalAlignment(.center)
@@ -9955,6 +10032,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text(window.title ?? "Platform title")
+                    .fontWeight(.bold)
 
                 HStack {
                     action("Rename") {

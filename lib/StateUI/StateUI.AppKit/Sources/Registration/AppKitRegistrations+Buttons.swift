@@ -34,7 +34,7 @@ extension AppKitRegistrations {
                 BorderElementContract.shape, BorderElementContract.stroke,
                 BorderElementContract.lineWidth, VisualElementContract.isEnabled,
                 FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes, TrackingElementContract.tracking,
+                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TrackingElementContract.tracking,
             ]) { control, values in
                 guard let view = control as? any AppKitButtonFace else { return }
                 // Each value is read into a name of its own: twelve arguments

@@ -26,7 +26,7 @@ private struct LongList: ExampleContent {
             }
             .header(Text("N and N², a thousand times")
                 .fontSize(11)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .textColor(Palette.subtle)
                 .padding(horizontal: 14, vertical: 8)
                 .background(Palette.raised))
@@ -119,7 +119,7 @@ private struct GridList: ExampleContent {
             ItemsView(0..<120) { number in
                 Text("\(number)")
                     .fontSize(15)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
                     .textColor(.white)
                     .horizontalTextAlignment(.center)
                     .verticalTextAlignment(.center)
@@ -187,7 +187,7 @@ private struct GroupedList: ExampleContent {
                 .id(shelf.name)
                 .header(Text(shelf.name)
                     .fontSize(12)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
                     .textColor(Palette.subtle)
                     .padding(horizontal: 14, vertical: 8)
                     .background(Palette.raised))

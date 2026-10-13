@@ -50,7 +50,7 @@ struct LevelPage: View {
 
             Text("Level \(level)")
                 .fontSize(32)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
 
             Text("appeared \(arrivals)× · disappeared \(departures)×")

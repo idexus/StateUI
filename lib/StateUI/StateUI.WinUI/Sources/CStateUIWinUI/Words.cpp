@@ -41,25 +41,27 @@ namespace {
     }
 }
 
-extern "C" void stateui_winui_set_font(StateUIObjectRef handle, double size, bool bold, bool italic, char const *family) {
+extern "C" void stateui_winui_set_font(StateUIObjectRef handle, double size, int32_t weight, bool italic, char const *family) {
     try {
-        auto weight = bold ? winrt::Microsoft::UI::Text::FontWeights::Bold() : winrt::Microsoft::UI::Text::FontWeights::Normal();
         auto style = italic ? winrt::Windows::UI::Text::FontStyle::Italic : winrt::Windows::UI::Text::FontStyle::Normal;
         auto named = family && *family ? media::FontFamily(text(family)) : media::FontFamily{nullptr};
-        auto apply = [&](auto const &element, auto sizeProperty, auto familyProperty) {
+        auto apply = [&](auto const &element, auto sizeProperty, auto weightProperty, auto familyProperty) {
             if (size > 0) element.FontSize(size);
             else element.ClearValue(sizeProperty);
-            element.FontWeight(weight);
+            if (weight > 0) element.FontWeight(winrt::Windows::UI::Text::FontWeight{static_cast<uint16_t>(weight)});
+            else element.ClearValue(weightProperty);
             element.FontStyle(style);
             if (named) element.FontFamily(named);
             else element.ClearValue(familyProperty);
         };
         either(handle,
             [&](controls::TextBlock const &block) {
-                apply(block, controls::TextBlock::FontSizeProperty(), controls::TextBlock::FontFamilyProperty());
+                apply(block, controls::TextBlock::FontSizeProperty(), controls::TextBlock::FontWeightProperty(),
+                      controls::TextBlock::FontFamilyProperty());
             },
             [&](controls::Control const &control) {
-                apply(control, controls::Control::FontSizeProperty(), controls::Control::FontFamilyProperty());
+                apply(control, controls::Control::FontSizeProperty(), controls::Control::FontWeightProperty(),
+                      controls::Control::FontFamilyProperty());
             });
     } catch (...) {
         report("setting a font");
@@ -199,7 +201,7 @@ extern "C" void stateui_winui_text_set_runs(StateUIObjectRef handle, StateUIWord
             piece.Text(words);
             if (run.hasColor) piece.Foreground(media::SolidColorBrush(color(run.color)));
             if (run.size > 0) piece.FontSize(run.size);
-            if (run.bold) piece.FontWeight(winrt::Microsoft::UI::Text::FontWeights::Bold());
+            if (run.weight > 0) piece.FontWeight(winrt::Windows::UI::Text::FontWeight{static_cast<uint16_t>(run.weight)});
             if (run.italic) piece.FontStyle(winrt::Windows::UI::Text::FontStyle::Italic);
             auto lines = TextDecorations::None;
             if (run.underline) lines = lines | TextDecorations::Underline;

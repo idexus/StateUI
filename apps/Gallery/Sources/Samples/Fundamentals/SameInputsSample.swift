@@ -102,12 +102,12 @@ private struct Block: View {
         VStack {
             Text("Built with \(caption)")
                 .fontSize(12)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .textColor(tint)
 
             Text(value)
                 .fontSize(20)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
 
             DebugInfoLabel()
         }
@@ -127,12 +127,12 @@ private struct Reads: View {
         VStack {
             Text("Reads the count")
                 .fontSize(12)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .textColor(tint)
 
             Text("\(count)")
                 .fontSize(20)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
 
             DebugInfoLabel()
         }

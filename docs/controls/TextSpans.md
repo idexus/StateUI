@@ -8,7 +8,7 @@ The runs a label is made of, in order.
 Text()
     .spans {
         TextSpan("let ").textColor(.purple)
-        TextSpan("count").fontAttributes(.bold)
+        TextSpan("count").fontWeight(.bold)
         TextSpan(" = 0")
     }
 ```

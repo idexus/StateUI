@@ -30,4 +30,10 @@ public final class TestText {
         Typeface face = view.getTypeface();
         return face == null ? Typeface.NORMAL : face.getStyle();
     }
+
+    /** How heavy the strokes are, 100 to 900: the typeface's weight. */
+    public static int weight(TextView view) {
+        Typeface face = view.getTypeface();
+        return face == null ? 400 : face.getWeight();
+    }
 }

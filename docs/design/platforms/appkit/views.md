@@ -148,3 +148,15 @@ forward or a load again the program asks for carries that as its cause; a
 page still coming is asked for again. macOS's WebKit also declares a legacy
 `WebHistory` class, so the host names the host layer's `StateUIHost.WebHistory`
 in full.
+
+## A text style
+
+Words in a text style stand in AppKit's font for it
+(`NSFont.preferredFont(forTextStyle:)`): `.display` the large title, `.title`
+the first title, `.subtitle` the second, `.headline`, `.body` and `.caption`
+the first caption. The style's size and weight stand under the tree's
+(`TextLook.standing`), and the font is made again at the size and weight that
+stand - the system font, or the named family with that weight in its
+descriptor; italic is AppKit's italic trait. A weight is AppKit's
+`NSFont.Weight`, and a font's weight reads back from its descriptor's traits.
+A Mac gives an application no text size of the user's to follow.

@@ -408,10 +408,10 @@ void stateui_winui_panel_set_children(StateUIObjectRef panel, StateUIObjectRef c
 StateUIObjectRef stateui_winui_spacer_make(void);
 StateUIObjectRef stateui_winui_divider_make(void);
 
-/// How words look on a text block or any control showing them: the font - a size of 0 or less and an empty
-/// family are the platform's - the colour as 0xAARRGGBB, `has` false putting back the platform's, and the room
-/// around them in DIPs.
-void stateui_winui_set_font(StateUIObjectRef element, double size, bool bold, bool italic, char const *family);
+/// How words look on a text block or any control showing them: the font - a size of 0 or less, a weight of 0 and
+/// an empty family are the platform's, a weight 100 to 900 - the colour as 0xAARRGGBB, `has` false putting back
+/// the platform's, and the room around them in DIPs.
+void stateui_winui_set_font(StateUIObjectRef element, double size, int32_t weight, bool italic, char const *family);
 void stateui_winui_set_foreground(StateUIObjectRef element, bool has, uint32_t argb);
 void stateui_winui_set_padding(StateUIObjectRef element, double left, double top, double right, double bottom);
 
@@ -436,7 +436,8 @@ void stateui_winui_text_set_vertical(StateUIObjectRef label, int32_t vertical);
 void stateui_winui_text_set_text(StateUIObjectRef text, char const *utf8);
 
 /// One run of a label's words, and how it differs from the label's: its colour and its background where it has
-/// them, as 0xAARRGGBB; its size in DIPs, 0 for the label's; bold, italic, and lines under or through it; its font
+/// them, as 0xAARRGGBB; its size in DIPs, 0 for the label's; its weight 100 to 900, 0 for the label's; italic, and
+/// lines under or through it; its font
 /// family, empty for the label's; and the space between its letters in thousandths of an em of its size.
 typedef struct {
     char const *text;
@@ -445,7 +446,7 @@ typedef struct {
     double size;
     bool hasColor;
     bool hasBackground;
-    bool bold;
+    int32_t weight;
     bool italic;
     bool underline;
     bool strikethrough;

@@ -401,7 +401,7 @@ extension ControlDictionary {
             Text()
                 .spans {
                     TextSpan("let ").textColor(.purple)
-                    TextSpan("count").fontAttributes(.bold)
+                    TextSpan("count").fontWeight(.bold)
                     TextSpan(" = 0")
                 }
             """#),
@@ -663,7 +663,7 @@ extension ControlDictionary {
         (FontElementContract.self, #"""
             Text("Total")
                 .fontSize(20)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
             """#),
 
         (TextAlignmentElementContract.self, #"""

@@ -694,7 +694,7 @@ final class StyleTests: XCTestCase {
 
             Style<Text>(.headline)
                 .fontSize(32)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
                 .basedOn(.body)
 
@@ -742,7 +742,7 @@ final class StyleTests: XCTestCase {
         // the default label's, whose colour it does not take.
         XCTAssertEqual(stack.at(.auto(4))?.props, [
             "text": .string("Welcome"), "fontSize": .number(32),
-            "fontAttributes": FontAttributes.bold.propValue,
+            "fontWeight": FontWeight.bold.propValue,
             "horizontalTextAlignment": TextAlignment.center.propValue,
         ])
         XCTAssertEqual(stack.at(.auto(5))?.props, [

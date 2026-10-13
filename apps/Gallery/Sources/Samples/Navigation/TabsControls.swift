@@ -41,7 +41,7 @@ struct TabsControls: View {
 
                     Text(verdict)
                         .fontSize(12)
-                        .fontAttributes(.bold)
+                        .fontWeight(.bold)
                         .textColor(Palette.accent)
                 }
                 .spacing(6)
