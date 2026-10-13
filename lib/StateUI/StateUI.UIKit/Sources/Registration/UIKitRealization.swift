@@ -75,6 +75,7 @@ enum UIKitRealization {
         .complete("Page", "disappearing"),
         .complete("Page", "showsBackButton"),
         .complete("Page", "showsNavigationBar"),
+        .complete("Page", "showsTitle"),
         .complete("Page", "icon"),
         .complete("Page", "navigatedFrom"),
         .complete("Page", "navigatedTo"),

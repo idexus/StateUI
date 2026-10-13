@@ -36,8 +36,9 @@ final class WinUITitleBarView: WinUIView {
         // A declared title area stands in the title's place, as an application names itself on WinUI's title bar.
         let area = chrome.titleArea
         let icon = WinUIStrings.lines(WinUIPictures.lines(area?.icon))
+        let title = area?.title ?? (chrome.showsTitle ? chrome.title : "")
         stateui_winui_title_bar_set(
-            handle, area?.title ?? chrome.title, area?.subtitle ?? "", icon, chrome.back != nil,
+            handle, title, area?.subtitle ?? "", icon, chrome.back != nil,
             chrome.sidebarToggle != nil, background != nil, background ?? 0, foreground != nil, foreground ?? 0,
             light.map { $0 ? 1 : 2 } ?? 0)
 

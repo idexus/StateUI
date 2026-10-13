@@ -56,6 +56,19 @@ extension View {
         pageSays { $0.twin(PageContract.showsNavigationBar, by: state) }
     }
 
+    /// Whether the page shows its title - false for a page whose own content names it: the title still names the
+    /// window and the way back, and stands on no bar and over no content.
+    ///
+    ///     HomePage().title("Home").showsTitle(false)
+    public func showsTitle(_ value: Bool) -> Modified {
+        pageSays { $0.setValue(PageContract.showsTitle, value) }
+    }
+
+    /// Whether the page shows its title, from a state, `$x`.
+    public func showsTitle(_ state: Binding<Bool>) -> Modified {
+        pageSays { $0.twin(PageContract.showsTitle, by: state) }
+    }
+
     /// Whether the way back is offered while the page is on top - false for a page the user must finish rather than
     /// leave. It controls the stack's own back affordances, not every system way of leaving.
     public func showsBackButton(_ value: Bool) -> Modified {

@@ -119,6 +119,9 @@ extension WebDriver {
         case (.page, .showsNavigationBar):
             guard let bar = try? bar(over: element) else { return nil }
             return try (!WebBrowser.truth("e.hidden", on: bar)).propValue
+        case (.page, .showsTitle):
+            guard let bar = try? bar(over: element) else { return nil }
+            return try WebBrowser.truth("e.dataset.title !== 'none'", on: bar).propValue
         case (.page, .showsBackButton):
             guard let bar = try? bar(over: element) else { return nil }
             return try WebBrowser.truth("!e.hidden && !e.querySelector('button[aria-label=Back]').hidden", on: bar).propValue

@@ -12,6 +12,8 @@ import UIKit
 @MainActor
 struct UIKitPageChrome {
     var title = ""
+    /// Whether the bar shows the title; the title names the way back all the same.
+    var showsTitle = true
     var subtitle: String?
     var titleView: UIView?
     var showsBar = true
@@ -34,7 +36,12 @@ struct UIKitPageChrome {
         if let titleView, item.titleView !== titleView || titleView is UIKitLayoutView || titleView.bounds.isEmpty {
             titleView.bounds.size = titleView.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: 44))
         }
-        if item.titleView !== titleView { item.titleView = titleView }
+        // A page showing no title stands nothing in its place: the item keeps the title for the way back.
+        if titleView == nil, !showsTitle {
+            if !(item.titleView is NoTitle) { item.titleView = NoTitle() }
+        } else if item.titleView !== titleView {
+            item.titleView = titleView
+        }
         item.hidesBackButton = !offersBack
         if item.backButtonTitle != backButtonTitle { item.backButtonTitle = backButtonTitle }
         // Each group its own background; the leading ones beside the way back.
@@ -85,4 +92,6 @@ struct UIKitPageChrome {
         UIBarButtonItemGroup(barButtonItems: items, representativeItem: nil)
     }
 }
+/// What a bar shows in place of the title of a page showing none.
+private final class NoTitle: UIView {}
 #endif

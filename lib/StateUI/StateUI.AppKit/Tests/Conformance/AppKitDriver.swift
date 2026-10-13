@@ -211,6 +211,10 @@ final class AppKitDriver: HostDriver {
         if property == .icon, let button = (element.native as? AppKitElement)?.view as? AppKitButtonView {
             return pictureName(button.image)
         }
+        // Whether a page shows its title: the window draws its name, which it keeps for the system either way.
+        if property == .showsTitle, element.type == .page {
+            return (try controller(of: element).window?.titleVisibility == .visible).propValue
+        }
         // Whether a page offers the way back: the window's toolbar holds its back item while the page shows.
         if property == .showsBackButton, element.type == .page {
             return (try controller(of: element).toolbarForTesting.itemForTesting(AppKitWindowToolbar.back) != nil).propValue

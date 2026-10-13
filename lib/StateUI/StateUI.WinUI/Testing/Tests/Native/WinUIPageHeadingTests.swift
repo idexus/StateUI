@@ -64,6 +64,22 @@ final class WinUIPageHeadingTests: XCTestCase {
         }
     }
 
+    /// A page saying it shows no title is headed by nothing, though the chrome names the application.
+    func testAPageShowingNoTitleIsHeadedByNothing() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    Text("Home words").title("Home").showsTitle(false)
+                } destination: { _ in
+                    Text("Sample words").title("Button menu")
+                }
+                .barTitle("StateUI")
+            }
+            host.settle { host.views(WinUITextView.self).contains { $0.text == "Home words" } }
+            XCTAssertEqual(Self.headings(host), [])
+        }
+    }
+
     /// Where the chrome names the page, nothing heads it.
     func testAPageTheChromeNamesIsHeadedByNothing() throws {
         try onUIThread {

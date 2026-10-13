@@ -61,6 +61,7 @@ enum WebRealization {
         .complete("Page", "navigatingFrom"),
         .complete("Page", "showsBackButton"),
         .complete("Page", "showsNavigationBar"),
+        .complete("Page", "showsTitle"),
         .complete("RadioButton", "groupName"),
         .complete("SplitView", "showsSidebar"),
         .complete("SplitView", "showsSidebarChanged"),

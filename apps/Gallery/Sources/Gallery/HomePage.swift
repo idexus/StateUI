@@ -372,7 +372,9 @@ struct HomePage: View {
         .opacity($shown)
         // No home button: this is it. The inspector stays, as it does on
         // every page - what each render cost is a question about any of them.
+        // The card names the page, which shows no title of its own.
         .galleryPage("Home")
+        .showsTitle(false)
     }
 
     /// Where the page is in coming in.

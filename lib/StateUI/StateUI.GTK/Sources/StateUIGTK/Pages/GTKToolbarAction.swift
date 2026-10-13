@@ -50,6 +50,9 @@ struct GTKToolbarAction {
 struct GTKPageChrome {
     var title = ""
 
+    /// Whether the header bar shows the title; the window keeps it for the system all the same.
+    var showsTitle = true
+
     /// The line under the title; nil for none.
     var subtitle: String?
     var titleView: GTKView?

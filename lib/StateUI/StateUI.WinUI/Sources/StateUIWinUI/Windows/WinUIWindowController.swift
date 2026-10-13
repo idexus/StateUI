@@ -108,6 +108,7 @@ final class WinUIWindowController {
         var chrome = WinUIWindowChrome()
         chrome.title = composed.title ?? ""
         chrome.titleArea = composed.titleArea
+        chrome.showsTitle = composed.showsTitle
         chrome.back = composed.back.map { back in
             WinUIToolbarAction(title: back.title, isEnabled: true, perform: { [weak element, weak stack = back.stack] in
                 if let element, let stack { runtime.goBack(.pop(stack), in: element) }
@@ -137,7 +138,8 @@ final class WinUIWindowController {
         chrome.escape = { [weak element] in
             element.map { KeyboardShortcuts.press(KeyboardShortcut(.escape, modifiers: []), under: $0, in: runtime) } ?? false
         }
-        head(composed.titleArea == nil ? nil : presentation.arrangement?.titledPage)
+        let headed = composed.titleArea != nil && composed.showsTitle
+        head(headed ? presentation.arrangement?.titledPage : nil)
         if !presentation.sheets.isEmpty {
             chrome.sheet = (
                 back: { [weak self] in self?.goBack(in: runtime) },

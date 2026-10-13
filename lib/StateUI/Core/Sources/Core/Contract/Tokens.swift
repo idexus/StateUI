@@ -195,6 +195,7 @@ extension NodeType {
     static let backButtonTitle = PageContract.backButtonTitle.token
     static let showsBackButton = PageContract.showsBackButton.token
     static let showsNavigationBar = PageContract.showsNavigationBar.token
+    static let showsTitle = PageContract.showsTitle.token
     static let opacity = VisualElementContract.opacity.token
     static let order = ToolbarItemGroupContract.order.token
     static let placement = ToolbarItemContract.placement.token

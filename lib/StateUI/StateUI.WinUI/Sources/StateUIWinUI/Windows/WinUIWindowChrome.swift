@@ -12,6 +12,8 @@
 @MainActor
 struct WinUIWindowChrome {
     var title = ""
+    /// Whether the title bar shows the title; the window keeps it for the system all the same.
+    var showsTitle = true
     var titleArea: WindowChrome.TitleArea?
     var back: WinUIToolbarAction?
     var sidebarToggle: (() -> Void)?

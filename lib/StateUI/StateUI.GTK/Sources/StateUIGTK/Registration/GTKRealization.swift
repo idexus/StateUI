@@ -98,6 +98,7 @@ enum GTKRealization {
         .complete("Page", "disappearing"),
         .complete("Page", "showsBackButton"),
         .complete("Page", "showsNavigationBar"),
+        .complete("Page", "showsTitle"),
         .complete("Page", "navigatedFrom"),
         .complete("Page", "navigatedTo"),
         .complete("Page", "navigatingFrom"),

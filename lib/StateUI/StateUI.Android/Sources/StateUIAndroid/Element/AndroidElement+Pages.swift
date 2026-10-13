@@ -144,7 +144,9 @@ extension AndroidElement {
         let colors = page?.barColors ?? element.barColors
 
         var content = AndroidBarView.Content()
-        content.title = element.titledPage?.value(.title)?.string ?? ""
+        // A page showing no title leaves the bar's place for it empty; the window keeps its name.
+        let titled = element.titledPage
+        content.title = titled?.value(.showsTitle)?.bool == false ? nil : titled?.value(.title)?.string ?? ""
         content.subtitle = (page ?? element).titleArea?.subtitle
         content.background = colors.background
         content.foreground = BandWords.color(on: colors.background, written: colors.foreground)

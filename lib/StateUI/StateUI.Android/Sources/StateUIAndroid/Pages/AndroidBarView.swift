@@ -20,7 +20,8 @@ final class AndroidBarView: AndroidView {
     /// What the bar says and shows: its title and the line under it, its colours, its actions, and the page's menus
     /// behind its overflow.
     struct Content: Equatable {
-        var title = ""
+        /// The title; nil where the page shows none, which leaves the bar's place for it empty.
+        var title: String? = ""
         var subtitle: String?
         var background: HostValue?
         var foreground: HostValue?
@@ -73,7 +74,7 @@ final class AndroidBarView: AndroidView {
 
         if previous?.title != content.title || previous?.subtitle != content.subtitle
             || previous?.background != content.background || previous?.foreground != content.foreground {
-            let title = Java.string(content.title)
+            let title = content.title.flatMap(Java.string)
             let subtitle = content.subtitle.flatMap(Java.string)
             Java.call(
                 reference, JavaAPI.showBar, .object(title), .object(subtitle),

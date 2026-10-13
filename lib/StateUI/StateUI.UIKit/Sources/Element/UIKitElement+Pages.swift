@@ -40,11 +40,13 @@ extension UIKitElement {
         if type == .tabView {
             var chrome = element.selectedTab?.visiblePage?.uiKit.chrome ?? UIKitPageChrome()
             chrome.title = element.titledPage?.value(.title)?.string ?? ""
+            chrome.showsTitle = element.titledPage?.value(.showsTitle)?.bool != false
             return chrome
         }
 
         var chrome = UIKitPageChrome()
         chrome.title = element.barTitle(applicationName: host?.runtime.core.applicationName ?? "")
+        chrome.showsTitle = value(.showsTitle)?.bool != false
         chrome.subtitle = element.titleArea?.subtitle
         chrome.titleView = element.chromeTitleView?.uiKit.view
         chrome.showsBar = value(.showsNavigationBar)?.bool != false

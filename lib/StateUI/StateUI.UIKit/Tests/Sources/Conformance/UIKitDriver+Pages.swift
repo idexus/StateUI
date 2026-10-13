@@ -82,6 +82,8 @@ extension UIKitDriver {
         case .icon where onTab: return controller.tabBarItem.image?.accessibilityIdentifier.map { .string($0) }
         case .title: return (controller.navigationItem.title ?? "").propValue
         case .showsBackButton: return (!controller.navigationItem.hidesBackButton).propValue
+        // The bar shows the title where it holds no view in its place.
+        case .showsTitle: return (controller.navigationItem.titleView == nil).propValue
         case .backButtonTitle: return controller.navigationItem.backButtonTitle?.propValue
         case .showsNavigationBar:
             guard let navigation = controller.navigationController else { return nil }

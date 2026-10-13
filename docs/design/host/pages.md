@@ -213,7 +213,8 @@ title's place (`chromeTitleView`); the title area and the bars' colours the
 path declares ([the bar a path declares](#the-bar-a-path-declares)); the menus
 its path declares
 (`chromeMenus`); and the sidebar's toggle where the window shows a split view. A host lays these out
-in its own chrome. A host whose pages each stand under a header bar of their
+in its own chrome. A page saying it shows no title (`showsTitle`) still names the window to the system and
+the way back from the page above it; the chrome shows none for it. A host whose pages each stand under a header bar of their
 own takes the same parts page by page: a page's actions (`chromeActions`),
 its title view (`chromeTitleView`), and its bar's colours and the line under its title.
 

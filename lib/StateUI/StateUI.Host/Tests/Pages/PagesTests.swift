@@ -244,6 +244,21 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(page.chromeActions.primary.map(\.showsActionWords), [true, false, true, true])
     }
 
+    /// A page saying it shows no title still names the window; the chrome shows no title for it.
+    func testAPageShowingNoTitleStillNamesTheWindow() throws {
+        let runtime = runtime(node("window", .window, children: [
+            node("stack", .navigationStack, children: [
+                node("home", .page, [.title: .string("Home"), .showsTitle: .bool(false)]),
+            ]),
+        ])) { _ in }
+        let root = try XCTUnwrap(runtime.tree.root)
+
+        let chrome = WindowChrome(window: root, arrangement: root.first(id: .manual("stack")))
+        XCTAssertEqual(chrome.title, "Home", "the window's name")
+        XCTAssertFalse(chrome.showsTitle)
+        XCTAssertTrue(WindowChrome.pageValues.contains(.showsTitle), "the chrome follows it")
+    }
+
     /// The chrome takes the visible path's actions, the overflow apart, the way back's words from the page beneath,
     /// the page's title view, and the stack's colour.
     func testTheChromeIsComposedFromWhatTheWindowShows() throws {
