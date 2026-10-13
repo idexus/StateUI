@@ -33,13 +33,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (83)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>44 ✅ · 2 ☑️ · 35 ✓ · 1 –</td><td><code>NSTextField</code> label; <code>NSAttributedString</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>45 ✅ · 1 ☑️ · 35 ✓ · 1 –</td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>68 ✅ · 3 ☑️ · 10 ✓</td><td><code>TextView</code>; <code>SpannableStringBuilder</code> spans</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>70 ✅ · 1 ☑️ · 12 ✓</td><td><code>TextBlock</code>; <code>Run</code> inlines</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>58 ✅ · 1 ☑️ · 23 ✓ · 1 –</td><td><code>GtkLabel</code>; <code>PangoAttrList</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>62 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;span&gt;</code>; <code>&lt;span&gt;</code> runs</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (84)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>45 ✅ · 2 ☑️ · 35 ✓ · 1 –</td><td><code>NSTextField</code> label; <code>NSAttributedString</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>46 ✅ · 1 ☑️ · 35 ✓ · 1 –</td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>69 ✅ · 3 ☑️ · 10 ✓</td><td><code>TextView</code>; <code>SpannableStringBuilder</code> spans</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>71 ✅ · 1 ☑️ · 12 ✓</td><td><code>TextBlock</code>; <code>Run</code> inlines</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>59 ✅ · 1 ☑️ · 23 ✓ · 1 –</td><td><code>GtkLabel</code>; <code>PangoAttrList</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>63 ✅ · 1 ☑️ · 20 ✓</td><td><code>&lt;span&gt;</code>; <code>&lt;span&gt;</code> runs</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextContract.swift`.
@@ -52,6 +52,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextContract.swift
 <tbody><tr></tr><tr><td><code>maximumLines</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>verticalTextAlignment</code></td><td>property</td><td><code>TextAlignment</code></td><td>native</td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: cannot read verticalTextAlignment of Text - AppKit's driver has no path for it yet<br>UIKit: cannot read verticalTextAlignment of Text - UIKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>isSelectable</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [AutomationElement](tiers/AutomationElement.md)

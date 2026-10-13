@@ -78,6 +78,7 @@ extension AndroidDriver {
         // Read only: the field offers a keyboard nothing to edit.
         case (.isReadOnly, let field as AndroidTextFieldView):
             return (!Java.callBool(field.reference, Self.onCheckIsTextEditor)).propValue
+        case (.isSelectable, let text as AndroidTextView): return text.isSelectable.propValue
         case (.fontSize, let text as AndroidTextualView):
             return Double(Java.callStaticFloat(Self.testText, Self.points, .object(text.reference))).rounded().propValue
         case (.isFontAutoScalingEnabled, let text as AndroidTextualView):

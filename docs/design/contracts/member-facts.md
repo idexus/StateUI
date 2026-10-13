@@ -63,6 +63,16 @@ again instead:
 Every host agrees with the members that say so, or the difference is found
 only on a screen.
 
+## Remakes
+
+A value a host makes its control by says `remakes: true`: another value is
+another element, made anew like another kind of view
+([another kind of view](../core/identity-and-diffing.md#another-kind-of-view)),
+so a toolkit that shows the value in another control makes that control,
+and one that sets it in place sees it set from the start. Words the user can
+select (`TextContract.isSelectable`) remake their text: a label of one
+toolkit selects nothing, and its selectable words stand in a text view.
+
 ## Moves
 
 `moves` names the group of values a property is in, for `.motion(_:_:)`,

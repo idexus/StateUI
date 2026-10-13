@@ -111,3 +111,14 @@ them with the user's text size (`UIFontMetrics(forTextStyle:)`), so a title
 grows as UIKit grows its titles; words with no style grow as the body does.
 A day's and a time's picker draw their words in UIKit's own font and take no
 style.
+
+## Selectable words
+
+A `UILabel` selects nothing, so a Text whose words the user can select stands
+in UIKit's text view instead (`UIKitSelectableTextView`): read only, not
+scrolling, its container's padding gone, showing the words, runs, alignment
+and breaks a label shows (`UIKitLabelWords`, through `UIKitLabel`), and
+measured as the label is, wherever down its room the words stand. The
+registration makes one or the other by the value the text is made with,
+and another value makes the text anew. A disabled one selects nothing.
+

@@ -90,6 +90,7 @@ ScenesSample.swift 841c7adf2c09246f
 ScrollViewSample.swift 50de577d52104fa7
 SearchFieldSample.swift 8353b3cb851595d0
 SearchSample.swift 38388654add4726f
+SelectableTextSample.swift f7995835a44664dc
 SemanticsSample.swift a453975fc297e008
 ShapesSample.swift 6107589125bcb192
 ShortcutSample.swift daf4ef581131770c

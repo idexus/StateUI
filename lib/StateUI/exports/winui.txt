@@ -242,6 +242,7 @@ Text
   fontWeight
   horizontalTextAlignment
   isFontAutoScalingEnabled
+  isSelectable
   lineBreak
   lineHeight
   maximumLines

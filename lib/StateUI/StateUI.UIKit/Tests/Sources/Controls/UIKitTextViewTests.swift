@@ -10,6 +10,28 @@ import XCTest
 /// A label's own box on UIKit.
 @MainActor
 final class UIKitTextViewTests: XCTestCase {
+    /// Words the user selects stand as a label's: the same height for the same words and padding, measured the
+    /// same wherever they stand, and at the room's foot where the tree aligns them there - and they can be selected.
+    @MainActor
+    func testSelectableWordsStandAsALabelsDo() {
+        let label = UIKitTextView()
+        let selectable = UIKitSelectableTextView()
+        for view in [label, selectable] as [any UIKitLabel] {
+            view.setText("Some words, long enough to wrap onto a second line in a narrow room")
+            view.setPadding(Insets(6))
+        }
+        let room = CGSize(width: 200, height: CGFloat.greatestFiniteMagnitude)
+        let height = label.sizeThatFits(room).height
+        XCTAssertEqual(selectable.sizeThatFits(room).height, height, accuracy: 2, "the label's height")
+        XCTAssertTrue(selectable.isSelectable && !selectable.isEditable, "selected, never edited")
+
+        selectable.setAlignment(horizontal: .start, vertical: .end)
+        selectable.frame = CGRect(x: 0, y: 0, width: 200, height: height + 100)
+        selectable.layoutIfNeeded()
+        XCTAssertEqual(selectable.textContainerInset.top, 106, accuracy: 2, "at the room's foot, within the padding")
+        XCTAssertEqual(selectable.sizeThatFits(room).height, height, accuracy: 2, "measured as it was")
+    }
+
     /// A label's background fills its whole box, the room around its words included - a colour, and a brush.
     @MainActor
     func testATextsBackgroundFillsItsBox() {

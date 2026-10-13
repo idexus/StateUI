@@ -397,6 +397,10 @@ final class UIKitDriver: HostDriver {
         case (.selectedItems, let items as UIKitItemsView): return .strings(items.selectedForTesting)
         case (.selectionMode, let items as UIKitItemsView): return items.modeForTesting.propValue
         case (.text, let label as UIKitTextView): return (label.text ?? "").propValue
+        case (.text, let label as UIKitSelectableTextView): return (label.text ?? "").propValue
+        // A label selects nothing; selectable words stand in a text view.
+        case (.isSelectable, is UIKitTextView): return false.propValue
+        case (.isSelectable, let label as UIKitSelectableTextView): return label.isSelectable.propValue
         case (.text, let field as any UIKitTextInputView): return field.words.propValue
         case (.cursorPosition, let field as any UIKitTextInputView): return field.selection.start.propValue
         case (.selectionLength, let field as any UIKitTextInputView): return field.selection.length.propValue

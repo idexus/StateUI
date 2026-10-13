@@ -28,6 +28,9 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
     /// Which of a view's values it is, for `.motion(_:_:)`, where the value cannot say.
     let moves: MotionValues
 
+    /// Whether another value makes the element anew: a host makes its control by the value.
+    let remakes: Bool
+
     /// A property declared in `Owner`.
     ///
     /// - Parameters:
@@ -37,18 +40,22 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
     ///   - cleared: whether a value no longer described is put back to the
     ///     control's default.
     ///   - moves: which of a view's values it is, where the value cannot say.
+    ///   - remakes: whether another value makes the element anew, where a host
+    ///     makes another control for it.
     public init(
         _ name: String,
         layer: ElementLayer = .provider,
         travels: Bool = true,
         cleared: Bool = true,
-        moves: MotionValues = []
+        moves: MotionValues = [],
+        remakes: Bool = false
     ) {
         self.name = name
         self.layer = layer
         self.travels = travels
         self.cleared = cleared
         self.moves = moves
+        self.remakes = remakes
     }
 
     /// The key the property crosses the boundary under.

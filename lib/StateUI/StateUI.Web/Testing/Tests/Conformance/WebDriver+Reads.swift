@@ -202,6 +202,7 @@ extension WebDriver {
         let style = "getComputedStyle(e)"
         switch property {
         case .text: return .some(try WebBrowser.evaluate("e.textContent", on: e)?.propValue)
+        case .isSelectable: return .some(try WebBrowser.truth("\(style).userSelect !== 'none'", on: e).propValue)
         case .textColor: return .some(try color("\(style).color", on: e)?.propValue)
         case .fontSize: return try WebBrowser.number("parseFloat(\(style).fontSize)", on: e)?.propValue
         case .isFontAutoScalingEnabled:

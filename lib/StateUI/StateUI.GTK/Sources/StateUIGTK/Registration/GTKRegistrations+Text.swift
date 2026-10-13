@@ -21,6 +21,7 @@ extension GTKRegistrations {
             label.property(TextContract.verticalTextAlignment) { view, alignment in
                 view.setAlignment(vertical: alignment ?? .start)
             }
+            label.property(TextContract.isSelectable) { view, selectable in view.setSelectable(selectable ?? false) }
             label.property(TrackingElementContract.tracking) { view, spacing in
                 view.setLook { $0.letterSpacing = spacing ?? 0 }
             }

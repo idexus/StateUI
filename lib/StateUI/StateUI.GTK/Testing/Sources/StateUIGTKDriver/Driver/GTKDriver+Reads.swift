@@ -217,6 +217,7 @@ extension GTKDriver {
             return .some(gtk_label_get_wrap(label) != 0 && lines > 0 ? Int(lines).propValue : nil)
         case .horizontalTextAlignment: return Self.alignment(gtk_label_get_xalign(label)).propValue
         case .verticalTextAlignment: return Self.alignment(gtk_label_get_yalign(label)).propValue
+        case .isSelectable: return (gtk_label_get_selectable(label) != 0).propValue
         case .tracking: return run.holds(property) ?? 0.0.propValue
         case .lineHeight, .textDecorations, .fontSize, .fontWeight, .fontAttributes, .fontFamily, .textColor:
             if let held = run.holds(property) { return held }

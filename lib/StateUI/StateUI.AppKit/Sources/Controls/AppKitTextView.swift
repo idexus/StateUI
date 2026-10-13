@@ -28,6 +28,12 @@ final class AppKitTextView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
 
     var attributedStringValue: NSAttributedString { textField.attributedStringValue }
     var stringValue: String { textField.stringValue }
+
+    /// Whether the user can select the words and copy them.
+    var isSelectable: Bool {
+        get { textField.isSelectable }
+        set { textField.isSelectable = newValue }
+    }
     var textFrame: NSRect { textField.frame }
     var nativeTextSizeForTesting: NSSize { textField.cell?.cellSize ?? .zero }
     private(set) var nativeMeasurementCountForTesting = 0

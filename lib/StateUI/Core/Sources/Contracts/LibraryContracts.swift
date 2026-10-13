@@ -77,6 +77,12 @@
     }()
 }
 
+extension LibraryContracts {
+    /// The properties another value of which makes the element anew, in their names' order.
+    /// Design: docs/design/core/identity-and-diffing.md#another-kind-of-view
+    static let remaking: [Prop] = facts.filter { $0.value.remakes }.keys.sorted()
+}
+
 extension Prop {
     /// What the members of this name say: whether a change animates, whether a
     /// lost value is cleared, which of a view's values it is. A name no library

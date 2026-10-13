@@ -30,6 +30,7 @@ extension AndroidRegistrations {
             label.property(DecorableTextElementContract.textDecorations) { view, decorations in
                 view.setDecorations(decorations)
             }
+            label.property(TextContract.isSelectable) { view, selectable in view.isSelectable = selectable ?? false }
         }
     }
 }

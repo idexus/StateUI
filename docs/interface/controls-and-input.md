@@ -218,6 +218,22 @@ VStack {
 A style is a member like any other: a run takes its own, a field and a
 button take theirs, and `.textStyle($style)` hands one over from a state.
 
+### Words the user selects
+
+A label's words are read, not selected - unless they are something the user
+will copy: an address, a code, an error to report. `isSelectable(true)` lets
+them select and copy the words with the platform's own selection:
+
+```swift
+VStack {
+    Text("221B Baker Street, London NW1 6XE").isSelectable(true)
+    Text("Order 7F3K-92QX-L0MA").isSelectable(true)
+}
+```
+
+A platform may show selectable words in another control than a label, so
+another value makes the text anew rather than changing it in place.
+
 ## Text entry, caret, and selection
 
 `TextField` is single-line, `TextEditor` is multiline, and `SearchField`

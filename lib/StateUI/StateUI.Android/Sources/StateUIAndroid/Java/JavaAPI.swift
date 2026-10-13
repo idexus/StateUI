@@ -89,6 +89,8 @@ enum JavaAPI {
     static let setTextSize = Java.method(textView, "setTextSize", "(IF)V")
     static let getTextSize = Java.method(textView, "getTextSize", "()F")
     static let setTextColor = Java.method(textView, "setTextColor", "(I)V")
+    static let setTextIsSelectable = Java.method(textView, "setTextIsSelectable", "(Z)V")
+    static let isTextSelectable = Java.method(textView, "isTextSelectable", "()Z")
     static let getTextColors = Java.method(textView, "getTextColors", "()Landroid/content/res/ColorStateList;")
     static let setTextColors = Java.method(
         textView, "setTextColor", "(Landroid/content/res/ColorStateList;)V")

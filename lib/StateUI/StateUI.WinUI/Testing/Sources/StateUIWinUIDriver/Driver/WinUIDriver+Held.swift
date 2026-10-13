@@ -254,6 +254,7 @@ extension WinUIDriver {
             }
             let across = Int(try read(view, "textAlignment")) ?? 1
             return (across == 0 ? TextAlignment.center : across == 2 ? .end : .start).propValue
+        case "isSelectable" where view is WinUITextView: return (try read(view, "selectable") == "1").propValue
         case "verticalTextAlignment" where view is WinUITextView:
             // WinUI's VerticalAlignment: top 0, centre 1, bottom 2, stretched 3 - the words at its top.
             let down = Int(try read(view, "verticalAlignment")) ?? 3

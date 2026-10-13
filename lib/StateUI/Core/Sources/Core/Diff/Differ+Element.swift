@@ -346,12 +346,13 @@ extension Differ {
         // Design: docs/design/core/identity-and-diffing.md#properties-no-longer-described
         let lost = (rendered?.props.keys.filter { node.props[$0] == nil } ?? []).sorted()
 
-        // Except those with no host default, which replace the element - as a view of another kind does, and a
-        // button another kind of control makes (Node+ButtonMenu.swift).
+        // Except those with no host default, which replace the element - as a view of another kind does, a button
+        // another kind of control makes (Node+ButtonMenu.swift), and another value a host makes its control by.
         // Design: docs/design/core/identity-and-diffing.md#another-kind-of-view
         let replace = rendered != nil
             && (rendered!.type != node.type || Self.kinds(rendered!.views) != Self.kinds(views)
-                || lost.contains { !$0.facts.cleared } || rendered!.buttonMenuKind != node.buttonMenuKind)
+                || lost.contains { !$0.facts.cleared } || rendered!.buttonMenuKind != node.buttonMenuKind
+                || LibraryContracts.remaking.contains { rendered!.props[$0] != node.props[$0] })
 
         // Nothing to build on: the element is new, or cannot become what is described.
         let previous = replace ? nil : rendered

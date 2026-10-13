@@ -20,6 +20,7 @@ extension WebRegistrations {
             text.property(TextContract.verticalTextAlignment) { view, alignment in
                 view.setAlignment(vertical: alignment ?? .start)
             }
+            text.property(TextContract.isSelectable) { view, selectable in view.isSelectable = selectable ?? false }
             text.applies([
                 TrackingElementContract.tracking, LineHeightElementContract.lineHeight,
                 DecorableTextElementContract.textDecorations,

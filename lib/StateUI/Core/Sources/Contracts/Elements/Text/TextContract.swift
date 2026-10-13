@@ -30,6 +30,11 @@ public enum TextContract: ElementContract {
     public static let verticalTextAlignment = ElementProperty<Self, TextAlignment>(
         "verticalTextAlignment", layer: .native)
 
+    /// Whether the user can select the words and copy them. Another value
+    /// makes the text anew: a toolkit may show selectable words in another
+    /// control.
+    public static let isSelectable = ElementProperty<Self, Bool>("isSelectable", layer: .native, remakes: true)
+
     /// The element's own members.
-    public static let members: [any ContractMember] = [lineBreak, maximumLines, verticalTextAlignment]
+    public static let members: [any ContractMember] = [lineBreak, maximumLines, verticalTextAlignment, isSelectable]
 }

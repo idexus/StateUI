@@ -69,6 +69,7 @@ enum AppKitRealization {
         .complete("Text", "fontSize"),
         .complete("Text", "horizontalTextAlignment"),
         .complete("Text", "ignoresInput"),
+        .complete("Text", "isSelectable"),
         .complete("Text", "lineBreak"),
         .complete("Text", "maximumLines"),
         .complete("Text", "padding"),

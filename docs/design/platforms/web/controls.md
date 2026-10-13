@@ -234,3 +234,10 @@ at the page's 15 in semibold, `.body` at the page's 15 and `.caption` at 12.
 The size and weight the tree gives stand over the style's
 (`TextLook.standing`); a size stands in rems where the words scale, so the
 browser's text size grows it, and a weight is CSS's `font-weight` number.
+
+## Selectable words
+
+A browser lets the user select any words, a platform's label none: a Text
+stands `user-select: none` unless the tree makes its words selectable, and
+`text` then.
+

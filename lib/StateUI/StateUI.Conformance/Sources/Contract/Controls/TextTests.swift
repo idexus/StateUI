@@ -13,6 +13,30 @@
         [
             Aspects.standsAlone("Text"),
             Aspects.holds(TextContract.verticalTextAlignment, on: "Text", .start, then: .end, with: Words.on("Text")),
+            ConformanceCase("wordsTheTreeMakesSelectableCanBeSelected", proves: [
+                Covered(TextContract.isSelectable, on: "Text"),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let selectable = State(wrappedValue: false)
+                s.start {
+                    VStack {
+                        Text("Some words").isSelectable(selectable.wrappedValue).id("label")
+                        Button("Change").onClicked { selectable.wrappedValue.toggle() }.id("change")
+                    }
+                }
+                s.expect(try s.held(TextContract.isSelectable, on: s.element("label")), false, "words not to select")
+                s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "Some words")
+
+                // Another value makes the text anew: it is looked for again.
+                try s.perform(.activate, on: s.element("change"))
+                try s.settle { try s.held(TextContract.isSelectable, on: s.element("label")) == true }
+                s.expect(try s.held(TextContract.isSelectable, on: s.element("label")), true, "words to select")
+                s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "Some words",
+                         "the same words, selectable")
+
+                try s.perform(.activate, on: s.element("change"))
+                try s.settle { try s.held(TextContract.isSelectable, on: s.element("label")) == false }
+                s.expect(try s.held(TextContract.isSelectable, on: s.element("label")), false, "not to select again")
+            },
             ConformanceCase("aTextShowsItsWords", proves: [
                 Covered(TextualElementContract.text, on: "Text"),
             ]) { s in

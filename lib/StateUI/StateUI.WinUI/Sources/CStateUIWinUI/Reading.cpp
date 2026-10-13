@@ -139,6 +139,7 @@ namespace {
 
     /// What a text block alone holds; its runs' words, each ended by the unit separator but the last.
     std::optional<std::string> block(controls::TextBlock const &text, std::string_view what) {
+        if (what == "selectable") return flag(text.IsTextSelectionEnabled());
         if (what == "runs") {
             std::string words;
             bool first = true;

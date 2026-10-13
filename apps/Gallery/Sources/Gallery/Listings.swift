@@ -7858,6 +7858,32 @@ enum Listings {
                 : items.filter { $0.lowercased().hasPrefix(query.lowercased()) }
         }
         """#,
+        "SelectableTextSample": #"""
+        // Sources/Samples/Text/SelectableTextSample.swift
+        /// Whether the address and the code can be selected, as the switch says.
+        @State private var selectable = true
+
+        var body: some View {
+            VStack {
+                Text("221B Baker Street, London NW1 6XE")
+                    .textStyle(.headline)
+                    .isSelectable(selectable)
+
+                Text("Order 7F3K-92QX-L0MA")
+                    .isSelectable(selectable)
+
+                Text("A caption the user only reads.")
+                    .textStyle(.caption)
+
+                HStack {
+                    Switch($selectable)
+
+                    Text("Selectable")
+                        .verticalAlignment(.center)
+                }
+            }
+        }
+        """#,
         "SemanticsSample": #"""
         // Sources/Samples/BasicInput/SemanticsSample.swift
         @State private var described = true

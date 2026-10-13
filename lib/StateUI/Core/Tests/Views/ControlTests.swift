@@ -101,6 +101,7 @@ final class ControlTests: XCTestCase {
                     .lineHeight(1.5)
                     .maximumLines(2)
                     .verticalTextAlignment(.end)
+                    .isSelectable(true)
                     .textDecorations([.underline, .strikethrough])
                     // The runs go here rather than in a case of their own: a
                     // TextSpan is not a view, so it has no case, and Text.swift
@@ -700,10 +701,12 @@ final class ControlTests: XCTestCase {
     /// gives: a value it cannot be handed whole (a brush, a picture, a date, a
     /// shape, a transform, a law, a run of numbers), a NAME rather than a
     /// value (a style key, a font family, a radio group), a rectangle - four
-    /// lanes where a plain value is one - and the tiers no view wears: a page,
-    /// a bar, a menu item, a map's own flags.
+    /// lanes where a plain value is one - the tiers no view wears: a page,
+    /// a bar, a menu item, a map's own flags - and a value that makes its
+    /// element anew, which a state the host carries past the tree cannot.
     func testEveryValueModifierHasABindingTwin() throws {
-        let allowed: Set<String> = [
+        let remaking = Set(LibraryContracts.remaking.map(\.name))
+        let allowed: Set<String> = remaking.union([
             // Named rather than valued.
             "style", "fontFamily", "groupName", "source", "userAgent", "data", "content", "format",
             // A value the host cannot be handed whole.
@@ -716,7 +719,7 @@ final class ControlTests: XCTestCase {
             "barBackgroundColor", "barForegroundColor", "barIcon", "barSubtitle", "barTitle", "isScrollEnabled",
             "isZoomEnabled", "showsTraffic", "showsUserLocation", "isDestructive", "title",
             "mapType", "avoidsSafeArea",
-        ]
+        ])
         var values: Set<String> = []
         var twins: Set<String> = []
 

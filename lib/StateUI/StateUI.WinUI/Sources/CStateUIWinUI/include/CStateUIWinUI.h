@@ -433,6 +433,9 @@ void stateui_winui_text_set_background(StateUIObjectRef label, StateUIBrush back
 /// Where a label's words stand across its height: at its top (0), in its middle (1), at its bottom (2).
 void stateui_winui_text_set_vertical(StateUIObjectRef label, int32_t vertical);
 
+/// Whether the user can select a label's words and copy them.
+void stateui_winui_text_set_selectable(StateUIObjectRef label, bool selectable);
+
 void stateui_winui_text_set_text(StateUIObjectRef text, char const *utf8);
 
 /// One run of a label's words, and how it differs from the label's: its colour and its background where it has

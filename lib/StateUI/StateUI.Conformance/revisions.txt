@@ -55,7 +55,7 @@ Stepper 2
 KeyboardElement 2
 LineHeightElement 2
 TextAlignmentElement 2
-Text 2
+Text 3
 TextStyleElement 2
 TintElement 2
 ContextMenu 2

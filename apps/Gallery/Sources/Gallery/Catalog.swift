@@ -144,6 +144,7 @@ final class Catalog {
                 samples: [
                     Sample(TextSample()),
                     Sample(TextStyleSample()),
+                    Sample(SelectableTextSample()),
                     Sample(TextSpanSample()),
                     Sample(TextFieldSample()),
                     Sample(NextFieldSample()),

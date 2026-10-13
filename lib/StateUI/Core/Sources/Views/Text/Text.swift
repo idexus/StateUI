@@ -22,6 +22,14 @@ extension TextProperties {
     public func verticalTextAlignment(_ value: TextAlignment) -> Modified {
         setValue(TextContract.verticalTextAlignment, value)
     }
+
+    /// Whether the user can select the words and copy them - an address, a
+    /// code, an error to report. Off unless said.
+    ///
+    ///     Text(address).isSelectable(true)
+    public func isSelectable(_ value: Bool) -> Modified {
+        setValue(TextContract.isSelectable, value)
+    }
 }
 
 /// A read-only piece of text.

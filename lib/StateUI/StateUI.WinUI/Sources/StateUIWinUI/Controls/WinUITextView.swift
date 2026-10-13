@@ -29,6 +29,11 @@ final class WinUITextView: WinUITextualView {
     }
 
     /// Where the words stand across the label's height.
+    /// Whether the user can select the words and copy them.
+    func setSelectable(_ selectable: Bool) {
+        stateui_winui_text_set_selectable(handle, selectable)
+    }
+
     func setVerticalAlignment(_ alignment: TextAlignment) {
         stateui_winui_text_set_vertical(handle, alignment.rawValue)
     }

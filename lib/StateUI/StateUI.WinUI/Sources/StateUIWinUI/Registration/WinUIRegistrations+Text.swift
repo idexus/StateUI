@@ -21,6 +21,7 @@ extension WinUIRegistrations {
             label.property(TextContract.verticalTextAlignment) { view, alignment in
                 view.setVerticalAlignment(alignment ?? .start)
             }
+            label.property(TextContract.isSelectable) { view, selectable in view.setSelectable(selectable ?? false) }
             label.property(TrackingElementContract.tracking) { view, spacing in
                 view.setLetterSpacing(spacing ?? 0)
             }

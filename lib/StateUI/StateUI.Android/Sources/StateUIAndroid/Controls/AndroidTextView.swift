@@ -93,6 +93,12 @@ final class AndroidTextView: AndroidTextualView {
         Java.call(reference, JavaAPI.setLineSpacing, .float(0), .float(Float(multiple.flatMap { $0 > 0 ? $0 : nil } ?? 1)))
     }
 
+    /// Whether the user can select the words and copy them.
+    var isSelectable: Bool {
+        get { Java.callBool(reference, JavaAPI.isTextSelectable) }
+        set { Java.call(reference, JavaAPI.setTextIsSelectable, .bool(newValue)) }
+    }
+
     /// A line under the words, or through them.
     func setDecorations(_ decorations: TextDecorations?) {
         var flags = Java.callInt(reference, JavaAPI.getPaintFlags) & ~(Self.underline | Self.strikethrough)

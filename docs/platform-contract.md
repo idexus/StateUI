@@ -470,17 +470,17 @@ Every control, and every part an application, its windows and its pages are made
 | [Spacer](controls/Spacer.md) | 66 | 29 ✅ · 2 ☑️ · 35 ✓ | 28 ✅ · 2 ☑️ · 35 ✓ · 1 – | 52 ✅ · 3 ☑️ · 10 ✓ | 51 ✅ · 1 ☑️ · 13 ✓ | 42 ✅ · 1 ☑️ · 22 ✓ · 1 – | 45 ✅ · 1 ☑️ · 20 ✓ |
 | [Stepper](controls/Stepper.md) | 76 | 39 ✅ · 2 ☑️ · 35 ✓ | 33 ✅ · 2 ☑️ · 37 ✓ · 4 – | 57 ✅ · 3 ☑️ · 12 ✓ · 3 – | 62 ✅ · 2 ☑️ · 12 ✓ | 50 ✅ · 1 ☑️ · 24 ✓ · 1 – | 55 ✅ · 1 ☑️ · 20 ✓ |
 | [Switch](controls/Switch.md) | 74 | 36 ✅ · 2 ☑️ · 35 ✓ · 1 – | 31 ✅ · 2 ☑️ · 37 ✓ · 4 – | 54 ✅ · 3 ☑️ · 12 ✓ · 3 – | 61 ✅ · 1 ☑️ · 12 ✓ | 47 ✅ · 1 ☑️ · 24 ✓ · 2 – | 53 ✅ · 1 ☑️ · 20 ✓ |
-| [Text](controls/Text.md) | 83 | 44 ✅ · 2 ☑️ · 35 ✓ · 1 – | 45 ✅ · 1 ☑️ · 35 ✓ · 1 – | 68 ✅ · 3 ☑️ · 10 ✓ | 70 ✅ · 1 ☑️ · 12 ✓ | 58 ✅ · 1 ☑️ · 23 ✓ · 1 – | 62 ✅ · 1 ☑️ · 20 ✓ |
+| [Text](controls/Text.md) | 84 | 45 ✅ · 2 ☑️ · 35 ✓ · 1 – | 46 ✅ · 1 ☑️ · 35 ✓ · 1 – | 69 ✅ · 3 ☑️ · 10 ✓ | 71 ✅ · 1 ☑️ · 12 ✓ | 59 ✅ · 1 ☑️ · 23 ✓ · 1 – | 63 ✅ · 1 ☑️ · 20 ✓ |
 | [TextEditor](controls/TextEditor.md) | 92 | 53 ✅ · 2 ☑️ · 36 ✓ · 1 – | 52 ✅ · 2 ☑️ · 37 ✓ · 1 – | 74 ✅ · 3 ☑️ · 12 ✓ · 1 – | 79 ✅ · 1 ☑️ · 12 ✓ | 64 ✅ · 2 ☑️ · 25 ✓ · 1 – | 71 ✅ · 1 ☑️ · 20 ✓ |
 | [TextField](controls/TextField.md) | 95 | 51 ✅ · 3 ☑️ · 36 ✓ · 2 – | 55 ✅ · 2 ☑️ · 37 ✓ · 1 – | 76 ✅ · 3 ☑️ · 12 ✓ · 2 – | 79 ✅ · 3 ☑️ · 12 ✓ | 66 ✅ · 2 ☑️ · 25 ✓ · 2 – | 73 ✅ · 1 ☑️ · 20 ✓ |
 | [TimePicker](controls/TimePicker.md) | 84 | 41 ✅ · 2 ☑️ · 36 ✓ · 5 – | 33 ✅ · 1 ☑️ · 37 ✓ · 9 – | 63 ✅ · 3 ☑️ · 13 ✓ · 3 – | 66 ✅ · 2 ☑️ · 12 ✓ | 56 ✅ · 1 ☑️ · 25 ✓ · 1 – | 58 ✅ · 1 ☑️ · 20 ✓ · 4 – |
 | [VStack](controls/VStack.md) | 76 | 38 ✅ · 1 ☑️ · 35 ✓ | 36 ✅ · 1 ☑️ · 36 ✓ · 1 – | 59 ✅ · 3 ☑️ · 11 ✓ | 61 ✅ · 1 ☑️ · 12 ✓ · 1 – | 51 ✅ · 1 ☑️ · 22 ✓ · 2 – | 54 ✅ · 1 ☑️ · 20 ✓ |
 | [WebView](controls/WebView.md) | 82 | 44 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 2 ☑️ · 38 ✓ · 1 – | 63 ✅ · 3 ☑️ · 12 ✓ · 3 – | 49 ✅ · 13 ✓ · 19 – | 56 ✅ · 1 ☑️ · 24 ✓ · 1 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [ZStack](controls/ZStack.md) | 75 | 37 ✅ · 1 ☑️ · 35 ✓ | 34 ✅ · 1 ☑️ · 37 ✓ · 1 – | 57 ✅ · 3 ☑️ · 12 ✓ | 60 ✅ · 1 ☑️ · 12 ✓ · 1 – | 49 ✅ · 1 ☑️ · 23 ✓ · 2 – | 53 ✅ · 1 ☑️ · 20 ✓ |
-| ✅ |  | 1303 | 1222 | 1961 | 2036 | 1685 | 1816 |
+| ✅ |  | 1304 | 1223 | 1962 | 2037 | 1686 | 1817 |
 | ✓ |  | 1175 | 1210 | 365 | 397 | 748 | 641 |
 | – |  | 25 | 79 | 38 | 37 | 46 | 18 |
-| **Met** | 2594 | **2503** | **2511** | **2364** | **2470** | **2479** | **2475** |
+| **Met** | 2595 | **2504** | **2512** | **2365** | **2471** | **2480** | **2476** |
 | 🧩 |  | 0 | 0 | 74 | 74 | 74 | 74 |
 
 ### Application structure
@@ -592,7 +592,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ |
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [TabView](controls/TabView.md) | `selectedTab`, `selectedTabChanged` | 2 | 1 ✅ · 1 ✓ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [Text](controls/Text.md) | `lineBreak`, `maximumLines`, `verticalTextAlignment` | 3 | 2 ✅ | 2 ✅ | 3 ✅ | 3 ✅ | 3 ✅ | 3 ✅ |
+| [Text](controls/Text.md) | `lineBreak`, `maximumLines`, `verticalTextAlignment`, `isSelectable` | 4 | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [TextField](controls/TextField.md) | `isPassword`, `submitLabel`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ · 1 ☑️ · 1 – | 4 ✅ | 3 ✅ · 1 – | 1 ✅ · 2 ☑️ | 2 ✅ · 1 ☑️ · 1 – | 3 ✅ |
 | [TextSpan](controls/TextSpan.md) | `background` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
@@ -645,11 +645,11 @@ realizes the element and each of its members.
 `ignoresInput`, `inputPurpose`, `isAccessibilityHidden`, `isAnimating`,
 `isDestructive`, `isEnabled`, `isFontAutoScalingEnabled`, `isMaximizable`,
 `isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isReadOnly`,
-`isScrollEnabled`, `isSpellCheckEnabled`, `isTextPredictionEnabled`,
-`isVisible`, `isZoomEnabled`, `items`, `itemsLayout`, `keyboardShortcut`,
-`keysTaken`, `label`, `layoutDirection`, `letsInputThrough`, `lineBreak`,
-`lineCap`, `lineHeight`, `lineJoin`, `lineWidth`, `location`, `mapType`,
-`margin`, `maximum`, `maximumDate`, `maximumHeight`, `maximumLength`,
+`isScrollEnabled`, `isSelectable`, `isSpellCheckEnabled`,
+`isTextPredictionEnabled`, `isVisible`, `isZoomEnabled`, `items`, `itemsLayout`,
+`keyboardShortcut`, `keysTaken`, `label`, `layoutDirection`, `letsInputThrough`,
+`lineBreak`, `lineCap`, `lineHeight`, `lineJoin`, `lineWidth`, `location`,
+`mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`, `maximumLength`,
 `maximumLines`, `maximumWidth`, `minimum`, `minimumDate`, `minimumHeight`,
 `minimumWidth`, `miterLimit`, `opacity`, `options`, `order`, `orientation`,
 `padding`, `panTouchCount`, `panXChannel`, `panYChannel`, `pivotX`, `pivotY`,

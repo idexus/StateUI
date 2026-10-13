@@ -18,6 +18,15 @@ final class WebTextView: WebDOMView, WebWordsView {
     init() {
         super.init(tag: "span")
         setLines(breaking: .wordWrap, maximum: nil)
+        isSelectable = false
+    }
+
+    /// Whether the user can select the words and copy them, as a platform's label lets them only where it says.
+    var isSelectable = false {
+        didSet {
+            style("user-select", isSelectable ? "text" : "none")
+            style("-webkit-user-select", isSelectable ? "text" : "none")
+        }
     }
 
     func setText(_ text: String) {

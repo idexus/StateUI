@@ -83,6 +83,7 @@ enum UIKitRealization {
         .complete("Scene", "deactivated"),
         .complete("Scene", "stopped"),
         .complete("Scene", "windowClosed"),
+        .complete("Text", "isSelectable"),
         .complete("TextSpan", "background"),
         .complete("TextSpan", "fontAttributes"),
         .complete("TextSpan", "fontWeight"),

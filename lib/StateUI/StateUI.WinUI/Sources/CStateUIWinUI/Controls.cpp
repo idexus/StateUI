@@ -99,6 +99,14 @@ extern "C" void stateui_winui_text_set_vertical(StateUIObjectRef handle, int32_t
     }
 }
 
+extern "C" void stateui_winui_text_set_selectable(StateUIObjectRef handle, bool selectable) {
+    try {
+        labelWords(handle).IsTextSelectionEnabled(selectable);
+    } catch (...) {
+        report("letting a label's words be selected");
+    }
+}
+
 extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view, int32_t kind) {
     try {
         if (kind == 2) {
