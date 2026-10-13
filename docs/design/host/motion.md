@@ -95,12 +95,13 @@ weakly: a view the tree dropped is not kept alive for its place.
 A host whose toolkit moves a split view's pane by itself - the detail beside it
 laid out once at its end width - slides the sidebar on the runtime's frames
 instead (`SidebarSlide`): how far it has come, 0 hidden and 1 shown, eased
-over a quarter of a second, the pane that wide each frame and the detail
+over 320 milliseconds - the Web's columns' time - the pane that wide each frame and the detail
 taking every width between, as a sidebar beside its detail slides where the
 toolkit lays out as it goes. The sidebar's page stands at its whole width, its
 trailing edge at the pane's. A slide turned back bends from where it stands,
 and with less motion it arrives at once. A split not placed yet stands at
-once: a window opens with its sidebar where it is.
+once: a window opens with its sidebar where it is. A sidebar over the detail,
+which keeps its width, slides as the toolkit slides it.
 
 ## Words at their destination
 

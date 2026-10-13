@@ -21,8 +21,8 @@
     /// Called when a slide starts, so the frame clock is held while it runs.
     public var onStart: () -> Void = {}
 
-    /// How long a sidebar takes to slide in or out, in milliseconds.
-    public static let milliseconds = 250.0
+    /// How long a sidebar takes to slide in or out, in milliseconds: as long as the Web's columns take.
+    public static let milliseconds = 320.0
 
     /// Slides on `animator`, on `now`'s time; with less motion each slide arrives at once.
     public init(animator: Animator, now: @escaping () -> Double, reducesMotion: @escaping () -> Bool) {

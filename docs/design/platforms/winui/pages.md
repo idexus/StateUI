@@ -115,16 +115,15 @@ sign-out button among them - so the sidebar is collapsed while its pane is
 closed: shown as the pane starts to open, collapsed once it has closed, and
 at once beside the detail.
 
-WinUI's `SplitView` animates its pane alone and lays the detail out at its end
-width at once, so the host slides the pane itself ([a sidebar
-sliding](../../host/motion.md#a-sidebar-sliding)): WinUI's own animation takes
-no time, by the theme resources its template reads
-(`SplitViewPaneAnimationOpenDuration`, `...OpenPreDuration`,
-`...CloseDuration`), and the pane's `OpenPaneLength` follows the slide each
-frame, the sidebar standing at the pane's whole width against its trailing
-edge. A pane WinUI would close of its own accord - a click beside a pane over
-the detail - stays open while it slides out, and the host closes it once it
-has.
+WinUI's `SplitView` animates its pane alone and lays a detail beside it out at
+its end width at once, so the host slides a pane beside the detail itself ([a
+sidebar sliding](../../host/motion.md#a-sidebar-sliding)): the pane's
+`OpenPaneLength` follows the slide each frame, the sidebar standing at the
+pane's whole width - the theme's `SplitViewOpenPaneThemeLength` - against its
+trailing edge, and a closed pane stands none wide, the width its slide opens
+from, where WinUI's own animation of opening and closing has nothing to move.
+A pane over the detail, which keeps its width, WinUI slides itself, at its
+whole width.
 
 Whether the sidebar shows is StateUI's binding, which follows what WinUI
 shows: the pane closing of WinUI's accord - a click beside it, the window's
