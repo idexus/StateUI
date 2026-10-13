@@ -24,6 +24,7 @@ final class AndroidButtonViewTests: XCTestCase {
             ("testAnIconAloneIsDrawnInTheWordsColour", testAnIconAloneIsDrawnInTheWordsColour),
             ("testAMenusArrowStandsAfterTheWords", testAMenusArrowStandsAfterTheWords),
             ("testASplitButtonsArrowIsNotItsClick", testASplitButtonsArrowIsNotItsClick),
+            ("testWhatAButtonShowsStandsInTheMiddleBesideItsArrow", testWhatAButtonShowsStandsInTheMiddleBesideItsArrow),
         ]
     }
 
@@ -239,6 +240,55 @@ final class AndroidButtonViewTests: XCTestCase {
             XCTAssertEqual(heard.values, [], "the arrow")
             click(at: 8)
             XCTAssertEqual(heard.values, ["save"], "the button")
+        }
+    }
+
+    /// What a button holding a menu shows stands in the middle beside its arrow: words with the arrow after them one
+    /// group, as far from either edge; a picture alone in the middle of the room before the arrow.
+    func testWhatAButtonShowsStandsInTheMiddleBesideItsArrow() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                HStack {
+                    Button("Share").menu { MenuItem("Mail") }.padding(horizontal: 16, vertical: 8)
+                    Button(icon: .icon(.more)).menu { MenuItem("Mail") }.padding(horizontal: 16, vertical: 8)
+                }
+                .horizontalAlignment(.start)
+            }
+            host.layOut()
+            let buttons = host.views(AndroidButtonView.self)
+            let (share, more) = (buttons[0], buttons[1])
+
+            // Material's arrow fills the middle half of its square across.
+            let width = Float(share.frame.width)
+            let wordsLeft = try XCTUnwrap(Self.wordsLeft(of: share))
+            let (markWidth, markRight) = try XCTUnwrap(Self.layer(0, of: share))
+            let arrowRight = width - Float(markRight) - Float(markWidth) / 4
+            XCTAssertEqual(wordsLeft, width - arrowRight, accuracy: 2, "words at \(wordsLeft), arrow to \(arrowRight)")
+
+            let (_, pictureRight) = try XCTUnwrap(Self.layer(0, of: more))
+            let left = Java.callInt(more.reference, JavaAPI.getPaddingLeft)
+            let right = Java.callInt(more.reference, JavaAPI.getPaddingRight)
+            let room = (Float(left) + Float(more.frame.width) - Float(right)) / 2
+            XCTAssertEqual((Float(more.frame.width) - Float(pictureRight)) / 2, room, accuracy: 1, "the picture's middle")
+        }
+    }
+
+    /// Where the button's line of words begins, in pixels of its own.
+    @MainActor
+    private static func wordsLeft(of button: AndroidButtonView) -> Float? {
+        guard let layout = Java.callObject(button.reference, TestJava.getLayout) else { return nil }
+        defer { Java.release(local: layout) }
+        return Float(Java.callInt(button.reference, JavaAPI.getCompoundPaddingLeft))
+            + Java.callFloat(layout, TestJava.getLineLeft, .int(0))
+    }
+
+    /// The width of the foreground's layer `index` and how far its room stands in from the right, in pixels.
+    @MainActor
+    private static func layer(_ index: Int32, of button: AndroidButtonView) -> (Int32, Int32)? {
+        Java.frame {
+            guard let layer = Java.callObject(button.reference, TestJava.getForeground) else { return nil }
+            return (Java.callInt(layer, TestJava.getLayerWidth, .int(index)),
+                    Java.callInt(layer, TestJava.getLayerInsetRight, .int(index)))
         }
     }
 

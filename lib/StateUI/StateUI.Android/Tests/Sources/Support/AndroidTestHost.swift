@@ -129,6 +129,7 @@ enum TestJava {
     static let getLayer = Java.method(layerDrawable, "getDrawable", "(I)Landroid/graphics/drawable/Drawable;")
     static let getNumberOfLayers = Java.method(layerDrawable, "getNumberOfLayers", "()I")
     static let getId = Java.method(layerDrawable, "getId", "(I)I")
+    static let getLayerInsetRight = Java.method(layerDrawable, "getLayerInsetRight", "(I)I")
     static let getCompoundDrawablesRelative = Java.method(
         JavaAPI.textView, "getCompoundDrawablesRelative", "()[Landroid/graphics/drawable/Drawable;")
     static let object = Java.findClass("java/lang/Object")

@@ -239,13 +239,13 @@ final class StateUIViews {
     /**
      * Puts `picture` beside the view's words - 0 before them, 1 after, 2 above, 3 below - `gap` pixels
      * away, or the platform's gap for -1, at its own size; with no words, alone in the middle of the view
-     * at `width` by `height` pixels. A null picture takes it away. A button holding a menu shows the drawable
-     * `arrow` names `side` pixels square, `arrowRight` pixels from its right edge, in its words' colours: a mark
-     * after its words (`splits` false), or a split button's arrow, a line `lineHeight` pixels high
-     * `lineRight` pixels from that edge setting it apart. A null `arrow` shows none.
+     * at `width` by `height` pixels, `room` pixels kept on its right. A null picture takes it away. A button
+     * holding a menu shows the drawable `arrow` names `side` pixels square, `arrowRight` pixels from its right
+     * edge, in its words' colours: a mark after its words (`splits` false), or a split button's arrow, a line
+     * `lineHeight` pixels high `lineRight` pixels from that edge setting it apart. A null `arrow` shows none.
      */
-    static void setIcon(TextView view, Bitmap picture, int position, int gap, int width, int height, String arrow,
-                        boolean splits, int side, int arrowRight, int lineRight, int lineHeight) {
+    static void setIcon(TextView view, Bitmap picture, int position, int gap, int width, int height, int room,
+                        String arrow, boolean splits, int side, int arrowRight, int lineRight, int lineHeight) {
         Drawable icon = picture == null ? null : new BitmapDrawable(view.getResources(), picture);
         if (icon != null && isMask(picture)) icon.setTintList(view.getTextColors());
         boolean alone = view.getText().length() == 0;
@@ -280,6 +280,7 @@ final class StateUIViews {
         if (alone && icon != null) {
             layers.setId(index, PICTURE_LAYER);
             layers.setLayerGravity(index, Gravity.CENTER);
+            layers.setLayerInsetRight(index, room);
             layers.setLayerSize(index++, width, height);
         }
         if (down != null) {

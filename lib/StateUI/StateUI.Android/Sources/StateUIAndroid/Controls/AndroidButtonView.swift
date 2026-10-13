@@ -64,11 +64,12 @@ final class AndroidButtonView: AndroidTextualView {
     private(set) var showsArrow = false
     private(set) var writeMenu: ((jobject) -> Void)?
 
-    /// How wide a split button's arrow stands, the arrow's side, how far apart the mark after the words stands from
-    /// them, and how high the line setting the arrow off, in points.
+    /// How wide a split button's arrow stands, the arrow's side - Material's arrow fills the middle half of it
+    /// across - how far the mark after the words stands from them, and how high the line setting the arrow off, in
+    /// points.
     private static let arrowWidth = 32.0
     private static let arrowSide = 18.0
-    private static let markGap = 2.0
+    private static let markGap = 6.0
     private static let lineHeight = 20.0
 
     /// Gives the button its menu, opened as `opening` says: by a click, an arrow after the words where `showsArrow`;
@@ -88,7 +89,7 @@ final class AndroidButtonView: AndroidTextualView {
         self.opening = opening
         self.showsArrow = showsArrow
         rightRoom = opening == .arrow ? pixels(Self.arrowWidth)
-            : showsArrow ? pixels(Self.arrowSide + Self.markGap) : 0
+            : showsArrow ? pixels(Self.arrowSide / 2 + Self.markGap) : 0
         paddingSet()
         shownIcon = nil
         showIcon(room: placedSize)
@@ -344,14 +345,15 @@ final class AndroidButtonView: AndroidTextualView {
         case .bottom: 3
         }
         let splits = opening == .arrow
+        let arrowRight = splits ? pixels((Self.arrowWidth - Self.arrowSide) / 2) : paddingRight - pixels(Self.arrowSide / 4)
         let arrow = shown.arrow ? Java.string(StateUI.Icon.down.androidDrawable) : nil
         defer { Java.release(local: arrow) }
         withExtendedLifetime(icon.picture) {
             Java.callStatic(
                 JavaAPI.views, JavaAPI.setIcon, .object(reference), .object(icon.picture?.reference),
                 .int(position), .int(icon.spacing.map(pixels) ?? -1), .int(alone.width), .int(alone.height),
-                .object(arrow), .bool(splits), .int(pixels(Self.arrowSide)),
-                .int(splits ? pixels((Self.arrowWidth - Self.arrowSide) / 2) : paddingRight),
+                .int(rightRoom), .object(arrow), .bool(splits), .int(pixels(Self.arrowSide)),
+                .int(arrowRight),
                 .int(pixels(Self.arrowWidth)), .int(pixels(Self.lineHeight)))
         }
     }
