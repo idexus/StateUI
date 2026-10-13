@@ -1,19 +1,25 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What a button is by what it holds, which a toolkit makes a control of its own of: a button; one whose click
-/// opens its menu; one whose click is its own action, its menu apart.
-/// Design: docs/design/views/controls.md#a-buttons-menu
-@_spi(Host) public enum ButtonMenuKind: Sendable, Equatable {
-    /// A button holding no menu.
-    case plain
-    /// A button holding a menu and no action of its own: a click opens the menu.
-    case menu
-    /// A button holding a menu and an action of its own: a split button.
-    case split
+// A closed vocabulary, numbered by StateUI: append a case, never insert one.
+// Design: docs/design/types/vocabularies.md#written-out-and-appended
 
-    /// The kind of a button holding a menu or not, its click heard or not.
-    public init(holdsMenu: Bool, clicks: Bool) {
-        self = holdsMenu ? (clicks ? .split : .menu) : .plain
-    }
+/// How a button's menu opens: by the button's click, by an arrow of its own, or held.
+///
+///     Button("Save")
+///         .onClicked { save() }
+///         .menu(.held) { MenuItem("Save as…").onClicked { saveAs() } }
+public enum ButtonMenuKind: Int32, Sendable, CaseIterable {
+    /// A click opens the menu where the button has no click of its own, an arrow pointing down saying so; else the
+    /// button splits, as `.split`.
+    case automatic = 0
+
+    /// The button splits: its click its own, an arrow of its own opening the menu.
+    case split = 1
+
+    /// The click is the button's own and no arrow shows: holding the button down opens the menu, as the platform
+    /// holds - a long press, a press and hold, or a right click.
+    case held = 2
 }
+
+extension ButtonMenuKind: HostRepresentable {}

@@ -1,19 +1,20 @@
 import StateUI
 
-/// A button opening its menu, and a split button: its click its own action, its menu apart.
+/// A button opening its menu, a split button, a button whose menu is held, and a menu's arrow shown or not.
 struct ButtonMenuSample: SampleContent, ExampleContent {
     // listing: ButtonMenuSample
     @State private var last = "nothing yet"
+    @State private var showsArrow = true
     // listing: end
 
     static let id = "buttonMenu"
     static let title = "Button menu"
-    static let summary = "A button opening a menu, and a split button with an action of its own."
+    static let summary = "A button opening a menu, a split button, and a menu held."
 
     // listing: ButtonMenuSample
     var body: some View {
         VStack {
-            Text("Share opens its menu. Save saves with a click, and offers more in its menu.")
+            Text("Share opens its menu. Save saves, its arrow offers more. Hold Open for a recent file.")
                 .fontSize(14)
 
             HStack {
@@ -30,6 +31,31 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
                         MenuItem("Save as…").onClicked { last = "Saved as" }
                         MenuItem("Save a copy").onClicked { last = "Saved a copy" }
                     }
+
+                Button("Open")
+                    .onClicked { last = "Opened" }
+                    .menu(.held) {
+                        MenuItem("Report.txt").onClicked { last = "Opened Report.txt" }
+                        MenuItem("Notes.txt").onClicked { last = "Opened Notes.txt" }
+                    }
+            }
+            .spacing(12)
+
+            HStack {
+                Button(icon: .icon(.more))
+                    .accessibilityLabel("More")
+                    .menu {
+                        MenuItem("Rename").onClicked { last = "Renamed" }
+                        MenuItem("Delete").onClicked { last = "Deleted" }
+                    }
+                    .showsMenuArrow(showsArrow)
+
+                Switch($showsArrow)
+                    .accessibilityLabel("Arrow")
+                    .verticalAlignment(.center)
+
+                Text("Arrow")
+                    .verticalAlignment(.center)
             }
             .spacing(12)
 
@@ -41,7 +67,7 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("Where the platform draws no split button, Save's menu opens with a long press or a right click.")
+        Text("Open's menu opens as it is held; on Windows and the Web, with the mouse's other button too.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

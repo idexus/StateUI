@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
@@ -25,6 +26,15 @@ import java.util.List;
 /** A menu read back as words, and an item chosen by its words - what a test of the host's menus asks. */
 public final class TestMenus {
     private TestMenus() {}
+
+    /** The layer a button's foreground draws the arrow after its words in: StateUIViews' MARK_LAYER. */
+    private static final int MARK_LAYER = 2;
+
+    /** Whether `button` shows the arrow saying its click opens its menu, among the layers of its foreground. */
+    public static boolean showsMenuArrow(View button) {
+        Drawable foreground = button.getForeground();
+        return foreground instanceof LayerDrawable && ((LayerDrawable) foreground).findDrawableByLayerId(MARK_LAYER) != null;
+    }
 
     /** An empty menu of Android's own, as a context menu is before its view writes it. */
     public static Menu empty(Context context) {

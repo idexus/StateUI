@@ -62,7 +62,8 @@ extension AppKitElement {
     /// never becomes a visual child in the native layout.
     func configureContextMenu() {
         // A button's menu is the menu it opens (configureButtonMenu).
-        guard let view, !(view is AppKitMenuOffering) else { return }
+        let holdsMenu = (view as? AppKitButtonView).map { $0.opening != .none } ?? false
+        guard let view, !holdsMenu else { return }
         let items = slot(.contextMenu).map { AppKitMenus.items(MenuEntry.entries(of: $0.element)) } ?? []
         guard !items.isEmpty else {
             view.menu = nil
@@ -80,7 +81,7 @@ extension AppKitElement {
 extension AppKitElement {
     /// Gives a button holding a menu its menu's entries, AppKit's items standing on their elements.
     func configureButtonMenu() {
-        guard let button = view as? AppKitMenuOffering else { return }
+        guard let button = view as? AppKitButtonView, button.opening != .none else { return }
         button.offer(AppKitMenus.items(ButtonMenu.entries(of: element)))
     }
 }

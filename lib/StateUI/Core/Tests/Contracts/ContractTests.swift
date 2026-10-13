@@ -197,6 +197,7 @@ final class ContractTests: XCTestCase {
             [Draw.fillColor(.gold)] as [DrawCommand],
             WindowType("document"),
             FontAttributes.italic, FontWeight.semibold, TextStyle.title, PickerPresentation.radio,
+            ButtonMenuKind.held,
             TextDecorations(rawValue: 1),
             KeyboardShortcut("s"), KeyboardShortcut(.f5, modifiers: [.primary, .shift, .alt]),
             Area.absolute(0, 0, 120, 40), Area.proportional(0.5, 0, 0.5, 1), SwipeDirection.all,

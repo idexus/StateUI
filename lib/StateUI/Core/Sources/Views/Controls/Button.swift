@@ -31,6 +31,12 @@ extension ButtonProperties {
         setValue(ButtonContract.iconPosition, value)
     }
 
+    /// Whether a button whose click opens its menu shows the arrow saying so - true unless said; a button standing
+    /// for its picture alone may leave it out. A split button's arrow is its menu's, and a held one has none.
+    public func showsMenuArrow(_ value: Bool) -> Modified {
+        setValue(ButtonContract.showsMenuArrow, value)
+    }
+
     /// The gap between the icon and the caption, in device units.
     public func iconSpacing(_ value: Double) -> Modified {
         setValue(ButtonContract.iconSpacing, value)
@@ -118,9 +124,10 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
         setValue(ButtonContract.role, role)
     }
 
-    /// A menu the button opens, holding what a menu holds - `MenuItem`, `Menu`, `MenuSeparator`. With no
-    /// `.onClicked` a click opens it; with one the button splits: its click is its own action, and its menu opens
-    /// from a part of its own, as the platform draws a split button.
+    /// A menu the button opens, holding what a menu holds - `MenuItem`, `Menu`, `MenuSeparator` - as `kind` says.
+    /// With no `.onClicked` a click opens it, an arrow pointing down saying so; with one the button splits: its click
+    /// is its own action, and its menu opens from an arrow of its own. `.held` keeps the click the button's own and
+    /// opens the menu as the button is held, with no arrow.
     ///
     ///     Button("Share").menu {
     ///         MenuItem("Mail").onClicked { mail() }
@@ -130,13 +137,14 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     ///     Button("Save")
     ///         .onClicked { save() }
     ///         .menu { MenuItem("Save as…").onClicked { saveAs() } }
-    public func menu(@MenuBuilder _ entries: () -> [Element]) -> Self {
-        modified {
+    public func menu(_ kind: ButtonMenuKind = .automatic, @MenuBuilder _ entries: () -> [Element]) -> Self {
+        let menu = modified {
             // The button's one menu, after its own children; written again, it stands in for the last.
             // Design: docs/design/views/modifiers.md#slot-children
             $0.children.removeAll { $0.type == .buttonMenu }
             $0.children.append(Node(contract: ButtonMenuContract.self, children: entries().map { $0.node }))
         }
+        return kind == .automatic ? menu : menu.setValue(ButtonContract.menuKind, kind)
     }
 
     // MARK: Events
@@ -218,6 +226,12 @@ extension Button {
     /// stands, and no view is rebuilt for it.
     public func iconPosition(_ state: Binding<IconPosition>) -> Modified {
         twin(ButtonContract.iconPosition, by: state)
+    }
+
+    /// `showsMenuArrow` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func showsMenuArrow(_ state: Binding<Bool>) -> Modified {
+        twin(ButtonContract.showsMenuArrow, by: state)
     }
 
     /// `iconSpacing` from a state, `$x`: the host animates the property to each

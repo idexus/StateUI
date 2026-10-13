@@ -502,7 +502,7 @@ body {
 .stateui-button[data-alone] > span { display: none; }
 .stateui-button[data-alone] > img { width: 100%; height: 100%; }
 /* A button opening its menu says so, as a menu button does. */
-.stateui-button[data-menu="opens"]::after { content: "▾"; margin-inline-start: 6px; }
+.stateui-button[data-menu="opens"]:not([data-bare])::after { content: "▾"; margin-inline-start: 6px; }
 .stateui-split-arrow {
   align-self: stretch;
   display: flex;

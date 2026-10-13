@@ -107,14 +107,24 @@ so a wide button's icon stands far from its words.
 
 ## A button's menu
 
-A button whose click opens its menu is AppKit's pull-down button: its arrow
-points down and the menu opens under the press at once, its first item the
-button's own caption and picture, never offered. AppKit's unified combo button
-opens its menu only when held. A button with a click of its own and a menu is
-the split combo button, its arrow opening the menu. The host sets a new menu
-on either each time its entries change: a split button offers its arrow only
-for a menu set on it, and its own menu, filled in place, leaves the arrow
-drawn and dead.
+AppKit's own menu buttons - the pull-down button and the combo button - take
+no box and no colour of their words, so a button holding a menu is the host's
+own AppKit button, which wears what the tree says, and its menu an `NSMenu`
+opened under it, at least as wide, as a pull-down opens its:
+
+- where its click opens the menu, it opens as the button is pressed, the
+  button pressed while it is open, and an arrow pointing down stands just
+  after the words; the button is a menu button to assistive technology;
+- a split button's arrow is a part of its own at its trailing edge, the whole
+  height, set off by a line, opening the menu as it is pressed;
+- a held button is let go before half a second for its click, and held past
+  it opens its menu, the press going on into it - AppKit's own event tracking
+  reads the press, with no timer.
+
+The button keeps room at its trailing edge for the arrow: its own size grows
+by it, and its cell sets its words and picture in the rest, its bezel the whole
+button's. Assistive technology asking for the menu of any of them opens it; a
+split button's arrow part, a view inside a button, is not met on its own.
 
 ## A radio button's set
 

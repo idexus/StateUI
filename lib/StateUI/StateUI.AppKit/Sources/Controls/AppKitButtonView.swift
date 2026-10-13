@@ -6,9 +6,17 @@ import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// The native AppKit button behind StateUI's `Button` - a caption, an icon or both.
+/// The native AppKit button behind StateUI's `Button` - a caption, an icon or both - and, holding a menu, the menu it
+/// opens: by its click, an arrow pointing down after its words; by a split button's arrow part; or held, no arrow.
+/// AppKit's own menu buttons take no box or colour of their words, so a button holding a menu is this one too.
+/// Design: docs/design/platforms/appkit/views.md#a-buttons-menu
 @MainActor
-final class AppKitButtonView: NSButton, AppKitButtonFace {
+final class AppKitButtonView: NSButton, AppKitPictureResolving {
+    override class var cellClass: AnyClass? {
+        get { AppKitButtonCell.self }
+        set {}
+    }
+
     var onPressed: (() -> Void)?
     var onReleased: (() -> Void)?
     var onClicked: (() -> Void)?
@@ -17,17 +25,41 @@ final class AppKitButtonView: NSButton, AppKitButtonFace {
     /// host's to answer, since the files and the cache over them are its.
     var picture: ((HostPicture) -> NSImage?)?
 
-    override init(frame frameRect: NSRect) {
-        super.init(frame: frameRect)
+    /// How the button opens its menu, which it is made for; none for a button holding no menu.
+    let opening: ButtonMenuOpening
+
+    /// The menu the button offers, its entries as they stand.
+    private let offered = NSMenu()
+
+    /// The arrow its menu opens by: a mark after the words, or a split button's part; nil for none.
+    private var arrow: AppKitButtonArrow?
+
+    /// How long a held button waits before it opens its menu, in seconds.
+    private static let holdDelay = 0.5
+
+    /// A button opening its menu as `opening` says, showing the arrow after its words where its click opens it and
+    /// `showsArrow`.
+    init(menu opening: ButtonMenuOpening = .none, showsArrow: Bool = false) {
+        self.opening = opening
+        super.init(frame: .zero)
         bezelStyle = .rounded
         // The icon keeps beside the words, the two in the middle together, however wide the button stands.
         imageHugsTitle = true
         target = self
         action = #selector(clicked(_:))
+        offered.autoenablesItems = false
+        if opening == .arrow {
+            arrow = .part(in: self)
+        } else if opening == .click, showsArrow {
+            arrow = .mark(in: self)
+        }
+        (cell as? AppKitButtonCell)?.arrowRoom = arrow?.room ?? 0
     }
 
-    convenience init() {
-        self.init(frame: .zero)
+    /// A button holding no menu, standing in `frame`.
+    convenience override init(frame frameRect: NSRect) {
+        self.init(menu: .none, showsArrow: false)
+        frame = frameRect
     }
 
     @available(*, unavailable)
@@ -58,6 +90,7 @@ final class AppKitButtonView: NSButton, AppKitButtonFace {
         attributedTitle = NSAttributedString(
             string: text,
             attributes: [.font: font, .foregroundColor: textColor, .kern: tracking])
+        arrow?.tint(textColor)
         self.imagePosition = image == nil ? .noImage : imagePosition
         self.imageScaling = imageScaling
 
@@ -140,6 +173,40 @@ final class AppKitButtonView: NSButton, AppKitButtonFace {
     override func layout() {
         super.layout()
         paintBox()
+        guard let arrow, let cell else { return }
+        let words = cell.titleRect(forBounds: bounds)
+        let wordsWidth = title.isEmpty ? 0 : attributedTitle.size().width
+        var content = NSRect(x: words.midX - wordsWidth / 2, y: words.minY, width: wordsWidth, height: words.height)
+        if image != nil {
+            let picture = cell.imageRect(forBounds: bounds)
+            content = title.isEmpty ? picture : content.union(picture)
+        }
+        arrow.place(in: bounds, after: content, rightToLeft: userInterfaceLayoutDirection == .rightToLeft)
+    }
+
+    /// The button's own size and the room it keeps for its arrow.
+    override var intrinsicContentSize: NSSize {
+        var size = super.intrinsicContentSize
+        size.width += arrow?.room ?? 0
+        return size
+    }
+
+    /// Sets the menu's entries, AppKit's items for them standing on their elements.
+    func offer(_ items: [NSMenuItem]) {
+        offered.removeAllItems()
+        for item in items { offered.addItem(item) }
+    }
+
+    /// The entries the menu offers now.
+    var offeredItems: [NSMenuItem] { offered.items }
+
+    /// Whether the button shows the arrow saying its click opens its menu.
+    var showsMenuMark: Bool { arrow.map { $0.line == nil } ?? false }
+
+    /// Opens the menu under the button, at least as wide, as AppKit's own pull-down button opens its.
+    func showMenu() {
+        offered.minimumWidth = bounds.width
+        offered.popUp(positioning: nil, at: NSPoint(x: 0, y: isFlipped ? bounds.maxY + 2 : bounds.minY - 2), in: self)
     }
 
     override func updateTrackingAreas() {
@@ -162,15 +229,46 @@ final class AppKitButtonView: NSButton, AppKitButtonFace {
     override func mouseDown(with event: NSEvent) {
         onPressed?()
         reach = PressedFill.pressed
+        switch opening {
+        // The menu opens as the button is pressed, and stays pressed while it is open.
+        case .click: pressed(showMenu)
+        case .hold: held()
         // AppKit tracks the press inside this call, until the button is let go.
-        super.mouseDown(with: event)
+        case .none, .arrow: super.mouseDown(with: event)
+        }
         let inside = window.map { bounds.contains(convert($0.mouseLocationOutsideOfEventStream, from: nil)) } ?? false
         reach = inside ? PressedFill.underPointer : 1
         onReleased?()
     }
 
+    /// Draws the button pressed while `action` runs.
+    private func pressed(_ action: () -> Void) {
+        highlight(true)
+        action()
+        highlight(false)
+    }
+
+    /// A held button: let go before the hold's delay, its click; held past it, its menu opens, the press going on
+    /// into it. AppKit's own tracking reads the press's events.
+    private func held() {
+        guard let window else { return }
+        let until = Date(timeIntervalSinceNow: Self.holdDelay)
+        pressed {
+            var letGo: NSEvent?
+            while letGo == nil,
+                  let next = window.nextEvent(
+                    matching: [.leftMouseUp, .leftMouseDragged], until: until, inMode: .eventTracking, dequeue: true) {
+                if next.type == .leftMouseUp { letGo = next }
+            }
+            guard let letGo else { return showMenu() }
+            if bounds.contains(convert(letGo.locationInWindow, from: nil)) { onClicked?() }
+        }
+    }
+
+    /// A click, the keyboard's or assistive technology's press: the button's action, or its menu where its click
+    /// opens it.
     @objc private func clicked(_ sender: NSButton) {
-        onClicked?()
+        if opening == .click { showMenu() } else { onClicked?() }
     }
 
     /// The share of its opacity the fill keeps now.

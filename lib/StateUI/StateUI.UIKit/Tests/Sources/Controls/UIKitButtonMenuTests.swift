@@ -52,4 +52,48 @@ final class UIKitButtonMenuTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(
             button.configuration?.contentInsets.trailing ?? 0, arrow.frame.width, "the words keep clear of the arrow")
     }
+
+    /// A held button keeps its tap and offers its menu as UIKit opens a button's held, with no arrow; a button whose
+    /// tap opens its menu may leave its arrow out.
+    func testAHeldButtonAndAButtonWithoutItsArrow() throws {
+        let host = UIKitRenderer.running {
+            VStack {
+                Button("Save").onClicked {}.menu(.held) { MenuItem("Save as") }
+                Button(icon: .icon(.more)).menu { MenuItem("Mail") }.showsMenuArrow(false)
+            }
+        }
+        defer { host.finish() }
+
+        let buttons = host.views(UIKitButtonView.self)
+        XCTAssertFalse(buttons[0].showsMenuAsPrimaryAction, "the tap is the button's own")
+        XCTAssertEqual(buttons[0].menu?.children.map(\.title), ["Save as"], "the menu held")
+        XCTAssertFalse(buttons[0].subviews.contains { $0 is UIButton }, "no arrow")
+        XCTAssertTrue(buttons[1].showsMenuAsPrimaryAction)
+        XCTAssertFalse(buttons[1].subviews.contains { $0 is UIButton }, "the arrow left out")
+    }
+
+    /// An icon alone opening a menu is placed with room for its arrow, which stands clear of the picture.
+    func testAnIconAlonesArrowStandsClearOfIt() throws {
+        let shows = State(wrappedValue: true)
+        let host = UIKitRenderer.running {
+            HStack {
+                Button(icon: .icon(.more)).menu { MenuItem("Mail") }.showsMenuArrow(shows.wrappedValue)
+                    .background(Color("#8E6BF0")).shape(.capsule).padding(horizontal: 16, vertical: 11)
+                Button(icon: .icon(.more)).menu { MenuItem("Mail") }.showsMenuArrow(false)
+                    .background(Color("#8E6BF0")).shape(.capsule).padding(horizontal: 16, vertical: 11)
+                Switch(shows.projectedValue)
+            }
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }
+        defer { host.finish() }
+        host.layOut()
+
+        let buttons = host.views(UIKitButtonView.self)
+        let (with, without) = (buttons[0].frame.size, buttons[1].frame.size)
+        XCTAssertEqual(with.width - without.width, 18, accuracy: 0.5, "the mark's room: \(with) and \(without)")
+        let arrow = try XCTUnwrap(buttons[0].subviews.compactMap { $0 as? UIButton }.first)
+        let picture = try XCTUnwrap(buttons[0].imageView)
+        XCTAssertLessThanOrEqual(picture.frame.maxX, arrow.frame.minX, "\(picture.frame) beside \(arrow.frame)")
+    }
 }

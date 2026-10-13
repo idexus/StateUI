@@ -32,6 +32,8 @@ extension AndroidDriver {
         switch (property, view) {
         case (.isOn, let toggle as AndroidToggleView): return toggle.isOn.propValue
         case (.role, let button as AndroidButtonView): return button.role.map(\.propValue) ?? HostValue.nothing
+        case (.showsMenuArrow, let button as AndroidButtonView):
+            return Java.callStaticBool(Self.testMenus, Self.showsMenuArrow, .object(button.reference)).propValue
         case (.value, let slider as AndroidSliderView): return slider.value.propValue
         case (.minimum, let slider as AndroidSliderView): return slider.minimum.propValue
         case (.maximum, let slider as AndroidSliderView): return slider.maximum.propValue

@@ -30,10 +30,10 @@ extension AndroidDriver {
 
     /// The menu Android's button standing for `button` pops up, written as it opens.
     func buttonMenu(of button: MountedElement) throws -> String {
-        guard let view = (button.native as? AndroidElement)?.view as? AndroidButtonView, let opening = view.menuOpening
+        guard let view = (button.native as? AndroidElement)?.view as? AndroidButtonView, let write = view.writeMenu
         else { throw DriverCannot("read the menu \(button.type.name) opens") }
         let menu = TestMenus.empty()
-        opening(menu.reference)
+        write(menu.reference)
         return Self.said(menu, menusOnly: false)
     }
 
@@ -117,7 +117,7 @@ extension AndroidDriver {
         if let slot = each, let holder = slot.parent, let view = (holder.native as? AndroidElement)?.view {
             let menu = TestMenus.empty()
             if slot.type == .buttonMenu {
-                (view as? AndroidButtonView)?.menuOpening?(menu.reference)
+                (view as? AndroidButtonView)?.writeMenu?(menu.reference)
             } else {
                 view.menuOpening(menu.reference)
             }
@@ -190,7 +190,8 @@ extension AndroidDriver {
         } ?? ""
     }
 
-    private static let testMenus = Java.findClass("stateui/android/test/TestMenus")
+    static let testMenus = Java.findClass("stateui/android/test/TestMenus")
+    static let showsMenuArrow = Java.staticMethod(testMenus, "showsMenuArrow", "(Landroid/view/View;)Z")
     private static let saidMenu = Java.staticMethod(testMenus, "said", "(Landroid/view/Menu;Z)Ljava/lang/String;")
     private static let laidOutBar = Java.staticMethod(
         testMenus, "laidOut", "(Landroid/view/ViewGroup;Landroid/view/Menu;)Ljava/lang/String;")

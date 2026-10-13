@@ -58,7 +58,9 @@ enum AppKitRealization {
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
         .partial("Button", "contentMode", missing: "AppKit's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
+        .complete("Button", "menuKind"),
         .complete("Button", "padding"),
+        .complete("Button", "showsMenuArrow"),
         .partial("Button", "role", missing: "AppKit draws no destructive look on a button standing alone; it marks one for the system."),
         .complete("Text", "accessibilityIdentifier"),
         .complete("Text", "tracking"),

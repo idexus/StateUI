@@ -76,6 +76,34 @@ final class GTKButtonViewTests: XCTestCase {
         }
     }
 
+    /// A button holding a menu stands as tall as a plain one beside it, the platform's own or the same box and
+    /// padding given to each.
+    func testAMenuButtonStandsAsTallAsAPlainOne() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                HStack {
+                    Button("Go").onClicked {}
+                    Button("Share").menu { MenuItem("Mail") }
+                    Button("Save").onClicked {}.menu { MenuItem("Save as") }
+                    Button("Go").onClicked {}.background(Color("#0000FF")).lineWidth(0).shape(.roundedRectangle(10))
+                        .padding(horizontal: 16, vertical: 11)
+                    Button("Share").menu { MenuItem("Mail") }
+                        .background(Color("#0000FF")).lineWidth(0).shape(.roundedRectangle(10))
+                        .padding(horizontal: 16, vertical: 11)
+                    Button("Save").onClicked {}.menu { MenuItem("Save as") }
+                        .background(Color("#0000FF")).lineWidth(0).shape(.roundedRectangle(10))
+                        .padding(horizontal: 16, vertical: 11)
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            host.layOut()
+            let heights = host.views(GTKButtonView.self).map(\.frame.height)
+            XCTAssertEqual(Set(heights.prefix(3)).count, 1, "the platform's own: \(heights)")
+            XCTAssertEqual(Set(heights.suffix(3)).count, 1, "with a box and padding: \(heights)")
+        }
+    }
+
     /// A see-through button draws its outline alone: nothing inside it, neither a fill nor a shadow.
     func testASeeThroughButtonDrawsOnlyItsOutline() throws {
         try onUIThread {

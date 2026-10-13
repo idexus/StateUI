@@ -485,7 +485,8 @@ hears it - so the main action takes Return while no field holds the keyboard.
 
 ### A button's menu
 
-A button can hold a menu, written as a menu is:
+A button can hold a menu, written as a menu is. How it opens is one of three
+kinds:
 
 ```swift
 struct Document: View {
@@ -500,15 +501,26 @@ struct Document: View {
             Button("Save")
                 .onClicked { last = "saved" }
                 .menu { MenuItem("Save as…").onClicked { last = "saved as" } }
+            Button("Open")
+                .onClicked { last = "opened" }
+                .menu(.held) { MenuItem("Open recent").onClicked { last = "recent" } }
         }
     }
 }
 ```
 
-With no `.onClicked`, a click opens the menu. With one, the button splits: its
-click is its own action and its menu stands apart, behind an arrow where the
-platform draws a split button and behind a long press or a right click where
-it draws none. A button holding a menu offers no context menu of its own.
+- With no `.onClicked`, a click opens the menu, and an arrow pointing down
+  after the words says so. `.showsMenuArrow(false)` takes the arrow away - an
+  icon alone opening a menu.
+- With one, the button splits: its click is its own action, and an arrow of
+  its own beside it opens the menu. `.menu(.split) { }` splits a button with
+  no action too.
+- `.menu(.held) { }` keeps the click the button's own and opens the menu when
+  the user holds the button - a mouse button or a finger held down; on Windows
+  and in a browser, as the user asks for any menu there: a finger held still or
+  the mouse's other button. It shows no arrow.
+
+A button holding a menu offers no context menu of its own.
 
 ### A view's keys
 

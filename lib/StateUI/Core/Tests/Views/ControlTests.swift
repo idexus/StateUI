@@ -135,6 +135,12 @@ final class ControlTests: XCTestCase {
                     .onPressed {}
                     .onReleased {}),
 
+            ControlCase("MenuButton", source: "Button.swift",
+                Button("Save")
+                    .onClicked {}
+                    .menu(.held) { MenuItem("Save as") }
+                    .showsMenuArrow(false)),
+
             ControlCase("IconButton", source: "Button.swift",
                 Button(icon: "tab_list.png")
                     .contentMode(.fit)

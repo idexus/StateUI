@@ -31,6 +31,8 @@ extension AppKitDriver {
         case .keyboardShortcut where view is NSButton:
             let button = view as! NSButton
             return AppKitKeys.shortcut(key: button.keyEquivalent, modifiers: button.keyEquivalentModifierMask)?.propValue
+        case .showsMenuArrow where view is AppKitButtonView:
+            return (view as! AppKitButtonView).showsMenuMark.propValue
         case .role where view is NSButton:
             // As AppKit holds it: the destructive mark, the main action's accent, the way out's Escape.
             let button = view as! NSButton

@@ -143,7 +143,6 @@ extension AppKitDriver {
     private func activate(_ element: MountedElement, _ view: NSView?) throws {
         switch view {
         case let button as AppKitButtonView: button.performClick(nil)
-        case let split as AppKitSplitButtonView: split.performClick(nil)
         case let radio as AppKitRadioButtonView: radio.performClick(nil)
         case let pressed as AppKitHitTestView where pressed.pressAction != nil: _ = pressed.accessibilityPerformPress()
         default:

@@ -351,7 +351,7 @@ extension Differ {
         // Design: docs/design/core/identity-and-diffing.md#another-kind-of-view
         let replace = rendered != nil
             && (rendered!.type != node.type || Self.kinds(rendered!.views) != Self.kinds(views)
-                || lost.contains { !$0.facts.cleared } || rendered!.buttonMenuKind != node.buttonMenuKind
+                || lost.contains { !$0.facts.cleared } || rendered!.buttonMenuOpening != node.buttonMenuOpening
                 || LibraryContracts.remaking.contains { rendered!.props[$0] != node.props[$0] })
 
         // Nothing to build on: the element is new, or cannot become what is described.

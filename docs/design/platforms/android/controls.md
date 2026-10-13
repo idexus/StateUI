@@ -205,6 +205,19 @@ and `.fill` both say - a button has no covering scale - stretched, or at its
 own size for `.center`. That size is worked out as the button is placed, and
 sent again only when the room changes.
 
+## A button's menu
+
+Android's Views draw no menu button and no split button, so a button holding a
+menu is Android's own button, its menu a `PopupMenu` at the button, written as
+it opens. Where its click opens the menu, an arrow pointing down - Material's
+`expand_more` - stands after its words, in their colours, and the button keeps
+room for it beyond its padding, so its words never run under it. A split
+button's arrow stands at its right edge in a part of its own, set off by a
+line: where the finger went down on it, the click opens the menu rather than
+being the button's, and a long press opens it too, the road TalkBack offers. A
+held menu opens with a long press. The arrow and the line are layers of the
+button's foreground, which an icon standing alone shares.
+
 ## A picker
 
 A picker is Android's dropdown spinner. A spinner always shows one of its

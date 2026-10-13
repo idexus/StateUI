@@ -22,6 +22,8 @@ final class AndroidButtonViewTests: XCTestCase {
             ("testAFamilyChangesTheTypeface", testAFamilyChangesTheTypeface),
             ("testAnIconIsDrawnInItsWordsColour", testAnIconIsDrawnInItsWordsColour),
             ("testAnIconAloneIsDrawnInTheWordsColour", testAnIconAloneIsDrawnInTheWordsColour),
+            ("testAMenusArrowStandsAfterTheWords", testAMenusArrowStandsAfterTheWords),
+            ("testASplitButtonsArrowIsNotItsClick", testASplitButtonsArrowIsNotItsClick),
         ]
     }
 
@@ -192,6 +194,62 @@ final class AndroidButtonViewTests: XCTestCase {
             }
 
             XCTAssertFalse(Java.jni.IsSameObject(Java.env, faces[0]?.reference, faces[1]?.reference) != 0)
+        }
+    }
+
+    /// A button whose click opens its menu shows an arrow after its words and keeps room for it, unless it shows
+    /// none; a split button's arrow stands at its edge, set off by a line.
+    func testAMenusArrowStandsAfterTheWords() {
+        onMainActor {
+            let host = AndroidRenderer.running {
+                VStack {
+                    Button("Share").menu { MenuItem("Mail") }
+                    Button("Share").menu { MenuItem("Mail") }.showsMenuArrow(false)
+                    Button("Save").onClicked {}.menu { MenuItem("Save as") }
+                    Button("Save").onClicked {}.menu(.held) { MenuItem("Save as") }
+                }
+            }
+            host.layOut()
+            let buttons = host.views(AndroidButtonView.self)
+
+            XCTAssertEqual(buttons.map(Self.layers(of:)), [[2], [], [3, 4], []], "a mark, none, an arrow and its line")
+            XCTAssertGreaterThan(Self.padding(of: buttons[0]).width, Self.padding(of: buttons[1]).width, "room for it")
+            XCTAssertGreaterThan(Self.padding(of: buttons[2]).width, Self.padding(of: buttons[0]).width)
+        }
+    }
+
+    /// A finger on a split button's arrow opens its menu rather than clicking it; anywhere else it clicks it.
+    func testASplitButtonsArrowIsNotItsClick() throws {
+        try onMainActor {
+            let heard = Received<String>()
+            let host = AndroidRenderer.running {
+                Button("Save").onClicked { heard.values.append("save") }.menu { MenuItem("Save as") }
+            }
+            host.layOut()
+            let save = try XCTUnwrap(host.views(AndroidButtonView.self).first)
+            let (_, _, width, height) = save.frame
+
+            // Down where the finger clicks, lifted off the button, so the click is the test's alone.
+            @MainActor func click(at x: Float) {
+                save.touch(0, x: x, y: Float(height) / 2)
+                save.touch(1, x: -100, y: -100)
+                save.click()
+            }
+            click(at: Float(width) - 8)
+            XCTAssertEqual(heard.values, [], "the arrow")
+            click(at: 8)
+            XCTAssertEqual(heard.values, ["save"], "the button")
+        }
+    }
+
+    /// The ids of the layers the button's foreground draws, in order.
+    @MainActor
+    private static func layers(of button: AndroidButtonView) -> [Int32] {
+        Java.frame {
+            guard let layer = Java.callObject(button.reference, TestJava.getForeground),
+                  Java.jni.IsInstanceOf(Java.env, layer, TestJava.layerDrawable) != 0
+            else { return [] }
+            return (0..<Java.callInt(layer, TestJava.getNumberOfLayers)).map { Java.callInt(layer, TestJava.getId, .int($0)) }
         }
     }
 

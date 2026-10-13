@@ -50,41 +50,71 @@ final class AndroidButtonView: AndroidTextualView {
         Java.call(reference, JavaAPI.setMinimumHeight, .int(height))
     }
 
-    /// A click is the button's own event, and a tap as any view's; a button whose click opens its menu opens it.
+    /// A click is the button's own event, and a tap as any view's; a button whose click opens its menu opens it, and
+    /// so does a split button's arrow.
     override func clicked() {
-        if menuKind == .menu { showMenu() } else { onClicked?() }
+        let at = Java.callFloat(listener.reference, JavaAPI.takeDownX)
+        if opening == .click || opening == .arrow && onArrow(at) { showMenu() } else { onClicked?() }
         super.clicked()
     }
 
-    /// The kind of control its menu makes the button, and what its menu writes into a menu as it opens.
-    private(set) var menuKind = ButtonMenuKind.plain
-    private(set) var menuOpening: ((jobject) -> Void)?
+    /// How the button opens its menu, whether it shows the arrow saying its click does, and what its menu writes
+    /// into a menu as it opens.
+    private(set) var opening = ButtonMenuOpening.none
+    private(set) var showsArrow = false
+    private(set) var writeMenu: ((jobject) -> Void)?
 
-    /// Gives the button its menu: opened by a click where the button has no click of its own, else held down long -
-    /// Android's Views draw no split button.
-    /// Design: docs/design/views/controls.md#a-buttons-menu
-    func setMenu(_ kind: ButtonMenuKind, _ opening: ((jobject) -> Void)?) {
-        if kind == .split, menuKind != .split { listen(JavaAPI.setOnLongClickListener) }
-        if kind != .split, menuKind == .split { Java.call(reference, JavaAPI.setOnLongClickListener, .object(nil)) }
-        menuKind = kind
-        menuOpening = kind == .plain ? nil : opening
+    /// How wide a split button's arrow stands, the arrow's side, how far apart the mark after the words stands from
+    /// them, and how high the line setting the arrow off, in points.
+    private static let arrowWidth = 32.0
+    private static let arrowSide = 18.0
+    private static let markGap = 2.0
+    private static let lineHeight = 20.0
+
+    /// Gives the button its menu, opened as `opening` says: by a click, an arrow after the words where `showsArrow`;
+    /// by a split button's arrow, the click the button's own; or held. Android's Views draw no split button: its
+    /// arrow is the button's, at its right edge, set off by a line, and a long press opens its menu too.
+    /// Design: docs/design/platforms/android/controls.md#a-buttons-menu
+    func setMenu(_ opening: ButtonMenuOpening, showsArrow: Bool, _ write: ((jobject) -> Void)?) {
+        writeMenu = opening == .none ? nil : write
+        let showsArrow = opening == .click && showsArrow
+        guard opening != self.opening || showsArrow != self.showsArrow else { return }
+        let holds = opening == .arrow || opening == .hold
+        if holds != (self.opening == .arrow || self.opening == .hold) {
+            if holds { listen(JavaAPI.setOnLongClickListener) } else {
+                Java.call(reference, JavaAPI.setOnLongClickListener, .object(nil))
+            }
+        }
+        self.opening = opening
+        self.showsArrow = showsArrow
+        rightRoom = opening == .arrow ? pixels(Self.arrowWidth)
+            : showsArrow ? pixels(Self.arrowSide + Self.markGap) : 0
+        paddingSet()
+        shownIcon = nil
+        showIcon(room: placedSize)
     }
 
-    /// A long press opens a split button's menu.
+    /// Whether a finger went down `x` pixels across the button on a split button's arrow.
+    private func onArrow(_ x: Float) -> Bool {
+        guard x >= 0, let width = placedSize?.width else { return false }
+        return x >= Float(width - pixels(Self.arrowWidth))
+    }
+
+    /// A long press opens a split button's menu, and a held one's.
     override func longClicked() -> Bool {
-        guard menuKind == .split else { return false }
+        guard opening == .arrow || opening == .hold else { return false }
         showMenu()
         return true
     }
 
     /// Android's menu popping up at the button, its entries written as it opens.
     private func showMenu() {
-        guard let menuOpening else { return }
+        guard let writeMenu else { return }
         Java.frame {
             guard let popup = Java.callStaticObject(JavaAPI.menus, JavaAPI.popUpMenu, .object(reference)),
                   let items = Java.callObject(popup, JavaAPI.popupMenuItems)
             else { return }
-            menuOpening(items)
+            writeMenu(items)
             Java.call(popup, JavaAPI.showPopupMenu)
         }
     }
@@ -293,7 +323,7 @@ final class AndroidButtonView: AndroidTextualView {
         onClicked = nil
         onPressed = nil
         onReleased = nil
-        menuOpening = nil
+        writeMenu = nil
         letGoOfIcon()
     }
 
@@ -303,7 +333,7 @@ final class AndroidButtonView: AndroidTextualView {
         let alone = hasWords ? (width: Int32(0), height: Int32(0)) : iconSizeAlone(in: room)
         let shown = Icon.Shown(
             source: icon.source, position: icon.position, spacing: icon.spacing, words: hasWords,
-            width: alone.width, height: alone.height)
+            width: alone.width, height: alone.height, arrow: showsArrow || opening == .arrow)
         guard shown != shownIcon else { return }
         shownIcon = shown
 
@@ -313,10 +343,16 @@ final class AndroidButtonView: AndroidTextualView {
         case .top: 2
         case .bottom: 3
         }
+        let splits = opening == .arrow
+        let arrow = shown.arrow ? Java.string(StateUI.Icon.down.androidDrawable) : nil
+        defer { Java.release(local: arrow) }
         withExtendedLifetime(icon.picture) {
             Java.callStatic(
                 JavaAPI.views, JavaAPI.setIcon, .object(reference), .object(icon.picture?.reference),
-                .int(position), .int(icon.spacing.map(pixels) ?? -1), .int(alone.width), .int(alone.height))
+                .int(position), .int(icon.spacing.map(pixels) ?? -1), .int(alone.width), .int(alone.height),
+                .object(arrow), .bool(splits), .int(pixels(Self.arrowSide)),
+                .int(splits ? pixels((Self.arrowWidth - Self.arrowSide) / 2) : paddingRight),
+                .int(pixels(Self.arrowWidth)), .int(pixels(Self.lineHeight)))
         }
     }
 
@@ -373,6 +409,7 @@ final class AndroidButtonView: AndroidTextualView {
             let words: Bool
             let width: Int32
             let height: Int32
+            let arrow: Bool
         }
     }
 }

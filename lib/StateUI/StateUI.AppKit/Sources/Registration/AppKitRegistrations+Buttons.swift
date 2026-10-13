@@ -16,14 +16,10 @@ extension AppKitRegistrations {
     /// native cell's own measurement, which is the host's arithmetic and not a
     /// value written onto a control.
     static func buttons(_ registry: Registry<NSView>) {
-        registry.add(ButtonContract.self, create: { reports -> NSControl in
-            // A button holding a menu is AppKit's pull-down or split button, made so from the first; another kind is
-            // made again.
-            let button: NSControl & AppKitButtonFace = switch ButtonMenu.kind(made: reports.made) {
-            case .plain: AppKitButtonView()
-            case .menu: AppKitPullDownButtonView()
-            case .split: AppKitSplitButtonView()
-            }
+        registry.add(ButtonContract.self, create: { reports in
+            // A button holding a menu is made as it opens it from the first; another opening is made again.
+            let button = AppKitButtonView(
+                menu: ButtonMenu.opening(made: reports.made), showsArrow: ButtonMenu.showsArrow(made: reports.made))
             button.onClicked = { reports.raise(ButtonContract.clicked) }
             button.onPressed = { reports.raise(ButtonContract.pressed) }
             button.onReleased = { reports.raise(ButtonContract.released) }
@@ -38,8 +34,7 @@ extension AppKitRegistrations {
                 BorderElementContract.lineWidth, VisualElementContract.isEnabled,
                 FontElementContract.fontFamily, FontElementContract.fontSize,
                 FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TrackingElementContract.tracking,
-            ]) { control, values in
-                guard let view = control as? any AppKitButtonFace else { return }
+            ]) { view, values in
                 // Each value is read into a name of its own: twelve arguments
                 // of `flatMap` and `??` in one call is more than the type
                 // checker will take.
@@ -87,7 +82,7 @@ extension AppKitRegistrations {
             button.applies([ButtonContract.keyboardShortcut, ButtonContract.role]) { control, values in
                 let role = values[ButtonContract.role]
                 let shortcut = KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role)
-                (control as? any AppKitButtonFace)?.applyKeys(shortcut, role: role)
+                control.applyKeys(shortcut, role: role)
             }
             button.raises(ButtonContract.clicked)
             button.raises(ButtonContract.pressed)

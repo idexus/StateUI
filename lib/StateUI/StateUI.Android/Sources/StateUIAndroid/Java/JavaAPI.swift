@@ -417,6 +417,7 @@ enum JavaAPI {
 
     static let listener = Java.findClass("stateui/android/StateUIListener")
     static let newListener = Java.method(listener, "<init>", "(J)V")
+    static let takeDownX = Java.method(listener, "takeDownX", "()F")
     static let setGestures = Java.method(listener, "setGestures", "(Landroid/view/View;FZZZZ)V")
 
     static let viewConfiguration = Java.findClass("android/view/ViewConfiguration")
@@ -479,7 +480,8 @@ enum JavaAPI {
         views, "colouredBackground", "(Landroid/content/Context;)Landroid/graphics/drawable/Drawable;")
     static let colouredWords = Java.staticMethod(
         views, "colouredWords", "(Landroid/content/Context;)Landroid/content/res/ColorStateList;")
-    static let setIcon = Java.staticMethod(views, "setIcon", "(Landroid/widget/TextView;Landroid/graphics/Bitmap;IIII)V")
+    static let setIcon = Java.staticMethod(
+        views, "setIcon", "(Landroid/widget/TextView;Landroid/graphics/Bitmap;IIIILjava/lang/String;ZIIII)V")
     static let iconMask = Java.staticMethod(
         views, "icon", "(Landroid/content/Context;Ljava/lang/String;I)Landroid/graphics/Bitmap;")
     static let pictureDrawable = Java.staticMethod(

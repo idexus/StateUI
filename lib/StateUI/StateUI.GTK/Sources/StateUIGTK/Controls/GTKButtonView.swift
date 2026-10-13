@@ -18,24 +18,26 @@ final class GTKButtonView: GTKView {
     /// The gesture a press and its end come through, wherever it ends.
     let press: OpaquePointer
 
-    /// The kind of control its menu makes the button: GTK's button, its menu button, or libadwaita's split button.
-    let menuKind: ButtonMenuKind
+    /// How the button opens its menu, which makes its control: GTK's button - holding a menu opened as it is held -
+    /// its menu button, or libadwaita's split button.
+    let opening: ButtonMenuOpening
 
     /// A button, or one that stays pressed in while what it turns on is on - or, holding a menu, GTK's menu button
-    /// opening it, or libadwaita's split button, its click its own and its menu behind the arrow.
+    /// opening it, libadwaita's split button, its click its own and its menu behind the arrow, or GTK's button
+    /// opening it as it is held.
     /// Design: docs/design/views/controls.md#a-buttons-menu
-    init(toggles: Bool = false, menu kind: ButtonMenuKind = .plain) {
+    init(toggles: Bool = false, menu opening: ButtonMenuOpening = .none) {
         press = gtk_gesture_drag_new()!
-        menuKind = kind
+        self.opening = opening
         super.init { _ in
-            switch kind {
-            case .plain: toggles ? gtk_toggle_button_new() : gtk_button_new()
-            case .menu: gtk_menu_button_new()
-            case .split: adw_split_button_new()
+            switch opening {
+            case .none, .hold: toggles ? gtk_toggle_button_new() : gtk_button_new()
+            case .click: gtk_menu_button_new()
+            case .arrow: adw_split_button_new()
             }
         }
-        if kind == .menu { gtk_menu_button_set_always_show_arrow(widget.opaque, 1) }
-        if kind != .menu {
+        if opening == .click { gtk_menu_button_set_always_show_arrow(widget.opaque, 1) }
+        if opening != .click {
             connect("clicked") { _, data in
                 MainActor.assumeIsolated { GTKView.find(viewNumber(data))?.clicked() }
             }
@@ -134,24 +136,24 @@ final class GTKButtonView: GTKView {
 
     /// What the button shows: its caption's label, its picture, or the two in a box.
     private var child: GTKWidget? {
-        switch menuKind {
-        case .plain: gtk_button_get_child(widget.of(GtkButton.self))
-        case .menu: gtk_menu_button_get_child(widget.opaque)
-        case .split: adw_split_button_get_child(widget.opaque)
+        switch opening {
+        case .none, .hold: gtk_button_get_child(widget.of(GtkButton.self))
+        case .click: gtk_menu_button_get_child(widget.opaque)
+        case .arrow: adw_split_button_get_child(widget.opaque)
         }
     }
 
     private func setChild(_ child: GTKWidget?) {
-        switch menuKind {
-        case .plain: gtk_button_set_child(widget.of(GtkButton.self), child)
-        case .menu: gtk_menu_button_set_child(widget.opaque, child)
-        case .split: adw_split_button_set_child(widget.opaque, child)
+        switch opening {
+        case .none, .hold: gtk_button_set_child(widget.of(GtkButton.self), child)
+        case .click: gtk_menu_button_set_child(widget.opaque, child)
+        case .arrow: adw_split_button_set_child(widget.opaque, child)
         }
     }
 
     /// Words alone: GTK's own label for a button, a label of the host's on one holding a menu.
     private func setLabel(_ text: String) {
-        guard menuKind != .plain else { return gtk_button_set_label(widget.of(GtkButton.self), text) }
+        guard opening == .click || opening == .arrow else { return gtk_button_set_label(widget.of(GtkButton.self), text) }
         if let label = child, Self.isLabel(label) { return gtk_label_set_text(label.opaque, text) }
         setChild(gtk_label_new(text))
     }
@@ -161,14 +163,25 @@ final class GTKButtonView: GTKView {
 
     /// Gives a button holding a menu `menu`, where it stands otherwise than the one it shows.
     func setMenu(_ menu: GTKMenu) {
-        if menuKind == .plain || self.menu.map(menu.stands(like:)) == true { return }
+        if opening == .none || self.menu.map(menu.stands(like:)) == true { return }
         self.menu = menu
-        if menuKind == .menu {
-            gtk_menu_button_set_menu_model(widget.opaque, g_menu_model(menu.model))
-        } else {
-            adw_split_button_set_menu_model(widget.opaque, g_menu_model(menu.model))
+        switch opening {
+        case .click: gtk_menu_button_set_menu_model(widget.opaque, g_menu_model(menu.model))
+        case .arrow: adw_split_button_set_menu_model(widget.opaque, g_menu_model(menu.model))
+        case .hold:
+            if let held { held.show(menu) } else { held = GTKContextMenu(menu, on: widget, heldByMouse: true) }
+        case .none: break
         }
         gtk_widget_insert_action_group(widget, GTKMenu.actionGroup, OpaquePointer(menu.actions))
+    }
+
+    /// The menu a held button opens, where it is held or clicked with the secondary button.
+    private var held: GTKContextMenu?
+
+    /// Whether a menu button shows the arrow saying its click opens the menu.
+    var showsArrow: Bool {
+        get { opening == .click && gtk_menu_button_get_always_show_arrow(widget.opaque) != 0 }
+        set { if opening == .click { gtk_menu_button_set_always_show_arrow(widget.opaque, newValue ? 1 : 0) } }
     }
 
     /// The caption's label beside the picture, or the one GTK makes for words alone; nil for a picture alone.

@@ -164,22 +164,32 @@ their `.id()` or their position.
 ## A button's menu
 
 `Button.menu { … }` writes a slot, `ButtonMenu`, after the button's children,
-holding what a menu holds; written again it stands in for the last. What the
-button is follows from what it holds (`ButtonMenuKind`): no menu, a button; a
-menu and no `.onClicked`, a button whose click opens the menu; both, a split
-button, its click its own action and its menu apart. Each toolkit makes a
-control of its own of each kind - AppKit's combo button, unified or split;
-GTK's menu button or libadwaita's split button; WinUI's DropDownButton or
-SplitButton - and a control is made once, so the differ makes a button of
-another kind again (`Node+ButtonMenu.swift`), and a host reads the kind it
-makes from the patch the element is made from (`Reports.made`). UIKit's
-button takes a menu either way: a tap opens it, or, beside an action, a held
-finger does. Android's and the browser's have no split button: a click or tap
-opens the menu where the button has no action, else a long press or the
-user's asking for a menu does. A button holding a menu offers no context menu
-of its own: on AppKit and WinUI the button's menu and the view's are one
-property. AppKit's combo button takes a caption, a picture, a font and being
-enabled, and no colour of its words, spacing of its letters or box of its own.
+holding what a menu holds; written again it stands in for the last. How the
+menu opens (`ButtonMenuOpening`) follows from the menu, the click and the kind
+asked (`ButtonMenuKind`):
+
+- no menu: a button;
+- a menu and no `.onClicked`: the click opens the menu, and an arrow pointing
+  down says so unless `.showsMenuArrow(false)` takes it away - never an arrow
+  up and down, which says a choice of values, as a picker's;
+- a click of its own, or `.split`: a split button, its click its own action,
+  its arrow a part of its own opening the menu;
+- `.held`: the click its own action, the menu opened by holding the button,
+  and no arrow.
+
+Each toolkit makes a control of its own of each - GTK's menu button and
+libadwaita's split button; WinUI's DropDownButton, a Button with a flyout, its
+SplitButton - and a control is made once, so the differ makes a button opening
+its menu otherwise, or showing its arrow otherwise, again
+(`Node+ButtonMenu.swift`, `remakes`), and a host reads how it opens from the
+patch the element is made from (`ButtonMenu.opening(made:)`). Where a toolkit
+draws no split button - UIKit, Android, the browser - or its menu buttons take
+no style - AppKit's - the host gives its own button the arrow. Holding is
+each platform's: a held mouse button on AppKit and GTK, a finger held on a
+touch screen, and on Windows and in the browser the user's asking for a
+menu - a finger or a pen held still, the mouse's other button. A button holding
+a menu offers no context menu of its own: on AppKit and WinUI the button's menu
+and the view's are one property.
 
 ## Radio groups
 

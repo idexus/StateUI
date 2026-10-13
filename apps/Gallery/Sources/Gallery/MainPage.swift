@@ -110,7 +110,11 @@ struct MainPage: View {
             // title the line the Window bar sample types.
             .barTitle("StateUI")
             .barSubtitle(bar.subtitle)
+            // On Windows a mark on the title bar reads as a button: the name
+            // stands alone there.
+            #if !WINUI
             .barIcon("stateui_mark.png")
+            #endif
             // listing: end
             // The bars of both panes, as the gallery's look says.
             .bars(look.bars, in: look.barColour, system: application.info.accentColor)

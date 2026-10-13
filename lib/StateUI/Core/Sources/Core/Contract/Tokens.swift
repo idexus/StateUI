@@ -176,6 +176,8 @@ extension NodeType {
     static let inputPurpose = TextInputContract.inputPurpose.token
     static let label = MarkerContract.label.token
     static let lineBreak = ButtonContract.lineBreak.token
+    static let menuKind = ButtonContract.menuKind.token
+    static let showsMenuArrow = ButtonContract.showsMenuArrow.token
     static let lineHeight = LineHeightElementContract.lineHeight.token
     static let location = MarkerContract.location.token
     static let mapType = MapContract.mapType.token

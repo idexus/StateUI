@@ -263,6 +263,7 @@ final class GTKDriver: HostDriver {
         case (.text, let field as GTKTextFieldView): return field.text.propValue
         case (.text, let editor as GTKTextEditorView): return editor.text.propValue
         case (.text, let button as GTKButtonView): return button.text.propValue
+        case (.showsMenuArrow, let button as GTKButtonView): return button.showsArrow.propValue
         case (.icon, let button as GTKButtonView), (.source, let button as GTKButtonView):
             return button.picture.flatMap { $0.found ? $0.picture?.value : nil }
         case (.iconPosition, let button as GTKButtonView): return Self.position(in: button)?.propValue

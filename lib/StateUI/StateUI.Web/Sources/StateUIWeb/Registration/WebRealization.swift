@@ -48,6 +48,8 @@ enum WebRealization {
             + "initializer that sets nothing, which a list of some items has not."),
 
         // MARK: Entries - a control's or a part's own
+        .complete("Button", "menuKind"),
+        .complete("Button", "showsMenuArrow"),
         .complete("ModalStack", "popped"),
         .complete("NavigationStack", "popped"),
         .complete("Page", "appearing"),

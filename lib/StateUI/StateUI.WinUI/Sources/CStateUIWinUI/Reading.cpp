@@ -101,11 +101,14 @@ namespace {
         return std::nullopt;
     }
 
-    /// What a button shows: how its words break, and its picture - the file, where it stands beside the words
-    /// (StateUI's IconPosition), how far from them, and how it fills the room alone (WinUI's Stretch).
+    /// What a button shows: how its words break, its picture - the file, where it stands beside the words
+    /// (StateUI's IconPosition), how far from them, and how it fills the room alone (WinUI's Stretch) - whether it is
+    /// a DropDownButton, showing the arrow its menu opens by, and whether its click opens a flyout.
     std::optional<std::string> button(IInspectable const &object, std::string_view what) {
         auto shown = object.try_as<controls::Button>();
         if (!shown) return std::nullopt;
+        if (what == "showsMenuArrow") return flag(object.try_as<controls::DropDownButton>() != nullptr);
+        if (what == "opensFlyout") return flag(shown.Flyout() != nullptr);
         if (what == "captionBottom") {
             auto caption = captionOf(object);
             if (!caption) return std::string();

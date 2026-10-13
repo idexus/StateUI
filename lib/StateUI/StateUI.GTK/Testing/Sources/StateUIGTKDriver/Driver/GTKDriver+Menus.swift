@@ -34,7 +34,7 @@ extension GTKDriver {
 
     /// The menu the button standing for `button` opens, as its model holds it.
     func buttonMenu(of button: MountedElement) throws -> String {
-        guard let view = (button.native as? GTKElement)?.view as? GTKButtonView, view.menuKind != .plain else {
+        guard let view = (button.native as? GTKElement)?.view as? GTKButtonView, view.opening != .none else {
             throw DriverCannot("read the menu \(button.type.name) opens")
         }
         guard let menu = view.menu else { return "" }

@@ -65,6 +65,19 @@ pressed: its fill is drawn a little fainter each time, as WinUI's own buttons
 are, its words and outline as they are - WinUI's template otherwise draws
 those states in the platform's colours.
 
+## A button's menu
+
+A button is made as it opens its menu, WinUI having a control for each: a
+DropDownButton where its click opens it, its arrow pointing down; a Button
+with a flyout where the click opens it and no arrow shows - an icon alone
+opening a menu; a SplitButton where the click is its own, its arrow part
+opening the menu; and a Button holding it as its context menu where the menu
+is held. Windows takes press and hold for the mouse's other button, so a held
+menu opens as any context menu does: a touch or a pen held still, the mouse's
+other button, or the keyboard's menu key. A DropDownButton's arrow is a part of
+its template, which nothing public hides, so showing the arrow or not makes the
+button anew.
+
 ## An oval button
 
 A button's corners round by one radius each, so its own border draws no oval.

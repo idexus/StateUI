@@ -39,14 +39,19 @@ final class WebButtonView: WebDOMView, WebWordsView {
     /// What opens the button's menu where a click opens it; nil where the click is the button's own.
     private var opensMenu: (() -> Void)?
 
-    /// Makes the button open its menu - by `open` - with a click where `opensOnClick`, else as a split button: its
-    /// click its own, its arrow - a part set off by a line - a right click or a finger held opening the menu.
+    /// Makes the button open its menu - by `open` - as `opening` says: its click; as a split button, its click its
+    /// own, its arrow - a part set off by a line - opening the menu; or held. A right click or a finger held opens a
+    /// split button's and a held one's.
     /// Design: docs/design/platforms/web/controls.md#a-buttons-menu
-    func holdMenu(opensOnClick: Bool, _ open: @escaping () -> Void) {
+    func holdMenu(_ opening: ButtonMenuOpening, _ open: @escaping () -> Void) {
         attribute("aria-haspopup", "menu")
-        attribute("data-menu", opensOnClick ? "opens" : "splits")
-        guard !opensOnClick else {
+        attribute("data-menu", opening == .click ? "opens" : opening == .arrow ? "splits" : "held")
+        if opening == .click {
             opensMenu = open
+            return
+        }
+        guard opening == .arrow else {
+            listen("menu") { open() }
             return
         }
 
@@ -61,6 +66,11 @@ final class WebButtonView: WebDOMView, WebWordsView {
         }
         self.arrow = arrow
         listen("menu") { open() }
+    }
+
+    /// Whether a button whose click opens its menu shows the `▾` saying so.
+    func showsMenuArrow(_ shows: Bool) {
+        attribute("data-bare", shows ? nil : "")
     }
 
     func setText(_ text: String) {

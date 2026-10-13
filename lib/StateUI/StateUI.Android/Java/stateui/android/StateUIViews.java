@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
@@ -22,6 +23,7 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import java.util.ArrayList;
 
 /** What the Swift host does to a view in one call where Android asks for several. */
 final class StateUIViews {
@@ -231,12 +233,19 @@ final class StateUIViews {
         return alpha;
     }
 
+    /** The layers of a button's foreground, by their ids: its picture alone, its menu's arrow, a split button's line. */
+    static final int PICTURE_LAYER = 1, MARK_LAYER = 2, ARROW_LAYER = 3, LINE_LAYER = 4;
+
     /**
      * Puts `picture` beside the view's words - 0 before them, 1 after, 2 above, 3 below - `gap` pixels
      * away, or the platform's gap for -1, at its own size; with no words, alone in the middle of the view
-     * at `width` by `height` pixels. A null picture takes it away.
+     * at `width` by `height` pixels. A null picture takes it away. A button holding a menu shows the drawable
+     * `arrow` names `side` pixels square, `arrowRight` pixels from its right edge, in its words' colours: a mark
+     * after its words (`splits` false), or a split button's arrow, a line `lineHeight` pixels high
+     * `lineRight` pixels from that edge setting it apart. A null `arrow` shows none.
      */
-    static void setIcon(TextView view, Bitmap picture, int position, int gap, int width, int height) {
+    static void setIcon(TextView view, Bitmap picture, int position, int gap, int width, int height, String arrow,
+                        boolean splits, int side, int arrowRight, int lineRight, int lineHeight) {
         Drawable icon = picture == null ? null : new BitmapDrawable(view.getResources(), picture);
         if (icon != null && isMask(picture)) icon.setTintList(view.getTextColors());
         boolean alone = view.getText().length() == 0;
@@ -247,14 +256,46 @@ final class StateUIViews {
                 position == 0 ? beside : null, position == 2 ? beside : null,
                 position == 1 ? beside : null, position == 3 ? beside : null);
 
-        if (!alone || icon == null) {
+        Context context = view.getContext();
+        int found = arrow == null ? 0 : context.getResources().getIdentifier(arrow, "drawable", context.getPackageName());
+        Drawable down = found == 0 ? null : context.getDrawable(found).mutate();
+        ArrayList<Drawable> drawn = new ArrayList<>();
+        if (alone && icon != null) drawn.add(icon);
+        if (down != null) {
+            down.setTintList(view.getTextColors());
+            drawn.add(down);
+        }
+        Drawable line = null;
+        if (down != null && splits) {
+            line = new ColorDrawable(Color.WHITE);
+            line.setTintList(view.getTextColors().withAlpha(89));
+            drawn.add(line);
+        }
+        if (drawn.isEmpty()) {
             view.setForeground(null);
             return;
         }
-        LayerDrawable centred = new LayerDrawable(new Drawable[] {icon});
-        centred.setLayerGravity(0, Gravity.CENTER);
-        centred.setLayerSize(0, width, height);
-        view.setForeground(centred);
+        LayerDrawable layers = new LayerDrawable(drawn.toArray(new Drawable[0]));
+        int index = 0;
+        if (alone && icon != null) {
+            layers.setId(index, PICTURE_LAYER);
+            layers.setLayerGravity(index, Gravity.CENTER);
+            layers.setLayerSize(index++, width, height);
+        }
+        if (down != null) {
+            layers.setId(index, splits ? ARROW_LAYER : MARK_LAYER);
+            layers.setLayerGravity(index, Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+            layers.setLayerSize(index, side, side);
+            layers.setLayerInsetRight(index++, arrowRight);
+        }
+        if (line != null) {
+            layers.setId(index, LINE_LAYER);
+            layers.setLayerGravity(index, Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+            layers.setLayerSize(index, Math.max(1, Math.round(context.getResources().getDisplayMetrics().density)),
+                                lineHeight);
+            layers.setLayerInsetRight(index, lineRight);
+        }
+        view.setForeground(layers);
     }
 
     /**

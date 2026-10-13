@@ -347,6 +347,7 @@ extension WinUIDriver {
         case ("selectedItems", let items as WinUIItemsView): return .strings(items.selectedForTesting)
         case ("selectionMode", let items as WinUIItemsView): return items.modeForTesting.propValue
         case ("isOn", let toggle as WinUIToggleView): return toggle.isOn.propValue
+        case ("showsMenuArrow", let button as WinUIButtonView): return (try read(button, "showsMenuArrow") == "1").propValue
         case ("value", let slider as WinUISliderView): return slider.value.propValue
         case ("minimum", let slider as WinUISliderView): return slider.minimum.propValue
         case ("maximum", let slider as WinUISliderView): return slider.maximum.propValue

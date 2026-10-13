@@ -1,4 +1,4 @@
-# revision 4.2
+# revision 5.2
 Button: ✅
 Button.clicked: ✅
 Button.frameChanged: ✅
@@ -7,7 +7,9 @@ Button.iconPosition: ✅
 Button.iconSpacing: ✅
 Button.keyboardShortcut: ✅
 Button.lineBreak: ✅
+Button.menuKind: ✅
 Button.pressed: ✅
 Button.released: ✅
 Button.role: ☑️ WinUI has no look for the way out or a destructive action, only the main action's accent.
+Button.showsMenuArrow: ✅
 Text.text: ✅

@@ -31,7 +31,8 @@ extension GTKElement {
     /// it stands under - the menu's entries.
     func offerButtonMenu() {
         let owner = NodeType.menuTypes.contains(type) ? element.enclosing(type: .buttonMenu)?.parent : element
-        guard let owner, let button = owner.gtk.view as? GTKButtonView, button.menuKind != .plain else { return }
+        guard let owner, let button = owner.gtk.view as? GTKButtonView, button.opening != .none else { return }
         button.setMenu(GTKMenu(ButtonMenu.entries(of: owner)))
+        button.showsArrow = ButtonMenu.showsArrow(owner)
     }
 }

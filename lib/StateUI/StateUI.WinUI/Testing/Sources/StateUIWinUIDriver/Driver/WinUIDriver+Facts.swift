@@ -23,9 +23,9 @@ extension WinUIDriver {
         return view.menus
     }
 
-    /// The flyout WinUI's DropDownButton or SplitButton standing for `button` opens.
+    /// The flyout the WinUI button standing for `button` opens, or the context menu it holds.
     func buttonMenu(of button: MountedElement) throws -> String {
-        guard let view = (button.native as? WinUIElement)?.view as? WinUIButtonView, view.menuKind != .plain else {
+        guard let view = (button.native as? WinUIElement)?.view as? WinUIButtonView, view.opening != .none else {
             throw DriverCannot("read the menu \(button.type.name) opens")
         }
         return view.menus

@@ -29,12 +29,14 @@ extension UIKitElement {
         contextMenuSlot.map { UIKitMenus.menu(MenuEntry.entries(of: $0)) }
     }
 
-    /// Gives a button holding a menu UIKit's menu for it: opened by a tap where the button has no click of its own,
-    /// else by the arrow of a split button, its tap running the button's action.
+    /// Gives a button holding a menu UIKit's menu for it, opened as the button says: by a tap, by a split button's
+    /// arrow, or held.
     func configureButtonMenu() {
         guard let button = view as? UIKitButtonView else { return }
-        let kind = ButtonMenu.kind(of: element)
-        button.offer(kind == .plain ? nil : UIKitMenus.menu(ButtonMenu.entries(of: element)), opensOnTap: kind == .menu)
+        let opening = ButtonMenu.opening(of: element)
+        button.offer(
+            opening == .none ? nil : UIKitMenus.menu(ButtonMenu.entries(of: element)), opening: opening,
+            showsArrow: ButtonMenu.showsArrow(element))
     }
 
     /// The slot the view's context menu stands in, a child of its own.

@@ -67,6 +67,8 @@ enum GTKRealization {
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
+        .complete("Button", "menuKind"),
+        .complete("Button", "showsMenuArrow"),
         .notPlanned("Page", "backButtonTitle", reason: "GNOME's way back in the bar is an arrow, with no words."),
         .partial("SearchField", "submitLabel", missing: "The return key's word: GTK gives an entry no word for the return key of a keyboard on the screen; Next "
             + "hands the keyboard on all the same."),

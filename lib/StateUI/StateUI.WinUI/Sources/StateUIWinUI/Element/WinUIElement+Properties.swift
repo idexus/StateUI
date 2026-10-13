@@ -10,7 +10,7 @@ extension WinUIElement {
     /// Design: docs/design/platforms/winui/pages.md#menus
     func refreshContextMenu() {
         // A button holding a menu offers that one: the menu's items' actions are the view's.
-        let button = (view as? WinUIButtonView).flatMap { $0.menuKind == .plain ? nil : $0 }
+        let button = (view as? WinUIButtonView).flatMap { $0.opening == .none ? nil : $0 }
         let menu = children.first { $0.type == (button == nil ? .contextMenu : .buttonMenu) }
         guard contextMenuChanged || (hadContextMenu && menu == nil), let view else { return }
         contextMenuChanged = false

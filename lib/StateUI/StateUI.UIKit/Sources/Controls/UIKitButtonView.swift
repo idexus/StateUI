@@ -74,8 +74,13 @@ final class UIKitButtonView: UIButton {
         configuration?.imagePadding = spacing ?? 8
     }
 
+    /// The outline the button's box follows, its corners rounded as the button is laid out.
+    private var boxShape = ContainerShape.rectangle
+
     /// What fills the button's box, its outline and its shape (`BoxArithmetic`): the configuration's background,
-    /// but for an oval, which its corners cannot draw - a face of the button's own then.
+    /// but for an oval, which its corners cannot draw - a face of the button's own then. A capsule's corners are half
+    /// its shorter side, as everywhere: UIKit's own capsule makes a button showing a picture alone a circle, whatever
+    /// its padding.
     func setBox(background: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?) {
         let fill = background.flatMap(UIColor.init(stateUI:))
         let outline = BoxArithmetic.outlineWidth(stroke: stroke, width: width)
@@ -86,16 +91,15 @@ final class UIKitButtonView: UIButton {
         configuration?.background.backgroundColor = oval ? .clear : fill
         configuration?.background.strokeWidth = oval ? 0 : outline
         configuration?.background.strokeColor = oval ? .clear : line
-        switch outlined {
-        case .rectangle, .ellipse:
-            configuration?.cornerStyle = .fixed
-            configuration?.background.cornerRadius = 0
-        case .roundedRectangle(let radius):
-            configuration?.cornerStyle = .fixed
-            configuration?.background.cornerRadius = radius
-        case .capsule:
-            configuration?.cornerStyle = .capsule
-        }
+        boxShape = outlined
+        configuration?.cornerStyle = .fixed
+        roundCorners()
+    }
+
+    /// Rounds the box's corners as its outline says in the button's bounds.
+    private func roundCorners() {
+        let radius = CGFloat(BoxArithmetic.cornerRadius(of: boxShape, width: bounds.width, height: bounds.height))
+        if configuration?.background.cornerRadius != radius { configuration?.background.cornerRadius = radius }
     }
 
     /// The room between the button's edge and what it shows.
@@ -106,14 +110,14 @@ final class UIKitButtonView: UIButton {
         showPadding()
     }
 
-    /// Offers `menu`: opened by a tap where `opensOnTap`, an arrow pointing down after the words, else by a split
-    /// button's arrow, the tap the button's own; nil offers none.
+    /// Offers `menu` as `opening` says: opened by a tap, an arrow pointing down after the words where `showsArrow`;
+    /// by a split button's arrow, the tap the button's own; or held, as UIKit opens a button's menu, no arrow.
     /// Design: docs/design/platforms/uikit/controls.md#a-buttons-menu
-    func offer(_ menu: UIMenu?, opensOnTap: Bool) {
-        let opens = opensOnTap && menu != nil
-        self.menu = opens ? menu : nil
-        showsMenuAsPrimaryAction = opens
-        if let menu {
+    func offer(_ menu: UIMenu?, opening: ButtonMenuOpening, showsArrow: Bool) {
+        let opensOnTap = opening == .click
+        self.menu = opening == .click || opening == .hold ? menu : nil
+        showsMenuAsPrimaryAction = opensOnTap && menu != nil
+        if let menu, opening == .arrow || opensOnTap && showsArrow {
             var arrow = self.arrow ?? makeArrow()
             arrow.splits = !opensOnTap
             arrow.button.menu = opensOnTap ? nil : menu
@@ -131,9 +135,14 @@ final class UIKitButtonView: UIButton {
         showLook()
     }
 
-    /// The menu the button offers - opened by its tap, or by a split button's arrow; nil for none.
+    /// The menu the button offers - opened by its tap or held, or by a split button's arrow; nil for none.
     var offeredMenu: UIMenu? {
         menu ?? arrow?.button.menu
+    }
+
+    /// Whether the button shows the arrow pointing down after its words, its tap opening the menu.
+    var showsMenuMark: Bool {
+        arrow.map { !$0.splits } ?? false
     }
 
     /// A split button's arrow: a chevron opening the menu with a tap, and the line setting it off.
@@ -151,10 +160,11 @@ final class UIKitButtonView: UIButton {
         return Arrow(button: button, line: line, splits: true)
     }
 
-    /// Stands a split button's arrow at the trailing edge, the whole height, and its line beside it; a mark inside the
-    /// padding after the words.
+    /// Rounds the box's corners, and stands a split button's arrow at the trailing edge, the whole height, and its
+    /// line beside it; a mark inside the padding after the words.
     override func layoutSubviews() {
         super.layoutSubviews()
+        roundCorners()
         guard let arrow else { return }
         let leading = effectiveUserInterfaceLayoutDirection == .rightToLeft
         guard arrow.splits else {

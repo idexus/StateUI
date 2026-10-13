@@ -144,27 +144,41 @@ class AndroidTextualView: AndroidView {
 
     /// The room around the words, in points; nil puts back the platform's.
     func setPadding(_ insets: Insets?) {
-        if madePadding == nil {
-            madePadding = (
-                Java.callInt(reference, JavaAPI.getPaddingLeft), Java.callInt(reference, JavaAPI.getPaddingTop),
-                Java.callInt(reference, JavaAPI.getPaddingRight), Java.callInt(reference, JavaAPI.getPaddingBottom))
-        }
         padding = insets
         applyPadding()
+    }
+
+    /// The pixels kept on the right beyond the padding: a button's room for its menu's arrow.
+    var rightRoom: Int32 = 0 {
+        didSet { if rightRoom != oldValue { applyPadding() } }
+    }
+
+    /// The padding's right side in pixels, without the room kept beyond it: the tree's, else the platform's.
+    var paddingRight: Int32 {
+        padding.map { pixels($0.right) } ?? platformPadding.right
     }
 
     /// A new background brings its own padding; the tree's is put back over it.
     /// Design: docs/design/platforms/android/controls.md#the-background-a-view-is-made-with
     override func showBackground(_ drawable: JavaObject?) {
         super.showBackground(drawable)
-        if padding != nil { applyPadding() }
+        if padding != nil || rightRoom != 0 { applyPadding() }
     }
 
     private func applyPadding() {
-        guard let made = madePadding else { return }
+        let platform = platformPadding
+        let sides = padding.map { (pixels($0.left), pixels($0.top), pixels($0.right), pixels($0.bottom)) } ?? platform
+        Java.call(reference, JavaAPI.setPadding, .int(sides.0), .int(sides.1), .int(sides.2 + rightRoom), .int(sides.3))
+    }
 
-        let sides = padding.map { (pixels($0.left), pixels($0.top), pixels($0.right), pixels($0.bottom)) } ?? made
-        Java.call(reference, JavaAPI.setPadding, .int(sides.0), .int(sides.1), .int(sides.2), .int(sides.3))
+    /// The padding the view was made with, the platform's, read before the first change.
+    private var platformPadding: (left: Int32, top: Int32, right: Int32, bottom: Int32) {
+        if let madePadding { return madePadding }
+        let read = (
+            Java.callInt(reference, JavaAPI.getPaddingLeft), Java.callInt(reference, JavaAPI.getPaddingTop),
+            Java.callInt(reference, JavaAPI.getPaddingRight), Java.callInt(reference, JavaAPI.getPaddingBottom))
+        madePadding = read
+        return read
     }
 
     /// The size and colours the view was made with, read before the first change.

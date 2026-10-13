@@ -109,12 +109,18 @@ enum AppStyles {
 
             // listing: AppStyles.sample keep
             // Every button the gallery shows wears its violet - a style with no
-            // key is every button's.
+            // key is every button's - in its platform's shape: a capsule on
+            // Apple's platforms and the Web, rounded on Windows, GNOME and
+            // Android.
             Style<Button>()
                 .textColor(Palette.onAccent)
                 .background(Palette.accent)
                 .lineWidth(0)
+                #if WINUI || GTK || ANDROID
                 .shape(.roundedRectangle(10))
+                #else
+                .shape(.capsule)
+                #endif
                 .padding(horizontal: 16, vertical: 11)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)

@@ -33,22 +33,32 @@ final class WinUIButtonView: WinUIView {
     private var words = ""
     private var look = Shown()
 
-    /// The kind of control its menu makes the button: WinUI's Button, its DropDownButton, or its SplitButton.
-    let menuKind: ButtonMenuKind
+    /// How the button opens its menu, which WinUI makes a control of its own of.
+    let opening: ButtonMenuOpening
 
-    /// A button - or, holding a menu, WinUI's DropDownButton opening it, or its SplitButton, its click its own and
-    /// its menu behind the arrow.
-    /// Design: docs/design/views/controls.md#a-buttons-menu
-    init(menu kind: ButtonMenuKind = .plain) {
-        menuKind = kind
-        super.init { number in stateui_winui_button_make(number, kind == .split ? 2 : kind == .menu ? 1 : 0) }
+    /// A button - or, holding a menu, WinUI's DropDownButton opening it where it shows its arrow, a Button opening its
+    /// flyout where it shows none, its SplitButton, its click its own and its menu behind the arrow, or a Button
+    /// holding it as its context menu: press and hold, or the mouse's other button.
+    /// Design: docs/design/platforms/winui/controls.md#a-buttons-menu
+    init(menu opening: ButtonMenuOpening = .none, showsArrow: Bool = false) {
+        self.opening = opening
+        let kind: Int32 = switch opening {
+        case .arrow: 2
+        case .click where showsArrow: 1
+        case .none, .click, .hold: 0
+        }
+        super.init { number in stateui_winui_button_make(number, kind) }
     }
 
-    /// The menu a button holding one opens; its items' actions are the view's.
+    /// The menu a button holding one opens, or holds as its context menu; its items' actions are the view's.
     func setMenu(_ menu: WinUIMenu) {
-        guard menuKind != .plain else { return }
-        menuActions = menu.actions
-        menu.relayed { stateui_winui_button_set_menu(handle, number, $0, $1, $2, $3, $4, $5, $6, $7, $8, $9) }
+        switch opening {
+        case .none: return
+        case .hold: setContextMenu(menu)
+        case .click, .arrow:
+            menuActions = menu.actions
+            menu.relayed { stateui_winui_button_set_menu(handle, number, $0, $1, $2, $3, $4, $5, $6, $7, $8, $9) }
+        }
     }
 
     /// The caption.

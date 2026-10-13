@@ -6,6 +6,7 @@ import AppKit
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 @testable import StateUIAppKit
+import StateUIConformance
 import XCTest
 
 @MainActor
@@ -214,46 +215,125 @@ final class AppKitButtonViewTests: XCTestCase {
         XCTAssertEqual(scaling("covering"), .scaleProportionallyUpOrDown)
     }
 
-    /// A button whose click opens its menu is AppKit's pull-down button: its arrow pointing down, the menu open at
-    /// once under the press, its first item the button's own caption.
+    /// A button whose click opens its menu wears its box - AppKit's own menu buttons take none - and an arrow
+    /// pointing down just after its words, inside the room it keeps; it is a menu button to assistive technology.
     @MainActor
-    func testAButtonOpeningAMenuPullsItDown() throws {
+    func testAButtonOpeningAMenuWearsItsBoxAndAnArrowDown() throws {
         let renderer = AppKitRenderer.running {
-            Button("Share").menu {
-                MenuItem("Mail")
-                MenuItem("Message")
+            HStack {
+                Button("Share").menu {
+                    MenuItem("Mail")
+                    MenuItem("Message")
+                }
+                .background(Color("#8E6BF0")).textColor(Color("#FFFFFF")).shape(.capsule)
+                .padding(horizontal: 16, vertical: 8)
             }
         }
         defer { renderer.closeForTesting() }
-        let button = try XCTUnwrap(renderer.nativeViews(NSPopUpButton.self).first)
-        XCTAssertTrue(button.pullsDown)
-        XCTAssertEqual(button.menu?.items.map(\.title), ["Share", "Mail", "Message"])
-        XCTAssertEqual(button.title, "Share")
+        let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
+        button.frame = NSRect(origin: .zero, size: button.fittingSize)
+        button.layoutSubtreeIfNeeded()
+
+        XCTAssertEqual(button.opening, .click)
+        XCTAssertEqual(button.offeredItems.map(\.title), ["Mail", "Message"])
+        XCTAssertNotNil(button.layer?.backgroundColor, "its box")
+        XCTAssertTrue(button.showsMenuMark)
+        let mark = try XCTUnwrap(button.subviews.first { $0 is NSImageView })
+        let cell = try XCTUnwrap(button.cell)
+        let words = cell.titleRect(forBounds: button.bounds)
+        let wordsEnd = words.midX + button.attributedTitle.size().width / 2
+        XCTAssertGreaterThanOrEqual(mark.frame.minX, wordsEnd, "after the words: \(mark.frame), \(words)")
+        XCTAssertLessThanOrEqual(mark.frame.maxX, button.bounds.maxX - 8, "inside the padding: \(mark.frame)")
+        XCTAssertEqual(cell.accessibilityRole(), .menuButton)
     }
 
-    /// A split button's arrow opens its menu: AppKit's combo button offers its arrow only for a menu set on it.
+    /// A split button's click is its own; its arrow is a part of its own at its trailing edge, set off by a line, a
+    /// menu button to assistive technology, its words clear of it.
     @MainActor
-    func testASplitButtonsArrowIsOffered() throws {
+    func testASplitButtonsArrowIsAPartOfItsOwn() throws {
+        let heard = Received<String>()
         let renderer = AppKitRenderer.running {
-            Button("Save").onClicked {}.menu {
-                MenuItem("Save as")
-                MenuItem("Save a copy")
+            HStack {
+                Button("Save").onClicked { heard.values.append("save") }.menu {
+                    MenuItem("Save as")
+                    MenuItem("Save a copy")
+                }
             }
         }
         defer { renderer.closeForTesting() }
-        let button = try XCTUnwrap(renderer.nativeViews(AppKitSplitButtonView.self).first)
-        XCTAssertEqual(button.style, .split)
-        XCTAssertEqual(button.menu.items.map(\.title), ["Save as", "Save a copy"])
+        let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
+        button.frame = NSRect(origin: .zero, size: button.fittingSize)
+        button.layoutSubtreeIfNeeded()
 
-        func parts(of element: Any) -> [NSObject] {
-            let children = ((element as? NSObject)?.value(forKey: "accessibilityChildren") as? [Any]) ?? []
-            return children.compactMap { $0 as? NSObject } + children.flatMap { parts(of: $0) }
+        XCTAssertEqual(button.offeredItems.map(\.title), ["Save as", "Save a copy"])
+        XCTAssertFalse(button.showsMenuMark)
+        let part = try XCTUnwrap(button.subviews.compactMap { $0 as? NSButton }.first)
+        XCTAssertEqual(part.frame.maxX, button.bounds.maxX, accuracy: 0.5)
+        XCTAssertEqual(part.frame.height, button.bounds.height, accuracy: 0.5)
+        XCTAssertEqual(part.cell?.accessibilityRole(), .menuButton)
+        let words = try XCTUnwrap(button.cell).titleRect(forBounds: button.bounds)
+        XCTAssertLessThanOrEqual(words.midX + button.attributedTitle.size().width / 2, part.frame.minX)
+
+        button.performClick(nil)
+        XCTAssertEqual(heard.values, ["save"], "the click its own")
+    }
+
+    /// A split button draws its words in the middle of the room before its arrow part, styled or AppKit's own.
+    @MainActor
+    func testASplitButtonsWordsStandInTheMiddleBeforeItsArrow() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Button("Save").onClicked {}.menu { MenuItem("Save as") }
+                    .background(Color("#8E6BF0")).textColor(Color("#FF0000")).shape(.capsule)
+                    .padding(horizontal: 16, vertical: 8)
+                Button("Save").onClicked {}.menu { MenuItem("Save as") }.textColor(Color("#FF0000"))
+            }
         }
-        let all = parts(of: button)
-        let arrow = try XCTUnwrap(
-            all.first { $0.value(forKey: "accessibilityRole") as? NSAccessibility.Role == .menuButton },
-            "\(all.map { "\($0.value(forKey: "accessibilityRole") ?? "-")" })")
-        XCTAssertEqual(arrow.value(forKey: "accessibilityEnabled") as? Bool, true, "the arrow offered")
+        defer { renderer.closeForTesting() }
+        for button in renderer.nativeViews(AppKitButtonView.self) {
+            button.frame = NSRect(origin: .zero, size: button.fittingSize)
+            button.layoutSubtreeIfNeeded()
+            let room = button.bounds.width - AppKitButtonArrow.partWidth
+
+            // The columns before the arrow part where the red words are drawn.
+            let drawn = try XCTUnwrap(button.bitmapImageRepForCachingDisplay(in: button.bounds))
+            button.cacheDisplay(in: button.bounds, to: drawn)
+            let scale = CGFloat(drawn.pixelsWide) / button.bounds.width
+            let columns = (0..<Int(room * scale)).filter { x in
+                (0..<drawn.pixelsHigh).contains { y in
+                    guard let colour = drawn.colorAt(x: x, y: y)?.usingColorSpace(.sRGB) else { return false }
+                    return colour.alphaComponent > 0.5 && colour.redComponent > 0.7 && colour.greenComponent < 0.3
+                        && colour.blueComponent < 0.3
+                }
+            }
+            let first = CGFloat(try XCTUnwrap(columns.first)) / scale
+            let last = CGFloat(try XCTUnwrap(columns.last)) / scale
+            XCTAssertEqual(
+                first, room - last, accuracy: 2,
+                "\(button.isBordered ? "bordered" : "styled"): the words from \(first) to \(last) in \(room)")
+        }
+    }
+
+    /// A held button's click is its own and it shows no arrow; assistive technology asking for its menu opens it.
+    @MainActor
+    func testAHeldButtonsClickIsItsOwnItsMenuAsked() throws {
+        let heard = Received<String>()
+        let renderer = AppKitRenderer.running {
+            HStack {
+                Button("Open").onClicked { heard.values.append("open") }.menu(.held) { MenuItem("Report.txt") }
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
+
+        XCTAssertTrue(button.subviews.isEmpty, "no arrow")
+        button.performClick(nil)
+        XCTAssertEqual(heard.values, ["open"])
+
+        let watch = MenuWatch()
+        defer { watch.stop() }
+        XCTAssertTrue(try XCTUnwrap(button.cell).accessibilityPerformShowMenu())
+        XCTAssertEqual(watch.opened, ["Report.txt"], "its menu opened")
     }
 
     /// An icon alone in a button stands at its own size, smaller where the button is: an icon is never stretched
@@ -287,6 +367,28 @@ final class AppKitButtonViewTests: XCTestCase {
         let drawn = try XCTUnwrap(button.cell as? NSButtonCell).imageRect(forBounds: button.bounds)
         XCTAssertGreaterThan(button.bounds.height, image.size.height * 2, "\(button.bounds)")
         XCTAssertLessThanOrEqual(drawn.height, image.size.height + 0.5, "\(drawn) for \(image.size)")
+    }
+}
+
+/// A menu as it opens: its entries read, and closed at once as the run loop tracks it.
+@MainActor
+private final class MenuWatch: NSObject {
+    private(set) var opened: [String] = []
+
+    override init() {
+        super.init()
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(began(_:)), name: NSMenu.didBeginTrackingNotification, object: nil)
+    }
+
+    @objc private func began(_ note: Notification) {
+        guard let menu = note.object as? NSMenu else { return }
+        opened = menu.items.map(\.title)
+        menu.perform(#selector(NSMenu.cancelTracking), with: nil, afterDelay: 0, inModes: [.eventTracking])
+    }
+
+    func stop() {
+        NotificationCenter.default.removeObserver(self)
     }
 }
 
