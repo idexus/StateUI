@@ -512,6 +512,9 @@ void stateui_winui_button_set_words(StateUIObjectRef button, char const *words);
 /// button wears it - what a test reads.
 void stateui_winui_button_set_accent(StateUIObjectRef button, bool accent);
 bool stateui_winui_button_accent(StateUIObjectRef button);
+/// Whether a button's words stand in the theme's critical colour where the tree colours them not, and whether they do.
+void stateui_winui_button_set_critical(StateUIObjectRef button, bool critical);
+bool stateui_winui_button_critical(StateUIObjectRef button);
 
 /// Puts a control in its template's visual state `state` - "PointerOver", "Pressed", "Normal" - as the pointer
 /// would; whether the template has it. What a test does.

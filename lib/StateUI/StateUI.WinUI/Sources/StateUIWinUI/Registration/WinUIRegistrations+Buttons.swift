@@ -41,11 +41,17 @@ extension WinUIRegistrations {
             }
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
             // WinUI's own accelerator - the one stated, else the role's - pressing the button while its window is in
-            // front, and the role's look: the accent style for the main action.
-            button.applies([ButtonContract.keyboardShortcut, ButtonContract.role]) { view, values in
+            // front, and the role's look: the accent style for the main action, a destructive one's words in the
+            // theme's critical colour where the tree colours them not.
+            button.applies([
+                ButtonContract.keyboardShortcut, ButtonContract.role, TextStyleElementContract.textColor,
+            ]) { view, values in
                 let role = values[ButtonContract.role]
                 view.setShortcut(KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role))
                 view.setRole(role)
+                view.setCritical(
+                    ButtonRoleLook(role, fills: false, colorsWords: values[TextStyleElementContract.textColor] != nil)
+                        .wordsInCritical)
             }
             button.property(VisualElementContract.isEnabled) { view, enabled in
                 view.setEnabled(enabled ?? true)

@@ -32,7 +32,9 @@ uikit WebView 2
 android WebView 3
 winui WebView 2
 Button 6
-winui Button 2
+appkit Button 2
+uikit Button 2
+winui Button 3
 MenuItemElement 3
 FontElement 3
 winui MenuItemElement 2

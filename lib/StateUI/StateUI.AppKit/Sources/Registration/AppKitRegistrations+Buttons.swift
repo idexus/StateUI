@@ -34,6 +34,7 @@ extension AppKitRegistrations {
                 BorderElementContract.lineWidth, VisualElementContract.isEnabled,
                 FontElementContract.fontFamily, FontElementContract.fontSize,
                 FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TrackingElementContract.tracking,
+                ButtonContract.role,
             ]) { view, values in
                 // Each value is read into a name of its own: twelve arguments
                 // of `flatMap` and `??` in one call is more than the type
@@ -53,9 +54,13 @@ extension AppKitRegistrations {
                 } else {
                     .scaleProportionallyDown
                 }
-                let textColor: NSColor = values[TextStyleElementContract.textColor]
-                    .flatMap { nsColor($0.propValue) } ?? .controlTextColor
                 let background = paintedColor(values[VisualElementContract.background]?.propValue)
+                // A destructive action's words in the system's red where the tree colours them not.
+                let look = ButtonRoleLook(
+                    values[ButtonContract.role], fills: background != nil,
+                    colorsWords: values[TextStyleElementContract.textColor] != nil)
+                let textColor: NSColor = values[TextStyleElementContract.textColor]
+                    .flatMap { nsColor($0.propValue) } ?? (look.wordsInCritical ? .systemRed : .controlTextColor)
                 let stroke = values[BorderElementContract.stroke]?.propValue
                 let lineWidth = BoxArithmetic.outlineWidth(
                     stroke: stroke, width: values[BorderElementContract.lineWidth])
@@ -78,7 +83,7 @@ extension AppKitRegistrations {
                     enabled: values[VisualElementContract.isEnabled] ?? true)
             }
             // AppKit's own key equivalent - the one stated, else the role's - pressing the button while its window is
-            // in front, and the role's look: the accent for the main action, AppKit's mark for a destructive one.
+            // in front, and the role's marks: the accent for the main action, AppKit's mark for a destructive one.
             button.applies([ButtonContract.keyboardShortcut, ButtonContract.role]) { control, values in
                 let role = values[ButtonContract.role]
                 let shortcut = KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role)

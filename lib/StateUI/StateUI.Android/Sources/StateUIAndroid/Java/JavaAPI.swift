@@ -480,6 +480,8 @@ enum JavaAPI {
         views, "colouredBackground", "(Landroid/content/Context;)Landroid/graphics/drawable/Drawable;")
     static let colouredWords = Java.staticMethod(
         views, "colouredWords", "(Landroid/content/Context;)Landroid/content/res/ColorStateList;")
+    static let errorWords = Java.staticMethod(
+        views, "errorWords", "(Landroid/content/Context;)Landroid/content/res/ColorStateList;")
     static let setIcon = Java.staticMethod(
         views, "setIcon", "(Landroid/widget/TextView;Landroid/graphics/Bitmap;IIIIILjava/lang/String;ZIIII)V")
     static let iconMask = Java.staticMethod(

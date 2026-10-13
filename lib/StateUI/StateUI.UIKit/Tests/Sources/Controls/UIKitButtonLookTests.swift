@@ -35,6 +35,30 @@ final class UIKitButtonLookTests: XCTestCase {
         XCTAssertEqual(styled.bounds.size, plain.bounds.size)
     }
 
+    /// A role draws as UIKit draws it where the tree draws nothing of its own: the main action filled in the tint, a
+    /// destructive one's words in the system's red; a colour the tree states wins.
+    func testARoleDrawsAsUIKitDrawsIt() throws {
+        let host = UIKitRenderer.running {
+            VStack {
+                Button("Save").role(.primary)
+                Button("Delete").role(.destructive)
+                Button("Erase").role(.destructive).textColor(.blue)
+                Button("Plain")
+            }
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }
+        defer { host.finish() }
+        host.layOut()
+        let buttons = host.views(UIKitButtonView.self)
+        XCTAssertEqual(buttons.count, 4)
+
+        XCTAssertNotEqual(Self.edge(of: buttons[0]).last, 0, "the main action's box filled")
+        XCTAssertEqual(Self.edge(of: buttons[3]).last, 0, "a plain one's clear")
+        XCTAssertEqual(buttons[1].configuration?.baseForegroundColor, .systemRed, "a destructive action's words")
+        XCTAssertNotEqual(buttons[2].configuration?.baseForegroundColor, .systemRed, "the tree's colour wins")
+    }
+
     /// The colour drawn just inside the button's leading edge, halfway down: its box, clear of its words.
     private static func edge(of button: UIView) -> [UInt8] {
         let format = UIGraphicsImageRendererFormat()

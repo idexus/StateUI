@@ -110,6 +110,14 @@ final class StateUIViews {
         return background;
     }
 
+    /** The theme's colours for an error, which mark an action that destroys something. */
+    static ColorStateList errorWords(Context context) {
+        TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.colorError});
+        ColorStateList words = theme.getColorStateList(0);
+        theme.recycle();
+        return words;
+    }
+
     /** The words' colours of the platform's coloured button: its style's own, else its text appearance's. */
     static ColorStateList colouredWords(Context context) {
         // Attributes in ascending order, as obtainStyledAttributes reads them.

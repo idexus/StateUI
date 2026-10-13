@@ -149,19 +149,35 @@ final class AndroidButtonView: AndroidTextualView {
     /// nil for the theme's plain one.
     private var coloured: (background: JavaObject, words: JavaObject)?
 
-    /// What the button stands for: the window's main action wears the platform's coloured button, its background
-    /// where the button draws no look of its own and its words' colours where none is written. Android has no
-    /// look for the way out or for a destructive action.
+    /// The theme's colours for an error, which a destructive action's words wear; nil for any other.
+    private var critical: JavaObject?
+
+    /// What the button stands for (`ButtonRoleLook`): the window's main action wears the platform's coloured button,
+    /// its background where the button draws no look of its own and its words' colours where none is written; a
+    /// destructive one's words stand in the theme's colour for an error where none is written. The way out stands
+    /// plain.
     /// Design: docs/design/platforms/android/controls.md#a-buttons-look
     func setRole(_ role: ButtonRole?) {
         self.role = role
-        guard (role == .primary) != (coloured != nil) else { return }
-        coloured = role == .primary ? Java.frame {
-            let context = AndroidRenderer.context
-            let background = Java.callStaticObject(JavaAPI.views, JavaAPI.colouredBackground, .object(context))
-            let words = Java.callStaticObject(JavaAPI.views, JavaAPI.colouredWords, .object(context))
-            return background.flatMap { background in words.map { (JavaObject(background), JavaObject($0)) } }
-        } : nil
+        // What the tree writes is weighed where the colours are used: these stand only where nothing is written.
+        let look = ButtonRoleLook(role, fills: false, colorsWords: false)
+        let colours = look.fillsInAccent != (coloured != nil)
+        let words = look.wordsInCritical != (critical != nil)
+        guard colours || words else { return }
+        if colours {
+            coloured = look.fillsInAccent ? Java.frame {
+                let context = AndroidRenderer.context
+                let background = Java.callStaticObject(JavaAPI.views, JavaAPI.colouredBackground, .object(context))
+                let words = Java.callStaticObject(JavaAPI.views, JavaAPI.colouredWords, .object(context))
+                return background.flatMap { background in words.map { (JavaObject(background), JavaObject($0)) } }
+            } : nil
+        }
+        if words {
+            critical = look.wordsInCritical ? Java.frame {
+                Java.callStaticObject(JavaAPI.views, JavaAPI.errorWords, .object(AndroidRenderer.context))
+                    .map(JavaObject.init)
+            } : nil
+        }
         drawLook()
         setTextColor(writtenTextColor)
     }
@@ -169,7 +185,7 @@ final class AndroidButtonView: AndroidTextualView {
     /// The role the tree gave the button; nil for none.
     private(set) var role: ButtonRole?
 
-    override var plainWordColours: JavaObject { coloured?.words ?? super.plainWordColours }
+    override var plainWordColours: JavaObject { coloured?.words ?? critical ?? super.plainWordColours }
 
     /// The words' colour, which an icon is drawn in too.
     override func setTextColor(_ color: HostValue?) {

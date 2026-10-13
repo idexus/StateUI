@@ -61,7 +61,7 @@ enum AppKitRealization {
         .complete("Button", "menuKind"),
         .complete("Button", "padding"),
         .complete("Button", "showsMenuArrow"),
-        .partial("Button", "role", missing: "AppKit draws no destructive look on a button standing alone; it marks one for the system."),
+        .complete("Button", "role"),
         .complete("Text", "accessibilityIdentifier"),
         .complete("Text", "tracking"),
         .complete("Text", "fontAttributes"),

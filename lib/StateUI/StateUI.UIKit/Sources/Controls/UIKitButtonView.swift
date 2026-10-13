@@ -78,17 +78,22 @@ final class UIKitButtonView: UIButton {
     /// says none, the platform's own corners standing.
     private var boxShape: ContainerShape?
 
+    /// Whether the button wears UIKit's filled configuration - the main action's - rather than its plain one.
+    private var filled = false
+
     /// What fills the button's box, its outline and its shape (`BoxArithmetic`): the configuration's background,
     /// but for an oval, which its corners cannot draw - a face of the button's own then. A capsule's corners are half
     /// its shorter side, as everywhere: UIKit's own capsule makes a button showing a picture alone a circle, whatever
-    /// its padding. What the tree leaves unsaid is the platform's own button's: an empty fill there is the tint's.
-    func setBox(background: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?) {
+    /// its padding. What the tree leaves unsaid is the platform's own button's - filled in the tint where `accent`,
+    /// plain else: an empty fill there is the tint's.
+    func setBox(background: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?, accent: Bool = false) {
+        wear(filled: accent)
         let fill = background.flatMap(UIColor.init(stateUI:))
         let outline = BoxArithmetic.outlineWidth(stroke: stroke, width: width)
         let line = outline > 0 ? UIKitBrush(stroke).lineColor : nil
         let outlined = BoxArithmetic.outline(shape)
         let oval = outlined == .ellipse
-        let own = UIButton.Configuration.plain()
+        let own = accent ? UIButton.Configuration.filled() : .plain()
         var box = own.background
         if oval {
             box.customView = UIKitOvalFace(fill: fill, stroke: line, width: outline)
@@ -104,6 +109,30 @@ final class UIKitButtonView: UIButton {
         boxShape = shape == nil ? nil : outlined
         configuration?.cornerStyle = boxShape == nil ? own.cornerStyle : .fixed
         roundCorners()
+    }
+
+    /// Wears UIKit's filled configuration or its plain one, keeping all the button set on the other.
+    private func wear(filled: Bool) {
+        guard filled != self.filled, let standing = configuration else { return }
+        self.filled = filled
+        var next = filled ? UIButton.Configuration.filled() : .plain()
+        next.title = standing.title
+        next.image = standing.image
+        next.imagePlacement = standing.imagePlacement
+        next.imagePadding = standing.imagePadding
+        next.titleLineBreakMode = standing.titleLineBreakMode
+        next.titleTextAttributesTransformer = standing.titleTextAttributesTransformer
+        next.imageColorTransformer = standing.imageColorTransformer
+        next.contentInsets = standing.contentInsets
+        next.baseForegroundColor = standing.baseForegroundColor
+        configuration = next
+    }
+
+    /// Stands the words in the system's red, as UIKit marks an action that destroys something, or in the
+    /// configuration's own colour.
+    func setCriticalWords(_ critical: Bool) {
+        let words: UIColor? = critical ? .systemRed : nil
+        if configuration?.baseForegroundColor != words { configuration?.baseForegroundColor = words }
     }
 
     /// Rounds the box's corners as its outline says in the button's bounds.

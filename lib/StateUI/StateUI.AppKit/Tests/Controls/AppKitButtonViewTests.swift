@@ -142,6 +142,28 @@ final class AppKitButtonViewTests: XCTestCase {
             [.imageLeading, .imageAbove, .imageTrailing, .imageBelow])
     }
 
+    /// A destructive action's words stand in the system's red where the tree colours them not, the main action is
+    /// AppKit's accent, and a colour the tree states wins over the role's.
+    @MainActor
+    func testARoleDrawsAsAppKitDrawsIt() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Button("Delete").role(.destructive)
+                Button("Save").role(.primary)
+                Button("Erase").role(.destructive).textColor(.blue)
+                Button("Plain")
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let buttons = renderer.nativeViews(AppKitButtonView.self)
+        let words = buttons.map { $0.attributedTitle.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? NSColor }
+
+        XCTAssertEqual(words[0], .systemRed, "a destructive action's words")
+        XCTAssertEqual(buttons[1].bezelColor, .controlAccentColor, "the main action's accent")
+        XCTAssertNotEqual(words[2], .systemRed, "the tree's colour wins")
+        XCTAssertEqual(words[3], .controlTextColor)
+    }
+
     /// What happens to a caption too long for its button reaches the native
     /// cell.
     @MainActor

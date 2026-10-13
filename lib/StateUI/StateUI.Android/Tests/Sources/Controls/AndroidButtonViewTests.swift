@@ -25,6 +25,7 @@ final class AndroidButtonViewTests: XCTestCase {
             ("testAMenusArrowStandsAfterTheWords", testAMenusArrowStandsAfterTheWords),
             ("testASplitButtonsArrowIsNotItsClick", testASplitButtonsArrowIsNotItsClick),
             ("testWhatAButtonShowsStandsInTheMiddleBesideItsArrow", testWhatAButtonShowsStandsInTheMiddleBesideItsArrow),
+            ("testADestructiveButtonsWordsStandInTheThemesErrorColour", testADestructiveButtonsWordsStandInTheThemesErrorColour),
         ]
     }
 
@@ -412,6 +413,36 @@ final class AndroidButtonViewTests: XCTestCase {
                 .map { Java.callInt(button.reference, $0) }
             XCTAssertGreaterThan(ink >> 24, 0, "the icon is drawn: \(button.frame) padding \(padding)")
             XCTAssertEqual(ink & 0xFF_FFFF, 0xFF_0000, String(ink, radix: 16))
+        }
+    }
+
+    /// A destructive action's words stand in the theme's colour for an error where the tree colours them not; a
+    /// colour the tree states wins.
+    func testADestructiveButtonsWordsStandInTheThemesErrorColour() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                VStack {
+                    Button("Delete").role(.destructive)
+                    Button("Erase").role(.destructive).textColor(Color("#0000FF"))
+                    Button("Plain")
+                }
+            }
+            host.layOut()
+
+            let buttons = host.views(AndroidButtonView.self)
+            XCTAssertEqual(buttons.count, 3)
+            let error = try XCTUnwrap(Java.frame {
+                Java.callStaticObject(JavaAPI.views, JavaAPI.errorWords, .object(AndroidRenderer.context))
+                    .map { Java.callInt($0, TestJava.getDefaultColor) }
+            })
+            let words = buttons.map { button in
+                Java.frame {
+                    Java.callObject(button.reference, JavaAPI.getTextColors).map { Java.callInt($0, TestJava.getDefaultColor) }
+                }
+            }
+            XCTAssertEqual(words[0], error, "the theme's error colour")
+            XCTAssertEqual(words[1].map { UInt32(bitPattern: $0) & 0xFF_FFFF }, 0x00_00FF, "the tree's colour wins")
+            XCTAssertNotEqual(words[2], error)
         }
     }
 }

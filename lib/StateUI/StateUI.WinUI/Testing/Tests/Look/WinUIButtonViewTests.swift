@@ -61,6 +61,32 @@ final class WinUIButtonViewTests: XCTestCase {
         }
     }
 
+    /// A destructive action's words stand in the theme's critical colour where the tree colours them not; a colour
+    /// the tree states wins.
+    func testADestructiveButtonsWordsStandInTheCriticalColour() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                VStack {
+                    Button("Delete").role(.destructive).width(120).height(40).horizontalAlignment(.start)
+                    Button("Delete").role(.destructive).textColor(Color("#0000FF"))
+                        .width(120).height(40).horizontalAlignment(.start)
+                }
+            }
+            let buttons = host.views(WinUIButtonView.self)
+            XCTAssertEqual(buttons.count, 2)
+            let reddish = { (button: WinUIButtonView) in
+                button.pixels(at: (0..<120).map { (Double($0), 20) }).contains { pixel in
+                    let (red, green, blue) = ((pixel >> 16) & 0xFF, (pixel >> 8) & 0xFF, pixel & 0xFF)
+                    return pixel >> 24 > 0x80 && red > green + 60 && red > blue + 40
+                }
+            }
+            host.settle { reddish(buttons[0]) }
+            XCTAssertTrue(reddish(buttons[0]), "its words in the critical colour")
+            XCTAssertTrue(buttons[0].isCritical)
+            XCTAssertFalse(reddish(buttons[1]), "the tree's colour wins")
+        }
+    }
+
     /// A button is named by its words, alone or beside a picture: its content is a text block, not the words.
     func testAButtonIsNamedByItsWords() {
         onUIThread {

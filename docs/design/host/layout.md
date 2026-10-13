@@ -252,6 +252,17 @@ A fill a host draws for a control itself - a button's background, an accent -
 keeps nine tenths of its opacity under the pointer and eight tenths pressed
 (`PressedFill`), as the platforms' own controls fade theirs.
 
+## A button's role
+
+A button's role draws as each platform draws it where the tree draws nothing
+of its own (`ButtonRoleLook`): the main action filled in the platform's
+accent, an action that destroys something with its words in the platform's
+colour for one - the red its alerts and menus give such an action - and the
+way out, like a button of no role, as the platform's plain one. A fill or a
+colour of words the tree states, by a style or on the button, wins: a role's
+look is the platform's, and an application drawing its own buttons draws
+their roles too (`Style<Button>(role:)`).
+
 ## The safe area
 
 On UIKit a window with bars and a notch over its screen - a phone's, a

@@ -197,6 +197,12 @@ shadow falls under the whole outline: a shape the page shows through - a
 see-through fill, an outline alone - says its outline is clear, as Android's
 own drawables do, so no grey shadow shows inside it.
 
+A role draws where the tree draws nothing of its own ([a button's
+role](../../host/layout.md#a-buttons-role)): the main action wears the
+platform's coloured button - `Widget.DeviceDefault.Button.Colored`, its
+background and its words' colours - and a destructive one's words the
+theme's `colorError`.
+
 An icon beside words is a compound drawable at the picture's own size,
 before, after, above or below them, the icon spacing apart or the
 platform's gap. With no words it stands alone in the middle of the button,

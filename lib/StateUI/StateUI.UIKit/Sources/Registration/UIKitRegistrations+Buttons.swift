@@ -36,15 +36,23 @@ extension UIKitRegistrations {
                     position: values[ButtonContract.iconPosition] ?? .leading,
                     spacing: values[ButtonContract.iconSpacing])
             }
+            // The box, and the role's look where the tree draws nothing of its own: the main action filled in the
+            // tint, a destructive one's words in the system's red.
             button.applies([
                 VisualElementContract.background, BorderElementContract.stroke, BorderElementContract.lineWidth,
-                BorderElementContract.shape,
+                BorderElementContract.shape, ButtonContract.role, TextStyleElementContract.textColor,
             ]) { view, values in
+                let background = HostMaterial(values[VisualElementContract.background]?.propValue).painted
+                let look = ButtonRoleLook(
+                    values[ButtonContract.role], fills: background != nil,
+                    colorsWords: values[TextStyleElementContract.textColor] != nil)
                 view.setBox(
-                    background: HostMaterial(values[VisualElementContract.background]?.propValue).painted,
+                    background: background,
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     width: values[BorderElementContract.lineWidth],
-                    shape: values[BorderElementContract.shape]?.propValue)
+                    shape: values[BorderElementContract.shape]?.propValue,
+                    accent: look.fillsInAccent)
+                view.setCriticalWords(look.wordsInCritical)
             }
             button.property(ButtonContract.lineBreak) { view, breaking in view.setLineBreak(breaking ?? .wordWrap) }
             // UIKit's own role; its key is the window root's (`KeyboardShortcuts.pressing`).

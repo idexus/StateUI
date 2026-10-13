@@ -52,7 +52,7 @@ enum WinUIRealization {
         .complete("MenuItemElement", "keyboardShortcut"),
         .complete("Button", "menuKind"),
         .complete("Button", "showsMenuArrow"),
-        .partial("Button", "role", missing: "WinUI has no look for the way out or a destructive action, only the main action's accent."),
+        .complete("Button", "role"),
         .complete("MenuItemElement", "text"),
         .complete("PageElement", "icon"),
         .complete("PageElement", "title"),

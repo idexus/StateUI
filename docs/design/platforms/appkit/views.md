@@ -105,6 +105,15 @@ A button keeps its icon beside its words, the two together in the middle
 AppKit puts the icon at the button's edge and the words alone in the middle,
 so a wide button's icon stands far from its words.
 
+## A button's role
+
+A role draws where the tree draws nothing of its own ([a button's
+role](../../host/layout.md#a-buttons-role)): the main action's bezel in the
+accent - with Return its key, AppKit's own default button - and a destructive
+one's words the system's red, as macOS's alerts mark one; AppKit also marks
+it for the system (`hasDestructiveAction`), which draws nothing on a button
+standing alone.
+
 ## A button's menu
 
 AppKit's own menu buttons - the pull-down button and the combo button - take

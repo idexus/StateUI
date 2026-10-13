@@ -32,7 +32,7 @@ enum UIKitRealization {
         .complete("Button", "keyboardShortcut"),
         .complete("Button", "menuKind"),
         .complete("Button", "showsMenuArrow"),
-        .partial("Button", "role", missing: "UIKit draws no destructive look on a button standing alone, only in its menus and bars."),
+        .complete("Button", "role"),
         .complete("MenuItem", "isOn"),
         .partial("MenuItem", "keyboardShortcut", missing: "UIKit shows a shortcut in the main menu alone, none in a context menu."),
         .complete("MenuItem", "toggled"),

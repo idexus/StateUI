@@ -85,6 +85,13 @@ whatever room the tree gives it beside the picture. What the tree leaves
 unsaid is a plain configuration's own: an empty fill there is the tint's, so a
 button whose style leaves takes the plain box again, never an empty one.
 
+A role draws where the tree draws nothing of its own ([a button's
+role](../../host/layout.md#a-buttons-role)): the main action wears UIKit's
+filled configuration, the tint behind white words - the configuration worn
+again with all the button set on the other - and a destructive one's words
+the system's red, as UIKit's alerts and menus mark one. UIKit's own role,
+which the button carries too, sets the main action's words semibold.
+
 ## A button's menu
 
 A button whose tap opens its menu shows the menu as its primary action and

@@ -70,6 +70,13 @@ again, and a button whose style leaves - the colours, the outline, the room -
 stands as one that never wore it. The room the tree says nothing of is the
 template's own padding, not none.
 
+A role draws where the tree draws nothing of its own ([a button's
+role](../../host/layout.md#a-buttons-role)): the main action wears WinUI's
+`AccentButtonStyle`, and a destructive one's words the theme's critical
+colour, as a destructive entry's ([a destructive entry](pages.md#a-destructive-entry)):
+brushes in a merged dictionary of the button's, which a colour the tree
+writes into its own resources stands over.
+
 ## A button's menu
 
 A button is made as it opens its menu, WinUI having a control for each: a

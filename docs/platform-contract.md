@@ -445,7 +445,7 @@ Every control, and every part an application, its windows and its pages are made
 | Control | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](controls/ActivityIndicator.md) | 68 | 29 ✅ · 2 ☑️ · 36 ✓ · 1 – | 30 ✅ · 2 ☑️ · 35 ✓ · 1 – | 54 ✅ · 3 ☑️ · 10 ✓ | 52 ✅ · 1 ☑️ · 13 ✓ · 1 – | 44 ✅ · 1 ☑️ · 22 ✓ · 1 – | 47 ✅ · 1 ☑️ · 20 ✓ |
-| [Button](controls/Button.md) | 97 | 53 ✅ · 3 ☑️ · 37 ✓ · 2 – | 51 ✅ · 2 ☑️ · 39 ✓ · 4 – | 70 ✅ · 3 ☑️ · 14 ✓ · 4 – | 83 ✅ · 2 ☑️ · 12 ✓ | 68 ✅ · 2 ☑️ · 26 ✓ · 1 – | 76 ✅ · 1 ☑️ · 20 ✓ |
+| [Button](controls/Button.md) | 97 | 54 ✅ · 2 ☑️ · 37 ✓ · 2 – | 52 ✅ · 1 ☑️ · 39 ✓ · 4 – | 70 ✅ · 3 ☑️ · 14 ✓ · 4 – | 84 ✅ · 1 ☑️ · 12 ✓ | 68 ✅ · 2 ☑️ · 26 ✓ · 1 – | 76 ✅ · 1 ☑️ · 20 ✓ |
 | [Canvas](controls/Canvas.md) | 70 | 30 ✅ · 2 ☑️ · 38 ✓ | 29 ✅ · 2 ☑️ · 38 ✓ · 1 – | 56 ✅ · 3 ☑️ · 10 ✓ | 55 ✅ · 14 ✓ | 46 ✅ · 1 ☑️ · 22 ✓ · 1 – | 49 ✅ · 1 ☑️ · 20 ✓ |
 | [CheckBox](controls/CheckBox.md) | 74 | 37 ✅ · 2 ☑️ · 35 ✓ | 30 ✅ · 2 ☑️ · 38 ✓ · 4 – | 55 ✅ · 3 ☑️ · 12 ✓ · 3 – | 61 ✅ · 1 ☑️ · 12 ✓ | 47 ✅ · 1 ☑️ · 25 ✓ · 1 – | 53 ✅ · 1 ☑️ · 20 ✓ |
 | [DatePicker](controls/DatePicker.md) | 86 | 43 ✅ · 2 ☑️ · 36 ✓ · 5 – | 32 ✅ · 1 ☑️ · 37 ✓ · 12 – | 63 ✅ · 3 ☑️ · 15 ✓ · 3 – | 71 ✅ · 3 ☑️ · 12 ✓ | 57 ✅ · 2 ☑️ · 26 ✓ · 1 – | 60 ✅ · 1 ☑️ · 20 ✓ · 4 – |
@@ -477,10 +477,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 76 | 38 ✅ · 1 ☑️ · 35 ✓ | 36 ✅ · 1 ☑️ · 36 ✓ · 1 – | 59 ✅ · 3 ☑️ · 11 ✓ | 61 ✅ · 1 ☑️ · 12 ✓ · 1 – | 51 ✅ · 1 ☑️ · 22 ✓ · 2 – | 54 ✅ · 1 ☑️ · 20 ✓ |
 | [WebView](controls/WebView.md) | 82 | 44 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 2 ☑️ · 38 ✓ · 1 – | 63 ✅ · 3 ☑️ · 12 ✓ · 3 – | 49 ✅ · 13 ✓ · 19 – | 56 ✅ · 1 ☑️ · 24 ✓ · 1 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [ZStack](controls/ZStack.md) | 75 | 37 ✅ · 1 ☑️ · 35 ✓ | 34 ✅ · 1 ☑️ · 37 ✓ · 1 – | 57 ✅ · 3 ☑️ · 12 ✓ | 60 ✅ · 1 ☑️ · 12 ✓ · 1 – | 49 ✅ · 1 ☑️ · 23 ✓ · 2 – | 53 ✅ · 1 ☑️ · 20 ✓ |
-| ✅ |  | 1307 | 1225 | 1964 | 2040 | 1689 | 1820 |
+| ✅ |  | 1308 | 1226 | 1964 | 2041 | 1689 | 1820 |
 | ✓ |  | 1175 | 1210 | 365 | 397 | 748 | 641 |
 | – |  | 25 | 79 | 38 | 37 | 46 | 18 |
-| **Met** | 2598 | **2507** | **2514** | **2367** | **2474** | **2483** | **2479** |
+| **Met** | 2598 | **2508** | **2515** | **2367** | **2475** | **2483** | **2479** |
 | 🧩 |  | 0 | 0 | 74 | 74 | 74 | 74 |
 
 ### Application structure
@@ -561,7 +561,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | Element | Members | Count | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](controls/ActivityIndicator.md) | `isAnimating` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `keyboardShortcut`, `lineBreak`, `menuKind`, `onPressed` (`pressed`), `onReleased` (`released`), `role`, `showsMenuArrow` | 11 | 7 ✅ · 1 ☑️ · 2 ✓ · 1 – | 8 ✅ · 1 ☑️ · 2 ✓ | 6 ✅ · 2 ✓ | 10 ✅ · 1 ☑️ | 10 ✅ · 1 ✓ | 11 ✅ |
+| [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `keyboardShortcut`, `lineBreak`, `menuKind`, `onPressed` (`pressed`), `onReleased` (`released`), `role`, `showsMenuArrow` | 11 | 8 ✅ · 2 ✓ · 1 – | 9 ✅ · 2 ✓ | 6 ✅ · 2 ✓ | 11 ✅ | 10 ✅ · 1 ✓ | 11 ✅ |
 | [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawing`, `onPressed` (`pressed`), `onReleased` (`released`) | 4 | 1 ✅ · 3 ✓ | 1 ✅ · 3 ✓ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 1 ✅ · 1 ✓ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 | 3 ✅ · 1 ✓ · 4 – | 4 ✅ | 5 ✅ · 3 ✓ | 7 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ · 2 ✓ | 4 ✅ · 3 – |

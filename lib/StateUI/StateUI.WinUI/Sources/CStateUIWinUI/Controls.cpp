@@ -205,6 +205,43 @@ extern "C" void stateui_winui_button_set_accent(StateUIObjectRef handle, bool ac
     }
 }
 
+extern "C" void stateui_winui_button_set_critical(StateUIObjectRef handle, bool critical) {
+    try {
+        // The theme's critical colour under the button's words, as a destructive entry's: a colour the tree writes
+        // in the button's own resources stands over it.
+        auto button = as<controls::Control>(handle);
+        std::wstring name = button.try_as<controls::SplitButton>() ? L"SplitButtonForeground" : L"ButtonForeground";
+        if (critical == isDestructive(button, name.c_str())) return;
+        auto merged = button.Resources().MergedDictionaries();
+        if (critical) {
+            markDestructive(button, {name, name + L"PointerOver", name + L"Pressed"});
+        } else {
+            for (uint32_t index = merged.Size(); index-- > 0;) {
+                for (auto const &theme : merged.GetAt(index).ThemeDictionaries()) {
+                    auto dictionary = theme.Value().try_as<xaml::ResourceDictionary>();
+                    if (dictionary && ownBrush(dictionary, name)) {
+                        merged.RemoveAt(index);
+                        break;
+                    }
+                }
+            }
+        }
+        readThemeAgain(button);
+    } catch (...) {
+        report("marking a button destructive");
+    }
+}
+
+extern "C" bool stateui_winui_button_critical(StateUIObjectRef handle) {
+    try {
+        auto button = as<controls::Control>(handle);
+        return isDestructive(button, button.try_as<controls::SplitButton>() ? L"SplitButtonForeground" : L"ButtonForeground");
+    } catch (...) {
+        report("reading whether a button is marked destructive");
+        return false;
+    }
+}
+
 extern "C" bool stateui_winui_button_accent(StateUIObjectRef handle) {
     try {
         auto style = as<controls::Control>(handle).Style();
