@@ -52,6 +52,18 @@ theme, so its fill would stand under the pointer and pressed too: the class
 draws the fill a little fainter under the pointer and fainter again pressed,
 as the theme's own buttons answer.
 
+A button opening a menu is a `GtkMenuButton`, a split button libadwaita's
+`AdwSplitButton`, and each draws its face with the buttons it holds - GTK's
+documented nodes `menubutton > button`, `splitbutton > button` and
+`splitbutton > menubutton > button`. A menu button's class leaves the outer
+node bare and draws the box on the button it holds: one face, not the theme's
+button standing inside the class's box. A split button wears the box whole,
+its two buttons bare but for a shade under the pointer and a deeper one
+pressed - each rounded at its outer corners alone, by the direction of the
+words - and the line between them, which the theme leaves to the gap
+between two filled buttons, drawn in the colour of its words. The padding
+goes to the buttons, which hold the words.
+
 ## A button's picture
 
 A button with a picture shows it as an Image draws one

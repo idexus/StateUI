@@ -43,6 +43,39 @@ final class GTKButtonViewTests: XCTestCase {
         }
     }
 
+    /// A button opening a menu and a split button wear their box as one face: the fill from edge to edge, no button
+    /// of the theme's standing inside it.
+    func testAMenuButtonsBoxIsOneFace() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                VStack {
+                    Button("Share").menu { MenuItem("Mail") }
+                        .background(Color("#0000FF"))
+                        .padding(horizontal: 16, vertical: 11)
+                    Button("Save").onClicked {}.menu { MenuItem("Save as") }
+                        .background(Color("#0000FF"))
+                        .padding(horizontal: 16, vertical: 11)
+                }
+                .horizontalAlignment(.start)
+            }
+            host.layOut()
+            for button in host.views(GTKButtonView.self) {
+                let height = button.frame.height
+                // At the edge, then inside the room the padding keeps above the words and below them.
+                let middle = button.frame.width / 2
+                let colours = button.pixels(at: [(3, height / 2), (middle, 13), (middle, height - 13)])
+                let said = "\(button.text): \(colours.map { String($0, radix: 16) })"
+                XCTAssertTrue(near(colours[0], 0xFF00_00FF), said)
+                // The theme's button would lighten its own part of the face.
+                for colour in colours.dropFirst() {
+                    for shift: UInt32 in [0, 8, 16, 24] {
+                        XCTAssertLessThanOrEqual(abs(Int(colour >> shift & 0xFF) - Int(colours[0] >> shift & 0xFF)), 3, said)
+                    }
+                }
+            }
+        }
+    }
+
     /// A see-through button draws its outline alone: nothing inside it, neither a fill nor a shadow.
     func testASeeThroughButtonDrawsOnlyItsOutline() throws {
         try onUIThread {
