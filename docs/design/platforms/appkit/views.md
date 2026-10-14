@@ -105,6 +105,14 @@ A button keeps its icon beside its words, the two together in the middle
 AppKit puts the icon at the button's edge and the words alone in the middle,
 so a wide button's icon stands far from its words.
 
+## A button's padding
+
+A button's padding is room on its size - the cell's own measurement and the
+padding round it - and room inside it: the cell stands its words and its
+picture within it (`AppKitButtonCell`). A button drawing a box of its own -
+a fill, an outline - takes no bezel, and AppKit would otherwise scale a
+picture alone up to the whole button, whatever room the tree kept.
+
 ## A button's role
 
 A role draws where the tree draws nothing of its own ([a button's

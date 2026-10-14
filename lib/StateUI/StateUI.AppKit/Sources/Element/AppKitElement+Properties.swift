@@ -164,6 +164,8 @@ extension AppKitElement {
 
         if let button = view as? NSButton,
            let padding = value(.padding)?.numbers, padding.count >= 4 {
+            (button.cell as? AppKitButtonCell)?.padding = NSEdgeInsets(
+                top: padding[1], left: padding[0], bottom: padding[3], right: padding[2])
             let intrinsic = button.intrinsicContentSize
             buttonWidthConstraint = reconciledConstraint(
                 buttonWidthConstraint,
@@ -184,6 +186,7 @@ extension AppKitElement {
                     return constraint
                 })
         } else {
+            (view as? NSButton).flatMap { $0.cell as? AppKitButtonCell }?.padding = NSEdgeInsetsZero
             buttonWidthConstraint?.isActive = false
             buttonWidthConstraint = nil
             buttonHeightConstraint?.isActive = false

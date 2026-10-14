@@ -142,6 +142,41 @@ final class AppKitButtonViewTests: XCTestCase {
             [.imageLeading, .imageAbove, .imageTrailing, .imageBelow])
     }
 
+    /// A button's padding keeps what it shows clear of its edges: a picture alone in a stated size fits the room
+    /// inside the padding, not the whole button.
+    @MainActor
+    func testAButtonsPaddingKeepsItsPictureClearOfItsEdges() throws {
+        stateUIUseApp(OneWindowApplication(page: {
+            VStack {
+                Button(icon: ImageSource("test_wide.svg")).contentMode(.fit).width(64).height(64).padding(12)
+                    .background(Color("#FFFFFF")).shape(.roundedRectangle(12))
+            }
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }))
+        let renderer = testRenderer(resourceDirectory: AppKitDriver.pictures, presentsWindows: false)
+        renderer.startForTesting()
+        defer { renderer.closeForTesting() }
+        let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
+        renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
+
+        // The columns the picture's colour is drawn in.
+        let drawn = try XCTUnwrap(button.bitmapImageRepForCachingDisplay(in: button.bounds))
+        button.cacheDisplay(in: button.bounds, to: drawn)
+        let columns = (0..<drawn.pixelsWide).filter { x in
+            (0..<drawn.pixelsHigh).contains { y in
+                guard let colour = drawn.colorAt(x: x, y: y)?.usingColorSpace(.deviceRGB) else { return false }
+                return colour.blueComponent > 0.45 && colour.blueComponent - colour.redComponent > 0.2
+                    && colour.alphaComponent > 0.9
+            }
+        }
+        let scale = CGFloat(drawn.pixelsWide) / button.bounds.width
+        let width = CGFloat((columns.last ?? 0) - (columns.first ?? 0) + 1) / scale
+
+        XCTAssertFalse(columns.isEmpty, "the picture is drawn")
+        XCTAssertEqual(width, 40, accuracy: 1.5, "as wide as the room inside the padding")
+    }
+
     /// A destructive action's words stand in the system's red where the tree colours them not, the main action is
     /// AppKit's accent, and a colour the tree states wins over the role's.
     @MainActor

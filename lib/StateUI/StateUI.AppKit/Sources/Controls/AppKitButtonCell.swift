@@ -5,19 +5,28 @@
 import AppKit
 @_spi(Host) import StateUI
 
-/// The cell of StateUI's AppKit button: its words and picture stand clear of the room kept at its trailing edge for
-/// its menu's arrow, its bezel the whole button's; and it tells assistive technology how its menu opens.
+/// The cell of StateUI's AppKit button: its words and picture stand inside its padding and clear of the room kept at
+/// its trailing edge for its menu's arrow, its bezel the whole button's; and it tells assistive technology how its
+/// menu opens.
 /// Design: docs/design/platforms/appkit/views.md#a-buttons-menu
 @MainActor
 final class AppKitButtonCell: NSButtonCell {
     /// The room kept at the trailing edge for a menu's arrow, in points.
     var arrowRoom: CGFloat = 0
 
-    /// `rect` without the room kept for the arrow.
+    /// The room the tree keeps between the button's edges and what it shows, in points.
+    var padding = NSEdgeInsetsZero {
+        didSet { if !NSEdgeInsetsEqual(padding, oldValue) { controlView?.needsDisplay = true } }
+    }
+
+    /// `rect` inside the padding, without the room kept for the arrow.
     private func clear(of rect: NSRect) -> NSRect {
-        guard arrowRoom > 0 else { return rect }
-        var inside = rect
-        inside.size.width = max(0, rect.width - arrowRoom)
+        var inside = NSRect(
+            x: rect.minX + padding.left, y: rect.minY + padding.top,
+            width: max(0, rect.width - padding.left - padding.right),
+            height: max(0, rect.height - padding.top - padding.bottom))
+        guard arrowRoom > 0 else { return inside }
+        inside.size.width = max(0, inside.width - arrowRoom)
         if controlView?.userInterfaceLayoutDirection == .rightToLeft { inside.origin.x += arrowRoom }
         return inside
     }
