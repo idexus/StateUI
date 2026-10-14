@@ -1,7 +1,8 @@
-# revision 1.1
+# revision 2.1
 ActivityIndicator.accessibilityIdentifier: ✅
 Button.accessibilityIdentifier: ✅
 Canvas.accessibilityIdentifier: ✅
+Capsule.accessibilityIdentifier: ✅
 CheckBox.accessibilityIdentifier: ✅
 DatePicker.accessibilityIdentifier: ✅
 Divider.accessibilityIdentifier: ✅

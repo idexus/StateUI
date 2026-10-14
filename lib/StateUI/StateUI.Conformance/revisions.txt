@@ -70,3 +70,4 @@ TextField 2
 SearchField 2
 Polyline 2
 FilledShape 2
+AutomationElement 2
