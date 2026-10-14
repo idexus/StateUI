@@ -114,7 +114,7 @@ COMMANDS
     systemctl --user reset-failed "$unit" 2> /dev/null || true
     passed=()
     for name in DISPLAY WAYLAND_DISPLAY XAUTHORITY DBUS_SESSION_BUS_ADDRESS XDG_RUNTIME_DIR HOME PATH \
-                $(compgen -e | grep '^STATEUI_' || true); do
+                ${GDK_BACKEND:+GDK_BACKEND} $(compgen -e | grep '^STATEUI_' || true); do
       passed+=(-E "$name")
     done
     systemd-run --user --quiet --unit="$unit" --same-dir "${passed[@]}" -E SWIFT_BACKTRACE=enable=no \
