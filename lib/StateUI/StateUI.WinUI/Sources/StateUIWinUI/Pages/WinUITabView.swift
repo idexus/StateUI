@@ -30,13 +30,18 @@ final class WinUITabView: WinUILayoutView {
     /// The row of tabs of its own, shown where the window shows none.
     let row = WinUITabsView()
 
+    /// Whether its tabs stand in its own row: where the window shows none, and under its heading where it is headed -
+    /// the title names what the tabs are tabs of, over them.
+    /// Design: docs/design/platforms/winui/pages.md#a-pages-heading
+    var showsOwnRow: Bool { !tabsShownByWindow || heading != nil }
+
     override init() {
         super.init()
         row.onChosen = { [weak self] index in self?.selectByUser(index) }
     }
 
     override func heldViews() -> [WinUIView] {
-        (tabsShownByWindow ? [] : [row]) + (selectedItem.map { [$0.view] } ?? [])
+        (showsOwnRow ? [row] : []) + (selectedItem.map { [$0.view] } ?? [])
     }
 
     /// The tab the view shows, as an index into its tabs; -1 for none.
@@ -76,7 +81,7 @@ final class WinUITabView: WinUILayoutView {
     override func arrange(in bounds: Rect) {
         let headed = heading?.place(in: bounds) ?? bounds
         let (rowRoom, room) = RowEdge.top.split(headed, row: rowHeight(width: headed.width))
-        if !tabsShownByWindow { row.layout(rowRoom) }
+        if showsOwnRow { row.layout(rowRoom) }
         guard let page = selectedItem else { return }
 
         page.view.layout(SingleChildArithmetic.place(of: page, in: room, direction: direction))
@@ -84,7 +89,7 @@ final class WinUITabView: WinUILayoutView {
 
     /// The own row's height for `width` DIPs; none where the window shows the tabs.
     private func rowHeight(width: Double?) -> Double {
-        tabsShownByWindow ? 0 : row.measure(width: width, height: nil).height
+        showsOwnRow ? row.measure(width: width, height: nil).height : 0
     }
 
     override func detach() {

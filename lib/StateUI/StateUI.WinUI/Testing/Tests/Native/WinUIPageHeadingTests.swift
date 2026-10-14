@@ -39,7 +39,8 @@ final class WinUIPageHeadingTests: XCTestCase {
         }
     }
 
-    /// A tab view naming the window is headed by its title, its tabs' page under it.
+    /// A tab view naming the window is headed by its title, its row of tabs under the heading - not across the
+    /// window over it - and the tab's page under the row.
     func testATabViewNamingTheWindowIsHeadedOverItsTabs() throws {
         try onUIThread {
             let path = State(wrappedValue: [Int]())
@@ -57,10 +58,14 @@ final class WinUIPageHeadingTests: XCTestCase {
 
             let tabs = try XCTUnwrap(host.views(WinUITabView.self).first)
             let heading = { tabs.heading?.view.placed }
+            let row = { tabs.row.placed }
             let page = { tabs.heldViews().last?.placed }
-            host.settle { heading() != nil && page() != nil }
+            host.settle { heading() != nil && row() != nil && page() != nil }
             let placed = try XCTUnwrap(heading())
-            XCTAssertGreaterThanOrEqual(try XCTUnwrap(page()).y, placed.y + placed.height, "the tab's page under it")
+            let tabsRow = try XCTUnwrap(row())
+            XCTAssertGreaterThanOrEqual(tabsRow.y, placed.y + placed.height, "the tabs under the heading")
+            XCTAssertGreaterThanOrEqual(try XCTUnwrap(page()).y, tabsRow.y + tabsRow.height, "the tab's page under them")
+            XCTAssertFalse(try XCTUnwrap(host.window).tabsStandInWindow, "no tabs across the window over the heading")
         }
     }
 

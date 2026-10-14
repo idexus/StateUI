@@ -158,11 +158,11 @@ final class WinUIWindowController {
             shortcut: item.keyboardShortcut, mount: item.mount, perform: { [weak item] in item?.winUI.choose() })
     }
 
-    /// The tabs the window shows - the visible tabbed view's, where its tabs stand in the window - and the split view
-    /// whose detail they stand across, if any.
+    /// The tabs the window shows - the visible tabbed view's, where its tabs stand in the window and no heading
+    /// stands over them - and the split view whose detail they stand across, if any.
     private var windowTabs: WinUIWindowTabs? {
         guard let tabbed = presentation.arrangement?.visibleTabView, tabbed.tabsStandInWindow,
-              let tabs = tabbed.winUI.view as? WinUITabView
+              let tabs = tabbed.winUI.view as? WinUITabView, !tabs.showsOwnRow
         else { return nil }
 
         return WinUIWindowTabs(
