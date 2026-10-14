@@ -74,7 +74,7 @@ private struct Knob: View {
             Slider($level)
                 .accessibilityIdentifier("bindingReader.level")
                 .accessibilityLabel("Level")
-                .motion(.eased(600, .cubicOut))
+                .motion(.eased(.milliseconds(600), .cubicOut))
 
             HStack {
                 Button("Full")

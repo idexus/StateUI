@@ -62,7 +62,7 @@ final class LayoutMotionTests: XCTestCase {
         layout.arrange([(first, 1, Self.row(0)), (joined, 2, Self.row(1))])
 
         XCTAssertEqual(joined.placedFrame, Self.row(1))
-        XCTAssertEqual(layout.fades, [2: .eased(200, .linear)])
+        XCTAssertEqual(layout.fades, [2: .eased(.milliseconds(200), .linear)])
         XCTAssertFalse(layout.animator.isMoving, "nothing travels to where it already is")
     }
 
@@ -147,7 +147,7 @@ final class LayoutMotionTests: XCTestCase {
     func testALayoutThatSaysNothingTravelsTheApplicationsWay() {
         for said in [nil, HostLayoutMotion(motion: .inherited, lanes: .all)] {
             let layout = HandWoundLayout(motion: said)
-            layout.motion.applicationMotion = .eased(200, .linear)
+            layout.motion.applicationMotion = .eased(.milliseconds(200), .linear)
             let moved = Placed()
             layout.arrange([(moved, 1, Self.row(1))])
 
@@ -247,7 +247,7 @@ private final class HandWoundLayout {
     private var now = 0.0
 
     /// A layout whose patches say `motion`: 200 ms on a linear law, every side of a place.
-    init(motion said: HostLayoutMotion? = HostLayoutMotion(motion: .eased(200, .linear), lanes: .all)) {
+    init(motion said: HostLayoutMotion? = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)) {
         motion = LayoutMotion(
             animator: animator, now: { [unowned self] in self.now },
             reducesMotion: { [unowned self] in self.reducesMotion })

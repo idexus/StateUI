@@ -93,7 +93,7 @@ sending a value where it is already going is still a fresh journey with a fresh
 waiter. The write and the booking land before `move` returns, so moves sent one after
 another and awaited after are in the air together, booked in the order
 written. A given law stays on the value: a plain assignment after
-`move(to: 0, .eased(2000))` animates for two seconds too.
+`move(to: 0, .eased(.milliseconds(2000)))` animates for two seconds too.
 
 A state nothing wears lands at once and answers true: nobody would ever answer a
 waiter booked on it. Under `.custom` the destination is written and the answer
@@ -146,7 +146,7 @@ state's.
 A state has no cadence: it is at its value the moment it is written, so there
 is no sweep on this side to hold back. What sweeps is where the value has got
 to, which the host sends every cycle it moves. `.samples($fade, into: $shown,
-.every(100))` copies it into an ordinary state at most ten times a second; the
+.every(.milliseconds(100)))` copies it into an ordinary state at most ten times a second; the
 body reads that state under the ordinary rules, and the source goes on costing
 nothing. The window belongs to the reading, not the state: one source may be
 read by two views into two states at two rates, taken in the order asked.
@@ -253,7 +253,7 @@ every animation of its table to where it starts and where it lands.
                                     holds a display clock awake for ever
 ```
 
-Time is in milliseconds, the unit of `Motion`'s numbers, so the law's velocity
+Time is in milliseconds, the unit a `Motion` keeps its length in, so the law's velocity
 is per millisecond; a journey reports per second, and an animator converts
 where it reports. The slope of an eased curve is a central difference on the
 curve, a function of progress alone, so it answers the same number in every

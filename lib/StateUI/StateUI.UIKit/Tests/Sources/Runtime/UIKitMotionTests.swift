@@ -22,7 +22,7 @@ final class UIKitMotionTests: XCTestCase {
             VStack {
                 Text(long.wrappedValue ? "Text & typing" : "Text").horizontalAlignment(.start).id("caption")
             }
-            .motion(.eased(200, .linear))
+            .motion(.eased(.milliseconds(200), .linear))
             .width(300)
             .horizontalAlignment(.start)
             .verticalAlignment(.start)
@@ -59,7 +59,7 @@ final class UIKitMotionTests: XCTestCase {
                     .width(wide.wrappedValue ? 300 : 100)
                     .height(60)
                     .horizontalAlignment(.start)
-                    .motion(.eased(1000, .linear))
+                    .motion(.eased(.milliseconds(1000), .linear))
                     .id("box")
             }
         }
@@ -97,7 +97,7 @@ final class UIKitMotionTests: XCTestCase {
                 }
                 Rectangle().fill(Color(red: 0, green: 0, blue: 255)).height(40).id("below")
             }
-            .motion(.eased(1000, .linear))
+            .motion(.eased(.milliseconds(1000), .linear))
         }
         defer { host.finish() }
         let below = try XCTUnwrap(Self.view(of: "below", in: host))

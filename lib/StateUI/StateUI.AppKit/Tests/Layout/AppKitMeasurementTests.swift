@@ -36,7 +36,7 @@ final class AppKitMeasurementTests: XCTestCase {
 
         var growing = HostPatch(id: .manual("box"), type: .rectangle)
         growing.properties[.width] = .number(300)
-        growing.transitions[.width] = HostTransition(motion: .eased(200, .linear))
+        growing.transitions[.width] = HostTransition(motion: .eased(.milliseconds(200), .linear))
         renderer.applyForTesting(path(to: growing))
         scroll.layoutSubtreeIfNeeded()
 
@@ -84,7 +84,7 @@ final class AppKitMeasurementTests: XCTestCase {
             value: [40],
             destination: [60],
             velocity: [0],
-            motion: .eased(400, .linear),
+            motion: .eased(.milliseconds(400), .linear),
             completion: nil,
             stopped: 0)))
         nativeOuter.layoutSubtreeIfNeeded()
@@ -142,7 +142,7 @@ final class AppKitMeasurementTests: XCTestCase {
 
         var red = HostPatch(id: .manual("span"), type: .textSpan)
         red.properties[.textColor] = .color(red: 255, green: 0, blue: 0, alpha: 255)
-        red.transitions[.textColor] = HostTransition(motion: .eased(200, .linear))
+        red.transitions[.textColor] = HostTransition(motion: .eased(.milliseconds(200), .linear))
         var formattedPath = HostPatch(id: .manual("formatted"), type: .textSpans)
         formattedPath.children = .changed([red])
         var labelPath = HostPatch(id: .manual("label"), type: .text)
@@ -217,7 +217,7 @@ final class AppKitMeasurementTests: XCTestCase {
 
         var fading = HostPatch(id: .manual("card"), type: .rectangle)
         fading.properties[.opacity] = .number(0.4)
-        fading.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
+        fading.transitions[.opacity] = HostTransition(motion: .eased(.milliseconds(200), .linear))
         var path = HostPatch(id: .manual("layout"), type: .zStack)
         path.children = .changed([fading])
         renderer.applyForTesting(path)

@@ -45,7 +45,7 @@ extension VisualElement where Self: StyleTarget {
     ///     ZStack { Text("Open") }
     ///         .scale($lift)
     ///         .onVisualStateChanged(.pointerOver, .normal) { state in
-    ///             $lift.journey.move(to: state == .pointerOver ? 1.03 : 1, .eased(120, .cubicOut))
+    ///             $lift.journey.move(to: state == .pointerOver ? 1.03 : 1, .eased(.milliseconds(120), .cubicOut))
     ///         }
     ///
     /// It runs after the render in which the control entered the state, never

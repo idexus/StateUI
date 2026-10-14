@@ -621,7 +621,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     private static var held: Int { 60 }
 
     /// How the press animates, down and back: short, as an answer to a finger.
-    private static var pressing: Motion { .eased(50, .cubicOut) }
+    private static var pressing: Motion { .eased(.milliseconds(50), .cubicOut) }
 
     /// How far a far card fades unless said: all of it, or a quarter where a
     /// shade does the rest.

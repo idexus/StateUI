@@ -90,7 +90,7 @@ final class PlacedRunTests: XCTestCase {
     func testARunCarriesItsViewsFirstAndItsLawLast() {
         let run = PlacedRun(
             [Placement(Rect(0, 0, 10, 10)), Placement(Rect(20, 0, 10, 10))],
-            motion: .eased(400, .cubicIn))
+            motion: .eased(.milliseconds(400), .cubicIn))
 
         guard case .lanes(let lanes) = run.carried else {
             return XCTFail("a run carries lanes")
@@ -108,14 +108,14 @@ final class PlacedRunTests: XCTestCase {
     func testARunComesBackFromItsLanes() throws {
         let run = PlacedRun(
             [Placement(Rect(1, 2, 3, 4)), Placement(Rect(5, 6, 7, 8), opacity: 0.5)],
-            motion: .spring(response: 300, damping: 0.7))
+            motion: .spring(response: .milliseconds(300), damping: 0.7))
 
         let back = try XCTUnwrap(PlacedRun(carried: run.carried))
 
         XCTAssertEqual(back.placements.count, 2)
         XCTAssertEqual(back.placements[0].bounds, Rect(1, 2, 3, 4))
         XCTAssertEqual(back.placements[1].opacity, 0.5)
-        XCTAssertEqual(back.motion, .spring(response: 300, damping: 0.7))
+        XCTAssertEqual(back.motion, .spring(response: .milliseconds(300), damping: 0.7))
 
         XCTAssertEqual(PlacedRun(carried: .lanes([]))?.placements.count, 0)
         XCTAssertNil(PlacedRun(carried: .lanes([1, 2, 3, 4, 5])), "a width that is nobody's")

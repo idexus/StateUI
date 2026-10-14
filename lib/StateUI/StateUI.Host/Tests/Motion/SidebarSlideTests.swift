@@ -70,7 +70,7 @@ final class SidebarSlideTests: XCTestCase {
         slide.follow(animator.advance(to: clock))
 
         let expected = Animation(
-            from: [0], destination: [1], velocity: [0], motion: .eased(UInt(SidebarSlide.milliseconds), .cubicOut),
+            from: [0], destination: [1], velocity: [0], motion: .eased(.milliseconds(Int(SidebarSlide.milliseconds)), .cubicOut),
             began: 0).position(at: SidebarSlide.longestFrame).value[0]
         XCTAssertEqual(seen.last ?? 0, expected, accuracy: 1e-9, "one longest frame's way")
         XCTAssertTrue(animator.isMoving, "still on its way")
@@ -79,7 +79,7 @@ final class SidebarSlideTests: XCTestCase {
     /// Following a toolkit's own slide, it moves by the toolkit's motion and keeps its time: a late frame is not
     /// slowed, as the toolkit's sidebar is not.
     func testASlideFollowingAToolkitKeepsItsMotionAndItsTime() {
-        let toolkit = Motion.spring(response: 340)
+        let toolkit = Motion.spring(response: .milliseconds(340))
         var seen: [Double] = []
         slide.slide(1, from: 0, shown: true, following: toolkit) { shown, _ in seen.append(shown) }
         clock = 120

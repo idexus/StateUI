@@ -238,7 +238,7 @@ struct PlacedSample: SampleContent, ExampleContent {
     private func move(_ by: Int) {
         let slot = max(0, min(Double(Self.cards.count - 1), (at + Double(by)).rounded()))
 
-        $scrolled.journey.move(to: Point(slot * Self.reach, 0), .eased(300, .cubicOut))
+        $scrolled.journey.move(to: Point(slot * Self.reach, 0), .eased(.milliseconds(300), .cubicOut))
     }
 
     /// One card's face - a picture and its name, and nothing at all about where

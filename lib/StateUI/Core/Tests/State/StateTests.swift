@@ -705,12 +705,12 @@ extension StateTests {
         _ = Renderer.shared.renderHost(baseline: 0)
         XCTAssertEqual(readers.count, 1)
 
-        fade.projectedValue.journey.move(to: 0.2, .eased(400, .linear))
+        fade.projectedValue.journey.move(to: 0.2, .eased(.milliseconds(400), .linear))
         _ = renders.revisit(changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(readers.count, 2, "the body that printed the state was not built again for the move")
         XCTAssertEqual(fade.get(), 0.2, "and it reads where the value is going")
-        XCTAssertEqual(fade.projectedValue.journey.motion, .eased(400, .linear), "on the move's own law")
+        XCTAssertEqual(fade.projectedValue.journey.motion, .eased(.milliseconds(400), .linear), "on the move's own law")
         XCTAssertEqual(fade.projectedValue.journey.value, 1, "the value waits for the host to walk it")
     }
 
@@ -729,7 +729,7 @@ extension StateTests {
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
             Shown { _ = shown.get() }
-                .samples(fade.projectedValue, into: shown.projectedValue, .every(0))
+                .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(0)))
                 .node,
         ], id: "root"))
 
@@ -754,7 +754,7 @@ extension StateTests {
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
             Shown { _ = shown.get() }
-                .samples(fade.projectedValue, into: shown.projectedValue, .every(0))
+                .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(0)))
                 .node,
         ], id: "root"))
         _ = Renderer.shared.renderHost(baseline: 0)
@@ -781,7 +781,7 @@ extension StateTests {
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
             Shown { _ = shown.get() }
-                .samples(fade.projectedValue, into: shown.projectedValue, .every(30))
+                .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(30)))
                 .node,
         ], id: "root"))
 
@@ -814,7 +814,7 @@ extension StateTests {
 
             renders.render(stack([
                 Shown { _ = shown.get() }
-                    .samples(fade.projectedValue, into: shown.projectedValue, .every(100))
+                    .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(100)))
                     .node,
             ], id: "root"))
 
@@ -846,7 +846,7 @@ extension StateTests {
             stack([
                 Text("walked").opacity(fade.projectedValue).node,
                 Shown { _ = shown.get() }
-                    .samples(fade.projectedValue, into: shown.projectedValue, .every(100_000))
+                    .samples(fade.projectedValue, into: shown.projectedValue, .every(.seconds(100)))
                     .node,
             ], id: "root")
         }
@@ -880,10 +880,10 @@ extension StateTests {
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
             Shown { _ = quick.get() }
-                .samples(fade.projectedValue, into: quick.projectedValue, .every(0))
+                .samples(fade.projectedValue, into: quick.projectedValue, .every(.milliseconds(0)))
                 .node,
             Shown { _ = slow.get() }
-                .samples(fade.projectedValue, into: slow.projectedValue, .every(100_000))
+                .samples(fade.projectedValue, into: slow.projectedValue, .every(.seconds(100)))
                 .node,
         ], id: "root"))
 

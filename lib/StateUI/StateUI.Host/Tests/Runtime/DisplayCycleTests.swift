@@ -27,7 +27,7 @@ final class DisplayCycleTests: XCTestCase {
         cycle.presenter = presenter
 
         let travelling = HostJourney(
-            value: [0], destination: [100], velocity: [0], motion: .eased(400), completion: nil, stopped: 0)
+            value: [0], destination: [100], velocity: [0], motion: .eased(.milliseconds(400)), completion: nil, stopped: 0)
         _ = channels.presentedValue(
             for: HostStateBinding(state: 9, mode: .out, kind: .property, laneKind: .number),
             from: HostBoundary.value(of: travelling),
@@ -37,7 +37,7 @@ final class DisplayCycleTests: XCTestCase {
             key: DescribedKey(mount: 1, property: .opacity),
             standing: .number(0),
             target: .number(1),
-            motion: .eased(400),
+            motion: .eased(.milliseconds(400)),
             now: 0,
             reducesMotion: false)
         _ = channels.takeOutputs()
@@ -58,7 +58,7 @@ final class DisplayCycleTests: XCTestCase {
         XCTAssertFalse(runtime.clock.held, "nothing moves")
 
         runtime.tree.receiveProperty(
-            mount: 1, property: .opacity, standing: .number(0), target: .number(1), motion: .eased(200, .linear))
+            mount: 1, property: .opacity, standing: .number(0), target: .number(1), motion: .eased(.milliseconds(200), .linear))
         XCTAssertTrue(runtime.clock.held, "a property's animation holds it as it starts")
         runtime.displayCycle.frame(now: 100)
         XCTAssertTrue(runtime.clock.held, "and while it runs")
@@ -66,7 +66,7 @@ final class DisplayCycleTests: XCTestCase {
         XCTAssertFalse(runtime.clock.held, "and lets go on the frame it lands")
 
         let child = Placed()
-        let travels = Arrangement(law: .eased(200, .linear), lanes: .all)
+        let travels = Arrangement(law: .eased(.milliseconds(200), .linear), lanes: .all)
         runtime.layoutMotion.place(
             child, mount: 2, at: Rect(x: 0, y: 0, width: 10, height: 10), stated: [], fadeIn: nil, in: travels)
         XCTAssertFalse(runtime.clock.held, "a child standing at its place does not move")
@@ -134,7 +134,7 @@ private struct TravelApplication: Application {
 }
 
 private struct TravelPage: View {
-    @State(motion: .eased(200, .linear)) private var level = 0.0
+    @State(motion: .eased(.milliseconds(200), .linear)) private var level = 0.0
 
     var body: some View {
         VStack {

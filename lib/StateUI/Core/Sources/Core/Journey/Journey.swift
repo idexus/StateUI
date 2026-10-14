@@ -10,7 +10,7 @@
 ///     Rectangle().opacity($fade)
 ///
 ///     fade = 0.2                                         // the destination: the box animates there
-///     $fade.journey.move(to: 0.2, .eased(400))           // the same, under a law of its own
+///     $fade.journey.move(to: 0.2, .eased(.milliseconds(400)))           // the same, under a law of its own
 ///     try await $fade.journey.move(to: 1).arrived()      // back, waiting for the arrival
 ///     $fade.journey.value                                // where it has got to this frame
 ///     $fade.journey.velocity                             // and how fast
@@ -154,7 +154,7 @@ public struct Journey<Value: Walked> {
     /// Sends the value there under `motion` - now, before the next line runs - and
     /// answers the movement, whose `arrived()` waits for its end.
     ///
-    ///     try await $fade.journey.move(to: 0.1, .eased(400, .cubicOut)).arrived()
+    ///     try await $fade.journey.move(to: 0.1, .eased(.milliseconds(400), .cubicOut)).arrived()
     ///
     ///     let fading = $fade.journey.move(to: 0)       // both start now, in this order
     ///     let sliding = $offset.journey.move(to: .zero)

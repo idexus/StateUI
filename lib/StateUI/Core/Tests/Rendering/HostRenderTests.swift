@@ -25,9 +25,9 @@ final class HostRenderTests: XCTestCase {
         patch.properties[.text] = .string("Save")
         patch.clearedProperties = [.margin]
         patch.motion = HostLayoutMotion(
-            motion: .spring(response: 240, damping: 0.8),
+            motion: .spring(response: .milliseconds(240), damping: 0.8),
             lanes: [.x, .height])
-        patch.transitions[.opacity] = HostTransition(motion: .eased(120, .linear))
+        patch.transitions[.opacity] = HostTransition(motion: .eased(.milliseconds(120), .linear))
         patch.driven = .replace([
             .opacity: HostStateBinding(state: 17, mode: .inOut, kind: .property, laneKind: .number),
         ])
@@ -188,7 +188,7 @@ final class HostRenderTests: XCTestCase {
             value: [0.25, 0.5, 0.75, 1],
             destination: [1, 0.75, 0.5, 0.25],
             velocity: [4, 3, 2, 1],
-            motion: .spring(response: 260, damping: 0.82),
+            motion: .spring(response: .milliseconds(260), damping: 0.82),
             completion: -17,
             stopped: 3)
 
@@ -213,7 +213,7 @@ final class HostRenderTests: XCTestCase {
     }
 
     func testANativeHostReportsOnlyTheJourneyGroupsItWalked() throws {
-        let fade = State(wrappedValue: 0.0, motion: .eased(400, .linear))
+        let fade = State(wrappedValue: 0.0, motion: .eased(.milliseconds(400), .linear))
         let renders = Renders()
         let patch = renders.render(Text("moving").opacity(fade.projectedValue).node)
 
@@ -249,7 +249,7 @@ final class HostRenderTests: XCTestCase {
     /// stands, and crosses on the next cycle. A snap's value stands against a
     /// frame the same way.
     func testAJourneyReportLeavesWhatTheProgramWroteSinceTheHostRead() throws {
-        let fade = State(wrappedValue: 0.0, motion: .eased(400, .linear))
+        let fade = State(wrappedValue: 0.0, motion: .eased(.milliseconds(400), .linear))
         let renders = Renders()
         let patch = renders.render(Text("moving").opacity(fade.projectedValue).node)
 

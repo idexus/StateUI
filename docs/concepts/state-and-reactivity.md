@@ -501,10 +501,10 @@ struct SampledProgress: View {
             ProgressBar().progress($progress)
             Text("Shown: \(Int(shown * 100))%")
             Button("Run").onClicked {
-                $progress.journey.move(to: 1, .eased(1_000, .cubicOut))
+                $progress.journey.move(to: 1, .eased(.seconds(1), .cubicOut))
             }
         }
-        .samples($progress, into: $shown, .every(100))
+        .samples($progress, into: $shown, .every(.milliseconds(100)))
     }
 }
 ```

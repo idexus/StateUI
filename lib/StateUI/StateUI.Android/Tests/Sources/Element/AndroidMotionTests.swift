@@ -27,7 +27,7 @@ final class AndroidMotionTests: XCTestCase {
 
             var changed = HostPatch(id: .manual("label"), type: .text)
             changed.properties[.opacity] = .number(0.75)
-            changed.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
+            changed.transitions[.opacity] = HostTransition(motion: .eased(.milliseconds(200), .linear))
             host.apply(changed)
 
             let label = try XCTUnwrap(host.view(id: .manual("label")))
@@ -96,7 +96,7 @@ final class AndroidMotionTests: XCTestCase {
                 VStack {
                     Text("moving").translationX(offset.projectedValue)
                     Button("Go").onClicked(gate: .ignoreWhileRunning) {
-                        try await offset.projectedValue.journey.move(to: 100, .eased(200, .linear)).arrived()
+                        try await offset.projectedValue.journey.move(to: 100, .eased(.milliseconds(200), .linear)).arrived()
                     }
                 }
             }

@@ -36,7 +36,7 @@ final class MotionTests: XCTestCase {
 
     func testTheApplicationSaysHowEverythingTravels() {
         let renders = Renders()
-        let own = Motion.spring(response: 260, damping: 0.8)
+        let own = Motion.spring(response: .milliseconds(260), damping: 0.8)
 
         renders.render(panel(1), motion: own)
         let patch = renders.render(panel(0.25), motion: own)
@@ -346,7 +346,7 @@ final class MotionTests: XCTestCase {
     /// And a rule may say a motion rather than none.
     func testARuleMaySayADifferentMotionRatherThanNone() {
         let renders = Renders()
-        let own = Motion.spring(response: 240)
+        let own = Motion.spring(response: .milliseconds(240))
 
         func panel(_ fade: Double, _ width: Double) -> Node {
             ZStack { Text("x") }
@@ -374,7 +374,7 @@ final class MotionTests: XCTestCase {
             ZStack { Text("x") }
                 .width(width)
                 .motion(.none, .size)
-                .motion(.eased(500), .width)
+                .motion(.eased(.milliseconds(500)), .width)
                 .id("p")
                 .node
         }
@@ -382,7 +382,7 @@ final class MotionTests: XCTestCase {
         renders.render(panel(100))
         let patch = renders.render(panel(300))
 
-        XCTAssertEqual(patch.transitions[.width]?.motion, .eased(500))
+        XCTAssertEqual(patch.transitions[.width]?.motion, .eased(.milliseconds(500)))
     }
 
     /// A LAYOUT says which parts of a child's place travel, since a place is
@@ -745,11 +745,19 @@ final class MotionTests: XCTestCase {
     // ---- The vocabulary itself ---------------------------------------------
 
     func testTheLawsCarryTheNumbersTheyNeed() {
-        XCTAssertEqual(Motion.eased(400, .cubicIn).milliseconds, 400)
-        XCTAssertEqual(Motion.eased(400, .cubicIn).curve, .cubicIn)
+        XCTAssertEqual(Motion.eased(.milliseconds(400), .cubicIn).milliseconds, 400)
+        XCTAssertEqual(Motion.eased(.milliseconds(400), .cubicIn).curve, .cubicIn)
 
-        XCTAssertEqual(Motion.spring(response: 260, damping: 0.7).milliseconds, 260)
-        XCTAssertEqual(Motion.spring(response: 260, damping: 0.7).factor, 0.7)
+        XCTAssertEqual(Motion.spring(response: .milliseconds(260), damping: 0.7).milliseconds, 260)
+        XCTAssertEqual(Motion.spring(response: .milliseconds(260), damping: 0.7).factor, 0.7)
+    }
+
+    func testALengthIsADurationKeptToTheMillisecond() {
+        XCTAssertEqual(Motion.eased(.seconds(1.25)).length, .milliseconds(1250))
+        XCTAssertEqual(Motion.spring(response: .milliseconds(260)).length, .milliseconds(260))
+        XCTAssertEqual(Motion.eased(.microseconds(1500)).milliseconds, 2, "to the nearest")
+        XCTAssertEqual(Motion.eased(.milliseconds(-30)).milliseconds, 0, "nothing before none")
+        XCTAssertEqual(Asks.every(.seconds(2)).window, 2000)
     }
 
     func testNoMotionIsNothingAndInheritedResolves() {
@@ -757,7 +765,7 @@ final class MotionTests: XCTestCase {
         XCTAssertFalse(Motion.standard.isNothing)
 
         XCTAssertEqual(Motion.inherited.resolved(against: .standard), .standard)
-        XCTAssertEqual(Motion.eased(50).resolved(against: .standard), .eased(50))
+        XCTAssertEqual(Motion.eased(.milliseconds(50)).resolved(against: .standard), .eased(.milliseconds(50)))
     }
 
     /// A spring's damping is bought deliberately and never given away: half a

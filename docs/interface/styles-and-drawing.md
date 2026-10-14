@@ -288,7 +288,7 @@ hears every state the control declares, normal included:
 Button("Hold")
     .scale($scale)
     .onVisualStateChanged(.pressed, .normal) { state in
-        $scale.journey.move(to: state == .pressed ? 0.96 : 1, .eased(90))
+        $scale.journey.move(to: state == .pressed ? 0.96 : 1, .eased(.milliseconds(90)))
     }
 ```
 

@@ -6,7 +6,7 @@
 /// A motion written on a view applies to all of them unless it names some:
 ///
 ///     VStack { … }
-///         .motion(.spring(response: 240))
+///         .motion(.spring(response: .milliseconds(240)))
 ///         .motion(.none, .size)
 ///
 /// The stack's children move to their new places on a spring and take their

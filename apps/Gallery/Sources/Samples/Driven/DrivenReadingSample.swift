@@ -64,12 +64,12 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             HStack {
                 Button("Grow")
                     .onClicked {
-                        $width.journey.move(to: 300, .eased(1600, .cubicOut))
+                        $width.journey.move(to: 300, .eased(.milliseconds(1600), .cubicOut))
                     }
 
                 Button("Shrink")
                     .onClicked {
-                        $width.journey.move(to: 60, .eased(1600, .cubicIn))
+                        $width.journey.move(to: 60, .eased(.milliseconds(1600), .cubicIn))
                     }
 
                 // Stopping leaves the value where it stands, and the

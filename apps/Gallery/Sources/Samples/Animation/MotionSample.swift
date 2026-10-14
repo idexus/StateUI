@@ -12,8 +12,8 @@ struct MotionSample: SampleContent, ExampleContent {
 
     static func law(_ index: Int) -> Motion {
         switch index {
-        case 1: .spring(response: 320)
-        case 2: .eased(900, .sineInOut)
+        case 1: .spring(response: .milliseconds(320))
+        case 2: .eased(.milliseconds(900), .sineInOut)
         case 3: .none
         default: .standard
         }

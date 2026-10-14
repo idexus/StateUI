@@ -10,9 +10,9 @@
 /// A change animates by default - assign a state and the control animates to
 /// the new value - and a motion says how:
 ///
-///     VStack { … }.motion(.spring(response: 260))
+///     VStack { … }.motion(.spring(response: .milliseconds(260)))
 ///
-///     $fade.journey.move(to: 0.1, .eased(400, .cubicOut))
+///     $fade.journey.move(to: 0.1, .eased(.milliseconds(400), .cubicOut))
 ///
 /// `.none` applies a change at once. `.custom` hands the animation to an
 /// engine of your own. `.eased` and `.spring` name a timing law and its
@@ -32,8 +32,9 @@ public struct Motion: Equatable, Sendable {
     /// The timing law this motion follows.
     public let law: Law
 
-    /// Milliseconds: how long an eased motion takes, or a spring's response.
-    public let milliseconds: UInt32
+    /// Milliseconds: how long an eased motion takes, or a spring's response -
+    /// `length` as a host reads it.
+    @_spi(Host) public let milliseconds: UInt32
 
     /// The curve an eased motion follows.
     public let curve: Easing
@@ -93,23 +94,26 @@ public struct Motion: Equatable, Sendable {
     public static let custom = Motion(
         law: .eased, milliseconds: 0, curve: .cubicOut, factor: 0, isInherited: false, isCustom: true)
 
+    /// How long an eased motion takes, or how quickly a spring answers.
+    public var length: Duration { .milliseconds(Int(milliseconds)) }
+
     /// An animation of a stated duration on a stated curve.
     ///
-    ///     .motion(.eased(400, .cubicOut))
+    ///     .motion(.eased(.milliseconds(400), .cubicOut))
     ///
     /// It takes the stated time whatever the distance: right for something
     /// whose distance is known, such as a fade, a page sliding in, or a card
     /// turning over.
     ///
     /// - Parameters:
-    ///   - length: how long it takes, in milliseconds.
+    ///   - length: how long it takes, to the millisecond.
     ///   - curve: how it spends that time. `.cubicOut` arrives gently, which is
     ///     what almost everything on screen wants.
     /// - Returns: the motion.
-    public static func eased(_ length: UInt, _ curve: Easing = .cubicOut) -> Motion {
+    public static func eased(_ length: Duration, _ curve: Easing = .cubicOut) -> Motion {
         Motion(
             law: .eased,
-            milliseconds: UInt32(truncatingIfNeeded: length),
+            milliseconds: Motion.milliseconds(of: length),
             curve: curve,
             factor: 0,
             isInherited: false,
@@ -118,7 +122,7 @@ public struct Motion: Equatable, Sendable {
 
     /// A mass on a spring, which answers a change rather than timing it.
     ///
-    ///     .motion(.spring(response: 260))
+    ///     .motion(.spring(response: .milliseconds(260)))
     ///
     /// It has no duration: a spring settles when it is done, and one whose
     /// destination changes mid-animation carries on from the speed it had.
@@ -126,15 +130,15 @@ public struct Motion: Equatable, Sendable {
     /// dragged, a value still being chosen.
     ///
     /// - Parameters:
-    ///   - response: how quickly it answers, in milliseconds. Smaller is
+    ///   - response: how quickly it answers, to the millisecond. Smaller is
     ///     snappier.
     ///   - damping: 1 comes to rest without overshooting; below 1 overshoots
     ///     and oscillates, which is rarely what a user expects.
     /// - Returns: the motion.
-    public static func spring(response: UInt = 300, damping: Double = 1) -> Motion {
+    public static func spring(response: Duration = .milliseconds(300), damping: Double = 1) -> Motion {
         Motion(
             law: .spring,
-            milliseconds: UInt32(truncatingIfNeeded: max(response, 1)),
+            milliseconds: max(Motion.milliseconds(of: response), 1),
             curve: .linear,
             factor: max(damping, 0.05),
             isInherited: false,
@@ -153,5 +157,13 @@ public struct Motion: Equatable, Sendable {
 
     /// The default motion: 200 milliseconds on `.cubicOut`, for ordinary
     /// changes and a scroller's landing.
-    public static let standard = Motion.eased(200, .cubicOut)
+    public static let standard = Motion.eased(.milliseconds(200), .cubicOut)
+
+    /// A length in whole milliseconds, nought for one before none, rounded to the nearest.
+    static func milliseconds(of length: Duration) -> UInt32 {
+        let (seconds, attoseconds) = length.components
+        let whole = Double(seconds) * 1_000 + Double(attoseconds) / 1e15
+
+        return UInt32(min(max(whole.rounded(), 0), Double(UInt32.max)))
+    }
 }

@@ -99,7 +99,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, ID: Hashable>: View {
     ///
     ///     PlacedLayout(cards, id: \.self) { … }
     ///         .placement($run)
-    ///         .motion(.eased(300, .cubicOut))
+    ///         .motion(.eased(.milliseconds(300), .cubicOut))
     ///
     /// - Parameter motion: how a run written `.inherited` animates.
     /// - Returns: the layout, moving that way.

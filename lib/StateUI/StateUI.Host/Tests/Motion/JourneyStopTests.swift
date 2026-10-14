@@ -13,7 +13,7 @@ final class JourneyStopTests: XCTestCase {
     func testAStoppedNumberStaysWhereItStood() throws {
         let (runtime, clock) = start()
 
-        Stage.held.$fade.journey.move(to: 0, .eased(1000, .linear))
+        Stage.held.$fade.journey.move(to: 0, .eased(.milliseconds(1000), .linear))
         turn(runtime, clock, to: 500)
         let stood = Stage.held.$fade.journey.value
         XCTAssertEqual(stood, 0.5, accuracy: 0.05, "half-way at half the time")
@@ -29,7 +29,7 @@ final class JourneyStopTests: XCTestCase {
     func testAStoppedColourStaysWhereItStood() throws {
         let (runtime, clock) = start()
 
-        Stage.held.$wash.journey.move(to: Stage.brand, .eased(1000, .linear))
+        Stage.held.$wash.journey.move(to: Stage.brand, .eased(.milliseconds(1000), .linear))
         turn(runtime, clock, to: 500)
         stop(runtime, clock, after: 16) { Stage.held.$wash.journey.stop() }
         let stood = Stage.held.$wash.journey.value
@@ -43,7 +43,7 @@ final class JourneyStopTests: XCTestCase {
     func testAMovedColourAnswersWhereItIsGoing() throws {
         let (runtime, clock) = start()
 
-        Stage.held.$wash.journey.move(to: Stage.brand, .eased(1000, .linear))
+        Stage.held.$wash.journey.move(to: Stage.brand, .eased(.milliseconds(1000), .linear))
 
         XCTAssertEqual(Stage.held.wash, Stage.brand, "the state answers where it is going")
         turn(runtime, clock, to: 1500)

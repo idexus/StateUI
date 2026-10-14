@@ -61,8 +61,8 @@ struct AnimationSample: SampleContent, ExampleContent {
                 // whatever happened instead, which is what lets Stop leave the
                 // card where it stood.
                 button("Fade") {
-                    let landed = try await $fade.journey.move(to: 0.1, .eased(400, curve)).arrived()
-                    if landed { try await $fade.journey.move(to: 1, .eased(400, curve)).arrived() }
+                    let landed = try await $fade.journey.move(to: 0.1, .eased(.milliseconds(400), curve)).arrived()
+                    if landed { try await $fade.journey.move(to: 1, .eased(.milliseconds(400), curve)).arrived() }
                 }
 
                 // ONE movement, because the card only ever moves sideways. A
@@ -70,13 +70,13 @@ struct AnimationSample: SampleContent, ExampleContent {
                 // beside this one before either is awaited, so the two land
                 // together.
                 button("Move") {
-                    let landed = try await $shift.journey.move(to: 60, .eased(400, curve)).arrived()
-                    if landed { try await $shift.journey.move(to: 0, .eased(400, curve)).arrived() }
+                    let landed = try await $shift.journey.move(to: 60, .eased(.milliseconds(400), curve)).arrived()
+                    if landed { try await $shift.journey.move(to: 0, .eased(.milliseconds(400), curve)).arrived() }
                 }
 
                 button("Scale") {
-                    let landed = try await $scale.journey.move(to: 1.4, .eased(400, curve)).arrived()
-                    if landed { try await $scale.journey.move(to: 1, .eased(400, curve)).arrived() }
+                    let landed = try await $scale.journey.move(to: 1.4, .eased(.milliseconds(400), curve)).arrived()
+                    if landed { try await $scale.journey.move(to: 1, .eased(.milliseconds(400), curve)).arrived() }
                 }
 
                 // A movement goes TO a value, never BY one, so a full turn is
@@ -84,7 +84,7 @@ struct AnimationSample: SampleContent, ExampleContent {
                 // headed, which is what makes the next press carry on from
                 // there rather than start over.
                 button("Spin") {
-                    try await $angle.journey.move(to: angle + 360, .eased(700, curve)).arrived()
+                    try await $angle.journey.move(to: angle + 360, .eased(.milliseconds(700), curve)).arrived()
                 }
             }
             .spacing(8)

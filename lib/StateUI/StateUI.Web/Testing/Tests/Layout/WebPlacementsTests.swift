@@ -18,7 +18,7 @@ final class WebPlacementsTests: XCTestCase {
     private func stack() -> (WebLayoutView, WebDOMView, WebDOMView) {
         let layout = WebLayoutView(arrangement: .stack(.vertical))
         let (first, second) = (WebDOMView(tag: "div"), WebDOMView(tag: "div"))
-        motion.applicationMotion = .eased(200, .linear)
+        motion.applicationMotion = .eased(.milliseconds(200), .linear)
         layout.placing = placements
         layout.places.layoutMotion = motion
         placements.follow(layout)

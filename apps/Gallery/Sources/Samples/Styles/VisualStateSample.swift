@@ -50,7 +50,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
                     // sends the state there over 90ms, and the button follows it.
                     .onVisualStateChanged { state in
                         entered = state.name
-                        $press.journey.move(to: state == .pressed ? 0.94 : 1, .eased(90))
+                        $press.journey.move(to: state == .pressed ? 0.94 : 1, .eased(.milliseconds(90)))
                     }
                     .onClicked { presses += 1 }
 

@@ -129,7 +129,7 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(image.pendingMask & ~beforeStop, Lanes.mask(of: .stopped), "a stop lays its counter alone")
 
         let beforeMove = image.pendingMask
-        wash.projectedValue.journey.move(to: Color("#EA580C"), .eased(400))
+        wash.projectedValue.journey.move(to: Color("#EA580C"), .eased(.milliseconds(400)))
         let moved = image.pendingMask & ~beforeMove
         XCTAssertEqual(moved & (Lanes.mask(of: .value) | Lanes.mask(of: .velocity)), 0, "a move leaves the value and the speed")
         XCTAssertNotEqual(moved & Lanes.mask(of: .destination), 0, "and lays where it goes")
@@ -149,8 +149,8 @@ final class JourneyTests: XCTestCase {
         stated.wrappedValue = 10
         XCTAssertEqual(stated.projectedValue.journey.motion, .spring(), "and sending it kept the law")
 
-        plain.projectedValue.journey.motion = .eased(90, .linear)
-        XCTAssertEqual(plain.projectedValue.journey.motion, .eased(90, .linear), "written later, it is the value's too")
+        plain.projectedValue.journey.motion = .eased(.milliseconds(90), .linear)
+        XCTAssertEqual(plain.projectedValue.journey.motion, .eased(.milliseconds(90), .linear), "written later, it is the value's too")
     }
 
     /// THE VALUE'S OWN LAW OVERRIDES THE ELEMENT'S, per property. `.inherited`
@@ -166,10 +166,10 @@ final class JourneyTests: XCTestCase {
 
         for image in [asked, stated] {
             image.door = .property
-            image.inherited = .eased(200, .cubicOut)
+            image.inherited = .eased(.milliseconds(200), .cubicOut)
         }
 
-        XCTAssertEqual(law(crossing: asked), .eased(200, .cubicOut),
+        XCTAssertEqual(law(crossing: asked), .eased(.milliseconds(200), .cubicOut),
                        "`.inherited` is answered by the element's law")
         XCTAssertEqual(law(crossing: stated), .spring(),
                        "a law the value states is left alone")
@@ -187,10 +187,10 @@ final class JourneyTests: XCTestCase {
 
         for image in images {
             image.door = .property
-            image.inherited = .eased(200, .cubicOut)
+            image.inherited = .eased(.milliseconds(200), .cubicOut)
         }
 
-        XCTAssertEqual(law(crossing: images[0]), .eased(200, .cubicOut),
+        XCTAssertEqual(law(crossing: images[0]), .eased(.milliseconds(200), .cubicOut),
                        "leaving it out means the element's")
         XCTAssertEqual(law(crossing: images[1]), .spring(),
                        "and a stated law is read before any cycle has run")

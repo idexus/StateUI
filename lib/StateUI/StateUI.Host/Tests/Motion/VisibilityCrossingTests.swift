@@ -68,7 +68,7 @@ final class VisibilityCrossingTests: XCTestCase {
         let joining = Faded()
         XCTAssertTrue(element.fadesIn(presentsOpacity: true))
         XCTAssertFalse(element.fadesIn(presentsOpacity: false))
-        element.fadeIn(joining, under: .eased(200, .linear))
+        element.fadeIn(joining, under: .eased(.milliseconds(200), .linear))
         XCTAssertEqual(joining.said, [], "its opacity is already on its way")
     }
 
@@ -91,7 +91,7 @@ final class VisibilityCrossingTests: XCTestCase {
     private static func label(visible: Bool) -> (HostRuntime, WoundClock, MountedElement) {
         let clock = WoundClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
-        runtime.layoutMotion.applicationMotion = .eased(200, .linear)
+        runtime.layoutMotion.applicationMotion = .eased(.milliseconds(200), .linear)
         var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [.isVisible: .bool(visible)]
         runtime.tree.apply(label, complete: true)

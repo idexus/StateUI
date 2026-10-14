@@ -521,7 +521,7 @@ struct HomePage: View {
     private static var patience: Double { 1500 }
 
     /// How long the page takes to come in, in milliseconds.
-    private static var entrance: UInt { 700 }
+    private static var entrance: Duration { .milliseconds(700) }
 
     /// The page's own margin, which the rows do not get to share.
     private static var margin: Double { 24 }

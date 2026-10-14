@@ -187,7 +187,7 @@ struct Fader: View {
     var body: some View {
         VStack {
             Text("Native motion").opacity($fade)
-            Button("Fade").onClicked { $fade.journey.move(to: 0.15, .eased(400, .cubicOut)) }
+            Button("Fade").onClicked { $fade.journey.move(to: 0.15, .eased(.milliseconds(400), .cubicOut)) }
             Button("Restore").onClicked { $fade.journey.snap(to: 1) }
             Button("Stop").onClicked { $fade.journey.stop() }
         }
@@ -198,7 +198,7 @@ struct Fader: View {
 Reading `fade` in a body subscribes to destination writes. Reading
 `$fade.journey.value` in a body subscribes to journey frames and therefore
 rebuilds while the value moves. When a body does not need every frame, use
-`.samples($fade, into: $shown, .every(100))`. When only a native property or
+`.samples($fade, into: $shown, .every(.milliseconds(100)))`. When only a native property or
 caption needs the live value, use a journey conversion and keep the work on the
 host-cycle path.
 
@@ -226,7 +226,7 @@ struct ResizingPanel: View {
             Rectangle(.cornflowerBlue)
                 .width(expanded ? 280 : 120)
                 .cornerRadius(expanded ? 28 : 8)
-                .motion(.spring(response: 320))
+                .motion(.spring(response: .milliseconds(320)))
 
             Button("Resize").onClicked { expanded.toggle() }
         }

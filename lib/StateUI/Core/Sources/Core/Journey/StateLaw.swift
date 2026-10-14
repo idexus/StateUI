@@ -40,8 +40,8 @@ enum StateLaw {
     static func motion(of lanes: [Double]) -> Motion {
         switch lanes.first ?? 0 {
         case 1: return .inherited
-        case 2: return .eased(UInt(max(lanes[1], 0)), Easing(rawValue: Int32(lanes[2])) ?? .cubicOut)
-        case 3: return .spring(response: UInt(max(lanes[1], 0)), damping: lanes[2])
+        case 2: return .eased(.milliseconds(Int(max(lanes[1], 0))), Easing(rawValue: Int32(lanes[2])) ?? .cubicOut)
+        case 3: return .spring(response: .milliseconds(Int(max(lanes[1], 0))), damping: lanes[2])
         case 4: return .custom
         default: return Motion.none
         }

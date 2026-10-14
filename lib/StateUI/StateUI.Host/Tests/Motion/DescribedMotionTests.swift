@@ -31,7 +31,7 @@ final class DescribedMotionTests: XCTestCase {
             key: key,
             standing: source,
             target: target,
-            motion: .eased(200, .linear),
+            motion: .eased(.milliseconds(200), .linear),
             now: 0,
             reducesMotion: false)
         XCTAssertEqual(described.presentedValue(for: key), source)
@@ -64,7 +64,7 @@ final class DescribedMotionTests: XCTestCase {
             key: key,
             standing: linear,
             target: solid,
-            motion: .eased(200, .linear),
+            motion: .eased(.milliseconds(200), .linear),
             now: 0,
             reducesMotion: false)
 
@@ -85,7 +85,7 @@ final class DescribedMotionTests: XCTestCase {
             key: colour,
             standing: black,
             target: .color(red: 255, green: 255, blue: 255, alpha: 255),
-            motion: .eased(200, .linear),
+            motion: .eased(.milliseconds(200), .linear),
             now: 0,
             reducesMotion: false)
 
@@ -98,7 +98,7 @@ final class DescribedMotionTests: XCTestCase {
             key: brush,
             standing: black,
             target: .values([.enumeration(1), .color(red: 255, green: 0, blue: 0, alpha: 255)]),
-            motion: .eased(200, .linear),
+            motion: .eased(.milliseconds(200), .linear),
             now: 100,
             reducesMotion: false)
 
@@ -115,13 +115,13 @@ final class DescribedMotionTests: XCTestCase {
         var firstEnded = 0
         var secondEnded = 0
         described.receive(
-            key: key, standing: .number(0), target: .number(1), motion: .eased(200, .linear),
+            key: key, standing: .number(0), target: .number(1), motion: .eased(.milliseconds(200), .linear),
             landed: { firstEnded += 1 }, now: 0, reducesMotion: false)
         described.follow(animator.advance(to: 100))
         _ = described.takeOutputs()
 
         described.receive(
-            key: key, standing: .number(1), target: .number(0), motion: .eased(200, .linear),
+            key: key, standing: .number(1), target: .number(0), motion: .eased(.milliseconds(200), .linear),
             landed: { secondEnded += 1 }, now: 100, reducesMotion: false)
 
         XCTAssertEqual(described.presentedValue(for: key), .number(0.5), "it bends from where it stands")
@@ -148,10 +148,10 @@ final class DescribedMotionTests: XCTestCase {
         let staying = DescribedKey(mount: 2, property: .opacity)
         for key in [fading, turning, staying] {
             described.receive(
-                key: key, standing: .number(0), target: .number(1), motion: .eased(200, .linear),
+                key: key, standing: .number(0), target: .number(1), motion: .eased(.milliseconds(200), .linear),
                 now: 0, reducesMotion: false)
         }
-        let channel = Animation(from: [0], destination: [1], velocity: [0], motion: .eased(200, .linear), began: 0)
+        let channel = Animation(from: [0], destination: [1], velocity: [0], motion: .eased(.milliseconds(200), .linear), began: 0)
         animator.start(channel, for: .state(1))
         described.follow(animator.advance(to: 50))
 

@@ -59,7 +59,7 @@ final class PropertyValuesTests: XCTestCase {
         ]
         var moved = HostPatch(id: .manual("box"), type: .rectangle)
         moved.properties = targets
-        moved.transitions = targets.mapValues { _ in HostTransition(motion: .eased(200, .linear)) }
+        moved.transitions = targets.mapValues { _ in HostTransition(motion: .eased(.milliseconds(200), .linear)) }
 
         runtime.tree.apply(moved, complete: false)
 

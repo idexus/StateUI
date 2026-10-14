@@ -253,9 +253,9 @@ enum Listings {
                         let toMinute = atMinute + (minute - atMinute).forwardTurn
                         let toHour = atHour + (hour - atHour).forwardTurn
 
-                        let s = $sAngle.journey.move(to: toSecond, .eased(260, .backOut))
-                        let m = $mAngle.journey.move(to: toMinute, .eased(300, .cubicOut))
-                        let h = $hAngle.journey.move(to: toHour, .eased(300, .cubicOut))
+                        let s = $sAngle.journey.move(to: toSecond, .eased(.milliseconds(260), .backOut))
+                        let m = $mAngle.journey.move(to: toMinute, .eased(.milliseconds(300), .cubicOut))
+                        let h = $hAngle.journey.move(to: toHour, .eased(.milliseconds(300), .cubicOut))
                         try await s.arrived()
                         try await m.arrived()
                         try await h.arrived()
@@ -382,7 +382,7 @@ enum Listings {
 
                     button("Send the bottom one") {
                         try await $level.journey.move(to: level < 0.5 ? 1 : 0,
-                                                   .eased(900, .cubicInOut)).arrived()
+                                                   .eased(.milliseconds(900), .cubicInOut)).arrived()
                     }
                 }
 
@@ -399,7 +399,7 @@ enum Listings {
                         .horizontalAlignment(.start)
 
                     button("Send the stepper to 12") {
-                        try await $count.journey.move(to: 12, .eased(800, .cubicOut)).arrived()
+                        try await $count.journey.move(to: 12, .eased(.milliseconds(800), .cubicOut)).arrived()
                     }
                 }
             }
@@ -446,31 +446,31 @@ enum Listings {
 
                 HStack {
                     button("Colour") {
-                        try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(500)).arrived()
+                        try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(.milliseconds(500))).arrived()
 
                         // The caption sits on the violet field inside the panel
                         // rather than on the panel itself, so what it goes to is
                         // white, the colour that reads on that field.
-                        try await $captionColor.journey.move(to: AppColors.white, .eased(500)).arrived()
+                        try await $captionColor.journey.move(to: AppColors.white, .eased(.milliseconds(500))).arrived()
                     }
 
                     button("Size") {
                         wide.toggle()
                         try await $panelHeight.journey.move(to: wide ? 160 : 90,
-                                                         .eased(400, .cubicInOut)).arrived()
+                                                         .eased(.milliseconds(400), .cubicInOut)).arrived()
                     }
 
                     button("Padding") {
-                        try await $panelPadding.journey.move(to: Insets(48), .eased(400)).arrived()
-                        try await $panelPadding.journey.move(to: Insets(16), .eased(400)).arrived()
+                        try await $panelPadding.journey.move(to: Insets(48), .eased(.milliseconds(400))).arrived()
+                        try await $panelPadding.journey.move(to: Insets(16), .eased(.milliseconds(400))).arrived()
                     }
                 }
                 .horizontalAlignment(.center)
 
                 HStack {
                     button("Text size") {
-                        try await $captionSize.journey.move(to: 28, .eased(400, .cubicOut)).arrived()
-                        try await $captionSize.journey.move(to: 17, .eased(400, .cubicIn)).arrived()
+                        try await $captionSize.journey.move(to: 28, .eased(.milliseconds(400), .cubicOut)).arrived()
+                        try await $captionSize.journey.move(to: 17, .eased(.milliseconds(400), .cubicIn)).arrived()
                     }
 
                     button("Back") {
@@ -481,9 +481,9 @@ enum Listings {
                         // of Size would ask for the value it already has.
                         wide = false
 
-                        try await $panelHeight.journey.move(to: 90, .eased(400, .cubicInOut)).arrived()
-                        try await $panelColor.journey.move(to: AppColors.lineDark, .eased(400)).arrived()
-                        try await $captionColor.journey.move(to: AppColors.ink, .eased(400)).arrived()
+                        try await $panelHeight.journey.move(to: 90, .eased(.milliseconds(400), .cubicInOut)).arrived()
+                        try await $panelColor.journey.move(to: AppColors.lineDark, .eased(.milliseconds(400))).arrived()
+                        try await $captionColor.journey.move(to: AppColors.ink, .eased(.milliseconds(400))).arrived()
                     }
                 }
                 .horizontalAlignment(.center)
@@ -542,8 +542,8 @@ enum Listings {
                     // whatever happened instead, which is what lets Stop leave the
                     // card where it stood.
                     button("Fade") {
-                        let landed = try await $fade.journey.move(to: 0.1, .eased(400, curve)).arrived()
-                        if landed { try await $fade.journey.move(to: 1, .eased(400, curve)).arrived() }
+                        let landed = try await $fade.journey.move(to: 0.1, .eased(.milliseconds(400), curve)).arrived()
+                        if landed { try await $fade.journey.move(to: 1, .eased(.milliseconds(400), curve)).arrived() }
                     }
 
                     // ONE movement, because the card only ever moves sideways. A
@@ -551,13 +551,13 @@ enum Listings {
                     // beside this one before either is awaited, so the two land
                     // together.
                     button("Move") {
-                        let landed = try await $shift.journey.move(to: 60, .eased(400, curve)).arrived()
-                        if landed { try await $shift.journey.move(to: 0, .eased(400, curve)).arrived() }
+                        let landed = try await $shift.journey.move(to: 60, .eased(.milliseconds(400), curve)).arrived()
+                        if landed { try await $shift.journey.move(to: 0, .eased(.milliseconds(400), curve)).arrived() }
                     }
 
                     button("Scale") {
-                        let landed = try await $scale.journey.move(to: 1.4, .eased(400, curve)).arrived()
-                        if landed { try await $scale.journey.move(to: 1, .eased(400, curve)).arrived() }
+                        let landed = try await $scale.journey.move(to: 1.4, .eased(.milliseconds(400), curve)).arrived()
+                        if landed { try await $scale.journey.move(to: 1, .eased(.milliseconds(400), curve)).arrived() }
                     }
 
                     // A movement goes TO a value, never BY one, so a full turn is
@@ -565,7 +565,7 @@ enum Listings {
                     // headed, which is what makes the next press carry on from
                     // there rather than start over.
                     button("Spin") {
-                        try await $angle.journey.move(to: angle + 360, .eased(700, curve)).arrived()
+                        try await $angle.journey.move(to: angle + 360, .eased(.milliseconds(700), curve)).arrived()
                     }
                 }
                 .horizontalAlignment(.center)
@@ -820,7 +820,7 @@ enum Listings {
 
         @State private var wide = false
 
-        static let laws: [Motion] = [.standard, .spring(response: 320, damping: 0.6), .none]
+        static let laws: [Motion] = [.standard, .spring(response: .milliseconds(320), damping: 0.6), .none]
 
         /// What the picker calls a law.
         static func name(_ law: Motion) -> String {
@@ -1021,7 +1021,7 @@ enum Listings {
             var body: some View {
                 VStack {
                     Slider($level)
-                        .motion(.eased(600, .cubicOut))
+                        .motion(.eased(.milliseconds(600), .cubicOut))
 
                     HStack {
                         Button("Full")
@@ -1602,7 +1602,7 @@ enum Listings {
                             if !finished { playing = false }
                         }
 
-                        try await $breath.journey.move(to: 1, .eased(200)).arrived()
+                        try await $breath.journey.move(to: 1, .eased(.milliseconds(200))).arrived()
                     }
                     .isEnabled(!playing)
 
@@ -1617,7 +1617,7 @@ enum Listings {
 
                         for bar in bars {
                             bar.journey.stop()
-                            try await bar.journey.move(to: 0, .eased(120)).arrived()
+                            try await bar.journey.move(to: 0, .eased(.milliseconds(120))).arrived()
                         }
                     }
                     .isEnabled(playing)
@@ -1640,9 +1640,9 @@ enum Listings {
             // state, and the host carries all three on the same frames.
             let washing = $wash.journey.move(to:
                 n.isMultiple(of: 2) ? Palette.brand : Palette.accent,
-                .eased(1200, .cubicInOut))
+                .eased(.milliseconds(1200), .cubicInOut))
 
-            let breathing = $breath.journey.move(to: 0.25, .eased(600, .cubicInOut))
+            let breathing = $breath.journey.move(to: 0.25, .eased(.milliseconds(600), .cubicInOut))
 
             // 4 bars x 300ms = the 1200ms the wash takes, so the wave crosses the
             // stage exactly once per colour. A hop that did not run to the end is
@@ -1651,10 +1651,10 @@ enum Listings {
             var hopped = true
 
             for bar in bars where hopped {
-                hopped = try await bar.journey.move(to: -26, .eased(150, .cubicOut)).arrived()
+                hopped = try await bar.journey.move(to: -26, .eased(.milliseconds(150), .cubicOut)).arrived()
 
                 if hopped {
-                    hopped = try await bar.journey.move(to: 0, .eased(150, .cubicIn)).arrived()
+                    hopped = try await bar.journey.move(to: 0, .eased(.milliseconds(150), .cubicIn)).arrived()
                 }
             }
 
@@ -1663,7 +1663,7 @@ enum Listings {
             let washed = try await washing.arrived()
             let breathed = try await breathing.arrived()
 
-            try await $breath.journey.move(to: 1, .eased(300, .cubicInOut)).arrived()
+            try await $breath.journey.move(to: 1, .eased(.milliseconds(300), .cubicInOut)).arrived()
 
             return hopped && washed && breathed
         }
@@ -2358,12 +2358,12 @@ enum Listings {
                 HStack {
                     Button("Grow")
                         .onClicked {
-                            $width.journey.move(to: 300, .eased(1600, .cubicOut))
+                            $width.journey.move(to: 300, .eased(.milliseconds(1600), .cubicOut))
                         }
 
                     Button("Shrink")
                         .onClicked {
-                            $width.journey.move(to: 60, .eased(1600, .cubicIn))
+                            $width.journey.move(to: 60, .eased(.milliseconds(1600), .cubicIn))
                         }
 
                     // Stopping leaves the value where it stands, and the
@@ -2446,7 +2446,7 @@ enum Listings {
 
         /// One place to be sent to, under whichever law the switch asks for.
         private func go(to place: Double) {
-            let law: Motion = slowly ? .eased(1600, .cubicInOut) : .eased(350, .cubicOut)
+            let law: Motion = slowly ? .eased(.milliseconds(1600), .cubicInOut) : .eased(.milliseconds(350), .cubicOut)
 
             $offset.journey.motion = law
             offset = Self.run * place
@@ -5580,8 +5580,8 @@ enum Listings {
 
         static func law(_ index: Int) -> Motion {
             switch index {
-            case 1: .spring(response: 320)
-            case 2: .eased(900, .sineInOut)
+            case 1: .spring(response: .milliseconds(320))
+            case 2: .eased(.milliseconds(900), .sineInOut)
             case 3: .none
             default: .standard
             }
@@ -6024,7 +6024,7 @@ enum Listings {
                         .horizontalAlignment(.center)
                         .gridRow(3)
 
-                    spelling(".samples($offset, into: $shown, .every(100))")
+                    spelling(".samples($offset, into: $shown, .every(.milliseconds(100)))")
                         .gridRow(4)
                 }
                 .rows(.auto, .fill, .auto, .auto, .auto)
@@ -6090,7 +6090,7 @@ enum Listings {
                     // reading of where the value HAS GOT TO - which the state
                     // itself never says, standing at its destination.
                     PacedOffset(offset: $paced, shown: pacedShown)
-                        .samples($paced, into: $pacedShown, .every(100))
+                        .samples($paced, into: $pacedShown, .every(.milliseconds(100)))
                         .gridColumn(1)
 
                     DrivenOffset(offset: $driven)
@@ -6121,7 +6121,7 @@ enum Listings {
         /// - Parameter y: how far down each strip is sent.
         private func move(to y: Double) async throws {
             for strip in [$described, $paced, $driven] {
-                try await strip.journey.move(to: Point(0, y), .eased(300, .cubicOut)).arrived()
+                try await strip.journey.move(to: Point(0, y), .eased(.milliseconds(300), .cubicOut)).arrived()
             }
         }
         """#,
@@ -6322,7 +6322,7 @@ enum Listings {
 
                     Text("at \(Int(shown * 100))%")
                 }
-                .samples($fade, into: $shown, .every(100))
+                .samples($fade, into: $shown, .every(.milliseconds(100)))
 
                 Rectangle(Palette.accent)
                     .height(60)
@@ -6330,10 +6330,10 @@ enum Listings {
 
                 HStack {
                     Button("Fade")
-                        .onClicked { $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
+                        .onClicked { $fade.journey.move(to: 0.1, .eased(.milliseconds(2000), .cubicOut)) }
 
                     Button("Back")
-                        .onClicked { $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
+                        .onClicked { $fade.journey.move(to: 1, .eased(.milliseconds(2000), .cubicOut)) }
                 }
                 .horizontalAlignment(.center)
             }
@@ -6866,7 +6866,7 @@ enum Listings {
         private func move(_ by: Int) {
             let slot = max(0, min(Double(Self.cards.count - 1), (at + Double(by)).rounded()))
 
-            $scrolled.journey.move(to: Point(slot * Self.reach, 0), .eased(300, .cubicOut))
+            $scrolled.journey.move(to: Point(slot * Self.reach, 0), .eased(.milliseconds(300), .cubicOut))
         }
 
         /// One card's face - a picture and its name, and nothing at all about where
@@ -9942,7 +9942,7 @@ enum Listings {
                         // sends the state there over 90ms, and the button follows it.
                         .onVisualStateChanged { state in
                             entered = state.name
-                            $press.journey.move(to: state == .pressed ? 0.94 : 1, .eased(90))
+                            $press.journey.move(to: state == .pressed ? 0.94 : 1, .eased(.milliseconds(90)))
                         }
                         .onClicked { presses += 1 }
 

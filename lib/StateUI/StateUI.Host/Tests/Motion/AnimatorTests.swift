@@ -17,7 +17,7 @@ final class AnimatorTests: XCTestCase {
         let near = DescribedKey(mount: 1, property: .opacity)
         let far = DescribedKey(mount: 2, property: .opacity)
         let animation = Animation(
-            from: [0], destination: [1], velocity: [0], motion: .eased(200, .linear), began: 0)
+            from: [0], destination: [1], velocity: [0], motion: .eased(.milliseconds(200), .linear), began: 0)
 
         for target in [AnimationTarget.described(far), .state(5), .described(near), .state(1)] {
             animator.start(animation, for: target)
@@ -34,7 +34,7 @@ final class AnimatorTests: XCTestCase {
     func testAnAnimationThatArrivesLeavesTheAnimator() {
         let animator = Animator()
         animator.start(
-            Animation(from: [0], destination: [1], velocity: [0], motion: .eased(200, .linear), began: 0),
+            Animation(from: [0], destination: [1], velocity: [0], motion: .eased(.milliseconds(200), .linear), began: 0),
             for: .state(1))
 
         let halfway = animator.advance(to: 100)
@@ -55,10 +55,10 @@ final class AnimatorTests: XCTestCase {
     func testLessMovementLandsEveryAnimationAtOnce() {
         let animator = Animator()
         animator.start(
-            Animation(from: [0], destination: [1], velocity: [0], motion: .spring(response: 300), began: 0),
+            Animation(from: [0], destination: [1], velocity: [0], motion: .spring(response: .milliseconds(300)), began: 0),
             for: .state(1))
         animator.start(
-            Animation(from: [5, 5], destination: [9, 1], velocity: [0, 0], motion: .eased(400), began: 0),
+            Animation(from: [5, 5], destination: [9, 1], velocity: [0, 0], motion: .eased(.milliseconds(400)), began: 0),
             for: .state(2))
 
         let steps = animator.advance(to: 10, reducesMotion: true)

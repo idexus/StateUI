@@ -474,7 +474,7 @@ final class CarriedStateTests: XCTestCase {
     /// described next.
     func testAJourneyOnAStateNothingWearsAnswersAtOnce() throws {
         let fade = State(wrappedValue: 1.0)
-        let arrival = fade.projectedValue.journey.move(to: 0.1, .eased(400, .cubicOut))
+        let arrival = fade.projectedValue.journey.move(to: 0.1, .eased(.milliseconds(400), .cubicOut))
 
         XCTAssertEqual(arrival.ended, true, "it arrived as it was sent")
         XCTAssertEqual(fade.projectedValue.journey.value, 0.1, "the value is at the target")
@@ -586,12 +586,12 @@ final class CarriedStateTests: XCTestCase {
         let fade = State(wrappedValue: 1.0)
         let renders = Renders()
 
-        renders.render(Text("x").motion(.spring(response: 450, damping: 0.7))
+        renders.render(Text("x").motion(.spring(response: .milliseconds(450), damping: 0.7))
             .opacity(fade.projectedValue).id("one").node)
 
         XCTAssertEqual(
             standing(fade.number, as: JourneyLanes<Double>.self)?.motion,
-            .spring(response: 450, damping: 0.7))
+            .spring(response: .milliseconds(450), damping: 0.7))
     }
 
     /// And the IMAGE goes on saying what the author wrote. `.inherited` is a
@@ -612,14 +612,14 @@ final class CarriedStateTests: XCTestCase {
         let fade = State(wrappedValue: 1.0)
         let renders = Renders()
 
-        renders.render(Text("x").motion(.eased(90, .linear))
+        renders.render(Text("x").motion(.eased(.milliseconds(90), .linear))
             .opacity(fade.projectedValue).id("one").node)
-        renders.render(Text("x").motion(.eased(700, .cubicIn))
+        renders.render(Text("x").motion(.eased(.milliseconds(700), .cubicIn))
             .opacity(fade.projectedValue).id("one").node)
 
         XCTAssertEqual(
             standing(fade.number, as: JourneyLanes<Double>.self)?.motion,
-            .eased(700, .cubicIn))
+            .eased(.milliseconds(700), .cubicIn))
     }
 
     /// A rule naming COLOURS answers a driven colour, which the property alone
@@ -629,12 +629,12 @@ final class CarriedStateTests: XCTestCase {
         let tint = State(wrappedValue: Color("#102030"))
         let renders = Renders()
 
-        renders.render(Text("x").motion(.none).motion(.eased(640, .cubicIn), .color)
+        renders.render(Text("x").motion(.none).motion(.eased(.milliseconds(640), .cubicIn), .color)
             .background(tint.projectedValue).id("one").node)
 
         XCTAssertEqual(
             standing(tint.number, as: JourneyLanes<Color>.self)?.motion,
-            .eased(640, .cubicIn))
+            .eased(.milliseconds(640), .cubicIn))
     }
 
     /// A value NO element drives holds `.inherited` as its law - there being

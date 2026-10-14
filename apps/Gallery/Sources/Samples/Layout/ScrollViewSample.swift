@@ -145,7 +145,7 @@ private struct PacedOffset: View {
                 .horizontalTextAlignment(.center)
                 .gridRow(3)
 
-            spelling(".samples($offset, into: $shown, .every(100))")
+            spelling(".samples($offset, into: $shown, .every(.milliseconds(100)))")
                 .gridRow(4)
         }
         .rows(.auto, .fill, .auto, .auto, .auto)
@@ -223,7 +223,7 @@ private struct OffsetStrips: ExampleContent {
                 // reading of where the value HAS GOT TO - which the state
                 // itself never says, standing at its destination.
                 PacedOffset(offset: $paced, shown: pacedShown)
-                    .samples($paced, into: $pacedShown, .every(100))
+                    .samples($paced, into: $pacedShown, .every(.milliseconds(100)))
                     .gridColumn(1)
 
                 DrivenOffset(offset: $driven)
@@ -257,7 +257,7 @@ private struct OffsetStrips: ExampleContent {
     /// - Parameter y: how far down each strip is sent.
     private func move(to y: Double) async throws {
         for strip in [$described, $paced, $driven] {
-            try await strip.journey.move(to: Point(0, y), .eased(300, .cubicOut)).arrived()
+            try await strip.journey.move(to: Point(0, y), .eased(.milliseconds(300), .cubicOut)).arrived()
         }
     }
     // listing: end
@@ -272,7 +272,7 @@ private struct OffsetStrips: ExampleContent {
 
             Text("Described reads the offset in its own braces, so the column is built "
                 + "again on every report. On a cadence reads a sample of it - "
-                + "`.samples($offset, into: $shown, .every(100))` - at most ten times a "
+                + "`.samples($offset, into: $shown, .every(.milliseconds(100)))` - at most ten times a "
                 + "second, so its count climbs no faster. A channel reads nothing: "
                 + "`$offset.journey.convert { … }` is a second state the host works out "
                 + "on its own frames, and the count stays at one.")
