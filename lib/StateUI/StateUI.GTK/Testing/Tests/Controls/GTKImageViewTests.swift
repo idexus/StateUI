@@ -128,8 +128,8 @@ final class GTKImageViewTests: XCTestCase {
     }
 
     /// Every icon stands in Adwaita, which holds the fewest of the themes: what it has no icon of, the host brings.
-    func testEveryIconStandsInAdwaita() throws {
-        try onUIThread {
+    func testEveryIconStandsInAdwaita() {
+        onUIThread {
             _ = GTKRenderer.running { VStack { Text("Icons") } }
             let theme = gtk_icon_theme_new()!
             defer { g_object_unref(UnsafeMutableRawPointer(theme)) }
