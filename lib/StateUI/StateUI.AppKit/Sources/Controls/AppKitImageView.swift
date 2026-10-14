@@ -26,6 +26,8 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
         wantsLayer = true
         layer?.masksToBounds = true
         imageView.imageAlignment = .alignCenter
+        // An icon, a template, stands in the words' colour; any other picture draws its own.
+        imageView.contentTintColor = .labelColor
         addSubview(imageView)
     }
 

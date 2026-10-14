@@ -13,7 +13,11 @@ ask, so the host hands every view it makes, through `AppKitPictureResolving`,
 the means to resolve a name. A name the application has no file for resolves
 to nothing. An icon resolves to its SF Symbol (`Icon.sfSymbol`), a template
 image in the colour of the control holding it, and bytes to the image they
-encode.
+encode. An image view tints a template in the label colour, as the words
+beside it; left untinted, it draws one in the secondary label colour. A
+bordered button tints a template in the platform's colour alone, so where
+its words stand in one of their own - a role's red, the tree's colour - it
+shows a copy of the icon drawn in theirs.
 
 ## Accessibility on the control
 

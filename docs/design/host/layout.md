@@ -310,9 +310,11 @@ drawn as its platform draws its own: an SF Symbol on AppKit and UIKit
 (`Icon.sfSymbol`, which both share), Material Symbols on Android - its own
 applications' icons, which the host brings, as Android ships none - a glyph
 of Segoe Fluent Icons on WinUI, the theme's symbolic icon on GTK, and on the
-Web a drawing of StateUI's own. An icon takes the colour of what it stands in
-- the words beside it, its bar's, the theme's - and, where nothing gives it
-room, the platform's own icon size. Bytes are a picture encoded whole - a
+Web a drawing of StateUI's own. An icon takes the colour of what it stands in:
+standing alone, the platform's primary words colour, as a label beside it;
+in a button, its words' - the platform's, its role's, the tree's own; in a
+bar, the bar's. Where nothing gives it room, it stands at the platform's
+own icon size. Bytes are a picture encoded whole - a
 PNG, a JPEG - read where they are given, at one pixel a point.
 
 ## A shape's own geometry

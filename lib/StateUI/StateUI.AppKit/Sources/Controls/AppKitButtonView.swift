@@ -67,6 +67,19 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         fatalError("AppKitButtonView is created in code")
     }
 
+    /// `image` as the button shows it: an icon - a template - in `colour` where its words stand in one of their own,
+    /// which a bordered button's tint leaves in the platform's; any other picture as it is.
+    /// Design: docs/design/host/layout.md#an-icon
+    private static func picture(_ image: NSImage?, in colour: NSColor) -> NSImage? {
+        guard let image, image.isTemplate, colour != .controlTextColor else { return image }
+        return NSImage(size: image.size, flipped: false) { room in
+            image.draw(in: room)
+            colour.set()
+            room.fill(using: .sourceAtop)
+            return true
+        }
+    }
+
     func apply(
         text: String,
         image: NSImage?,
@@ -83,7 +96,7 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         enabled: Bool
     ) {
         title = text
-        self.image = image
+        self.image = Self.picture(image, in: textColor)
         self.font = font
         isEnabled = enabled
         cell?.lineBreakMode = lineBreakMode

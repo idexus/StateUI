@@ -428,6 +428,31 @@ final class AppKitButtonViewTests: XCTestCase {
         XCTAssertLessThanOrEqual(drawn.height, image.size.height + 0.5, "\(drawn) for \(image.size)")
     }
 
+    /// A button's icon is drawn in its words' colour: the platform's, a destructive role's red, the tree's own.
+    @MainActor
+    func testAButtonsIconIsDrawnInItsWordsColour() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Button("Share").icon(.icon(.share))
+                Button("Delete").icon(.icon(.delete)).role(.destructive)
+                Button("Mail").icon(.icon(.mail)).textColor(.blue)
+            }
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }
+        defer { renderer.closeForTesting() }
+        renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
+
+        for button in renderer.nativeViews(AppKitButtonView.self) {
+            let cell = try XCTUnwrap(button.cell as? NSButtonCell)
+            let (image, title) = (cell.imageRect(forBounds: button.bounds), cell.titleRect(forBounds: button.bounds))
+            let icon = try inkColour(of: button, columns: image.minX...image.maxX)
+            let words = try inkColour(of: button, columns: title.minX...title.maxX)
+
+            XCTAssertTrue(sameInk(icon, words), "\(button.title): the icon's \(String(describing: icon)), the words' \(String(describing: words))")
+        }
+    }
+
     /// An icon beside its button's words stands at its own size, smaller where the button is: a tall button does
     /// not stretch it over the words.
     @MainActor

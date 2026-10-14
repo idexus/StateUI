@@ -162,6 +162,24 @@ final class AppKitImageViewTests: XCTestCase {
         }
         return result == KERN_SUCCESS ? Int(info.phys_footprint) : 0
     }
+
+    /// An icon standing alone is drawn in the words' colour, as the label beside it is.
+    func testAnIconIsDrawnInTheWordsColour() throws {
+        let renderer = AppKitRenderer.running {
+            HStack {
+                Image(.icon(.share)).width(24).height(24)
+                Text("Share")
+            }
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }
+        defer { renderer.closeForTesting() }
+        renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
+        let icon = try inkColour(of: XCTUnwrap(renderer.nativeViews(AppKitImageView.self).first))
+        let words = try inkColour(of: XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first))
+
+        XCTAssertTrue(sameInk(icon, words), "the icon's \(String(describing: icon)), the words' \(String(describing: words))")
+    }
 }
 
 /// An application whose first window shows a run of SVGs and opens a second window showing them again.
