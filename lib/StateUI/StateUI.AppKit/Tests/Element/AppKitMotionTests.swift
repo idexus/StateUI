@@ -284,8 +284,8 @@ final class AppKitMotionTests: XCTestCase {
 
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([
-            child("first", state: 81),
-            child("second", state: 82),
+            child("first", state: handMadeState(81)),
+            child("second", state: handMadeState(82)),
         ])
         renderer.applyForTesting(stack)
 
@@ -302,7 +302,7 @@ final class AppKitMotionTests: XCTestCase {
                 stopped: 0))
         }
 
-        renderer.applyStatesForTesting([81: landed(70), 82: landed(90)])
+        renderer.applyStatesForTesting([handMadeState(81): landed(70), handMadeState(82): landed(90)])
 
         XCTAssertEqual(
             nativeStack.arrangementCountForTesting - arrangementsBeforeFrame,

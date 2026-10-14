@@ -62,6 +62,25 @@ final class AppKitTestRendererTests: XCTestCase {
             "these make a renderer through AppKitRenderer, which reads the machine's own Reduce "
                 + "Motion setting - make it with testRenderer, which answers for the machine")
     }
+
+    /// EVERY STATE A TEST NUMBERS BY HAND IS ONE THE CORE NEVER ISSUES - `handMadeState`.
+    /// Design: docs/design/core/cycle.md#state-numbers
+    func testEveryStateATestNumbersByHandIsOneTheCoreNeverIssues() throws {
+        let literal = /(state: |applyStateForTesting\(|applyStatesForTesting\(\[)[0-9]/
+        let numbering = try AppKitSources.tests().filter { $0.text.contains(literal) }.map(\.name)
+
+        XCTAssertEqual(
+            numbering, [],
+            "these number a state from the core's own range, where an application an earlier test left in the "
+                + "core lands its values - number it with handMadeState")
+    }
+}
+
+/// A state number for a patch a test writes by hand, counted down from the top of the range: the core issues its own
+/// from one up, so the two never meet.
+/// Design: docs/design/core/cycle.md#state-numbers
+func handMadeState(_ index: Int32) -> Int32 {
+    Int32.max - index
 }
 /// A folder holding a picture for each name the tests give an icon or an image: a name with no file resolves to
 /// nothing, as on every host, so a test that needs a picture names one that stands here.

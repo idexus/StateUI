@@ -186,7 +186,7 @@ final class AppKitContainerTests: XCTestCase {
     func testAHostDrivenChildHeightRefreshesItsAncestorLayoutItem() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        let binding = HostStateBinding(state: 71, mode: .inOut, kind: .property, laneKind: .number)
+        let binding = HostStateBinding(state: handMadeState(71), mode: .inOut, kind: .property, laneKind: .number)
 
         var frame = HostPatch(id: .manual("frame"), type: .zStack)
         frame.properties[.height] = .number(90)
@@ -209,7 +209,7 @@ final class AppKitContainerTests: XCTestCase {
             motion: .none,
             completion: nil,
             stopped: 0)
-        renderer.applyStateForTesting(71, value: HostBoundary.value(of: arrived))
+        renderer.applyStateForTesting(handMadeState(71), value: HostBoundary.value(of: arrived))
         nativeStack.layoutSubtreeIfNeeded()
 
         XCTAssertEqual(nativeFrame.frame.height, 160, accuracy: 0.001)
@@ -437,7 +437,7 @@ final class AppKitContainerTests: XCTestCase {
     func testAZStacksSubviewsFollowTheDrawingOrder() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        let binding = HostStateBinding(state: 72, mode: .inOut, kind: .property, laneKind: .number)
+        let binding = HostStateBinding(state: handMadeState(72), mode: .inOut, kind: .property, laneKind: .number)
         func layers(front: String) -> HostPatch {
             var layers = HostPatch(id: .manual("layers"), type: .zStack)
             layers.children = .arranged(["red", "blue", "bound"].map { id in
@@ -462,7 +462,7 @@ final class AppKitContainerTests: XCTestCase {
         XCTAssertEqual(try drawn(), ["red", "bound", "blue"])
 
         let raised = HostJourney(value: [5], destination: [5], velocity: [0], motion: .none, completion: nil, stopped: 0)
-        renderer.applyStateForTesting(72, value: HostBoundary.value(of: raised))
+        renderer.applyStateForTesting(handMadeState(72), value: HostBoundary.value(of: raised))
         XCTAssertEqual(try drawn(), ["red", "blue", "bound"])
     }
 

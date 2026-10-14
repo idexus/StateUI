@@ -214,6 +214,12 @@ to a fresh process's before each test that names one; nothing a running interfac
 survive, since a value whose number is forgotten while the host still quotes it
 would be told about somebody else's movement.
 
+A host's test that writes a patch by hand names its states from the top of the
+range down (`handMadeState`), never from one. The core in that process still
+holds the application an earlier test set, and the first render the test's host
+asks for numbers that application's states anew: a hand-made number among them
+would take that state's values onto the test's tree.
+
 ## The image
 
 A value lies on the image as little-endian bit patterns, eight bytes a lane, or
