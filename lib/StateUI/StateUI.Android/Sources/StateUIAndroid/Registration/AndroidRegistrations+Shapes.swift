@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 extension AndroidRegistrations {
-    /// The six shapes: a rectangle and an ellipse filling their room, and a line, a path, a polygon and a
+    /// The seven shapes: a rectangle, a capsule and an ellipse filling their room, and a line, a path, a polygon and a
     /// polyline drawn from their own geometry - each filled, outlined and placed as the shape tier says.
     static func shapes(_ registry: Registry<AndroidView>) {
         registry.add(RectangleContract.self, create: { _ in AndroidShapeView() }) { shape in
@@ -15,6 +15,9 @@ extension AndroidRegistrations {
         }
         registry.add(EllipseContract.self, create: { _ in AndroidShapeView() }) { shape in
             shape.applies(filledShapeMembers) { view, values in draw(view, values, .ellipse) }
+        }
+        registry.add(CapsuleContract.self, create: { _ in AndroidShapeView() }) { shape in
+            shape.applies(filledShapeMembers) { view, values in draw(view, values, .rectangle(BoxArithmetic.capsule)) }
         }
         registry.add(LineContract.self, create: { _ in AndroidShapeView() }) { shape in
             shape.applies(shapeMembers + [LineContract.x1, LineContract.y1, LineContract.x2, LineContract.y2]) {

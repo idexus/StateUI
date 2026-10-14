@@ -131,6 +131,19 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(BoxArithmetic.fitted(6, width: 100, height: 20), 6)
     }
 
+    /// A capsule's corners fit any room - a wide one's, a tall one's, a large one's in a display's pixels - to half
+    /// its shorter side.
+    func testACapsulesCornersFitHalfTheShorterSideOfAnyRoom() {
+        for (width, height) in [(120.0, 32.0), (30.0, 80.0), (40.0, 40.0), (12_000.0, 9_000.0)] {
+            for density in [1.0, 2.0, 3.0] {
+                let radii = BoxArithmetic.clockwise(BoxArithmetic.capsule).map {
+                    BoxArithmetic.fitted($0 * density, width: width * density, height: height * density)
+                }
+                XCTAssertEqual(radii, Array(repeating: min(width, height) / 2 * density, count: 4), "\(width) x \(height)")
+            }
+        }
+    }
+
     /// A box's corners round by none for a rectangle, by a rounded one's radius as far as the room holds it, and by
     /// half the shorter side for a capsule at every size; an oval has none - it is no capsule.
     func testAnOutlineRoundsItsCornersByItsRoom() {

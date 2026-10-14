@@ -87,10 +87,15 @@ extension ControlDictionary {
             """#),
 
         (EllipseContract.self, #"""
-            Ellipse()
-                .fill(.tomato)
+            Ellipse(.tomato)
                 .width(48)
                 .height(48)
+            """#),
+
+        (CapsuleContract.self, #"""
+            Capsule(.teal)
+                .width(120)
+                .height(32)
             """#),
 
         (GridContract.self, #"""

@@ -57,10 +57,9 @@ struct PacedStateSample: SampleContent, ExampleContent {
             .background(Palette.well)
             .samples($fade, into: $shown, .every(100))
 
-            Rectangle()
+            Rectangle(Palette.accent)
                 .height(60)
                 .cornerRadius(8)
-                .fill(Palette.accent)
                 .opacity($fade)
 
             HStack {

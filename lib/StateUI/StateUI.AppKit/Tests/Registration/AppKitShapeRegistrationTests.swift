@@ -23,7 +23,7 @@ final class AppKitShapeRegistrationTests: XCTestCase {
         let realization = AppKitRegistrations.registry.realization
 
         XCTAssertTrue(realization.elements.isSuperset(of: [
-            "Rectangle", "Ellipse", "Line", "Path", "Polygon", "Polyline",
+            "Rectangle", "Capsule", "Ellipse", "Line", "Path", "Polygon", "Polyline",
         ]))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "Rectangle", owner: "Rectangle", member: "cornerRadius")))
@@ -42,7 +42,7 @@ final class AppKitShapeRegistrationTests: XCTestCase {
     func testTheSharedStrokeAndFillAreRecordedOnEveryShape() {
         let realization = AppKitRegistrations.registry.realization
 
-        for shape in ["Rectangle", "Ellipse", "Line", "Path", "Polygon", "Polyline"] {
+        for shape in ["Rectangle", "Capsule", "Ellipse", "Line", "Path", "Polygon", "Polyline"] {
             XCTAssertTrue(
                 realization.members.contains(
                     HostRealizedMember(element: shape, owner: "Shape", member: "stroke")),

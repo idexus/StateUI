@@ -364,6 +364,8 @@ final class ControlTests: XCTestCase {
 
             ControlCase("Ellipse", source: "Ellipse.swift", Ellipse()),
 
+            ControlCase("Capsule", source: "Capsule.swift", Capsule()),
+
             ControlCase("Line", source: "Line.swift",
                 Line()
                     .x1(0)

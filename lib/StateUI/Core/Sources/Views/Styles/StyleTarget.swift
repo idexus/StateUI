@@ -48,6 +48,7 @@ extension HStack: StyleTarget {}
 extension ZStack: StyleTarget {}
 extension Rectangle: StyleTarget {}
 extension Ellipse: StyleTarget {}
+extension Capsule: StyleTarget {}
 extension Line: StyleTarget {}
 extension Path: StyleTarget {}
 extension Polygon: StyleTarget {}

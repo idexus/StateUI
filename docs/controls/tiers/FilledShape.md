@@ -14,7 +14,7 @@ Ellipse()
 
 Wears: [Shape](Shape.md)
 
-Worn by: [Ellipse](../Ellipse.md) · [Path](../Path.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [Rectangle](../Rectangle.md)
+Worn by: [Capsule](../Capsule.md) · [Ellipse](../Ellipse.md) · [Path](../Path.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [Rectangle](../Rectangle.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Tiers/FilledShapeContract.swift`.
 

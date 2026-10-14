@@ -30,6 +30,7 @@ extension NodeType {
     static let datePicker = DatePickerContract.nodeType
     static let textEditor = TextEditorContract.nodeType
     static let ellipse = EllipseContract.nodeType
+    static let capsule = CapsuleContract.nodeType
     static let textField = TextFieldContract.nodeType
     static let splitView = SplitViewContract.nodeType
     static let textSpans = TextSpansContract.nodeType

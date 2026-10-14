@@ -45,9 +45,9 @@ Picker 2
 Image 2
 Page 5
 PageElement 2
-View 5
-VisualElement 11
-Shape 4
+View 6
+VisualElement 12
+Shape 5
 BorderElement 8
 TextInput 2
 Application 3
@@ -69,3 +69,4 @@ gtk Layout 2
 TextField 2
 SearchField 2
 Polyline 2
+FilledShape 2

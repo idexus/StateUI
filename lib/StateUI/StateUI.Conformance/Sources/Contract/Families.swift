@@ -10,6 +10,7 @@
         ActivityIndicatorTests.self,
         ButtonTests.self,
         CanvasTests.self,
+        CapsuleTests.self,
         CheckBoxTests.self,
         DatePickerTests.self,
         EllipseTests.self,

@@ -48,7 +48,7 @@
     /// The views whose only answer to the hand is the View tier's gestures: what disabling one stops is what it hears
     /// of them.
     static let answeringByGestures: Set<String> = [
-        "ActivityIndicator", "Ellipse", "Grid", "HStack", "Image", "Line", "Path", "Polygon", "Polyline",
+        "ActivityIndicator", "Capsule", "Ellipse", "Grid", "HStack", "Image", "Line", "Path", "Polygon", "Polyline",
         "ProgressBar", "Rectangle", "Text", "VStack", "ZStack",
     ]
 
@@ -416,7 +416,7 @@
         let figure = [Point(20, 5), Point(60, 5), Point(60, 35), Point(20, 35)]
         let atItsSize = Write(ShapeContract.contentMode, ContentMode.center)
         return switch element {
-        case "Rectangle", "Ellipse": [Write(FilledShapeContract.fill, red)]
+        case "Rectangle", "Ellipse", "Capsule": [Write(FilledShapeContract.fill, red)]
         case "Line": [
             Write(LineContract.x1, 0), Write(LineContract.y1, 20), Write(LineContract.x2, 80), Write(LineContract.y2, 20),
             Write(ShapeContract.stroke, red), Write(ShapeContract.lineWidth, 8),

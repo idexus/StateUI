@@ -117,7 +117,7 @@ extension ShapeTests {
         switch element {
         case "Line": return (2...38).map { Point(Double($0), 20) }
         case "Rectangle": return (Int(width) + 2...38 - Int(width)).map { Point(Double($0), width / 2) }
-        case "Ellipse":
+        case "Ellipse", "Capsule":
             let radius = 20 - width / 2
             return (8...32).map { x in
                 let across = Double(x) - 20

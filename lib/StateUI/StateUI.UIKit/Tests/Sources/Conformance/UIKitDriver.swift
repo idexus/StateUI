@@ -31,7 +31,7 @@ final class UIKitDriver: HostDriver {
             "read growsWithText of TextEditor":
                 "an editor's growing is StateUI's measuring, which no property of UIKit's holds; its frames prove it",
         ]
-        for shape in ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
+        for shape in ["Capsule", "Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
             for member in ["contentMode", "geometryTransform"] {
                 none["read \(member) of \(shape)"] =
                     "StateUI places and moves a shape's figure into its layer's path, which holds no \(member); its drawing proves it"

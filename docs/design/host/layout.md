@@ -240,7 +240,11 @@ outline is a rectangle where the tree asks none, a rounded one's radius never
 below nothing; a capsule's corners round by half the shorter side at whatever
 size the box takes - one radius for a box's size, `BoxArithmetic.cornerRadius`,
 which a host asks again as the size changes - and an oval is an oval on every
-host, never a capsule, though a toolkit's control rounds only corners; and the
+host, never a capsule, though a toolkit's control rounds only corners; a
+`Capsule` shape is a rectangle drawn with `BoxArithmetic.capsule`, a radius
+past any room - in a display's pixels too - which the rectangle's own drawing
+fits to half its shorter side, so its ends round whole at every size without
+a host asking its size; and the
 outline is drawn one wide where the tree gives it a colour and no width, and
 not at all without a colour. A fill is read as the tree
 sends it (`HostBrush`): a bare colour is one colour, a gradient's stops stand

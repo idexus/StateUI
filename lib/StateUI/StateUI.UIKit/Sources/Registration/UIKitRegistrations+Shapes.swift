@@ -7,8 +7,8 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 extension UIKitRegistrations {
-    /// The six shapes: a rectangle and an ellipse filling their room, and a line, a path, a polygon and a polyline
-    /// drawn from their own geometry - each filled, outlined and placed as the shape tier says.
+    /// The seven shapes: a rectangle, a capsule and an ellipse filling their room, and a line, a path, a polygon and a
+    /// polyline drawn from their own geometry - each filled, outlined and placed as the shape tier says.
     static func shapes(_ registry: Registry<UIView>) {
         registry.add(RectangleContract.self, create: { _ in UIKitShapeView() }) { shape in
             shape.applies(corneredShapeMembers + [RectangleContract.cornerRadius]) { view, values in
@@ -21,6 +21,12 @@ extension UIKitRegistrations {
             shape.applies(filledShapeMembers) { view, values in
                 paint(view, values)
                 view.draw(.ellipse(transform: transform(values)))
+            }
+        }
+        registry.add(CapsuleContract.self, create: { _ in UIKitShapeView() }) { shape in
+            shape.applies(filledShapeMembers) { view, values in
+                paint(view, values)
+                view.draw(.rectangle(BoxArithmetic.clockwise(BoxArithmetic.capsule), transform: transform(values)))
             }
         }
         registry.add(LineContract.self, create: { _ in UIKitShapeView() }) { shape in

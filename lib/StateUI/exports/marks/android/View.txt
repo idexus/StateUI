@@ -1,4 +1,4 @@
-# revision 5.1
+# revision 6.1
 ActivityIndicator.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ActivityIndicator.area: ✅
 ActivityIndicator.canDrag: ✓ dragAndDrop on ActivityIndicator: the views' drag listeners' reports told by the driver, no drag started
@@ -101,6 +101,40 @@ Canvas.swiped: ✅
 Canvas.tapCount: ✅
 Canvas.tapped: ✅
 Canvas.verticalAlignment: ✅
+Capsule.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Capsule.area: ✅
+Capsule.canDrag: ✓ dragAndDrop on Capsule: the views' drag listeners' reports told by the driver, no drag started
+Capsule.dragEnded: ✓ dragAndDrop on Capsule: the views' drag listeners' reports told by the driver, no drag started
+Capsule.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Capsule.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Capsule.dragStarting: ✓ dragAndDrop on Capsule: the views' drag listeners' reports told by the driver, no drag started
+Capsule.dragText: ✓ dragAndDrop on Capsule: the views' drag listeners' reports told by the driver, no drag started
+Capsule.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Capsule.droppedFileTypes: ✓ dropFiles on Capsule: the view's drag listener's report told the driver's documents, no drag started
+Capsule.filesDropped: ✓ dropFiles on Capsule: the view's drag listener's report told the driver's documents, no drag started
+Capsule.frameChanged: ✅
+Capsule.gridColumn: ✅
+Capsule.gridColumnSpan: ✅
+Capsule.gridRow: ✅
+Capsule.gridRowSpan: ✅
+Capsule.horizontalAlignment: ✅
+Capsule.margin: ✅
+Capsule.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+Capsule.panUpdated: ✅
+Capsule.panXChannel: ✅
+Capsule.panYChannel: ✅
+Capsule.pinchUpdated: ✅
+Capsule.pointerEntered: ✅
+Capsule.pointerExited: ✅
+Capsule.pointerMoved: ✅
+Capsule.pointerPressed: ✅
+Capsule.pointerReleased: ✅
+Capsule.swipeDirection: ✅
+Capsule.swipeThreshold: ✅
+Capsule.swiped: ✅
+Capsule.tapCount: ✅
+Capsule.tapped: ✅
+Capsule.verticalAlignment: ✅
 CheckBox.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 CheckBox.area: ✅
 CheckBox.canDrag: ✓ dragAndDrop on CheckBox: the views' drag listeners' reports told by the driver, no drag started

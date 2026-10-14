@@ -41,7 +41,7 @@ struct WindowPhaseLog: View {
     @Environment(\.window) private var window
 
     var body: some View {
-        Rectangle().fill(Color("#00000000"))
+        Rectangle(Color("#00000000"))
             .width(0)
             .height(0)
             .ignoresInput(true)

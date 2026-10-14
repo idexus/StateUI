@@ -1,68 +1,65 @@
-# revision 11.2
+# revision 12.2
 ActivityIndicator.background: – WinUI's progress ring paints its Background as its track, no ground under its frame.
 Button.ignoresInput: ✅
 Button.scale: ✅
 Canvas.accessibilityHeading: ✅
-CheckBox.frameChanged: ✅
-CheckBox.height: ✅
-CheckBox.rotationX: ✓ read rotationX of CheckBox: the host's own tip, checked against the projection it laid on the element
-CheckBox.width: ✅
-DatePicker.accessibilityHint: ✅
-Divider.layoutDirection: ✓ read layoutDirection of Divider: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Ellipse.opacity: ✅
-Ellipse.pivotY: ✅
-Grid.translationX: ✅
-Grid.zIndex: ✅
-HStack.layoutDirection: ✅
-HStack.tooltip: ✅
-Image.background: – WinUI's picture paints the picture alone, no ground around it.
-ItemsView.ignoresInput: ✅
-ItemsView.scale: ✅
-Line.isEnabled: does not apply - read isEnabled of Line - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Line.rotation: ✅
-Map.accessibilityHeading: 🧩
-Map.translationY: 🧩
-Path.scaleY: ✅
-Path.style: ✅
-Picker.isAccessibilityHidden: ✅
-Polygon.frameChanged: ✅
-Polygon.maximumHeight: ✅
-Polygon.maximumWidth: ✅
-Polygon.minimumHeight: ✅
-Polygon.minimumWidth: ✅
-Polygon.rotationY: ✓ read rotationY of Polygon: the host's own tip, checked against the projection it laid on the element
-Polyline.accessibilityHint: ✅
-ProgressBar.isVisible: ✅
-ProgressBar.pivotX: ✅
-RadioButton.scaleY: ✅
-RadioButton.style: ✅
-Rectangle.automationExcludedWithChildren: ✅
-ScrollView.frameChanged: ✅
-ScrollView.maximumHeight: ✅
-ScrollView.maximumWidth: ✅
-ScrollView.minimumHeight: ✅
-ScrollView.minimumWidth: ✅
-ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own tip, checked against the projection it laid on the element
-SearchField.accessibilityLabel: ✅
-Slider.isVisible: ✅
-Slider.pivotX: ✅
-Spacer.translationX: ✅
-Spacer.zIndex: ✅
-Stepper.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Switch.frame: ✅
-Switch.scaleX: ✅
-Text.accessibilityHeading: ✅
-TextEditor.isAccessibilityHidden: ✅
-TextField.frameChanged: ✅
-TextField.maximumHeight: ✅
-TextField.maximumWidth: ✅
-TextField.minimumHeight: ✅
-TextField.minimumWidth: ✅
-TextField.rotationY: ✓ read rotationY of TextField: the host's own tip, checked against the projection it laid on the element
-TimePicker.tooltip: ✅
-VStack.isEnabled: does not apply - read isEnabled of VStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-VStack.rotation: ✅
-WebView.ignoresInput: ✅
-WebView.scale: ✅
-ZStack.accessibilityHeading: ✅
-ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Capsule.frameChanged: ✅
+Capsule.height: ✅
+Capsule.rotationX: ✓ read rotationX of Capsule: the host's own tip, checked against the projection it laid on the element
+Capsule.width: ✅
+CheckBox.accessibilityLabel: ✅
+DatePicker.isVisible: ✅
+DatePicker.pivotX: ✅
+Divider.frame: ✅
+Divider.scaleX: ✅
+Ellipse.translationX: ✅
+Ellipse.zIndex: ✅
+Grid.automationExcludedWithChildren: ✅
+HStack.opacity: ✅
+HStack.pivotY: ✅
+Image.ignoresInput: ✅
+Image.scale: ✅
+ItemsView.tooltip: ✅
+Line.accessibilityHeading: ✅
+Line.translationY: ✅
+Map.background: 🧩
+Path.isAccessibilityHidden: ✅
+Picker.frameChanged: ✅
+Picker.height: ✅
+Picker.rotationX: ✓ read rotationX of Picker: the host's own tip, checked against the projection it laid on the element
+Picker.width: ✅
+Polygon.accessibilityHint: ✅
+Polyline.isVisible: ✅
+Polyline.pivotX: ✅
+ProgressBar.scaleY: ✅
+ProgressBar.style: ✅
+RadioButton.isAccessibilityHidden: ✅
+Rectangle.frameChanged: ✅
+Rectangle.maximumHeight: ✅
+Rectangle.maximumWidth: ✅
+Rectangle.minimumHeight: ✅
+Rectangle.minimumWidth: ✅
+Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own tip, checked against the projection it laid on the element
+ScrollView.accessibilityHint: ✅
+ScrollView.layoutDirection: ✅
+SearchField.layoutDirection: ✅
+Slider.scaleY: ✅
+Slider.style: ✅
+Spacer.automationExcludedWithChildren: ✅
+Stepper.ignoresInput: ✅
+Stepper.scale: ✅
+Switch.accessibilityHeading: ✅
+Text.isEnabled: does not apply - read isEnabled of Text - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Text.rotation: ✅
+TextEditor.frameChanged: ✅
+TextEditor.height: ✅
+TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own tip, checked against the projection it laid on the element
+TextEditor.width: ✅
+TextField.accessibilityHint: ✅
+TimePicker.opacity: ✅
+TimePicker.pivotY: ✅
+VStack.accessibilityHeading: ✅
+VStack.translationY: ✅
+WebView.tooltip: ✅
+ZStack.isEnabled: does not apply - read isEnabled of ZStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+ZStack.rotation: ✅

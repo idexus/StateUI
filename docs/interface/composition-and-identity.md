@@ -17,7 +17,7 @@ struct StatusBadge: View {
 
     var body: some View {
         HStack {
-            Rectangle().fill(ready ? .green : .gray)
+            Rectangle(ready ? .green : .gray)
                 .width(8)
                 .height(8)
             Text(title)

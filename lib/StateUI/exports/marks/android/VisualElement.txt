@@ -1,4 +1,4 @@
-# revision 11.1
+# revision 12.1
 ActivityIndicator.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
@@ -95,6 +95,38 @@ Canvas.translationX: ✅
 Canvas.translationY: ✅
 Canvas.width: ✅
 Canvas.zIndex: ✅
+Capsule.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
+Capsule.accessibilityHint: ✅
+Capsule.accessibilityLabel: ✅
+Capsule.automationExcludedWithChildren: ✅
+Capsule.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Capsule.frame: ✅
+Capsule.frameChanged: ✅
+Capsule.height: ✅
+Capsule.ignoresInput: not realized
+Capsule.isAccessibilityHidden: ✅
+Capsule.isEnabled: ✅
+Capsule.isVisible: ✅
+Capsule.layoutDirection: ✅
+Capsule.maximumHeight: ✅
+Capsule.maximumWidth: ✅
+Capsule.minimumHeight: ✅
+Capsule.minimumWidth: ✅
+Capsule.opacity: ✅
+Capsule.pivotX: ✅
+Capsule.pivotY: ✅
+Capsule.rotation: ✅
+Capsule.rotationX: ✅
+Capsule.rotationY: ✅
+Capsule.scale: ✅
+Capsule.scaleX: ✅
+Capsule.scaleY: ✅
+Capsule.style: ✅
+Capsule.tooltip: ✅
+Capsule.translationX: ✅
+Capsule.translationY: ✅
+Capsule.width: ✅
+Capsule.zIndex: ✅
 CheckBox.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅

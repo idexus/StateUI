@@ -71,10 +71,10 @@ struct ListRow: View {
         let action = self.action
 
         return ZStack {
-            Rectangle().fill(Palette.selected)
+            Rectangle(Palette.selected)
                 .opacity(lit)
 
-            Rectangle().fill(Palette.outline)
+            Rectangle(Palette.outline)
                 .height(1)
                 .margin(left: 16, top: 0, right: 0, bottom: 0)
                 .verticalAlignment(.start)

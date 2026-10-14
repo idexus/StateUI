@@ -18,6 +18,11 @@
         return radii.map { $0.isFinite ? max(0, $0) : 0 }
     }
 
+    /// A capsule's corners: a radius past any room - and past it still in a display's pixels - which a rectangle's
+    /// drawing fits to half its shorter side, so its ends round whole at every size.
+    /// Design: docs/design/host/layout.md#a-box
+    public static let capsule = CornerRadius.uniform(1_000_000)
+
     /// A corner's radius in a room `width` by `height`: round, and no more than half the shorter side - so a radius
     /// past half a wide box's height rounds its ends whole, a capsule, never an oval.
     /// Design: docs/design/host/layout.md#a-box

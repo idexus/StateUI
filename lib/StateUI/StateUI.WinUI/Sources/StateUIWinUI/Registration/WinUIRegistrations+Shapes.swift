@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 extension WinUIRegistrations {
-    /// The six shapes: a rectangle and an ellipse filling their room, and a line, a path, a polygon and a polyline
-    /// drawn from their own geometry - each filled, outlined and placed as the shape tier says.
+    /// The seven shapes: a rectangle, a capsule and an ellipse filling their room, and a line, a path, a polygon and a
+    /// polyline drawn from their own geometry - each filled, outlined and placed as the shape tier says.
     static func shapes(_ registry: Registry<WinUIView>) {
         registry.add(RectangleContract.self, create: { _ in WinUIPathView() }) { shape in
             shape.applies(corneredShapeMembers + [RectangleContract.cornerRadius]) { view, values in
@@ -19,6 +19,12 @@ extension WinUIRegistrations {
             shape.applies(filledShapeMembers) { view, values in
                 paint(view, values)
                 view.draw(.ellipse(transform: moved(values)))
+            }
+        }
+        registry.add(CapsuleContract.self, create: { _ in WinUIPathView() }) { shape in
+            shape.applies(filledShapeMembers) { view, values in
+                paint(view, values)
+                view.draw(.rectangle(BoxArithmetic.clockwise(BoxArithmetic.capsule), transform: moved(values)))
             }
         }
         registry.add(LineContract.self, create: { _ in WinUIPathView() }) { shape in

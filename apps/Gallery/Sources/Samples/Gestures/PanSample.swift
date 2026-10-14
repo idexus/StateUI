@@ -37,7 +37,7 @@ struct PanSample: SampleContent, ExampleContent {
             // A fixed box for it to move inside, so the layout does not follow
             // the view about.
             ZStack {
-                Rectangle().fill(Palette.accent)
+                Rectangle(Palette.accent)
                     .cornerRadius(10)
                     .width(64)
                     .height(64)

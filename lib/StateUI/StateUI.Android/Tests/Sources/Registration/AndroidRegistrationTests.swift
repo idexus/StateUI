@@ -21,7 +21,7 @@ final class AndroidRegistrationTests: XCTestCase {
             XCTAssertEqual(
                 realization.elements,
                 [
-                    "ActivityIndicator", "Button", "Canvas", "CheckBox", "DatePicker", "Divider", "Ellipse", "Grid",
+                    "ActivityIndicator", "Button", "Canvas", "Capsule", "CheckBox", "DatePicker", "Divider", "Ellipse", "Grid",
                     "HStack", "Image", "ItemsView", "Text", "Line", "Path", "Polygon", "Polyline", "Rectangle",
                     "Picker", "ProgressBar", "RadioButton", "ScrollView", "SearchField", "Slider", "Spacer",
                     "Stepper", "Switch", "TextEditor", "TextField", "TimePicker", "VStack", "WebView", "ZStack",

@@ -38,7 +38,7 @@
     /// Every element: one contract per node type the library declares.
     public static let elements: [any ElementContract.Type] = [
         ActivityIndicatorContract.self, ApplicationContract.self,
-        ButtonContract.self, ButtonMenuContract.self, CanvasContract.self, CheckBoxContract.self,
+        ButtonContract.self, ButtonMenuContract.self, CanvasContract.self, CapsuleContract.self, CheckBoxContract.self,
         ContextMenuContract.self, DatePickerContract.self,
         EllipseContract.self, GridContract.self, HStackContract.self, ImageContract.self, ItemsViewContract.self,
         TextContract.self,

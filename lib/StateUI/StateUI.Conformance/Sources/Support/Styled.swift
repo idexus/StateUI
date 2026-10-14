@@ -19,6 +19,7 @@ enum Styled {
             dimmed(ActivityIndicator.self)
             dimmed(Button.self)
             dimmed(Canvas.self)
+            dimmed(Capsule.self)
             dimmed(CheckBox.self)
             dimmed(DatePicker.self)
             dimmed(Divider.self)

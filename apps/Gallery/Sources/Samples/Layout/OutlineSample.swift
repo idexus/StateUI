@@ -61,7 +61,7 @@ struct OutlineSample: SampleContent, ExampleContent {
             // The box fills the ZStack; its corners are cut only while the
             // ZStack clips what it holds.
             ZStack {
-                Rectangle().fill(Palette.accent)
+                Rectangle(Palette.accent)
             }
             .shape(.roundedRectangle(24))
             .clipsContent(clips)

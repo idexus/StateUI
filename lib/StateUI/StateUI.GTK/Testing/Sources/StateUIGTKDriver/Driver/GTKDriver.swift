@@ -32,7 +32,7 @@ final class GTKDriver: HostDriver {
                 "GTK bounds code points, not characters, so the host cuts what is typed; typing proves it",
             "read format of TimePicker": "GTK's clock holds no format: it writes hours and minutes in the user's own clock",
         ]
-        let shapes = ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"]
+        let shapes = ["Capsule", "Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"]
         let shapePaint = [
             "contentMode", "geometryTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
             "lineCap", "lineJoin", "miterLimit",

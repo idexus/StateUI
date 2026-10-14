@@ -31,12 +31,8 @@ struct BrushSample: SampleContent, ExampleContent {
 
             SectionTitle("Along a line")
 
-            Rectangle()
+            Rectangle(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Self.ends[end].point))
                 .cornerRadius(12)
-                .fill(.linearGradient(
-                    Self.stops,
-                    startPoint: Point(0, 0),
-                    endPoint: Self.ends[end].point))
                 .contentMode(.stretch)   // fills the room, proportions and all
                 .height(80)
 
@@ -46,8 +42,7 @@ struct BrushSample: SampleContent, ExampleContent {
 
             SectionTitle("Out from a point")
 
-            Ellipse()
-                .fill(.radialGradient(
+            Ellipse(.radialGradient(
                     [GradientStop(.white, 0), GradientStop(.steelBlue, 1)],
                     center: Point(0.35, 0.3),
                     radius: 0.75))

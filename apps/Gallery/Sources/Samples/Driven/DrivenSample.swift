@@ -36,14 +36,12 @@ struct DrivenSample: SampleContent, ExampleContent {
 
             ZStack {
                 Grid {
-                    Rectangle()
-                        .fill($tint)
+                    Rectangle($tint)
                         .height(6)
                         .cornerRadius(3)
                         .verticalAlignment(.center)
 
-                    Rectangle()
-                        .fill(Palette.brand)
+                    Rectangle(Palette.brand)
                         .width(20)
                         .height(20)
                         .cornerRadius(10)

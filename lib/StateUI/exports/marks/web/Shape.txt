@@ -1,4 +1,11 @@
-# revision 4.1
+# revision 5.1
+Capsule.contentMode: ✅
+Capsule.dash: ✅
+Capsule.dashPhase: ✅
+Capsule.geometryTransform: ✅
+Capsule.lineCap: ✅
+Capsule.lineWidth: ✅
+Capsule.stroke: ✅
 Ellipse.contentMode: ✅
 Ellipse.dash: ✅
 Ellipse.dashPhase: ✅

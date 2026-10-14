@@ -1,27 +1,31 @@
-# revision 4.1
-Ellipse.contentMode: does not apply - read contentMode of Ellipse - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
+# revision 5.1
+Capsule.contentMode: does not apply - read contentMode of Capsule - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
+Capsule.dash: ✅
+Capsule.dashPhase: ✅
+Capsule.geometryTransform: ✅
+Ellipse.contentMode: ✅
 Ellipse.dash: ✅
-Ellipse.dashPhase: ✅
-Ellipse.geometryTransform: ✅
-Line.contentMode: ✅
-Line.dash: ✅
+Ellipse.lineCap: ✅
+Ellipse.lineWidth: ✅
+Line.dashPhase: ✅
+Line.geometryTransform: does not apply - read geometryTransform of Line - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
 Line.lineCap: ✅
 Line.lineWidth: ✅
+Line.stroke: ✅
+Path.contentMode: does not apply - read contentMode of Path - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
+Path.dash: ✅
 Path.dashPhase: ✅
-Path.geometryTransform: does not apply - read geometryTransform of Path - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
-Path.lineCap: ✅
-Path.lineWidth: ✅
-Path.stroke: ✅
-Polygon.contentMode: does not apply - read contentMode of Polygon - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
+Path.geometryTransform: ✅
+Polygon.contentMode: ✅
 Polygon.dash: ✅
-Polygon.dashPhase: ✅
-Polygon.geometryTransform: ✅
-Polyline.contentMode: ✅
-Polyline.dash: ✅
+Polygon.lineCap: ✅
+Polygon.lineWidth: ✅
+Polyline.dashPhase: ✅
+Polyline.geometryTransform: does not apply - read geometryTransform of Polyline - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
 Polyline.lineCap: ✅
 Polyline.lineWidth: ✅
+Polyline.stroke: ✅
+Rectangle.contentMode: does not apply - read contentMode of Rectangle - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
+Rectangle.dash: ✅
 Rectangle.dashPhase: ✅
-Rectangle.geometryTransform: does not apply - read geometryTransform of Rectangle - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
-Rectangle.lineCap: ✅
-Rectangle.lineWidth: ✅
-Rectangle.stroke: ✅
+Rectangle.geometryTransform: ✅

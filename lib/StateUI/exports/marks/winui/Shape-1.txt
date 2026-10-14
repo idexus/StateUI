@@ -1,40 +1,47 @@
-# revision 4.1
-Ellipse.contentMode: does not apply - read contentMode of Ellipse - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
+# revision 5.1
+Capsule.contentMode: does not apply - read contentMode of Capsule - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
+Capsule.dash: ✅
+Capsule.dashPhase: ✅
+Capsule.geometryTransform: ✅
+Capsule.lineCap: ✅
+Capsule.lineWidth: ✅
+Capsule.stroke: ✅
+Ellipse.contentMode: ✅
 Ellipse.dash: ✅
 Ellipse.dashPhase: ✅
-Ellipse.geometryTransform: ✅
+Ellipse.geometryTransform: does not apply - read geometryTransform of Ellipse - WinUI folds a shape's transform into its figure; its drawing proves it
 Ellipse.lineCap: ✅
-Ellipse.lineWidth: ✅
 Ellipse.stroke: ✅
-Line.contentMode: ✅
+Line.contentMode: does not apply - read contentMode of Line - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Line.dash: ✅
 Line.dashPhase: ✅
-Line.geometryTransform: does not apply - read geometryTransform of Line - WinUI folds a shape's transform into its figure; its drawing proves it
+Line.geometryTransform: ✅
 Line.lineCap: ✅
+Line.lineWidth: ✅
 Line.stroke: ✅
-Path.contentMode: does not apply - read contentMode of Path - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
+Path.contentMode: ✅
 Path.dash: ✅
 Path.dashPhase: ✅
-Path.geometryTransform: ✅
+Path.geometryTransform: does not apply - read geometryTransform of Path - WinUI folds a shape's transform into its figure; its drawing proves it
 Path.lineCap: ✅
-Path.lineWidth: ✅
 Path.stroke: ✅
-Polygon.contentMode: ✅
+Polygon.contentMode: does not apply - read contentMode of Polygon - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Polygon.dash: ✅
 Polygon.dashPhase: ✅
-Polygon.geometryTransform: does not apply - read geometryTransform of Polygon - WinUI folds a shape's transform into its figure; its drawing proves it
+Polygon.geometryTransform: ✅
 Polygon.lineCap: ✅
+Polygon.lineWidth: ✅
 Polygon.stroke: ✅
-Polyline.contentMode: does not apply - read contentMode of Polyline - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
+Polyline.contentMode: ✅
 Polyline.dash: ✅
 Polyline.dashPhase: ✅
-Polyline.geometryTransform: ✅
+Polyline.geometryTransform: does not apply - read geometryTransform of Polyline - WinUI folds a shape's transform into its figure; its drawing proves it
 Polyline.lineCap: ✅
-Polyline.lineWidth: ✅
 Polyline.stroke: ✅
-Rectangle.contentMode: ✅
+Rectangle.contentMode: does not apply - read contentMode of Rectangle - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Rectangle.dash: ✅
 Rectangle.dashPhase: ✅
-Rectangle.geometryTransform: does not apply - read geometryTransform of Rectangle - WinUI folds a shape's transform into its figure; its drawing proves it
+Rectangle.geometryTransform: ✅
 Rectangle.lineCap: ✅
+Rectangle.lineWidth: ✅
 Rectangle.stroke: ✅

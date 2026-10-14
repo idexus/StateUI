@@ -7,7 +7,7 @@ import AppKit
 @_spi(Host) import StateUIHost
 
 extension AppKitRegistrations {
-    /// The shapes and the box they are drawn beside. Six elements share one
+    /// The shapes and the box they are drawn beside. Seven elements share one
     /// native view and one tier - `ShapeContract` carries the stroke, the fill
     /// and the transform, and each element adds only the geometry it is: a
     /// radius, four coordinates, a path's data, a run of points. The box is its
@@ -22,6 +22,12 @@ extension AppKitRegistrations {
         registry.add(EllipseContract.self, create: { _ in AppKitShapeView(kind: .ellipse) }) { shape in
             shape.applies(Self.filledShapeMembers) { view, values in
                 Self.draw(view, values, .ellipse)
+            }
+        }
+
+        registry.add(CapsuleContract.self, create: { _ in AppKitShapeView(kind: .rectangle) }) { shape in
+            shape.applies(Self.filledShapeMembers) { view, values in
+                Self.draw(view, values, .rectangle(BoxArithmetic.clockwise(BoxArithmetic.capsule)))
             }
         }
 

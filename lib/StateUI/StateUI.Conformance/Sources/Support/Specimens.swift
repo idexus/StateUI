@@ -18,6 +18,7 @@
         case "ActivityIndicator": return dressing.dress(ActivityIndicator(true))
         case "Button": return dressing.dress(Button())
         case "Canvas": return dressing.dress(Canvas())
+        case "Capsule": return dressing.dress(Capsule())
         case "CheckBox": return dressing.dress(CheckBox())
         case "DatePicker": return dressing.dress(DatePicker())
         case "Divider": return dressing.dress(Divider())

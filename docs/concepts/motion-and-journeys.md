@@ -42,7 +42,7 @@ struct MovingPanel: View {
 
     var body: some View {
         VStack {
-            Rectangle().fill(.cornflowerBlue)
+            Rectangle(.cornflowerBlue)
                 .width(expanded ? 280 : 120)
                 .cornerRadius(expanded ? 28 : 8)
                 .motion(.spring(response: 280))

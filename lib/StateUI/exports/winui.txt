@@ -31,6 +31,15 @@ Canvas
   dragged()
   pressed()
   released()
+Capsule
+  contentMode
+  dash
+  dashPhase
+  fill
+  geometryTransform
+  lineCap
+  lineWidth
+  stroke
 CheckBox
   isOn
   tint

@@ -23,7 +23,7 @@ final class WebDriver: HostDriver {
         for stack in ["HStack", "VStack"] {
             none["read spacing of \(stack)"] = "the page places a stack's children where StateUI's layout says; their frames prove it"
         }
-        for shape in ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
+        for shape in ["Capsule", "Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
             for member in ["contentMode", "geometryTransform"] {
                 none["read \(member) of \(shape)"] =
                     "the page holds the path placed in its room, its \(member) worked in; its drawing proves it"

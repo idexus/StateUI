@@ -1,4 +1,4 @@
-# revision 5.1
+# revision 6.1
 ActivityIndicator.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ActivityIndicator.area: ✅
 ActivityIndicator.canDrag: ✓ dragAndDrop on ActivityIndicator: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -101,6 +101,40 @@ Canvas.swiped: ✅
 Canvas.tapCount: ✅
 Canvas.tapped: ✅
 Canvas.verticalAlignment: ✅
+Capsule.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Capsule.area: ✅
+Capsule.canDrag: ✓ dragAndDrop on Capsule: the DOM's drag events dispatched by the driver, no drag the browser began
+Capsule.dragEnded: ✓ dragAndDrop on Capsule: the DOM's drag events dispatched by the driver, no drag the browser began
+Capsule.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Capsule.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Capsule.dragStarting: ✓ dragAndDrop on Capsule: the DOM's drag events dispatched by the driver, no drag the browser began
+Capsule.dragText: ✓ dragAndDrop on Capsule: the DOM's drag events dispatched by the driver, no drag the browser began
+Capsule.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Capsule.droppedFileTypes: ✓ dropFiles on Capsule: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Capsule.filesDropped: ✓ dropFiles on Capsule: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Capsule.frameChanged: ✅
+Capsule.gridColumn: ✅
+Capsule.gridColumnSpan: ✅
+Capsule.gridRow: ✅
+Capsule.gridRowSpan: ✅
+Capsule.horizontalAlignment: ✅
+Capsule.margin: ✅
+Capsule.panTouchCount: ✅
+Capsule.panUpdated: ✅
+Capsule.panXChannel: ✅
+Capsule.panYChannel: ✅
+Capsule.pinchUpdated: ✅
+Capsule.pointerEntered: ✅
+Capsule.pointerExited: ✅
+Capsule.pointerMoved: ✅
+Capsule.pointerPressed: ✅
+Capsule.pointerReleased: ✅
+Capsule.swipeDirection: ✅
+Capsule.swipeThreshold: ✅
+Capsule.swiped: ✅
+Capsule.tapCount: ✅
+Capsule.tapped: ✅
+Capsule.verticalAlignment: ✅
 CheckBox.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 CheckBox.area: ✅
 CheckBox.canDrag: ✓ dragAndDrop on CheckBox: the DOM's drag events dispatched by the driver, no drag the browser began

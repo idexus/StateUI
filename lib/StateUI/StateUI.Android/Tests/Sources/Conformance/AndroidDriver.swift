@@ -35,7 +35,7 @@ final class AndroidDriver: HostDriver {
             "contentMode", "geometryTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
             "lineCap", "lineJoin", "miterLimit",
         ]
-        for shape in ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
+        for shape in ["Capsule", "Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
             for member in shapePaint {
                 none["read \(member) of \(shape)"] =
                     "StateUI draws a shape in its view's onDraw, which holds none of its \(member); its drawing proves it"

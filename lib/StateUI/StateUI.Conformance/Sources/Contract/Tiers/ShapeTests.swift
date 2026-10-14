@@ -67,7 +67,7 @@
             let shape = try s.specimen(element)
             let stroked = element == "Line" || element == "Polyline"
             let probe = stroked ? Point(70, 35) : Point(75, 5)
-            let fills = element == "Rectangle" || element == "Ellipse"
+            let fills = element == "Rectangle" || element == "Ellipse" || element == "Capsule"
             let inside = stroked || fills ? Point(40, 20) : Point(55, 5)
             try s.settle { try s.shows(.red, on: shape, at: inside) }
             if fills {

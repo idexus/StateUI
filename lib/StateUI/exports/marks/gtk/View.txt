@@ -1,4 +1,4 @@
-# revision 5.1
+# revision 6.1
 ActivityIndicator.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ActivityIndicator.area: ✅
 ActivityIndicator.canDrag: ✓ dragAndDrop on ActivityIndicator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -101,6 +101,40 @@ Canvas.swiped: ✅
 Canvas.tapCount: ✅
 Canvas.tapped: ✅
 Canvas.verticalAlignment: ✅
+Capsule.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Capsule.area: ✅
+Capsule.canDrag: ✓ dragAndDrop on Capsule: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Capsule.dragEnded: ✓ dragAndDrop on Capsule: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Capsule.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Capsule.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Capsule.dragStarting: ✓ dragAndDrop on Capsule: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Capsule.dragText: ✓ dragAndDrop on Capsule: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Capsule.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Capsule.droppedFileTypes: ✓ dropFiles on Capsule: the drop target's signal told the driver's files, no drag GTK began
+Capsule.filesDropped: ✓ dropFiles on Capsule: the drop target's signal told the driver's files, no drag GTK began
+Capsule.frameChanged: ✅
+Capsule.gridColumn: ✅
+Capsule.gridColumnSpan: ✅
+Capsule.gridRow: ✅
+Capsule.gridRowSpan: ✅
+Capsule.horizontalAlignment: ✅
+Capsule.margin: ✅
+Capsule.panTouchCount: ✅
+Capsule.panUpdated: ✅
+Capsule.panXChannel: ✅
+Capsule.panYChannel: ✅
+Capsule.pinchUpdated: ✓ pinch on Capsule: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+Capsule.pointerEntered: ✅
+Capsule.pointerExited: ✅
+Capsule.pointerMoved: ✅
+Capsule.pointerPressed: ✅
+Capsule.pointerReleased: ✅
+Capsule.swipeDirection: ✅
+Capsule.swipeThreshold: ✅
+Capsule.swiped: ✅
+Capsule.tapCount: ✅
+Capsule.tapped: ✅
+Capsule.verticalAlignment: ✅
 CheckBox.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 CheckBox.area: ✅
 CheckBox.canDrag: ✓ dragAndDrop on CheckBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began

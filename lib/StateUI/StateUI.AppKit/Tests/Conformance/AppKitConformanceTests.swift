@@ -16,6 +16,7 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testActivityIndicator() { conform(ActivityIndicatorTests.self) }
     @MainActor func testButton() { conform(ButtonTests.self) }
     @MainActor func testCanvas() { conform(CanvasTests.self) }
+    @MainActor func testCapsule() { conform(CapsuleTests.self) }
     @MainActor func testCheckBox() { conform(CheckBoxTests.self) }
     @MainActor func testSpacer() { conform(SpacerTests.self) }
     @MainActor func testDatePicker() { conform(DatePickerTests.self) }
