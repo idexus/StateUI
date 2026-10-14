@@ -111,7 +111,11 @@ A button's padding is room on its size - the cell's own measurement and the
 padding round it - and room inside it: the cell stands its words and its
 picture within it (`AppKitButtonCell`). A button drawing a box of its own -
 a fill, an outline - takes no bezel, and AppKit would otherwise scale a
-picture alone up to the whole button, whatever room the tree kept.
+picture alone up to the whole button, whatever room the tree kept. A button
+in AppKit's own bezel placed taller than the push button stands in the
+flexible push button's, which is as tall as it is placed: the push button's
+keeps one height, and a square button of a picture would stand as a short
+wide one.
 
 ## A button's role
 

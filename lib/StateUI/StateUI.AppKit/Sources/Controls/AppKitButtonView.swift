@@ -42,7 +42,7 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
     init(menu opening: ButtonMenuOpening = .none, showsArrow: Bool = false) {
         self.opening = opening
         super.init(frame: .zero)
-        bezelStyle = .rounded
+        bezelStyle = .push
         // The icon keeps beside the words, the two in the middle together, however wide the button stands.
         imageHugsTitle = true
         target = self
@@ -112,6 +112,21 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         hasDestructiveAction = role == .destructive
     }
 
+    /// The height of AppKit's push button, above which a button stands in the flexible push button's bezel.
+    private static let pushHeight: CGFloat = {
+        let reference = NSButton(title: "Push", target: nil, action: nil)
+        reference.bezelStyle = .push
+        return reference.fittingSize.height
+    }()
+
+    /// The bezel stands as tall as the button: the push button's at its own height, the flexible push button's -
+    /// AppKit's push button of any height - where the button stands taller.
+    /// Design: docs/design/platforms/appkit/views.md#a-buttons-padding
+    private func standBezel() {
+        let style: NSButton.BezelStyle = bounds.height > Self.pushHeight + 0.5 ? .flexiblePush : .push
+        if bezelStyle != style { bezelStyle = style }
+    }
+
     /// The shape the box follows: a layer's corners round a rectangle, the button draws an oval itself.
     private var outlineShape = ContainerShape.rectangle
 
@@ -172,6 +187,7 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
 
     override func layout() {
         super.layout()
+        standBezel()
         paintBox()
         guard let arrow, let cell else { return }
         let words = cell.titleRect(forBounds: bounds)

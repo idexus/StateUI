@@ -177,6 +177,25 @@ final class AppKitButtonViewTests: XCTestCase {
         XCTAssertEqual(width, 40, accuracy: 1.5, "as wide as the room inside the padding")
     }
 
+    /// A button standing taller than AppKit's push button stands as tall as it is placed - its bezel the flexible
+    /// push button's - and one of the push button's height keeps the push button's bezel.
+    @MainActor
+    func testATallButtonsBezelIsAsTallAsTheButton() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Button(icon: ImageSource("save.png")).width(48).height(48).padding(10)
+                Button("Save")
+            }
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }
+        defer { renderer.closeForTesting() }
+        renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
+        let buttons = renderer.nativeViews(AppKitButtonView.self)
+
+        XCTAssertEqual(buttons.map(\.bezelStyle), [.flexiblePush, .push])
+    }
+
     /// A destructive action's words stand in the system's red where the tree colours them not, the main action is
     /// AppKit's accent, and a colour the tree states wins over the role's.
     @MainActor
