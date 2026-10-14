@@ -255,6 +255,7 @@ extension AndroidDriver {
     static let style = Java.staticMethod(testText, "style", "(Landroid/widget/TextView;)I")
     static let weight = Java.staticMethod(testText, "weight", "(Landroid/widget/TextView;)I")
     static let scales = Java.staticMethod(testText, "scales", "(Landroid/widget/TextView;)I")
+    static let primaryWords = Java.staticMethod(testText, "primaryWords", "(Landroid/content/Context;)I")
 
     /// Whether a size follows the user's font scale, as the test reads it: 1, 0, or -1 where Android cannot say.
     static func scales(_ held: Int32) throws -> HostValue? {

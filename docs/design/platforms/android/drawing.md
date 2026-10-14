@@ -101,9 +101,11 @@ applications, which Android itself does not ship - put by the host among every
 application's resources (`Resources/drawable/stateui_icon_*.xml`, copied into
 the APK's as it is built; THIRD-PARTY-NOTICES), drawn into a square of
 Android's icon size, 24 points, and kept as a mask of how opaque each pixel is
-(`ALPHA_8`). What shows it colours it: an image and a bar in the theme's
-colour for controls' icons (`colorControlNormal`), a button in its words'
-colour, again whenever they change. The bitmap kept holds no colour, so a
+(`ALPHA_8`) - drawn without the drawable's own tint, which a theme often
+makes partly opaque, so the mask holds the shape whole. What shows it colours it: an image in the theme's primary words
+colour (`textColorPrimary`), as a label beside it; a bar, a tab and a menu
+in the theme's colour for controls' icons (`colorControlNormal`); a button in
+its words' colour, again whenever they change. The bitmap kept holds no colour, so a
 change of theme leaves none behind.
 
 A picture's bytes are read as a file is, at one pixel a point, their size

@@ -112,10 +112,19 @@ final class StateUIViews {
 
     /** The theme's colours for an error, which mark an action that destroys something. */
     static ColorStateList errorWords(Context context) {
-        TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.colorError});
-        ColorStateList words = theme.getColorStateList(0);
+        return themeColours(context, android.R.attr.colorError);
+    }
+
+    /** The theme's colours for primary words: a label's where the tree colours it not. */
+    static ColorStateList primaryWords(Context context) {
+        return themeColours(context, android.R.attr.textColorPrimary);
+    }
+
+    private static ColorStateList themeColours(Context context, int attribute) {
+        TypedArray theme = context.obtainStyledAttributes(new int[] {attribute});
+        ColorStateList colours = theme.getColorStateList(0);
         theme.recycle();
-        return words;
+        return colours;
     }
 
     /** The words' colours of the platform's coloured button: its style's own, else its text appearance's. */
@@ -175,20 +184,21 @@ final class StateUIViews {
      * size the picture is drawn at elsewhere.
      */
     static BitmapDrawable glyph(Context context, Bitmap picture) {
-        BitmapDrawable glyph = picture(context, picture);
+        BitmapDrawable glyph = drawn(context, picture, android.R.attr.colorControlNormal);
         float tall = 24 * context.getResources().getDisplayMetrics().density;
         glyph.setTargetDensity(Math.round(picture.getDensity() * tall / Math.max(1, picture.getHeight())));
         return glyph;
     }
 
-    /** A picture to draw: an icon - a mask, `isMask` - in the theme's colour for controls, any other as it is. */
+    /** A picture standing alone: an icon - a mask, `isMask` - in the theme's primary words colour, as a label's. */
     static BitmapDrawable picture(Context context, Bitmap picture) {
+        return drawn(context, picture, android.R.attr.textColorPrimary);
+    }
+
+    /** A picture to draw: an icon in the theme's colour `attribute` names, any other as it is. */
+    private static BitmapDrawable drawn(Context context, Bitmap picture, int attribute) {
         BitmapDrawable drawable = new BitmapDrawable(context.getResources(), picture);
-        if (isMask(picture)) {
-            TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.colorControlNormal});
-            drawable.setTintList(theme.getColorStateList(0));
-            theme.recycle();
-        }
+        if (isMask(picture)) drawable.setTintList(themeColours(context, attribute));
         return drawable;
     }
 
@@ -205,6 +215,9 @@ final class StateUIViews {
         int id = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
         Drawable drawable = id == 0 || side <= 0 ? null : context.getDrawable(id);
         if (drawable == null) return null;
+        // The mask keeps the shape whole: the drawable's own tint, often partly opaque, is not drawn into it.
+        drawable = drawable.mutate();
+        drawable.setTintList(null);
         float width = Math.max(1, drawable.getIntrinsicWidth());
         float height = Math.max(1, drawable.getIntrinsicHeight());
         float scale = Math.min(side / width, side / height);

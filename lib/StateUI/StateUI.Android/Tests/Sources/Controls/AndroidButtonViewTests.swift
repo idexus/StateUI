@@ -391,6 +391,7 @@ final class AndroidButtonViewTests: XCTestCase {
                 TestJava.testPictures, TestJava.iconInk, .object(button.reference)))
             XCTAssertGreaterThan(ink >> 24, 0, "the icon is drawn")
             XCTAssertEqual(ink & 0xFF_FFFF, 0xFF_0000, String(ink, radix: 16))
+            XCTAssertEqual(ink >> 24, 0xFF, "as opaque as its words: \(String(ink, radix: 16))")
         }
     }
 
@@ -413,6 +414,7 @@ final class AndroidButtonViewTests: XCTestCase {
                 .map { Java.callInt(button.reference, $0) }
             XCTAssertGreaterThan(ink >> 24, 0, "the icon is drawn: \(button.frame) padding \(padding)")
             XCTAssertEqual(ink & 0xFF_FFFF, 0xFF_0000, String(ink, radix: 16))
+            XCTAssertEqual(ink >> 24, 0xFF, "as opaque as its words: \(String(ink, radix: 16))")
         }
     }
 

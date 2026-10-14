@@ -14,7 +14,7 @@ final class AndroidImageViewTests: XCTestCase {
             ("testAPictureShownSmallIsReadAtFewerPixels", testAPictureShownSmallIsReadAtFewerPixels),
             ("testAPictureNoViewShowsIsLetGo", testAPictureNoViewShowsIsLetGo),
             ("testEveryIconIsADrawableOfTheApplications", testEveryIconIsADrawableOfTheApplications),
-            ("testAnIconIsDrawnInTheThemesColourForControls", testAnIconIsDrawnInTheThemesColourForControls),
+            ("testAnIconIsDrawnInTheWordsColour", testAnIconIsDrawnInTheWordsColour),
         ]
     }
 
@@ -124,25 +124,30 @@ final class AndroidImageViewTests: XCTestCase {
         }
     }
 
-    /// An icon's mask is drawn in the colour the theme gives controls' icons: its colour, no more opaque.
-    func testAnIconIsDrawnInTheThemesColourForControls() throws {
+    /// An icon standing alone is drawn in the words' colour, as the label beside it is: its colour, as opaque.
+    func testAnIconIsDrawnInTheWordsColour() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                Image(.icon(.add)).horizontalAlignment(.start).verticalAlignment(.start)
+                HStack {
+                    Image(.icon(.add))
+                    Text("Add")
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
             }
             host.layOut()
 
             let image = try XCTUnwrap(host.views(AndroidImageView.self).first)
+            let label = try XCTUnwrap(host.views(AndroidTextView.self).first)
             let ink = UInt32(bitPattern: Java.callStaticInt(TestJava.testPictures, TestJava.imageInk, .object(image.reference)))
-            let colour = UInt32(bitPattern: Java.callStaticInt(
-                TestJava.testPictures, TestJava.controlColour, .object(AndroidRenderer.context)))
+            let colour = UInt32(bitPattern: Java.callInt(label.reference, AndroidDriver.getCurrentTextColor))
             XCTAssertGreaterThan(ink >> 24, 0, "the icon is drawn")
             // A partly opaque pixel is kept premultiplied: its channels come back a few steps apart.
             for shift: UInt32 in [0, 8, 16] {
                 let (drawn, given) = (Int(ink >> shift & 0xFF), Int(colour >> shift & 0xFF))
                 XCTAssertLessThanOrEqual(abs(drawn - given), 4, "\(String(ink, radix: 16)) for \(String(colour, radix: 16))")
             }
-            XCTAssertLessThanOrEqual(ink >> 24, colour >> 24, String(ink, radix: 16))
+            XCTAssertEqual(ink >> 24, colour >> 24, "\(String(ink, radix: 16)) for \(String(colour, radix: 16))")
         }
     }
 }
@@ -153,5 +158,4 @@ extension TestJava {
     static let imageInk = Java.staticMethod(testPictures, "imageInk", "(Landroid/widget/ImageView;)I")
     static let iconInk = Java.staticMethod(testPictures, "iconInk", "(Landroid/widget/TextView;)I")
     static let aloneInk = Java.staticMethod(testPictures, "aloneInk", "(Landroid/widget/TextView;)I")
-    static let controlColour = Java.staticMethod(testPictures, "controlColour", "(Landroid/content/Context;)I")
 }

@@ -143,7 +143,10 @@ behind it.
 
 ## A label's words
 
-A label's words are one text, or the runs its spans describe as the host
+A label's words stand in the theme's primary words colour
+(`textColorPrimary`) where the tree colours them not, as Android's own body
+text; a `TextView` made bare reads its text appearance, whose colour is the
+secondary one. A label's words are one text, or the runs its spans describe as the host
 layer reads them (`textRuns`), laid down as one spanned text: each run in its
 own colour, size, family, weight, background and decorations where it has
 its own.

@@ -4,7 +4,6 @@
 package stateui.android.test;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -41,14 +40,6 @@ public final class TestPictures {
     /** `points` density-independent pixels, in this device's pixels. */
     public static int pixels(Context context, float points) {
         return Math.round(points * context.getResources().getDisplayMetrics().density);
-    }
-
-    /** The colour the theme draws controls' icons in, as ARGB. */
-    public static int controlColour(Context context) {
-        TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.colorControlNormal});
-        int colour = theme.getColor(0, 0);
-        theme.recycle();
-        return colour;
     }
 
     /** The image view's picture drawn alone at its own size: its most opaque pixel, as ARGB; 0 for none. */

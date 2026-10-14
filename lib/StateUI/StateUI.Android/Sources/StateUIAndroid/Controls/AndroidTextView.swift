@@ -20,8 +20,17 @@ final class AndroidTextView: AndroidTextualView {
 
     override var wordsRoom: Rect? { bound }
 
+    /// A `TextView` in the theme's primary words colour, which its own text appearance leaves secondary.
+    /// Design: docs/design/platforms/android/controls.md#a-labels-words
     init() {
-        super.init { _ in Java.new(JavaAPI.textView, JavaAPI.newTextView, .object(AndroidRenderer.context)) }
+        super.init { _ in
+            let label = Java.new(JavaAPI.textView, JavaAPI.newTextView, .object(AndroidRenderer.context))
+            Java.frame {
+                let words = Java.callStaticObject(JavaAPI.views, JavaAPI.primaryWords, .object(AndroidRenderer.context))
+                Java.call(label.reference, JavaAPI.setTextColors, .object(words))
+            }
+            return label
+        }
     }
 
     /// The words as runs, each spanning its own part of them with how its look differs from the label's.
