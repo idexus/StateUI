@@ -63,8 +63,9 @@ final class AndroidStepperView: AndroidView {
 
     /// Each button is on while the stepper is and its way is not at the range's end.
     private func showEnds() {
-        down.setEnabled(enabled && value > lowest)
-        up.setEnabled(enabled && value < highest)
+        let ways = ValueArithmetic.stepsWay(value, lower: lowest, upper: highest)
+        down.setEnabled(enabled && ways.down)
+        up.setEnabled(enabled && ways.up)
     }
 
     override func detach() {

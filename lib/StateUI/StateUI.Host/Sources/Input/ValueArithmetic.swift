@@ -44,6 +44,13 @@
         return ((destination + Swift.min(Swift.max(between, fewest), most) * step) * scale).rounded() / scale
     }
 
+    /// Which ways a stepper's step moves a `value` within `lower` and `upper`: down where it stands above the range's
+    /// lower end, up where below its upper; a button whose way is at the range's end stands disabled.
+    /// Design: docs/design/host/runtime.md#a-value-in-a-range
+    public static func stepsWay(_ value: Double, lower: Double, upper: Double) -> (down: Bool, up: Bool) {
+        (value > lower, value < upper)
+    }
+
     /// How far a slider's thumb moves for a key and for a page: a hundredth and a tenth of its range.
     public static func sliderSteps(lower: Double, upper: Double) -> (key: Double, page: Double) {
         let span = upper - lower

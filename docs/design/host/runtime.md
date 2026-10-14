@@ -634,8 +634,11 @@ bar's - follows one arithmetic on every host (`ValueArithmetic`): the range's
 ends stand in order whichever the tree gave first; a step that does not move
 is 1; a share of work past an end stands at that end, one that is no number
 at the start; a slider's key moves a hundredth of its range and a page a
-tenth; and a stepped number is written with as many decimals as its step,
-its ends and its value take, so each reads exactly, and no more than six.
+tenth; a stepped number is written with as many decimals as its step,
+its ends and its value take, so each reads exactly, and no more than six;
+and a stepper's step moves only away from the range's end it stands at
+(`ValueArithmetic.stepsWay`), its button of that way standing disabled where
+the host draws the buttons itself.
 
 Such a control is written, as its value and its ends apply, by one rule
 (`ElementValues.written`): the tree's value where the tree changed the value

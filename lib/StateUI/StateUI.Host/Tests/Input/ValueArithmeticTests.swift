@@ -78,4 +78,12 @@ final class ValueArithmeticTests: XCTestCase {
         XCTAssertEqual(TextCase.none.applied(to: "Mixed Words"), "Mixed Words")
         XCTAssertEqual(TextCase.default.applied(to: "Mixed Words"), "Mixed Words")
     }
+
+    /// A stepper's step moves down only above the range's lower end and up only below its upper: at an end, the
+    /// button of that way stands disabled.
+    func testAStepMovesOnlyAwayFromTheRangesEnd() {
+        XCTAssertTrue(ValueArithmetic.stepsWay(0, lower: 0, upper: 10) == (false, true))
+        XCTAssertTrue(ValueArithmetic.stepsWay(5, lower: 0, upper: 10) == (true, true))
+        XCTAssertTrue(ValueArithmetic.stepsWay(10, lower: 0, upper: 10) == (true, false))
+    }
 }
