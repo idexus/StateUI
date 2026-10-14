@@ -3,6 +3,7 @@
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+import CStateUIWinUI
 
 /// One window element shown in a WinUI window: what the host layer says it shows - its arrangement of pages, its
 /// sheets, its overlays, its frame and its chrome - turned into WinUI's, in step with the element as the tree changes.
@@ -20,6 +21,19 @@ final class WinUIWindowController {
 
     /// The sheets the window shows, one for each page its modal stack presents, the last on top.
     private var sheets: [(element: MountedElement, sheet: WinUISheetView)] = []
+
+    /// The page or tab view heading its content with its title, while the chrome names the application in its
+    /// place.
+    private weak var headed: WinUILayoutView?
+
+    /// Heads `page` - a page, or a tab view naming the window - with its title, and the one headed before it no more.
+    /// Design: docs/design/platforms/winui/pages.md#a-pages-heading
+    private func head(_ page: MountedElement?) {
+        let view = page?.winUI.view as? WinUILayoutView
+        if headed !== view { headed?.setHeading(nil) }
+        headed = view
+        view?.setHeading(page?.value(.title)?.string.flatMap { $0.isEmpty ? nil : $0 })
+    }
 
     init(_ element: MountedElement) {
         self.element = element
@@ -94,6 +108,7 @@ final class WinUIWindowController {
         var chrome = WinUIWindowChrome()
         chrome.title = composed.title ?? ""
         chrome.titleArea = composed.titleArea
+        chrome.showsTitle = composed.showsTitle
         chrome.back = composed.back.map { back in
             WinUIToolbarAction(title: back.title, isEnabled: true, perform: { [weak element, weak stack = back.stack] in
                 if let element, let stack { runtime.goBack(.pop(stack), in: element) }
@@ -112,6 +127,19 @@ final class WinUIWindowController {
         chrome.background = composed.background
         chrome.foreground = composed.foreground
         chrome.menuBar = WinUIMenu(menus: composed.menus.menus)
+        chrome.takeKey = { [weak self, weak element] pressed in
+            guard let self, let element else { return false }
+            let holder = KeyPresses.holder(under: element) { held in
+                (held.native as? WinUIElement)?.view.map { stateui_winui_focused($0.handle) } ?? false
+            }
+            return KeyPresses.press(
+                pressed.key, modifiers: pressed.modifiers, focused: holder, front: presentation.frontPage, in: runtime)
+        }
+        chrome.escape = { [weak element] in
+            element.map { KeyboardShortcuts.press(KeyboardShortcut(.escape, modifiers: []), under: $0, in: runtime) } ?? false
+        }
+        let headed = composed.titleArea != nil && composed.showsTitle
+        head(headed ? presentation.arrangement?.titledPage : nil)
         if !presentation.sheets.isEmpty {
             chrome.sheet = (
                 back: { [weak self] in self?.goBack(in: runtime) },
@@ -125,16 +153,16 @@ final class WinUIWindowController {
         WinUIToolbarAction(
             title: item.value(.text)?.string ?? "", isEnabled: item.isEffectivelyEnabled,
             identifier: item.value(.accessibilityIdentifier)?.string,
-            icon: item.value(.icon)?.string.flatMap { $0.isEmpty ? nil : PictureArithmetic.files(for: $0) } ?? [],
+            icon: WinUIPictures.lines(HostPicture(item.value(.icon))),
             isDestructive: item.value(.isDestructive)?.bool == true, showsWords: item.showsActionWords,
-            mount: item.mount, perform: { [weak item] in item?.winUI.send(.clicked, []) })
+            shortcut: item.keyboardShortcut, mount: item.mount, perform: { [weak item] in item?.winUI.choose() })
     }
 
-    /// The tabs the window shows - the visible tabbed view's, where its tabs stand in the window - and the split view
-    /// whose detail they stand across, if any.
+    /// The tabs the window shows - the visible tabbed view's, where its tabs stand in the window and no heading
+    /// stands over them - and the split view whose detail they stand across, if any.
     private var windowTabs: WinUIWindowTabs? {
         guard let tabbed = presentation.arrangement?.visibleTabView, tabbed.tabsStandInWindow,
-              let tabs = tabbed.winUI.view as? WinUITabView
+              let tabs = tabbed.winUI.view as? WinUITabView, !tabs.showsOwnRow
         else { return nil }
 
         return WinUIWindowTabs(

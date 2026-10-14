@@ -1,4 +1,4 @@
-# revision 5.1
+# revision 8.1
 Button.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Button.lineWidth: ✅
 Button.shape: ✅
@@ -11,9 +11,6 @@ HStack.background: ☑️ A page has no glass: glass is drawn as the blur as cle
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
-RadioButton.lineWidth: not realized
-RadioButton.shape: not realized
-RadioButton.stroke: not realized
 ScrollView.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅

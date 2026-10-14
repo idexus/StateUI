@@ -76,6 +76,12 @@ struct HomePage: View {
     /// the run, and the entrance, which waits for it to hold still.
     @State private var room = Rect(0, 0, 0, 0)
 
+    /// The library's home opening: the panel and its button go through it, so a tap both hear opens it once.
+    @State private var opening = Gatekeeper(.ignoreWhileRunning)
+
+    /// Where StateUI lives.
+    private static let repository = "https://github.com/idexus/StateUI"
+
     /// Where the entrance has got to - the engine's own step.
     ///
     /// ORDINARY STATE THAT NOTHING DESCRIBES: kept by property name across
@@ -141,7 +147,7 @@ struct HomePage: View {
 
                         Text("StateUI Gallery")
                             .fontSize(34)
-                            .fontAttributes(.bold)
+                            .fontWeight(.bold)
                             .tracking(-0.5)
                             .textColor(Palette.onBrand)
 
@@ -152,14 +158,30 @@ struct HomePage: View {
                     }
                     .spacing(10)
                     .padding(22)
+
+                    // The library's home, at the panel's top right; the whole panel opens it too.
+                    VStack {
+                        Button("Open on GitHub")
+                            .fontSize(13)
+                            .textColor(Palette.onBrand)
+                            .background(Color("#33FFFFFF"))
+                            .stroke(.transparent)
+                            .shape(.capsule)
+                            .padding(horizontal: 14, vertical: 6)
+                            .onClicked(gate: opening) { try await Links.launch(Self.repository) }
+                    }
+                    .padding(14)
+                    .horizontalAlignment(.end)
+                    .verticalAlignment(.start)
                 }
+                .onTapped(gate: opening) { try await Links.launch(Self.repository) }
                 .style(.card)
                 .background(Palette.identity)
                 .stroke(.transparent)
                 .lineWidth(0)
                 .shape(.roundedRectangle(18))
 
-                SectionTitle("\(catalog.sampleCount(on: device.info.formFactor)) SAMPLES "
+                SectionTitle("\(catalog.sampleCount(on: device)) SAMPLES "
                     + "IN \(groups.count) GROUPS")
             }
             .spacing(14)
@@ -186,7 +208,7 @@ struct HomePage: View {
                 // card rather than the card going transparent. It wears the
                 // card's own corners, which is why the view is the
                 // application's to give.
-                .shade(ColorBox(Color("#000000")).cornerRadius(16))
+                .shade(Rectangle(Color("#000000")).cornerRadius(16))
                 // WHAT THE ROWS CAN SPARE, worn on the host's own frames. The
                 // state is written by the engine under this grid, so a page
                 // settling through half a dozen passes costs no render at all.
@@ -220,7 +242,7 @@ struct HomePage: View {
                 // to as many lines as it wants, the count sits under it, and
                 // what changes between cards is how much of the block is
                 // empty underneath rather than how tall it is.
-                Caption(catalog: catalog, position: $chosen, formFactor: device.info.formFactor)
+                Caption(catalog: catalog, position: $chosen)
                     .height(Self.caption)
                     .verticalAlignment(.start)
                     .isVisible(wearing.captions)
@@ -241,9 +263,9 @@ struct HomePage: View {
                     .spans {
                         TextSpan("Copyright © 2026 Paweł Krzywdziński and Contributors · ")
                             .fontSize(11).textColor(Palette.subtle)
-                        TextSpan("StateUI").fontAttributes(.bold).fontSize(11).textColor(Palette.subtle)
+                        TextSpan("StateUI").fontWeight(.bold).fontSize(11).textColor(Palette.subtle)
                         TextSpan(" is a trademark of Paweł Krzywdziński. ").fontSize(11).textColor(Palette.subtle)
-                        TextSpan("Swift").fontAttributes(.bold).fontSize(11).textColor(Palette.subtle)
+                        TextSpan("Swift").fontWeight(.bold).fontSize(11).textColor(Palette.subtle)
                         TextSpan(" is a trademark of Apple Inc.").fontSize(11).textColor(Palette.subtle)
                     }
                     .fontSize(11)
@@ -350,7 +372,9 @@ struct HomePage: View {
         .opacity($shown)
         // No home button: this is it. The inspector stays, as it does on
         // every page - what each render cost is a question about any of them.
+        // The card names the page, which shows no title of its own.
         .galleryPage("Home")
+        .showsTitle(false)
     }
 
     /// Where the page is in coming in.
@@ -571,8 +595,8 @@ private struct Caption: View {
     /// the one built again when the user swipes.
     @Binding var position: Int
 
-    /// What the device is, for the count - a phone is shown fewer samples.
-    let formFactor: FormFactor
+    /// What the device is and has, for the count - a phone is shown fewer samples.
+    @Environment(\.device) private var device
 
     var body: some View {
         let groups = catalog.groups
@@ -581,7 +605,7 @@ private struct Caption: View {
         // THE NAME IS NOT AMONG THEM: the card carries it, and saying it again
         // a card's width below reads as two things rather than one.
         return VStack {
-            Text("\(group.shown(on: formFactor).count) samples · tap the card to open")
+            Text("\(group.shown(on: device).count) samples · tap the card to open")
                 .fontSize(12)
                 .textColor(Palette.accent)
                 .horizontalTextAlignment(.center)
@@ -646,7 +670,7 @@ private struct GroupFace: View {
                 Grid {
                     Text(title)
                         .fontSize(18)
-                        .fontAttributes(.bold)
+                        .fontWeight(.bold)
                         .textColor(Palette.onBrand)
                         .lineBreak(.tailTruncation)
                         .padding(horizontal: 12, vertical: 10)

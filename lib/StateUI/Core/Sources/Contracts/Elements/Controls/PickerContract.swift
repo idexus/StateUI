@@ -12,7 +12,7 @@ public enum PickerContract: ElementContract {
     /// A picker is a view of text in a font, aligned and tinted.
     public static let tiers: [any Contract.Type] = [
         ViewContract.self, TextStyleElementContract.self, FontElementContract.self,
-        TextAlignmentElementContract.self, TintElementContract.self,
+        TextAlignmentElementContract.self, TintElementContract.self, FocusElementContract.self,
     ]
 
     /// The user has closed the list of choices.
@@ -30,6 +30,11 @@ public enum PickerContract: ElementContract {
     /// What the field says while nothing is chosen.
     public static let placeholder = ElementProperty<Self, String>("placeholder", layer: .native)
 
+    /// How the values are offered: a menu, segments or radio buttons. Another
+    /// value makes the picker anew - each is another control.
+    public static let presentation = ElementProperty<Self, PickerPresentation>(
+        "presentation", layer: .native, remakes: true)
+
     /// Which item is chosen, counted from zero; -1 for none.
     public static let selectedIndex = ElementProperty<Self, Int>(
         "selectedIndex", layer: .native, travels: false, cleared: false)
@@ -39,6 +44,6 @@ public enum PickerContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        closed, isOpen, opened, options, placeholder, selectedIndex, selectedIndexChanged,
+        closed, isOpen, opened, options, placeholder, presentation, selectedIndex, selectedIndexChanged,
     ]
 }

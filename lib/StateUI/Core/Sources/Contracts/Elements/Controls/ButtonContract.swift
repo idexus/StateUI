@@ -12,8 +12,8 @@ public enum ButtonContract: ElementContract {
     /// A button is a view with a caption in a font, padded, bordered, with a
     /// picture fitted.
     public static let tiers: [any Contract.Type] = [
-        ViewContract.self, TextualElementContract.self, FontElementContract.self, PaddingElementContract.self,
-        BorderElementContract.self, ImageElementContract.self,
+        ViewContract.self, TextualElementContract.self, TrackingElementContract.self, FontElementContract.self,
+        PaddingElementContract.self, BorderElementContract.self, ImageElementContract.self, FocusElementContract.self,
     ]
 
     /// The button was pressed and released on it.
@@ -28,6 +28,17 @@ public enum ButtonContract: ElementContract {
     /// The gap between the icon and the caption, in device units.
     public static let iconSpacing = ElementProperty<Self, Double>("iconSpacing", layer: .adaptive)
 
+    /// Keys that press the button from the keyboard while its window is in front.
+    public static let keyboardShortcut = ElementProperty<Self, KeyboardShortcut>("keyboardShortcut", layer: .native)
+
+    /// How the button's menu opens - by its click, an arrow, or held (`Button.menu`); the button is made anew when it
+    /// changes.
+    public static let menuKind = ElementProperty<Self, ButtonMenuKind>("menuKind", layer: .adaptive, remakes: true)
+
+    /// Whether a button whose click opens its menu shows the arrow saying so; the button is made anew when it
+    /// changes.
+    public static let showsMenuArrow = ElementProperty<Self, Bool>("showsMenuArrow", layer: .native, remakes: true)
+
     /// What happens to a caption too long for the button.
     public static let lineBreak = ElementProperty<Self, LineBreak>("lineBreak", layer: .native)
 
@@ -37,8 +48,13 @@ public enum ButtonContract: ElementContract {
     /// The press ended, wherever the pointer ended up.
     public static let released = ElementEvent<Self, Void>("released", layer: .native)
 
+    /// What the button stands for in its window - its main action, the way out, or one destroying something - drawn
+    /// as each platform draws it; Return presses the main action and Escape the way out.
+    public static let role = ElementProperty<Self, ButtonRole>("role", layer: .adaptive)
+
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        clicked, icon, iconPosition, iconSpacing, lineBreak, pressed, released,
+        clicked, icon, iconPosition, iconSpacing, keyboardShortcut, lineBreak, menuKind, pressed, released, role,
+        showsMenuArrow,
     ]
 }

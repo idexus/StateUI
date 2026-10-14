@@ -112,7 +112,7 @@ struct Level: View {
     var body: some View {
         VStack {
             Slider($level)
-            ColorBox(.cornflowerBlue).scaleX($level)
+            Rectangle(.cornflowerBlue).scaleX($level)
             Text($level.convert { "\(Int($0 * 100))%" })
         }
     }
@@ -223,7 +223,7 @@ struct ResizingPanel: View {
 
     var body: some View {
         VStack {
-            ColorBox(.cornflowerBlue)
+            Rectangle(.cornflowerBlue)
                 .width(expanded ? 280 : 120)
                 .cornerRadius(expanded ? 28 : 8)
                 .motion(.spring(response: 320))
@@ -270,7 +270,7 @@ struct FallingDot: View {
 
     var body: some View {
         VStack {
-            ColorBox(.cornflowerBlue)
+            Rectangle(.cornflowerBlue)
                 .translationY($y)
                 .engine(tracking: $y) { cycle in
                     let journey = $y.journey
@@ -310,8 +310,8 @@ Application -> Scene -> windows -> a view
 Each structural protocol has one composition property. A window shows a view,
 which stands on a page - an arrangement is the page itself - and says what
 that page is by modifier: its values with `.title`, `.icon`,
-`.pageBackground`, `.showsNavigationBar`, `.showsBackButton` and
-`.backButtonTitle`; its phases with `.onAppearing`, `.onDisappearing`,
+`.pageBackground`, `.showsNavigationBar`, `.showsTitle`, `.showsBackButton`
+and `.backButtonTitle`; its phases with `.onAppearing`, `.onDisappearing`,
 `.onNavigatedTo`, `.onNavigatingFrom` and `.onNavigatedFrom`; and what stands
 on its bar and over its window with `.titleView { }`, `.toolbar { }` and
 `.overlays { }`

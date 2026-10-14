@@ -194,7 +194,7 @@ enum Listings {
                 // margin(2x, 2y, 0, 0) shifts a centred view by (x, y).
                 ForEach(Array(Self.marks.enumerated()), id: \.offset) { pair in
                     let (x, y, wide, tall) = pair.element
-                    return ColorBox(Palette.outline)
+                    return Rectangle(Palette.outline)
                         .width(wide)
                         .height(tall)
                         .horizontalAlignment(.center)
@@ -294,7 +294,7 @@ enum Listings {
             _ angle: Binding<Double>,
             length: Double, width: Double, color: Color
         ) -> some View {
-            ColorBox(color)
+            Rectangle(color)
                 .rotation(angle)
                 .width(width)
                 .height(length)
@@ -498,7 +498,7 @@ enum Listings {
         """#,
         "AnimationSample": #"""
         // Sources/Samples/Animation/AnimationSample.swift
-        @State private var curve = 0
+        @State private var curve = Easing.linear
 
         /// The four values the card is drawn from, one per thing a button moves.
         ///
@@ -511,12 +511,12 @@ enum Listings {
         @State private var scale = 1.0
         @State private var angle = 0.0
 
-        static let curves = ["Linear", "Cubic in-out", "Bounce out", "Back out"]
+        static let curves: [Easing] = [.linear, .cubicInOut, .bounceOut, .backOut]
 
         var body: some View {
             VStack {
-                // The picker is handed `$curve`, which reads nothing at build,
-                // and the four journeys are the host's - so this stands at one.
+                // A curve chosen builds this closure once; the four journeys are
+                // the host's, so a button pressed builds nothing.
                 DebugInfoLabel()
 
                 ZStack {
@@ -532,8 +532,7 @@ enum Listings {
                 .stroke(Palette.accent)
                 .horizontalAlignment(.center)
 
-                Picker(Self.curves)
-                    .selectedIndex($curve)
+                Picker(Self.curves, selection: $curve, caption: Self.name)
                     .placeholder("Easing")
 
                 HStack {
@@ -543,8 +542,8 @@ enum Listings {
                     // whatever happened instead, which is what lets Stop leave the
                     // card where it stood.
                     button("Fade") {
-                        let landed = try await $fade.journey.move(to: 0.1, .eased(400, easing)).arrived()
-                        if landed { try await $fade.journey.move(to: 1, .eased(400, easing)).arrived() }
+                        let landed = try await $fade.journey.move(to: 0.1, .eased(400, curve)).arrived()
+                        if landed { try await $fade.journey.move(to: 1, .eased(400, curve)).arrived() }
                     }
 
                     // ONE movement, because the card only ever moves sideways. A
@@ -552,13 +551,13 @@ enum Listings {
                     // beside this one before either is awaited, so the two land
                     // together.
                     button("Move") {
-                        let landed = try await $shift.journey.move(to: 60, .eased(400, easing)).arrived()
-                        if landed { try await $shift.journey.move(to: 0, .eased(400, easing)).arrived() }
+                        let landed = try await $shift.journey.move(to: 60, .eased(400, curve)).arrived()
+                        if landed { try await $shift.journey.move(to: 0, .eased(400, curve)).arrived() }
                     }
 
                     button("Scale") {
-                        let landed = try await $scale.journey.move(to: 1.4, .eased(400, easing)).arrived()
-                        if landed { try await $scale.journey.move(to: 1, .eased(400, easing)).arrived() }
+                        let landed = try await $scale.journey.move(to: 1.4, .eased(400, curve)).arrived()
+                        if landed { try await $scale.journey.move(to: 1, .eased(400, curve)).arrived() }
                     }
 
                     // A movement goes TO a value, never BY one, so a full turn is
@@ -566,7 +565,7 @@ enum Listings {
                     // headed, which is what makes the next press carry on from
                     // there rather than start over.
                     button("Spin") {
-                        try await $angle.journey.move(to: angle + 360, .eased(700, easing)).arrived()
+                        try await $angle.journey.move(to: angle + 360, .eased(700, curve)).arrived()
                     }
                 }
                 .horizontalAlignment(.center)
@@ -590,13 +589,13 @@ enum Listings {
                 .onClicked(gate: .cancelPrevious, act)
         }
 
-        /// The curve the picker is on.
-        private var easing: Easing {
+        /// What the picker calls a curve.
+        static func name(_ curve: Easing) -> String {
             switch curve {
-            case 1: return .cubicInOut
-            case 2: return .bounceOut
-            case 3: return .backOut
-            default: return .linear
+            case .cubicInOut: "Cubic in-out"
+            case .bounceOut: "Bounce out"
+            case .backOut: "Back out"
+            default: "Linear"
             }
         }
         """#,
@@ -606,7 +605,7 @@ enum Listings {
         // size at the default spacing reads loose.
         Style<Text>(.headline)
             .fontSize(32)
-            .fontAttributes(.bold)
+            .fontWeight(.bold)
             .tracking(-0.5)
             .horizontalAlignment(.center)
             .horizontalTextAlignment(.center)
@@ -627,21 +626,39 @@ enum Listings {
             .textColor(Palette.accent)
 
         // Every button the gallery shows wears its violet - a style with no
-        // key is every button's.
+        // key is every button's - in its platform's shape: a capsule on
+        // Apple's platforms, rounded everywhere else; and lower on the
+        // desktop, where a pointer presses it.
         Style<Button>()
             .textColor(Palette.onAccent)
             .background(Palette.accent)
             .lineWidth(0)
+            #if APPKIT || UIKIT
+            .shape(.capsule)
+            #else
             .shape(.roundedRectangle(10))
+            #endif
+            #if APPKIT || WINUI || GTK
+            .padding(horizontal: 16, vertical: 6)
+            #elseif UIKIT
+            .padding(horizontal: 22, vertical: 10)
+            #else
             .padding(horizontal: 16, vertical: 11)
+            #endif
             .visualState(.disabled) { $0
                 .textColor(Palette.disabled)
                 .background(Palette.outline)
             }
 
-        // Every ColorBox that names no colour of its own wears the violet.
-        Style<ColorBox>()
-            .color(Palette.accent)
+        // A button's role chooses a style over the one above: it says
+        // only what the role changes. The main action keeps the violet;
+        // the way out steps back, and what destroys something is red.
+        Style<Button>(role: .cancel)
+            .textColor(Palette.text)
+            .background(Palette.selected)
+        Style<Button>(role: .destructive)
+            .textColor(Palette.danger)
+            .background(Palette.dangerWash)
         """#,
         "AppThemeSample": #"""
         // Sources/Samples/Styles/AppThemeSample.swift
@@ -655,6 +672,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text("\(app.info.colorScheme)")
+                    .fontWeight(.bold)
 
                 // LOGIC on the theme - a different WORD, not a colour.
                 // A colour that differs by theme is Color(light:dark:),
@@ -686,13 +704,14 @@ enum Listings {
             // new place.
             let application = self.application
             let themes = Self.themes
-            let theme = themes.firstIndex { $0.scheme == application.colorScheme } ?? 0
 
             return VStack {
                 // The theme first: which of the two looks below the gallery wears.
                 SectionTitle("The theme")
-                Picker(themes.map(\.name))
-                    .selectedIndex(Binding(get: { theme }, set: { application.colorScheme = themes[$0].scheme }))
+                Picker(themes.map(\.scheme),
+                       selection: Binding(get: { application.colorScheme }, set: { application.colorScheme = $0 })) { scheme in
+                    themes.first { $0.scheme == scheme }?.name ?? ""
+                }
 
                 // A look for each theme: the gallery wears the one of the theme in
                 // force, and changes with it. Side by side where there is room,
@@ -748,14 +767,11 @@ enum Listings {
                         .onClicked { style[keyPath: choice] = .own }
 
                     Text("The bars")
-                    Picker(bars.map(\.name))
-                        .selectedIndex(Binding(
-                            get: { bars.firstIndex(of: look.bars) ?? 0 }, set: { style[keyPath: key].bars = bars[$0] }))
-                    Picker(accents.map(\.name))
+                    Picker(bars, selection: Binding(get: { look.bars }, set: { style[keyPath: key].bars = $0 })) { $0.name }
+                    Picker(accents, selection: Binding(get: { look.barColour }, set: { style[keyPath: key].barColour = $0 })) {
+                        $0.name
+                    }
                         .isEnabled(look.bars == .tinted || look.bars == .colour)
-                        .selectedIndex(Binding(
-                            get: { accents.firstIndex(of: look.barColour) ?? 0 },
-                            set: { style[keyPath: key].barColour = accents[$0] }))
 
                     SurfacePickers(title: "The window", label: "Window", theme: name, surface: surface(\.window))
                     SurfacePickers(title: "The sidebar", label: "Sidebar", theme: name, surface: surface(\.sidebar))
@@ -782,20 +798,17 @@ enum Listings {
 
                 return VStack {
                     Text(title)
-                    Picker(materials.map(\.name))
-                        .selectedIndex(Binding(
-                            get: { materials.firstIndex(of: look.material) ?? 0 },
-                            set: { surface.wrappedValue.material = materials[$0] }))
-                    Picker(accents.map(\.name))
+                    Picker(materials, selection: Binding(get: { look.material }, set: { surface.wrappedValue.material = $0 })) {
+                        $0.name
+                    }
+                    Picker(accents, selection: Binding(get: { look.colour }, set: { surface.wrappedValue.colour = $0 })) {
+                        $0.name
+                    }
                         .isEnabled(look.material.showsColour)
-                        .selectedIndex(Binding(
-                            get: { accents.firstIndex(of: look.colour) ?? 0 },
-                            set: { surface.wrappedValue.colour = accents[$0] }))
-                    Picker(["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"])
+                    Picker(blurs, selection: Binding(get: { look.blur }, set: { surface.wrappedValue.blur = $0 })) { blur in
+                        ["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"][blurs.firstIndex(of: blur) ?? 0]
+                    }
                         .isEnabled(look.material.showsBlur)
-                        .selectedIndex(Binding(
-                            get: { blurs.firstIndex(of: look.blur) ?? 0 },
-                            set: { surface.wrappedValue.blur = blurs[$0] }))
                 }
             }
         }
@@ -807,13 +820,14 @@ enum Listings {
 
         @State private var wide = false
 
-        static let laws = ["Standard", "Spring", "None"]
+        static let laws: [Motion] = [.standard, .spring(response: 320, damping: 0.6), .none]
 
-        static func law(_ index: Int) -> Motion {
-            switch index {
-            case 1: .spring(response: 320, damping: 0.6)
-            case 2: .none
-            default: .standard
+        /// What the picker calls a law.
+        static func name(_ law: Motion) -> String {
+            switch law {
+            case .standard: "Standard"
+            case .none: "None"
+            default: "Spring"
             }
         }
 
@@ -827,14 +841,12 @@ enum Listings {
 
                 // One write for the whole application: every value without a
                 // motion of its own takes it.
-                Picker(Self.laws)
-                    .onSelectedIndexChanged { application.motion = Self.law($0) }
-                    .selectedIndex(Self.laws.indices.first { Self.law($0) == application.motion } ?? 0)
+                Picker(Self.laws, selection: Binding(get: { application.motion }, set: { application.motion = $0 }),
+                       caption: Self.name)
                     .horizontalAlignment(.center)
 
                 // No `.motion` here: the panel takes the application's.
-                ColorBox()
-                    .color(wide ? Palette.accent : Palette.brand)
+                Rectangle(wide ? Palette.accent : Palette.brand)
                     .width(wide ? 300 : 120)
                     .height(60)
                     .horizontalAlignment(.center)
@@ -856,11 +868,11 @@ enum Listings {
                 // differ asks, so the only closure this switch rebuilds is that one.
                 ZStack {
                     // No area: the whole room, filled.
-                    ColorBox(Palette.outline)
+                    Rectangle(Palette.outline)
 
                     // The panel fills the area it names: the right half of the
                     // room, or 120 by 60 at 16, 16 whatever the room's size.
-                    ColorBox(Color("#1E88E5"))
+                    Rectangle(Color("#1E88E5"))
                         .area(proportional ? .proportional(0.5, 0, 0.5, 1) : .absolute(16, 16, 120, 60))
 
                     // Its natural size, where its alignments put it.
@@ -973,6 +985,7 @@ enum Listings {
                 Text(device.battery.chargeLevel <= 0
                     ? "the host has not said"
                     : "\(Int(device.battery.chargeLevel * 100))%")
+                    .fontWeight(.bold)
 
                 Text("state · \(device.battery.state)")
                 Text("source · \(device.battery.powerSource)")
@@ -1077,9 +1090,9 @@ enum Listings {
         /// Words the host writes.
         @State private var hint = "Type here"   // words: the host writes them
 
-        /// A choice the host sets AND reports: the picker is handed `$choice`
+        /// A value the host sets AND reports: the slider is handed `$level`
         /// both ways, and nothing here reads it.
-        @State private var choice = 1   // a choice: set and reported
+        @State private var level = 0.25   // a value: set and reported
 
         /// A toggle the host sets and reports - and one row READS it, which is
         /// the one row that renders.
@@ -1130,13 +1143,12 @@ enum Listings {
 
                 button("Another hint") { hint = hint == "Type here" ? "Your name" : "Type here" }
 
-                row("5 · a choice, both ways - selectedIndex($choice)") {
-                    Picker(["S", "M", "L"])
-                        .selectedIndex($choice)
+                row("5 · a value, both ways - Slider($level)") {
+                    Slider($level)
                     DebugInfoLabel()
                 }
 
-                button("Choose L") { choice = 2 }
+                button("To the middle") { level = 0.5 }
 
                 row("6 · a member the host sets - horizontalAlignment($side)") {
                     Text("Where am I?")
@@ -1201,11 +1213,7 @@ enum Listings {
 
                 SectionTitle("Along a line")
 
-                Rectangle()
-                    .fill(.linearGradient(
-                        Self.stops,
-                        startPoint: Point(0, 0),
-                        endPoint: Self.ends[end].point))
+                Rectangle(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Self.ends[end].point))
                     .contentMode(.stretch)   // fills the room, proportions and all
                     .height(80)
 
@@ -1215,8 +1223,7 @@ enum Listings {
 
                 SectionTitle("Out from a point")
 
-                Ellipse()
-                    .fill(.radialGradient(
+                Ellipse(.radialGradient(
                         [GradientStop(.white, 0), GradientStop(.steelBlue, 1)],
                         center: Point(0.35, 0.3),
                         radius: 0.75))
@@ -1266,6 +1273,7 @@ enum Listings {
                 // either way, so what has been typed in it survives the toggle.
                 if signedIn {
                     Text("Signed in")
+                        .fontWeight(.bold)
                 }
 
                 TextField($note)
@@ -1292,6 +1300,7 @@ enum Listings {
                 ForEach(0..<5) { turn in
                     if turn == chosen {
                         Text("turn \(turn) - chosen")
+                            .fontWeight(.bold)
                     } else {
                         Button("turn \(turn)")
                             .horizontalAlignment(.start)
@@ -1299,6 +1308,119 @@ enum Listings {
                     }
                 }
 
+            }
+        }
+        """#,
+        "ButtonMenuSample": #"""
+        // Sources/Samples/BasicInput/ButtonMenuSample.swift
+        @State private var last = "nothing yet"
+        @State private var showsArrow = true
+        @State private var platformLook = false
+
+        var body: some View {
+            // The platform's own buttons, or the gallery's every button wears.
+            let look: StyleKey<Button>? = platformLook ? .platform : nil
+
+            return VStack {
+                Text("Share opens its menu. Save saves, its arrow offers more. Hold Open for a recent file.")
+
+                HStack {
+                    Button("Share").style(look).menu {
+                        MenuItem("Mail").onClicked { last = "Share by mail" }
+                        MenuItem("Message").onClicked { last = "Share by message" }
+                        MenuSeparator()
+                        MenuItem("Copy link").onClicked { last = "Link copied" }
+                    }
+
+                    Button("Save")
+                        .style(look)
+                        .onClicked { last = "Saved" }
+                        .menu {
+                            MenuItem("Save as…").onClicked { last = "Saved as" }
+                            MenuItem("Save a copy").onClicked { last = "Saved a copy" }
+                        }
+
+                    Button("Open")
+                        .style(look)
+                        .onClicked { last = "Opened" }
+                        .menu(.held) {
+                            MenuItem("Report.txt").onClicked { last = "Opened Report.txt" }
+                            MenuItem("Notes.txt").onClicked { last = "Opened Notes.txt" }
+                        }
+                }
+
+                HStack {
+                    Button(icon: .icon(.more))
+                        .style(look)
+                        .menu {
+                            MenuItem("Rename").onClicked { last = "Renamed" }
+                            MenuItem("Delete").onClicked { last = "Deleted" }
+                        }
+                        .showsMenuArrow(showsArrow)
+
+                    Switch($showsArrow)
+                        .verticalAlignment(.center)
+
+                    Text("Arrow")
+                        .verticalAlignment(.center)
+                }
+
+                HStack {
+                    Switch($platformLook)
+
+                    Text("Platform look")
+                        .verticalAlignment(.center)
+                }
+
+                Text("Last: \(last)")
+            }
+        }
+        """#,
+        "ButtonRoleSample": #"""
+        // Sources/Samples/BasicInput/ButtonRoleSample.swift
+        @State private var name = ""
+        @State private var last = "nothing yet"
+        @State private var platformLook = false
+
+        var body: some View {
+            // The gallery's style for each role, or the platform's own look.
+            let look: StyleKey<Button>? = platformLook ? .platform : nil
+
+            return VStack {
+                Text("Press Return or Escape; in the field, Return ends the name instead.")
+
+                TextField($name)
+                    .placeholder("Name")
+                    .onSubmitted { last = "the name \(name)" }
+
+                HStack {
+                    // Marked as an action that destroys something.
+                    Button("Delete")
+                        .style(look)
+                        .role(.destructive)
+                        .onClicked { last = "Delete" }
+
+                    // Escape presses the way out.
+                    Button("Cancel")
+                        .style(look)
+                        .role(.cancel)
+                        .onClicked { last = "Cancel" }
+
+                    // Return presses the main action.
+                    Button("Save")
+                        .style(look)
+                        .role(.primary)
+                        .onClicked { last = "Save" }
+                }
+
+                HStack {
+                    Switch($platformLook)
+
+                    Text("Platform look")
+                        .verticalAlignment(.center)
+                }
+
+                Text("Last: \(last)")
             }
         }
         """#,
@@ -1320,6 +1442,7 @@ enum Listings {
                 Button("Outlined")
                     .stroke(Palette.accent)
                     .lineWidth(1)
+                    .shape(.capsule)
                     .horizontalAlignment(.center)
                     .onClicked { counter += 1 }
 
@@ -1369,36 +1492,6 @@ enum Listings {
         /// What is ticked, in the order the boxes are drawn.
         private var chosen: [String] {
             ["Cheese", "Bacon", "Egg"].enumerated().filter { extras[$0.offset] }.map { $0.element }
-        }
-        """#,
-        "ColorBoxSample": #"""
-        // Sources/Samples/Layout/ColorBoxSample.swift
-        var body: some View {
-            VStack {
-                HStack {
-                    ColorBox(Palette.accent)
-                        .width(44)
-                        .height(44)
-
-                    ColorBox(Palette.accent)
-                        .width(44)
-                        .height(44)
-
-                    ColorBox(Palette.accent)
-                        .width(44)
-                        .height(44)
-
-                    ColorBox(Color("#E53935"))
-                        .opacity(0.4)
-                        .width(44)
-                        .height(44)
-                }
-                .horizontalAlignment(.center)
-
-                // A one-pixel ColorBox is also the usual divider.
-                ColorBox(Palette.outline)
-                    .height(1)
-            }
         }
         """#,
         "ComplaintsSample": #"""
@@ -1476,7 +1569,7 @@ enum Listings {
                     VStack {
                         HStack {
                             ForEach(Array(bars.enumerated()), id: \.offset) { bar in
-                                ColorBox(Palette.onAccent)
+                                Rectangle(Palette.onAccent)
                                     .translationY(bar.element)
                                     .width(14)
                                     .height(46)
@@ -1600,6 +1693,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text("\(total)")
+                    .fontWeight(.bold)
 
                 // The proof: after a run, the count equals what was asked for.
                 Text(running
@@ -1669,6 +1763,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text(device.connectivity.networkAccess == .internet ? "online" : "offline")
+                    .fontWeight(.bold)
 
                 Text("access · \(device.connectivity.networkAccess)")
                 Text("via · \(profiles.isEmpty ? "nothing reported" : profiles)")
@@ -1683,6 +1778,7 @@ enum Listings {
         // Sources/Samples/Navigation/ContextMenuSample.swift
         @State private var items = ["Alpha", "Beta", "Gamma"]
         @State private var chosen = "nothing yet"
+        @State private var large = false
 
         var body: some View {
             VStack {
@@ -1712,7 +1808,11 @@ enum Listings {
                                         }
                                 }
 
-                                Divider()
+                                // A setting: its check follows the state, and
+                                // choosing it turns the state over.
+                                MenuItem("Large text").isOn($large)
+
+                                MenuSeparator()
 
                                 MenuItem("Remove")
                                     .icon(ImageSource(light: "menu_remove.png", dark: "menu_remove_dark.png"))
@@ -1732,6 +1832,7 @@ enum Listings {
                     .onClicked {
                         items = ["Alpha", "Beta", "Gamma"]
                         chosen = "nothing yet"
+                        large = false
                     }
             }
         }
@@ -1779,7 +1880,7 @@ enum Listings {
                 row("3 · a caption from the conversion") {
                     // A caption from the conversion: words the host writes.
                     Text()
-                        .text($volume.convert { "\(Int($0 * 100))%" })
+                        .text($volume.convert { "\(Int(($0 * 100).rounded()))%" })
                     DebugInfoLabel()
                 }
 
@@ -1818,7 +1919,12 @@ enum Listings {
                         .minimum(20)
                         .maximum(200)
                     Text()
-                        .text($width.convert(with: $height) { w, h in "\(Int(w)) × \(Int(h)) = \(Int(w * h))" })
+                        // The sides as they are shown, whole, and their product - not the product of what
+                        // the sliders hold, which would disagree with the sides it names.
+                        .text($width.convert(with: $height) { w, h in
+                            let (across, down) = (Int(w.rounded()), Int(h.rounded()))
+                            return "\(across) × \(down) = \(across * down)"
+                        })
                     DebugInfoLabel()
                 }
 
@@ -1839,7 +1945,7 @@ enum Listings {
                     // building it.
                     Text()
                         .text(.multi($named, $width, $height)
-                            .convert { "\($0): \(Int($1)) × \(Int($2))" })
+                            .convert { "\($0): \(Int($1.rounded())) × \(Int($2.rounded()))" })
                     DebugInfoLabel()
                 }
             }
@@ -1955,12 +2061,8 @@ enum Listings {
         "Cube3DSample": #"""
         // Sources/Samples/Animation/Cube3DSample.swift
         @State private var size = 0.6
-        @State private var color = 0
+        @State private var color = CubeColor.teal
         @State private var spinning = true
-
-        /// The names the picker offers, in the order `CubeColor` declares them -
-        /// so the chosen index IS the vocabulary's member number.
-        static let colors = ["Teal", "Amber", "Violet"]
 
         var body: some View {
             VStack {
@@ -1968,7 +2070,7 @@ enum Listings {
 
                 Cube3D()
                     .size($size)
-                    .color(CubeColor(rawValue: Int32(color)) ?? .teal)
+                    .color(color)
                     .isSpinning($spinning)
                     .horizontalAlignment(.center)
 
@@ -1979,8 +2081,7 @@ enum Listings {
                     .minimum(0.2)
                     .maximum(1)
 
-                Picker(Self.colors)
-                    .selectedIndex($color)
+                Picker(CubeColor.allCases, selection: $color) { "\($0)".titled }
                     .placeholder("Color")
 
                 HStack {
@@ -2040,6 +2141,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text("\(Int(device.display.width)) × \(Int(device.display.height)) px")
+                    .fontWeight(.bold)
 
                 Text(device.display.density > 0
                     ? "\(Int(device.display.width / device.display.density)) × "
@@ -2070,6 +2172,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text("\(app.info.name) \(app.info.versionString) (\(app.info.buildString))")
+                    .fontWeight(.bold)
 
                 Text(app.info.packageName)
 
@@ -2299,13 +2402,11 @@ enum Listings {
 
                 ZStack {
                     Grid {
-                        ColorBox()
-                            .color($tint)
+                        Rectangle($tint)
                             .height(6)
                             .verticalAlignment(.center)
 
-                        ColorBox()
-                            .color(Palette.brand)
+                        Rectangle(Palette.brand)
                             .width(20)
                             .height(20)
                             .horizontalAlignment(.start)
@@ -2324,6 +2425,7 @@ enum Listings {
                 // nothing here reads anything.
                 Text()
                     .text($offset.journey.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
+                    .fontWeight(.bold)
                     .horizontalAlignment(.center)
 
                 // Off ordinary state: described again each time the switch is
@@ -2393,6 +2495,7 @@ enum Listings {
                     // Off a driven state: written ten times a second, never described.
                     Text()
                         .text($reading)
+                        .fontWeight(.bold)
                         .horizontalAlignment(.center)
                 }
                 .style(.card)
@@ -3287,7 +3390,7 @@ enum Listings {
             // over, which a stack cannot give a child - and a gallery wants it all.
             Grid {
                 Grid {
-                    ColorBox(Palette.raised)
+                    Rectangle(Palette.raised)
 
                     // THE WHOLE CONTROL: the run made below - one card per item, each
                     // named by its name - and one word for the shape they stand in.
@@ -3377,7 +3480,7 @@ enum Listings {
             // corners, which is why the view is the application's to give.
             // A quarter of the fade is left beside it, unless `.fade(_:)` says
             // otherwise.
-            return run.shade(ColorBox(Color("#000000")).cornerRadius(16))
+            return run.shade(Rectangle(Color("#000000")).cornerRadius(16))
         }
 
         /// One card's face - a picture and its name, and nothing at all about where
@@ -3390,6 +3493,7 @@ enum Listings {
                         .contentMode(.fill)
 
                     Text(card.name)
+                        .fontWeight(.bold)
                         .lineBreak(.tailTruncation)
                         .verticalAlignment(.end)
                 }
@@ -3480,6 +3584,7 @@ enum Listings {
                     // them - so a settled frame builds the reader AND the page.
                     GeometryReader { frame in
                         Text("\(Int(frame.width)) × \(Int(frame.height))")
+                            .fontWeight(.bold)
                             .horizontalAlignment(.center)
                             .verticalAlignment(.center)
                     }
@@ -3530,6 +3635,7 @@ enum Listings {
                 // Columns at least 100 wide: as many as the width holds.
                 ItemsView(0..<120) { number in
                     Text("\(number)")
+                        .fontWeight(.bold)
                         .height(72)
                         .background(Self.hues[number % Self.hues.count])
                 }
@@ -3573,7 +3679,7 @@ enum Listings {
                         .gridRow(2)
                         .gridColumnSpan(2)
                 }
-                .rows(.fixed(64), .fixed(64), .auto)
+                .rows(.fixed(64, count: 2), .auto)
                 .columns(.fill, .proportional(wideSecondColumn ? 2 : 1))
 
                 // Changing a definition patches the grid in place: the cells keep
@@ -3626,7 +3732,8 @@ enum Listings {
                         Text(item)
                     }
                     .id(shelf.name)
-                    .header(Text(shelf.name))
+                    .header(Text(shelf.name)
+                        .fontWeight(.bold))
 
                     return counts
                         ? group.footer(Text("\(shelf.items.count) items"))
@@ -3657,6 +3764,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text("Here: \(zone.isEmpty ? "…" : zone)")
+                    .fontWeight(.bold)
 
                 Text(season)
 
@@ -3722,12 +3830,11 @@ enum Listings {
         // Sources/Samples/BasicInput/IconButtonSample.swift
         @State private var taps = 0
         @State private var pressed = false
-        @State private var side = 0
+        @State private var side = IconPosition.leading
         @State private var gap = 8.0
         @State private var wide = false
 
-        static let sides = ["Leading", "Top", "Trailing", "Bottom"]
-        static let positions: [IconPosition] = [.leading, .top, .trailing, .bottom]
+        static let sides: [IconPosition] = [.leading, .top, .trailing, .bottom]
 
         var body: some View {
             VStack {
@@ -3762,13 +3869,12 @@ enum Listings {
                 // between them as the slider says - together, however wide.
                 Button("Media")
                     .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
-                    .iconPosition(Self.positions[side])
+                    .iconPosition(side)
                     .iconSpacing(gap)
                     .horizontalAlignment(wide ? .fill : .center)
                     .onClicked { taps += 1 }
 
-                Picker(Self.sides)
-                    .selectedIndex($side)
+                Picker(Self.sides, selection: $side) { "\($0)".titled }
                     .placeholder("Picture")
                     .horizontalAlignment(.center)
 
@@ -3777,6 +3883,60 @@ enum Listings {
                     .maximum(24)
 
                 SwitchRow("Full width", $wide)
+            }
+        }
+        """#,
+        "IconSample": #"""
+        // Sources/Samples/Media/IconSample.swift
+        /// The hue of the picture the application makes.
+        @State private var hue = 0.6
+
+        var body: some View {
+            VStack {
+                Grid {
+                    ForEach(Array(Icon.allCases.enumerated()), id: \.offset) { place, icon in
+                        VStack {
+                            Image(.icon(icon))
+                                .width(24)
+                                .height(24)
+                                .horizontalAlignment(.center)
+
+                            Text("\(icon)")
+                                .textStyle(.caption)
+                        }
+                        .gridColumn(place % 4)
+                        .gridRow(place / 4)
+                    }
+                }
+                .columns(.fill(count: 4))
+                .rows(.auto(count: 8))
+
+                SectionTitle("In the button's colour")
+
+                HStack {
+                    Button("Share")
+                        .icon(.icon(.share))
+
+                    Button("Delete")
+                        .icon(.icon(.delete))
+                        .role(.destructive)
+
+                    Button(icon: .icon(.settings))
+                }
+
+                SectionTitle("Made as bytes")
+
+                HStack {
+                    // Four pixels a point, shown as large as the icons above.
+                    Image(ImageSource(bytes: MadePicture.rings(side: 96, hue: hue)))
+                        .width(24)
+                        .height(24)
+                        .verticalAlignment(.center)
+
+                    Button("Make another")
+                        .onClicked { hue = (hue + 0.17).truncatingRemainder(dividingBy: 1) }
+                        .verticalAlignment(.center)
+                }
             }
         }
         """#,
@@ -4047,6 +4207,34 @@ enum Listings {
             }
         }
         """#,
+        "KeyPressSample": #"""
+        // Sources/Samples/BasicInput/KeyPressSample.swift
+        @State private var query = ""
+        @State private var row = 0
+
+        var body: some View {
+            VStack {
+                Text("Type in the field: the arrows move through the list, and Escape empties the field.")
+
+                VStack {
+                    TextField($query)
+                        .placeholder("Search")
+
+                    Text(row == 0 ? "▸ Apples" : "Apples")
+                    Text(row == 1 ? "▸ Bread" : "Bread")
+                    Text(row == 2 ? "▸ Cheese" : "Cheese")
+                }
+                // The stack holds the field, so these keys are its while the field holds the keyboard.
+                .onKeyPressed(.upArrow, .downArrow, .escape) { key in
+                    if key == .escape {
+                        query = ""
+                    } else {
+                        row = min(2, max(0, row + (key == .upArrow ? -1 : 1)))
+                    }
+                }
+            }
+        }
+        """#,
         "KeyboardSample": #"""
         // Sources/Samples/Text/KeyboardSample.swift
         @State private var name = ""
@@ -4142,10 +4330,9 @@ enum Listings {
                     ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
                         HStack {
                             ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
-                                ColorBox()
+                                Rectangle(Palette.outline)
                                     .width(7)
                                     .height(14)
-                                    .color(Palette.outline)
                                     .id(index)
                             }
                         }
@@ -4153,6 +4340,7 @@ enum Listings {
 
                     HStack {
                         Text("Counter \(counter)")
+                            .fontWeight(.bold)
 
                         Text(took(began, leaves))
                             .height(15)
@@ -4179,10 +4367,9 @@ enum Listings {
                     ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
                         HStack {
                             ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
-                                ColorBox()
+                                Rectangle(Palette.outline)
                                     .width(7)
                                     .height(14)
-                                    .color(Palette.outline)
                                     .id(index)
                             }
                         }
@@ -4190,6 +4377,7 @@ enum Listings {
 
                     HStack {
                         Text($counter.convert { "Counter \($0)" })
+                            .fontWeight(.bold)
 
                         Text(took(began, leaves))
                             .height(15)
@@ -4249,11 +4437,13 @@ enum Listings {
 
                 boxed("Layer one · a get") {
                     Text("Counter \(counter)")
+                        .fontWeight(.bold)
                     DebugInfoLabel()   // climbs, "for counter"
                 }
 
                 boxed("Layer two · a channel") {
                     Text($counter.convert { "Counter \($0)" })
+                        .fontWeight(.bold)
                     DebugInfoLabel()   // stays: "1 build, first time"
                 }
             }
@@ -4282,13 +4472,13 @@ enum Listings {
                 // Left alone, the child written last is drawn on top; the higher
                 // zIndex is nearer the front, and nothing moves.
                 ZStack {
-                    ColorBox(Color("#E53935"))
+                    Rectangle(Color("#E53935"))
                         .width(150)
                         .height(70)
                         .horizontalAlignment(.start)
                         .zIndex(redInFront ? 1 : 0)
 
-                    ColorBox(Color("#1E88E5"))
+                    Rectangle(Color("#1E88E5"))
                         .width(150)
                         .height(70)
                         .horizontalAlignment(.end)
@@ -4321,7 +4511,7 @@ enum Listings {
                 // Laid out the way `direction` says - at `.inherited`, the way the
                 // view above it is.
                 HStack {
-                    ColorBox(Palette.accent)
+                    Rectangle(Palette.accent)
                         .width(60)
                         .height(20)
 
@@ -4570,6 +4760,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text(locale.name.isEmpty ? "the host has not said" : locale.name)
+                    .fontWeight(.bold)
 
                 Text("language · \(locale.language)")
                 Text("region · \(locale.region.isEmpty ? "none" : locale.region)")
@@ -4577,6 +4768,170 @@ enum Listings {
                 Text("clock · \(locale.uses24HourClock ? "24-hour" : "12-hour")")
                 Text("week starts · \(locale.firstDayOfWeek)")
                 Text(locale.isMetric ? "metric" : "not metric")
+            }
+        }
+        """#,
+        "LocalizationSample": #"""
+        // Sources/Samples/Environment/Localization/LocalizationSample.swift
+        @State private var localization = Localization(
+            ReportCatalog.self, language: .fixed(.polish), formatLocale: .fixed("pl-PL"))
+        @State private var count = 22.0
+        private let prepared = CalendarDate(year: 2026, month: 10, day: 11)
+        private let recent = [
+            FileItem(name: "Plan.pdf", modified: CalendarDate(year: 2026, month: 9, day: 30)),
+            FileItem(name: "Budżet.xlsx", modified: CalendarDate(year: 2026, month: 10, day: 2)),
+            FileItem(name: "Notes.txt", modified: CalendarDate(year: 2026, month: 10, day: 9)),
+        ]
+
+        var body: some View {
+            VStack {
+                HStack {
+                    Button("English")
+                        .onClicked {
+                            localization.language = .fixed(.english)
+                            localization.formatLocale = .fixed("en-US")
+                        }
+                    Button("Polski")
+                        .onClicked {
+                            localization.language = .fixed(.polish)
+                            localization.formatLocale = .fixed("pl-PL")
+                        }
+                }
+
+                HStack {
+                    Stepper($count)
+                        .minimum(0)
+                        .maximum(30)
+                    Text("\(Int(count))")
+                }
+
+                ReportView(fileCount: Int(count), recent: recent, prepared: prepared)
+                    .environment(localization)
+
+                Text("Side by side")
+                    .fontWeight(.bold)
+                Grid {
+                    ReportView(fileCount: Int(count), recent: recent, prepared: prepared)
+                        .environment(localization.speaking(.english))
+                    ReportView(fileCount: Int(count), recent: recent, prepared: prepared)
+                        .environment(localization.speaking(.polish))
+                        .gridColumn(1)
+                }
+                .columns(.fill, .fill)
+            }
+        }
+
+        // Sources/Samples/Environment/Localization/ReportCatalog.swift
+        /// The languages the folder report is written in.
+        enum ReportLanguage: String, CaseIterable, Sendable {
+            case english = "en"
+            case polish = "pl"
+        }
+
+        /// The report's languages, and the one it falls back to - nothing else, so it never grows.
+        enum ReportCatalog: LocalizationCatalog {
+            static let defaultLanguage = ReportLanguage.english
+        }
+
+        // Sources/Samples/Environment/Localization/ReportEnglish.swift
+        extension ReportResources {
+            static let english = ReportResources(
+                heading: "Folder report",
+                prepared: Message { day, context in
+                    "Prepared on \(context.date(day, style: .long))"
+                },
+                fileCount: Message { count, context in
+                    let number = context.number(count)
+                    return context.plural(count,
+                        one: "The folder holds \(number) file.",
+                        other: "The folder holds \(number) files.")
+                },
+                recent: "Recently changed",
+                footer: "Generated by Files",
+                headingStyle: TextStyleSpec(size: 20, lineHeight: 1.15))
+        }
+
+        // Sources/Samples/Environment/Localization/ReportPolish.swift
+        extension ReportResources {
+            static let polish = ReportResources(
+                heading: "Raport folderu",
+                prepared: Message { day, context in
+                    "Sporządzono \(context.date(day, style: .long))"
+                },
+                fileCount: Message { count, context in
+                    let number = context.number(count)
+                    return context.plural(count,
+                        one: "Folder zawiera \(number) plik.",
+                        few: "Folder zawiera \(number) pliki.",
+                        many: "Folder zawiera \(number) plików.",
+                        other: "Folder zawiera \(number) pliku.")
+                },
+                recent: "Ostatnio zmienione",
+                footer: "Wygenerowano w aplikacji Pliki",
+                headingStyle: TextStyleSpec(size: 20, lineHeight: 1.15))
+        }
+
+        // Sources/Samples/Environment/Localization/ReportResources.swift
+        /// A base typeface: its size and its line height. The user's text size still scales it.
+        struct TextStyleSpec {
+            let size: Double
+            let lineHeight: Double
+        }
+
+        /// What the folder report says - the document's own words, a part of its own.
+        struct ReportResources: LocalizedResources {
+            typealias Catalog = ReportCatalog
+
+            let heading: String
+            let prepared: Message<CalendarDate>
+            let fileCount: Message<Int>
+            let recent: String
+            let footer: String
+            let headingStyle: TextStyleSpec
+
+            static func resources(for language: ReportLanguage) -> ReportResources {
+                switch language {
+                case .english: .english
+                case .polish: .polish
+                }
+            }
+        }
+
+        // Sources/Samples/Environment/Localization/ReportView.swift
+        /// A file the folder holds: data, so it reads the same in every language.
+        struct FileItem: Hashable {
+            let name: String
+            let modified: CalendarDate
+        }
+
+        /// The document: every word, plural form and date in it follows the nearest localization.
+        struct ReportView: View {
+            @Environment private var res: ReportResources
+            @Environment private var localization: Localization<ReportCatalog>
+            let fileCount: Int
+            let recent: [FileItem]
+            let prepared: CalendarDate
+
+            var body: some View {
+                VStack {
+                    Text(res.heading)
+                        .fontSize(res.headingStyle.size)
+                        .lineHeight(res.headingStyle.lineHeight)
+                        .fontWeight(.bold)
+                    Text(localization.text(res.prepared, prepared))
+                    Text(localization.text(res.fileCount, fileCount))
+
+                    Text(res.recent)
+                        .fontWeight(.bold)
+                    ForEach(recent) { file in
+                        VStack {
+                            Text(file.name)
+                            Text(localization.date(file.modified, style: .medium))
+                        }
+                    }
+
+                    Text(res.footer)
+                }
             }
         }
         """#,
@@ -4598,7 +4953,8 @@ enum Listings {
                             .verticalAlignment(.center)
                     }
                 }
-                .header(Text("N and N², a thousand times"))
+                .header(Text("N and N², a thousand times")
+                    .fontWeight(.bold))
                 .footer(Text("That is all of them."))
                 .selection($chosen)
                 .gridRow(0)
@@ -4632,7 +4988,7 @@ enum Listings {
             if bar.showsSurprise {
                 ToolbarItem("Surprise me")
                     .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
-                    .onClicked { nav.surprise(from: catalog, on: device.info.formFactor) }
+                    .onClicked { nav.surprise(from: catalog, on: device) }
             }
         }
         // What the window's bar says of the gallery: its name and mark,
@@ -4640,7 +4996,7 @@ enum Listings {
         // title the line the Window bar sample types.
         .barTitle("StateUI")
         .barSubtitle(bar.subtitle)
-        .barIcon("stateui_mark.png")
+        .barIcon(Self.mark)
         """#,
         "MainPage.created": #"""
         // Sources/Gallery/MainPage.swift
@@ -4905,7 +5261,7 @@ enum Listings {
         "MaterialsSample": #"""
         // Sources/Samples/Styles/MaterialsSample.swift
         /// Which of the blurs the blurred panel wears.
-        @State private var thickness = 2
+        @State private var thickness = Blur.regular
 
         /// Whether the blur wears the gallery's colour as a tint.
         @State private var tinted = false
@@ -4926,7 +5282,7 @@ enum Listings {
         ]
 
         var body: some View {
-            let chosen = Self.blurs[thickness].blur
+            let chosen = thickness
             let blur = tinted ? chosen.tint(Palette.accent.opacity(0.25)) : chosen
             let glass = (clear ? Glass.clear : .regular).isInteractive(interactive)
 
@@ -4934,11 +5290,11 @@ enum Listings {
                 ZStack {
                     // Stripes of colour behind the panels: what each lets through shows on them.
                     Grid {
-                        Rectangle().fill(.tomato).gridColumn(0)
-                        Rectangle().fill(.gold).gridColumn(1)
-                        Rectangle().fill(.steelBlue).gridColumn(2)
-                        Rectangle().fill(.white).gridColumn(3)
-                        Rectangle().fill(Palette.accent).gridColumn(4)
+                        Rectangle(.tomato).gridColumn(0)
+                        Rectangle(.gold).gridColumn(1)
+                        Rectangle(.steelBlue).gridColumn(2)
+                        Rectangle(.white).gridColumn(3)
+                        Rectangle(Palette.accent).gridColumn(4)
                     }
                     .columns(.fill, .fill, .fill, .fill, .fill)
 
@@ -4959,8 +5315,9 @@ enum Listings {
                 }
                 .clipsContent(true)
 
-                Picker(Self.blurs.map(\.name))
-                    .selectedIndex($thickness)
+                Picker(Self.blurs.map(\.blur), selection: $thickness) { blur in
+                    Self.blurs.first { $0.blur == blur }?.name ?? ""
+                }
                 SwitchRow("Tinted blur", $tinted)
                 SwitchRow("Clear glass", $clear)
                 SwitchRow("Glass answers the touch", $interactive)
@@ -4980,6 +5337,7 @@ enum Listings {
         private func words(_ name: String) -> ZStack {
             ZStack {
                 Text(name)
+                    .fontWeight(.bold)
                     .horizontalAlignment(.center)
                     .verticalAlignment(.center)
             }
@@ -5113,6 +5471,7 @@ enum Listings {
                         .verticalAlignment(.center)
 
                     Text("StateUI")
+                        .fontWeight(.bold)
                         .tracking(-0.3)
                         .verticalAlignment(.center)
                 }
@@ -5148,7 +5507,7 @@ enum Listings {
                     // A row with no fixed place to go: it pushes a sample chosen at
                     // random. It needs no type of its own: the same view, with a
                     // different handler.
-                    MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.info.formFactor) }
+                    MenuRow("Surprise me") { nav.surprise(from: catalog, on: device) }
                         .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
                 }
                 // Clear of the pane's edges, so the chosen row's fill stands inside it.
@@ -5180,6 +5539,7 @@ enum Listings {
                     SectionTitle("Over everything")
 
                     Text("Native modal page")
+                        .fontWeight(.bold)
 
                     Text("The host chooses the presentation that belongs to this platform.")
 
@@ -5266,8 +5626,7 @@ enum Listings {
         /// One panel, either travelling at the chosen law or arriving at once.
         private func panel(travels: Bool) -> some View {
             // `.motion` is per view: the chosen law, or `.none` to arrive at once.
-            ColorBox()
-                .color(warm ? Palette.accent : Palette.brand)
+            Rectangle(warm ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
                 .height(wide ? 110 : 56)
                 .horizontalAlignment(.start)
@@ -5275,10 +5634,10 @@ enum Listings {
         }
 
         /// The same panel with a RULE: everything travels except its size, which
-        /// `.size` takes to be its width, its height and its corner radius.
+        /// `.size` takes to be its width and its height - its corners are its
+        /// shape, and travel with the rest.
         private func sized() -> some View {
-            ColorBox()
-                .color(warm ? Palette.accent : Palette.brand)
+            Rectangle(warm ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
                 .height(wide ? 110 : 56)
                 .horizontalAlignment(.start)
@@ -5536,6 +5895,38 @@ enum Listings {
                 : "\(place) + \(nav.path.count): \(nav.path.map { "\($0)" }.joined(separator: " › "))"
         }
         """#,
+        "NextFieldSample": #"""
+        // Sources/Samples/Text/NextFieldSample.swift
+        @State private var name = ""
+        @State private var street = ""
+        @State private var city = ""
+        @State private var sent = false
+
+        var body: some View {
+            VStack {
+                Text("Type a name and press Return: each field hands the keyboard to the next.")
+
+                TextField($name)
+                    .placeholder("Name")
+                    .submitLabel(.next)
+
+                Grid {
+                    TextField($street)
+                        .placeholder("Street")
+                        .submitLabel(.next)
+
+                    TextField($city)
+                        .placeholder("City")
+                        .submitLabel(.send)
+                        .onSubmitted { sent = true }
+                        .gridColumn(1)
+                }
+                .columns(.fill, .fill)
+
+                Text(sent ? "Sent to \(name), \(street), \(city)" : "Not sent yet")
+            }
+        }
+        """#,
         "OffsetStrips": #"""
         // Sources/Samples/Layout/ScrollViewSample.swift
         /// Forty numbered lines - the same strip in all three columns below, so the
@@ -5558,6 +5949,7 @@ enum Listings {
         @MainActor
         private func columnTitle(_ text: String) -> Text {
             Text(text)
+                .fontWeight(.bold)
         }
 
         /// The spelling that makes a column what it is, under its reading.
@@ -5746,6 +6138,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text("\(Int(celsius)) °C")
+                    .fontWeight(.bold)
                     .horizontalAlignment(.center)
 
                 Slider($celsius)
@@ -5780,35 +6173,61 @@ enum Listings {
             VStack {
                 VStack {
                     Text("A column")
+                        .fontSize(15)
                     Text("rounded, with a hairline")
+                        .fontSize(13)
+                        .textColor(Palette.subtle)
                 }
+                .spacing(2)
+                .padding(16)
                 .stroke(Palette.outline)
                 .lineWidth(1)
+                .shape(.roundedRectangle(12))
 
                 HStack {
                     Text("A row,")
+                        .fontSize(15)
                     Text("square and thicker")
+                        .fontSize(15)
                 }
+                .spacing(6)
+                .padding(16)
                 .stroke(Palette.accent)
                 .lineWidth(3)
+                .shape(.rectangle)
+
+                // Its ends round whole however wide it stands.
+                HStack {
+                    Text("A capsule, as wide as its row")
+                        .fontSize(15)
+                }
+                .padding(horizontal: 20, vertical: 10)
+                .stroke(Palette.accent)
+                .lineWidth(2)
+                .shape(.capsule)
 
                 ZStack {
                     Text("An ellipse")
+                        .fontSize(15)
                         .horizontalAlignment(.center)
                         .verticalAlignment(.center)
                 }
+                .padding(24)
                 .stroke(Palette.accent)
+                .shape(.ellipse)
 
                 // The box fills the ZStack; its corners are cut only while the
                 // ZStack clips what it holds.
                 ZStack {
-                    ColorBox(Palette.accent)
+                    Rectangle(Palette.accent)
                 }
+                .shape(.roundedRectangle(24))
                 .clipsContent(clips)
                 .height(60)
 
                 SwitchRow("Cut what it holds", $clips)
             }
+            .spacing(12)
         }
         """#,
         "OwnGates": #"""
@@ -5905,9 +6324,8 @@ enum Listings {
                 }
                 .samples($fade, into: $shown, .every(100))
 
-                ColorBox()
+                Rectangle(Palette.accent)
                     .height(60)
-                    .color(Palette.accent)
                     .opacity($fade)
 
                 HStack {
@@ -5932,6 +6350,11 @@ enum Listings {
         static let disabled = Color(light: Color("#40000000"), dark: Color("#40FFFFFF"))
 
         static let outline = Color(light: Color("#1F000000"), dark: Color("#1FFFFFFF"))
+
+        static let danger = Color(light: AppColors.red, dark: AppColors.redLight)
+
+        /// What such an action stands on: its red let faintly through.
+        static let dangerWash = Color(light: Color("#1FD92D20"), dark: Color("#33FF8A80"))
         """#,
         "PanSample": #"""
         // Sources/Samples/Gestures/PanSample.swift
@@ -5958,7 +6381,7 @@ enum Listings {
                 // A fixed box for it to move inside, so the layout does not follow
                 // the view about.
                 ZStack {
-                    ColorBox(Palette.accent)
+                    Rectangle(Palette.accent)
                         .width(64)
                         .height(64)
                         .horizontalAlignment(.center)
@@ -6087,9 +6510,8 @@ enum Listings {
                         .onToggled { on in shade = on ? .bold : .quiet }
                 }
 
-                ColorBox()
+                Rectangle(shade == .bold ? Palette.accent : Palette.well)
                     .height(48)
-                    .color(shade == .bold ? Palette.accent : Palette.well)
             }
         }
         """#,
@@ -6133,22 +6555,26 @@ enum Listings {
         """#,
         "PickerSample": #"""
         // Sources/Samples/BasicInput/PickerSample.swift
-        @State private var size = 1
-        @State private var changes = 0
+        /// The values on offer.
+        enum Size: CaseIterable, Equatable {
+            case small, medium, large
+        }
+
+        /// The value chosen, nil while none is.
+        @State private var size: Size? = .medium
         @State private var opened = 0
         @State private var showing = false
 
-        static let sizes = ["Small", "Medium", "Large"]
+        /// The device, by its name: whether its platform opens a list at the program's asking.
+        @Environment(\.device) private var device
 
         var body: some View {
             VStack {
-                // The choice and the two counts are read here, so a pick builds
-                // this closure - and a write of OURS raises no event at all.
+                // The choice and the count are read here, so a pick builds this
+                // closure - and a write of OURS raises no event at all.
                 DebugInfoLabel()
 
-                Picker(Self.sizes)
-                    .onSelectedIndexChanged { _ in changes += 1 }
-                    .selectedIndex($size)
+                Picker(Size.allCases, selection: $size) { "\($0)".titled }
                     .placeholder("Size")
                     // Settable, so a button elsewhere can open the list. The two
                     // events answer the user and the platform - never this
@@ -6157,18 +6583,24 @@ enum Listings {
                     .onOpened { opened += 1; showing = true }
                     .onClosed { showing = false }
 
-                Button("Open the list")
-                    .onClicked { showing = true }
-                    .horizontalAlignment(.center)
+                // Only where the platform opens a list at the program's asking.
+                if device.honours(PickerContract.isOpen) {
+                    Button("Open the list")
+                        .onClicked { showing = true }
+                        .horizontalAlignment(.center)
+                }
 
-                Text(chosen)
+                // The same choice, offered as segments and as radio buttons.
+                Picker(Size.allCases, selection: $size) { "\($0)".titled }
+                    .presentation(.segmented)
 
-                Text("Changed \(changes)x, opened \(opened)x")
+                Picker(Size.allCases, selection: $size) { "\($0)".titled }
+                    .presentation(.radio)
+
+                Text(size.map { "Chosen: \($0)" } ?? "Nothing chosen")
+
+                Text("Opened \(opened)x")
             }
-        }
-
-        private var chosen: String {
-            size >= 0 && size < Self.sizes.count ? "Chosen: \(Self.sizes[size])" : "Nothing chosen"
         }
         """#,
         "PinchSample": #"""
@@ -6182,11 +6614,11 @@ enum Listings {
                 // pinch makes builds this closure.
                 DebugInfoLabel()
 
-                // The recognizer is on the ZStack; the ColorBox inside it is what
+                // The recognizer is on the ZStack; the rectangle inside it is what
                 // moves. Putting both on one view is what stops a pinch after its
                 // first report - see the notes.
                 ZStack {
-                    ColorBox(Palette.accent)
+                    Rectangle(Palette.accent)
                         .width(80)
                         .height(80)
                         .horizontalAlignment(.center)
@@ -6315,7 +6747,7 @@ enum Listings {
             Grid {
                 Grid {
                     // THE BOARD, under everything.
-                    ColorBox(Palette.raised)
+                    Rectangle(Palette.raised)
 
                     // THE CARDS, and what moves them - the whole of the example.
                     // Nothing here is described again while the ring turns: the
@@ -6353,7 +6785,7 @@ enum Listings {
                     // of its own, because a phone on its side has no height to
                     // spare for one.
                     PlacedLayout(Self.cards, id: \.name) { _ in
-                        ColorBox(Palette.text)
+                        Rectangle(Palette.text)
                     }
                     .placement($dots)
                     .frame($dotRoom)
@@ -6414,7 +6846,7 @@ enum Listings {
             // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn over
             // every card, wearing the card's own corners - which is why it is the
             // application's to give and not the library's to draw.
-            .shade(ColorBox(Color("#000000")).cornerRadius(16))
+            .shade(Rectangle(Color("#000000")).cornerRadius(16))
             .placement($ring)
             .frame($room)
             // THE WHOLE LAYOUT, run on the display's own frames whenever one of
@@ -6450,6 +6882,7 @@ enum Listings {
                         // ONE LINE, whatever the card's width: a caption that
                         // wrapped would change the picture's height with it.
                         Text(card.name)
+                            .fontWeight(.bold)
                             .lineBreak(.tailTruncation)
 
                         Text("Placed by arithmetic")
@@ -6533,6 +6966,31 @@ enum Listings {
                 Self.height * fit)
         }
         """#,
+        "PlatformSupportSample": #"""
+        // Sources/Samples/Environment/PlatformSupportSample.swift
+        /// The device, by its name: what its platform honours is its host's.
+        @Environment(\.device) var device
+
+        var body: some View {
+            VStack {
+                supported("Opening a picker's list", device.honours(PickerContract.isOpen))
+                supported("Hearing a picker's list open", device.honours(PickerContract.opened))
+                supported("A tooltip", device.honours(VisualElementContract.tooltip))
+                supported("A picture beside a menu's entry", device.honours(MenuItemElementContract.icon))
+            }
+        }
+
+        /// One member, and whether this platform honours it.
+        private func supported(_ words: String, _ honoured: Bool) -> some View {
+            HStack {
+                Text(words)
+
+                Spacer()
+
+                Text(honoured ? "honoured" : "not here")
+            }
+        }
+        """#,
         "PointerSample": #"""
         // Sources/Samples/Gestures/PointerSample.swift
         @State private var pointer = Point(x: 0, y: 0)
@@ -6599,6 +7057,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text(status)
+                    .fontWeight(.bold)
 
                 Text("\(rounds) round(s)")
 
@@ -6668,6 +7127,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text(Self.steps[step])
+                    .fontWeight(.bold)
 
                 PositionIndicator()
                     .count(Self.steps.count)
@@ -7085,6 +7545,7 @@ enum Listings {
                 ZStack {
                     VStack {
                         Text("\(name) is \(value)")
+                            .fontWeight(.bold)
 
                         // WHY THIS VIEW IS BEING DESCRIBED, on the screen it is
                         // about: the view's name, how many times, and the state
@@ -7275,8 +7736,10 @@ enum Listings {
             var body: some View {
                 VStack {
                     Text("Built with \(caption)")
+                        .fontWeight(.bold)
 
                     Text(value)
+                        .fontWeight(.bold)
 
                     DebugInfoLabel()
                 }
@@ -7291,8 +7754,10 @@ enum Listings {
             var body: some View {
                 VStack {
                     Text("Reads the count")
+                        .fontWeight(.bold)
 
                     Text("\(count)")
+                        .fontWeight(.bold)
 
                     DebugInfoLabel()
                 }
@@ -7315,7 +7780,7 @@ enum Listings {
         "SaveAndDelete": #"""
         // Sources/Samples/State/GateSample.swift
         /// One gate for both of the document's actions.
-        @State private var document = SharedGate(.ignoreWhileRunning)
+        @State private var document = Gatekeeper(.ignoreWhileRunning)
         @State private var said = "Saved nothing yet."
 
         var body: some View {
@@ -7463,7 +7928,7 @@ enum Listings {
         var body: some View {
             VStack {
                 // The list below is filtered from `query`, so every keystroke builds
-                // this closure; the fields themselves are handed the state.
+                // this closure; the field itself is handed the state.
                 DebugInfoLabel()
 
                 // Every keystroke lands on `query`; `.onSubmitted` hears the
@@ -7482,11 +7947,6 @@ enum Listings {
                 Text(searched.isEmpty
                     ? "Type to narrow the list, then press the keyboard's search key."
                     : "Searched for: \(searched)")
-
-                SectionTitle("In the accent")
-
-                SearchField($query)
-                    .placeholder("Search the list")
             }
         }
 
@@ -7561,6 +8021,32 @@ enum Listings {
                 : items.filter { $0.lowercased().hasPrefix(query.lowercased()) }
         }
         """#,
+        "SelectableTextSample": #"""
+        // Sources/Samples/Text/SelectableTextSample.swift
+        /// Whether the address and the code can be selected, as the switch says.
+        @State private var selectable = true
+
+        var body: some View {
+            VStack {
+                Text("221B Baker Street, London NW1 6XE")
+                    .textStyle(.headline)
+                    .isSelectable(selectable)
+
+                Text("Order 7F3K-92QX-L0MA")
+                    .isSelectable(selectable)
+
+                Text("A caption the user only reads.")
+                    .textStyle(.caption)
+
+                HStack {
+                    Switch($selectable)
+
+                    Text("Selectable")
+                        .verticalAlignment(.center)
+                }
+            }
+        }
+        """#,
         "SemanticsSample": #"""
         // Sources/Samples/BasicInput/SemanticsSample.swift
         @State private var described = true
@@ -7629,10 +8115,12 @@ enum Listings {
                 // user jumping through the page can land.
                 VStack {
                     Text("Drawn large")
+                        .fontWeight(.bold)
 
                     // Read as a heading: somewhere a user jumping through the page
                     // can land.
                     Text("A heading, and drawn the same")
+                        .fontWeight(.bold)
                         .accessibilityHeading(.h1)
                 }
 
@@ -7661,6 +8149,7 @@ enum Listings {
                     ZStack {
                         VStack {
                             Text("Walked")
+                                .fontWeight(.bold)
 
                             Text("Both lines are read")
                         }
@@ -7672,6 +8161,7 @@ enum Listings {
                     ZStack {
                         VStack {
                             Text("Skipped")
+                                .fontWeight(.bold)
 
                             Text("Neither line is read")
                         }
@@ -7682,7 +8172,7 @@ enum Listings {
                 .horizontalAlignment(.center)
 
                 // A rule is decoration: a stop that would waste the user's time.
-                ColorBox(Palette.outline)
+                Rectangle(Palette.outline)
                     .height(1)
                     .isAccessibilityHidden(true)
             }
@@ -7727,26 +8217,38 @@ enum Listings {
                 SectionTitle("Filled")
 
                 HStack {
-                    Rectangle()
-                        .fill(Palette.accent)
+                    Rectangle(Palette.accent)
                         .width(56)
                         .height(56)
 
-                    Rectangle()
-                        .fill(Palette.accent)
+                    Rectangle(Palette.accent)
+                        .cornerRadius(14)
                         .width(56)
                         .height(56)
 
-                    Rectangle()
-                        .fill(Palette.accent)
+                    Rectangle(Palette.accent)
+                        .cornerRadius(topLeft: 22, topRight: 4, bottomLeft: 4, bottomRight: 22)
                         .width(56)
                         .height(56)
 
-                    Ellipse()
-                        .fill(Palette.accent)
+                    Ellipse(Palette.accent)
                         .width(56)
                         .height(56)
                 }
+                .spacing(12)
+                .horizontalAlignment(.center)
+
+                // A capsule's ends stay round at every size: wide, tall, or square.
+                HStack {
+                    Capsule(Palette.accent)
+                        .width(120)
+                        .height(40)
+
+                    Capsule(Palette.accent)
+                        .width(40)
+                        .height(80)
+                }
+                .spacing(12)
                 .horizontalAlignment(.center)
 
                 SectionTitle("Stroked")
@@ -7787,8 +8289,8 @@ enum Listings {
                         .width(56)
                         .height(56)
 
-                    Rectangle()
-                        .fill(Palette.accent)
+                    Rectangle(Palette.accent)
+                        .cornerRadius(14)
                         .geometryTransform(.skew(20, 0))
                         .width(56)
                         .height(56)
@@ -7800,6 +8302,7 @@ enum Listings {
                         .width(56)
                         .height(56)
                 }
+                .spacing(12)
                 .horizontalAlignment(.center)
 
                 SectionTitle("Where the dashes start")
@@ -7827,6 +8330,7 @@ enum Listings {
                         .width(200)
                         .height(8)
                 }
+                .spacing(10)
                 .horizontalAlignment(.center)
 
                 SectionTitle("How far a sharp corner reaches")
@@ -7851,6 +8355,7 @@ enum Listings {
                         .width(56)
                         .height(72)
                 }
+                .spacing(12)
                 .horizontalAlignment(.center)
 
                 SectionTitle("An outline that crosses itself")
@@ -7866,6 +8371,65 @@ enum Listings {
                     .horizontalAlignment(.center)
                     .onClicked { rule = rule == .evenOdd ? .nonzero : .evenOdd }
             }
+            .spacing(12)
+        }
+        """#,
+        "ShortcutSample": #"""
+        // Sources/Samples/BasicInput/ShortcutSample.swift
+        @State private var saved = 0
+        @State private var last = "nothing yet"
+        @State private var note = ""
+
+        var body: some View {
+            VStack {
+                Text("Press Command or Control with S, with Shift and S, with Shift and E, then 1 or 2 alone.")
+
+                HStack {
+                    // Command on Apple's platforms, Control elsewhere.
+                    Button("Save")
+                        .keyboardShortcut("s")
+                        .onClicked { pressed("Save") }
+
+                    Button("Save As")
+                        .keyboardShortcut("s", modifiers: [.primary, .shift])
+                        .onClicked { pressed("Save As") }
+
+                    // A key alone is a shortcut too.
+                    Button("First")
+                        .keyboardShortcut("1", modifiers: [])
+                        .onClicked { pressed("First") }
+                }
+
+                // While this field is typed into, 1 and 2 write themselves.
+                TextField($note)
+                    .placeholder("Type here")
+
+                Text("Pressed \(saved) time\(saved == 1 ? "" : "s"), last: \(last)")
+                    // A context menu shows the shortcut; the menu bar's entry acts on it.
+                    .contextMenu {
+                        MenuItem("Export…")
+                            .keyboardShortcut("e", modifiers: [.primary, .shift])
+                            .onClicked { pressed("Export from the context menu") }
+                    }
+            }
+            .menuBar {
+                Menu("File") {
+                    MenuItem("Export…")
+                        .keyboardShortcut("e", modifiers: [.primary, .shift])
+                        .onClicked { pressed("Export") }
+                }
+                .id(StandardMenu.file)
+            }
+            .toolbar {
+                ToolbarItem("Mark")
+                    .keyboardShortcut("2", modifiers: [])
+                    .onClicked { pressed("Mark") }
+            }
+        }
+
+        private func pressed(_ name: String) {
+            saved += 1
+            last = name
         }
         """#,
         "SizingSample": #"""
@@ -7874,24 +8438,24 @@ enum Listings {
             VStack {
                 row("width(120)",
                     // A request, not an instruction: the layout has the last word.
-                    ColorBox(Palette.accent).width(120).height(24))
+                    Rectangle(Palette.accent).width(120).height(24))
 
                 row("maximumWidth(200)",
-                    ColorBox(Palette.accent).height(24).maximumWidth(200))
+                    Rectangle(Palette.accent).height(24).maximumWidth(200))
 
                 row("minimumWidth(160)",
-                    ColorBox(Palette.accent).height(24).minimumWidth(160))
+                    Rectangle(Palette.accent).height(24).minimumWidth(160))
 
                 // The pair is the point: both ask for 80 high, and only the one
                 // without a ceiling on it is allowed to have it.
                 row("height(80), then the same with maximumHeight(32)",
                     HStack {
-                        ColorBox(Palette.outline)
+                        Rectangle(Palette.outline)
                             .width(60)
                             .height(80)
                             .verticalAlignment(.start)
 
-                        ColorBox(Palette.accent)
+                        Rectangle(Palette.accent)
                             .width(60)
                             .height(80)
                             .maximumHeight(32)
@@ -7901,7 +8465,7 @@ enum Listings {
                 // A child drawn past the layout's edge, cut off at it.
                 row("clipsContent(true)",
                     VStack {
-                        ColorBox(Palette.accent)
+                        Rectangle(Palette.accent)
                             .height(24)
                             .translationX(60)
                     }
@@ -7910,7 +8474,7 @@ enum Listings {
 
                 row("clipsContent(false)",
                     VStack {
-                        ColorBox(Palette.accent)
+                        Rectangle(Palette.accent)
                             .height(24)
                             .translationX(60)
                     }
@@ -7992,6 +8556,8 @@ enum Listings {
         """#,
         "StackLayoutSample": #"""
         // Sources/Samples/Layout/StackLayoutSample.swift
+        @State private var spaced = true
+
         var body: some View {
             VStack {
                 SectionTitle("Vertical")
@@ -8025,6 +8591,38 @@ enum Listings {
 
                     StackCell(text: "fill")
                         .horizontalAlignment(.fill)
+                }
+
+                SectionTitle("Spacer")
+
+                // A spacer takes the room the other children leave.
+                HStack {
+                    StackCell(text: "Draft")
+                    if spaced { Spacer() }
+                    StackCell(text: "Send")
+                }
+
+                HStack {
+                    Switch($spaced)
+
+                    Text("Spacer")
+                        .verticalAlignment(.center)
+                }
+
+                SectionTitle("Divider")
+
+                // The platform's own line, across its stack.
+                VStack {
+                    Text("Inbox")
+                    Divider()
+                    Text("Archive")
+                }
+
+                HStack {
+                    Text("Bold")
+                        .fontWeight(.bold)
+                    Divider()
+                    Text("Italic")
                 }
             }
         }
@@ -8193,23 +8791,33 @@ enum Listings {
                     .step(5)
                     .horizontalAlignment(.center)
                     .onValueChanged { value in servings = value }
+
+                // One write: the value is the new one at once, the motion under
+                // the steppers is smooth, and each shows its steps alone on the way.
+                Button(servings < 7 ? "Twelve" : "One")
+                    .horizontalAlignment(.center)
+                    .onClicked { servings = servings < 7 ? 12 : 1 }
             }
         }
         """#,
         "StyleSample": #"""
         // Sources/Samples/Styles/StyleSample.swift
         @State private var enabled = true
+        @State private var platformLook = false
 
         var body: some View {
-            VStack {
+            // The gallery's styles, or the platform's own look.
+            let look: StyleKey<Button>? = platformLook ? .platform : nil
+
+            return VStack {
                 DebugInfoLabel()
 
                 // Neither of these says anything of its own look: the violet, the
                 // corners and the padding come from Style<Button> in AppStyles.swift,
                 // which every button wears.
                 HStack {
-                    Button("Save")
-                    Button("Cancel")
+                    Button("Save").style(look)
+                    Button("Cancel").style(look)
                 }
                 .horizontalAlignment(.center)
 
@@ -8217,6 +8825,7 @@ enum Listings {
                 // the control enter one is what .onVisualStateChanged is for, next
                 // door in the Visual states sample.
                 Button(enabled ? "Enabled" : "Disabled")
+                    .style(look)
                     .isEnabled(enabled)
                     .horizontalAlignment(.center)
                     .onClicked {}
@@ -8229,20 +8838,21 @@ enum Listings {
                 }
                 .horizontalAlignment(.center)
 
-                SectionTitle("A style for every control of a type")
-
-                // None of these names a colour: a style with no key is implicit,
-                // and every ColorBox wears the one `Style<ColorBox>()` gives.
                 HStack {
-                    ColorBox()
-                        .width(40)
-                        .height(40)
-                    ColorBox()
-                        .width(40)
-                        .height(40)
-                    ColorBox()
-                        .width(40)
-                        .height(40)
+                    Text("Platform look")
+                        .verticalAlignment(.center)
+
+                    Switch($platformLook)
+                }
+                .horizontalAlignment(.center)
+
+                SectionTitle("A style for a role")
+
+                // Each wears the style its role chooses, over the one every button
+                // wears: the role's style says only what the role changes.
+                HStack {
+                    Button("Keep").style(look).role(.cancel)
+                    Button("Delete").style(look).role(.destructive)
                 }
                 .horizontalAlignment(.center)
 
@@ -8403,6 +9013,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text("\(remaining)")
+                    .fontWeight(.bold)
 
                 ProgressBar(total == 0 ? 0 : Double(remaining) / Double(total))
 
@@ -8585,7 +9196,7 @@ enum Listings {
 
                 Text("Bold")
                     .fontSize(16)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
 
                 Text("Italic, and coloured")
                     .fontSize(16)
@@ -8677,7 +9288,7 @@ enum Listings {
 
                         TextSpan("out")
                             .fontSize(17)
-                            .fontAttributes(.bold)
+                            .fontWeight(.bold)
                             .textColor(Palette.onAccent)
                             .background(Palette.accent)
                     }
@@ -8688,7 +9299,7 @@ enum Listings {
                             TextSpan(word + " ")
                                 .fontSize(17)
                                 .textColor(index == highlighted ? Palette.accent : Palette.text)
-                                .fontAttributes(index == highlighted ? .bold : .none)
+                                .fontWeight(index == highlighted ? .bold : .regular)
                         }
                     }
 
@@ -8708,6 +9319,38 @@ enum Listings {
             .spacing(12)
         }
         """#,
+        "TextStyleSample": #"""
+        // Sources/Samples/Text/TextStyleSample.swift
+        /// The step a line stands at, moved by the buttons and handed to the line as a state.
+        @State private var style = TextStyle.title
+
+        var body: some View {
+            VStack {
+                Text("Display").textStyle(.display)
+                Text("Title").textStyle(.title)
+                Text("Subtitle").textStyle(.subtitle)
+                Text("Headline").textStyle(.headline)
+                Text("Body").textStyle(.body)
+                Text("Caption").textStyle(.caption)
+
+                HStack {
+                    Text("Regular").fontWeight(.regular)
+                    Text("Medium").fontWeight(.medium)
+                    Text("Semibold").fontWeight(.semibold)
+                    Text("Bold").fontWeight(.bold)
+                }
+
+                Text("A title, at a weight of its own").textStyle(.title).fontWeight(.regular)
+
+                Text("Stepped through the ramp").textStyle($style)
+
+                HStack {
+                    Button("Larger").onClicked { style = TextStyle(rawValue: style.rawValue - 1) ?? .display }
+                    Button("Smaller").onClicked { style = TextStyle(rawValue: style.rawValue + 1) ?? .caption }
+                }
+            }
+        }
+        """#,
         "TickerSample": #"""
         // Sources/Samples/DateTime/TickerSample.swift
         /// `@State` keeps the instance across renders; a tick asks for the render
@@ -8722,6 +9365,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text("\((ticker.limit ?? 0) - ticker.ticks)")
+                    .fontWeight(.bold)
 
                 ProgressBar(remaining)
 
@@ -8820,6 +9464,7 @@ enum Listings {
             var body: some View {
                 VStack {
                     Text("Layer \(depth)")
+                        .fontWeight(.bold)
 
                     Text("Shared \(shared) time(s)")
 
@@ -8977,6 +9622,47 @@ enum Listings {
             }
         }
         """#,
+        "TooltipSample": #"""
+        // Sources/Samples/BasicInput/TooltipSample.swift
+        @State private var detailed = false
+
+        var body: some View {
+            VStack {
+                Text("Rest the pointer on a button or on the swatch.")
+
+                HStack {
+                    // A button that is only a picture says what it does
+                    // to the eye under the pointer.
+                    Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                        .style(.iconButton)
+                        .contentMode(.fit)
+                        .width(48)
+                        .height(48)
+                        .tooltip(detailed ? "Opens the pictures, films and sounds" : "Media")
+
+                    Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+                        .style(.iconButton)
+                        .contentMode(.fit)
+                        .width(48)
+                        .height(48)
+                        .tooltip(detailed ? "Opens the stacks, grids and placement" : "Layout")
+
+                    // Any view takes one, not only a control.
+                    Rectangle(Palette.accent)
+                        .width(48)
+                        .height(48)
+                        .tooltip(detailed ? "The colour the gallery marks things with" : "Accent")
+                }
+
+                HStack {
+                    Switch($detailed)
+
+                    Text("Detailed")
+                        .verticalAlignment(.center)
+                }
+            }
+        }
+        """#,
         "TouchThroughSample": #"""
         // Sources/Samples/Gestures/TouchThroughSample.swift
         @State private var below = 0
@@ -8991,7 +9677,7 @@ enum Listings {
 
                 Grid {
                     // Underneath, and still reachable.
-                    ColorBox(Palette.accent)
+                    Rectangle(Palette.accent)
                         .height(120)
                         .onTapped { below += 1 }
 
@@ -9174,8 +9860,8 @@ enum Listings {
         ///
         /// - Parameter colour: which family this square belongs to.
         /// - Returns: the square, ready to be transformed.
-        private func box(_ colour: Color) -> ColorBox {
-            ColorBox(colour)
+        private func box(_ colour: Color) -> Rectangle {
+            Rectangle(colour)
                 .width(44)
                 .height(44)
         }
@@ -9193,7 +9879,7 @@ enum Listings {
         "Uploads": #"""
         // Sources/Samples/State/GateSample.swift
         /// Nothing held back, and busy while any upload runs.
-        @State private var uploads = SharedGate(.none)
+        @State private var uploads = Gatekeeper(.none)
         @State private var sent: [String] = []
 
         private let files = ["notes.txt", "photo.png", "song.mp3"]
@@ -9372,7 +10058,7 @@ enum Listings {
                 Text(answer)
                     .gridRow(4)
             }
-            .rows(.auto, .fill, .auto, .auto, .auto)
+            .rows(.auto, .fill, .auto(count: 3))
         }
         """#,
         "WindowBarSample": #"""
@@ -9444,7 +10130,7 @@ enum Listings {
             @Environment(\.window) private var window
 
             var body: some View {
-                ColorBox(Color("#00000000"))
+                Rectangle(Color("#00000000"))
                     .width(0)
                     .height(0)
                     .ignoresInput(true)
@@ -9552,6 +10238,7 @@ enum Listings {
                         .verticalAlignment(.center)
 
                     Text(value)
+                        .fontWeight(.bold)
                         .verticalAlignment(.center)
                 }
                 .horizontalAlignment(.center)
@@ -9574,6 +10261,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Text(window.title ?? "Platform title")
+                    .fontWeight(.bold)
 
                 HStack {
                     action("Rename") {
@@ -9644,7 +10332,7 @@ enum Listings {
         /// A draft that saves through its own gate, whoever asks.
         @MainActor
         final class Draft {
-            let saving = SharedGate(.ignoreWhileRunning)
+            let saving = Gatekeeper(.ignoreWhileRunning)
             @State var saves = 0
 
             /// Saves, unless a save is under way: the gate lets this one go.

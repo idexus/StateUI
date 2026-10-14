@@ -42,7 +42,7 @@ extension StepperProperties {
 ///
 /// Given a binding it shows the value and writes every step back. Given a number
 /// it shows that, and `.onValueChanged` is how the step gets anywhere.
-public struct Stepper: ElementView, StepperProperties {
+public struct Stepper: ElementView, StepperProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 
@@ -99,7 +99,7 @@ public struct Stepper: ElementView, StepperProperties {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onValueChanged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onValueChanged(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
         fatalError("unavailable")
     }

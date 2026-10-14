@@ -32,6 +32,15 @@ extension GTKDriver {
         return Self.said(model, actions: shown.menu.actions)
     }
 
+    /// The menu the button standing for `button` opens, as its model holds it.
+    func buttonMenu(of button: MountedElement) throws -> String {
+        guard let view = (button.native as? GTKElement)?.view as? GTKButtonView, view.opening != .none else {
+            throw DriverCannot("read the menu \(button.type.name) opens")
+        }
+        guard let menu = view.menu else { return "" }
+        return Self.said(g_menu_model(menu.model), actions: menu.actions)
+    }
+
     /// Chooses the item `element` as the user does: the action its menu runs, which GTK refuses where it cannot be
     /// chosen. Whether a menu shows it.
     func chooseMenuItem(_ element: MountedElement) throws {
@@ -39,13 +48,24 @@ extension GTKDriver {
         _ = gtk_widget_activate_action_variant(widget, GTKMenu.actionGroup + "." + name, nil)
     }
 
-    /// What the menu showing the item `element` holds of it: its caption, and whether it can be chosen.
+    /// What the menu showing the item `element` holds of it: its caption, whether it can be chosen, and whether it
+    /// stands checked.
     func menuItemHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
         guard let (_, menu, name) = menuItem(element), let (holder, index) = Self.item(of: name, in: g_menu_model(menu.model))
         else { throw DriverCannot(reading: property, of: element) }
         switch property {
         case .text: return Self.attribute(holder, index, "label").map { $0.propValue }
         case .isEnabled: return (g_action_group_get_action_enabled(OpaquePointer(menu.actions), name) != 0).propValue
+        case .keyboardShortcut:
+            guard let accelerator = Self.attribute(holder, index, "accel") else { return HostValue.nothing }
+            var keyval: guint = 0
+            var modifiers = GdkModifierType(rawValue: 0)
+            guard gtk_accelerator_parse(accelerator, &keyval, &modifiers) != 0 else { return nil }
+            return GTKKeys.shortcut(keyval: keyval, modifiers: modifiers)?.propValue
+        case .isOn:
+            guard let state = g_action_group_get_action_state(OpaquePointer(menu.actions), name) else { return false.propValue }
+            defer { g_variant_unref(state) }
+            return (g_variant_get_boolean(state) != 0).propValue
         default: throw DriverCannot(reading: property, of: element)
         }
     }
@@ -65,11 +85,12 @@ extension GTKDriver {
         return nil
     }
 
-    /// The widget whose menu shows the item `element` - a view its context menu, a main menu's button - the menu,
-    /// and the name of its action.
+    /// The widget whose menu shows the item `element` - a view its context menu, a main menu's button, a button its
+    /// own menu - the menu, and the name of its action.
     private func menuItem(_ element: MountedElement) -> (GTKWidget, GTKMenu, String)? {
         let shown: [(GTKWidget, GTKMenu)] = frames().compactMap { frame in frame.mainMenu.map { ($0.button, $0.menu) } }
             + (renderer?.views(GTKView.self) ?? []).compactMap { view in view.contextMenu.map { (view.widget, $0.menu) } }
+            + (renderer?.views(GTKButtonView.self) ?? []).compactMap { button in button.menu.map { (button.widget, $0) } }
         for (widget, menu) in shown {
             if let name = menu.items.first(where: { $0.value() === element })?.key { return (widget, menu, name) }
         }

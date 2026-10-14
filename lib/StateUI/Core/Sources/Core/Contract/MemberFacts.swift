@@ -26,7 +26,10 @@ struct MemberFacts: Equatable {
     /// Which of a view's values it is, where the value cannot say.
     let moves: MotionValues
 
-    /// What an application's own property says: it travels, it is cleared, no motion.
+    /// Whether another value makes the element anew.
+    var remakes = false
+
+    /// What an application's own property says: it travels, it is cleared, no motion, nothing remade.
     static let undeclared = MemberFacts(kind: .property, layer: nil, travels: true, cleared: true, moves: [])
 }
 
@@ -44,7 +47,7 @@ protocol PropertyMember: DeclaredMember {
 
 extension ElementProperty: PropertyMember {
     var facts: MemberFacts {
-        MemberFacts(kind: .property, layer: layer, travels: travels, cleared: cleared, moves: moves)
+        MemberFacts(kind: .property, layer: layer, travels: travels, cleared: cleared, moves: moves, remakes: remakes)
     }
 
     var valueType: any HostRepresentable.Type { Value.self }

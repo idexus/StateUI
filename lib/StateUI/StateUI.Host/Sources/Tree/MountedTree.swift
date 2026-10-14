@@ -177,6 +177,7 @@
         } else {
             intake.drifted("a sparse message describes a root '\(patch.id)' the tree does not hold")
         }
+        if let root { KeyboardShortcuts.complainOfRepeats(in: root, after: patch) }
     }
 
     /// Lays the whole tree out again where the language's direction turned since the tree last followed it.

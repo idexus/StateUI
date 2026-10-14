@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// A control backed by a node, and drawn.
-public protocol VisualElement: ModifiableElement, VisualElementProperties {}
+public protocol VisualElement: ModifiableElement, VisualElementProperties, AutomationElement {}
 
 /// The properties every drawn control has: the value half of
 /// `VisualElement`, shared by the control and its `Style`.
@@ -167,13 +167,4 @@ extension VisualElement {
     }
 }
 
-extension VisualElement {
-    /// Whether the platform has given this control the focus, written into the
-    /// binding. Read-only: the platform moves the focus.
-    public func isFocused(_ binding: Binding<Bool>) -> Modified {
-        onEvent(VisualElementContract.isFocusedChanged) { focused in
-            binding.wrappedValue = focused
-        }
-    }
 
-}

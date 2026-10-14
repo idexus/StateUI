@@ -27,6 +27,9 @@
     /// A layout's children travelling to their new places.
     public let layoutMotion: LayoutMotion
 
+    /// Split views' sidebars sliding in and out, where a host slides them itself.
+    public let sidebarSlide: SidebarSlide
+
     /// One display frame's order: the user's reports, the animations, the core's cycle, a walk, a render.
     public let displayCycle: DisplayCycle
 
@@ -69,9 +72,11 @@
         stateChannels = StateChannels(animator: animator)
         describedMotion = DescribedMotion(animator: animator)
         layoutMotion = LayoutMotion(animator: animator, now: clock.now, reducesMotion: reducesMotion)
+        sidebarSlide = SidebarSlide(animator: animator, now: clock.now, reducesMotion: reducesMotion)
         displayCycle = DisplayCycle(
             core: core, clock: clock, animator: animator, stateChannels: stateChannels,
-            describedMotion: describedMotion, layoutMotion: layoutMotion, reducesMotion: reducesMotion)
+            describedMotion: describedMotion, layoutMotion: layoutMotion, sidebarSlide: sidebarSlide,
+            reducesMotion: reducesMotion)
         var diagnostics = DiagnosticText.environment
         diagnostics.views = views
         tree = MountedTree(
@@ -85,6 +90,7 @@
         tree.tellPhase = { [weak pump] handler in pump?.handlers.enqueuePhase(handler) }
         clock.onFrame = { [weak self] now in self?.displayCycle.frame(now: now) }
         layoutMotion.onStart = { [weak self] in self?.displayCycle.hold() }
+        sidebarSlide.onStart = { [weak self] in self?.displayCycle.hold() }
         tree.onAnimation = { [weak self] in self?.displayCycle.hold() }
     }
 
@@ -93,10 +99,10 @@
     /// language's direction, the windows, then the turns. Each step but the first and the direction is the host's.
     /// Design: docs/design/host/runtime.md#starting
     public func start(
-        realizing realization: HostRealization, unrealized: Set<String>, environment: () -> Void,
-        kept: () -> Void = {}, windows: () -> Void = {}, turns: () -> Void = {}
+        realizing realization: HostRealization, unrealized: Set<String>, register: HostRegister? = nil,
+        environment: () -> Void, kept: () -> Void = {}, windows: () -> Void = {}, turns: () -> Void = {}
     ) {
-        core.setRealization(realization, unrealized: unrealized)
+        core.setRealization(realization, unrealized: unrealized, register: register)
         environment()
         kept()
         tree.followTheLanguagesDirection()
@@ -146,12 +152,17 @@
     }
 
     /// What the application stands on changed - the theme, the locale, the power, the network: `report` tells the
-    /// core what stands now, the tree follows the language's direction, and a turn renders what it all changed.
+    /// core what stands now, the tree follows the language's direction, and a turn renders what it all changed. A
+    /// report that repeats what stands takes no turn; answers whether it changed anything.
     /// Design: docs/design/host/runtime.md#the-environment
-    public func environmentChanged(_ report: () -> Void) {
+    @discardableResult
+    public func environmentChanged(_ report: () -> Void) -> Bool {
+        let changes = core.environmentChanges
         report()
+        guard core.environmentChanges != changes else { return false }
         tree.followTheLanguagesDirection()
         pump.turn()
+        return true
     }
 
     /// The toolkit told what `window` does now. It settles a turn later, with whatever else the toolkit tells in

@@ -215,7 +215,7 @@ final class AndroidPagesTests: XCTestCase {
             let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
             let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
             XCTAssertTrue(split.overlays)
-            XCTAssertEqual(navigation.bar.content.navigation, .sidebar("test_dot.png"))
+            XCTAssertEqual(navigation.bar.content.navigation, .sidebar(.file("test_dot.png")))
 
             navigation.bar.clicked()
             XCTAssertTrue(open.wrappedValue)

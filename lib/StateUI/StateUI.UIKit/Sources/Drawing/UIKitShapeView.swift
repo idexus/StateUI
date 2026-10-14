@@ -37,6 +37,8 @@ final class UIKitShapeView: UIView {
     private var fillLayer: CALayer?
     private var strokeLayer: CALayer?
 
+    var fillForTesting: UIKitBrush { fill }
+
     init() {
         super.init(frame: .zero)
         isOpaque = false

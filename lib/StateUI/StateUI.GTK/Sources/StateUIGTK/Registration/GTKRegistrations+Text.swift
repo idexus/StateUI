@@ -18,10 +18,11 @@ extension GTKRegistrations {
             label.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
                 view.setAlignment(horizontal: alignment ?? .start)
             }
-            label.property(TextAlignmentElementContract.verticalTextAlignment) { view, alignment in
+            label.property(TextContract.verticalTextAlignment) { view, alignment in
                 view.setAlignment(vertical: alignment ?? .start)
             }
-            label.property(TextStyleElementContract.tracking) { view, spacing in
+            label.property(TextContract.isSelectable) { view, selectable in view.setSelectable(selectable ?? false) }
+            label.property(TrackingElementContract.tracking) { view, spacing in
                 view.setLook { $0.letterSpacing = spacing ?? 0 }
             }
             label.property(LineHeightElementContract.lineHeight) { view, height in
@@ -38,14 +39,7 @@ extension GTKRegistrations {
     static func applyText<Realized: ElementContract>(_ view: any GTKWordsView, _ values: ElementValues<Realized>) {
         if let words = TextMembers.words(values) { view.setText(words) }
         if let look = TextMembers.look(values) {
-            view.setLook { shown in
-                shown.size = look.size
-                shown.attributes = look.attributes
-                shown.attributesGiven = look.attributesGiven
-                shown.family = look.family
-                shown.color = look.color
-                shown.scales = look.scales
-            }
+            view.setLook { $0.adopt(fontAndColorOf: look) }
         }
         if values.changed(PaddingElementContract.padding) {
             view.setPadding(values[PaddingElementContract.padding])

@@ -79,16 +79,16 @@ final class HostRegisterTests: XCTestCase {
     func testAnElementsUnrealizedRecordStandsOverItsTiers() {
         let register = HostRegister(
             records: [
-                .complete("PropertyContainer", "accessibilityIdentifier"),
+                .complete("AutomationElement", "accessibilityIdentifier"),
                 .unrealized("ToolbarItem", "accessibilityIdentifier", why: "The toolbar item holds none."),
             ],
             unrealized: [], viewless: [])
 
         XCTAssertEqual(
-            register.judgement(of: "accessibilityIdentifier", on: "ToolbarItem", from: "PropertyContainer"),
+            register.judgement(of: "accessibilityIdentifier", on: "ToolbarItem", from: "AutomationElement"),
             .unrealized(why: "The toolbar item holds none."))
-        XCTAssertFalse(register.realizes("accessibilityIdentifier", on: "ToolbarItem", from: "PropertyContainer"))
-        XCTAssertTrue(register.realizes("accessibilityIdentifier", on: "Button", from: "PropertyContainer"))
+        XCTAssertFalse(register.realizes("accessibilityIdentifier", on: "ToolbarItem", from: "AutomationElement"))
+        XCTAssertTrue(register.realizes("accessibilityIdentifier", on: "Button", from: "AutomationElement"))
     }
 
     /// A tier's mark promises every wearer: a member a host realizes on only some of its elements wearing the

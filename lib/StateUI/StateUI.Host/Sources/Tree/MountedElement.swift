@@ -82,10 +82,16 @@
         self.parent = parent
         mount = tree.allocateMount()
         native = nil
+        made = patch
         native = tree.makeNative(self)
+        made = nil
         tree.tally?.made += 1
         apply(patch)
     }
+
+    /// The patch the element is made from while its native half is made - what a toolkit making another control of
+    /// what the element holds reads (`Reports.made`); nil after.
+    public private(set) var made: HostPatch?
 
     /// Applies a patch of this element.
     public func apply(_ patch: HostPatch) {
@@ -337,6 +343,17 @@
         return nil
     }
 
+    /// The element numbered `sought` in this subtree, this one first; nil where none is.
+    public func first(mount sought: UInt64) -> MountedElement? {
+        if mount == sought { return self }
+
+        for child in held {
+            if let found = child.first(mount: sought) { return found }
+        }
+
+        return nil
+    }
+
     /// Every element with key `sought` in this subtree.
     public func all(id sought: ElementID) -> [MountedElement] {
         var found = id == sought ? [self] : []
@@ -478,6 +495,7 @@
         values.rowSpan = max(whole(.gridRowSpan) ?? 1, 1)
         values.columnSpan = max(whole(.gridColumnSpan) ?? 1, 1)
         values.area = value(.area).flatMap(Area.init(propValue:))
+        values.grows = type == .spacer
         return values
     }
 
@@ -496,6 +514,15 @@
     public func carriedValue(_ property: Prop) -> HostStateValue? {
         guard let binding = driven[property] else { return nil }
         return drivenValues[property] ?? tree?.core.value(for: binding)
+    }
+
+    /// Where `property` is headed: the destination of the journey its state carries it on; nil where no state does.
+    public func destination(_ property: Prop) -> HostValue? {
+        guard let binding = driven[property], binding.mode != .in, binding.kind == .property,
+              let carried = carriedValue(property),
+              let journey = HostBoundary.journey(from: tree?.presentedValue(for: binding, from: carried) ?? carried)
+        else { return nil }
+        return Self.value(of: journey.destination, as: binding.laneKind)
     }
 
     /// The value `property` settles at: the bound state's, else the described one.

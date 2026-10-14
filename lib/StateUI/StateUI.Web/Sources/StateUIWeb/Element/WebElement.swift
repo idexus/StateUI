@@ -24,6 +24,7 @@ final class WebElement: NativeElement {
 
     /// Whether the view listens for the user's asking for its context menu.
     var listensForMenu = false
+    var listensForButtonMenu = false
 
     /// Whether the view listens for the keyboard coming into it and leaving it.
     var listensForFocus = false
@@ -64,6 +65,7 @@ final class WebElement: NativeElement {
         arrangeChildren()
         listenForTheUser()
         offerContextMenu()
+        offerButtonMenu()
         followFrame()
     }
 
@@ -89,6 +91,12 @@ final class WebElement: NativeElement {
     func send(_ event: Event, _ values: [HostValue]) {
         guard let host else { return }
         element.send(event, values, in: host.runtime)
+    }
+
+    /// A menu's entry or a bar's item chosen (`MountedElement.chosen`).
+    func choose() {
+        guard let host else { return }
+        element.chosen(in: host.runtime)
     }
 
     /// A value the user changed in the view; a radio button's peers turned off on their own buttons.

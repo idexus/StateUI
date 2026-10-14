@@ -5,16 +5,16 @@
 One choice out of a list.
 
 ```swift
-@State var size = 1
+@State var size: String? = "Medium"
 
-Picker(["Small", "Medium", "Large"])
-    .selectedIndex($size)
+Picker(["Small", "Medium", "Large"], selection: $size)
     .placeholder("Size")
+    .presentation(.segmented)
 ```
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [TintElement](tiers/TintElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [TintElement](tiers/TintElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -33,13 +33,13 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (84)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>40 ✅ · 2 ☑️ · 36 ✓ · 1 –</td><td><code>NSPopUpButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>36 ✅ · 2 ☑️ · 38 ✓ · 3 –</td><td>pop-up <code>UIButton</code> menu</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>60 ✅ · 3 ☑️ · 11 ✓ · 3 –</td><td><code>Spinner</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>69 ✅ · 1 ☑️ · 12 ✓</td><td><code>ComboBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>52 ✅ · 1 ☑️ · 22 ✓ · 7 –</td><td><code>GtkDropDown</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>56 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;select&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (88)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>46 ✅ · 2 ☑️ · 36 ✓ · 1 –</td><td><code>NSPopUpButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>38 ✅ · 3 ☑️ · 40 ✓ · 4 –</td><td>pop-up <code>UIButton</code> menu</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>63 ✅ · 4 ☑️ · 13 ✓ · 3 –</td><td><code>Spinner</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>75 ✅ · 1 ☑️ · 12 ✓</td><td><code>ComboBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>56 ✅ · 1 ☑️ · 24 ✓ · 7 –</td><td><code>GtkDropDown</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>62 ✅ · 1 ☑️ · 20 ✓ · 3 –</td><td><code>&lt;select&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PickerContract.swift`.
@@ -58,15 +58,17 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PickerContract
 <tr><td colspan="9">UIKit: only through the host's own: read options of Picker: the host's own choice, not the menu's<br>Android Views: only through the host's own: read options of Picker: the rows the relay keeps, not the spinner's</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>placeholder</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">GTK 4: GTK's drop-down shows a choice or nothing: it has no words standing for none.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>presentation</code></td><td>property</td><td><code>PickerPresentation</code></td><td>native</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: UIKit has no radio buttons: <code>.radio</code> is a column of its buttons, each marked by a filled or an empty circle.<br>Android Views: Android has no segmented control: <code>.segmented</code> is a radio group in a row.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>selectedIndex</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: only through the host's own: choose on Picker: the host's choice called, not the menu's action</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onSelectedIndexChanged</code> (<code>selectedIndexChanged</code>)</td><td>event</td><td><code>Int</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>selectedIndexChanged</code></td><td>event</td><td><code>Int</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: choose on Picker: the host's action called, not the pop-up's<br>UIKit: only through the host's own: choose on Picker: the host's choice called, not the menu's action</td></tr></tbody>
 </table>
 
-## From [PropertyContainer](tiers/PropertyContainer.md)
+## From [AutomationElement](tiers/AutomationElement.md)
 
-What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
+What an element the platform's automation meets has - a drawn element, a menu's entry or a bar's item, an arrangement of pages: the name automation finds it by.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
@@ -87,16 +89,12 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tbody><tr></tr><tr><td><code>automationExcludedWithChildren</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✓</td><td align="center">☑️</td></tr>
 <tr><td colspan="9">AppKit: AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.<br>UIKit: UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.<br>Android Views: Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.<br>WinUI 3: An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.<br>GTK 4: only through the host's own: read background of Picker: the class of the host's style sheet the widget wears: GTK reads back no background<br>Web: A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>focus</code></td><td>act</td><td><code>() -&gt; Bool</code></td><td></td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit, Android Views: Picker takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>frame</code></td><td>property</td><td><code>Rect</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>height</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>ignoresInput</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">Android Views: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isAccessibilityHidden</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isFocusedChanged</code></td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit, Android Views: Picker takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isVisible</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>layoutDirection</code></td><td>property</td><td><code>LayoutDirection</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>maximumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
@@ -121,12 +119,12 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tbody><tr></tr><tr><td rowspan="2"><code>scaleY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read scaleY of Picker: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleY of Picker: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read scaleY of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>tooltip</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read translationX of Picker: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read translationX of Picker: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read translationX of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read translationY of Picker: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read translationY of Picker: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read translationY of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>unfocus</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit, Android Views: Picker takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>width</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>zIndex</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
@@ -138,20 +136,20 @@ What every view a layout positions has: where it sits in its layout, the space k
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>allowsDrop</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on ColorBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
+<tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>area</code></td><td>property</td><td><code>Area</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>canDrag</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Picker: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Picker: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on Picker: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on Picker: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on Picker: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onDragLeave</code> (<code>dragLeave</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on ColorBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
+<tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onDragOver</code> (<code>dragOver</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on ColorBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
+<tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>dragStarting</code></td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Picker: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Picker: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on Picker: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on Picker: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on Picker: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>dragText</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Picker: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Picker: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on Picker: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on Picker: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on Picker: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onDrop</code> (<code>drop</code>)</td><td>event</td><td><code>String</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on ColorBox: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on ColorBox: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on ColorBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on ColorBox: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
+<tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>droppedFileTypes</code></td><td>property</td><td><code>[FileType]</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dropFiles on Picker: the window's drop routing told the driver's files, no dragging session<br>UIKit: only through the host's own: dropFiles on Picker: the drop interaction's handler told the driver's files, no drag session<br>Android Views: only through the host's own: dropFiles on Picker: the view's drag listener's report told the driver's documents, no drag started<br>WinUI 3: only through the host's own: dropFiles on Picker: the relay's drop report told the driver's files, no drag WinUI began<br>GTK 4: only through the host's own: dropFiles on Picker: the drop target's signal told the driver's files, no drag GTK began<br>Web: only through the host's own: dropFiles on Picker: the DOM's drag events dispatched by the driver with its files, no drag the browser began</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onDragEnded</code> (<code>dragEnded</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
@@ -200,22 +198,22 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 
-How text looks wherever it is drawn: its colour and the space between its letters.
+How text looks wherever it is drawn: its colour.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>tracking</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4, Web: not realized</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>textColor</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [FontElement](tiers/FontElement.md)
 
-The font text is drawn in: its family, its size, its weight and slant, and whether it follows the user's text-size setting.
+The font text is drawn in: its step of the platform's type ramp, its family, its size, its weight and slant, and whether it follows the user's text-size setting.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>fontAttributes</code></td><td>property</td><td><code>FontAttributes</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>fontWeight</code></td><td>property</td><td><code>FontWeight</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>textStyle</code></td><td>property</td><td><code>TextStyle</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isFontAutoScalingEnabled</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: macOS gives an application no text size of the user's to follow.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>fontFamily</code></td><td>property</td><td><code>Name</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
@@ -225,14 +223,12 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 ## From [TextAlignmentElement](tiers/TextAlignmentElement.md)
 
-Where text sits inside the space its own element was given.
+Where text sits across the space its own element was given.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>horizontalTextAlignment</code></td><td>property</td><td><code>TextAlignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center"></td></tr>
 <tr><td colspan="9">GTK 4: GTK's drop-down draws its choice with the factory that draws its list: the choice alone takes no alignment without redrawing GNOME's list.<br>Web: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>verticalTextAlignment</code></td><td>property</td><td><code>TextAlignment</code></td><td>native</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4, Web: not realized</td></tr></tbody>
 </table>
 
 ## From [TintElement](tiers/TintElement.md)
@@ -243,4 +239,30 @@ A control's one accent colour.
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>tint</code></td><td>property</td><td><code>Color</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center"></td></tr>
 <tr><td colspan="9">GTK 4: A GNOME drop-down wears no accent: a check in its words' colour marks the choice.<br>Web: not realized</td></tr></tbody>
+</table>
+
+## From [KeyboardElement](tiers/KeyboardElement.md)
+
+An element that can hold the keyboard - a control taking the focus, or a layout holding the view that does - and so hear the keys it takes.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>keyPressed</code></td><td>event</td><td><code>Key</code></td><td>native</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: only through the host's own: pressKeys on Picker: the window's or the main menu's key command performed, no key pressed<br>Android Views: only through the host's own: pressKeys on Picker: the key event no view took handed to the host as the application's activity hands it<br>GTK 4: only through the host's own: pressKeys on Picker: the shortcut controller's action run, no key event</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>keysTaken</code></td><td>property</td><td><code>[Key]</code></td><td>structure</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: only through the host's own: pressKeys on Picker: the window's or the main menu's key command performed, no key pressed<br>Android Views: only through the host's own: pressKeys on Picker: the key event no view took handed to the host as the application's activity hands it<br>GTK 4: only through the host's own: pressKeys on Picker: the shortcut controller's action run, no key event</td></tr></tbody>
+</table>
+
+## From [FocusElement](tiers/FocusElement.md)
+
+An element that takes the keyboard focus itself - a field, a button, a list - and so holds the keyboard.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>focus</code></td><td>act</td><td><code>() -&gt; Bool</code></td><td></td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit, Android Views: Picker takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isFocusedChanged</code></td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit, Android Views: Picker takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>unfocus</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit, Android Views: Picker takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
 </table>

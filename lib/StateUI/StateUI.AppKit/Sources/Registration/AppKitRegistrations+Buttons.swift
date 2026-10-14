@@ -17,7 +17,9 @@ extension AppKitRegistrations {
     /// value written onto a control.
     static func buttons(_ registry: Registry<NSView>) {
         registry.add(ButtonContract.self, create: { reports in
-            let button = AppKitButtonView()
+            // A button holding a menu is made as it opens it from the first; another opening is made again.
+            let button = AppKitButtonView(
+                menu: ButtonMenu.opening(made: reports.made), showsArrow: ButtonMenu.showsArrow(made: reports.made))
             button.onClicked = { reports.raise(ButtonContract.clicked) }
             button.onPressed = { reports.raise(ButtonContract.pressed) }
             button.onReleased = { reports.raise(ButtonContract.released) }
@@ -31,23 +33,34 @@ extension AppKitRegistrations {
                 BorderElementContract.shape, BorderElementContract.stroke,
                 BorderElementContract.lineWidth, VisualElementContract.isEnabled,
                 FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes, TextStyleElementContract.tracking,
+                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TrackingElementContract.tracking,
+                ButtonContract.role,
             ]) { view, values in
                 // Each value is read into a name of its own: twelve arguments
                 // of `flatMap` and `??` in one call is more than the type
                 // checker will take.
                 let caption = (values[TextualElementContract.textCase] ?? .none)
                     .applied(to: values[TextualElementContract.text] ?? "")
-                let icon: NSImage? = values[ButtonContract.icon]
-                    .flatMap { $0.isEmpty ? nil : view.picture?($0.file) }
+                let source = values[ButtonContract.icon].flatMap { HostPicture($0.propValue) }
+                let icon: NSImage? = source.flatMap { view.picture?($0) }
                 let position: NSControl.ImagePosition = caption.isEmpty
                     ? .imageOnly
                     : Self.imagePosition(values[ButtonContract.iconPosition] ?? .leading)
-                let scaling: NSImageScaling = Self.imageScaling(
-                    values[ImageElementContract.contentMode] ?? .fit)
-                let textColor: NSColor = values[TextStyleElementContract.textColor]
-                    .flatMap { nsColor($0.propValue) } ?? .controlTextColor
+                // Beside words a picture stands at its own size, smaller where the button is; so does an icon alone.
+                let scaling: NSImageScaling = if caption.isEmpty, case .icon? = source {
+                    .scaleProportionallyDown
+                } else if caption.isEmpty {
+                    Self.imageScaling(values[ImageElementContract.contentMode] ?? .fit)
+                } else {
+                    .scaleProportionallyDown
+                }
                 let background = paintedColor(values[VisualElementContract.background]?.propValue)
+                // A destructive action's words in the system's red where the tree colours them not.
+                let look = ButtonRoleLook(
+                    values[ButtonContract.role], fills: background != nil,
+                    colorsWords: values[TextStyleElementContract.textColor] != nil)
+                let textColor: NSColor = values[TextStyleElementContract.textColor]
+                    .flatMap { nsColor($0.propValue) } ?? (look.wordsInCritical ? .systemRed : .controlTextColor)
                 let stroke = values[BorderElementContract.stroke]?.propValue
                 let lineWidth = BoxArithmetic.outlineWidth(
                     stroke: stroke, width: values[BorderElementContract.lineWidth])
@@ -61,13 +74,20 @@ extension AppKitRegistrations {
                     imageScaling: scaling,
                     font: Self.font(values),
                     textColor: textColor,
-                    tracking: values[TextStyleElementContract.tracking] ?? 0,
+                    tracking: values[TrackingElementContract.tracking] ?? 0,
                     backgroundColor: background,
                     strokeColor: strokeColor,
                     lineWidth: lineWidth,
                     shape: BoxArithmetic.outline(values[BorderElementContract.shape]?.propValue),
                     lineBreakMode: breaking,
                     enabled: values[VisualElementContract.isEnabled] ?? true)
+            }
+            // AppKit's own key equivalent - the one stated, else the role's - pressing the button while its window is
+            // in front, and the role's marks: the accent for the main action, AppKit's mark for a destructive one.
+            button.applies([ButtonContract.keyboardShortcut, ButtonContract.role]) { control, values in
+                let role = values[ButtonContract.role]
+                let shortcut = KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role)
+                control.applyKeys(shortcut, role: role)
             }
             button.raises(ButtonContract.clicked)
             button.raises(ButtonContract.pressed)
@@ -85,7 +105,7 @@ extension AppKitRegistrations {
         }
     }
 
-    /// How an icon fills the room it is given.
+    /// How an icon standing alone fills the room it is given.
     ///
     /// `.fit` and `.fill` come out the same: a native button has no covering
     /// scale, which is what this host's declaration says about `contentMode`

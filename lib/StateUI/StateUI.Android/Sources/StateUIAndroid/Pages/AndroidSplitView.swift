@@ -39,7 +39,7 @@ final class AndroidSplitView: AndroidLayoutView {
 
     /// The drawer holding the sidebar page, and the shade over the detail while it is open.
     let drawer = AndroidSingleChildView()
-    private let scrim = AndroidColorBoxView()
+    private let scrim = AndroidView { _ in Java.new(JavaAPI.view, JavaAPI.newView, .object(AndroidRenderer.context)) }
     private var drawerWidth = 0.0
 
     override init() {

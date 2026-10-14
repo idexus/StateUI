@@ -58,14 +58,14 @@ final class GTKGridViewTests: XCTestCase {
             let host = GTKRenderer.running {
                 Grid {
                     Text("head").height(30)
-                    ColorBox(.red).gridRow(1)
+                    Rectangle().fill(.red).gridRow(1)
                     Text("foot").height(20).gridRow(2)
                 }
                 .rows(.auto, .fill, .auto)
             }
             let grid = try XCTUnwrap(host.views(GTKGridView.self).first).frame
 
-            let box = try XCTUnwrap(host.views(GTKColorBoxView.self).first)
+            let box = try XCTUnwrap(host.views(GTKShapeView.self).first)
             XCTAssertTrue(box.frame == (0, 30, grid.width, grid.height - 50), "\(box.frame) in \(grid)")
         }
     }
@@ -75,7 +75,7 @@ final class GTKGridViewTests: XCTestCase {
         try onUIThread {
             let host = GTKRenderer.running {
                 Grid {
-                    ColorBox(.red).gridRowSpan(2)
+                    Rectangle().fill(.red).gridRowSpan(2)
                     Text("one").height(20).gridColumn(1)
                     Text("two").height(30).gridRow(1).gridColumn(1)
                 }
@@ -83,7 +83,7 @@ final class GTKGridViewTests: XCTestCase {
                 .rows(.auto, .auto)
                 .rowSpacing(10)
             }
-            let box = try XCTUnwrap(host.views(GTKColorBoxView.self).first)
+            let box = try XCTUnwrap(host.views(GTKShapeView.self).first)
 
             XCTAssertTrue(box.frame == (0, 0, 20, 60), "\(box.frame)")
         }

@@ -1,66 +1,65 @@
-# revision 8.1
+# revision 12.2
 ActivityIndicator.background: – WinUI's progress ring paints its Background as its track, no ground under its frame.
 Button.ignoresInput: ✅
 Button.scale: ✅
 Canvas.accessibilityHeading: ✅
-CheckBox.frameChanged: ✅
-CheckBox.height: ✅
-CheckBox.rotationX: ✓ read rotationX of CheckBox: the host's own tip, checked against the projection it laid on the element
-CheckBox.width: ✅
-ColorBox.accessibilityLabel: ✅
+Capsule.frameChanged: ✅
+Capsule.height: ✅
+Capsule.rotationX: ✓ read rotationX of Capsule: the host's own tip, checked against the projection it laid on the element
+Capsule.width: ✅
+CheckBox.accessibilityLabel: ✅
 DatePicker.isVisible: ✅
 DatePicker.pivotX: ✅
-Ellipse.style: ✅
+Divider.frame: ✅
+Divider.scaleX: ✅
 Ellipse.translationX: ✅
+Ellipse.zIndex: ✅
 Grid.automationExcludedWithChildren: ✅
 HStack.opacity: ✅
 HStack.pivotY: ✅
 Image.ignoresInput: ✅
 Image.scale: ✅
-ItemsView.accessibilityHint: ✅
+ItemsView.tooltip: ✅
+Line.accessibilityHeading: ✅
 Line.translationY: ✅
-Line.zIndex: ✅
 Map.background: 🧩
-Path.frame: ✅
-Path.scaleX: ✅
-Picker.accessibilityHeading: ✅
-Polygon.frameChanged: ✅
-Polygon.height: ✅
-Polygon.rotationX: ✓ read rotationX of Polygon: the host's own tip, checked against the projection it laid on the element
-Polygon.width: ✅
-Polyline.accessibilityHeading: ✅
-Polyline.isEnabled: ✅
-ProgressBar.layoutDirection: ✅
-RadioButton.frame: ✅
-RadioButton.scaleX: ✅
-Rectangle.isAccessibilityHidden: ✅
-ScrollView.frameChanged: ✅
-ScrollView.height: ✅
-ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own tip, checked against the projection it laid on the element
-ScrollView.width: ✅
-SearchField.translationY: ✅
-SearchField.zIndex: ✅
-Slider.layoutDirection: ✅
-Stepper.focus: ✅
-Stepper.isFocusedChanged: ✅
-Stepper.scaleY: ✅
-Stepper.unfocus: ✅
-Switch.automationExcludedWithChildren: ✅
+Path.isAccessibilityHidden: ✅
+Picker.frameChanged: ✅
+Picker.height: ✅
+Picker.rotationX: ✓ read rotationX of Picker: the host's own tip, checked against the projection it laid on the element
+Picker.width: ✅
+Polygon.accessibilityHint: ✅
+Polyline.isVisible: ✅
+Polyline.pivotX: ✅
+ProgressBar.scaleY: ✅
+ProgressBar.style: ✅
+RadioButton.isAccessibilityHidden: ✅
+Rectangle.frameChanged: ✅
+Rectangle.maximumHeight: ✅
+Rectangle.maximumWidth: ✅
+Rectangle.minimumHeight: ✅
+Rectangle.minimumWidth: ✅
+Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own tip, checked against the projection it laid on the element
+ScrollView.accessibilityHint: ✅
+ScrollView.layoutDirection: ✅
+SearchField.layoutDirection: ✅
+Slider.scaleY: ✅
+Slider.style: ✅
+Spacer.automationExcludedWithChildren: ✅
+Stepper.ignoresInput: ✅
+Stepper.scale: ✅
+Switch.accessibilityHeading: ✅
 Text.isEnabled: does not apply - read isEnabled of Text - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Text.rotation: ✅
-TextEditor.ignoresInput: ✅
-TextEditor.scale: ✅
-TextField.accessibilityHeading: ✅
-TimePicker.frameChanged: ✅
-TimePicker.height: ✅
-TimePicker.rotationX: ✓ read rotationX of TimePicker: the host's own tip, checked against the projection it laid on the element
-TimePicker.width: ✅
-VStack.accessibilityLabel: ✅
-VStack.isEnabled: ✅
-WebView.isAccessibilityHidden: ✅
-ZStack.frameChanged: ✅
-ZStack.maximumHeight: ✅
-ZStack.maximumWidth: ✅
-ZStack.minimumHeight: ✅
-ZStack.minimumWidth: ✅
-ZStack.rotationY: ✓ read rotationY of ZStack: the host's own tip, checked against the projection it laid on the element
+TextEditor.frameChanged: ✅
+TextEditor.height: ✅
+TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own tip, checked against the projection it laid on the element
+TextEditor.width: ✅
+TextField.accessibilityHint: ✅
+TimePicker.opacity: ✅
+TimePicker.pivotY: ✅
+VStack.accessibilityHeading: ✅
+VStack.translationY: ✅
+WebView.tooltip: ✅
+ZStack.isEnabled: does not apply - read isEnabled of ZStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+ZStack.rotation: ✅

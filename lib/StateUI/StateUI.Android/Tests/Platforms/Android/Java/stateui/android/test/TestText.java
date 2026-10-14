@@ -3,6 +3,8 @@
 
 package stateui.android.test;
 
+import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.util.TypedValue;
@@ -29,5 +31,19 @@ public final class TestText {
     public static int style(TextView view) {
         Typeface face = view.getTypeface();
         return face == null ? Typeface.NORMAL : face.getStyle();
+    }
+
+    /** How heavy the strokes are, 100 to 900: the typeface's weight. */
+    public static int weight(TextView view) {
+        Typeface face = view.getTypeface();
+        return face == null ? 400 : face.getWeight();
+    }
+
+    /** The colour the theme draws primary words in, as ARGB. */
+    public static int primaryWords(Context context) {
+        TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.textColorPrimary});
+        int colour = theme.getColor(0, 0);
+        theme.recycle();
+        return colour;
     }
 }

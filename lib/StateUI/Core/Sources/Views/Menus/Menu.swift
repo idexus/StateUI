@@ -12,7 +12,7 @@
 ///                     MenuItem(file).onClicked { open(file) }
 ///                 }
 ///             }
-///             Divider()
+///             MenuSeparator()
 ///             MenuItem("Close").onClicked { close() }
 ///         }
 ///         .id(StandardMenu.file)

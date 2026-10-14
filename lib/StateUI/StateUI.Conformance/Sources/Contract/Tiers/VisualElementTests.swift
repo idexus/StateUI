@@ -16,10 +16,11 @@
         Specimens.wearing(VisualElementContract.self).flatMap { element in
             [
                 shown(element), opacity(element), enabled(element), sized(element), bounded(element),
-                reachable(element), framed(element), focused(element), styled(element), layered(element),
+                reachable(element), framed(element), styled(element), layered(element),
                 headed(element),
                 Aspects.holds(VisualElementContract.accessibilityLabel, on: element, "Confirm", then: "Save"),
                 Aspects.holds(VisualElementContract.accessibilityHint, on: element, "Saves the form", then: "Saves it all"),
+                Aspects.holds(VisualElementContract.tooltip, on: element, "Saves the draft", then: "Saves every draft"),
                 Aspects.holds(VisualElementContract.accessibilityHeading, on: element, .h2, then: .h3),
                 Aspects.holds(VisualElementContract.isAccessibilityHidden, on: element, false, then: true, with: named),
                 Aspects.holds(
@@ -47,7 +48,7 @@
     /// The views whose only answer to the hand is the View tier's gestures: what disabling one stops is what it hears
     /// of them.
     static let answeringByGestures: Set<String> = [
-        "ActivityIndicator", "ColorBox", "Ellipse", "Grid", "HStack", "Image", "Line", "Path", "Polygon", "Polyline",
+        "ActivityIndicator", "Capsule", "Ellipse", "Grid", "HStack", "Image", "Line", "Path", "Polygon", "Polyline",
         "ProgressBar", "Rectangle", "Text", "VStack", "ZStack",
     ]
 
@@ -140,7 +141,7 @@
                 VStack {
                     ZStack {
                         Specimens.view(element, [Write(VisualElementContract.zIndex, depth.wrappedValue)])
-                        ColorBox(.blue).id("cover")
+                        Rectangle().fill(.blue).id("cover")
                     }
                     .width(120).height(80).id("layers")
                     Button("Lower").onClicked { depth.wrappedValue = -1 }.id("change")
@@ -258,12 +259,12 @@
     static func directingItsChild(_ layout: String) -> ConformanceCase {
         ConformanceCase("\(layout).placesItsChildInItsDirection", proves: [
             Covered(VisualElementContract.layoutDirection, on: layout),
-        ], needs: [Covered(ButtonContract.clicked), Covered(VisualElementContract.frame, on: "ColorBox")]) { s in
+        ], needs: [Covered(ButtonContract.clicked), Covered(VisualElementContract.frame, on: "Rectangle")]) { s in
             let room = State(wrappedValue: Rect(x: -1, y: 0, width: 0, height: 0))
             let direction = State(wrappedValue: LayoutDirection.leftToRight)
             s.start {
                 VStack {
-                    Specimens.holding(layout, ColorBox(.red).width(60).height(30).horizontalAlignment(.start)
+                    Specimens.holding(layout, Rectangle().fill(.red).width(60).height(30).horizontalAlignment(.start)
                         .verticalAlignment(.start).frame(room.projectedValue), [
                             Write(VisualElementContract.layoutDirection, direction.wrappedValue),
                             Write(VisualElementContract.width, 200), Write(VisualElementContract.height, 100),
@@ -408,22 +409,21 @@
     }
 
     /// What `element` paints at the middle of a box of 80 by 40, where a press is read: a host may hand a view
-    /// only the presses on what it paints - a figure filled across it, a line through it, a box's colour, a picture.
+    /// only the presses on what it paints - a figure filled across it, a line through it, a picture.
     @MainActor
     static func painted(_ element: String) -> [any Worn] {
         let red = Brush.solidColor(.red)
         let figure = [Point(20, 5), Point(60, 5), Point(60, 35), Point(20, 35)]
         let atItsSize = Write(ShapeContract.contentMode, ContentMode.center)
         return switch element {
-        case "Rectangle", "Ellipse": [Write(ShapeContract.fill, red)]
+        case "Rectangle", "Ellipse", "Capsule": [Write(FilledShapeContract.fill, red)]
         case "Line": [
             Write(LineContract.x1, 0), Write(LineContract.y1, 20), Write(LineContract.x2, 80), Write(LineContract.y2, 20),
             Write(ShapeContract.stroke, red), Write(ShapeContract.lineWidth, 8),
         ]
-        case "Polygon": [Write(PolygonContract.points, figure), Write(ShapeContract.fill, red), atItsSize]
-        case "Polyline": [Write(PolylineContract.points, figure + [figure[0]]), Write(ShapeContract.fill, red), atItsSize]
-        case "Path": [Write(PathContract.data, "M 20 5 L 60 5 L 60 35 L 20 35 Z"), Write(ShapeContract.fill, red), atItsSize]
-        case "ColorBox": [Write(ColorBoxContract.color, Color.red)]
+        case "Polygon": [Write(PolygonContract.points, figure), Write(FilledShapeContract.fill, red), atItsSize]
+        case "Polyline": [Write(PolylineContract.points, figure + [figure[0]]), Write(FilledShapeContract.fill, red), atItsSize]
+        case "Path": [Write(PathContract.data, "M 20 5 L 60 5 L 60 35 L 20 35 Z"), Write(FilledShapeContract.fill, red), atItsSize]
         case "Image": [Write(ImageContract.source, ImageSource("test_dot.png"))]
         default: []
         }
@@ -454,45 +454,6 @@
             try s.perform(.activate, on: s.element("change"))
             s.settle { room.wrappedValue.width == 90 }
             s.expect(room.wrappedValue, Rect(x: 0, y: 0, width: 90, height: 30), "again where the tree moved it")
-        }
-    }
-
-    /// The keyboard put on a view that takes it is heard coming, and heard going as it is taken off. A view that
-    /// refuses it says so and hears nothing - and never takes the focus on that host.
-    @MainActor
-    static func focused(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).theKeyboardComingAndGoingIsHeard", proves: [
-            Covered(VisualElementContract.focus, on: element), Covered(VisualElementContract.unfocus, on: element),
-            Covered(VisualElementContract.isFocusedChanged, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
-            let aim = FocusAim()
-            let heard = Received<Bool>()
-            let took = Received<Bool>()
-            s.start {
-                VStack {
-                    Opened.aimed(Specimens.view(element, [
-                        Hear(VisualElementContract.isFocusedChanged) { heard.values.append($0) },
-                    ]), by: aim)
-                    Button("Focus").onClicked(gate: .ignoreWhileRunning) { took.values.append(try await aim.focus()) }.id("focus")
-                    Button("Unfocus").onClicked(gate: .ignoreWhileRunning) { try await aim.unfocus() }.id("unfocus")
-                }
-            }
-            let view = try s.element("specimen")
-
-            try s.perform(.activate, on: s.element("focus"))
-            s.settle { !took.values.isEmpty && (took.values == [false] || heard.values == [true]) }
-            guard took.values == [true] else {
-                s.expect(heard.values, [], "a view that refused the keyboard hears nothing")
-                s.expect(try s.focused(view), false)
-                throw s.absent("\(element) takes no keyboard focus here: it refuses it, and nothing is heard")
-            }
-            s.expect(heard.values, [true], "the keyboard coming heard")
-            s.expect(try s.focused(view), true)
-
-            try s.perform(.activate, on: s.element("unfocus"))
-            s.settle { heard.values == [true, false] }
-            s.expect(heard.values, [true, false], "and its going")
-            s.expect(try s.focused(view), false)
         }
     }
 

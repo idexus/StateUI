@@ -36,14 +36,12 @@ struct DrivenSample: SampleContent, ExampleContent {
 
             ZStack {
                 Grid {
-                    ColorBox()
-                        .color($tint)
+                    Rectangle($tint)
                         .height(6)
                         .cornerRadius(3)
                         .verticalAlignment(.center)
 
-                    ColorBox()
-                        .color(Palette.brand)
+                    Rectangle(Palette.brand)
                         .width(20)
                         .height(20)
                         .cornerRadius(10)
@@ -67,7 +65,7 @@ struct DrivenSample: SampleContent, ExampleContent {
             Text()
                 .text($offset.journey.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
                 .fontSize(28)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalAlignment(.center)
 
             // Off ordinary state: described again each time the switch is
@@ -104,7 +102,7 @@ struct DrivenSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("A value the host holds is worn by a property the way a plain value is: "
-                + "`.translationX($offset)`, `.color($tint)`. Send it somewhere from a "
+                + "`.translationX($offset)`, `.fill($tint)`. Send it somewhere from a "
                 + "handler - `offset = 240`, under `$offset.journey.motion` - and the host "
                 + "walks the property there on the display's own frames, which the tree "
                 + "does not have. A journey is part of every `@State` the host can walk, "

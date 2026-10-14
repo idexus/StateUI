@@ -26,7 +26,7 @@ struct TabsExtraPage: View {
 
                 Text("Extra \(number)")
                     .fontSize(26)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
 
                 Text("This tab is `.extra(\(number))`, one value in the tabs array.")
                     .fontSize(13)

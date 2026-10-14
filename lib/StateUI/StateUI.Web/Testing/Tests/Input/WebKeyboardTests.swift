@@ -50,6 +50,7 @@ final class WebKeyboardTests: XCTestCase {
                     MenuItem("Copy")
                     MenuItem("Cut").isEnabled(false)
                     MenuItem("Paste")
+                    MenuItem("Ruler").isOn(true)
                 }
             }
         }
@@ -63,8 +64,10 @@ final class WebKeyboardTests: XCTestCase {
         press("ArrowDown", host)
         XCTAssertEqual(try focused(), "Paste", "past the one that cannot be chosen")
         press("ArrowDown", host)
+        XCTAssertEqual(try focused(), "Ruler", "a checked one among the others")
+        press("ArrowDown", host)
         XCTAssertEqual(try focused(), "Copy", "round to the first")
         press("End", host)
-        XCTAssertEqual(try focused(), "Paste")
+        XCTAssertEqual(try focused(), "Ruler")
     }
 }

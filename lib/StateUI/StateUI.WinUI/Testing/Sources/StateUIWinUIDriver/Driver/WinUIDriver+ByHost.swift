@@ -17,6 +17,9 @@ extension WinUIDriver {
         case "dropFiles": return "the relay's drop report told the driver's files, no drag WinUI began"
         default: break
         }
+        if ability == "read role of Button" {
+            return "the accent WinUI holds for the main action, and the host's own record of the roles it draws no look for"
+        }
         if ability == "read background of Canvas" {
             return "the colour the host's canvas clears its surface to under its drawing, which WinUI keeps as no brush"
         }
@@ -30,9 +33,9 @@ extension WinUIDriver {
     }
 
     /// The elements whose views stand left to right in WinUI whatever their direction (`WinUIView.directionHolder`):
-    /// the layouts, the drawings, and a web view, whose page says its own.
+    /// the layouts and a stack's parts, the drawings, and a web view, whose page says its own.
     static let standsLeftToRight: Set<String> = [
-        "ActivityIndicator", "Canvas", "ColorBox", "Ellipse", "Grid", "HStack", "Image", "Line", "Path", "Polygon",
-        "Polyline", "Rectangle", "ScrollView", "VStack", "WebView", "ZStack",
+        "ActivityIndicator", "Canvas", "Capsule", "Divider", "Ellipse", "Grid", "HStack", "Image", "Line", "Path", "Polygon",
+        "Polyline", "Rectangle", "ScrollView", "Spacer", "VStack", "WebView", "ZStack",
     ]
 }

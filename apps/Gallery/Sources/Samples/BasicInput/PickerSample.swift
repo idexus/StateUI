@@ -1,32 +1,37 @@
 import StateUI
 
-/// One choice out of a list, opened by the user or by a button.
+/// One value chosen out of a list - offered as a menu, as segments or as radio buttons - opened by the user or by a
+/// button.
 struct PickerSample: SampleContent, ExampleContent {
     // listing: PickerSample
-    @State private var size = 1
-    @State private var changes = 0
+    /// The values on offer.
+    enum Size: CaseIterable, Equatable {
+        case small, medium, large
+    }
+
+    /// The value chosen, nil while none is.
+    @State private var size: Size? = .medium
     @State private var opened = 0
     @State private var showing = false
+
+    /// The device, by its name: whether its platform opens a list at the program's asking.
+    @Environment(\.device) private var device
     // listing: end
 
     static let id = "picker"
     static let title = "Picker"
-    static let summary = "One choice out of a list, with the chosen index as a binding."
+    static let summary = "One value chosen out of a list, as a menu, as segments or as radio buttons."
 
     // listing: PickerSample
-    static let sizes = ["Small", "Medium", "Large"]
-
     var body: some View {
         VStack {
-            // The choice and the two counts are read here, so a pick builds
-            // this closure - and a write of OURS raises no event at all.
+            // The choice and the count are read here, so a pick builds this
+            // closure - and a write of OURS raises no event at all.
             DebugInfoLabel()
 
-            Picker(Self.sizes)
+            Picker(Size.allCases, selection: $size) { "\($0)".titled }
                 .accessibilityIdentifier("picker.size")
                 .accessibilityLabel("Size")
-                .onSelectedIndexChanged { _ in changes += 1 }
-                .selectedIndex($size)
                 .placeholder("Size")
                 // Settable, so a button elsewhere can open the list. The two
                 // events answer the user and the platform - never this
@@ -35,15 +40,29 @@ struct PickerSample: SampleContent, ExampleContent {
                 .onOpened { opened += 1; showing = true }
                 .onClosed { showing = false }
 
-            Button("Open the list")
-                .onClicked { showing = true }
-                .horizontalAlignment(.center)
+            // Only where the platform opens a list at the program's asking.
+            if device.honours(PickerContract.isOpen) {
+                Button("Open the list")
+                    .onClicked { showing = true }
+                    .horizontalAlignment(.center)
+            }
 
-            Text(chosen)
+            // The same choice, offered as segments and as radio buttons.
+            Picker(Size.allCases, selection: $size) { "\($0)".titled }
+                .accessibilityIdentifier("picker.segments")
+                .accessibilityLabel("Size as segments")
+                .presentation(.segmented)
+
+            Picker(Size.allCases, selection: $size) { "\($0)".titled }
+                .accessibilityIdentifier("picker.radio")
+                .accessibilityLabel("Size as radio buttons")
+                .presentation(.radio)
+
+            Text(size.map { "Chosen: \($0)" } ?? "Nothing chosen")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
-            Text("Changed \(changes)x, opened \(opened)x")
+            Text("Opened \(opened)x")
                 .fontSize(13)
                 .horizontalTextAlignment(.center)
         }
@@ -53,14 +72,12 @@ struct PickerSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("The items are a list of strings and the choice is an index into it; "
-                + "-1 means nothing is chosen.")
+            Text("The choice is one of the values, not a place in the list: "
+                + "nil while nothing is chosen, and the same value however the list is ordered.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`$size` and the handler both hear the user's choice: the binding lands "
-                + "the index on the state, and an `.onSelectedIndexChanged` written beside "
-                + "it runs after it has landed - whichever order the two are written in.")
+            Text("The three pickers share one state: choose in any and the others follow.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -80,10 +97,4 @@ struct PickerSample: SampleContent, ExampleContent {
         }
         .spacing(12)
     }
-
-    // listing: PickerSample
-    private var chosen: String {
-        size >= 0 && size < Self.sizes.count ? "Chosen: \(Self.sizes[size])" : "Nothing chosen"
-    }
-    // listing: end
 }

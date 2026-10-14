@@ -16,7 +16,7 @@ Text(saved ? "Saved" : "Draft")
     }
 ```
 
-Wears: [PropertyContainer](PropertyContainer.md)
+Wears: [AutomationElement](AutomationElement.md)
 
 Worn by: [MenuItem](../MenuItem.md) · [ToolbarItem](../ToolbarItem.md)
 
@@ -30,4 +30,5 @@ How each of them realizes these members is on its own page.
 | `icon` | property | `ImageSource` | adaptive |
 | `isDestructive` | property | `Bool` | adaptive |
 | `isEnabled` | property | `Bool` | native |
+| `keyboardShortcut` | property | `KeyboardShortcut` | native |
 | `text` | property | `String` | native |

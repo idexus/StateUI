@@ -17,16 +17,29 @@ extension TextProperties {
     public func maximumLines(_ value: Int) -> Modified {
         setValue(TextContract.maximumLines, value)
     }
+
+    /// Where the text sits within the control's own height.
+    public func verticalTextAlignment(_ value: TextAlignment) -> Modified {
+        setValue(TextContract.verticalTextAlignment, value)
+    }
+
+    /// Whether the user can select the words and copy them - an address, a
+    /// code, an error to report. Off unless said.
+    ///
+    ///     Text(address).isSelectable(true)
+    public func isSelectable(_ value: Bool) -> Modified {
+        setValue(TextContract.isSelectable, value)
+    }
 }
 
 /// A read-only piece of text.
 ///
 ///     Text("Total")
 ///         .fontSize(20)
-///         .fontAttributes(.bold)
+///         .fontWeight(.bold)
 ///         .horizontalTextAlignment(.center)
 public struct Text: ElementView, TextualElement, FontElement, TextAlignmentElement,
-    PaddingElement, LineHeightElement, DecorableTextElement, TextProperties {
+    PaddingElement, LineHeightElement, TrackingElement, DecorableTextElement, TextProperties {
     /// The node this control describes.
     public var node: Node
 
@@ -78,12 +91,11 @@ public struct Text: ElementView, TextualElement, FontElement, TextAlignmentEleme
 ///
 ///     TextSpan("Sold out")
 ///         .textColor(.firebrick)
-///         .fontAttributes(.bold)
+///         .fontWeight(.bold)
 ///
 /// Not a view: a run has text and font properties and nothing else, and it
 /// goes only in a Text's `spans`.
-public struct TextSpan: ModifiableElement, TextualElement, FontElement,
-    LineHeightElement, DecorableTextElement {
+public struct TextSpan: ModifiableElement, TextualElement, FontElement, TrackingElement, DecorableTextElement {
     /// The node this run describes.
     public var node: Node
 
@@ -115,5 +127,11 @@ extension Text {
     /// stands, and no view is rebuilt for it.
     public func maximumLines(_ state: Binding<Int>) -> Modified {
         twin(TextContract.maximumLines, by: state)
+    }
+
+    /// `verticalTextAlignment` from a state, `$x`: the host sets each new value
+    /// as it stands, and no view is rebuilt for it.
+    public func verticalTextAlignment(_ state: Binding<TextAlignment>) -> Modified {
+        twin(TextContract.verticalTextAlignment, by: state)
     }
 }

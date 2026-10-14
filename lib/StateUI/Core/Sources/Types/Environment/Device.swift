@@ -35,3 +35,21 @@ public final class Device {
         self.connectivity = connectivity
     }
 }
+
+extension Device {
+    /// Whether the platform the application runs on honours `member` - its host realizes it. Where it does not,
+    /// writing the member changes nothing, so a view may leave out what asks for it; the platform contract says why.
+    ///
+    ///     if device.honours(PickerContract.isOpen) {
+    ///         Button("Open the list").onClicked { showing = true }
+    ///     }
+    public func honours<Owner: Contract, Value>(_ member: ElementProperty<Owner, Value>) -> Bool {
+        HostRealizations.honours(member.name, of: Owner.name)
+    }
+
+    /// Whether the platform the application runs on raises `event` - its host realizes it.
+    public func honours<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) -> Bool {
+        HostRealizations.honours(event.name, of: Owner.name)
+    }
+}
+

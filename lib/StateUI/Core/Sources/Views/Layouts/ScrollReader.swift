@@ -123,7 +123,7 @@ public struct ScrollReader: View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onScrollStopped(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onScrollStopped(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onScrollStopped(_ handler: @escaping EventHandler) -> ScrollReader {
         fatalError("unavailable")
     }
@@ -145,7 +145,7 @@ public struct ScrollReader: View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onTapped(_ handler: @escaping EventHandler) -> ScrollReader {
         fatalError("unavailable")
     }
@@ -171,7 +171,7 @@ public struct ScrollReader: View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPanUpdated(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPanUpdated(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onPanUpdated(_ handler: @escaping ValueEventHandler<PanUpdate>) -> ScrollReader {
         fatalError("unavailable")
     }
@@ -207,7 +207,7 @@ public struct ScrollReader: View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(within: area, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(within: area, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onTapped(within area: @escaping (Rect) -> Rect, _ handler: @escaping EventHandler) -> ScrollReader {
         fatalError("unavailable")
     }
@@ -285,7 +285,7 @@ public struct ScrollReader: View {
                         let along = sideways > 0
 
                         PlacedLayout(Self.parts, id: \.self) { part in
-                            ColorBox(Color("#00000000"))
+                            Rectangle().fill(Color("#00000000"))
                                 .motion(.none)
                                 .tapping(part == Self.parts[1] ? tap : nil)
                                 // Both boxes take the drag: the second lies over the first.
@@ -316,7 +316,7 @@ public struct ScrollReader: View {
                                 motion: .none)
                         }
                     } else {
-                        ColorBox(Color("#00000000"))
+                        Rectangle().fill(Color("#00000000"))
                             .width(long)
                             .height(tall)
                             .motion(.none)
@@ -367,16 +367,16 @@ extension VisualElement where Modified == Self {
     }
 }
 
-extension ColorBox {
+extension Rectangle {
     /// The box answering a drag, where one was asked for.
-    func dragging(_ handler: (gate: any Gate, handler: ValueEventHandler<PanUpdate>)?) -> ColorBox {
+    func dragging(_ handler: (gate: any Gate, handler: ValueEventHandler<PanUpdate>)?) -> Rectangle {
         guard let handler else { return self }
 
         return onPanUpdated(gate: handler.gate, handler.handler)
     }
 
     /// The box answering a tap, where one was asked for.
-    func tapping(_ handler: (gate: any Gate, handler: EventHandler)?) -> ColorBox {
+    func tapping(_ handler: (gate: any Gate, handler: EventHandler)?) -> Rectangle {
         guard let handler else { return self }
 
         return onTapped(gate: handler.gate, handler.handler)

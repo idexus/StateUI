@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import CStateUIGTK
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIGTK
@@ -18,7 +19,7 @@ private struct FramesPage: View {
         VStack {
             Text("said \(said)")
             Text("room \(Int(room.width))x\(Int(room.height))")
-            ColorBox(.steelBlue)
+            Rectangle().fill(.steelBlue)
                 .width(wide ? 200 : 120)
                 .height(60)
                 .frame($room)
@@ -60,6 +61,41 @@ final class GTKFrameReportTests: XCTestCase {
         }
     }
 
+    /// A view the tree reads says where it stands in the frame's layout that placed it, before the frame is drawn:
+    /// no display frame comes between - a sidebar's slide lays a page out every frame.
+    func testAViewSaysWhereItStandsInTheLayoutThatPlacedIt() throws {
+        try onUIThread {
+            let wide = State(wrappedValue: false)
+            let heard = Received<Double>()
+            let host = GTKRenderer.running {
+                VStack {
+                    Rectangle().fill(.steelBlue).width(wide.wrappedValue ? 200 : 120).height(60)
+                        .onEvent(ViewContract.frameChanged) { heard.values.append($0[2]) }
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            host.settle { heard.values.last == 120 }
+            let window = (host.window ?? GTKTestHost.window).widget
+
+            let clock = try XCTUnwrap(gtk_widget_get_frame_clock(window.of(GtkWidget.self)))
+            gdk_frame_clock_begin_updating(clock)
+            defer { gdk_frame_clock_end_updating(clock) }
+            GTKTestHost.pump(0.1)
+
+            wide.wrappedValue = true
+            host.runtime.pump.turn()
+            GTKTestHost.emit(clock, "layout")
+            XCTAssertEqual(heard.values.last, 200, "said in the layout that widened it")
+
+            // The layout repeats once for what was said, and ends: a frame's readers say once.
+            wide.wrappedValue = false
+            host.runtime.pump.turn()
+            GTKTestHost.emit(clock, "layout")
+            XCTAssertEqual(heard.values.last, 200, "nothing more said in the same frame")
+        }
+    }
+
     /// A view says nothing of where it stands before a layout places it: the first report its handler hears is
     /// where it is laid out.
     func testAViewSaysNothingBeforeItIsLaidOut() {
@@ -67,7 +103,7 @@ final class GTKFrameReportTests: XCTestCase {
             let heard = Received<[Double]>()
             let host = GTKRenderer.running {
                 VStack {
-                    ColorBox(.steelBlue).width(120).height(60)
+                    Rectangle().fill(.steelBlue).width(120).height(60)
                         .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
                 }
                 .horizontalAlignment(.start)

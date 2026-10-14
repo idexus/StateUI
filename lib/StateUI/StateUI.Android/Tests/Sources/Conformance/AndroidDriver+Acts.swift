@@ -39,8 +39,9 @@ extension AndroidDriver {
             (element.native as? AndroidElement)?.changeSidebarVisibility(to: !split.isPresented)
         case (.type(let words), let field as AndroidTextFieldView): Self.type(words, into: field)
         case (.submit, let field as AndroidTextFieldView):
-            // The keyboard's own action, as the field's return key says it: done, or search for a search field.
-            Java.call(field.reference, Self.onEditorAction, .int(element.type == .searchField ? 3 : 6))
+            // The keyboard's own action, as the field's return key says it - done where it says nothing.
+            let action = Java.callInt(field.reference, Self.getImeOptions) & 0xff
+            Java.call(field.reference, Self.onEditorAction, .int(action == 0 ? 6 : action))
         case (.answer(let caption, let words), _):
             let answered = Java.frame {
                 Java.callStaticBool(
@@ -59,6 +60,8 @@ extension AndroidDriver {
                     .object(Java.array(of: JavaAPI.string, names.map { Java.string(filesFolder + $0) })))
             }
             guard answered else { throw DriverCannot("answer a file dialog: none is held") }
+        case (.choose(let place), let picker as AndroidPickerView) where picker.presentation != .menu:
+            Java.callStatic(Self.testPicker, Self.chooseRadio, .object(picker.reference), .int(Int32(place)))
         case (.choose(let place), let picker as AndroidPickerView):
             // The row after the title's, as the user's tap on it in the open list chooses it.
             Java.callStatic(Self.testPicker, Self.choosePicker, .object(picker.reference), .int(Int32(place + 1)))
@@ -84,6 +87,22 @@ extension AndroidDriver {
             TestTouches.hover(view, action: Self.hoverEnter, x: Self.pixels(point.x), y: Self.pixels(point.y))
             TestTouches.hover(view, action: Self.hoverMove, x: Self.pixels(point.x), y: Self.pixels(point.y))
         case (.leave, let view?): TestTouches.hover(view, action: Self.hoverExit, x: 0, y: 0)
+        case (.focus, let view?):
+            // The keyboard brought to the view as a tap on a field brings it: Android's own request for the focus.
+            guard Java.callStaticBool(JavaAPI.views, JavaAPI.focus, .object(view.reference), .bool(true)) else {
+                throw DriverCannot(act, on: element)
+            }
+        case (.pressKeys(let shortcut), _):
+            // The key as the activity hands it on: to a view taking it, then to the views, then - none taking it -
+            // to the host's shortcuts; its going up after.
+            guard let pressed = AndroidKeys.pressed(shortcut) else { throw DriverCannot(act, on: element) }
+            let character = shortcut.key.character?.unicodeScalars.first.map { Int32($0.value) } ?? 0
+            if renderer?.taken(down: true, code: pressed.code, character: character, meta: pressed.meta) == true {
+                _ = renderer?.taken(down: false, code: pressed.code, character: character, meta: pressed.meta)
+                return
+            }
+            guard !TestWindow.dispatch(code: pressed.code, meta: pressed.meta) else { return }
+            _ = renderer?.pressed(code: pressed.code, character: character, meta: pressed.meta)
         case (.goBack, _) where element.type == .window || element.type == .navigationStack:
             // The system's back, as the activity hands it on; what it reached, the case reads.
             _ = renderer?.goBack()
@@ -157,6 +176,9 @@ extension AndroidDriver {
     static let testPicker = Java.findClass("stateui/android/test/TestPicker")
     static let choosePicker = Java.staticMethod(testPicker, "choose", "(Landroid/widget/Spinner;I)V")
     static let pickerRows = Java.staticMethod(testPicker, "rows", "(Landroid/widget/Spinner;)[Ljava/lang/String;")
+    static let radios = Java.staticMethod(testPicker, "radios", "(Landroid/widget/RadioGroup;)[Ljava/lang/String;")
+    static let checkedRadio = Java.staticMethod(testPicker, "checked", "(Landroid/widget/RadioGroup;)I")
+    static let chooseRadio = Java.staticMethod(testPicker, "chooseRadio", "(Landroid/widget/RadioGroup;I)V")
     static let getSelectedItemPosition = Java.method(
         Java.findClass("android/widget/AdapterView"), "getSelectedItemPosition", "()I")
 

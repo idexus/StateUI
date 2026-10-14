@@ -63,7 +63,7 @@ TextField($query)
 A policy given as the gate is the handler's own: two buttons written with
 `.ignoreWhileRunning` never hold each other back. Where several actions
 touch one thing - a save and a delete of one document - they pass through one
-`SharedGate`, kept in a state or a model, and its `isBusy` says whether a run
+`Gatekeeper`, kept in a state or a model, and its `isBusy` says whether a run
 is under way through it:
 
 ```swift
@@ -75,7 +75,7 @@ final class Document {
 
 struct DocumentActions: View {
     let document: Document
-    @State private var busy = SharedGate(.ignoreWhileRunning)
+    @State private var busy = Gatekeeper(.ignoreWhileRunning)
 
     var body: some View {
         HStack {
@@ -97,21 +97,21 @@ posts and acts are refused, each refusal said once - a slower, older search
 never overwrites a newer one, and a page already left never navigates. A
 `Task { }` or a child task the run started is refused with it; one started
 with `Task(gate:)` or `Task.detached` is not. An element leaving ends its own runs
-alone: in a shared gate, the others' runs go on. A handler without an `await`
+alone: behind a gatekeeper, the others' runs go on. A handler without an `await`
 names no gate: it runs whole inside its event, so nothing supersedes it.
 `.onCreated` and `.onDestroying` name none either, as they come once.
 
 ### Work started from code
 
 Work a model starts from its own code - an autosave, a refresh a timer asks
-for - passes a shared gate with `Task(gate:)`, as a handler written with the
+for - passes a gatekeeper with `Task(gate:)`, as a handler written with the
 gate would. A save the user asks for and an autosave never run at once, and
 the gate's `isBusy` covers both:
 
 ```swift
 @MainActor
 final class Draft {
-    let saving = SharedGate(.ignoreWhileRunning)
+    let saving = Gatekeeper(.ignoreWhileRunning)
     @State var saves = 0
 
     func save() {
@@ -137,7 +137,7 @@ The task is the run: awaiting its `value` waits for the work's end, cancelling
 it ends the run as a later event would - one still waiting its turn leaves the
 queue at once - and a task the gate lets go ends at once, its work not run. It belongs to the gate - not to an element, nor to the
 handler that started it - so no element leaving ends it. A task takes a
-`SharedGate` only: a policy alone has no element to keep its runs.
+`Gatekeeper` only: a policy alone has no element to keep its runs.
 
 ### Work that outlives its element
 

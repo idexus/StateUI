@@ -12,9 +12,14 @@ extension TextFieldProperties {
     }
 
     /// What the keyboard's return key is captioned - Go, Search, Send, Next.
-    /// The caption only; what the key does is `.onSubmitted`, which it raises
-    /// whatever it says. A host with a hardware keyboard may have no caption
-    /// to change and still reports the submission.
+    /// What the key does is `.onSubmitted`, which it raises whatever it says;
+    /// `.next` hands the keyboard on as well, to the next field the page
+    /// reads. A host with a hardware keyboard may have no caption to change,
+    /// and does both all the same.
+    ///
+    ///     TextField($name).submitLabel(.next)
+    ///     TextField($street).submitLabel(.next)
+    ///     TextField($city).submitLabel(.done).onSubmitted { save() }
     public func submitLabel(_ value: SubmitLabel) -> Modified {
         setValue(TextFieldContract.submitLabel, value)
     }
@@ -99,7 +104,7 @@ public struct TextField: TextInput, TextualElement, FontElement, TextAlignmentEl
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSubmitted(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSubmitted(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onSubmitted(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

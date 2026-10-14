@@ -15,7 +15,7 @@
 ///
 /// Every platform accepts the same grammar: the host parses the path itself
 /// before drawing it.
-public struct Path: Shape, PathProperties {
+public struct Path: FilledShape, CorneredShape, PathProperties {
     /// The node this control describes.
     public var node: Node
 

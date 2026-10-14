@@ -42,21 +42,23 @@ final class WinUIBrushTests: XCTestCase {
         }
     }
 
-    /// A figure paints no ground of its own and takes none: a colour box stays its colour under a background, and an
+    /// A figure paints no ground of its own and takes none: a rectangle stays its colour under a background, and an
     /// ellipse's corner, outside its oval, stays clear.
-    func testAFigureTakesNoBackground() throws {
-        try onUIThread {
+    func testAFigureTakesNoBackground() {
+        onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
-                    ColorBox(Color("#0000FF")).background(Color("#FF0000")).width(40).height(40)
+                    Rectangle().fill(Color("#0000FF")).background(Color("#FF0000")).width(40).height(40)
                     Ellipse().fill(Color("#0000FF")).background(Color("#FF0000")).width(40).height(40)
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)
             }
-            let box = try XCTUnwrap(host.views(WinUIColorBoxView.self).first)
-            let oval = try XCTUnwrap(host.views(WinUIPathView.self).first)
-            XCTAssertEqual(box.pixels(at: [(20, 20)]), [blue], "the box's own colour")
+            let figures = host.views(WinUIPathView.self)
+            XCTAssertEqual(figures.count, 2)
+            guard figures.count == 2 else { return }
+            let (box, oval) = (figures[0], figures[1])
+            XCTAssertEqual(box.pixels(at: [(20, 20)]), [blue], "the rectangle's own colour")
             XCTAssertEqual(oval.pixels(at: [(1, 1), (20, 20)]), [0, blue], "clear outside the oval")
         }
     }

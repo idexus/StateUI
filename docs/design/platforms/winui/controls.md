@@ -63,7 +63,43 @@ changing writes them again in their place.
 A button drawn in the application's colours keeps them under the pointer and
 pressed: its fill is drawn a little fainter each time, as WinUI's own buttons
 are, its words and outline as they are - WinUI's template otherwise draws
-those states in the platform's colours.
+those states in the platform's colours. They are written as a control's
+accent is ([a control's accent](#a-controls-accent)): its template reads
+them as it is applied, so a colour that comes or goes has its theme read
+again, and a button whose style leaves - the colours, the outline, the room -
+stands as one that never wore it. The room the tree says nothing of is the
+template's own padding, not none.
+
+A role draws where the tree draws nothing of its own ([a button's
+role](../../host/layout.md#a-buttons-role)): the main action wears WinUI's
+`AccentButtonStyle`, and a destructive one's words the theme's critical
+colour, as a destructive entry's ([a destructive entry](pages.md#a-destructive-entry)):
+brushes in a merged dictionary of the button's, which a colour the tree
+writes into its own resources stands over.
+
+## A button's menu
+
+A button is made as it opens its menu, WinUI having a control for each: a
+DropDownButton where its click opens it, its arrow pointing down; a Button
+with a flyout where the click opens it and no arrow shows - an icon alone
+opening a menu; a SplitButton where the click is its own, its arrow part
+opening the menu; and a Button holding it as its context menu where the menu
+is held. Windows takes press and hold for the mouse's other button, so a held
+menu opens as any context menu does: a touch or a pen held still, the mouse's
+other button, or the keyboard's menu key. A DropDownButton's arrow is a part of
+its template, which nothing public hides, so showing the arrow or not makes the
+button anew.
+
+## An oval button
+
+A button's corners round by one radius each, so its own border draws no oval.
+An oval button's background is a brush of the host's, a
+`XamlCompositionBrushBase` whose surface the compositor draws: an ellipse of
+the button's size, filled and outlined inside its edge, the button's own
+border none. It is written where the button's look is, in the lightweight
+resources under the pointer and pressed too, its fill fainter there, and
+again at each size the button takes. Its fill is one colour - a gradient's
+first.
 
 ## Runs of words
 
@@ -96,7 +132,10 @@ A Switch is WinUI's `ToggleSwitch`, a CheckBox its `CheckBox` and a
 RadioButton its `RadioButton`, one view kind in the host: whether it is on,
 whether it can be turned, and the turn the user makes, each telling it through
 the same callback. A check box has no caption, so it takes no caption's room:
-the box alone, where WinUI's own style would reserve the width of words.
+the box alone, where WinUI's own style would reserve the width of words. A
+switch has no words of its own either: WinUI's "On" and "Off" beside its
+track are left empty, and the room its style keeps for them with them; the
+words beside a switch are a view of the page's.
 
 Which of a radio button's set loses its check is the host's. A set is named
 across the window, or is the buttons beside one that names none, and only
@@ -211,8 +250,8 @@ an activity ring, a stepper, a search box and a day's or a time's picker
 draw stay met, `☑️` in the matrix.
 
 Assistive technology meets an element only through its automation peer, and
-WinUI gives a shape, a colour box and a canvas none. A shape and a colour box
-stand in a figure of the relay's, and a canvas is a panel of the relay's;
+WinUI gives a shape and a canvas none. A shape stands in a figure of the
+relay's, and a canvas is a panel of the relay's;
 each answers with the figure's peer - an image, pressed as a tap while the
 view listens for taps - met by itself only while it has a name or says it is
 met, so a decoration says nothing to a screen reader. A menu's item and a
@@ -351,21 +390,38 @@ it drawn at the size it shows at in its room, in its own proportions, at the
 display's scale - again only for more pixels, so a size in motion does not
 draw it every frame - and WinUI's `Stretch` fits it, fills with it, or
 centres it. A centred SVG gives the image its declared size, in the middle
-of the room. A stretched picture keeps no proportions, and WinUI draws a
-stretched SVG at its room's size, where the SVG would keep its own and leave
-bands: the relay hands WinUI the picture from memory with its proportions
-let go (`preserveAspectRatio="none"`).
+of the room. A stretched picture keeps no proportions and is drawn at its
+room's size: WinUI fits an SVG into its pixels in the SVG's own proportions,
+leaving bands, so the relay reads a copy of it that has given them up - and
+its own size with them (`preserveAspectRatio="none"`, width and height
+`100%`) - written once among the system's temporary files.
 
-Every SVG is read from memory, once for each file, the pixels it is drawn at
-and whether its proportions are let go, and that one source is shared by
-every picture, button and icon showing it in every window: a picture drawn
-at a new size takes the source for that size. Read by its file's address,
-WinUI draws an SVG short and cut under a turn with an uneven scale - a
-wheel's side cards - and read from memory once for every picture, the
-Gallery's pictures in a second window held some five gigabytes of surfaces;
-shared, a second window adds megabytes. The relay keeps each source weakly,
-with its file, which is how a picture's file is read back. WinUI's renderer
-draws no SVG text: a picture's words are outlines.
+Every SVG is read by its file's address, once for each file, the pixels it
+is drawn at and whether its proportions are let go, and that one source is
+shared by every picture, button and icon showing it in every window: a
+picture drawn at a new size takes the source for that size. An SVG read from
+memory costs a surface as large as the window - the Gallery's Home held some
+2.7 GB that way, 64 MB read by address - and drawn at its size, an SVG read
+by address stands whole under a turn with an uneven scale, a wheel's side
+cards (`testEverySVGIsReadByItsFilesAddress`). The relay keeps each source
+weakly, with its file, which is how a picture's file is read back. WinUI's
+renderer draws no SVG text: a picture's words are outlines.
+
+## Icons
+
+A picture crosses to the relay as lines: the files a name stands for, an
+icon as `glyph:` and its code point in Segoe Fluent Icons
+(`Icon.fluentGlyph`), or bytes as `bytes:` and their base64
+(`WinUIPictures`). An icon is a `FontIcon` - a `FontIconSource` on a title
+bar - drawn in the theme's font for symbols and coloured by what holds it,
+as WinUI's own icons are.
+
+An Image stands its picture in a border: an `Image` for a file or bytes, or
+for an icon a `FontIcon` in a `Viewbox`, which fits it to the room by the
+aspect; an icon's own size is the font's, 20 DIPs. Assistive technology
+meets the image or the icon, and what it was told of one stays with the
+other as the picture turns. Bytes are read from memory into a bitmap, whose
+size is known once WinUI has read it, as a file's is.
 
 ## A web view
 
@@ -398,3 +454,28 @@ links resolve against, else at one the backend gives it, under
 `https://page.stateui.invalid/`, which no network answers. WebView2 leaves a
 `data:` address unfinished, sent to it or taken back to - `NavigateToString`
 goes to one - and every navigation after it.
+
+## A text style
+
+Words in a text style stand at the size and weight of WinUI's text block style
+for it: `.display` TitleLarge's 40, `.title` Title's 28, `.subtitle`
+Subtitle's 20 and `.headline` BodyStrong's 14, each semibold, `.body` Body's
+14 and `.caption` Caption's 12. The largest is the largest title WinUI's own
+pages head with, in proportion to the other platforms' largest (26 to 34);
+WinUI's Display, 68, stands twice that. The size and weight the tree gives stand over the
+style's (`TextLook.standing`), and every element showing words - a text
+block, a button, a field - takes them as its `FontSize` and `FontWeight`; a
+weight of none clears the element's own back to the theme's.
+
+## A picker's segments and radio buttons
+
+A picker offered as segments is WinUI's `SelectorBar`, an item for each
+value; one offered as radio buttons is its `RadioButtons`. The relay makes
+the one the picker's presentation asks for (`stateui_winui_picker_make`'s
+kind) and tells its choice through the same callback as a `ComboBox`'s; the
+program's choice is written as every program write is, so it is never told
+back - and `RadioButtons` applies it a turn after the write, once its buttons
+stand, and tells it as a change, so a change to the choice standing is no
+user's. Only a `ComboBox` has a list to open, a placeholder and choices across
+it.
+

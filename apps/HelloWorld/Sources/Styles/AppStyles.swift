@@ -22,7 +22,7 @@ enum AppStyles {
                 .textColor(.white)
                 .background(Color(light: Color("#512BD4"), dark: Color("#7B5CE0")))
                 .fontSize(14)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .shape(.roundedRectangle(10))
                 .padding(horizontal: 16, vertical: 11)
         }

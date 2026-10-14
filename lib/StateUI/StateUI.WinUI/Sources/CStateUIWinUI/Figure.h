@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // A figure: the relay's panel for what WinUI gives no automation peer - a
-// shape's Path, a colour box - and the peer assistive technology meets it and a
-// canvas by.
+// shape's Path - and the peer assistive technology meets it and a canvas by.
 // Design: docs/design/platforms/winui/controls.md#what-assistive-technology-meets
 #pragma once
 

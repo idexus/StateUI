@@ -19,3 +19,15 @@ public struct StyleKey<Target: StyleTarget>: Hashable, Sendable {
         self.name = name
     }
 }
+
+extension StyleKey {
+    /// The platform's own look: a control asking for it wears no style of the application's sheet - neither the one
+    /// every control of its type wears nor one filed under a name.
+    ///
+    ///     Button("Delete").style(.platform).role(.destructive)
+    public static var platform: Self { Self(platformStyleName) }
+}
+
+/// The name the platform's own look is asked for by: none, which no style is filed under.
+let platformStyleName = ""
+

@@ -6,15 +6,19 @@ Button
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   icon
   iconPosition
+  keyboardShortcut
   lineBreak
   lineWidth
+  role
   shape
   stroke
   text
   textCase
   textColor
+  textStyle
   tracking
   clicked()
   pressed()
@@ -24,23 +28,31 @@ Canvas
   dragged()
   pressed()
   released()
+Capsule
+  contentMode
+  dash
+  dashPhase
+  fill
+  geometryTransform
+  lineCap
+  lineWidth
+  stroke
 CheckBox
   isOn
   tint
   toggled()
-ColorBox
-  background
-  color
-  cornerRadius
 DatePicker
   date
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   maximumDate
   minimumDate
   textColor
+  textStyle
   dateChanged()
+Divider
 Ellipse
   contentMode
   dash
@@ -48,9 +60,7 @@ Ellipse
   fill
   geometryTransform
   lineCap
-  lineJoin
   lineWidth
-  miterLimit
   stroke
 Grid
   columnSpacing
@@ -79,12 +89,9 @@ Line
   contentMode
   dash
   dashPhase
-  fill
   geometryTransform
   lineCap
-  lineJoin
   lineWidth
-  miterLimit
   stroke
   x1
   x2
@@ -121,12 +128,14 @@ Picker
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   horizontalTextAlignment
   isOpen
   options
   placeholder
   selectedIndex
   textColor
+  textStyle
   tint
   closed()
   opened()
@@ -163,10 +172,12 @@ RadioButton
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   isOn
   text
   textCase
   textColor
+  textStyle
   toggled()
 Rectangle
   contentMode
@@ -195,6 +206,7 @@ SearchField
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   horizontalTextAlignment
   inputPurpose
   isReadOnly
@@ -207,6 +219,7 @@ SearchField
   text
   textCase
   textColor
+  textStyle
   submitted()
   textChanged()
 Slider
@@ -217,6 +230,7 @@ Slider
   pressed()
   released()
   valueChanged()
+Spacer
 SplitView
   showsSidebar
   sidebarBackground
@@ -235,6 +249,7 @@ TextEditor
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   growsWithText
   horizontalTextAlignment
   inputPurpose
@@ -248,6 +263,7 @@ TextEditor
   text
   textCase
   textColor
+  textStyle
   textChanged()
 TextField
   background
@@ -255,6 +271,7 @@ TextField
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   horizontalTextAlignment
   inputPurpose
   isPassword
@@ -268,13 +285,16 @@ TextField
   text
   textCase
   textColor
+  textStyle
   submitted()
   textChanged()
 TimePicker
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   textColor
+  textStyle
   time
   timeChanged()
 VStack
@@ -310,6 +330,7 @@ WebView
   isAccessibilityHidden
   isEnabled
   isVisible
+  keysTaken
   letsInputThrough
   margin
   maximumHeight
@@ -331,6 +352,7 @@ WebView
   swipeDirection
   swipeThreshold
   tapCount
+  tooltip
   translationX
   translationY
   verticalAlignment
@@ -344,6 +366,7 @@ WebView
   filesDropped()
   frameChanged()
   isFocusedChanged()
+  keyPressed()
   panUpdated()
   pinchUpdated()
   pointerEntered()

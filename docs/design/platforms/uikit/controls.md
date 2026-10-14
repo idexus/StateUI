@@ -55,6 +55,12 @@ a colour or a brush - fills its whole box, that room included, painted
 before the words: they are the label's own drawing, which a layer laid over
 it would cover.
 
+A label resized draws its words again, whatever its height comes to. UIKit
+does not always do so when the width alone changes - a label measured for
+its new width first, its line count the same - and its old drawing then
+stands stretched to the new box, its lines breaking anew only when something
+else has it drawn, half a second later in a sidebar's slide.
+
 ## The user's text size
 
 Words follow the user's text size (`isFontAutoScalingEnabled`, on unless
@@ -70,7 +76,32 @@ UIKit's own font, which follows the user always - `–` in the matrix.
 
 A Button is UIKit's button, its configuration what the tree says: its words
 and their look, an icon beside them, the box behind them - its colour, its
-outline and its shape, an oval a capsule - and the room inside it.
+outline and its shape - an oval a face of the button's own, the
+configuration's background view, which its corners cannot draw - and the room
+inside it. Its corners are rounded as it is laid out, by the host layer's
+radius (`BoxArithmetic`): a capsule's half its shorter side. UIKit's own
+capsule makes a button showing a picture alone a circle as wide as it is high,
+whatever room the tree gives it beside the picture. What the tree leaves
+unsaid is a plain configuration's own: an empty fill there is the tint's, so a
+button whose style leaves takes the plain box again, never an empty one.
+
+A role draws where the tree draws nothing of its own ([a button's
+role](../../host/layout.md#a-buttons-role)): the main action wears UIKit's
+filled configuration, the tint behind white words - the configuration worn
+again with all the button set on the other - and a destructive one's words
+the system's red, as UIKit's alerts and menus mark one. UIKit's own role,
+which the button carries too, sets the main action's words semibold.
+
+## A button's menu
+
+A button whose tap opens its menu shows the menu as its primary action and
+wears an arrow pointing down after its words, inside its padding - a mark,
+the whole button taking the tap. UIKit's own menu indicator points up and
+down, which says a choice of values, as a picker's. UIKit draws no split button,
+so a split button keeps its tap and holds an arrow of its own: a `UIButton`
+with a chevron at its trailing edge, the whole height, set off by a line,
+opening the menu with a tap; the button keeps room for it inside its padding,
+so its words never run under the arrow, which takes the words' colour.
 
 ## Accessibility
 
@@ -95,3 +126,28 @@ forward or a load again the program asks for carries that as its cause; a
 page still coming, which WebKit reloads without asking, is asked for again.
 A script's value is written as JSON and answers as text by the host layer's
 rule, as on every host ([the host layer's web rules](../../host/web.md)).
+
+## A text style
+
+Words in a text style stand in UIKit's font for it at the platform's own text
+size (`UIFont.preferredFont(forTextStyle:compatibleWith:)` at `.large`):
+`.display` the large title, `.title` the first title, `.subtitle` the second,
+`.headline`, `.body` and `.caption` the first caption. The size and weight
+the tree gives stand over the style's (`TextLook.standing`); the font is the
+system's at the size and weight that stand, or the named family with that
+weight in its descriptor. Where the words scale, the style's own metrics grow
+them with the user's text size (`UIFontMetrics(forTextStyle:)`), so a title
+grows as UIKit grows its titles; words with no style grow as the body does.
+A day's and a time's picker draw their words in UIKit's own font and take no
+style.
+
+## Selectable words
+
+A `UILabel` selects nothing, so a Text whose words the user can select stands
+in UIKit's text view instead (`UIKitSelectableTextView`): read only, not
+scrolling, its container's padding gone, showing the words, runs, alignment
+and breaks a label shows (`UIKitLabelWords`, through `UIKitLabel`), and
+measured as the label is, wherever down its room the words stand. The
+registration makes one or the other by the value the text is made with,
+and another value makes the text anew. A disabled one selects nothing.
+

@@ -97,13 +97,13 @@ struct SemanticsSample: SampleContent, ExampleContent {
             VStack {
                 Text("Drawn large")
                     .fontSize(20)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
 
                 // Read as a heading: somewhere a user jumping through the page
                 // can land.
                 Text("A heading, and drawn the same")
                     .fontSize(20)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
                     .accessibilityHeading(.h1)
             }
             .spacing(4)
@@ -138,7 +138,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     VStack {
                         Text("Walked")
                             .fontSize(15)
-                            .fontAttributes(.bold)
+                            .fontWeight(.bold)
 
                         Text("Both lines are read")
                             .fontSize(12)
@@ -155,7 +155,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     VStack {
                         Text("Skipped")
                             .fontSize(15)
-                            .fontAttributes(.bold)
+                            .fontWeight(.bold)
 
                         Text("Neither line is read")
                             .fontSize(12)
@@ -171,7 +171,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
 
             // A rule is decoration: a stop that would waste the user's time.
-            ColorBox(Palette.outline)
+            Rectangle(Palette.outline)
                 .height(1)
                 .isAccessibilityHidden(true)
         }

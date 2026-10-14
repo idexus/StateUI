@@ -18,6 +18,20 @@ extension GTKDriver {
         if property == .isFontAutoScalingEnabled { return scalesHolds(element, view) }
         if element.type == .textSpan { return spanHolds(property, element) }
         if let assisted = accessibilityHolds(property, element, view) { return assisted }
+        if property == .keyboardShortcut, let shortcut = (view as? GTKButtonView)?.shortcutForTesting {
+            return .some(GTKKeys.shortcut(keyval: shortcut.keyval, modifiers: shortcut.modifiers)?.propValue)
+        }
+        if property == .role, let button = view as? GTKButtonView {
+            // As the classes libadwaita draws a role by; the way out wears none, its Escape its only mark.
+            let has = { (name: String) in gtk_widget_has_css_class(button.widget, name) != 0 }
+            if has("suggested-action") { return .some(ButtonRole.primary.propValue) }
+            if has("destructive-action") { return .some(ButtonRole.destructive.propValue) }
+            let shortcut = button.shortcutForTesting.flatMap { GTKKeys.shortcut(keyval: $0.keyval, modifiers: $0.modifiers) }
+            return .some(shortcut == KeyboardShortcut(.escape, modifiers: []) ? ButtonRole.cancel.propValue : HostValue.nothing)
+        }
+        if property == .tooltip {
+            return .some(view.flatMap { gtk_widget_get_tooltip_text($0.widget) }.map { String(cString: $0) }?.propValue)
+        }
         if property == .title, let tab = tabTitle(of: element) { return .some(tab.propValue) }
         switch view {
         case let field as GTKTextFieldView: return fieldHolds(property, field)
@@ -32,6 +46,8 @@ extension GTKDriver {
         case let tabs as GTKTabView where property == .selectedTab: return Self.shownTab(of: tabs).map(\.propValue)
         case _ where property == .showsNavigationBar && element.type == .page:
             return (try? frame(of: element)).map { (adw_toolbar_view_get_reveal_top_bars($0.widget.opaque) != 0).propValue }
+        case _ where property == .showsTitle && element.type == .page:
+            return (try? frame(of: element)).map { (gtk_widget_get_visible($0.titleWidget) != 0).propValue }
         case _ where property == .showsBackButton && element.type == .page:
             return (try? frame(of: element)).map { (adw_header_bar_get_show_back_button($0.header.opaque) != 0).propValue }
         case let layout as GTKLayoutView: return layoutHolds(property, layout)
@@ -184,11 +200,11 @@ extension GTKDriver {
         case .textColor: return Self.color(of: widget).propValue
         case .fontSize: return (Double(pango_font_description_get_size(description)) / Double(PANGO_SCALE)).propValue
         case .fontFamily: return .some(pango_font_description_get_family(description).map { Name(String(cString: $0)).propValue })
+        case .fontWeight:
+            return FontWeight(nearest: Double(pango_font_description_get_weight(description).rawValue)).propValue
         case .fontAttributes:
-            var attributes: FontAttributes = []
-            if pango_font_description_get_weight(description).rawValue >= PANGO_WEIGHT_BOLD.rawValue { attributes.insert(.bold) }
-            if pango_font_description_get_style(description) == PANGO_STYLE_ITALIC { attributes.insert(.italic) }
-            return attributes.propValue
+            let italic = pango_font_description_get_style(description) == PANGO_STYLE_ITALIC
+            return (italic ? FontAttributes.italic : .none).propValue
         default: return nil
         }
     }
@@ -203,8 +219,9 @@ extension GTKDriver {
             return .some(gtk_label_get_wrap(label) != 0 && lines > 0 ? Int(lines).propValue : nil)
         case .horizontalTextAlignment: return Self.alignment(gtk_label_get_xalign(label)).propValue
         case .verticalTextAlignment: return Self.alignment(gtk_label_get_yalign(label)).propValue
+        case .isSelectable: return (gtk_label_get_selectable(label) != 0).propValue
         case .tracking: return run.holds(property) ?? 0.0.propValue
-        case .lineHeight, .textDecorations, .fontSize, .fontAttributes, .fontFamily, .textColor:
+        case .lineHeight, .textDecorations, .fontSize, .fontWeight, .fontAttributes, .fontFamily, .textColor:
             if let held = run.holds(property) { return held }
             return wordsHolds(property, widget)
         default: return nil
@@ -405,13 +422,11 @@ private struct PangoRun {
             return first(PANGO_ATTR_FAMILY).map {
                 Name(String(cString: $0.withMemoryRebound(to: PangoAttrString.self, capacity: 1) { $0.pointee.value })).propValue
             }
+        case .fontWeight:
+            return first(PANGO_ATTR_WEIGHT).map { FontWeight(nearest: Double(Self.number($0))).propValue }
         case .fontAttributes:
-            var attributes: FontAttributes = []
-            if let weight = first(PANGO_ATTR_WEIGHT).map(Self.number), weight >= Int32(PANGO_WEIGHT_BOLD.rawValue) {
-                attributes.insert(.bold)
-            }
-            if first(PANGO_ATTR_STYLE).map(Self.number) == Int32(PANGO_STYLE_ITALIC.rawValue) { attributes.insert(.italic) }
-            return first(PANGO_ATTR_WEIGHT) == nil && first(PANGO_ATTR_STYLE) == nil ? nil : attributes.propValue
+            let italic = first(PANGO_ATTR_STYLE).map(Self.number) == Int32(PANGO_STYLE_ITALIC.rawValue)
+            return first(PANGO_ATTR_STYLE) == nil ? nil : (italic ? FontAttributes.italic : .none).propValue
         case .textColor: return color(PANGO_ATTR_FOREGROUND, PANGO_ATTR_FOREGROUND_ALPHA)?.propValue
         case .background: return color(PANGO_ATTR_BACKGROUND, PANGO_ATTR_BACKGROUND_ALPHA).map { Material.color($0).propValue }
         case .tracking:

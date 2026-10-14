@@ -10,12 +10,8 @@ import UIKit
 /// look as attributes, standing across and down its room within its padding as the tree says.
 /// Design: docs/design/platforms/uikit/controls.md#a-labels-words
 @MainActor
-final class UIKitTextView: UILabel {
-    private var words = ""
-    private var look = TextLook()
-    private var runs: [TextRun]?
-    private var horizontal = TextAlignment.start
-    private var breaking = LineBreak.wordWrap
+final class UIKitTextView: UILabel, UIKitLabel {
+    var shown = UIKitLabelWords()
 
     /// The room between the label's edge and its words.
     private(set) var padding = UIEdgeInsets.zero
@@ -23,16 +19,21 @@ final class UIKitTextView: UILabel {
     /// What fills the label's box behind its words: a colour, or a brush; nothing where the tree says none.
     private var fill = UIKitBrush()
 
-    /// Where the words stand down the room; a `UILabel` of itself stands them in its middle.
-    private var verticalAlignment = TextAlignment.start {
-        didSet { if verticalAlignment != oldValue { setNeedsDisplay() } }
-    }
+    /// The words' sizes as measured for each width offered; the size measured without one holds in any wider room.
+    /// Design: docs/design/host/layout.md#words-in-a-wider-room
+    private let measurements = MeasurementCache(holdsWhenWider: true)
+    private(set) var nativeMeasurementCountForTesting = 0
+
+    /// The size the words were last drawn for: UIKit does not always draw a label again when its width alone
+    /// changes, and its old drawing stands stretched to the new box until something else has it drawn.
+    /// Design: docs/design/platforms/uikit/controls.md#a-labels-words
+    private var drawnSize: CGSize?
 
     init() {
         super.init(frame: .zero)
         font = .stateUI(TextLook())
         numberOfLines = 0
-        registerForTraitChanges([UITraitPreferredContentSizeCategory.self]) { (label: Self, _) in label.show() }
+        registerForTraitChanges([UITraitPreferredContentSizeCategory.self]) { (label: Self, _) in label.showWords() }
     }
 
     @available(*, unavailable)
@@ -40,71 +41,39 @@ final class UIKitTextView: UILabel {
         fatalError("UIKitTextView is made in code")
     }
 
-    /// The words, in their case.
-    func setText(_ text: String) {
-        words = text
-        show()
-    }
-
-    /// Changes the words' look; what it leaves unsaid is the system's.
-    func setLook(_ change: (inout TextLook) -> Void) {
-        change(&look)
-        show()
-    }
-
-    /// The spans' runs in place of the words; nil for the words again.
-    func setRuns(_ runs: [TextRun]?) {
-        self.runs = runs
-        show()
-    }
-
     /// The room between the label's edge and its words.
     func setPadding(_ insets: Insets?) {
         padding = insets.map(UIEdgeInsets.init) ?? .zero
+        measurements.invalidate()
         invalidateIntrinsicContentSize()
         setNeedsDisplay()
     }
 
-    /// Where the words stand across and down the room: a line's start and end follow the view's own direction.
-    func setAlignment(horizontal: TextAlignment, vertical: TextAlignment) {
-        self.horizontal = horizontal
-        verticalAlignment = vertical
-        show()
-    }
-
-    /// How the words break, and how many lines show (`LineBreak.lines`).
-    func setLines(breaking: LineBreak, maximum: Int?) {
-        self.breaking = breaking
-        numberOfLines = breaking.lines(maximum: maximum) ?? 0
-        show()
-    }
-
     /// Writes the words - or the runs - with their look, then how the whole stands and breaks.
-    private func show() {
-        let standing = look.attributes(color: .label, in: traitCollection)
-        let shown = NSMutableAttributedString()
-        for run in runs ?? [TextRun(text: words, look: TextLook())] {
-            shown.append(NSAttributedString(
-                string: run.text, attributes: run.look.over(look).attributes(color: .label, in: traitCollection)))
-        }
-        attributedText = shown.length > 0 ? shown : NSAttributedString(string: "", attributes: standing)
-        textAlignment = switch horizontal {
-        case .start: .natural
-        case .center: .center
-        case .end: effectiveUserInterfaceLayoutDirection == .rightToLeft ? .left : .right
-        }
-        lineBreakMode = switch breaking {
-        case .noWrap: .byClipping
-        case .wordWrap: .byWordWrapping
-        case .characterWrap: .byCharWrapping
-        case .headTruncation: .byTruncatingHead
-        case .tailTruncation: .byTruncatingTail
-        case .middleTruncation: .byTruncatingMiddle
-        }
+    func showWords() {
+        attributedText = shown.attributed(in: traitCollection)
+        textAlignment = shown.alignment(in: effectiveUserInterfaceLayoutDirection)
+        lineBreakMode = shown.lineBreakMode
+        numberOfLines = shown.lines
+        measurements.invalidate()
         invalidateIntrinsicContentSize()
+        setNeedsDisplay()
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
+        // A layout measures with no bound below: the words' size for the width offered, kept.
+        guard size.height >= .greatestFiniteMagnitude else { return fitted(size) }
+        let width = size.width < .greatestFiniteMagnitude ? Double(size.width) : nil
+        let measured = measurements.size(offering: width) {
+            let words = self.fitted(size)
+            return LayoutSize(width: words.width, height: words.height)
+        }
+        return CGSize(width: measured.width, height: measured.height)
+    }
+
+    /// The words' size within `size`, the padding around them.
+    private func fitted(_ size: CGSize) -> CGSize {
+        nativeMeasurementCountForTesting += 1
         let room = CGSize(
             width: size.width.isFinite ? max(0, size.width - padding.left - padding.right) : size.width,
             height: size.height.isFinite ? max(0, size.height - padding.top - padding.bottom) : size.height)
@@ -127,7 +96,13 @@ final class UIKitTextView: UILabel {
         setNeedsDisplay()
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if bounds.size != drawnSize { setNeedsDisplay() }
+    }
+
     override func draw(_ rect: CGRect) {
+        drawnSize = bounds.size
         if let context = UIGraphicsGetCurrentContext(), let painted = fill.layer(over: bounds, reusing: nil) {
             painted.render(in: context)
         }
@@ -137,7 +112,7 @@ final class UIKitTextView: UILabel {
     override func drawText(in rect: CGRect) {
         let room = rect.inset(by: padding)
         let fitted = textRect(forBounds: room, limitedToNumberOfLines: numberOfLines)
-        let top: CGFloat = switch verticalAlignment {
+        let top: CGFloat = switch shown.vertical {
         case .start: room.minY
         case .center: room.minY + (room.height - fitted.height) / 2
         case .end: room.maxY - fitted.height

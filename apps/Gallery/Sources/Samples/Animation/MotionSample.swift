@@ -66,8 +66,7 @@ struct MotionSample: SampleContent, ExampleContent {
     /// One panel, either travelling at the chosen law or arriving at once.
     private func panel(travels: Bool) -> some View {
         // `.motion` is per view: the chosen law, or `.none` to arrive at once.
-        ColorBox()
-            .color(warm ? Palette.accent : Palette.brand)
+        Rectangle(warm ? Palette.accent : Palette.brand)
             .width(wide ? 300 : 120)
             .height(wide ? 110 : 56)
             .cornerRadius(wide ? 28 : 8)
@@ -76,10 +75,10 @@ struct MotionSample: SampleContent, ExampleContent {
     }
 
     /// The same panel with a RULE: everything travels except its size, which
-    /// `.size` takes to be its width, its height and its corner radius.
+    /// `.size` takes to be its width and its height - its corners are its
+    /// shape, and travel with the rest.
     private func sized() -> some View {
-        ColorBox()
-            .color(warm ? Palette.accent : Palette.brand)
+        Rectangle(warm ? Palette.accent : Palette.brand)
             .width(wide ? 300 : 120)
             .height(wide ? 110 : 56)
             .cornerRadius(wide ? 28 : 8)

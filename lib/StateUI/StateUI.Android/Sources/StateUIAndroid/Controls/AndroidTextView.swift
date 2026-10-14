@@ -20,8 +20,17 @@ final class AndroidTextView: AndroidTextualView {
 
     override var wordsRoom: Rect? { bound }
 
+    /// A `TextView` in the theme's primary words colour, which its own text appearance leaves secondary.
+    /// Design: docs/design/platforms/android/controls.md#a-labels-words
     init() {
-        super.init { _ in Java.new(JavaAPI.textView, JavaAPI.newTextView, .object(AndroidRenderer.context)) }
+        super.init { _ in
+            let label = Java.new(JavaAPI.textView, JavaAPI.newTextView, .object(AndroidRenderer.context))
+            Java.frame {
+                let words = Java.callStaticObject(JavaAPI.views, JavaAPI.primaryWords, .object(AndroidRenderer.context))
+                Java.call(label.reference, JavaAPI.setTextColors, .object(words))
+            }
+            return label
+        }
     }
 
     /// The words as runs, each spanning its own part of them with how its look differs from the label's.
@@ -57,17 +66,17 @@ final class AndroidTextView: AndroidTextualView {
             spans.append(Java.new(JavaAPI.foregroundSpan, JavaAPI.newForegroundSpan, .int(argb)))
         }
         let runScales = look.scales && scales
-        if let size = look.size ?? (runScales == scales ? nil : labelPoints) {
+        let (ownSize, weight) = look.standing(styleSize: look.style?.androidSize, styleWeight: look.style?.androidWeight)
+        if let size = ownSize ?? (runScales == scales ? nil : labelPoints) {
             let held = runScales ? Int32((size * points.scaled).rounded()) : Int32(size.rounded())
             spans.append(Java.new(JavaAPI.sizeSpan, JavaAPI.newSizeSpan, .int(held), .bool(!runScales)))
         }
-        let style = look.attributes.rawValue & 3
-        if let family = look.family, let face = Java.callStaticObject(
-            JavaAPI.typeface, JavaAPI.createTypeface, .object(Java.string(family)), .int(style)) {
+        let italic = look.attributes.contains(.italic)
+        if let face = AndroidTypeface.local(family: look.family, weight: weight, italic: italic) {
             spans.append(Java.new(JavaAPI.typefaceSpan, JavaAPI.newTypefaceSpan, .object(face)))
         }
-        if style != 0 {
-            spans.append(Java.new(JavaAPI.styleSpan, JavaAPI.newStyleSpan, .int(style)))
+        if weight == nil, italic {
+            spans.append(Java.new(JavaAPI.styleSpan, JavaAPI.newStyleSpan, .int(AndroidTypeface.italicStyle)))
         }
         if let argb = look.background.flatMap(Self.argb) {
             spans.append(Java.new(JavaAPI.backgroundSpan, JavaAPI.newBackgroundSpan, .int(argb)))
@@ -91,6 +100,12 @@ final class AndroidTextView: AndroidTextualView {
     /// The height of a line, as a multiple of the font's own; nil for the font's.
     func setLineHeight(_ multiple: Double?) {
         Java.call(reference, JavaAPI.setLineSpacing, .float(0), .float(Float(multiple.flatMap { $0 > 0 ? $0 : nil } ?? 1)))
+    }
+
+    /// Whether the user can select the words and copy them.
+    var isSelectable: Bool {
+        get { Java.callBool(reference, JavaAPI.isTextSelectable) }
+        set { Java.call(reference, JavaAPI.setTextIsSelectable, .bool(newValue)) }
     }
 
     /// A line under the words, or through them.

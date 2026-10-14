@@ -25,10 +25,12 @@ var products: [Product] = [
 ]
 
 var targets: [Target] = [
+    // The application's Swift, which every host compiles, holds each file to the modules it imports itself: a member
+    // Foundation adds, written where no import of it stands, fails on every host, not on the Web alone.
     .target(
         name: "GalleryUI",
         dependencies: [.product(name: "StateUI", package: "StateUIRoot")],
-        path: "Sources", swiftSettings: settings),
+        path: "Sources", swiftSettings: settings + [.enableUpcomingFeature("MemberImportVisibility")]),
     .testTarget(
         name: "GalleryTests",
         dependencies: ["GalleryUI", .product(name: "StateUI", package: "StateUIRoot")],

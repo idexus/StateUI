@@ -16,4 +16,8 @@
 
     /// Performs an act the application called, on the interface its handler changed.
     func perform(_ call: HostActCall)
+
+    /// Puts the keyboard on `element` as the focus act does (`ActToolkit.focus`): a field the keyboard is handed on
+    /// to (`NextField`).
+    func focus(_ element: MountedElement)
 }

@@ -73,6 +73,14 @@ line where the tree says nothing. A pointer taking hold of it is its press,
 and its release comes once - lifted, called off, or gone off the button; a
 slider's are heard the same.
 
+## A button's menu
+
+A button opening a menu says so (`aria-haspopup`) and wears a `▾` after its
+words. The browser draws no split button, so a split button is one `<button>`
+whose last part, its arrow - a `▾` set off by a line - opens the menu; a click
+there is the arrow's, never the button's. A right click or a finger held opens
+the menu too, as on any view offering one.
+
 ## A field
 
 A TextField is an `<input>`, a SearchField a search `<input>` and a TextEditor
@@ -225,3 +233,37 @@ siblings. Its frame is its room still: the box the browser lays out reaches
 past it (`WebDOMView.reach`), and the place read back, as everything measured
 of the picture, is that box less its reach - read whole, the picture stood two
 pixels up and left of its room, its own top left corner clipped away.
+
+## A text style
+
+A browser has no type ramp of its own, so the Web's is the host's: `.display`
+at 34 CSS pixels, `.title` at 26, `.subtitle` at 20, each semibold, `.headline`
+at the page's 15 in semibold, `.body` at the page's 15 and `.caption` at 12.
+The size and weight the tree gives stand over the style's
+(`TextLook.standing`); a size stands in rems where the words scale, so the
+browser's text size grows it, and a weight is CSS's `font-weight` number.
+
+## Selectable words
+
+A browser lets the user select any words, a platform's label none: a Text
+stands `user-select: none` unless the tree makes its words selectable, and
+`text` then.
+
+## A picker's segments and radio buttons
+
+A browser has no segmented control, so a picker offered as segments is the
+Web's own: a `radiogroup` of buttons, each a `radio` in ARIA, standing in one
+rounded frame with the one chosen in the accent (`.stateui-segment`). One
+offered as radio buttons is a column of the browser's radio buttons in their
+labels (`.stateui-radio`). Both are `WebChoiceGroupView`, which checks the
+tree's choice without an event and tells the user's.
+
+## Icons
+
+A browser ships no icons, so the Web's are StateUI's own: one stroke drawn
+on a 24-point square for each `Icon` (`WebIcons`), worn as a CSS mask over
+the colour of the words around it, so an icon takes a button's or a bar's
+colour and the theme's. Its `<img>` shows a drawing of nothing 24 points
+square, which gives the icon its size. A picture from bytes is a `data:` URL,
+its type read from its own first bytes (`WebPictureData`).
+

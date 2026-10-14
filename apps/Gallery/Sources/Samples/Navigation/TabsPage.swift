@@ -23,7 +23,7 @@ struct TabsPage: View {
 
                 Text("A TabView of two")
                     .fontSize(26)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
 
                 Text("Push a page, change tabs, come back: it is still on top.")
                     .fontSize(13)

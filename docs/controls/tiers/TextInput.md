@@ -13,7 +13,7 @@ TextField($email)
     .maximumLength(80)
 ```
 
-Wears: [View](View.md)
+Wears: [View](View.md) · [FocusElement](FocusElement.md)
 
 Worn by: [SearchField](../SearchField.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md)
 

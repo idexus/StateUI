@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// `SearchFieldContract` on a host: the user's search is heard as typed and as submitted; the program's words are
-/// shown and heard by nobody.
+/// shown and heard by nobody; a return saying Next hands the keyboard on.
 @_spi(Host) public enum SearchFieldTests: ConformanceFamily {
     public static let name = "SearchField"
 
@@ -55,6 +55,7 @@
                 s.expect(heard.values, ["s", "s"], "each submission once")
             },
             Aspects.holds(SearchFieldContract.submitLabel, on: "SearchField", .search, then: .go),
+            TextFieldTests.handsTheKeyboardOn(from: "SearchField", saying: SearchFieldContract.submitLabel),
         ]
     }
 }

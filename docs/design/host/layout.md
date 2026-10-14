@@ -68,6 +68,18 @@ arranges the parent again, and one that is only drawn - an opacity, a colour,
 a toggle's state, a transform, what assistive technology meets - measures
 nothing.
 
+## Words in a wider room
+
+Words measured with no width offered stand on their natural lines, and in
+any room at least that wide they stand the same: no line breaks earlier. So
+a label's kept answers hold its natural size for every wider width
+(`MeasurementCache(holdsWhenWider:)`), and only a narrower room asks its
+toolkit again. A page whose width changes every frame - a sidebar sliding
+beside it - measures its words once, not once a frame at each new width:
+measuring large words is the costliest call a toolkit makes, and a frame that
+makes it at every width stalls. A view that is not words keeps one answer a
+width.
+
 ## A child measured
 
 A layout measures a child the same way on every host: at its stated width,
@@ -92,6 +104,33 @@ across, its slot's rule. A vertical stack offers each child its own width, so
 wrapped text is measured at the width it will have; a horizontal stack offers
 none, because the width is what the children decide. A hidden child takes no
 room and no spacing.
+
+## A spacer
+
+A child that grows - a `Spacer` - takes the room the stack's shown children
+leave along its axis: the stack's length less their natural lengths, their
+margins and the spacing, shared alike among the spacers, none where nothing is
+left. It measures as no room of its own, so a stack sized by its children
+leaves it none, and its least and most lengths still bound it. A spacer that
+states its length along the axis grows no more: it is a child of that length
+like any other (`LayoutValues.grows(along:)`). Every host stands an empty view
+there; the arithmetic is the host layer's, so the room a spacer takes is the
+same on every host. The Web hands its stacks to the browser, so there the same
+rule is written as CSS: a spacer is a flex item growing from nothing
+(`flex: 1 1 0`), which the browser shares alike.
+
+## A divider in a stack
+
+A `Divider` is a view: the toolkit's own line, across its stack and as thick
+as the toolkit draws one. A line between a menu's entries is a
+`MenuSeparator`, one of the entries a menu draws itself
+(`NodeType.viewlessTypes`), so it never gets a view.
+
+Each host draws the line its toolkit offers: AppKit's separator box, a hairline
+in UIKit's separator colour, the Android theme's list divider, WinUI's divider
+stroke, GTK's separator - turned to run down a row - and the document's rule
+on the Web. A hairline is one pixel, a third of a point on a dense screen, so
+a test reads its thickness unrounded.
 
 ## Grids
 
@@ -178,7 +217,10 @@ control that draws its picture at its own edge and its words in the middle is
 given, on each side, half of what the picture, the gap and the words leave
 (`ButtonArithmetic.sideRoom`) as more padding where it is placed; it is not the
 button's, so it is left out of what the button measures. A picture above or
-below its words is already in the middle with them.
+below its words is already in the middle with them. Beside its words a
+picture stands at its own size, smaller where the button is, never stretched
+over them; alone it fills the room as its aspect says - but an icon, which
+stands at its own size alone too, as the platform's icon buttons do.
 
 ## A row beside a page
 
@@ -189,13 +231,22 @@ page's with the row's height added.
 
 ## A box
 
-A box - a layout's, a button's, a colour box's, a rectangle's - is read the
+A box - a layout's, a button's, a rectangle's - is read the
 same way on every host (`BoxArithmetic`): its corners' radii stand clockwise
 from the top left, the order toolkits take them in, each never below nothing;
-a corner rounds no more than half the side it rounds; its outline is a
-rectangle where the tree asks none, a rounded one's radius never below
-nothing; and the outline is drawn one wide where the tree gives it a colour
-and no width, and not at all without a colour. A fill is read as the tree
+a corner is round and no more than half the shorter side, so a radius past
+half a wide box's height rounds its ends whole - a capsule, not an oval; its
+outline is a rectangle where the tree asks none, a rounded one's radius never
+below nothing; a capsule's corners round by half the shorter side at whatever
+size the box takes - one radius for a box's size, `BoxArithmetic.cornerRadius`,
+which a host asks again as the size changes - and an oval is an oval on every
+host, never a capsule, though a toolkit's control rounds only corners; a
+`Capsule` shape is a rectangle drawn with `BoxArithmetic.capsule`, a radius
+past any room - in a display's pixels too - which the rectangle's own drawing
+fits to half its shorter side, so its ends round whole at every size without
+a host asking its size; and the
+outline is drawn one wide where the tree gives it a colour and no width, and
+not at all without a colour. A fill is read as the tree
 sends it (`HostBrush`): a bare colour is one colour, a gradient's stops stand
 between 0 and 1, a gradient given no geometry runs top to bottom, or from
 the middle to the edge, and a gradient of one stop is its colour, of none
@@ -204,6 +255,17 @@ colour takes the brush's first.
 A fill a host draws for a control itself - a button's background, an accent -
 keeps nine tenths of its opacity under the pointer and eight tenths pressed
 (`PressedFill`), as the platforms' own controls fade theirs.
+
+## A button's role
+
+A button's role draws as each platform draws it where the tree draws nothing
+of its own (`ButtonRoleLook`): the main action filled in the platform's
+accent, an action that destroys something with its words in the platform's
+colour for one - the red its alerts and menus give such an action - and the
+way out, like a button of no role, as the platform's plain one. A fill or a
+colour of words the tree states, by a style or on the button, wins: a role's
+look is the platform's, and an application drawing its own buttons draws
+their roles too (`Style<Button>(role:)`).
 
 ## The safe area
 
@@ -243,6 +305,21 @@ stretched over the whole of it. A picture on a bar or a tab stands at the
 platform's icon height, as wide as its shape makes it, whatever size it is
 drawn at elsewhere (`PictureArithmetic.glyph`): the platform draws its own
 pictures there at that size, and one at its file's size stands far taller.
+
+## An icon
+
+A picture is a file, an icon or bytes (`HostPicture`), read alike on every
+host from the member's value. An icon is one of a closed set (`Icon`), each
+drawn as its platform draws its own: an SF Symbol on AppKit and UIKit
+(`Icon.sfSymbol`, which both share), Material Symbols on Android - its own
+applications' icons, which the host brings, as Android ships none - a glyph
+of Segoe Fluent Icons on WinUI, the theme's symbolic icon on GTK, and on the
+Web a drawing of StateUI's own. An icon takes the colour of what it stands in:
+standing alone, the platform's primary words colour, as a label beside it;
+in a button, its words' - the platform's, its role's, the tree's own; in a
+bar, the bar's. Where nothing gives it room, it stands at the platform's
+own icon size. Bytes are a picture encoded whole - a
+PNG, a JPEG - read where they are given, at one pixel a point.
 
 ## A shape's own geometry
 

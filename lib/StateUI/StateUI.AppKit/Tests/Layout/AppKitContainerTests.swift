@@ -321,7 +321,7 @@ final class AppKitContainerTests: XCTestCase {
         for (container, origin) in expected {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
-            var box = HostPatch(id: .manual("box"), type: .colorBox)
+            var box = HostPatch(id: .manual("box"), type: .rectangle)
             box.properties = [.width: .number(44), .height: .number(20)]
             var layout = HostPatch(id: .manual("layout"), type: container)
             layout.children = .arranged([box])
@@ -664,11 +664,11 @@ final class AppKitContainerTests: XCTestCase {
     func testALayoutThatClipsCutsWhatItHoldsToItsShape() throws {
         let renderer = AppKitRenderer.running {
             VStack {
-                ZStack { ColorBox(Color("#FF0000")) }.shape(.roundedRectangle(16)).clipsContent(true)
+                ZStack { Rectangle().fill(Color("#FF0000")) }.shape(.roundedRectangle(16)).clipsContent(true)
                     .width(100).height(100)
-                ZStack { ColorBox(Color("#FF0000")) }.shape(.ellipse).clipsContent(true).width(100).height(60)
-                ZStack { ColorBox(Color("#FF0000")) }.clipsContent(true).width(100).height(40)
-                ZStack { ColorBox(Color("#FF0000")) }.shape(.roundedRectangle(16)).width(100).height(40)
+                ZStack { Rectangle().fill(Color("#FF0000")) }.shape(.ellipse).clipsContent(true).width(100).height(60)
+                ZStack { Rectangle().fill(Color("#FF0000")) }.clipsContent(true).width(100).height(40)
+                ZStack { Rectangle().fill(Color("#FF0000")) }.shape(.roundedRectangle(16)).width(100).height(40)
             }
         }
         defer { renderer.closeForTesting() }
@@ -776,7 +776,7 @@ final class AppKitContainerTests: XCTestCase {
     // MARK: - Helpers
 
     private func box(_ id: String, _ properties: [Prop: HostValue]) -> HostPatch {
-        var box = HostPatch(id: .manual(id), type: .colorBox)
+        var box = HostPatch(id: .manual(id), type: .rectangle)
         box.properties = properties
         return box
     }

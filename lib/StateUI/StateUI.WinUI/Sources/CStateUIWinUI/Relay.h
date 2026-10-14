@@ -47,6 +47,19 @@ namespace stateui {
     /// WinUI's own brush for a brush as the host hands it; null for none.
     xaml::Media::Brush brush(StateUIBrush const &brush);
 
+    /// A brush painting an oval `width` by `height`: `fill`'s first colour keeping `share` of its opacity inside,
+    /// `stroke`'s first colour `lineWidth` wide inside its edge.
+    xaml::Media::Brush oval(StateUIBrush const &fill, StateUIBrush const &stroke, double lineWidth, double share,
+                            double width, double height);
+
+    /// WinUI's accelerator for `key` and `modifiers` - a VirtualKey and VirtualKeyModifiers - which invokes its
+    /// owner while its window is in front; one giving way to typing invokes nothing while a field the user types
+    /// into holds the keyboard.
+    xaml::Input::KeyboardAccelerator accelerator(int32_t key, int32_t modifiers, bool givesWayToTyping);
+
+    /// The words WinUI shows beside an item for an accelerator - `Ctrl+Shift+S`.
+    winrt::hstring acceleratorText(int32_t key, int32_t modifiers);
+
     /// Whether the view numbered `view` listens for taps; and a press assistive technology made on it, told as
     /// a tap.
     bool hearsTaps(int64_t view);
@@ -81,7 +94,7 @@ namespace stateui {
     /// other element.
     controls::TextBlock captionOf(IInspectable const &element);
 
-    /// What assistive technology meets of an element: a label's words, or the element itself.
+    /// What assistive technology meets of an element: a label's words, a picture's image or icon, or the element itself.
     xaml::UIElement metOf(IInspectable const &element);
 
     /// The first of the files `names` - UTF-8, each ended by a line feed - that the application's pictures hold;
@@ -92,17 +105,23 @@ namespace stateui {
     /// proportions.
     xaml::Media::ImageSource pictureSource(std::wstring const &file);
 
-    /// An icon showing the first of the files `names` lists that the pictures hold, read from its address, which
-    /// says the file again (`iconFile`); null for none.
-    controls::ImageIcon pictureIcon(char const *names);
+    /// The name of what `names` asks to show - the file found, an icon's `glyph:`, the bytes' count and sum - by
+    /// which a picture shown is told from another (`iconFile`, `sourceFile`, `shownName`); empty for none.
+    std::wstring pictureName(char const *names);
 
-    /// An image showing that picture at its own size - an SVG at the size it declares, which WinUI takes for
-    /// thousands of pixels - read from its address; null for none.
-    controls::Image pictureImage(char const *names);
+    /// An icon showing what `names` asks: a FontIcon's glyph, or the first of the files the pictures hold, or
+    /// bytes, as an ImageIcon (`iconFile`); null for none.
+    controls::IconElement pictureIcon(char const *names);
 
-    /// An icon source showing the first of the files `names` lists that the pictures hold, read from its address,
-    /// which says the file again (`sourceFile`); null for none.
+    /// What shows that picture at its own size: a FontIcon for an icon, an image for a file - an SVG at the size
+    /// it declares, which WinUI takes for thousands of pixels - or bytes (`shownName`); null for none.
+    xaml::FrameworkElement pictureImage(char const *names);
+
+    /// An icon source showing what `names` asks, as `pictureIcon` does (`sourceFile`); null for none.
     controls::IconSource pictureIconSource(char const *names);
+
+    /// The name of the picture `pictureImage` or `pictureIcon` made `shown` with; empty for any other.
+    std::wstring shownName(xaml::UIElement const &shown);
 
     /// The file an icon source `pictureIconSource` made shows; empty for any other, and for none.
     std::wstring sourceFile(controls::IconSource const &icon);
@@ -129,9 +148,6 @@ namespace stateui {
 
     /// WinUI's input scope the relay numbers `scope` (`WinUIInputScope`): the on-screen keyboard a field brings up.
     xaml::Input::InputScope inputScope(int32_t scope);
-
-    /// Whether the window whose root is `root` presents sheets over its pages.
-    bool showsSheets(controls::Grid const &root);
 
     /// Keeps what the screen reader was told, which a test reads back (`stateui_winui_announced`).
     void announced(std::string const &words);

@@ -20,14 +20,14 @@ changes:
 
 ```swift
 struct Total: View {
-    @State private var weight: FontAttributes = .bold
+    @State private var weight: FontWeight = .bold
     @State private var alignment: Alignment = .center
     @State private var fade = 1.0
 
     var body: some View {
         VStack {
-            Text("Total").fontAttributes(.bold)
-            Text("Total").fontAttributes($weight)
+            Text("Total").fontWeight(.bold)
+            Text("Total").fontWeight($weight)
             Text("Total").horizontalAlignment($alignment)
             Text("Total").opacity($fade)
         }
@@ -57,7 +57,7 @@ like.
   the native control is made again, its focus, caret and selection go with
   it, and nothing moves from one look to the other.
 - It cannot say no. Removing `.bold()` is the only way back, while
-  `.fontAttributes(.none)` is one more value of the same member.
+  `.fontWeight(.regular)` is one more value of the same member.
 - It is a second spelling of one member. The contract, the hosts, the
   conformance cases and the [platform matrix](../platform-contract.md) all
   speak member by member; one member reached by several modifiers, each
@@ -224,7 +224,7 @@ run before it, waits, or runs beside it
 ```swift
 @MainActor
 final class Document {
-    let saving = SharedGate(.ignoreWhileRunning)
+    let saving = Gatekeeper(.ignoreWhileRunning)
 
     func save() async {}
     func autosave() { Task(gate: saving) { await self.save() } }
@@ -254,9 +254,9 @@ struct Toolbar: View {
   awaiting handler without a gate does not compile, and the message says what
   to write; a handler with no `await` takes none.
 - **One gate for everything that touches one thing.** A policy given as the
-  gate is the handler's own; a `SharedGate` is shared by every handler and
+  gate is the handler's own; a `Gatekeeper` is shared by every handler and
   task written with it - two buttons, an autosave - and its `isBusy` is a
-  state a body reads. The type says which kind a gate is: only a shared gate
+  state a body reads. The type says which kind a gate is: only a gatekeeper
   has `isBusy`, and only it takes a task.
 - **One spelling.** Work passes a gate written `gate:` wherever it starts, an
   event or the application's code.

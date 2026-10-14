@@ -38,9 +38,7 @@ extension WinUIRegistrations {
                 StepperContract.value, StepperContract.minimum, StepperContract.maximum, StepperContract.step,
             ]) { view, values in
                 view.apply(
-                    value: values.written(
-                        StepperContract.value, within: [StepperContract.minimum, StepperContract.maximum],
-                        standing: view.value),
+                    value: values.shownStep(standing: view.value),
                     minimum: values[StepperContract.minimum] ?? 0,
                     maximum: values[StepperContract.maximum] ?? 100,
                     step: values[StepperContract.step] ?? 1)

@@ -57,10 +57,13 @@ extension ControlDictionary {
             .spacing(8)
             """#),
 
-        (ColorBoxContract.self, #"""
-            ColorBox(.cornflowerBlue)
-                .cornerRadius(8)
-                .height(40)
+        (ButtonMenuContract.self, #"""
+            @State var sent = ""
+
+            Button("Share").menu {
+                MenuItem("Mail").onClicked { sent = "mail" }
+                MenuItem("Message").onClicked { sent = "message" }
+            }
             """#),
 
         (ContextMenuContract.self, #"""
@@ -84,10 +87,15 @@ extension ControlDictionary {
             """#),
 
         (EllipseContract.self, #"""
-            Ellipse()
-                .fill(.tomato)
+            Ellipse(.tomato)
                 .width(48)
                 .height(48)
+            """#),
+
+        (CapsuleContract.self, #"""
+            Capsule(.teal)
+                .width(120)
+                .height(32)
             """#),
 
         (GridContract.self, #"""
@@ -135,6 +143,8 @@ extension ControlDictionary {
             Text("A description long enough to wrap onto a second line, and stop there.")
                 .maximumLines(2)
                 .lineBreak(.tailTruncation)
+                .verticalTextAlignment(.center)
+                .height(80)
             """#),
 
         (LineContract.self, #"""
@@ -191,11 +201,19 @@ extension ControlDictionary {
             """#),
 
         (DividerContract.self, #"""
+            VStack {
+                Text("Inbox")
+                Divider()
+                Text("Archive")
+            }
+            """#),
+
+        (MenuSeparatorContract.self, #"""
             Text("Report.pdf")
                 .contextMenu {
                     MenuItem("Open")
                     MenuItem("Rename")
-                    Divider()
+                    MenuSeparator()
                     MenuItem("Delete").isDestructive(true)
                 }
             """#),
@@ -258,11 +276,11 @@ extension ControlDictionary {
             """#),
 
         (PickerContract.self, #"""
-            @State var size = 1
+            @State var size: String? = "Medium"
 
-            Picker(["Small", "Medium", "Large"])
-                .selectedIndex($size)
+            Picker(["Small", "Medium", "Large"], selection: $size)
                 .placeholder("Size")
+                .presentation(.segmented)
             """#),
 
         (MarkerContract.self, #"""
@@ -358,6 +376,14 @@ extension ControlDictionary {
                 }
             """#),
 
+        (SpacerContract.self, #"""
+            HStack {
+                Text("Draft")
+                Spacer()
+                Button("Send")
+            }
+            """#),
+
         (SliderContract.self, #"""
             @State var volume = 50.0
 
@@ -380,7 +406,7 @@ extension ControlDictionary {
             Text()
                 .spans {
                     TextSpan("let ").textColor(.purple)
-                    TextSpan("count").fontAttributes(.bold)
+                    TextSpan("count").fontWeight(.bold)
                     TextSpan(" = 0")
                 }
             """#),
@@ -540,7 +566,7 @@ extension ControlDictionary {
 
         (ZStackContract.self, #"""
             ZStack {
-                ColorBox(.cornflowerBlue)
+                Rectangle().fill(.cornflowerBlue)
                 Text("Bottom right")
                     .horizontalAlignment(.end)
                     .verticalAlignment(.end)
@@ -550,7 +576,7 @@ extension ControlDictionary {
 
         // MARK: - Tiers
 
-        (PropertyContainerContract.self, #"""
+        (AutomationElementContract.self, #"""
             Button("Save")
                 .accessibilityIdentifier("editor.save")
             """#),
@@ -601,12 +627,27 @@ extension ControlDictionary {
             """#),
 
         (ShapeContract.self, #"""
-            Rectangle()
-                .fill(.gold)
+            Line()
+                .x2(120)
                 .stroke(.black)
                 .lineWidth(2)
                 .dash([4, 2])
+                .lineCap(.round)
+            """#),
+
+        (FilledShapeContract.self, #"""
+            Ellipse()
+                .fill(.gold)
+                .stroke(.black)
+                .width(40)
                 .height(40)
+            """#),
+
+        (CorneredShapeContract.self, #"""
+            Polygon([Point(0, 40), Point(20, 0), Point(40, 40)])
+                .stroke(.black)
+                .lineWidth(6)
+                .lineJoin(.round)
             """#),
 
         (TextualElementContract.self, #"""
@@ -617,20 +658,24 @@ extension ControlDictionary {
         (TextStyleElementContract.self, #"""
             Text("Overdue")
                 .textColor(.firebrick)
+            """#),
+
+        (TrackingElementContract.self, #"""
+            Button("Continue")
                 .tracking(1.5)
             """#),
 
         (FontElementContract.self, #"""
             Text("Total")
                 .fontSize(20)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
             """#),
 
         (TextAlignmentElementContract.self, #"""
-            Text("In the middle")
-                .horizontalTextAlignment(.center)
-                .verticalTextAlignment(.center)
-                .height(80)
+            @State var amount = ""
+
+            TextField($amount)
+                .horizontalTextAlignment(.end)
             """#),
 
         (LineHeightElementContract.self, #"""
@@ -670,6 +715,24 @@ extension ControlDictionary {
 
             Switch($on)
                 .tint(.green)
+            """#),
+
+        (FocusElementContract.self, #"""
+            @State var editing = false
+
+            TextField("Name")
+                .isFocused($editing)
+            """#),
+
+        (KeyboardElementContract.self, #"""
+            @State var row = 0
+
+            VStack {
+                Text("Row \(row)")
+            }
+            .onKeyPressed(.upArrow, .downArrow) { key in
+                row += key == .upArrow ? -1 : 1
+            }
             """#),
 
         (BarElementContract.self, #"""

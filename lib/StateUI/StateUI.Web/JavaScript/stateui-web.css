@@ -242,6 +242,8 @@ body {
   position: fixed;
   inset: auto;
   margin: 0;
+  /* Each entry as tall as it is: WebKit spreads a grid held to a max-height over its rows. */
+  grid-auto-rows: min-content;
   min-width: 200px;
   max-width: min(320px, calc(100vw - 16px));
   max-height: calc(100dvh - 16px);
@@ -272,7 +274,10 @@ body {
 .stateui-menu > button:disabled { opacity: 0.45; cursor: default; }
 .stateui-menu > button[data-destructive] { color: #d92d20; }
 .stateui-menu > button[aria-haspopup]::after { content: "›"; margin-inline-start: auto; opacity: 0.6; }
+.stateui-menu > button kbd { margin-inline-start: auto; padding-inline-start: 24px; font: inherit; opacity: 0.6; }
 .stateui-menu > button img { width: 18px; height: 18px; }
+.stateui-menu > [role="menuitemcheckbox"]::before { content: ""; width: 1em; text-align: center; }
+.stateui-menu > [role="menuitemcheckbox"][aria-checked="true"]::before { content: "✓"; }
 .stateui-menu > [role="separator"] { height: 1px; margin: 5px 6px; background: var(--stateui-line); }
 
 /* A sheet: the browser's modal dialog, a card in the middle over a shade, from the bottom where the page is narrow;
@@ -297,9 +302,11 @@ body {
 }
 @keyframes stateui-rise { from { transform: translateY(24px); opacity: 0; } }
 
-/* A question for the user: the browser's modal dialog, its words over its buttons. */
+/* A question for the user: the browser's modal dialog, its words over its buttons, as tall as they are - WebKit
+   stretches a modal dialog with no height of its own over the window, and its rows and buttons with it. */
 .stateui-question {
   width: min(400px, calc(100vw - 32px));
+  height: fit-content;
   padding: 24px;
   border: 0;
   border-radius: 16px;
@@ -307,7 +314,7 @@ body {
   color: var(--stateui-text);
   box-shadow: var(--stateui-raised-shadow);
 }
-.stateui-question[open] { display: grid; gap: 12px; animation: stateui-rise 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.stateui-question[open] { display: grid; align-content: start; gap: 12px; animation: stateui-rise 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .stateui-question::backdrop { background: var(--stateui-shade); }
 .stateui-question h2 { margin: 0; font-size: 18px; font-weight: 650; }
 .stateui-question p { margin: 0; color: var(--stateui-muted); line-height: 1.45; }
@@ -315,7 +322,7 @@ body {
   font: inherit; width: 100%; min-height: 40px; padding: 8px 12px; border-radius: var(--stateui-radius);
   border: 1px solid var(--stateui-line-strong); background: var(--stateui-surface); color: var(--stateui-text);
 }
-.stateui-question-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.stateui-question-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 4px; }
 .stateui-question[data-kind="choice"] .stateui-question-buttons { flex-direction: column; align-items: stretch; }
 .stateui-question button {
   font: inherit; font-weight: 600; min-height: 40px; padding: 0 18px; border-radius: 999px; cursor: pointer;
@@ -415,6 +422,9 @@ body {
 .stateui-frame > iframe { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border: 0; }
 .stateui-color-box { display: grid; }
 
+/* A divider in a stack: the document's rule, one line thick both ways - the stack stretches it across. */
+.stateui-divider { margin: 0; border: 0; min-width: 1px; min-height: 1px; background: var(--stateui-line-strong); }
+
 /* A canvas: its drawing on a surface filling the room its layout gives it, the surface taking no room of its own. */
 .stateui-canvas { position: relative; min-width: 0; min-height: 0; overflow: hidden; touch-action: none; }
 .stateui-canvas > canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
@@ -480,12 +490,28 @@ body {
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
+/* A button's role: the main action in the accent, a destructive one in the colour a question's has. */
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-button[data-role="primary"] {
+  background: var(--stateui-accent); border-color: transparent; color: white;
+}
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-button[data-role="destructive"] { color: #d92d20; }
 /* A button's picture stands beside its words, the two in its middle; alone, it fills the button. */
 .stateui-button { display: inline-flex; align-items: center; justify-content: center; }
 .stateui-button > span { min-width: 0; }
 .stateui-button > img { contain: none; }
 .stateui-button[data-alone] > span { display: none; }
 .stateui-button[data-alone] > img { width: 100%; height: 100%; }
+/* A button opening its menu says so, as a menu button does. */
+.stateui-button[data-menu="opens"]:not([data-bare])::after { content: "▾"; margin-inline-start: 6px; }
+.stateui-split-arrow {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  margin-inline-start: 10px;
+  padding-inline-start: 8px;
+  border-inline-start: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+}
+.stateui-split-arrow::before { content: "▾"; }
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) button:hover { filter: brightness(0.97); border-color: color-mix(in srgb, currentColor 30%, transparent); }
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) button:active { filter: brightness(0.92); }
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) button:disabled { opacity: 0.45; cursor: default; filter: none; }
@@ -555,6 +581,14 @@ body {
 .stateui-toggle[aria-disabled] { cursor: default; }
 .stateui-radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; -webkit-user-select: none; }
 .stateui-radio[aria-disabled] { opacity: 0.45; cursor: default; }
+/* A picker's segments: a row of buttons in one rounded frame, the one chosen in the accent; its radio buttons, a
+   column. */
+.stateui-segments { display: inline-flex; border: 1px solid var(--stateui-line-strong); border-radius: 8px; overflow: hidden; }
+.stateui-segment { appearance: none; border: 0; margin: 0; padding: 6px 14px; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.stateui-segment + .stateui-segment { border-inline-start: 1px solid var(--stateui-line-strong); }
+.stateui-segment[aria-checked="true"] { background: var(--stateui-accent); color: #ffffff; }
+.stateui-segment:disabled { opacity: 0.45; cursor: default; }
+.stateui-radios { display: inline-flex; flex-direction: column; gap: 6px; }
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) select {
   appearance: none;
   -webkit-appearance: none;

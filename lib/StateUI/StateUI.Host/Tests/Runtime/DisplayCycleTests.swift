@@ -21,6 +21,7 @@ final class DisplayCycleTests: XCTestCase {
             stateChannels: channels,
             describedMotion: described,
             layoutMotion: LayoutMotion(animator: animator, now: { 0 }, reducesMotion: { false }),
+            sidebarSlide: SidebarSlide(animator: animator, now: { 0 }, reducesMotion: { false }),
             reducesMotion: { false })
         let presenter = CountingPresenter()
         cycle.presenter = presenter
@@ -81,6 +82,20 @@ final class DisplayCycleTests: XCTestCase {
         presenter.wantsFrames = false
         runtime.displayCycle.frame(now: 600)
         XCTAssertFalse(runtime.clock.held)
+    }
+
+    /// The display's frames come stamped on its clock and a turn between them on the runtime's own: a frame stamped
+    /// before the last turn's time moves nothing back.
+    @MainActor
+    func testTheCyclesTimeNeverRunsBack() {
+        let runtime = HostRuntime.still()
+        var seen: [Double] = []
+        runtime.sidebarSlide.slide(1, from: 0, shown: true) { shown, _ in seen.append(shown) }
+        runtime.displayCycle.frame(now: 100)
+        runtime.displayCycle.drain(now: 130)
+        runtime.displayCycle.frame(now: 116)
+
+        XCTAssertEqual(seen, seen.sorted(), "nothing slides back")
     }
 
     /// A handler's write in the turn a state's travel lands sends the travel on: the frame lands the travel and

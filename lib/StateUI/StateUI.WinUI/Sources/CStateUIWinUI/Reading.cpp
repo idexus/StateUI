@@ -101,11 +101,14 @@ namespace {
         return std::nullopt;
     }
 
-    /// What a button shows: how its words break, and its picture - the file, where it stands beside the words
-    /// (StateUI's IconPosition), how far from them, and how it fills the room alone (WinUI's Stretch).
+    /// What a button shows: how its words break, its picture - the file, where it stands beside the words
+    /// (StateUI's IconPosition), how far from them, and how it fills the room alone (WinUI's Stretch) - whether it is
+    /// a DropDownButton, showing the arrow its menu opens by, and whether its click opens a flyout.
     std::optional<std::string> button(IInspectable const &object, std::string_view what) {
         auto shown = object.try_as<controls::Button>();
         if (!shown) return std::nullopt;
+        if (what == "showsMenuArrow") return flag(object.try_as<controls::DropDownButton>() != nullptr);
+        if (what == "opensFlyout") return flag(shown.Flyout() != nullptr);
         if (what == "captionBottom") {
             auto caption = captionOf(object);
             if (!caption) return std::string();
@@ -124,8 +127,7 @@ namespace {
         if (both)
             for (auto const &child : both.Children())
                 if (auto found = child.try_as<controls::Viewbox>()) box = found;
-        auto picture = box ? box.Child().try_as<controls::Image>() : nullptr;
-        if (what == "icon") return picture ? winrt::to_string(sourceFile(picture.Source())) : "";
+        if (what == "icon") return box && box.Child() ? winrt::to_string(shownName(box.Child())) : "";
         if (what == "stretch") return box ? number(static_cast<int32_t>(box.Stretch())) : "";
         if (what == "iconSpacing") return both ? number(both.Spacing()) : "";
         if (what == "iconPosition") {
@@ -139,6 +141,7 @@ namespace {
 
     /// What a text block alone holds; its runs' words, each ended by the unit separator but the last.
     std::optional<std::string> block(controls::TextBlock const &text, std::string_view what) {
+        if (what == "selectable") return flag(text.IsTextSelectionEnabled());
         if (what == "runs") {
             std::string words;
             bool first = true;
@@ -301,6 +304,12 @@ namespace {
             if (held == "wordsShown") return flag(button.LabelPosition() != controls::CommandBarLabelPosition::Collapsed);
             if (held == "destructive") return flag(isDestructive(button, L"AppBarButtonForeground"));
             if (held == "identifier") return narrow(xaml::Automation::AutomationProperties::GetAutomationId(button));
+            if (held == "shortcut") {
+                if (button.KeyboardAccelerators().Size() == 0) return std::string();
+                auto first = button.KeyboardAccelerators().GetAt(0);
+                return std::to_string(static_cast<int32_t>(first.Key())) + ","
+                    + std::to_string(static_cast<int32_t>(first.Modifiers()));
+            }
             return std::nullopt;
         }
         return std::nullopt;
@@ -341,6 +350,9 @@ namespace {
         if (what == "tint") return tint(object);
         if (what == "scope") return scope(object);
         if (auto bar = object.try_as<controls::TitleBar>()) return chrome(bar, what);
+        if (auto split = object.try_as<controls::SplitView>(); split && what == "paneLength") {
+            return number(split.OpenPaneLength());
+        }
         if (auto split = object.try_as<controls::SplitView>(); split && what == "paneOpen") {
             return flag(split.IsPaneOpen());
         }
@@ -382,7 +394,13 @@ namespace {
             if (!box) return std::string();
             return painted(box, what.substr(4));
         }
-        if (auto image = object.try_as<controls::Image>()) {
+        if (auto frame = object.try_as<controls::Border>(); frame && frame.Child().try_as<controls::Viewbox>()) {
+            if (what == "stretch") return number(static_cast<int32_t>(frame.Child().as<controls::Viewbox>().Stretch()));
+            if (what == "source") return winrt::to_string(shownName(frame.Child().as<controls::Viewbox>().Child()));
+        }
+        auto image = object.try_as<controls::Image>();
+        if (auto frame = object.try_as<controls::Border>(); !image && frame) image = frame.Child().try_as<controls::Image>();
+        if (image) {
             if (what == "stretch") return number(static_cast<int32_t>(image.Stretch()));
             if (what == "source") return narrow(winrt::unbox_value_or<winrt::hstring>(image.Tag(), L""));
         }

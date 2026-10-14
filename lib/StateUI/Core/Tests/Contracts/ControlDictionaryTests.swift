@@ -178,6 +178,29 @@ final class ControlDictionaryTests: XCTestCase {
         XCTAssertGreaterThan(read, 10, "the verdicts read almost nothing")
     }
 
+    /// An element a host's fresh verdicts name in one family of a tier it wears stands in every fresh family of the
+    /// tiers it wears: an element joining a tier family since its verdicts were written is missing from them, which
+    /// no cell shows stale until the family's revision is raised.
+    func testAnElementStandsInEveryFreshFamilyOfItsTiers() throws {
+        let revisions = ControlDictionary.revisions
+        for (host, folder) in ControlDictionary.folders.sorted(by: { $0.key < $1.key }) {
+            var named: [String: Set<String>] = [:]
+            for file in try ControlDictionary.verdicts(folder) {
+                if HostVerdict.isStale(file.text, family: file.family, on: folder, in: revisions) { continue }
+                named[file.family, default: []].formUnion(file.verdicts.map { $0.element })
+            }
+            for element in LibraryContracts.elements {
+                let name = element.name
+                let families = element.worn.map { $0.name }.filter { $0 != name && named[$0] != nil }
+                let standsIn = families.filter { named[$0]?.contains(name) == true }
+                if standsIn.isEmpty { continue }
+                let missing = families.filter { named[$0]?.contains(name) != true }
+                XCTAssertEqual(missing, [], "\(host): \(name) stands in \(standsIn.joined(separator: ", ")) "
+                    + "but not in these, whose revision was not raised as it joined them")
+            }
+        }
+    }
+
     /// A mark is the run's alone, each verdict its own sign: proven ✅, never –, failed ❌, partly ◐, the driver
     /// unable ·, waiting ⏸, and nothing for a cell a run gave no verdict or said is not realized; a verdict a run of
     /// other sources gave is ⌛, with no note: what it said is no verdict of these sources.

@@ -42,7 +42,7 @@ struct MovingPanel: View {
 
     var body: some View {
         VStack {
-            ColorBox(.cornflowerBlue)
+            Rectangle(.cornflowerBlue)
                 .width(expanded ? 280 : 120)
                 .cornerRadius(expanded ? 28 : 8)
                 .motion(.spring(response: 280))
@@ -81,7 +81,8 @@ merged over that plan.
 | `.color` | every color-valued property |
 | `.width` | requested, minimum and maximum width, and the widths a layout gives its children |
 | `.height` | requested, minimum and maximum height, and the heights a layout gives its children |
-| `.size` | width and height plus outline and corner sizes |
+| `.size` | width and height |
+| `.shape` | corner radius and outline width |
 | `.place` | host-arranged position and translation |
 | `.transform` | scale, rotation, and anchors |
 | `.spacing` | padding, margin, stack spacing, and grid spacing |
@@ -123,8 +124,10 @@ The built-in `Walked` values are `Double`, `Point`, `Rect`, `Insets`, and
 made from get/set closures do not own the complete storage image a host needs
 to walk; move the complete state instead.
 
-A move starts as it is sent and returns at once; its `arrived()` awaits the
-outcome:
+A move is a write of the destination, under a law of its choosing: the state
+reads the new value at once and every body that read it is built again, as
+after an assignment, while the host walks the value there on the move's law.
+It returns at once; its `arrived()` awaits the outcome:
 
 ```swift quote
 let arrived = try await $opacity.journey.move(

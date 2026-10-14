@@ -22,8 +22,8 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-  # GTK 4 and libadwaita as Ubuntu 24.04 has them, the versions the host is
-  # written against, drawn on Xvfb with a session bus. A label is measured in
+  # GTK 4 and libadwaita as Ubuntu 26.04 has them - GTK 4.20 the least the
+  # host is written against - drawn on Xvfb with a session bus. A label is measured in
   # the font GNOME gives this platform's desktop, so a verdict that reads a
   # frame holds here as it was written. gdk-pixbuf reads an SVG only through
   # librsvg's loader, which an install without recommends leaves out. The web
@@ -35,7 +35,7 @@ jobs:
     name: GTK
     runs-on: ubuntu-24.04
     timeout-minutes: 60
-    container: swift:6.4.0-noble
+    container: swift:6.4.0-resolute
     steps:
       - uses: actions/checkout@v7.0.1
 

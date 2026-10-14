@@ -53,7 +53,7 @@ private struct Driver: View {
 /// A view holding a driven state of its OWN, so a test can watch the wrapper a second
 /// render builds take over the storage the first one made.
 private struct Holder: View {
-    @State var choice = 0
+    @State var choice = false
     let seen: Seen
 
     /// Something to build the holder with a second time: a view built with
@@ -63,7 +63,7 @@ private struct Holder: View {
     var body: some View {
         seen.numbers.append($choice.number ?? -1)
         seen.values.append(choice)
-        return Picker(["a", "b", "c", "d"]).selectedIndex($choice)
+        return Switch($choice)
     }
 }
 
@@ -76,7 +76,7 @@ private struct Plain: View {
 /// What each render of the holder saw. A class, for the same reason.
 private final class Seen {
     var numbers: [Int32] = []
-    var values: [Int] = []
+    var values: [Bool] = []
 }
 
 /// Counts builds. A class, so the walk that collects state boxes leaves it
@@ -428,10 +428,10 @@ final class CarriedStateTests: XCTestCase {
         let seen = Seen()
 
         renders.render(Holder(seen: seen).node)
-        moved(seen.numbers[0], to: 3)
+        moved(seen.numbers[0], to: 1)
         renders.render(Holder(seen: seen, tag: 2).node)
 
-        XCTAssertEqual(seen.values, [0, 3])
+        XCTAssertEqual(seen.values, [false, true])
     }
 
     /// A BINDING IS BORROWED, AND THE STATE WALK STOPS AT IT: the state behind
@@ -525,7 +525,7 @@ final class CarriedStateTests: XCTestCase {
         let across = State(wrappedValue: 0.0)
         let down = State(wrappedValue: 0.0)
 
-        let node = ColorBox(Color("#000000")).panX(across.projectedValue).panY(down.projectedValue).node
+        let node = Rectangle().fill(Color("#000000")).panX(across.projectedValue).panY(down.projectedValue).node
 
         XCTAssertEqual(node.props[.panXChannel], .number(Double(across.number)))
         XCTAssertEqual(node.props[.panYChannel], .number(Double(down.number)))

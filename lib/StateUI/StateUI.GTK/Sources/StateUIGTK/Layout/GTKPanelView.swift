@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 import CStateUIGTK
 
-/// A view over a `StateUIPanel`: what StateUI measures, places and draws itself - a layout, a colour box.
+/// A view over a `StateUIPanel`: what StateUI measures, places and draws itself - a layout, a shape.
 @MainActor
 class GTKPanelView: GTKView {
     /// Whether a click beside the panel's children goes on to what is under it: an overlay laid over a window's pages.

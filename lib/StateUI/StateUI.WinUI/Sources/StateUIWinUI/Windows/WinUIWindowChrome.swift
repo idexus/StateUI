@@ -4,14 +4,16 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// What a window's chrome shows, composed from the visible arrangement: the title or the title area its path
-/// declares, the way back and the sidebar's toggle, the path's groups of actions at each edge and those in overflow,
-/// its title view, the bar's colours, and the page's menus beneath.
+/// What a window's chrome shows, composed from the visible arrangement: the title or the title area its path declares,
+/// the way back and the sidebar's toggle, the groups of actions at each edge and in overflow, its title view, the bar's
+/// colours, the page's menus beneath, a sheet's way back and going, Escape - the way out in sight pressed - and a key
+/// a view takes.
 /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
 @MainActor
 struct WinUIWindowChrome {
     var title = ""
-    /// The application's name, line and mark its path declares, shown in the place of the title naming the window.
+    /// Whether the title bar shows the title; the window keeps it for the system all the same.
+    var showsTitle = true
     var titleArea: WindowChrome.TitleArea?
     var back: WinUIToolbarAction?
     var sidebarToggle: (() -> Void)?
@@ -22,7 +24,7 @@ struct WinUIWindowChrome {
     var background: HostValue?
     var foreground: HostValue?
     var menuBar = WinUIMenu()
-
-    /// While a sheet shows: its way back - its own stack's, else it going - and it going, which Escape asks.
     var sheet: (back: () -> Void, dismiss: () -> Void)?
+    var escape: (() -> Bool)?
+    var takeKey: ((KeyboardShortcut) -> Bool)?
 }

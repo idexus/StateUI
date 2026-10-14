@@ -1,9 +1,8 @@
 // The gallery's styles: what a control asked for by name looks like.
 //
 // A style with no key applies to every control of its type: every button the
-// gallery shows wears its violet, every field lets the panel behind it through,
-// and a ColorBox naming no colour wears the accent. Every other control keeps
-// its platform's own look.
+// gallery shows wears its violet, and every field lets the panel behind it
+// through. Every other control keeps its platform's own look.
 //
 // Every colour comes through `Palette`, one name per job.
 //
@@ -50,6 +49,7 @@ extension StyleKey where Target == HStack {
 extension StyleKey where Target == Button {
     /// A button that is only its icon.
     static let iconButton = StyleKey("IconButton")
+
 }
 
 extension StyleKey where Target == RatingBar {
@@ -72,7 +72,7 @@ enum AppStyles {
             // size at the default spacing reads loose.
             Style<Text>(.headline)
                 .fontSize(32)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .tracking(-0.5)
                 .horizontalAlignment(.center)
                 .horizontalTextAlignment(.center)
@@ -107,21 +107,39 @@ enum AppStyles {
 
             // listing: AppStyles.sample keep
             // Every button the gallery shows wears its violet - a style with no
-            // key is every button's.
+            // key is every button's - in its platform's shape: a capsule on
+            // Apple's platforms, rounded everywhere else; and lower on the
+            // desktop, where a pointer presses it.
             Style<Button>()
                 .textColor(Palette.onAccent)
                 .background(Palette.accent)
                 .lineWidth(0)
+                #if APPKIT || UIKIT
+                .shape(.capsule)
+                #else
                 .shape(.roundedRectangle(10))
+                #endif
+                #if APPKIT || WINUI || GTK
+                .padding(horizontal: 16, vertical: 6)
+                #elseif UIKIT
+                .padding(horizontal: 22, vertical: 10)
+                #else
                 .padding(horizontal: 16, vertical: 11)
+                #endif
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
                     .background(Palette.outline)
                 }
 
-            // Every ColorBox that names no colour of its own wears the violet.
-            Style<ColorBox>()
-                .color(Palette.accent)
+            // A button's role chooses a style over the one above: it says
+            // only what the role changes. The main action keeps the violet;
+            // the way out steps back, and what destroys something is red.
+            Style<Button>(role: .cancel)
+                .textColor(Palette.text)
+                .background(Palette.selected)
+            Style<Button>(role: .destructive)
+                .textColor(Palette.danger)
+                .background(Palette.dangerWash)
             // listing: end
 
             Style<Button>(.iconButton)

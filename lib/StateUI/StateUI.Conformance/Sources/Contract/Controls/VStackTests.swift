@@ -21,7 +21,7 @@
                     VStack {
                         VStack {
                             ForEach(swapped.wrappedValue ? ["second", "first"] : ["first", "second"]) { name in
-                                ColorBox(.red).width(40).height(name == "first" ? 20 : 30).horizontalAlignment(.start)
+                                Rectangle().fill(.red).width(40).height(name == "first" ? 20 : 30).horizontalAlignment(.start)
                                     .onEvent(ViewContract.frameChanged) {
                                         (name == "first" ? first : second).values.append($0)
                                     }

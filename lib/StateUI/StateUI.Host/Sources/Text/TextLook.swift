@@ -7,14 +7,20 @@
 /// host turns into its toolkit's attributes.
 /// Design: docs/design/host/tree.md#runs-of-words
 @_spi(Host) public struct TextLook: Equatable, Sendable {
+    /// The step of the platform's type ramp the words are set in.
+    public var style: TextStyle?
+
     /// The font's size in points.
     public var size: Double?
 
-    /// The font's weight and slant.
+    /// The font's weight.
+    public var weight: FontWeight?
+
+    /// The font's slant.
     public var attributes = FontAttributes.none
 
-    /// Whether the tree gave the weight and the slant - none of them included: a toolkit whose theme draws words bold
-    /// draws them regular then; given nothing, the theme's own stand.
+    /// Whether the tree gave the slant - upright included: a toolkit whose theme draws words italic draws them
+    /// upright then; given nothing, the theme's own stands.
     public var attributesGiven = false
 
     /// The font's family.
@@ -47,10 +53,21 @@
         size > 0 && size.isFinite ? letterSpacing / size : 0
     }
 
+    /// Takes `other`'s font, its scaling and its colour - what `TextMembers.look` reads - keeping this look's own
+    /// spacing, lines and decorations.
+    public mutating func adopt(fontAndColorOf other: TextLook) {
+        (style, size, weight, attributes, attributesGiven, family, color, scales) = (
+            other.style, other.size, other.weight, other.attributes, other.attributesGiven, other.family, other.color,
+            other.scales
+        )
+    }
+
     /// This look where it says something, `other` where it says nothing: a run of words over its label's look.
     public func over(_ other: TextLook) -> TextLook {
         var look = self
+        look.style = style ?? other.style
         look.size = size ?? other.size
+        look.weight = weight ?? other.weight
         look.attributes = attributes.isEmpty && !attributesGiven ? other.attributes : attributes
         look.attributesGiven = attributesGiven || other.attributesGiven
         look.family = family ?? other.family
@@ -84,7 +101,9 @@ extension MountedElement {
     /// lines' height and its decorations - each nil or empty where it says nothing.
     public var textLook: TextLook {
         var look = TextLook()
+        look.style = value(.textStyle)?.enumeration.flatMap(TextStyle.init(rawValue:))
         look.size = number(.fontSize)
+        look.weight = value(.fontWeight)?.enumeration.flatMap(FontWeight.init(rawValue:))
         look.attributes = value(.fontAttributes)?.enumeration.map { FontAttributes(rawValue: $0) } ?? .none
         look.attributesGiven = value(.fontAttributes) != nil
         look.family = value(.fontFamily)?.name

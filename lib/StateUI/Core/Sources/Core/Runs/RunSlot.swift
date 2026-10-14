@@ -141,7 +141,7 @@ final class RunSlot {
 }
 
 /// Who started a run: a handler of an element's event, what an element's walk found to run, a host event's
-/// subscription, a shared gate's tasks, or a control the library composes. An element leaving supersedes its owners'
+/// subscription, a gatekeeper's tasks, or a control the library composes. An element leaving supersedes its owners'
 /// runs - in a gate others pass through too, its own alone.
 /// Design: docs/design/core/runs.md#a-gate
 @MainActor

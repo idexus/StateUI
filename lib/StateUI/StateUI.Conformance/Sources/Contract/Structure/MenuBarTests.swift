@@ -137,7 +137,7 @@ struct MenusPage: View {
             .menuBar {
                 Menu("File") {
                     MenuItem("New").onClicked { heard.values.append("new") }.id("new")
-                    Divider()
+                    MenuSeparator()
                     Menu("Recent") {
                         recent.wrappedValue.map { file in
                             MenuItem(file).onClicked { heard.values.append("open \(file)") }.id("open \(file)")

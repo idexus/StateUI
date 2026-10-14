@@ -35,7 +35,7 @@ struct BuilderSample: SampleContent, ExampleContent {
             // either way, so what has been typed in it survives the toggle.
             if signedIn {
                 Text("Signed in")
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
             }
 
             TextField($note)
@@ -68,7 +68,7 @@ struct BuilderSample: SampleContent, ExampleContent {
             ForEach(0..<5) { turn in
                 if turn == chosen {
                     Text("turn \(turn) - chosen")
-                        .fontAttributes(.bold)
+                        .fontWeight(.bold)
                         .textColor(Palette.accent)
                 } else {
                     Button("turn \(turn)")

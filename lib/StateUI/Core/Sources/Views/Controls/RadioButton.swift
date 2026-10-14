@@ -40,8 +40,8 @@ extension RadioButtonProperties {
 /// same name and reports both changes together, which is why the handler above
 /// acts on `checked` alone. Buttons with no group name are exclusive within
 /// the layout that holds them.
-public struct RadioButton: ElementView, TextualElement, FontElement, PaddingElement,
-    BorderElement, RadioButtonProperties {
+public struct RadioButton: ElementView, TextualElement, FontElement, PaddingElement, RadioButtonProperties,
+    FocusElement {
     /// The node this control describes.
     public var node: Node
 
@@ -88,7 +88,7 @@ public struct RadioButton: ElementView, TextualElement, FontElement, PaddingElem
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onToggled(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onToggled(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
         fatalError("unavailable")
     }

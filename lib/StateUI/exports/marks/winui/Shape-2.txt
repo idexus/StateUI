@@ -1,49 +1,46 @@
-# revision 3.1
+# revision 5.1
+Capsule.contentMode: ✅
+Capsule.dash: ✅
+Capsule.dashPhase: ✅
+Capsule.geometryTransform: does not apply - read geometryTransform of Capsule - WinUI folds a shape's transform into its figure; its drawing proves it
+Capsule.lineCap: ✅
+Capsule.stroke: ✅
+Ellipse.contentMode: does not apply - read contentMode of Ellipse - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Ellipse.dash: ✅
 Ellipse.dashPhase: ✅
 Ellipse.geometryTransform: ✅
 Ellipse.lineCap: ✅
-Ellipse.lineJoin: – an ellipse has no corner its outline joins at
 Ellipse.lineWidth: ✅
-Ellipse.miterLimit: ✅
 Ellipse.stroke: ✅
 Line.contentMode: ✅
 Line.dash: ✅
 Line.dashPhase: ✅
-Line.fill: ✅
+Line.geometryTransform: does not apply - read geometryTransform of Line - WinUI folds a shape's transform into its figure; its drawing proves it
 Line.lineCap: ✅
-Line.lineJoin: ✅
-Line.lineWidth: ✅
-Line.miterLimit: – a line has no corner its outline joins at
+Line.stroke: ✅
+Path.contentMode: does not apply - read contentMode of Path - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Path.dash: ✅
 Path.dashPhase: ✅
 Path.geometryTransform: ✅
 Path.lineCap: ✅
-Path.lineJoin: ✅
 Path.lineWidth: ✅
-Path.miterLimit: ✅
 Path.stroke: ✅
 Polygon.contentMode: ✅
 Polygon.dash: ✅
 Polygon.dashPhase: ✅
-Polygon.fill: ✅
+Polygon.geometryTransform: does not apply - read geometryTransform of Polygon - WinUI folds a shape's transform into its figure; its drawing proves it
 Polygon.lineCap: ✅
-Polygon.lineJoin: ✅
-Polygon.lineWidth: ✅
-Polygon.miterLimit: ✅
+Polygon.stroke: ✅
+Polyline.contentMode: does not apply - read contentMode of Polyline - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Polyline.dash: ✅
 Polyline.dashPhase: ✅
 Polyline.geometryTransform: ✅
 Polyline.lineCap: ✅
-Polyline.lineJoin: ✅
 Polyline.lineWidth: ✅
-Polyline.miterLimit: ✅
 Polyline.stroke: ✅
 Rectangle.contentMode: ✅
 Rectangle.dash: ✅
 Rectangle.dashPhase: ✅
-Rectangle.fill: ✅
+Rectangle.geometryTransform: does not apply - read geometryTransform of Rectangle - WinUI folds a shape's transform into its figure; its drawing proves it
 Rectangle.lineCap: ✅
-Rectangle.lineJoin: ✅
-Rectangle.lineWidth: ✅
-Rectangle.miterLimit: ✅
+Rectangle.stroke: ✅

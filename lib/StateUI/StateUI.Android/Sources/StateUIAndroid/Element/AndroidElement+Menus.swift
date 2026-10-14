@@ -11,9 +11,10 @@ extension AndroidElement {
     var menuItem: AndroidMenu.Item {
         AndroidMenu.Item(
             text: value(.text)?.string ?? "",
-            picture: value(.icon)?.string.flatMap { $0.isEmpty ? nil : $0 },
+            picture: HostPicture(value(.icon)),
             isEnabled: element.isEffectivelyEnabled,
-            isDestructive: value(.isDestructive)?.bool == true)
+            isDestructive: value(.isDestructive)?.bool == true,
+            shortcut: element.keyboardShortcut)
     }
 
     /// Offers the view's context menu while it carries a menu slot: the slot's entries, written as the user
@@ -29,7 +30,22 @@ extension AndroidElement {
             AndroidMenu.fill(menu, view: view, Self.menuEntries(MenuEntry.entries(of: slot.element), items: &items))
             view.onMenuChose = { index in
                 guard items.indices.contains(index) else { return }
-                items[index].android.send(.clicked, [])
+                items[index].android.choose()
+            }
+        }
+    }
+
+    /// Gives a button holding a menu its menu: its entries written as it opens, each item chosen heard by its element.
+    func configureButtonMenu() {
+        guard let button = view as? AndroidButtonView else { return }
+        button.setMenu(ButtonMenu.opening(of: element), showsArrow: ButtonMenu.showsArrow(element)) {
+            [weak self, weak button] menu in
+            guard let self, let button else { return }
+            var items: [MountedElement] = []
+            AndroidMenu.fill(menu, view: button, Self.menuEntries(ButtonMenu.entries(of: element), items: &items))
+            button.onMenuChose = { index in
+                guard items.indices.contains(index) else { return }
+                items[index].android.choose()
             }
         }
     }
@@ -44,7 +60,8 @@ extension AndroidElement {
                 element.android.menuPlace = items.count
                 items.append(element)
                 return .item(AndroidMenu.Item(
-                    text: entry.title, isEnabled: entry.isEnabled, isDestructive: entry.isDestructive))
+                    text: entry.title, isEnabled: entry.isEnabled, isDestructive: entry.isDestructive,
+                    isOn: entry.isOn, shortcut: entry.keyboardShortcut))
             case .submenu:
                 return .menu(entry.title, isEnabled: entry.isEnabled, menuEntries(entry.entries, items: &items))
             case .separator:

@@ -27,7 +27,13 @@ extension UIKitDriver {
             return (!view.isAccessibilityElement && view.accessibilityElementsHidden).propValue
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "UIKit marks a heading, not its level")
-        case .fontSize, .fontAttributes, .fontFamily, .textColor, .tracking, .lineHeight, .textDecorations:
+        case .keyboardShortcut:
+            // The key command the window offers that reaches this element.
+            guard let native, let root = UIKitDriver.windowRoot(of: native.element) else { return nil }
+            let window = native.element.enclosing(type: .window) ?? native.element
+            return root.keyCommands?.compactMap { UIKitKeys.shortcut(of: $0) }
+                .first { KeyboardShortcuts.target(of: $0, under: window) === native.element }?.propValue
+        case .fontSize, .fontWeight, .fontAttributes, .fontFamily, .textColor, .tracking, .lineHeight, .textDecorations:
             return try words(property, view)
         case .isFontAutoScalingEnabled:
             return try scales(view) { try words(.fontSize, view)?.number ?? 0 }.propValue
@@ -73,12 +79,10 @@ extension UIKitDriver {
         switch property {
         case .fontSize: return Double(font.pointSize).propValue
         case .fontFamily: return Name(font.familyName).propValue
+        case .fontWeight: return FontWeight(uiKit: font.weight).propValue
         case .fontAttributes:
-            let traits = font.fontDescriptor.symbolicTraits
-            var attributes: FontAttributes = []
-            if traits.contains(.traitBold) { attributes.insert(.bold) }
-            if traits.contains(.traitItalic) { attributes.insert(.italic) }
-            return attributes.propValue
+            let italic = font.fontDescriptor.symbolicTraits.contains(.traitItalic)
+            return (italic ? FontAttributes.italic : .none).propValue
         case .textColor: return drawn.color.map { color($0).propValue }
         case .tracking:
             guard written != nil else { throw DriverCannot("read the spacing of a \(type(of: view))") }

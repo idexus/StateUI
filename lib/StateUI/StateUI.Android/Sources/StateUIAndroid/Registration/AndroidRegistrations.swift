@@ -42,7 +42,9 @@ enum AndroidRegistrations {
     /// What `AndroidElement` puts on every view wearing each member's contract, by the host layer's rules.
     static func shared(_ registry: Registry<AndroidView>) {
         registry.everyElementMeetsAssistiveTechnology()
+        registry.everyElementShowsItsTooltip()
         registry.everyElementHearsTheUser()
+        registry.everyElementTakesItsKeys()
         registry.everyElementDragsAndDrops()
         registry.everyElementTakesDroppedFiles()
         registry.everyElementTakesItsPlace()
@@ -51,7 +53,7 @@ enum AndroidRegistrations {
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(VisualElementContract.isEnabled)
         registry.everyElementRealizes(VisualElementContract.background)
-        registry.everyElementRaises(VisualElementContract.isFocusedChanged)
+        registry.everyElementRaises(FocusElementContract.isFocusedChanged)
     }
 
     /// Puts `TextMembers.members` on a text view: its words in their case, their look, and the room around them.

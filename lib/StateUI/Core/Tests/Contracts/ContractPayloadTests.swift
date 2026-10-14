@@ -22,7 +22,7 @@ final class ContractPayloadTests: XCTestCase {
         let address = PropValue.string("https://example.com")
 
         // What the tiers and mixins report.
-        check(VisualElementContract.isFocusedChanged, [.bool(true)])
+        check(FocusElementContract.isFocusedChanged, [.bool(true)])
         check(ViewContract.dragLeave)
         check(ViewContract.dragOver)
         check(ViewContract.dragStarting)
@@ -38,6 +38,7 @@ final class ContractPayloadTests: XCTestCase {
         check(ViewContract.pointerPressed, [.numbers([1, 2])])
         check(ViewContract.pointerReleased, [])
         check(ViewContract.swiped, [.enumeration(1)])
+        check(KeyboardElementContract.keyPressed, [Key.escape.propValue])
         check(ViewContract.tapped)
         check(TextInputContract.textChanged, [.string("typed")])
         check(MenuItemElementContract.clicked)
@@ -69,6 +70,7 @@ final class ContractPayloadTests: XCTestCase {
         check(PickerContract.opened)
         check(PickerContract.selectedIndexChanged, [.number(-1)])
         check(MarkerContract.selected)
+        check(MenuItemContract.toggled, [.bool(true)])
         check(MarkerContract.detailsClicked)
         check(RadioButtonContract.toggled, [.bool(false)])
         check(SceneContract.activated)

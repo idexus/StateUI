@@ -8,8 +8,8 @@ public enum VisualElementContract: Contract {
     /// The tier's name.
     public static let name = "VisualElement"
 
-    /// Every drawn element carries values in the tree.
-    public static let tiers: [any Contract.Type] = [PropertyContainerContract.self]
+    /// Every drawn element is found by automation.
+    public static let tiers: [any Contract.Type] = [AutomationElementContract.self]
 
     /// How deep a heading the element is, for a user moving by headings.
     public static let accessibilityHeading = ElementProperty<Self, AccessibilityHeadingLevel>(
@@ -33,9 +33,6 @@ public enum VisualElementContract: Contract {
     public static let background = ElementProperty<Self, Material>(
         "background", layer: .adaptive)
 
-    /// Gives the element the keyboard focus, answering whether it took it.
-    public static let focus = ElementAct<Self, Void, Bool>("focus")
-
     /// The frame the element settled on, fed by the host into a state.
     public static let frame = ElementProperty<Self, Rect>("frame", layer: .structure)
 
@@ -52,10 +49,6 @@ public enum VisualElementContract: Contract {
 
     /// Whether the element answers input.
     public static let isEnabled = ElementProperty<Self, Bool>("isEnabled", layer: .native)
-
-    /// The platform moved the focus onto the element, or off it.
-    public static let isFocusedChanged = ElementEvent<Self, Bool>(
-        "isFocusedChanged", layer: .native)
 
     /// Whether the element is shown.
     public static let isVisible = ElementProperty<Self, Bool>("isVisible", layer: .native)
@@ -127,12 +120,12 @@ public enum VisualElementContract: Contract {
     public static let translationY = ElementProperty<Self, Double>(
         "translationY", layer: .native, moves: .place)
 
-    /// Takes the keyboard focus off the element.
-    public static let unfocus = ElementAct<Self, Void, Void>("unfocus")
-
     /// The width the element asks for.
     public static let width = ElementProperty<Self, Double>(
         "width", layer: .native, moves: .width)
+
+    /// The words the platform shows beside the element while the pointer rests on it.
+    public static let tooltip = ElementProperty<Self, String>("tooltip", layer: .native)
 
     /// Which of its overlapping siblings in a grid or a ZStack the element is drawn over.
     public static let zIndex = ElementProperty<Self, Int>("zIndex", layer: .native, travels: false)
@@ -140,10 +133,10 @@ public enum VisualElementContract: Contract {
     /// The tier's own members.
     public static let members: [any ContractMember] = [
         accessibilityHeading, accessibilityHint, accessibilityLabel,
-        automationExcludedWithChildren, background, focus, frame, height, ignoresInput,
-        isAccessibilityHidden, isEnabled, isFocusedChanged, isVisible, layoutDirection,
+        automationExcludedWithChildren, background, frame, height, ignoresInput,
+        isAccessibilityHidden, isEnabled, isVisible, layoutDirection,
         maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY,
-        rotation, rotationX, rotationY, scale, scaleX, scaleY, style, translationX,
-        translationY, unfocus, width, zIndex,
+        rotation, rotationX, rotationY, scale, scaleX, scaleY, style, tooltip, translationX,
+        translationY, width, zIndex,
     ]
 }

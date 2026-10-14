@@ -31,7 +31,9 @@ namespace {
     }
 
     /// Writes a menu's flat entries into the lists they belong to: an item (0), a separator (1), a submenu opening
-    /// (2) and closing (3). On a bar, a menu at the top is one of the bar's own.
+    /// (2) and closing (3), an item standing unchecked (4) or checked (5). On a bar, a menu at the top is one of the
+    /// bar's own. An item's shortcut is WinUI's accelerator on a bar, whose words WinUI shows beside it; a context
+    /// menu's item only shows its words, its accelerator held disabled.
     struct Writer {
         int64_t view;
         controls::MenuBar bar{nullptr};
@@ -39,7 +41,7 @@ namespace {
         int32_t chosen = 0;
 
         void write(int32_t kind, char const *title, bool enabled, char const *identifier, char const *icon,
-                   bool destructive) {
+                   bool destructive, int32_t key, int32_t modifiers, bool givesWay) {
             if (kind == 3) {
                 if (levels.size() > (bar ? 0u : 1u)) levels.pop_back();
                 return;
@@ -55,8 +57,11 @@ namespace {
                 return;
             }
             switch (kind) {
-            case 0: {
-                controls::MenuFlyoutItem item;
+            case 0:
+            case 4:
+            case 5: {
+                controls::MenuFlyoutItem item = kind == 0 ? controls::MenuFlyoutItem() : controls::ToggleMenuFlyoutItem();
+                if (kind != 0) item.as<controls::ToggleMenuFlyoutItem>().IsChecked(kind == 5);
                 item.Text(text(title));
                 item.IsEnabled(enabled);
                 identify(item, identifier);
@@ -64,6 +69,14 @@ namespace {
                 if (destructive)
                     markDestructive(item, {L"MenuFlyoutItemForeground", L"MenuFlyoutItemForegroundPointerOver",
                                            L"MenuFlyoutItemForegroundPressed"});
+                if (key != 0) {
+                    auto held = accelerator(key, modifiers, givesWay);
+                    if (!bar) {
+                        held.IsEnabled(false);
+                        item.KeyboardAcceleratorTextOverride(acceleratorText(key, modifiers));
+                    }
+                    item.KeyboardAccelerators().Append(held);
+                }
                 item.Click(guarded("handling Click",
                     [view = view, place = chosen++](IInspectable const &, xaml::RoutedEventArgs const &) {
                     callbacks.menuChosen(view, place);
@@ -116,12 +129,22 @@ namespace {
         return nullptr;
     }
 
-    /// The entries of each menu an element offers: its context menu's, or each of a bar's menus.
+    /// The menu an element offers: a button's flyout, which it opens, else its context menu.
+    controls::MenuFlyout offered(xaml::UIElement const &element) {
+        if (auto split = element.try_as<controls::SplitButton>()) {
+            if (auto flyout = split.Flyout().try_as<controls::MenuFlyout>()) return flyout;
+        } else if (auto button = element.try_as<controls::Button>()) {
+            if (auto flyout = button.Flyout().try_as<controls::MenuFlyout>()) return flyout;
+        }
+        return element.ContextFlyout().try_as<controls::MenuFlyout>();
+    }
+
+    /// The entries of each menu an element offers: its button's or context menu's, or each of a bar's menus.
     std::vector<Entries> menus(xaml::UIElement const &element) {
         std::vector<Entries> found;
         if (auto bar = element.try_as<controls::MenuBar>()) {
             for (auto const &menu : bar.Items()) found.push_back(menu.Items());
-        } else if (auto flyout = element.ContextFlyout().try_as<controls::MenuFlyout>()) {
+        } else if (auto flyout = offered(element)) {
             found.push_back(flyout.Items());
         }
         return found;
@@ -130,7 +153,8 @@ namespace {
 
 extern "C" void stateui_winui_set_context_menu(
     StateUIObjectRef handle, int64_t view, int32_t const *kinds, char const *const *titles, bool const *enabled,
-    char const *const *identifiers, char const *const *icons, bool const *destructive, int32_t count
+    char const *const *identifiers, char const *const *icons, bool const *destructive, int32_t const *keys,
+    int32_t const *modifiers, bool const *givesWay, int32_t count
 ) {
     try {
         auto element = as<xaml::UIElement>(handle);
@@ -141,13 +165,33 @@ extern "C" void stateui_winui_set_context_menu(
             Writer writer{view, nullptr, {flyout.Items()}};
             for (int32_t index = 0; index < count; ++index) {
                 writer.write(kinds[index], titles[index], enabled[index], identifiers[index], icons[index],
-                             destructive[index]);
+                             destructive[index], keys[index], modifiers[index], givesWay[index]);
             }
             element.ContextFlyout(flyout);
         }
         holdHitArea(element, view);
     } catch (...) {
         report("giving a view its context menu");
+    }
+}
+
+extern "C" void stateui_winui_button_set_menu(
+    StateUIObjectRef handle, int64_t view, int32_t const *kinds, char const *const *titles, bool const *enabled,
+    char const *const *identifiers, char const *const *icons, bool const *destructive, int32_t const *keys,
+    int32_t const *modifiers, bool const *givesWay, int32_t count
+) {
+    try {
+        controls::MenuFlyout flyout;
+        Writer writer{view, nullptr, {flyout.Items()}};
+        for (int32_t index = 0; index < count; ++index) {
+            writer.write(kinds[index], titles[index], enabled[index], identifiers[index], icons[index],
+                         destructive[index], keys[index], modifiers[index], givesWay[index]);
+        }
+        auto element = as<IInspectable>(handle);
+        if (auto split = element.try_as<controls::SplitButton>()) split.Flyout(flyout);
+        else if (auto button = element.try_as<controls::Button>()) button.Flyout(flyout);
+    } catch (...) {
+        report("giving a button its menu");
     }
 }
 
@@ -162,7 +206,8 @@ extern "C" StateUIObjectRef stateui_winui_menu_bar_make(int64_t) {
 
 extern "C" void stateui_winui_menu_bar_set(
     StateUIObjectRef handle, int64_t view, int32_t const *kinds, char const *const *titles, bool const *enabled,
-    char const *const *identifiers, char const *const *icons, bool const *destructive, int32_t count
+    char const *const *identifiers, char const *const *icons, bool const *destructive, int32_t const *keys,
+    int32_t const *modifiers, bool const *givesWay, int32_t count
 ) {
     try {
         auto bar = borrow<controls::MenuBar>(handle);
@@ -170,7 +215,7 @@ extern "C" void stateui_winui_menu_bar_set(
         Writer writer{view, bar, {}};
         for (int32_t index = 0; index < count; ++index) {
             writer.write(kinds[index], titles[index], enabled[index], identifiers[index], icons[index],
-                         destructive[index]);
+                         destructive[index], keys[index], modifiers[index], givesWay[index]);
         }
     } catch (...) {
         report("writing a menu bar");
@@ -186,7 +231,7 @@ extern "C" int32_t stateui_winui_menus(StateUIObjectRef handle, char *utf8, int3
                 if (!text.empty()) text += L";";
                 text += (menu.IsEnabled() ? L"" : L"!") + std::wstring(menu.Title()) + L"[" + described(menu.Items()) + L"]";
             }
-        } else if (auto flyout = element.ContextFlyout().try_as<controls::MenuFlyout>()) {
+        } else if (auto flyout = offered(element)) {
             text = described(flyout.Items());
         }
         auto bytes = winrt::to_string(text);
@@ -206,7 +251,9 @@ extern "C" void stateui_winui_menus_choose(StateUIObjectRef handle, int32_t inde
     try {
         for (auto const &entries : menus(as<xaml::UIElement>(handle))) {
             if (auto chosen = item(entries, index)) {
-                pattern<provider::IInvokeProvider>(chosen, PatternInterface::Invoke).Invoke();
+                // A checked item's peer offers toggling, as assistive technology chooses it, and no invoking.
+                if (auto invoke = pattern<provider::IInvokeProvider>(chosen, PatternInterface::Invoke)) invoke.Invoke();
+                else pattern<provider::IToggleProvider>(chosen, PatternInterface::Toggle).Toggle();
                 return;
             }
         }
@@ -232,6 +279,14 @@ extern "C" int32_t stateui_winui_menus_items(StateUIObjectRef handle, char const
                     else if (asked == "icon") text += iconFile(item.Icon());
                     else if (asked == "destructive")
                         text += isDestructive(item, L"MenuFlyoutItemForeground") ? L"1" : L"0";
+                    else if (asked == "checked") {
+                        auto toggle = item.try_as<controls::ToggleMenuFlyoutItem>();
+                        text += toggle && toggle.IsChecked() ? L"1" : L"0";
+                    } else if (asked == "shortcut" && item.KeyboardAccelerators().Size() > 0) {
+                        auto held = item.KeyboardAccelerators().GetAt(0);
+                        text += std::to_wstring(static_cast<int32_t>(held.Key())) + L","
+                            + std::to_wstring(static_cast<int32_t>(held.Modifiers()));
+                    }
                 }
             }
         };

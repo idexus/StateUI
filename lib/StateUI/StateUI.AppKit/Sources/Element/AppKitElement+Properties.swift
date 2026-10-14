@@ -9,11 +9,12 @@ import AppKit
 /// The native view: made, and given the element's properties.
 extension AppKitElement {
     func makeView() -> NSView? {
-        if element.isDrawnByParent(in: AppKitRegistrations.registry) { return nil }
+        if element.isDrawnByParent(in: AppKitRegistrations.registry) || element.isViewless { return nil }
         if let registered = AppKitRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
-            reporting: { [weak self] property, event, value in self?.report(property, event, value) }
+            reporting: { [weak self] property, event, value in self?.report(property, event, value) },
+            made: element.made
         ) {
             // A picture crosses as a file NAME, and the files are the
             // renderer's: it holds the resource directory and the cache over
@@ -21,7 +22,7 @@ extension AppKitElement {
             // renderer to ask, so a view that draws pictures is given the way
             // to resolve one here, where it is made.
             if let drawing = registered as? any AppKitPictureResolving {
-                drawing.picture = { [weak self] name in self?.image(named: name) }
+                drawing.picture = { [weak self] picture in self?.host?.image(picture) }
             }
 
             return registered
@@ -38,7 +39,7 @@ extension AppKitElement {
 
         case .modalStack, .overlay, .titleView, .toolbarItemGroup, .menuBar, .contextMenu,
              .menu, .menuItem,
-             .divider, .textSpans, .textSpan:
+             .textSpans, .textSpan:
             return nil
 
         case .navigationStack:
@@ -163,6 +164,8 @@ extension AppKitElement {
 
         if let button = view as? NSButton,
            let padding = value(.padding)?.numbers, padding.count >= 4 {
+            (button.cell as? AppKitButtonCell)?.padding = NSEdgeInsets(
+                top: padding[1], left: padding[0], bottom: padding[3], right: padding[2])
             let intrinsic = button.intrinsicContentSize
             buttonWidthConstraint = reconciledConstraint(
                 buttonWidthConstraint,
@@ -183,6 +186,7 @@ extension AppKitElement {
                     return constraint
                 })
         } else {
+            (view as? NSButton).flatMap { $0.cell as? AppKitButtonCell }?.padding = NSEdgeInsetsZero
             buttonWidthConstraint?.isActive = false
             buttonWidthConstraint = nil
             buttonHeightConstraint?.isActive = false
@@ -190,6 +194,7 @@ extension AppKitElement {
         }
 
         drawing?.own = element.drawingTransform
+        if changed.contains(.tooltip) { view.toolTip = string(.tooltip) }
         // Last, so the words meet the control as configured above - a text
         // field may just have swapped in a password field.
         applyAccessibility(to: view)
@@ -220,7 +225,7 @@ extension AppKitElement {
 
     /// Resolves an image-valued property through the host's resource policy.
     func image(_ property: Prop) -> NSImage? {
-        string(property).flatMap { image(named: $0) }
+        HostPicture(value(property)).flatMap { host?.image($0) }
     }
 
     func enumeration(_ property: Prop) -> Int32? {
@@ -243,8 +248,7 @@ extension AppKitElement {
         let result = NSMutableAttributedString()
         for run in runs {
             let runLook = run.look.over(look)
-            let font = appKitFont(
-                family: runLook.family, size: runLook.size, attributes: runLook.attributes, fallback: fallbackFont)
+            let font = appKitFont(runLook, fallback: fallbackFont)
             result.append(NSAttributedString(
                 string: run.text, attributes: appKitAttributes(runLook, font: font, fallbackColor: .labelColor)))
         }

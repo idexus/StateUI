@@ -6,9 +6,8 @@ import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A box with four corners of their own - a rectangle's, a colour box's - drawn by the host layer's rule
-/// (`BoxArithmetic`): each corner no more than half the side it rounds, an ellipse's quarter where the room is
-/// narrower one way.
+/// A box with four corners of their own - a rectangle's - drawn by the host layer's rule
+/// (`BoxArithmetic`): each corner round and no more than half the shorter side.
 /// Design: docs/design/host/layout.md#a-box
 enum AppKitCorners {
     /// The outline of `rect`, drawn from the top, its corners' radii `clockwise` from the top left.
@@ -18,32 +17,32 @@ enum AppKitCorners {
         }
         let (topLeft, topRight, bottomRight, bottomLeft) = (fitted[0], fitted[1], fitted[2], fitted[3])
         let path = CGMutablePath()
-        path.move(to: CGPoint(x: rect.minX + topLeft.width, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.maxX - topRight.width, y: rect.minY))
+        path.move(to: CGPoint(x: rect.minX + topLeft, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX - topRight, y: rect.minY))
         corner(
-            path, to: CGPoint(x: rect.maxX, y: rect.minY + topRight.height),
+            path, to: CGPoint(x: rect.maxX, y: rect.minY + topRight),
             through: CGPoint(x: rect.maxX, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - bottomRight.height))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - bottomRight))
         corner(
-            path, to: CGPoint(x: rect.maxX - bottomRight.width, y: rect.maxY),
+            path, to: CGPoint(x: rect.maxX - bottomRight, y: rect.maxY),
             through: CGPoint(x: rect.maxX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.minX + bottomLeft.width, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX + bottomLeft, y: rect.maxY))
         corner(
-            path, to: CGPoint(x: rect.minX, y: rect.maxY - bottomLeft.height),
+            path, to: CGPoint(x: rect.minX, y: rect.maxY - bottomLeft),
             through: CGPoint(x: rect.minX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + topLeft.height))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + topLeft))
         corner(
-            path, to: CGPoint(x: rect.minX + topLeft.width, y: rect.minY),
+            path, to: CGPoint(x: rect.minX + topLeft, y: rect.minY),
             through: CGPoint(x: rect.minX, y: rect.minY))
         path.closeSubpath()
         return path
     }
 
-    /// A quarter of an ellipse from where the path stands to `end`, bending around the box's corner `through`.
+    /// A quarter of a circle from where the path stands to `end`, bending around the box's corner `through`.
     private static func corner(_ path: CGMutablePath, to end: CGPoint, through corner: CGPoint) {
         let start = path.currentPoint
         guard start != corner, end != corner else { return path.addLine(to: end) }
-        // A cubic's control points a quarter of an ellipse sets: this share of the way to the corner.
+        // A cubic's control points a quarter of a circle sets: this share of the way to the corner.
         let share: CGFloat = 0.552_284_75
         path.addCurve(
             to: end,

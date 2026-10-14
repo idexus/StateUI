@@ -106,6 +106,7 @@ final class AppKitWindowController: NSWindowController {
         super.init(window: window)
 
         content.drops = AppKitDrops { [weak self] in self?.host?.dropTakers() ?? [:] }
+        content.reportsLaidOut = { [weak self] in self?.host?.runtime.frames.reportLaidOut() ?? false }
         window.delegate = self
         configureChrome(window)
         // Tab and Shift-Tab go through the views as they stand on screen: AppKit works the loop out.
@@ -142,7 +143,7 @@ final class AppKitWindowController: NSWindowController {
     }
 
     static func makeWindow() -> NSWindow {
-        NSWindow(
+        AppKitWindow(
             contentRect: NSRect(x: 0, y: 0, width: 560, height: 440),
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
             backing: .buffered,
@@ -200,6 +201,10 @@ final class AppKitWindowController: NSWindowController {
         if window.contentView !== content {
             content.frame = NSRect(origin: .zero, size: window.contentLayoutRect.size)
             content.autoresizingMask = [.width, .height]
+            content.unclaimedKey = { [weak self] in self?.choosesABarItem(by: $0) ?? false }
+            (window as? AppKitWindow)?.takesKey = { [weak self, weak window] key, modifiers in
+                self?.takesKey(key, modifiers, in: window) ?? false
+            }
             window.contentView = content
         }
         synchronizeModals(presentation.sheets.map(\.appKit))
@@ -295,6 +300,35 @@ final class AppKitWindowController: NSWindowController {
         } else if presentsWindow {
             window.orderFront(nil)
         }
+    }
+}
+
+extension AppKitWindowController {
+    /// A key equivalent no view took choosing the bar's item stating it (`KeyboardShortcuts`): AppKit holds no
+    /// shortcut on a toolbar's item. A button's and a menu bar entry's are AppKit's own.
+    /// Design: docs/design/types/keyboard.md#on-each-platform
+    /// A key a view takes, pressed in this window or a sheet over it, handed to that view (`KeyPresses`): out from the
+    /// view holding the keyboard, else from the page in front. Whether one took it.
+    func takesKey(_ key: String, _ modifiers: NSEvent.ModifierFlags, in window: NSWindow?) -> Bool {
+        guard let element, let runtime = host?.runtime, let pressed = AppKitKeys.shortcut(key: key, modifiers: modifiers)
+        else { return false }
+        let responder = window?.firstResponder
+        let holder = KeyPresses.holder(under: element) { held in
+            (held.native as? AppKitElement)?.view.map { AppKitFocus.holds($0, responder) } ?? false
+        }
+        return KeyPresses.press(
+            pressed.key, modifiers: pressed.modifiers, focused: holder, front: presentation.frontPage, in: runtime)
+    }
+
+    func choosesABarItem(by event: NSEvent) -> Bool {
+        guard let element, let runtime = host?.runtime,
+              let shortcut = AppKitKeys.shortcut(
+                key: event.charactersIgnoringModifiers ?? "", modifiers: event.modifierFlags),
+              let target = KeyboardShortcuts.target(of: shortcut, under: element), target.type == .toolbarItem
+        else { return false }
+        if window?.firstResponder is NSText, KeyboardShortcuts.givesWayToTyping(shortcut) { return false }
+        target.chosen(in: runtime)
+        return true
     }
 }
 

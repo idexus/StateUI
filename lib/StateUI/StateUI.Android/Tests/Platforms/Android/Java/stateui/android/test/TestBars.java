@@ -14,6 +14,11 @@ import android.widget.Toolbar;
 public final class TestBars {
     private TestBars() {}
 
+    /** Whether the bar shows a title, however few its words: it holds one in its title's place. */
+    public static boolean titled(Toolbar bar) {
+        return bar.getTitle() != null;
+    }
+
     /** The line under the bar's title; null for none. */
     public static String subtitle(Toolbar bar) {
         CharSequence words = bar.getSubtitle();

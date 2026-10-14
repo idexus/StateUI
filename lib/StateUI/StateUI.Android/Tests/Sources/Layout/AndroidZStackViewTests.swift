@@ -16,9 +16,9 @@ struct LayeredBoxes: View {
     var body: some View {
         VStack {
             ZStack {
-                ColorBox(.red).width(10).zIndex(blueInFront ? 0 : 1)
-                ColorBox(.blue).width(20).zIndex(blueInFront ? 1 : 0)
-                ColorBox(.green).width(30).zIndex($green)
+                Rectangle().fill(.red).width(10).zIndex(blueInFront ? 0 : 1)
+                Rectangle().fill(.blue).width(20).zIndex(blueInFront ? 1 : 0)
+                Rectangle().fill(.green).width(30).zIndex($green)
             }
             .height(40)
 
@@ -45,14 +45,14 @@ final class AndroidZStackViewTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 ZStack {
-                    ColorBox(.red).area(.absolute(10, 20, 30, 40))
-                    ColorBox(.blue).area(.proportional(0.5, 0.5, 0.5, 0.5))
+                    Rectangle().fill(.red).area(.absolute(10, 20, 30, 40))
+                    Rectangle().fill(.blue).area(.proportional(0.5, 0.5, 0.5, 0.5))
                 }
             }
 
             host.layOut(width: 1080, height: 1920)
 
-            let boxes = host.views(AndroidColorBoxView.self)
+            let boxes = host.views(AndroidShapeView.self)
             XCTAssertEqual(boxes.count, 2)
             XCTAssertTrue(boxes[0].frame == (20, 40, 60, 80), "\(boxes[0].frame)")
             XCTAssertTrue(boxes[1].frame == (540, 960, 540, 960), "\(boxes[1].frame)")
@@ -67,7 +67,7 @@ final class AndroidZStackViewTests: XCTestCase {
             let host = AndroidRenderer.running(clock: clock) {
                 VStack {
                     PlacedLayout(["back", "front"], id: \.self) { name in
-                        ColorBox(name == "back" ? .red : .blue)
+                        Rectangle().fill(name == "back" ? .red : .blue)
                     }
                     .placement(run.projectedValue)
                     .height(200)
@@ -96,7 +96,7 @@ final class AndroidZStackViewTests: XCTestCase {
             XCTAssertEqual(layout.drawingOrder, [1, 0], "the higher rank drawn last")
             XCTAssertTrue(layout.holds(inOrder: [holders[0], holders[1]]), "and nothing moved in the group")
 
-            let boxes = host.views(AndroidColorBoxView.self)
+            let boxes = host.views(AndroidShapeView.self)
             XCTAssertTrue(boxes[0].frame == (0, 0, 60, 80), "\(boxes[0].frame)")
             XCTAssertTrue(boxes[1].frame == (0, 0, 100, 100), "\(boxes[1].frame)")
         }
@@ -111,7 +111,7 @@ final class AndroidZStackViewTests: XCTestCase {
             host.layOut()
             let layout = try XCTUnwrap(host.views(AndroidZStackView.self).first)
             @MainActor func drawn() -> [Int32] {
-                host.views(AndroidColorBoxView.self)
+                host.views(AndroidShapeView.self)
                     .sorted {
                         Java.callInt(layout.reference, TestJava.indexOfChild, .object($0.reference))
                             < Java.callInt(layout.reference, TestJava.indexOfChild, .object($1.reference))
@@ -139,15 +139,15 @@ final class AndroidZStackViewTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 ZStack {
-                    ColorBox(.red)
-                    ColorBox(.blue).area(.absolute(10, 20, 30, 40))
+                    Rectangle().fill(.red)
+                    Rectangle().fill(.blue).area(.absolute(10, 20, 30, 40))
                 }
                 .padding(left: 10, top: 5, right: 20, bottom: 15)
             }
 
             host.layOut(width: 1080, height: 1920)
 
-            let boxes = host.views(AndroidColorBoxView.self)
+            let boxes = host.views(AndroidShapeView.self)
             XCTAssertEqual(boxes.count, 2)
             XCTAssertTrue(boxes[0].frame == (20, 10, 1080 - 60, 1920 - 40), "\(boxes[0].frame)")
             XCTAssertTrue(boxes[1].frame == (40, 50, 60, 80), "\(boxes[1].frame)")
@@ -160,7 +160,7 @@ final class AndroidZStackViewTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    ZStack { ColorBox(.red) }
+                    ZStack { Rectangle().fill(.red) }
                         .padding(10)
                         .background(Color("#00FF00"))
                         .stroke(Color("#0000FF"))
@@ -170,7 +170,7 @@ final class AndroidZStackViewTests: XCTestCase {
                         .width(100)
                         .height(80)
                         .horizontalAlignment(.start)
-                    ZStack { ColorBox(.red) }
+                    ZStack { Rectangle().fill(.red) }
                         .shape(.roundedRectangle(20))
                         .width(100)
                         .height(80)
@@ -180,7 +180,7 @@ final class AndroidZStackViewTests: XCTestCase {
             host.layOut()
 
             let layouts = host.views(AndroidZStackView.self)
-            let boxes = host.views(AndroidColorBoxView.self)
+            let boxes = host.views(AndroidShapeView.self)
             XCTAssertEqual(layouts.count, 2)
             guard layouts.count == 2 else { return }
             XCTAssertTrue(layouts[0].frame == (0, 0, 200, 160), "\(layouts[0].frame)")
@@ -200,7 +200,7 @@ final class AndroidZStackViewTests: XCTestCase {
     func testALayoutWithAPlainColourKeepsAPlainBackground() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                ZStack { ColorBox(.red).width(10).height(10) }
+                ZStack { Rectangle().fill(.red).width(10).height(10) }
                     .background(Color("#00FF00"))
                     .width(100)
                     .height(80)

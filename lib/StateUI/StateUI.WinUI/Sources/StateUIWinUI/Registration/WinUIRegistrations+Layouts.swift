@@ -18,6 +18,11 @@ extension WinUIRegistrations {
             stack.applies(boxMembers) { view, values in applyBox(view, values) }
         }
 
+        // A spacer is empty room the stack's arithmetic sizes; a divider in a stack is the theme's line.
+        // Design: docs/design/host/layout.md#a-spacer
+        registry.add(SpacerContract.self, create: { _ in WinUIStackPartView.spacer() })
+        registry.add(DividerContract.self, create: { _ in WinUIStackPartView.divider() })
+
         registry.add(GridContract.self, create: { _ in WinUIGridView() }) { grid in
             grid.applies([
                 GridContract.rows, GridContract.columns,

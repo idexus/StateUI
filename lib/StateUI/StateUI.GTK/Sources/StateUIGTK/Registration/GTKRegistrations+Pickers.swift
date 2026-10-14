@@ -7,20 +7,28 @@
 extension GTKRegistrations {
     /// A Picker: its choices and the one chosen, which the user chooses too, and the look of the chosen one's words.
     static func pickers(_ registry: Registry<GTKView>) {
-        registry.add(PickerContract.self, create: { reports in
-            let picker = GTKPickerView()
+        // Each presentation is another control: the picker is made as the one it is made with.
+        registry.add(PickerContract.self, create: { reports -> GTKView in
+            let picker: any GTKChoosing = switch PickerChoices.presentation(made: reports.made) {
+            case .menu: GTKPickerView()
+            case .segmented: GTKChoiceGroupView(segmented: true)
+            case .radio: GTKChoiceGroupView(segmented: false)
+            }
             picker.onChosen = { index in
                 reports.report(PickerContract.selectedIndex, index, as: PickerContract.selectedIndexChanged)
             }
             return picker
-        }, members: { picker in
+        }, members: { (picker: Registration<PickerContract, GTKView>) in
             picker.applies([PickerContract.options, PickerContract.selectedIndex]) { view, values in
-                view.setChoices(
+                (view as! any GTKChoosing).setChoices(
                     values[PickerContract.options] ?? [], chosen: values[PickerContract.selectedIndex] ?? -1,
                     writeChosen: values.changed(PickerContract.selectedIndex))
             }
             picker.applies(TextMembers.lookMembers) { view, values in
-                view.setWordsClass(GTKStyleSheet.words(TextMembers.look(of: values), placeholder: nil, in: " > button"))
+                // A drop-down's words are its button's; a group's buttons take the box's, which GTK's CSS hands on.
+                let part = view is GTKPickerView ? " > button" : ""
+                (view as! any GTKChoosing).setWordsClass(
+                    GTKStyleSheet.words(TextMembers.look(of: values), placeholder: nil, in: part))
             }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.raises(PickerContract.selectedIndexChanged)

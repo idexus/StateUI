@@ -22,6 +22,9 @@ final class GTKPageFrame {
     let header: GTKWidget
     private let heading: GTKWidget
 
+    /// The widget showing the page's title on the header bar - what a test reads.
+    var titleWidget: GTKWidget { heading }
+
     /// The bar's start - the sidebar's toggle, then the leading groups - and its end - the trailing groups, the
     /// overflow's menu, then the main menu.
     private let startBox: GTKWidget
@@ -86,6 +89,7 @@ final class GTKPageFrame {
     func show(_ chrome: GTKPageChrome) {
         if chrome.title != self.chrome.title { adw_window_title_set_title(heading.opaque, chrome.title) }
         if chrome.subtitle != self.chrome.subtitle { adw_window_title_set_subtitle(heading.opaque, chrome.subtitle ?? "") }
+        if chrome.showsTitle != self.chrome.showsTitle { gtk_widget_set_visible(heading, chrome.showsTitle ? 1 : 0) }
         if chrome.titleView !== self.chrome.titleView {
             adw_header_bar_set_title_widget(header.opaque, chrome.titleView?.widget ?? heading)
         }

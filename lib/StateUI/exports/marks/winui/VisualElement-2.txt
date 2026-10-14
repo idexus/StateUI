@@ -1,17 +1,19 @@
-# revision 8.1
+# revision 12.2
 ActivityIndicator.opacity: ✅
 ActivityIndicator.pivotY: ✅
-Button.style: ✅
 Button.translationX: ✅
+Button.zIndex: ✅
 Canvas.background: ✓ read background of Canvas: the colour the host's canvas clears its surface to under its drawing, which WinUI keeps as no brush
-CheckBox.frame: ✅
-CheckBox.scaleX: ✅
-ColorBox.isAccessibilityHidden: ✅
+Capsule.frame: ✅
+Capsule.scaleX: ✅
+CheckBox.accessibilityHeading: ✅
 DatePicker.frameChanged: ✅
 DatePicker.height: ✅
 DatePicker.rotationX: ✓ read rotationX of DatePicker: the host's own tip, checked against the projection it laid on the element
 DatePicker.width: ✅
-Ellipse.accessibilityLabel: ✅
+Divider.accessibilityHeading: ✅
+Divider.translationY: ✅
+Ellipse.accessibilityHint: ✅
 Grid.isVisible: ✅
 Grid.pivotX: ✅
 HStack.frameChanged: ✅
@@ -20,42 +22,47 @@ HStack.maximumWidth: ✅
 HStack.minimumHeight: ✅
 HStack.minimumWidth: ✅
 HStack.rotationY: ✓ read rotationY of HStack: the host's own tip, checked against the projection it laid on the element
-Image.style: ✅
 Image.translationX: ✅
+Image.zIndex: ✅
 ItemsView.automationExcludedWithChildren: ✅
-Line.accessibilityHint: ✅
+Line.tooltip: ✅
 Map.opacity: 🧩
 Map.pivotY: 🧩
-Path.translationY: ✅
-Path.zIndex: ✅
-Picker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Polygon.frame: ✅
-Polygon.scaleX: ✅
-Polyline.accessibilityHeading: ✅
+Path.layoutDirection: ✓ read layoutDirection of Path: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Picker.frame: ✅
+Picker.scaleX: ✅
+Polygon.isAccessibilityHidden: ✅
+Polyline.frameChanged: ✅
+Polyline.height: ✅
+Polyline.rotationX: ✓ read rotationX of Polyline: the host's own tip, checked against the projection it laid on the element
+Polyline.width: ✅
+ProgressBar.accessibilityLabel: ✅
 ProgressBar.isEnabled: ✅
-ProgressBar.rotation: ✅
-RadioButton.translationY: ✅
-RadioButton.zIndex: ✅
-Rectangle.layoutDirection: ✓ read layoutDirection of Rectangle: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-ScrollView.frame: ✅
-ScrollView.scaleX: ✅
-SearchField.accessibilityHint: ✅
-Slider.isEnabled: ✅
-Slider.rotation: ✅
-Stepper.accessibilityHeading: ✅
-Switch.isVisible: ✅
-Switch.pivotX: ✅
+RadioButton.layoutDirection: ✅
+Rectangle.scaleY: ✅
+Rectangle.style: ✅
+ScrollView.isAccessibilityHidden: ✅
+SearchField.isEnabled: ✅
+SearchField.rotation: ✅
+Slider.accessibilityLabel: ✅
+Spacer.isVisible: ✅
+Spacer.pivotX: ✅
+Stepper.translationX: ✅
+Stepper.zIndex: ✅
+Switch.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 Text.ignoresInput: ✅
 Text.scale: ✅
-TextEditor.style: ✅
-TextEditor.translationX: ✅
-TextField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-TimePicker.frame: ✅
-TimePicker.scaleX: ✅
-VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-VStack.isAccessibilityHidden: ✅
-WebView.layoutDirection: ✓ read layoutDirection of WebView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
-ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
-ZStack.scaleY: ✅
-ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
+TextEditor.frame: ✅
+TextEditor.scaleX: ✅
+TextField.isAccessibilityHidden: ✅
+TimePicker.frameChanged: ✅
+TimePicker.maximumHeight: ✅
+TimePicker.maximumWidth: ✅
+TimePicker.minimumHeight: ✅
+TimePicker.minimumWidth: ✅
+TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own tip, checked against the projection it laid on the element
+VStack.layoutDirection: ✅
+VStack.tooltip: ✅
+WebView.automationExcludedWithChildren: ✅
+ZStack.ignoresInput: ✅
+ZStack.scale: ✅

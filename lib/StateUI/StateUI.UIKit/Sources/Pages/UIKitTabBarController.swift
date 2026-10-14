@@ -64,7 +64,7 @@ final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegat
 
     /// The tabs, each its controller, its title and its picture, and the tab the tree asks for, where the user has
     /// not chosen another since.
-    func show(_ tabs: [(controller: UIViewController, title: String, icon: String?)], requested: Int?) {
+    func show(_ tabs: [(controller: UIViewController, title: String, icon: HostPicture?)], requested: Int?) {
         let controllers = tabs.map(\.controller)
         if !(viewControllers ?? []).elementsEqual(controllers, by: ===) {
             setViewControllers(controllers, animated: false)
@@ -72,10 +72,10 @@ final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegat
         for tab in tabs {
             let item = tab.controller.tabBarItem!
             if item.title != tab.title { item.title = tab.title }
-            let icon = tab.icon.flatMap { $0.isEmpty ? nil : $0 }
-            if item.image?.accessibilityIdentifier != icon {
-                item.image = icon.flatMap { UIKitRenderer.glyph(named: $0, height: Self.glyphHeight) }
-                item.landscapeImagePhone = icon.flatMap { UIKitRenderer.glyph(named: $0, height: Self.lowGlyphHeight) }
+            let icon = tab.icon
+            if item.image?.accessibilityIdentifier != icon?.identity {
+                item.image = icon.flatMap { UIKitRenderer.glyph($0, height: Self.glyphHeight) }
+                item.landscapeImagePhone = icon.flatMap { UIKitRenderer.glyph($0, height: Self.lowGlyphHeight) }
             }
         }
         _ = choice.request(requested)

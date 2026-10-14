@@ -31,7 +31,7 @@ final class UIKitDriver: HostDriver {
             "read growsWithText of TextEditor":
                 "an editor's growing is StateUI's measuring, which no property of UIKit's holds; its frames prove it",
         ]
-        for shape in ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
+        for shape in ["Capsule", "Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
             for member in ["contentMode", "geometryTransform"] {
                 none["read \(member) of \(shape)"] =
                     "StateUI places and moves a shape's figure into its layer's path, which holds no \(member); its drawing proves it"
@@ -97,11 +97,31 @@ final class UIKitDriver: HostDriver {
     /// A menu item's action in the menu UIKit is handed now - the menu bar's, or the context menu of the view it
     /// stands under.
     func menuAction(of element: MountedElement) -> UIAction? {
+        builtMenus(around: element)
+        return (element.native as? UIKitElement)?.menuAction
+    }
+
+    /// The key commands among `elements` and in their submenus, in order.
+    static func keyCommands(in elements: [UIMenuElement]) -> [UIKeyCommand] {
+        elements.flatMap { element -> [UIKeyCommand] in
+            if let command = element as? UIKeyCommand { return [command] }
+            return (element as? UIMenu).map { keyCommands(in: $0.children) } ?? []
+        }
+    }
+
+    /// A menu's entry stating a shortcut, as the menu UIKit is handed now holds it: a key command.
+    func menuCommand(of element: MountedElement) -> UIKeyCommand? {
+        builtMenus(around: element)
+        return (element.native as? UIKitElement)?.menuCommand
+    }
+
+    /// Builds the menus `element` stands in, as UIKit asks for them: the menu bar's, or the context menu of the view
+    /// it stands under.
+    private func builtMenus(around element: MountedElement) {
         _ = renderer?.menuBar
         var holder = element.parent
         while let each = holder, (each.native as? UIKitElement)?.view == nil { holder = each.parent }
         _ = (holder?.native as? UIKitElement)?.builtContextMenu
-        return (element.native as? UIKitElement)?.menuAction
     }
 
     /// What the hosts wrote to their log since the driver last started one.
@@ -203,6 +223,20 @@ final class UIKitDriver: HostDriver {
         if element.type == .marker { return try performOnMarker(act, element) }
         let view = (element.native as? UIKitElement)?.view
         switch (act, view) {
+        case (.pressKeys(let shortcut), _):
+            // The key command the element's window offers for the shortcut, performed as UIKit performs it - else a
+            // menu bar's entry's, which UIKit sends up the responder chain to the root after text takes a key typed.
+            guard let root = Self.windowRoot(of: element) else { return }
+            if let command = root.keyCommands?.first(where: { UIKitKeys.shortcut(of: $0) == shortcut }),
+               let action = command.action {
+                _ = root.perform(action, with: command)
+            } else if let command = Self.keyCommands(in: renderer?.menuBar ?? []).first(where: {
+                          UIKitKeys.shortcut(of: $0) == shortcut
+                      }),
+                      !command.attributes.contains(.disabled),
+                      !(KeyboardShortcuts.givesWayToTyping(shortcut) && UIKitFirstResponder.isTyping) {
+                root.chooseMenuEntry(command)
+            }
         case (.tap(let count), let map as UIKitMapView):
             // A tap on a map is the map's, and the view's where it hears taps too.
             try touch(element) { listening, view in Self.tap(listening, on: view, count: count) }
@@ -253,7 +287,7 @@ final class UIKitDriver: HostDriver {
             scroll.scrollViewWillBeginDragging(scroll.scroller)
             scroll.scroller.contentOffset = CGPoint(x: target.x, y: target.y)
             scroll.scrollViewDidEndDragging(scroll.scroller, willDecelerate: false)
-        case (.choose(let place), let picker as UIKitPickerView): picker.userChose(place)
+        case (.choose(let place), let picker as any UIKitChoosing): picker.userChose(place)
         case (.endContent, let web as UIKitWebView):
             // As WebKit tells it when the page's process dies.
             web.navigationDelegate?.webViewWebContentProcessDidTerminate?(web)
@@ -307,7 +341,12 @@ final class UIKitDriver: HostDriver {
             try performOnPages(act, on: element)
         case (.activate, _) where element.type == .toolbarItem: try performOnPages(act, on: element)
         case (.activate, _) where element.type == .menuItem:
-            // The item as the menu UIKit is handed shows it, taken where it can be.
+            // The item as the menu UIKit is handed shows it, taken where it can be: a key command up the responder
+            // chain to the window's root, an action to its handler.
+            if let command = menuCommand(of: element) {
+                if !command.attributes.contains(.disabled) { Self.windowRoot(of: element)?.chooseMenuEntry(command) }
+                return
+            }
             guard let action = menuAction(of: element) else { throw DriverCannot(act, on: element) }
             if !action.attributes.contains(.disabled) { UIButton().sendAction(action) }
         case (.tap(let count), _): try touch(element) { listening, view in Self.tap(listening, on: view, count: count) }
@@ -358,6 +397,10 @@ final class UIKitDriver: HostDriver {
         case (.selectedItems, let items as UIKitItemsView): return .strings(items.selectedForTesting)
         case (.selectionMode, let items as UIKitItemsView): return items.modeForTesting.propValue
         case (.text, let label as UIKitTextView): return (label.text ?? "").propValue
+        case (.text, let label as UIKitSelectableTextView): return (label.text ?? "").propValue
+        // A label selects nothing; selectable words stand in a text view.
+        case (.isSelectable, is UIKitTextView): return false.propValue
+        case (.isSelectable, let label as UIKitSelectableTextView): return label.isSelectable.propValue
         case (.text, let field as any UIKitTextInputView): return field.words.propValue
         case (.cursorPosition, let field as any UIKitTextInputView): return field.selection.start.propValue
         case (.selectionLength, let field as any UIKitTextInputView): return field.selection.length.propValue
@@ -399,8 +442,8 @@ final class UIKitDriver: HostDriver {
             return alignments.first { $0.0 == picker.contentHorizontalAlignment }?.1.propValue
         case (.tint, let picker as UIKitPickerView):
             return picker.configuration?.indicatorColorTransformer.map { Self.color($0(.label)).propValue }
-        case (.selectedIndex, let picker as UIKitPickerView): return picker.chosen.map(\.propValue)
-        case (.options, let picker as UIKitPickerView): return picker.choices.propValue
+        case (.selectedIndex, let picker as any UIKitChoosing): return (picker.chosen ?? -1).propValue
+        case (.options, let picker as any UIKitChoosing): return picker.choices.propValue
         case (.placeholder, let picker as UIKitPickerView): return picker.title.propValue
         case (.date, let picker as UIKitDatePickerView): return picker.day.propValue
         case (.time, let picker as UIKitTimePickerView): return picker.time.propValue
@@ -448,6 +491,13 @@ final class UIKitDriver: HostDriver {
             throw DriverCannot(reading: property, of: element)
         default: throw DriverCannot(reading: property, of: element)
         }
+    }
+
+    /// The root of the window `element` stands in, which offers the window's key commands.
+    static func windowRoot(of element: MountedElement) -> UIKitRootViewController? {
+        var each: MountedElement? = element
+        while let current = each, (current.native as? UIKitElement)?.view?.window == nil { each = current.parent }
+        return (each?.native as? UIKitElement)?.view?.window?.rootViewController as? UIKitRootViewController
     }
 }
 

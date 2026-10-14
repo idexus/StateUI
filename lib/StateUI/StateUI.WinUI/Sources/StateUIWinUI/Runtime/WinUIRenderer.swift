@@ -130,6 +130,7 @@ final class WinUIRenderer {
     func start(restoringKept: Bool = false, turns: () -> Void = {}) {
         runtime.start(
             realizing: WinUIRegistrations.registry.realization, unrealized: WinUIRealization.unmade,
+            register: WinUIRealization.register,
             environment: { WinUIEnvironment.report(to: runtime.core) },
             kept: { if restoringKept { WinUIPersistence.restore(into: runtime.core) } },
             windows: { scenes.restore(WinUIPersistence.readScenes(), in: runtime) },
@@ -183,6 +184,10 @@ extension WinUIRenderer: HostPresenter {
 
     func perform(_ call: HostActCall) {
         acts.perform(call)
+    }
+
+    func focus(_ element: MountedElement) {
+        acts.focus(element)
     }
 }
 

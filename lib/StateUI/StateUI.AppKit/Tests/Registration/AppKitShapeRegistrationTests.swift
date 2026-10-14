@@ -8,7 +8,7 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
-/// The shapes and the colour box, realized through the registry: six elements
+/// The shapes, realized through the registry: six elements
 /// over one native view, each registration knowing only the geometry it is,
 /// and the stroke, fill and transform they share coming from the one tier they
 /// all wear.
@@ -23,7 +23,7 @@ final class AppKitShapeRegistrationTests: XCTestCase {
         let realization = AppKitRegistrations.registry.realization
 
         XCTAssertTrue(realization.elements.isSuperset(of: [
-            "Rectangle", "Ellipse", "Line", "Path", "Polygon", "Polyline", "ColorBox",
+            "Rectangle", "Capsule", "Ellipse", "Line", "Path", "Polygon", "Polyline",
         ]))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "Rectangle", owner: "Rectangle", member: "cornerRadius")))
@@ -33,32 +33,26 @@ final class AppKitShapeRegistrationTests: XCTestCase {
             HostRealizedMember(element: "Path", owner: "Path", member: "data")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "Polygon", owner: "Polygon", member: "fillRule")))
-        XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "ColorBox", owner: "ColorBox", member: "color")))
     }
 
     /// What the shapes SHARE is recorded on every one of them, from the single
-    /// tier they wear - and an element that wears no such tier claims none of
-    /// it.
+    /// tier they wear; a fill only on a shape enclosing an area, and a line,
+    /// which encloses none, claims none.
     @MainActor
     func testTheSharedStrokeAndFillAreRecordedOnEveryShape() {
         let realization = AppKitRegistrations.registry.realization
 
-        for shape in ["Rectangle", "Ellipse", "Line", "Path", "Polygon", "Polyline"] {
+        for shape in ["Rectangle", "Capsule", "Ellipse", "Line", "Path", "Polygon", "Polyline"] {
             XCTAssertTrue(
                 realization.members.contains(
                     HostRealizedMember(element: shape, owner: "Shape", member: "stroke")),
                 "\(shape) draws the stroke its tier declares")
-            XCTAssertTrue(
+            XCTAssertEqual(
                 realization.members.contains(
-                    HostRealizedMember(element: shape, owner: "Shape", member: "fill")),
+                    HostRealizedMember(element: shape, owner: "FilledShape", member: "fill")),
+                shape != "Line",
                 "\(shape) draws the fill its tier declares")
         }
-
-        XCTAssertFalse(
-            realization.members.contains(
-                HostRealizedMember(element: "ColorBox", owner: "Shape", member: "stroke")),
-            "a colour box wears no Shape, and claims nothing of it")
     }
 
     /// An ellipse has no geometry of its own to describe, and is registered all

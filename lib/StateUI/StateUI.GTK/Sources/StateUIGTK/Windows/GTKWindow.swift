@@ -95,7 +95,28 @@ final class GTKWindow {
             connectNotify(UnsafeMutableRawPointer(surface), "state", number: viewNumber(data)) { _, _, data in
                 MainActor.assumeIsolated { GTKRenderer.shared?.windowStateChanged(number: viewNumber(data)) }
             }
+            // After GTK lays the window out in a frame, what reads a frame says where it stands, and what that
+            // changes is laid out again before the frame is drawn: the frame clock repeats its layout for it.
+            // Design: docs/design/host/runtime.md#where-a-view-stands
+            if let clock = gtk_widget_get_frame_clock(native.assumingMemoryBound(to: GtkWidget.self)) {
+                connectSignal(UnsafeMutableRawPointer(clock), "layout", number: viewNumber(data)) { clock, data in
+                    guard let clock else { return }
+                    MainActor.assumeIsolated { GTKWindow.reportLaidOut(OpaquePointer(clock), window: viewNumber(data)) }
+                }
+            }
         }
+    }
+
+    /// The frame each window's readers last said where they stand in, by the window's number.
+    private static var reported: [Int64: Int64] = [:]
+
+    /// Lets what reads a frame say where it stands, once a frame of `clock`, the clock of the window numbered
+    /// `window`: the layout that what they say changes repeats once, and ends.
+    static func reportLaidOut(_ clock: OpaquePointer, window: Int64) {
+        let frame = Int64(gdk_frame_clock_get_frame_counter(clock))
+        guard reported[window] != frame else { return }
+        reported[window] = frame
+        _ = GTKRenderer.shared?.runtime.frames.reportLaidOut()
     }
 
     /// Whether the window is active and whether it stands minimized, as it last told them.

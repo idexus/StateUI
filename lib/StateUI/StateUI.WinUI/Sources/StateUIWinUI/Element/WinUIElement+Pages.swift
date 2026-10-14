@@ -28,6 +28,7 @@ extension WinUIElement {
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
         case .splitView:
             guard let split = view as? WinUISplitView else { return }
+            if let host { split.slide(on: host.runtime.sidebarSlide, mount: element.mount) }
             // The split's first room is decided inside a layout pass, and said once the pass is over.
             split.onPresentationChanged = { [weak self] presented in
                 WinUIRenderer.afterLayout { [weak self] in self?.sidebarShown(presented) }

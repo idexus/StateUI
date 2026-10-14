@@ -42,6 +42,8 @@ extension AndroidDriver {
         switch property {
         case .showsNavigationBar:
             return Java.callStaticBool(testBars, barShown, .object(bar.reference)).propValue
+        case .showsTitle:
+            return Java.callStaticBool(testBars, barTitled, .object(bar.reference)).propValue
         case .showsBackButton:
             let words = Java.frame {
                 Java.callStaticObject(testBars, barNavigation, .object(bar.reference)).map { Java.text($0) }
@@ -56,6 +58,7 @@ extension AndroidDriver {
     private static let barNavigation = Java.staticMethod(
         testBars, "navigation", "(Landroid/widget/Toolbar;)Ljava/lang/String;")
     private static let barShown = Java.staticMethod(testBars, "shown", "(Landroid/widget/Toolbar;)Z")
+    private static let barTitled = Java.staticMethod(testBars, "titled", "(Landroid/widget/Toolbar;)Z")
     private static let barSubtitle = Java.staticMethod(
         testBars, "subtitle", "(Landroid/widget/Toolbar;)Ljava/lang/String;")
     private static let barBackground = Java.staticMethod(testBars, "background", "(Landroid/widget/Toolbar;)I")

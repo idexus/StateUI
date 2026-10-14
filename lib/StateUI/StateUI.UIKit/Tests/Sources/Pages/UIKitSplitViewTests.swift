@@ -58,8 +58,9 @@ final class UIKitSplitViewTests: XCTestCase {
         XCTAssertEqual(chrome(split.children.dropFirst().first), "")
     }
 
-    /// A sidebar the application paints stands on UIKit's plain column, which UIKit parts from the detail by its
-    /// own separator; the platform's own sidebar stays on UIKit's sidebar material.
+    /// A sidebar the application paints stands apart from the detail by a line of UIKit's separator colour down its
+    /// edge, and on UIKit's sidebar material all the same - under which the detail's column slides with the sidebar
+    /// as it shows and hides; UIKit's plain column parts them by its own line, and its detail jumps to its width.
     @MainActor
     func testASidebarTheApplicationPaintsStandsApartFromTheDetail() throws {
         let painted = State(wrappedValue: true)
@@ -72,12 +73,16 @@ final class UIKitSplitViewTests: XCTestCase {
             }
         }
         defer { host.finish() }
-        let split = { Self.controller(of: .splitView, in: host) as? UISplitViewController }
+        let split = { Self.controller(of: .splitView, in: host) as? UIKitSplitViewController }
         host.settle { split()?.view.window != nil }
-        XCTAssertEqual(split()?.primaryBackgroundStyle, UISplitViewController.BackgroundStyle.none, "the plain column")
+        XCTAssertEqual(split()?.primaryBackgroundStyle, .sidebar, "UIKit's sidebar material, its columns sliding together")
+        let sidebar = try XCTUnwrap(split()?.viewController(for: .primary)?.view)
+        XCTAssertTrue(split()?.separator.superview === sidebar, "a line down the sidebar's edge")
+        XCTAssertEqual(split()?.separator.backgroundColor, .opaqueSeparator)
 
         painted.wrappedValue = false
-        host.settle { split()?.primaryBackgroundStyle == .sidebar }
+        host.settle { split()?.separator.superview == nil }
+        XCTAssertNil(split()?.separator.superview, "the platform's own sidebar draws no line of the host's")
         XCTAssertEqual(split()?.primaryBackgroundStyle, .sidebar, "the platform's own sidebar")
     }
 
@@ -105,7 +110,22 @@ final class UIKitSplitViewTests: XCTestCase {
     /// stands, never grown from nothing with the sidebar's slide.
     @MainActor
     func testAPagePushedAsTheSidebarGoesIsNotGrownFromNothing() throws {
-        let path = State(wrappedValue: [Int]())
+        try assertStandsAtOnce(from: [], to: [1])
+    }
+
+    /// A page taking the top's place as the sidebar goes - another group chosen from the menu - stands at once too.
+    @MainActor
+    func testAPageReplacingTheTopAsTheSidebarGoesIsNotGrownFromNothing() throws {
+        try assertStandsAtOnce(from: [1], to: [2])
+    }
+
+    /// The stack's top page, its path moved from `before` to `after` as the sidebar goes, stands where it is laid
+    /// out from its first frame - a page taking the top's place laid out as the slide begins - and fills its column
+    /// once the slide ends.
+    private func assertStandsAtOnce(
+        from before: [Int], to after: [Int], file: StaticString = #filePath, line: UInt = #line
+    ) throws {
+        let path = State(wrappedValue: before)
         let menuOpen = State(wrappedValue: true)
         let host = UIKitRenderer.running {
             SplitView(menuOpen.projectedValue) { Text("Sidebar") } detail: {
@@ -114,13 +134,23 @@ final class UIKitSplitViewTests: XCTestCase {
         }
         defer { host.finish() }
         let split = try XCTUnwrap(Self.controller(of: .splitView, in: host) as? UISplitViewController)
-        host.settle { split.view.window != nil && split.displayMode != .secondaryOnly }
+        let stack = try XCTUnwrap(Self.controller(of: .navigationStack, in: host) as? UINavigationController)
+        host.settle {
+            split.view.window != nil && split.displayMode != .secondaryOnly && stack.transitionCoordinator == nil
+        }
 
-        path.wrappedValue = [1]
+        path.wrappedValue = after
         menuOpen.wrappedValue = false
         host.runtime.pump.turn()
 
-        let words = try XCTUnwrap(host.views(UIKitTextView.self).first { $0.attributedText?.string == "Group 1" })
+        let top = "Group \(after.last ?? 0)"
+        let words = try XCTUnwrap(host.views(UIKitTextView.self).first { $0.attributedText?.string == top })
+        if before.count == after.count {
+            // Shown without a move, the page stands laid out as the slide begins, which carries it from its place.
+            XCTAssertNotNil(words.window, "the page stands in the window as the slide begins", file: file, line: line)
+            XCTAssertGreaterThan(words.bounds.width, 0, "the page is laid out as the slide begins",
+                                 file: file, line: line)
+        }
         var grown: [String] = []
         var each: UIView? = words
         while let view = each {
@@ -132,13 +162,13 @@ final class UIKitSplitViewTests: XCTestCase {
             }
             each = view.superview
         }
-        XCTAssertEqual(grown, [], "the page stands where it is laid out, from its first frame")
+        XCTAssertEqual(grown, [], "the page stands where it is laid out, from its first frame", file: file, line: line)
 
-        let stack = try XCTUnwrap(Self.controller(of: .navigationStack, in: host) as? UINavigationController)
         host.settle { split.transitionCoordinator == nil && stack.transitionCoordinator == nil }
         RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.5))
         let page = try XCTUnwrap(stack.topViewController?.view)
-        XCTAssertEqual(page.convert(page.bounds, to: stack.view), stack.view.bounds, "the page fills its column")
+        XCTAssertEqual(page.convert(page.bounds, to: stack.view), stack.view.bounds, "the page fills its column",
+                       file: file, line: line)
     }
 
     /// A detail the tree replaces - a stack with pages pushed on it by tabs, the stack emptied in the same move, once

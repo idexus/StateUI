@@ -33,7 +33,7 @@ extension SliderProperties {
 /// number it shows that, and `.onValueChanged` is how the drag gets anywhere.
 ///
 /// The range is 0 to 1 until `.minimum` and `.maximum` say otherwise.
-public struct Slider: ElementView, TintElement, SliderProperties {
+public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 
@@ -94,7 +94,7 @@ public struct Slider: ElementView, TintElement, SliderProperties {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onValueChanged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onValueChanged(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
         fatalError("unavailable")
     }
@@ -112,7 +112,7 @@ public struct Slider: ElementView, TintElement, SliderProperties {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPressed(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPressed(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onPressed(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }
@@ -130,7 +130,7 @@ public struct Slider: ElementView, TintElement, SliderProperties {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onReleased(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onReleased(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onReleased(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

@@ -11,7 +11,7 @@ public enum ScrollViewContract: ElementContract {
 
     /// A scroller is a view, padded around what it holds.
     public static let tiers: [any Contract.Type] = [
-        ViewContract.self, PaddingElementContract.self, BorderElementContract.self,
+        ViewContract.self, PaddingElementContract.self, BorderElementContract.self, FocusElementContract.self,
     ]
 
     /// Whether the bar along the bottom is drawn.

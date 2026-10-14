@@ -114,16 +114,16 @@ struct ArrangedBeneath: View {
                     Text("Sections")
                 } detail: {
                     NavigationStack(path.projectedValue) {
-                        ColorBox(Color("#0F766E")).id("root")
+                        Rectangle().fill(Color("#0F766E")).id("root")
                     } destination: { _ in
-                        ColorBox(Color("#C2410C")).id("pushed")
+                        Rectangle().fill(Color("#C2410C")).id("pushed")
                     }
                 }
             } else {
-                ColorBox(Color("#374151")).id("first")
+                Rectangle().fill(Color("#374151")).id("first")
             }
         } destination: { _ in
-            ColorBox(Color("#512BD4")).width(240).height(160).id("sheet")
+            Rectangle().fill(Color("#512BD4")).width(240).height(160).id("sheet")
         }
     }
 }

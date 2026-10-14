@@ -14,12 +14,16 @@
     /// The place a layout gave the mounted element with this key.
     case placed(UInt64)
 
-    /// States first, then described properties, then places; each in key order.
+    /// How far the sidebar of the split view mounted with this key has slid in.
+    case slide(UInt64)
+
+    /// States first, then described properties, then places, then slides; each in key order.
     public static func < (left: Self, right: Self) -> Bool {
         switch (left, right) {
         case (.state(let a), .state(let b)): return a < b
         case (.described(let a), .described(let b)): return a < b
         case (.placed(let a), .placed(let b)): return a < b
+        case (.slide(let a), .slide(let b)): return a < b
         default: return left.rank < right.rank
         }
     }
@@ -29,6 +33,7 @@
         case .state: return 0
         case .described: return 1
         case .placed: return 2
+        case .slide: return 3
         }
     }
 }

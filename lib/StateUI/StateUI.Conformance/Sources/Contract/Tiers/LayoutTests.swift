@@ -33,7 +33,7 @@
                 VStack {
                     ZStack {
                         Holding.layout(element, clips: clips.wrappedValue, width: 40, height: 40) {
-                            ColorBox(.red).width(20).height(20).horizontalAlignment(.start).verticalAlignment(.start)
+                            Rectangle().fill(.red).width(20).height(20).horizontalAlignment(.start).verticalAlignment(.start)
                                 .translationX(30).translationY(30)
                         }
                     }
@@ -44,13 +44,13 @@
                 .verticalAlignment(.start)
             }
             let room = try s.element("room")
-            try s.settle { try s.color(of: room, at: Point(45, 45)) == .red }
-            s.expect(try s.color(of: room, at: Point(45, 45)), .red, "past its edge, shown")
+            try s.settle { try s.shows(.red, on: room, at: Point(45, 45)) }
+            s.expect(try s.color(of: room, at: Point(45, 45)), shows: .red, "past its edge, shown")
 
             try s.perform(.activate, on: s.element("change"))
             try s.settle { try s.color(of: room, at: Point(45, 45)) == nil }
             s.expect(try s.color(of: room, at: Point(45, 45)), nil, "cut once it clips")
-            s.expect(try s.color(of: room, at: Point(35, 35)), .red, "inside, still shown")
+            s.expect(try s.color(of: room, at: Point(35, 35)), shows: .red, "inside, still shown")
         }
     }
 
@@ -64,9 +64,9 @@
             s.start {
                 VStack {
                     ZStack {
-                        ColorBox(.blue).id("beneath")
+                        Rectangle().fill(.blue).id("beneath")
                         Holding.layout(element, through: through.wrappedValue) {
-                            ColorBox(.red).width(20).height(20).horizontalAlignment(.start).verticalAlignment(.start)
+                            Rectangle().fill(.red).width(20).height(20).horizontalAlignment(.start).verticalAlignment(.start)
                         }
                     }
                     .width(100).height(100)

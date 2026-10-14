@@ -81,7 +81,7 @@ automation script activates the row without a pointer. Give such a view a
 @State private var x = 0.0
 @State private var scale = 1.0
 
-ColorBox(.cornflowerBlue)
+Rectangle(.cornflowerBlue)
     .translationX(x)
     .scale(scale)
     .onPanUpdated { update in
@@ -165,9 +165,10 @@ The differ fills the aim with the element identity after the view has rendered.
 One aim names one view. Calling through an aim that reached no view, was placed
 on two views, or refers to a view that has left fails explicitly.
 
-The type parameter limits methods to the controls that support them. Common
-focus methods exist on every aim; specialized surfaces add methods such as
-history navigation or map movement. `.id(...)` and `.aim(...)` can be used
+The type parameter limits methods to the controls that support them. `focus()`
+and `unfocus()` exist on the aim of a control that takes the focus - a field, a
+button, a list - never on a text or a stack, which cannot; specialized surfaces
+add methods such as history navigation or map movement. `.id(...)` and `.aim(...)` can be used
 together because they answer different questions: identity says which element
 continues, while the aim says where an action goes.
 
@@ -378,6 +379,203 @@ wires its sources unconditionally. The head declares what it raises,
 `StateUIEvents.raises(NotesContract.importFinished)`, and a subscription to an
 event no head declared is said once, as a misspelled name would be.
 
+## Keyboard shortcuts
+
+A button presses from the keyboard while its window is in front:
+
+```swift
+struct Editor: View {
+    @State private var saved = 0
+
+    var body: some View {
+        HStack {
+            Button("Save")
+                .keyboardShortcut("s")
+                .onClicked { saved += 1 }
+            Button("Send")
+                .keyboardShortcut(.return, modifiers: [])
+                .onClicked { saved += 1 }
+        }
+    }
+}
+```
+
+A shortcut is a `Key` - a character, `"s"`, or one of `.return`, `.escape`,
+`.delete`, the arrows and `.f1` to `.f12` - with the keys held with it, or with
+none: `keyboardShortcut("1", modifiers: [])` presses a button on the key `1`
+alone, except while a field is being typed into, where the `1` is written -
+and Return there ends what was typed.
+`.primary` alone is held unless the shortcut says otherwise: Command on Apple's
+platforms, Control on Windows, Linux and Android, so one `keyboardShortcut("s")`
+is ⌘S on the Mac and Ctrl+S elsewhere; `.shift` and `.alt` add Shift and
+Option or Alt. A disabled button's shortcut presses nothing, and a button on
+a page out of sight - beneath a stack's top, behind another tab - takes none.
+Two controls in one window stating the same shortcut is said in debug: which of
+them acts is then not yours to choose.
+
+A menu bar's entry and a bar's item take a shortcut the same way, and the
+shortcut chooses them as a click does; a menu shows it beside the entry's
+words:
+
+```swift
+struct Document: View {
+    @State private var exported = 0
+
+    var body: some View {
+        Text("Exported \(exported) times")
+            .contextMenu {
+                MenuItem("Export…")
+                    .keyboardShortcut("e", modifiers: [.primary, .shift])
+                    .onClicked { exported += 1 }
+            }
+            .menuBar {
+                Menu("File") {
+                    MenuItem("Export…")
+                        .keyboardShortcut("e", modifiers: [.primary, .shift])
+                        .onClicked { exported += 1 }
+                }
+                .id(StandardMenu.file)
+            }
+            .toolbar {
+                ToolbarItem("Mark")
+                    .keyboardShortcut("m")
+                    .onClicked { exported += 1 }
+            }
+    }
+}
+```
+
+A context menu's entry only shows its shortcut, telling the user the keys of
+the command it repeats; pressing them chooses the menu bar's entry, never the
+context menu's.
+
+### A button's role
+
+A role says what a button stands for in its window, and gives it a key:
+
+```swift
+struct Rename: View {
+    @State private var name = ""
+    @State private var renamed = false
+
+    var body: some View {
+        VStack {
+            TextField($name)
+                .onSubmitted { renamed = true }
+            HStack {
+                Button("Cancel")
+                    .role(.cancel)
+                    .onClicked { name = "" }
+                Button("Rename")
+                    .role(.primary)
+                    .onClicked { renamed = true }
+            }
+        }
+    }
+}
+```
+
+`.primary` is the window's main action: filled in the platform's accent and
+pressed by Return. `.cancel` is the way out, pressed by Escape, and stands as
+the platform's plain button. `.destructive` marks an action that destroys
+something: its words stand in the platform's colour for one - the red its
+alerts and menus give such an action. A fill or a colour of words the button
+is given, by a style or itself, takes the place of its role's, and
+`Style<Button>(role:)` styles a role in an application's own look. A
+shortcut the button states takes the place of its role's key. Return belongs
+to a field being typed into - it ends the words there, and `.onSubmitted`
+hears it - so the main action takes Return while no field holds the keyboard.
+
+### A button's menu
+
+A button can hold a menu, written as a menu is. How it opens is one of three
+kinds:
+
+```swift
+struct Document: View {
+    @State private var last = ""
+
+    var body: some View {
+        HStack {
+            Button("Share").menu {
+                MenuItem("Mail").onClicked { last = "mail" }
+                MenuItem("Message").onClicked { last = "message" }
+            }
+            Button("Save")
+                .onClicked { last = "saved" }
+                .menu { MenuItem("Save as…").onClicked { last = "saved as" } }
+            Button("Open")
+                .onClicked { last = "opened" }
+                .menu(.held) { MenuItem("Open recent").onClicked { last = "recent" } }
+        }
+    }
+}
+```
+
+- With no `.onClicked`, a click opens the menu, and an arrow pointing down
+  after the words says so. `.showsMenuArrow(false)` takes the arrow away - an
+  icon alone opening a menu.
+- With one, the button splits: its click is its own action, and an arrow of
+  its own beside it opens the menu. `.menu(.split) { }` splits a button with
+  no action too.
+- `.menu(.held) { }` keeps the click the button's own and opens the menu when
+  the user holds the button - a mouse button or a finger held down; on Windows
+  and in a browser, as the user asks for any menu there: a finger held still or
+  the mouse's other button. It shows no arrow.
+
+A button holding a menu offers no context menu of its own.
+
+### A view's keys
+
+A control taking the focus, and a layout holding one, hears the keys it names
+while it holds the keyboard:
+
+```swift
+struct Search: View {
+    @State private var query = ""
+    @State private var row = 0
+
+    var body: some View {
+        VStack {
+            TextField($query)
+            Text("Row \(row)")
+        }
+        .onKeyPressed(.upArrow, .downArrow, .escape) { key in
+            if key == .escape {
+                query = ""
+            } else {
+                row += key == .upArrow ? -1 : 1
+            }
+        }
+    }
+}
+```
+
+The nearest view naming a key takes it, out from the one holding the
+keyboard; with nothing holding it, the page's content does. A taken key
+reaches nothing else - the field above keeps its caret where it was - and
+every other key goes on as before. A text, a picture or a shape never holds
+the keyboard, so it offers no `onKeyPressed`. A key held with the platform's
+own key or Alt belongs to shortcuts. `.onKeyPressed(.escape, gate:
+.ignoreWhileRunning) { _ in try await close() }` takes a handler that awaits.
+
+## Tooltips
+
+`tooltip` gives any view words the platform shows beside it while the pointer
+rests on it:
+
+```swift
+Button(icon: "trash.png")
+    .accessibilityLabel("Delete")
+    .tooltip("Moves the file to the bin")
+```
+
+The Mac, Windows, Linux and the Web show it after their own delay, and Android
+after a long press too. An iPhone and an iPad show none, so nothing a view
+needs to be used is said only in its tooltip. A tooltip is no
+accessible name: a button that is only a picture still carries an
+`accessibilityLabel`.
+
 ## Accessibility and automation
 
 Accessibility modifiers describe meaning, not test-only metadata:
@@ -397,7 +595,9 @@ Use `isAccessibilityHidden` and
 semantics require it.
 
 `accessibilityIdentifier` is an external stable identifier for UI automation. It is not
-the tree's `.id`, and assigning one does not change StateUI identity.
+the tree's `.id`, and assigning one does not change StateUI identity. A view, a
+menu's entry, a bar's item and a page arrangement take one; a run of text and a
+style do not, as automation never meets a run and a style dresses many controls.
 
 Announce an important asynchronous change that has no visible focused element:
 

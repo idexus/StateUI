@@ -8,23 +8,28 @@
 @_spi(Host) public enum LibraryContracts {
     /// The tiers, in the dictionary's order.
     public static let tiers: [any Contract.Type] = [
-        PropertyContainerContract.self,
+        AutomationElementContract.self,
         VisualElementContract.self,
         ViewContract.self,
         LayoutContract.self,
         StackContract.self,
         TextInputContract.self,
         ShapeContract.self,
+        FilledShapeContract.self,
+        CorneredShapeContract.self,
         TextualElementContract.self,
         TextStyleElementContract.self,
         FontElementContract.self,
         TextAlignmentElementContract.self,
         LineHeightElementContract.self,
+        TrackingElementContract.self,
         DecorableTextElementContract.self,
         PaddingElementContract.self,
         BorderElementContract.self,
         ImageElementContract.self,
         TintElementContract.self,
+        KeyboardElementContract.self,
+        FocusElementContract.self,
         BarElementContract.self,
         MenuItemElementContract.self,
         PageElementContract.self,
@@ -33,17 +38,18 @@
     /// Every element: one contract per node type the library declares.
     public static let elements: [any ElementContract.Type] = [
         ActivityIndicatorContract.self, ApplicationContract.self,
-        ButtonContract.self, CanvasContract.self, CheckBoxContract.self,
-        ColorBoxContract.self, ContextMenuContract.self, DatePickerContract.self,
+        ButtonContract.self, ButtonMenuContract.self, CanvasContract.self, CapsuleContract.self, CheckBoxContract.self,
+        ContextMenuContract.self, DatePickerContract.self,
         EllipseContract.self, GridContract.self, HStackContract.self, ImageContract.self, ItemsViewContract.self,
         TextContract.self,
         LineContract.self, MapContract.self, MenuBarContract.self,
-        MenuContract.self, MenuItemContract.self, DividerContract.self, ModalStackContract.self,
+        MenuContract.self, MenuItemContract.self, MenuSeparatorContract.self, DividerContract.self,
+        ModalStackContract.self,
         NavigationStackContract.self, OverlayContract.self, PageContract.self, PathContract.self,
         PickerContract.self, MarkerContract.self, PolygonContract.self, PolylineContract.self,
         ProgressBarContract.self, RadioButtonContract.self,
         RectangleContract.self, SceneContract.self, ScrollViewContract.self,
-        SearchFieldContract.self, SliderContract.self, TextSpanContract.self,
+        SearchFieldContract.self, SliderContract.self, SpacerContract.self, TextSpanContract.self,
         TextSpansContract.self, SplitViewContract.self, StepperContract.self, SwitchContract.self,
         TabViewContract.self, TextEditorContract.self, TextFieldContract.self, TimePickerContract.self,
         TitleViewContract.self, ToolbarItemContract.self, ToolbarItemGroupContract.self,
@@ -69,6 +75,12 @@
 
         return facts
     }()
+}
+
+extension LibraryContracts {
+    /// The properties another value of which makes the element anew, in their names' order.
+    /// Design: docs/design/core/identity-and-diffing.md#another-kind-of-view
+    static let remaking: [Prop] = facts.filter { $0.value.remakes }.keys.sorted()
 }
 
 extension Prop {

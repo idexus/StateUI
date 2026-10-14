@@ -22,10 +22,11 @@
 /// What the user does to an element's native control, carried into the runtime alike on every host.
 /// Design: docs/design/host/runtime.md#a-users-change
 extension MountedElement {
-    /// An event the control raised, with what it carries, to the handler the tree listens with.
+    /// An event the control raised, with what it carries, to the handler the tree listens with; a field submitted
+    /// whose return says Next hands the keyboard on (`NextField`).
     public func send(_ event: Event, _ values: [HostValue], in runtime: HostRuntime) {
-        guard let handler = handler(event) else { return }
-        runtime.dispatch(handler, payload: values)
+        if let handler = handler(event) { runtime.dispatch(handler, payload: values) }
+        if event == .submitted, let next = NextField.after(self) { runtime.presenter?.focus(next) }
     }
 
     /// A value the user changed: onto the state carrying it, then the event with it. A radio button checked takes

@@ -1,6 +1,6 @@
 # Drawing on GTK
 
-What the GTK host draws itself: a layout's box, a colour box, and a child
+What the GTK host draws itself: a layout's box, a shape, and a child
 placed by an engine's run. Each is a `StateUIPanel` whose snapshot the host
 answers ([the C API](c-api.md#a-subclass-from-swift)).
 
@@ -12,16 +12,13 @@ size, a radial one a circle reaching as far across as down
 ([brushes](../../types/brushes.md#geometry-in-fractions)) - inside the
 outline, then the outline's stroke inside its edge, so the
 stroke never spills over the place the layout was given. The outline is a
-rectangle, a rectangle with rounded corners, or an ellipse, each GSK's
-rounded rectangle. A stroke is drawn in one colour: a gradient's first stop.
+rectangle, a rectangle with rounded corners, a capsule or an ellipse, each
+GSK's rounded rectangle. A stroke is drawn in one colour: a gradient's first stop.
 
 A layout that clips cuts what it holds to its outline as it draws it, and
 its widget's overflow is hidden (`gtk_widget_set_overflow`), so a child cut
 away also takes no click. A layout
 that does not clip cuts nothing.
-
-A colour box is a panel of one colour, its corners rounded each by its own
-radius; it takes the room its layout gives it and asks for none.
 
 ## A view's background
 
@@ -56,6 +53,24 @@ A picture shown as an icon is a `GtkImage` of the file's icon, a given number
 of logical pixels across: GTK reads the file - an SVG through gdk-pixbuf's
 loader - at that size times the display's scale, and again when the scale
 changes.
+
+## Icons
+
+An icon is the theme's symbolic icon, by its freedesktop or Adwaita name
+(`Icon.themeName`). Where the theme holds none - Adwaita draws no heart since
+`emblem-favorite` left it, though Ubuntu's Yaru still does - the host brings
+its own, as GNOME's applications bring theirs: a symbolic SVG of StateUI's
+own drawing, written once to a folder of the user's runtime directory that
+the theme then searches (`GTKOwnIcons`), so an image and a bar find it by
+name alike (`Icon.name(in:)`). An image stands it at the theme's normal icon size, 16
+logical pixels, where nothing gives it room, and fills the room it is placed
+in by its aspect: the theme gives the icon at that size times the display's
+scale, and the image draws it in the colour of the words around it, so a
+button's, a heading's and the dark theme's colours reach it. On a bar it is
+a `GtkImage` of the icon's name, which GTK colours itself.
+
+A picture's bytes are read into a texture as they are given, at one pixel a
+logical pixel.
 
 ## The shapes
 

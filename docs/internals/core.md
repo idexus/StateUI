@@ -134,7 +134,7 @@ turns the nodes into the patch.
   **`ModalStack`** (`Navigation/`) are arrangements: views standing where a
   page stands, which key the pages they hold, whose stack, chosen tab and
   modal stack are state. `Menu`,
-  `MenuItem`, `Divider` and `ToolbarItem` (`Menus/`) are a menu's
+  `MenuItem`, `MenuSeparator` and `ToolbarItem` (`Menus/`) are a menu's
   entries and a page's actions, collected without keys. *Application.*
   ([An arrangement is a view](../design/views/pages.md#an-arrangement-is-a-view),
   [menus](../design/views/builders.md#menus-collect-without-keys);
@@ -413,11 +413,11 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 
 ### Runs
 
-- **`Gate`**, **`GatePolicy`** and **`SharedGate`** are what a handler that
+- **`Gate`**, **`GatePolicy`** and **`Gatekeeper`** are what a handler that
   awaits passes through - what an event that comes while a run is under way
   does: a handler's own policy, or a gate kept in a state and shared by every
   handler and task written with it; **`Task(gate:)`** starts work from code
-  through a shared gate. *Application.*
+  through a gatekeeper. *Application.*
   ([A gate](../design/core/runs.md#a-gate),
   [work started from code](../design/core/runs.md#work-started-from-code))
 - **`RunSlot`**, **`RunOwner`**, **`RunSlots`** and **`EventRegistration`**

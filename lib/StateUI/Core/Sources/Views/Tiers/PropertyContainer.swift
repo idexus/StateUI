@@ -49,19 +49,6 @@ extension PropertyContainer {
     }
 }
 
-extension PropertyContainer {
-    /// A stable name that automation finds this by.
-    ///
-    ///     Button("Save").accessibilityIdentifier("save")
-    ///     ToolbarItem("Home").accessibilityIdentifier("chrome.home")
-    ///
-    /// Nothing shows it and no screen reader says it: it is the handle a UI
-    /// test, a script or an agent asks the platform's automation for. What a
-    /// screen-reader user hears is `.accessibilityLabel`. Keep it stable
-    /// across renders and unique on the page.
-    public func accessibilityIdentifier(_ value: String) -> Modified { setValue(PropertyContainerContract.accessibilityIdentifier, value) }
-}
-
 extension PropertyContainer where Modified == Self {
     /// A copy with one property changed. What every modifier on a control or a
     /// style is built from.

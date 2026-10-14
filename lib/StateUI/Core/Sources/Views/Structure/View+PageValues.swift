@@ -56,6 +56,19 @@ extension View {
         pageSays { $0.twin(PageContract.showsNavigationBar, by: state) }
     }
 
+    /// Whether the page shows its title - false for a page whose own content names it: the title still names the
+    /// window and the way back, and stands on no bar and over no content.
+    ///
+    ///     HomePage().title("Home").showsTitle(false)
+    public func showsTitle(_ value: Bool) -> Modified {
+        pageSays { $0.setValue(PageContract.showsTitle, value) }
+    }
+
+    /// Whether the page shows its title, from a state, `$x`.
+    public func showsTitle(_ state: Binding<Bool>) -> Modified {
+        pageSays { $0.twin(PageContract.showsTitle, by: state) }
+    }
+
     /// Whether the way back is offered while the page is on top - false for a page the user must finish rather than
     /// leave. It controls the stack's own back affordances, not every system way of leaving.
     public func showsBackButton(_ value: Bool) -> Modified {
@@ -90,7 +103,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onAppearing(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onAppearing(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onAppearing(_ handler: @escaping EventHandler) -> Modified {
         fatalError("unavailable")
     }
@@ -107,7 +120,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDisappearing(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDisappearing(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onDisappearing(_ handler: @escaping EventHandler) -> Modified {
         fatalError("unavailable")
     }
@@ -124,7 +137,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigatedTo(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigatedTo(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onNavigatedTo(_ handler: @escaping EventHandler) -> Modified {
         fatalError("unavailable")
     }
@@ -141,7 +154,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigatingFrom(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigatingFrom(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onNavigatingFrom(_ handler: @escaping EventHandler) -> Modified {
         fatalError("unavailable")
     }
@@ -158,7 +171,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigatedFrom(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigatedFrom(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onNavigatedFrom(_ handler: @escaping EventHandler) -> Modified {
         fatalError("unavailable")
     }

@@ -16,7 +16,7 @@ struct MainPage: View {
 
             Text(name.isEmpty ? "Hello, StateUI!" : "Hello, \(name)!")
                 .fontSize(28)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalAlignment(.center)
 
             TextField($name)

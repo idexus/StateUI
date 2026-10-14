@@ -19,7 +19,7 @@ public enum TextFieldContract: ElementContract {
     /// marks.
     public static let isPassword = ElementProperty<Self, Bool>("isPassword", layer: .native)
 
-    /// What the keyboard's return key is captioned.
+    /// What the keyboard's return key is captioned; Next hands the keyboard on to the next field as it submits.
     public static let submitLabel = ElementProperty<Self, SubmitLabel>("submitLabel", layer: .adaptive)
 
     /// Whether the field shows the native button that empties it.

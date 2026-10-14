@@ -9,10 +9,13 @@ extension WinUIElement {
     /// Gives the view its context menu again once the menu changed or went.
     /// Design: docs/design/platforms/winui/pages.md#menus
     func refreshContextMenu() {
-        let menu = children.first { $0.type == .contextMenu }
+        // A button holding a menu offers that one: the menu's items' actions are the view's.
+        let button = (view as? WinUIButtonView).flatMap { $0.opening == .none ? nil : $0 }
+        let menu = children.first { $0.type == (button == nil ? .contextMenu : .buttonMenu) }
         guard contextMenuChanged || (hadContextMenu && menu == nil), let view else { return }
         contextMenuChanged = false
         hadContextMenu = menu != nil
+        if let button { return button.setMenu(WinUIMenu(entries: ButtonMenu.entries(of: element))) }
         view.setContextMenu(WinUIMenu(menu))
     }
 
@@ -22,17 +25,16 @@ extension WinUIElement {
                 host?.runtime.reducesMotion() ?? false
             })
         }
-        if element.isDrawnByParent(in: WinUIRegistrations.registry) { return nil }
+        if element.isDrawnByParent(in: WinUIRegistrations.registry) || element.isViewless { return nil }
         if let registered = WinUIRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
-            reporting: { [weak self] property, event, value in self?.report(property, event, value) }
+            reporting: { [weak self] property, event, value in self?.report(property, event, value) },
+            made: element.made
         ) {
             if let scroll = registered as? WinUIScrollView { follow(scroll) }
             return registered
         }
-        guard !NodeType.viewlessTypes.contains(type) else { return nil }
-
         switch type {
         case .page, .overlay: return WinUISingleChildView()
         case .navigationStack: return WinUINavigationView()
@@ -74,6 +76,7 @@ extension WinUIElement {
             case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
             // Ignored, the view and all in it are passed over: a click goes to what is under it.
             case .ignoresInput: view.setIgnoresInput(element.bool(.ignoresInput) == true)
+            case .tooltip: view.setTooltip(element.string(.tooltip))
             case .background:
                 view.setBackground(HostMaterial(value(.background)).painted)
                 (parent?.view as? WinUISplitView)?.paintPane()

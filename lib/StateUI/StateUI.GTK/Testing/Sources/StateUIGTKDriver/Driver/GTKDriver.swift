@@ -20,6 +20,8 @@ final class GTKDriver: HostDriver {
     /// what StateUI measures, what the host cuts - each proven by its effect in another case - and a clock's format.
     private static func none() -> [String: String] {
         var none = [
+            "read submitLabel of TextField": "GTK gives an entry no word for the return key of a keyboard on the screen",
+            "read submitLabel of SearchField": "GTK gives an entry no word for the return key of a keyboard on the screen",
             "read growsWithText of TextEditor":
                 "an editor's growing is StateUI's measuring, which no property of GTK's holds; its frames prove it",
             "read maximumLength of TextEditor":
@@ -30,7 +32,7 @@ final class GTKDriver: HostDriver {
                 "GTK bounds code points, not characters, so the host cuts what is typed; typing proves it",
             "read format of TimePicker": "GTK's clock holds no format: it writes hours and minutes in the user's own clock",
         ]
-        let shapes = ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"]
+        let shapes = ["Capsule", "Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"]
         let shapePaint = [
             "contentMode", "geometryTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
             "lineCap", "lineJoin", "miterLimit",
@@ -67,6 +69,7 @@ final class GTKDriver: HostDriver {
 
     /// What the driver reaches past GTK, through the host's own entry or record - ✓.
     func byHost(_ ability: String) -> String? {
+        if Ability(ability).act == "pressKeys" { return "the shortcut controller's action run, no key event" }
         if Ability(ability).readsATransform { return "the host's own transform: GTK reads back no part of one" }
         if ability.hasPrefix("read background of "), ["Grid", "HStack", "VStack", "ZStack"].contains(Ability(ability).element) {
             return "the brush the host draws the box with: GTK reads back no drawing"
@@ -83,6 +86,7 @@ final class GTKDriver: HostDriver {
     private static let recordedMembers = ["padding", "background", "stroke", "lineWidth", "shape", "placeholderColor"]
 
     private static let byHostReasons = [
+        "read keyboardShortcut of ToolbarItem": "the host's own record: a header bar's button shows no shortcut",
         "read sidebarBackground of SplitView":
             "the class of the host's style sheet the sidebar wears: GTK reads back no background",
         "read flyoutBackground of SplitView":
@@ -147,6 +151,31 @@ final class GTKDriver: HostDriver {
     }
 
     func perform(_ act: UserAct, on element: MountedElement) throws {
+        if case .pressKeys(let shortcut) = act, [.toolbarItem, .menuItem].contains(element.type) {
+            // The window's shortcut for the keys, run as its controller runs it for them.
+            guard let window = renderer?.windows.first(where: { window in
+                window.element.map { owner in element.enclosing(type: .window) === owner } == true
+            }) else { throw DriverCannot(act, on: element) }
+            _ = window.shortcuts.runForTesting(shortcut)
+            return
+        }
+        if case .pressKeys(let shortcut) = act,
+           let window = renderer?.windows.first(where: { window in
+               window.element.map { owner in element === owner || element.enclosing(type: .window) === owner } == true
+           }),
+           window.keys.pressForTesting(shortcut) {
+            // A key a view takes, as the window's capturing controller hears it before any widget.
+            return
+        }
+        if case .pressKeys(let shortcut) = act {
+            // The shortcut's own action, run as its controller runs it for the key; a key nothing takes goes on to
+            // the widget, which the driver does not follow.
+            guard let button = (element.native as? GTKElement)?.view as? GTKButtonView,
+                  let held = button.shortcutForTesting,
+                  GTKKeys.shortcut(keyval: held.keyval, modifiers: held.modifiers) == shortcut
+            else { return }
+            return button.runShortcutForTesting()
+        }
         if case .dragAndDrop(let target, let across) = act { return try dragAndDrop(element, onto: target, across: across) }
         if case .dropFiles(let names) = act {
             guard let drop = (element.native as? GTKElement)?.view?.dragAndDrop, drop.offered.takesFiles else {
@@ -197,7 +226,7 @@ final class GTKDriver: HostDriver {
         case (.focus, let view?): gtk_widget_grab_focus(view.widget)
         case (.choose(let place), let tabs as GTKTabView): try tabs.choose(place, on: element)
         case (.toggle, let split as GTKSplitView): split.toggleAsUser()
-        case (.choose(let place), let picker as GTKPickerView): gtk_drop_down_set_selected(picker.widget.opaque, guint(place))
+        case (.choose(let place), let picker as any GTKChoosing): picker.choose(place)
         case (.scroll(let offset), let items as GTKItemsView): try scroll(items, to: offset, on: element, act)
         case (.scroll(let offset), let scrollView as GTKScrollView): try scroll(scrollView, to: offset, on: element, act)
         case (.pressDown, let canvas as GTKCanvasView), (.drag, let canvas as GTKCanvasView),
@@ -234,8 +263,9 @@ final class GTKDriver: HostDriver {
         case (.text, let field as GTKTextFieldView): return field.text.propValue
         case (.text, let editor as GTKTextEditorView): return editor.text.propValue
         case (.text, let button as GTKButtonView): return button.text.propValue
+        case (.showsMenuArrow, let button as GTKButtonView): return button.showsArrow.propValue
         case (.icon, let button as GTKButtonView), (.source, let button as GTKButtonView):
-            return button.picture.flatMap { $0.found ? ImageSource($0.file).propValue : nil }
+            return button.picture.flatMap { $0.found ? $0.picture?.value : nil }
         case (.iconPosition, let button as GTKButtonView): return Self.position(in: button)?.propValue
         case (.iconSpacing, let button as GTKButtonView):
             return button.pictureAndCaption.map { Double(gtk_box_get_spacing($0.of(GtkBox.self))).propValue }
@@ -243,7 +273,7 @@ final class GTKDriver: HostDriver {
         case (.contentMode, let button as GTKButtonView): return button.picture?.aspect.propValue
         case (.tint, let spinner as GTKActivityIndicatorView): return Self.color(of: spinner.widget).propValue
         case (.tint, let view?): return view.tint.map { Self.color($0).propValue }
-        case (.source, let image as GTKImageView): return image.found ? ImageSource(image.file).propValue : nil
+        case (.source, let image as GTKImageView): return image.found ? image.picture?.value : nil
         case (.contentMode, let image as GTKImageView): return image.aspect.propValue
         case (.text, let check as GTKCheckView): return check.text.propValue
         case (.showsSidebar, let split as GTKSplitView): return split.showsSidebar.propValue
@@ -254,11 +284,8 @@ final class GTKDriver: HostDriver {
                     .map { Material.color(Self.color($0)).propValue }
             }
             return split.sidebarWidgetForTesting.flatMap(Self.fill).map { Material.color($0).propValue }
-        case (.selectedIndex, let picker as GTKPickerView): return picker.chosen.map(\.propValue)
-        case (.options, let picker as GTKPickerView):
-            guard let model = gtk_drop_down_get_model(picker.widget.opaque) else { return [String]().propValue }
-            return (0..<g_list_model_get_n_items(model)).map { String(cString: gtk_string_list_get_string(model, $0)) }
-                .propValue
+        case (.selectedIndex, let picker as any GTKChoosing): return picker.chosen.map(\.propValue)
+        case (.options, let picker as any GTKChoosing): return picker.offered.propValue
         case (.selectionMode, let items as GTKItemsView): return items.choiceMode.map { $0.propValue }
         case (.selectedItems, let items as GTKItemsView): return items.chosenIdentities.propValue
         // Shown in its window: GTK maps a widget only while it and everything around it show there.

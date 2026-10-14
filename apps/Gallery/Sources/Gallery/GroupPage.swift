@@ -44,7 +44,7 @@ struct GroupPage: View {
                 // `shown`, not `samples`: a sample about desktop chrome is not
                 // listed on a phone.
                 VStack {
-                    ForEach(Array(group.shown(on: device.info.formFactor).enumerated()), id: \.element.id) { item in
+                    ForEach(Array(group.shown(on: device).enumerated()), id: \.element.id) { item in
                         ListRow(item.element.title, summary: item.element.summary) {
                             nav.push(.sample(item.element.id))
                         }

@@ -19,8 +19,9 @@ final class WinUIConformanceTests: XCTestCase {
     func testActivityIndicator() { conform(ActivityIndicatorTests.self) }
     func testButton() { conform(ButtonTests.self) }
     func testCanvas() { conform(CanvasTests.self) }
+    func testCapsule() { conform(CapsuleTests.self) }
     func testCheckBox() { conform(CheckBoxTests.self) }
-    func testColorBox() { conform(ColorBoxTests.self) }
+    func testSpacer() { conform(SpacerTests.self) }
     func testDatePicker() { conform(DatePickerTests.self) }
     func testEllipse() { conform(EllipseTests.self) }
     func testGrid() { conform(GridTests.self) }
@@ -50,10 +51,12 @@ final class WinUIConformanceTests: XCTestCase {
     func testZStack() { conform(ZStackTests.self) }
     func testApplication() { conform(ApplicationTests.self) }
     func testContextMenu() { conform(ContextMenuTests.self) }
+    func testButtonMenu() { conform(ButtonMenuTests.self) }
     func testMenu() { conform(MenuTests.self) }
     func testMenuBar() { conform(MenuBarTests.self) }
     func testMenuItem() { conform(MenuItemTests.self) }
     func testDivider() { conform(DividerTests.self) }
+    func testMenuSeparator() { conform(MenuSeparatorTests.self) }
     func testModalStack() { conform(ModalStackTests.self) }
     func testNavigationStack() { conform(NavigationStackTests.self) }
     func testOverlay() { conform(OverlayTests.self) }
@@ -68,7 +71,7 @@ final class WinUIConformanceTests: XCTestCase {
     func testToolbarItem() { conform(ToolbarItemTests.self) }
     func testToolbarItemGroup() { conform(ToolbarItemGroupTests.self) }
     func testWindow() { conform(WindowTests.self) }
-    func testPropertyContainer() { conform(PropertyContainerTests.self) }
+    func testAutomationElement() { conform(AutomationElementTests.self) }
     func testVisualElement1() { conform(VisualElementTests.self, part: Conformance.Part(1, of: 18)) }
     func testVisualElement2() { conform(VisualElementTests.self, part: Conformance.Part(2, of: 18)) }
     func testVisualElement3() { conform(VisualElementTests.self, part: Conformance.Part(3, of: 18)) }
@@ -100,16 +103,21 @@ final class WinUIConformanceTests: XCTestCase {
     func testTextInput() { conform(TextInputTests.self) }
     func testShape1() { conform(ShapeTests.self, part: Conformance.Part(1, of: 2)) }
     func testShape2() { conform(ShapeTests.self, part: Conformance.Part(2, of: 2)) }
+    func testFilledShape() { conform(FilledShapeTests.self) }
+    func testCorneredShape() { conform(CorneredShapeTests.self) }
     func testTextualElement() { conform(TextualElementTests.self) }
     func testTextStyleElement() { conform(TextStyleElementTests.self) }
     func testFontElement() { conform(FontElementTests.self) }
     func testTextAlignmentElement() { conform(TextAlignmentElementTests.self) }
     func testLineHeightElement() { conform(LineHeightElementTests.self) }
+    func testTrackingElement() { conform(TrackingElementTests.self) }
     func testDecorableTextElement() { conform(DecorableTextElementTests.self) }
     func testPaddingElement() { conform(PaddingElementTests.self) }
     func testBorderElement() { conform(BorderElementTests.self) }
     func testImageElement() { conform(ImageElementTests.self) }
     func testTintElement() { conform(TintElementTests.self) }
+    func testKeyboardElement() { conform(KeyboardElementTests.self) }
+    func testFocusElement() { conform(FocusElementTests.self) }
     func testBarElement() { conform(BarElementTests.self) }
     func testMenuItemElement() { conform(MenuItemElementTests.self) }
     func testPageElement() { conform(PageElementTests.self) }

@@ -643,7 +643,7 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(control.segmentDistribution, .fillEqually)
         XCTAssertEqual(control.label(forSegment: 0), "Home")
         XCTAssertEqual(control.image(forSegment: 0)?.isTemplate, true)
-        XCTAssertEqual(control.image(forSegment: 0)?.size.height, AppKitTabRow.glyphHeight)
+        XCTAssertEqual(control.image(forSegment: 0)?.size.height, NSImage.glyphHeight)
         XCTAssertNil(control.image(forSegment: 1))
         XCTAssertFalse(picture.isTemplate)
         XCTAssertEqual(picture.size, NSSize(width: 48, height: 48))
@@ -732,7 +732,7 @@ final class AppKitPageTests: XCTestCase {
 
         var painted = HostPatch(id: .manual("painted"), type: .page)
         painted.properties = [.background: .color(red: 51, green: 102, blue: 153, alpha: 255)]
-        painted.children = .arranged([HostPatch(id: .manual("content"), type: .colorBox)])
+        painted.children = .arranged([HostPatch(id: .manual("content"), type: .rectangle)])
         renderer.applyForTesting(tree(painted))
 
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("painted")))
@@ -1030,7 +1030,7 @@ final class AppKitPageTests: XCTestCase {
         var save = HostPatch(id: .manual("save"), type: .menuItem)
         save.properties[.text] = .string("Save")
         save.events = .replace([.clicked: 60])
-        let separator = HostPatch(id: .manual("separator"), type: .divider)
+        let separator = HostPatch(id: .manual("separator"), type: .menuSeparator)
         var recentFile = HostPatch(id: .manual("recent-file"), type: .menuItem)
         recentFile.properties[.text] = .string("notes.txt")
         var recent = HostPatch(id: .manual("recent"), type: .menu)

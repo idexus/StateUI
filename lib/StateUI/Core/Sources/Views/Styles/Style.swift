@@ -35,6 +35,9 @@ public struct StyleBag<Target: StyleTarget, Context> {
     /// sheet is built.
     var basedOn: String?
 
+    /// The role a button wears this style for, over the one every button gets; nil for any other style.
+    var role: ButtonRole?
+
     /// The states written so far, in writing order.
     var states: [DeclaredState] = []
 
@@ -71,7 +74,21 @@ extension StyleBag where Context == StyleBase {
     public init(_ key: StyleKey<Target>) {
         self.init(key: key.name)
     }
+}
 
+extension StyleBag where Context == StyleBase, Target == Button {
+    /// A style every button of `role` gets, standing over the one every button gets: it says only what the role
+    /// changes. A button asking for a style by its key, or for the platform's own look, wears none of it.
+    ///
+    ///     Style<Button>().background(AppColors.accent)
+    ///     Style<Button>(role: .destructive).background(AppColors.danger)
+    public init(role: ButtonRole) {
+        self.init(key: nil)
+        self.role = role
+    }
+}
+
+extension StyleBag where Context == StyleBase {
     /// The style this one starts from, named by the key that style was given.
     ///
     /// The one it names must be in the same sheet. A key naming nothing is
@@ -126,6 +143,7 @@ extension StyleBag where Context == StyleBase {
             target: node.type,
             key: key,
             basedOn: basedOn,
+            role: role,
             props: node.props,
             states: states)
     }
@@ -144,6 +162,9 @@ public struct AnyStyle {
 
     /// The style it starts from, until the sheet flattens the chain.
     let basedOn: String?
+
+    /// The role a button wears it for, over the implicit style; nil for any other.
+    let role: ButtonRole?
 
     /// What it sets.
     var props: [Prop: PropValue]

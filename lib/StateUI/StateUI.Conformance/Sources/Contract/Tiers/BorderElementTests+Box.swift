@@ -13,15 +13,17 @@ extension BorderElementTests {
 
     /// Whether `color`, inside `element`'s outline, is none of the outline: nothing at all in a layout, anything but
     /// the outline's red where a button's own face stands.
-    static func bare(_ color: Color?, inside element: String) -> Bool {
-        element == "Button" ? color != .red : color == nil
+    static func bare(_ color: ShownColor?, inside element: String) -> Bool {
+        element == "Button" ? color?.shows(.red) != true : color == nil
     }
 
     /// The box cases of a layout.
     @MainActor
     static func boxCases(_ element: String) -> [ConformanceCase] {
         guard drawnBoxes.contains(element) else { return [] }
-        return [boxFilled(element), boxOutlined(element), boxWidened(element), boxShaped(element)]
+        return [
+            boxFilled(element), boxOutlined(element), boxWidened(element), boxShaped(element), boxCapsuled(element),
+        ]
     }
 
     /// A layout's box is filled in its background.
@@ -75,7 +77,8 @@ extension BorderElementTests {
         }
     }
 
-    /// A box outlined as an ellipse leaves its corners bare, which a rectangle's outline covers.
+    /// A wide box outlined as an ellipse leaves bare a point near its top that a rectangle's outline covers - and a
+    /// capsule's too, whose top runs straight there: an oval, not a capsule, its outline drawn on its top.
     @MainActor
     static func boxShaped(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).outlinesItsBoxInItsShape", proves: [
@@ -84,30 +87,57 @@ extension BorderElementTests {
             let round = State(wrappedValue: false)
             s.start {
                 VStack {
-                    Specimens.view(element, room + outline(width: 4) + [
+                    Specimens.view(element, outline(width: 4) + [
+                        Write(VisualElementContract.width, 120), Write(VisualElementContract.height, 40),
+                        Write(ViewContract.horizontalAlignment, Alignment.start),
                         Write(BorderElementContract.shape, round.wrappedValue ? ContainerShape.ellipse : .rectangle),
                     ])
                     Button("Round").onClicked { round.wrappedValue = true }.id("change")
                 }
             }
             let layout = try s.specimen(element)
-            let corner = Point(1, 1)
-            try s.settle { try s.shows(.red, on: layout, at: corner) }
+            let (corner, top) = (Point(1, 1), Point(25, 1))
+            try s.settle { try s.shows(.red, on: layout, at: top) }
             s.expect(try s.color(of: layout, at: corner), shows: .red, "a rectangle's corner")
+            s.expect(try s.color(of: layout, at: top), shows: .red, "and its top")
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.color(of: layout, at: corner) == nil }
-            s.expect(try s.color(of: layout, at: corner), nil, "an ellipse leaves it bare")
+            try s.settle { try s.color(of: layout, at: top) == nil }
+            s.expect(try s.color(of: layout, at: corner), nil, "an ellipse leaves its corner bare")
+            s.expect(try s.color(of: layout, at: top), nil, "and the top a capsule's would cover")
+            s.expect(try s.color(of: layout, at: Point(60, 1)), shows: .red, "its outline drawn on the oval's top")
         }
     }
 
-    /// A box of 60 by 40 at the top left.
+    /// A box outlined as a capsule rounds its ends by half its shorter side at every size: 40 high, its top runs
+    /// straight from 20 in; 100 high, its end reaches over the same point.
     @MainActor
-    private static var room: [any Worn] {
-        [
-            Write(VisualElementContract.width, 60), Write(VisualElementContract.height, 40),
-            Write(ViewContract.horizontalAlignment, Alignment.start),
-        ]
+    static func boxCapsuled(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).roundsItsEndsWholeAsACapsule", proves: [
+            Covered(BorderElementContract.shape, on: element),
+        ], needs: [Covered(BorderElementContract.stroke, on: element), Covered(ButtonContract.clicked)]) { s in
+            let tall = State(wrappedValue: false)
+            s.start {
+                VStack {
+                    Specimens.view(element, outline(width: 4) + [
+                        Write(VisualElementContract.width, 120),
+                        Write(VisualElementContract.height, tall.wrappedValue ? 100 : 40),
+                        Write(ViewContract.horizontalAlignment, Alignment.start),
+                        Write(BorderElementContract.shape, ContainerShape.capsule),
+                    ])
+                    Button("Grow").onClicked { tall.wrappedValue = true }.id("change")
+                }
+            }
+            let layout = try s.specimen(element)
+            let top = Point(25, 1)
+            try s.settle { try s.shows(.red, on: layout, at: top) }
+            s.expect(try s.color(of: layout, at: top), shows: .red, "40 high, its top runs straight there")
+            s.expect(try s.color(of: layout, at: Point(1, 1)), nil, "its corner left bare")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.color(of: layout, at: top) == nil }
+            s.expect(try s.color(of: layout, at: top), nil, "100 high, its end reaches over it")
+        }
     }
 
     /// An outline in red, `width` wide.

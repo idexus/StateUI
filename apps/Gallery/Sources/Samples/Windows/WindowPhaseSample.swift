@@ -71,7 +71,7 @@ private struct PhaseRow: View {
 
             Text(value)
                 .fontSize(24)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .verticalAlignment(.center)
         }
         .spacing(12)

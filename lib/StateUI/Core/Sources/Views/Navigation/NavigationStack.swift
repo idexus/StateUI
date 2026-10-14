@@ -63,7 +63,7 @@
 /// `.onChanged(path)` observes every committed arrival and departure. The
 /// title on the bar belongs to the top page; `.title` and `.icon` on the
 /// stack name the whole stack where another container presents it.
-public struct NavigationStack: ElementView, Arrangement, BarElement {
+public struct NavigationStack: ElementView, Arrangement, BarElement, AutomationElement {
     /// The node this page describes.
     public var node: Node
 

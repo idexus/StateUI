@@ -40,12 +40,15 @@ final class ResourceTests: XCTestCase {
     }
 
     /// A style with no setters is a style that does nothing, and the way to end
-    /// up with one is a closure that forgot to return what it was given.
+    /// up with one is a closure that forgot to return what it was given - but for
+    /// a keyed one whose type has an implicit style: it takes that style off.
     func testEveryStyleActuallySetsSomething() {
+        let implicit = Set(styles.filter { $0.key == nil }.map(\.target.name))
         for style in styles {
             let key = style.key ?? style.target.name
+            let takesOff = style.key != nil && implicit.contains(style.target.name)
 
-            XCTAssertFalse(style.props.isEmpty, "\(key) sets nothing")
+            XCTAssertFalse(style.props.isEmpty && !takesOff, "\(key) sets nothing")
 
             for state in style.states {
                 XCTAssertFalse(state.setters.isEmpty, "\(key) in \(state.name) sets nothing")
@@ -53,15 +56,18 @@ final class ResourceTests: XCTestCase {
         }
     }
 
-    /// Two styles under one key means one of them is not there, and nothing
-    /// says so.
+    /// Two styles under one key, or for one role, means one of them is not
+    /// there, and nothing says so.
     func testNothingIsFiledTwice() {
         var keys: Set<String> = []
+        var roles: Set<ButtonRole> = []
         var implicitTargets: Set<String> = []
 
         for style in styles {
             if let key = style.key {
                 XCTAssertTrue(keys.insert(key).inserted, "two styles answer to \"\(key)\"")
+            } else if let role = style.role {
+                XCTAssertTrue(roles.insert(role).inserted, "two styles for the role \(role)")
             } else {
                 XCTAssertTrue(implicitTargets.insert(style.target.name).inserted,
                               "two implicit styles for \(style.target.name)")

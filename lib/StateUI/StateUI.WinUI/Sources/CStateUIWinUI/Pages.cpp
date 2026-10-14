@@ -189,7 +189,7 @@ extern "C" void stateui_winui_title_bar_set(
         auto bar = borrow<controls::TitleBar>(handle);
         if (bar.Title() != text(title)) bar.Title(text(title));
         if (bar.Subtitle() != text(subtitle)) bar.Subtitle(text(subtitle));
-        if (sourceFile(bar.IconSource()) != pictureFile(icon)) bar.IconSource(pictureIconSource(icon));
+        if (sourceFile(bar.IconSource()) != pictureName(icon)) bar.IconSource(pictureIconSource(icon));
         bar.IsBackButtonVisible(back);
         bar.IsPaneToggleButtonVisible(paneToggle);
         if (hasBackground) bar.Background(media::SolidColorBrush(color(background)));
@@ -233,7 +233,7 @@ extern "C" int32_t stateui_winui_title_bar_words(StateUIObjectRef handle) {
 extern "C" void stateui_winui_title_bar_set_actions(
     StateUIObjectRef handle, char const *const *texts, char const *const *identifiers, char const *const *icons,
     bool const *words, bool const *destructive, int32_t const *groups, int32_t leadingGroups, bool const *enabled,
-    int32_t count
+    int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t count
 ) {
     try {
         auto bar = borrow<controls::TitleBar>(handle);
@@ -264,6 +264,7 @@ extern "C" void stateui_winui_title_bar_set_actions(
             if (destructive[index])
                 markDestructive(button, {L"AppBarButtonForeground", L"AppBarButtonForegroundPointerOver",
                                          L"AppBarButtonForegroundPressed"});
+            if (keys[index] != 0) button.KeyboardAccelerators().Append(accelerator(keys[index], modifiers[index], givesWay[index]));
             button.Click(guarded("handling Click", [view, index](IInspectable const &, xaml::RoutedEventArgs const &) {
                 callbacks.chosen(view, index);
             }));
@@ -308,7 +309,10 @@ extern "C" StateUIObjectRef stateui_winui_split_make(int64_t view) {
             callbacks.presented(view, true);
         }));
         split.PaneClosing(guarded("handling PaneClosing",
-            [view](controls::SplitView const &, controls::SplitViewPaneClosingEventArgs const &) {
+            [view](controls::SplitView const &sender, controls::SplitViewPaneClosingEventArgs const &args) {
+            // Closing of WinUI's accord - a click beside a pane over the detail - the pane stays open while the host
+            // slides it out; the host closes a pane none wide.
+            if (sender.OpenPaneLength() > 0.5) args.Cancel(true);
             callbacks.presented(view, false);
         }));
         split.PaneClosed(guarded("handling PaneClosed", [](controls::SplitView const &sender, IInspectable const &) {
@@ -344,6 +348,33 @@ extern "C" void stateui_winui_split_set(
         if (split.IsPaneOpen() != open) split.IsPaneOpen(open);
     } catch (...) {
         report("setting a split view");
+    }
+}
+
+extern "C" double stateui_winui_split_pane_width(StateUIObjectRef) {
+    try {
+        // The theme's width, which a SplitView's style opens its pane at; the pane's own is the slide's.
+        auto key = winrt::box_value(L"SplitViewOpenPaneThemeLength");
+        auto width = xaml::Application::Current().Resources().TryLookup(key);
+        return winrt::unbox_value_or<double>(width, 320);
+    } catch (...) {
+        report("reading a split view's pane");
+        return 320;
+    }
+}
+
+extern "C" void stateui_winui_split_slide(StateUIObjectRef handle, double pane, double width) {
+    try {
+        auto split = borrow<controls::SplitView>(handle);
+        if (split.OpenPaneLength() != pane) split.OpenPaneLength(pane);
+        // The sidebar at its whole width, its trailing edge at the pane's: what stands past the pane's leading edge
+        // stands past the window's.
+        if (auto sidebar = split.Pane().try_as<xaml::FrameworkElement>()) {
+            if (sidebar.Width() != width) sidebar.Width(width);
+            sidebar.HorizontalAlignment(xaml::HorizontalAlignment::Right);
+        }
+    } catch (...) {
+        report("sliding a split view's pane");
     }
 }
 
@@ -442,11 +473,12 @@ extern "C" void stateui_winui_tabs_set(
             if (index >= static_cast<int32_t>(items.Size())) items.Append(controls::SelectorBarItem());
             auto item = items.GetAt(index);
             if (item.Text() != text(titles[index])) item.Text(text(titles[index]));
-            if (iconFile(item.Icon()) != pictureFile(icons[index])) {
+            if (iconFile(item.Icon()) != pictureName(icons[index])) {
                 // The row stands a tab's picture at its own size: as tall as the theme's tab icons, as wide as its
-                // shape makes it.
+                // shape makes it; an icon's glyph as tall.
                 auto icon = pictureIcon(icons[index]);
                 if (icon) icon.Height(tabIconHeight);
+                if (auto glyph = icon ? icon.try_as<controls::FontIcon>() : nullptr) glyph.FontSize(tabIconHeight);
                 item.Icon(icon);
             }
         }

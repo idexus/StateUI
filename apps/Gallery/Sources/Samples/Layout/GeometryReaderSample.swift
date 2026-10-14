@@ -39,7 +39,7 @@ struct GeometryReaderSample: SampleContent, ExampleContent {
                 GeometryReader { frame in
                     Text("\(Int(frame.width)) × \(Int(frame.height))")
                         .fontSize(22)
-                        .fontAttributes(.bold)
+                        .fontWeight(.bold)
                         .textColor(Palette.onAccent)
                         .horizontalAlignment(.center)
                         .verticalAlignment(.center)

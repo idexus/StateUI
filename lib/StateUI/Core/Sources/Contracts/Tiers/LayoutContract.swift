@@ -9,7 +9,7 @@ public enum LayoutContract: Contract {
 
     /// A layout is a view, and keeps space inside itself.
     public static let tiers: [any Contract.Type] = [
-        ViewContract.self, PaddingElementContract.self, BorderElementContract.self,
+        ViewContract.self, PaddingElementContract.self, BorderElementContract.self, KeyboardElementContract.self,
     ]
 
     /// What each edge of the layout stays clear of on the screen's unsafe

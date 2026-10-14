@@ -53,6 +53,9 @@ typealias GTKRangeHandler = @convention(c) (UnsafeMutableRawPointer?, UInt32, UI
 /// A signal whose handler answers whether it took what the signal asks: a window's request to close.
 typealias GTKAnswerHandler = @convention(c) (UnsafeMutableRawPointer?, gpointer?) -> gboolean
 
+/// A key controller's key: its key value, its hardware code and the modifiers held; whether the handler took it.
+typealias GTKKeyHandler = @convention(c) (UnsafeMutableRawPointer?, guint, guint, guint, gpointer?) -> gboolean
+
 /// Connects `handler` to `signal` of `instance`, handing it `number`; the handler answers whether it took it.
 @discardableResult
 func connectAnswering(
@@ -118,6 +121,11 @@ func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number
 
 @discardableResult
 func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKRangeHandler) -> gulong {
+    connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
+}
+
+@discardableResult
+func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKKeyHandler) -> gulong {
     connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
 }
 

@@ -8,14 +8,16 @@ import AppKit
 
 extension AppKitRegistrations {
     /// What this host realizes around every view rather than inside a registration: the room, the drawing and
-    /// turning, the accessibility words, the gestures, drags and drops and dropped files, whether it shows, is
+    /// turning, the accessibility words, the tooltip, the gestures, drags and drops and dropped files, whether it shows, is
     /// enabled and takes input, its opacity, and its focus.
     /// Design: docs/design/platforms/appkit/registrations.md#shared-members
     static func shared(_ registry: Registry<NSView>) {
         registry.everyElementMeetsAssistiveTechnology()
+        registry.everyElementShowsItsTooltip()
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
         registry.everyElementHearsTheUser()
+        registry.everyElementTakesItsKeys()
         registry.everyElementDragsAndDrops()
         registry.everyElementTakesDroppedFiles()
         registry.everyElementRealizes(VisualElementContract.ignoresInput)
@@ -23,7 +25,7 @@ extension AppKitRegistrations {
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(LayoutContract.letsInputThrough)
-        registry.everyElementRaises(VisualElementContract.isFocusedChanged)
+        registry.everyElementRaises(FocusElementContract.isFocusedChanged)
     }
 }
 

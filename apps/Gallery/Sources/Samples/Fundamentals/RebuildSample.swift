@@ -77,7 +77,7 @@ private struct RebuildPanel: View {
             VStack {
                 Text("\(name) is \(value)")
                     .fontSize(15)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
                     .textColor(Palette.text)
 
                 // WHY THIS VIEW IS BEING DESCRIBED, on the screen it is

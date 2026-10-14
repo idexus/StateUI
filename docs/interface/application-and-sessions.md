@@ -486,6 +486,7 @@ What the page is, the view it shows says by modifier:
 | `.icon` | the page's representative image, commonly a tab icon |
 | `.pageBackground` | what the whole page is made of behind what it shows - a colour, a gradient, a blur or glass - also where the view does not reach |
 | `.showsNavigationBar` | whether a containing navigation stack shows its bar for this page |
+| `.showsTitle` | whether the page shows its title - on its bar, or over its content where the bar names the application; the title names the window and the way back all the same |
 | `.showsBackButton` | whether that bar offers its native back affordance |
 | `.backButtonTitle` | short title supplied by this page for the page pushed above it |
 

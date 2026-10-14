@@ -74,7 +74,12 @@ the host is told at the first crossing and cannot be told again.
 ## Moving and waiting
 
 `$x.journey.move(to:_:)` sends the value and returns its `Arrival` at once;
-`arrived()` suspends until the value arrives. The answer is true when it got
+`arrived()` suspends until the value arrives. A move is a write of the
+destination: the state reads the target at once, its readers are built again
+and a kept state keeps it, as after an assignment (`Storage.moved(to:)`) - and
+the journey the host walks is the move's, on its law, never a second one on the
+value's own. A stop, in turn, comes back as a write of where the value stood:
+the host makes that its destination and reports it. The answer is true when it got
 there and false when something else ended the journey: a newer destination, a
 value written over it, or a stop. Where there is nothing to animate - already
 there, or the user asked for less motion - it arrives on the host's next frame

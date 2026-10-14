@@ -32,8 +32,8 @@ value written out as text.
 
 ## Flag sets carry bits
 
-`FontAttributes`, `TextDecorations` and `SwipeDirection` are option sets, so `.bold` and `[.bold, .italic]` both
-work. Their bits are StateUI's own by the same rule, `1 << 0` upwards in
+`FontAttributes`, `TextDecorations` and `SwipeDirection` are option sets, so `.underline` and
+`[.underline, .strikethrough]` both work. Their bits are StateUI's own by the same rule, `1 << 0` upwards in
 declaration order, and a composite such as `.all` is the OR of its parts. A
 set crosses as one `.enumeration` holding its bits.
 
@@ -49,6 +49,7 @@ kind is made of.
   GridLength.auto                  [2, 1]      every length carries both parts
   ContainerShape.roundedRectangle(12) [1, 12]
   ContainerShape.ellipse              [2]
+  ContainerShape.capsule              [3]
   Brush.solidColor(.red)           [1, #FFFF0000]
 ```
 

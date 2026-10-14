@@ -7,7 +7,7 @@
 ///
 ///     @State private var fade = 1.0
 ///
-///     ColorBox().opacity($fade)
+///     Rectangle().opacity($fade)
 ///
 ///     fade = 0.2                                         // the destination: the box animates there
 ///     $fade.journey.move(to: 0.2, .eased(400))           // the same, under a law of its own
@@ -201,7 +201,7 @@ public struct Journey<Value: Walked> {
             [.destination, .completion, .motion], of: travelling,
             forcing: JourneyLanes<Value>.mask(of: .destination) | JourneyLanes<Value>.mask(of: .completion))
 
-        storage.noteDestination(target)
+        storage.moved(to: target)
         return arrival
     }
 

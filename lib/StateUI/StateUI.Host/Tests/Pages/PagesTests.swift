@@ -244,6 +244,21 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(page.chromeActions.primary.map(\.showsActionWords), [true, false, true, true])
     }
 
+    /// A page saying it shows no title still names the window; the chrome shows no title for it.
+    func testAPageShowingNoTitleStillNamesTheWindow() throws {
+        let runtime = runtime(node("window", .window, children: [
+            node("stack", .navigationStack, children: [
+                node("home", .page, [.title: .string("Home"), .showsTitle: .bool(false)]),
+            ]),
+        ])) { _ in }
+        let root = try XCTUnwrap(runtime.tree.root)
+
+        let chrome = WindowChrome(window: root, arrangement: root.first(id: .manual("stack")))
+        XCTAssertEqual(chrome.title, "Home", "the window's name")
+        XCTAssertFalse(chrome.showsTitle)
+        XCTAssertTrue(WindowChrome.pageValues.contains(.showsTitle), "the chrome follows it")
+    }
+
     /// The chrome takes the visible path's actions, the overflow apart, the way back's words from the page beneath,
     /// the page's title view, and the stack's colour.
     func testTheChromeIsComposedFromWhatTheWindowShows() throws {
@@ -610,7 +625,7 @@ final class PagesTests: XCTestCase {
         let runtime = runtime(node("page", .page, children: [node("bar", .menuBar, children: [
             node("file", .menu, [.text: .string("File")], children: [
                 node("open", .menuItem, [.text: .string("Open"), .icon: .string("folder")]),
-                node("line", .divider),
+                node("line", .menuSeparator),
                 node("erase", .menuItem, [.text: .string("Erase"), .isDestructive: .bool(true), .icon: .string("")]),
                 node("recent", .menu, [.text: .string("Recent")], children: [
                     node("one", .menuItem, [.text: .string("One"), .isEnabled: .bool(false)]),
@@ -624,7 +639,7 @@ final class PagesTests: XCTestCase {
         let file = try XCTUnwrap(menus.first).entries
         XCTAssertEqual(file.map(\.kind), [.item, .separator, .item, .submenu])
         XCTAssertEqual(file.map(\.title), ["Open", "", "Erase", "Recent"])
-        XCTAssertEqual(file.map(\.icon), ["folder", nil, nil, nil], "an empty picture is none")
+        XCTAssertEqual(file.map(\.icon), [.file("folder"), nil, nil, nil], "an empty picture is none")
         XCTAssertEqual(file.map(\.isDestructive), [false, false, true, false])
         XCTAssertEqual(file.last?.entries.map(\.isEnabled), [false])
     }

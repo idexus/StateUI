@@ -50,6 +50,8 @@
                 try s.perform(.toggle, on: split)
                 s.settle { !open.wrappedValue }
                 s.expect(open.wrappedValue, false, "the user hid it")
+                // A host sliding the sidebar out closes its pane once it has.
+                try s.settle { try s.held(SplitViewContract.showsSidebar, on: split) == false }
                 s.expect(try s.held(SplitViewContract.showsSidebar, on: split), false)
 
                 try s.perform(.toggle, on: split)

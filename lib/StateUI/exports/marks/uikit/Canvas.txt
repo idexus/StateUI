@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 Canvas: ✅
 Canvas.dragged: ✓ pressDown on Canvas: the view's listening handed the recognizer's states, no touch sent
 Canvas.drawing: ✅

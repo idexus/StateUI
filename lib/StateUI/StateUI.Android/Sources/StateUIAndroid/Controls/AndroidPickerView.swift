@@ -6,7 +6,8 @@
 import CStateUIAndroid
 
 /// A Picker: the host's `StateUIPicker`, Android's dropdown spinner, whose closed field shows the title
-/// while nothing is chosen.
+/// while nothing is chosen - or, as its presentation says, the host's `StateUIChoices`, a radio group in a column,
+/// or in a row for segments.
 /// Design: docs/design/platforms/android/controls.md#a-picker
 @MainActor
 final class AndroidPickerView: AndroidView {
@@ -26,9 +27,17 @@ final class AndroidPickerView: AndroidView {
     private var opening = PickerOpening()
     private var listShows = false
 
-    init() {
+    /// How the values are offered: only a menu has a list to open, and an arrow to tint.
+    let presentation: PickerPresentation
+
+    init(presentation: PickerPresentation = .menu) {
+        self.presentation = presentation
         super.init { number in
-            Java.new(JavaAPI.picker, JavaAPI.newPicker, .object(AndroidRenderer.context), .long(number))
+            presentation == .menu
+                ? Java.new(JavaAPI.picker, JavaAPI.newPicker, .object(AndroidRenderer.context), .long(number))
+                : Java.new(
+                    JavaAPI.choices, JavaAPI.newChoices, .object(AndroidRenderer.context), .long(number),
+                    .bool(presentation == .segmented))
         }
     }
 
@@ -50,11 +59,12 @@ final class AndroidPickerView: AndroidView {
     /// How the words look (`TextMembers.look`) - each the theme's where it says nothing - and where they stand across
     /// the field.
     func setLook(_ look: TextLook, alignment: TextAlignment) {
-        let (size, color) = (look.size, look.color)
+        let (size, weight) = look.standing(styleSize: look.style?.androidSize, styleWeight: look.style?.androidWeight)
+        let color = look.color
         Java.frame {
-            let style = look.attributes.rawValue & 3
-            let face = Java.callStaticObject(
-                JavaAPI.typeface, JavaAPI.createTypeface, .object(look.family.flatMap(Java.string)), .int(style))
+            let italic = look.attributes.contains(.italic)
+            let face = AndroidTypeface.local(family: look.family, weight: weight, italic: italic) ?? Java.callStaticObject(
+                JavaAPI.typeface, JavaAPI.createTypeface, .object(nil), .int(italic ? AndroidTypeface.italicStyle : 0))
             let unit = look.scales ? ViewConstants.scaledPixels : ViewConstants.independentPixels
             Java.call(
                 reference, JavaAPI.setPickerLook, .float(Float(size ?? 0)), .int(unit),
@@ -64,12 +74,13 @@ final class AndroidPickerView: AndroidView {
 
     /// Opens the list for the program, heard by nobody. A spinner's list closes only by the user's hand.
     func openList() {
-        guard opening.programAsks(open: true, shown: listShows) else { return }
+        guard presentation == .menu, opening.programAsks(open: true, shown: listShows) else { return }
         Java.call(reference, JavaAPI.openList)
     }
 
     /// The arrow's colour; nil puts back the platform's.
     func setTint(_ color: HostValue?) {
+        guard presentation == .menu else { return }
         if madeTint == nil {
             madeTint = .some(Java.callObject(reference, JavaAPI.getBackgroundTintList).map(JavaObject.init))
         }

@@ -80,6 +80,19 @@ A navigation stack shows its top page across its whole frame; the pages below
 are kept by their elements and held by no view, so each keeps what it showed
 for when the user comes back to it. Its bar is the window's chrome.
 
+## A page's heading
+
+Where the window's chrome names the application - a title area declared on the
+visible path - the page that would name the window is headed by its own
+title, as Windows' own applications head a page under a title bar naming the
+application: a row across the top of the page's room in WinUI's title style,
+24 DIPs from its top and sides, the page's content under it - a tab view
+naming the window by its own title is headed over its tabs, which then stand
+in its own row under the heading rather than across the window over it: the
+title names what the tabs are tabs of. The window heads one page at a time,
+the one its chrome composes from, and takes the heading from the one it
+headed before.
+
 ## The way back
 
 The way back is the chrome's back button, the mouse's back button, Alt+Left
@@ -103,6 +116,20 @@ keep what it holds where the keyboard's Tab and Narrator still reach it - a
 sign-out button among them - so the sidebar is collapsed while its pane is
 closed: shown as the pane starts to open, collapsed once it has closed, and
 at once beside the detail.
+
+WinUI's `SplitView` animates its pane alone and lays a detail beside it out at
+its end width at once, so the host slides a pane beside the detail itself, by
+the host layer's `SplitSlide` ([a sidebar sliding](../../host/motion.md#a-sidebar-sliding)):
+the pane opens as the slide sets out, its `OpenPaneLength` follows the slide
+each frame, and it closes as a slide out rests, the sidebar standing at the
+pane's whole width - the theme's `SplitViewOpenPaneThemeLength` - against its
+trailing edge, and a closed pane stands none wide, the width its slide opens
+from, where WinUI's own animation of opening and closing has nothing to move.
+A pane over the detail, which keeps its width, WinUI slides in itself at its
+whole width; the host slides it out, as WinUI's own takes a tenth of a second.
+A pane WinUI closes of its own accord - a click beside a pane over the detail -
+stays open while it slides out: the host closes only a pane none wide, so no
+close WinUI tells late can keep one open.
 
 Whether the sidebar shows is StateUI's binding, which follows what WinUI
 shows: the pane closing of WinUI's accord - a click beside it, the window's

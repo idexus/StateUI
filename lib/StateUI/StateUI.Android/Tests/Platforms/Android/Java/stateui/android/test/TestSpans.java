@@ -11,6 +11,7 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
+import android.text.style.TypefaceSpan;
 import android.text.style.UnderlineSpan;
 import android.util.TypedValue;
 import android.widget.TextView;
@@ -56,6 +57,15 @@ public final class TestSpans {
         if (style != null) return style.getStyle();
         Typeface face = view.getTypeface();
         return face == null ? Typeface.NORMAL : face.getStyle();
+    }
+
+    /** How heavy the strokes are at `at`, 100 to 900: a typeface span's weight, a bold style span's, else the view's. */
+    public static int weight(TextView view, int at) {
+        TypefaceSpan typeface = span(view, at, TypefaceSpan.class);
+        if (typeface != null && typeface.getTypeface() != null) return typeface.getTypeface().getWeight();
+        StyleSpan style = span(view, at, StyleSpan.class);
+        if (style != null && (style.getStyle() & Typeface.BOLD) != 0) return 700;
+        return TestText.weight(view);
     }
 
     /** The lines at `at`: 1 under the words, 2 through them. */

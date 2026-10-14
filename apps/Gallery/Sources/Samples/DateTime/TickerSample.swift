@@ -23,7 +23,7 @@ struct TickerSample: SampleContent, ExampleContent {
 
             Text("\((ticker.limit ?? 0) - ticker.ticks)")
                 .fontSize(64)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .textColor(ticker.isFinished ? Palette.subtle : Palette.accent)
                 .horizontalTextAlignment(.center)
 

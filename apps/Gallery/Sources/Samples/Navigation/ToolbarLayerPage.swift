@@ -20,7 +20,7 @@ struct ToolbarLayerPage: View {
         VStack {
             Text("Layer \(depth)")
                 .fontSize(28)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
 
             Text("Shared \(shared) time(s)")
                 .fontSize(14)

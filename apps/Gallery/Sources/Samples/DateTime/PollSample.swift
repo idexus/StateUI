@@ -27,7 +27,7 @@ struct PollSample: SampleContent, ExampleContent {
 
             Text(status)
                 .fontSize(20)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
 
             Text("\(rounds) round(s)")

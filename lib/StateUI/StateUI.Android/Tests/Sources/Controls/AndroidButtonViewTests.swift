@@ -20,6 +20,12 @@ final class AndroidButtonViewTests: XCTestCase {
             ("testADisabledLookDimsAsTheThemesControlsDo", testADisabledLookDimsAsTheThemesControlsDo),
             ("testAFingerDownAndUpArePressedAndReleased", testAFingerDownAndUpArePressedAndReleased),
             ("testAFamilyChangesTheTypeface", testAFamilyChangesTheTypeface),
+            ("testAnIconIsDrawnInItsWordsColour", testAnIconIsDrawnInItsWordsColour),
+            ("testAnIconAloneIsDrawnInTheWordsColour", testAnIconAloneIsDrawnInTheWordsColour),
+            ("testAMenusArrowStandsAfterTheWords", testAMenusArrowStandsAfterTheWords),
+            ("testASplitButtonsArrowIsNotItsClick", testASplitButtonsArrowIsNotItsClick),
+            ("testWhatAButtonShowsStandsInTheMiddleBesideItsArrow", testWhatAButtonShowsStandsInTheMiddleBesideItsArrow),
+            ("testADestructiveButtonsWordsStandInTheThemesErrorColour", testADestructiveButtonsWordsStandInTheThemesErrorColour),
         ]
     }
 
@@ -193,6 +199,111 @@ final class AndroidButtonViewTests: XCTestCase {
         }
     }
 
+    /// A button whose click opens its menu shows an arrow after its words and keeps room for it, unless it shows
+    /// none; a split button's arrow stands at its edge, set off by a line.
+    func testAMenusArrowStandsAfterTheWords() {
+        onMainActor {
+            let host = AndroidRenderer.running {
+                VStack {
+                    Button("Share").menu { MenuItem("Mail") }
+                    Button("Share").menu { MenuItem("Mail") }.showsMenuArrow(false)
+                    Button("Save").onClicked {}.menu { MenuItem("Save as") }
+                    Button("Save").onClicked {}.menu(.held) { MenuItem("Save as") }
+                }
+            }
+            host.layOut()
+            let buttons = host.views(AndroidButtonView.self)
+
+            XCTAssertEqual(buttons.map(Self.layers(of:)), [[2], [], [3, 4], []], "a mark, none, an arrow and its line")
+            XCTAssertGreaterThan(Self.padding(of: buttons[0]).width, Self.padding(of: buttons[1]).width, "room for it")
+            XCTAssertGreaterThan(Self.padding(of: buttons[2]).width, Self.padding(of: buttons[0]).width)
+        }
+    }
+
+    /// A finger on a split button's arrow opens its menu rather than clicking it; anywhere else it clicks it.
+    func testASplitButtonsArrowIsNotItsClick() throws {
+        try onMainActor {
+            let heard = Received<String>()
+            let host = AndroidRenderer.running {
+                Button("Save").onClicked { heard.values.append("save") }.menu { MenuItem("Save as") }
+            }
+            host.layOut()
+            let save = try XCTUnwrap(host.views(AndroidButtonView.self).first)
+            let (_, _, width, height) = save.frame
+
+            // Down where the finger clicks, lifted off the button, so the click is the test's alone.
+            @MainActor func click(at x: Float) {
+                save.touch(0, x: x, y: Float(height) / 2)
+                save.touch(1, x: -100, y: -100)
+                save.click()
+            }
+            click(at: Float(width) - 8)
+            XCTAssertEqual(heard.values, [], "the arrow")
+            click(at: 8)
+            XCTAssertEqual(heard.values, ["save"], "the button")
+        }
+    }
+
+    /// What a button holding a menu shows stands in the middle beside its arrow: words with the arrow after them one
+    /// group, as far from either edge; a picture alone in the middle of the room before the arrow.
+    func testWhatAButtonShowsStandsInTheMiddleBesideItsArrow() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                HStack {
+                    Button("Share").menu { MenuItem("Mail") }.padding(horizontal: 16, vertical: 8)
+                    Button(icon: .icon(.more)).menu { MenuItem("Mail") }.padding(horizontal: 16, vertical: 8)
+                }
+                .horizontalAlignment(.start)
+            }
+            host.layOut()
+            let buttons = host.views(AndroidButtonView.self)
+            let (share, more) = (buttons[0], buttons[1])
+
+            // Material's arrow fills the middle half of its square across.
+            let width = Float(share.frame.width)
+            let wordsLeft = try XCTUnwrap(Self.wordsLeft(of: share))
+            let (markWidth, markRight) = try XCTUnwrap(Self.layer(0, of: share))
+            let arrowRight = width - Float(markRight) - Float(markWidth) / 4
+            XCTAssertEqual(wordsLeft, width - arrowRight, accuracy: 2, "words at \(wordsLeft), arrow to \(arrowRight)")
+
+            let (_, pictureRight) = try XCTUnwrap(Self.layer(0, of: more))
+            let left = Java.callInt(more.reference, JavaAPI.getPaddingLeft)
+            let right = Java.callInt(more.reference, JavaAPI.getPaddingRight)
+            let room = (Float(left) + Float(more.frame.width) - Float(right)) / 2
+            XCTAssertEqual((Float(more.frame.width) - Float(pictureRight)) / 2, room, accuracy: 1, "the picture's middle")
+        }
+    }
+
+    /// Where the button's line of words begins, in pixels of its own.
+    @MainActor
+    private static func wordsLeft(of button: AndroidButtonView) -> Float? {
+        guard let layout = Java.callObject(button.reference, TestJava.getLayout) else { return nil }
+        defer { Java.release(local: layout) }
+        return Float(Java.callInt(button.reference, JavaAPI.getCompoundPaddingLeft))
+            + Java.callFloat(layout, TestJava.getLineLeft, .int(0))
+    }
+
+    /// The width of the foreground's layer `index` and how far its room stands in from the right, in pixels.
+    @MainActor
+    private static func layer(_ index: Int32, of button: AndroidButtonView) -> (Int32, Int32)? {
+        Java.frame {
+            guard let layer = Java.callObject(button.reference, TestJava.getForeground) else { return nil }
+            return (Java.callInt(layer, TestJava.getLayerWidth, .int(index)),
+                    Java.callInt(layer, TestJava.getLayerInsetRight, .int(index)))
+        }
+    }
+
+    /// The ids of the layers the button's foreground draws, in order.
+    @MainActor
+    private static func layers(of button: AndroidButtonView) -> [Int32] {
+        Java.frame {
+            guard let layer = Java.callObject(button.reference, TestJava.getForeground),
+                  Java.jni.IsInstanceOf(Java.env, layer, TestJava.layerDrawable) != 0
+            else { return [] }
+            return (0..<Java.callInt(layer, TestJava.getNumberOfLayers)).map { Java.callInt(layer, TestJava.getId, .int($0)) }
+        }
+    }
+
     /// The size of the icon standing alone in the middle, in pixels; nil where none does.
     @MainActor
     private static func layerSize(of button: AndroidButtonView) -> (Int32, Int32)? {
@@ -265,5 +376,75 @@ final class AndroidButtonViewTests: XCTestCase {
             Java.callInt(reference, JavaAPI.getPaddingLeft) + Java.callInt(reference, JavaAPI.getPaddingRight),
             Java.callInt(reference, JavaAPI.getPaddingTop) + Java.callInt(reference, JavaAPI.getPaddingBottom)
         )
+    }
+
+    /// An icon beside a button's words is drawn in their colour.
+    func testAnIconIsDrawnInItsWordsColour() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                Button("Add").icon(.icon(.add)).textColor(Color("#FF0000"))
+            }
+            host.layOut()
+
+            let button = try XCTUnwrap(host.views(AndroidButtonView.self).first)
+            let ink = UInt32(bitPattern: Java.callStaticInt(
+                TestJava.testPictures, TestJava.iconInk, .object(button.reference)))
+            XCTAssertGreaterThan(ink >> 24, 0, "the icon is drawn")
+            XCTAssertEqual(ink & 0xFF_FFFF, 0xFF_0000, String(ink, radix: 16))
+            XCTAssertEqual(ink >> 24, 0xFF, "as opaque as its words: \(String(ink, radix: 16))")
+        }
+    }
+
+    /// An icon standing alone in a button with no words gives the button its size - the icon's own inside the
+    /// padding - and is drawn in the colour its words would take.
+    func testAnIconAloneIsDrawnInTheWordsColour() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                Button(icon: .icon(.settings)).textColor(Color("#FF0000"))
+                    .horizontalAlignment(.start).verticalAlignment(.start)
+            }
+            host.layOut()
+
+            let button = try XCTUnwrap(host.views(AndroidButtonView.self).first)
+            XCTAssertGreaterThanOrEqual(button.frame.width, 24, "\(button.frame)")
+            XCTAssertGreaterThanOrEqual(button.frame.height, 24, "\(button.frame)")
+            let ink = UInt32(bitPattern: Java.callStaticInt(
+                TestJava.testPictures, TestJava.aloneInk, .object(button.reference)))
+            let padding = [JavaAPI.getPaddingLeft, JavaAPI.getPaddingTop, JavaAPI.getPaddingRight, JavaAPI.getPaddingBottom]
+                .map { Java.callInt(button.reference, $0) }
+            XCTAssertGreaterThan(ink >> 24, 0, "the icon is drawn: \(button.frame) padding \(padding)")
+            XCTAssertEqual(ink & 0xFF_FFFF, 0xFF_0000, String(ink, radix: 16))
+            XCTAssertEqual(ink >> 24, 0xFF, "as opaque as its words: \(String(ink, radix: 16))")
+        }
+    }
+
+    /// A destructive action's words stand in the theme's colour for an error where the tree colours them not; a
+    /// colour the tree states wins.
+    func testADestructiveButtonsWordsStandInTheThemesErrorColour() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                VStack {
+                    Button("Delete").role(.destructive)
+                    Button("Erase").role(.destructive).textColor(Color("#0000FF"))
+                    Button("Plain")
+                }
+            }
+            host.layOut()
+
+            let buttons = host.views(AndroidButtonView.self)
+            XCTAssertEqual(buttons.count, 3)
+            let error = try XCTUnwrap(Java.frame {
+                Java.callStaticObject(JavaAPI.views, JavaAPI.errorWords, .object(AndroidRenderer.context))
+                    .map { Java.callInt($0, TestJava.getDefaultColor) }
+            })
+            let words = buttons.map { button in
+                Java.frame {
+                    Java.callObject(button.reference, JavaAPI.getTextColors).map { Java.callInt($0, TestJava.getDefaultColor) }
+                }
+            }
+            XCTAssertEqual(words[0], error, "the theme's error colour")
+            XCTAssertEqual(words[1].map { UInt32(bitPattern: $0) & 0xFF_FFFF }, 0x00_00FF, "the tree's colour wins")
+            XCTAssertNotEqual(words[2], error)
+        }
     }
 }

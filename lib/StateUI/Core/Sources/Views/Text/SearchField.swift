@@ -7,7 +7,8 @@ public protocol SearchFieldProperties: PropertyContainer {}
 
 extension SearchFieldProperties {
     /// What the keyboard's return key is captioned, `.search` unless said. What
-    /// the key does is `.onSubmitted`.
+    /// the key does is `.onSubmitted`; `.next` hands the keyboard on as well,
+    /// to the next field the page reads.
     public func submitLabel(_ value: SubmitLabel) -> Modified {
         setValue(SearchFieldContract.submitLabel, value)
     }
@@ -29,9 +30,7 @@ extension SearchFieldProperties {
 /// Given a binding the field shows the value and writes every edit back; given a
 /// plain string it shows that, and `.onTextChanged` is how what is typed gets
 /// anywhere.
-public struct SearchField: TextInput, TextualElement, FontElement, TextAlignmentElement, TintElement,
-    SearchFieldProperties
-{
+public struct SearchField: TextInput, TextualElement, FontElement, TextAlignmentElement, SearchFieldProperties {
     /// The node this control describes.
     public var node: Node
 
@@ -86,7 +85,7 @@ public struct SearchField: TextInput, TextualElement, FontElement, TextAlignment
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSubmitted(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSubmitted(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onSubmitted(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

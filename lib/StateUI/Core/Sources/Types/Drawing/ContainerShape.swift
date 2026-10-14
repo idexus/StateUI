@@ -16,12 +16,16 @@ public enum ContainerShape: Equatable, Sendable, HostRepresentable {
     /// An oval filling the element's bounds.
     case ellipse
 
+    /// Ends rounded whole: its corners round by half its shorter side, whatever its size.
+    case capsule
+
     /// Which shape this is, as the number that crosses ahead of its parts.
     /// Design: docs/design/types/vocabularies.md#a-kind-first
     enum Kind: Int32, Sendable {
         case rectangle = 0
         case roundedRectangle = 1
         case ellipse = 2
+        case capsule = 3
     }
 
     /// The kind, then what that kind is made of.
@@ -33,6 +37,8 @@ public enum ContainerShape: Equatable, Sendable, HostRepresentable {
             return .values([.enumeration(Kind.roundedRectangle.rawValue), .number(radius)])
         case .ellipse:
             return .values([.enumeration(Kind.ellipse.rawValue)])
+        case .capsule:
+            return .values([.enumeration(Kind.capsule.rawValue)])
         }
     }
 
@@ -51,6 +57,8 @@ public enum ContainerShape: Equatable, Sendable, HostRepresentable {
             self = .roundedRectangle(radius)
         case (.ellipse, 1):
             self = .ellipse
+        case (.capsule, 1):
+            self = .capsule
         default:
             return nil
         }

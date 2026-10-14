@@ -37,7 +37,9 @@ controls::TextBlock stateui::labelWords(StateUIObjectRef handle) {
 }
 
 controls::TextBlock stateui::captionOf(IInspectable const &element) {
-    auto button = element.try_as<controls::Button>();
+    // A button's, or a split button's, which shows its words as a button does.
+    auto button = element.try_as<controls::Button>() || element.try_as<controls::SplitButton>()
+        ? element.try_as<controls::ContentControl>() : nullptr;
     if (!button) return nullptr;
     auto content = button.Content();
     if (auto block = content.try_as<controls::TextBlock>()) return block;
@@ -50,6 +52,9 @@ controls::TextBlock stateui::captionOf(IInspectable const &element) {
 xaml::UIElement stateui::metOf(IInspectable const &element) {
     if (auto border = element.try_as<controls::Border>()) {
         if (auto block = border.Child().try_as<controls::TextBlock>()) return block;
+        // A picture's image, or its icon's glyph in a box.
+        if (auto image = border.Child().try_as<controls::Image>()) return image;
+        if (auto box = border.Child().try_as<controls::Viewbox>()) return box.Child();
     }
     return element.as<xaml::UIElement>();
 }
@@ -97,9 +102,25 @@ extern "C" void stateui_winui_text_set_vertical(StateUIObjectRef handle, int32_t
     }
 }
 
-extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view) {
+extern "C" void stateui_winui_text_set_selectable(StateUIObjectRef handle, bool selectable) {
     try {
-        controls::Button button;
+        labelWords(handle).IsTextSelectionEnabled(selectable);
+    } catch (...) {
+        report("letting a label's words be selected");
+    }
+}
+
+extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view, int32_t kind) {
+    try {
+        if (kind == 2) {
+            controls::SplitButton split;
+            split.Click(guarded("handling Click",
+                [view](controls::SplitButton const &, controls::SplitButtonClickEventArgs const &) {
+                    callbacks.clicked(view);
+                }));
+            return detach(split);
+        }
+        controls::Button button = kind == 1 ? controls::DropDownButton() : controls::Button();
         button.Click(guarded("handling Click",
             [view](IInspectable const &, xaml::RoutedEventArgs const &) { callbacks.clicked(view); }));
         // Held down by a pointer or a key, and let go: what WinUI's own pressed look follows.
@@ -117,45 +138,117 @@ extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view) {
 
 extern "C" void stateui_winui_button_set_look(
     StateUIObjectRef handle, StateUIBrush background, StateUIBrush stroke, double lineWidth, double cornerRadius,
-    double underPointer, double pressed
+    bool drawsOval, double width, double height, double underPointer, double pressed
 ) {
     try {
-        auto button = borrow<controls::Button>(handle);
-        auto resources = button.Resources();
-        auto keep = [&](wchar_t const *key, xaml::Media::Brush const &value) {
-            auto name = winrt::box_value(key);
-            if (resources.HasKey(name)) resources.Remove(name);
-            if (value) resources.Insert(name, value);
-        };
+        // A Button or a SplitButton: one QueryInterface finds the control either way.
+        auto button = as<controls::Control>(handle);
+        // A split button's style reads keys of its own; what its template reads is written as one, so a brush that
+        // comes or goes has its template read it again.
+        std::wstring kind = button.try_as<controls::SplitButton>() ? L"SplitButton" : L"Button";
+        std::vector<std::pair<std::wstring, xaml::Media::Brush>> brushes;
+        auto keep = [&](std::wstring const &key, xaml::Media::Brush const &value) { brushes.emplace_back(key, value); };
         // Under the pointer and pressed, the fill is drawn a little fainter each time, as WinUI's own buttons draw it.
-        auto fill = brush(background);
-        auto faded = [&](double opacity) {
+        // An oval, which the button's corners cannot draw, is a brush of its own holding the outline too.
+        auto faded = [&](double opacity) -> xaml::Media::Brush {
+            if (drawsOval) return oval(background, stroke, lineWidth, opacity, width, height);
             auto made = brush(background);
             if (made) made.Opacity(opacity);
             return made;
         };
+        auto fill = faded(1);
         if (fill) button.Background(fill);
         else button.ClearValue(controls::Control::BackgroundProperty());
-        keep(L"ButtonBackground", fill);
-        keep(L"ButtonBackgroundPointerOver", faded(underPointer));
-        keep(L"ButtonBackgroundPressed", faded(pressed));
+        // The accent's style reads its own keys: a main action's button wears the look written for it too.
+        for (std::wstring style : {L"", L"Accent"}) {
+            keep(style + kind + L"Background", fill);
+            keep(style + kind + L"BackgroundPointerOver", faded(underPointer));
+            keep(style + kind + L"BackgroundPressed", faded(pressed));
+        }
 
-        auto outline = lineWidth > 0 ? brush(stroke) : xaml::Media::Brush{nullptr};
+        auto outline = lineWidth > 0 && !drawsOval ? brush(stroke) : xaml::Media::Brush{nullptr};
         if (outline) {
             button.BorderBrush(outline);
             button.BorderThickness({lineWidth, lineWidth, lineWidth, lineWidth});
+        } else if (drawsOval) {
+            button.BorderThickness({0, 0, 0, 0});
         } else {
             button.ClearValue(controls::Control::BorderBrushProperty());
             button.ClearValue(controls::Control::BorderThicknessProperty());
         }
-        keep(L"ButtonBorderBrush", outline);
-        keep(L"ButtonBorderBrushPointerOver", outline);
-        keep(L"ButtonBorderBrushPressed", outline);
+        for (std::wstring style : {L"", L"Accent"}) {
+            keep(style + kind + L"BorderBrush", outline);
+            keep(style + kind + L"BorderBrushPointerOver", outline);
+            keep(style + kind + L"BorderBrushPressed", outline);
+        }
+        writeResources(button, brushes);
 
         if (cornerRadius >= 0) button.CornerRadius({cornerRadius, cornerRadius, cornerRadius, cornerRadius});
         else button.ClearValue(controls::Control::CornerRadiusProperty());
     } catch (...) {
         report("dressing a button");
+    }
+}
+
+extern "C" void stateui_winui_button_set_accent(StateUIObjectRef handle, bool accent) {
+    try {
+        // WinUI writes the accent for its Button alone.
+        auto button = as<IInspectable>(handle).try_as<controls::Button>();
+        if (!button) return;
+        auto style = accent
+            ? xaml::Application::Current().Resources().TryLookup(winrt::box_value(L"AccentButtonStyle")).try_as<xaml::Style>()
+            : nullptr;
+        if (style) button.Style(style);
+        else button.ClearValue(xaml::FrameworkElement::StyleProperty());
+    } catch (...) {
+        report("giving a button the accent");
+    }
+}
+
+extern "C" void stateui_winui_button_set_critical(StateUIObjectRef handle, bool critical) {
+    try {
+        // The theme's critical colour under the button's words, as a destructive entry's: a colour the tree writes
+        // in the button's own resources stands over it.
+        auto button = as<controls::Control>(handle);
+        std::wstring name = button.try_as<controls::SplitButton>() ? L"SplitButtonForeground" : L"ButtonForeground";
+        if (critical == isDestructive(button, name.c_str())) return;
+        auto merged = button.Resources().MergedDictionaries();
+        if (critical) {
+            markDestructive(button, {name, name + L"PointerOver", name + L"Pressed"});
+        } else {
+            for (uint32_t index = merged.Size(); index-- > 0;) {
+                for (auto const &theme : merged.GetAt(index).ThemeDictionaries()) {
+                    auto dictionary = theme.Value().try_as<xaml::ResourceDictionary>();
+                    if (dictionary && ownBrush(dictionary, name)) {
+                        merged.RemoveAt(index);
+                        break;
+                    }
+                }
+            }
+        }
+        readThemeAgain(button);
+    } catch (...) {
+        report("marking a button destructive");
+    }
+}
+
+extern "C" bool stateui_winui_button_critical(StateUIObjectRef handle) {
+    try {
+        auto button = as<controls::Control>(handle);
+        return isDestructive(button, button.try_as<controls::SplitButton>() ? L"SplitButtonForeground" : L"ButtonForeground");
+    } catch (...) {
+        report("reading whether a button is marked destructive");
+        return false;
+    }
+}
+
+extern "C" bool stateui_winui_button_accent(StateUIObjectRef handle) {
+    try {
+        auto style = as<controls::Control>(handle).Style();
+        return style && style == xaml::Application::Current().Resources().TryLookup(winrt::box_value(L"AccentButtonStyle"));
+    } catch (...) {
+        report("reading a button's accent");
+        return false;
     }
 }
 
@@ -172,7 +265,7 @@ extern "C" void stateui_winui_button_set_content(
     bool wraps, bool trims
 ) {
     try {
-        auto button = borrow<controls::Button>(handle);
+        auto button = as<controls::ContentControl>(handle);
         auto picture = pictureImage(icons);
         auto caption = text(words);
         controls::TextBlock block{nullptr};
@@ -231,7 +324,7 @@ extern "C" void stateui_winui_button_set_content(
 
 extern "C" void stateui_winui_button_set_room(StateUIObjectRef handle, double height) {
     try {
-        auto button = borrow<controls::Button>(handle);
+        auto button = as<controls::ContentControl>(handle);
         auto both = button.Content().try_as<controls::StackPanel>();
         if (!both) return;
         controls::Viewbox box{nullptr};
@@ -272,7 +365,7 @@ extern "C" bool stateui_winui_go_to_state(StateUIObjectRef handle, char const *s
 
 extern "C" void stateui_winui_button_invoke(StateUIObjectRef handle) {
     try {
-        pattern<provider::IInvokeProvider>(borrow<controls::Button>(handle), PatternInterface::Invoke).Invoke();
+        pattern<provider::IInvokeProvider>(as<xaml::UIElement>(handle), PatternInterface::Invoke).Invoke();
     } catch (...) {
         report("pressing a button");
     }

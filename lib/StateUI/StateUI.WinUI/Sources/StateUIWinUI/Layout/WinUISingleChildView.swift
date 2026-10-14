@@ -4,16 +4,19 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A page, or a container like it: its one child in its room.
+/// A page, or a container like it: its one child in its room - under its title where the window heads the page.
 @MainActor
 class WinUISingleChildView: WinUILayoutView {
     override func contentSize(width: Double?) -> LayoutSize {
-        SingleChildArithmetic.size(of: items.first, width: width)
+        let child = SingleChildArithmetic.size(of: items.first, width: width)
+        guard let heading else { return child }
+        return RowEdge.size(page: child, row: heading.height(width: width))
     }
 
     override func arrange(in bounds: Rect) {
+        let room = heading?.place(in: bounds) ?? bounds
         guard let item = items.first, item.isShown else { return }
 
-        item.view.layout(SingleChildArithmetic.place(of: item, in: bounds, direction: direction))
+        item.view.layout(SingleChildArithmetic.place(of: item, in: room, direction: direction))
     }
 }

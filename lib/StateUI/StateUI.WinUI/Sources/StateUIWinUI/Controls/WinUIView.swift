@@ -147,6 +147,18 @@ class WinUIView {
         }
     }
 
+    /// The keys pressing the view while its window is in front: WinUI's own accelerator on it; nil for none.
+    func setShortcut(_ shortcut: KeyboardShortcut?) {
+        let spelled = shortcut.flatMap(WinUIKeys.spelled) ?? (key: 0, modifiers: 0)
+        let givesWay = shortcut.map(KeyboardShortcuts.givesWayToTyping) ?? false
+        stateui_winui_set_shortcut(handle, spelled.key, spelled.modifiers, givesWay)
+    }
+
+    /// The words WinUI shows over the view while the pointer rests on it; nil shows none.
+    func setTooltip(_ text: String?) {
+        stateui_winui_set_tooltip(handle, text)
+    }
+
     /// Whether clicks and touches go through the view to what is behind it.
     func setIgnoresInput(_ ignores: Bool) {
         stateui_winui_set_hit_testable(handle, !ignores)
@@ -320,7 +332,7 @@ class WinUIView {
     /// Design: docs/design/platforms/winui/pages.md#menus
     func setContextMenu(_ menu: WinUIMenu) {
         menuActions = menu.actions
-        menu.relayed { stateui_winui_set_context_menu(handle, number, $0, $1, $2, $3, $4, $5, $6) }
+        menu.relayed { stateui_winui_set_context_menu(handle, number, $0, $1, $2, $3, $4, $5, $6, $7, $8, $9) }
     }
 
     /// The user holds the view down or lets it go: a scroller taken hold of, a button's press.

@@ -24,7 +24,7 @@ extension VisualElementProperties {
 
     /// Whether a screen reader skips this view.
     ///
-    ///     ColorBox(.silver).isAccessibilityHidden(true)
+    ///     Rectangle().fill(.silver).isAccessibilityHidden(true)
     ///
     /// For decoration: a rule, a shadow, a picture repeating the words beside
     /// it. Left unsaid, the platform decides, which is nearly always right; say
@@ -53,7 +53,7 @@ extension VisualElement {
     /// `accessibilityIdentifier` from a state, `$x`: the host writes each new
     /// text, and no view is rebuilt for it.
     public func accessibilityIdentifier(_ state: Binding<String>) -> Modified {
-        words(PropertyContainerContract.accessibilityIdentifier, by: state)
+        words(AutomationElementContract.accessibilityIdentifier, by: state)
     }
 
     /// `automationExcludedWithChildren` from a state, `$x`: the host sets each

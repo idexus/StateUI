@@ -30,9 +30,9 @@
                 }
                 let canvas = try s.element("canvas")
 
-                try s.settle { try s.color(of: canvas, at: Point(10, 20)) == .red }
-                s.expect(try s.color(of: canvas, at: Point(10, 20)), .red, "the first fill")
-                s.expect(try s.color(of: canvas, at: Point(60, 20)), .blue, "the later fill over it")
+                try s.settle { try s.shows(.red, on: canvas, at: Point(10, 20)) }
+                s.expect(try s.color(of: canvas, at: Point(10, 20)), shows: .red, "the first fill")
+                s.expect(try s.color(of: canvas, at: Point(60, 20)), shows: .blue, "the later fill over it")
                 s.expect(try s.color(of: canvas, at: Point(95, 20)), nil, "nothing past both")
             },
             ConformanceCase("aWholeTurnFillsTheWholeOval", proves: [Covered(CanvasContract.drawing)]) { s in
@@ -52,9 +52,9 @@
                 }
                 let canvas = try s.element("canvas")
 
-                try s.settle { try s.color(of: canvas, at: Point(20, 20)) == .red }
+                try s.settle { try s.shows(.red, on: canvas, at: Point(20, 20)) }
                 for point in [Point(20, 20), Point(20, 4), Point(4, 20), Point(70, 20), Point(70, 36)] {
-                    s.expect(try s.color(of: canvas, at: point), .red, "a whole turn, at \(point.x), \(point.y)")
+                    s.expect(try s.color(of: canvas, at: point), shows: .red, "a whole turn, at \(point.x), \(point.y)")
                 }
                 s.expect(try s.color(of: canvas, at: Point(2, 2)), nil, "the oval's corner stands empty")
             },
@@ -75,11 +75,36 @@
                     .verticalAlignment(.start)
                 }
                 let canvas = try s.element("canvas")
-                try s.settle { try s.color(of: canvas, at: Point(20, 20)) == .red }
+                try s.settle { try s.shows(.red, on: canvas, at: Point(20, 20)) }
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.color(of: canvas, at: Point(20, 20)) == .blue }
-                s.expect(try s.color(of: canvas, at: Point(20, 20)), .blue)
+                try s.settle { try s.shows(.blue, on: canvas, at: Point(20, 20)) }
+                s.expect(try s.color(of: canvas, at: Point(20, 20)), shows: .blue)
+            },
+            ConformanceCase("aDrawingTheTreeEmptiesLeavesTheCanvasBare", proves: [
+                Covered(CanvasContract.drawing),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let drawn = State(wrappedValue: true)
+                s.start {
+                    VStack {
+                        Canvas {
+                            if drawn.wrappedValue {
+                                Draw.fillColor(.red)
+                                Draw.fillRectangle(x: 0, y: 0, width: 40, height: 40)
+                            }
+                        }
+                        .width(40).height(40).id("canvas")
+                        Button("Clear").onClicked { drawn.wrappedValue = false }.id("change")
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+                let canvas = try s.element("canvas")
+                try s.settle { try s.shows(.red, on: canvas, at: Point(20, 20)) }
+
+                try s.perform(.activate, on: s.element("change"))
+                try s.settle { try s.color(of: canvas, at: Point(20, 20)) == nil }
+                s.expect(try s.color(of: canvas, at: Point(20, 20)), nil, "a drawing of nothing leaves nothing drawn")
             },
             ConformanceCase("aPressIsHeardWhereItWent", proves: [
                 Covered(CanvasContract.pressed), Covered(CanvasContract.dragged), Covered(CanvasContract.released),

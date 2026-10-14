@@ -46,7 +46,7 @@ extension TimePickerProperties {
 /// The time is a `ClockTime`: hours, minutes and seconds since midnight. The
 /// picker takes `.textColor` but has no `.text`, the field showing the
 /// formatted time.
-public struct TimePicker: ElementView, TextStyleElement, FontElement, TimePickerProperties {
+public struct TimePicker: ElementView, TextStyleElement, FontElement, TimePickerProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 
@@ -101,7 +101,7 @@ public struct TimePicker: ElementView, TextStyleElement, FontElement, TimePicker
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTimeChanged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTimeChanged(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onTimeChanged(_ handler: @escaping ValueEventHandler<ClockTime>) -> Self {
         fatalError("unavailable")
     }
@@ -119,7 +119,7 @@ public struct TimePicker: ElementView, TextStyleElement, FontElement, TimePicker
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onOpened(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onOpened(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onOpened(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }
@@ -136,7 +136,7 @@ public struct TimePicker: ElementView, TextStyleElement, FontElement, TimePicker
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClosed(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClosed(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onClosed(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

@@ -11,6 +11,8 @@ extension AndroidDriver {
         switch Ability(ability).act {
         case "switchAway", "switchBack", "bringToFront", "minimize", "restore", "close":
             if Ability(ability).element == "Window" { return "the host told the activity's phase, no activity moved" }
+        case "pressKeys":
+            return "the key event no view took handed to the host as the application's activity hands it"
         case "toggle" where Ability(ability).element == "SplitView":
             return "the host's own entry the scrim's tap and the bar's button call"
         case "dragAndDrop":
@@ -25,6 +27,7 @@ extension AndroidDriver {
         case "read minimum of Slider", "read maximum of Slider":
             return "the host's own range; the SeekBar holds only steps"
         case "read value of Stepper": return "the host's own number; Android's stepper is two buttons, which hold none"
+        case "read role of Button": return "the host's own record; Android has no role on a button"
         case "read options of Picker", "read title of Picker": return "the rows the relay keeps, not the spinner's"
         case "read showsSidebar of SplitView": return "the split's own flag; the drawer slides on it"
         case "read sidebarBackground of SplitView":

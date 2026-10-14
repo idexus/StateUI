@@ -102,6 +102,7 @@ final class UIKitRenderer {
         started = true
         runtime.start(
             realizing: UIKitRegistrations.registry.realization, unrealized: UIKitRealization.unrealized,
+            register: UIKitRealization.register,
             environment: {
                 reportEnvironment()
                 environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
@@ -344,18 +345,30 @@ final class UIKitRenderer {
         return nil
     }
 
-    /// The picture `name` as a bar or a tab shows it: `height` points tall and as wide as its shape makes it
-    /// (`PictureArithmetic.glyph`) - its own pixels, drawn smaller.
+    /// The native image for a picture: a file the application ships, the SF Symbol for an icon - a template, drawn
+    /// in the colour of what holds it - or the bytes decoded at a point a pixel. Each is named by its identity.
+    static func image(_ picture: HostPicture) -> UIImage? {
+        let image: UIImage? = switch picture {
+        case .file(let name): image(named: name)
+        case .icon(let icon): UIImage(systemName: icon.sfSymbol)
+        case .bytes(let bytes): UIImage(data: Data(bytes), scale: 1)
+        }
+        image?.accessibilityIdentifier = picture.identity
+        return image
+    }
+
+    /// The picture as a bar or a tab shows it: `height` points tall and as wide as its shape makes it
+    /// (`PictureArithmetic.glyph`) - its own pixels, drawn smaller; a symbol as UIKit sizes it there.
     /// Design: docs/design/platforms/uikit/pages.md#pictures-on-the-bars
-    static func glyph(named name: String, height: Double) -> UIImage? {
-        guard let image = image(named: name) else { return nil }
+    static func glyph(_ picture: HostPicture, height: Double) -> UIImage? {
+        guard let image = image(picture) else { return nil }
         guard let pixels = image.cgImage, image.size.height > 0 else { return image }
         let size = PictureArithmetic.glyph(
             LayoutSize(width: image.size.width, height: image.size.height), height: height)
         let glyph = UIImage(
             cgImage: pixels, scale: image.scale * image.size.height / size.height, orientation: image.imageOrientation)
             .withRenderingMode(image.renderingMode)
-        glyph.accessibilityIdentifier = name
+        glyph.accessibilityIdentifier = picture.identity
         return glyph
     }
 }
@@ -371,6 +384,10 @@ extension UIKitRenderer: HostPresenter {
 
     func perform(_ call: HostActCall) {
         acts.perform(call)
+    }
+
+    func focus(_ element: MountedElement) {
+        acts.focus(element)
     }
 }
 #endif

@@ -46,7 +46,7 @@ extension AndroidDriver {
             }
         case .icon:
             let shown = Self.pictures.first { name in
-                guard let picture = AndroidPictures.bitmap(named: name) else { return false }
+                guard let picture = AndroidPictures.bitmap(.file(name)) else { return false }
                 return Java.callStaticBool(
                     Self.testTabs, Self.tabShows, .object(row.reference), .int(Int32(place)), .object(picture.reference))
             }

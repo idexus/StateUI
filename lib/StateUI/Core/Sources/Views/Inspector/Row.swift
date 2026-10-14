@@ -21,7 +21,7 @@ struct Row: View {
             Text("#\(pass.number)  \(Look.road(pass.road))  "
                 + (pass.causes.isEmpty ? "" : "for " + pass.causes.joined(separator: ", ")))
                 .fontSize(12)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .textColor(Look.ink)
                 .lineBreak(.tailTruncation)
 

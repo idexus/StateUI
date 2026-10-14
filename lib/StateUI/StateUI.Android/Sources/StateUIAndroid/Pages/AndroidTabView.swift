@@ -12,7 +12,7 @@ final class AndroidTabView: AndroidLayoutView {
     /// One tab as its row shows it.
     struct Tab: Equatable {
         var title: String
-        var picture: String?
+        var picture: HostPicture?
     }
 
     /// The row's tabs and colours, as the tree says them.

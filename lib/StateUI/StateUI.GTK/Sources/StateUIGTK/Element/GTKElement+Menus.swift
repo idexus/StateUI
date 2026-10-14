@@ -10,7 +10,8 @@ extension GTKElement {
     /// Offers the menu a context menu declares on the view it stands on: the view this element is, or the one a menu
     /// or an entry of it stands under. A menu of no entries is none.
     func offerContextMenu() {
-        let owner = NodeType.menuTypes.contains(type) ? element.enclosing(type: .contextMenu)?.parent : element
+        let inMenu = NodeType.menuTypes.contains(type)
+        let owner = inMenu ? element.enclosing(type: .contextMenu)?.parent : element
         guard let owner, let view = owner.gtk.view else { return }
 
         let declared = owner.children.first { $0.type == .contextMenu }
@@ -25,9 +26,13 @@ extension GTKElement {
             view.contextMenu = GTKContextMenu(menu, on: view.widget)
         }
     }
-}
 
-extension NodeType {
-    /// The elements a menu is made of.
-    static let menuTypes: Set<NodeType> = [.contextMenu, .menu, .menuItem, .divider]
+    /// Gives the button a button's menu stands on - the button this element is, or the one its menu or an entry of
+    /// it stands under - the menu's entries.
+    func offerButtonMenu() {
+        let owner = NodeType.menuTypes.contains(type) ? element.enclosing(type: .buttonMenu)?.parent : element
+        guard let owner, let button = owner.gtk.view as? GTKButtonView, button.opening != .none else { return }
+        button.setMenu(GTKMenu(ButtonMenu.entries(of: owner)))
+        button.showsArrow = ButtonMenu.showsArrow(owner)
+    }
 }

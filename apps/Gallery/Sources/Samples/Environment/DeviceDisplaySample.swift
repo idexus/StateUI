@@ -12,6 +12,9 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
     static let summary = "The screen in pixels and points, and which way it "
         + "is turned - live through a rotation."
 
+    /// Listed where the host reports it: one that says nothing of it would show placeholders alone.
+    static func shows(_ device: Device) -> Bool { device.display.width > 0 }
+
     // listing: DeviceDisplaySample
     var body: some View {
         VStack {
@@ -21,7 +24,7 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
 
             Text("\(Int(device.display.width)) × \(Int(device.display.height)) px")
                 .fontSize(28)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
 
             Text(device.display.density > 0

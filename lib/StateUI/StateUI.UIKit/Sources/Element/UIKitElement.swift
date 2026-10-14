@@ -27,7 +27,7 @@ final class UIKitElement: NativeElement {
     var dragAndDrop: UIKitDragAndDrop?
 
     /// Whether the view held the focus when the element last said so.
-    var reportedFocus: Bool?
+    var reportedFocus = false
 
     /// What UIKit asks for the view's context menu, while it has one.
     var contextMenu: UIKitContextMenu?
@@ -41,6 +41,10 @@ final class UIKitElement: NativeElement {
 
     /// A menu item's or a toolbar item's action, as UIKit was last handed it.
     var menuAction: UIAction?
+
+    /// A menu's entry stating a shortcut, as UIKit was last handed it: a key command, which UIKit shows the shortcut
+    /// beside.
+    var menuCommand: UIKeyCommand?
 
     /// What every action made for this element is identified by: UIKit keeps it in the copies it makes of an action.
     var actionIdentifier: UIAction.Identifier { UIAction.Identifier("stateui.action.\(element.mount)") }
@@ -92,6 +96,7 @@ final class UIKitElement: NativeElement {
         if let view, let host { element.applyDrawnChildren(to: view, through: UIKitRegistrations.registry, in: host.runtime) }
         configureGestures()
         configureContextMenu()
+        configureButtonMenu()
         configureLayoutMotion()
         arrangeChildren()
         arrangePages(changed: changed)

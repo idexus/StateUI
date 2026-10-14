@@ -1,0 +1,7 @@
+# revision 2.1
+Capsule.fill: ✅
+Ellipse.fill: ✅
+Path.fill: ✅
+Polygon.fill: ✅
+Polyline.fill: ✅
+Rectangle.fill: ✅

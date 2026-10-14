@@ -26,12 +26,13 @@ extension AppKitWindowController {
         let foreground = chrome.foreground.flatMap(nsColor)
         window.title = chrome.title ?? "StateUI"
         window.subtitle = ""
-        // A page's title view stands in for its title, and over a painted band
-        // the title stands in the bar's foreground: either way the window
-        // keeps its name for the system and hides the one it would draw.
-        window.titleVisibility = titleView == nil && barColor == nil ? .visible : .hidden
+        // A page's title view stands in for its title, over a painted band the
+        // title stands in the bar's foreground, and a page may show none:
+        // the window keeps its name for the system and hides the one it would
+        // draw.
+        window.titleVisibility = titleView == nil && barColor == nil && chrome.showsTitle ? .visible : .hidden
         let paintedTitle: NSView? = chrome.background.flatMap { band in
-            guard titleView == nil, barColor != nil else { return nil }
+            guard titleView == nil, barColor != nil, chrome.showsTitle else { return nil }
             bandTitle.stringValue = window.title
             bandTitle.textColor = Self.foreground(on: band, written: foreground)
             bandTitle.sizeToFit()
@@ -187,7 +188,7 @@ extension AppKitWindowController {
         titleCluster.apply(
             title: area.title ?? "",
             subtitle: area.subtitle ?? "",
-            image: area.icon.flatMap { host?.image(named: $0) },
+            image: area.icon.flatMap { host?.image($0) },
             foreground: foreground)
         // AppKit gives a trailing accessory the toolbar row's height and
         // centres it there; only the width is the cluster's own.

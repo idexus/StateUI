@@ -17,19 +17,20 @@ extension AndroidRegistrations {
             }
             label.applies([
                 TextAlignmentElementContract.horizontalTextAlignment,
-                TextAlignmentElementContract.verticalTextAlignment,
+                TextContract.verticalTextAlignment,
             ]) { view, values in
                 view.setAlignment(
                     horizontal: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start,
-                    vertical: values[TextAlignmentElementContract.verticalTextAlignment] ?? .start)
+                    vertical: values[TextContract.verticalTextAlignment] ?? .start)
             }
-            label.property(TextStyleElementContract.tracking) { view, spacing in
+            label.property(TrackingElementContract.tracking) { view, spacing in
                 view.setLetterSpacing(spacing ?? 0)
             }
             label.property(LineHeightElementContract.lineHeight) { view, height in view.setLineHeight(height) }
             label.property(DecorableTextElementContract.textDecorations) { view, decorations in
                 view.setDecorations(decorations)
             }
+            label.property(TextContract.isSelectable) { view, selectable in view.isSelectable = selectable ?? false }
         }
     }
 }

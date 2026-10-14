@@ -8,15 +8,17 @@ extension WinUIRegistrations {
     /// A Button: its caption, its picture and its look, whether it takes a press, the press, its release and the click.
     static func buttons(_ registry: Registry<WinUIView>) {
         registry.add(ButtonContract.self, create: { reports in
-            let button = WinUIButtonView()
+            // A button holding a menu is made as it opens it from the first.
+            let button = WinUIButtonView(
+                menu: ButtonMenu.opening(made: reports.made), showsArrow: ButtonMenu.showsArrow(made: reports.made))
             button.onClicked = { reports.raise(ButtonContract.clicked) }
             button.onPressed = { reports.raise(ButtonContract.pressed) }
             button.onReleased = { reports.raise(ButtonContract.released) }
             return button
         }, members: { button in
             button.applies(TextMembers.members) { view, values in applyText(view, values) }
-            button.applies([TextStyleElementContract.tracking, FontElementContract.fontSize]) { view, values in
-                view.setLetterSpacing(values[TextStyleElementContract.tracking] ?? 0, size: values[FontElementContract.fontSize])
+            button.applies([TrackingElementContract.tracking, FontElementContract.fontSize]) { view, values in
+                view.setLetterSpacing(values[TrackingElementContract.tracking] ?? 0, size: values[FontElementContract.fontSize])
             }
             button.applies([
                 VisualElementContract.background,
@@ -33,11 +35,24 @@ extension WinUIRegistrations {
                 ImageElementContract.contentMode,
             ]) { view, values in
                 view.setIcon(
-                    values[ButtonContract.icon].flatMap { $0.isEmpty ? nil : PictureArithmetic.files(for: $0.file) } ?? [],
+                    WinUIPictures.lines(HostPicture(values[ButtonContract.icon], dark: false)),
                     position: values[ButtonContract.iconPosition] ?? .leading,
                     spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
             }
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
+            // WinUI's own accelerator - the one stated, else the role's - pressing the button while its window is in
+            // front, and the role's look: the accent style for the main action, a destructive one's words in the
+            // theme's critical colour where the tree colours them not.
+            button.applies([
+                ButtonContract.keyboardShortcut, ButtonContract.role, TextStyleElementContract.textColor,
+            ]) { view, values in
+                let role = values[ButtonContract.role]
+                view.setShortcut(KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role))
+                view.setRole(role)
+                view.setCritical(
+                    ButtonRoleLook(role, fills: false, colorsWords: values[TextStyleElementContract.textColor] != nil)
+                        .wordsInCritical)
+            }
             button.property(VisualElementContract.isEnabled) { view, enabled in
                 view.setEnabled(enabled ?? true)
             }

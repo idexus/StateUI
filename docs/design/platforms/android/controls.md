@@ -143,7 +143,10 @@ behind it.
 
 ## A label's words
 
-A label's words are one text, or the runs its spans describe as the host
+A label's words stand in the theme's primary words colour
+(`textColorPrimary`) where the tree colours them not, as Android's own body
+text; a `TextView` made bare reads its text appearance, whose colour is the
+secondary one. A label's words are one text, or the runs its spans describe as the host
 layer reads them (`textRuns`), laid down as one spanned text: each run in its
 own colour, size, family, weight, background and decorations where it has
 its own.
@@ -197,6 +200,12 @@ shadow falls under the whole outline: a shape the page shows through - a
 see-through fill, an outline alone - says its outline is clear, as Android's
 own drawables do, so no grey shadow shows inside it.
 
+A role draws where the tree draws nothing of its own ([a button's
+role](../../host/layout.md#a-buttons-role)): the main action wears the
+platform's coloured button - `Widget.DeviceDefault.Button.Colored`, its
+background and its words' colours - and a destructive one's words the
+theme's `colorError`.
+
 An icon beside words is a compound drawable at the picture's own size,
 before, after, above or below them, the icon spacing apart or the
 platform's gap. With no words it stands alone in the middle of the button,
@@ -204,6 +213,19 @@ over its background, sized to the room inside the padding: fitted, as `.fit`
 and `.fill` both say - a button has no covering scale - stretched, or at its
 own size for `.center`. That size is worked out as the button is placed, and
 sent again only when the room changes.
+
+## A button's menu
+
+Android's Views draw no menu button and no split button, so a button holding a
+menu is Android's own button, its menu a `PopupMenu` at the button, written as
+it opens. Where its click opens the menu, an arrow pointing down - Material's
+`expand_more` - stands after its words, in their colours, and the button keeps
+room for it beyond its padding, so its words never run under it. A split
+button's arrow stands at its right edge in a part of its own, set off by a
+line: where the finger went down on it, the click opens the menu rather than
+being the button's, and a long press opens it too, the road TalkBack offers. A
+held menu opens with a long press. The arrow and the line are layers of the
+button's foreground, which an icon standing alone shares.
 
 ## A picker
 
@@ -320,3 +342,15 @@ its listener only what no part takes, so its gestures see the touches and the
 hovering first, before the parts do (`StateUIWatch`): a drag or a pinch under
 way takes the rest of the touch from the parts, which are told it was called
 off, and a touch no part takes stays the view's where its element listens.
+
+## A text style
+
+Android Views' type scale is the platform's Material one: `.display` stands
+at Display 1's 34 points, `.title` at the Headline's 24, `.subtitle` at the
+Title's 20 in medium, `.headline` at Body 2's 14 in medium, `.body` at Body
+1's 14 and `.caption` at 12 (`AndroidTypeface`). The size and weight the tree
+gives stand over the style's (`TextLook.standing`). A weight is a typeface of
+the family - the platform's where it names none - at the weight's number
+(`Typeface.create(Typeface, int, boolean)`), which carries the slant; with no
+weight, the view's style bits slant the platform's face. A run's weight is a
+`TypefaceSpan` of such a typeface.

@@ -4,7 +4,7 @@ import StateUI
 @MainActor
 struct AnimationSample: SampleContent, ExampleContent {
     // listing: AnimationSample
-    @State private var curve = 0
+    @State private var curve = Easing.linear
 
     /// The four values the card is drawn from, one per thing a button moves.
     ///
@@ -23,12 +23,12 @@ struct AnimationSample: SampleContent, ExampleContent {
     static let summary = "Fade, move, scale and spin a view by sending the driven state behind it."
 
     // listing: AnimationSample
-    static let curves = ["Linear", "Cubic in-out", "Bounce out", "Back out"]
+    static let curves: [Easing] = [.linear, .cubicInOut, .bounceOut, .backOut]
 
     var body: some View {
         VStack {
-            // The picker is handed `$curve`, which reads nothing at build,
-            // and the four journeys are the host's - so this stands at one.
+            // A curve chosen builds this closure once; the four journeys are
+            // the host's, so a button pressed builds nothing.
             DebugInfoLabel()
 
             ZStack {
@@ -49,10 +49,9 @@ struct AnimationSample: SampleContent, ExampleContent {
             .shape(.roundedRectangle(32))
             .horizontalAlignment(.center)
 
-            Picker(Self.curves)
+            Picker(Self.curves, selection: $curve, caption: Self.name)
                 .accessibilityIdentifier("animation.curve")
                 .accessibilityLabel("Easing curve")
-                .selectedIndex($curve)
                 .placeholder("Easing")
 
             HStack {
@@ -62,8 +61,8 @@ struct AnimationSample: SampleContent, ExampleContent {
                 // whatever happened instead, which is what lets Stop leave the
                 // card where it stood.
                 button("Fade") {
-                    let landed = try await $fade.journey.move(to: 0.1, .eased(400, easing)).arrived()
-                    if landed { try await $fade.journey.move(to: 1, .eased(400, easing)).arrived() }
+                    let landed = try await $fade.journey.move(to: 0.1, .eased(400, curve)).arrived()
+                    if landed { try await $fade.journey.move(to: 1, .eased(400, curve)).arrived() }
                 }
 
                 // ONE movement, because the card only ever moves sideways. A
@@ -71,13 +70,13 @@ struct AnimationSample: SampleContent, ExampleContent {
                 // beside this one before either is awaited, so the two land
                 // together.
                 button("Move") {
-                    let landed = try await $shift.journey.move(to: 60, .eased(400, easing)).arrived()
-                    if landed { try await $shift.journey.move(to: 0, .eased(400, easing)).arrived() }
+                    let landed = try await $shift.journey.move(to: 60, .eased(400, curve)).arrived()
+                    if landed { try await $shift.journey.move(to: 0, .eased(400, curve)).arrived() }
                 }
 
                 button("Scale") {
-                    let landed = try await $scale.journey.move(to: 1.4, .eased(400, easing)).arrived()
-                    if landed { try await $scale.journey.move(to: 1, .eased(400, easing)).arrived() }
+                    let landed = try await $scale.journey.move(to: 1.4, .eased(400, curve)).arrived()
+                    if landed { try await $scale.journey.move(to: 1, .eased(400, curve)).arrived() }
                 }
 
                 // A movement goes TO a value, never BY one, so a full turn is
@@ -85,7 +84,7 @@ struct AnimationSample: SampleContent, ExampleContent {
                 // headed, which is what makes the next press carry on from
                 // there rather than start over.
                 button("Spin") {
-                    try await $angle.journey.move(to: angle + 360, .eased(700, easing)).arrived()
+                    try await $angle.journey.move(to: angle + 360, .eased(700, curve)).arrived()
                 }
             }
             .spacing(8)
@@ -149,13 +148,13 @@ struct AnimationSample: SampleContent, ExampleContent {
             .onClicked(gate: .cancelPrevious, act)
     }
 
-    /// The curve the picker is on.
-    private var easing: Easing {
+    /// What the picker calls a curve.
+    static func name(_ curve: Easing) -> String {
         switch curve {
-        case 1: return .cubicInOut
-        case 2: return .bounceOut
-        case 3: return .backOut
-        default: return .linear
+        case .cubicInOut: "Cubic in-out"
+        case .bounceOut: "Bounce out"
+        case .backOut: "Back out"
+        default: "Linear"
         }
     }
     // listing: end

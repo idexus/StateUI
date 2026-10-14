@@ -51,11 +51,39 @@ final class ValueArithmeticTests: XCTestCase {
         XCTAssertEqual(ValueArithmetic.decimals(of: [1.0 / 3]), 6)
     }
 
+    /// A stepper shows its steps alone: on its way, the step of its destination's nearest where the journey
+    /// stands, between there and the destination; at rest, its value - written as exactly as its step and its
+    /// destination are.
+    func testAStepperShowsTheStepsOfItsDestination() {
+        func shown(
+            _ value: Double, _ destination: Double, step: Double = 1, _ lower: Double = 0, _ upper: Double = 30
+        ) -> Double {
+            ValueArithmetic.stepped(value, toward: destination, step: step, lower: lower, upper: upper)
+        }
+        XCTAssertEqual(shown(24.999999999989246, 25), 25, "the last approach shows the destination")
+        XCTAssertEqual(shown(4, 25), 4, "where it set out")
+        XCTAssertEqual(shown(4.3, 25), 5, "the next step on its way, never 4.3")
+        XCTAssertEqual(shown(2, 5.2, step: 2, 0, 10), 3.2, "a step of the destination's own, never behind the start")
+        XCTAssertEqual(shown(5.5, 5.2, step: 2, 0, 10), 5.2, "never past where it lands")
+        XCTAssertEqual(shown(5.2, 5.2, step: 2, 0, 10), 5.2, "at rest, the value itself")
+        XCTAssertEqual(shown(0.30000000000000004, 0.1, step: 0.1, 0, 1), 0.3)
+        XCTAssertEqual(shown(31, 25, 20, 30), 30, "on its way down, within the range")
+        XCTAssertEqual(shown(.nan, 25, 20, 30), 25)
+    }
+
     /// Words stand as written, or in one case throughout.
     func testWordsTakeTheirCase() {
         XCTAssertEqual(TextCase.uppercase.applied(to: "Mixed Words"), "MIXED WORDS")
         XCTAssertEqual(TextCase.lowercase.applied(to: "Mixed Words"), "mixed words")
         XCTAssertEqual(TextCase.none.applied(to: "Mixed Words"), "Mixed Words")
         XCTAssertEqual(TextCase.default.applied(to: "Mixed Words"), "Mixed Words")
+    }
+
+    /// A stepper's step moves down only above the range's lower end and up only below its upper: at an end, the
+    /// button of that way stands disabled.
+    func testAStepMovesOnlyAwayFromTheRangesEnd() {
+        XCTAssertTrue(ValueArithmetic.stepsWay(0, lower: 0, upper: 10) == (false, true))
+        XCTAssertTrue(ValueArithmetic.stepsWay(5, lower: 0, upper: 10) == (true, true))
+        XCTAssertTrue(ValueArithmetic.stepsWay(10, lower: 0, upper: 10) == (true, false))
     }
 }

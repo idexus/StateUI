@@ -5,26 +5,26 @@
 public protocol GridProperties: PropertyContainer {}
 
 extension GridProperties {
-    /// How tall each row is - one length per row, so the count says how many
-    /// rows there are.
+    /// How tall each row is - one length per row, or a run of rows alike with a
+    /// count, so together they say how many rows there are.
     ///
-    ///     .rows(.auto, .fill, .proportional(2), .fixed(100))
+    ///     .rows(.fill, .auto(count: 2), .fill(count: 5), .fixed(80))
     ///
     /// `.auto` fits what is in the row, `.fill` and `.proportional` take a
     /// share of what is left over, and `.fixed` is that many device units. A
     /// grid told nothing has one row and one column.
-    public func rows(_ lengths: GridLength...) -> Modified {
-        setValue(GridContract.rows, lengths)
+    public func rows(_ runs: GridTracks...) -> Modified {
+        setValue(GridContract.rows, GridTracks.lengths(runs))
     }
 
-    /// How wide each column is - one length per column, so the count says how
-    /// many columns there are.
+    /// How wide each column is - one length per column, or a run of columns
+    /// alike with a count, so together they say how many columns there are.
     ///
-    ///     .columns(.fill, .proportional(2))
+    ///     .columns(.fill(count: 4))
     ///
     /// The same kinds of length as `rows`.
-    public func columns(_ lengths: GridLength...) -> Modified {
-        setValue(GridContract.columns, lengths)
+    public func columns(_ runs: GridTracks...) -> Modified {
+        setValue(GridContract.columns, GridTracks.lengths(runs))
     }
 
     /// The gap between one row and the next, in device units - between the rows

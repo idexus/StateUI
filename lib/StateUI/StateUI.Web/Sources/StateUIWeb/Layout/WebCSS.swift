@@ -79,19 +79,24 @@ enum WebCSS {
         switch outline {
         case .rectangle: nil
         case .roundedRectangle(let radius): pixels(radius)
+        // A radius past the box's size is cut down by the browser to half its shorter side, whatever its size.
+        case .capsule: "9999px"
         case .ellipse: "50%"
         }
     }
 
-    /// A look's font and colour as CSS - what it leaves unsaid none, so the words take it from around them. A size
-    /// stands in rems, which the browser's text size scales, where the words scale, and in pixels where not - the
-    /// page's own size held fixed where the look gives none.
+    /// A look's font and colour as CSS - what it leaves unsaid none, so the words take it from around them: its
+    /// style's size and weight from the Web's type ramp, under the size and weight it gives. A size stands in rems,
+    /// which the browser's text size scales, where the words scale, and in pixels where not - the page's own size
+    /// held fixed where the look gives none.
+    /// Design: docs/design/platforms/web/controls.md#a-text-style
     static func font(_ look: TextLook) -> [(String, String?)] {
-        [("font-size", look.scales ? look.size.map(rems) : pixels(look.size) ?? "var(--stateui-words-fixed)"),
-         ("font-weight", look.attributesGiven ? (look.attributes.contains(.bold) ? "700" : "400") : nil),
-         ("font-style", look.attributesGiven ? (look.attributes.contains(.italic) ? "italic" : "normal") : nil),
-         ("font-family", look.family.map(string)),
-         ("color", color(look.color))]
+        let (size, weight) = look.standing(styleSize: look.style?.webSize, styleWeight: look.style?.webWeight)
+        return [("font-size", look.scales ? size.map(rems) : pixels(size) ?? "var(--stateui-words-fixed)"),
+                ("font-weight", weight.map { String($0.number) }),
+                ("font-style", look.attributesGiven ? (look.attributes.contains(.italic) ? "italic" : "normal") : nil),
+                ("font-family", look.family.map(string)),
+                ("color", color(look.color))]
     }
 
     /// How words break across lines and where they stop - at most `lines` of them, nil for any - as CSS says it.
@@ -157,6 +162,28 @@ enum WebCSS {
         case 1: "center"
         case 2: "end"
         default: stated ? "center" : "stretch"
+        }
+    }
+}
+
+extension TextStyle {
+    /// The style's size on the Web's type ramp, in CSS pixels at the browser's own text size: the body's is the
+    /// page's.
+    var webSize: Double {
+        switch self {
+        case .display: 34
+        case .title: 26
+        case .subtitle: 20
+        case .headline, .body: 15
+        case .caption: 12
+        }
+    }
+
+    /// The style's weight on the Web's type ramp.
+    var webWeight: FontWeight {
+        switch self {
+        case .display, .title, .subtitle, .headline: .semibold
+        case .body, .caption: .regular
         }
     }
 }

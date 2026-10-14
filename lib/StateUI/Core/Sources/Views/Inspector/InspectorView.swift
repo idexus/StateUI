@@ -109,7 +109,7 @@ struct InspectorView: View {
             HStack {
                 Text("Inspector")
                     .fontSize(15)
-                    .fontAttributes(.bold)
+                    .fontWeight(.bold)
                     .textColor(Look.ink)
                     .margin(left: 0, top: 0, right: 10, bottom: 4)
 
@@ -240,7 +240,7 @@ struct InspectorView: View {
 
                         Text("Render #\(pass.number) · \(Look.road(pass.road))")
                             .fontSize(13)
-                            .fontAttributes(.bold)
+                            .fontWeight(.bold)
                             .textColor(Look.ink)
                             .verticalAlignment(.center)
                     }

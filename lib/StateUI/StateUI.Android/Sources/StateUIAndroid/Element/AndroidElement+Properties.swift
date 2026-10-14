@@ -12,17 +12,16 @@ extension AndroidElement {
                 host?.runtime.reducesMotion() ?? false
             })
         }
-        if element.isDrawnByParent(in: AndroidRegistrations.registry) { return nil }
+        if element.isDrawnByParent(in: AndroidRegistrations.registry) || element.isViewless { return nil }
         if let registered = AndroidRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
-            reporting: { [weak self] property, event, value in self?.report(property, event, value) }
+            reporting: { [weak self] property, event, value in self?.report(property, event, value) },
+            made: element.made
         ) {
             if let scroll = registered as? AndroidScrollView { follow(scroll) }
             return registered
         }
-
-        guard !NodeType.viewlessTypes.contains(type) else { return nil }
 
         switch type {
         case .page, .overlay:
@@ -62,6 +61,7 @@ extension AndroidElement {
                 // Android blurs nothing behind a view: a blur's or glass's colour stands in, its tint over it.
                 case .background: view.setBackground(HostMaterial(value(.background)).painted)
                 case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
+                case .tooltip: view.setTooltip(element.string(.tooltip))
                 default: break
                 }
             }

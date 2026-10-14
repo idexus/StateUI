@@ -27,13 +27,19 @@ allowed can be written" a compiler rule rather than a convention.
   │       ├── LayoutProperties                     │                  environment
   │       │   └── StackProperties                  ├── StyleTarget    style
   │       ├── ShapeProperties                      └── View           gestures, pan, frame,
-  │       └── TextInputProperties                      │              context menu
-  └── the mixins, one file each:                       └── ElementView
-      TextStyleElement  TextualElement  FontElement        ├── Layout
-      TextAlignmentElement  PaddingElement                 │   └── Stack
-      LineHeightElement  DecorableTextElement              ├── Shape
+  │       │   ├── FilledShapeProperties                │              context menu
+  │       │   └── CorneredShapeProperties              └── ElementView
+  │       └── TextInputProperties                          ├── Layout
+  └── the mixins, one file each:                           │   └── Stack
+      TextStyleElement  TextualElement  FontElement        ├── Shape
+      TextAlignmentElement  PaddingElement                 │   ├── FilledShape
+      LineHeightElement  DecorableTextElement              │   └── CorneredShape
       BorderElement  ImageElement  TintElement             └── TextInput
-      BarElement  MenuItemElement
+      BarElement
+
+  the element side's mixins: AutomationElement (refined by VisualElement and
+  MenuItemElement), KeyboardElement, FocusElement - a style names no element
+  and takes no key
 ```
 
 A control conforms on the element side - `ElementView` (a view that is its own
@@ -84,9 +90,11 @@ control that does not wear the tier is never offered its modifiers.
 `PropertyContainer` sits below `VisualElement` because not everything that
 carries properties is a view. A `TextSpan`, one run of text inside a Text,
 carries a text colour, a font size and a background colour, and has no
-opacity, margin or size. The text and font mixins are therefore written against
+opacity, margin or size, no line of its own and no name automation finds it
+by. The text and font mixins are therefore written against
 `PropertyContainer`, where a `TextSpan` and a `Style` - which is not in the
-tree at all - can both wear them.
+tree at all - can both wear them; a line's height is a paragraph's, so
+`LineHeightElement` is worn by `Text` alone.
 
 There are two text tiers because some controls colour text they do not own. A
 Picker shows the chosen item, and a DatePicker and a TimePicker format a value:

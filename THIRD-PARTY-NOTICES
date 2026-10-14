@@ -12,12 +12,13 @@ This file is about what a BUILT APPLICATION carries, not about this repository,
 and it is at the root rather than beside the samples because it is true of ANY
 application built with StateUI, not only of the ones here.
 
-Nothing third-party is checked in: the Swift toolchain is installed rather than
-vendored, a host links its platform's own toolkit, and every picture in the
-samples is hand-written SVG. Beyond its own code and this library, an
-application built with StateUI carries the Swift runtime on a platform that
-does not provide one - see below. A platform's toolkit is part of the platform,
-not of the application.
+One thing third-party is checked in: the Android host's icons, Material
+Symbols - see below. The Swift toolchain is installed rather than vendored, a
+host links its platform's own toolkit, and every picture in the samples is
+hand-written SVG. Beyond its own code and this library, an application built
+with StateUI carries the Swift runtime on a platform that does not provide
+one, and on Android those icons - see below. A platform's toolkit is part of
+the platform, not of the application.
 
 So if you ship an application written with this library, this file is a
 starting point for yours: read what your own build packages, not only this list.
@@ -37,14 +38,32 @@ Exception.
     https://swift.org/LICENSE.txt
 
 
+MATERIAL SYMBOLS, IN EVERY ANDROID APPLICATION
+----------------------------------------------
+
+The Android host draws each icon of StateUI's set (`Icon`) from a Material
+Symbols drawable, which it puts among every Android application's resources:
+lib/StateUI/StateUI.Android/Resources/drawable/stateui_icon_*.xml, the 24 dp
+outlined Android vector drawables of the Material Design icons, each renamed
+for the icon it draws. One change in each file: its tint names the platform's
+attribute, `?android:attr/colorControlNormal`, where Google's names AndroidX's
+`?attr/colorControlNormal`.
+
+Copyright Google LLC
+Licensed under the Apache License, Version 2.0.
+
+    https://github.com/google/material-design-icons
+
+
 WHAT IS NOT HERE, AND WHY
 -------------------------
 
 No fonts. This repository has no font files at all: the samples ask for
 whatever the platform draws with.
 
-No borrowed artwork. Every icon and each application icon are hand-written SVG
-in apps/Gallery/Resources/ and apps/HelloWorld/Resources/.
+No other borrowed artwork. Every picture and each application icon of the
+samples are hand-written SVG in apps/Gallery/Resources/ and
+apps/HelloWorld/Resources/; the Web host's icons are drawn in its own code.
 
 Nothing from the test tools. XCTest and the Swift toolchain build and check this
 repository and are not part of anything shipped.

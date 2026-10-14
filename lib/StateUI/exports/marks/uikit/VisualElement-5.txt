@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 12.1
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.isEnabled: ✓ tap on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.maximumHeight: ✅
@@ -7,9 +7,10 @@ ActivityIndicator.minimumHeight: ✅
 ActivityIndicator.minimumWidth: ✅
 Button.scale: ✓ read scale of Button: the host's own transform, checked against the layer it composed itself
 Canvas.pivotY: ✓ read pivotY of Canvas: the host's own transform, checked against the layer it composed itself
-CheckBox.automationExcludedWithChildren: ✅
-ColorBox.accessibilityLabel: ✅
+Capsule.automationExcludedWithChildren: ✅
+CheckBox.accessibilityLabel: ✅
 DatePicker.frame: ✅
+Divider.frame: ✅
 Ellipse.isEnabled: ✅
 Ellipse.translationX: ✓ read translationX of Ellipse: the host's own transform, checked against the layer it composed itself
 Grid.rotationX: ✓ read rotationX of Grid: the host's own transform, checked against the layer it composed itself
@@ -18,31 +19,32 @@ Image.ignoresInput: ✅
 ItemsView.isVisible: ✅
 ItemsView.scaleX: ✓ read scaleX of ItemsView: the host's own transform, checked against the layer it composed itself
 Line.automationExcludedWithChildren: ✅
-Map.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-Path.frame: ✅
-Picker.opacity: ✅
-Picker.scaleY: ✓ read scaleY of Picker: the host's own transform, checked against the layer it composed itself
-Polygon.rotationX: ✓ read rotationX of Polygon: the host's own transform, checked against the layer it composed itself
-Polyline.background: ☑️ UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
-ProgressBar.accessibilityLabel: ✅
-RadioButton.frame: ✅
-Rectangle.isEnabled: ✅
-Rectangle.translationX: ✓ read translationX of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.automationExcludedWithChildren: ✅
-Slider.accessibilityLabel: ✅
-Stepper.focus: – Stepper takes no keyboard focus here: it refuses it, and nothing is heard
-Stepper.isFocusedChanged: – Stepper takes no keyboard focus here: it refuses it, and nothing is heard
-Stepper.unfocus: – Stepper takes no keyboard focus here: it refuses it, and nothing is heard
-Switch.frameChanged: ✅
-Switch.height: ✅
-Switch.translationY: ✓ read translationY of Switch: the host's own transform, checked against the layer it composed itself
-Switch.width: ✅
+Map.accessibilityLabel: ✅
+Path.isEnabled: ✅
+Path.translationX: ✓ read translationX of Path: the host's own transform, checked against the layer it composed itself
+Picker.rotationX: ✓ read rotationX of Picker: the host's own transform, checked against the layer it composed itself
+Polygon.layoutDirection: ✅
+Polyline.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
+ProgressBar.style: ✅
+RadioButton.isEnabled: ✅
+RadioButton.translationX: ✓ read translationX of RadioButton: the host's own transform, checked against the layer it composed itself
+Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.layoutDirection: ✅
+SearchField.accessibilityHint: ✅
+Slider.style: ✅
+Spacer.frameChanged: ✅
+Spacer.height: ✅
+Spacer.translationY: ✓ read translationY of Spacer: the host's own transform, checked against the layer it composed itself
+Spacer.width: ✅
+Stepper.scale: ✓ read scale of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.pivotY: ✓ read pivotY of Switch: the host's own transform, checked against the layer it composed itself
 Text.rotation: ✓ read rotation of Text: the host's own transform, checked against the layer it composed itself
-TextEditor.scale: ✓ read scale of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.pivotY: ✓ read pivotY of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.automationExcludedWithChildren: ✅
-VStack.accessibilityLabel: ✅
-WebView.isEnabled: ✅
-WebView.translationX: ✓ read translationX of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.rotationY: ✓ read rotationY of ZStack: the host's own transform, checked against the layer it composed itself
+TextEditor.automationExcludedWithChildren: ✅
+TextField.accessibilityHint: ✅
+TimePicker.style: ✅
+VStack.frameChanged: ✅
+VStack.height: ✅
+VStack.translationY: ✓ read translationY of VStack: the host's own transform, checked against the layer it composed itself
+VStack.width: ✅
+WebView.pivotX: ✓ read pivotX of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.isAccessibilityHidden: ✅

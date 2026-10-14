@@ -52,12 +52,12 @@ final class PropertyValuesTests: XCTestCase {
     func testAPropertyFirstAnimatedStartsAtItsNeutralValue() throws {
         let runtime = HostRuntime(
             clock: StillClock(), reducesMotion: { false }, makeNative: { _ in AnimatingView() }, log: { _ in })
-        runtime.tree.apply(HostPatch(id: .manual("box"), type: .colorBox), complete: true)
+        runtime.tree.apply(HostPatch(id: .manual("box"), type: .rectangle), complete: true)
         let targets: [Prop: HostValue] = [
             .margin: .numbers([8, 8, 8, 8]), .rotation: .number(90), .scale: .number(3),
             .cornerRadius: .numbers([4, 4, 4, 4]),
         ]
-        var moved = HostPatch(id: .manual("box"), type: .colorBox)
+        var moved = HostPatch(id: .manual("box"), type: .rectangle)
         moved.properties = targets
         moved.transitions = targets.mapValues { _ in HostTransition(motion: .eased(200, .linear)) }
 

@@ -30,7 +30,10 @@ extension AndroidDriver {
             return try Self.scales(Java.callStaticInt(Self.testSpans, Self.spanScales, .object(reference), .int(start)))
         case .fontAttributes:
             let style = Java.callStaticInt(Self.testSpans, Self.spanStyle, .object(reference), .int(start))
-            return FontAttributes(rawValue: style & 3).propValue
+            return FontAttributes(rawValue: style & 2).propValue
+        case .fontWeight:
+            let weight = Java.callStaticInt(Self.testSpans, Self.spanWeight, .object(reference), .int(start))
+            return FontWeight(nearest: Double(weight)).propValue
         case .textColor:
             let argb = Java.callStaticInt(Self.testSpans, Self.spanColor, .object(reference), .int(start))
             return Self.color(UInt32(bitPattern: argb)).propValue
@@ -53,6 +56,7 @@ extension AndroidDriver {
     static let spanPoints = Java.staticMethod(testSpans, "points", "(Landroid/widget/TextView;I)F")
     static let spanColor = Java.staticMethod(testSpans, "color", "(Landroid/widget/TextView;I)I")
     static let spanStyle = Java.staticMethod(testSpans, "style", "(Landroid/widget/TextView;I)I")
+    static let spanWeight = Java.staticMethod(testSpans, "weight", "(Landroid/widget/TextView;I)I")
     static let spanScales = Java.staticMethod(testSpans, "scales", "(Landroid/widget/TextView;I)I")
     static let spanLines = Java.staticMethod(testSpans, "lines", "(Landroid/widget/TextView;I)I")
     static let spanBackground = Java.staticMethod(testSpans, "background", "(Landroid/widget/TextView;I)I")

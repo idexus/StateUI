@@ -19,10 +19,17 @@ extension WebDriver {
         case (.isVisible, _):
             return try WebBrowser.truth("e.isConnected && e.checkVisibility({ visibilityProperty: true })", on: e).propValue
         case (.opacity, _): return try WebBrowser.number("Number(getComputedStyle(e).opacity)", on: e)?.propValue
+        case (.tooltip, _): return try WebBrowser.evaluate("e.getAttribute('title')", on: e)?.propValue
+        case (.keyboardShortcut, _): return try shortcut(on: e)
+        case (.showsMenuArrow, _):
+            return try WebBrowser.truth("e.dataset.menu === 'opens' && !e.hasAttribute('data-bare')", on: e).propValue
+        case (.role, _):
+            let roles: [String: ButtonRole] = ["primary": .primary, "cancel": .cancel, "destructive": .destructive]
+            return try WebBrowser.evaluate("e.dataset.role ?? null", on: e).flatMap { roles[$0] }?.propValue
         case (.isEnabled, _):
             return try (!WebBrowser.truth("""
                 e.matches(":disabled") || e.getAttribute("aria-disabled") === "true" \
-                || (e.getAttribute("role") === "group" && !!e.querySelector(":disabled"))
+                || (e.getAttribute("role") === "group" && !e.querySelector("input:enabled, button:enabled"))
                 """, on: e)).propValue
         case (.layoutDirection, _):
             let rightToLeft = try WebBrowser.truth("getComputedStyle(e).direction === 'rtl'", on: e)
@@ -59,6 +66,10 @@ extension WebDriver {
         case (.selectedIndex, is WebPickerView):
             return .some(try WebBrowser.number("e.selectedIndex - 1", on: e).flatMap { $0 < 0 ? nil : Int($0).propValue })
         case (.options, is WebPickerView): return try words("[...e.options].slice(1).map((o) => o.text)", on: e).propValue
+        case (.options, is WebChoiceGroupView): return try words("[...e.children].map((c) => c.textContent)", on: e).propValue
+        case (.selectedIndex, is WebChoiceGroupView):
+            let checked = "[...e.children].findIndex((c) => c.getAttribute('aria-checked') === 'true' || !!c.querySelector('input:checked'))"
+            return .some(try WebBrowser.number(checked, on: e).flatMap { $0 < 0 ? nil : Int($0).propValue })
         case (.placeholder, is WebPickerView): return .some(try WebBrowser.evaluate("e.options[0].text || null", on: e)?.propValue)
         case (.source, let image as WebImageView): return .some(try source(of: image))
         case (.contentMode, is WebImageView): return try contentMode(of: e)
@@ -108,6 +119,9 @@ extension WebDriver {
         case (.page, .showsNavigationBar):
             guard let bar = try? bar(over: element) else { return nil }
             return try (!WebBrowser.truth("e.hidden", on: bar)).propValue
+        case (.page, .showsTitle):
+            guard let bar = try? bar(over: element) else { return nil }
+            return try WebBrowser.truth("e.dataset.title !== 'none'", on: bar).propValue
         case (.page, .showsBackButton):
             guard let bar = try? bar(over: element) else { return nil }
             return try WebBrowser.truth("!e.hidden && !e.querySelector('button[aria-label=Back]').hidden", on: bar).propValue
@@ -197,6 +211,7 @@ extension WebDriver {
         let style = "getComputedStyle(e)"
         switch property {
         case .text: return .some(try WebBrowser.evaluate("e.textContent", on: e)?.propValue)
+        case .isSelectable: return .some(try WebBrowser.truth("\(style).userSelect !== 'none'", on: e).propValue)
         case .textColor: return .some(try color("\(style).color", on: e)?.propValue)
         case .fontSize: return try WebBrowser.number("parseFloat(\(style).fontSize)", on: e)?.propValue
         case .isFontAutoScalingEnabled:
@@ -213,11 +228,11 @@ extension WebDriver {
         case .fontFamily:
             let family = try WebBrowser.evaluate("\(style).fontFamily.split(',')[0].trim().replace(/^[\"']|[\"']$/g, '')", on: e)
             return .some(family.map { Name($0).propValue })
+        case .fontWeight:
+            return FontWeight(nearest: try WebBrowser.number("Number(\(style).fontWeight)", on: e) ?? 400).propValue
         case .fontAttributes:
-            var attributes: FontAttributes = []
-            if try WebBrowser.number("Number(\(style).fontWeight)", on: e) ?? 400 >= 700 { attributes.insert(.bold) }
-            if try WebBrowser.truth("\(style).fontStyle === 'italic'", on: e) { attributes.insert(.italic) }
-            return attributes.propValue
+            let italic = try WebBrowser.truth("\(style).fontStyle === 'italic'", on: e)
+            return (italic ? FontAttributes.italic : .none).propValue
         case .textDecorations:
             var decorations: TextDecorations = []
             let lines = try WebBrowser.evaluate("\(style).textDecorationLine", on: e) ?? ""
@@ -498,6 +513,13 @@ extension WebDriver {
             document = document[document.index(after: end)...]
         }
         return WebViewSource.html(String(document), baseURL: base).propValue
+    }
+
+    /// The shortcut the element of `node` names to assistive technology (`aria-keyshortcuts`); nil for none.
+    func shortcut(on node: Int32) throws -> HostValue? {
+        let onApple = try WebBrowser.truth("/Mac|iPhone|iPad|iPod/.test(navigator.platform ?? '')", on: 0)
+        return try WebBrowser.evaluate("e.getAttribute('aria-keyshortcuts')", on: node)
+            .flatMap { WebKeys.shortcut(spelled: $0, onApple: onApple) }?.propValue
     }
 }
 

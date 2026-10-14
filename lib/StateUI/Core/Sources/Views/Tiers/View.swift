@@ -21,7 +21,7 @@ public protocol ViewProperties: VisualElementProperties {}
 ///         }
 ///
 ///         var body: some View {
-///             Text(title).fontSize(28).fontAttributes(.bold)
+///             Text(title).fontSize(28).fontWeight(.bold)
 ///         }
 ///     }
 ///
@@ -84,12 +84,12 @@ extension View {
     ///     Text(item.name)
     ///         .contextMenu {
     ///             MenuItem("Rename").onClicked { rename(item) }
-    ///             Divider()
+    ///             MenuSeparator()
     ///             MenuItem("Delete").isDestructive(true).onClicked { remove(item) }
     ///         }
     ///
     /// The same entries a menu bar takes - `MenuItem`, `Menu`
-    /// and `Divider` - attached to a view instead of to a page.
+    /// and `MenuSeparator` - attached to a view instead of to a page.
     ///
     /// The menu stays hidden until the user asks for it, so do not put the
     /// only way to perform an essential action behind it.

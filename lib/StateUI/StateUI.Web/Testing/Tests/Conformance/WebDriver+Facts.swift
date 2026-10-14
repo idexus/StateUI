@@ -194,6 +194,7 @@ extension WebDriver {
             case .isDestructive: return try WebBrowser.truth("e.hasAttribute('data-destructive')", on: e).propValue
             case .accessibilityIdentifier: return .some(try WebBrowser.evaluate("e.dataset.identifier ?? null", on: e)?.propValue)
             case .icon: return .some(try picture("e.querySelector('img')", on: e))
+            case .keyboardShortcut: return .some(try shortcut(on: e))
             default: return nil
             }
         }

@@ -10,7 +10,7 @@ struct OutlineSample: SampleContent, ExampleContent {
     static let title = "Shape and outline"
     static let summary = "A stack, a grid or a ZStack paints its own background and outline, in the shape you give it."
 
-    // listing: OutlineSample
+    // listing: OutlineSample keep
     var body: some View {
         VStack {
             VStack {
@@ -38,6 +38,16 @@ struct OutlineSample: SampleContent, ExampleContent {
             .lineWidth(3)
             .shape(.rectangle)
 
+            // Its ends round whole however wide it stands.
+            HStack {
+                Text("A capsule, as wide as its row")
+                    .fontSize(15)
+            }
+            .padding(horizontal: 20, vertical: 10)
+            .stroke(Palette.accent)
+            .lineWidth(2)
+            .shape(.capsule)
+
             ZStack {
                 Text("An ellipse")
                     .fontSize(15)
@@ -51,7 +61,7 @@ struct OutlineSample: SampleContent, ExampleContent {
             // The box fills the ZStack; its corners are cut only while the
             // ZStack clips what it holds.
             ZStack {
-                ColorBox(Palette.accent)
+                Rectangle(Palette.accent)
             }
             .shape(.roundedRectangle(24))
             .clipsContent(clips)
@@ -64,7 +74,7 @@ struct OutlineSample: SampleContent, ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("The shape is `.rectangle`, `.roundedRectangle(radius)` or `.ellipse`: the layout's background is "
+        Text("The shape is `.rectangle`, `.roundedRectangle(radius)`, `.capsule` or `.ellipse`: the layout's background is "
             + "painted to it and its outline follows it. `.clipsContent(true)` cuts what the layout holds to it too.")
             .fontSize(12)
             .textColor(Palette.subtle)

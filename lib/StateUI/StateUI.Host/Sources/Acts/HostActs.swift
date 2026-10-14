@@ -11,7 +11,7 @@
     /// and the zones, the on-screen keyboard, a value kept - the application's or a scene's - a handler's failure
     /// told, and the theme the application shows in.
     public static let performed: [any ContractMember] = [
-        VisualElementContract.focus, VisualElementContract.unfocus,
+        FocusElementContract.focus, FocusElementContract.unfocus,
         ApplicationContract.alert, ApplicationContract.announce, ApplicationContract.chooseAction,
         ApplicationContract.confirm, ApplicationContract.currentTime, ApplicationContract.currentTimeZone,
         ApplicationContract.handlerFailed, ApplicationContract.hideOnScreenKeyboard,

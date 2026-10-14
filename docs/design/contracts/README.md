@@ -36,7 +36,7 @@ a property and its value meet in the compiler and nothing is spelled twice.
       members    lineBreak      ElementProperty<Self, LineBreak>
                  maximumLines   ElementProperty<Self, Int>     travels: false
 
-  TextContract.worn    Text, View, VisualElement, PropertyContainer, TextualElement,
+  TextContract.worn    Text, View, VisualElement, AutomationElement, TextualElement,
                         TextStyleElement, FontElement, TextAlignmentElement, ...
                         each once, in the order met - depth first,
                         in declaration order
@@ -89,9 +89,10 @@ A tier mirrors a Swift protocol of the same name in `Views`: an element's
 view conforms to the protocols whose tiers its contract wears, and a
 protocol's modifiers write the tier's members. A tier wears the tiers its
 protocol refines, so `View` wears `VisualElement`, which wears
-`PropertyContainer`. Two tiers stand apart: `PageElement` has no protocol -
-a view's page modifiers write its members - and `BarElementContract` wears
-nothing, though `BarElement` refines `PropertyContainer`.
+`AutomationElement`. `PropertyContainer`, the protocol of anything holding
+values - a control, a `Style`, a `TextSpan` - has no tier: it promises no
+member, so a mixin refining it alone wears nothing. `PageElement` has no
+protocol - a view's page modifiers write its members.
 
 ## The contracts of the library
 
@@ -100,3 +101,20 @@ the dictionary's order, then every element. The guards and the tables the
 library derives from its contracts read this list, and the differ reads its
 facts by name from it; an application declares its own contracts the same
 way and registers them with its hosts.
+
+## What an element does not wear
+
+A modifier stands on the tier of the elements that can honour it, so the typed
+roads offer nothing an element's contract does not wear. The generic roads -
+`setValue`, `onEvent` over any member - cannot be tied to an element's tiers
+by type: Swift has no constraint saying a contract is among those another
+wears. So the differ holds every element of the library to its contract
+(`Node.keepingDeclared`): a value, a driven value or a handler its contract
+does not wear is left out before any host sees it, and said once - "Text
+takes no role". An arrangement says why: it fills where a page stands. An
+application's own element is not held: its node names no contract the
+library knows.
+
+A place belongs to a layout too. A grid's row or column written on a view
+that stands outside a Grid, or an area outside a ZStack, places nothing; the
+differ says so once, naming both, as it says a page's value written too deep.

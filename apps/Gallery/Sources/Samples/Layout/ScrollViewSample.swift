@@ -51,7 +51,7 @@ private func numberedLines() -> ScrollView {
 private func columnTitle(_ text: String) -> Text {
     Text(text)
         .fontSize(12)
-        .fontAttributes(.bold)
+        .fontWeight(.bold)
         .textColor(Palette.subtle)
         .horizontalTextAlignment(.center)
 }

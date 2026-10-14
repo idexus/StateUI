@@ -111,7 +111,7 @@ public struct Map: ElementView, MapProperties {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onMapClicked(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onMapClicked(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onMapClicked(_ handler: @escaping ValueEventHandler<Location>) -> Self {
         fatalError("unavailable")
     }
@@ -194,7 +194,7 @@ public struct Marker: Element {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSelected(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSelected(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onSelected(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }
@@ -214,7 +214,7 @@ public struct Marker: Element {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDetailsClicked(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDetailsClicked(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onDetailsClicked(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

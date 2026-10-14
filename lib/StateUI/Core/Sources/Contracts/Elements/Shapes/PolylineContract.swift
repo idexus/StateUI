@@ -12,7 +12,7 @@ public enum PolylineContract: ElementContract {
     public static let layer: ElementLayer = .stateUI
 
     /// A polyline is a shape.
-    public static let tiers: [any Contract.Type] = [ShapeContract.self]
+    public static let tiers: [any Contract.Type] = [FilledShapeContract.self, CorneredShapeContract.self]
 
     /// Which parts of a self-crossing outline count as inside it.
     public static let fillRule = ElementProperty<Self, FillRule>("fillRule", layer: .stateUI)

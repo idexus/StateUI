@@ -31,7 +31,7 @@ private struct CutPage: View {
 }
 
 final class WinUIMotionTests: XCTestCase {
-    /// A colour box whose colour and width change under a motion stands halfway at half its time, and lands - the
+    /// A rectangle whose fill and width change under a motion stands halfway at half its time, and lands - the
     /// Gallery's Motion sample: what travels is the host layer's list.
     func testAColourAndAWidthTravelHalfwayAndLand() throws {
         try onUIThread {
@@ -39,8 +39,8 @@ final class WinUIMotionTests: XCTestCase {
             let wide = State(wrappedValue: false)
             let host = WinUIRenderer.running(clock: clock) {
                 VStack {
-                    ColorBox()
-                        .color(wide.wrappedValue ? Color(red: 255, green: 0, blue: 0) : Color(red: 0, green: 0, blue: 255))
+                    Rectangle()
+                        .fill(wide.wrappedValue ? Color(red: 255, green: 0, blue: 0) : Color(red: 0, green: 0, blue: 255))
                         .width(wide.wrappedValue ? 300 : 100)
                         .height(60)
                         .horizontalAlignment(.start)

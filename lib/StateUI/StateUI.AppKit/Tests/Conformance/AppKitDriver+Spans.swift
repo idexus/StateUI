@@ -24,12 +24,10 @@ extension AppKitDriver {
         case .text: return (words.string as NSString).substring(with: range).propValue
         case .fontSize: return Double(font.pointSize).propValue
         case .fontFamily: return font.familyName.map { Name($0) }.propValue
+        case .fontWeight: return FontWeight(appKit: font.weight).propValue
         case .fontAttributes:
-            let traits = NSFontManager.shared.traits(of: font)
-            var held: FontAttributes = []
-            if traits.contains(.boldFontMask) { held.insert(.bold) }
-            if traits.contains(.italicFontMask) { held.insert(.italic) }
-            return held.propValue
+            let italic = NSFontManager.shared.traits(of: font).contains(.italicFontMask)
+            return (italic ? FontAttributes.italic : .none).propValue
         case .textColor: return (attributes[.foregroundColor] as? NSColor).map { Self.color($0).propValue }
         case .background: return (attributes[.backgroundColor] as? NSColor).map { Self.color($0).propValue }
         case .tracking: return Double((attributes[.kern] as? NSNumber)?.doubleValue ?? 0).propValue

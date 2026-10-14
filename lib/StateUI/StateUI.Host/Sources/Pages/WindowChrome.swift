@@ -12,6 +12,10 @@
     /// which leaves the host's own.
     public var title: String?
 
+    /// Whether the chrome shows the title: false where the page naming the window says it shows none, which
+    /// leaves the title naming the window to the system alone.
+    public var showsTitle = true
+
     /// The stack whose top page the way back takes, and the way back's words.
     public var back: (stack: MountedElement, title: String)?
 
@@ -40,6 +44,7 @@
     public init(window: MountedElement, arrangement: MountedElement?) {
         let page = arrangement?.visiblePage
         title = arrangement?.titledPage?.value(.title)?.string ?? window.value(.title)?.string
+        showsTitle = arrangement?.titledPage?.value(.showsTitle)?.bool != false
         back = arrangement?.visibleBackStack.map { stack in
             (stack, stack.children[stack.children.count - 2].value(.backButtonTitle)?.string ?? "Back")
         }
@@ -59,11 +64,11 @@
         /// The line under the title; nil for none.
         public let subtitle: String?
 
-        /// The picture beside the title, by name; nil for none.
-        public let icon: String?
+        /// The picture beside the title; nil for none.
+        public let icon: HostPicture?
 
         /// An area saying `title`, `subtitle` and `icon`.
-        public init(title: String?, subtitle: String?, icon: String?) {
+        public init(title: String?, subtitle: String?, icon: HostPicture?) {
             self.title = title
             self.subtitle = subtitle
             self.icon = icon
@@ -80,5 +85,7 @@
 
     /// What of a page the chrome shows - its title, its way back, its bar and the back button's words: a change to
     /// one shows the chrome again, from a state too.
-    public static let pageValues: Set<Prop> = [.title, .showsBackButton, .backButtonTitle, .showsNavigationBar]
+    public static let pageValues: Set<Prop> = [
+        .title, .showsBackButton, .backButtonTitle, .showsNavigationBar, .showsTitle,
+    ]
 }

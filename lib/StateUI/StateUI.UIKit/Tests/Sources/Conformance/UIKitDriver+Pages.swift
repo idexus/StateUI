@@ -46,12 +46,26 @@ extension UIKitDriver {
     /// What a page or an arrangement of pages holds: its tab's title and picture where it stands on a tab, its bar,
     /// a tabbed view's tab and a split view's sidebar; nil for any other element.
     func pageHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
+        if element.type == .menuItem, let command = menuCommand(of: element) {
+            switch property {
+            case .text: return command.title.propValue
+            case .icon: return command.image?.accessibilityIdentifier.map { .string($0) }
+            case .isEnabled: return (!command.attributes.contains(.disabled)).propValue
+            case .isDestructive: return command.attributes.contains(.destructive).propValue
+            case .isOn: return (command.state == .on).propValue
+            case .accessibilityIdentifier: return command.accessibilityIdentifier.map { .string($0) }
+            case .keyboardShortcut: return UIKitKeys.shortcut(of: command)?.propValue
+            default: break
+            }
+        }
         if element.type == .menuItem || element.type == .toolbarItem, let action = menuAction(of: element) {
             switch property {
+            case .keyboardShortcut where element.type == .toolbarItem: return element.value(.keyboardShortcut)
             case .text: return action.title.propValue
             case .icon: return action.image?.accessibilityIdentifier.map { .string($0) }
             case .isEnabled: return (!action.attributes.contains(.disabled)).propValue
             case .isDestructive: return action.attributes.contains(.destructive).propValue
+            case .isOn: return (action.state == .on).propValue
             case .accessibilityIdentifier: return action.accessibilityIdentifier.map { .string($0) }
             case .placement: return Self.placement(of: action, under: element)
             default: break
@@ -68,6 +82,8 @@ extension UIKitDriver {
         case .icon where onTab: return controller.tabBarItem.image?.accessibilityIdentifier.map { .string($0) }
         case .title: return (controller.navigationItem.title ?? "").propValue
         case .showsBackButton: return (!controller.navigationItem.hidesBackButton).propValue
+        // The bar shows the title where it holds no view in its place.
+        case .showsTitle: return (controller.navigationItem.titleView == nil).propValue
         case .backButtonTitle: return controller.navigationItem.backButtonTitle?.propValue
         case .showsNavigationBar:
             guard let navigation = controller.navigationController else { return nil }

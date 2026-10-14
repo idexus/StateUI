@@ -116,6 +116,8 @@ final class Catalog {
                 card: ImageSource("cat_basicinput.png"),
                 samples: [
                     Sample(ButtonSample()),
+                    Sample(ButtonRoleSample()),
+                    Sample(ButtonMenuSample()),
                     Sample(IconButtonSample()),
                     Sample(SwitchSample()),
                     Sample(CheckBoxSample()),
@@ -126,6 +128,9 @@ final class Catalog {
                     Sample(ProgressBarSample()),
                     Sample(ActivityIndicatorSample()),
                     Sample(SemanticsSample()),
+                    Sample(TooltipSample()),
+                    Sample(ShortcutSample()),
+                    Sample(KeyPressSample()),
                 ]),
 
             SampleGroup(
@@ -138,8 +143,11 @@ final class Catalog {
                 card: ImageSource("cat_text.png"),
                 samples: [
                     Sample(TextSample()),
+                    Sample(TextStyleSample()),
+                    Sample(SelectableTextSample()),
                     Sample(TextSpanSample()),
                     Sample(TextFieldSample()),
+                    Sample(NextFieldSample()),
                     Sample(TextEditorSample()),
                     Sample(SearchFieldSample()),
                     Sample(KeyboardSample()),
@@ -159,7 +167,6 @@ final class Catalog {
                     Sample(ScrollViewSample()),
                     Sample(SizingSample()),
                     Sample(OutlineSample()),
-                    Sample(ColorBoxSample()),
                     Sample(TransformSample()),
                     Sample(LayoutDirectionSample()),
                     Sample(GeometryReaderSample()),
@@ -232,12 +239,13 @@ final class Catalog {
             SampleGroup(
                 route: "media",
                 title: "Media",
-                summary: "Pictures from the app's resources, a page of the web, and the "
-                    + "world on a map.",
+                summary: "Pictures from the app's resources, the platform's icons, a page of "
+                    + "the web, and the world on a map.",
                 icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"),
                 card: ImageSource("cat_media.png"),
                 samples: [
                     Sample(ImageSample()),
+                    Sample(IconSample()),
                     Sample(WebViewSample()),
                     Sample(MapSample()),
                 ]),
@@ -283,9 +291,10 @@ final class Catalog {
                 route: "environment",
                 title: "Environment",
                 summary: "What the host knows - the device, the screen, the locale, the "
-                    + "network and the battery - the application's session, and an object "
-                    + "of your own provided above and resolved below by type; the theme is "
-                    + "under Styles, the scene's and the window's sessions under Scene.",
+                    + "network and the battery - the application's session, an object "
+                    + "of your own provided above and resolved below by type, and a document "
+                    + "in its own language; the theme is under Styles, the scene's and the "
+                    + "window's sessions under Scene.",
                 icon: ImageSource(light: "nav_environment.png", dark: "nav_environment_dark.png"),
                 card: ImageSource("cat_environment.png"),
                 samples: [
@@ -293,8 +302,10 @@ final class Catalog {
                     Sample(DeviceInfoSample()),
                     Sample(DeviceDisplaySample()),
                     Sample(LocaleInfoSample()),
+                    Sample(LocalizationSample()),
                     Sample(ConnectivitySample()),
                     Sample(BatterySample()),
+                    Sample(PlatformSupportSample()),
                     Sample(ApplicationSessionSample()),
                 ]),
 
@@ -367,10 +378,11 @@ final class Catalog {
         #endif
     }
 
-    /// How many samples a device of `formFactor` lists - the home page's count, so
-    /// it agrees with what the group pages show.
-    func sampleCount(on formFactor: FormFactor) -> Int {
-        groups.reduce(0) { $0 + $1.shown(on: formFactor).count }
+    /// How many samples `device` lists - the home page's count, so it agrees with
+    /// what the group pages show.
+    @MainActor
+    func sampleCount(on device: Device) -> Int {
+        groups.reduce(0) { $0 + $1.shown(on: device).count }
     }
 
     /// The sample behind an id, for the route that pushes one.

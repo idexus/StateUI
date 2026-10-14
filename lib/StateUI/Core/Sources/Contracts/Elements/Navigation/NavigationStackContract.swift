@@ -13,7 +13,7 @@ public enum NavigationStackContract: ElementContract {
     /// A stack has a bar, is shown as a page with a title and an icon, and
     /// automation finds it by its name.
     public static let tiers: [any Contract.Type] = [
-        BarElementContract.self, PageElementContract.self, PropertyContainerContract.self,
+        BarElementContract.self, PageElementContract.self, AutomationElementContract.self,
     ]
 
     /// The user went back natively, leaving this many pages above the root.

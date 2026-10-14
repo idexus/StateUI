@@ -11,7 +11,7 @@
 ///         .icon("trash.png")
 ///         .isDestructive(true)
 ///         .onClicked { delete() }
-public protocol MenuItemElement: PropertyContainer {}
+public protocol MenuItemElement: AutomationElement {}
 
 extension MenuItemElement {
     /// What the item says. Usually given in the initializer instead.
@@ -36,6 +36,17 @@ extension MenuItemElement {
     public func isEnabled(_ value: Bool) -> Modified {
         setValue(MenuItemElementContract.isEnabled, value)
     }
+
+    /// Keys that choose it from the keyboard while its window is in front:
+    /// `key` with `modifiers` - the platform's Command or Control unless said
+    /// otherwise. A bar's item and a menu bar's entry are chosen by them; a
+    /// context menu's entry shows them beside its words.
+    ///
+    ///     MenuItem("Save").keyboardShortcut("s")
+    ///     ToolbarItem("Share").keyboardShortcut("s", modifiers: [.primary, .shift])
+    public func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Modified {
+        setValue(MenuItemElementContract.keyboardShortcut, KeyboardShortcut(key, modifiers: modifiers))
+    }
 }
 
 extension MenuItemElement where Modified == Self {
@@ -52,7 +63,7 @@ extension MenuItemElement where Modified == Self {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClicked(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClicked(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onClicked(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

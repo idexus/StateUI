@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 6.1
 ActivityIndicator.swipeDirection: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.swipeThreshold: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.swiped: ✓ pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
@@ -8,20 +8,24 @@ Canvas.area: ✅
 Canvas.droppedFileTypes: ✓ dropFiles on Canvas: the window's drop routing told the driver's files, no dragging session
 Canvas.filesDropped: ✓ dropFiles on Canvas: the window's drop routing told the driver's files, no dragging session
 Canvas.frameChanged: ✅
-CheckBox.pointerEntered: ✓ hover on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
-CheckBox.pointerExited: ✓ hover on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
-CheckBox.pointerMoved: ✓ hover on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
-CheckBox.pointerPressed: ✓ hover on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
-CheckBox.pointerReleased: ✓ hover on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
-ColorBox.frameChanged: ✅
-ColorBox.panYChannel: ✓ pan on ColorBox: handed to the host's recognizer or handler, no NSEvent sent
+Capsule.pointerEntered: ✓ hover on Capsule: handed to the host's recognizer or handler, no NSEvent sent
+Capsule.pointerExited: ✓ hover on Capsule: handed to the host's recognizer or handler, no NSEvent sent
+Capsule.pointerMoved: ✓ hover on Capsule: handed to the host's recognizer or handler, no NSEvent sent
+Capsule.pointerPressed: ✓ hover on Capsule: handed to the host's recognizer or handler, no NSEvent sent
+Capsule.pointerReleased: ✓ hover on Capsule: handed to the host's recognizer or handler, no NSEvent sent
+CheckBox.panYChannel: ✓ pan on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.frameChanged: ✅
 DatePicker.gridColumnSpan: ✅
 DatePicker.gridRowSpan: ✅
-Ellipse.allowsDrop: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
-Ellipse.dragLeave: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
-Ellipse.dragOver: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
-Ellipse.drop: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
+Divider.pointerEntered: ✓ hover on Divider: handed to the host's recognizer or handler, no NSEvent sent
+Divider.pointerExited: ✓ hover on Divider: handed to the host's recognizer or handler, no NSEvent sent
+Divider.pointerMoved: ✓ hover on Divider: handed to the host's recognizer or handler, no NSEvent sent
+Divider.pointerPressed: ✓ hover on Divider: handed to the host's recognizer or handler, no NSEvent sent
+Divider.pointerReleased: ✓ hover on Divider: handed to the host's recognizer or handler, no NSEvent sent
+Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Ellipse.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Ellipse.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Ellipse.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Ellipse.frameChanged: ✅
 Ellipse.horizontalAlignment: ✅
 Ellipse.verticalAlignment: ✅
@@ -44,67 +48,71 @@ Map.area: ✅
 Map.droppedFileTypes: ✓ dropFiles on Map: the window's drop routing told the driver's files, no dragging session
 Map.filesDropped: ✓ dropFiles on Map: the window's drop routing told the driver's files, no dragging session
 Map.frameChanged: ✅
-Path.pointerEntered: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
-Path.pointerExited: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
-Path.pointerMoved: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
-Path.pointerPressed: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
-Path.pointerReleased: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
-Picker.panYChannel: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
+Path.panYChannel: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
+Picker.frameChanged: ✅
+Picker.gridColumnSpan: ✅
+Picker.gridRowSpan: ✅
+Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Polygon.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Polygon.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Polygon.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Polygon.frameChanged: ✅
-Polygon.gridColumnSpan: ✅
-Polygon.gridRowSpan: ✅
-Polyline.allowsDrop: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
-Polyline.dragLeave: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
-Polyline.dragOver: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
-Polyline.drop: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
-Polyline.frameChanged: ✅
-Polyline.horizontalAlignment: ✅
-Polyline.verticalAlignment: ✅
-ProgressBar.pinchUpdated: ✓ pinch on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
-RadioButton.panTouchCount: ✓ pan on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
-RadioButton.panUpdated: ✓ pan on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
-RadioButton.panXChannel: ✓ pan on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
+Polygon.horizontalAlignment: ✅
+Polygon.verticalAlignment: ✅
+Polyline.pinchUpdated: ✓ pinch on Polyline: handed to the host's recognizer or handler, no NSEvent sent
+ProgressBar.panTouchCount: ✓ pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
+ProgressBar.panUpdated: ✓ pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
+ProgressBar.panXChannel: ✓ pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
+RadioButton.frameChanged: ✅
+RadioButton.gridColumn: ✅
+RadioButton.gridRow: ✅
+Rectangle.canDrag: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Rectangle.dragEnded: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Rectangle.dragStarting: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Rectangle.dragText: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Rectangle.frameChanged: ✅
-Rectangle.gridColumn: ✅
-Rectangle.gridRow: ✅
-ScrollView.canDrag: ✓ dragAndDrop on ScrollView: the drag source and the window's drop routing told by the driver, no dragging session
-ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the drag source and the window's drop routing told by the driver, no dragging session
-ScrollView.dragStarting: ✓ dragAndDrop on ScrollView: the drag source and the window's drop routing told by the driver, no dragging session
-ScrollView.dragText: ✓ dragAndDrop on ScrollView: the drag source and the window's drop routing told by the driver, no dragging session
-ScrollView.frameChanged: ✅
-ScrollView.margin: ✅
-SearchField.swipeDirection: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
-SearchField.swipeThreshold: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
-SearchField.swiped: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
-Slider.tapCount: ✓ tap on Slider: handed to the host's recognizer or handler, no NSEvent sent
-Slider.tapped: ✓ tap on Slider: handed to the host's recognizer or handler, no NSEvent sent
-Stepper.area: ✅
-Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the window's drop routing told the driver's files, no dragging session
-Stepper.filesDropped: ✓ dropFiles on Stepper: the window's drop routing told the driver's files, no dragging session
-Stepper.frameChanged: ✅
-Switch.pointerEntered: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
-Switch.pointerExited: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
-Switch.pointerMoved: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
-Switch.pointerPressed: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
-Switch.pointerReleased: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Rectangle.margin: ✅
+ScrollView.swipeDirection: ✓ pan on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
+ScrollView.swipeThreshold: ✓ pan on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
+ScrollView.swiped: ✓ pan on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
+SearchField.tapCount: ✓ tap on SearchField: handed to the host's recognizer or handler, no NSEvent sent
+SearchField.tapped: ✓ tap on SearchField: handed to the host's recognizer or handler, no NSEvent sent
+Slider.area: ✅
+Slider.droppedFileTypes: ✓ dropFiles on Slider: the window's drop routing told the driver's files, no dragging session
+Slider.filesDropped: ✓ dropFiles on Slider: the window's drop routing told the driver's files, no dragging session
+Slider.frameChanged: ✅
+Spacer.pointerEntered: ✓ hover on Spacer: handed to the host's recognizer or handler, no NSEvent sent
+Spacer.pointerExited: ✓ hover on Spacer: handed to the host's recognizer or handler, no NSEvent sent
+Spacer.pointerMoved: ✓ hover on Spacer: handed to the host's recognizer or handler, no NSEvent sent
+Spacer.pointerPressed: ✓ hover on Spacer: handed to the host's recognizer or handler, no NSEvent sent
+Spacer.pointerReleased: ✓ hover on Spacer: handed to the host's recognizer or handler, no NSEvent sent
+Stepper.panYChannel: ✓ pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent
+Switch.frameChanged: ✅
+Switch.gridColumnSpan: ✅
+Switch.gridRowSpan: ✅
 Text.swipeDirection: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
 Text.swipeThreshold: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
 Text.swiped: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
-TextEditor.panYChannel: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
-TextField.frameChanged: ✅
-TextField.gridColumnSpan: ✅
-TextField.gridRowSpan: ✅
-TimePicker.allowsDrop: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
-TimePicker.dragLeave: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
-TimePicker.dragOver: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
-TimePicker.drop: ✓ dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session
-TimePicker.frameChanged: ✅
-TimePicker.horizontalAlignment: ✅
-TimePicker.verticalAlignment: ✅
-VStack.pinchUpdated: ✓ pinch on VStack: handed to the host's recognizer or handler, no NSEvent sent
-WebView.panTouchCount: ✓ pan on WebView: handed to the host's recognizer or handler, no NSEvent sent
-WebView.panUpdated: ✓ pan on WebView: handed to the host's recognizer or handler, no NSEvent sent
-WebView.panXChannel: ✓ pan on WebView: handed to the host's recognizer or handler, no NSEvent sent
-ZStack.frameChanged: ✅
-ZStack.gridColumn: ✅
-ZStack.gridRow: ✅
+TextEditor.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+TextEditor.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+TextEditor.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+TextEditor.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+TextEditor.frameChanged: ✅
+TextEditor.horizontalAlignment: ✅
+TextEditor.verticalAlignment: ✅
+TextField.pinchUpdated: ✓ pinch on TextField: handed to the host's recognizer or handler, no NSEvent sent
+TimePicker.panTouchCount: ✓ pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
+TimePicker.panUpdated: ✓ pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
+TimePicker.panXChannel: ✓ pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
+VStack.frameChanged: ✅
+VStack.gridColumn: ✅
+VStack.gridRow: ✅
+WebView.canDrag: ✓ dragAndDrop on WebView: the drag source and the window's drop routing told by the driver, no dragging session
+WebView.dragEnded: ✓ dragAndDrop on WebView: the drag source and the window's drop routing told by the driver, no dragging session
+WebView.dragStarting: ✓ dragAndDrop on WebView: the drag source and the window's drop routing told by the driver, no dragging session
+WebView.dragText: ✓ dragAndDrop on WebView: the drag source and the window's drop routing told by the driver, no dragging session
+WebView.frameChanged: ✅
+WebView.margin: ✅
+ZStack.swipeDirection: ✓ pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent
+ZStack.swipeThreshold: ✓ pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent
+ZStack.swiped: ✓ pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent

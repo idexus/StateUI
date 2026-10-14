@@ -96,7 +96,7 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(journey.value, 0.2, "nobody walks it, so it is there")
         XCTAssertEqual(journey.destination, 0.2)
 
-        renders.render(ColorBox().opacity(fade.projectedValue).node)
+        renders.render(Rectangle().opacity(fade.projectedValue).node)
 
         fade.wrappedValue = 0.9
 
@@ -111,7 +111,7 @@ final class JourneyTests: XCTestCase {
     /// time let the wash travel on to where it had been going.
     func testAJourneyWriteLaysOnlyItsPart() throws {
         let wash = State(wrappedValue: Color("#7C3AED"))
-        Renders().render(ColorBox().background(wash.projectedValue).node)
+        Renders().render(Rectangle().background(wash.projectedValue).node)
         let image = try XCTUnwrap(wash.storage.walkedImage())
         let board = Renderer.shared.board(of: image)
         typealias Lanes = JourneyLanes<Color>
@@ -207,7 +207,7 @@ final class JourneyTests: XCTestCase {
         let journey = ball.projectedValue.journey
         let renders = Renders()
 
-        renders.render(ColorBox().translationY(ball.projectedValue).node)
+        renders.render(Rectangle().translationY(ball.projectedValue).node)
 
         ball.wrappedValue = 100
 
@@ -260,7 +260,7 @@ final class JourneyTests: XCTestCase {
         let binding = ball.projectedValue
         let renders = Renders()
 
-        renders.render(ColorBox().translationY(binding).node)
+        renders.render(Rectangle().translationY(binding).node)
 
         XCTAssertEqual(binding.journey.move(to: 50).ended, true, "it arrived as it was sent")
         XCTAssertEqual(ball.wrappedValue, 50, "the destination was written")
@@ -295,7 +295,7 @@ final class JourneyTests: XCTestCase {
         let walking = fade.projectedValue.journey.convert { "at \(Int($0.value * 100))" }
         let going = fade.projectedValue.convert { "going to \(Int($0 * 100))" }
 
-        renders.render(ColorBox().opacity(fade.projectedValue).node)
+        renders.render(Rectangle().opacity(fade.projectedValue).node)
 
         moved(fade.number, to: [0.5, 1, 0, 0, 0, 0, 0, 0], mask: 0b1)
 

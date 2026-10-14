@@ -168,7 +168,17 @@ screen shows it: where the smoothing of an edge touches the pixel read, a
 colour drawn whole comes back a few steps off in a channel - at one pixel a
 point, the middle of a line four points wide is a pixel or two. `Session.shows`
 and `expect(_:shows:)` take each channel within four steps of the colour;
-nothing drawn at the point shows no colour.
+nothing drawn at the point shows no colour. A colour read is a `ShownColor`,
+which answers `shows` and is never compared with a colour whole: whole, an
+edge's smoothing may keep it from ever matching, and a `settle` waiting on it
+runs out without a word - the case passes having proved nothing, its time the
+whole of the settle's steps.
+
+A run of points is read at once (`Session.colors`, `shows(_:on:at:)` with
+points): a host that reads its window a frame at a time reads every point
+from one frame, where one at a time would wait a frame for each - on Android
+a tenth of a second a point, a dashed outline's run of thirty-seven points
+three times over some twelve seconds in one message of the UI thread.
 
 ## The runner
 

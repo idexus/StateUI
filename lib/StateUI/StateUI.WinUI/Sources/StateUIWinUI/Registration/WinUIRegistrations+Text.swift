@@ -18,10 +18,11 @@ extension WinUIRegistrations {
             label.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
                 view.setAlignment(horizontal: alignment ?? .start)
             }
-            label.property(TextAlignmentElementContract.verticalTextAlignment) { view, alignment in
+            label.property(TextContract.verticalTextAlignment) { view, alignment in
                 view.setVerticalAlignment(alignment ?? .start)
             }
-            label.property(TextStyleElementContract.tracking) { view, spacing in
+            label.property(TextContract.isSelectable) { view, selectable in view.setSelectable(selectable ?? false) }
+            label.property(TrackingElementContract.tracking) { view, spacing in
                 view.setLetterSpacing(spacing ?? 0)
             }
             label.property(LineHeightElementContract.lineHeight) { view, height in view.setLineHeight(height) }
@@ -37,9 +38,9 @@ extension WinUIRegistrations {
         if let words = TextMembers.words(values) { (view as? WinUIWordsView)?.setText(words) }
         if let look = TextMembers.look(values) {
             if let text = view as? WinUITextualView {
-                text.setTextFont(size: look.size, attributes: look.attributes, family: look.family)
+                text.setTextFont(look)
             } else {
-                view.setFont(size: look.size, attributes: look.attributes, family: look.family)
+                view.setFont(look)
             }
             view.setTextScales(look.scales)
             view.setForeground(look.color)

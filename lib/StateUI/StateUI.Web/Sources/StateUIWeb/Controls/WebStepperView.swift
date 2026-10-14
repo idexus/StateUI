@@ -61,6 +61,17 @@ final class WebStepperView: WebDOMView {
         let words = WebCSS.number(value, decimals: decimals)
         WebRelay.setValue(field.node, words)
         field.attribute("aria-valuenow", words)
+        showEnds()
+    }
+
+    /// Whether the user may change the value, as the tree says.
+    private var enabled = true
+
+    /// Each button is on while the stepper is and its way is not at the range's end.
+    private func showEnds() {
+        let ways = ValueArithmetic.stepsWay(value, lower: range.lower, upper: range.upper)
+        down.attribute("disabled", enabled && ways.down ? nil : "")
+        up.attribute("disabled", enabled && ways.up ? nil : "")
     }
 
     private func within(_ number: Double) -> Double {
@@ -86,7 +97,9 @@ final class WebStepperView: WebDOMView {
     }
 
     override func setEnabled(_ enabled: Bool) {
-        for part in [down, field, up] { part.attribute("disabled", enabled ? nil : "") }
+        self.enabled = enabled
+        field.attribute("disabled", enabled ? nil : "")
+        showEnds()
     }
 
     override func detach() {

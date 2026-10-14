@@ -21,6 +21,7 @@ ToolbarItem 3
 ToolbarItemGroup 2
 TitleView 2
 MenuBar 2
+MenuItem 2
 Window 6
 Scene 2
 ModalStack 3
@@ -30,19 +31,43 @@ NavigationStack 2
 uikit WebView 2
 android WebView 3
 winui WebView 2
-winui Button 2
-MenuItemElement 2
-FontElement 2
+Button 6
+appkit Button 2
+uikit Button 2
+winui Button 3
+MenuItemElement 3
+FontElement 3
 winui MenuItemElement 2
 winui PageElement 2
 DatePicker 2
 TimePicker 2
-Page 4
+Picker 2
+Image 2
+Page 5
 PageElement 2
-View 4
-VisualElement 8
-Shape 3
-BorderElement 5
+View 6
+VisualElement 12
+Shape 5
+BorderElement 8
 TextInput 2
 Application 3
 TextSpan 2
+Divider 3
+Canvas 2
+Rectangle 2
+Stepper 2
+KeyboardElement 2
+LineHeightElement 2
+TextAlignmentElement 2
+Text 3
+TextStyleElement 2
+TintElement 2
+ContextMenu 2
+winui VisualElement 2
+winui Layout 2
+gtk Layout 2
+TextField 2
+SearchField 2
+Polyline 2
+FilledShape 2
+AutomationElement 2

@@ -23,7 +23,7 @@ struct LocaleInfoSample: SampleContent, ExampleContent {
 
             Text(locale.name.isEmpty ? "the host has not said" : locale.name)
                 .fontSize(28)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
 
             Text("language · \(locale.language)")

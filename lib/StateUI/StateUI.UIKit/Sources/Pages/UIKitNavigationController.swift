@@ -45,7 +45,11 @@ final class UIKitNavigationController: UINavigationController, UINavigationContr
         let moved = abs(pages.count - viewControllers.count) == 1
             && zip(pages, viewControllers).allSatisfy { $0 === $1 }
         self.pages = pages
-        setViewControllers(pages, animated: animated && moved && view.window != nil)
+        let moves = animated && moved && view.window != nil
+        setViewControllers(pages, animated: moves)
+        // Shown without a move, the page stands laid out at once: a move begun in the same turn - the sidebar's
+        // slide - carries it from its place, where laying it out within that move would grow it from nothing.
+        if !moves { view.layoutIfNeeded() }
     }
 
     /// Shows the bar or hides it, as the page on top says.

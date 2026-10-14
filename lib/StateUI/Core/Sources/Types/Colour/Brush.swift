@@ -112,10 +112,15 @@ public struct Brush: Equatable, Sendable, HostRepresentable {
         return .values(values)
     }
 
-    /// A brush back: its kind, then what that kind is made of - nil for
-    /// anything else.
+    /// A brush back: its kind, then what that kind is made of, or a bare
+    /// colour as its one colour - nil for anything else.
     /// - Parameter propValue: what the host sent.
     public init?(propValue: PropValue) {
+        // A colour's state crosses as the colour itself: its one colour.
+        if let color = Color(propValue: propValue) {
+            self = .solidColor(color)
+            return
+        }
         guard let values = propValue.values,
               let kind = values.first?.enumeration.flatMap(Kind.init(rawValue:))
         else { return nil }

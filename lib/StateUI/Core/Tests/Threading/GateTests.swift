@@ -40,7 +40,7 @@ final class GateTests: XCTestCase {
     /// Two buttons through one gate share its policy: while one's run is under way, the other's click is let go.
     func testTwoButtonsThroughOneGateShareItsPolicy() async throws {
         let latch = Latch()
-        let document = SharedGate(.ignoreWhileRunning)
+        let document = Gatekeeper(.ignoreWhileRunning)
         var saves = 0, deletes = 0
         let (renders, save, delete) = twoButtons(
             Button("Save").onClicked(gate: document) { saves += 1; await latch.wait() },
@@ -76,7 +76,7 @@ final class GateTests: XCTestCase {
     /// A gate is busy while a run is under way through it - a state a body reads to dim a control.
     func testAGateIsBusyWhileARunIsUnderWay() async throws {
         let latch = Latch()
-        let saving = SharedGate(.ignoreWhileRunning)
+        let saving = Gatekeeper(.ignoreWhileRunning)
         let (renders, id) = button(gate: saving) { await latch.wait() }
 
         XCTAssertFalse(saving.isBusy)
@@ -88,9 +88,9 @@ final class GateTests: XCTestCase {
     }
 
     /// An element leaving ends its own runs in a gate it shares, and the others' stand.
-    func testAnElementLeavingEndsOnlyItsOwnRunsInASharedGate() async throws {
+    func testAnElementLeavingEndsOnlyItsOwnRunsInAGatekeeper() async throws {
         let latch = Latch()
-        let uploads = SharedGate(.none)
+        let uploads = Gatekeeper(.none)
         let first = State(wrappedValue: 0), second = State(wrappedValue: 0)
         let renders = Renders()
         func tree(_ both: Bool) -> Node {
@@ -473,11 +473,11 @@ final class GateTests: XCTestCase {
         latch.open()
     }
 
-    /// A task through a shared gate and a click through it hold each other back: the one that comes while the
+    /// A task through a gatekeeper and a click through it hold each other back: the one that comes while the
     /// other runs is let go.
     func testATaskAndAClickThroughOneGateHoldEachOtherBack() async throws {
         let latch = Latch()
-        let document = SharedGate(.ignoreWhileRunning)
+        let document = Gatekeeper(.ignoreWhileRunning)
         var clicks = 0, saves = 0
         let (renders, id) = button(gate: document) { clicks += 1; await latch.wait() }
 
@@ -500,7 +500,7 @@ final class GateTests: XCTestCase {
     /// A task's value is its run's end: awaiting it waits until the work is done.
     func testATasksValueWaitsForItsRun() async throws {
         let latch = Latch()
-        let gate = SharedGate(.none)
+        let gate = Gatekeeper(.none)
         let landed = State(wrappedValue: 0)
 
         let task = Task(gate: gate) {
@@ -518,7 +518,7 @@ final class GateTests: XCTestCase {
     /// Cancelling a task supersedes its run: it changes nothing from then on, and the gate is free again.
     func testCancellingATaskSupersedesItsRun() async throws {
         let latch = Latch()
-        let gate = SharedGate(.ignoreWhileRunning)
+        let gate = Gatekeeper(.ignoreWhileRunning)
         let landed = State(wrappedValue: 0)
         var cancelled = false
 
@@ -541,7 +541,7 @@ final class GateTests: XCTestCase {
     /// and the count of runs under way.
     func testATaskCancelledWhileWaitingLeavesTheQueueAtOnce() async throws {
         let latch = Latch()
-        let queue = SharedGate(.waitForPrevious)
+        let queue = Gatekeeper(.waitForPrevious)
         let before = HostBoundary.tally.runs
         var ran = 0
         let first = Task(gate: queue) { await latch.wait() }
@@ -564,7 +564,7 @@ final class GateTests: XCTestCase {
     /// A task through a gate that cancels the previous run cancels a click's run under way through it.
     func testATaskCancelsTheRunBeforeItThroughItsGate() async throws {
         let latch = Latch()
-        let search = SharedGate(.cancelPrevious)
+        let search = Gatekeeper(.cancelPrevious)
         let found = State(wrappedValue: "")
         let (renders, id) = button(gate: search) {
             await latch.wait()
@@ -585,7 +585,7 @@ final class GateTests: XCTestCase {
     /// while one waits.
     func testTasksThroughAWaitingGateRunInTheirOrder() async throws {
         let latch = Latch()
-        let queue = SharedGate(.waitForPrevious)
+        let queue = Gatekeeper(.waitForPrevious)
         var started: [Int] = []
 
         let tasks = (1...3).map { number in
@@ -606,11 +606,11 @@ final class GateTests: XCTestCase {
         XCTAssertFalse(queue.isBusy)
     }
 
-    /// A task a handler starts through a shared gate belongs to the gate, not to the handler's run: the element
+    /// A task a handler starts through a gatekeeper belongs to the gatekeeper, not to the handler's run: the element
     /// leaving supersedes the handler's run, and the task goes on to its end.
     func testATaskAHandlerStartsBelongsToTheGate() async throws {
         let latch = Latch()
-        let document = SharedGate(.none)
+        let document = Gatekeeper(.none)
         let saved = State(wrappedValue: 0), said = State(wrappedValue: 0)
         let (renders, id) = button(gate: .none) {
             Task(gate: document) {
@@ -660,11 +660,11 @@ final class GateTests: XCTestCase {
     /// A gate nobody holds is freed once its runs end - whoever passed through it, a click or a task.
     func testAGateNobodyHoldsIsFreed() async throws {
         let latch = Latch()
-        weak var gone: SharedGate?
+        weak var gone: Gatekeeper?
         let renders = Renders()
 
         do {
-            let gate = SharedGate(.ignoreWhileRunning)
+            let gate = Gatekeeper(.ignoreWhileRunning)
             gone = gate
             let id = renders.render(Button("Go").onClicked(gate: gate) { await latch.wait() }.node)
                 .events?["clicked"] ?? -1

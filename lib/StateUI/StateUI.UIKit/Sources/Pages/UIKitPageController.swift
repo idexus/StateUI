@@ -117,10 +117,32 @@ final class UIKitPageController: UIViewController {
         view.edgeInsets(for: .safeArea(cornerAdaptation: .vertical))
     }
 
+    /// How far the page's room stands from its leading edge while a sidebar slides beside it - as far as the sidebar
+    /// has come - in place of the safe area UIKit gives at once for where the sidebar is going; nil for none.
+    /// Design: docs/design/platforms/uikit/pages.md#a-split-view
+    var slidingInset: CGFloat? {
+        didSet { if slidingInset != oldValue { view.setNeedsLayout() } }
+    }
+
+    /// Whether the page's leading edge is its right one.
+    private var leadsRight: Bool { view.effectiveUserInterfaceLayoutDirection == .rightToLeft }
+
+    /// How far the page's safe area stands from its leading edge.
+    var leadingSafeInset: Double { leadsRight ? safeInsets.right : safeInsets.left }
+
+    /// The page's safe insets, the leading one where a sidebar sliding beside it stands.
+    private var insets: UIEdgeInsets {
+        var insets = safeInsets
+        if let inset = slidingInset {
+            if leadsRight { insets.right = inset } else { insets.left = inset }
+        }
+        return insets
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         layGround()
-        let (safe, whole) = (view.bounds.inset(by: safeInsets), view.bounds.inset(by: barsOver))
+        let (safe, whole) = (view.bounds.inset(by: insets), view.bounds.inset(by: barsOver))
         let room = SafeAreaArithmetic.room(
             safe: Rect(x: safe.minX, y: safe.minY, width: safe.width, height: safe.height),
             whole: Rect(x: whole.minX, y: whole.minY, width: whole.width, height: whole.height),

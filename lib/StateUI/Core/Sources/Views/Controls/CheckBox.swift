@@ -27,7 +27,7 @@ extension CheckBoxProperties {
 ///
 /// No caption of its own - a CheckBox is the box and nothing else. Put a
 /// Text beside it, as above.
-public struct CheckBox: ElementView, TintElement, CheckBoxProperties {
+public struct CheckBox: ElementView, TintElement, CheckBoxProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 
@@ -76,7 +76,7 @@ public struct CheckBox: ElementView, TintElement, CheckBoxProperties {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onToggled(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onToggled(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
         fatalError("unavailable")
     }

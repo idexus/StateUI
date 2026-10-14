@@ -36,6 +36,9 @@ design notes beside them.
 - [Environment](concepts/environment.md) covers application objects, the
   facts the library offers by name (`\.application`, `\.scene`, `\.window`,
   `\.device`, `\.locale`), dates, time and time zones.
+- [Localization](concepts/localization.md) covers typed resources in each
+  language, messages and plural forms, formats, and a document in its own
+  language.
 
 ## Build an interface
 
@@ -59,7 +62,7 @@ design notes beside them.
   render diagnostics.
 - [Concurrency](interface/concurrency.md) defines handler isolation on
   `MainActor`, what an awaiting handler does when its event comes again
-  (`Gate`, `SharedGate`, `Task(gate:)`), a run superseded, posting to state from other threads,
+  (`Gate`, `Gatekeeper`, `Task(gate:)`), a run superseded, posting to state from other threads,
   `Ticker`, and the application module's compiler setting.
 
 ## Internals

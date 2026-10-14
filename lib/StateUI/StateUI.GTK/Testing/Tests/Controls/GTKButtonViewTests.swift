@@ -18,7 +18,7 @@ final class GTKButtonViewTests: XCTestCase {
                 VStack {
                     Button("Save")
                         .fontSize(20)
-                        .fontAttributes(.bold)
+                        .fontWeight(.bold)
                         .textColor(Color("#FFFFFF"))
                         .background(Color("#0000FF"))
                         .stroke(Color("#FF0000"))
@@ -40,6 +40,67 @@ final class GTKButtonViewTests: XCTestCase {
             XCTAssertNotEqual(gtk_widget_has_css_class(button.widget, "stateui-padding-11-16-11-16"), 0)
             let fill = try XCTUnwrap(button.pixels(at: [(8, height / 2)]).first)
             XCTAssertTrue(near(fill, 0xFF00_00FF), "filled in the fill, \(width) by \(height): \(String(fill, radix: 16))")
+        }
+    }
+
+    /// A button opening a menu and a split button wear their box as one face: the fill from edge to edge, no button
+    /// of the theme's standing inside it.
+    func testAMenuButtonsBoxIsOneFace() {
+        onUIThread {
+            let host = GTKRenderer.running {
+                VStack {
+                    Button("Share").menu { MenuItem("Mail") }
+                        .background(Color("#0000FF"))
+                        .padding(horizontal: 16, vertical: 11)
+                    Button("Save").onClicked {}.menu { MenuItem("Save as") }
+                        .background(Color("#0000FF"))
+                        .padding(horizontal: 16, vertical: 11)
+                }
+                .horizontalAlignment(.start)
+            }
+            host.layOut()
+            for button in host.views(GTKButtonView.self) {
+                let height = button.frame.height
+                // At the edge, then inside the room the padding keeps above the words and below them.
+                let middle = button.frame.width / 2
+                let colours = button.pixels(at: [(3, height / 2), (middle, 13), (middle, height - 13)])
+                let said = "\(button.text): \(colours.map { String($0, radix: 16) })"
+                XCTAssertTrue(near(colours[0], 0xFF00_00FF), said)
+                // The theme's button would lighten its own part of the face.
+                for colour in colours.dropFirst() {
+                    for shift: UInt32 in [0, 8, 16, 24] {
+                        XCTAssertLessThanOrEqual(abs(Int(colour >> shift & 0xFF) - Int(colours[0] >> shift & 0xFF)), 3, said)
+                    }
+                }
+            }
+        }
+    }
+
+    /// A button holding a menu stands as tall as a plain one beside it, the platform's own or the same box and
+    /// padding given to each.
+    func testAMenuButtonStandsAsTallAsAPlainOne() {
+        onUIThread {
+            let host = GTKRenderer.running {
+                HStack {
+                    Button("Go").onClicked {}
+                    Button("Share").menu { MenuItem("Mail") }
+                    Button("Save").onClicked {}.menu { MenuItem("Save as") }
+                    Button("Go").onClicked {}.background(Color("#0000FF")).lineWidth(0).shape(.roundedRectangle(10))
+                        .padding(horizontal: 16, vertical: 11)
+                    Button("Share").menu { MenuItem("Mail") }
+                        .background(Color("#0000FF")).lineWidth(0).shape(.roundedRectangle(10))
+                        .padding(horizontal: 16, vertical: 11)
+                    Button("Save").onClicked {}.menu { MenuItem("Save as") }
+                        .background(Color("#0000FF")).lineWidth(0).shape(.roundedRectangle(10))
+                        .padding(horizontal: 16, vertical: 11)
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            host.layOut()
+            let heights = host.views(GTKButtonView.self).map(\.frame.height)
+            XCTAssertEqual(Set(heights.prefix(3)).count, 1, "the platform's own: \(heights)")
+            XCTAssertEqual(Set(heights.suffix(3)).count, 1, "with a box and padding: \(heights)")
         }
     }
 

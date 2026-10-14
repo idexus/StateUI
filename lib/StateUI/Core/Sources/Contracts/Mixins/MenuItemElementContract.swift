@@ -7,8 +7,8 @@ public enum MenuItemElementContract: Contract {
     /// The tier's name.
     public static let name = "MenuItemElement"
 
-    /// An item carries values in the tree.
-    public static let tiers: [any Contract.Type] = [PropertyContainerContract.self]
+    /// An item is found by automation.
+    public static let tiers: [any Contract.Type] = [AutomationElementContract.self]
 
     /// The item was chosen.
     public static let clicked = ElementEvent<Self, Void>("clicked", layer: .native)
@@ -22,9 +22,13 @@ public enum MenuItemElementContract: Contract {
     /// Whether the item can be chosen.
     public static let isEnabled = ElementProperty<Self, Bool>("isEnabled", layer: .native)
 
+    /// Keys that choose the item while its window is in front - a bar's item, a menu bar's entry; a context menu's
+    /// entry shows them beside its words.
+    public static let keyboardShortcut = ElementProperty<Self, KeyboardShortcut>("keyboardShortcut", layer: .native)
+
     /// The caption.
     public static let text = ElementProperty<Self, String>("text", layer: .native)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [clicked, icon, isDestructive, isEnabled, text]
+    public static let members: [any ContractMember] = [clicked, icon, isDestructive, isEnabled, keyboardShortcut, text]
 }

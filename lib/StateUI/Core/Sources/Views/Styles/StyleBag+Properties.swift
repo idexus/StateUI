@@ -10,6 +10,8 @@ extension StyleBag: ViewProperties where Target: View {}
 extension StyleBag: LayoutProperties where Target: Layout {}
 extension StyleBag: StackProperties where Target: Stack {}
 extension StyleBag: ShapeProperties where Target: Shape {}
+extension StyleBag: FilledShapeProperties where Target: FilledShape {}
+extension StyleBag: CorneredShapeProperties where Target: CorneredShape {}
 extension StyleBag: PaddingElement where Target: PaddingElement {}
 extension StyleBag: TextStyleElement where Target: TextStyleElement {}
 extension StyleBag: TextualElement where Target: TextualElement {}
@@ -17,6 +19,7 @@ extension StyleBag: FontElement where Target: FontElement {}
 extension StyleBag: TintElement where Target: TintElement {}
 extension StyleBag: TextAlignmentElement where Target: TextAlignmentElement {}
 extension StyleBag: LineHeightElement where Target: LineHeightElement {}
+extension StyleBag: TrackingElement where Target: TrackingElement {}
 extension StyleBag: DecorableTextElement where Target: DecorableTextElement {}
 extension StyleBag: BorderElement where Target: BorderElement {}
 extension StyleBag: ImageElement where Target: ImageElement {}
@@ -25,7 +28,6 @@ extension StyleBag: TextInputProperties where Target: TextInput {}
 // And each control's own properties.
 
 extension StyleBag: ActivityIndicatorProperties where Target == ActivityIndicator {}
-extension StyleBag: ColorBoxProperties where Target == ColorBox {}
 extension StyleBag: ButtonProperties where Target == Button {}
 extension StyleBag: CheckBoxProperties where Target == CheckBox {}
 extension StyleBag: DatePickerProperties where Target == DatePicker {}

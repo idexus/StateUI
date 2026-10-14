@@ -90,7 +90,7 @@ final class AndroidTextFieldView: AndroidTextualView {
 
         self.traits = traits
         applyInputType()
-        setFontAttributes(fontAttributes)
+        applyTypeface()
     }
 
     /// What the keyboard's return key does; nil for the kind's own - the platform's, or a search.
@@ -192,7 +192,7 @@ final class AndroidTextFieldView: AndroidTextualView {
 
         isPassword = password
         applyInputType()
-        setFontAttributes(fontAttributes)
+        applyTypeface()
     }
 
     /// Lets the user only read and select the words, or edit them again: a field read only takes no key and raises

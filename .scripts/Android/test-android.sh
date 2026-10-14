@@ -14,7 +14,7 @@
 # drawn, and runs it on a Linux emulator.
 #
 # STATEUI_FILTER=<names> runs only the tests whose "Case.test" name holds one of the names, split at commas
-# ("testPicker,AndroidColorBoxViewTests"), and then holds nothing to lib/StateUI/exports/: a part of the suite proves only part
+# ("testPicker,AndroidShapeViewTests"), and then holds nothing to lib/StateUI/exports/: a part of the suite proves only part
 # of what the host declares.
 #
 # Each item, and each conformance case, says as it ends where the run stands and how long it took

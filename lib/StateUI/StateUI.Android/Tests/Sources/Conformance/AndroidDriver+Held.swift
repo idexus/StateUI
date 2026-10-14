@@ -17,7 +17,7 @@ extension AndroidDriver {
         if [.barSubtitle, .barBackgroundColor, .barForegroundColor].contains(property) {
             return Self.barHolds(property, of: element)
         }
-        if element.type == .page, property == .showsBackButton || property == .showsNavigationBar {
+        if element.type == .page, [.showsBackButton, .showsNavigationBar, .showsTitle].contains(property) {
             return Self.pageBarHolds(property, of: element)
         }
         if property == .title || property == .icon, let tabs = element.parent, tabs.type == .tabView {
@@ -31,6 +31,9 @@ extension AndroidDriver {
         if let web = view as? AndroidWebView, let held = try Self.webHolds(property, web) { return held }
         switch (property, view) {
         case (.isOn, let toggle as AndroidToggleView): return toggle.isOn.propValue
+        case (.role, let button as AndroidButtonView): return button.role.map(\.propValue) ?? HostValue.nothing
+        case (.showsMenuArrow, let button as AndroidButtonView):
+            return Java.callStaticBool(Self.testMenus, Self.showsMenuArrow, .object(button.reference)).propValue
         case (.value, let slider as AndroidSliderView): return slider.value.propValue
         case (.minimum, let slider as AndroidSliderView): return slider.minimum.propValue
         case (.maximum, let slider as AndroidSliderView): return slider.maximum.propValue
@@ -77,12 +80,16 @@ extension AndroidDriver {
         // Read only: the field offers a keyboard nothing to edit.
         case (.isReadOnly, let field as AndroidTextFieldView):
             return (!Java.callBool(field.reference, Self.onCheckIsTextEditor)).propValue
+        case (.isSelectable, let text as AndroidTextView): return text.isSelectable.propValue
         case (.fontSize, let text as AndroidTextualView):
             return Double(Java.callStaticFloat(Self.testText, Self.points, .object(text.reference))).rounded().propValue
         case (.isFontAutoScalingEnabled, let text as AndroidTextualView):
             return try Self.scales(Java.callStaticInt(Self.testText, Self.scales, .object(text.reference)))
         case (.fontAttributes, let text as AndroidTextualView):
-            return FontAttributes(rawValue: Java.callStaticInt(Self.testText, Self.style, .object(text.reference)) & 3)
+            return FontAttributes(rawValue: Java.callStaticInt(Self.testText, Self.style, .object(text.reference)) & 2)
+                .propValue
+        case (.fontWeight, let text as AndroidTextualView):
+            return FontWeight(nearest: Double(Java.callStaticInt(Self.testText, Self.weight, .object(text.reference))))
                 .propValue
         case (.textColor, let text as AndroidTextualView):
             return Self.color(UInt32(bitPattern: Java.callInt(text.reference, Self.getCurrentTextColor))).propValue
@@ -91,11 +98,23 @@ extension AndroidDriver {
             guard held >> 32 == 1 else { throw DriverCannot("read a background of no one colour") }
             return StandIns.material(painted: Self.color(UInt32(truncatingIfNeeded: held))).propValue
         case (.fontSize, let picker as AndroidPickerView), (.fontAttributes, let picker as AndroidPickerView),
+             (.fontWeight, let picker as AndroidPickerView),
              (.isFontAutoScalingEnabled, let picker as AndroidPickerView),
              (.textColor, let picker as AndroidPickerView), (.horizontalTextAlignment, let picker as AndroidPickerView):
             return try Self.fieldHolds(property, of: picker)
         case (.fontFamily, is AndroidPickerView):
             throw DriverCannot("read a family", because: "Android's typeface keeps no family's name")
+        case (.options, let picker as AndroidPickerView) where picker.presentation != .menu:
+            return Java.frame {
+                guard let words = Java.callStaticObject(Self.testPicker, Self.radios, .object(picker.reference)) else {
+                    return [String]()
+                }
+                return (0..<Java.jni.GetArrayLength(Java.env, words)).map { index in
+                    Java.jni.GetObjectArrayElement(Java.env, words, index).map { Java.text($0) } ?? ""
+                }
+            }.propValue
+        case (.selectedIndex, let picker as AndroidPickerView) where picker.presentation != .menu:
+            return Int(Java.callStaticInt(Self.testPicker, Self.checkedRadio, .object(picker.reference))).propValue
         case (.options, let picker as AndroidPickerView): return Array(Self.rows(of: picker).dropFirst()).propValue
         case (.placeholder, let picker as AndroidPickerView): return Self.rows(of: picker).first?.propValue
         case (.selectedIndex, let picker as AndroidPickerView):
@@ -119,7 +138,9 @@ extension AndroidDriver {
             case .isFontAutoScalingEnabled:
                 return try? Self.scales(Java.callStaticInt(testText, scales, .object(row)))
             case .fontAttributes:
-                return FontAttributes(rawValue: Java.callStaticInt(testText, style, .object(row)) & 3).propValue
+                return FontAttributes(rawValue: Java.callStaticInt(testText, style, .object(row)) & 2).propValue
+            case .fontWeight:
+                return FontWeight(nearest: Double(Java.callStaticInt(testText, weight, .object(row)))).propValue
             case .textColor: return color(UInt32(bitPattern: Java.callInt(row, getCurrentTextColor))).propValue
             default:
                 // Gravity's horizontal bits: centre 1, start or left 3, end or right 5.
@@ -171,6 +192,11 @@ extension AndroidDriver {
             return (Java.callInt(reference, JavaAPI.getImportantForAccessibility) == 4).propValue
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "Android marks a heading, not its level")
+        case .tooltip:
+            return Java.frame {
+                Java.callObject(reference, JavaAPI.getTooltipText).flatMap { Java.callObject($0, JavaAPI.toString) }
+                    .map { Java.text($0) }
+            }.propValue
         default: return controlHolds(property, view)
         }
     }
@@ -227,7 +253,9 @@ extension AndroidDriver {
     static let testText = Java.findClass("stateui/android/test/TestText")
     static let points = Java.staticMethod(testText, "points", "(Landroid/widget/TextView;)F")
     static let style = Java.staticMethod(testText, "style", "(Landroid/widget/TextView;)I")
+    static let weight = Java.staticMethod(testText, "weight", "(Landroid/widget/TextView;)I")
     static let scales = Java.staticMethod(testText, "scales", "(Landroid/widget/TextView;)I")
+    static let primaryWords = Java.staticMethod(testText, "primaryWords", "(Landroid/content/Context;)I")
 
     /// Whether a size follows the user's font scale, as the test reads it: 1, 0, or -1 where Android cannot say.
     static func scales(_ held: Int32) throws -> HostValue? {
@@ -253,7 +281,7 @@ extension AndroidDriver {
 
     static let testPixels = Java.findClass("stateui/android/test/TestPixels")
     static let background = Java.staticMethod(testPixels, "background", "(Landroid/view/View;)J")
-    static let pixel = Java.staticMethod(testPixels, "color", "(Landroid/view/View;II)I")
+    static let pixels = Java.staticMethod(testPixels, "colors", "(Landroid/view/View;[I)[I")
     static let paintNothing = Java.staticMethod(testPixels, "paintNothing", "(Landroid/app/Activity;)V")
 
     /// What the host keeps under `key` for the next launch, as it reads it back: a value of the application's from

@@ -82,6 +82,7 @@
         update(locale, \.firstDayOfWeek, info.firstDayOfWeek)
         update(locale, \.isMetric, info.isMetric)
         update(locale, \.layoutDirection, info.layoutDirection == .rightToLeft ? .rightToLeft : .leftToRight)
+        update(locale, \.languages, info.languages.map { LocaleTag($0) })
     }
 
     /// The way the user's language is written, as the host last reported it.
@@ -116,8 +117,14 @@
     private static func update<Provider: AnyObject, Value: Equatable>(
         _ provider: Provider, _ field: ReferenceWritableKeyPath<Provider, Value>, _ value: Value
     ) {
-        if provider[keyPath: field] != value { provider[keyPath: field] = value }
+        guard provider[keyPath: field] != value else { return }
+        provider[keyPath: field] = value
+        environmentChanges += 1
     }
+
+    /// How many fields the host's reports have changed so far: a report repeating what stands leaves it.
+    /// Design: docs/design/types/environment.md#a-report-that-repeats-itself
+    public private(set) static var environmentChanges = 0
 
     /// The typed keys the host reads before the first application render - the application, made at its first
     /// need, lists them as it is made.
@@ -320,6 +327,13 @@
     /// - Parameter realization: the elements and members this host realizes.
     public static func setRealization(_ realization: HostRealization) {
         HostRealizations.current = realization
+    }
+
+    /// Tells the core what the host judges it realizes, member by member - what `Device.honours` answers from.
+    ///
+    /// - Parameter register: the host's register, its runtime's realization behind its own records.
+    public static func setRegister(_ register: HostRegister?) {
+        HostRealizations.register = register
     }
 
     /// Whether this host makes a view for an element.

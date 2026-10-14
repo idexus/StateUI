@@ -216,7 +216,7 @@ final class PlacedRunTests: XCTestCase {
 
         let patch = renders.render(
             PlacedLayout([1], id: \.self) { Text("\($0)") }
-                .shade(ColorBox(.black))
+                .shade(Rectangle().fill(.black))
                 .placement(run.projectedValue)
                 .id("run")
                 .node)
@@ -236,7 +236,7 @@ final class PlacedRunTests: XCTestCase {
         }
 
         XCTAssertEqual(wrapper.children.count, 2)
-        XCTAssertEqual(wrapper.children[1].type, .colorBox)
+        XCTAssertEqual(wrapper.children[1].type, .rectangle)
         XCTAssertNil(wrapper.children[1].props[.opacity], "the shade's own fade is the number's")
     }
 
@@ -246,7 +246,7 @@ final class PlacedRunTests: XCTestCase {
         let room = State(wrappedValue: Rect(0, 0, 0, 0))
         let renders = Renders()
 
-        let patch = renders.render(ColorBox().frame(room.projectedValue).id("box").node)
+        let patch = renders.render(Rectangle().frame(room.projectedValue).id("box").node)
 
         XCTAssertEqual(
             patch.driven?[.frame],

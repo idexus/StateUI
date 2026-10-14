@@ -1,41 +1,32 @@
-# revision 3.1
+# revision 5.1
+Capsule.dashPhase: ✅
+Capsule.geometryTransform: does not apply - read geometryTransform of Capsule - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
+Capsule.lineCap: ✅
+Capsule.lineWidth: ✅
+Capsule.stroke: ✅
 Ellipse.contentMode: does not apply - read contentMode of Ellipse - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
+Ellipse.dash: ✅
 Ellipse.dashPhase: ✅
-Ellipse.fill: ✅
 Ellipse.geometryTransform: ✅
-Ellipse.lineCap: ✅
-Ellipse.lineWidth: ✅
-Ellipse.miterLimit: – an ellipse has no corner its outline joins at
 Line.contentMode: ✅
 Line.dash: ✅
-Line.dashPhase: ✅
-Line.lineJoin: – a line has no corner its outline joins at
-Line.miterLimit: ✅
-Line.stroke: ✅
-Path.dash: ✅
-Path.fill: ✅
+Line.lineCap: ✅
+Line.lineWidth: ✅
+Path.dashPhase: ✅
 Path.geometryTransform: does not apply - read geometryTransform of Path - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
 Path.lineCap: ✅
-Path.lineJoin: ✅
 Path.lineWidth: ✅
 Path.stroke: ✅
 Polygon.contentMode: does not apply - read contentMode of Polygon - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
+Polygon.dash: ✅
 Polygon.dashPhase: ✅
-Polygon.fill: ✅
 Polygon.geometryTransform: ✅
-Polygon.lineCap: ✅
-Polygon.lineWidth: ✅
-Polygon.miterLimit: ✅
 Polyline.contentMode: ✅
 Polyline.dash: ✅
-Polyline.dashPhase: ✅
-Polyline.lineJoin: ✅
-Polyline.miterLimit: ✅
-Polyline.stroke: ✅
-Rectangle.dash: ✅
-Rectangle.fill: ✅
+Polyline.lineCap: ✅
+Polyline.lineWidth: ✅
+Rectangle.dashPhase: ✅
 Rectangle.geometryTransform: does not apply - read geometryTransform of Rectangle - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
 Rectangle.lineCap: ✅
-Rectangle.lineJoin: ✅
 Rectangle.lineWidth: ✅
 Rectangle.stroke: ✅

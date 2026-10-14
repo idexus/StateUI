@@ -22,7 +22,7 @@ extension SwitchProperties {
 ///
 /// A `CheckBox` asks the same question in the shape a form uses; a
 /// `RadioButton` is what to reach for once there are more than two answers.
-public struct Switch: ElementView, TintElement, SwitchProperties {
+public struct Switch: ElementView, TintElement, SwitchProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 
@@ -76,7 +76,7 @@ public struct Switch: ElementView, TintElement, SwitchProperties {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onToggled(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onToggled(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
         fatalError("unavailable")
     }

@@ -1,6 +1,6 @@
 import StateUI
 
-/// Six outlines, filled and stroked - with dashes, joins and a fill rule.
+/// Seven shapes, filled and stroked - with dashes, joins and a fill rule.
 struct ShapesSample: SampleContent, ExampleContent {
     // listing: ShapesSample
     @State private var rule = FillRule.evenOdd
@@ -8,9 +8,9 @@ struct ShapesSample: SampleContent, ExampleContent {
 
     static let id = "shapes"
     static let title = "Shapes"
-    static let summary = "Six outlines sharing one shape vocabulary, drawn with each platform's own paths."
+    static let summary = "Seven shapes sharing one shape vocabulary, drawn with each platform's own paths."
 
-    // listing: ShapesSample
+    // listing: ShapesSample keep
     /// A pentagram: five points, each joined to the one two along, so the
     /// outline crosses itself - which is the whole point of a fill rule.
     private static let star = [
@@ -26,27 +26,36 @@ struct ShapesSample: SampleContent, ExampleContent {
             SectionTitle("Filled")
 
             HStack {
-                Rectangle()
-                    .fill(Palette.accent)
+                Rectangle(Palette.accent)
                     .width(56)
                     .height(56)
 
-                Rectangle()
-                    .fill(Palette.accent)
+                Rectangle(Palette.accent)
                     .cornerRadius(14)
                     .width(56)
                     .height(56)
 
-                Rectangle()
-                    .fill(Palette.accent)
+                Rectangle(Palette.accent)
                     .cornerRadius(topLeft: 22, topRight: 4, bottomLeft: 4, bottomRight: 22)
                     .width(56)
                     .height(56)
 
-                Ellipse()
-                    .fill(Palette.accent)
+                Ellipse(Palette.accent)
                     .width(56)
                     .height(56)
+            }
+            .spacing(12)
+            .horizontalAlignment(.center)
+
+            // A capsule's ends stay round at every size: wide, tall, or square.
+            HStack {
+                Capsule(Palette.accent)
+                    .width(120)
+                    .height(40)
+
+                Capsule(Palette.accent)
+                    .width(40)
+                    .height(80)
             }
             .spacing(12)
             .horizontalAlignment(.center)
@@ -89,8 +98,7 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .width(56)
                     .height(56)
 
-                Rectangle()
-                    .fill(Palette.accent)
+                Rectangle(Palette.accent)
                     .cornerRadius(14)
                     .geometryTransform(.skew(20, 0))
                     .width(56)
@@ -179,11 +187,13 @@ struct ShapesSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("Fill, stroke and everything about the stroke form one `Shape` protocol, "
-                + "shared by all six outlines and every native host. A shape with no "
+                + "shared by all seven shapes and every native host. A shape with no "
                 + "stroke draws no outline and one with no fill has no inside - a "
-                + "`Line` has only an outline, as there is nothing to fill. A `Rectangle` "
-                + "rounds its corners with `cornerRadius`: one number for all four, or "
-                + "each corner by name.")
+                + "`Line` has only an outline, as there is nothing to fill. A `Rectangle`, "
+                + "an `Ellipse` and a `Capsule` take their fill first, "
+                + "`Rectangle(Palette.accent)`. A `Rectangle` rounds its corners with "
+                + "`cornerRadius`: one number for all four, or each corner by name; a "
+                + "`Capsule`'s ends are always half its shorter side.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -8,17 +8,17 @@
 extension GTKElement {
     func makeView() -> GTKView? {
         if type == .itemsView, let host { return GTKItemsView(cells: ItemsCells(element, in: host.runtime)) }
-        if element.isDrawnByParent(in: GTKRegistrations.registry) { return nil }
+        if element.isDrawnByParent(in: GTKRegistrations.registry) || element.isViewless { return nil }
+        if type == .divider { return GTKDividerView(inRow: element.parent?.type == .hStack) }
         if let registered = GTKRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
-            reporting: { [weak self] property, event, value in self?.report(property, event, value) }
+            reporting: { [weak self] property, event, value in self?.report(property, event, value) },
+            made: element.made
         ) {
             if let scroll = registered as? GTKScrollView { follow(scroll) }
             return registered
         }
-
-        guard !NodeType.viewlessTypes.contains(type) else { return nil }
 
         switch type {
         case .page: return GTKSingleChildView()
@@ -58,6 +58,7 @@ extension GTKElement {
             case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
             case .ignoresInput: view.setIgnoresInput(value(.ignoresInput)?.bool ?? false)
             case .isVisible: view.setShown(isShown)
+            case .tooltip: view.setTooltip(element.string(.tooltip))
             // GTK blurs nothing behind a widget: a blur's or glass's colour stands in, its tint over it.
             case .background: view.setBackground(HostMaterial(value(.background)).painted)
             default: break

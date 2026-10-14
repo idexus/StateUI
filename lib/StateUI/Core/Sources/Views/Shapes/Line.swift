@@ -10,7 +10,7 @@
 ///         .stroke(.lightGray)
 ///         .lineWidth(1)
 ///
-/// A line with no stroke draws nothing: it has no inside for `fill` to paint.
+/// A line is drawn by its stroke alone: it encloses nothing to fill.
 ///
 /// Each coordinate left unsaid is zero, so `.x2(240)` on its own runs from the
 /// top left corner across.

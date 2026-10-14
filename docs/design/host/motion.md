@@ -51,8 +51,8 @@ brushes of one shape; anything else snaps. A themed value never moves.
 
 A host moves frame by frame only what its views present and whose values
 travel: `TransitionSurface` names them, element type by element type - a
-view's opacity, background, size and transform; a colour box's colour and
-corners; a label's size and colour of type; a layout's padding and spacing;
+view's opacity, background, size and transform; a rectangle's corners; a
+label's size and colour of type; a layout's padding and spacing;
 a shape's fill and stroke; a window's place. A host's element answers
 `animates(_:)` from it, and the host layer then walks the value and hands
 it each frame's. Every other pair arrives at once, rather than
@@ -89,6 +89,31 @@ hand the reader of that frame a room nobody chose. The same place asked for
 again keeps its running animation, and a new place bends a running one from
 where it has reached, at its speed. Layout motion holds each child's view
 weakly: a view the tree dropped is not kept alive for its place.
+
+## A sidebar sliding
+
+A host whose toolkit moves a split view's pane by itself - the detail beside it
+laid out once at its end width - slides the sidebar on the runtime's frames
+instead (`SidebarSlide`): how far it has come, 0 hidden and 1 shown, over
+320 milliseconds - the Web's columns' time - slowing as it arrives either
+way, the pane that wide each frame and the detail
+taking every width between, as a sidebar beside its detail slides where the
+toolkit lays out as it goes. The sidebar's page stands at its whole width, its
+trailing edge at the pane's. A slide turned back bends from where it stands,
+and with less motion it arrives at once. One frame moves a slide at most 50
+milliseconds' way: a frame coming later - the first ones of a page measured
+at new widths - slows the slide rather than skipping it. A split not placed
+yet stands at once: a window opens with its sidebar where it is.
+
+Where the toolkit slides the sidebar itself but gives the detail its end
+width at once, the slide follows the toolkit's own motion and keeps its
+time - never slowed, as the toolkit's sidebar is not - and the detail's
+page stands as far from its edge as the sidebar has come. One split's slide
+is a `SplitSlide`: the width its column last stood at, where it is going,
+and three steps a host fills in with its toolkit's calls - as it begins, at
+each frame the pane's width and the page's, and where it rests. A toggle
+asked while it slides turns it back from where it is going, not from where
+the toolkit last stood.
 
 ## Words at their destination
 

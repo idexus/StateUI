@@ -10,7 +10,9 @@ public enum SwitchContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A switch is a view, tinted.
-    public static let tiers: [any Contract.Type] = [ViewContract.self, TintElementContract.self]
+    public static let tiers: [any Contract.Type] = [
+        ViewContract.self, TintElementContract.self, FocusElementContract.self,
+    ]
 
     /// Which way it is thrown - true for on.
     public static let isOn = ElementProperty<Self, Bool>("isOn", layer: .native)

@@ -50,10 +50,74 @@ final class AndroidButtonView: AndroidTextualView {
         Java.call(reference, JavaAPI.setMinimumHeight, .int(height))
     }
 
-    /// A click is the button's own event, and a tap as any view's.
+    /// A click is the button's own event, and a tap as any view's; a button whose click opens its menu opens it, and
+    /// so does a split button's arrow.
     override func clicked() {
-        onClicked?()
+        let at = Java.callFloat(listener.reference, JavaAPI.takeDownX)
+        if opening == .click || opening == .arrow && onArrow(at) { showMenu() } else { onClicked?() }
         super.clicked()
+    }
+
+    /// How the button opens its menu, whether it shows the arrow saying its click does, and what its menu writes
+    /// into a menu as it opens.
+    private(set) var opening = ButtonMenuOpening.none
+    private(set) var showsArrow = false
+    private(set) var writeMenu: ((jobject) -> Void)?
+
+    /// How wide a split button's arrow stands, the arrow's side - Material's arrow fills the middle half of it
+    /// across - how far the mark after the words stands from them, and how high the line setting the arrow off, in
+    /// points.
+    private static let arrowWidth = 32.0
+    private static let arrowSide = 18.0
+    private static let markGap = 6.0
+    private static let lineHeight = 20.0
+
+    /// Gives the button its menu, opened as `opening` says: by a click, an arrow after the words where `showsArrow`;
+    /// by a split button's arrow, the click the button's own; or held. Android's Views draw no split button: its
+    /// arrow is the button's, at its right edge, set off by a line, and a long press opens its menu too.
+    /// Design: docs/design/platforms/android/controls.md#a-buttons-menu
+    func setMenu(_ opening: ButtonMenuOpening, showsArrow: Bool, _ write: ((jobject) -> Void)?) {
+        writeMenu = opening == .none ? nil : write
+        let showsArrow = opening == .click && showsArrow
+        guard opening != self.opening || showsArrow != self.showsArrow else { return }
+        let holds = opening == .arrow || opening == .hold
+        if holds != (self.opening == .arrow || self.opening == .hold) {
+            if holds { listen(JavaAPI.setOnLongClickListener) } else {
+                Java.call(reference, JavaAPI.setOnLongClickListener, .object(nil))
+            }
+        }
+        self.opening = opening
+        self.showsArrow = showsArrow
+        rightRoom = opening == .arrow ? pixels(Self.arrowWidth)
+            : showsArrow ? pixels(Self.arrowSide / 2 + Self.markGap) : 0
+        paddingSet()
+        shownIcon = nil
+        showIcon(room: placedSize)
+    }
+
+    /// Whether a finger went down `x` pixels across the button on a split button's arrow.
+    private func onArrow(_ x: Float) -> Bool {
+        guard x >= 0, let width = placedSize?.width else { return false }
+        return x >= Float(width - pixels(Self.arrowWidth))
+    }
+
+    /// A long press opens a split button's menu, and a held one's.
+    override func longClicked() -> Bool {
+        guard opening == .arrow || opening == .hold else { return false }
+        showMenu()
+        return true
+    }
+
+    /// Android's menu popping up at the button, its entries written as it opens.
+    private func showMenu() {
+        guard let writeMenu else { return }
+        Java.frame {
+            guard let popup = Java.callStaticObject(JavaAPI.menus, JavaAPI.popUpMenu, .object(reference)),
+                  let items = Java.callObject(popup, JavaAPI.popupMenuItems)
+            else { return }
+            writeMenu(items)
+            Java.call(popup, JavaAPI.showPopupMenu)
+        }
     }
 
     override func held(_ holding: Bool) {
@@ -81,12 +145,62 @@ final class AndroidButtonView: AndroidTextualView {
     /// look shows.
     private var drawn: (shape: AndroidShapeDrawable, mask: AndroidShapeDrawable)?
 
-    /// One shape under the platform's pressed ripple, or the theme's background where nothing is said.
+    /// The platform's coloured button - its background and words' colours - which the window's main action wears;
+    /// nil for the theme's plain one.
+    private var coloured: (background: JavaObject, words: JavaObject)?
+
+    /// The theme's colours for an error, which a destructive action's words wear; nil for any other.
+    private var critical: JavaObject?
+
+    /// What the button stands for (`ButtonRoleLook`): the window's main action wears the platform's coloured button,
+    /// its background where the button draws no look of its own and its words' colours where none is written; a
+    /// destructive one's words stand in the theme's colour for an error where none is written. The way out stands
+    /// plain.
+    /// Design: docs/design/platforms/android/controls.md#a-buttons-look
+    func setRole(_ role: ButtonRole?) {
+        self.role = role
+        // What the tree writes is weighed where the colours are used: these stand only where nothing is written.
+        let look = ButtonRoleLook(role, fills: false, colorsWords: false)
+        let colours = look.fillsInAccent != (coloured != nil)
+        let words = look.wordsInCritical != (critical != nil)
+        guard colours || words else { return }
+        if colours {
+            coloured = look.fillsInAccent ? Java.frame {
+                let context = AndroidRenderer.context
+                let background = Java.callStaticObject(JavaAPI.views, JavaAPI.colouredBackground, .object(context))
+                let words = Java.callStaticObject(JavaAPI.views, JavaAPI.colouredWords, .object(context))
+                return background.flatMap { background in words.map { (JavaObject(background), JavaObject($0)) } }
+            } : nil
+        }
+        if words {
+            critical = look.wordsInCritical ? Java.frame {
+                Java.callStaticObject(JavaAPI.views, JavaAPI.errorWords, .object(AndroidRenderer.context))
+                    .map(JavaObject.init)
+            } : nil
+        }
+        drawLook()
+        setTextColor(writtenTextColor)
+    }
+
+    /// The role the tree gave the button; nil for none.
+    private(set) var role: ButtonRole?
+
+    override var plainWordColours: JavaObject { coloured?.words ?? critical ?? super.plainWordColours }
+
+    /// The words' colour, which an icon is drawn in too.
+    override func setTextColor(_ color: HostValue?) {
+        super.setTextColor(color)
+        shownIcon = nil
+        showIcon(room: placedSize)
+    }
+
+    /// One shape under the platform's pressed ripple, or the theme's background - the coloured button's for the
+    /// main action - where nothing is said.
     /// Design: docs/design/platforms/android/controls.md#a-buttons-look
     private func drawLook() {
         guard look.fill != nil || look.stroke != nil || look.shape != .rectangle else {
             drawn = nil
-            return showBackground(nil)
+            return showBackground(coloured?.background)
         }
 
         let corners = look.shape
@@ -112,12 +226,12 @@ final class AndroidButtonView: AndroidTextualView {
 
     /// The picture beside the words `spacing` points away - the platform's gap for nil - or alone where
     /// there are none, filling its room as `aspect` says.
-    func setIcon(_ source: ImageSource?, position: IconPosition, spacing: Double?, aspect: ContentMode) {
-        let file = source?.file ?? ""
-        if file != icon.file {
+    func setIcon(_ source: HostPicture?, position: IconPosition, spacing: Double?, aspect: ContentMode) {
+        if source != icon.source {
             letGoOfIcon()
-            icon.file = file
-            icon.picture = file.isEmpty ? nil : AndroidPictures.take(named: file, sample: 1)
+            icon.source = source
+            icon.size = source.flatMap(AndroidPictures.size(of:))
+            icon.picture = source.flatMap { AndroidPictures.take($0, sample: 1) }
         }
         icon.position = position
         icon.spacing = spacing
@@ -141,13 +255,30 @@ final class AndroidButtonView: AndroidTextualView {
         super.layout(place)
     }
 
-    /// Measured as if the side room were not there: as wide again as it adds, less what it adds.
+    /// Measured as if the side room were not there: as wide again as it adds, less what it adds. With no words it
+    /// holds its icon at its own size inside its padding, which Android, drawing it over the button, measures not.
     override func measure(width: Int32, height: Int32) -> (width: Int32, height: Int32) {
-        guard sideRoom > 0 else { return super.measure(width: width, height: height) }
-        let mode = width & ViewConstants.modes
-        let widened = mode == ViewConstants.unspecified ? width : mode | ((width & ~ViewConstants.modes) + 2 * sideRoom)
-        let measured = super.measure(width: widened, height: height)
-        return (measured.width - 2 * sideRoom, measured.height)
+        let measured: (width: Int32, height: Int32)
+        if sideRoom > 0 {
+            let mode = width & ViewConstants.modes
+            let widened = mode == ViewConstants.unspecified ? width : mode | ((width & ~ViewConstants.modes) + 2 * sideRoom)
+            let wide = super.measure(width: widened, height: height)
+            measured = (wide.width - 2 * sideRoom, wide.height)
+        } else {
+            measured = super.measure(width: width, height: height)
+        }
+        guard !hasWords, let size = icon.size else { return measured }
+
+        func holding(_ spec: Int32, _ measured: Int32, _ least: Int32) -> Int32 {
+            switch ViewConstants.mode(spec) {
+            case ViewConstants.exactly: measured
+            case ViewConstants.atMost: min(max(measured, least), ViewConstants.size(spec))
+            default: max(measured, least)
+            }
+        }
+        let across = Java.callInt(reference, JavaAPI.getPaddingLeft) + Java.callInt(reference, JavaAPI.getPaddingRight)
+        let down = Java.callInt(reference, JavaAPI.getPaddingTop) + Java.callInt(reference, JavaAPI.getPaddingBottom)
+        return (holding(width, measured.width, size.width + across), holding(height, measured.height, size.height + down))
     }
 
     /// Stands the icon beside the words in the middle with them, on a button `width` pixels wide.
@@ -209,6 +340,7 @@ final class AndroidButtonView: AndroidTextualView {
         onClicked = nil
         onPressed = nil
         onReleased = nil
+        writeMenu = nil
         letGoOfIcon()
     }
 
@@ -217,8 +349,8 @@ final class AndroidButtonView: AndroidTextualView {
     private func showIcon(room: (width: Int32, height: Int32)?) {
         let alone = hasWords ? (width: Int32(0), height: Int32(0)) : iconSizeAlone(in: room)
         let shown = Icon.Shown(
-            file: icon.file, position: icon.position, spacing: icon.spacing, words: hasWords,
-            width: alone.width, height: alone.height)
+            source: icon.source, position: icon.position, spacing: icon.spacing, words: hasWords,
+            width: alone.width, height: alone.height, arrow: showsArrow || opening == .arrow)
         guard shown != shownIcon else { return }
         shownIcon = shown
 
@@ -228,17 +360,23 @@ final class AndroidButtonView: AndroidTextualView {
         case .top: 2
         case .bottom: 3
         }
+        let splits = opening == .arrow
+        let arrowRight = splits ? pixels((Self.arrowWidth - Self.arrowSide) / 2) : paddingRight - pixels(Self.arrowSide / 4)
+        let arrow = shown.arrow ? Java.string(StateUI.Icon.down.androidDrawable) : nil
+        defer { Java.release(local: arrow) }
         withExtendedLifetime(icon.picture) {
             Java.callStatic(
                 JavaAPI.views, JavaAPI.setIcon, .object(reference), .object(icon.picture?.reference),
-                .int(position), .int(icon.spacing.map(pixels) ?? -1), .int(alone.width), .int(alone.height))
+                .int(position), .int(icon.spacing.map(pixels) ?? -1), .int(alone.width), .int(alone.height),
+                .int(rightRoom), .object(arrow), .bool(splits), .int(pixels(Self.arrowSide)),
+                .int(arrowRight),
+                .int(pixels(Self.arrowWidth)), .int(pixels(Self.lineHeight)))
         }
     }
 
     /// The icon's size shown alone: the room inside the padding, filled as the aspect says.
     private func iconSizeAlone(in room: (width: Int32, height: Int32)?) -> (width: Int32, height: Int32) {
-        guard let room, !icon.file.isEmpty, let size = AndroidPictures.size(named: icon.file),
-              size.width > 0, size.height > 0
+        guard let room, let size = icon.size, size.width > 0, size.height > 0
         else { return (0, 0) }
 
         let inside = (
@@ -260,7 +398,7 @@ final class AndroidButtonView: AndroidTextualView {
 
     /// Lets go of the icon's picture.
     private func letGoOfIcon() {
-        if icon.picture != nil { AndroidPictures.letGo(named: icon.file, sample: 1) }
+        if let source = icon.source, icon.picture != nil { AndroidPictures.letGo(source, sample: 1) }
         icon.picture = nil
     }
 
@@ -274,7 +412,8 @@ final class AndroidButtonView: AndroidTextualView {
 
     /// A button's icon.
     private struct Icon {
-        var file = ""
+        var source: HostPicture?
+        var size: (width: Int32, height: Int32)?
         var position: IconPosition = .leading
         var spacing: Double?
         var aspect: ContentMode = .fit
@@ -282,12 +421,13 @@ final class AndroidButtonView: AndroidTextualView {
 
         /// What an icon shows as: its picture, where, and its size alone in pixels.
         struct Shown: Equatable {
-            let file: String
+            let source: HostPicture?
             let position: IconPosition
             let spacing: Double?
             let words: Bool
             let width: Int32
             let height: Int32
+            let arrow: Bool
         }
     }
 }

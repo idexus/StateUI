@@ -58,7 +58,7 @@ final class WebMenu {
             button.listen("click") { [weak self] in
                 guard let self, entry.isEnabled else { return }
                 takeDown()
-                (entry.element?.native as? WebElement)?.send(.clicked, [])
+                (entry.element?.native as? WebElement)?.choose()
             }
         case .submenu:
             let button = item(entry)
@@ -77,13 +77,15 @@ final class WebMenu {
     private func item(_ entry: MenuEntry) -> WebDOMView {
         let button = WebDOMView(tag: "button")
         button.attribute("type", "button")
-        button.attribute("role", "menuitem")
+        // An item standing checked or not is the document's checkbox item, its mark drawn before its words.
+        button.attribute("role", entry.isOn == nil ? "menuitem" : "menuitemcheckbox")
+        button.attribute("aria-checked", entry.isOn.map { $0 ? "true" : "false" })
         button.attribute("data-identifier", entry.identifier)
         button.attribute("data-destructive", entry.isDestructive ? "" : nil)
         button.attribute("disabled", entry.isEnabled ? nil : "")
         if let icon = entry.icon {
             let picture = WebImageView()
-            picture.apply(source: ImageSource(icon), aspect: .fit)
+            picture.apply(picture: icon, aspect: .fit)
             WebRelay.insert(picture.node, into: button.node, at: 0)
             owned.append(picture)
         }
@@ -91,6 +93,15 @@ final class WebMenu {
         WebRelay.setText(words.node, entry.title)
         WebRelay.insert(words.node, into: button.node, at: entry.icon == nil ? 0 : 1)
         owned.append(words)
+        if let shortcut = entry.keyboardShortcut {
+            // Shown at the item's end; assistive technology hears it from `aria-keyshortcuts`.
+            button.attribute("aria-keyshortcuts", WebKeys.spelled(shortcut, onApple: WebRelay.onApple))
+            let keys = WebDOMView(tag: "kbd")
+            keys.attribute("aria-hidden", "true")
+            WebRelay.setText(keys.node, WebKeys.shown(shortcut, onApple: WebRelay.onApple))
+            WebRelay.insert(keys.node, into: button.node, at: entry.icon == nil ? 1 : 2)
+            owned.append(keys)
+        }
         place(button)
         return button
     }

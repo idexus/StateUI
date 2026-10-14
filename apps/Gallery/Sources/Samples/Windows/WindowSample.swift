@@ -35,7 +35,7 @@ struct WindowSample: SampleContent, ExampleContent {
 
             Text(window.title ?? "Platform title")
                 .fontSize(15)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
 
             HStack {
                 action("Rename") {

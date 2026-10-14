@@ -128,7 +128,7 @@ extension AppKitRegistrations {
         TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
         TextInputContract.placeholderColor,
         TextStyleElementContract.textColor, VisualElementContract.background,
-        FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
+        FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle,
         TextAlignmentElementContract.horizontalTextAlignment, VisualElementContract.isEnabled,
         TextInputContract.isReadOnly, TextInputContract.maximumLength,
         TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled, TextInputContract.inputPurpose,

@@ -13,18 +13,21 @@ import Foundation
 /// Design: docs/design/host/conformance.md#the-driver
 @MainActor
 final class WinUIDriver: HostDriver {
+    /// Why a field holds no word for its return key on WinUI.
+    static let noReturnWord = "WinUI gives a text box no word for the return key of the keyboard on the screen"
+
     /// Why a view that is no control holds no `isEnabled` on WinUI.
     static let noEnabledState =
         "WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it"
 
     let host = "WinUI 3"
-    let cannot = [
-        "submit on TextField":
-            "WinUI raises a text box's KeyDown only from the keyboard; Enter is walked on HelloWorld's field",
-    ]
+    let cannot: [String: String] = [:]
     let platformHasNone = [
+        "read submitLabel of TextField": WinUIDriver.noReturnWord,
+        "read submitLabel of SearchField": WinUIDriver.noReturnWord,
         "read isEnabled of Canvas": WinUIDriver.noEnabledState,
-        "read isEnabled of ColorBox": WinUIDriver.noEnabledState,
+        "read isEnabled of Capsule": WinUIDriver.noEnabledState,
+        "read isEnabled of Divider": WinUIDriver.noEnabledState,
         "read isEnabled of Ellipse": WinUIDriver.noEnabledState,
         "read isEnabled of Grid": WinUIDriver.noEnabledState,
         "read isEnabled of HStack": WinUIDriver.noEnabledState,
@@ -34,18 +37,21 @@ final class WinUIDriver: HostDriver {
         "read isEnabled of Polygon": WinUIDriver.noEnabledState,
         "read isEnabled of Polyline": WinUIDriver.noEnabledState,
         "read isEnabled of Rectangle": WinUIDriver.noEnabledState,
+        "read isEnabled of Spacer": WinUIDriver.noEnabledState,
         "read isEnabled of Text": WinUIDriver.noEnabledState,
         "read isEnabled of VStack": WinUIDriver.noEnabledState,
         "read isEnabled of ZStack": WinUIDriver.noEnabledState,
         "read growsWithText of TextEditor":
             "an editor's growing is StateUI's measuring, which no property of WinUI's holds; its frames prove it",
         "read contentMode of Rectangle": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
+        "read contentMode of Capsule": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
         "read contentMode of Ellipse": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
         "read contentMode of Line": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
         "read contentMode of Path": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
         "read contentMode of Polygon": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
         "read contentMode of Polyline": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
         "read geometryTransform of Rectangle": "WinUI folds a shape's transform into its figure; its drawing proves it",
+        "read geometryTransform of Capsule": "WinUI folds a shape's transform into its figure; its drawing proves it",
         "read geometryTransform of Ellipse": "WinUI folds a shape's transform into its figure; its drawing proves it",
         "read geometryTransform of Line": "WinUI folds a shape's transform into its figure; its drawing proves it",
         "read geometryTransform of Path": "WinUI folds a shape's transform into its figure; its drawing proves it",
@@ -116,6 +122,10 @@ final class WinUIDriver: HostDriver {
         case (.choose(let place), let items as WinUIItemsView): items.chooseForTesting(place)
         case (.scroll(let target), let items as WinUIItemsView): scroll(items, to: target)
         case (.activate, _): try activate(element, view)
+        case (.pressKeys(let shortcut), _):
+            // The keys sent as the system sends them, to the window in front.
+            guard let spelled = WinUIKeys.spelled(shortcut) else { throw DriverCannot(act, on: element) }
+            stateui_winui_send_keys(spelled.key, spelled.modifiers)
         case (.toggle, let toggle as WinUIToggleView): toggle.toggle()
         case (.toggle, _) where element.type == .splitView: try window().titleBar.chose(-2)
         case (.slide(let value), let slider as WinUISliderView): slider.move(to: value)
@@ -129,6 +139,14 @@ final class WinUIDriver: HostDriver {
             for _ in 0..<150 where element.value(.text)?.string != words { step() }
         case (.type(let words), let field as WinUITextInputView): type(words, into: field)
         case (.submit, let search as WinUISearchFieldView): stateui_winui_search_submit_as_user(search.handle)
+        case (.submit, let field as WinUITextInputView) where element.type == .textField:
+            // Enter as the system sends it, to the field holding the keyboard: WinUI raises a text box's KeyDown from
+            // the keyboard alone.
+            guard let enter = WinUIKeys.spelled(KeyboardShortcut(.return, modifiers: [])) else {
+                throw DriverCannot(act, on: element)
+            }
+            _ = stateui_winui_focus(field.handle, true)
+            stateui_winui_send_keys(enter.key, enter.modifiers)
         case (.choose(let place), let picker as WinUIPickerView):
             stateui_winui_picker_choose_as_user(picker.handle, Int32(place))
         case (.choose(let place), _) where element.type == .tabView: try chooseTab(place, of: element)

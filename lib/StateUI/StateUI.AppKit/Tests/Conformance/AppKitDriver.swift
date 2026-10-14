@@ -32,11 +32,14 @@ final class AppKitDriver: HostDriver {
             none["read maximumLength of \(field)"] =
                 "AppKit's field keeps no bound: the host cuts what is typed, and typing proves it"
         }
+        for field in ["TextField", "SearchField"] {
+            none["read submitLabel of \(field)"] = "a Mac has no keyboard on the screen whose return key says anything"
+        }
         let shapePaint = [
             "contentMode", "geometryTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
             "lineCap", "lineJoin", "miterLimit",
         ]
-        for shape in ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
+        for shape in ["Capsule", "Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
             for member in shapePaint {
                 none["read \(member) of \(shape)"] =
                     "StateUI draws a shape in its view's draw(_:), which holds none of its \(member); its drawing proves it"
@@ -208,6 +211,10 @@ final class AppKitDriver: HostDriver {
         if property == .icon, let button = (element.native as? AppKitElement)?.view as? AppKitButtonView {
             return pictureName(button.image)
         }
+        // Whether a page shows its title: the window draws its name, which it keeps for the system either way.
+        if property == .showsTitle, element.type == .page {
+            return (try controller(of: element).window?.titleVisibility == .visible).propValue
+        }
         // Whether a page offers the way back: the window's toolbar holds its back item while the page shows.
         if property == .showsBackButton, element.type == .page {
             return (try controller(of: element).toolbarForTesting.itemForTesting(AppKitWindowToolbar.back) != nil).propValue
@@ -237,9 +244,9 @@ final class AppKitDriver: HostDriver {
         case (.text, let button as AppKitButtonView): return button.title.propValue
         case (.text, let check as AppKitCheckBoxView): return check.title.propValue
         case (.text, let radio as AppKitRadioButtonView): return radio.title.propValue
-        case (.selectedIndex, let picker as AppKitPickerView):
+        case (.selectedIndex, let picker as any AppKitChoosing):
             return picker.indexOfSelectedItem >= 0 ? picker.indexOfSelectedItem.propValue : nil
-        case (.options, let picker as AppKitPickerView): return picker.itemTitles.propValue
+        case (.options, let picker as any AppKitChoosing): return picker.itemTitles.propValue
         case (.placeholder, let picker as AppKitPickerView): return picker.title.propValue
         case (.tint, let picker as AppKitPickerView): return picker.contentTintForTesting.map { Self.color($0).propValue }
         case (.tint, let check as AppKitCheckBoxView): return check.contentTintColor.map { Self.color($0).propValue }

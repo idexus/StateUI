@@ -15,14 +15,13 @@ struct SwatchPage: View {
 
     var body: some View {
         VStack {
-            ColorBox()
-                .color(SwatchPage.colour(of: number))
+            Rectangle(SwatchPage.colour(of: number))
                 .height(150)
                 .cornerRadius(12)
 
             Text("Swatch \(number)")
                 .fontSize(20)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalAlignment(.center)
 
             HStack {

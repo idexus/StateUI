@@ -1,11 +1,16 @@
-# revision 1.2
+# revision 6.3
 Button: ✅
 Button.clicked: ✅
 Button.frameChanged: ✅
 Button.icon: ✅
 Button.iconPosition: ✅
 Button.iconSpacing: ✅
+Button.keyboardShortcut: ✅
 Button.lineBreak: ✅
+Button.menuKind: ✅
 Button.pressed: ✅
 Button.released: ✅
+Button.role: ✅
+Button.showsMenuArrow: ✅
+Button.style: ✅
 Text.text: ✅

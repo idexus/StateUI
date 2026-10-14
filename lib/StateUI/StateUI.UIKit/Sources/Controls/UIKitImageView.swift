@@ -7,7 +7,7 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 /// An Image: a `UIImageView` showing one of the application's pictures - its dark one where the user's appearance is
-/// dark - filling its room as its aspect says.
+/// dark - an icon, or bytes, filling its room as its aspect says.
 @MainActor
 final class UIKitImageView: UIImageView {
     private var source: ImageSource?
@@ -41,7 +41,10 @@ final class UIKitImageView: UIImageView {
             return
         }
         let dark = traitCollection.userInterfaceStyle == .dark
-        image = UIKitRenderer.image(named: dark ? source.dark ?? source.file : source.file)
+        let picture = HostPicture(source, dark: dark)
+        image = picture.flatMap(UIKitRenderer.image)
+        // An icon is drawn in the colour of the words around it, not the accent.
+        if case .icon = picture { tintColor = .label } else { tintColor = nil }
         invalidateIntrinsicContentSize()
     }
 }

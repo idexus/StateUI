@@ -14,7 +14,6 @@ Text("Account")
 Button("Save")
 Button(icon: "trash.png")
 Image("avatar.png")
-ColorBox(.cornflowerBlue)
 ```
 
 Optional capabilities are modifiers:
@@ -74,7 +73,7 @@ hands the state channel to the host instead:
 @State var volume = 0.5
 
 Slider($volume)
-ColorBox(.cornflowerBlue).scaleX($volume)
+Rectangle(.cornflowerBlue).scaleX($volume)
 ```
 
 Passing `$volume` does not make the body a reader. Native input and program
@@ -122,7 +121,7 @@ caused by the user. Do not duplicate the assignment in the handler.
 Text()
     .spans {
         TextSpan("let ").textColor(.purple)
-        TextSpan("count").fontAttributes(.bold)
+        TextSpan("count").fontWeight(.bold)
         TextSpan(" = 0")
     }
 ```
@@ -149,17 +148,21 @@ and the tier pages it links list each with its mark per host:
   span - take `textCase`, which draws the words `.uppercase` or `.lowercase`
   while the text stays as written; a field turns what is typed into the case
   and reports it so;
-- text-styled controls take `textColor` and `tracking`, the space between
-  letters; those in a font take `fontSize`, `fontFamily` - the name the
-  application registered the font under - `fontAttributes`, which is `.bold`,
-  `.italic`, `[.bold, .italic]` or `.none`, and `isFontAutoScalingEnabled`,
+- text-styled controls take `textColor`; a label, a button and a span take
+  `tracking`, the space between letters, too; those in a font take
+  `textStyle` - `.display`, `.title`, `.subtitle`, `.headline`, `.body` or
+  `.caption`, each the platform's own size and weight - `fontSize` and
+  `fontWeight` - `.regular`, `.medium`, `.semibold` or `.bold` - which stand
+  over the style's, `fontFamily` - the name the application registered the
+  font under - `fontAttributes`, which is `.italic` or `.none`, and
+  `isFontAutoScalingEnabled`,
   on unless said, which makes the text follow the user's text-size setting -
   iOS's text size, Android's font size, Windows' text size, GNOME's text
   scaling and the browser's font size; a Mac has none to follow;
-- aligned controls take `horizontalTextAlignment` and
-  `verticalTextAlignment`: `.start`, `.center` or `.end`;
+- aligned controls take `horizontalTextAlignment`, and a label
+  `verticalTextAlignment` too: `.start`, `.center` or `.end`;
 - a label and a span take `textDecorations` - `.underline`, `.strikethrough`,
-  or both - and `lineHeight`, a multiple of the font's own;
+  or both - and a label `lineHeight`, a multiple of the font's own;
 - a label's own properties control wrapping and maximum lines. `lineBreak` is
   `.wordWrap`, the default, `.characterWrap`, which breaks inside a word, or
   `.noWrap`; `.headTruncation`, `.tailTruncation` and `.middleTruncation` keep
@@ -190,6 +193,46 @@ VStack {
         .isFontAutoScalingEnabled(false)
 }
 ```
+
+### A text style and a weight
+
+A text style says what the words are - a page's title, a section's, running
+text, a note under it - and each platform says how large and heavy that is on
+its own type ramp, growing it with the user's text size where the words
+scale. There are six, from the largest: `.display`, `.title`, `.subtitle`,
+`.headline` - the body's size, heavier - `.body`, and `.caption`. A weight is
+`.regular`, `.medium`, `.semibold` or `.bold`, the font's weights 400 to 700.
+A size or a weight the words give stand over their style's:
+
+```swift
+VStack {
+    Text("Inbox").textStyle(.title)
+    Text("Today").textStyle(.subtitle)
+    Text("3 unread").textStyle(.headline)
+    Text("The words of a message, as the platform sets running text.")
+    Text("Sent from the Mac").textStyle(.caption)
+    Text("A quieter title").textStyle(.title).fontWeight(.regular)
+}
+```
+
+A style is a member like any other: a run takes its own, a field and a
+button take theirs, and `.textStyle($style)` hands one over from a state.
+
+### Words the user selects
+
+A label's words are read, not selected - unless they are something the user
+will copy: an address, a code, an error to report. `isSelectable(true)` lets
+them select and copy the words with the platform's own selection:
+
+```swift
+VStack {
+    Text("221B Baker Street, London NW1 6XE").isSelectable(true)
+    Text("Order 7F3K-92QX-L0MA").isSelectable(true)
+}
+```
+
+A platform may show selectable words in another control than a label, so
+another value makes the text anew rather than changing it in place.
 
 ## Text entry, caret, and selection
 
@@ -223,7 +266,7 @@ of its own:
 | `isSpellCheckEnabled` | every field | whether the platform marks what it takes to be misspelt |
 | `isTextPredictionEnabled` | every field | whether the platform offers the next word |
 | `isPassword` | `TextField` | what is typed hides behind the platform's secure-entry marks |
-| `submitLabel` | `TextField`, `SearchField` | the return key's caption - `.done`, `.go`, `.next`, `.search`, `.send`; what the key does is `.onSubmitted`, whatever it says |
+| `submitLabel` | `TextField`, `SearchField` | the return key's caption - `.done`, `.go`, `.next`, `.search`, `.send`; what the key does is `.onSubmitted`, whatever it says, and `.next` hands the keyboard on to the next field |
 | `showsClearButton` | `TextField` | whether the native button that empties the field shows, where the platform's field has one; it does unless told otherwise |
 
 ```swift
@@ -249,6 +292,24 @@ VStack {
         .inputPurpose(.email)
         .maximumLength(20)
         .onSubmitted { done += 1 }
+}
+```
+
+A field whose return key says Next hands the keyboard on as it is submitted,
+to the next field its page reads: in the order the page is written, across a
+row and then down, past a field hidden or disabled. After the last field the
+keyboard stays where it is. A desktop keyboard's Return does the same, though
+it shows no caption:
+
+```swift
+@State var name = ""
+@State var street = ""
+@State var city = ""
+
+VStack {
+    TextField($name).placeholder("Name").submitLabel(.next)
+    TextField($street).placeholder("Street").submitLabel(.next)
+    TextField($city).placeholder("City").submitLabel(.done)
 }
 ```
 
@@ -279,7 +340,7 @@ Choice controls follow the same binding rule:
 ```swift
 @State var accepted = false
 @State var level = 0.25
-@State var index = 0
+@State var size = "Medium"
 
 VStack {
     CheckBox($accepted)
@@ -288,8 +349,32 @@ VStack {
         .minimum(0)
         .maximum(1)
 
-    Picker(["Small", "Medium", "Large"])
-        .selectedIndex($index)
+    Picker(["Small", "Medium", "Large"], selection: $size)
+}
+```
+
+A picker chooses a value, not a place in its list: the state holds one of
+the values - an application's own enum, a model - and each shows by its
+caption, its description unless the picker is given one. The list can change
+its order and the choice stays the value it was; a state that may hold
+nothing is optional, and the placeholder shows while it is nil. A picker
+offers its values as the platform's menu unless it says otherwise -
+`.segmented`, a row of segments for a few short values, or `.radio`, a radio
+button for each:
+
+```swift
+enum Span: CaseIterable, Equatable { case day, week, month }
+
+@State var span = Span.week
+@State var plan: String? = nil
+
+VStack {
+    Picker(Span.allCases, selection: $span) { "\($0)".capitalized }
+        .presentation(.segmented)
+
+    Picker(["Free", "Team", "Business"], selection: $plan)
+        .placeholder("Choose a plan")
+        .presentation(.radio)
 }
 ```
 
@@ -334,6 +419,11 @@ to each new value, and `.isAnimating($loading)` one it sets as it stands. Both
 take `.tint`. Nothing about either is the user's to change, so neither reports
 anything back.
 
+A stepper shows only its steps. A state sent far - `$done.journey.move(to: 5)`
+- travels smoothly underneath, and the stepper shows each step of where it is
+headed on the way, never a number between two; at rest it shows the value
+itself.
+
 ## Dates and times
 
 Date and time controls use StateUI value types rather than Foundation types:
@@ -354,9 +444,30 @@ belongs in the application boundary; see [Environment](../concepts/environment.m
 
 ## Images and media providers
 
-`ImageSource` names an application resource and can choose light and dark
-variants. `Image` and a button's `icon` consume it without exposing a platform
-image type.
+`ImageSource` is one of three pictures: an application resource, which can
+choose light and dark variants; one of the platform's own icons; or a picture's
+encoded bytes. `Image` and a button's `icon` consume it without exposing a
+platform image type.
+
+An icon is chosen by its meaning from a closed set, `Icon`, and each host draws
+it as its platform draws its own - an SF Symbol, a Material Symbol on Android,
+a Segoe Fluent Icons glyph, the GTK theme's symbolic icon - in the colour of
+what holds it, at the platform's icon size where nothing gives it room. Bytes
+are a picture encoded whole - a PNG or a JPEG the application downloaded or
+made - shown at one pixel a point:
+
+```swift
+let downloaded: [UInt8] = []
+
+Image(.icon(.star))
+    .width(24)
+    .height(24)
+
+Button("Share")
+    .icon(.icon(.share))
+
+Image(ImageSource(bytes: downloaded))
+```
 
 A button carries a picture in one of two ways. When the picture is its whole
 purpose, it goes in the initializer: `Button(icon:)`. Beside a caption it is the
@@ -397,7 +508,7 @@ VStack {
 }
 ```
 
-StateUI composes it of colour boxes in a row, so it looks and behaves the same
+StateUI composes it of rectangles in a row, so it looks and behaves the same
 on every platform. `maximumVisible` caps the dots, the current one kept among
 them; one lone dot is hidden unless `hidesForSinglePage(false)` asks for it;
 `indicatorShape(.square)` draws squares. Given items,
@@ -570,7 +681,7 @@ struct ContactsPage: View {
         Grid {
             ItemsView(contacts, id: \.name) { contact in
                 VStack {
-                    Text(contact.name).fontAttributes(.bold)
+                    Text(contact.name).fontWeight(.bold)
                     Text(contact.phone)
                 }
                 .padding(horizontal: 14, vertical: 10)

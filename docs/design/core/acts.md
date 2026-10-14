@@ -156,7 +156,10 @@ model is the model's; the walk never enters a model.
 ## Focus and the keyboard
 
 Focus is an act with two forms: `field.focus()` on a known view, and
-`OnScreenKeyboard.hide()` for whatever has the keyboard. The focused control is
+`OnScreenKeyboard.hide()` for whatever has the keyboard. The first exists only
+on the aim of an element that takes the focus itself - the `FocusElement`
+tier, with `.isFocused` and the `.focused` visual state - so a text or a stack,
+which never can, offers none. The focused control is
 whichever one the user touched last, so the host asks its native focus system,
 and StateUI does not mirror that identity as state. The second form lets a Done
 button close a keyboard it did not open. On iOS a search field on the

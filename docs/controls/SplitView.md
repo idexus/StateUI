@@ -20,7 +20,7 @@ struct MainPage: View {
 
 Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [BarElement](tiers/BarElement.md) · [PageElement](tiers/PageElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [BarElement](tiers/BarElement.md) · [PageElement](tiers/PageElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -64,9 +64,9 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Navigation/SplitViewCon
 <tr><td colspan="9">AppKit: A Mac sidebar always stands beside the detail: a window too narrow for both hides it.<br>Android Views: Android blurs nothing behind a view: a blur or glass shows its colour.<br>WinUI 3: WinUI has no glass: a pane of glass shows the in-app acrylic at its fallback thickness.<br>GTK 4: only through the host's own: read flyoutBackground of SplitView: the colour the split keeps for its sidebar over the detail, which a wide window never shows<br>Web: A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.</td></tr></tbody>
 </table>
 
-## From [PropertyContainer](tiers/PropertyContainer.md)
+## From [AutomationElement](tiers/AutomationElement.md)
 
-What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
+What an element the platform's automation meets has - a drawn element, a menu's entry or a bar's item, an arrangement of pages: the name automation finds it by.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>

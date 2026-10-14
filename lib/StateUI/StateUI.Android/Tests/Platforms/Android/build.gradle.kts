@@ -23,7 +23,7 @@ android {
         minSdk = 28
         targetSdk = 36
         versionCode = 1
-        versionName = "0.6.0"
+        versionName = "0.6.3"
     }
 
     sourceSets {
@@ -33,6 +33,7 @@ android {
             java.srcDir("Java")
             jniLibs.srcDir(stated("stateui.libraries"))
             assets.srcDir(stated("stateui.assets"))
+            res.srcDir(stated("stateui.res"))
         }
     }
 

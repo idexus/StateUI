@@ -114,7 +114,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, ID: Hashable>: View {
     ///
     ///     PlacedLayout(cards, id: \.name) { face($0) }
     ///         .placement($run)
-    ///         .shade(ColorBox(.black).cornerRadius(14))
+    ///         .shade(Rectangle().fill(.black).cornerRadius(14))
     ///
     /// Give it the corners the views have. Where views overlap, a shade darkens
     /// a far view without showing the one behind it, as fading it would.

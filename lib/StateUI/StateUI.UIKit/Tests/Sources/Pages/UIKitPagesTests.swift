@@ -5,6 +5,7 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIUIKit
+@_spi(Host) import StateUIConformance
 import XCTest
 
 /// What pages and their arrangements say on UIKit's bars and the window's scene.
@@ -135,6 +136,43 @@ final class UIKitPagesTests: XCTestCase {
         host.settle { UIKitMenus.said(host.menuBar, identified: true) != identified }
         XCTAssertEqual(UIKitMenus.said(host.menuBar), words, "the same words")
         XCTAssertNotEqual(UIKitMenus.said(host.menuBar, identified: true), identified, "another element's")
+    }
+
+    /// An entry stating a shortcut stands in the main menu as a key command, which UIKit shows the shortcut of and
+    /// the window's root chooses the entry by, the root offering no command of its own for those keys; the main menu
+    /// is built again when the shortcut changes.
+    @MainActor
+    func testAnEntrysShortcutStandsInTheMenuBarAsAKeyCommand() throws {
+        let shifted = State(wrappedValue: false)
+        let heard = Received<Int>()
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            Text("Document").menuBar {
+                Menu("File") {
+                    MenuItem("Save").keyboardShortcut("s", modifiers: shifted.wrappedValue ? [.primary, .shift] : .primary)
+                        .onClicked { heard.values.append(1) }.id("save")
+                }
+                .id("file")
+            }
+        }
+        defer { host.finish() }
+        host.settle { !host.menuBar.isEmpty }
+        func command() -> UIKeyCommand? { host.menuBar.first?.children.first as? UIKeyCommand }
+        XCTAssertEqual(command().flatMap(UIKitKeys.shortcut(of:)), KeyboardShortcut("s"))
+        let identified = UIKitMenus.said(host.menuBar, identified: true)
+
+        shifted.wrappedValue = true
+        host.settle { UIKitMenus.said(host.menuBar, identified: true) != identified }
+        XCTAssertNotEqual(UIKitMenus.said(host.menuBar, identified: true), identified, "built again")
+        XCTAssertEqual(command().flatMap(UIKitKeys.shortcut(of:)), KeyboardShortcut("s", modifiers: [.primary, .shift]))
+
+        let root = try XCTUnwrap(host.userWindow?.rootViewController as? UIKitRootViewController)
+        XCTAssertFalse(
+            root.keyCommands?.contains { UIKitKeys.shortcut(of: $0) == KeyboardShortcut("s", modifiers: [.primary, .shift]) }
+                ?? false,
+            "the main menu's alone: UIKit shows no shortcut on a command another responder's overrides")
+        root.chooseMenuEntry(try XCTUnwrap(command()))
+        host.settle { !heard.values.isEmpty }
+        XCTAssertEqual(heard.values, [1], "the entry chosen")
     }
 
     /// The groups a page's path declares stand on its navigation item as the host layer composes them: each a

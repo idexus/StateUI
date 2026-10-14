@@ -91,6 +91,13 @@ display cycle, in this order, in every runtime:
 A user's own change drains steps 2 to 5 at once, so the followers and
 the engines move on the user's frame.
 
+The cycle's time never runs back. The display stamps each frame with the time
+of its last refresh, and a turn between frames - a report, a handler, the
+environment - drains on the runtime's own time, which is later. A frame
+stamped before the last drain runs at that drain's time instead: an animation
+advanced by the drain would otherwise step back on the frame after it, and
+forward again on the next.
+
 In step 4 a host only presents each element's moved values; what they ask
 of the elements around it is decided once, for every host
 (`MountedElement.presentFrame`): the element presents itself again; its
@@ -271,7 +278,14 @@ asks the browser whether the element has a box.
 The Web, as each call from the page ends and before the browser draws, lets
 what was laid out say it at once (`FrameFollowers.reportLaidOut`), so a
 size worked out from a frame is drawn in the frame that measured it; a
-scroller still says what it did on the display's frame.
+scroller still says what it did on the display's frame. AppKit does the
+same in each room's layout pass - the window's content, a split view's
+pane - laying the page out, letting it say, and laying it out again where
+anything did (`layOutReporting`): a split view sliding its sidebar lays out
+only its panes, and a report left to the display's next frame stood the
+page's content in the last frame's width every other frame. GTK lets it say
+in its frame clock's layout phase, after the window's own layout, and the
+clock lays out again what that changed before it paints.
 
 ## A scroller's movement
 
@@ -387,7 +401,10 @@ tall, turned by quarters from its natural orientation - none on one that
 turns with nothing. When any of it changes, one step
 follows on every host (`HostRuntime.environmentChanged`): the core is told
 what stands now, the tree follows the language's direction, and one turn
-renders what it all changed.
+renders what it all changed. A report that repeats what stands - and
+platforms repeat themselves often, a network monitor several times a frame -
+changes nothing and takes no turn: a turn between frames would move
+whatever moves once more.
 
 ## The theme in force
 
@@ -477,9 +494,10 @@ the control it hands an aimed act.
 
 A question - an alert, a confirmation, a choice of actions, a prompt - is
 read from its act the same way on every host (`HostQuestion`): its title and
-message, the accepting caption ("OK" where it names none), the cancelling one
-("Cancel" for a confirmation or a prompt; a choice's only where it names
-one), a choice's dangerous action and its others, a prompt's placeholder,
+message, the accepting caption, the cancelling one (a choice's only where it
+names one) - the core sends the library's own words in the system's language
+where the application names none, so "OK" and "Cancel" here stand only for an
+act that came without them - a choice's dangerous action and its others, a prompt's placeholder,
 bound, purpose and starting words. It answers as its kind does: a
 confirmation yes or no, a choice or a prompt its words where the user
 accepted - a prompt's cut to its bound, by characters - and nothing where
@@ -616,8 +634,11 @@ bar's - follows one arithmetic on every host (`ValueArithmetic`): the range's
 ends stand in order whichever the tree gave first; a step that does not move
 is 1; a share of work past an end stands at that end, one that is no number
 at the start; a slider's key moves a hundredth of its range and a page a
-tenth; and a stepped number is written with as many decimals as its step,
-its ends and its value take, so each reads exactly, and no more than six.
+tenth; a stepped number is written with as many decimals as its step,
+its ends and its value take, so each reads exactly, and no more than six;
+and a stepper's step moves only away from the range's end it stands at
+(`ValueArithmetic.stepsWay`), its button of that way standing disabled where
+the host draws the buttons itself.
 
 Such a control is written, as its value and its ends apply, by one rule
 (`ElementValues.written`): the tree's value where the tree changed the value
@@ -626,6 +647,15 @@ buttons is never argued with. A range that moves takes the tree's value
 again: the control stood clamped at the old range's end - a state's value
 outside it, or one travelling to the value written with the range - and a
 range widened over that value shows it rather than the end it stood at.
+
+A stepper shows its steps alone (`ElementValues.shownStep`,
+`ValueArithmetic.stepped`). Its presentation is discrete; the journey a state
+carries its value on is not. So it shows a step of where its value is headed
+- the destination and every step from it within the range - the nearest to
+where the journey stands, between there and the destination: never a value
+between two steps, one behind where the journey set out, or one past where it
+lands; at rest, its value itself. The destination comes with the journey
+(`ElementValues.destination`).
 
 ## A day and a time
 

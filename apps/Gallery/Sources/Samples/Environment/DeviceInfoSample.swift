@@ -25,7 +25,7 @@ struct DeviceInfoSample: SampleContent, ExampleContent {
 
             Text("\(app.info.name) \(app.info.versionString) (\(app.info.buildString))")
                 .fontSize(22)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
 
             Text(app.info.packageName)

@@ -11,12 +11,14 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.EditorInfo;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 /** What the user does to one view, forwarded to the Swift view by its number. */
-final class StateUIListener implements View.OnClickListener, CompoundButton.OnCheckedChangeListener,
+final class StateUIListener implements View.OnClickListener, View.OnLongClickListener,
+        CompoundButton.OnCheckedChangeListener,
         SeekBar.OnSeekBarChangeListener, TextWatcher, TextView.OnEditorActionListener,
         View.OnScrollChangeListener, View.OnTouchListener, View.OnHoverListener, View.OnCreateContextMenuListener,
         View.OnFocusChangeListener,
@@ -25,6 +27,9 @@ final class StateUIListener implements View.OnClickListener, CompoundButton.OnCh
 
     /** Whether a finger holds the view, as its touches last said. */
     private boolean holding;
+
+    /** Where across the view the finger that may click it went down, in pixels; -1 for none. */
+    private float downX = -1;
 
     /** The gestures the view's element listens for; none before it first listens for one. */
     private StateUIGestures gestures;
@@ -36,6 +41,18 @@ final class StateUIListener implements View.OnClickListener, CompoundButton.OnCh
     @Override
     public void onClick(View clicked) {
         StateUIHost.clicked(view);
+    }
+
+    /** Where across the view the finger clicking it went down, in pixels, taken once; -1 for a click with none. */
+    float takeDownX() {
+        float x = downX;
+        downX = -1;
+        return x;
+    }
+
+    @Override
+    public boolean onLongClick(View held) {
+        return StateUIHost.longClicked(view);
     }
 
     @Override
@@ -72,13 +89,15 @@ final class StateUIListener implements View.OnClickListener, CompoundButton.OnCh
 
     /**
      * Once per Return: the keyboard's action, or a hardware key as it is let go - its release then reaches no field
-     * the submission put the focus on. An editor's hardware Return starts a new line.
+     * the submission put the focus on. An editor's hardware Return starts a new line. The keyboard's Next is
+     * StateUI's: the submission hands the keyboard on to the field its page reads next, and the toolkit's own
+     * search for one does not run after it.
      */
     @Override
     public boolean onEditorAction(TextView field, int action, KeyEvent event) {
         if (event == null) {
             StateUIHost.submitted(view);
-            return false;
+            return action == EditorInfo.IME_ACTION_NEXT;
         }
         if ((field.getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0) return false;
         if (event.getAction() == KeyEvent.ACTION_UP) StateUIHost.submitted(view);
@@ -114,6 +133,8 @@ final class StateUIListener implements View.OnClickListener, CompoundButton.OnCh
     public boolean onTouch(View touched, MotionEvent event) {
         int action = event.getActionMasked();
         boolean ends = action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL;
+        if (action == MotionEvent.ACTION_DOWN) downX = event.getX();
+        if (action == MotionEvent.ACTION_CANCEL) downX = -1;
         if (holding == ends) {
             holding = !ends;
             StateUIHost.held(view, holding);

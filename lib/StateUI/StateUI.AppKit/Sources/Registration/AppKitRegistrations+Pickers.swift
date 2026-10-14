@@ -9,32 +9,33 @@ import AppKit
 extension AppKitRegistrations {
     /// A choice, a day and a time: what the user picks, reported by member.
     static func pickers(_ registry: Registry<NSView>) {
-        registry.add(PickerContract.self, create: { reports in
-            let picker = AppKitPickerView()
+        // Each presentation is another control: the picker is made as the one it is made with.
+        registry.add(PickerContract.self, create: { reports -> NSView in
+            let picker: any AppKitChoosing = switch PickerChoices.presentation(made: reports.made) {
+            case .menu: AppKitPickerView()
+            case .segmented: AppKitSegmentedPickerView()
+            case .radio: AppKitRadioPickerView()
+            }
             picker.onSelectionChanged = { index in
                 reports.report(PickerContract.selectedIndex, index, as: PickerContract.selectedIndexChanged)
             }
             picker.onOpened = { reports.raise(PickerContract.opened) }
             picker.onClosed = { reports.raise(PickerContract.closed) }
             return picker
-        }, members: { picker in
+        }, members: { (picker: Registration<PickerContract, NSView>) in
             picker.applies([
                 PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder,
                 PickerContract.isOpen, FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes, TextStyleElementContract.textColor,
+                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TextStyleElementContract.textColor,
                 TintElementContract.tint, TextAlignmentElementContract.horizontalTextAlignment,
                 VisualElementContract.isEnabled,
             ]) { view, values in
-                view.apply(
+                (view as! any AppKitChoosing).apply(
                     items: values[PickerContract.options] ?? [],
                     selectedIndex: values[PickerContract.selectedIndex] ?? -1,
                     writeSelection: values.changed(PickerContract.selectedIndex),
                     title: values[PickerContract.placeholder],
-                    font: appKitFont(
-                        family: values[FontElementContract.fontFamily]?.text,
-                        size: values[FontElementContract.fontSize],
-                        attributes: values[FontElementContract.fontAttributes],
-                        fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
+                    font: Self.font(values),
                     textColor: values[TextStyleElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
                     tint: values[TintElementContract.tint].flatMap { nsColor($0.propValue) },
@@ -57,7 +58,7 @@ extension AppKitRegistrations {
             picker.applies([
                 DatePickerContract.date, DatePickerContract.minimumDate, DatePickerContract.maximumDate,
                 FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes, TextStyleElementContract.textColor,
+                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TextStyleElementContract.textColor,
                 VisualElementContract.isEnabled,
             ]) { view, values in
                 dress(view, values)
@@ -74,7 +75,7 @@ extension AppKitRegistrations {
         }, members: { picker in
             picker.applies([
                 TimePickerContract.time, FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes, TextStyleElementContract.textColor,
+                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TextStyleElementContract.textColor,
                 VisualElementContract.isEnabled,
             ]) { view, values in
                 dress(view, values)

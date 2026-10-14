@@ -16,8 +16,9 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testActivityIndicator() { conform(ActivityIndicatorTests.self) }
     @MainActor func testButton() { conform(ButtonTests.self) }
     @MainActor func testCanvas() { conform(CanvasTests.self) }
+    @MainActor func testCapsule() { conform(CapsuleTests.self) }
     @MainActor func testCheckBox() { conform(CheckBoxTests.self) }
-    @MainActor func testColorBox() { conform(ColorBoxTests.self) }
+    @MainActor func testSpacer() { conform(SpacerTests.self) }
     @MainActor func testDatePicker() { conform(DatePickerTests.self) }
     @MainActor func testEllipse() { conform(EllipseTests.self) }
     @MainActor func testGrid() { conform(GridTests.self) }
@@ -47,10 +48,12 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testZStack() { conform(ZStackTests.self) }
     @MainActor func testApplication() { conform(ApplicationTests.self) }
     @MainActor func testContextMenu() { conform(ContextMenuTests.self) }
+    @MainActor func testButtonMenu() { conform(ButtonMenuTests.self) }
     @MainActor func testMenu() { conform(MenuTests.self) }
     @MainActor func testMenuBar() { conform(MenuBarTests.self) }
     @MainActor func testMenuItem() { conform(MenuItemTests.self) }
     @MainActor func testDivider() { conform(DividerTests.self) }
+    @MainActor func testMenuSeparator() { conform(MenuSeparatorTests.self) }
     @MainActor func testModalStack() { conform(ModalStackTests.self) }
     @MainActor func testNavigationStack() { conform(NavigationStackTests.self) }
     @MainActor func testOverlay() { conform(OverlayTests.self) }
@@ -65,7 +68,7 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testToolbarItem() { conform(ToolbarItemTests.self) }
     @MainActor func testToolbarItemGroup() { conform(ToolbarItemGroupTests.self) }
     @MainActor func testWindow() { conform(WindowTests.self) }
-    @MainActor func testPropertyContainer() { conform(PropertyContainerTests.self) }
+    @MainActor func testAutomationElement() { conform(AutomationElementTests.self) }
     @MainActor func testVisualElement1() { conform(VisualElementTests.self, part: Conformance.Part(1, of: 24)) }
     @MainActor func testVisualElement2() { conform(VisualElementTests.self, part: Conformance.Part(2, of: 24)) }
     @MainActor func testVisualElement3() { conform(VisualElementTests.self, part: Conformance.Part(3, of: 24)) }
@@ -107,16 +110,21 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testShape1() { conform(ShapeTests.self, part: Conformance.Part(1, of: 3)) }
     @MainActor func testShape2() { conform(ShapeTests.self, part: Conformance.Part(2, of: 3)) }
     @MainActor func testShape3() { conform(ShapeTests.self, part: Conformance.Part(3, of: 3)) }
+    @MainActor func testFilledShape() { conform(FilledShapeTests.self) }
+    @MainActor func testCorneredShape() { conform(CorneredShapeTests.self) }
     @MainActor func testTextualElement() { conform(TextualElementTests.self) }
     @MainActor func testTextStyleElement() { conform(TextStyleElementTests.self) }
     @MainActor func testFontElement() { conform(FontElementTests.self) }
     @MainActor func testTextAlignmentElement() { conform(TextAlignmentElementTests.self) }
     @MainActor func testLineHeightElement() { conform(LineHeightElementTests.self) }
+    @MainActor func testTrackingElement() { conform(TrackingElementTests.self) }
     @MainActor func testDecorableTextElement() { conform(DecorableTextElementTests.self) }
     @MainActor func testPaddingElement() { conform(PaddingElementTests.self) }
     @MainActor func testBorderElement() { conform(BorderElementTests.self) }
     @MainActor func testImageElement() { conform(ImageElementTests.self) }
     @MainActor func testTintElement() { conform(TintElementTests.self) }
+    @MainActor func testKeyboardElement() { conform(KeyboardElementTests.self) }
+    @MainActor func testFocusElement() { conform(FocusElementTests.self) }
     @MainActor func testBarElement() { conform(BarElementTests.self) }
     @MainActor func testMenuItemElement() { conform(MenuItemElementTests.self) }
     @MainActor func testPageElement() { conform(PageElementTests.self) }

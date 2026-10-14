@@ -16,7 +16,14 @@ enum GTKStyleSheet {
     static func padding(_ insets: Insets) -> String {
         let sides = [insets.top, insets.right, insets.bottom, insets.left].map { max(0, $0.isFinite ? $0 : 0) }
         let name = "stateui-padding-" + sides.map { css($0).replacing(".", with: "_") }.joined(separator: "-")
-        write(name, "padding: " + sides.map { css($0) + "px" }.joined(separator: " ") + ";")
+        let room = sides.map { css($0) + "px" }.joined(separator: " ")
+        // A menu button's and a split button's room is their buttons', which hold the words: a split button's arrow
+        // keeps the theme's room across.
+        let held = "menubutton.\(name), splitbutton.\(name) { padding: 0; }\n"
+            + "menubutton.\(name) > button, splitbutton.\(name) > button { padding: \(room); }\n"
+            + "splitbutton.\(name) > menubutton > button { padding-top: \(css(sides[0]))px; "
+            + "padding-bottom: \(css(sides[2]))px; }\n"
+        write(name, "padding: \(room);", states: held)
         return name
     }
 
@@ -44,33 +51,60 @@ enum GTKStyleSheet {
     }
 
     /// The class drawing a button's box: its fill - a little fainter under the pointer and fainter again pressed,
-    /// which the theme's own states would otherwise lose under it - its outline and its corners' radius; nil where
-    /// nothing is given.
-    static func box(fill: GdkRGBA?, stroke: GdkRGBA?, lineWidth: Double?, radius: Double?) -> String? {
-        guard fill != nil || stroke != nil || radius != nil else { return nil }
+    /// which the theme's own states would otherwise lose under it - its outline and its shape; nil where nothing is
+    /// given.
+    static func box(fill: GdkRGBA?, stroke: GdkRGBA?, lineWidth: Double?, shape: ContainerShape?) -> String? {
+        guard fill != nil || stroke != nil || shape != nil else { return nil }
         var name = "stateui-box"
-        var body = ""
-        var states = ""
+        var face = ""
+        var corners: String?
         if let fill {
             name += "-f" + hex(fill)
-            body += "background: \(css(fill)); box-shadow: none; "
+            face += "background: \(css(fill)); box-shadow: none; "
         }
         if let stroke, let lineWidth {
             name += "-s" + hex(stroke) + "-w" + css(lineWidth).replacing(".", with: "_")
-            body += "border: \(css(lineWidth))px solid \(css(stroke)); "
+            face += "border: \(css(lineWidth))px solid \(css(stroke)); "
         }
-        if let radius {
-            name += "-r" + css(radius).replacing(".", with: "_")
-            body += "border-radius: \(css(radius))px; "
+        if let shape {
+            let part: String
+            (part, corners) = switch shape {
+            case .rectangle: ("0", "0")
+            case .roundedRectangle(let radius): (css(radius).replacing(".", with: "_"), css(radius) + "px")
+            // GTK cuts corners wider than the box down alike, to half its shorter side: a capsule at any size.
+            case .capsule: ("capsule", "9999px")
+            // A share of the box's own sides, across and down: an oval.
+            case .ellipse: ("oval", "50%")
+            }
+            name += "-r" + part
+        }
+        var states = ""
+        // A menu button draws its box with the button it holds, GTK's documented node: the look goes there. A split
+        // button wears it whole, its two buttons answering the pointer over it, the line between them drawn.
+        // Design: docs/design/platforms/gtk/controls.md#a-buttons-box
+        let menu = "menubutton.\(name)", split = "splitbutton.\(name)"
+        let halves = ["\(split) > button", "\(split) > menubutton > button"]
+        states += [menu, menu + ":hover", menu + ":active"].joined(separator: ", ")
+            + " { background: none; border: none; box-shadow: none; }\n"
+        states += "\(menu) > button { \(face)\(corners.map { "border-radius: \($0); " } ?? "")}\n"
+        states += halves.joined(separator: ", ") + " { background: none; border: none; }\n"
+        states += halves.map { $0 + ":hover" }.joined(separator: ", ") + " { background: alpha(currentColor, 0.1); }\n"
+        states += halves.map { $0 + ":active" }.joined(separator: ", ") + " { background: alpha(currentColor, 0.2); }\n"
+        states += "\(split) > separator { background: alpha(currentColor, 0.35); }\n"
+        if let corners {
+            let start = "\(corners) 0 0 \(corners)", end = "0 \(corners) \(corners) 0"
+            states += "\(halves[0]):dir(ltr), \(halves[1]):dir(rtl) { border-radius: \(start); }\n"
+            states += "\(halves[0]):dir(rtl), \(halves[1]):dir(ltr) { border-radius: \(end); }\n"
         }
         if var fill {
             let alpha = fill.alpha
+            states += "\(split):hover, \(split):active { background: \(css(fill)); }\n"
             fill.alpha = alpha * Float(PressedFill.underPointer)
-            states += ".\(name):hover { background: \(css(fill)); }\n"
+            states += ".\(name):hover, \(menu) > button:hover { background: \(css(fill)); }\n"
             fill.alpha = alpha * Float(PressedFill.pressed)
-            states += ".\(name):active { background: \(css(fill)); }\n"
+            states += ".\(name):active, \(menu) > button:active { background: \(css(fill)); }\n"
         }
-        write(name, body, states: states)
+        write(name, face + (corners.map { "border-radius: \($0); " } ?? ""), states: states)
         return name
     }
 
@@ -133,14 +167,15 @@ enum GTKStyleSheet {
     static func words(_ look: TextLook, placeholder: GdkRGBA?, in part: String = "") -> String? {
         var name = "stateui-words"
         var body = ""
+        let (size, weight) = look.gtkStanding
         // In typographic points where the words scale, which the desktop's text scale applies to; in pixels where not.
-        if let size = look.size ?? (look.scales ? nil : GTKEnvironment.fontSize), size > 0 {
+        if let size = size ?? (look.scales ? nil : GTKEnvironment.fontSize), size > 0 {
             name += "-s" + css(size).replacing(".", with: "_") + (look.scales ? "" : "x")
             body += look.scales ? "font-size: \(css(TextLook.typographic(size)))pt; " : "font-size: \(css(size))px; "
         }
-        if look.attributes.contains(.bold) || look.attributesGiven {
-            name += look.attributes.contains(.bold) ? "-b" : "-r"
-            body += look.attributes.contains(.bold) ? "font-weight: bold; " : "font-weight: normal; "
+        if let weight {
+            name += "-w\(weight)"
+            body += "font-weight: \(weight); "
         }
         if look.attributes.contains(.italic) || look.attributesGiven {
             name += look.attributes.contains(.italic) ? "-i" : "-u"

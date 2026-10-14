@@ -2,14 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIAndroid
 
-/// An Image: an `android.widget.ImageView` showing a picture of the application's, cut to its bounds.
+/// An Image: an `android.widget.ImageView` showing a picture - the application's, the platform's icon, or bytes -
+/// cut to its bounds.
 /// Design: docs/design/platforms/android/drawing.md#pictures
 @MainActor
 final class AndroidImageView: AndroidView {
-    /// The picture's file, as the tree names it; empty for none.
-    private(set) var file = ""
+    /// The picture, as the tree names it; nil for none.
+    private(set) var picture: HostPicture?
 
     /// How the picture fills the view.
     private var aspect: ContentMode = .fit
@@ -25,14 +27,12 @@ final class AndroidImageView: AndroidView {
         Java.call(reference, JavaAPI.setCropToPadding, .bool(true))
     }
 
-    /// Shows the picture `source` names, filling its room as `aspect` says; it is read once the view's
-    /// size is known.
-    func apply(source: ImageSource?, aspect: ContentMode) {
-        let file = source?.file ?? ""
-        if file != self.file {
+    /// Shows `picture`, filling its room as `aspect` says; it is read once the view's size is known.
+    func apply(picture: HostPicture?, aspect: ContentMode) {
+        if picture != self.picture {
             letGoOfPicture()
-            self.file = file
-            pictureSize = file.isEmpty ? (0, 0) : AndroidPictures.size(named: file) ?? (0, 0)
+            self.picture = picture
+            pictureSize = picture.flatMap(AndroidPictures.size(of:)) ?? (0, 0)
             Java.call(reference, JavaAPI.setImageBitmap, .object(nil))
         }
         if aspect != self.aspect {
@@ -72,23 +72,23 @@ final class AndroidImageView: AndroidView {
     /// a size in motion does not read it every frame.
     /// Design: docs/design/platforms/android/drawing.md#pictures
     private func show(at shown: (width: Int32, height: Int32)) {
-        guard !file.isEmpty, pictureSize.width > 0, shown.width > 0, shown.height > 0 else { return }
+        guard let picture, pictureSize.width > 0, shown.width > 0, shown.height > 0 else { return }
 
-        let needed = aspect == .center ? 1 : AndroidPictures.sample(named: file, shown: shown)
+        let needed = aspect == .center ? 1 : AndroidPictures.sample(picture, size: pictureSize, shown: shown)
         guard sample == 0 || needed < sample else { return }
 
-        let bitmap = AndroidPictures.take(named: file, sample: needed)
-        // Drawn at the host's density, as the picture was read and measured, not at the system's.
+        let bitmap = AndroidPictures.take(picture, sample: needed)
+        // Drawn at the host's density, as the picture was read and measured, not at the system's; an icon in the
+        // theme's colour.
         Java.frame {
             let drawable = bitmap.flatMap { bitmap in
-                Java.callObject(AndroidRenderer.context, JavaAPI.getResources).map { resources in
-                    Java.new(JavaAPI.bitmapDrawable, JavaAPI.newBitmapDrawable, .object(resources), .object(bitmap.reference))
-                }
+                Java.callStaticObject(
+                    JavaAPI.views, JavaAPI.pictureDrawable, .object(AndroidRenderer.context), .object(bitmap.reference))
             }
             if let drawable {
-                Java.call(drawable.reference, JavaAPI.setTargetDensity, .int(AndroidPictures.displayDensity))
+                Java.call(drawable, JavaAPI.setTargetDensity, .int(AndroidPictures.displayDensity))
             }
-            Java.call(reference, JavaAPI.setImageDrawable, .object(drawable?.reference))
+            Java.call(reference, JavaAPI.setImageDrawable, .object(drawable))
         }
         letGoOfPicture()
         sample = needed
@@ -96,9 +96,9 @@ final class AndroidImageView: AndroidView {
 
     /// Lets go of the picture the view holds.
     private func letGoOfPicture() {
-        guard sample != 0 else { return }
+        guard let picture, sample != 0 else { return }
 
-        AndroidPictures.letGo(named: file, sample: sample)
+        AndroidPictures.letGo(picture, sample: sample)
         sample = 0
     }
 

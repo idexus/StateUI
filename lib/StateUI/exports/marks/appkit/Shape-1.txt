@@ -1,41 +1,32 @@
-# revision 3.1
+# revision 5.1
+Capsule.dashPhase: does not apply - read dashPhase of Capsule - StateUI draws a shape in its view's draw(_:), which holds none of its dashPhase; its drawing proves it
+Capsule.geometryTransform: does not apply - read geometryTransform of Capsule - StateUI draws a shape in its view's draw(_:), which holds none of its geometryTransform; its drawing proves it
+Capsule.lineCap: ✅
+Capsule.lineWidth: ✅
+Capsule.stroke: ✅
 Ellipse.contentMode: does not apply - read contentMode of Ellipse - StateUI draws a shape in its view's draw(_:), which holds none of its contentMode; its drawing proves it
+Ellipse.dash: does not apply - read dash of Ellipse - StateUI draws a shape in its view's draw(_:), which holds none of its dash; its drawing proves it
 Ellipse.dashPhase: ✅
-Ellipse.fill: ✅
 Ellipse.geometryTransform: ✅
-Ellipse.lineCap: does not apply - read lineCap of Ellipse - StateUI draws a shape in its view's draw(_:), which holds none of its lineCap; its drawing proves it
-Ellipse.lineWidth: does not apply - read lineWidth of Ellipse - StateUI draws a shape in its view's draw(_:), which holds none of its lineWidth; its drawing proves it
-Ellipse.miterLimit: – an ellipse has no corner its outline joins at
 Line.contentMode: ✅
 Line.dash: ✅
-Line.dashPhase: does not apply - read dashPhase of Line - StateUI draws a shape in its view's draw(_:), which holds none of its dashPhase; its drawing proves it
-Line.lineJoin: – a line has no corner its outline joins at
-Line.miterLimit: does not apply - read miterLimit of Line - StateUI draws a shape in its view's draw(_:), which holds none of its miterLimit; its drawing proves it
-Line.stroke: does not apply - read stroke of Line - StateUI draws a shape in its view's draw(_:), which holds none of its stroke; its drawing proves it
-Path.dash: does not apply - read dash of Path - StateUI draws a shape in its view's draw(_:), which holds none of its dash; its drawing proves it
-Path.fill: does not apply - read fill of Path - StateUI draws a shape in its view's draw(_:), which holds none of its fill; its drawing proves it
+Line.lineCap: does not apply - read lineCap of Line - StateUI draws a shape in its view's draw(_:), which holds none of its lineCap; its drawing proves it
+Line.lineWidth: does not apply - read lineWidth of Line - StateUI draws a shape in its view's draw(_:), which holds none of its lineWidth; its drawing proves it
+Path.dashPhase: does not apply - read dashPhase of Path - StateUI draws a shape in its view's draw(_:), which holds none of its dashPhase; its drawing proves it
 Path.geometryTransform: does not apply - read geometryTransform of Path - StateUI draws a shape in its view's draw(_:), which holds none of its geometryTransform; its drawing proves it
 Path.lineCap: ✅
-Path.lineJoin: does not apply - read lineJoin of Path - StateUI draws a shape in its view's draw(_:), which holds none of its lineJoin; its drawing proves it
 Path.lineWidth: ✅
 Path.stroke: ✅
 Polygon.contentMode: does not apply - read contentMode of Polygon - StateUI draws a shape in its view's draw(_:), which holds none of its contentMode; its drawing proves it
+Polygon.dash: does not apply - read dash of Polygon - StateUI draws a shape in its view's draw(_:), which holds none of its dash; its drawing proves it
 Polygon.dashPhase: ✅
-Polygon.fill: ✅
 Polygon.geometryTransform: ✅
-Polygon.lineCap: does not apply - read lineCap of Polygon - StateUI draws a shape in its view's draw(_:), which holds none of its lineCap; its drawing proves it
-Polygon.lineWidth: does not apply - read lineWidth of Polygon - StateUI draws a shape in its view's draw(_:), which holds none of its lineWidth; its drawing proves it
-Polygon.miterLimit: ✅
 Polyline.contentMode: ✅
 Polyline.dash: ✅
-Polyline.dashPhase: does not apply - read dashPhase of Polyline - StateUI draws a shape in its view's draw(_:), which holds none of its dashPhase; its drawing proves it
-Polyline.lineJoin: ✅
-Polyline.miterLimit: does not apply - read miterLimit of Polyline - StateUI draws a shape in its view's draw(_:), which holds none of its miterLimit; its drawing proves it
-Polyline.stroke: does not apply - read stroke of Polyline - StateUI draws a shape in its view's draw(_:), which holds none of its stroke; its drawing proves it
-Rectangle.dash: does not apply - read dash of Rectangle - StateUI draws a shape in its view's draw(_:), which holds none of its dash; its drawing proves it
-Rectangle.fill: does not apply - read fill of Rectangle - StateUI draws a shape in its view's draw(_:), which holds none of its fill; its drawing proves it
+Polyline.lineCap: does not apply - read lineCap of Polyline - StateUI draws a shape in its view's draw(_:), which holds none of its lineCap; its drawing proves it
+Polyline.lineWidth: does not apply - read lineWidth of Polyline - StateUI draws a shape in its view's draw(_:), which holds none of its lineWidth; its drawing proves it
+Rectangle.dashPhase: does not apply - read dashPhase of Rectangle - StateUI draws a shape in its view's draw(_:), which holds none of its dashPhase; its drawing proves it
 Rectangle.geometryTransform: does not apply - read geometryTransform of Rectangle - StateUI draws a shape in its view's draw(_:), which holds none of its geometryTransform; its drawing proves it
 Rectangle.lineCap: ✅
-Rectangle.lineJoin: does not apply - read lineJoin of Rectangle - StateUI draws a shape in its view's draw(_:), which holds none of its lineJoin; its drawing proves it
 Rectangle.lineWidth: ✅
 Rectangle.stroke: ✅

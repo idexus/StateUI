@@ -22,6 +22,35 @@
         progress.isFinite ? Swift.min(Swift.max(progress, 0), 1) : 0
     }
 
+    /// The step a stepper shows where its value stands at `value` on its way to `destination`: a step of
+    /// `destination`'s own - the destination and every `step` from it within `lower` and `upper` - the nearest to
+    /// `value` between it and the destination, so the stepper never shows a value between two steps, one behind
+    /// where the journey set out, or one past where it lands. At rest it shows its value itself.
+    /// Design: docs/design/host/runtime.md#a-value-in-a-range
+    public static func stepped(
+        _ value: Double, toward destination: Double, step: Double, lower: Double, upper: Double
+    ) -> Double {
+        guard destination.isFinite else { return lower }
+        let held = Swift.min(Swift.max(destination, lower), upper)
+        guard value.isFinite else { return held }
+        let step = Self.step(step)
+        let span = (value - destination) / step
+        let nearest = span.rounded()
+        let between = span < 0 ? Swift.max(nearest, span.rounded(.up)) : Swift.min(nearest, span.rounded(.down))
+        let fewest = ((lower - destination) / step).rounded(.up), most = ((upper - destination) / step).rounded(.down)
+        guard fewest <= most else { return held }
+        var scale = 1.0
+        for _ in 0..<decimals(of: [destination, step]) { scale *= 10 }
+        return ((destination + Swift.min(Swift.max(between, fewest), most) * step) * scale).rounded() / scale
+    }
+
+    /// Which ways a stepper's step moves a `value` within `lower` and `upper`: down where it stands above the range's
+    /// lower end, up where below its upper; a button whose way is at the range's end stands disabled.
+    /// Design: docs/design/host/runtime.md#a-value-in-a-range
+    public static func stepsWay(_ value: Double, lower: Double, upper: Double) -> (down: Bool, up: Bool) {
+        (value > lower, value < upper)
+    }
+
     /// How far a slider's thumb moves for a key and for a page: a hundredth and a tenth of its range.
     public static func sliderSteps(lower: Double, upper: Double) -> (key: Double, page: Double) {
         let span = upper - lower

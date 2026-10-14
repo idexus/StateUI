@@ -9,6 +9,25 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/controls.md#a-button
 @MainActor
 final class WinUIButtonView: WinUIView {
+    /// The role the tree gave the button; nil for none.
+    private(set) var role: ButtonRole?
+
+    /// What the button stands for: the window's main action wears WinUI's accent style. WinUI has no look for the way
+    /// out or for a destructive action.
+    func setRole(_ role: ButtonRole?) {
+        guard role != self.role else { return }
+        self.role = role
+        stateui_winui_button_set_accent(handle, role == .primary)
+    }
+
+    /// Stands the words in the theme's critical colour, as WinUI marks a destructive entry, or in the button's own.
+    func setCritical(_ critical: Bool) {
+        stateui_winui_button_set_critical(handle, critical)
+    }
+
+    /// Whether the words stand in the theme's critical colour.
+    var isCritical: Bool { stateui_winui_button_critical(handle) }
+
     override var takesDirection: Bool { true }
 
     /// What the button does when the user clicks it, holds it down and lets it go.
@@ -22,8 +41,32 @@ final class WinUIButtonView: WinUIView {
     private var words = ""
     private var look = Shown()
 
-    init() {
-        super.init { number in stateui_winui_button_make(number) }
+    /// How the button opens its menu, which WinUI makes a control of its own of.
+    let opening: ButtonMenuOpening
+
+    /// A button - or, holding a menu, WinUI's DropDownButton opening it where it shows its arrow, a Button opening its
+    /// flyout where it shows none, its SplitButton, its click its own and its menu behind the arrow, or a Button
+    /// holding it as its context menu: press and hold, or the mouse's other button.
+    /// Design: docs/design/platforms/winui/controls.md#a-buttons-menu
+    init(menu opening: ButtonMenuOpening = .none, showsArrow: Bool = false) {
+        self.opening = opening
+        let kind: Int32 = switch opening {
+        case .arrow: 2
+        case .click where showsArrow: 1
+        case .none, .click, .hold: 0
+        }
+        super.init { number in stateui_winui_button_make(number, kind) }
+    }
+
+    /// The menu a button holding one opens, or holds as its context menu; its items' actions are the view's.
+    func setMenu(_ menu: WinUIMenu) {
+        switch opening {
+        case .none: return
+        case .hold: setContextMenu(menu)
+        case .click, .arrow:
+            menuActions = menu.actions
+            menu.relayed { stateui_winui_button_set_menu(handle, number, $0, $1, $2, $3, $4, $5, $6, $7, $8, $9) }
+        }
     }
 
     /// The caption.
@@ -88,23 +131,23 @@ final class WinUIButtonView: WinUIView {
         WinUIView.words(of: handle)
     }
 
-    /// What fills the button, its outline and its shape; nil for the platform's own. An oval is a capsule at the
-    /// button's size: its corners round by half its shorter side.
+    /// What fills the button, its outline and its shape; nil for the platform's own. Its corners round as far as
+    /// its size holds them (`BoxArithmetic.cornerRadius`), a capsule's by half its shorter side; an oval, which a
+    /// button's corners cannot draw, is a brush holding the fill and the outline at its size.
     func setLook(background: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
         let outlined = shape.map(BoxArithmetic.outline)
         let (fill, outline) = (WinUIBrush(background), WinUIBrush(stroke))
         let width = BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth)
-        paint("look", followsSize: fill.followsSize || outline.followsSize || outlined == .ellipse) { [handle] size in
-            let radius: Double = switch outlined {
-            case .roundedRectangle(let radius)?: radius
-            case .ellipse?: min(size.width, size.height) / 2
-            case .rectangle?: 0
-            case nil: -1
-            }
+        let rounds = outlined.map { $0 != .rectangle } ?? false
+        paint("look", followsSize: fill.followsSize || outline.followsSize || rounds) { [handle] size in
+            let radius = outlined.map {
+                BoxArithmetic.cornerRadius(of: $0, width: size.width, height: size.height)
+            } ?? -1
             fill.withRelayBrush(over: size) { fill in
                 outline.withRelayBrush(over: size) { outline in
                     stateui_winui_button_set_look(
-                        handle, fill, outline, width, radius, PressedFill.underPointer, PressedFill.pressed)
+                        handle, fill, outline, width, radius, outlined == .ellipse, size.width, size.height,
+                        PressedFill.underPointer, PressedFill.pressed)
                 }
             }
         }

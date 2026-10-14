@@ -5,7 +5,8 @@
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
 
-/// A Picker: WinUI's `ComboBox`, its choices, the one chosen and its list, which the user opens and closes.
+/// A Picker: WinUI's `ComboBox`, its choices, the one chosen and its list, which the user opens and closes - or, as
+/// its presentation says, a `SelectorBar` of segments or `RadioButtons`, the relay telling each apart.
 /// Design: docs/design/platforms/winui/controls.md#a-picker
 @MainActor
 final class WinUIPickerView: WinUIView {
@@ -22,8 +23,13 @@ final class WinUIPickerView: WinUIView {
     /// Whose the list's opening and closing are.
     private var showing = PickerOpening()
 
-    init() {
-        super.init { number in stateui_winui_picker_make(number) }
+    /// The choice shown last, as the program wrote it or the user made it: WinUI's `RadioButtons` applies the
+    /// program's a turn after the write, once its buttons stand, and tells it as a change - the program's own.
+    /// Design: docs/design/platforms/winui/controls.md#a-pickers-segments-and-radio-buttons
+    private var standing: Int?
+
+    init(presentation: PickerPresentation = .menu) {
+        super.init { number in stateui_winui_picker_make(number, presentation.rawValue) }
     }
 
     /// The choices, the one chosen - written only where `writeChosen` or the choices changed, so the user's choice
@@ -35,6 +41,7 @@ final class WinUIPickerView: WinUIView {
                 stateui_winui_picker_set_options(handle, pointers, Int32(choices.count))
             }
         }
+        if write.writesChoice { standing = write.chosen ?? -1 }
         stateui_winui_picker_set(handle, Int32(clamping: write.chosen ?? -1), write.writesChoice, title)
     }
 
@@ -55,6 +62,8 @@ final class WinUIPickerView: WinUIView {
     var chosen: Int { Int(stateui_winui_picker_selected(handle)) }
 
     override func chose(_ index: Int) {
+        guard index != standing else { return }
+        standing = index
         onChosen?(index)
     }
 

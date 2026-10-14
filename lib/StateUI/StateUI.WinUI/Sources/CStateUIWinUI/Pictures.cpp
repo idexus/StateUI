@@ -4,6 +4,7 @@
 // Pictures from the application's own folder: an Image showing one by file
 // name, an SVG found under the PNG name it is asked for, at the size it
 // declares, drawn at the size it shows at - one source a file and a size.
+// A picture's own bytes are read from memory; an icon is a FontIcon's glyph.
 // Design: docs/design/platforms/winui/controls.md#pictures
 
 #include "Relay.h"
@@ -13,13 +14,16 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <functional>
 #include <map>
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include <shcore.h>
 #include <shlwapi.h>
 
+#include <winrt/Microsoft.UI.Xaml.Automation.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Microsoft.UI.Xaml.Media.Imaging.h>
@@ -109,15 +113,20 @@ namespace {
         return {static_cast<float>(width), static_cast<float>(height)};
     }
 
-    /// Makes the picture `text` draws give up its proportions, filling whatever room it is drawn in.
+    /// Makes the picture `text` draws fill whatever room it is drawn in: its proportions given up, and its own size
+    /// too, which WinUI fits into the room in its proportions whatever the picture says of them.
     void letGoOfProportions(std::string &text) {
-        auto [start, span] = root(text);
-        if (start == std::string::npos) return;
-        auto tag = text.substr(start, span);
-        if (auto at = attribute(tag, "preserveAspectRatio"); at != std::string::npos)
-            text.replace(start + at, tag.find(tag[at - 1], at) - at, "none");
-        else
-            text.insert(start + 4, " preserveAspectRatio=\"none\"");
+        std::pair<char const *, char const *> const values[] = {
+            {"preserveAspectRatio", "none"}, {"width", "100%"}, {"height", "100%"}};
+        for (auto const &[name, value] : values) {
+            auto [start, span] = root(text);
+            if (start == std::string::npos) return;
+            auto tag = text.substr(start, span);
+            if (auto at = attribute(tag, name); at != std::string::npos)
+                text.replace(start + at, tag.find(tag[at - 1], at) - at, value);
+            else
+                text.insert(start + 4, std::string(" ") + name + "=\"" + value + "\"");
+        }
     }
 
     std::string contents(std::wstring const &path) {
@@ -130,17 +139,64 @@ namespace {
         return text;
     }
 
-    /// An SVG source drawing `text`, read from memory.
-    imaging::SvgImageSource drawing(std::string const &text) {
+    /// A stream reading `size` bytes at `data` from a copy in memory.
+    winrt::Windows::Storage::Streams::IRandomAccessStream memoryStream(void const *data, size_t size) {
         winrt::com_ptr<IStream> memory;
-        memory.attach(SHCreateMemStream(reinterpret_cast<BYTE const *>(text.data()), static_cast<UINT>(text.size())));
+        memory.attach(SHCreateMemStream(static_cast<BYTE const *>(data), static_cast<UINT>(size)));
         if (!memory) winrt::throw_hresult(E_OUTOFMEMORY);
         winrt::Windows::Storage::Streams::IRandomAccessStream stream{nullptr};
         winrt::check_hresult(CreateRandomAccessStreamOverStream(
             memory.get(), BSOS_DEFAULT, winrt::guid_of<decltype(stream)>(), winrt::put_abi(stream)));
-        imaging::SvgImageSource source;
-        source.SetSourceAsync(stream);
-        return source;
+        return stream;
+    }
+
+    /// A bitmap of a picture's own `bytes`, read from memory; its size is known once it is read.
+    imaging::BitmapImage bitmapOf(std::vector<uint8_t> const &bytes) {
+        imaging::BitmapImage bitmap;
+        bitmap.SetSourceAsync(memoryStream(bytes.data(), bytes.size()));
+        return bitmap;
+    }
+
+    /// The bytes base64 `text` writes; what is no base64 digit - the padding - is passed over.
+    std::vector<uint8_t> decoded(std::string_view text) {
+        std::vector<uint8_t> bytes;
+        bytes.reserve(text.size() / 4 * 3);
+        uint32_t value = 0;
+        int bits = 0;
+        for (char each : text) {
+            int digit = each >= 'A' && each <= 'Z' ? each - 'A'
+                      : each >= 'a' && each <= 'z' ? each - 'a' + 26
+                      : each >= '0' && each <= '9' ? each - '0' + 52
+                      : each == '+' ? 62 : each == '/' ? 63 : -1;
+            if (digit < 0) continue;
+            value = ((value << 6) | static_cast<uint32_t>(digit)) & 0xFFFFFF;
+            bits += 6;
+            if (bits >= 8) {
+                bits -= 8;
+                bytes.push_back(static_cast<uint8_t>(value >> bits));
+            }
+        }
+        return bytes;
+    }
+
+    /// An icon's glyph as the words a FontIcon shows.
+    winrt::hstring glyphText(wchar_t glyph) {
+        return winrt::hstring(std::wstring(1, glyph));
+    }
+
+    /// The name of an icon's glyph: `glyph:` and its code point in hex.
+    std::wstring glyphName(winrt::hstring const &glyph) {
+        if (glyph.empty()) return {};
+        wchar_t hex[8] = {};
+        swprintf_s(hex, L"%X", static_cast<unsigned>(glyph[0]));
+        return std::wstring(L"glyph:") + hex;
+    }
+
+    /// The icon the relay draws a glyph in: the theme's font for symbols, as WinUI's own icons are.
+    controls::FontIcon fontIcon(wchar_t glyph) {
+        controls::FontIcon icon;
+        icon.Glyph(glyphText(glyph));
+        return icon;
     }
 
     /// What an SVG source is drawn from: its file, the pixels it is drawn at - none for WinUI's own - and whether
@@ -159,9 +215,31 @@ namespace {
     /// The SVG sources standing, each read once and shared by every picture and window showing it.
     std::map<Drawn, winrt::weak_ref<imaging::SvgImageSource>> drawn;
 
+    /// Where the SVG `file` stands with its proportions let go: a copy of its text with `preserveAspectRatio="none"`
+    /// on its root, written once for the process among the system's temporary files, named by the picture's path.
+    std::wstring stretchedCopy(std::wstring const &file) {
+        static std::map<std::wstring, std::wstring> copies;
+        if (auto found = copies.find(file); found != copies.end()) return found->second;
+        auto text = contents(pictures() + file);
+        letGoOfProportions(text);
+        wchar_t temporary[MAX_PATH] = {};
+        GetTempPathW(MAX_PATH, temporary);
+        std::wstring folder = std::wstring(temporary) + L"StateUI\\";
+        CreateDirectoryW(folder.c_str(), nullptr);
+        auto copy = folder + std::to_wstring(GetCurrentProcessId()) + L"-"
+            + std::to_wstring(std::hash<std::wstring>{}(pictures() + file)) + L".svg";
+        FILE *written = nullptr;
+        if (_wfopen_s(&written, copy.c_str(), L"wb") == 0 && written) {
+            std::fwrite(text.data(), 1, text.size(), written);
+            std::fclose(written);
+        }
+        copies[file] = copy;
+        return copy;
+    }
+
     /// The SVG `file` drawn at `width` x `height` pixels - WinUI's own size for none - its proportions let go where
-    /// `stretched`: read from memory, as WinUI draws an SVG read by its address short under a turn with an uneven
-    /// scale, and one source for each, so a second window showing it draws no surface of its own.
+    /// `stretched`: read by its file's address, as an SVG read from memory takes a surface the window's size, and
+    /// one source for each, shared by every picture and window showing it.
     /// Design: docs/design/platforms/winui/controls.md#pictures
     imaging::SvgImageSource svg(std::wstring const &file, uint32_t width = 0, uint32_t height = 0, bool stretched = false) {
         Drawn key{file, width, height, stretched};
@@ -169,9 +247,7 @@ namespace {
             if (auto source = found->second.get()) return source;
         for (auto each = drawn.begin(); each != drawn.end();) each = each->second.get() ? std::next(each) : drawn.erase(each);
 
-        auto text = contents(pictures() + file);
-        if (stretched) letGoOfProportions(text);
-        auto source = drawing(text);
+        imaging::SvgImageSource source(address(stretched ? stretchedCopy(file) : pictures() + file));
         if (width > 0 && height > 0) {
             source.RasterizePixelWidth(width);
             source.RasterizePixelHeight(height);
@@ -183,6 +259,57 @@ namespace {
     bool isSvg(std::wstring const &file) {
         auto dot = file.find_last_of(L'.');
         return dot != std::wstring::npos && file.substr(dot) == L".svg";
+    }
+
+    /// What lines `names` - UTF-8, each ended by a line feed - ask to show: an icon's glyph (`glyph:` and its code
+    /// point in hex), a picture's own bytes (`bytes:` and their base64), or the first of the files the pictures
+    /// hold; and its name, by which a picture shown is told from another.
+    struct Asked {
+        wchar_t glyph = 0;
+        std::vector<uint8_t> bytes;
+        std::wstring file;
+        std::wstring name;
+
+        bool none() const { return !glyph && bytes.empty() && file.empty(); }
+    };
+
+    Asked asked(char const *names) {
+        Asked asked;
+        std::string_view first(names ? names : "");
+        first = first.substr(0, first.find('\n'));
+        if (first.rfind("glyph:", 0) == 0) {
+            asked.glyph = static_cast<wchar_t>(std::strtoul(std::string(first.substr(6)).c_str(), nullptr, 16));
+            asked.name = glyphName(glyphText(asked.glyph));
+        } else if (first.rfind("bytes:", 0) == 0) {
+            asked.bytes = decoded(first.substr(6));
+            asked.name = L"bytes:" + std::to_wstring(asked.bytes.size()) + L":"
+                + std::to_wstring(std::hash<std::string_view>{}(first));
+        } else {
+            asked.file = pictureFile(names);
+            asked.name = asked.file;
+        }
+        return asked;
+    }
+
+    /// A source showing what is asked, which is no icon.
+    xaml::Media::ImageSource sourceOf(Asked const &picture) {
+        return picture.bytes.empty() ? pictureSource(picture.file) : bitmapOf(picture.bytes);
+    }
+
+    /// The image the Image element `handle` shows a bitmap or an SVG in; null while it shows an icon.
+    controls::Image imageOf(StateUIObjectRef handle) {
+        return borrow<controls::Border>(handle).Child().try_as<controls::Image>();
+    }
+
+    /// Hands `taking` what assistive technology met of `leaving`: the element shown in its place.
+    void takeOver(xaml::UIElement const &leaving, xaml::UIElement const &taking) {
+        using Properties = xaml::Automation::AutomationProperties;
+        for (auto const &property : {Properties::NameProperty(), Properties::AutomationIdProperty(),
+                                     Properties::HelpTextProperty(), Properties::HeadingLevelProperty(),
+                                     Properties::AccessibilityViewProperty()}) {
+            auto value = leaving.ReadLocalValue(property);
+            if (value != xaml::DependencyProperty::UnsetValue()) taking.SetValue(property, value);
+        }
     }
 }
 
@@ -204,34 +331,54 @@ xaml::Media::ImageSource stateui::pictureSource(std::wstring const &file) {
     return imaging::BitmapImage(address(pictures() + file));
 }
 
-controls::ImageIcon stateui::pictureIcon(char const *names) {
-    auto file = pictureFile(names);
-    if (file.empty()) return nullptr;
+std::wstring stateui::pictureName(char const *names) {
+    return asked(names).name;
+}
+
+controls::IconElement stateui::pictureIcon(char const *names) {
+    auto picture = asked(names);
+    if (picture.glyph) return fontIcon(picture.glyph);
+    if (picture.none()) return nullptr;
     controls::ImageIcon icon;
-    icon.Source(pictureSource(file));
+    icon.Source(sourceOf(picture));
+    icon.Tag(winrt::box_value(winrt::hstring(picture.name)));
     return icon;
 }
 
-controls::Image stateui::pictureImage(char const *names) {
-    auto file = pictureFile(names);
-    if (file.empty()) return nullptr;
+xaml::FrameworkElement stateui::pictureImage(char const *names) {
+    auto picture = asked(names);
+    if (picture.glyph) return fontIcon(picture.glyph);
+    if (picture.none()) return nullptr;
     controls::Image image;
-    if (isSvg(file)) {
-        if (auto own = declared(contents(pictures() + file)); own.Width > 0) {
+    if (isSvg(picture.file)) {
+        if (auto own = declared(contents(pictures() + picture.file)); own.Width > 0) {
             image.Width(own.Width);
             image.Height(own.Height);
         }
     }
-    image.Source(pictureSource(file));
+    image.Source(sourceOf(picture));
+    image.Tag(winrt::box_value(winrt::hstring(picture.name)));
     return image;
 }
 
 controls::IconSource stateui::pictureIconSource(char const *names) {
-    auto file = pictureFile(names);
-    if (file.empty()) return nullptr;
+    auto picture = asked(names);
+    if (picture.glyph) {
+        controls::FontIconSource icon;
+        icon.Glyph(glyphText(picture.glyph));
+        return icon;
+    }
+    if (picture.none()) return nullptr;
     controls::ImageIconSource icon;
-    icon.ImageSource(pictureSource(file));
+    icon.ImageSource(sourceOf(picture));
     return icon;
+}
+
+std::wstring stateui::shownName(xaml::UIElement const &shown) {
+    if (auto icon = shown.try_as<controls::FontIcon>()) return glyphName(icon.Glyph());
+    if (auto element = shown.try_as<xaml::FrameworkElement>())
+        return winrt::unbox_value_or<winrt::hstring>(element.Tag(), L"").c_str();
+    return {};
 }
 
 std::wstring stateui::sourceFile(xaml::Media::ImageSource const &source) {
@@ -249,13 +396,17 @@ std::wstring stateui::sourceFile(xaml::Media::ImageSource const &source) {
 }
 
 std::wstring stateui::sourceFile(controls::IconSource const &icon) {
+    if (auto glyph = icon ? icon.try_as<controls::FontIconSource>() : nullptr) return glyphName(glyph.Glyph());
     auto pictured = icon ? icon.try_as<controls::ImageIconSource>() : nullptr;
     return pictured ? sourceFile(pictured.ImageSource()) : std::wstring();
 }
 
 std::wstring stateui::iconFile(controls::IconElement const &icon) {
+    if (auto glyph = icon ? icon.try_as<controls::FontIcon>() : nullptr) return glyphName(glyph.Glyph());
     auto pictured = icon ? icon.try_as<controls::ImageIcon>() : nullptr;
-    return pictured ? sourceFile(pictured.Source()) : std::wstring();
+    if (!pictured) return {};
+    auto file = sourceFile(pictured.Source());
+    return file.empty() ? shownName(pictured) : file;
 }
 
 extern "C" void stateui_winui_set_pictures(char const *utf8) {
@@ -269,7 +420,10 @@ extern "C" void stateui_winui_set_pictures(char const *utf8) {
 
 extern "C" StateUIObjectRef stateui_winui_image_make(void) {
     try {
-        return detach(controls::Image());
+        // The picture stands in a border, which holds an image, or a FontIcon in a box for an icon.
+        controls::Border frame;
+        frame.Child(controls::Image());
+        return detach(frame);
     } catch (...) {
         report("making an image");
         return nullptr;
@@ -281,44 +435,64 @@ extern "C" bool stateui_winui_image_set(
 ) {
     size[0] = size[1] = 0;
     try {
-        auto image = borrow<controls::Image>(handle);
+        auto frame = borrow<controls::Border>(handle);
         // StateUI's ContentMode: fit, fill, stretch, centre - at the picture's own size, in the middle of the room.
         auto centred = aspect == 3;
-        image.Stretch(aspect == 1 ? xaml::Media::Stretch::UniformToFill
-                      : aspect == 2 ? xaml::Media::Stretch::Fill
-                      : centred ? xaml::Media::Stretch::None : xaml::Media::Stretch::Uniform);
+        auto stretch = aspect == 1 ? xaml::Media::Stretch::UniformToFill
+                     : aspect == 2 ? xaml::Media::Stretch::Fill
+                     : centred ? xaml::Media::Stretch::None : xaml::Media::Stretch::Uniform;
+        std::string listed;
+        for (int32_t index = 0; index < count; ++index) listed += std::string(names[index] ? names[index] : "") + "\n";
+        auto picture = asked(listed.c_str());
+
+        // An icon is a FontIcon at its own size, fitted to the room by a box; what assistive technology met of the
+        // picture before is the icon's.
+        // Design: docs/design/platforms/winui/controls.md#icons
+        auto shown = frame.Child().as<xaml::UIElement>();
+        if (picture.glyph) {
+            auto icon = fontIcon(picture.glyph);
+            controls::Viewbox box;
+            box.Stretch(stretch);
+            box.Child(icon);
+            if (!shown.try_as<controls::Viewbox>()) takeOver(shown, icon);
+            frame.Child(box);
+            size[0] = size[1] = icon.FontSize();
+            return true;
+        }
+        auto image = shown.try_as<controls::Image>();
+        if (!image) {
+            image = controls::Image();
+            if (auto box = shown.try_as<controls::Viewbox>()) takeOver(box.Child(), image);
+            frame.Child(image);
+        }
+        image.Stretch(stretch);
         image.HorizontalAlignment(centred ? xaml::HorizontalAlignment::Center : xaml::HorizontalAlignment::Stretch);
         image.VerticalAlignment(centred ? xaml::VerticalAlignment::Center : xaml::VerticalAlignment::Stretch);
         image.ClearValue(xaml::FrameworkElement::WidthProperty());
         image.ClearValue(xaml::FrameworkElement::HeightProperty());
 
-        // The first of the files the name stands for that the pictures hold.
-        std::string listed;
-        for (int32_t index = 0; index < count; ++index) listed += std::string(names[index] ? names[index] : "") + "\n";
-        auto file = pictureFile(listed.c_str());
+        // The first of the files the name stands for that the pictures hold, or the picture's own bytes.
+        auto file = picture.file;
         auto named = count > 0 && names[0] && *names[0];
-        image.Tag(winrt::box_value(winrt::hstring(file)));
-        if (file.empty()) {
+        image.Tag(winrt::box_value(winrt::hstring(picture.name)));
+        if (picture.none()) {
             image.Source(nullptr);
             return !named;
         }
-        auto path = pictures() + file;
-        auto dot = file.find_last_of(L'.');
-        auto extension = dot == std::wstring::npos ? std::wstring() : file.substr(dot);
-        if (extension != L".svg") {
+        if (!picture.bytes.empty() || !isSvg(file)) {
             // A bitmap's size is known once it is read; the layout holding it measures it again then.
-            imaging::BitmapImage bitmap(address(path));
+            auto bitmap = picture.bytes.empty() ? imaging::BitmapImage(address(pictures() + file)) : bitmapOf(picture.bytes);
             bitmap.ImageOpened(guarded("handling ImageOpened",
-                [held = winrt::make_weak(image)](auto const &, xaml::RoutedEventArgs const &) {
-                auto image = held.get();
-                if (!image) return;
-                if (auto layout = xaml::Media::VisualTreeHelper::GetParent(image).try_as<xaml::UIElement>())
+                [held = winrt::make_weak(frame)](auto const &, xaml::RoutedEventArgs const &) {
+                auto frame = held.get();
+                if (!frame) return;
+                if (auto layout = xaml::Media::VisualTreeHelper::GetParent(frame).try_as<xaml::UIElement>())
                     layout.InvalidateMeasure();
             }));
             image.Source(bitmap);
             return true;
         }
-
+        auto path = pictures() + file;
         auto text = contents(path);
         auto own = declared(text);
         size[0] = own.Width;
@@ -343,7 +517,8 @@ extern "C" bool stateui_winui_image_set(
 extern "C" void stateui_winui_image_size(StateUIObjectRef handle, double *size) {
     size[0] = size[1] = 0;
     try {
-        auto bitmap = borrow<controls::Image>(handle).Source().try_as<imaging::BitmapImage>();
+        auto image = imageOf(handle);
+        auto bitmap = image ? image.Source().try_as<imaging::BitmapImage>() : nullptr;
         if (!bitmap) return;
         size[0] = bitmap.PixelWidth();
         size[1] = bitmap.PixelHeight();
@@ -352,15 +527,35 @@ extern "C" void stateui_winui_image_size(StateUIObjectRef handle, double *size) 
     }
 }
 
+extern "C" void stateui_winui_svgs_read(StateUIObjectRef handle, int32_t *counts) {
+    counts[0] = counts[1] = 0;
+    try {
+        // Every picture and icon under the element, its SVG source read by its file's address or not.
+        std::function<void(xaml::DependencyObject const &)> walk = [&](xaml::DependencyObject const &node) {
+            imaging::SvgImageSource source{nullptr};
+            if (auto image = node.try_as<controls::Image>()) source = image.Source().try_as<imaging::SvgImageSource>();
+            if (auto icon = node.try_as<controls::ImageIcon>()) source = icon.Source().try_as<imaging::SvgImageSource>();
+            if (source) ++counts[source.UriSource() ? 0 : 1];
+            for (int32_t index = 0, count = xaml::Media::VisualTreeHelper::GetChildrenCount(node); index < count; ++index)
+                walk(xaml::Media::VisualTreeHelper::GetChild(node, index));
+        };
+        walk(as<xaml::DependencyObject>(handle));
+    } catch (...) {
+        report("counting the SVGs an element shows");
+    }
+}
+
 extern "C" void stateui_winui_image_draw(StateUIObjectRef handle, double width, double height) {
     try {
         // The source of its file drawn at that size, which every picture showing it at that size shares.
-        auto image = borrow<controls::Image>(handle);
+        auto image = imageOf(handle);
+        if (!image) return;
         std::wstring file(winrt::unbox_value_or<winrt::hstring>(image.Tag(), L"").c_str());
         if (!isSvg(file)) return;
         auto scale = image.XamlRoot() ? image.XamlRoot().RasterizationScale() : 1.0;
         image.Source(svg(file, static_cast<uint32_t>(std::ceil(width * scale)),
-                         static_cast<uint32_t>(std::ceil(height * scale))));
+                         static_cast<uint32_t>(std::ceil(height * scale)),
+                         image.Stretch() == xaml::Media::Stretch::Fill));
     } catch (...) {
         report("drawing a picture");
     }

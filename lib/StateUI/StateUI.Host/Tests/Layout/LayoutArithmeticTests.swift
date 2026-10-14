@@ -30,6 +30,49 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(Extent.bounded(.nan, minimum: 5, maximum: nil), 5)
     }
 
+    /// A growing child - a spacer - takes the room its siblings leave along the stack, shared alike among several,
+    /// and none where nothing is left; it measures as no room of its own.
+    func testAGrowingChildTakesTheRoomItsSiblingsLeave() {
+        var spacer = Child(width: 0, height: 0)
+        spacer.values.grows = true
+        let row = [Child(width: 20, height: 10), spacer, Child(width: 30, height: 10)]
+
+        let size = StackArithmetic.size(of: row, axis: .horizontal, spacing: 5, padding: Insets(0), width: nil)
+        let places = StackArithmetic.places(
+            of: row, axis: .horizontal, spacing: 5, padding: Insets(0), in: Rect(0, 0, 200, 10),
+            direction: .leftToRight)
+        XCTAssertEqual(size, LayoutSize(width: 60, height: 10))
+        XCTAssertEqual(places[1], Rect(25, 0, 140, 10), "the 200 less the boxes' 50 and the two spacings' 10")
+        XCTAssertEqual(places[2], Rect(170, 0, 30, 10), "the last box stands at the far end")
+
+        let column = [spacer, Child(width: 10, height: 20), spacer]
+        let shared = StackArithmetic.places(
+            of: column, axis: .vertical, spacing: 0, padding: Insets(0), in: Rect(0, 0, 10, 100),
+            direction: .leftToRight)
+        XCTAssertEqual(shared[1], Rect(0, 40, 10, 20), "two spacers share the room alike")
+
+        let tight = StackArithmetic.places(
+            of: row, axis: .horizontal, spacing: 5, padding: Insets(0), in: Rect(0, 0, 40, 10),
+            direction: .leftToRight)
+        XCTAssertEqual(tight[1]?.width, 0, "no room left, none taken")
+
+        var stated = spacer
+        stated.values.width = 12
+        let fixed = StackArithmetic.places(
+            of: [Child(width: 20, height: 10), stated], axis: .horizontal, spacing: 0, padding: Insets(0),
+            in: Rect(0, 0, 200, 10), direction: .leftToRight)
+        XCTAssertEqual(fixed[1]?.width, 12, "a length it states wins over growing")
+    }
+
+    /// A divider is a stack's view; a menu's separator, like its entries, is one the menu draws.
+    func testAMenusSeparatorIsViewlessAndADividerIsAView() {
+        XCTAssertFalse(NodeType.viewlessTypes.contains(.divider))
+        XCTAssertTrue(NodeType.viewlessTypes.contains(.menuSeparator))
+        XCTAssertTrue(NodeType.menuTypes.contains(.menuSeparator))
+        XCTAssertTrue(NodeType.viewlessTypes.contains(.menuItem))
+        XCTAssertFalse(NodeType.viewlessTypes.contains(.spacer))
+    }
+
     /// A vertical stack sets shown children one under another; a hidden one takes no room and no spacing.
     @MainActor
     func testAVerticalStackPlacesItsShownChildrenInOrder() {
@@ -336,6 +379,31 @@ final class LayoutArithmeticTests: XCTestCase {
         cache.invalidate()
         _ = size(10)
         XCTAssertEqual(measured, 3)
+    }
+
+    /// Words measured without a width stand the same in any room at least as wide: a long listing in a scroller,
+    /// laid out as wide as its document each frame a page widens, is measured once.
+    @MainActor
+    func testWordsMeasuredWithoutAWidthHoldInAnyWiderRoom() {
+        let cache = MeasurementCache(holdsWhenWider: true)
+        var measured = 0
+        func size(_ width: Double?) -> LayoutSize {
+            cache.size(offering: width) {
+                measured += 1
+                return LayoutSize(width: min(width ?? 537, 537), height: width.map { $0 < 537 ? 40 : 20 } ?? 20)
+            }
+        }
+
+        XCTAssertEqual(size(nil), LayoutSize(width: 537, height: 20))
+        XCTAssertEqual(size(756), LayoutSize(width: 537, height: 20))
+        XCTAssertEqual(size(1024), LayoutSize(width: 537, height: 20))
+        XCTAssertEqual(size(537), LayoutSize(width: 537, height: 20))
+        XCTAssertEqual(measured, 1, "measured once, without a width")
+        XCTAssertEqual(size(400), LayoutSize(width: 400, height: 40), "a narrower room breaks the words")
+        XCTAssertEqual(measured, 2)
+        XCTAssertEqual(
+            MeasurementCache().size(offering: 756) { LayoutSize(width: 756, height: 1) }.width, 756,
+            "a layout's size is its own at every width")
     }
 }
 

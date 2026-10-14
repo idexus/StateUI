@@ -12,12 +12,15 @@ public protocol StyleTarget: VisualElement {
 }
 
 extension StyleTarget {
-    /// The keyed style from the application's style sheet that this control wears.
+    /// The keyed style from the application's style sheet that this control wears; nil wears the style without a
+    /// key, which applies to every control of its type by itself.
     ///
     ///     Text("Welcome").style(.headline)
-    ///
-    /// A style without a key applies to every control of its type by itself.
-    public func style(_ key: StyleKey<Self>) -> Modified { setValue(VisualElementContract.style, Name(key.name)) }
+    ///     Button("Save").style(plain ? .platform : nil)
+    public func style(_ key: StyleKey<Self>?) -> Modified {
+        guard let key else { return modified { $0.props[VisualElementContract.style.token] = nil } }
+        return setValue(VisualElementContract.style, Name(key.name))
+    }
 }
 
 extension Text: StyleTarget {}
@@ -36,7 +39,8 @@ extension SearchField: StyleTarget {}
 extension ActivityIndicator: StyleTarget {}
 extension ProgressBar: StyleTarget {}
 extension Image: StyleTarget {}
-extension ColorBox: StyleTarget {}
+extension Divider: StyleTarget {}
+extension Spacer: StyleTarget {}
 extension Grid: StyleTarget {}
 extension ScrollView: StyleTarget {}
 extension VStack: StyleTarget {}
@@ -44,6 +48,7 @@ extension HStack: StyleTarget {}
 extension ZStack: StyleTarget {}
 extension Rectangle: StyleTarget {}
 extension Ellipse: StyleTarget {}
+extension Capsule: StyleTarget {}
 extension Line: StyleTarget {}
 extension Path: StyleTarget {}
 extension Polygon: StyleTarget {}

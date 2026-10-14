@@ -28,6 +28,7 @@ extension AppKitElement {
                     rawValue: enumeration(.verticalTextAlignment) ?? 0) ?? .start,
                 breaking: lineBreak,
                 maximumNumberOfLines: maximumLines())
+            label.isSelectable = value(.isSelectable)?.bool == true
             return
         }
 

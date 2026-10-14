@@ -62,7 +62,7 @@ extension AndroidElement {
         row.tabs = children.map { tab in
             AndroidTabView.Tab(
                 title: tab.value(.title)?.string ?? "",
-                picture: tab.value(.icon)?.string.flatMap { $0.isEmpty ? nil : $0 })
+                picture: HostPicture(tab.value(.icon)))
         }
         let colors = element.barColors
         row.background = colors.background
@@ -144,7 +144,9 @@ extension AndroidElement {
         let colors = page?.barColors ?? element.barColors
 
         var content = AndroidBarView.Content()
-        content.title = element.titledPage?.value(.title)?.string ?? ""
+        // A page showing no title leaves the bar's place for it empty; the window keeps its name.
+        let titled = element.titledPage
+        content.title = titled?.value(.showsTitle)?.bool == false ? nil : titled?.value(.title)?.string ?? ""
         content.subtitle = (page ?? element).titleArea?.subtitle
         content.background = colors.background
         content.foreground = BandWords.color(on: colors.background, written: colors.foreground)
@@ -162,7 +164,7 @@ extension AndroidElement {
             content.navigation = .back
         } else if let split = enclosingSplit, let sidebar = split.children.first,
                   (split.view as? AndroidSplitView)?.overlays == true {
-            content.navigation = .sidebar(sidebar.value(.icon)?.string)
+            content.navigation = .sidebar(HostPicture(sidebar.value(.icon)))
         }
 
         navigation.setShowsBar(element.children.last?.showsTheStacksBar ?? true)
@@ -172,7 +174,7 @@ extension AndroidElement {
         bar.items = items
         bar.onMenuChose = { [weak bar] index in
             guard let bar, bar.items.indices.contains(index) else { return }
-            bar.items[index].android.send(.clicked, [])
+            bar.items[index].android.choose()
         }
         bar.onNavigation = { [weak self] in
             guard let self else { return }

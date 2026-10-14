@@ -12,7 +12,10 @@ final class AndroidImageViewTests: XCTestCase {
             ("testAPictureIsMeasuredAtItsOwnSizeInPoints", testAPictureIsMeasuredAtItsOwnSizeInPoints),
             ("testAPictureFillsOrFitsItsRoomAsItsAspectSays", testAPictureFillsOrFitsItsRoomAsItsAspectSays),
             ("testAPictureShownSmallIsReadAtFewerPixels", testAPictureShownSmallIsReadAtFewerPixels),
+            ("testAPictureShownSmallKeepsAsManyOfItsPixelsAsTheViewShows", testAPictureShownSmallKeepsAsManyOfItsPixelsAsTheViewShows),
             ("testAPictureNoViewShowsIsLetGo", testAPictureNoViewShowsIsLetGo),
+            ("testEveryIconIsADrawableOfTheApplications", testEveryIconIsADrawableOfTheApplications),
+            ("testAnIconIsDrawnInTheWordsColour", testAnIconIsDrawnInTheWordsColour),
         ]
     }
 
@@ -77,6 +80,21 @@ final class AndroidImageViewTests: XCTestCase {
         }
     }
 
+    /// Bytes are a picture at one pixel a point: 96 of them shown at 24 points, on a display of two pixels a point,
+    /// need 48 of their own pixels across - read at one in two, never thinner, then scaled to the display's density.
+    func testAPictureShownSmallKeepsAsManyOfItsPixelsAsTheViewShows() {
+        onMainActor {
+            let bytes = Java.frame { Java.bytesOf(Java.callStaticObject(TestJava.testPictures, TestJava.square, .int(96))) }
+            let host = AndroidRenderer.running {
+                Image(ImageSource(bytes: bytes)).width(24).height(24).horizontalAlignment(.start).verticalAlignment(.start)
+            }
+            host.layOut()
+
+            let held = host.views(AndroidImageView.self).first?.bitmapSize
+            XCTAssertTrue(held.map { $0 == (96, 96) } == true, "\(String(describing: held))")
+        }
+    }
+
     /// A picture is kept while a view shows it: the last one leaving lets it go.
     func testAPictureNoViewShowsIsLetGo() throws {
         try onMainActor {
@@ -101,4 +119,60 @@ final class AndroidImageViewTests: XCTestCase {
             XCTAssertEqual(AndroidPictures.keptCount, before, "and let go when the view leaves")
         }
     }
+
+    /// Every icon is its Material Symbols drawable among the application's resources, read as a mask of Android's
+    /// icon size.
+    func testEveryIconIsADrawableOfTheApplications() {
+        onMainActor {
+            let side = Int32((24 * AndroidRenderer.density).rounded())
+            for icon in Icon.allCases {
+                let mask = AndroidPictures.take(.icon(icon), sample: 1)
+                defer { AndroidPictures.letGo(.icon(icon), sample: 1) }
+                guard let mask else {
+                    XCTFail("no \(icon.androidDrawable) among the application's drawables")
+                    continue
+                }
+
+                XCTAssertEqual(Java.callInt(mask.reference, JavaAPI.bitmapWidth), side, "\(icon)")
+                XCTAssertEqual(Java.callInt(mask.reference, JavaAPI.bitmapHeight), side, "\(icon)")
+                XCTAssertTrue(Java.callStaticBool(JavaAPI.views, TestJava.isMask, .object(mask.reference)), "\(icon)")
+            }
+        }
+    }
+
+    /// An icon standing alone is drawn in the words' colour, as the label beside it is: its colour, as opaque.
+    func testAnIconIsDrawnInTheWordsColour() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                HStack {
+                    Image(.icon(.add))
+                    Text("Add")
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            host.layOut()
+
+            let image = try XCTUnwrap(host.views(AndroidImageView.self).first)
+            let label = try XCTUnwrap(host.views(AndroidTextView.self).first)
+            let ink = UInt32(bitPattern: Java.callStaticInt(TestJava.testPictures, TestJava.imageInk, .object(image.reference)))
+            let colour = UInt32(bitPattern: Java.callInt(label.reference, AndroidDriver.getCurrentTextColor))
+            XCTAssertGreaterThan(ink >> 24, 0, "the icon is drawn")
+            // A partly opaque pixel is kept premultiplied: its channels come back a few steps apart.
+            for shift: UInt32 in [0, 8, 16] {
+                let (drawn, given) = (Int(ink >> shift & 0xFF), Int(colour >> shift & 0xFF))
+                XCTAssertLessThanOrEqual(abs(drawn - given), 4, "\(String(ink, radix: 16)) for \(String(colour, radix: 16))")
+            }
+            XCTAssertEqual(ink >> 24, colour >> 24, "\(String(ink, radix: 16)) for \(String(colour, radix: 16))")
+        }
+    }
+}
+
+extension TestJava {
+    static let isMask = Java.staticMethod(JavaAPI.views, "isMask", "(Landroid/graphics/Bitmap;)Z")
+    static let testPictures = Java.findClass("stateui/android/test/TestPictures")
+    static let imageInk = Java.staticMethod(testPictures, "imageInk", "(Landroid/widget/ImageView;)I")
+    static let iconInk = Java.staticMethod(testPictures, "iconInk", "(Landroid/widget/TextView;)I")
+    static let aloneInk = Java.staticMethod(testPictures, "aloneInk", "(Landroid/widget/TextView;)I")
+    static let square = Java.staticMethod(testPictures, "square", "(I)[B")
 }

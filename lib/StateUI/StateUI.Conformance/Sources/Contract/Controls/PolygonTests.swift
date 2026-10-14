@@ -27,11 +27,11 @@
                     .horizontalAlignment(.start)
                 }
                 let shape = try s.element("shape")
-                try s.settle { try s.color(of: shape, at: Point(8, 8)) == .blue }
+                try s.settle { try s.shows(.blue, on: shape, at: Point(8, 8)) }
                 s.expect(try s.color(of: shape, at: Point(32, 32)), nil, "outside its points")
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.color(of: shape, at: Point(32, 32)) == .blue }
+                try s.settle { try s.shows(.blue, on: shape, at: Point(32, 32)) }
                 s.expect(try s.color(of: shape, at: Point(8, 8)), nil, "the points the tree moved")
             },
             ConformanceCase("aFigureCrossingItselfIsFilledByItsRule", proves: [
@@ -47,12 +47,12 @@
                     .horizontalAlignment(.start)
                 }
                 let shape = try s.element("shape")
-                try s.settle { try s.color(of: shape, at: Point(2, 2)) == .blue }
+                try s.settle { try s.shows(.blue, on: shape, at: Point(2, 2)) }
                 s.expect(try s.color(of: shape, at: Point(20, 20)), nil, "even and odd: the middle, gone round twice, empty")
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.color(of: shape, at: Point(20, 20)) == .blue }
-                s.expect(try s.color(of: shape, at: Point(20, 20)), .blue, "nonzero: the middle filled")
+                try s.settle { try s.shows(.blue, on: shape, at: Point(20, 20)) }
+                s.expect(try s.color(of: shape, at: Point(20, 20)), shows: .blue, "nonzero: the middle filled")
             },
         ]
     }

@@ -174,11 +174,12 @@ final class LibraryContractTests: XCTestCase {
 
     /// A tier wears the tiers its Swift protocol refines, so an element
     /// listing the protocol-level tier gets the chain: View wears
-    /// VisualElement, which wears PropertyContainer.
+    /// VisualElement, which wears AutomationElement.
     func testATierWearsTheChainItsProtocolRefines() {
-        XCTAssertEqual(ViewContract.worn.map { $0.name }, ["View", "VisualElement", "PropertyContainer"])
+        XCTAssertEqual(ViewContract.worn.map { $0.name }, ["View", "VisualElement", "AutomationElement"])
         XCTAssertEqual(StackContract.worn.map { $0.name }, [
-            "Stack", "Layout", "View", "VisualElement", "PropertyContainer", "PaddingElement", "BorderElement",
+            "Stack", "Layout", "View", "VisualElement", "AutomationElement", "PaddingElement", "BorderElement",
+            "KeyboardElement",
         ])
     }
 

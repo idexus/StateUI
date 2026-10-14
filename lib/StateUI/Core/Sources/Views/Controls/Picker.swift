@@ -11,39 +11,38 @@ extension PickerProperties {
         setValue(PickerContract.isOpen, value)
     }
 
-    /// The captions to choose from, in order. Choosing among models, format
-    /// them here and find the chosen one by its index.
-    public func options(_ value: [String]) -> Modified {
-        setValue(PickerContract.options, value)
-    }
-
-    /// Which item is chosen, counted from zero; -1 for none.
-    public func selectedIndex(_ value: Int) -> Modified {
-        setValue(PickerContract.selectedIndex, value)
-    }
-
     /// What the field says while nothing is chosen. A host can also reuse it
     /// as the heading of a separate native choice surface.
     public func placeholder(_ value: String) -> Modified {
         setValue(PickerContract.placeholder, value)
     }
+
+    /// How the values are offered: `.menu`, the default - a field opening the
+    /// list - `.segmented`, a row of segments, or `.radio`, a radio button
+    /// for each. A list opens only from a menu.
+    ///
+    ///     Picker(Span.allCases, selection: $span) { "\($0)" }
+    ///         .presentation(.segmented)
+    public func presentation(_ value: PickerPresentation) -> Modified {
+        setValue(PickerContract.presentation, value)
+    }
 }
 
-/// One choice out of a list.
+/// One choice out of a list of values.
 ///
-///     private let sizes = ["Small", "Medium", "Large"]
-///     @State private var size = 1
+///     enum Span: CaseIterable, Hashable { case day, week, month }
+///     @State private var span = Span.week
 ///
-///     Picker(sizes)
-///         .selectedIndex($size)
-///         .placeholder("Size")
+///     Picker(Span.allCases, selection: $span) { "\($0)" }
+///         .placeholder("Span")
 ///
-/// The choice comes back through the binding as an index into the list, `-1`
-/// while nothing is chosen; `sizes[size]` turns it back into a value, which is
-/// why the list is worth holding. The picker takes `.textColor` but has no
-/// `.text`: the field shows the chosen item or the placeholder.
+/// The choice is one of the values, not a place in the list: the list may
+/// change its order and the choice stays. Each value shows by its caption -
+/// its description unless the picker is given one. The picker takes
+/// `.textColor` but has no `.text`: the field shows the chosen value's caption,
+/// or the placeholder while nothing is chosen.
 public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentElement, TintElement,
-    PickerProperties {
+    PickerProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 
@@ -52,47 +51,47 @@ public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentE
         node = Node(contract: PickerContract.self)
     }
 
-    /// A picker offering `items`, with nothing chosen until `.selectedIndex`
-    /// says so.
-    public init(_ items: [String]) {
-        node = Node(contract: PickerContract.self)
-        node.write(PickerContract.options, items)
+    /// A picker offering `items`, each by its `caption`, with the one
+    /// `selection` holds chosen; the user's choice is written into it.
+    ///
+    /// - Parameters:
+    ///   - items: the values to choose from, in the order they are offered.
+    ///   - selection: the state holding the chosen value, shown and written back into.
+    ///   - caption: the words each value shows by; its description unless given.
+    public init<Item: Equatable>(
+        _ items: [Item], selection: Binding<Item>, caption: (Item) -> String = { "\($0)" }
+    ) {
+        let chosen = Binding<Item?>(get: { selection.wrappedValue }, set: { if let value = $0 { selection.wrappedValue = value } })
+        self.init(items, chosen: chosen, caption: caption)
     }
 
-    // MARK: Properties
-
-    // Design: docs/design/views/bindings.md#two-way-controls
-    /// Two-way: shows the choice the state holds and writes back the one the
-    /// user makes, with no view rebuilt for it.
+    /// A picker offering `items`, each by its `caption`, with nothing chosen
+    /// while `selection` holds nil - the placeholder shows then - and the user's
+    /// choice written into it.
     ///
-    /// - Parameter binding: the state shown, and written back into as the
-    ///   user chooses.
-    /// - Returns: the picker, wearing and reporting that choice.
-    public func selectedIndex(_ binding: Binding<Int>) -> Self {
-        binding.image == nil
-            ? described(.selectedIndex, binding, on: .selectedIndexChanged)
-            : plain(.selectedIndex, by: binding, mode: .inOut)
+    /// - Parameters:
+    ///   - items: the values to choose from, in the order they are offered.
+    ///   - selection: the state holding the chosen value, or nil, shown and written back into.
+    ///   - caption: the words each value shows by; its description unless given.
+    public init<Item: Equatable>(
+        _ items: [Item], selection: Binding<Item?>, caption: (Item) -> String = { "\($0)" }
+    ) {
+        self.init(items, chosen: selection, caption: caption)
+    }
+
+    /// The choice crosses as the chosen value's place in the list, worked out
+    /// again at each build, and a choice reported comes back as its value.
+    /// Design: docs/design/views/bindings.md#two-way-controls
+    private init<Item: Equatable>(_ items: [Item], chosen: Binding<Item?>, caption: (Item) -> String) {
+        var picker = Picker()
+        picker.node.write(PickerContract.options, items.map(caption))
+        let place = Binding<Int>(
+            get: { chosen.wrappedValue.flatMap { items.firstIndex(of: $0) } ?? -1 },
+            set: { place in if items.indices.contains(place) { chosen.wrappedValue = items[place] } })
+        self = picker.described(.selectedIndex, place, on: .selectedIndexChanged)
     }
 
     // MARK: Events
-
-    /// Fires when the user changes the choice, with the new index - after the
-    /// choice has landed on a state handed as `$size`.
-    public func onSelectedIndexChanged(_ handler: @escaping @MainActor (Int) throws -> Void) -> Self {
-        onEvent(PickerContract.selectedIndexChanged, handler)
-    }
-
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
-    /// again while a run is under way.
-    public func onSelectedIndexChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<Int>) -> Self {
-        onEvent(PickerContract.selectedIndexChanged, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSelectedIndexChanged(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
-    public func onSelectedIndexChanged(_ handler: @escaping ValueEventHandler<Int>) -> Self {
-        fatalError("unavailable")
-    }
 
     /// The user has opened the list of choices. Opening it with `isOpen(true)`
     /// raises nothing: the application already knows.
@@ -107,7 +106,7 @@ public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentE
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onOpened(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onOpened(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onOpened(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }
@@ -125,7 +124,7 @@ public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentE
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClosed(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClosed(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onClosed(_ handler: @escaping EventHandler) -> Self {
         fatalError("unavailable")
     }

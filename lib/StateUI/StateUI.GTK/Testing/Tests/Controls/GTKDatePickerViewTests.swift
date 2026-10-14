@@ -26,7 +26,7 @@ final class GTKDatePickerViewTests: XCTestCase {
             let past = try XCTUnwrap(g_date_time_new_local(2026, 12, 24, 12, 0, 0))
             defer { g_date_time_unref(past) }
 
-            gtk_calendar_select_day(picker.calendar.opaque, past)
+            gtk_calendar_set_date(picker.calendar.opaque, past)
             host.step()
 
             let end = CalendarDate(year: 2026, month: 10, day: 31)

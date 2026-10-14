@@ -119,7 +119,7 @@ and this table maps the two.
 | program write | programmatic change | a write to a control made by the program, not the user |
 | act | imperative control call | a call the application makes on a control, such as `focus` |
 | run | in-flight handler call | one going of a handler that awaits, or of a task through a gate, from its start to its end |
-| gate (`Gate`, `SharedGate`) | concurrency policy | what an event or a task does while a run is under way: let go, cancel the run before it, wait, or run beside it - a handler's own, or shared by every handler and task written with it |
+| gate (`Gate`, `Gatekeeper`) | concurrency policy | what an event or a task does while a run is under way: let go, cancel the run before it, wait, or run beside it - a handler's own, or shared by every handler and task written with it |
 | superseded run | cancelled task | a run a later event, its task's cancellation or its element leaving ended: it changes nothing more |
 | chosen file (`ChosenFile`) | file handle, picked file | a file the user opened or saved in a dialog: its name, and its place, which only the host reads |
 | kind of file (`FileType`) | file type filter | a caption and the extensions a dialog shows or offers |

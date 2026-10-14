@@ -12,7 +12,7 @@ An event's handlers keep their runs under the event's id in an
 `EventRegistration`, each handler its `RunOwner`: who started a run. The id
 survives renders, so a run started by one render's closure is still its
 owner's when the next render writes the closure again. A run is started in a
-`RunSlot` - a shared gate's, or the owner's own where the gate is a policy
+`RunSlot` - a gatekeeper's, or the owner's own where the gate is a policy
 alone - which holds the runs under way and waiting, and decides, by the
 gate's policy, what an event that comes while one is under way does.
 `RunSlot.start` makes every run's task at once - one that starts, waits in the
@@ -38,14 +38,14 @@ A gate is a handler's own or shared, and its type says which. A
 `GatePolicy` - `gate: .ignoreWhileRunning` and the rest - is the handler's
 own gate: its runs stand in its owner's slot, so two buttons written with
 `.ignoreWhileRunning` never hold each other back, and a policy has no
-`isBusy` to read. A `SharedGate` kept in a state or a model is shared by every handler
+`isBusy` to read. A `Gatekeeper` kept in a state or a model is shared by every handler
 and task written with it, from one control or several - a save and a delete
 of one document - and its `isBusy`, a state, says whether a run is under way
 or waits through it. `Gate` is the protocol both meet, what `gate:` takes.
 The four policies are static members of that protocol alone, not cases of an
 enumeration of their own, so `.none` names one thing whether it is given as a
-gate or to `SharedGate(_:)`. An element leaving supersedes its owners' runs
-alone, so in a shared gate the others' runs stand.
+gate or to `Gatekeeper(_:)`. An element leaving supersedes its owners' runs
+alone, so behind a gatekeeper the others' runs stand.
 
 There is no default. Each event modifier comes three ways: a step, `() throws
 -> Void`, which Swift picks for a closure with no `await`; the same with a
@@ -66,7 +66,7 @@ handlers' work to end, rather than a length of time, and the tally's `runs`
 ## Work started from code
 
 Work a model starts from its own code - an autosave, a refresh a timer asks
-for - passes a shared gate through `Task(gate:)`, as a handler written with
+for - passes a gatekeeper through `Task(gate:)`, as a handler written with
 that gate would: the policy holds for it, it makes the gate busy, and it holds
 back, or is held back by, the events through the same gate. The task it
 returns is the run's own, the one `RunSlot.start` makes for every run:
@@ -76,7 +76,7 @@ once, through a job on the UI thread - and a task the gate lets go ends at
 once, its work not run. Its owner is the gate's own `RunOwner`, which nothing orphans, so no
 element leaving ends the run; started inside a handler, it runs under a
 `HandlerRun` of its own, not the handler's. A policy is no gate for a task -
-it has no element to keep its runs - so `Task(gate:)` takes a `SharedGate`
+it has no element to keep its runs - so `Task(gate:)` takes a `Gatekeeper`
 alone.
 
 ## A superseded run

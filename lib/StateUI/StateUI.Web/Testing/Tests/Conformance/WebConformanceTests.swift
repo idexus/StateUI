@@ -16,8 +16,9 @@ final class WebConformanceTests: XCTestCase {
     func testActivityIndicator() { conform(ActivityIndicatorTests.self) }
     func testButton() { conform(ButtonTests.self) }
     func testCanvas() { conform(CanvasTests.self) }
+    func testCapsule() { conform(CapsuleTests.self) }
     func testCheckBox() { conform(CheckBoxTests.self) }
-    func testColorBox() { conform(ColorBoxTests.self) }
+    func testSpacer() { conform(SpacerTests.self) }
     func testDatePicker() { conform(DatePickerTests.self) }
     func testEllipse() { conform(EllipseTests.self) }
     func testGrid() { conform(GridTests.self) }
@@ -47,10 +48,12 @@ final class WebConformanceTests: XCTestCase {
     func testZStack() { conform(ZStackTests.self) }
     func testApplication() { conform(ApplicationTests.self) }
     func testContextMenu() { conform(ContextMenuTests.self) }
+    func testButtonMenu() { conform(ButtonMenuTests.self) }
     func testMenu() { conform(MenuTests.self) }
     func testMenuBar() { conform(MenuBarTests.self) }
     func testMenuItem() { conform(MenuItemTests.self) }
     func testDivider() { conform(DividerTests.self) }
+    func testMenuSeparator() { conform(MenuSeparatorTests.self) }
     func testModalStack() { conform(ModalStackTests.self) }
     func testNavigationStack() { conform(NavigationStackTests.self) }
     func testOverlay() { conform(OverlayTests.self) }
@@ -65,23 +68,28 @@ final class WebConformanceTests: XCTestCase {
     func testToolbarItem() { conform(ToolbarItemTests.self) }
     func testToolbarItemGroup() { conform(ToolbarItemGroupTests.self) }
     func testWindow() { conform(WindowTests.self) }
-    func testPropertyContainer() { conform(PropertyContainerTests.self) }
+    func testAutomationElement() { conform(AutomationElementTests.self) }
     func testVisualElement() { conform(VisualElementTests.self) }
     func testView() { conform(ViewTests.self) }
     func testLayout() { conform(LayoutTests.self) }
     func testStack() { conform(StackTests.self) }
     func testTextInput() { conform(TextInputTests.self) }
     func testShape() { conform(ShapeTests.self) }
+    func testFilledShape() { conform(FilledShapeTests.self) }
+    func testCorneredShape() { conform(CorneredShapeTests.self) }
     func testTextualElement() { conform(TextualElementTests.self) }
     func testTextStyleElement() { conform(TextStyleElementTests.self) }
     func testFontElement() { conform(FontElementTests.self) }
     func testTextAlignmentElement() { conform(TextAlignmentElementTests.self) }
     func testLineHeightElement() { conform(LineHeightElementTests.self) }
+    func testTrackingElement() { conform(TrackingElementTests.self) }
     func testDecorableTextElement() { conform(DecorableTextElementTests.self) }
     func testPaddingElement() { conform(PaddingElementTests.self) }
     func testBorderElement() { conform(BorderElementTests.self) }
     func testImageElement() { conform(ImageElementTests.self) }
     func testTintElement() { conform(TintElementTests.self) }
+    func testKeyboardElement() { conform(KeyboardElementTests.self) }
+    func testFocusElement() { conform(FocusElementTests.self) }
     func testBarElement() { conform(BarElementTests.self) }
     func testMenuItemElement() { conform(MenuItemElementTests.self) }
     func testPageElement() { conform(PageElementTests.self) }

@@ -66,6 +66,12 @@ content root's own path (`Node.branch`, compared with the views' types). The
 composed view itself keeps its state across the swap; an `.id()` on the
 content root outweighs the branch.
 
+Another value of a member that says it remakes its element
+([remakes](../contracts/member-facts.md#remakes)) replaces the element too
+(`LibraryContracts.remaking`), as a button another kind of control makes does
+(`Node.buttonMenuKind`): the host makes its control by the value, from the
+first patch it is made with.
+
 ## What a walk keeps
 
 The differ is one object for the life of the renderer. What it keeps between

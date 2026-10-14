@@ -6,6 +6,7 @@ Button
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   icon
   iconPosition
   iconSpacing
@@ -13,11 +14,13 @@ Button
   lineBreak
   lineWidth
   padding
+  role
   shape
   stroke
   text
   textCase
   textColor
+  textStyle
   tracking
   clicked()
   pressed()
@@ -27,18 +30,25 @@ Canvas
   dragged()
   pressed()
   released()
+Capsule
+  contentMode
+  dash
+  dashPhase
+  fill
+  geometryTransform
+  lineCap
+  lineWidth
+  stroke
 CheckBox
   isOn
   tint
   toggled()
-ColorBox
-  color
-  cornerRadius
 DatePicker
   date
   maximumDate
   minimumDate
   dateChanged()
+Divider
 Ellipse
   contentMode
   dash
@@ -46,9 +56,7 @@ Ellipse
   fill
   geometryTransform
   lineCap
-  lineJoin
   lineWidth
-  miterLimit
   stroke
 Grid
   background
@@ -88,12 +96,9 @@ Line
   contentMode
   dash
   dashPhase
-  fill
   geometryTransform
   lineCap
-  lineJoin
   lineWidth
-  miterLimit
   stroke
   x1
   x2
@@ -130,12 +135,14 @@ Picker
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   horizontalTextAlignment
   isFontAutoScalingEnabled
   options
   placeholder
   selectedIndex
   textColor
+  textStyle
   tint
   closed()
   opened()
@@ -173,12 +180,14 @@ RadioButton
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   isFontAutoScalingEnabled
   isOn
   padding
   text
   textCase
   textColor
+  textStyle
   toggled()
 Rectangle
   contentMode
@@ -210,6 +219,7 @@ SearchField
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   horizontalTextAlignment
   inputPurpose
   isFontAutoScalingEnabled
@@ -224,6 +234,7 @@ SearchField
   text
   textCase
   textColor
+  textStyle
   submitted()
   textChanged()
 Slider
@@ -234,6 +245,7 @@ Slider
   pressed()
   released()
   valueChanged()
+Spacer
 Stepper
   maximum
   minimum
@@ -249,6 +261,7 @@ Text
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   horizontalTextAlignment
   isFontAutoScalingEnabled
   lineBreak
@@ -259,6 +272,7 @@ Text
   textCase
   textColor
   textDecorations
+  textStyle
   tracking
   verticalTextAlignment
 TextEditor
@@ -266,6 +280,7 @@ TextEditor
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   growsWithText
   horizontalTextAlignment
   inputPurpose
@@ -280,12 +295,14 @@ TextEditor
   text
   textCase
   textColor
+  textStyle
   textChanged()
 TextField
   cursorPosition
   fontAttributes
   fontFamily
   fontSize
+  fontWeight
   horizontalTextAlignment
   inputPurpose
   isFontAutoScalingEnabled
@@ -302,6 +319,7 @@ TextField
   text
   textCase
   textColor
+  textStyle
   submitted()
   textChanged()
 TimePicker
@@ -353,6 +371,7 @@ ZStack
   isAccessibilityHidden
   isEnabled
   isVisible
+  keysTaken
   margin
   maximumHeight
   maximumWidth
@@ -386,6 +405,7 @@ ZStack
   filesDropped()
   frameChanged()
   isFocusedChanged()
+  keyPressed()
   panUpdated()
   pinchUpdated()
   pointerEntered()

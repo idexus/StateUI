@@ -44,7 +44,7 @@ modifiers live on `ModifiableElement`, so a style is offered none after the
 dot, and a style keeps only its values and states (`AnyStyle`), so nothing
 else written into its node reaches a control (tiers.md). Each handler passes through its own gate - a policy
 given as the gate is the handler's alone - so the second never waits for the first unless both are written with
-one `SharedGate` (core/runs.md).
+one `Gatekeeper` (core/runs.md).
 
 ## An event payload that does not read
 
@@ -146,8 +146,10 @@ view (`isAccessibilityHidden`) or the view and everything in it
 `accessibilityIdentifier` is a handle nothing reads out: a UI test, a script or
 an agent driving the application asks the platform's automation for it, where
 the alternative is a coordinate read off a picture. It is on
-`PropertyContainer` because a toolbar item and a menu entry carry one as much
-as a view does, so the button in a page's bar can be named. It stays stable
+`AutomationElement`, which a view, a toolbar item, a menu entry and a page
+arrangement wear, so the button in a page's bar can be named; a text run,
+which automation never meets, and a `Style`, which would give every control
+it dresses one name, are offered none. It stays stable
 across renders and unique on the page: an id that moves with the state is one
 nothing can wait for, and two things sharing one leave the driver to guess.
 
@@ -159,6 +161,17 @@ them, so the ones worth writing are on controls with no words of their own.
 Left unsaid, whether a screen reader skips a view is the platform's decision,
 which is nearly always right: a view with words is reachable and a plain
 container is not.
+
+## A tooltip
+
+`tooltip` is words for a sighted user with a pointer: what a view does, shown
+beside it while the pointer rests there. AppKit's `toolTip`, Android's tooltip
+text, WinUI's `ToolTipService`, GTK's tooltip text and the Web's `title` hold
+one on any view and show it their own way, after their own delay; Android also
+after a long press. UIKit shows a tool tip on the Mac and on visionOS only, so
+on an iPhone and an iPad the member is `–`. It is no accessible name: a
+control with no words of its own still takes an `accessibilityLabel`, as a
+tooltip is not what a screen reader is sure to read.
 
 ## Gestures
 

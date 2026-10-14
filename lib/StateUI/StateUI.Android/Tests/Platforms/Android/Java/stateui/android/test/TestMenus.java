@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
@@ -25,6 +26,15 @@ import java.util.List;
 /** A menu read back as words, and an item chosen by its words - what a test of the host's menus asks. */
 public final class TestMenus {
     private TestMenus() {}
+
+    /** The layer a button's foreground draws the arrow after its words in: StateUIViews' MARK_LAYER. */
+    private static final int MARK_LAYER = 2;
+
+    /** Whether `button` shows the arrow saying its click opens its menu, among the layers of its foreground. */
+    public static boolean showsMenuArrow(View button) {
+        Drawable foreground = button.getForeground();
+        return foreground instanceof LayerDrawable && ((LayerDrawable) foreground).findDrawableByLayerId(MARK_LAYER) != null;
+    }
 
     /** An empty menu of Android's own, as a context menu is before its view writes it. */
     public static Menu empty(Context context) {
@@ -84,7 +94,9 @@ public final class TestMenus {
 
     /**
      * What the item of `id` holds, a line each: its words, then 1 or 0 for whether it can be chosen, whether its
-     * words are in the theme's error colour and whether it has a picture; null where the menu holds no such item.
+     * words are in the theme's error colour, whether it has a picture and whether it stands checked, then the
+     * character of the shortcut it shows - 0 for none - and the modifiers held with it; null where the menu holds
+     * no such item.
      */
     public static String held(Context context, Menu menu, int id) {
         MenuItem item = menu.findItem(id);
@@ -93,8 +105,12 @@ public final class TestMenus {
         int error = attributes.getColor(0, 0);
         attributes.recycle();
         CharSequence title = item.getTitle();
+        boolean letter = item.getAlphabeticShortcut() != 0;
+        char key = letter ? item.getAlphabeticShortcut() : item.getNumericShortcut();
+        int modifiers = letter ? item.getAlphabeticModifiers() : item.getNumericModifiers();
         return title + "\n" + (item.isEnabled() ? 1 : 0) + "\n" + (colour(title) == error ? 1 : 0)
-                + "\n" + (item.getIcon() != null ? 1 : 0);
+                + "\n" + (item.getIcon() != null ? 1 : 0) + "\n" + (item.isChecked() ? 1 : 0)
+                + "\n" + (int) key + "\n" + (key == 0 ? 0 : modifiers);
     }
 
     /** Chooses the item whose words are `text`, in `menu` or a submenu of it, as a touch does; whether it ran. */

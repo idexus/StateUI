@@ -185,4 +185,31 @@ func firstInkRow(of view: NSView) throws -> Int {
 
     return bitmap.pixelsHigh
 }
+
+/// The colour of the most opaque pixel `view` and what it holds draw between `columns` points from its left - the
+/// colour its ink stands in; nil where it draws none there.
+@MainActor
+func inkColour(of view: NSView, columns: ClosedRange<CGFloat>? = nil) throws -> NSColor? {
+    let bitmap = try XCTUnwrap(view.bitmapImageRepForCachingDisplay(in: view.bounds))
+    view.cacheDisplay(in: view.bounds, to: bitmap)
+    let scale = CGFloat(bitmap.pixelsWide) / max(view.bounds.width, 1)
+    let span = columns ?? 0...view.bounds.width
+    let xs = max(0, Int(span.lowerBound * scale))..<min(bitmap.pixelsWide, Int(span.upperBound * scale))
+
+    var ink: NSColor?
+    for x in xs {
+        for y in 0..<bitmap.pixelsHigh {
+            guard let pixel = bitmap.colorAt(x: x, y: y)?.usingColorSpace(.sRGB) else { continue }
+            if pixel.alphaComponent > (ink?.alphaComponent ?? 0.1) { ink = pixel }
+        }
+    }
+    return ink
+}
+
+/// Whether two colours of ink are one: their channels and opacity within a few hundredths.
+func sameInk(_ one: NSColor?, _ other: NSColor?) -> Bool {
+    guard let one, let other else { return false }
+    return abs(one.redComponent - other.redComponent) < 0.08 && abs(one.greenComponent - other.greenComponent) < 0.08
+        && abs(one.blueComponent - other.blueComponent) < 0.08 && abs(one.alphaComponent - other.alphaComponent) < 0.08
+}
 #endif

@@ -35,11 +35,20 @@ final class StateUIHost {
     /** A button was clicked. */
     static native void clicked(long view);
 
+    /** A view was held down long: whether the view took the long press. */
+    static native boolean longClicked(long view);
+
     /** A tab was chosen, by its place among the tabs. */
     static native void tabSelected(long view, int tab);
 
     /** One of a view's menu items was chosen - a bar's action, a context menu's item - by its place among them. */
     static native void menuChose(long view, int item);
+
+    /** A key pressed that no view took: whether a shortcut a button or an item states took it. */
+    static native boolean keyPressed(int code, int character, int meta);
+
+    /** A key going down or up, before any view has it: whether a view taking it took it, its going up with it. */
+    static native boolean keyTaken(boolean down, int code, int character, int meta);
 
     /** The user asks for a view's context menu - a long press, a secondary click - for Swift to write into `menu`. */
     static native void menuOpening(long view, Menu menu);

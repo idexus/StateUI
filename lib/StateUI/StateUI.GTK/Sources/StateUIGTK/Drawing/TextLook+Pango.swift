@@ -20,14 +20,13 @@ extension TextLook {
     @MainActor
     func insert(into list: OpaquePointer, from start: UInt32 = 0, to end: UInt32 = UInt32.max) {
         var made: [UnsafeMutablePointer<PangoAttribute>] = []
+        let (size, weight) = gtkStanding
         if let size = size ?? (scales ? nil : GTKEnvironment.fontSize), size > 0 {
             made.append(scales
                 ? pango_attr_size_new(Int32((Self.typographic(size) * Double(PANGO_SCALE)).rounded()))
                 : pango_attr_size_new_absolute(Int32((size * Double(PANGO_SCALE)).rounded())))
         }
-        if attributes.contains(.bold) || attributesGiven {
-            made.append(pango_attr_weight_new(attributes.contains(.bold) ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL))
-        }
+        if let weight { made.append(pango_attr_weight_new(PangoWeight(rawValue: UInt32(weight)))) }
         if attributes.contains(.italic) || attributesGiven {
             made.append(pango_attr_style_new(attributes.contains(.italic) ? PANGO_STYLE_ITALIC : PANGO_STYLE_NORMAL))
         }

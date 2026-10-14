@@ -97,7 +97,10 @@ final class WebWindowBar: WebDOMView {
         WebRelay.setText(name.node, area?.title ?? "")
         WebRelay.setText(subtitle.node, area?.subtitle ?? "")
         subtitle.setShown(area?.subtitle?.isEmpty == false)
-        showTitle(shown, or: (chrome.center?.native as? WebElement)?.view, repeating: area?.title)
+        // A page showing no title leaves its place empty; the tab keeps its name.
+        attribute("data-title", chrome.showsTitle ? nil : "none")
+        let view = (chrome.center?.native as? WebElement)?.view
+        showTitle(chrome.showsTitle ? shown : "", or: view, repeating: area?.title)
 
         style("--stateui-bar-background", WebCSS.fill(chrome.background))
         // A clear bar shows what is behind it as it is: no blur, no deeper colour under it.

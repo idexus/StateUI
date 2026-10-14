@@ -12,11 +12,14 @@
     private struct Entry {
         /// Makes the element's view, its reports handed to the functions given
         /// - nil where the registration made something that is no `View`.
-        let make: (@escaping (Event, [HostValue]) -> Void, @escaping (Prop, Event, HostValue) -> Void) -> View?
+        let make: (@escaping (Event, [HostValue]) -> Void, @escaping (Prop, Event, HostValue) -> Void, HostPatch?)
+            -> View?
 
         /// Puts the changed properties it takes on the view, each read through
         /// the functions given, and answers them.
-        let apply: (View, Set<Prop>, @escaping (Prop) -> HostValue?, @escaping (Prop) -> Bool) -> Set<Prop>
+        let apply: (
+            View, Set<Prop>, @escaping (Prop) -> HostValue?, @escaping (Prop) -> Bool, @escaping (Prop) -> HostValue?
+        ) -> Set<Prop>
 
         /// Every member registered.
         let members: Set<HostRealizedMember>
@@ -56,8 +59,8 @@
         create: @escaping (Reports<Realized>) -> Made,
         members: (Registration<Realized, Made>) -> Void = { _ in }
     ) {
-        register(contract, members: members) { send, carry in
-            let made = create(Reports(sending: send, reporting: carry))
+        register(contract, members: members) { send, carry, patch in
+            let made = create(Reports(sending: send, reporting: carry, made: patch))
 
             guard let view = made as? View else {
                 complain("\(Realized.name)'s registration made a \(type(of: made)), which is no "
@@ -94,7 +97,7 @@
         madeByHost view: Made.Type,
         members: (Registration<Realized, Made>) -> Void
     ) {
-        register(contract, members: members) { _, _ in nil }
+        register(contract, members: members) { _, _, _ in nil }
     }
 
     /// One contract's registration, entered under its node type: `members` says
@@ -104,7 +107,7 @@
         _ contract: Realized.Type,
         members: (Registration<Realized, Made>) -> Void,
         making make: @escaping (
-            @escaping (Event, [HostValue]) -> Void, @escaping (Prop, Event, HostValue) -> Void
+            @escaping (Event, [HostValue]) -> Void, @escaping (Prop, Event, HostValue) -> Void, HostPatch?
         ) -> View?
     ) {
         let registration = Registration<Realized, Made>()
@@ -123,7 +126,7 @@
 
         entries[Realized.nodeType] = Entry(
             make: make,
-            apply: { view, changed, read, carried in
+            apply: { view, changed, read, carried, heading in
                 guard let made = view as? Made else { return [] }
 
                 var applied: Set<Prop> = []
@@ -135,7 +138,8 @@
                     applied.insert(key)
                 }
 
-                let values = ElementValues<Realized>(changed: changed, reading: read, carriedIn: carried)
+                let values = ElementValues<Realized>(
+                    changed: changed, reading: read, carriedIn: carried, heading: heading)
 
                 for whole in wholes where !whole.keys.isDisjoint(with: changed) {
                     whole.apply(made, values)
@@ -192,13 +196,15 @@
     ///   - send: given each event the view raises, and what it carries.
     ///   - carry: given each value the user changed in the view: the property, the
     ///     event to raise for it, and the value.
+    ///   - made: the patch the element is made from, which its reports hand on.
     /// - Returns: the view, or nil.
     public func makeView(
         for type: NodeType,
         sending send: @escaping (Event, [HostValue]) -> Void,
-        reporting carry: @escaping (Prop, Event, HostValue) -> Void
+        reporting carry: @escaping (Prop, Event, HostValue) -> Void,
+        made: HostPatch? = nil
     ) -> View? {
-        entries[type].flatMap { $0.make(send, carry) }
+        entries[type].flatMap { $0.make(send, carry, made) }
     }
 
     /// Puts what changed - a patch's properties, or a display frame's moving
@@ -216,6 +222,8 @@
     ///   - read: the element's current value for a key, as the host presents
     ///     it.
     ///   - carried: whether a key's value is carried in - the host's to write.
+    ///   - heading: where a key's value is headed - the destination of the
+    ///     journey a state carries it on, nil where none does.
     /// - Returns: the properties a registration took.
     @discardableResult
     public func apply(
@@ -223,9 +231,10 @@
         to view: View,
         of type: NodeType,
         reading read: @escaping (Prop) -> HostValue?,
-        carriedIn carried: @escaping (Prop) -> Bool = { _ in false }
+        carriedIn carried: @escaping (Prop) -> Bool = { _ in false },
+        heading: @escaping (Prop) -> HostValue? = { _ in nil }
     ) -> Set<Prop> {
-        entries[type]?.apply(view, changed, read, carried) ?? []
+        entries[type]?.apply(view, changed, read, carried, heading) ?? []
     }
 
     /// The node types of the children the view of a `type` draws itself, in registration order - a child of one

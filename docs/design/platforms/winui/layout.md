@@ -109,7 +109,7 @@ told right to left under one left to right is drawn mirrored whole: a panel
 would mirror its places a second time, and a picture, a figure or a gradient
 would be turned. So a control takes its element's direction - its words, the
 side its mark stands on, the end a slider fills from - and a layout and a
-drawing (a picture, a figure, a canvas, a colour box, the activity ring) stand
+drawing (a picture, a figure, a canvas, the activity ring) stand
 left to right, written so, never inherited. An ItemsView's items are placed
 by WinUI's own list, which takes the element's direction - a grid fills from
 the right - while each cell's content stands by the same rule. A web view stands left to right: its page says its own direction. A

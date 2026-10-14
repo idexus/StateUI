@@ -4,6 +4,7 @@ import StateUI
 struct StyleSample: SampleContent, ExampleContent {
     // listing: StyleSample
     @State private var enabled = true
+    @State private var platformLook = false
     // listing: end
 
     static let id = "styles"
@@ -14,15 +15,18 @@ struct StyleSample: SampleContent, ExampleContent {
 
     // listing: StyleSample
     var body: some View {
-        VStack {
+        // The gallery's styles, or the platform's own look.
+        let look: StyleKey<Button>? = platformLook ? .platform : nil
+
+        return VStack {
             DebugInfoLabel()
 
             // Neither of these says anything of its own look: the violet, the
             // corners and the padding come from Style<Button> in AppStyles.swift,
             // which every button wears.
             HStack {
-                Button("Save")
-                Button("Cancel")
+                Button("Save").style(look)
+                Button("Cancel").style(look)
             }
             .spacing(12)
             .horizontalAlignment(.center)
@@ -31,6 +35,7 @@ struct StyleSample: SampleContent, ExampleContent {
             // the control enter one is what .onVisualStateChanged is for, next
             // door in the Visual states sample.
             Button(enabled ? "Enabled" : "Disabled")
+                .style(look)
                 .isEnabled(enabled)
                 .horizontalAlignment(.center)
                 .onClicked {}
@@ -46,20 +51,23 @@ struct StyleSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalAlignment(.center)
 
-            SectionTitle("A style for every control of a type")
-
-            // None of these names a colour: a style with no key is implicit,
-            // and every ColorBox wears the one `Style<ColorBox>()` gives.
             HStack {
-                ColorBox()
-                    .width(40)
-                    .height(40)
-                ColorBox()
-                    .width(40)
-                    .height(40)
-                ColorBox()
-                    .width(40)
-                    .height(40)
+                Text("Platform look")
+                    .verticalAlignment(.center)
+
+                Switch($platformLook)
+                    .accessibilityLabel("Platform look")
+            }
+            .spacing(12)
+            .horizontalAlignment(.center)
+
+            SectionTitle("A style for a role")
+
+            // Each wears the style its role chooses, over the one every button
+            // wears: the role's style says only what the role changes.
+            HStack {
+                Button("Keep").style(look).role(.cancel)
+                Button("Delete").style(look).role(.destructive)
             }
             .spacing(12)
             .horizontalAlignment(.center)
@@ -90,12 +98,17 @@ struct StyleSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("\"Save\" and \"Cancel\" say nothing of their look: both wear the gallery's "
-                + "`Style<Button>()`, which every button wears.")
+                + "`Style<Button>()`, which every button wears. Platform look shows them in the platform's own.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("\"Keep\" and \"Delete\" wear `Style<Button>(role:)`, the style of their role, standing over "
+                + "`Style<Button>()`: each says only what its role changes.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Text("A style with no key is implicit: every control of its type wears it, "
-                + "as every ColorBox here wears `Style<ColorBox>()`. `Headline` has a key "
+                + "as every button here wears `Style<Button>()`. `Headline` has a key "
                 + "and is asked for by name, and a keyed style REPLACES the implicit one, "
                 + "so it says everything it needs.")
                 .fontSize(12)

@@ -20,13 +20,13 @@ final class GTKShapeViewTests: XCTestCase {
         XCTAssertEqual(colours, [Self.red, Self.red, 0])
     }
 
-    /// A corner wider than half a side is held to half of each side it rounds (`BoxArithmetic.fitted`): a long room's
-    /// corner is an ellipse's quarter, as long as half its width and as tall as half its height.
-    func testACornerIsHeldToHalfOfEachSide() throws {
-        let colours = try drawn(width: 100, height: 20, at: [(12, 2), (50, 10)]) {
+    /// A corner wider than half the shorter side is held to it (`BoxArithmetic.fitted`): a long room's ends are
+    /// rounded whole, a capsule, never an oval.
+    func testACornerIsHeldToHalfTheShorterSide() throws {
+        let colours = try drawn(width: 100, height: 20, at: [(1, 1), (12, 2), (50, 10)]) {
             Rectangle().fill(Color("#FF0000")).cornerRadius(50).width(100).height(20)
         }
-        XCTAssertEqual(colours, [0, Self.red], "outside the long corner's curve, where a round one would have filled")
+        XCTAssertEqual(colours, [0, Self.red, Self.red], "beyond the round corner; within the end an oval would leave empty")
     }
 
     /// An ellipse fills its room, and nothing beyond its curve.

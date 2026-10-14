@@ -213,7 +213,8 @@ title's place (`chromeTitleView`); the title area and the bars' colours the
 path declares ([the bar a path declares](#the-bar-a-path-declares)); the menus
 its path declares
 (`chromeMenus`); and the sidebar's toggle where the window shows a split view. A host lays these out
-in its own chrome. A host whose pages each stand under a header bar of their
+in its own chrome. A page saying it shows no title (`showsTitle`) still names the window to the system and
+the way back from the page above it; the chrome shows none for it. A host whose pages each stand under a header bar of their
 own takes the same parts page by page: a page's actions (`chromeActions`),
 its title view (`chromeTitleView`), and its bar's colours and the line under its title.
 
@@ -230,3 +231,17 @@ own, each entry with its caption, its picture, whether the user can choose
 it, whether choosing it destroys something and its identifier; a menu bar
 holds only its menus. A host builds its toolkit's menu
 from the walk, and an item's element hears it chosen.
+
+## A checked entry
+
+An item may stand checked or not (`MenuItemContract.isOn`), which each host
+shows as its toolkit marks a setting - a check beside it. Choosing such an
+item is one rule on every host (`MountedElement.chosen`): it turns the other
+way first - `toggled` with the way it turned to, written through a binding -
+and then it is clicked. An item that says neither way is only clicked, and
+shows no mark.
+
+A menu is walked from the tree, never a channel of its own, so the two-way
+`isOn($state)` reads its state where the menu is built: the state turning
+builds that body again, and the walk shows the new mark on every host the
+same way a caption changing does.

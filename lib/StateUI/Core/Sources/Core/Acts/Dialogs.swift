@@ -19,14 +19,16 @@ public enum Dialogs {
     /// - Parameters:
     ///   - title: what the alert is about, in bold.
     ///   - message: the sentence under it.
-    ///   - cancel: the one button's caption.
+    ///   - cancel: the one button's caption; nil says "OK" in the system's language, as the platform's own
+    ///     buttons do.
     /// - Throws: `StateUIError` when there is no page on screen to show it.
     public static func alert(
         _ title: String,
         message: String,
-        cancel: String = "OK"
+        cancel: String? = nil
     ) async throws {
-        try await stateUICall(ApplicationContract.alert, title, message, cancel)
+        let words = await LibraryWords.inSystemLanguage
+        try await stateUICall(ApplicationContract.alert, title, message, cancel ?? words.ok)
     }
 
     /// Asks the user a yes-or-no question.
@@ -87,8 +89,8 @@ public enum Dialogs {
     /// - Parameters:
     ///   - title: what is being asked for, in bold.
     ///   - message: the sentence under it.
-    ///   - accept: the confirming button's caption.
-    ///   - cancel: the dismissing button's caption.
+    ///   - accept: the confirming button's caption; nil says "OK" in the system's language.
+    ///   - cancel: the dismissing button's caption; nil says "Cancel" in the system's language.
     ///   - placeholder: what the field says while it is empty. Nil for nothing.
     ///   - initialValue: what the field starts holding.
     ///   - maximumLength: how many characters the field accepts. Nil for no limit.
@@ -99,12 +101,13 @@ public enum Dialogs {
     /// - Throws: `StateUIError` when there is no page on screen to show it.
     public static func prompt(
         _ title: String, message: String = "",
-        accept: String = "OK", cancel: String = "Cancel",
+        accept: String? = nil, cancel: String? = nil,
         placeholder: String? = nil, initialValue: String = "",
         maximumLength: Int? = nil, inputPurpose: InputPurpose = .default
     ) async throws -> String? {
-        try await stateUICall(
-            ApplicationContract.prompt, title, message, accept, cancel, placeholder, maximumLength,
-            inputPurpose, initialValue)
+        let words = await LibraryWords.inSystemLanguage
+        return try await stateUICall(
+            ApplicationContract.prompt, title, message, accept ?? words.ok, cancel ?? words.cancel, placeholder,
+            maximumLength, inputPurpose, initialValue)
     }
 }

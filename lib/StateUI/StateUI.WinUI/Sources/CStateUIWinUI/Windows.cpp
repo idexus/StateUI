@@ -80,7 +80,7 @@ namespace {
     }
 
     /// The window's way back - the mouse's back button, Alt+Left and the Back key - chosen on its chrome as -1; and
-    /// Escape, which takes a sheet away.
+    /// Escape, chosen as -3, which the host hands the way out in sight, else a sheet's going.
     void takeTheWayBack(controls::Grid const &grid, int64_t chrome) {
         // The window's keys, not a control's: no tip says them under the pointer over everything it holds.
         grid.KeyboardAcceleratorPlacementMode(xaml::Input::KeyboardAcceleratorPlacementMode::Hidden);
@@ -108,13 +108,27 @@ namespace {
         accelerate(VirtualKey::Left, VirtualKeyModifiers::Menu);
         accelerate(VirtualKey::GoBack, VirtualKeyModifiers::None);
 
-        // Escape takes the top sheet away, chosen on the chrome as -3; with no sheet it is left to whatever has it.
+        // A key a view takes reaches it before the element holding the focus has it: the host decides.
+        grid.PreviewKeyDown(guarded("handling PreviewKeyDown",
+            [chrome](IInspectable const &, xaml::Input::KeyRoutedEventArgs const &args) {
+            using winrt::Microsoft::UI::Input::InputKeyboardSource;
+            using winrt::Windows::UI::Core::CoreVirtualKeyStates;
+            auto down = [](VirtualKey key) {
+                auto state = static_cast<uint32_t>(InputKeyboardSource::GetKeyStateForCurrentThread(key));
+                return (state & static_cast<uint32_t>(CoreVirtualKeyStates::Down)) != 0;
+            };
+            // VirtualKeyModifiers' bits: Control 1, Menu (Alt) 2, Shift 4.
+            int32_t modifiers = (down(VirtualKey::Control) ? 1 : 0) | (down(VirtualKey::Menu) ? 2 : 0)
+                | (down(VirtualKey::Shift) ? 4 : 0);
+            if (callbacks.keyTaken(chrome, static_cast<int32_t>(args.Key()), modifiers)) args.Handled(true);
+        }));
+
+        // Escape is the window's: WinUI invokes one accelerator for a key, and the root's is found before a
+        // control's, so the host decides - the way out in sight presses, else the top sheet goes.
         xaml::Input::KeyboardAccelerator escape;
         escape.Key(VirtualKey::Escape);
         escape.Invoked(guarded("handling Invoked",
             [chrome](auto const &, xaml::Input::KeyboardAcceleratorInvokedEventArgs const &args) {
-            auto root = args.Element().try_as<controls::Grid>();
-            if (!root || !showsSheets(root)) return;
             callbacks.chosen(chrome, -3);
             args.Handled(true);
         }));

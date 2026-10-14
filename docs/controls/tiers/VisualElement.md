@@ -14,9 +14,9 @@ Button("Send")
     .accessibilityHint("Sends the message")
 ```
 
-Wears: [PropertyContainer](PropertyContainer.md)
+Wears: [AutomationElement](AutomationElement.md)
 
-Worn by: [ActivityIndicator](../ActivityIndicator.md) · [Button](../Button.md) · [Canvas](../Canvas.md) · [CheckBox](../CheckBox.md) · [ColorBox](../ColorBox.md) · [DatePicker](../DatePicker.md) · [Ellipse](../Ellipse.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [Image](../Image.md) · [ItemsView](../ItemsView.md) · [Line](../Line.md) · [Map](../Map.md) · [Path](../Path.md) · [Picker](../Picker.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [ProgressBar](../ProgressBar.md) · [RadioButton](../RadioButton.md) · [Rectangle](../Rectangle.md) · [ScrollView](../ScrollView.md) · [SearchField](../SearchField.md) · [Slider](../Slider.md) · [Stepper](../Stepper.md) · [Switch](../Switch.md) · [Text](../Text.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TimePicker](../TimePicker.md) · [VStack](../VStack.md) · [WebView](../WebView.md) · [ZStack](../ZStack.md)
+Worn by: [ActivityIndicator](../ActivityIndicator.md) · [Button](../Button.md) · [Canvas](../Canvas.md) · [Capsule](../Capsule.md) · [CheckBox](../CheckBox.md) · [DatePicker](../DatePicker.md) · [Divider](../Divider.md) · [Ellipse](../Ellipse.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [Image](../Image.md) · [ItemsView](../ItemsView.md) · [Line](../Line.md) · [Map](../Map.md) · [Path](../Path.md) · [Picker](../Picker.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [ProgressBar](../ProgressBar.md) · [RadioButton](../RadioButton.md) · [Rectangle](../Rectangle.md) · [ScrollView](../ScrollView.md) · [SearchField](../SearchField.md) · [Slider](../Slider.md) · [Spacer](../Spacer.md) · [Stepper](../Stepper.md) · [Switch](../Switch.md) · [Text](../Text.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TimePicker](../TimePicker.md) · [VStack](../VStack.md) · [WebView](../WebView.md) · [ZStack](../ZStack.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Tiers/VisualElementContract.swift`.
 
@@ -29,13 +29,11 @@ How each of them realizes these members is on its own page.
 | `accessibilityLabel` | property | `String` | native |
 | `automationExcludedWithChildren` | property | `Bool` | native |
 | `background` | property | `Material` | adaptive |
-| `focus` | act | `() -> Bool` |  |
 | `frame` | property | `Rect` | structure |
 | `height` | property | `Double` | native |
 | `ignoresInput` | property | `Bool` | native |
 | `isAccessibilityHidden` | property | `Bool` | native |
 | `isEnabled` | property | `Bool` | native |
-| `isFocusedChanged` | event | `Bool` | native |
 | `isVisible` | property | `Bool` | native |
 | `layoutDirection` | property | `LayoutDirection` | native |
 | `maximumHeight` | property | `Double` | native |
@@ -52,8 +50,8 @@ How each of them realizes these members is on its own page.
 | `scaleX` | property | `Double` | native |
 | `scaleY` | property | `Double` | native |
 | `style` | property | `Name` | structure |
+| `tooltip` | property | `String` | native |
 | `translationX` | property | `Double` | native |
 | `translationY` | property | `Double` | native |
-| `unfocus` | act | `() -> Void` |  |
 | `width` | property | `Double` | native |
 | `zIndex` | property | `Int` | native |

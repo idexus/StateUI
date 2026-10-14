@@ -35,9 +35,10 @@ final class WinUITitleBarView: WinUIView {
         let light = chrome.background.flatMap(BandWords.light(on:))
         // A declared title area stands in the title's place, as an application names itself on WinUI's title bar.
         let area = chrome.titleArea
-        let icon = WinUIStrings.lines(area?.icon.map(PictureArithmetic.files(for:)) ?? [])
+        let icon = WinUIStrings.lines(WinUIPictures.lines(area?.icon))
+        let title = area?.title ?? (chrome.showsTitle ? chrome.title : "")
         stateui_winui_title_bar_set(
-            handle, area?.title ?? chrome.title, area?.subtitle ?? "", icon, chrome.back != nil,
+            handle, title, area?.subtitle ?? "", icon, chrome.back != nil,
             chrome.sidebarToggle != nil, background != nil, background ?? 0, foreground != nil, foreground ?? 0,
             light.map { $0 ? 1 : 2 } ?? 0)
 
@@ -52,9 +53,12 @@ final class WinUITitleBarView: WinUIView {
             WinUIStrings.withCStrings(actions.map(\.title)) { titles in
                 WinUIStrings.withCStrings(actions.map { $0.identifier ?? "" }) { identifiers in
                     WinUIStrings.withCStrings(actions.map { WinUIStrings.lines($0.icon) }) { icons in
+                        let spelled = actions.map { $0.shortcut.flatMap(WinUIKeys.spelled) ?? (key: 0, modifiers: 0) }
                         stateui_winui_title_bar_set_actions(
                             handle, titles, identifiers, icons, actions.map(\.showsWords), actions.map(\.isDestructive),
-                            places, leading, actions.map(\.isEnabled), Int32(actions.count))
+                            places, leading, actions.map(\.isEnabled), spelled.map(\.key), spelled.map(\.modifiers),
+                            actions.map { $0.shortcut.map(KeyboardShortcuts.givesWayToTyping) ?? false },
+                            Int32(actions.count))
                     }
                 }
             }
@@ -66,12 +70,17 @@ final class WinUITitleBarView: WinUIView {
         if previous.center !== chrome.center { stateui_winui_title_bar_set_title_view(handle, chrome.center?.handle) }
     }
 
+    /// A key went down in the window, before the element holding the focus has it: whether a view took it.
+    func takesKey(key: Int32, modifiers: Int32) -> Bool {
+        WinUIKeys.shortcut(key: key, modifiers: modifiers).map { chrome.takeKey?($0) == true } ?? false
+    }
+
     /// The user pressed the way back (-1), the sidebar's toggle (-2), Escape (-3), or an action by its place.
     override func chose(_ index: Int) {
         switch index {
         case -1: if let sheet = chrome.sheet { sheet.back() } else { chrome.back?.perform() }
         case -2: chrome.sidebarToggle?()
-        case -3: chrome.sheet?.dismiss()
+        case -3: if chrome.escape?() != true { chrome.sheet?.dismiss() }
         default: if drawn.indices.contains(index), drawn[index].isEnabled { drawn[index].perform() }
         }
     }

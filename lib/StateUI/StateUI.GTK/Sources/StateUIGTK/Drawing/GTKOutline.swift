@@ -5,17 +5,16 @@
 @_spi(Host) import StateUIHost
 import CStateUIGTK
 
-/// An outline over a size as GSK's rounded rectangle: a rectangle, one with rounded corners, or an ellipse.
+/// An outline over a size as GSK's rounded rectangle: a rectangle, one with rounded corners, a capsule, or an
+/// ellipse.
 extension ContainerShape {
-    /// The outline over `bounds`, each corner fitted to the room (`BoxArithmetic.fitted`).
+    /// The outline over `bounds`, its corners rounded as far as the room holds them (`BoxArithmetic.cornerRadius`).
     func rounded(_ bounds: graphene_rect_t) -> GskRoundedRect {
         let (width, height) = (Double(bounds.size.width), Double(bounds.size.height))
-        let fitted: (width: Double, height: Double) = switch self {
-        case .rectangle: (0, 0)
-        case .roundedRectangle(let radius): BoxArithmetic.fitted(radius, width: width, height: height)
-        case .ellipse: (width / 2, height / 2)
-        }
-        let corner = graphene_size_t(width: Float(fitted.width), height: Float(fitted.height))
+        let radius = BoxArithmetic.cornerRadius(of: self, width: width, height: height)
+        let corner = self == .ellipse
+            ? graphene_size_t(width: Float(width / 2), height: Float(height / 2))
+            : graphene_size_t(width: Float(radius), height: Float(radius))
         return GTKOutline.rounded(bounds, corners: [corner, corner, corner, corner])
     }
 }

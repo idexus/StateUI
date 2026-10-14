@@ -48,6 +48,8 @@ private struct EveryPropertyPage: View {
                         .icon(ImageSource("mark.png"))
                         .isDestructive(true)
                         .isEnabled(false)
+                        .isOn(true)
+                        .keyboardShortcut("o")
                         .onClicked {}
 
                     Menu("Recent") {
@@ -55,12 +57,13 @@ private struct EveryPropertyPage: View {
                     }
                     .isEnabled(true)
 
-                    Divider()
+                    MenuSeparator()
                 }
                 .isEnabled(true)
             }
             // The page's own.
             .title("Everything")
+            .showsTitle(false)
             .icon(ImageSource("tab.png"))
             .pageBackground(.whiteSmoke)
             // What it asks of a NavigationStack.
@@ -104,6 +107,7 @@ private struct KnobPage: View {
     var body: some View {
         VStack { Button("dress").onClicked { on = true } }
             .title(on ? "On" : "Off")
+            .showsTitle(on)
             .icon(ImageSource(on ? "on.png" : "off.png"))
             .pageBackground(on ? .red : .whiteSmoke)
             .showsNavigationBar(on)
@@ -583,7 +587,7 @@ final class PageTests: XCTestCase {
         XCTAssertEqual(page.props, [
             "backButtonTitle": .string("Back"), "background": Color("#F5F5F5").propValue,
             "showsBackButton": .bool(false), "showsNavigationBar": .bool(false), "icon": .string("tab.png"),
-            "title": .string("Everything"),
+            "title": .string("Everything"), "showsTitle": .bool(false),
         ])
         XCTAssertEqual(page.eventNames, HostPatch.pageEvents)
         XCTAssertEqual(page.children.map(\.type), [.text])
@@ -601,7 +605,7 @@ final class PageTests: XCTestCase {
 
         // A menu at any depth: the bar's File holds an entry, a menu of its own and a line.
         let file = try XCTUnwrap(content.children.last?.children.first)
-        XCTAssertEqual(file.children.map(\.type), [.menuItem, .menu, .divider])
+        XCTAssertEqual(file.children.map(\.type), [.menuItem, .menu, .menuSeparator])
         XCTAssertEqual(file.children[1].children.first?.props, ["text": .string("Notes.txt")])
     }
 

@@ -80,8 +80,14 @@ final class WebRenderer {
             WebRelay.listener { [weak self] in self?.runtime.ending() },
         ]
         WebRelay.listenToPage(changed: pageListeners[0], leaving: pageListeners[1])
+        let shortcuts = WebRelay.listener { [weak self] in self?.pressedShortcut() }
+        let keys = WebRelay.listener { [weak self] in self?.pressedKey() }
+        pageListeners += [shortcuts, keys]
+        WebRelay.listen(WebRelay.body, "shortcut", shortcuts)
+        WebRelay.listen(WebRelay.body, "key", keys)
         runtime.start(
             realizing: WebRegistrations.registry.realization, unrealized: WebRealization.unmade,
+            register: WebRealization.register,
             environment: {
                 WebEnvironment.report(to: core, applicationName: applicationName)
                 pageListeners.append(WebEnvironment.watch { [weak self] in
@@ -92,6 +98,36 @@ final class WebRenderer {
             // The scenes kept when the page was left come back; else the window launch opens.
             windows: { scenes.restore(WebKeptValues.readScenes(applicationName), in: runtime) },
             turns: entryEnded)
+    }
+
+    /// A key going down before the element holding the keyboard has it, sent to a view taking it (`KeyPresses`) -
+    /// out from the element holding the focus, else from the page in front; where one takes it, nothing else hears
+    /// the key.
+    private func pressedKey() {
+        let told = (0...2).map { Int32(WebRelay.eventNumber($0)) }
+        guard let pressed = WebKeys.shortcut(named: told[0], character: told[1], held: told[2]),
+              let window = runtime.tree.root?.first(type: .window),
+              let controller = roster.windows.first(where: { $0.0 === window })?.1
+        else { return }
+        let holder = KeyPresses.holder(under: window) { held in
+            (held.native as? WebElement)?.view.map { WebRelay.holdsFocus($0.node) } ?? false
+        }
+        guard KeyPresses.press(
+            pressed.key, modifiers: pressed.modifiers, focused: holder, front: controller.presentation.frontPage,
+            in: runtime)
+        else { return }
+        WebRelay.takeEvent()
+    }
+
+    /// A key pressed in the page reaching the element of the window stating it as a shortcut; where one takes it,
+    /// the browser does nothing more with the key.
+    private func pressedShortcut() {
+        let told = (0...3).map { Int32(WebRelay.eventNumber($0)) }
+        guard let shortcut = WebKeys.shortcut(named: told[0], character: told[1], held: told[2]),
+              let window = runtime.tree.root?.first(type: .window),
+              KeyboardShortcuts.press(shortcut, under: window, in: runtime, typing: told[3] != 0)
+        else { return }
+        WebRelay.takeEvent()
     }
 
     /// Every call from the page ends with a turn, and asks the page to call again where work is left or a job kept
@@ -160,5 +196,9 @@ extension WebRenderer: HostPresenter {
 
     func perform(_ call: HostActCall) {
         acts.perform(call)
+    }
+
+    func focus(_ element: MountedElement) {
+        acts.focus(element)
     }
 }

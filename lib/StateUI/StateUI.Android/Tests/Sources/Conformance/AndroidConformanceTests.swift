@@ -16,8 +16,8 @@ final class AndroidConformanceTests: XCTestCase {
             ("testActivityIndicator", testActivityIndicator),
             ("testButton", testButton),
             ("testCanvas", testCanvas),
+            ("testCapsule", testCapsule),
             ("testCheckBox", testCheckBox),
-            ("testColorBox", testColorBox),
             ("testDatePicker", testDatePicker),
             ("testEllipse", testEllipse),
             ("testGrid", testGrid),
@@ -37,6 +37,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testItemsView", testItemsView),
             ("testSearchField", testSearchField),
             ("testSlider", testSlider),
+            ("testSpacer", testSpacer),
             ("testStepper", testStepper),
             ("testSwitch", testSwitch),
             ("testTextEditor", testTextEditor),
@@ -47,10 +48,12 @@ final class AndroidConformanceTests: XCTestCase {
             ("testZStack", testZStack),
             ("testApplication", testApplication),
             ("testContextMenu", testContextMenu),
+            ("testButtonMenu", testButtonMenu),
             ("testMenu", testMenu),
             ("testMenuBar", testMenuBar),
             ("testMenuItem", testMenuItem),
             ("testDivider", testDivider),
+            ("testMenuSeparator", testMenuSeparator),
             ("testModalStack", testModalStack),
             ("testNavigationStack", testNavigationStack),
             ("testOverlay", testOverlay),
@@ -65,23 +68,28 @@ final class AndroidConformanceTests: XCTestCase {
             ("testToolbarItem", testToolbarItem),
             ("testToolbarItemGroup", testToolbarItemGroup),
             ("testWindow", testWindow),
-            ("testPropertyContainer", testPropertyContainer),
+            ("testAutomationElement", testAutomationElement),
             ("testVisualElement", testVisualElement),
             ("testView", testView),
             ("testLayout", testLayout),
             ("testStack", testStack),
             ("testTextInput", testTextInput),
             ("testShape", testShape),
+            ("testFilledShape", testFilledShape),
+            ("testCorneredShape", testCorneredShape),
             ("testTextualElement", testTextualElement),
             ("testTextStyleElement", testTextStyleElement),
             ("testFontElement", testFontElement),
             ("testTextAlignmentElement", testTextAlignmentElement),
             ("testLineHeightElement", testLineHeightElement),
+            ("testTrackingElement", testTrackingElement),
             ("testDecorableTextElement", testDecorableTextElement),
             ("testPaddingElement", testPaddingElement),
             ("testBorderElement", testBorderElement),
             ("testImageElement", testImageElement),
             ("testTintElement", testTintElement),
+            ("testKeyboardElement", testKeyboardElement),
+            ("testFocusElement", testFocusElement),
             ("testBarElement", testBarElement),
             ("testMenuItemElement", testMenuItemElement),
             ("testPageElement", testPageElement),
@@ -92,8 +100,9 @@ final class AndroidConformanceTests: XCTestCase {
     func testActivityIndicator() throws { try conform(ActivityIndicatorTests.self) }
     func testButton() throws { try conform(ButtonTests.self) }
     func testCanvas() throws { try conform(CanvasTests.self) }
+    func testCapsule() throws { try conform(CapsuleTests.self) }
     func testCheckBox() throws { try conform(CheckBoxTests.self) }
-    func testColorBox() throws { try conform(ColorBoxTests.self) }
+    func testSpacer() throws { try conform(SpacerTests.self) }
     func testDatePicker() throws { try conform(DatePickerTests.self) }
     func testEllipse() throws { try conform(EllipseTests.self) }
     func testGrid() throws { try conform(GridTests.self) }
@@ -123,10 +132,12 @@ final class AndroidConformanceTests: XCTestCase {
     func testZStack() throws { try conform(ZStackTests.self) }
     func testApplication() throws { try conform(ApplicationTests.self) }
     func testContextMenu() throws { try conform(ContextMenuTests.self) }
+    func testButtonMenu() throws { try conform(ButtonMenuTests.self) }
     func testMenu() throws { try conform(MenuTests.self) }
     func testMenuBar() throws { try conform(MenuBarTests.self) }
     func testMenuItem() throws { try conform(MenuItemTests.self) }
     func testDivider() throws { try conform(DividerTests.self) }
+    func testMenuSeparator() throws { try conform(MenuSeparatorTests.self) }
     func testModalStack() throws { try conform(ModalStackTests.self) }
     func testNavigationStack() throws { try conform(NavigationStackTests.self) }
     func testOverlay() throws { try conform(OverlayTests.self) }
@@ -141,23 +152,28 @@ final class AndroidConformanceTests: XCTestCase {
     func testToolbarItem() throws { try conform(ToolbarItemTests.self) }
     func testToolbarItemGroup() throws { try conform(ToolbarItemGroupTests.self) }
     func testWindow() throws { try conform(WindowTests.self) }
-    func testPropertyContainer() throws { try conform(PropertyContainerTests.self) }
+    func testAutomationElement() throws { try conform(AutomationElementTests.self) }
     func testVisualElement() throws { try conform(VisualElementTests.self) }
     func testView() throws { try conform(ViewTests.self) }
     func testLayout() throws { try conform(LayoutTests.self) }
     func testStack() throws { try conform(StackTests.self) }
     func testTextInput() throws { try conform(TextInputTests.self) }
     func testShape() throws { try conform(ShapeTests.self) }
+    func testFilledShape() throws { try conform(FilledShapeTests.self) }
+    func testCorneredShape() throws { try conform(CorneredShapeTests.self) }
     func testTextualElement() throws { try conform(TextualElementTests.self) }
     func testTextStyleElement() throws { try conform(TextStyleElementTests.self) }
     func testFontElement() throws { try conform(FontElementTests.self) }
     func testTextAlignmentElement() throws { try conform(TextAlignmentElementTests.self) }
     func testLineHeightElement() throws { try conform(LineHeightElementTests.self) }
+    func testTrackingElement() throws { try conform(TrackingElementTests.self) }
     func testDecorableTextElement() throws { try conform(DecorableTextElementTests.self) }
     func testPaddingElement() throws { try conform(PaddingElementTests.self) }
     func testBorderElement() throws { try conform(BorderElementTests.self) }
     func testImageElement() throws { try conform(ImageElementTests.self) }
     func testTintElement() throws { try conform(TintElementTests.self) }
+    func testKeyboardElement() throws { try conform(KeyboardElementTests.self) }
+    func testFocusElement() throws { try conform(FocusElementTests.self) }
     func testBarElement() throws { try conform(BarElementTests.self) }
     func testMenuItemElement() throws { try conform(MenuItemElementTests.self) }
     func testPageElement() throws { try conform(PageElementTests.self) }

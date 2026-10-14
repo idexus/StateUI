@@ -10,12 +10,15 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/drawing.md#a-shape-and-its-brush
 @MainActor
 final class AndroidShapeDrawable {
-    /// A shape's outline: a rectangle, one with rounded corners, or an ellipse.
+    /// A shape's outline: a rectangle, one with rounded corners, a capsule, or an ellipse.
     enum Shape: Equatable {
         case rectangle
 
         /// The corners' radii in points, clockwise from the top left.
         case rounded([Double])
+
+        /// Ends rounded whole, by half the shorter side of the size it is drawn at.
+        case capsule
 
         case ellipse
 
@@ -24,13 +27,9 @@ final class AndroidShapeDrawable {
             switch BoxArithmetic.outline(value) {
             case .rectangle: self = .rectangle
             case .roundedRectangle(let radius): self = .rounded([radius, radius, radius, radius])
+            case .capsule: self = .capsule
             case .ellipse: self = .ellipse
             }
-        }
-
-        /// A box's own corners; a rectangle where none are said.
-        init(corners: CornerRadius?) {
-            self = corners == nil ? .rectangle : .rounded(BoxArithmetic.clockwise(corners))
         }
 
         /// The Java side's kind, and each corner's width and height in pixels, clockwise from the top left: no more
@@ -39,12 +38,15 @@ final class AndroidShapeDrawable {
             switch self {
             case .rectangle: (0, Array(repeating: 0, count: 8))
             case .ellipse: (2, Array(repeating: 0, count: 8))
+            case .capsule:
+                (1, Array(repeating: Float(size.map {
+                    BoxArithmetic.cornerRadius(of: .capsule, width: $0.width, height: $0.height)
+                } ?? 0), count: 8))
             case .rounded(let radii):
                 (1, radii.flatMap { radius -> [Float] in
                     let pixels = radius * density
-                    guard let size else { return [Float(pixels), Float(pixels)] }
-                    let fitted = BoxArithmetic.fitted(pixels, width: size.width, height: size.height)
-                    return [Float(fitted.width), Float(fitted.height)]
+                    let fitted = size.map { BoxArithmetic.fitted(pixels, width: $0.width, height: $0.height) } ?? pixels
+                    return [Float(fitted), Float(fitted)]
                 })
             }
         }

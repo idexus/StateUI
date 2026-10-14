@@ -4,17 +4,14 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `TextStyleElementContract` on a host: words stand in the colour and with the spacing between their letters the
-/// tree gives them, and those it changes them to - on every element wearing the tier.
+/// `TextStyleElementContract` on a host: words stand in the colour the tree gives them, and the one it changes them
+/// to - on every element wearing the tier.
 @_spi(Host) public enum TextStyleElementTests: ConformanceFamily {
     public static let name = "TextStyleElement"
 
     public static var cases: [ConformanceCase] {
-        Specimens.wearing(TextStyleElementContract.self).flatMap { element in
-            [
-                Aspects.holds(TextStyleElementContract.textColor, on: element, .red, then: .blue, with: Words.on(element)),
-                Aspects.holds(TextStyleElementContract.tracking, on: element, 0, then: 2, with: Words.on(element)),
-            ]
+        Specimens.wearing(TextStyleElementContract.self).map { element in
+            Aspects.holds(TextStyleElementContract.textColor, on: element, .red, then: .blue, with: Words.on(element))
         }
     }
 }
@@ -22,12 +19,13 @@
 /// The words a specimen shows, where it shows words of its own.
 @MainActor
 enum Words {
-    /// What `element`'s specimen wears to show words: its text where it has one, its choices where it chooses.
+    /// What `element`'s specimen wears to show words: its text where it has one, its choices where it chooses;
+    /// nothing where it shows no words of its own - a layout, a date.
     static func on(_ element: String) -> [any Worn] {
-        switch element {
-        case "Picker": [Write(PickerContract.options, ["Some words"]), Write(PickerContract.selectedIndex, 0)]
-        case "DatePicker", "TimePicker": []
-        default: [Write(TextualElementContract.text, "Some words")]
+        if element == "Picker" {
+            return [Write(PickerContract.options, ["Some words"]), Write(PickerContract.selectedIndex, 0)]
         }
+        guard Specimens.wearing(TextualElementContract.self).contains(element) else { return [] }
+        return [Write(TextualElementContract.text, "Some words")]
     }
 }

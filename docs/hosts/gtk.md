@@ -41,8 +41,8 @@ The host builds on Linux, on arm64 or x64:
   toolchain's LLDB takes the Python library of the distribution it was built
   for, so on another one install that library (a toolchain built for UBI 9
   takes `libpython3.9`, `python39` from the AUR on Arch);
-- GTK 4.14 and libadwaita 1.5 or newer, with their headers and pkg-config -
-  on Ubuntu 24.04 or newer, `libgtk-4-dev` and `libadwaita-1-dev`;
+- GTK 4.20 and libadwaita 1.5 or newer, with their headers and pkg-config -
+  on Ubuntu 26.04 or newer, `libgtk-4-dev` and `libadwaita-1-dev`;
 - gdk-pixbuf's SVG loader, through which GTK reads a vector picture -
   `librsvg2-common`, which a desktop has and a minimal system may not; from
   gdk-pixbuf 2.44, which reads pictures through glycin, glycin's loaders

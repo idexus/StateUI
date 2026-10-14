@@ -15,12 +15,62 @@ final class WebButtonView: WebDOMView, WebWordsView {
     private var picture: WebImageView?
     private var text = ""
 
+    /// A split button's arrow, the part opening its menu; nil for any other button.
+    private var arrow: WebDOMView?
+
+    /// Whether the click under way landed on the arrow, which opened the menu in place of clicking the button.
+    private var arrowClicked = false
+
     init() {
         super.init(tag: "button")
         attribute("type", "button")
         attribute("class", "stateui-button")
         WebRelay.insert(words.node, into: node, at: 0)
-        listen("click") { [weak self] in self?.onClicked() }
+        listen("click") { [weak self] in
+            guard let self else { return }
+            if arrowClicked {
+                arrowClicked = false
+                return
+            }
+            if let opensMenu { opensMenu() } else { onClicked() }
+        }
+    }
+
+    /// What opens the button's menu where a click opens it; nil where the click is the button's own.
+    private var opensMenu: (() -> Void)?
+
+    /// Makes the button open its menu - by `open` - as `opening` says: its click; as a split button, its click its
+    /// own, its arrow - a part set off by a line - opening the menu; or held. A right click or a finger held opens a
+    /// split button's and a held one's.
+    /// Design: docs/design/platforms/web/controls.md#a-buttons-menu
+    func holdMenu(_ opening: ButtonMenuOpening, _ open: @escaping () -> Void) {
+        attribute("aria-haspopup", "menu")
+        attribute("data-menu", opening == .click ? "opens" : opening == .arrow ? "splits" : "held")
+        if opening == .click {
+            opensMenu = open
+            return
+        }
+        guard opening == .arrow else {
+            listen("menu") { open() }
+            return
+        }
+
+        let arrow = WebDOMView(tag: "span")
+        arrow.attribute("class", "stateui-split-arrow")
+        arrow.attribute("aria-hidden", "true")
+        // Last, after the words and a picture put before them.
+        WebRelay.insert(arrow.node, into: node, at: .max)
+        arrow.listen("click") { [weak self] in
+            self?.arrowClicked = true
+            open()
+        }
+        self.arrow = arrow
+        listen("menu") { open() }
+    }
+
+    /// Whether a button whose click opens its menu shows the `▾` saying so.
+    func showsMenuArrow(_ shows: Bool) {
+        attribute("data-bare", shows ? nil : "")
     }
 
     func setText(_ text: String) {
@@ -38,7 +88,7 @@ final class WebButtonView: WebDOMView, WebWordsView {
     /// The picture beside the words - before them, after, above or below, `spacing` apart, 8 where nil - or alone,
     /// filling the button as `aspect` says; none shows the words alone.
     func setIcon(_ source: ImageSource?, position: IconPosition, spacing: Double?, aspect: ContentMode) {
-        guard let source, !source.file.isEmpty else {
+        guard let source = HostPicture(source, dark: false) else {
             picture?.detach()
             picture = nil
             attribute("data-alone", nil)
@@ -47,7 +97,7 @@ final class WebButtonView: WebDOMView, WebWordsView {
         let shown = picture ?? WebImageView()
         if picture == nil { WebRelay.insert(shown.node, into: node, at: 0) }
         picture = shown
-        shown.apply(source: source, aspect: aspect)
+        shown.apply(picture: source, aspect: aspect)
         let direction: String? = switch position {
         case .leading: nil
         case .trailing: "row-reverse"
@@ -65,6 +115,7 @@ final class WebButtonView: WebDOMView, WebWordsView {
     override var isControl: Bool { true }
 
     override func detach() {
+        opensMenu = nil
         picture?.detach()
         words.detach()
         super.detach()

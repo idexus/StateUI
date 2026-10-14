@@ -6,9 +6,6 @@ public enum DecorableTextElementContract: Contract {
     /// The tier's name.
     public static let name = "DecorableTextElement"
 
-    /// Decorations are carried as a value in the tree.
-    public static let tiers: [any Contract.Type] = [PropertyContainerContract.self]
-
     /// Whether the text is underlined, struck through, or both.
     public static let textDecorations = ElementProperty<Self, TextDecorations>("textDecorations", layer: .native)
 

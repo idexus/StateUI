@@ -1,7 +1,7 @@
-# revision 5.1
+# revision 8.1
 Button.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
 Button.lineWidth: ✅
-Button.shape: ☑️ AppKit rounds an oval button into a capsule: a layer's corners draw no oval.
+Button.shape: ✅
 Button.stroke: ✅
 Grid.background: ✅
 Grid.lineWidth: ✅
@@ -11,13 +11,10 @@ HStack.background: ✅
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
-RadioButton.lineWidth: not realized
-RadioButton.shape: not realized
-RadioButton.stroke: not realized
 ScrollView.background: ☑️ AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
-ScrollView.stroke: ☑️ AppKit outlines a scroller in a colour on a rectangle or a rounded one; an oval, or a gradient, draws none.
+ScrollView.stroke: ☑️ AppKit outlines a scroller in one colour: a gradient draws none.
 VStack.background: ✅
 VStack.lineWidth: ✅
 VStack.shape: ✅

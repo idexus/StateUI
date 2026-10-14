@@ -2,13 +2,13 @@
 
 # TextAlignmentElement
 
-Where text sits inside the space its own element was given.
+Where text sits across the space its own element was given.
 
 ```swift
-Text("In the middle")
-    .horizontalTextAlignment(.center)
-    .verticalTextAlignment(.center)
-    .height(80)
+@State var amount = ""
+
+TextField($amount)
+    .horizontalTextAlignment(.end)
 ```
 
 Wears: [VisualElement](VisualElement.md)
@@ -22,4 +22,3 @@ How each of them realizes these members is on its own page.
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
 | `horizontalTextAlignment` | property | `TextAlignment` | native |
-| `verticalTextAlignment` | property | `TextAlignment` | native |

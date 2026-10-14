@@ -61,7 +61,9 @@ extension AppKitElement {
     /// Attaches the view's context menu slot to AppKit. The slot stays a child for identity and sparse updates, but
     /// never becomes a visual child in the native layout.
     func configureContextMenu() {
-        guard let view else { return }
+        // A button's menu is the menu it opens (configureButtonMenu).
+        let holdsMenu = (view as? AppKitButtonView).map { $0.opening != .none } ?? false
+        guard let view, !holdsMenu else { return }
         let items = slot(.contextMenu).map { AppKitMenus.items(MenuEntry.entries(of: $0.element)) } ?? []
         guard !items.isEmpty else {
             view.menu = nil
@@ -73,6 +75,14 @@ extension AppKitElement {
         menu.removeAllItems()
         for item in items { menu.addItem(item) }
         view.menu = menu
+    }
+}
+
+extension AppKitElement {
+    /// Gives a button holding a menu its menu's entries, AppKit's items standing on their elements.
+    func configureButtonMenu() {
+        guard let button = view as? AppKitButtonView, button.opening != .none else { return }
+        button.offer(AppKitMenus.items(ButtonMenu.entries(of: element)))
     }
 }
 
@@ -109,10 +119,14 @@ enum AppKitMenus {
         item.title = entry.title
         item.isEnabled = entry.isEnabled
         item.setAccessibilityIdentifier(entry.identifier)
-        item.image = entry.icon.flatMap { element.image(named: $0) }
+        item.image = entry.icon.flatMap { element.host?.image($0) }?.glyph(tinted: false)
         item.attributedTitle = NSAttributedString(
             string: entry.title, attributes: entry.isDestructive ? [.foregroundColor: NSColor.systemRed] : [:])
 
+        item.state = entry.isOn == true ? .on : .off
+        let spelled = entry.keyboardShortcut.map(AppKitKeys.equivalent(of:)) ?? (key: "", modifiers: [])
+        item.keyEquivalent = spelled.key
+        item.keyEquivalentModifierMask = spelled.modifiers
         if entry.kind == .item {
             item.target = element
             item.action = #selector(AppKitElement.clicked(_:))

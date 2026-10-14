@@ -38,6 +38,7 @@ extension AppKitDriver {
         case (.choose(let place), let items as AppKitItemsView): items.chooseForTesting(place)
         case (.scroll(let target), let items as AppKitItemsView): items.scrollForTesting(to: target)
         case (.activate, _): try activate(element, view)
+        case (.pressKeys(let shortcut), _): try pressKeys(shortcut, on: element, view)
         case (.toggle, let toggle as AppKitSwitchView): _ = toggle.accessibilityPerformPress()
         case (.toggle, let check as AppKitCheckBoxView): check.performClick(nil)
         case (.toggle, let radio as AppKitRadioButtonView): radio.performClick(nil)
@@ -57,7 +58,7 @@ extension AppKitDriver {
         case (.type(let words), let editor as AppKitTextEditorView): try type(words, into: editor.textView)
         case (.submit, let field as AppKitTextFieldView): try submit(field.textField)
         case (.submit, let search as AppKitSearchFieldView): try submit(search)
-        case (.choose(let place), let picker as AppKitPickerView): picker.chooseForTesting(index: place)
+        case (.choose(let place), let picker as any AppKitChoosing): picker.chooseForTesting(index: place)
         case (.choose(let place), let tabs as AppKitTabView): try choose(place, of: tabs, element)
         case (.open, let picker as AppKitPickerView): picker.menuWillOpen(NSMenu())
         case (.close, let picker as AppKitPickerView): picker.menuDidClose(NSMenu())
@@ -289,6 +290,30 @@ extension AppKitDriver {
         _ = drops.entered(at: view.convert(NSPoint(x: view.bounds.midX, y: view.bounds.midY), to: nil), carrying: carried, in: root)
         _ = drops.dropped(carried)
     }
+
+    /// A shortcut pressed while the element's window is in front: the key-down AppKit makes of it, offered to the
+    /// window's key equivalents, then the main menu's, then to the view holding the keyboard, as AppKit offers it.
+    private func pressKeys(_ shortcut: KeyboardShortcut, on element: MountedElement, _ view: NSView?) throws {
+        let spelled = AppKitKeys.equivalent(of: shortcut)
+        let controller = try? controller(of: element)
+        guard let window = view?.window ?? controller?.window ?? NSApp.windows.first(where: \.isVisible),
+              let event = NSEvent.keyEvent(
+                with: .keyDown, location: .zero, modifierFlags: spelled.modifiers, timestamp: 0,
+                windowNumber: window.windowNumber, context: nil, characters: spelled.key,
+                charactersIgnoringModifiers: spelled.key, isARepeat: false, keyCode: 0)
+        else { throw DriverCannot(.pressKeys(shortcut), on: element) }
+        // The window in front: its page's menus on the menu bar, as AppKit puts them there for the key window - and
+        // off it again, so no later window finds them.
+        if NSApp.mainMenu == nil { NSApp.mainMenu = StateUIAppKit.mainMenu(newWindow: nil) }
+        controller?.host?.installPageMenus(controller?.pageMenus ?? [])
+        defer { controller?.host?.installPageMenus([]) }
+        // The application's key monitor first, as AppKit hands it every key: one a view takes ends there.
+        guard let offered = AppKitWindow.offered(event) else { return }
+        if window.performKeyEquivalent(with: offered) || NSApp.mainMenu?.performKeyEquivalent(with: offered) == true {
+            return
+        }
+        window.sendEvent(offered)
+    }
 }
 
 extension NSPoint {
@@ -296,6 +321,5 @@ extension NSPoint {
     init(_ point: Point) {
         self.init(x: point.x, y: point.y)
     }
-
 }
 #endif

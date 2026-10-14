@@ -3,7 +3,7 @@
 
 @_spi(Host) import StateUI
 
-/// A box's outline and corners - a layout's, a button's, a colour box's, a rectangle's - as every host draws them.
+/// A box's outline and corners - a layout's, a button's, a rectangle's - as every host draws them.
 /// Design: docs/design/host/layout.md#a-box
 @_spi(Host) public enum BoxArithmetic {
     /// The corners' radii, clockwise from the top left - the order toolkits take them in, where StateUI names the
@@ -18,9 +18,28 @@
         return radii.map { $0.isFinite ? max(0, $0) : 0 }
     }
 
-    /// A corner's radius in a room `width` by `height`: no more than half the side it rounds.
-    public static func fitted(_ radius: Double, width: Double, height: Double) -> (width: Double, height: Double) {
-        (min(radius, width / 2), min(radius, height / 2))
+    /// A capsule's corners: a radius past any room - and past it still in a display's pixels - which a rectangle's
+    /// drawing fits to half its shorter side, so its ends round whole at every size.
+    /// Design: docs/design/host/layout.md#a-box
+    public static let capsule = CornerRadius.uniform(1_000_000)
+
+    /// A corner's radius in a room `width` by `height`: round, and no more than half the shorter side - so a radius
+    /// past half a wide box's height rounds its ends whole, a capsule, never an oval.
+    /// Design: docs/design/host/layout.md#a-box
+    public static func fitted(_ radius: Double, width: Double, height: Double) -> Double {
+        min(radius, width / 2, height / 2)
+    }
+
+    /// The radius `outline`'s corners round by in a room `width` by `height`: none for a rectangle, a rounded one's
+    /// as far as the room holds it, half the shorter side for a capsule; none for an oval, which has no corner and
+    /// is drawn as an oval.
+    /// Design: docs/design/host/layout.md#a-box
+    public static func cornerRadius(of outline: ContainerShape, width: Double, height: Double) -> Double {
+        switch outline {
+        case .rectangle, .ellipse: 0
+        case .roundedRectangle(let radius): fitted(radius, width: width, height: height)
+        case .capsule: min(width, height) / 2
+        }
     }
 
     /// The outline the tree's `value` asks for: a rectangle where it asks none, a rounded one's radius never below
@@ -30,6 +49,7 @@
         switch kind {
         case 1: return .roundedRectangle(max(0, parts.count > 1 ? parts[1].number ?? 0 : 0))
         case 2: return .ellipse
+        case 3: return .capsule
         default: return .rectangle
         }
     }

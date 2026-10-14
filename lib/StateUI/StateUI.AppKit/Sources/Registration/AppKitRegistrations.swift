@@ -35,7 +35,7 @@ enum AppKitRegistrations {
         return registry
     }()
 
-    /// The elements whose registration draws their background itself - a field, a button, a colour box - under
+    /// The elements whose registration draws their background itself - a field, a button - under
     /// which no layer paints another: a search field's rounded field takes no fill colour, and a square painted
     /// under it would hide its shape.
     /// Design: docs/design/platforms/appkit/registrations.md#a-background
@@ -82,11 +82,7 @@ enum AppKitRegistrations {
 
     /// The font a field draws in, composed from the members it wears.
     static func font<Realized: ElementContract>(_ values: ElementValues<Realized>) -> NSFont {
-        appKitFont(
-            family: values[FontElementContract.fontFamily]?.text,
-            size: values[FontElementContract.fontSize],
-            attributes: values[FontElementContract.fontAttributes],
-            fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize))
+        appKitFont(TextMembers.look(of: values), fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize))
     }
 }
 

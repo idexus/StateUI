@@ -13,7 +13,10 @@ holds the shape as a view of its own, the first child of the layout's panel;
 the panel measures it in every pass, so no pass is left unsettled, and places
 it over the layout's whole size in each arrangement. A box that paints nothing
 is let go of, and one whose outline turns from a rectangle into an ellipse is
-made again, the two being different elements.
+made again, the two being different elements. Swift fits the radius to the
+box's size ([a box](../../host/layout.md#a-box)), a capsule's at half its
+shorter side, and paints it again at each new size, so the `Rectangle` is told
+the radius it draws; a button's corners are fitted the same way.
 
 A brush crosses as its parts ([brushes](../../types/brushes.md)) and becomes
 WinUI's own: a `SolidColorBrush`, or a `LinearGradientBrush` or
@@ -29,9 +32,6 @@ The cut is a clip on the panel's composition visual, a rounded rectangle or an
 ellipse of the layout's size, written in the arrangement that gives the size
 and only where it differs from the last. `UIElement.Clip` takes only a plain
 rectangle, and a panel's own corner radius cuts none of its children.
-
-A ColorBox is a figure of the relay's, a `Grid` of one colour, its four
-corners rounded each as the element says; a `Rectangle` rounds all four alike.
 
 ## A view's background
 
@@ -49,7 +49,7 @@ combo box (`ComboBoxBackground`), of a date picker
 `Background`. A canvas clears its surface to its ground as it replays its
 drawing - a brush's first colour alone. A layout paints its box, a label its
 words' ground, a button its face. What paints no ground of its own takes
-none: a figure - a shape, a colour box - and a picture, and the progress bar
+none: a figure - a shape - and a picture, and the progress bar
 and ring, whose `Background` is their track; their pages in the dictionary
 say so.
 

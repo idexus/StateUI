@@ -32,6 +32,10 @@ public enum PageContract: ElementContract {
     /// Whether the bar shows above the page.
     public static let showsNavigationBar = ElementProperty<Self, Bool>("showsNavigationBar", layer: .adaptive)
 
+    /// Whether the page shows its title - on its bar, or over its content where the bar names the application; it
+    /// names the window and the way back all the same.
+    public static let showsTitle = ElementProperty<Self, Bool>("showsTitle", layer: .adaptive)
+
     /// The user has left the page for another.
     public static let navigatedFrom = ElementEvent<Self, Void>("navigatedFrom", layer: .adaptive)
 
@@ -43,7 +47,7 @@ public enum PageContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        appearing, backButtonTitle, background, disappearing, showsBackButton, showsNavigationBar, navigatedFrom,
-        navigatedTo, navigatingFrom,
+        appearing, backButtonTitle, background, disappearing, showsBackButton, showsNavigationBar, showsTitle,
+        navigatedFrom, navigatedTo, navigatingFrom,
     ]
 }

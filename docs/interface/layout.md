@@ -58,7 +58,7 @@ say otherwise - after layout has assigned the view's rectangle, so it changes
 the drawing without changing measurement or arrangement:
 
 ```swift
-ColorBox(.cornflowerBlue)
+Rectangle(.cornflowerBlue)
     .width(80)
     .height(80)
     .transform(.rotate(15).scale(1.1).translate(20, 0))
@@ -118,6 +118,34 @@ container's children. A state read inside that closure belongs to the
 container's description scope, which can keep invalidation narrower than a
 read in an outer composed view.
 
+### Spacer and Divider
+
+A `Spacer` takes the room its stack's other children leave along the stack's
+axis, shared alike when there are several; a `Divider` is the platform's own
+separator line, drawn across its stack:
+
+```swift
+VStack {
+    HStack {
+        Text("Draft")
+        Spacer()
+        Button("Send")
+    }
+
+    Divider()
+
+    Text("Sent a minute ago")
+}
+.spacing(8)
+.padding(16)
+```
+
+A spacer asks for no room of its own, so a stack only as long as its children
+leaves it none; a spacer given a length along the axis - `.width(12)` in an
+`HStack` - is a gap of exactly that length, and `.minimumWidth` or
+`.maximumWidth` bound one that grows. A line between a menu's entries is a
+`MenuSeparator`.
+
 ## Grid
 
 A grid owns row and column definitions; each child states its cell and spans:
@@ -150,6 +178,10 @@ Grid {
 | `.fill` | one share of remaining room |
 | `.proportional(2)` | two shares of remaining room |
 
+Rows or columns alike are written once, with their count:
+`.rows(.fill, .auto(count: 2), .fill(count: 5), .fixed(80))` is nine rows, and
+`.columns(.fill(count: 4))` four equal columns. Each spelling takes `count:`.
+
 A grid's own width, where its room does not decide it, is the least at which
 each proportional track holds its content at its share: shares stand as
 written, and words that fit in their column stand on one line.
@@ -170,13 +202,13 @@ the whole room within the stack's padding, or the rectangle it names with
 
 ```swift
 ZStack {
-    ColorBox(.cornflowerBlue)
+    Rectangle(.cornflowerBlue)
 
     Text("Bottom right")
         .horizontalAlignment(.end)
         .verticalAlignment(.end)
 
-    ColorBox(.orange)
+    Rectangle(.orange)
         .area(.proportional(0.5, 0, 0.5, 1))
 }
 .height(240)
@@ -428,8 +460,11 @@ VStack {
 .clipsContent(true)
 ```
 
-`shape` is `.rectangle`, `.roundedRectangle(radius)` or `.ellipse`. The outline
-is drawn inside the layout's bounds and never pushes its children in; that is
+`shape` is `.rectangle`, `.roundedRectangle(radius)`, `.capsule` or `.ellipse`.
+A corner rounds no more than half the shorter side, so a radius larger than
+that rounds a wide box's ends whole; `.capsule` asks for exactly that at any
+size - a pill-shaped button or tag keeps round ends as its words grow. The
+outline is drawn inside the layout's bounds and never pushes its children in; that is
 the padding's work. `clipsContent(true)` cuts what the layout holds to the
 shape, so a picture in a rounded card has rounded corners; without it the shape
 is drawn and nothing is cut. A dashed outline belongs to a shape: lay a

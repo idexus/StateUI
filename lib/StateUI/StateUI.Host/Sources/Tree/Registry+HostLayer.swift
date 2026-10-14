@@ -45,12 +45,18 @@ extension Registry {
     /// its identifier where the toolkit gives an accessible one - `identifying` - its label, hint and heading level,
     /// and whether it is met at all.
     public func everyElementMeetsAssistiveTechnology(identifying: Bool = true) {
-        if identifying { everyElementRealizes(PropertyContainerContract.accessibilityIdentifier) }
+        if identifying { everyElementRealizes(AutomationElementContract.accessibilityIdentifier) }
         everyElementRealizes(VisualElementContract.accessibilityLabel)
         everyElementRealizes(VisualElementContract.accessibilityHint)
         everyElementRealizes(VisualElementContract.accessibilityHeading)
         everyElementRealizes(VisualElementContract.isAccessibilityHidden)
         everyElementRealizes(VisualElementContract.automationExcludedWithChildren)
+    }
+
+    /// The words a view shows while the pointer rests on it, which a toolkit showing tooltips holds on any view.
+    /// Design: docs/design/views/modifiers.md#a-tooltip
+    public func everyElementShowsItsTooltip() {
+        everyElementRealizes(VisualElementContract.tooltip)
     }
 
     /// Where a view stands, said as the tree reads it (`MountedElement.reportFrame`), and what the user does to it
@@ -73,6 +79,13 @@ extension Registry {
         everyElementRaises(ViewContract.pointerMoved)
         everyElementRaises(ViewContract.pointerPressed)
         everyElementRaises(ViewContract.pointerReleased)
+    }
+
+    /// The keys a view takes (`View.onKeyPressed`) reaching it as the host layer routes them (`KeyPresses`), the host
+    /// offering each key of its windows before the view holding the keyboard does.
+    public func everyElementTakesItsKeys() {
+        everyElementRealizes(KeyboardElementContract.keysTaken)
+        everyElementRaises(KeyboardElementContract.keyPressed)
     }
 
     /// Every element's view is dragged between views and takes what is dropped on it, by the host layer's rules

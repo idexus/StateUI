@@ -29,6 +29,13 @@ enum UIKitRealization {
         .complete("BarElement", "barSubtitle"),
         .notPlanned("BarElement", "barTitle",
                     reason: "A UIKit bar is each page's own and names that page; an application names itself in none."),
+        .complete("Button", "keyboardShortcut"),
+        .complete("Button", "menuKind"),
+        .complete("Button", "showsMenuArrow"),
+        .complete("Button", "role"),
+        .complete("MenuItem", "isOn"),
+        .partial("MenuItem", "keyboardShortcut", missing: "UIKit shows a shortcut in the main menu alone, none in a context menu."),
+        .complete("MenuItem", "toggled"),
         .complete("MenuItemElement", "clicked"),
         .complete("MenuItemElement", "icon"),
         .complete("MenuItemElement", "isEnabled"),
@@ -68,18 +75,24 @@ enum UIKitRealization {
         .complete("Page", "disappearing"),
         .complete("Page", "showsBackButton"),
         .complete("Page", "showsNavigationBar"),
+        .complete("Page", "showsTitle"),
         .complete("Page", "icon"),
         .complete("Page", "navigatedFrom"),
         .complete("Page", "navigatedTo"),
         .complete("Page", "navigatingFrom"),
         .complete("Page", "title"),
+        .partial("Picker", "presentation", missing: "UIKit has no radio buttons: `.radio` is a column of its buttons, "
+            + "each marked by a filled or an empty circle."),
         .complete("RadioButton", "groupName"),
         .complete("Scene", "activated"),
         .complete("Scene", "deactivated"),
         .complete("Scene", "stopped"),
         .complete("Scene", "windowClosed"),
+        .complete("Text", "isSelectable"),
         .complete("TextSpan", "background"),
         .complete("TextSpan", "fontAttributes"),
+        .complete("TextSpan", "fontWeight"),
+        .complete("TextSpan", "textStyle"),
         .complete("TextSpan", "fontFamily"),
         .complete("TextSpan", "fontSize"),
         .complete("TextSpan", "isFontAutoScalingEnabled"),
@@ -95,10 +108,12 @@ enum UIKitRealization {
         .complete("TabView", "selectedTab"),
         .complete("TabView", "selectedTabChanged"),
         .complete("ToolbarItem", "isDestructive"),
+        .complete("ToolbarItem", "keyboardShortcut"),
         .complete("ToolbarItem", "placement"),
         .notPlanned("ToolbarItem", "showsText", reason: "A UIKit bar button shows its picture or its words, never both."),
         .complete("ToolbarItemGroup", "order"),
         .complete("ToolbarItemGroup", "side"),
+        .notPlanned("VisualElement", "tooltip", reason: "UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none."),
         .complete("Window", "activated"),
         .complete("Window", "created"),
         .complete("Window", "deactivated"),
@@ -128,7 +143,7 @@ enum UIKitRealization {
 
     /// The words of a day's and a time's picker, which UIKit draws in its own look.
     private static let pickerWords: [HostRecord] = ["DatePicker", "TimePicker"].flatMap { picker in
-        ["fontAttributes", "fontFamily", "fontSize", "textColor"].map { member in
+        ["fontAttributes", "fontFamily", "fontSize", "fontWeight", "textColor", "textStyle"].map { member in
             .notPlanned(picker, member, reason: "UIKit's date picker draws its words in its own font and colour: it takes neither.")
         } + [
             .notPlanned(picker, "isFontAutoScalingEnabled",

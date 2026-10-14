@@ -20,7 +20,7 @@
                 s.start {
                     VStack {
                         ScrollView {
-                            ColorBox(.red).height(2000).onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+                            Rectangle().fill(.red).height(2000).onEvent(ViewContract.frameChanged) { frames.values.append($0) }
                         }
                         .orientation(.vertical)
                         .width(200).height(100)
@@ -39,7 +39,7 @@
                 s.start {
                     VStack {
                         ScrollView {
-                            ColorBox(.red).width(3000).height(40)
+                            Rectangle().fill(.red).width(3000).height(40)
                                 .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
                         }
                         .orientation(.horizontal)
@@ -61,7 +61,7 @@
                     VStack {
                         Button("Down").onClicked { offset.wrappedValue = Point(0, 300) }.id("down")
                         Button("Past").onClicked { offset.wrappedValue = Point(0, 5000) }.id("past")
-                        ScrollView { ColorBox(.red).height(2000) }
+                        ScrollView { Rectangle().fill(.red).height(2000) }
                             .scrollOffset(offset.projectedValue)
                             .onEvent(ScrollViewContract.scrollYChanged) { heard.values.append($0) }
                             .width(200).height(500).id("scroller")
@@ -90,7 +90,7 @@
                 let rests = Received<Int>()
                 s.start(clock: clock) {
                     VStack {
-                        ScrollView { ColorBox(.red).height(2000) }
+                        ScrollView { Rectangle().fill(.red).height(2000) }
                             .scrollOffset(offset.projectedValue)
                             .onEvent(ScrollViewContract.scrollYChanged) { heard.values.append($0) }
                             .onScrollStopped { rests.values.append(1) }
@@ -119,7 +119,7 @@
                 let heard = Received<Double>()
                 s.start(clock: clock) {
                     VStack {
-                        ScrollView { ColorBox(.red).width(3000).height(40) }
+                        ScrollView { Rectangle().fill(.red).width(3000).height(40) }
                             .orientation(.horizontal)
                             .onEvent(ScrollViewContract.scrollXChanged) { heard.values.append($0) }
                             .width(200).height(100).id("scroller")

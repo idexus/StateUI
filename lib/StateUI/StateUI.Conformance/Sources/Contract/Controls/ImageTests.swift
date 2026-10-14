@@ -15,6 +15,39 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("Image"),
+            ConformanceCase("aPictureFromBytesStandsAtItsOwnSize", proves: [
+                Covered(ImageContract.source),
+            ]) { s in
+                let frames = Received<[Double]>()
+                s.start {
+                    VStack {
+                        Image(ImageSource(bytes: Self.redPixels))
+                            .onEvent(ViewContract.frameChanged) { frames.values.append($0) }.id("image")
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+
+                s.settle { frames.values.last.map(FrameReport.place) == [0, 0, 4, 2] }
+                s.expect(frames.values.last.map(FrameReport.place), [0, 0, 4, 2], "the bytes' pixels")
+                // A host may draw the pixels a frame after it has read their size.
+                let image = try s.element("image")
+                try s.settle { try s.color(of: image, at: Point(2, 1)) != nil }
+                s.expect(try s.color(of: image, at: Point(2, 1)), shows: Color(red: 255, green: 0, blue: 0), "the bytes' colour")
+            },
+            ConformanceCase("anIconOfThePlatformsIsDrawn", proves: [
+                Covered(ImageContract.source),
+            ]) { s in
+                s.start {
+                    VStack { Image(.icon(.add)).contentMode(.fit).width(32).height(32).id("image") }
+                        .horizontalAlignment(.start)
+                        .verticalAlignment(.start)
+                }
+                let image = try s.element("image")
+                let grid = stride(from: 1.0, to: 32, by: 2).flatMap { x in stride(from: 1.0, to: 32, by: 2).map { Point(x, $0) } }
+                try s.settle { try s.colors(of: image, at: grid).contains { $0 != nil } }
+                s.expect(try s.colors(of: image, at: grid).contains { $0 != nil }, true, "the platform's plus drawn")
+            },
             ConformanceCase("aPictureStandsAtItsOwnSize", proves: [
                 Covered(ImageContract.source),
             ]) { s in
@@ -82,4 +115,11 @@
                           with: [Write(ImageContract.source, "test_dot.png")]),
         ]
     }
+
+    /// A PNG of red pixels, 4 across and 2 down.
+    static let redPixels: [UInt8] = [
+        137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 4, 0, 0, 0, 2, 8, 2, 0, 0, 0, 240, 202,
+        234, 52, 0, 0, 0, 16, 73, 68, 65, 84, 120, 218, 99, 248, 207, 192, 0, 71, 12, 200, 28, 0, 111, 170, 7, 249,
+        104, 221, 175, 167, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130,
+    ]
 }

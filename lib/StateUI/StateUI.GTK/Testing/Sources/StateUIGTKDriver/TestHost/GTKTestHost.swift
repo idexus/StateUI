@@ -353,10 +353,13 @@ extension GTKTestHost {
 
     /// Clicks a `GtkButton` as the pointer's release does, then lets GTK lay out what that changed.
     static func click(_ button: GTKWidget) {
+        // A split button's click is its own signal: its main part's.
+        let split = g_type_check_instance_is_a(button.of(GTypeInstance.self), adw_split_button_get_type()) != 0
+        let type = split ? adw_split_button_get_type() : gtk_button_get_type()
         var instance = GValue()
-        g_value_init(&instance, gtk_button_get_type())
+        g_value_init(&instance, type)
         g_value_set_object(&instance, UnsafeMutableRawPointer(button))
-        g_signal_emitv(&instance, g_signal_lookup("clicked", gtk_button_get_type()), 0, nil)
+        g_signal_emitv(&instance, g_signal_lookup("clicked", type), 0, nil)
         g_value_unset(&instance)
         pump(0.05)
     }

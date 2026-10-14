@@ -111,7 +111,7 @@ final class AndroidTextFieldViewTests: XCTestCase {
             let hidden = State(wrappedValue: false)
             let host = AndroidRenderer.running {
                 VStack {
-                    TextField(name.projectedValue).isPassword(hidden.wrappedValue).fontAttributes(.bold)
+                    TextField(name.projectedValue).isPassword(hidden.wrappedValue).fontWeight(.bold)
                     Button("Hide").onClicked { hidden.wrappedValue = true }
                 }
             }
@@ -122,7 +122,9 @@ final class AndroidTextFieldViewTests: XCTestCase {
 
             XCTAssertTrue(field.isPassword)
             XCTAssertEqual(field.text, "secret")
-            XCTAssertEqual(field.fontAttributes, .bold)
+            XCTAssertEqual(
+                Java.callStaticInt(AndroidDriver.testText, AndroidDriver.weight, .object(field.reference)), 700,
+                "the weight drawn after the words were hidden")
             XCTAssertEqual(name.wrappedValue, "secret")
         }
     }

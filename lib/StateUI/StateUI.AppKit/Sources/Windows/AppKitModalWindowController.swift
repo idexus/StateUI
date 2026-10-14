@@ -22,7 +22,7 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
         element = node.element
         stateUIOwner = owner
 
-        let window = NSWindow(
+        let window = AppKitWindow(
             contentRect: NSRect(x: 0, y: 0, width: 520, height: 380),
             styleMask: [.titled, .closable, .resizable],
             backing: .buffered,
@@ -32,6 +32,9 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
         window.autorecalculatesKeyViewLoop = true
         super.init(window: window)
         window.delegate = self
+        window.takesKey = { [weak owner, weak window] key, modifiers in
+            owner?.takesKey(key, modifiers, in: window) ?? false
+        }
         focusWatch = window.observe(\.firstResponder) { [weak self] _, _ in
             MainActor.assumeIsolated { self?.stateUIOwner?.focusMoved() }
         }

@@ -20,7 +20,7 @@ final class AppKitTextViewTests: XCTestCase {
             .textCase: .enumeration(TextCase.uppercase.rawValue),
             .textColor: .color(red: 20, green: 40, blue: 60, alpha: 255),
             .fontSize: .number(18),
-            .fontAttributes: .enumeration(FontAttributes.bold.rawValue),
+            .fontWeight: FontWeight.bold.propValue,
             .tracking: .number(2),
             .textDecorations: .enumeration(
                 TextDecorations.underline.union(.strikethrough).rawValue),
@@ -148,7 +148,7 @@ final class AppKitTextViewTests: XCTestCase {
         first.properties = [
             .text: .string("let "),
             .textColor: .color(red: 128, green: 0, blue: 128, alpha: 255),
-            .fontAttributes: .enumeration(FontAttributes.bold.rawValue),
+            .fontWeight: FontWeight.bold.propValue,
         ]
         var second = HostPatch(id: .manual("second"), type: .textSpan)
         second.properties = [

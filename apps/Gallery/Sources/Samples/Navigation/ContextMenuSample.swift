@@ -5,6 +5,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
     // listing: ContextMenuSample
     @State private var items = ["Alpha", "Beta", "Gamma"]
     @State private var chosen = "nothing yet"
+    @State private var large = false
     // listing: end
 
     static let id = "contextMenu"
@@ -22,7 +23,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                 ForEach(Array(items.enumerated()), id: \.offset) { pair in
                     let (index, item) = pair
                     return Text(item)
-                        .fontSize(16)
+                        .fontSize(large ? 20 : 16)
                         .padding(horizontal: 14, vertical: 10)
                         .background(Palette.raised)
                         .contextMenu {
@@ -43,7 +44,11 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                                     }
                             }
 
-                            Divider()
+                            // A setting: its check follows the state, and
+                            // choosing it turns the state over.
+                            MenuItem("Large text").isOn($large)
+
+                            MenuSeparator()
 
                             MenuItem("Remove")
                                 .icon(ImageSource(light: "menu_remove.png", dark: "menu_remove_dark.png"))
@@ -66,6 +71,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                 .onClicked {
                     items = ["Alpha", "Beta", "Gamma"]
                     chosen = "nothing yet"
+                    large = false
                 }
         }
         .spacing(12)
@@ -76,7 +82,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
         VStack {
             Text("Right-click or long-press a row. The entries are the same three a menu bar takes - "
                 + "an item, a submenu and a separator - attached to a view instead of to "
-                + "a page.")
+                + "a page. An item given `isOn` shows a check and turns its state when chosen.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

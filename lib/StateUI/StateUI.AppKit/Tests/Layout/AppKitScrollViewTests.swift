@@ -441,7 +441,7 @@ private struct TappedRun: View {
 
     var body: some View {
         ScrollReader(across: 300) {
-            ColorBox(Color("#3366FF"))
+            Rectangle().fill(Color("#3366FF"))
         }
         .scrollOffset($across)
         .onTapped(within: { room in Rect(0, 0, 100, room.height) }) {}
@@ -454,7 +454,7 @@ private struct BoundStrip: View {
     var body: some View {
         VStack {
             ScrollView {
-                ColorBox(Color("#3366FF")).height(2_000)
+                Rectangle().fill(Color("#3366FF")).height(2_000)
             }
             .scrollOffset($offset)
             .height(300)

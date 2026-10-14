@@ -42,6 +42,9 @@
 
     /// What is laid over the pages and sheets, each layer an overlay element, the first lowest.
     public private(set) var overlays: [MountedElement] = []
+
+    /// The page the user sees on top: the top sheet's, else the arrangement's.
+    public var frontPage: MountedElement? { (sheets.last ?? arrangement)?.visiblePage }
     private weak var created: MountedElement?
     private var requested = WindowFrame()
     private var bounds: WindowBounds?

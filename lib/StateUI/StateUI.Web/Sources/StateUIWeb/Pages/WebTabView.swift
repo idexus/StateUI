@@ -51,7 +51,7 @@ final class WebTabView: WebDOMView {
 
     /// Names the tabs and gives them their pictures - none for an empty name - and shows the one the tree asks for
     /// where the user has not chosen another since.
-    func show(_ titles: [String], icons: [String], requested: Int?) {
+    func show(_ titles: [String], icons: [HostPicture?], requested: Int?) {
         while names.count < titles.count { names.append(name(at: names.count)) }
         while names.count > titles.count {
             names.removeLast().detach()
@@ -59,9 +59,9 @@ final class WebTabView: WebDOMView {
             words.removeLast().detach()
         }
         for (index, title) in titles.enumerated() {
-            let icon = index < icons.count ? icons[index] : ""
-            pictures[index].apply(source: icon.isEmpty ? nil : ImageSource(icon), aspect: .fit)
-            pictures[index].setShown(!icon.isEmpty)
+            let icon = index < icons.count ? icons[index] : nil
+            pictures[index].apply(picture: icon, aspect: .fit)
+            pictures[index].setShown(icon != nil)
             WebRelay.setText(words[index].node, title)
             WebRelay.insert(names[index].node, into: strip.node, at: index)
         }

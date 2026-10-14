@@ -13,6 +13,7 @@ final class AndroidTextViewTests: XCTestCase {
             ("testATextShowsAsManyLinesAsItsBreakAllows", testATextShowsAsManyLinesAsItsBreakAllows),
             ("testATextsCaseAndLetterSpacingAreItsOwn", testATextsCaseAndLetterSpacingAreItsOwn),
             ("testABackgroundBrushIsDrawnAcrossTheView", testABackgroundBrushIsDrawnAcrossTheView),
+            ("testALabelsWordsStandInTheThemesPrimaryColour", testALabelsWordsStandInTheThemesPrimaryColour),
         ]
     }
 
@@ -24,7 +25,7 @@ final class AndroidTextViewTests: XCTestCase {
                     Text()
                         .spans {
                             TextSpan("small ").textColor(.red).fontSize(12)
-                            TextSpan("large").fontSize(36).fontAttributes(.bold)
+                            TextSpan("large").fontSize(36).fontWeight(.bold)
                         }
                         .horizontalAlignment(.start)
                     Text("small large").fontSize(12).horizontalAlignment(.start)
@@ -96,6 +97,22 @@ final class AndroidTextViewTests: XCTestCase {
             XCTAssertLessThan(drawn[0] & 0xFF, 0x10, String(drawn[0], radix: 16))
             XCTAssertLessThan(drawn[1] >> 16 & 0xFF, 0x10, String(drawn[1], radix: 16))
             XCTAssertGreaterThan(drawn[1] & 0xFF, 0xF0, String(drawn[1], radix: 16))
+        }
+    }
+
+    /// A label whose colour the tree states not stands in the theme's primary words colour.
+    func testALabelsWordsStandInTheThemesPrimaryColour() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                Text("Words").horizontalAlignment(.start).verticalAlignment(.start)
+            }
+            host.layOut()
+
+            let label = try XCTUnwrap(host.views(AndroidTextView.self).first)
+            let shown = UInt32(bitPattern: Java.callInt(label.reference, AndroidDriver.getCurrentTextColor))
+            let primary = UInt32(bitPattern: Java.callStaticInt(
+                AndroidDriver.testText, AndroidDriver.primaryWords, .object(AndroidRenderer.context)))
+            XCTAssertEqual(String(shown, radix: 16), String(primary, radix: 16))
         }
     }
 }

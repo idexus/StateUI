@@ -5,11 +5,12 @@ package stateui.android;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
@@ -22,6 +23,7 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import java.util.ArrayList;
 
 /** What the Swift host does to a view in one call where Android asks for several. */
 final class StateUIViews {
@@ -99,6 +101,48 @@ final class StateUIViews {
     }
 
     /** Words in `color`, dimmed while their view is disabled, as the theme's own colours are. */
+    /** The background of the platform's coloured button, which a window's main action wears. */
+    static Drawable colouredBackground(Context context) {
+        TypedArray style = context.obtainStyledAttributes(
+                null, new int[] {android.R.attr.background}, 0, android.R.style.Widget_DeviceDefault_Button_Colored);
+        Drawable background = style.getDrawable(0);
+        style.recycle();
+        return background;
+    }
+
+    /** The theme's colours for an error, which mark an action that destroys something. */
+    static ColorStateList errorWords(Context context) {
+        return themeColours(context, android.R.attr.colorError);
+    }
+
+    /** The theme's colours for primary words: a label's where the tree colours it not. */
+    static ColorStateList primaryWords(Context context) {
+        return themeColours(context, android.R.attr.textColorPrimary);
+    }
+
+    private static ColorStateList themeColours(Context context, int attribute) {
+        TypedArray theme = context.obtainStyledAttributes(new int[] {attribute});
+        ColorStateList colours = theme.getColorStateList(0);
+        theme.recycle();
+        return colours;
+    }
+
+    /** The words' colours of the platform's coloured button: its style's own, else its text appearance's. */
+    static ColorStateList colouredWords(Context context) {
+        // Attributes in ascending order, as obtainStyledAttributes reads them.
+        TypedArray style = context.obtainStyledAttributes(
+                null, new int[] {android.R.attr.textAppearance, android.R.attr.textColor}, 0,
+                android.R.style.Widget_DeviceDefault_Button_Colored);
+        ColorStateList words = style.getColorStateList(1);
+        int appearance = style.getResourceId(0, 0);
+        style.recycle();
+        if (words != null || appearance == 0) return words;
+        TypedArray look = context.obtainStyledAttributes(appearance, new int[] {android.R.attr.textColor});
+        words = look.getColorStateList(0);
+        look.recycle();
+        return words;
+    }
+
     static ColorStateList textColors(Context context, int color) {
         int dimmed = (Math.round(Color.alpha(color) * disabledAlpha(context)) << 24) | (color & 0xFFFFFF);
         return new ColorStateList(
@@ -139,11 +183,67 @@ final class StateUIViews {
      * A bar's or a tab's picture at Android's icon size: 24 dp tall, as wide as its shape makes it, whatever
      * size the picture is drawn at elsewhere.
      */
-    static BitmapDrawable glyph(Resources resources, Bitmap picture) {
-        BitmapDrawable glyph = new BitmapDrawable(resources, picture);
-        float tall = 24 * resources.getDisplayMetrics().density;
+    static BitmapDrawable glyph(Context context, Bitmap picture) {
+        BitmapDrawable glyph = drawn(context, picture, android.R.attr.colorControlNormal);
+        float tall = 24 * context.getResources().getDisplayMetrics().density;
         glyph.setTargetDensity(Math.round(picture.getDensity() * tall / Math.max(1, picture.getHeight())));
         return glyph;
+    }
+
+    /** A picture standing alone: an icon - a mask, `isMask` - in the theme's primary words colour, as a label's. */
+    static BitmapDrawable picture(Context context, Bitmap picture) {
+        return drawn(context, picture, android.R.attr.textColorPrimary);
+    }
+
+    /** A picture to draw: an icon in the theme's colour `attribute` names, any other as it is. */
+    private static BitmapDrawable drawn(Context context, Bitmap picture, int attribute) {
+        BitmapDrawable drawable = new BitmapDrawable(context.getResources(), picture);
+        if (isMask(picture)) drawable.setTintList(themeColours(context, attribute));
+        return drawable;
+    }
+
+    /** Whether `picture` is an icon: only how opaque each pixel is, drawn in the colour of what shows it. */
+    static boolean isMask(Bitmap picture) {
+        return picture.getConfig() == Bitmap.Config.ALPHA_8;
+    }
+
+    /**
+     * The application's drawable `name` - an icon the host puts among its resources - fitted into a square `side`
+     * pixels across, kept as a mask; null where it has none such.
+     */
+    static Bitmap icon(Context context, String name, int side) {
+        int id = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
+        Drawable drawable = id == 0 || side <= 0 ? null : context.getDrawable(id);
+        if (drawable == null) return null;
+        // The mask keeps the shape whole: the drawable's own tint, often partly opaque, is not drawn into it.
+        drawable = drawable.mutate();
+        drawable.setTintList(null);
+        float width = Math.max(1, drawable.getIntrinsicWidth());
+        float height = Math.max(1, drawable.getIntrinsicHeight());
+        float scale = Math.min(side / width, side / height);
+        int drawnWidth = Math.round(width * scale);
+        int drawnHeight = Math.round(height * scale);
+        int left = (side - drawnWidth) / 2;
+        int top = (side - drawnHeight) / 2;
+        Bitmap drawn = Bitmap.createBitmap(side, side, Bitmap.Config.ARGB_8888);
+        drawable.setBounds(left, top, left + drawnWidth, top + drawnHeight);
+        drawable.draw(new Canvas(drawn));
+        Bitmap mask = drawn.extractAlpha();
+        drawn.recycle();
+        return mask;
+    }
+
+    /** A divider in a stack: a plain view drawn with the theme's list divider, as thick as that line both ways. */
+    static View divider(Context context) {
+        TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.listDivider});
+        Drawable line = theme.getDrawable(0);
+        theme.recycle();
+        View view = new View(context);
+        view.setBackground(line);
+        int thickness = Math.max(1, line == null ? 1 : line.getIntrinsicHeight());
+        view.setMinimumWidth(thickness);
+        view.setMinimumHeight(thickness);
+        return view;
     }
 
     /** How opaque the theme draws a disabled control. */
@@ -154,13 +254,21 @@ final class StateUIViews {
         return alpha;
     }
 
+    /** The layers of a button's foreground, by their ids: its picture alone, its menu's arrow, a split button's line. */
+    static final int PICTURE_LAYER = 1, MARK_LAYER = 2, ARROW_LAYER = 3, LINE_LAYER = 4;
+
     /**
      * Puts `picture` beside the view's words - 0 before them, 1 after, 2 above, 3 below - `gap` pixels
      * away, or the platform's gap for -1, at its own size; with no words, alone in the middle of the view
-     * at `width` by `height` pixels. A null picture takes it away.
+     * at `width` by `height` pixels, `room` pixels kept on its right. A null picture takes it away. A button
+     * holding a menu shows the drawable `arrow` names `side` pixels square, `arrowRight` pixels from its right
+     * edge, in its words' colours: a mark after its words (`splits` false), or a split button's arrow, a line
+     * `lineHeight` pixels high `lineRight` pixels from that edge setting it apart. A null `arrow` shows none.
      */
-    static void setIcon(TextView view, Bitmap picture, int position, int gap, int width, int height) {
+    static void setIcon(TextView view, Bitmap picture, int position, int gap, int width, int height, int room,
+                        String arrow, boolean splits, int side, int arrowRight, int lineRight, int lineHeight) {
         Drawable icon = picture == null ? null : new BitmapDrawable(view.getResources(), picture);
+        if (icon != null && isMask(picture)) icon.setTintList(view.getTextColors());
         boolean alone = view.getText().length() == 0;
         Drawable beside = alone ? null : icon;
 
@@ -169,14 +277,47 @@ final class StateUIViews {
                 position == 0 ? beside : null, position == 2 ? beside : null,
                 position == 1 ? beside : null, position == 3 ? beside : null);
 
-        if (!alone || icon == null) {
+        Context context = view.getContext();
+        int found = arrow == null ? 0 : context.getResources().getIdentifier(arrow, "drawable", context.getPackageName());
+        Drawable down = found == 0 ? null : context.getDrawable(found).mutate();
+        ArrayList<Drawable> drawn = new ArrayList<>();
+        if (alone && icon != null) drawn.add(icon);
+        if (down != null) {
+            down.setTintList(view.getTextColors());
+            drawn.add(down);
+        }
+        Drawable line = null;
+        if (down != null && splits) {
+            line = new ColorDrawable(Color.WHITE);
+            line.setTintList(view.getTextColors().withAlpha(89));
+            drawn.add(line);
+        }
+        if (drawn.isEmpty()) {
             view.setForeground(null);
             return;
         }
-        LayerDrawable centred = new LayerDrawable(new Drawable[] {icon});
-        centred.setLayerGravity(0, Gravity.CENTER);
-        centred.setLayerSize(0, width, height);
-        view.setForeground(centred);
+        LayerDrawable layers = new LayerDrawable(drawn.toArray(new Drawable[0]));
+        int index = 0;
+        if (alone && icon != null) {
+            layers.setId(index, PICTURE_LAYER);
+            layers.setLayerGravity(index, Gravity.CENTER);
+            layers.setLayerInsetRight(index, room);
+            layers.setLayerSize(index++, width, height);
+        }
+        if (down != null) {
+            layers.setId(index, splits ? ARROW_LAYER : MARK_LAYER);
+            layers.setLayerGravity(index, Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+            layers.setLayerSize(index, side, side);
+            layers.setLayerInsetRight(index++, arrowRight);
+        }
+        if (line != null) {
+            layers.setId(index, LINE_LAYER);
+            layers.setLayerGravity(index, Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+            layers.setLayerSize(index, Math.max(1, Math.round(context.getResources().getDisplayMetrics().density)),
+                                lineHeight);
+            layers.setLayerInsetRight(index, lineRight);
+        }
+        view.setForeground(layers);
     }
 
     /**

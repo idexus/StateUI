@@ -66,6 +66,9 @@
     /// The part of a ZStack's room the child stands in; the whole room where it names none.
     public var area: Area?
 
+    /// Whether the child grows along its stack into the room the others leave - a spacer.
+    public var grows = false
+
     /// Values with every part at its default.
     public init() {}
 
@@ -147,12 +150,23 @@
 @_spi(Host) @MainActor public final class MeasurementCache {
     private var sizes: [(width: Double?, size: LayoutSize)] = []
 
-    /// A cache holding nothing yet.
-    public init() {}
+    /// Whether the size measured without a width holds for every width at least as wide: words that fit their
+    /// natural lines stand the same in more room.
+    /// Design: docs/design/host/layout.md#words-in-a-wider-room
+    private let holdsWhenWider: Bool
+
+    /// A cache holding nothing yet; one for words keeps their natural size for every wider room.
+    public init(holdsWhenWider: Bool = false) {
+        self.holdsWhenWider = holdsWhenWider
+    }
 
     /// The size measured for `width`, measuring only when none is kept.
     public func size(offering width: Double?, measure: () -> LayoutSize) -> LayoutSize {
         if let kept = sizes.first(where: { $0.width == width }) { return kept.size }
+        if holdsWhenWider, let width, let natural = sizes.first(where: { $0.width == nil })?.size,
+           width >= natural.width {
+            return natural
+        }
 
         let measured = measure()
         if sizes.count == Self.capacity { sizes.removeFirst() }

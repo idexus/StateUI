@@ -41,31 +41,60 @@ public final class TestPixels {
      * `NOTHING` shows, where it lies outside the view, or where the window could not be read.
      */
     public static int color(View view, int x, int y) {
-        if (x < 0 || y < 0 || x >= view.getWidth() || y >= view.getHeight()) return 0;
+        return colors(view, new int[] {x, y})[0];
+    }
+
+    /**
+     * The colours the window shows at each point of the view's pixels - `points` holds x, y, x, y and on - as
+     * `color` reads one, every one from a single copy of the window: one frame waited for, however many points.
+     */
+    public static int[] colors(View view, int[] points) {
+        int[] colors = new int[points.length / 2];
         Activity activity = activity(view.getContext());
-        if (activity == null) return 0;
+        if (activity == null) return colors;
+        // The one rectangle holding every point inside the view, which one copy reads.
+        int left = Integer.MAX_VALUE, top = Integer.MAX_VALUE, right = -1, bottom = -1;
+        for (int i = 0; i + 1 < points.length; i += 2) {
+            if (!inside(view, points[i], points[i + 1])) continue;
+            left = Math.min(left, points[i]);
+            top = Math.min(top, points[i + 1]);
+            right = Math.max(right, points[i]);
+            bottom = Math.max(bottom, points[i + 1]);
+        }
+        if (right < 0) return colors;
         // The window draws on the display's next frames, which come as the thread's messages run.
         view.getRootView().invalidate();
         TestLooper.run(100);
 
         int[] corner = new int[2];
         view.getLocationInWindow(corner);
-        Bitmap pixel = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        Rect source = new Rect(corner[0] + x, corner[1] + y, corner[0] + x + 1, corner[1] + y + 1);
+        Bitmap drawn = Bitmap.createBitmap(right - left + 1, bottom - top + 1, Bitmap.Config.ARGB_8888);
+        Rect source = new Rect(corner[0] + left, corner[1] + top, corner[0] + right + 1, corner[1] + bottom + 1);
         CountDownLatch copied = new CountDownLatch(1);
         int[] result = {PixelCopy.ERROR_UNKNOWN};
-        PixelCopy.request(activity.getWindow(), source, pixel, done -> {
+        PixelCopy.request(activity.getWindow(), source, drawn, done -> {
             result[0] = done;
             copied.countDown();
         }, new Handler(copying.getLooper()));
         try {
             copied.await(2, TimeUnit.SECONDS);
         } catch (InterruptedException interrupted) {
-            return 0;
+            drawn.recycle();
+            return colors;
         }
-        int color = result[0] == PixelCopy.SUCCESS ? pixel.getPixel(0, 0) : 0;
-        pixel.recycle();
-        return color == NOTHING ? 0 : color;
+        if (result[0] == PixelCopy.SUCCESS) {
+            for (int i = 0; i + 1 < points.length; i += 2) {
+                if (!inside(view, points[i], points[i + 1])) continue;
+                int color = drawn.getPixel(points[i] - left, points[i + 1] - top);
+                colors[i / 2] = color == NOTHING ? 0 : color;
+            }
+        }
+        drawn.recycle();
+        return colors;
+    }
+
+    private static boolean inside(View view, int x, int y) {
+        return x >= 0 && y >= 0 && x < view.getWidth() && y < view.getHeight();
     }
 
     private static Activity activity(Context context) {

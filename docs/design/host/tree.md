@@ -196,6 +196,21 @@ one (`LineBreak.lines`); a truncating break cuts them with an ellipsis. A
 toolkit spacing letters in ems is handed the space as a share of the font's
 size.
 
+## A text style
+
+A text style is a step of the platform's own type ramp - `.display`,
+`.title`, `.subtitle`, `.headline`, `.body`, `.caption` - and each host maps
+it to its toolkit's own: AppKit's and UIKit's text styles, Android's Material
+type scale, WinUI's text block styles, libadwaita's style classes, and the
+Web's ramp. The rule every host follows is the host layer's
+(`TextLook.standing`): the size and the weight the tree gives stand over the
+style's, and with no style the host's own stand. A weight crosses as
+`FontWeight` and is weighed by its number, 400 to 700
+(`FontWeight.number`); a font a toolkit reports reads as the weight nearest
+its number, the lighter of two as near. A label takes a new look's font,
+scaling and colour whole (`TextLook.adopt(fontAndColorOf:)`), keeping its own
+spacing, lines and decorations.
+
 ## What assistive technology meets
 
 What an element says for assistive technology is put together once, the same

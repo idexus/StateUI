@@ -6,9 +6,10 @@ child an engine places, and the application's pictures.
 
 ## A shape and its brush
 
-A layout's own box, a ColorBox and any background that is not one plain colour are
+A layout's own box and any background that is not one plain colour are
 drawn by one drawable of the host's, `StateUIShapeDrawable`: a rectangle, a
-rectangle with rounded corners, or an ellipse, filled with a brush and
+rectangle with rounded corners - a capsule's half its shorter side - or an
+ellipse, filled with a brush and
 outlined in one colour. The Swift host tells it every part as the host layer
 reads a box ([a box](../../host/layout.md#a-box)) - the shape's kind, each
 corner's width and height in pixels, the brush's kind, its stops' colours and
@@ -22,9 +23,8 @@ places the view, and for a layout's own box where Android places it too. A
 plain colour stays the view's own colour background; a background cleared
 gives back the one the view was made with.
 
-A corner rounds no more than half the side it rounds within the outline,
-so a radius wider than a short box rounds it in a quarter of an ellipse.
-Swift fits the corners to the size its view is placed at, and again each
+A corner is round and no more than half the shorter side within the
+outline, so a radius wider than a short box rounds its ends whole. Swift fits the corners to the size its view is placed at, and again each
 time that size changes; the drawable draws them as given. A view clipping
 to the shape cuts with one radius, the top left corner's narrower way, as an
 outline takes it.
@@ -81,8 +81,12 @@ density: its drawable targets that density, where Android's would take the
 system's.
 
 A picture's pixels are read when its view is placed, at the fewest the view
-needs: one pixel in two, four, up to sixteen across and down, while that
-still covers the view, scaled to the display's density as it is read. A card
+needs: one pixel in two, four, up to sixteen across and down, while the
+picture's own pixels read still cover the view, then scaled to the display's
+density. Android thins a picture before it scales it, so a picture drawn at
+fewer pixels a point than the display - bytes, at one - is thinned by its own
+pixels, not by its size on the display: thinned by that, it would be read at
+fewer pixels than the view shows and drawn coarse. A card
 showing a picture three times smaller than it was drawn holds a quarter of
 its pixels, in memory and on the GPU alike. A StateUI layout measures a
 height it has not settled yet, so the size a view is placed at is the one
@@ -94,8 +98,22 @@ shown centred, at its own size, is read whole. Views showing the same
 picture at the same thinning share one bitmap, and the last to leave lets it
 go; only a bar's and a tab's icons are kept for as long as the host runs.
 
-A colour box has nothing to show but its colour: it takes the room its layout
-gives it and asks for none of its own.
+## Icons
+
+An icon is its Material Symbols drawable - the icons of Android's own
+applications, which Android itself does not ship - put by the host among every
+application's resources (`Resources/drawable/stateui_icon_*.xml`, copied into
+the APK's as it is built; THIRD-PARTY-NOTICES), drawn into a square of
+Android's icon size, 24 points, and kept as a mask of how opaque each pixel is
+(`ALPHA_8`) - drawn without the drawable's own tint, which a theme often
+makes partly opaque, so the mask holds the shape whole. What shows it colours it: an image in the theme's primary words
+colour (`textColorPrimary`), as a label beside it; a bar, a tab and a menu
+in the theme's colour for controls' icons (`colorControlNormal`); a button in
+its words' colour, again whenever they change. The bitmap kept holds no colour, so a
+change of theme leaves none behind.
+
+A picture's bytes are read as a file is, at one pixel a point, their size
+from their header; nothing keeps them once no view shows them.
 
 ## Shapes
 

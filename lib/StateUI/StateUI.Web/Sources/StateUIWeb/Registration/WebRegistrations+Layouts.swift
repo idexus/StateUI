@@ -20,6 +20,15 @@ extension WebRegistrations {
             stack.property(LayoutContract.letsInputThrough) { view, lets in view.setLetsInputThrough(lets ?? false) }
         }
 
+        // A spacer is empty room its stack's flexbox grows; a divider in a stack is the document's own rule.
+        // Design: docs/design/host/layout.md#a-spacer
+        registry.add(SpacerContract.self, create: { _ in WebDOMView(tag: "div") })
+        registry.add(DividerContract.self, create: { _ in
+            let rule = WebDOMView(tag: "hr")
+            rule.attribute("class", "stateui-divider")
+            return rule
+        })
+
         registry.add(GridContract.self, create: { _ in WebLayoutView(arrangement: .grid) }) { grid in
             grid.applies([
                 GridContract.rows, GridContract.columns, GridContract.rowSpacing, GridContract.columnSpacing,

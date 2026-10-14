@@ -1,15 +1,21 @@
-# revision 8.1
+# revision 12.2
 ActivityIndicator.isAccessibilityHidden: ✅
 Button.frameChanged: ✅
 Button.height: ✅
 Button.rotationX: ✓ read rotationX of Button: the host's own tip, checked against the projection it laid on the element
 Button.width: ✅
-Canvas.accessibilityLabel: ✅
-CheckBox.opacity: ✅
-CheckBox.pivotY: ✅
-ColorBox.translationY: ✅
-ColorBox.zIndex: ✅
+Canvas.accessibilityHint: ✅
+Capsule.opacity: ✅
+Capsule.pivotY: ✅
+CheckBox.translationX: ✅
+CheckBox.zIndex: ✅
 DatePicker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+Divider.frameChanged: ✅
+Divider.maximumHeight: ✅
+Divider.maximumWidth: ✅
+Divider.minimumHeight: ✅
+Divider.minimumWidth: ✅
+Divider.rotationY: ✓ read rotationY of Divider: the host's own tip, checked against the projection it laid on the element
 Ellipse.frame: ✅
 Ellipse.scaleX: ✅
 Grid.accessibilityHeading: ✅
@@ -19,52 +25,41 @@ Image.frameChanged: ✅
 Image.height: ✅
 Image.rotationX: ✓ read rotationX of Image: the host's own tip, checked against the projection it laid on the element
 Image.width: ✅
-ItemsView.accessibilityHeading: ✅
-Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
-Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+ItemsView.accessibilityLabel: ✅
 Line.scaleY: ✅
-Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Line.style: ✅
 Map.isAccessibilityHidden: 🧩
-Path.frameChanged: ✅
-Path.maximumHeight: ✅
-Path.maximumWidth: ✅
-Path.minimumHeight: ✅
-Path.minimumWidth: ✅
-Path.rotationY: ✓ read rotationY of Path: the host's own tip, checked against the projection it laid on the element
-Picker.accessibilityLabel: ✅
-Polygon.opacity: ✅
-Polygon.pivotY: ✅
-Polyline.style: ✅
-Polyline.translationX: ✅
-ProgressBar.automationExcludedWithChildren: ✅
-RadioButton.frameChanged: ✅
-RadioButton.maximumHeight: ✅
-RadioButton.maximumWidth: ✅
-RadioButton.minimumHeight: ✅
-RadioButton.minimumWidth: ✅
-RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own tip, checked against the projection it laid on the element
-Rectangle.accessibilityHint: ✅
-ScrollView.opacity: ✅
-ScrollView.pivotY: ✅
-SearchField.focus: ✅
-SearchField.isFocusedChanged: ✅
-SearchField.scaleY: ✅
-SearchField.unfocus: ✅
-Slider.automationExcludedWithChildren: ✅
-Stepper.ignoresInput: ✅
-Stepper.scale: ✅
-Switch.accessibilityHeading: ✅
+Path.tooltip: ✅
+Picker.opacity: ✅
+Picker.pivotY: ✅
+Polygon.accessibilityHeading: ✅
+Polygon.translationY: ✅
+Polyline.background: – A WinUI shape is its figure alone: it paints no ground around it.
+ProgressBar.ignoresInput: ✅
+ProgressBar.scale: ✅
+RadioButton.tooltip: ✅
+Rectangle.isEnabled: does not apply - read isEnabled of Rectangle - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Rectangle.rotation: ✅
+ScrollView.accessibilityHeading: ✅
+ScrollView.translationY: ✅
+SearchField.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
+Slider.ignoresInput: ✅
+Slider.scale: ✅
+Spacer.accessibilityHeading: ✅
+Stepper.frameChanged: ✅
+Stepper.height: ✅
+Stepper.rotationX: ✓ read rotationX of Stepper: the host's own tip, checked against the projection it laid on the element
+Stepper.width: ✅
+Switch.accessibilityHint: ✅
 Text.isVisible: ✅
 Text.pivotX: ✅
-TextEditor.frameChanged: ✅
-TextEditor.height: ✅
-TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own tip, checked against the projection it laid on the element
-TextEditor.width: ✅
-TextField.accessibilityLabel: ✅
-TimePicker.opacity: ✅
-TimePicker.pivotY: ✅
-VStack.translationY: ✅
-VStack.zIndex: ✅
-WebView.accessibilityHint: ✅
-ZStack.isEnabled: does not apply - read isEnabled of ZStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-ZStack.rotation: ✅
+TextEditor.opacity: ✅
+TextEditor.pivotY: ✅
+TextField.accessibilityHeading: ✅
+TextField.translationY: ✅
+TimePicker.layoutDirection: ✅
+VStack.scaleY: ✅
+VStack.style: ✅
+WebView.accessibilityLabel: ✅
+ZStack.isVisible: ✅
+ZStack.pivotX: ✅

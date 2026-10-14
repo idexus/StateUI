@@ -39,7 +39,7 @@ extension Node {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: node.addHandler(event, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: node.addHandler(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public mutating func addHandler<Owner: Contract>(
         _ event: ElementEvent<Owner, Void>,
         _ handler: @escaping EventHandler
@@ -82,7 +82,7 @@ extension Node {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: node.addHandler(event, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: node.addHandler(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public mutating func addHandler<Owner: Contract, Value: HostRepresentable>(
         _ event: ElementEvent<Owner, Value>,
         _ handler: @escaping ValueEventHandler<Value>
@@ -127,7 +127,7 @@ extension Node {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: node.addHandler(event, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: node.addHandler(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public mutating func addHandler<Owner: Contract, First: HostRepresentable, Second: HostRepresentable>(
         _ event: ElementEvent<Owner, (First, Second)>,
         _ handler: @escaping ValueEventHandler<First, Second>
@@ -176,7 +176,7 @@ extension Node {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: node.addHandler(event, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: node.addHandler(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public mutating func addHandler<
         Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
     >(

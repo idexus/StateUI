@@ -20,6 +20,14 @@ extension AppKitDriver {
         return Self.said(view.menu?.items ?? [])
     }
 
+    /// The menu the button standing for `button` opens.
+    func buttonMenu(of button: MountedElement) throws -> String {
+        guard let view = (button.native as? AppKitElement)?.view as? AppKitButtonView, view.opening != .none else {
+            throw DriverCannot("read the menu \(button.type.name) opens")
+        }
+        return Self.said(view.offeredItems)
+    }
+
     /// The bar the window of `page` shows, read from its toolbar: the actions before the first flexible space and
     /// after the last, each run between two spaces a group, then the overflow's actions.
     func bar(of page: MountedElement) throws -> String {
@@ -122,7 +130,8 @@ extension AppKitDriver {
     func pictureName(_ shown: NSImage?) -> HostValue? {
         guard let shown else { return nil }
         let names = ["test_dot.png", "test_wide.png", "photo.png"]
-        return names.first { renderer?.image(named: $0) === shown }.map { .string($0) }
+        let picture = shown.glyphSource ?? shown
+        return names.first { renderer?.image(named: $0) === picture }.map { .string($0) }
     }
 
     /// The colour the bar of the window `element` stands in is painted: the band the title bar lets show only while

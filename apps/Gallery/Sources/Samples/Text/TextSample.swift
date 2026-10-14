@@ -13,7 +13,7 @@ struct TextSample: SampleContent, ExampleContent {
 
             Text("Bold")
                 .fontSize(16)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
 
             Text("Italic, and coloured")
                 .fontSize(16)

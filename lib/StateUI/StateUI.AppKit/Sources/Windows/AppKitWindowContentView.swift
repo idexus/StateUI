@@ -35,6 +35,13 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
         return band
     }()
 
+    /// What takes a key equivalent no view of the window took - a bar's item stating it.
+    var unclaimedKey: ((NSEvent) -> Bool)?
+
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        super.performKeyEquivalent(with: event) || unclaimedKey?(event) == true
+    }
+
     /// The window's drags between views, where this view is the window's root.
     /// Design: docs/design/platforms/appkit/input.md#a-drag-between-views
     var drops: AppKitDrops? {
@@ -131,6 +138,10 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
         page?.fittingSize ?? .zero
     }
 
+    /// Lets what reads a frame say where it stands, once the window is laid out and before it draws; whether
+    /// anything did.
+    var reportsLaidOut: () -> Bool = { false }
+
     override func layout() {
         super.layout()
         if let material {
@@ -144,6 +155,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
         page?.frame = pageSpansTitleBar ? bounds : safeAreaRect
         overlaySurface.frame = safeAreaRect
         overlaySurface.layoutSubtreeIfNeeded()
+        layOutReporting(page)
     }
 }
 

@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import StateUI
 @_spi(Host) import StateUIHost
 import CStateUIAndroid
 
-/// The application's pictures, read from its APK's `images` assets at the pixels the views showing
-/// them need, and kept while one does.
+/// The pictures views show - the application's files from its APK's `images` assets, the platform's icons, and
+/// pictures given as bytes - read at the pixels the views showing them need, and kept while one does.
 /// Design: docs/design/platforms/android/drawing.md#pictures
 @MainActor
 enum AndroidPictures {
@@ -16,7 +17,10 @@ enum AndroidPictures {
     /// The most a picture is thinned: one pixel in 16 across and down.
     private static let thinnest: Int32 = 16
 
-    /// A picture's file, the density it was drawn at, and its size in pixels at the display's.
+    /// An icon's side, in points: Android's icon size.
+    private static let iconSide = 24.0
+
+    /// A file's path in the assets, the density it was drawn at, and its size in pixels at the display's.
     private struct Asset {
         let path: String
         let density: Int32
@@ -31,11 +35,17 @@ enum AndroidPictures {
 
     /// A picture read at one pixel in `sample` across and down.
     private struct Reading: Hashable {
-        let name: String
+        let picture: HostPicture
         let sample: Int32
     }
 
-    /// The pictures found, by name; nil for a name with no picture.
+    /// Where a picture's encoded pixels are read from: a file in the assets, or the bytes themselves.
+    private enum Encoded {
+        case asset(String)
+        case bytes([UInt8])
+    }
+
+    /// The files found, by name; nil for a name with no file.
     private static var assets: [String: Asset?] = [:]
 
     /// The bitmaps views show.
@@ -53,48 +63,95 @@ enum AndroidPictures {
     /// The host's density, in pixels per inch: what every picture is read, measured and drawn at.
     static var displayDensity: Int32 { Int32((AndroidRenderer.density * 160).rounded()) }
 
-    /// `name`'s size in pixels at the display's density; nil where the application has no such picture.
+    /// `picture`'s size in pixels at the display's density; nil where there is no such picture.
     ///
     /// An SVG - asked for by its own name, or by its `.png` name where no such file stands - is drawn three times over
-    /// when the application is built, as `<name>@3x.png`; a file of the name itself is kept at one pixel a point.
-    static func size(named name: String) -> (width: Int32, height: Int32)? {
-        asset(named: name)?.size
+    /// when the application is built, as `<name>@3x.png`; a file of the name itself, and bytes, are kept at one pixel
+    /// a point. An icon stands at Android's icon size.
+    static func size(of picture: HostPicture) -> (width: Int32, height: Int32)? {
+        switch picture {
+        case .file(let name): asset(named: name)?.size
+        case .icon: (iconPixels, iconPixels)
+        case .bytes(let bytes): bounds(.bytes(bytes)).map { scaled($0, from: onePixelAPoint) }
+        }
     }
 
-    /// How thinly `name` can be read for a view `shown` pixels big: one pixel in the answer across and down.
-    static func sample(named name: String, shown: (width: Int32, height: Int32)) -> Int32 {
-        guard let size = asset(named: name)?.size, shown.width > 0, shown.height > 0 else { return 1 }
+    /// How thinly `picture`, `size` pixels big at the display's density, can be read for a view `shown` pixels big:
+    /// one pixel in the answer across and down, while the picture's own pixels read still cover the view - a reading
+    /// thins them before it scales them to the display's density.
+    static func sample(
+        _ picture: HostPicture, size: (width: Int32, height: Int32), shown: (width: Int32, height: Int32)
+    ) -> Int32 {
+        let ratio = Double(density(of: picture)) / Double(displayDensity)
+        let own = (width: Int32(Double(size.width) * ratio), height: Int32(Double(size.height) * ratio))
+        guard own.width > 0, own.height > 0, shown.width > 0, shown.height > 0 else { return 1 }
         var sample: Int32 = 1
-        while sample < thinnest, size.width / (sample * 2) >= shown.width, size.height / (sample * 2) >= shown.height {
+        while sample < thinnest, own.width / (sample * 2) >= shown.width, own.height / (sample * 2) >= shown.height {
             sample *= 2
         }
         return sample
     }
 
-    /// `name` read at one pixel in `sample`, held for one more view until it lets go; nil for no picture.
-    static func take(named name: String, sample: Int32) -> JavaObject? {
-        let reading = Reading(name: name, sample: sample)
+    /// The density `picture` is drawn at, in pixels per inch: a file's, bytes' one pixel a point, an icon's the
+    /// display's.
+    private static func density(of picture: HostPicture) -> Int32 {
+        switch picture {
+        case .file(let name): asset(named: name)?.density ?? displayDensity
+        case .bytes: onePixelAPoint
+        case .icon: displayDensity
+        }
+    }
+
+    /// `picture` read at one pixel in `sample`, held for one more view until it lets go; nil for no picture.
+    static func take(_ picture: HostPicture, sample: Int32) -> JavaObject? {
+        let reading = Reading(picture: picture, sample: sample)
         if let held = kept[reading] {
             kept[reading]?.holders = held.holders + 1
             return held.bitmap
         }
-        guard let asset = asset(named: name), let bitmap = decode(asset, sample: sample) else { return nil }
+        guard let bitmap = decode(picture, sample: sample) else { return nil }
 
         kept[reading] = Kept(bitmap: bitmap, holders: 1)
         return bitmap
     }
 
-    /// One view no longer shows `name` read at `sample`; the last to let go lets the bitmap go.
-    static func letGo(named name: String, sample: Int32) {
-        let reading = Reading(name: name, sample: sample)
+    /// One view no longer shows `picture` read at `sample`; the last to let go lets the bitmap go.
+    static func letGo(_ picture: HostPicture, sample: Int32) {
+        let reading = Reading(picture: picture, sample: sample)
         guard let held = kept[reading] else { return }
 
         if held.holders > 1 { kept[reading]?.holders = held.holders - 1 } else { kept[reading] = nil }
     }
 
-    /// `name` whole, for a bar's or a tab's icon, which the host keeps for as long as it runs.
-    static func bitmap(named name: String) -> JavaObject? {
-        take(named: name, sample: 1)
+    /// `picture` whole, for a bar's or a tab's icon, which the host keeps for as long as it runs.
+    static func bitmap(_ picture: HostPicture) -> JavaObject? {
+        take(picture, sample: 1)
+    }
+
+    /// An icon's side in pixels at the display's density.
+    private static var iconPixels: Int32 { Int32((iconSide * AndroidRenderer.density).rounded()) }
+
+    /// `picture` read at one pixel in `sample`; nil where there is no such picture.
+    private static func decode(_ picture: HostPicture, sample: Int32) -> JavaObject? {
+        switch picture {
+        case .file(let name): asset(named: name).flatMap { decode(.asset($0.path), density: $0.density, sample: sample) }
+        case .bytes(let bytes): decode(.bytes(bytes), density: onePixelAPoint, sample: sample)
+        case .icon(let icon): drawn(icon)
+        }
+    }
+
+    /// `icon` drawn from its drawable at Android's icon size, as a mask the view showing it colours.
+    /// Design: docs/design/platforms/android/drawing.md#icons
+    private static func drawn(_ icon: Icon) -> JavaObject? {
+        Java.frame {
+            guard let mask = Java.callStaticObject(
+                JavaAPI.views, JavaAPI.iconMask,
+                .object(AndroidRenderer.context), .object(Java.string(icon.androidDrawable)), .int(iconPixels))
+            else { return nil }
+
+            Java.call(mask, JavaAPI.setBitmapDensity, .int(displayDensity))
+            return JavaObject(mask)
+        }
     }
 
     /// The asset `name` stands for, its size read without its pixels.
@@ -106,7 +163,7 @@ enum AndroidPictures {
             files.contains(drawn.file) ? ("images/\(drawn.file)", Int32(drawn.scale) * onePixelAPoint) : nil
         }.first
         let asset = found.flatMap { found in
-            bounds(found.path).map { Asset(path: found.path, density: found.density, size: scaled($0, from: found.density)) }
+            bounds(.asset(found.path)).map { Asset(path: found.path, density: found.density, size: scaled($0, from: found.density)) }
         }
         if asset == nil { AndroidRenderer.log.error("no picture named \(name) in the application's images") }
 
@@ -114,9 +171,9 @@ enum AndroidPictures {
         return asset
     }
 
-    /// The pixels the asset at `path` holds, read from its header.
-    private static func bounds(_ path: String) -> (width: Int32, height: Int32)? {
-        read(path, configure: { options in
+    /// The pixels `encoded` holds, read from its header.
+    private static func bounds(_ encoded: Encoded) -> (width: Int32, height: Int32)? {
+        read(encoded, configure: { options in
             Java.set(options, JavaAPI.inJustDecodeBounds, true)
         }, finish: { options, _ in
             let size = (width: Java.int(options, JavaAPI.outWidth), height: Java.int(options, JavaAPI.outHeight))
@@ -124,11 +181,12 @@ enum AndroidPictures {
         })
     }
 
-    /// The asset read at one pixel in `sample`, scaled to the display's density as it is read.
-    private static func decode(_ asset: Asset, sample: Int32) -> JavaObject? {
-        read(asset.path, configure: { options in
+    /// `encoded`, drawn at `density`, read at one pixel in `sample` and scaled to the display's density as it is
+    /// read.
+    private static func decode(_ encoded: Encoded, density: Int32, sample: Int32) -> JavaObject? {
+        read(encoded, configure: { options in
             Java.set(options, JavaAPI.inSampleSize, sample)
-            Java.set(options, JavaAPI.inDensity, asset.density)
+            Java.set(options, JavaAPI.inDensity, density)
             Java.set(options, JavaAPI.inTargetDensity, displayDensity)
             Java.set(options, JavaAPI.inScaled, true)
         }, finish: { _, bitmap in
@@ -139,23 +197,33 @@ enum AndroidPictures {
         })
     }
 
-    /// Reads the asset at `path` with the options `configure` sets, and hands them and the bitmap - nil
-    /// when only the bounds were asked for - to `finish`.
+    /// Reads `encoded` with the options `configure` sets, and hands them and the bitmap - nil when only the bounds
+    /// were asked for - to `finish`.
     private static func read<Result>(
-        _ path: String, configure: (jobject) -> Void, finish: (jobject, jobject?) -> Result?
+        _ encoded: Encoded, configure: (jobject) -> Void, finish: (jobject, jobject?) -> Result?
     ) -> Result? {
         Java.frame {
-            let assets = Java.callObject(AndroidRenderer.context, JavaAPI.getAssets)!
-            guard let stream = Java.callObject(assets, JavaAPI.openAsset, .object(Java.string(path))) else { return nil }
-
             let options = Java.new(JavaAPI.bitmapOptions, JavaAPI.newBitmapOptions)
             return withExtendedLifetime(options) {
                 configure(options.reference)
-                let bitmap = Java.callStaticObject(
-                    JavaAPI.bitmapFactory, JavaAPI.decodeStream,
-                    .object(stream), .object(nil), .object(options.reference))
-                Java.call(stream, JavaAPI.close)
-                return finish(options.reference, bitmap)
+                switch encoded {
+                case .asset(let path):
+                    let assets = Java.callObject(AndroidRenderer.context, JavaAPI.getAssets)!
+                    guard let stream = Java.callObject(assets, JavaAPI.openAsset, .object(Java.string(path))) else {
+                        return nil
+                    }
+
+                    let bitmap = Java.callStaticObject(
+                        JavaAPI.bitmapFactory, JavaAPI.decodeStream,
+                        .object(stream), .object(nil), .object(options.reference))
+                    Java.call(stream, JavaAPI.close)
+                    return finish(options.reference, bitmap)
+                case .bytes(let bytes):
+                    let bitmap = Java.callStaticObject(
+                        JavaAPI.bitmapFactory, JavaAPI.decodeByteArray,
+                        .object(Java.bytes(bytes)), .int(0), .int(Int32(bytes.count)), .object(options.reference))
+                    return finish(options.reference, bitmap)
+                }
             }
         }
     }

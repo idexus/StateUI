@@ -100,6 +100,8 @@ final class ControlTests: XCTestCase {
                     .lineBreak(.tailTruncation)
                     .lineHeight(1.5)
                     .maximumLines(2)
+                    .verticalTextAlignment(.end)
+                    .isSelectable(true)
                     .textDecorations([.underline, .strikethrough])
                     // The runs go here rather than in a case of their own: a
                     // TextSpan is not a view, so it has no case, and Text.swift
@@ -110,10 +112,9 @@ final class ControlTests: XCTestCase {
                             .background(.whiteSmoke)
                             .fontSize(13)
                             .fontFamily("Menlo")
-                            .fontAttributes(.bold)
+                            .fontWeight(.bold)
                             .isFontAutoScalingEnabled(false)
                             .tracking(0.5)
-                            .lineHeight(1.2)
                             .textDecorations(.underline)
 
                         TextSpan("counter").textColor(.steelBlue)
@@ -128,9 +129,17 @@ final class ControlTests: XCTestCase {
                     .icon("tab_list.png")
                     .iconPosition(.leading)
                     .iconSpacing(8)
+                    .keyboardShortcut("i", modifiers: [.primary, .shift])
+                    .role(.primary)
                     .onClicked {}
                     .onPressed {}
                     .onReleased {}),
+
+            ControlCase("MenuButton", source: "Button.swift",
+                Button("Save")
+                    .onClicked {}
+                    .menu(.held) { MenuItem("Save as") }
+                    .showsMenuArrow(false)),
 
             ControlCase("IconButton", source: "Button.swift",
                 Button(icon: "tab_list.png")
@@ -143,7 +152,8 @@ final class ControlTests: XCTestCase {
                     .submitLabel(.done)
                     .showsClearButton(true)
                     .onTextChanged { _ in }
-                    .onSubmitted {}),
+                    .onSubmitted {}
+                    .onKeyPressed(.upArrow) { _ in }),
 
             ControlCase("TextEditor", source: "TextEditor.swift",
                 TextEditor("Notes")
@@ -157,12 +167,11 @@ final class ControlTests: XCTestCase {
 
 
             ControlCase("Picker", source: "Picker.swift",
-                Picker(["Small", "Medium", "Large"])
-                    .selectedIndex(1)
+                Picker(["Small", "Medium", "Large"], selection: State(wrappedValue: "Medium").projectedValue)
                     .placeholder("Size")
+                    .presentation(.segmented)
                     .tint(.gray)
                     .isOpen(false)
-                    .onSelectedIndexChanged { _ in }
                     .onOpened {}
                     .onClosed {}),
 
@@ -204,9 +213,6 @@ final class ControlTests: XCTestCase {
                     .isOn(true)
                     .groupName("size")
                     .textCase(.uppercase)
-                    .stroke(.gray)
-                    .lineWidth(1)
-                    .shape(.roundedRectangle(8))
                     .onToggled { _ in }),
 
             ControlCase("Slider", source: "Slider.swift",
@@ -229,7 +235,6 @@ final class ControlTests: XCTestCase {
             ControlCase("SearchField", source: "SearchField.swift",
                 SearchField("al")
                     .submitLabel(.search)
-                    .tint(.gray)
                     .onTextChanged { _ in }
                     .onSubmitted {}),
 
@@ -243,9 +248,11 @@ final class ControlTests: XCTestCase {
                     .progress(0.4)
                     .tint(.cornflowerBlue)),
 
-            ControlCase("ColorBox", source: "ColorBox.swift",
-                ColorBox(.cornflowerBlue)
-                    .cornerRadius(8)),
+            ControlCase("Spacer", source: "Spacer.swift",
+                Spacer()
+                    .minimumWidth(8)),
+
+            ControlCase("Divider", source: "Divider.swift", Divider()),
 
             ControlCase("Grid", source: "Grid.swift",
                 Grid {
@@ -274,7 +281,7 @@ final class ControlTests: XCTestCase {
 
             ControlCase("ZStack", source: "ZStack.swift",
                 ZStack {
-                    ColorBox(.cornflowerBlue)
+                    Rectangle().fill(.cornflowerBlue)
                         .area(.proportional(0, 0, 1, 0.5))
 
                     Text("Bottom right")
@@ -357,6 +364,8 @@ final class ControlTests: XCTestCase {
 
             ControlCase("Ellipse", source: "Ellipse.swift", Ellipse()),
 
+            ControlCase("Capsule", source: "Capsule.swift", Capsule()),
+
             ControlCase("Line", source: "Line.swift",
                 Line()
                     .x1(0)
@@ -433,10 +442,10 @@ final class ControlTests: XCTestCase {
             // placement lives - on the child, not the grid.
             ControlCase("Elements", sources: SourceTree.sharedTier,
                 VStack {
-                    // The Shape tier, which all six shapes share - so it is
+                    // The Shape tiers, which the shapes share - so they are
                     // checked here rather than in each of their cases, exactly
                     // as the font tier is.
-                    Ellipse()
+                    Rectangle()
                         .fill(.radialGradient([
                             GradientStop(.white, 0),
                             GradientStop(.steelBlue, 1),
@@ -463,17 +472,18 @@ final class ControlTests: XCTestCase {
                         .textColor(.firebrick)
                         .tracking(1.5)
                         .textCase(.uppercase)
+                        .textStyle(.subtitle)
                         .fontSize(20)
                         .fontFamily("OpenSansRegular")
-                        .fontAttributes(.bold)
+                        .fontWeight(.bold)
                         .isFontAutoScalingEnabled(false)
                         .horizontalTextAlignment(.center)
-                        .verticalTextAlignment(.end)
                         // What the view says about itself: a handle for a
                         // driver, and three things a screen reader says.
                         .accessibilityIdentifier("tiers")
                         .accessibilityLabel("The shared tier")
                         .accessibilityHint("Everything every view can be told")
+                        .tooltip("Every view can say what it does")
                         .accessibilityHeading(.h2)
                         .isAccessibilityHidden(false)
                         .automationExcludedWithChildren(false)
@@ -698,10 +708,12 @@ final class ControlTests: XCTestCase {
     /// gives: a value it cannot be handed whole (a brush, a picture, a date, a
     /// shape, a transform, a law, a run of numbers), a NAME rather than a
     /// value (a style key, a font family, a radio group), a rectangle - four
-    /// lanes where a plain value is one - and the tiers no view wears: a page,
-    /// a bar, a menu item, a map's own flags.
+    /// lanes where a plain value is one - the tiers no view wears: a page,
+    /// a bar, a menu item, a map's own flags - and a value that makes its
+    /// element anew, which a state the host carries past the tree cannot.
     func testEveryValueModifierHasABindingTwin() throws {
-        let allowed: Set<String> = [
+        let remaking = Set(LibraryContracts.remaking.map(\.name))
+        let allowed: Set<String> = remaking.union([
             // Named rather than valued.
             "style", "fontFamily", "groupName", "source", "userAgent", "data", "content", "format",
             // A value the host cannot be handed whole.
@@ -714,7 +726,7 @@ final class ControlTests: XCTestCase {
             "barBackgroundColor", "barForegroundColor", "barIcon", "barSubtitle", "barTitle", "isScrollEnabled",
             "isZoomEnabled", "showsTraffic", "showsUserLocation", "isDestructive", "title",
             "mapType", "avoidsSafeArea",
-        ]
+        ])
         var values: Set<String> = []
         var twins: Set<String> = []
 
@@ -906,7 +918,6 @@ final class ControlTests: XCTestCase {
         let text = State("")
         let toggled = State(false)
         let volume = State(0.0)
-        let size = State(0)
         let due = State(CalendarDate(year: 2026, month: 1, day: 1))
         let ticked = State(false)
         let chosen = State(false)
@@ -923,7 +934,6 @@ final class ControlTests: XCTestCase {
             TextEditor(text.projectedValue).id("editor").node,
             Switch(toggled.projectedValue).node,
             Slider(volume.projectedValue).node,
-            Picker(["S", "M", "L"]).selectedIndex(size.projectedValue).node,
             DatePicker(due.projectedValue).node,
             CheckBox(ticked.projectedValue).id("checkBox").node,
             RadioButton("Medium").isOn(chosen.projectedValue).id("radio").node,
@@ -937,13 +947,12 @@ final class ControlTests: XCTestCase {
         // same words land on.
         typed(text.number, "Ada")
         typed(text.number, "Notes")
-        // A switch, a picker, a box and a radio button are the HOST's own
-        // writes onto plain ties, not events.
+        // A switch, a box and a radio button are the HOST's own writes onto
+        // plain ties, not events.
         moved(toggled.number, to: 1)
         // A slider's and a stepper's report is the HOST's own write onto the
         // journey it walks, not an event.
         dragged(volume.number, to: 12.5)
-        moved(size.number, to: 2)
         // A chosen day and a chosen time are three lanes each, landed the same way.
         moved(due.number, to: [2026, 8, 2], mask: 0b111)
         moved(ticked.number, to: 1)
@@ -955,7 +964,6 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(text.wrappedValue, "Notes")
         XCTAssertTrue(toggled.wrappedValue)
         XCTAssertEqual(volume.wrappedValue, 12.5)
-        XCTAssertEqual(size.wrappedValue, 2)
         XCTAssertEqual(due.wrappedValue, CalendarDate(year: 2026, month: 8, day: 2))
         XCTAssertTrue(ticked.wrappedValue)
         XCTAssertTrue(chosen.wrappedValue)
@@ -1081,32 +1089,32 @@ final class ControlTests: XCTestCase {
 
     /// The same rule in the other order: the binding written AFTER the handler
     /// must not replace it. A binding that stored its write-back directly
-    /// would kill the handler in
-    /// `.onSelectedIndexChanged { } .selectedIndex($size)` without a word.
+    /// would kill the handler in `.onToggled { } .isOn($chosen)` without a
+    /// word.
     func testABindingWrittenAfterAHandlerRunsBesideIt() {
-        let size = State(0)
-        var seen: [Int] = []
-        var stateAsTheHandlerRan: [Int] = []
+        let chosen = State(false)
+        var seen: [Bool] = []
+        var stateAsTheHandlerRan: [Bool] = []
 
         let renders = Renders()
         let patch = renders.render(
-            Picker(["S", "M", "L"])
-                .onSelectedIndexChanged {
+            RadioButton("Medium")
+                .onToggled {
                     seen.append($0)
-                    stateAsTheHandlerRan.append(size.wrappedValue)
+                    stateAsTheHandlerRan.append(chosen.wrappedValue)
                 }
-                .selectedIndex(size.projectedValue)
+                .isOn(chosen.projectedValue)
                 .node)
 
         // The choice is the HOST's write onto the plain tie, landed before the
         // event it raises beside it - so the handler reads the state already
         // written, wherever it was written in the chain.
-        moved(size.number, to: 2)
-        renders.fire(handler(patch, "selectedIndexChanged"), with: [.number(2)])
+        moved(chosen.number, to: 1)
+        renders.fire(handler(patch, "toggled"), with: [.bool(true)])
 
-        XCTAssertEqual(size.wrappedValue, 2)
-        XCTAssertEqual(seen, [2])
-        XCTAssertEqual(stateAsTheHandlerRan, [2])
+        XCTAssertTrue(chosen.wrappedValue)
+        XCTAssertEqual(seen, [true])
+        XCTAssertEqual(stateAsTheHandlerRan, [true])
     }
 
     /// A second handler for the same event runs beside the first - on a Button
@@ -1159,27 +1167,21 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(seen, ["first", "second"])
     }
 
-    /// A payload of the wrong KIND leaves the handler AND the binding alone -
-    /// the rule every gesture follows, now on the typed value events too.
-    /// Nothing is parsed anywhere: the value arrives under its tag and the
-    /// typed accessor answers nil for every other arm. -1 is a real index
-    /// (nothing chosen), so it cannot stand in for "unreadable" either.
-    func testAPayloadOfTheWrongKindLeavesTheHandlerAlone() {
-        let size = State(1)
-        var seen: [Int] = []
+    /// A payload of the wrong KIND leaves the binding alone - the rule every
+    /// gesture follows, now on the typed value events too. Nothing is parsed
+    /// anywhere: the value arrives under its tag and the typed accessor
+    /// answers nil for every other arm.
+    func testAPayloadOfTheWrongKindLeavesTheChoiceAlone() {
+        let size = State("M")
 
         let renders = Renders()
-        let patch = renders.render(
-            Picker(["S", "M", "L"])
-                .selectedIndex(size.projectedValue)
-                .onSelectedIndexChanged { seen.append($0) }
-                .node)
+        let patch = renders.render(Picker(["S", "M", "L"], selection: size.projectedValue).node)
 
         renders.fire(handler(patch, "selectedIndexChanged"), with: [.string("not-a-number")])
 
-        XCTAssertEqual(size.wrappedValue, 1)
-        XCTAssertEqual(seen, [])
+        XCTAssertEqual(size.wrappedValue, "M")
     }
+
     /// A two-way control handed a binding the host CANNOT carry - a part of a
     /// state, or one made from closures - keeps the described road: the value
     /// is read at build, the report is written back through the binding, and
@@ -1188,6 +1190,7 @@ final class ControlTests: XCTestCase {
         var on = false
         let closure = Binding<Bool>(get: { on }, set: { on = $0 })
         let room = State(wrappedValue: Rect(0, 0, 3, 4))
+        let sizes = ["S", "M", "L", "XL"]
 
         struct Profile { var name = "" }
         let profile = State(wrappedValue: Profile())
@@ -1201,7 +1204,9 @@ final class ControlTests: XCTestCase {
         let renders = Renders()
         let patch = renders.render(Node(type: "VStack", children: [
             Switch(closure).node,
-            Picker(["S", "M", "L"]).selectedIndex(Binding(get: { Int(room.wrappedValue.width) }, set: { room.wrappedValue.width = Double($0) })).node,
+            Picker(sizes, selection: Binding(
+                get: { sizes[Int(room.wrappedValue.width)] },
+                set: { room.wrappedValue.width = Double(sizes.firstIndex(of: $0) ?? 0) })).node,
             TextField(text).node,
             TextEditor(profile.projectedValue.name).id("editor").node,
             SearchField(text).id("search").node,

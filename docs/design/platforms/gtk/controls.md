@@ -44,11 +44,25 @@ changed nothing GTK 4.14 measures; the driver doubles `gtk-xft-dpi` itself.
 
 A button the tree gives a fill, an outline or a shape wears a class of the
 host's style sheet drawing them - the fill as its background, the outline as
-its border, the shape as its corners' radius, an ellipse as round ends - and
+its border, the shape as its corners' radius - a capsule's wider than the
+button, which GTK cuts down to half its shorter side, an oval's half of each
+side - and
 what the tree says nothing of stays the theme's. The sheet stands above the
 theme, so its fill would stand under the pointer and pressed too: the class
 draws the fill a little fainter under the pointer and fainter again pressed,
 as the theme's own buttons answer.
+
+A button opening a menu is a `GtkMenuButton`, a split button libadwaita's
+`AdwSplitButton`, and each draws its face with the buttons it holds - GTK's
+documented nodes `menubutton > button`, `splitbutton > button` and
+`splitbutton > menubutton > button`. A menu button's class leaves the outer
+node bare and draws the box on the button it holds: one face, not the theme's
+button standing inside the class's box. A split button wears the box whole,
+its two buttons bare but for a shade under the pointer and a deeper one
+pressed - each rounded at its outer corners alone, by the direction of the
+words - and the line between them, which the theme leaves to the gap
+between two filled buttons, drawn in the colour of its words. The padding
+goes to the buttons, which hold the words.
 
 ## A button's picture
 
@@ -310,3 +324,27 @@ behind and ahead, said as the history changes; and the end of its web
 process. A script's answer is the JSON WebKit writes its value in, read by
 the host layer's rule. WebKit's calls are declared by the backend itself
 over untyped pointers, as GTK's headers belong to the host's own module.
+
+## A text style
+
+Words in a text style stand at the size and weight libadwaita gives its style
+class for it: `.display` `title-1`, `.title` `title-2`, `.subtitle`
+`title-4`, `.headline` `heading`, `.body` `body` and `.caption` `caption`.
+The numbers are the theme's own: a label of each class, never shown, is read
+for them each time (`GTKTypeRamp`), so they follow the desktop's font, and a
+style's weight stands at the theme's own number - 800 for the largest titles -
+where the tree gives none. The
+size and weight the tree gives stand over the style's (`TextLook.standing`),
+and both reach a label and a run as Pango attributes and a field as its words'
+class.
+
+## A picker's segments and radio buttons
+
+A picker offered as segments is a row of GTK's toggle buttons in a box of the
+`linked` class, which libadwaita draws as one strip; one offered as radio
+buttons is a column of its check buttons, which a group draws as radio
+buttons (`GTKChoiceGroupView`). Each set is one group, so GTK keeps one
+active; a button turned on tells the choice, and the program's writes are
+dropped as every program write is. The words' class stands on the box, and
+GTK's CSS hands the font and colour on to the buttons.
+

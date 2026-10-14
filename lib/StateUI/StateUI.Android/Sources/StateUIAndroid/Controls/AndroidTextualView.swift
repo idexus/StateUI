@@ -10,8 +10,11 @@ import CStateUIAndroid
 class AndroidTextualView: AndroidView {
     private var made: (size: Float, colors: JavaObject)?
 
-    /// Bold and italic, as last set.
+    /// The slant, as last set.
     private(set) var fontAttributes: FontAttributes?
+
+    /// The weight, as last set; nil for the platform's.
+    private(set) var fontWeight: FontWeight?
 
     /// The family the words are drawn in; nil for the platform's.
     private(set) var fontFamily: String?
@@ -42,11 +45,14 @@ class AndroidTextualView: AndroidView {
         return Java.text(string)
     }
 
-    /// How the words look (`TextMembers.look`): their size, weight, slant, family and colour, each the
-    /// platform's own where the look says nothing.
+    /// How the words look (`TextMembers.look`): their style's size and weight on the platform's type scale, under
+    /// the size and weight they give, their slant, family and colour, each the platform's own where the look says
+    /// nothing.
     func setLook(_ look: TextLook) {
         scales = look.scales
-        setFontSize(look.size)
+        let (size, weight) = look.standing(styleSize: look.style?.androidSize, styleWeight: look.style?.androidWeight)
+        setFontSize(size)
+        fontWeight = weight
         fontAttributes = look.attributes
         fontFamily = look.family
         applyTypeface()
@@ -88,19 +94,15 @@ class AndroidTextualView: AndroidView {
         Java.call(reference, JavaAPI.setLetterSpacing, .float(Float(look.letterSpacing(inEmsOf: size))))
     }
 
-    /// Bold and italic, in the bits `FontAttributes` and `Typeface` share.
-    func setFontAttributes(_ attributes: FontAttributes?) {
-        fontAttributes = attributes
-        applyTypeface()
-    }
-
-    private func applyTypeface() {
-        let style = (fontAttributes?.rawValue ?? 0) & 3
-        let name = fontFamily.flatMap(Java.string)
-        let face = name.flatMap { Java.callStaticObject(JavaAPI.typeface, JavaAPI.createTypeface, .object($0), .int(style)) }
+    /// Draws the words in the family, weight and slant last set again - after anything that put back the
+    /// platform's typeface.
+    func applyTypeface() {
+        let italic = fontAttributes?.contains(.italic) == true
+        let face = AndroidTypeface.local(family: fontFamily, weight: fontWeight, italic: italic)
+        // A weighted face carries its slant; the platform's takes it from the style bits.
+        let style = fontWeight == nil && italic ? AndroidTypeface.italicStyle : 0
         Java.call(reference, JavaAPI.setTypeface, .object(face), .int(style))
         Java.release(local: face)
-        Java.release(local: name)
     }
 
     /// How the words break, and how many lines show: a line cut or truncated is one line, and only a
@@ -120,42 +122,63 @@ class AndroidTextualView: AndroidView {
         withExtendedLifetime(at) { Java.call(reference, JavaAPI.setEllipsize, .object(at?.reference)) }
     }
 
-    /// The words' colour; nil puts back the platform's.
+    /// The words' colour; nil puts back the platform's (`plainWordColours`).
     func setTextColor(_ color: HostValue?) {
-        let made = madeWith
+        writtenTextColor = color
         if let argb = color.flatMap(Self.argb) {
             let colors = Java.callStaticObject(
                 JavaAPI.views, JavaAPI.textColors, .object(AndroidRenderer.context), .int(argb))
             Java.call(reference, JavaAPI.setTextColors, .object(colors))
             Java.release(local: colors)
         } else {
-            Java.call(reference, JavaAPI.setTextColors, .object(made.colors.reference))
+            let plain = plainWordColours
+            withExtendedLifetime(plain) { Java.call(reference, JavaAPI.setTextColors, .object(plain.reference)) }
         }
     }
 
+    /// The colour the tree wrote for the words; nil for none.
+    private(set) var writtenTextColor: HostValue?
+
+    /// The words' colours where none is written: the platform's, as the view was made.
+    var plainWordColours: JavaObject { madeWith.colors }
+
     /// The room around the words, in points; nil puts back the platform's.
     func setPadding(_ insets: Insets?) {
-        if madePadding == nil {
-            madePadding = (
-                Java.callInt(reference, JavaAPI.getPaddingLeft), Java.callInt(reference, JavaAPI.getPaddingTop),
-                Java.callInt(reference, JavaAPI.getPaddingRight), Java.callInt(reference, JavaAPI.getPaddingBottom))
-        }
         padding = insets
         applyPadding()
+    }
+
+    /// The pixels kept on the right beyond the padding: a button's room for its menu's arrow.
+    var rightRoom: Int32 = 0 {
+        didSet { if rightRoom != oldValue { applyPadding() } }
+    }
+
+    /// The padding's right side in pixels, without the room kept beyond it: the tree's, else the platform's.
+    var paddingRight: Int32 {
+        padding.map { pixels($0.right) } ?? platformPadding.right
     }
 
     /// A new background brings its own padding; the tree's is put back over it.
     /// Design: docs/design/platforms/android/controls.md#the-background-a-view-is-made-with
     override func showBackground(_ drawable: JavaObject?) {
         super.showBackground(drawable)
-        if padding != nil { applyPadding() }
+        if padding != nil || rightRoom != 0 { applyPadding() }
     }
 
     private func applyPadding() {
-        guard let made = madePadding else { return }
+        let platform = platformPadding
+        let sides = padding.map { (pixels($0.left), pixels($0.top), pixels($0.right), pixels($0.bottom)) } ?? platform
+        Java.call(reference, JavaAPI.setPadding, .int(sides.0), .int(sides.1), .int(sides.2 + rightRoom), .int(sides.3))
+    }
 
-        let sides = padding.map { (pixels($0.left), pixels($0.top), pixels($0.right), pixels($0.bottom)) } ?? made
-        Java.call(reference, JavaAPI.setPadding, .int(sides.0), .int(sides.1), .int(sides.2), .int(sides.3))
+    /// The padding the view was made with, the platform's, read before the first change.
+    private var platformPadding: (left: Int32, top: Int32, right: Int32, bottom: Int32) {
+        if let madePadding { return madePadding }
+        let read = (
+            Java.callInt(reference, JavaAPI.getPaddingLeft), Java.callInt(reference, JavaAPI.getPaddingTop),
+            Java.callInt(reference, JavaAPI.getPaddingRight), Java.callInt(reference, JavaAPI.getPaddingBottom))
+        madePadding = read
+        return read
     }
 
     /// The size and colours the view was made with, read before the first change.

@@ -17,6 +17,8 @@ struct WinUIMenu {
     /// The files each entry's picture may stand in (`PictureArithmetic.files`); none for words alone.
     private(set) var icons: [[String]] = []
     private(set) var destructive: [Bool] = []
+    /// Each entry's shortcut; nil for none.
+    private(set) var shortcuts: [KeyboardShortcut?] = []
     private(set) var actions: [() -> Void] = []
 
     /// The entries `container` holds, as the host layer walks them; none for no container.
@@ -29,38 +31,49 @@ struct WinUIMenu {
         add(menus)
     }
 
+    /// `entries`, as the host layer walks them: a button's menu.
+    init(entries: [MenuEntry]) {
+        add(entries)
+    }
+
     /// Whether the menu has no entries.
     var isEmpty: Bool { kinds.isEmpty }
 
     /// Whether the menu draws as `other` does: the same entries, captions, choosable ones, pictures and marks.
     func draws(like other: WinUIMenu) -> Bool {
         kinds == other.kinds && titles == other.titles && enabled == other.enabled && identifiers == other.identifiers
-            && icons == other.icons && destructive == other.destructive
+            && icons == other.icons && destructive == other.destructive && shortcuts == other.shortcuts
     }
 
     /// Hands `write` the entries as the relay takes them: their kinds, captions, whether each can be chosen, the
-    /// identifiers, the files each picture may stand in, whether each destroys something, and how many there are.
+    /// identifiers, the files each picture may stand in, whether each destroys something, each shortcut's key - 0 for
+    /// none - and modifiers and whether it gives way to typing, and how many there are.
     func relayed(
         _ write: ([Int32], [UnsafePointer<CChar>?], [Bool], [UnsafePointer<CChar>?], [UnsafePointer<CChar>?], [Bool],
-                  Int32) -> Void
+                  [Int32], [Int32], [Bool], Int32) -> Void
     ) {
+        let spelled = shortcuts.map { $0.flatMap(WinUIKeys.spelled) ?? (key: 0, modifiers: 0) }
+        let givesWay = shortcuts.map { $0.map(KeyboardShortcuts.givesWayToTyping) ?? false }
         WinUIStrings.withCStrings(titles) { titles in
             WinUIStrings.withCStrings(identifiers) { identifiers in
                 WinUIStrings.withCStrings(icons.map(WinUIStrings.lines)) { icons in
-                    write(kinds, titles, enabled, identifiers, icons, destructive, Int32(kinds.count))
+                    write(kinds, titles, enabled, identifiers, icons, destructive, spelled.map(\.key),
+                          spelled.map(\.modifiers), givesWay, Int32(kinds.count))
                 }
             }
         }
     }
 
-    /// The relay's kinds: an item 0, a separator 1, a submenu opening 2 and closing 3.
+    /// The relay's kinds: an item 0, a separator 1, a submenu opening 2 and closing 3, an item standing unchecked 4
+    /// or checked 5.
     private mutating func add(_ entries: [MenuEntry]) {
         for entry in entries {
             switch entry.kind {
             case .item:
-                append(0, entry.title, entry.isEnabled, entry.identifier,
-                       icon: entry.icon.map(PictureArithmetic.files(for:)) ?? [], destructive: entry.isDestructive)
-                actions.append { [weak element = entry.element] in element?.winUI.send(.clicked, []) }
+                append(entry.isOn.map { $0 ? 5 : 4 } ?? 0, entry.title, entry.isEnabled, entry.identifier,
+                       icon: WinUIPictures.lines(entry.icon), destructive: entry.isDestructive,
+                       shortcut: entry.keyboardShortcut)
+                actions.append { [weak element = entry.element] in element?.winUI.choose() }
             case .separator:
                 append(1, "", true, nil)
             case .submenu:
@@ -73,7 +86,7 @@ struct WinUIMenu {
 
     private mutating func append(
         _ kind: Int32, _ title: String, _ isEnabled: Bool, _ identifier: String?, icon: [String] = [],
-        destructive isDestructive: Bool = false
+        destructive isDestructive: Bool = false, shortcut: KeyboardShortcut? = nil
     ) {
         kinds.append(kind)
         titles.append(title)
@@ -81,5 +94,6 @@ struct WinUIMenu {
         identifiers.append(identifier ?? "")
         icons.append(icon)
         destructive.append(isDestructive)
+        shortcuts.append(shortcut)
     }
 }

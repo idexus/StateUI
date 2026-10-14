@@ -18,7 +18,7 @@ enum AppKitVerticalTextAlignment: Int32, Equatable {
 final class AppKitTextView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
     AppKitMeasurementCaching {
     private let textField: NSTextField = AppKitLabel(labelWithString: "")
-    let measurements = MeasurementCache()
+    let measurements = MeasurementCache(holdsWhenWider: true)
 
     private(set) var padding = NSEdgeInsets()
     private(set) var horizontalTextAlignment: NSTextAlignment = .left
@@ -28,6 +28,12 @@ final class AppKitTextView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
 
     var attributedStringValue: NSAttributedString { textField.attributedStringValue }
     var stringValue: String { textField.stringValue }
+
+    /// Whether the user can select the words and copy them.
+    var isSelectable: Bool {
+        get { textField.isSelectable }
+        set { textField.isSelectable = newValue }
+    }
     var textFrame: NSRect { textField.frame }
     var nativeTextSizeForTesting: NSSize { textField.cell?.cellSize ?? .zero }
     private(set) var nativeMeasurementCountForTesting = 0

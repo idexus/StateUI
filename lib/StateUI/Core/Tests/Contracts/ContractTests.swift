@@ -54,6 +54,23 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(lamp.node.props["count"], .number(3))
     }
 
+    /// A library element keeps only what its contract wears: a member another contract declares, written on it by
+    /// the generic road, reaches no host - it is left out and said once - and what it wears stays.
+    func testALibraryElementLeavesOutWhatItsContractDoesNotWear() {
+        let text = Text("Save")
+            .setValue(ButtonContract.role, .primary)
+            .onEvent(SliderContract.valueChanged) { _ in }
+            .setValue(FontElementContract.fontSize, 20)
+
+        let patch = Renders().render(text.id("label").node)
+
+        XCTAssertNil(patch.props["role"])
+        XCTAssertFalse(patch.eventNames.contains("valueChanged"))
+        XCTAssertEqual(patch.props["fontSize"], .number(20))
+        XCTAssertTrue(hasComplained("Text takes no role - its contract does not wear it"))
+        XCTAssertTrue(hasComplained("Text takes no valueChanged - its contract does not wear it"))
+    }
+
     /// What comes back from a host is the declared kind or no value at all -
     /// never a guess, and never a trap on a number that is not one.
     func testAValueBackFromTheHostIsTheDeclaredKindOrNone() {
@@ -100,6 +117,7 @@ final class ContractTests: XCTestCase {
     func testAKindCrossesInFrontOfItsParts() {
         XCTAssertEqual(ContainerShape.roundedRectangle(12).propValue, .values([.enumeration(1), .number(12)]))
         XCTAssertEqual(ContainerShape.ellipse.propValue, .values([.enumeration(2)]))
+        XCTAssertEqual(ContainerShape.capsule.propValue, .values([.enumeration(3)]))
         XCTAssertEqual(
             [GridLength.auto, .fixed(100)].propValue,
             .values([.values([.enumeration(2), .number(1)]), .values([.enumeration(0), .number(100)])]))
@@ -132,6 +150,7 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(Material.gradient(brush).propValue, brush.propValue)
         XCTAssertEqual(Material(propValue: Color.tomato.propValue), .color(.tomato))
         XCTAssertEqual(Material(propValue: brush.propValue), .gradient(brush))
+        XCTAssertEqual(Brush(propValue: Color.tomato.propValue), .solidColor(.tomato), "a colour state's fill")
 
         XCTAssertEqual(SafeAreaEdges.uniform(.none).propValue, .enumeration(0))
         XCTAssertEqual(
@@ -173,10 +192,14 @@ final class ContractTests: XCTestCase {
             Location(latitude: 52.25, longitude: 21.01),
             CalendarDate(year: 2026, month: 9, day: 15), ClockTime(hour: 9, minute: 30, second: 5),
             ContainerShape.rectangle, ContainerShape.roundedRectangle(12), ContainerShape.ellipse,
+            ContainerShape.capsule,
             [GridLength.auto, .proportional(2), .fixed(100)] as [GridLength],
             [Draw.fillColor(.gold)] as [DrawCommand],
             WindowType("document"),
-            FontAttributes([.bold, .italic]), TextDecorations(rawValue: 1),
+            FontAttributes.italic, FontWeight.semibold, TextStyle.title, PickerPresentation.radio,
+            ButtonMenuKind.held,
+            TextDecorations(rawValue: 1),
+            KeyboardShortcut("s"), KeyboardShortcut(.f5, modifiers: [.primary, .shift, .alt]),
             Area.absolute(0, 0, 120, 40), Area.proportional(0.5, 0, 0.5, 1), SwipeDirection.all,
             Alignment(rawValue: 1)!, TextAlignment.center, LineBreak(rawValue: 1)!, TextCase(rawValue: 1)!,
             InputPurpose(rawValue: 1)!, SubmitLabel(rawValue: 1)!, ScrollOrientation(rawValue: 1)!,
@@ -184,7 +207,7 @@ final class ContractTests: XCTestCase {
             AccessibilityHeadingLevel(rawValue: 1)!, ScrollIndicatorVisibility(rawValue: 1)!,
             LineCap(rawValue: 1)!, LineJoin(rawValue: 1)!,
             FillRule(rawValue: 1)!, IndicatorShape(rawValue: 1)!, ToolbarItemPlacement(rawValue: 1)!, ToolbarSide.leading,
-            SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!, MapType(rawValue: 1)!,
+            SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!, ButtonRole.cancel, [Key.escape, "a"], MapType(rawValue: 1)!,
             WebNavigationType(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.changed,
             ItemsLayout.list(), ItemsLayout.row(spacing: 8), ItemsLayout.grid(minimumItemWidth: 120, spacing: 4),
             SelectionMode.multiple, ScrollAnchor.center,

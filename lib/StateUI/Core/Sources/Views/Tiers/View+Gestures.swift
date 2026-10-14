@@ -24,7 +24,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onTapped(_ handler: @escaping EventHandler) -> Modified {
         fatalError("unavailable")
     }
@@ -47,7 +47,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(count: count, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(count: count, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onTapped(count: Int, _ handler: @escaping EventHandler) -> Modified {
         fatalError("unavailable")
     }
@@ -95,7 +95,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSwiped(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSwiped(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onSwiped(
         direction: SwipeDirection = .all,
         threshold: Double? = nil,
@@ -111,7 +111,7 @@ extension View {
     ///
     ///     @State private var turn = 0.0
     ///
-    ///     ColorBox(.transparent).panX($turn)
+    ///     Rectangle().fill(.transparent).panX($turn)
     ///
     /// The distance `onPanUpdated` reports, for an `.engine(following:)` to
     /// follow frame by frame. A drag moves the value on from where it stood, so
@@ -126,7 +126,7 @@ extension View {
     /// Writes how far the view has been dragged down into a state, with no view
     /// rebuilt as it moves; see `panX(_:)`.
     ///
-    ///     ColorBox(.transparent).panY($turn)
+    ///     Rectangle().fill(.transparent).panY($turn)
     ///
     /// - Parameter value: the state the distance is written into.
     /// - Returns: the view, reporting there.
@@ -137,7 +137,7 @@ extension View {
     /// Runs as the view is dragged, from the moment it starts until it is let
     /// go.
     ///
-    ///     ColorBox(.cornflowerBlue)
+    ///     Rectangle().fill(.cornflowerBlue)
     ///         .translationX(offsetX)
     ///         .onPanUpdated { pan in
     ///             if pan.phase == .changed { offsetX = pan.totalX }
@@ -177,7 +177,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPanUpdated(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPanUpdated(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onPanUpdated(
         touchCount: Int? = nil,
         _ handler: @escaping ValueEventHandler<PanUpdate>
@@ -204,7 +204,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPinchUpdated(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPinchUpdated(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onPinchUpdated(_ handler: @escaping ValueEventHandler<PinchUpdate>) -> Modified {
         fatalError("unavailable")
     }
@@ -226,7 +226,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerEntered(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerEntered(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onPointerEntered(_ handler: @escaping EventHandler) -> Modified {
         fatalError("unavailable")
     }
@@ -243,7 +243,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerExited(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerExited(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onPointerExited(_ handler: @escaping EventHandler) -> Modified {
         fatalError("unavailable")
     }
@@ -266,7 +266,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerMoved(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerMoved(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onPointerMoved(_ handler: @escaping ValueEventHandler<Point>) -> Modified {
         fatalError("unavailable")
     }
@@ -288,7 +288,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerPressed(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerPressed(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onPointerPressed(_ handler: @escaping ValueEventHandler<Point>) -> Modified {
         fatalError("unavailable")
     }
@@ -309,7 +309,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerReleased(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerReleased(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onPointerReleased(_ handler: @escaping ValueEventHandler<Point>) -> Modified {
         fatalError("unavailable")
     }
@@ -351,7 +351,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDragEnded(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDragEnded(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onDragEnded(_ handler: @escaping EventHandler) -> Modified {
         fatalError("unavailable")
     }
@@ -379,7 +379,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDrop(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDrop(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onDrop(_ handler: @escaping ValueEventHandler<String>) -> Modified {
         fatalError("unavailable")
     }
@@ -417,7 +417,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDrop(files: types, gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDrop(files: types, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onDrop(files types: [FileType] = [], _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Modified {
         fatalError("unavailable")
     }
@@ -434,7 +434,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDragOver(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDragOver(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onDragOver(_ handler: @escaping EventHandler) -> Modified {
         fatalError("unavailable")
     }
@@ -452,7 +452,7 @@ extension View {
     }
 
     /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDragLeave(gate: saving) { … } with @State var saving = SharedGate(.ignoreWhileRunning) - or gate: .none")
+    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDragLeave(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
     public func onDragLeave(_ handler: @escaping EventHandler) -> Modified {
         fatalError("unavailable")
     }

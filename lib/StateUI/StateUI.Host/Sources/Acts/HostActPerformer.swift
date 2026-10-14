@@ -39,6 +39,11 @@
         self.tree = tree
     }
 
+    /// Puts the keyboard on `element`, as the focus act does, answering no one: the host hands it on.
+    public func focus(_ element: MountedElement) {
+        _ = toolkit.focus(element)
+    }
+
     /// Performs one act, and answers it.
     public func perform(_ call: HostActCall) {
         switch call.act {

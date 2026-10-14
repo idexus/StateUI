@@ -25,7 +25,7 @@ StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map
 
 Layer: `provider`. An optional provider supplies it: a package, or the application that registers it with its hosts.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -44,16 +44,16 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (76)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>35 ✅ · 2 ☑️ · 36 ✓ · 3 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>35 ✅ · 2 ☑️ · 36 ✓ · 3 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">🧩</td><td>76 🧩</td><td>the application's own, registered</td></tr>
+<thead><tr><th>Host</th><th>Created</th><th>Members (74)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>36 ✅ · 2 ☑️ · 36 ✓</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>35 ✅ · 2 ☑️ · 36 ✓ · 1 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">🧩</td><td>74 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">WinUI 3</td><td align="center">🧩</td><td>76 🧩</td><td>the application's own, registered</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">WinUI 3</td><td align="center">🧩</td><td>74 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">GTK 4</td><td align="center">🧩</td><td>76 🧩</td><td>the application's own, registered</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">GTK 4</td><td align="center">🧩</td><td>74 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">🧩</td><td>76 🧩</td><td>the application's own, registered</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">🧩</td><td>74 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
 </table>
 
@@ -81,9 +81,9 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/MapContract.sw
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 </table>
 
-## From [PropertyContainer](tiers/PropertyContainer.md)
+## From [AutomationElement](tiers/AutomationElement.md)
 
-What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
+What an element the platform's automation meets has - a drawn element, a menu's entry or a bar's item, an arrangement of pages: the name automation finds it by.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
@@ -107,8 +107,6 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">AppKit: AppKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.<br>UIKit: UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in.<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>focus</code></td><td>act</td><td><code>() -&gt; Bool</code></td><td></td><td align="center">–</td><td align="center">–</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit, UIKit: Map takes no keyboard focus here: it refuses it, and nothing is heard<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>frame</code></td><td>property</td><td><code>Rect</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>height</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
@@ -119,8 +117,6 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isFocusedChanged</code></td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center">–</td><td align="center">–</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit, UIKit: Map takes no keyboard focus here: it refuses it, and nothing is heard<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isVisible</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>layoutDirection</code></td><td>property</td><td><code>LayoutDirection</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
@@ -153,12 +149,12 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read scaleY of Map: the host's own transform, checked against the layer it composed itself<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>tooltip</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
+<tr><td colspan="9">UIKit: UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read translationX of Map: the host's own transform, checked against the layer it composed itself<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read translationY of Map: the host's own transform, checked against the layer it composed itself<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>unfocus</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center">–</td><td align="center">–</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit, UIKit: Map takes no keyboard focus here: it refuses it, and nothing is heard<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>width</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>zIndex</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
@@ -172,21 +168,21 @@ What every view a layout positions has: where it sits in its layout, the space k
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>allowsDrop</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
+<tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>area</code></td><td>property</td><td><code>Area</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>canDrag</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Map: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Map: the drag and drop interactions' handlers called, no drag session<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onDragLeave</code> (<code>dragLeave</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
+<tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onDragOver</code> (<code>dragOver</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
+<tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>dragStarting</code></td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Map: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Map: the drag and drop interactions' handlers called, no drag session<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>dragText</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Map: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Map: the drag and drop interactions' handlers called, no drag session<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onDrop</code> (<code>drop</code>)</td><td>event</td><td><code>String</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on ColorBox: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on ColorBox: the drag and drop interactions' handlers called, no drag session<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
+<tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>droppedFileTypes</code></td><td>property</td><td><code>[FileType]</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dropFiles on Map: the window's drop routing told the driver's files, no dragging session<br>UIKit: only through the host's own: dropFiles on Map: the drop interaction's handler told the driver's files, no drag session<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onDragEnded</code> (<code>dragEnded</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>

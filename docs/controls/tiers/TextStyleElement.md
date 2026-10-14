@@ -2,15 +2,12 @@
 
 # TextStyleElement
 
-How text looks wherever it is drawn: its colour and the space between its letters.
+How text looks wherever it is drawn: its colour.
 
 ```swift
 Text("Overdue")
     .textColor(.firebrick)
-    .tracking(1.5)
 ```
-
-Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [Button](../Button.md) · [DatePicker](../DatePicker.md) · [Picker](../Picker.md) · [RadioButton](../RadioButton.md) · [SearchField](../SearchField.md) · [Text](../Text.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TextSpan](../TextSpan.md) · [TimePicker](../TimePicker.md)
 
@@ -20,5 +17,4 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `tracking` | property | `Double` | native |
 | `textColor` | property | `Color` | native |

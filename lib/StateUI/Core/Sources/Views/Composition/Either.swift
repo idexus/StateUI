@@ -36,8 +36,8 @@ extension Either: Element where First: Element, Second: Element {
     }
 }
 
-extension Either: PropertyContainer, ModifiableElement, VisualElementProperties, VisualElement, ViewProperties,
-    View where First: View, Second: View {
+extension Either: PropertyContainer, ModifiableElement, AutomationElement, VisualElementProperties, VisualElement,
+    ViewProperties, View where First: View, Second: View {
     /// A modifier on a branch is kept on the branch's node, as on a composed view.
     public typealias Modified = ModifiedContent
 

@@ -94,6 +94,9 @@ in so that both stay open. A click beside it or Escape takes it down - the
 browser's own light dismissal - and so does choosing an item, which then
 hears it chosen. A popover is kept in the window whole, under what opened
 it, above where there is no room under, at the pointer for a context menu.
+Its entries stand in a grid of rows each as tall as it is: WebKit spreads a
+grid held to a maximum height over its rows, and a menu of three stood the
+window's height in Safari.
 
 A bar's action that is a menu opens its entries under it. The actions
 standing behind the bar - its overflow - and the menus the page's path

@@ -37,7 +37,7 @@ extension PolylineProperties {
 /// The same list a `Polygon` takes, left open: the last point is not joined back
 /// to the first. It still has an inside that `fill` paints, decided the way a
 /// polygon's is.
-public struct Polyline: Shape, PolylineProperties {
+public struct Polyline: FilledShape, CorneredShape, PolylineProperties {
     /// The node this control describes.
     public var node: Node
 

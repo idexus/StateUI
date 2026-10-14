@@ -53,7 +53,8 @@ UIKit's own tab icon size, each as wide as its shape makes it
 (`PictureArithmetic.glyph`); on a phone on its side, whose bars stand
 lower, both stand 18 points tall (`landscapeImagePhone`). The picture keeps
 its pixels and is drawn smaller: at its file's size it stands far taller
-than the system's own pictures beside it.
+than the system's own pictures beside it. An icon is its SF Symbol
+(`Icon.sfSymbol`), a template image the bar colours as it does its own.
 
 ## A page's background
 
@@ -84,7 +85,10 @@ UIKit tells it once the move ends, so a render while the pages go still
 describes them: the stack does not show them again, which would undo the
 user's way back. A page comes in already wearing its bar: UIKit takes the
 bar's look as the move starts, and a layout in the same turn - a sidebar
-going away - can start it before the window's chrome is composed.
+going away - can start it before the window's chrome is composed. A page
+shown without a move - the top replaced by another - is laid out at once: a
+move begun in the same turn, a sidebar going away, then carries it from its
+place, where UIKit would lay it out within that move and grow it from nothing.
 
 ## Tabs
 
@@ -108,10 +112,13 @@ column, and each column says the room's own width, so the tabs, sheets and
 bars inside stand as a phone's.
 
 A sidebar the application paints ([a sidebar's
-material](../../host/pages.md#a-sidebars-material)) stands on UIKit's plain
-column (`primaryBackgroundStyle` `.none`), which UIKit parts from the detail
-by its own separator; on UIKit's sidebar material - the platform's own
-sidebar - the columns stand with none. A blur or glass for the sidebar's
+material](../../host/pages.md#a-sidebars-material)) stands apart from the
+detail by a line of UIKit's separator colour, one point down its column's
+edge, the host's own: it stands on UIKit's sidebar material like the
+platform's own sidebar, which UIKit parts by no line. UIKit's plain column
+(`primaryBackgroundStyle` `.none`) would part them by its own, but the detail
+of a plain column takes its new width at once as the sidebar shows or hides,
+where under the sidebar material it slides with it. A blur or glass for the sidebar's
 place is UIKit's own effect under what the sidebar page shows - a blur's tint
 washed over it, glass tinted in itself - beside the detail and over it alike;
 a colour is the page's own background.
@@ -128,6 +135,18 @@ column shown or hidden (`willShow`/`willHide` stay silent for the sidebar);
 entering its window it settles a display mode of its own before the first
 layout, which is no user's move; and its sidebar button item is handed out
 bare - the one on the bar is UIKit's own.
+
+Beside a wide detail the detail's column spans the whole room under the
+sidebar and never moves, and UIKit gives its page the safe area of where the
+sidebar is going at once. So the detail's shown pages follow the slide
+themselves ([a sidebar sliding](../../host/motion.md#a-sidebar-sliding)): as
+the display mode changes, a `SplitSlide` follows UIKit's own spring - its
+time, never slowed - and each frame stands every shown page's content as far
+from its leading edge as the sidebar has come, in place of the safe area's
+inset; resting, the page takes its safe area again. The sidebar's column
+moves under UIKit's presentation modifiers, with no animation to read, so a
+page following where the column is drawn stands a frame behind it: the
+slide follows the spring, not the column.
 
 ## Sheets
 

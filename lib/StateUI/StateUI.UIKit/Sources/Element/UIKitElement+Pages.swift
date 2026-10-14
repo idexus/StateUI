@@ -40,11 +40,13 @@ extension UIKitElement {
         if type == .tabView {
             var chrome = element.selectedTab?.visiblePage?.uiKit.chrome ?? UIKitPageChrome()
             chrome.title = element.titledPage?.value(.title)?.string ?? ""
+            chrome.showsTitle = element.titledPage?.value(.showsTitle)?.bool != false
             return chrome
         }
 
         var chrome = UIKitPageChrome()
         chrome.title = element.barTitle(applicationName: host?.runtime.core.applicationName ?? "")
+        chrome.showsTitle = value(.showsTitle)?.bool != false
         chrome.subtitle = element.titleArea?.subtitle
         chrome.titleView = element.chromeTitleView?.uiKit.view
         chrome.showsBar = value(.showsNavigationBar)?.bool != false
@@ -61,10 +63,10 @@ extension UIKitElement {
     /// A page's action as the bar takes it.
     private static func action(_ item: MountedElement) -> UIKitBarAction {
         UIKitBarAction(
-            title: item.value(.text)?.string ?? "", icon: item.value(.icon)?.string,
+            title: item.value(.text)?.string ?? "", icon: HostPicture(item.value(.icon)),
             isEnabled: item.isEffectivelyEnabled, isDestructive: item.value(.isDestructive)?.bool == true,
             identifier: item.value(.accessibilityIdentifier)?.string,
-            perform: { [weak item] in item?.uiKit.send(.clicked, []) }, element: item.uiKit)
+            perform: { [weak item] in item?.uiKit.choose() }, element: item.uiKit)
     }
 
     /// Writes the bar of every page in this arrangement and every one it holds.
@@ -106,7 +108,7 @@ extension UIKitElement {
             guard let tabs = controller as? UIKitTabBarController else { return }
             tabs.show(
                 children.compactMap { tab in
-                    tab.controller.map { ($0, tab.value(.title)?.string ?? "", tab.value(.icon)?.string) }
+                    tab.controller.map { ($0, tab.value(.title)?.string ?? "", HostPicture(tab.value(.icon))) }
                 },
                 requested: value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
@@ -115,6 +117,7 @@ extension UIKitElement {
             guard let split = controller as? UIKitSplitViewController else { return }
             split.show(sidebar: children.first?.controller, detail: children.dropFirst().first?.controller)
             split.onPresentationChanged = { [weak self] presented in self?.sidebarChanged(to: presented) }
+            if let host { split.slide(on: host.runtime.sidebarSlide, mount: element.mount) }
             if changed.contains(.showsSidebar) { split.present(value(.showsSidebar)?.bool == true) }
             if !changed.isDisjoint(with: MountedElement.sidebarMaterials) {
                 split.paintsSidebar = element.paintsSidebar
@@ -130,6 +133,7 @@ extension UIKitElement {
         (controller as? UIKitNavigationController)?.onPopped = nil
         (controller as? UIKitTabBarController)?.onSelection = nil
         (controller as? UIKitSplitViewController)?.onPresentationChanged = nil
+        (controller as? UIKitSplitViewController)?.stopSliding()
     }
 
     /// The user took the stack's top pages away: the stack is told how many stay, as the index of its top.

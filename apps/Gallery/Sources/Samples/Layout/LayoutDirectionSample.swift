@@ -46,7 +46,7 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
             // Laid out the way `direction` says - at `.inherited`, the way the
             // view above it is.
             HStack {
-                ColorBox(Palette.accent)
+                Rectangle(Palette.accent)
                     .width(60)
                     .height(20)
 

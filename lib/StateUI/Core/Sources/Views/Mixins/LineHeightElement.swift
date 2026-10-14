@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The height of a text line, relative to the font's own - worn by `Text`
-/// and `TextSpan`.
+/// The height of a text line, relative to the font's own - worn by `Text`:
+/// a line's height is its paragraph's, never a run's.
 public protocol LineHeightElement: PropertyContainer {}
 
 extension LineHeightElement {

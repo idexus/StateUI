@@ -6,7 +6,7 @@ import StateUI
 struct MaterialsSample: SampleContent, ExampleContent {
     // listing: MaterialsSample
     /// Which of the blurs the blurred panel wears.
-    @State private var thickness = 2
+    @State private var thickness = Blur.regular
 
     /// Whether the blur wears the gallery's colour as a tint.
     @State private var tinted = false
@@ -35,7 +35,7 @@ struct MaterialsSample: SampleContent, ExampleContent {
     ]
 
     var body: some View {
-        let chosen = Self.blurs[thickness].blur
+        let chosen = thickness
         let blur = tinted ? chosen.tint(Palette.accent.opacity(0.25)) : chosen
         let glass = (clear ? Glass.clear : .regular).isInteractive(interactive)
 
@@ -43,11 +43,11 @@ struct MaterialsSample: SampleContent, ExampleContent {
             ZStack {
                 // Stripes of colour behind the panels: what each lets through shows on them.
                 Grid {
-                    Rectangle().fill(.tomato).gridColumn(0)
-                    Rectangle().fill(.gold).gridColumn(1)
-                    Rectangle().fill(.steelBlue).gridColumn(2)
-                    Rectangle().fill(.white).gridColumn(3)
-                    Rectangle().fill(Palette.accent).gridColumn(4)
+                    Rectangle(.tomato).gridColumn(0)
+                    Rectangle(.gold).gridColumn(1)
+                    Rectangle(.steelBlue).gridColumn(2)
+                    Rectangle(.white).gridColumn(3)
+                    Rectangle(Palette.accent).gridColumn(4)
                 }
                 .columns(.fill, .fill, .fill, .fill, .fill)
 
@@ -74,10 +74,11 @@ struct MaterialsSample: SampleContent, ExampleContent {
             .shape(.roundedRectangle(14))
             .clipsContent(true)
 
-            Picker(Self.blurs.map(\.name))
+            Picker(Self.blurs.map(\.blur), selection: $thickness) { blur in
+                Self.blurs.first { $0.blur == blur }?.name ?? ""
+            }
                 .accessibilityIdentifier("materials.thickness")
                 .accessibilityLabel("Blur")
-                .selectedIndex($thickness)
             SwitchRow("Tinted blur", $tinted)
             SwitchRow("Clear glass", $clear)
             SwitchRow("Glass answers the touch", $interactive)
@@ -101,7 +102,7 @@ struct MaterialsSample: SampleContent, ExampleContent {
         ZStack {
             Text(name)
                 .fontSize(13)
-                .fontAttributes(.bold)
+                .fontWeight(.bold)
                 .horizontalAlignment(.center)
                 .verticalAlignment(.center)
         }

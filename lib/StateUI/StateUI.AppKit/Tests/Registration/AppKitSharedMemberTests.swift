@@ -49,7 +49,7 @@ final class AppKitSharedMemberTests: XCTestCase {
     }
 
     /// A control that sets text sets it in the size, the family, and the
-    /// weight and slant that `fontSize`, `fontFamily` and `fontAttributes` say.
+    /// weight and slant that `fontSize`, `fontFamily`, `fontWeight` and `fontAttributes` say.
     @MainActor
     func testEveryTextControlSetsItsTextInTheWrittenFont() throws {
         let controls: [(NodeType, [Prop: HostValue], @MainActor (NSView) -> NSFont?)] = [
@@ -74,7 +74,8 @@ final class AppKitSharedMemberTests: XCTestCase {
             control.properties = properties.merging([
                 .fontSize: .number(21),
                 .fontFamily: .name("Menlo"),
-                .fontAttributes: .enumeration(FontAttributes([.bold, .italic]).rawValue),
+                .fontWeight: FontWeight.bold.propValue,
+                .fontAttributes: FontAttributes.italic.propValue,
             ]) { $1 }
             renderer.applyForTesting(tree(control))
 
@@ -125,8 +126,8 @@ final class AppKitSharedMemberTests: XCTestCase {
     }
 
     /// A background colour paints the view it is written on: its layer, or -
-    /// for a view that draws its own - its own fill, a colour box's drawing, a
-    /// field's and an editor's. A search field takes none: AppKit draws its
+    /// for a view that draws its own - its own fill, a field's and an
+    /// editor's. A search field takes none: AppKit draws its
     /// rounded field itself, and no square is painted under it.
     @MainActor
     func testABackgroundColourPaintsEveryView() throws {
@@ -138,7 +139,6 @@ final class AppKitSharedMemberTests: XCTestCase {
         ]
         let layer: (NSView) -> [CGFloat]? = { channels($0.layer?.backgroundColor) }
         var fills: [(NodeType, (NSView) -> [CGFloat]?)] = layered.map { ($0, layer) }
-        fills.append((NodeType.colorBox, { channels(($0 as? AppKitColorBoxView)?.backgroundColor) }))
         fills.append((NodeType.textField, { channels(($0 as? AppKitTextFieldView)?.fill) }))
         fills.append((NodeType.textEditor, { channels(($0 as? AppKitTextEditorView)?.textView.backgroundColor) }))
         fills.append((NodeType.searchField, { channels(($0 as? AppKitSearchFieldView)?.fill) }))
@@ -160,7 +160,7 @@ final class AppKitSharedMemberTests: XCTestCase {
     @MainActor
     func testAViewThatIgnoresInputIsNotHit() throws {
         let views: [NodeType] = [
-            .canvas, .colorBox, .ellipse, .grid, .hStack, .image,
+            .canvas, .ellipse, .grid, .hStack, .image,
             .text, .line, .path, .polygon, .polyline, .rectangle, .vStack, .zStack,
         ]
 
@@ -205,7 +205,7 @@ final class AppKitSharedMemberTests: XCTestCase {
         for type in [NodeType.vStack, .hStack, .grid, .zStack] {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
-            var child = HostPatch(id: .manual("child"), type: .colorBox)
+            var child = HostPatch(id: .manual("child"), type: .rectangle)
             child.properties = [
                 .width: .number(20),
                 .height: .number(20),

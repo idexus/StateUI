@@ -36,6 +36,12 @@ extension GTKRegistrations {
             grid.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
+        // A spacer is empty room the stack's arithmetic sizes; a divider in a stack is GTK's separator, which the
+        // host makes across its stack.
+        // Design: docs/design/host/layout.md#a-spacer
+        registry.add(SpacerContract.self, create: { _ in GTKPanelView() })
+        registry.add(DividerContract.self, madeByHost: GTKDividerView.self) { _ in }
+
         registry.add(ZStackContract.self, create: { _ in GTKZStackView() }) { layout in
             layout.property(PaddingElementContract.padding) { view, padding in view.padding = padding ?? Insets(0) }
             layout.applies(boxMembers) { view, values in applyBox(view, values) }

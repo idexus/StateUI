@@ -9,17 +9,22 @@ import CStateUIWinUI
 /// around them.
 /// Design: docs/design/platforms/winui/controls.md#words
 extension WinUIView {
-    /// The font: its size in DIPs, its weight and slant, and its family; nil and empty for the platform's.
-    func setFont(size: Double?, attributes: FontAttributes?, family: String?) {
-        let attributes = attributes ?? []
+    /// The font a look gives (`TextMembers.look`): its style's size and weight on WinUI's type ramp under the size
+    /// and weight it gives, its slant and its family - the platform's where it says nothing. Answers the size the
+    /// words stand at, nil for the platform's.
+    /// Design: docs/design/platforms/winui/controls.md#a-text-style
+    @discardableResult
+    func setFont(_ look: TextLook) -> Double? {
+        let (size, weight) = look.standing(styleSize: look.style?.winUISize, styleWeight: look.style?.winUIWeight)
         stateui_winui_set_font(
-            handle, size ?? 0, attributes.contains(.bold), attributes.contains(.italic), family ?? "")
+            handle, size ?? 0, Int32(weight?.number ?? 0), look.attributes.contains(.italic), look.family ?? "")
+        return size
     }
 
     /// How the words look (`TextMembers.look`): their font, whether it grows with the user's text size, and their
     /// colour - each the platform's where the look says nothing.
     func setLook(_ look: TextLook) {
-        setFont(size: look.size, attributes: look.attributes, family: look.family)
+        setFont(look)
         setTextScales(look.scales)
         setForeground(look.color)
     }
@@ -48,10 +53,10 @@ extension WinUIView {
         stateui_winui_set_foreground(handle, argb != nil, argb ?? 0)
     }
 
-    /// The room kept around the words, in DIPs.
+    /// The room kept around the words, in DIPs; nil puts back the platform's.
     func setPadding(_ padding: Insets?) {
         let room = padding ?? Insets(0)
-        stateui_winui_set_padding(handle, room.left, room.top, room.right, room.bottom)
+        stateui_winui_set_padding(handle, padding != nil, room.left, room.top, room.right, room.bottom)
     }
 
     /// How the words look, as WinUI holds it.
@@ -59,5 +64,28 @@ extension WinUIView {
         var style = [Double](repeating: 0, count: 5)
         stateui_winui_text_style(handle, &style)
         return (style[0], Int(style[1]), Int(style[2]), Int(style[3]), UInt32(style[4]))
+    }
+}
+
+extension TextStyle {
+    /// The style's size on WinUI's type ramp, in DIPs: the TitleLarge, Title, Subtitle, BodyStrong, Body and Caption
+    /// text block styles - the largest title WinUI's own pages head with, as the other platforms' largest is; its
+    /// Display is twice that.
+    var winUISize: Double {
+        switch self {
+        case .display: 40
+        case .title: 28
+        case .subtitle: 20
+        case .headline, .body: 14
+        case .caption: 12
+        }
+    }
+
+    /// The style's weight on WinUI's type ramp: semibold but for the body and a caption.
+    var winUIWeight: FontWeight {
+        switch self {
+        case .display, .title, .subtitle, .headline: .semibold
+        case .body, .caption: .regular
+        }
     }
 }

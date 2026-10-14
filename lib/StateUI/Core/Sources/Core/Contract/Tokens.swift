@@ -23,7 +23,6 @@ extension NodeType {
 @_spi(Host) public extension NodeType {
     static let activityIndicator = ActivityIndicatorContract.nodeType
     static let application = ApplicationContract.nodeType
-    static let colorBox = ColorBoxContract.nodeType
     static let button = ButtonContract.nodeType
     static let checkBox = CheckBoxContract.nodeType
     static let page = PageContract.nodeType
@@ -31,6 +30,7 @@ extension NodeType {
     static let datePicker = DatePickerContract.nodeType
     static let textEditor = TextEditorContract.nodeType
     static let ellipse = EllipseContract.nodeType
+    static let capsule = CapsuleContract.nodeType
     static let textField = TextFieldContract.nodeType
     static let splitView = SplitViewContract.nodeType
     static let textSpans = TextSpansContract.nodeType
@@ -46,6 +46,9 @@ extension NodeType {
     static let menuBar = MenuBarContract.nodeType
     static let menuItem = MenuItemContract.nodeType
     static let divider = DividerContract.nodeType
+    static let menuSeparator = MenuSeparatorContract.nodeType
+    static let buttonMenu = ButtonMenuContract.nodeType
+    static let spacer = SpacerContract.nodeType
     static let modalStack = ModalStackContract.nodeType
     static let navigationStack = NavigationStackContract.nodeType
     static let titleView = TitleViewContract.nodeType
@@ -78,7 +81,11 @@ extension NodeType {
 @_spi(Host) public extension Prop {
     static let accessibilityHeading = VisualElementContract.accessibilityHeading.token
     static let accessibilityHint = VisualElementContract.accessibilityHint.token
-    static let accessibilityIdentifier = PropertyContainerContract.accessibilityIdentifier.token
+    static let tooltip = VisualElementContract.tooltip.token
+    static let keyboardShortcut = ButtonContract.keyboardShortcut.token
+    static let role = ButtonContract.role.token
+    static let keysTaken = KeyboardElementContract.keysTaken.token
+    static let accessibilityIdentifier = AutomationElementContract.accessibilityIdentifier.token
     static let accessibilityLabel = VisualElementContract.accessibilityLabel.token
     static let subtitle = MarkerContract.subtitle.token
     static let allowsDrop = ViewContract.allowsDrop.token
@@ -101,18 +108,17 @@ extension NodeType {
     static let barSubtitle = BarElementContract.barSubtitle.token
     static let barTitle = BarElementContract.barTitle.token
     static let canDrag = ViewContract.canDrag.token
-    static let tracking = TextStyleElementContract.tracking.token
+    static let tracking = TrackingElementContract.tracking.token
     static let selectedItems = ItemsViewContract.selectedItems.token
     static let selectionMode = ItemsViewContract.selectionMode.token
     static let shape = BorderElementContract.shape.token
     static let showsClearButton = TextFieldContract.showsClearButton.token
     static let showsText = ToolbarItemContract.showsText.token
-    static let color = ColorBoxContract.color.token
     static let columns = GridContract.columns.token
     static let columnSpacing = GridContract.columnSpacing.token
     static let iconPosition = ButtonContract.iconPosition.token
     static let iconSpacing = ButtonContract.iconSpacing.token
-    static let cornerRadius = ColorBoxContract.cornerRadius.token
+    static let cornerRadius = RectangleContract.cornerRadius.token
     static let selectedTab = TabViewContract.selectedTab.token
     static let cursorPosition = TextInputContract.cursorPosition.token
     static let data = PathContract.data.token
@@ -120,12 +126,16 @@ extension NodeType {
     static let dragText = ViewContract.dragText.token
     static let droppedFileTypes = ViewContract.droppedFileTypes.token
     static let drawing = CanvasContract.drawing.token
-    static let fill = ShapeContract.fill.token
+    static let fill = FilledShapeContract.fill.token
     static let fillRule = PolygonContract.fillRule.token
     static let floatsOnTop = WindowContract.floatsOnTop.token
     static let layoutDirection = VisualElementContract.layoutDirection.token
     static let letsInputThrough = LayoutContract.letsInputThrough.token
     static let fontAttributes = FontElementContract.fontAttributes.token
+    static let fontWeight = FontElementContract.fontWeight.token
+    static let isSelectable = TextContract.isSelectable.token
+    static let presentation = PickerContract.presentation.token
+    static let textStyle = FontElementContract.textStyle.token
     static let isFontAutoScalingEnabled = FontElementContract.isFontAutoScalingEnabled.token
     static let fontFamily = FontElementContract.fontFamily.token
     static let fontSize = FontElementContract.fontSize.token
@@ -167,6 +177,8 @@ extension NodeType {
     static let inputPurpose = TextInputContract.inputPurpose.token
     static let label = MarkerContract.label.token
     static let lineBreak = ButtonContract.lineBreak.token
+    static let menuKind = ButtonContract.menuKind.token
+    static let showsMenuArrow = ButtonContract.showsMenuArrow.token
     static let lineHeight = LineHeightElementContract.lineHeight.token
     static let location = MarkerContract.location.token
     static let mapType = MapContract.mapType.token
@@ -184,6 +196,7 @@ extension NodeType {
     static let backButtonTitle = PageContract.backButtonTitle.token
     static let showsBackButton = PageContract.showsBackButton.token
     static let showsNavigationBar = PageContract.showsNavigationBar.token
+    static let showsTitle = PageContract.showsTitle.token
     static let opacity = VisualElementContract.opacity.token
     static let order = ToolbarItemGroupContract.order.token
     static let placement = ToolbarItemContract.placement.token
@@ -217,8 +230,8 @@ extension NodeType {
     static let dashPhase = ShapeContract.dashPhase.token
     static let dash = ShapeContract.dash.token
     static let lineCap = ShapeContract.lineCap.token
-    static let lineJoin = ShapeContract.lineJoin.token
-    static let miterLimit = ShapeContract.miterLimit.token
+    static let lineJoin = CorneredShapeContract.lineJoin.token
+    static let miterLimit = CorneredShapeContract.miterLimit.token
     static let lineWidth = ShapeContract.lineWidth.token
     static let style = VisualElementContract.style.token
     static let swipeDirection = ViewContract.swipeDirection.token
@@ -239,7 +252,7 @@ extension NodeType {
     static let value = SliderContract.value.token
     static let verticalAlignment = ViewContract.verticalAlignment.token
     static let verticalScrollIndicator = ScrollViewContract.verticalScrollIndicator.token
-    static let verticalTextAlignment = TextAlignmentElementContract.verticalTextAlignment.token
+    static let verticalTextAlignment = TextContract.verticalTextAlignment.token
     static let width = VisualElementContract.width.token
     static let windowType = WindowContract.windowType.token
     static let windowValue = WindowContract.windowValue.token
@@ -280,7 +293,8 @@ extension NodeType {
     static let filesDropped = ViewContract.filesDropped.token
     static let dragEnded = ViewContract.dragEnded.token
     static let frameChanged = ViewContract.frameChanged.token
-    static let isFocusedChanged = VisualElementContract.isFocusedChanged.token
+    static let isFocusedChanged = FocusElementContract.isFocusedChanged.token
+    static let keyPressed = KeyboardElementContract.keyPressed.token
     static let showsSidebarChanged = SplitViewContract.showsSidebarChanged.token
     static let mapClicked = MapContract.mapClicked.token
     static let navigated = WebViewContract.navigated.token
@@ -316,9 +330,9 @@ extension NodeType {
 }
 
 @_spi(Host) public extension Act {
-    static let focus = VisualElementContract.focus.token
+    static let focus = FocusElementContract.focus.token
     static let scrollTo = ItemsViewContract.scrollTo.token
-    static let unfocus = VisualElementContract.unfocus.token
+    static let unfocus = FocusElementContract.unfocus.token
     static let goBack = WebViewContract.goBack.token
     static let goForward = WebViewContract.goForward.token
     static let reload = WebViewContract.reload.token

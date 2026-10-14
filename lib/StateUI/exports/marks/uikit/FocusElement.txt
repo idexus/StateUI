@@ -1,0 +1,46 @@
+# revision 1.1
+Button.focus: – Button takes no keyboard focus here: it refuses it, and nothing is heard
+Button.isFocusedChanged: – Button takes no keyboard focus here: it refuses it, and nothing is heard
+Button.unfocus: – Button takes no keyboard focus here: it refuses it, and nothing is heard
+CheckBox.focus: – CheckBox takes no keyboard focus here: it refuses it, and nothing is heard
+CheckBox.isFocusedChanged: – CheckBox takes no keyboard focus here: it refuses it, and nothing is heard
+CheckBox.unfocus: – CheckBox takes no keyboard focus here: it refuses it, and nothing is heard
+DatePicker.focus: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
+DatePicker.isFocusedChanged: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
+DatePicker.unfocus: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
+ItemsView.focus: – ItemsView takes no keyboard focus here: it refuses it, and nothing is heard
+ItemsView.isFocusedChanged: – ItemsView takes no keyboard focus here: it refuses it, and nothing is heard
+ItemsView.unfocus: – ItemsView takes no keyboard focus here: it refuses it, and nothing is heard
+Picker.focus: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
+Picker.isFocusedChanged: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
+Picker.unfocus: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
+RadioButton.focus: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
+RadioButton.isFocusedChanged: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
+RadioButton.unfocus: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
+SearchField.focus: ✅
+SearchField.isFocusedChanged: ✅
+SearchField.unfocus: ✅
+Slider.focus: – Slider takes no keyboard focus here: it refuses it, and nothing is heard
+Slider.isFocusedChanged: – Slider takes no keyboard focus here: it refuses it, and nothing is heard
+Slider.unfocus: – Slider takes no keyboard focus here: it refuses it, and nothing is heard
+Stepper.focus: – Stepper takes no keyboard focus here: it refuses it, and nothing is heard
+Stepper.isFocusedChanged: – Stepper takes no keyboard focus here: it refuses it, and nothing is heard
+Stepper.unfocus: – Stepper takes no keyboard focus here: it refuses it, and nothing is heard
+Switch.focus: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
+Switch.isFocusedChanged: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
+Switch.unfocus: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
+TextEditor.focus: ✅
+TextEditor.isFocusedChanged: ✅
+TextEditor.unfocus: ✅
+TextField.focus: ✅
+TextField.isFocusedChanged: ✅
+TextField.unfocus: ✅
+TimePicker.focus: ✅
+TimePicker.isFocusedChanged: ✅
+TimePicker.unfocus: ✅
+WebView.focus: ✅
+WebView.isFocusedChanged: ✅
+WebView.unfocus: ✅

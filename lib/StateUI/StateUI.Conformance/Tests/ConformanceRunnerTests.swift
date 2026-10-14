@@ -221,14 +221,14 @@ final class ConformanceRunnerTests: XCTestCase {
     /// it, is the colour; more is another, and nothing is none.
     func testAColourShowsWithinTheStepsSmoothingTakes() {
         let red = Color(red: 255, green: 0, blue: 0)
-        XCTAssertTrue(Session.shows(Color(red: 253, green: 0, blue: 0), red))
-        XCTAssertTrue(Session.shows(Color(red: 251, green: 4, blue: 0, alpha: 251), red))
-        XCTAssertFalse(Session.shows(Color(red: 250, green: 0, blue: 0), red))
-        XCTAssertFalse(Session.shows(Color(red: 255, green: 0, blue: 5), red))
+        XCTAssertTrue(ShownColor(Color(red: 253, green: 0, blue: 0)).shows(red))
+        XCTAssertTrue(ShownColor(Color(red: 251, green: 4, blue: 0, alpha: 251)).shows(red))
+        XCTAssertFalse(ShownColor(Color(red: 250, green: 0, blue: 0)).shows(red))
+        XCTAssertFalse(ShownColor(Color(red: 255, green: 0, blue: 5)).shows(red))
         XCTAssertFalse(Session.shows(nil, red))
 
         run([ConformanceCase("paints", proves: [Covered(SwitchContract.isOn)]) { s in
-            s.expect(Color(red: 253, green: 0, blue: 0), shows: red)
+            s.expect(ShownColor(Color(red: 253, green: 0, blue: 0)), shows: red)
             s.expect(nil, shows: red, "on its outline")
         }], on: RegisterOnly(realizing: [.complete("Switch", "isOn")]))
         XCTAssertEqual(failures, ["Nowhere · paints: \(red) expected, nothing came - on its outline"])

@@ -29,8 +29,8 @@
     /// The caption; empty for a separator.
     public let title: String
 
-    /// The picture shown with the caption, by name, where one is said.
-    public let icon: String?
+    /// The picture shown with the caption, where one is said.
+    public let icon: HostPicture?
 
     /// Whether the user can choose it.
     public let isEnabled: Bool
@@ -40,6 +40,13 @@
 
     /// The identifier a test and assistive technology find it by, where one is said.
     public let identifier: String?
+
+    /// Whether an item stands checked, or not; nil for one standing neither way, which shows no mark.
+    public let isOn: Bool?
+
+    /// The shortcut an item states, shown beside its words; nil for none, and for a submenu or a line.
+    /// Design: docs/design/types/keyboard.md#on-each-platform
+    public let keyboardShortcut: KeyboardShortcut?
 
     /// A submenu's entries, in order.
     public let entries: [MenuEntry]
@@ -55,7 +62,7 @@
         container.children.compactMap { entry in
             switch entry.type {
             case .menuItem: MenuEntry(entry, kind: .item, entries: [])
-            case .divider: .separator
+            case .menuSeparator: .separator
             case .menu: MenuEntry(entry, kind: .submenu, entries: entries(of: entry))
             default: nil
             }
@@ -81,10 +88,12 @@
         self.kind = kind
         self.element = element
         title = element?.value(.text)?.string ?? ""
-        icon = element?.value(.icon)?.string.flatMap { $0.isEmpty ? nil : $0 }
+        icon = HostPicture(element?.value(.icon))
         isEnabled = element?.isEffectivelyEnabled ?? true
         isDestructive = element?.value(.isDestructive)?.bool == true
         identifier = element?.value(.accessibilityIdentifier)?.string
+        isOn = kind == .item ? element?.value(.isOn)?.bool : nil
+        keyboardShortcut = kind == .item ? element?.keyboardShortcut : nil
         self.entries = entries
     }
 }

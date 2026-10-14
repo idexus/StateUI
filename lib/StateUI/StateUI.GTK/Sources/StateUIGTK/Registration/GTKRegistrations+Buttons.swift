@@ -8,14 +8,15 @@ extension GTKRegistrations {
     /// A Button: its caption, its picture and their look, whether it takes a press, the press and the click.
     static func buttons(_ registry: Registry<GTKView>) {
         registry.add(ButtonContract.self, create: { reports in
-            let button = GTKButtonView()
+            // A button holding a menu is GTK's menu button or libadwaita's split button, made so from the first.
+            let button = GTKButtonView(menu: ButtonMenu.opening(made: reports.made))
             button.onClicked = { reports.raise(ButtonContract.clicked) }
             button.onPressed = { reports.raise(ButtonContract.pressed) }
             button.onReleased = { reports.raise(ButtonContract.released) }
             return button
         }, members: { button in
             button.applies(TextMembers.members) { view, values in applyText(view, values) }
-            button.property(TextStyleElementContract.tracking) { view, spacing in
+            button.property(TrackingElementContract.tracking) { view, spacing in
                 view.setLook { $0.letterSpacing = spacing ?? 0 }
             }
             button.applies([
@@ -32,10 +33,18 @@ extension GTKRegistrations {
                 ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing, ImageElementContract.contentMode,
             ]) { view, values in
                 view.setPicture(
-                    values[ButtonContract.icon], position: values[ButtonContract.iconPosition] ?? .leading,
+                    HostPicture(values[ButtonContract.icon], dark: false),
+                    position: values[ButtonContract.iconPosition] ?? .leading,
                     spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
             }
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
+            // GTK's own shortcut - the one stated, else the role's - and the role's look, libadwaita's classes for the
+            // suggested action and a destructive one.
+            button.applies([ButtonContract.keyboardShortcut, ButtonContract.role]) { view, values in
+                let role = values[ButtonContract.role]
+                view.setShortcut(KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role))
+                view.setRole(role)
+            }
             button.property(VisualElementContract.isEnabled) { view, enabled in
                 view.setEnabled(enabled ?? true)
             }

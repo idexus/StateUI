@@ -104,4 +104,18 @@ final class EnvironmentFactsTests: XCTestCase {
         XCTAssertTrue(told)
         XCTAssertEqual(runtime.tree.languageDirection, .rightToLeft, "the tree follows the language's direction")
     }
+
+    /// A report that repeats what stands changes nothing and takes no turn: a platform reports far more often than
+    /// anything changes, and a turn between the display's frames moves what moves once more.
+    @MainActor
+    func testAReportThatRepeatsItselfTakesNoTurn() {
+        let runtime = HostRuntime.still()
+        let wifi = HostConnectivityInfo(networkAccess: .internet, connectionProfiles: [.wifi])
+        let cellular = HostConnectivityInfo(networkAccess: .internet, connectionProfiles: [.cellular])
+        defer { runtime.core.setConnectivityInfo(HostConnectivityInfo(networkAccess: .unknown, connectionProfiles: [])) }
+        runtime.environmentChanged { runtime.core.setConnectivityInfo(wifi) }
+
+        XCTAssertFalse(runtime.environmentChanged { runtime.core.setConnectivityInfo(wifi) }, "the same again")
+        XCTAssertTrue(runtime.environmentChanged { runtime.core.setConnectivityInfo(cellular) }, "another")
+    }
 }

@@ -188,10 +188,16 @@ final class MotionTests: XCTestCase {
         // value that would travel if the property were not on the list.
         for property in LibraryContracts.facts.filter({ !$0.value.travels }).keys.sorted() {
             let alone = Renders()
+            // On an element wearing it: one that does not leaves it out.
+            let wearer = LibraryContracts.elements.first { element in
+                element.worn.contains { $0.members.contains { $0.name == property.name } }
+            }
+            let type = wearer?.nodeType ?? TextContract.nodeType
+            let node = { (value: Double) in Node(type: type, id: "l", props: [property: .number(value)]) }
 
-            alone.render(Text("x").setValue(property, .number(0)).id("l").node)
+            alone.render(node(0))
 
-            let moved = alone.render(Text("x").setValue(property, .number(3)).id("l").node)
+            let moved = alone.render(node(3))
 
             XCTAssertEqual(
                 moved.props[property], .number(3),
@@ -307,6 +313,34 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(patch.props[.width], .number(300))
         XCTAssertNil(patch.transitions[.width], "the size arrives")
         XCTAssertNotNil(patch.transitions[.background], "the colour still travels")
+    }
+
+    /// A shape's corners and outline are its shape, not its size: a size held
+    /// still leaves them travelling, and a rule naming the shape holds them.
+    func testAShapesCornersAndOutlineAreItsShapeNotItsSize() {
+        func panel(_ wide: Bool, still: MotionValues) -> Node {
+            Rectangle()
+                .width(wide ? 300 : 120)
+                .cornerRadius(wide ? 28 : 8)
+                .lineWidth(wide ? 4 : 1)
+                .motion(.none, still)
+                .id("p")
+                .node
+        }
+
+        let sizeStill = Renders()
+        sizeStill.render(panel(false, still: .size))
+        let resized = sizeStill.render(panel(true, still: .size))
+        XCTAssertNil(resized.transitions[.width], "the size arrives")
+        XCTAssertNotNil(resized.transitions[.cornerRadius], "the corners travel")
+        XCTAssertNotNil(resized.transitions[.lineWidth], "the outline travels")
+
+        let shapeStill = Renders()
+        shapeStill.render(panel(false, still: .shape))
+        let reshaped = shapeStill.render(panel(true, still: .shape))
+        XCTAssertNotNil(reshaped.transitions[.width], "the size travels")
+        XCTAssertNil(reshaped.transitions[.cornerRadius], "the corners arrive")
+        XCTAssertNil(reshaped.transitions[.lineWidth], "the outline arrives")
     }
 
     /// And a rule may say a motion rather than none.

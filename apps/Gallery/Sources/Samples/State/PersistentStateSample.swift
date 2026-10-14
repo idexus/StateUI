@@ -113,9 +113,8 @@ struct PersistentStateSample: SampleContent, ExampleContent {
             }
             .spacing(12)
 
-            ColorBox()
+            Rectangle(shade == .bold ? Palette.accent : Palette.well)
                 .height(48)
-                .color(shade == .bold ? Palette.accent : Palette.well)
                 .cornerRadius(8)
         }
         .spacing(14)

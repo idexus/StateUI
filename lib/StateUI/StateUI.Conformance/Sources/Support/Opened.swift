@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import StateUI
+@_spi(Host) import StateUI
 
 /// What a case puts on a specimen that only a view of a known kind takes - a state its frame lands in, the states a
 /// pan carries, an aim - put on whatever kind the specimen is.
@@ -32,22 +32,22 @@ enum Opened {
 
 /// The keyboard's acts on one view, which a case's buttons call: whatever kind the view is.
 final class FocusAim: @unchecked Sendable {
-    private var focusing: (() async throws -> Bool)?
-    private var unfocusing: (() async throws -> Void)?
+    private var focusing: (@MainActor () async throws -> Bool)?
+    private var unfocusing: (@MainActor () async throws -> Void)?
 
     /// Acts on the view `aim` aims at.
     func hold<V>(_ aim: Aim<V>) {
-        focusing = { try await aim.focus() }
-        unfocusing = { try await aim.unfocus() }
+        focusing = { try await aim.call(FocusElementContract.focus) }
+        unfocusing = { try await aim.call(FocusElementContract.unfocus) }
     }
 
     /// Puts the keyboard on the view; whether it took it.
-    func focus() async throws -> Bool {
+    @MainActor func focus() async throws -> Bool {
         try await focusing?() ?? false
     }
 
     /// Takes the keyboard off the view.
-    func unfocus() async throws {
+    @MainActor func unfocus() async throws {
         try await unfocusing?()
     }
 }

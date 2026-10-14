@@ -15,7 +15,9 @@ public enum SubmitLabel: Int32, Sendable {
     /// "Go".
     case go = 2
 
-    /// "Next", for a field with another after it.
+    /// "Next": as the field is submitted, the keyboard goes on to the next
+    /// field its page reads - in the order the page is written, past a field
+    /// hidden or disabled; after the last it stays.
     case next = 3
 
     /// "Search".

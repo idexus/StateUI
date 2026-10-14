@@ -69,6 +69,9 @@
     /// caption, ";" between; empty for none.
     func menu(of element: MountedElement) throws -> String
 
+    /// The menu `button` opens (`Button.menu`), written as `menu(of:)` writes one.
+    func buttonMenu(of button: MountedElement) throws -> String
+
     /// The bar `page` shows as the user meets it: the leading groups, "|", the trailing groups, "|", the actions in
     /// the overflow - a group its actions' ids in brackets, in reading order, "!" before one that cannot be chosen.
     func bar(of page: MountedElement) throws -> String
@@ -105,6 +108,10 @@
     /// The colour `element` shows at `point`, in its own coordinates; nil where it shows nothing there. Asked only of
     /// what StateUI draws itself - a canvas, a shape, a box's fill - never of a native control's look.
     func color(of element: MountedElement, at point: Point) throws -> Color?
+
+    /// The colours `element` shows at each of `points`, in its own coordinates, read at once - a host reading its
+    /// window a frame at a time reads them all from one; nil where it shows nothing.
+    func colors(of element: MountedElement, at points: [Point]) throws -> [Color?]
 
     /// Where `element` stands in its window, as the toolkit placed its view - an item in a collection's cell
     /// included.
@@ -146,6 +153,10 @@ extension HostDriver {
 
     public func menu(of element: MountedElement) throws -> String {
         throw DriverCannot("read the menu of \(element.type.name)")
+    }
+
+    public func buttonMenu(of button: MountedElement) throws -> String {
+        throw DriverCannot("read the menu \(button.type.name) opens")
     }
 
     public func bar(of page: MountedElement) throws -> String {
@@ -191,6 +202,10 @@ extension HostDriver {
 
     public func color(of element: MountedElement, at point: Point) throws -> Color? {
         throw DriverCannot("read the colour of \(element.type.name)")
+    }
+
+    public func colors(of element: MountedElement, at points: [Point]) throws -> [Color?] {
+        try points.map { try color(of: element, at: $0) }
     }
 
     public func place(of element: MountedElement) throws -> Rect {

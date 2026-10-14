@@ -11,9 +11,12 @@ import android.os.Build;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.View;
+import android.widget.PopupMenu;
 import java.util.ArrayDeque;
 
 /**
@@ -27,12 +30,20 @@ final class StateUIMenus {
     static final int ITEM = 0, MENU = 1, END = 2, SEPARATOR = 3, KIND = 3;
 
     /**
-     * An entry's flags: not enabled, destructive, standing on the bar beside the title where room allows, and
-     * showing its words there beside its picture where room allows.
+     * An entry's flags: not enabled, destructive, standing on the bar beside the title where room allows, showing
+     * its words there beside its picture where room allows, standing checked or not, and checked.
      */
-    static final int DISABLED = 4, DESTRUCTIVE = 8, ON_BAR = 16, WITH_TEXT = 32;
+    static final int DISABLED = 4, DESTRUCTIVE = 8, ON_BAR = 16, WITH_TEXT = 32, CHECKABLE = 64, CHECKED = 128;
+
+    /** An item's shortcut: the modifiers held with its key, whose character stands in the entry's upper half. */
+    static final int CONTROL = 256, SHIFT = 512, ALT = 1024;
 
     private StateUIMenus() {}
+
+    /** A menu popping up at `anchor`, its entries written before it shows: a button's menu. */
+    static PopupMenu popUp(View anchor) {
+        return new PopupMenu(anchor.getContext(), anchor);
+    }
 
     /**
      * Adds the entries to `menu`: a submenu's entries follow it up to its END, and a separator starts a new
@@ -58,7 +69,7 @@ final class StateUIMenus {
                     Bitmap picture = pictures == null ? null : pictures[text];
                     text++;
                     if (picture != null) {
-                        BitmapDrawable drawable = StateUIViews.glyph(context.getResources(), picture);
+                        BitmapDrawable drawable = StateUIViews.glyph(context, picture);
                         boolean destructive = (entry & DESTRUCTIVE) != 0 && (entry & DISABLED) == 0;
                         if (destructive) {
                             drawable.setTint(error);
@@ -69,6 +80,11 @@ final class StateUIMenus {
                         added.setIcon(drawable);
                     }
                     added.setEnabled((entry & DISABLED) == 0);
+                    if ((entry & CHECKABLE) != 0) {
+                        added.setCheckable(true);
+                        added.setChecked((entry & CHECKED) != 0);
+                    }
+                    showShortcut(added, entry);
                     int withText = (entry & WITH_TEXT) != 0 ? MenuItem.SHOW_AS_ACTION_WITH_TEXT : 0;
                     added.setShowAsAction(
                             (entry & ON_BAR) != 0 ? MenuItem.SHOW_AS_ACTION_IF_ROOM | withText : MenuItem.SHOW_AS_ACTION_NEVER);
@@ -96,6 +112,23 @@ final class StateUIMenus {
                 default:
                     group++;
             }
+        }
+    }
+
+    /**
+     * Shows the item's shortcut beside its words, as Android does while a keyboard is attached: a digit's on the
+     * numeric keys, any other character's on the letters. The host hears the key itself; the menu only shows it.
+     */
+    private static void showShortcut(MenuItem item, int entry) {
+        char key = (char) (entry >>> 16);
+        if (key == 0) return;
+        int meta = ((entry & CONTROL) != 0 ? KeyEvent.META_CTRL_ON : 0)
+                | ((entry & SHIFT) != 0 ? KeyEvent.META_SHIFT_ON : 0)
+                | ((entry & ALT) != 0 ? KeyEvent.META_ALT_ON : 0);
+        if (Character.isDigit(key)) {
+            item.setNumericShortcut(key, meta);
+        } else {
+            item.setAlphabeticShortcut(key, meta);
         }
     }
 

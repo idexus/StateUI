@@ -1,0 +1,4 @@
+# revision 1.1
+Button.tracking: ✅
+Text.tracking: ✅
+TextSpan.tracking: – Android spaces the letters of a whole text: no span spaces a run's own.

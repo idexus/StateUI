@@ -170,6 +170,18 @@ extension WinUIDriver {
             return .string(try read(view, "automationName"))
         case "accessibilityLabel": return .string(view.automationWords.name)
         case "accessibilityHint": return .string(view.automationWords.help)
+        case "role" where view is WinUIButtonView:
+            // The accent WinUI holds for the main action; the host's own record for the roles it draws no look for.
+            let button = view as! WinUIButtonView
+            if stateui_winui_button_accent(button.handle) { return ButtonRole.primary.propValue }
+            return button.role.flatMap { $0 == .primary ? nil : $0.propValue } ?? HostValue.nothing
+        case "keyboardShortcut":
+            var key: Int32 = 0, modifiers: Int32 = 0
+            guard stateui_winui_shortcut(view.answering.handle, &key, &modifiers) else { return nil }
+            return WinUIKeys.shortcut(key: key, modifiers: modifiers)?.propValue
+        case "tooltip":
+            let words = WinUIStrings.read { stateui_winui_tooltip(view.handle, $0, $1) }
+            return words.isEmpty ? nil : .string(words)
         case "accessibilityIdentifier": return .string(view.automationWords.identifier)
         case "accessibilityHeading": return (AccessibilityHeadingLevel(rawValue: view.automationFacts.heading) ?? AccessibilityHeadingLevel.none).propValue
         case "isAccessibilityHidden":
@@ -217,11 +229,8 @@ extension WinUIDriver {
         case "fontSize": return Double(try read(view, "fontSize"))?.propValue
         case "fontFamily": return Name(try read(view, "fontFamily")).propValue
         case "isFontAutoScalingEnabled": return (try read(view, "textScales") == "1").propValue
-        case "fontAttributes":
-            var attributes: FontAttributes = []
-            if (Int(try read(view, "fontWeight")) ?? 400) >= 600 { attributes.insert(.bold) }
-            if try read(view, "italic") == "1" { attributes.insert(.italic) }
-            return attributes.propValue
+        case "fontWeight": return FontWeight(nearest: Double(try read(view, "fontWeight")) ?? 400).propValue
+        case "fontAttributes": return (try read(view, "italic") == "1" ? FontAttributes.italic : .none).propValue
         case "tracking":
             // Thousandths of an em on WinUI: back in DIPs, to the tenth WinUI keeps.
             let size = Double(try read(view, "fontSize")) ?? 14
@@ -245,6 +254,7 @@ extension WinUIDriver {
             }
             let across = Int(try read(view, "textAlignment")) ?? 1
             return (across == 0 ? TextAlignment.center : across == 2 ? .end : .start).propValue
+        case "isSelectable" where view is WinUITextView: return (try read(view, "selectable") == "1").propValue
         case "verticalTextAlignment" where view is WinUITextView:
             // WinUI's VerticalAlignment: top 0, centre 1, bottom 2, stretched 3 - the words at its top.
             let down = Int(try read(view, "verticalAlignment")) ?? 3
@@ -337,6 +347,7 @@ extension WinUIDriver {
         case ("selectedItems", let items as WinUIItemsView): return .strings(items.selectedForTesting)
         case ("selectionMode", let items as WinUIItemsView): return items.modeForTesting.propValue
         case ("isOn", let toggle as WinUIToggleView): return toggle.isOn.propValue
+        case ("showsMenuArrow", let button as WinUIButtonView): return (try read(button, "showsMenuArrow") == "1").propValue
         case ("value", let slider as WinUISliderView): return slider.value.propValue
         case ("minimum", let slider as WinUISliderView): return slider.minimum.propValue
         case ("maximum", let slider as WinUISliderView): return slider.maximum.propValue
@@ -390,6 +401,10 @@ extension WinUIDriver {
             let back = try read(bar, "back") == "1"
             let actions = try read(bar, "actions") != "||"
             return (back || actions).propValue
+        // The window's title bar shows the page's title in its place, else the page's heading does.
+        case ("showsTitle", _):
+            let heading = renderer?.views(WinUILayoutView.self).contains { $0.heading != nil } ?? false
+            return try (heading || !read(window().titleBar, "title").isEmpty).propValue
         // The window's title bar offers the way back of the page it shows.
         case ("showsBackButton", _): return (try read(window().titleBar, "back") == "1").propValue
         case ("barBackgroundColor", _): return try Self.color(read(window().titleBar, "background")).map { $0.propValue }
@@ -455,11 +470,8 @@ extension WinUIDriver {
         case "textColor": return run[0] == 0 ? nil : Self.color(UInt32(run[0])).propValue
         case "background": return run[5] == 0 ? nil : Self.color(UInt32(run[5])).propValue
         case "fontSize": return run[1] == 0 ? nil : run[1].propValue
-        case "fontAttributes":
-            var attributes: FontAttributes = []
-            if run[2] >= 600 { attributes.insert(.bold) }
-            if run[3] != 0 { attributes.insert(.italic) }
-            return attributes.propValue
+        case "fontWeight": return FontWeight(nearest: run[2]).propValue
+        case "fontAttributes": return (run[3] != 0 ? FontAttributes.italic : .none).propValue
         case "textDecorations": return TextDecorations(rawValue: Int32(run[4])).propValue
         case "fontFamily":
             let families = try read(label, "runFamilies").split(separator: "\u{1F}", omittingEmptySubsequences: false)
@@ -486,16 +498,18 @@ extension WinUIDriver {
         switch name {
         case "text": return .string(shown[place].caption)
         case "isEnabled": return shown[place].enabled.propValue
-        case "accessibilityIdentifier", "icon", "isDestructive":
+        case "accessibilityIdentifier", "icon", "isDestructive", "isOn", "keyboardShortcut":
             guard kind == .menuItem else { return nil }
-            let what = name == "icon" ? "icon" : name == "isDestructive" ? "destructive" : "identifier"
+            let what = ["icon": "icon", "isDestructive": "destructive", "isOn": "checked", "keyboardShortcut": "shortcut"][name]
+                ?? "identifier"
             let items = WinUIStrings.read { stateui_winui_menus_items(owner.handle, what, $0, $1) }
                 .split(separator: ";", omittingEmptySubsequences: false).map(String.init)
             let index = menuPlace(of: element)?.index ?? 0
             guard items.indices.contains(index) else { return nil }
             switch name {
             case "icon": return Self.picture(items[index], named: element)
-            case "isDestructive": return (items[index] == "1").propValue
+            case "isDestructive", "isOn": return (items[index] == "1").propValue
+            case "keyboardShortcut": return Self.shortcut(items[index])
             default: return .string(items[index])
             }
         default: return nil
@@ -518,8 +532,16 @@ extension WinUIDriver {
         case "isDestructive": return (try action("destructive") == "1").propValue
         case "showsText": return (try action("wordsShown") == "1").propValue
         case "accessibilityIdentifier": return .string(try action("identifier"))
+        case "keyboardShortcut": return Self.shortcut(try action("shortcut"))
         default: return nil
         }
+    }
+
+    /// The shortcut an accelerator's key and modifiers spell, read as "key,modifiers"; nothing for none.
+    private static func shortcut(_ read: String) -> HostValue? {
+        let numbers = read.split(separator: ",").compactMap { Int32($0) }
+        guard numbers.count == 2 else { return HostValue.nothing }
+        return WinUIKeys.shortcut(key: numbers[0], modifiers: numbers[1])?.propValue
     }
 
     /// The bar `page`'s window shows: its groups at each edge and what stands behind "more", each action by its

@@ -21,7 +21,7 @@ final class AndroidTabsView: AndroidView {
     func show(_ row: AndroidTabView.Row, chosen: Int) {
         Java.frame {
             let titles = Java.array(of: JavaAPI.string, row.tabs.map { Java.string($0.title) })
-            let bitmaps = row.tabs.map { $0.picture.flatMap(AndroidPictures.bitmap(named:)) }
+            let bitmaps = row.tabs.map { $0.picture.flatMap(AndroidPictures.bitmap) }
             let pictures = Java.array(of: JavaAPI.bitmap, bitmaps.map { $0?.reference })
             withExtendedLifetime(bitmaps) {
                 Java.call(

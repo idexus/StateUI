@@ -1,4 +1,4 @@
-# revision 5.1
+# revision 8.1
 Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 Button.lineWidth: ✅
 Button.shape: ✅
@@ -11,9 +11,6 @@ HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
-RadioButton.lineWidth: not realized
-RadioButton.shape: not realized
-RadioButton.stroke: not realized
 ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅

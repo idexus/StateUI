@@ -5,11 +5,16 @@
 # Builds an application's GTK head and starts it.
 #
 # USAGE:
-#   run-app.sh <app-dir> [debug|release] [--detach] [--build-only]
+#   run-app.sh <app-dir> [debug|release] [--detach | --gdb] [--build-only]
 #
 #   app-dir       the application's folder: Package.swift, and Platforms/GTK
 #   --detach      returns once the application has started; its output goes to
 #                 <app-dir>/.build/gtk/run.log
+#   --gdb         as --detach, under gdb: every GTK critical's stack, and a
+#                 crash's, goes to <app-dir>/.build/gtk/gdb.log ("=== CRITICAL",
+#                 "=== STOPPED") and the application goes on past a critical. It
+#                 starts from the session's service manager where there is one,
+#                 as WebKitGTK's sandbox needs a process of the session.
 #   --build-only  builds the head and says where it is, starting nothing
 #
 # A running copy of the head is stopped first: a GTK application is one
@@ -22,16 +27,18 @@ set -euo pipefail
 app_dir=""
 configuration="debug"
 detach=0
+under_gdb=0
 build_only=0
 for argument in "$@"; do
   case "$argument" in
     --detach)      detach=1 ;;
+    --gdb)         under_gdb=1 ;;
     --build-only)  build_only=1 ;;
     debug|release) configuration="$argument" ;;
     *)             app_dir="$argument" ;;
   esac
 done
-[[ -n "$app_dir" ]] || { echo "USAGE: $0 <app-dir> [debug|release] [--detach] [--build-only]"; exit 1; }
+[[ -n "$app_dir" ]] || { echo "USAGE: $0 <app-dir> [debug|release] [--detach | --gdb] [--build-only]"; exit 1; }
 
 app_dir="$(cd "$app_dir" && pwd)"
 application="$(basename "$app_dir")"
@@ -74,6 +81,54 @@ fi
 if [[ "$build_only" == 1 ]]; then
   echo "built:      $executable"
   exit 0
+fi
+
+if [[ "$under_gdb" == 1 ]]; then
+  commands="$scratch/gdb.cmd"
+  cat > "$commands" <<'COMMANDS'
+set pagination off
+set confirm off
+set print thread-events off
+set print inferior-events off
+set debuginfod enabled off
+handle SIGPIPE nostop noprint pass
+handle SIGUSR1 nostop noprint pass
+set breakpoint pending on
+break g_return_if_fail_warning
+commands
+silent
+printf "=== CRITICAL %s: %s\n", (char *)$x1, (char *)$x2
+bt 25
+continue
+end
+run
+printf "=== STOPPED\n"
+bt 60
+info threads
+thread apply all bt 12
+COMMANDS
+  launch=(gdb -batch -x "$commands" --args "$executable")
+  if systemctl --user show-environment > /dev/null 2>&1; then
+    unit="stateui-$(echo "$application" | tr '[:upper:]' '[:lower:]')-gdb"
+    systemctl --user stop "$unit" 2> /dev/null || true
+    systemctl --user reset-failed "$unit" 2> /dev/null || true
+    passed=()
+    for name in DISPLAY WAYLAND_DISPLAY XAUTHORITY DBUS_SESSION_BUS_ADDRESS XDG_RUNTIME_DIR HOME PATH \
+                $(compgen -e | grep '^STATEUI_' || true); do
+      passed+=(-E "$name")
+    done
+    systemd-run --user --quiet --unit="$unit" --same-dir "${passed[@]}" -E SWIFT_BACKTRACE=enable=no \
+      bash -c '"$@" > "'"$scratch/gdb.log"'" 2>&1' gdb "${launch[@]}"
+  else
+    SWIFT_BACKTRACE=enable=no setsid "${launch[@]}" > "$scratch/gdb.log" 2>&1 < /dev/null &
+  fi
+  # gdb starts the file the build's link names, so the process is found by its name, not by the link's path.
+  for _ in $(seq 1 120); do
+    pgrep -x "${product:0:15}" > /dev/null && { echo "started:    $product under gdb, log $scratch/gdb.log"; exit 0; }
+    sleep 0.5
+  done
+  echo "ERROR: $product did not start under gdb - $scratch/gdb.log says why"
+  exit 1
 fi
 
 if [[ "$detach" == 1 ]]; then

@@ -15,16 +15,16 @@ extension UIKitElement {
                 host?.runtime.reducesMotion() ?? false
             })
         }
-        if element.isDrawnByParent(in: UIKitRegistrations.registry) { return nil }
+        if element.isDrawnByParent(in: UIKitRegistrations.registry) || element.isViewless { return nil }
         if let registered = UIKitRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
-            reporting: { [weak self] property, event, value in self?.report(property, event, value) }
+            reporting: { [weak self] property, event, value in self?.report(property, event, value) },
+            made: element.made
         ) {
             if let scroll = registered as? UIKitScrollView { follow(scroll) }
             return registered
         }
-        guard !NodeType.viewlessTypes.contains(type) else { return nil }
         guard !Self.showsUnsupported(type) else { return UIKitUnsupportedView(type) }
         let single = UIKitSingleChildView()
         // An overlay lets a touch beside what it holds through to the page under it.

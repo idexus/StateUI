@@ -26,6 +26,8 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
         wantsLayer = true
         layer?.masksToBounds = true
         imageView.imageAlignment = .alignCenter
+        // An icon, a template, stands in the words' colour; any other picture draws its own.
+        imageView.contentTintColor = .labelColor
         addSubview(imageView)
     }
 
@@ -40,7 +42,7 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
 
     /// Resolves a picture's file name against the application's resources -
     /// the host's to answer, since the files and the cache over them are its.
-    var picture: ((String) -> NSImage?)?
+    var picture: ((HostPicture) -> NSImage?)?
 
     func apply(image: NSImage?, aspect: ContentMode, animationPlaying: Bool) {
         let imageChanged = imageView.image !== image
@@ -65,7 +67,7 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
     ///   - animationPlaying: whether an animated picture runs.
     func apply(source: ImageSource?, aspect: ContentMode, animationPlaying: Bool) {
         apply(
-            image: source.flatMap { $0.isEmpty ? nil : picture?($0.file) },
+            image: source.flatMap { HostPicture($0.propValue) }.flatMap { picture?($0) },
             aspect: aspect,
             animationPlaying: animationPlaying)
     }

@@ -46,14 +46,6 @@ the same colour. A bare
 colour written out instead would make one property arrive in two shapes and
 leave the host carrying a branch to tell them apart.
 
-## A colour box fills with its colour
-
-A `ColorBox` carries both `color` and `background`, and draws `color`. The
-background is a second surface behind the box, which the corner radius does
-not round and which need not share the box's transform: a rotated box carrying
-both shows the background standing still underneath. A box is given its
-colour through `color`, in a style as much as on the control.
-
 ## Opening a picker
 
 A picker's, a date picker's and a time picker's `isOpen` asks the host to show
@@ -64,13 +56,38 @@ nothing, since an application that opened it from a button of its own already
 knows. The user can still close it by choosing, tapping away or pressing
 Escape, which `onClosed` reports.
 
-A date picker and a time picker take `textColor` and letter spacing through
-`TextStyleElement` but have no `text`: the field shows the formatted value. The
+A date picker and a time picker take `textColor` through `TextStyleElement`
+but have no `text` and no letter spacing: the field shows the formatted value,
+which a native picker spaces as it does. The
 host does the formatting, where the calendar and the user's locale are, so
 month names and a 12- or 24-hour clock come out in the user's own terms. There
 is no `today` to hand, since the host's clock answers a time of day with no
 date beside it, so a page whose limit is the current day holds that day in
 state.
+
+## A picker chooses a value
+
+A picker chooses one of its values, not a place in its list: `Picker(items,
+selection: $value) { caption }` crosses as the values' captions (`options`) and
+the chosen value's place among them (`selectedIndex`), worked out again at
+each build, so the list can change its order and the choice stays the value
+it was. A choice the user makes comes back as its place and lands on the
+state as the value standing there; a place outside the list changes nothing.
+The state is read where the picker is built, so a choice builds that body
+again - the host cannot carry an application's own value. Nothing is chosen
+while the state holds nil, or a value the list does not hold, and the
+placeholder shows. A value needs only to be `Equatable`; it shows by its
+description unless the picker is given a caption.
+
+## A picker's presentation
+
+`.presentation(.menu/.segmented/.radio)` says how a picker offers its values:
+the platform's pop-up or drop-down field, a row of segments, or a radio button
+for each. Each is another control, so another presentation makes the picker
+anew (`remakes`), and a host makes the one the picker is made with
+(`PickerChoices.presentation(made:)`). A list opens only from a menu: on
+segments and radio buttons `isOpen` asks for nothing, and `onOpened` and
+`onClosed` never come.
 
 ## Where a map opens
 
@@ -143,6 +160,36 @@ and no layout of its own. Of the modifiers a view has they take only `.id()`,
 and `.accessibilityIdentifier` on a menu entry or a toolbar item; they belong
 in one place - a page's toolbar, a menu, a map - and are matched there by
 their `.id()` or their position.
+
+## A button's menu
+
+`Button.menu { … }` writes a slot, `ButtonMenu`, after the button's children,
+holding what a menu holds; written again it stands in for the last. How the
+menu opens (`ButtonMenuOpening`) follows from the menu, the click and the kind
+asked (`ButtonMenuKind`):
+
+- no menu: a button;
+- a menu and no `.onClicked`: the click opens the menu, and an arrow pointing
+  down says so unless `.showsMenuArrow(false)` takes it away - never an arrow
+  up and down, which says a choice of values, as a picker's;
+- a click of its own, or `.split`: a split button, its click its own action,
+  its arrow a part of its own opening the menu;
+- `.held`: the click its own action, the menu opened by holding the button,
+  and no arrow.
+
+Each toolkit makes a control of its own of each - GTK's menu button and
+libadwaita's split button; WinUI's DropDownButton, a Button with a flyout, its
+SplitButton - and a control is made once, so the differ makes a button opening
+its menu otherwise, or showing its arrow otherwise, again
+(`Node+ButtonMenu.swift`, `remakes`), and a host reads how it opens from the
+patch the element is made from (`ButtonMenu.opening(made:)`). Where a toolkit
+draws no split button - UIKit, Android, the browser - or its menu buttons take
+no style - AppKit's - the host gives its own button the arrow. Holding is
+each platform's: a held mouse button on AppKit and GTK, a finger held on a
+touch screen, and on Windows and in the browser the user's asking for a
+menu - a finger or a pen held still, the mouse's other button. A button holding
+a menu offers no context menu of its own: on AppKit and WinUI the button's menu
+and the view's are one property.
 
 ## Radio groups
 

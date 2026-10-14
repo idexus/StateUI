@@ -11,7 +11,13 @@ keeps the cache over it, so one name is loaded once however many views draw
 it. A registration is made once for the whole process and has no renderer to
 ask, so the host hands every view it makes, through `AppKitPictureResolving`,
 the means to resolve a name. A name the application has no file for resolves
-to nothing.
+to nothing. An icon resolves to its SF Symbol (`Icon.sfSymbol`), a template
+image in the colour of the control holding it, and bytes to the image they
+encode. An image view tints a template in the label colour, as the words
+beside it; left untinted, it draws one in the secondary label colour. A
+bordered button tints a template in the platform's colour alone, so where
+its words stand in one of their own - a role's red, the tree's colour - it
+shows a copy of the icon drawn in theirs.
 
 ## Accessibility on the control
 
@@ -60,7 +66,8 @@ A scroller's box is its layer's alone: a colour behind what it shows, a
 colour's outline on a rectangle or a rounded one, and the cut of what it shows
 to its shape, always. AppKit repaints a scroller's layer as it displays it and
 clears its colour and outline, so the scroller puts them back each time it
-updates its layer. An oval scroller cuts and draws no outline.
+updates its layer. An oval scroller's outline is a shape layer over what it
+shows: under the oval's mask a layer's border would show only as slivers.
 
 ## A sidebar's material
 
@@ -101,6 +108,48 @@ A button keeps its icon beside its words, the two together in the middle
 (`imageHugsTitle`), however wide the layout stands it. Left to its default,
 AppKit puts the icon at the button's edge and the words alone in the middle,
 so a wide button's icon stands far from its words.
+
+## A button's padding
+
+A button's padding is room on its size - the cell's own measurement and the
+padding round it - and room inside it: the cell stands its words and its
+picture within it (`AppKitButtonCell`). A button drawing a box of its own -
+a fill, an outline - takes no bezel, and AppKit would otherwise scale a
+picture alone up to the whole button, whatever room the tree kept. A button
+in AppKit's own bezel placed taller than the push button stands in the
+flexible push button's, which is as tall as it is placed: the push button's
+keeps one height, and a square button of a picture would stand as a short
+wide one.
+
+## A button's role
+
+A role draws where the tree draws nothing of its own ([a button's
+role](../../host/layout.md#a-buttons-role)): the main action's bezel in the
+accent - with Return its key, AppKit's own default button - and a destructive
+one's words the system's red, as macOS's alerts mark one; AppKit also marks
+it for the system (`hasDestructiveAction`), which draws nothing on a button
+standing alone.
+
+## A button's menu
+
+AppKit's own menu buttons - the pull-down button and the combo button - take
+no box and no colour of their words, so a button holding a menu is the host's
+own AppKit button, which wears what the tree says, and its menu an `NSMenu`
+opened under it, at least as wide, as a pull-down opens its:
+
+- where its click opens the menu, it opens as the button is pressed, the
+  button pressed while it is open, and an arrow pointing down stands just
+  after the words; the button is a menu button to assistive technology;
+- a split button's arrow is a part of its own at its trailing edge, the whole
+  height, set off by a line, opening the menu as it is pressed;
+- a held button is let go before half a second for its click, and held past
+  it opens its menu, the press going on into it - AppKit's own event tracking
+  reads the press, with no timer.
+
+The button keeps room at its trailing edge for the arrow: its own size grows
+by it, and its cell sets its words and picture in the rest, its bezel the whole
+button's. Assistive technology asking for the menu of any of them opens it; a
+split button's arrow part, a view inside a button, is not met on its own.
 
 ## A radio button's set
 
@@ -147,3 +196,15 @@ forward or a load again the program asks for carries that as its cause; a
 page still coming is asked for again. macOS's WebKit also declares a legacy
 `WebHistory` class, so the host names the host layer's `StateUIHost.WebHistory`
 in full.
+
+## A text style
+
+Words in a text style stand in AppKit's font for it
+(`NSFont.preferredFont(forTextStyle:)`): `.display` the large title, `.title`
+the first title, `.subtitle` the second, `.headline`, `.body` and `.caption`
+the first caption. The style's size and weight stand under the tree's
+(`TextLook.standing`), and the font is made again at the size and weight that
+stand - the system font, or the named family with that weight in its
+descriptor; italic is AppKit's italic trait. A weight is AppKit's
+`NSFont.Weight`, and a font's weight reads back from its descriptor's traits.
+A Mac gives an application no text size of the user's to follow.
