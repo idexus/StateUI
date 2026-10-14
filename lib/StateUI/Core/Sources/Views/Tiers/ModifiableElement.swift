@@ -42,15 +42,6 @@ extension ModifiableElement {
         modified { $0.addHandler(event, gate: gate, handler) }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: onEvent(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onEvent<Owner: Contract>(
-        _ event: ElementEvent<Owner, Void>,
-        _ handler: @escaping EventHandler
-    ) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// Hears one of this element's events, its value handed over as the type
     /// its contract declares; the handler runs whole inside the event.
     ///
@@ -90,15 +81,6 @@ extension ModifiableElement {
         modified { $0.addHandler(event, gate: gate, handler) }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: onEvent(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onEvent<Owner: Contract, Value: HostRepresentable>(
-        _ event: ElementEvent<Owner, Value>,
-        _ handler: @escaping ValueEventHandler<Value>
-    ) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// Hears one of this element's events that carries two values, handed
     /// over as the types its contract declares, in its order; the handler runs
     /// whole inside the event.
@@ -132,15 +114,6 @@ extension ModifiableElement {
         _ handler: @escaping ValueEventHandler<First, Second>
     ) -> Modified {
         modified { $0.addHandler(event, gate: gate, handler) }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: onEvent(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onEvent<Owner: Contract, First: HostRepresentable, Second: HostRepresentable>(
-        _ event: ElementEvent<Owner, (First, Second)>,
-        _ handler: @escaping ValueEventHandler<First, Second>
-    ) -> Modified {
-        fatalError("unavailable")
     }
 
     /// Hears one of this element's events that carries three values, handed
@@ -178,17 +151,6 @@ extension ModifiableElement {
         _ handler: @escaping ValueEventHandler<First, Second, Third>
     ) -> Modified {
         modified { $0.addHandler(event, gate: gate, handler) }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: onEvent(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onEvent<
-        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
-    >(
-        _ event: ElementEvent<Owner, (First, Second, Third)>,
-        _ handler: @escaping ValueEventHandler<First, Second, Third>
-    ) -> Modified {
-        fatalError("unavailable")
     }
 
     /// Adds a handler beside any already there, by token - on this tier, so

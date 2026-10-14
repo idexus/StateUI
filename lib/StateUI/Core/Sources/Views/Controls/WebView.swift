@@ -94,12 +94,6 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
         }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigating(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onNavigating(_ handler: @escaping ValueEventHandler<WebNavigation>) -> Self {
-        fatalError("unavailable")
-    }
-
     /// Fires when a navigation finished, with how it ended - the place to
     /// clear a spinner, or to say a page could not be fetched.
     public func onNavigated(_ handler: @escaping @MainActor (WebNavigated) throws -> Void) -> Self {
@@ -114,12 +108,6 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
         }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigated(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onNavigated(_ handler: @escaping ValueEventHandler<WebNavigated>) -> Self {
-        fatalError("unavailable")
-    }
-
     /// Fires when the platform's web process died under the view - out of
     /// memory, usually - leaving it blank. `reload()` is the recovery.
     public func onProcessTerminated(_ handler: @escaping @MainActor () throws -> Void) -> Self {
@@ -130,12 +118,6 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
     /// again while a run is under way.
     public func onProcessTerminated(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
         onEvent(WebViewContract.processTerminated, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onProcessTerminated(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onProcessTerminated(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
     }
 }
 

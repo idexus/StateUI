@@ -914,9 +914,9 @@ func label(_ text: String, id: String? = nil) -> Node {
 
 /// A button with a click handler, for the tests about handler ids.
 @MainActor
-func button(_ text: String, id: String? = nil, onClicked: @escaping EventHandler) -> Node {
+func button(_ text: String, id: String? = nil, onClicked: @escaping @MainActor () throws -> Void) -> Node {
     var node = Node(type: "Button", id: id, props: ["text": .string(text)])
-    node.addHandler("clicked", gate: .none, onClicked)
+    node.addHandler("clicked", onClicked)
     return node
 }
 

@@ -110,12 +110,6 @@ public struct DatePicker: ElementView, TextStyleElement, FontElement, DatePicker
         onEvent(DatePickerContract.dateChanged, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDateChanged(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onDateChanged(_ handler: @escaping ValueEventHandler<CalendarDate>) -> Self {
-        fatalError("unavailable")
-    }
-
     /// The user has opened the calendar. Opening it with `isOpen(true)` raises
     /// nothing: the application already knows.
     public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Self {
@@ -128,12 +122,6 @@ public struct DatePicker: ElementView, TextStyleElement, FontElement, DatePicker
         onEvent(DatePickerContract.opened, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onOpened(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onOpened(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
-    }
-
     /// It has closed - by a choice, by a tap outside, or by the platform.
     public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(DatePickerContract.closed, handler)
@@ -143,12 +131,6 @@ public struct DatePicker: ElementView, TextStyleElement, FontElement, DatePicker
     /// again while a run is under way.
     public func onClosed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
         onEvent(DatePickerContract.closed, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClosed(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onClosed(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
     }
 }
 

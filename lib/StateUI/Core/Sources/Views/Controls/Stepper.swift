@@ -97,12 +97,6 @@ public struct Stepper: ElementView, StepperProperties, FocusElement {
     public func onValueChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<Double>) -> Self {
         onEvent(StepperContract.valueChanged, gate: gate, handler)
     }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onValueChanged(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
-        fatalError("unavailable")
-    }
 }
 
 extension Stepper {

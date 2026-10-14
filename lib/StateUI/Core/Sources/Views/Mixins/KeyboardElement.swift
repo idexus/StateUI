@@ -27,12 +27,6 @@ extension KeyboardElement {
         taking(keys, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onKeyPressed(.escape, gate: closing) { key in … } with @State var closing = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onKeyPressed(_ keys: Key..., perform handler: @escaping ValueEventHandler<Key>) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// The element taking `keys` beside those it takes already, `handler` hearing those alone.
     private func taking(_ keys: [Key], gate: some Gate, _ handler: @escaping ValueEventHandler<Key>) -> Modified {
         // One `modified`: chaining would return `Modified.Modified`.

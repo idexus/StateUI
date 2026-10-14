@@ -34,7 +34,7 @@ public struct MenuItem: Element, MenuItemElement {
     public func isOn(_ state: Binding<Bool>) -> Self {
         modified {
             $0.props[MenuItemContract.isOn.token] = .bool(state.wrappedValue)
-            $0.addHandler(MenuItemContract.toggled.token, gate: .none) {
+            $0.addHandler(MenuItemContract.toggled.token) {
                 if let turned = EventBuffer.current.value()?.bool { state.wrappedValue = turned }
             }
         }

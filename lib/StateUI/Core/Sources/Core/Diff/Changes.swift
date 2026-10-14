@@ -80,15 +80,6 @@ extension ModifiableElement {
         modified { $0.watches.append(Watch(value, gate: gate) { _, _ in try await handler() }) }
     }
 
-    /// A handler that awaits says what a change does while it runs.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onChanged(value, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onChanged<Value: Equatable>(
-        _ value: Value,
-        _ handler: @escaping EventHandler
-    ) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// The same, handed the value it was and the value it now is.
     ///
     ///     Text(status)
@@ -131,14 +122,5 @@ extension ModifiableElement {
                 try await handler(old, new)
             })
         }
-    }
-
-    /// A handler that awaits says what a change does while it runs.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onChanged(value, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onChanged<Value: Equatable>(
-        _ value: Value,
-        _ handler: @escaping ValueEventHandler<Value, Value>
-    ) -> Modified {
-        fatalError("unavailable")
     }
 }

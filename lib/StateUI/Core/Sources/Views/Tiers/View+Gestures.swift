@@ -23,12 +23,6 @@ extension View {
         onEvent(ViewContract.tapped, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onTapped(_ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// The same, for a double tap or more: `count` taps in a row.
     ///
     ///     Text("Reset").onTapped(count: 2) { taps = 0 }
@@ -44,12 +38,6 @@ extension View {
             $0.write(ViewContract.tapCount, count)
             $0.addHandler(ViewContract.tapped.token, gate: gate, handler)
         }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onTapped(count: count, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onTapped(count: Int, _ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
     }
 
     // MARK: Swipe
@@ -92,16 +80,6 @@ extension View {
                 }
             }
         }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSwiped(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onSwiped(
-        direction: SwipeDirection = .all,
-        threshold: Double? = nil,
-        _ handler: @escaping ValueEventHandler<SwipeDirection>
-    ) -> Modified {
-        fatalError("unavailable")
     }
 
     // MARK: Pan
@@ -176,15 +154,6 @@ extension View {
         }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPanUpdated(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPanUpdated(
-        touchCount: Int? = nil,
-        _ handler: @escaping ValueEventHandler<PanUpdate>
-    ) -> Modified {
-        fatalError("unavailable")
-    }
-
     // MARK: Pinch
 
     /// Runs as two fingers move apart or together.
@@ -203,12 +172,6 @@ extension View {
         }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPinchUpdated(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPinchUpdated(_ handler: @escaping ValueEventHandler<PinchUpdate>) -> Modified {
-        fatalError("unavailable")
-    }
-
     // MARK: Pointer
 
     /// Runs when a pointer enters the view.
@@ -225,12 +188,6 @@ extension View {
         onEvent(ViewContract.pointerEntered, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerEntered(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPointerEntered(_ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// Runs when a pointer leaves the view - the other half of a hover.
     public func onPointerExited(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(ViewContract.pointerExited, handler)
@@ -240,12 +197,6 @@ extension View {
     /// again while a run is under way.
     public func onPointerExited(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ViewContract.pointerExited, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerExited(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPointerExited(_ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
     }
 
     /// Runs as the pointer moves over the view, with where it is in the view's
@@ -265,12 +216,6 @@ extension View {
         }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerMoved(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPointerMoved(_ handler: @escaping ValueEventHandler<Point>) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// Runs when a pointer button goes down over the view, with where it went
     /// down in the view's own coordinates.
     public func onPointerPressed(_ handler: @escaping @MainActor (Point) throws -> Void) -> Modified {
@@ -287,12 +232,6 @@ extension View {
         }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerPressed(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPointerPressed(_ handler: @escaping ValueEventHandler<Point>) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// Runs when the pointer button comes back up, with where it came up.
     public func onPointerReleased(_ handler: @escaping @MainActor (Point) throws -> Void) -> Modified {
         onPointerReleased(gate: .none) { try handler($0) }
@@ -306,12 +245,6 @@ extension View {
                 try await handler(point)
             }
         }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPointerReleased(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPointerReleased(_ handler: @escaping ValueEventHandler<Point>) -> Modified {
-        fatalError("unavailable")
     }
 
     // MARK: Drag and drop
@@ -334,7 +267,7 @@ extension View {
             $0.write(ViewContract.canDrag, canDrag)
 
             if let onDragStarting = onDragStarting {
-                $0.addHandler(ViewContract.dragStarting.token, gate: .none) { try onDragStarting() }
+                $0.addHandler(ViewContract.dragStarting.token, onDragStarting)
             }
         }
     }
@@ -348,12 +281,6 @@ extension View {
     /// again while a run is under way.
     public func onDragEnded(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ViewContract.dragEnded, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDragEnded(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onDragEnded(_ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
     }
 
     /// Accepts what is dropped on the view, with the text it carried.
@@ -376,12 +303,6 @@ extension View {
                 }
             }
         }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDrop(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onDrop(_ handler: @escaping ValueEventHandler<String>) -> Modified {
-        fatalError("unavailable")
     }
 
     /// Accepts files the user drops on the view from the system - of
@@ -416,12 +337,6 @@ extension View {
         }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDrop(files: types, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onDrop(files types: [FileType] = [], _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// Runs while a drag is over the view, before it is let go.
     public func onDragOver(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(ViewContract.dragOver, handler)
@@ -431,12 +346,6 @@ extension View {
     /// again while a run is under way.
     public func onDragOver(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ViewContract.dragOver, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDragOver(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onDragOver(_ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
     }
 
     /// Runs when a drag leaves the view without being let go - the mirror of
@@ -449,11 +358,5 @@ extension View {
     /// again while a run is under way.
     public func onDragLeave(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ViewContract.dragLeave, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDragLeave(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onDragLeave(_ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
     }
 }

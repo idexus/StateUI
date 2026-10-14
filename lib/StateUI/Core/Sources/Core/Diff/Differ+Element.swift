@@ -442,7 +442,7 @@ extension Differ {
         // Design: docs/design/core/identity-and-diffing.md#created-and-destroying
         if previous == nil {
             for (index, created) in node.created.enumerated() {
-                fired.append(Fired(run: created, gate: .none, owner: kept.owner("created \(index)")))
+                fired.append(Fired(run: created, owner: kept.owner("created \(index)")))
             }
 
             // A node type the host does not realize is said once, with near misses.

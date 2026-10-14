@@ -102,12 +102,6 @@ extension View {
         pageSays { $0.modified { $0.addHandler(PageContract.appearing, gate: gate, handler) } }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onAppearing(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onAppearing(_ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// Runs as the page leaves the screen - covered, left, or another tab chosen.
     public func onDisappearing(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onDisappearing(gate: .none) { try handler() }
@@ -117,12 +111,6 @@ extension View {
     /// again while a run is under way.
     public func onDisappearing(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageContract.disappearing, gate: gate, handler) } }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDisappearing(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onDisappearing(_ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
     }
 
     /// Runs once navigation has arrived at the page. Only navigation says it; `onAppearing` answers any showing.
@@ -136,12 +124,6 @@ extension View {
         pageSays { $0.modified { $0.addHandler(PageContract.navigatedTo, gate: gate, handler) } }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigatedTo(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onNavigatedTo(_ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// Runs as navigation is about to leave the page, while it is still on screen.
     public func onNavigatingFrom(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onNavigatingFrom(gate: .none) { try handler() }
@@ -153,12 +135,6 @@ extension View {
         pageSays { $0.modified { $0.addHandler(PageContract.navigatingFrom, gate: gate, handler) } }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigatingFrom(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onNavigatingFrom(_ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// Runs once navigation has left the page, its destination on screen.
     public func onNavigatedFrom(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onNavigatedFrom(gate: .none) { try handler() }
@@ -168,11 +144,5 @@ extension View {
     /// again while a run is under way.
     public func onNavigatedFrom(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageContract.navigatedFrom, gate: gate, handler) } }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onNavigatedFrom(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onNavigatedFrom(_ handler: @escaping EventHandler) -> Modified {
-        fatalError("unavailable")
     }
 }

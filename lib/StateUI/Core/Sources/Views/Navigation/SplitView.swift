@@ -77,7 +77,7 @@ public struct SplitView: ElementView, Arrangement, BarElement, AutomationElement
         node.write(SplitViewContract.showsSidebar, showsSidebar.wrappedValue)
 
         // The user's ways in and out, once finished, written only when moved.
-        node.addHandler(SplitViewContract.showsSidebarChanged.token, gate: .none) {
+        node.addHandler(SplitViewContract.showsSidebarChanged.token) {
             guard let visible = EventBuffer.current.value()?.bool,
                   visible != showsSidebar.wrappedValue else { return }
 

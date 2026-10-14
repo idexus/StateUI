@@ -113,15 +113,6 @@ public enum HostEvents {
         }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: HostEvents.on(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public static func on<Owner: ApplicationTier>(
-        _ event: ElementEvent<Owner, Void>,
-        _ handler: @escaping EventHandler
-    ) -> HostEventSubscription {
-        fatalError("unavailable")
-    }
-
     /// Subscribes a handler to an event of the application's that carries one
     /// value, handed over as the type its contract declares.
     ///
@@ -152,15 +143,6 @@ public enum HostEvents {
 
             try await handler(value)
         }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: HostEvents.on(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public static func on<Owner: ApplicationTier, Value: HostRepresentable>(
-        _ event: ElementEvent<Owner, Value>,
-        _ handler: @escaping ValueEventHandler<Value>
-    ) -> HostEventSubscription {
-        fatalError("unavailable")
     }
 
     /// Subscribes a handler to an event of the application's that carries two
@@ -196,15 +178,6 @@ public enum HostEvents {
         }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: HostEvents.on(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public static func on<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
-        _ event: ElementEvent<Owner, (First, Second)>,
-        _ handler: @escaping ValueEventHandler<First, Second>
-    ) -> HostEventSubscription {
-        fatalError("unavailable")
-    }
-
     /// Subscribes a handler to an event of the application's that carries
     /// three values, handed over as the types its contract declares, in its
     /// order.
@@ -237,17 +210,6 @@ public enum HostEvents {
 
             try await handler(first, second, third)
         }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: HostEvents.on(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public static func on<
-        Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
-    >(
-        _ event: ElementEvent<Owner, (First, Second, Third)>,
-        _ handler: @escaping ValueEventHandler<First, Second, Third>
-    ) -> HostEventSubscription {
-        fatalError("unavailable")
     }
 
     /// Takes one subscription out - `HostEventSubscription.cancel`'s half.

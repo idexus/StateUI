@@ -109,12 +109,6 @@ public struct Map: ElementView, MapProperties {
     public func onMapClicked(gate: some Gate, _ handler: @escaping ValueEventHandler<Location>) -> Self {
         onEvent(MapContract.mapClicked, gate: gate, handler)
     }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onMapClicked(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onMapClicked(_ handler: @escaping ValueEventHandler<Location>) -> Self {
-        fatalError("unavailable")
-    }
 }
 
 /// A marker on the map.
@@ -193,12 +187,6 @@ public struct Marker: Element {
         return copy
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSelected(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onSelected(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
-    }
-
     /// Fires when the callout above the marker - its details - is tapped: the
     /// place a navigation usually goes.
     public func onDetailsClicked(_ handler: @escaping @MainActor () throws -> Void) -> Self {
@@ -211,12 +199,6 @@ public struct Marker: Element {
         var copy = self
         copy.node.addHandler(MarkerContract.detailsClicked, gate: gate, handler)
         return copy
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onDetailsClicked(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onDetailsClicked(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
     }
 }
 

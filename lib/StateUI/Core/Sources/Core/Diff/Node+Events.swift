@@ -38,15 +38,6 @@ extension Node {
         }
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: node.addHandler(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public mutating func addHandler<Owner: Contract>(
-        _ event: ElementEvent<Owner, Void>,
-        _ handler: @escaping EventHandler
-    ) {
-        fatalError("unavailable")
-    }
-
     /// Hears one of this node's events its value handed over as the type its contract declares, beside any handler already there - what an element wearing no
     /// tier hears its events through; a view hears through `onEvent`. The handler runs whole inside the event.
     ///
@@ -79,15 +70,6 @@ extension Node {
 
             try await handler(value)
         }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: node.addHandler(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public mutating func addHandler<Owner: Contract, Value: HostRepresentable>(
-        _ event: ElementEvent<Owner, Value>,
-        _ handler: @escaping ValueEventHandler<Value>
-    ) {
-        fatalError("unavailable")
     }
 
     /// Hears one of this node's events that carries two values, handed over as the types its contract declares in its order, beside any handler already there - what an element wearing no
@@ -124,15 +106,6 @@ extension Node {
 
             try await handler(first, second)
         }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: node.addHandler(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public mutating func addHandler<Owner: Contract, First: HostRepresentable, Second: HostRepresentable>(
-        _ event: ElementEvent<Owner, (First, Second)>,
-        _ handler: @escaping ValueEventHandler<First, Second>
-    ) {
-        fatalError("unavailable")
     }
 
     /// Hears one of this node's events that carries three values, handed over as the types its contract declares in its order, beside any handler already there - what an element wearing no
@@ -173,16 +146,5 @@ extension Node {
 
             try await handler(first, second, third)
         }
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: node.addHandler(event, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public mutating func addHandler<
-        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
-    >(
-        _ event: ElementEvent<Owner, (First, Second, Third)>,
-        _ handler: @escaping ValueEventHandler<First, Second, Third>
-    ) {
-        fatalError("unavailable")
     }
 }

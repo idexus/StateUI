@@ -93,12 +93,6 @@ public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
         onEvent(SliderContract.valueChanged, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onValueChanged(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
-        fatalError("unavailable")
-    }
-
     /// Runs when the thumb is grabbed - the start of a drag whose every step
     /// is an `onValueChanged`.
     public func onPressed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
@@ -111,12 +105,6 @@ public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
         onEvent(SliderContract.pressed, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPressed(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPressed(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
-    }
-
     /// Runs when the thumb is let go - where work too heavy for every step of
     /// the drag belongs.
     public func onReleased(_ handler: @escaping @MainActor () throws -> Void) -> Self {
@@ -127,12 +115,6 @@ public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
     /// again while a run is under way.
     public func onReleased(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
         onEvent(SliderContract.released, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onReleased(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onReleased(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
     }
 }
 

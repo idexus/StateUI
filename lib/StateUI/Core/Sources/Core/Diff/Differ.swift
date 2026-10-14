@@ -172,7 +172,7 @@ final class Differ {
     /// The handlers the last walk found - what left first, then the rest - taken so
     /// each runs once.
     func takeFired() -> [Fired] {
-        let taken = leaving.map { Fired(run: $0, gate: .none, owner: nil) } + fired
+        let taken = leaving.map { Fired(run: $0, owner: nil) } + fired
         leaving.removeAll(keepingCapacity: true)
         fired.removeAll(keepingCapacity: true)
         return taken

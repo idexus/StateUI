@@ -78,15 +78,6 @@ extension VisualElement where Self: StyleTarget {
         listening(states, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onVisualStateChanged(states, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onVisualStateChanged(
-        _ states: VisualState<Self>...,
-        perform handler: @escaping ValueEventHandler<VisualState<Self>>
-    ) -> Modified {
-        fatalError("unavailable")
-    }
-
     /// Declares `states` and hears the control entering them.
     private func listening(
         _ states: [VisualState<Self>],

@@ -71,7 +71,7 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
         element.node.producer = { source.children(realized: realized) }
         element.node.aim = aimed?.box
 
-        element.node.addHandler(ItemsViewContract.realizedChanged.token, gate: .none) {
+        element.node.addHandler(ItemsViewContract.realizedChanged.token) {
             guard let identities = MemberValues.carried(
                 EventBuffer.current, by: ItemsViewContract.realizedChanged.name, as: [String].self),
                 identities != held.wrappedValue
@@ -83,7 +83,7 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
         if let choice {
             element.node.write(ItemsViewContract.selectionMode, choice.mode)
             element.node.write(ItemsViewContract.selectedItems, source.identities(of: choice.chosen))
-            element.node.addHandler(ItemsViewContract.selectedItemsChanged.token, gate: .none) {
+            element.node.addHandler(ItemsViewContract.selectedItemsChanged.token) {
                 guard let identities = MemberValues.carried(
                     EventBuffer.current, by: ItemsViewContract.selectedItemsChanged.name, as: [String].self)
                 else { return }
@@ -170,12 +170,6 @@ extension ItemsView {
         return copy
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onItemActivated(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onItemActivated(_ handler: @escaping ValueEventHandler<ID>) -> Self {
-        fatalError("unavailable")
-    }
-
     /// Hears the user scroll within `within` items of the end - where more
     /// items are loaded.
     public func onEndReached(within: Int = 0, _ handler: @escaping @MainActor () throws -> Void) -> Self {
@@ -194,12 +188,6 @@ extension ItemsView {
         var copy = self
         copy.endReached = (within: max(within, 0), gate: gate, handler: handler)
         return copy
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onEndReached(within: n, gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onEndReached(within: Int = 0, _ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
     }
 
     /// A view standing before every item, scrolled with them.

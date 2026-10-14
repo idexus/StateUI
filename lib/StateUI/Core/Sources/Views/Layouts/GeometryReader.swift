@@ -67,15 +67,6 @@ extension View {
             try await handler(frame)
         }
     }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onFrameChanged(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onFrameChanged(
-        in space: CoordinateSpace = .parent,
-        _ handler: @escaping ValueEventHandler<Rect>
-    ) -> Modified {
-        fatalError("unavailable")
-    }
 }
 
 /// What a frame handler last handed over, remembered across reports; a

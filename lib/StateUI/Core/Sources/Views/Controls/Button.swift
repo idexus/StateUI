@@ -162,12 +162,6 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
         onEvent(ButtonContract.clicked, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClicked(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onClicked(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
-    }
-
     /// Runs the moment a press begins, before it ends.
     public func onPressed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         onEvent(ButtonContract.pressed, handler)
@@ -177,12 +171,6 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     /// again while a run is under way.
     public func onPressed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
         onEvent(ButtonContract.pressed, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onPressed(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onPressed(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
     }
 
     /// Runs when the press ends, wherever the pointer ends up - unlike
@@ -195,12 +183,6 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     /// again while a run is under way.
     public func onReleased(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
         onEvent(ButtonContract.released, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onReleased(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onReleased(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
     }
 }
 

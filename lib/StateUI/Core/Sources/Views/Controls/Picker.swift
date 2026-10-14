@@ -105,12 +105,6 @@ public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentE
         onEvent(PickerContract.opened, gate: gate, handler)
     }
 
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onOpened(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onOpened(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
-    }
-
     /// The user has closed it - by a choice, a click outside or the platform's
     /// own dismissal.
     public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
@@ -121,11 +115,5 @@ public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentE
     /// again while a run is under way.
     public func onClosed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
         onEvent(PickerContract.closed, gate: gate, handler)
-    }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onClosed(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onClosed(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
     }
 }

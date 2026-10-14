@@ -102,12 +102,6 @@ public struct TextField: TextInput, TextualElement, FontElement, TextAlignmentEl
     public func onSubmitted(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
         onEvent(TextFieldContract.submitted, gate: gate, handler)
     }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onSubmitted(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onSubmitted(_ handler: @escaping EventHandler) -> Self {
-        fatalError("unavailable")
-    }
 }
 
 extension TextField {

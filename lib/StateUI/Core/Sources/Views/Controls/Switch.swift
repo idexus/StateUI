@@ -74,10 +74,4 @@ public struct Switch: ElementView, TintElement, SwitchProperties, FocusElement {
     public func onToggled(gate: some Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Self {
         onEvent(SwitchContract.toggled, gate: gate, handler)
     }
-
-    /// A handler that awaits passes through a gate.
-    @available(*, unavailable, message: "a handler that awaits passes through a gate: .onToggled(gate: saving) { … } with @State var saving = Gatekeeper(.ignoreWhileRunning) - or gate: .none")
-    public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
-        fatalError("unavailable")
-    }
 }

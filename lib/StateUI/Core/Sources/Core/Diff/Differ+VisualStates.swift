@@ -17,15 +17,15 @@ extension Differ {
 
         // Only what a declared state follows is heard.
         if names.contains("Pressed") {
-            node.addHandler(.pressed, gate: .none) { input.hold(true) }
-            node.addHandler(.released, gate: .none) { input.hold(false) }
+            node.addHandler(.pressed) { input.hold(true) }
+            node.addHandler(.released) { input.hold(false) }
         }
         if names.contains("PointerOver") {
-            node.addHandler(.pointerEntered, gate: .none) { input.hover(true) }
-            node.addHandler(.pointerExited, gate: .none) { input.hover(false) }
+            node.addHandler(.pointerEntered) { input.hover(true) }
+            node.addHandler(.pointerExited) { input.hover(false) }
         }
         if names.contains("Focused") {
-            node.addHandler(.isFocusedChanged, gate: .none) {
+            node.addHandler(.isFocusedChanged) {
                 if let focused = EventBuffer.current.first?.bool { input.focus(focused) }
             }
         }

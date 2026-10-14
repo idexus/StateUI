@@ -209,7 +209,7 @@ public typealias EventHandler = @MainActor () async throws -> Void
 /// the event declares them. An event with nothing to say takes an `EventHandler`.
 ///
 ///     TextField("").onTextChanged(gate: .cancelPrevious) { text in try await model.search(text) }
-///     let heard = HostEvents.on(NotesContract.batteryChanged, gate: .none) { level, charging in … }
+///     let heard = HostEvents.on(NotesContract.batteryChanged, gate: .cancelPrevious) { level, _ in try await log(level) }
 public typealias ValueEventHandler<each Value> = @MainActor (repeat each Value) async throws -> Void
 
 /// One element of the UI tree: its type, properties, children and handlers.
@@ -346,6 +346,11 @@ public struct Node {
         events[event, default: []].append(Handler(run: handler, gate: gate))
     }
 
+    /// The same, for a handler that does not await: it passes through no gate.
+    mutating func addHandler(_ event: Event, _ handler: @escaping @MainActor () throws -> Void) {
+        events[event, default: []].append(Handler(run: { try handler() }))
+    }
+
     /// Takes `handlers` for `event` after any it already has - what is written on a composed view, moved onto
     /// its body.
     mutating func addHandlers(_ event: Event, _ handlers: [Handler]) {
@@ -365,7 +370,7 @@ public struct Node {
         self.id = id
         self.props = props
         self.children = children
-        self.events = events.mapValues { [Handler(run: $0, gate: .none)] }
+        self.events = events.mapValues { [Handler(run: $0)] }
     }
 
     /// A node of an element's own type: how every element's view begins.
