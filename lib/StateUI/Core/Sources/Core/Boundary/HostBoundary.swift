@@ -329,6 +329,13 @@
         HostRealizations.current = realization
     }
 
+    /// Tells the core what the host judges it realizes, member by member - what `Device.honours` answers from.
+    ///
+    /// - Parameter register: the host's register, its runtime's realization behind its own records.
+    public static func setRegister(_ register: HostRegister?) {
+        HostRealizations.register = register
+    }
+
     /// Whether this host makes a view for an element.
     ///
     /// - Parameter contract: the element's contract.

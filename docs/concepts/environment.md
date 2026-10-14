@@ -200,6 +200,35 @@ room a view is given - `.onFrameChanged` and `GeometryReader`
 screen itself, handling zero density before the first host report. Use `app.info.colorScheme` only when logic itself branches on the
 theme; themed colors resolve through the style and color system directly.
 
+### What the platform honours
+
+A platform may leave a member out where its toolkit cannot honour it - a
+picker's list opened by the program, a tooltip on a phone. Writing such a
+member changes nothing, so a view asks first and leaves out what asks for it:
+
+```swift
+struct SizeChooser: View {
+    @Environment(\.device) private var device
+    @State private var size = 1
+    @State private var showing = false
+
+    var body: some View {
+        VStack {
+            Picker([1, 2, 3], selection: $size) { "\($0)" }
+                .isOpen(showing)
+                .onClosed { showing = false }
+            if device.honours(PickerContract.isOpen) {
+                Button("Open the list").onClicked { showing = true }
+            }
+        }
+    }
+}
+```
+
+The answer is the host's own judgement, the one the
+[platform contract](../platform-contract.md) shows: in full or in part is
+honoured, never or not realized is not.
+
 `device.connectivity.networkAccess == .internet` means ordinary internet access.
 `.constrainedInternet` describes a route with a portal or another constraint,
 and `connectionProfiles` may contain more than one active transport.

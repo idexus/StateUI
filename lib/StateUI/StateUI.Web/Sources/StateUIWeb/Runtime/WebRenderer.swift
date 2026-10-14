@@ -87,6 +87,7 @@ final class WebRenderer {
         WebRelay.listen(WebRelay.body, "key", keys)
         runtime.start(
             realizing: WebRegistrations.registry.realization, unrealized: WebRealization.unmade,
+            register: WebRealization.register,
             environment: {
                 WebEnvironment.report(to: core, applicationName: applicationName)
                 pageListeners.append(WebEnvironment.watch { [weak self] in

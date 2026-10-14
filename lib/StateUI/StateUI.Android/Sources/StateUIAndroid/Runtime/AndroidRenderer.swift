@@ -142,6 +142,7 @@ final class AndroidRenderer {
     func start(restoringKept: Bool = false, restoringScenes: Bool = true, turns: () -> Void = {}) {
         runtime.start(
             realizing: AndroidRegistrations.registry.realization, unrealized: AndroidRealization.unmade,
+            register: AndroidRealization.register,
             environment: { AndroidEnvironment.report(to: runtime.core, activity: context.reference) },
             kept: { if restoringKept { AndroidPersistence.restore(into: runtime.core, context: context.reference) } },
             windows: {

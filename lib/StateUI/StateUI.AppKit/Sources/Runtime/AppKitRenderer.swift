@@ -84,6 +84,7 @@ final class AppKitRenderer {
         started = true
         runtime.start(
             realizing: AppKitRegistrations.registry.realization, unrealized: AppKitRealization.unrealized,
+            register: AppKitRealization.register,
             environment: {
                 configureEnvironment()
                 watching()

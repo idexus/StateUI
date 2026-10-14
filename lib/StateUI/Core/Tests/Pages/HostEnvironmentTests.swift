@@ -305,4 +305,40 @@ final class HostEnvironmentTests: XCTestCase {
         HostBoundary.setApplicationPhase(.inactive)
         XCTAssertEqual(StandardEnvironment.application.phase, .inactive)
     }
+
+    /// The device says whether the platform honours a member: what its host realizes, and nothing it leaves out.
+    func testTheDeviceSaysWhatThePlatformHonours() {
+        HostBoundary.setRealization(HostRealization(
+            elements: ["Picker"],
+            members: [HostRealizedMember(element: "Picker", owner: "Picker", member: "isOpen")]))
+        defer { HostBoundary.setRealization(HostRealization()) }
+        let device = Device()
+
+        XCTAssertTrue(device.honours(PickerContract.isOpen))
+        XCTAssertFalse(device.honours(PickerContract.placeholder), "a member its host leaves out")
+        XCTAssertFalse(device.honours(PickerContract.opened), "an event its host raises not")
+    }
+
+    /// Where the host hands its register, the register answers - what the platform contract shows: a member the
+    /// host judges its family never has is not honoured, though its runtime registered it.
+    func testTheDeviceAnswersFromTheHostsRegister() {
+        HostBoundary.setRealization(HostRealization(
+            elements: ["Picker"],
+            members: [HostRealizedMember(element: "Picker", owner: "VisualElement", member: "tooltip")]))
+        HostBoundary.setRegister(HostRegister(
+            records: [
+                HostRecord(owner: "VisualElement", member: "tooltip", judgement: .notPlanned(reason: "no pointer")),
+                HostRecord(owner: "Picker", member: "isOpen", judgement: .partial(missing: "its closing")),
+            ],
+            unrealized: [], viewless: []))
+        defer {
+            HostBoundary.setRegister(nil)
+            HostBoundary.setRealization(HostRealization())
+        }
+        let device = Device()
+
+        XCTAssertFalse(device.honours(VisualElementContract.tooltip), "never on this family")
+        XCTAssertTrue(device.honours(PickerContract.isOpen), "in part")
+        XCTAssertFalse(device.honours(PickerContract.placeholder), "said nowhere")
+    }
 }

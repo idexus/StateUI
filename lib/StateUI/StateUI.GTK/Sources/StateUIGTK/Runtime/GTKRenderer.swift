@@ -128,6 +128,7 @@ final class GTKRenderer {
     func start(turns: () -> Void = {}) {
         runtime.start(
             realizing: GTKRegistrations.registry.realization, unrealized: GTKRealization.unmade,
+            register: GTKRealization.register,
             environment: {
                 GTKEnvironment.report(to: runtime.core, applicationID: applicationID)
                 GTKEnvironment.watch { [weak self] in self?.environmentChanged() }

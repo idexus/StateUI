@@ -7,6 +7,17 @@ enum HostRealizations {
     /// What the host said, replacing what it said before - once, at start-up.
     static var current = HostRealization()
 
+    /// What the host judges it realizes, member by member - what the platform contract shows; nil before it says.
+    static var register: HostRegister?
+
+    /// Whether the host realizes `member` of the contract `owner` - in full or in part - by its register, else by
+    /// what it said it realizes.
+    /// Design: docs/design/core/contracts.md#what-a-platform-honours
+    static func honours(_ member: String, of owner: String) -> Bool {
+        if let register { return register.realizes(member, on: owner, from: owner) }
+        return current.members.contains { $0.owner == owner && $0.member == member }
+    }
+
     /// What to say about a node type described for the first time: nothing where the
     /// host realizes it or has said nothing, and otherwise that it does not, with the
     /// nearest realized names.

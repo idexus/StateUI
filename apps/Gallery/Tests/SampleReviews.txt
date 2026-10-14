@@ -74,9 +74,10 @@ OutlineSample.swift 7dc9511e8f22b755
 PacedStateSample.swift 1b621c51843cd65d
 PanSample.swift 72af32582df8741e
 PersistentStateSample.swift 438168678bcf08b9
-PickerSample.swift 75d697fc2eda9e66
+PickerSample.swift e99db030448ba415
 PinchSample.swift 45b58de2f0cb046d
 PlacedSample.swift 43e809547b7b7f3b
+PlatformSupportSample.swift 6f5a186c20c71ebc
 PointerSample.swift 3306b3b76379bc70
 PollSample.swift d8a149d4da3bffd8
 PositionIndicatorSample.swift 8d01bf0d34da3ca4

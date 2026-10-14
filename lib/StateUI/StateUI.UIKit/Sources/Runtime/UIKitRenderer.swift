@@ -102,6 +102,7 @@ final class UIKitRenderer {
         started = true
         runtime.start(
             realizing: UIKitRegistrations.registry.realization, unrealized: UIKitRealization.unrealized,
+            register: UIKitRealization.register,
             environment: {
                 reportEnvironment()
                 environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })

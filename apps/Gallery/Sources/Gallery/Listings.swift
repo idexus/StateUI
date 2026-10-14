@@ -6551,6 +6551,9 @@ enum Listings {
         @State private var opened = 0
         @State private var showing = false
 
+        /// The device, by its name: whether its platform opens a list at the program's asking.
+        @Environment(\.device) private var device
+
         var body: some View {
             VStack {
                 // The choice and the count are read here, so a pick builds this
@@ -6566,9 +6569,12 @@ enum Listings {
                     .onOpened { opened += 1; showing = true }
                     .onClosed { showing = false }
 
-                Button("Open the list")
-                    .onClicked { showing = true }
-                    .horizontalAlignment(.center)
+                // Only where the platform opens a list at the program's asking.
+                if device.honours(PickerContract.isOpen) {
+                    Button("Open the list")
+                        .onClicked { showing = true }
+                        .horizontalAlignment(.center)
+                }
 
                 // The same choice, offered as segments and as radio buttons.
                 Picker(Size.allCases, selection: $size) { "\($0)".titled }
@@ -6944,6 +6950,31 @@ enum Listings {
                 room.height / 2 + up - Self.height * fit / 2,
                 Self.width * fit,
                 Self.height * fit)
+        }
+        """#,
+        "PlatformSupportSample": #"""
+        // Sources/Samples/Environment/PlatformSupportSample.swift
+        /// The device, by its name: what its platform honours is its host's.
+        @Environment(\.device) var device
+
+        var body: some View {
+            VStack {
+                supported("Opening a picker's list", device.honours(PickerContract.isOpen))
+                supported("Hearing a picker's list open", device.honours(PickerContract.opened))
+                supported("A tooltip", device.honours(VisualElementContract.tooltip))
+                supported("A picture beside a menu's entry", device.honours(MenuItemElementContract.icon))
+            }
+        }
+
+        /// One member, and whether this platform honours it.
+        private func supported(_ words: String, _ honoured: Bool) -> some View {
+            HStack {
+                Text(words)
+
+                Spacer()
+
+                Text(honoured ? "honoured" : "not here")
+            }
         }
         """#,
         "PointerSample": #"""

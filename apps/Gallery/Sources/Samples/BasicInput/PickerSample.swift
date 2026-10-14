@@ -13,6 +13,9 @@ struct PickerSample: SampleContent, ExampleContent {
     @State private var size: Size? = .medium
     @State private var opened = 0
     @State private var showing = false
+
+    /// The device, by its name: whether its platform opens a list at the program's asking.
+    @Environment(\.device) private var device
     // listing: end
 
     static let id = "picker"
@@ -37,9 +40,12 @@ struct PickerSample: SampleContent, ExampleContent {
                 .onOpened { opened += 1; showing = true }
                 .onClosed { showing = false }
 
-            Button("Open the list")
-                .onClicked { showing = true }
-                .horizontalAlignment(.center)
+            // Only where the platform opens a list at the program's asking.
+            if device.honours(PickerContract.isOpen) {
+                Button("Open the list")
+                    .onClicked { showing = true }
+                    .horizontalAlignment(.center)
+            }
 
             // The same choice, offered as segments and as radio buttons.
             Picker(Size.allCases, selection: $size) { "\($0)".titled }
