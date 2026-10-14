@@ -29,7 +29,7 @@ extension WebDriver {
         case (.isEnabled, _):
             return try (!WebBrowser.truth("""
                 e.matches(":disabled") || e.getAttribute("aria-disabled") === "true" \
-                || (e.getAttribute("role") === "group" && !!e.querySelector(":disabled"))
+                || (e.getAttribute("role") === "group" && !e.querySelector("input:enabled, button:enabled"))
                 """, on: e)).propValue
         case (.layoutDirection, _):
             let rightToLeft = try WebBrowser.truth("getComputedStyle(e).direction === 'rtl'", on: e)
