@@ -74,7 +74,7 @@ final class AndroidImageView: AndroidView {
     private func show(at shown: (width: Int32, height: Int32)) {
         guard let picture, pictureSize.width > 0, shown.width > 0, shown.height > 0 else { return }
 
-        let needed = aspect == .center ? 1 : AndroidPictures.sample(size: pictureSize, shown: shown)
+        let needed = aspect == .center ? 1 : AndroidPictures.sample(picture, size: pictureSize, shown: shown)
         guard sample == 0 || needed < sample else { return }
 
         let bitmap = AndroidPictures.take(picture, sample: needed)

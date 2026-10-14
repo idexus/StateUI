@@ -42,6 +42,16 @@ public final class TestPictures {
         return Math.round(points * context.getResources().getDisplayMetrics().density);
     }
 
+    /** A square `side` pixels across, one colour, as a PNG's bytes. */
+    public static byte[] square(int side) {
+        Bitmap drawn = Bitmap.createBitmap(side, side, Bitmap.Config.ARGB_8888);
+        drawn.eraseColor(Color.BLUE);
+        java.io.ByteArrayOutputStream bytes = new java.io.ByteArrayOutputStream();
+        drawn.compress(Bitmap.CompressFormat.PNG, 100, bytes);
+        drawn.recycle();
+        return bytes.toByteArray();
+    }
+
     /** The image view's picture drawn alone at its own size: its most opaque pixel, as ARGB; 0 for none. */
     public static int imageInk(ImageView view) {
         return ink(view.getDrawable());

@@ -12,6 +12,7 @@ final class AndroidImageViewTests: XCTestCase {
             ("testAPictureIsMeasuredAtItsOwnSizeInPoints", testAPictureIsMeasuredAtItsOwnSizeInPoints),
             ("testAPictureFillsOrFitsItsRoomAsItsAspectSays", testAPictureFillsOrFitsItsRoomAsItsAspectSays),
             ("testAPictureShownSmallIsReadAtFewerPixels", testAPictureShownSmallIsReadAtFewerPixels),
+            ("testAPictureShownSmallKeepsAsManyOfItsPixelsAsTheViewShows", testAPictureShownSmallKeepsAsManyOfItsPixelsAsTheViewShows),
             ("testAPictureNoViewShowsIsLetGo", testAPictureNoViewShowsIsLetGo),
             ("testEveryIconIsADrawableOfTheApplications", testEveryIconIsADrawableOfTheApplications),
             ("testAnIconIsDrawnInTheWordsColour", testAnIconIsDrawnInTheWordsColour),
@@ -76,6 +77,21 @@ final class AndroidImageViewTests: XCTestCase {
             XCTAssertTrue(held.map { $0 == (40, 20) } == true, "\(String(describing: held))")
             XCTAssertEqual(images[0].pixels(at: [(20, 10)]), [Self.slate])
             XCTAssertTrue(images[1].frame == (0, 20, 80, 40), "\(images[1].frame)")
+        }
+    }
+
+    /// Bytes are a picture at one pixel a point: 96 of them shown at 24 points, on a display of two pixels a point,
+    /// need 48 of their own pixels across - read at one in two, never thinner, then scaled to the display's density.
+    func testAPictureShownSmallKeepsAsManyOfItsPixelsAsTheViewShows() {
+        onMainActor {
+            let bytes = Java.frame { Java.bytesOf(Java.callStaticObject(TestJava.testPictures, TestJava.square, .int(96))) }
+            let host = AndroidRenderer.running {
+                Image(ImageSource(bytes: bytes)).width(24).height(24).horizontalAlignment(.start).verticalAlignment(.start)
+            }
+            host.layOut()
+
+            let held = host.views(AndroidImageView.self).first?.bitmapSize
+            XCTAssertTrue(held.map { $0 == (96, 96) } == true, "\(String(describing: held))")
         }
     }
 
@@ -158,4 +174,5 @@ extension TestJava {
     static let imageInk = Java.staticMethod(testPictures, "imageInk", "(Landroid/widget/ImageView;)I")
     static let iconInk = Java.staticMethod(testPictures, "iconInk", "(Landroid/widget/TextView;)I")
     static let aloneInk = Java.staticMethod(testPictures, "aloneInk", "(Landroid/widget/TextView;)I")
+    static let square = Java.staticMethod(testPictures, "square", "(I)[B")
 }

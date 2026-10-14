@@ -81,8 +81,12 @@ density: its drawable targets that density, where Android's would take the
 system's.
 
 A picture's pixels are read when its view is placed, at the fewest the view
-needs: one pixel in two, four, up to sixteen across and down, while that
-still covers the view, scaled to the display's density as it is read. A card
+needs: one pixel in two, four, up to sixteen across and down, while the
+picture's own pixels read still cover the view, then scaled to the display's
+density. Android thins a picture before it scales it, so a picture drawn at
+fewer pixels a point than the display - bytes, at one - is thinned by its own
+pixels, not by its size on the display: thinned by that, it would be read at
+fewer pixels than the view shows and drawn coarse. A card
 showing a picture three times smaller than it was drawn holds a quarter of
 its pixels, in memory and on the GPU alike. A StateUI layout measures a
 height it has not settled yet, so the size a view is placed at is the one

@@ -76,15 +76,30 @@ enum AndroidPictures {
         }
     }
 
-    /// How thinly a picture `size` pixels big can be read for a view `shown` pixels big: one pixel in the answer
-    /// across and down.
-    static func sample(size: (width: Int32, height: Int32), shown: (width: Int32, height: Int32)) -> Int32 {
-        guard size.width > 0, size.height > 0, shown.width > 0, shown.height > 0 else { return 1 }
+    /// How thinly `picture`, `size` pixels big at the display's density, can be read for a view `shown` pixels big:
+    /// one pixel in the answer across and down, while the picture's own pixels read still cover the view - a reading
+    /// thins them before it scales them to the display's density.
+    static func sample(
+        _ picture: HostPicture, size: (width: Int32, height: Int32), shown: (width: Int32, height: Int32)
+    ) -> Int32 {
+        let ratio = Double(density(of: picture)) / Double(displayDensity)
+        let own = (width: Int32(Double(size.width) * ratio), height: Int32(Double(size.height) * ratio))
+        guard own.width > 0, own.height > 0, shown.width > 0, shown.height > 0 else { return 1 }
         var sample: Int32 = 1
-        while sample < thinnest, size.width / (sample * 2) >= shown.width, size.height / (sample * 2) >= shown.height {
+        while sample < thinnest, own.width / (sample * 2) >= shown.width, own.height / (sample * 2) >= shown.height {
             sample *= 2
         }
         return sample
+    }
+
+    /// The density `picture` is drawn at, in pixels per inch: a file's, bytes' one pixel a point, an icon's the
+    /// display's.
+    private static func density(of picture: HostPicture) -> Int32 {
+        switch picture {
+        case .file(let name): asset(named: name)?.density ?? displayDensity
+        case .bytes: onePixelAPoint
+        case .icon: displayDensity
+        }
     }
 
     /// `picture` read at one pixel in `sample`, held for one more view until it lets go; nil for no picture.
