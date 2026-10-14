@@ -172,6 +172,17 @@ natural size is the room its neediest child needs at its natural size: a
 rectangle in points to its far corner, a fraction as much as leaves the child
 its natural size in its share, and anything else its size and margins.
 
+## A layout engine
+
+A layout engine has no size of its own: it takes the room its layout gives
+it, whatever its views need, as a shape does - its padding and nothing more.
+Its views stand where arithmetic of that room puts them, so a size taken
+from them, as a ZStack takes its children's, would feed the very room the
+arithmetic is worked out from: a scroller's content is the room plus how far
+the run reaches. Each host stands the engine on its ZStack and measures it
+by `ZStackArithmetic.size(of:padding:width:engine:)`; on the Web, CSS's size
+containment says the same.
+
 ## A placing run
 
 A state that places a ZStack's children - a placing run - stands each child

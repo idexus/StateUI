@@ -531,47 +531,6 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertEqual(node.props[.panYChannel], .number(Double(down.number)))
     }
 
-    // MARK: - The reader
-
-    /// A `ScrollReader` lays an empty scroller over what it holds, as long as
-    /// the room plus how far the run goes beyond it, reporting into the
-    /// state - and hearing the scroller come to rest.
-    func testAScrollReaderReportsIntoItsState() {
-        let across = State(wrappedValue: Point.zero)
-        let renders = Renders()
-
-        func tree() -> Node {
-            ScrollReader(across: 540) { Text("under") }
-                .scrollOffset(across.projectedValue)
-                .onScrollStopped {}
-                .id("reader")
-                .node
-        }
-
-        func find(_ patch: HostPatch, _ match: (HostPatch) -> Bool) -> HostPatch? {
-            if match(patch) { return patch }
-
-            for child in patch.children {
-                if let found = find(child, match) { return found }
-            }
-
-            return nil
-        }
-
-        // The scroller stands once the reader knows its room.
-        let first = renders.render(tree())
-        let room = find(first) { $0.events?[.frameChanged] != nil }?.events?[.frameChanged] ?? -1
-        renders.fire(room, with: [.numbers([0, 0, 300, 200, 0, 0, 0, 0])])
-        let patch = renders.renderFromScratch(tree())
-        let found = find(patch) { $0.type == .scrollView }
-
-        XCTAssertEqual(
-            found?.driven?[.scrollOffset],
-            HostStateBinding(state: across.number, mode: .inOut, kind: .property, laneKind: .number))
-        XCTAssertNotNil(found?.events?[.scrollStopped], "the scroller hears itself come to rest")
-        XCTAssertEqual(found?.props[.orientation]?.enumeration, ScrollOrientation.horizontal.rawValue)
-    }
-
     // MARK: - The law a driven value travels under
 
     /// `.inherited` on a driven value means THE ELEMENT'S own law, and this

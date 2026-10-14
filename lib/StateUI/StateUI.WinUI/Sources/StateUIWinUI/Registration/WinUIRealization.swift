@@ -180,7 +180,7 @@ enum WinUIRealization {
         .complete("Window", "windowValue"),
         .complete("Window", "x"),
         .complete("Window", "y"),
-    ]
+    ] + HostRecord.layoutEngine
 
     /// What a split view's pane leaves out of a material.
     static let paneHasNoGlass = "WinUI has no glass: a pane of glass shows the in-app acrylic at its fallback thickness."

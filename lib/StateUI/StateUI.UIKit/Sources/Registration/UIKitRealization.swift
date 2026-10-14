@@ -58,6 +58,7 @@ enum UIKitRealization {
         .notPlanned("TimePicker", "background", reason: "UIKit's time picker keeps no background colour: one written reads back as none."),
         .complete("VStack", "background"),
         .complete("ZStack", "background"),
+        .complete("LayoutEngine", "background"),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
         .partial("Menu", "isEnabled", missing: "UIKit holds no menu out of reach itself: each of its entries is."),
@@ -132,7 +133,7 @@ enum UIKitRealization {
         .notPlanned("Window", "width", reason: Self.sizedBySystem),
         .notPlanned("Window", "x", reason: Self.placedBySystem),
         .notPlanned("Window", "y", reason: Self.placedBySystem),
-    ] + pickerWords
+    ] + pickerWords + HostRecord.layoutEngine
 
     /// Why a window takes no size: the user's hand gives it, and a scene asks only for orientations.
     private static let sizedBySystem =

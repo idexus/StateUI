@@ -1,4 +1,4 @@
-# revision 12.2
+# revision 13.2
 ActivityIndicator.opacity: ✅
 ActivityIndicator.pivotY: ✅
 Button.translationX: ✅
@@ -11,8 +11,7 @@ DatePicker.frameChanged: ✅
 DatePicker.height: ✅
 DatePicker.rotationX: ✓ read rotationX of DatePicker: the host's own tip, checked against the projection it laid on the element
 DatePicker.width: ✅
-Divider.accessibilityHeading: ✅
-Divider.translationY: ✅
+Divider.isAccessibilityHidden: ✅
 Ellipse.accessibilityHint: ✅
 Grid.isVisible: ✅
 Grid.pivotX: ✅
@@ -25,44 +24,51 @@ HStack.rotationY: ✓ read rotationY of HStack: the host's own tip, checked agai
 Image.translationX: ✅
 Image.zIndex: ✅
 ItemsView.automationExcludedWithChildren: ✅
-Line.tooltip: ✅
-Map.opacity: 🧩
-Map.pivotY: 🧩
-Path.layoutDirection: ✓ read layoutDirection of Path: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-Picker.frame: ✅
-Picker.scaleX: ✅
-Polygon.isAccessibilityHidden: ✅
-Polyline.frameChanged: ✅
-Polyline.height: ✅
-Polyline.rotationX: ✓ read rotationX of Polyline: the host's own tip, checked against the projection it laid on the element
-Polyline.width: ✅
-ProgressBar.accessibilityLabel: ✅
-ProgressBar.isEnabled: ✅
-RadioButton.layoutDirection: ✅
-Rectangle.scaleY: ✅
-Rectangle.style: ✅
-ScrollView.isAccessibilityHidden: ✅
-SearchField.isEnabled: ✅
-SearchField.rotation: ✅
-Slider.accessibilityLabel: ✅
-Spacer.isVisible: ✅
-Spacer.pivotX: ✅
-Stepper.translationX: ✅
-Stepper.zIndex: ✅
-Switch.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+LayoutEngine.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+LayoutEngine.tooltip: ✅
+Line.layoutDirection: ✓ read layoutDirection of Line: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Map.frame: 🧩
+Map.scaleX: 🧩
+Path.frameChanged: ✅
+Path.maximumHeight: ✅
+Path.maximumWidth: ✅
+Path.minimumHeight: ✅
+Path.minimumWidth: ✅
+Path.rotationY: ✓ read rotationY of Path: the host's own tip, checked against the projection it laid on the element
+Picker.accessibilityHint: ✅
+Polygon.opacity: ✅
+Polygon.pivotY: ✅
+Polyline.translationX: ✅
+Polyline.zIndex: ✅
+ProgressBar.automationExcludedWithChildren: ✅
+RadioButton.frameChanged: ✅
+RadioButton.maximumHeight: ✅
+RadioButton.maximumWidth: ✅
+RadioButton.minimumHeight: ✅
+RadioButton.minimumWidth: ✅
+RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own tip, checked against the projection it laid on the element
+Rectangle.tooltip: ✅
+ScrollView.opacity: ✅
+ScrollView.pivotY: ✅
+SearchField.scaleY: ✅
+SearchField.style: ✅
+Slider.automationExcludedWithChildren: ✅
+Spacer.ignoresInput: ✅
+Spacer.scale: ✅
+Stepper.accessibilityHeading: ✅
+Switch.frameChanged: ✅
+Switch.height: ✅
+Switch.rotationX: ✓ read rotationX of Switch: the host's own tip, checked against the projection it laid on the element
+Switch.width: ✅
 Text.ignoresInput: ✅
 Text.scale: ✅
-TextEditor.frame: ✅
-TextEditor.scaleX: ✅
-TextField.isAccessibilityHidden: ✅
-TimePicker.frameChanged: ✅
-TimePicker.maximumHeight: ✅
-TimePicker.maximumWidth: ✅
-TimePicker.minimumHeight: ✅
-TimePicker.minimumWidth: ✅
-TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own tip, checked against the projection it laid on the element
-VStack.layoutDirection: ✅
-VStack.tooltip: ✅
-WebView.automationExcludedWithChildren: ✅
-ZStack.ignoresInput: ✅
-ZStack.scale: ✅
+TextEditor.accessibilityHint: ✅
+TextField.opacity: ✅
+TextField.pivotY: ✅
+TimePicker.accessibilityHeading: ✅
+TimePicker.translationY: ✅
+VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+WebView.isEnabled: – WinUI's WebView2 is no control: it keeps no enabled state, and its page takes the user's hand whatever the tree says.
+WebView.rotation: ✅
+ZStack.accessibilityLabel: ✅
+ZStack.isEnabled: ✅

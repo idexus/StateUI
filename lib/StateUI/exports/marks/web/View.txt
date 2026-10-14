@@ -1,4 +1,4 @@
-# revision 6.1
+# revision 7.1
 ActivityIndicator.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ActivityIndicator.area: ✅
 ActivityIndicator.canDrag: ✓ dragAndDrop on ActivityIndicator: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -407,6 +407,40 @@ ItemsView.swiped: ✅
 ItemsView.tapCount: ✅
 ItemsView.tapped: ✅
 ItemsView.verticalAlignment: ✅
+LayoutEngine.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+LayoutEngine.area: ✅
+LayoutEngine.canDrag: ✓ dragAndDrop on LayoutEngine: the DOM's drag events dispatched by the driver, no drag the browser began
+LayoutEngine.dragEnded: ✓ dragAndDrop on LayoutEngine: the DOM's drag events dispatched by the driver, no drag the browser began
+LayoutEngine.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+LayoutEngine.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+LayoutEngine.dragStarting: ✓ dragAndDrop on LayoutEngine: the DOM's drag events dispatched by the driver, no drag the browser began
+LayoutEngine.dragText: ✓ dragAndDrop on LayoutEngine: the DOM's drag events dispatched by the driver, no drag the browser began
+LayoutEngine.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+LayoutEngine.droppedFileTypes: ✓ dropFiles on LayoutEngine: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+LayoutEngine.filesDropped: ✓ dropFiles on LayoutEngine: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+LayoutEngine.frameChanged: ✅
+LayoutEngine.gridColumn: ✅
+LayoutEngine.gridColumnSpan: ✅
+LayoutEngine.gridRow: ✅
+LayoutEngine.gridRowSpan: ✅
+LayoutEngine.horizontalAlignment: ✅
+LayoutEngine.margin: ✅
+LayoutEngine.panTouchCount: ✅
+LayoutEngine.panUpdated: ✅
+LayoutEngine.panXChannel: ✅
+LayoutEngine.panYChannel: ✅
+LayoutEngine.pinchUpdated: ✅
+LayoutEngine.pointerEntered: ✅
+LayoutEngine.pointerExited: ✅
+LayoutEngine.pointerMoved: ✅
+LayoutEngine.pointerPressed: ✅
+LayoutEngine.pointerReleased: ✅
+LayoutEngine.swipeDirection: ✅
+LayoutEngine.swipeThreshold: ✅
+LayoutEngine.swiped: ✅
+LayoutEngine.tapCount: ✅
+LayoutEngine.tapped: ✅
+LayoutEngine.verticalAlignment: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Line.area: ✅
 Line.canDrag: ✓ dragAndDrop on Line: the DOM's drag events dispatched by the driver, no drag the browser began

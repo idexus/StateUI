@@ -48,7 +48,4 @@ extension HostPlacement {
 @_spi(Host) public struct HostPlacementRun: Equatable, Sendable {
     /// One placement for each child, in child order.
     public let placements: [HostPlacement]
-
-    /// How a changed arrangement animates to its new positions.
-    public let motion: Motion
 }

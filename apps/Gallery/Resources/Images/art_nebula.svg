@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Nebula - a gallery card for the PlacedLayout sample.</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Nebula - a gallery card for the layout engine sample.</title>
 <defs>
 <radialGradient id="nc" cx="0.44" cy="0.38" r="0.8"><stop offset="0" stop-color="#FFF6DF"/><stop offset="0.18" stop-color="#FFC46B"/><stop offset="0.44" stop-color="#DE5535"/><stop offset="0.72" stop-color="#6E2668"/><stop offset="1" stop-color="#0B0A22"/></radialGradient>
 <radialGradient id="nd" cx="0.7" cy="0.75" r="0.5"><stop offset="0" stop-color="#4C7BD9" stop-opacity="0.55"/><stop offset="1" stop-color="#4C7BD9" stop-opacity="0"/></radialGradient>

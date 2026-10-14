@@ -15,13 +15,12 @@ enum StateLaw {
     static let custom: Double = 4
 
     /// Where a law's three lanes start for a value going through this door: five
-    /// lanes from the end of a journey, last in a placement run, nowhere for text, a
-    /// feed or a plain value.
+    /// lanes from the end of a journey, nowhere for a placement run, text, a feed or
+    /// a plain value.
     static func within(_ door: StateKind, lanes: Int) -> Int? {
         switch door {
         case .property: return lanes >= 8 ? lanes - 5 : nil
-        case .placement: return lanes >= StateLaw.lanes ? lanes - StateLaw.lanes : nil
-        case .text, .feed, .plain: return nil
+        case .placement, .text, .feed, .plain: return nil
         }
     }
 

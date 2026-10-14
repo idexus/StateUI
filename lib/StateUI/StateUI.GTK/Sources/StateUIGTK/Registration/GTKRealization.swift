@@ -82,6 +82,7 @@ enum GTKRealization {
             + "recolour the track, not lie under it."),
         .complete("VStack", "background"),
         .complete("ZStack", "background"),
+        .complete("LayoutEngine", "background"),
         .partial("DatePicker", "format", missing: "GTK writes \"D\" and \"d\" in the user's own way, and any other pattern as \"d\"."),
         .partial("DatePicker", "maximumDate",
                  missing: "GtkCalendar offers every day: one the user picks past the range stands at its end."),
@@ -170,7 +171,7 @@ enum GTKRealization {
         .complete("Window", "windowValue"),
         .notPlanned("Window", "x", reason: "GNOME places its windows itself: GTK 4 asks no place of the desktop."),
         .notPlanned("Window", "y", reason: "GNOME places its windows itself: GTK 4 asks no place of the desktop."),
-    ]
+    ] + HostRecord.layoutEngine
 
     /// What GTK's registry says it realizes: the export's content.
     @MainActor static var declaration: HostDeclaration {

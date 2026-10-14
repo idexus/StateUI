@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Mural - a gallery card for the PlacedLayout sample.</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Mural - a gallery card for the layout engine sample.</title>
 <defs>
 <linearGradient id="mw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD36E"/><stop offset="1" stop-color="#E2542C"/></linearGradient>
 <linearGradient id="mb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2FA8CC"/><stop offset="1" stop-color="#1D5F9E"/></linearGradient>

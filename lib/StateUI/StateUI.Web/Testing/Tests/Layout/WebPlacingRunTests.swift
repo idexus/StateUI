@@ -14,7 +14,7 @@ final class WebPlacingRunTests: XCTestCase {
             HostPlacement(
                 bounds: Rect(x: 0, y: 0, width: width, height: height), translationX: 0, translationY: 0, rotation: 90,
                 scaleX: 1, scaleY: 1, opacity: 1, zIndex: 0, shade: shade),
-        ], motion: .none)
+        ])
     }
 
     /// The same turn at a new size is drawn about the new size's middle: the matrix's pivot is the place's, so a run

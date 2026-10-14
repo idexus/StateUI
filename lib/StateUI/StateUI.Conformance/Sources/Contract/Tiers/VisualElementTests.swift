@@ -53,7 +53,7 @@
     ]
 
     /// The layouts drawing their own box, whose background may be a blur or glass.
-    static let boxes: Set<String> = ["Grid", "HStack", "VStack", "ZStack"]
+    static let boxes: Set<String> = ["Grid", "HStack", "LayoutEngine", "VStack", "ZStack"]
 
     /// A box's background is the blur the tree gives it and then the glass it changes it to - or what stands in for
     /// the glass, the blur as clear as it is, whose colour a host that blurs nothing paints.
@@ -106,7 +106,7 @@
     }
 
     /// The views holding others: their `isEnabled` is their branch's, and they lay their child out in their direction.
-    static let layouts: Set<String> = ["Grid", "HStack", "ScrollView", "VStack", "ZStack"]
+    static let layouts: Set<String> = ["Grid", "HStack", "LayoutEngine", "ScrollView", "VStack", "ZStack"]
 
     /// A view is shown or not as the tree says, and hides when the tree says so.
     @MainActor
@@ -240,6 +240,7 @@
                 VStack {
                     Specimens.holding(layout, Button("Inside").id("inside"), [
                         Write(VisualElementContract.isEnabled, enabled.wrappedValue),
+                        Write(VisualElementContract.height, 60),
                     ])
                     Button("Enable").onClicked { enabled.wrappedValue = true }.id("change")
                 }

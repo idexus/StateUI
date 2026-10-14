@@ -57,8 +57,10 @@ extension AppKitElement {
                 host?.runtime.reducesMotion() ?? false
             })
 
-        case .zStack:
-            return AppKitZStackView()
+        case .zStack, .layoutEngine:
+            let layers = AppKitZStackView()
+            layers.engine = type == .layoutEngine
+            return layers
 
 
         case .scrollView:

@@ -1,4 +1,4 @@
-# revision 12.1
+# revision 13.1
 ActivityIndicator.accessibilityHeading: ✅
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
@@ -383,6 +383,38 @@ ItemsView.translationX: ✓ read translationX of ItemsView: the host's own trans
 ItemsView.translationY: ✓ read translationY of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ItemsView.width: ✅
 ItemsView.zIndex: ✅
+LayoutEngine.accessibilityHeading: ✅
+LayoutEngine.accessibilityHint: ✅
+LayoutEngine.accessibilityLabel: ✅
+LayoutEngine.automationExcludedWithChildren: ✅
+LayoutEngine.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
+LayoutEngine.frame: ✅
+LayoutEngine.frameChanged: ✅
+LayoutEngine.height: ✅
+LayoutEngine.ignoresInput: ✅
+LayoutEngine.isAccessibilityHidden: ✅
+LayoutEngine.isEnabled: ✅
+LayoutEngine.isVisible: ✅
+LayoutEngine.layoutDirection: ✅
+LayoutEngine.maximumHeight: ✅
+LayoutEngine.maximumWidth: ✅
+LayoutEngine.minimumHeight: ✅
+LayoutEngine.minimumWidth: ✅
+LayoutEngine.opacity: ✅
+LayoutEngine.pivotX: ✓ read pivotX of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+LayoutEngine.pivotY: ✓ read pivotY of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+LayoutEngine.rotation: ✓ read rotation of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+LayoutEngine.rotationX: ✓ read rotationX of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+LayoutEngine.rotationY: ✓ read rotationY of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+LayoutEngine.scale: ✓ read scale of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+LayoutEngine.scaleX: ✓ read scaleX of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+LayoutEngine.scaleY: ✓ read scaleY of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+LayoutEngine.style: not realized
+LayoutEngine.tooltip: ✅
+LayoutEngine.translationX: ✓ read translationX of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+LayoutEngine.translationY: ✓ read translationY of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+LayoutEngine.width: ✅
+LayoutEngine.zIndex: ✅
 Line.accessibilityHeading: ✅
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅

@@ -1,4 +1,4 @@
-# revision 2.1
+# revision 3.1
 Button.keyPressed: ✓ pressKeys on Button: the shortcut controller's action run, no key event
 Button.keysTaken: ✓ pressKeys on Button: the shortcut controller's action run, no key event
 CheckBox.keyPressed: ✓ pressKeys on CheckBox: the shortcut controller's action run, no key event
@@ -11,6 +11,8 @@ HStack.keyPressed: ✓ pressKeys on HStack: the shortcut controller's action run
 HStack.keysTaken: ✓ pressKeys on HStack: the shortcut controller's action run, no key event
 ItemsView.keyPressed: ✓ pressKeys on ItemsView: the shortcut controller's action run, no key event
 ItemsView.keysTaken: ✓ pressKeys on ItemsView: the shortcut controller's action run, no key event
+LayoutEngine.keyPressed: ✓ pressKeys on LayoutEngine: the shortcut controller's action run, no key event
+LayoutEngine.keysTaken: ✓ pressKeys on LayoutEngine: the shortcut controller's action run, no key event
 Picker.keyPressed: ✓ pressKeys on Picker: the shortcut controller's action run, no key event
 Picker.keysTaken: ✓ pressKeys on Picker: the shortcut controller's action run, no key event
 RadioButton.keyPressed: ✓ pressKeys on RadioButton: the shortcut controller's action run, no key event

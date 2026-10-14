@@ -63,21 +63,20 @@ final class AndroidZStackViewTests: XCTestCase {
     func testAPlacementRunStandsAndDrawsEachChildAsItSays() throws {
         try onMainActor {
             let clock = TestClock()
-            let run = State(wrappedValue: PlacedRun())
+            let placed = State(wrappedValue: 0.0)
             let host = AndroidRenderer.running(clock: clock) {
                 VStack {
-                    PlacedLayout(["back", "front"], id: \.self) { name in
-                        Rectangle().fill(name == "back" ? .red : .blue)
+                    LayoutEngine(["back", "front"]) { name in
+                        Rectangle(name == "back" ? .red : .blue)
+                    } placements: { room, phase in
+                        phase < 1
+                            ? [Placement(room), Placement(room)]
+                            : [Placement(Rect(10, 20, 30, 40), zIndex: 1), Placement(Rect(0, 0, 50, 50), opacity: 0.5)]
                     }
-                    .placement(run.projectedValue)
+                    .phase(placed.projectedValue)
                     .height(200)
 
-                    Button("Place").onClicked {
-                        run.wrappedValue = PlacedRun([
-                            Placement(Rect(10, 20, 30, 40), zIndex: 1),
-                            Placement(Rect(0, 0, 50, 50), opacity: 0.5),
-                        ])
-                    }
+                    Button("Place").onClicked { placed.wrappedValue = 1 }
                 }
             }
             host.layOut()
@@ -93,8 +92,7 @@ final class AndroidZStackViewTests: XCTestCase {
             XCTAssertTrue(holders[0].frame == (20, 40, 60, 80), "\(holders[0].frame)")
             XCTAssertTrue(holders[1].frame == (0, 0, 100, 100), "\(holders[1].frame)")
             XCTAssertEqual(Java.callFloat(holders[1].reference, JavaAPI.getAlpha), 0.5, accuracy: 0.001)
-            XCTAssertEqual(layout.drawingOrder, [1, 0], "the higher rank drawn last")
-            XCTAssertTrue(layout.holds(inOrder: [holders[0], holders[1]]), "and nothing moved in the group")
+            XCTAssertEqual(layout.drawingOrder, [2, 1, 0], "the watcher under them, the higher rank drawn last")
 
             let boxes = host.views(AndroidShapeView.self)
             XCTAssertTrue(boxes[0].frame == (0, 0, 60, 80), "\(boxes[0].frame)")

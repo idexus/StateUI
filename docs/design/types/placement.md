@@ -1,9 +1,9 @@
 # Placement
 
-A `PlacedLayout` puts each of its views where an application's arithmetic
+A `LayoutEngine` puts each of its views where an application's arithmetic
 says. A `Placement` is that answer for one view, a `PlacedRun` the answer for
-the whole run, and `PackedPlacement` the same answer as the numbers a host
-reads.
+the whole run as the host is handed it, and `PackedPlacement` the same answer
+as the numbers a host reads.
 
 ## Where one view goes
 
@@ -17,7 +17,7 @@ view's place is, said once for each.
 ## Written onto the placed view
 
 Each field is drawn onto the container the layout wraps the view in, over
-what the view's own properties say. A view inside a `PlacedLayout` is turned,
+what the view's own properties say. A view inside a `LayoutEngine` is turned,
 scaled and faded by its placement, and what the closure that builds it writes
 stays its own: the placement composes with it and never overwrites it.
 
@@ -59,28 +59,26 @@ run replaces each z-index with its rank, back to front, and a rank changes
 only when the picture does. Equal numbers keep the order the views stand in.
 A z-index does not animate: an order has no half-way.
 
-## A motion per write
+## A run lands as written
 
-A `PlacedRun` carries its own motion, per write, which is what a layout
-followed by a finger needs. The run is written at once (`.none`, the
-default) while a hand is moving it, since the next frame replaces whatever
-an animation would reach for, and animates when the shape of the layout
-changes. A write made during an animation bends it rather than starting it
-again, so a finger moving the cards while they cross does not restart the
-crossing. `.inherited` uses the layout's own `.motion`.
+A run carries no law: it lands as written. Placements are worked out - from
+the room, the phase, a finger - and a value worked out is written at once
+(journeys.md, writing the parts); what travels is the phase they are worked
+out from, whose journey a host walks. A host walking places from one to the
+next draws a straight line: a chord across a ring, and for a whole turn
+nothing at all.
 
 ## Twelve numbers a view
 
 A placement crosses as twelve numbers, in one order, and a run as each
-view's twelve followed by its motion's three.
+view's twelve.
 
 ```text
   x  y  width  height    translationX  translationY  rotation  scaleX  scaleY    opacity  zIndex  shade
   0  1  2      3         4             5             6         7       8         9        10      11
 ```
 
-The motion comes last, so a view's numbers always start at `12 × index`,
-which lets a host read one view's place by stride and know which view a
+A view's numbers always start at `12 × index`, which lets a host read one view's place by stride and know which view a
 changed lane belongs to. A state's dirty word has a bit per lane and runs
 out at lane 63, so a run says exactly which of its first five views moved
 and reports the rest together. That costs nothing: a view given the place it

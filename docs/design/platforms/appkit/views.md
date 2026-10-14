@@ -78,6 +78,16 @@ the pane's layer, a blur or glass a view of its own under the page - over
 the system's. A Mac sidebar never slides over the detail: a window too narrow
 for both hides it, so the flyout's material is never shown.
 
+## A child turned in place
+
+A ZStack whose run turns its drawing order - two cards swapping ranks as a
+layout engine's run passes halfway between them - sets its `subviews` in the
+new order (`ZStackArithmetic.drawingOrder`), which moves each child it keeps
+without taking it out. A child taken out and added again leaves the window
+for a moment, and AppKit cancels a gesture under way on it: a pointer drag of
+the scroller lying over the cards ended at the first swap, and the run went
+back to the target it had left.
+
 ## Scroll bars
 
 A ScrollView and an ItemsView lay their scroll bars over what they show,

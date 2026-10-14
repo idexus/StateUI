@@ -466,6 +466,40 @@ final class AppKitContainerTests: XCTestCase {
         XCTAssertEqual(try drawn(), ["red", "blue", "bound"])
     }
 
+    /// A run turning its drawing order moves its children into place and takes none out of the ZStack: a child taken
+    /// out and put back leaves the window, and a gesture under way on it - a drag of the scroller over a layout
+    /// engine's cards - is cancelled.
+    @MainActor
+    func testARunTurningItsOrderTakesNoChildOut() {
+        final class Watched: NSView {
+            var moves = 0
+            override func viewDidMoveToSuperview() {
+                super.viewDidMoveToSuperview()
+                moves += 1
+            }
+        }
+        func run(_ ranks: [Int]) -> HostPlacementRun {
+            HostPlacementRun(placements: ranks.map { rank in
+                HostPlacement(
+                    bounds: Rect(x: 0, y: 0, width: 10, height: 10), translationX: 0, translationY: 0, rotation: 0,
+                    scaleX: 1, scaleY: 1, opacity: 1, zIndex: rank, shade: 0)
+            })
+        }
+        let layers = AppKitZStackView()
+        layers.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
+        let children = [Watched(), Watched(), Watched()]
+        layers.setItems(children.map { AppKitLayoutItem(view: $0) })
+        layers.placement = run([0, 1, 2])
+        layers.layout()
+        let standing = children.map(\.moves)
+
+        layers.placement = run([2, 1, 0])
+        layers.layout()
+
+        XCTAssertEqual(layers.subviews, [children[2], children[1], children[0]], "drawn in the run's new order")
+        XCTAssertEqual(children.map(\.moves), standing, "and none taken out to get there")
+    }
+
     /// A row whose direction is right to left fills from the right, its padding swapped; the direction is its
     /// parent's, and the parent turning lays the row out again.
     @MainActor

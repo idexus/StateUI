@@ -35,13 +35,16 @@ final class UIKitZStackView: UIKitLayoutView {
         }
     }
 
+    /// Whether the ZStack stands a layout engine, which has no size of its own.
+    var engine = false
+
     override func setItems(_ items: [UIKitLayoutItem]) {
         super.setItems(items)
         orderChildren()
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        ZStackArithmetic.size(of: items, padding: padding, width: width)
+        ZStackArithmetic.size(of: items, padding: padding, width: width, engine: engine)
     }
 
     override func arrange(in bounds: Rect) {

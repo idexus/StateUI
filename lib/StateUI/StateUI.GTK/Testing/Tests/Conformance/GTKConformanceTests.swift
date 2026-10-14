@@ -20,6 +20,7 @@ final class GTKConformanceTests: XCTestCase {
     func testButton() { conform(ButtonTests.self) }
     func testCanvas() { conform(CanvasTests.self) }
     func testCapsule() { conform(CapsuleTests.self) }
+    func testLayoutEngine() { conform(LayoutEngineTests.self) }
     func testCheckBox() { conform(CheckBoxTests.self) }
     func testSpacer() { conform(SpacerTests.self) }
     func testDatePicker() { conform(DatePickerTests.self) }

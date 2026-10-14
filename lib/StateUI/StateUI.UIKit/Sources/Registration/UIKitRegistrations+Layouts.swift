@@ -48,6 +48,16 @@ extension UIKitRegistrations {
             layout.applies(boxMembers) { view, values in applyBox(view, values) }
             layout.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
+
+        // A layout engine stands on the ZStack: its children where its run of placements puts them.
+        registry.add(LayoutEngineContract.self, create: { _ in
+            let layout = UIKitZStackView()
+            layout.engine = true
+            return layout
+        }) { layout in
+            layout.applies(boxMembers) { view, values in applyBox(view, values) }
+            layout.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
+        }
     }
 
     /// A ScrollView: its orientation, bars and room, and the offset the tree moves it to. Where the user moves it is

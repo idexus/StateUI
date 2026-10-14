@@ -100,6 +100,11 @@ ItemsView
   itemActivated()
   realizedChanged()
   selectedItemsChanged()
+LayoutEngine
+  clipsContent
+  lineWidth
+  shape
+  stroke
 Line
   contentMode
   dash

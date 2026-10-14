@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 Button.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 Button.lineWidth: ✅
 Button.shape: ✅
@@ -11,6 +11,10 @@ HStack.background: ☑️ Android blurs nothing behind a view: a blur or glass s
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
+LayoutEngine.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+LayoutEngine.lineWidth: ◐ cannot read lineWidth of LayoutEngine - Android's driver has no path for it yet
+LayoutEngine.shape: ◐ cannot read shape of LayoutEngine - Android's driver has no path for it yet
+LayoutEngine.stroke: ◐ cannot read stroke of LayoutEngine - Android's driver has no path for it yet
 ScrollView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅

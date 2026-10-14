@@ -22,7 +22,8 @@ final class AndroidRegistrationTests: XCTestCase {
                 realization.elements,
                 [
                     "ActivityIndicator", "Button", "Canvas", "Capsule", "CheckBox", "DatePicker", "Divider", "Ellipse", "Grid",
-                    "HStack", "Image", "ItemsView", "Text", "Line", "Path", "Polygon", "Polyline", "Rectangle",
+                    "HStack", "Image", "ItemsView", "LayoutEngine", "Text", "Line", "Path", "Polygon", "Polyline",
+                    "Rectangle",
                     "Picker", "ProgressBar", "RadioButton", "ScrollView", "SearchField", "Slider", "Spacer",
                     "Stepper", "Switch", "TextEditor", "TextField", "TimePicker", "VStack", "WebView", "ZStack",
                 ])

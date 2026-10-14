@@ -19,6 +19,9 @@ final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeas
     var padding = NSEdgeInsets() {
         didSet { if !NSEdgeInsetsEqual(padding, oldValue) { invalidateMeasurements() } }
     }
+
+    /// Whether the ZStack stands a layout engine, which has no size of its own.
+    var engine = false
     private var items: [AppKitLayoutItem] = []
     private var drawingOrder: [ObjectIdentifier] = []
 
@@ -44,7 +47,7 @@ final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeas
     }
 
     private func measuredContentSize(width: CGFloat?) -> NSSize {
-        NSSize(ZStackArithmetic.size(of: items, padding: Insets(padding), width: width.map(Double.init)))
+        NSSize(ZStackArithmetic.size(of: items, padding: Insets(padding), width: width.map(Double.init), engine: engine))
     }
 
     override func layout() {
@@ -66,19 +69,13 @@ final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeas
 
     private func apply(_ placements: [HostPlacement]) {
         let count = min(items.count, placements.count)
-        let ordered = (0..<count).sorted {
-            placements[$0].zIndex == placements[$1].zIndex
-                ? $0 < $1
-                : placements[$0].zIndex < placements[$1].zIndex
-        }
+        let ordered = ZStackArithmetic.drawingOrder(of: items.count, placedBy: placements)
         let identities = ordered.map { ObjectIdentifier(items[$0].view) }
 
+        // Turned in place: a child taken out and put back leaves the window, and a gesture under way on it is
+        // cancelled. Design: docs/design/platforms/appkit/views.md#a-child-turned-in-place
         if identities != drawingOrder {
-            for index in ordered {
-                let child = items[index].view
-                child.removeFromSuperview()
-                addSubview(child)
-            }
+            subviews = ordered.map { items[$0].view }
             drawingOrder = identities
         }
 

@@ -101,6 +101,12 @@ ItemsView
   itemActivated()
   realizedChanged()
   selectedItemsChanged()
+LayoutEngine
+  clipsContent
+  ignoresInput
+  lineWidth
+  shape
+  stroke
 Line
   contentMode
   dash

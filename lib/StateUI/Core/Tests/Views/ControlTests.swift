@@ -93,6 +93,7 @@ final class ControlTests: XCTestCase {
         let hasBack = State(false)
         let hasForward = State(false)
         let chosen = State<String?>(wrappedValue: "two")
+        let turn = State(wrappedValue: 0.0)
 
         return [
             ControlCase("Text", source: "Text.swift",
@@ -316,6 +317,21 @@ final class ControlTests: XCTestCase {
                     .onItemActivated { _ in }
                     .onEndReached(within: 5) {}
                     .node.built),
+
+            // The layout engine as its view writes it: the views, the arithmetic, the
+            // phase and the hand over them. A composed view, so the case is its body built.
+            ControlCase("LayoutEngine", sources: ["PlacedStack.swift", "LayoutEngine.swift"],
+                LayoutEngine(["one", "two"]) { Text($0) } placements: { room, phase in
+                    [Placement(Rect(phase, 0, room.width / 2, room.height)), Placement(Rect(room.width / 2, 0, 10, 10))]
+                }
+                .phase(turn.projectedValue)
+                .input(.scroll(.horizontal, pointsPerUnit: 90))
+                .snapTargets([0, 1])
+                .following(chosen.projectedValue)
+                .shade(Rectangle(.black))
+                .motion(.spring(response: .milliseconds(240)))
+                .onItemTapped { _ in }
+                .node.built),
 
             // Both halves of a map: the control, and the markers on it. A Marker is
             // not a control of its own - it is a marker on the map - so this
@@ -1363,7 +1379,10 @@ final class ControlTests: XCTestCase {
         var node = node
         node.materialize()
 
-        return node.children.reduce(into: Set(node.props.keys.map(\.name))) { names, child in
+        // A property driven from a state is carried as much as one stated.
+        let carried = Set(node.props.keys.map(\.name)).union(node.driven.keys.map(\.name))
+
+        return node.children.reduce(into: carried) { names, child in
             names.formUnion(propNames(in: child))
         }
     }

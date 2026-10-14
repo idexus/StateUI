@@ -287,53 +287,9 @@ page continues moving under vertical input.
 
 `ScrollView` is eager. It is not a virtualized data collection.
 
-### ScrollReader
-
-`ScrollReader` gives authored placement arithmetic native scroll input without
-moving the content subtree itself. It lays a transparent native scroller over
-the held views and reports that scroller's offset into one driven `Point`
-state. An engine can read `$offset.journey.value` and move already mounted
-children on host frames, without rebuilding a view for every wheel, trackpad,
-or touch update.
-
-```swift quote
-@State private var offset = Point.zero
-@State private var places = PlacedRun()
-
-ScrollReader(across: Double(cards.count - 1) * 90) {
-    PlacedLayout(cards, id: \.id) { Card($0) }
-        .placement($places)
-        .engine(following: $offset) { _ in
-            places = placements(at: $offset.journey.value.x / 90)
-        }
-}
-.scrollOffset($offset)
-```
-
-`across` and `down` are the distances the run may travel beyond the measured
-room, not total content dimensions. Use the single-axis initializers or provide
-both for two-dimensional input.
-
-The rest of the contract follows from that ownership:
-
-- `.scrollOffset($offset)` is the two-way offset. A program write moves the native
-  scroller; input reports into the same state. `Journey.snap(to:)` lands now
-  and `Journey.move(to:)` requests a host-driven animation.
-- `onScrollStopped` is the scroller's own: it runs once a movement has ended,
-  and a write to the offset from there is how a run comes to rest on an item.
-- The held subtree is input-transparent because the scroller owns the room's
-  native input. Attach `onTapped`, `onPanUpdated`, or `onTapped(within:_:)` to
-  the reader rather than to a held card.
-- `onTapped(within:_:)` receives the measured room and returns the active
-  rectangle in that room. With a scroll binding, StateUI keeps the native hit
-  target over that viewport rectangle as the content offset moves. Without a
-  binding it falls back to the whole run.
-- `aim(_:)` exposes the underlying scroller for other aimed acts. Offset
-  movement itself remains state, not an act.
-
-`ScrollReader` is a StateUI composition, so its availability is the combined
-availability of frame reporting, scrolling, driven state, and any authored
-layout used by its content. It is not an additional native control row.
+A layout whose views a scroll moves without moving its content - a run of
+cards turned by a finger, a wheel or a trackpad - is a
+[layout engine](#a-layout-engine) with `.input(.scroll(_:pointsPerUnit:))`.
 
 ## Repeated content and collections
 
@@ -377,11 +333,12 @@ The frame feed is useful when an engine or authored layout needs the native
 rectangle without making a body read it:
 
 ```swift quote
-@State private var room = Rect(0, 0, 0, 0)
+@State private var room = Rect.zero
+@State private var columns = 1.0
 
-PlacedLayout(items, id: \.id) { ItemView($0) }
-    .placement($places)
+Grid { tiles }
     .frame($room)
+    .engine(following: $room) { _ in columns = max((room.width / 240).rounded(.down), 1) }
 ```
 
 Handing over `$room` is not a state read and therefore causes no body rebuild
@@ -499,10 +456,10 @@ The [platform contract](../platform-contract.md) says where each is realized.
 
 ## StateUI-authored layouts
 
-`PlacedLayout` and `GalleryView` are StateUI composition mechanisms, not new
-native controls. The core implements them once, over the primitives - a
-`GalleryView` is a `PlacedLayout` of its cards under a `ScrollReader` - and the
-Gallery exercises both on every host.
+`LayoutEngine` and `GalleryView` are StateUI's own layouts: the core
+implements them once - a `GalleryView` is a `LayoutEngine` with the
+arithmetic of three shapes written - and the Gallery exercises both on every
+host.
 
 `GalleryView` shows one card at a time, swiped through, in a shape one word
 chooses:
@@ -548,49 +505,90 @@ the middle; `.itemSize(width:height:)`,
 bounded size, as a scroller needs - a `.height`, or a `.fill` row of a `Grid`.
 No view is built again while the run moves.
 
-`PlacedLayout` places its views by arithmetic of the application's own. An
-engine works out one `Placement` per view - its bounds from the layout's top
-left, and a transform, an opacity, a shade and a `zIndex` - and writes them as
-a `PlacedRun` into the state `.placement($places)` is given. The host puts
-each view where its placement says, and no view is built again:
+### A layout engine
+
+`LayoutEngine` places its views by arithmetic of the application's own,
+worked out from the room and a phase. The arithmetic answers one `Placement`
+per view, in the items' order - its bounds from the layout's top left, and a
+transform, an opacity, a shade and a `zIndex` - and runs on the host's frames
+whenever the room or the phase moves, with no view built again. The layout
+has no size of its own: it takes the room its own layout gives it, whatever
+its views need, so give it one - a `.height`, or a `.fill` row of a `Grid`:
 
 ```swift
 struct Shelf: View {
-    @State private var places = PlacedRun()
-    @State private var room = Rect(0, 0, 0, 0)
-
     let names = ["Mural", "Nebula", "Ridge"]
 
     var body: some View {
-        PlacedLayout(names, id: \.self) { name in
+        LayoutEngine(names) { name in
             Text(name)
-        }
-        .placement($places)
-        .frame($room)
-        .engine(following: $room) { _ in
-            places = PlacedRun(names.indices.map { place($0) })
-        }
-    }
+        } placements: { room, _ in
+            names.indices.map { index in
+                let width = room.width / Double(names.count)
 
-    func place(_ index: Int) -> Placement {
-        let width = room.width / Double(names.count)
-
-        return Placement(Rect(Double(index) * width, 0, width, room.height))
+                return Placement(Rect(Double(index) * width, 0, width, room.height))
+            }
+        }
+        .height(60)
     }
 }
 ```
 
-`.frame($room)` reports the room the layout is given, and the engine runs
-again whenever a state it follows is written - here the room. One placement
-stands for each view, in order. `PlacedRun(placements)` puts the views there at
-once, which arithmetic following a finger wants;
-`PlacedRun(placements, motion:)` animates them there, and `motion: .inherited`
-takes the layout's own `.motion`. On an axis nothing bounds - inside a scroller - keep the answer
-bounded: placements that grow with the room grow the room, and the layout
-never settles. A [ScrollReader](#scrollreader) hands such arithmetic the
-user's scrolling.
+The phase is where the run rests or is going. Lend it a state with
+`.phase(_:)` and the program moves the run by writing it; give it
+`.input(.scroll(_:pointsPerUnit:))` and a finger, a trackpad or a wheel moves
+it too, with the platform's own physics, coming to rest on the nearest of its
+`.snapTargets(_:)`:
 
-Neither has a row of its own in the
-[Platform contract](../platform-contract.md): on a host each behaves as far as
-the primitive rows it uses - frame reporting, scrolling, driven state, layout
-motion - are checked there.
+```swift
+struct Carousel: View {
+    @State private var turn = 0.0
+
+    let names = ["Mural", "Nebula", "Ridge", "Bloom"]
+
+    var body: some View {
+        VStack {
+            LayoutEngine(names) { name in
+                Text(name)
+            } placements: { room, phase in
+                names.indices.map { index in
+                    let step = Double(index) - phase
+
+                    return Placement(
+                        Rect(room.width / 2 - 60 + step * 140, 0, 120, room.height),
+                        transform: .scale(1 - min(abs(step), 1) * 0.2),
+                        zIndex: -Int(abs(step) * 10))
+                }
+            }
+            .phase($turn)
+            .input(.scroll(.horizontal, pointsPerUnit: 140))
+            .snapTargets(names.indices.map(Double.init))
+            .motion(.spring(response: .milliseconds(240)))
+            .height(200)
+
+            Button("Next").onClicked { turn = min(turn + 1, Double(names.count - 1)) }
+        }
+    }
+}
+```
+
+The arithmetic is handed the phase as it stands each frame, and each
+placement lands as written: what moves smoothly is the phase, so every view
+keeps to the path the arithmetic draws - an arc, a fan opening - rather than
+cutting across it. `turn` is the snap target the run rests on: written by the
+program, the run travels there under `.motion(_:)`; under the hand it is the
+target the run passes and the one it comes to rest on. A tap reaches the view
+drawn on top through `.onItemTapped`, and `.shade(_:)` darkens a far view by
+the `shade` its placement answers.
+
+A value read in the body is a change of the description: the layout is built
+again and its arithmetic with it. A state the arithmetic reads that moves on
+the host's frames - a drag of your own - is named in `.following(_:)` instead.
+On an axis nothing bounds - inside a scroller - keep the answer bounded:
+placements that grow with the room grow the room, and the layout never
+settles.
+
+`LayoutEngine` has its own row in the
+[Platform contract](../platform-contract.md); `GalleryView` behaves as far as
+the rows it uses - the layout engine, frame reporting, scrolling - are checked
+there.

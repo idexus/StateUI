@@ -28,6 +28,9 @@ final class GTKZStackView: GTKTravellingLayout {
         didSet { if padding != oldValue { invalidateMeasurements() } }
     }
 
+    /// Whether the ZStack stands a layout engine, which has no size of its own.
+    var engine = false
+
     /// The children back to front as the run ranks them, or in their order without one: GTK draws a panel's
     /// children in that order and a click reaches the last first.
     override func heldViews() -> [GTKView] {
@@ -35,7 +38,7 @@ final class GTKZStackView: GTKTravellingLayout {
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        ZStackArithmetic.size(of: items, padding: padding, width: width)
+        ZStackArithmetic.size(of: items, padding: padding, width: width, engine: engine)
     }
 
     override func arrange(in bounds: Rect) {

@@ -27,6 +27,8 @@
         case "HStack": return dressing.dress(HStack())
         case "Image": return dressing.dress(Image())
         case "ItemsView": return dressing.dress(ItemsView(0..<20) { Text("Item \($0)") }.width(240).height(160))
+        case "LayoutEngine":
+            return dressing.dress(ModifiedContent(node: LayoutEngine([Int]()) { _ in Spacer() } placements: { _, _ in [] }.node))
         case "Text": return dressing.dress(Text())
         case "Line": return dressing.dress(Line())
         case "Map": return dressing.dress(Map())
@@ -71,9 +73,15 @@
         case "ScrollView": dressing.dress(ScrollView { child })
         case "VStack": dressing.dress(VStack { child })
         case "ZStack": dressing.dress(ZStack { child })
+        case "LayoutEngine": dressing.dress(ModifiedContent(node: Specimens.engine(holding: child).node))
         default: Text("no layout \(layout) holding a child")
         }
         return ModifiedContent(node: view.node)
+    }
+
+    /// A layout engine holding `child` across its whole room, as a ZStack holds a child naming no area.
+    public static func engine(holding child: some View) -> some View {
+        LayoutEngine([0]) { _ in child } placements: { room, _ in [Placement(room)] }
     }
 
     /// A page holding `element`'s specimen wearing `worn` where an application puts one, `beside` it on the page. A

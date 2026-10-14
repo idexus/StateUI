@@ -107,6 +107,7 @@ enum Holding {
         case "Grid": dressing.dress(Grid { held })
         case "HStack": dressing.dress(HStack { held })
         case "ZStack": dressing.dress(ZStack { held })
+        case "LayoutEngine": dressing.dress(ModifiedContent(node: Specimens.engine(holding: held).node))
         default: dressing.dress(VStack { held })
         }
         return ModifiedContent(node: layout.node)

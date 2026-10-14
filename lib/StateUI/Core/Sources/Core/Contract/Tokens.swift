@@ -31,6 +31,7 @@ extension NodeType {
     static let textEditor = TextEditorContract.nodeType
     static let ellipse = EllipseContract.nodeType
     static let capsule = CapsuleContract.nodeType
+    static let layoutEngine = LayoutEngineContract.nodeType
     static let textField = TextFieldContract.nodeType
     static let splitView = SplitViewContract.nodeType
     static let textSpans = TextSpansContract.nodeType

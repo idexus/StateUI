@@ -64,21 +64,20 @@ final class GTKZStackViewTests: XCTestCase {
     func testAPlacementRunStandsAndDrawsEachChildAsItSays() throws {
         try onUIThread {
             let clock = TestClock()
-            let run = State(wrappedValue: PlacedRun())
+            let placed = State(wrappedValue: 0.0)
             let host = GTKRenderer.running(clock: clock) {
                 VStack {
-                    PlacedLayout(["back", "front"], id: \.self) { name in
-                        Rectangle().fill(name == "back" ? .red : .blue)
+                    LayoutEngine(["back", "front"]) { name in
+                        Rectangle(name == "back" ? .red : .blue)
+                    } placements: { room, phase in
+                        phase < 1
+                            ? [Placement(room), Placement(room)]
+                            : [Placement(Rect(10, 20, 30, 40), zIndex: 1), Placement(Rect(0, 0, 50, 50), opacity: 0.5)]
                     }
-                    .placement(run.projectedValue)
+                    .phase(placed.projectedValue)
                     .height(200)
 
-                    Button("Place").onClicked {
-                        run.wrappedValue = PlacedRun([
-                            Placement(Rect(10, 20, 30, 40), zIndex: 1),
-                            Placement(Rect(0, 0, 50, 50), opacity: 0.5),
-                        ])
-                    }
+                    Button("Place").onClicked { placed.wrappedValue = 1 }
                 }
             }
             let layout = try XCTUnwrap(host.views(GTKZStackView.self).first)

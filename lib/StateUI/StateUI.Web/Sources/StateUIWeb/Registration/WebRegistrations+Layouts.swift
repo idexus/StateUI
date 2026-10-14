@@ -47,6 +47,17 @@ extension WebRegistrations {
             layers.applies(boxMembers) { view, values in applyBox(view, values) }
             layers.property(LayoutContract.letsInputThrough) { view, lets in view.setLetsInputThrough(lets ?? false) }
         }
+        // A layout engine stands on the layers: its children where its run of placements puts them. It has no size
+        // of its own, which CSS's size containment says.
+        // Design: docs/design/host/layout.md#a-layout-engine
+        registry.add(LayoutEngineContract.self, create: { _ in
+            let layers = WebLayoutView(arrangement: .layers)
+            layers.style("contain", "size")
+            return layers
+        }) { layers in
+            layers.applies(boxMembers) { view, values in applyBox(view, values) }
+            layers.property(LayoutContract.letsInputThrough) { view, lets in view.setLetsInputThrough(lets ?? false) }
+        }
         // Where the user moves it is reported by the element, on the display's frames.
         // Design: docs/design/platforms/web/layout.md#scrolling
         registry.add(ScrollViewContract.self, create: { _ in WebScrollView() }) { scroll in

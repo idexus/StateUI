@@ -241,7 +241,7 @@ extension ModifiableElement {
 
     /// Registers an engine woken by `named`'s writes; a part of a state or a binding made from closures is
     /// refused, said once.
-    private func engine(
+    func engine(
         _ named: [(any FollowedState)?], sync: Sync, priority: Double,
         _ run: @escaping @MainActor (EngineCycle) -> EngineAnswer
     ) -> Modified {

@@ -1,4 +1,4 @@
-# revision 12.2
+# revision 13.2
 ActivityIndicator.layoutDirection: ✓ read layoutDirection of ActivityIndicator: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Button.frame: ✅
 Button.scaleX: ✅
@@ -12,8 +12,7 @@ Capsule.rotationY: ✓ read rotationY of Capsule: the host's own tip, checked ag
 CheckBox.accessibilityHint: ✅
 DatePicker.opacity: ✅
 DatePicker.pivotY: ✅
-Divider.scaleY: ✅
-Divider.style: ✅
+Divider.tooltip: ✅
 Ellipse.accessibilityHeading: ✅
 Ellipse.translationY: ✅
 Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
@@ -22,50 +21,49 @@ HStack.rotation: ✅
 Image.frame: ✅
 Image.scaleX: ✅
 ItemsView.accessibilityHeading: ✅
-Line.accessibilityLabel: ✅
-Line.isEnabled: ✅
-Map.layoutDirection: 🧩
-Path.automationExcludedWithChildren: ✅
-Picker.frameChanged: ✅
-Picker.maximumHeight: ✅
-Picker.maximumWidth: ✅
-Picker.minimumHeight: ✅
-Picker.minimumWidth: ✅
-Picker.rotationY: ✓ read rotationY of Picker: the host's own tip, checked against the projection it laid on the element
-Polygon.tooltip: ✅
-Polyline.opacity: ✅
-Polyline.pivotY: ✅
-ProgressBar.translationX: ✅
-ProgressBar.zIndex: ✅
-RadioButton.automationExcludedWithChildren: ✅
-Rectangle.ignoresInput: ✅
-Rectangle.scale: ✅
-ScrollView.tooltip: ✅
-SearchField.isVisible: ✅
-SearchField.pivotX: ✅
-Slider.translationX: ✅
-Slider.zIndex: ✅
-Spacer.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Stepper.frame: ✅
-Stepper.scaleX: ✅
-Switch.isAccessibilityHidden: ✅
+LayoutEngine.accessibilityLabel: ✅
+LayoutEngine.isEnabled: ✅
+Line.automationExcludedWithChildren: ✅
+Map.frameChanged: 🧩
+Map.maximumHeight: 🧩
+Map.maximumWidth: 🧩
+Map.minimumHeight: 🧩
+Map.minimumWidth: 🧩
+Map.rotationY: 🧩
+Path.isEnabled: does not apply - read isEnabled of Path - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Path.rotation: ✅
+Picker.accessibilityHeading: ✅
+Picker.translationY: ✅
+Polygon.layoutDirection: ✓ read layoutDirection of Polygon: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Polyline.frame: ✅
+Polyline.scaleX: ✅
+ProgressBar.accessibilityHeading: ✅
+RadioButton.isEnabled: ✅
+RadioButton.rotation: ✅
+Rectangle.accessibilityLabel: ✅
+Rectangle.isEnabled: ✅
+ScrollView.layoutDirection: ✓ read layoutDirection of ScrollView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+SearchField.ignoresInput: ✅
+SearchField.scale: ✅
+Slider.accessibilityHeading: ✅
+Spacer.frameChanged: ✅
+Spacer.height: ✅
+Spacer.rotationX: ✓ read rotationX of Spacer: the host's own tip, checked against the projection it laid on the element
+Spacer.width: ✅
+Stepper.accessibilityHint: ✅
+Switch.opacity: ✅
+Switch.pivotY: ✅
 Text.frameChanged: ✅
 Text.height: ✅
 Text.rotationX: ✓ read rotationX of Text: the host's own tip, checked against the projection it laid on the element
 Text.width: ✅
-TextEditor.frameChanged: ✅
-TextEditor.maximumHeight: ✅
-TextEditor.maximumWidth: ✅
-TextEditor.minimumHeight: ✅
-TextEditor.minimumWidth: ✅
-TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own tip, checked against the projection it laid on the element
-TextField.tooltip: ✅
-TimePicker.isEnabled: ✅
-TimePicker.rotation: ✅
-VStack.accessibilityLabel: ✅
-VStack.isEnabled: ✅
-WebView.accessibilityHeading: ✅
-ZStack.frameChanged: ✅
-ZStack.height: ✅
-ZStack.rotationX: ✓ read rotationX of ZStack: the host's own tip, checked against the projection it laid on the element
-ZStack.width: ✅
+TextEditor.accessibilityHeading: ✅
+TextEditor.translationY: ✅
+TextField.layoutDirection: ✅
+TimePicker.scaleY: ✅
+TimePicker.style: ✅
+VStack.automationExcludedWithChildren: ✅
+WebView.isVisible: ✅
+WebView.pivotX: ✅
+ZStack.translationX: ✅
+ZStack.zIndex: ✅

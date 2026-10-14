@@ -1505,7 +1505,7 @@ final class CatalogTests: XCTestCase {
         // THREE rooms: the page's own, which that height is arithmetic over,
         // the gallery's, which its cards are placed in, and where its
         // scroller's run is laid out, which a change of room waits for.
-        XCTAssertEqual(rooms, ["Grid", "ZStack", "ZStack"],
+        XCTAssertEqual(rooms, ["Grid", "LayoutEngine", "LayoutEngine"],
                        "the page, its run and the scroller's run are measured onto numbers")
 
         // And the entrance is the third number - so the page waits for its room
@@ -1513,16 +1513,16 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(fades.count, 1,
                        "the page comes in through a render rather than through the cycle")
 
-        XCTAssertEqual(engines, 3,
-                       "the page and its run of cards keep three engines between them")
+        XCTAssertEqual(engines, 2,
+                       "the page and its run of cards keep one engine each")
     }
 
-    /// And the home page's groups answer one, which is the gallery's; the
-    /// banner over them answers its own, opening StateUI's home.
+    /// And the home page's groups answer the gallery's, one a card; the banner
+    /// over them answers its own, opening StateUI's home.
     ///
-    /// A `GalleryView` is swiped to choose and tapped to open, so there is ONE
-    /// handler however many groups there are - inside the scroller lying over
-    /// the cards, which is the only thing there a finger can reach.
+    /// A `GalleryView` is swiped to choose and tapped to open, so its taps land
+    /// on a box under each card inside the scroller lying over them, which is
+    /// the only thing there a finger can reach.
     func testTheHomePagesGalleryAnswersATap() throws {
         let (shown, nav) = (catalog(), Place().nav)
         let page = Renders().laid { HomePage(catalog: shown, nav: nav).node }
@@ -1535,8 +1535,8 @@ final class CatalogTests: XCTestCase {
 
         walk(page)
 
-        XCTAssertEqual(carriers, ["ZStack", "Rectangle"],
-                       "the banner opens StateUI's home, the gallery a tap on the run")
+        XCTAssertEqual(carriers, ["ZStack"] + Array(repeating: "Rectangle", count: shown.groups.count),
+                       "the banner opens StateUI's home, a box under each card the gallery's")
     }
 
     /// Finds what answers a tap and insists there is one per thing listed, each

@@ -15,7 +15,7 @@ VStack {
 
 Wears: [View](View.md) · [PaddingElement](PaddingElement.md) · [BorderElement](BorderElement.md) · [KeyboardElement](KeyboardElement.md)
 
-Worn by: [Grid](../Grid.md) · [HStack](../HStack.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)
+Worn by: [Grid](../Grid.md) · [HStack](../HStack.md) · [LayoutEngine](../LayoutEngine.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Tiers/LayoutContract.swift`.
 

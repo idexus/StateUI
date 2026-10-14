@@ -690,35 +690,6 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(past.child("one")?.props[.scaleX]?.number ?? 1, 0, accuracy: 0.0005)
     }
 
-    // ---- A layout of the author's own ---------------------------------------
-
-    func testAPlacedLayoutSaysHowItsViewsTravel() {
-        let renders = Renders()
-
-        let run = State(wrappedValue: PlacedRun())
-
-        func tree(_ still: Bool) -> Node {
-            let fan = PlacedLayout([1], id: \.self) { number in
-                Text("\(number)")
-            }
-            .placement(run.projectedValue)
-
-            return (still ? fan.motion(.none) : fan).id("fan").node
-        }
-
-        func layout(_ patch: HostPatch) -> HostPatch? {
-            if patch.type == .zStack { return patch }
-
-            for child in patch.children {
-                if let found = layout(child) { return found }
-            }
-
-            return nil
-        }
-
-        XCTAssertEqual(layout(renders.render(tree(true)))?.motion?.motion, Motion.none)
-    }
-
     // ---- The patch ----------------------------------------------------------
 
     /// THE ORDINARY CASE. A value that simply changed is the motion almost

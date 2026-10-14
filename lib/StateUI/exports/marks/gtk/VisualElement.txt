@@ -1,4 +1,4 @@
-# revision 12.1
+# revision 13.1
 ActivityIndicator.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
@@ -383,6 +383,38 @@ ItemsView.translationX: ✓ read translationX of ItemsView: the host's own trans
 ItemsView.translationY: ✓ read translationY of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.width: ✅
 ItemsView.zIndex: ✅
+LayoutEngine.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
+LayoutEngine.accessibilityHint: ✅
+LayoutEngine.accessibilityLabel: ✅
+LayoutEngine.automationExcludedWithChildren: ✅
+LayoutEngine.background: ◐ cannot read background of LayoutEngine - GTK's driver has no path for it yet
+LayoutEngine.frame: ✅
+LayoutEngine.frameChanged: ✅
+LayoutEngine.height: ✅
+LayoutEngine.ignoresInput: ✅
+LayoutEngine.isAccessibilityHidden: ✅
+LayoutEngine.isEnabled: ✅
+LayoutEngine.isVisible: ✅
+LayoutEngine.layoutDirection: ✅
+LayoutEngine.maximumHeight: ✅
+LayoutEngine.maximumWidth: ✅
+LayoutEngine.minimumHeight: ✅
+LayoutEngine.minimumWidth: ✅
+LayoutEngine.opacity: ✅
+LayoutEngine.pivotX: ✓ read pivotX of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.pivotY: ✓ read pivotY of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.rotation: ✓ read rotation of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.rotationX: ✓ read rotationX of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.rotationY: ✓ read rotationY of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.scale: ✓ read scale of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.scaleX: ✓ read scaleX of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.scaleY: ✓ read scaleY of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.style: not realized
+LayoutEngine.tooltip: ✅
+LayoutEngine.translationX: ✓ read translationX of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.translationY: ✓ read translationY of LayoutEngine: the host's own transform: GTK reads back no part of one
+LayoutEngine.width: ✅
+LayoutEngine.zIndex: ✅
 Line.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅

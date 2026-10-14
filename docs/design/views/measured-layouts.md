@@ -1,17 +1,15 @@
 # Measured layouts
 
 Some views place their children by arithmetic over a measurement rather than
-by a layout the host knows: a frame report, a placed layout, a scroll read as
-a number, and the gallery built from all three. The arithmetic runs in engines
-on the host's frames, so a run of views can follow a finger with no view built.
+by a layout the host knows: a frame report, a layout engine, and the gallery
+built on one. The arithmetic runs in engines on the host's frames, so a run of
+views can follow a finger with no view built.
 
 ```text
   GalleryView
-   ├── ScrollReader: an empty ScrollView over the cards ──────▶ offset state ($scrolled)
-   │     │                       .laidOut($length): the run the scroller laid out
-   │     └── PlacedLayout (the cards) ◀── placements state ◀── engine(following: $scrolled, $room, $length)
-   │           └── .frame($room) ── the room, fed by the host ──┘   reads $scrolled.journey.value
-   └── Turning: an empty view watching the asked position and shape
+   ├── LayoutEngine: the cards, the wheel's, fan's or row's arithmetic, the
+   │     phase the card in front, a scroll the hand (layout-engine.md)
+   └── PositionWatcher: an empty view watching the card in front
 ```
 
 ## Frame reports
@@ -87,52 +85,11 @@ several passes, and a place left to animate to its answer sets off from
 whatever the first pass made of it - and where nothing else on the page moves
 there are no frames to carry it the rest of the way.
 
-## Placed layout
+## Layout engine
 
-`PlacedLayout` is a run of views and an engine's arithmetic saying where each
-goes and how it is turned. A fan, a ring, a spiral, a stack of receipts, a
-masonry of tiles, a timeline and a gallery whose cards turn away as they leave
-the middle are the same layout with different arithmetic.
-
-```text
-  engine(following: values)  ──▶  PlacedRun: one Placement per view, in order -
-  on the host's frames               where it goes, how it is turned, its opacity,
-                                     its shade, which is drawn over which
-                                          │
-  ZStack                                  ▼  the host writes each placement
-   ├── Grid (wrapper)  ── the author's view   [ + the shade view, second ]
-   ├── Grid (wrapper)  ── the author's view
-   └── …
-```
-
-The arithmetic runs on the host's frames, never in a render: the engine reads
-the values it follows, writes one placement a view, and the host wears them,
-so a run of cards under a finger costs the sums and the writes and no
-description at all. It is made of a ZStack and places in it, and it is one
-frame late on its first
-showing, because the room has to be measured before anything can be placed in
-it.
-
-Each view sits inside a container the host writes the placement onto, shaded
-or not, which keeps the two writers apart: everything a placement says is
-written onto the wrapper, so an author's own `.opacity` or `.rotation` on the
-view beneath is theirs alone and never overwritten by a frame of arithmetic. A
-shade is the wrapper's second child, which is how the host finds one; both
-children are the library's own, so their order is its guarantee rather than
-the author's. The absence of a shade is a number, `PackedPlacement.unshaded`,
-because the host cannot see this side's views.
-
-The motion belongs to the run. `PlacedRun(placements)` puts the views where it
-says at once, which arithmetic re-run on every frame wants; a run written with
-a motion animates there, so a shape that changes can cross while a finger goes
-on moving the cards. `.motion(_:)` on the layout is what a run written
-`.inherited` animates by, and it reaches the views' turn and fade as well as
-their places.
-
-A placed layout given no placement state places nothing: its views lie over
-one another, each across the whole layout, as a ZStack's children do when they
-name no area. It says so with a complaint, because the screen alone reads as a
-view that failed to draw.
+A run of views placed by an application's arithmetic, worked out from a phase
+the hand or the program moves, is a `LayoutEngine`: its element, its run, its
+phase and its hand are layout-engine.md.
 
 ## Bounded arithmetic
 
@@ -145,105 +102,34 @@ Where the parent states a size there is nothing to watch for; where it does
 not, the answer is capped. `GalleryView` holds a card to 1.375 times its
 stated size for this reason.
 
-## Scroll reader
-
-`ScrollReader` lays an empty scroller over a run of views and reads its offset
-into a state rather than showing it. What it holds is not scrolled: the views
-stay where their own arithmetic puts them, and what moves is a number a
-layout's engine follows. It is a scroller rather than a drag on purpose: a
-finger drag, a two-finger trackpad swipe and a mouse wheel are one thing to a
-scroller and three things to everything else, so all three move the run, with
-the platform's own physics. Where the run comes to rest is the author's:
-`onScrollStopped` hears the scroller stop, and a write to the offset carries it
-on to the nearest item. How far it goes is how far beyond the room it scrolls,
-so an author states the distance the arithmetic is written against rather than
-a size that depends on the screen.
-
-The views it holds take no touches: everything the user does belongs to the
-scroller over them, so a tap or a drag is written on the reader itself.
-
-The scroller's content has nothing to show, only a length: the room plus how
-far the run goes beyond it. Across the axis it is one unit, never the room's
-own size: a size taken from the room the scroller is in feeds itself, and a
-measure that feeds itself need not settle. Where a tap is asked for, the
-content is the room instead - the cell the scroller was given, which asks for
-no more room than there already is - because a tap has to land on something: a
-run swiped at a point answers no tap at that point when the content there is
-one unit wide. The length is the content layout's own size, which the
-scroller measures, rather than an extent a host would have to find among its
-placements. It is worked out from the room a render after the room changed,
-so a reader inside the module hears where the run is laid out (`laidOut(_:)`):
-that is when the scroller can hold what the new room asks.
-
-A tap on one part of the room - the card in front of the user - is answered by
-a box in the content, which slides under the room. The box belongs at the
-room's own place plus however far the run has scrolled, a number that moves on
-the host's frames and is never described, so an engine following the offset
-places it from where the run is, not where it is going, and places it at once.
-Both boxes take the drag: the tap box lies over the length box, and a hand that
-comes down on the card in front would otherwise be heard by nobody. A tap and a
-drag on one view are two gestures, not a choice.
-
 ## Gallery view
 
-`GalleryView` is a `PlacedLayout` for the cards, a `ScrollReader` for the hand,
-and a state between them. The offset of the empty scroller over the cards is
-written into a state no body reads, and the arithmetic placing the cards reads
-it, so the run follows a finger, a trackpad and a wheel with no view built,
-nothing compared and no message sent. The one render is the card crossing,
-which tells the rest of the page which card the user is on.
+`GalleryView` is a `LayoutEngine` with the arithmetic of three shapes written,
+its phase the card in front and its snap targets one a card. The run follows a
+finger, a trackpad and a wheel with no view built, nothing compared and no
+message sent; the one render is the card crossing, which tells the rest of the
+page which card the user is on. What the hand does - naming a card as the run
+passes it, coming to rest on the nearest, a pointer's drag, a change of room -
+is the layout engine's (layout-engine.md, the hand).
 
 The three shapes are three functions of the same numbers - which card, how
 many, and the room - each answering where the card goes, how far it is turned,
-how big it looks and how opaque it is. A change of shape is those values
-changing. The shape is worn one render late, so there is a render in which the
-cards are told they may animate before they are told where to - described in
-one render, they would already be there - and for `crossing` milliseconds the
-run is written to animate. The rest of the time placements arrive, since a
-card a fifth of a second behind the hand is a card that lags.
+how big it looks and how opaque it is. A change of shape is read in the
+gallery's body, so it is a change of the description: the cards land where the
+new shape says.
 
-- The middle card is named as the run passes halfway between two cards - under
-  the hand or in the platform's throw - so a card crossed is one render and a
-  frame is none. On a way the program sent the run - a position assigned, a
-  rest carried on - it names nothing: the card is the one it goes to, and
-  naming those it passes would turn the position back and forth. A position
-  the scroller reported is where the run already is: it moves nothing, and
-  the handler still hears it as it hears an assignment.
 - The asked position is a closure, not a read: read in the gallery's body it
   would make that body a reader, and every card crossed would describe the
-  whole deck for a picture none of them changes. The watchers are a view of
-  their own beside the deck (composition.md, a watcher is a view of its own).
-- A press is drawn on the view inside the card's wrapper, since the wrapper is
+  whole deck for a picture none of them changes. The watcher is a view of its
+  own beside the deck (composition.md, a watcher is a view of its own).
+- A press is drawn on the view inside the card's holder, since the holder is
   written by the placement on every frame and a press there would be snapped
-  away. The press shows and the card is back at its size before the tap's own
-  work begins: opening a card usually builds a page, and a page built on the
-  UI thread takes every frame beside it.
-- On a desktop a pointer drag turns the run, because a mouse drag leaves a
-  scroller where it stands; on a phone and a tablet the finger is the
-  scroller's own gesture, and a pan beside it would move the cards twice. The
-  form factor decides, not the platform. The drag writes the offset rather
-  than the scroller: it is measured in the coordinates of a view inside the
-  scroller's content, so scrolling while the hand is down would move the frame
-  the report is measured in, and the two would chase each other. When the
-  hand lets go, the scroller is snapped to where the run already is and then
-  animates to the nearest card, rather than walking back to where the drag
-  began.
-- The run comes to rest on the nearest card: the scroller stops wherever the
-  platform's throw leaves it, and a write to the offset carries it on under the
-  element's motion. That card, or the one a position sent the run to, is the
-  card the run stands on.
-- After each layout the run is put on the card it stands on; a scroller not
-  laid out yet keeps the offset for its first layout (host/layout.md, an offset
-  the tree writes). A change of room keeps that card in front: a room grown
-  wider - a phone turned - stands the scroller in it before the run is as long
-  as the room asks, so the toolkit clamps the offset and reports a card short
-  of it. The gallery names its card again and, once the scroller says its run
-  is long enough to hold it, sends the run there; until then the hand names
-  nothing and a rest is no card the user chose.
-- A gallery nobody may swipe has no scroller: the deck stands in a `Grid`, an
-  assigned position animates the cards there for `crossing` milliseconds, and
-  a tap is answered by a box a `GeometryReader` places where the card in front
-  is drawn.
+  away. Only the card in front answers a tap; the press shows and the card is
+  back at its size before the tap's own work begins: opening a card usually
+  builds a page, and a page built on the UI thread takes every frame beside
+  it.
+- A gallery nobody may swipe has no scroll: an assigned position places the
+  cards there, and the card in front answers a tap itself.
 
 The sensitivity is one number, how far the hand travels to turn the run by one
 card: three fifths of a card's width, far enough that the coarsest step a

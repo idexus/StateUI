@@ -564,6 +564,22 @@ extension ControlDictionary {
             }
             """#),
 
+        (LayoutEngineContract.self, #"""
+            @State var turn = 0.0
+
+            LayoutEngine(["Mural", "Nebula", "Ridge"]) { name in
+                Text(name)
+            } placements: { room, phase in
+                (0..<3).map { index in
+                    Placement(Rect((Double(index) - phase) * 120 + room.width / 2 - 50, 0, 100, room.height))
+                }
+            }
+            .phase($turn)
+            .input(.scroll(.horizontal, pointsPerUnit: 120))
+            .snapTargets([0, 1, 2])
+            .height(160)
+            """#),
+
         (ZStackContract.self, #"""
             ZStack {
                 Rectangle().fill(.cornflowerBlue)

@@ -85,37 +85,30 @@ final class PlacedRunTests: XCTestCase {
         XCTAssertEqual(again.transform.height, 2, accuracy: 1e-9)
     }
 
-    /// THE LAW IS LAST, which is what lets the host read one view's place by
-    /// stride and know which view a dirty lane belongs to.
-    func testARunCarriesItsViewsFirstAndItsLawLast() {
-        let run = PlacedRun(
-            [Placement(Rect(0, 0, 10, 10)), Placement(Rect(20, 0, 10, 10))],
-            motion: .eased(.milliseconds(400), .cubicIn))
+    /// TWELVE NUMBERS A VIEW AND NOTHING ELSE, which is what lets the host
+    /// read one view's place by stride and know which view a dirty lane
+    /// belongs to. A run lands as written: it carries no law.
+    func testARunCarriesTwelveNumbersAViewAndNothingElse() {
+        let run = PlacedRun([Placement(Rect(0, 0, 10, 10)), Placement(Rect(20, 0, 10, 10))])
 
         guard case .lanes(let lanes) = run.carried else {
             return XCTFail("a run carries lanes")
         }
 
-        XCTAssertEqual(lanes.count, 2 * Placement.lanes + 3)
+        XCTAssertEqual(lanes.count, 2 * Placement.lanes)
         XCTAssertEqual(lanes[Placement.lanes], 20, "the second view's numbers start at its stride")
-
-        // 2 is a stated length on a stated curve; see StateLaw.
-        XCTAssertEqual(Array(lanes.suffix(3)), [2, 400, Double(Easing.cubicIn.rawValue)])
     }
 
     /// And back, however many views it holds - including none at all, which is
     /// what a number that has never been written stands at.
     func testARunComesBackFromItsLanes() throws {
-        let run = PlacedRun(
-            [Placement(Rect(1, 2, 3, 4)), Placement(Rect(5, 6, 7, 8), opacity: 0.5)],
-            motion: .spring(response: .milliseconds(300), damping: 0.7))
+        let run = PlacedRun([Placement(Rect(1, 2, 3, 4)), Placement(Rect(5, 6, 7, 8), opacity: 0.5)])
 
         let back = try XCTUnwrap(PlacedRun(carried: run.carried))
 
         XCTAssertEqual(back.placements.count, 2)
         XCTAssertEqual(back.placements[0].bounds, Rect(1, 2, 3, 4))
         XCTAssertEqual(back.placements[1].opacity, 0.5)
-        XCTAssertEqual(back.motion, .spring(response: .milliseconds(300), damping: 0.7))
 
         XCTAssertEqual(PlacedRun(carried: .lanes([]))?.placements.count, 0)
         XCTAssertNil(PlacedRun(carried: .lanes([1, 2, 3, 4, 5])), "a width that is nobody's")
@@ -169,37 +162,24 @@ final class PlacedRunTests: XCTestCase {
 
     // MARK: - The tree
 
-    /// A LAYOUT PLACED BY DRIVEN STATE DESCRIBES NO PLACEMENT AT ALL: the registration
-    /// says which number, and not one of the twelve properties is on any child.
-    func testADrivenPlacedLayoutDescribesNothingAboutWhereItsViewsGo() {
-        let run = State(wrappedValue: PlacedRun())
+    /// A LAYOUT ENGINE DESCRIBES NO PLACEMENT AT ALL: its own `area` says
+    /// which number carries the run, and not one of the twelve properties is
+    /// on any child - every view wrapped, the watcher of its phase last.
+    func testALayoutEngineDescribesNothingAboutWhereItsViewsGo() {
         let renders = Renders()
 
         let patch = renders.render(
-            PlacedLayout([1, 2], id: \.self) { Text("\($0)") }
-                .placement(run.projectedValue)
+            LayoutEngine([1, 2]) { Text("\($0)") } placements: { _, _ in [] }
                 .id("run")
                 .node)
 
-        func layout(_ patch: HostPatch) -> HostPatch? {
-            if patch.type == .zStack { return patch }
+        guard let placed = Self.layout(patch) else { return XCTFail("no layout was described") }
 
-            for child in patch.children {
-                if let found = layout(child) { return found }
-            }
+        XCTAssertEqual(placed.driven?[.area]?.kind, .placement)
+        XCTAssertEqual(placed.driven?[.area]?.mode, .out)
+        XCTAssertEqual(placed.children.count, 3, "two views and the watcher")
 
-            return nil
-        }
-
-        guard let placed = layout(patch) else { return XCTFail("no layout was described") }
-
-        XCTAssertEqual(
-            placed.driven?[.area],
-            HostStateBinding(state: run.number, mode: .out, kind: .placement, laneKind: .number))
-
-        XCTAssertEqual(placed.children.count, 2)
-
-        for wrapper in placed.children {
+        for wrapper in placed.children.prefix(2) {
             XCTAssertEqual(wrapper.type, .grid, "every face is wrapped, shaded or not")
 
             for named in [Prop.area, .opacity, .zIndex, .rotation, .scale] {
@@ -210,34 +190,33 @@ final class PlacedRunTests: XCTestCase {
 
     /// A SHADED RUN WRAPS TWO, and the shade is the second - which is the
     /// whole of how the host finds one, both children being the library's.
-    func testAShadedDrivenLayoutPutsTheShadeSecond() {
-        let run = State(wrappedValue: PlacedRun())
+    func testAShadedLayoutPutsTheShadeSecond() {
         let renders = Renders()
 
         let patch = renders.render(
-            PlacedLayout([1], id: \.self) { Text("\($0)") }
-                .shade(Rectangle().fill(.black))
-                .placement(run.projectedValue)
+            LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [] }
+                .shade(Rectangle(.black))
                 .id("run")
                 .node)
 
-        func layout(_ patch: HostPatch) -> HostPatch? {
-            if patch.type == .zStack { return patch }
-
-            for child in patch.children {
-                if let found = layout(child) { return found }
-            }
-
-            return nil
-        }
-
-        guard let wrapper = layout(patch)?.children.first else {
+        guard let wrapper = Self.layout(patch)?.children.first else {
             return XCTFail("no wrapper was described")
         }
 
         XCTAssertEqual(wrapper.children.count, 2)
         XCTAssertEqual(wrapper.children[1].type, .rectangle)
         XCTAssertNil(wrapper.children[1].props[.opacity], "the shade's own fade is the number's")
+    }
+
+    /// The layout engine's element in a message.
+    private static func layout(_ patch: HostPatch) -> HostPatch? {
+        if patch.type == .layoutEngine { return patch }
+
+        for child in patch.children {
+            if let found = layout(child) { return found }
+        }
+
+        return nil
     }
 
     /// A ROOM IS A FEED: the host writes it, this side reads it, and no mode

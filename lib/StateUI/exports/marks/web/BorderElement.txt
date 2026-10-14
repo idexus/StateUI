@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 Button.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 Button.lineWidth: ✅
 Button.shape: ✅
@@ -11,6 +11,10 @@ HStack.background: ☑️ A page has no glass: glass is drawn as the blur as cle
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
+LayoutEngine.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
+LayoutEngine.lineWidth: ✅
+LayoutEngine.shape: ✅
+LayoutEngine.stroke: ✅
 ScrollView.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅

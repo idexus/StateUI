@@ -288,27 +288,22 @@ final class DrivenPatchTests: XCTestCase {
     /// The wrapper around each face is the library's own and is always there,
     /// shaded or not - which is what keeps the host's writes off the author's
     /// view. A shaded run wraps two, the shade second.
-    func testADrivenPlacedLayoutRegistersOnTheLayoutAlone() throws {
-        let run = State(wrappedValue: PlacedRun())
-        let room = State(wrappedValue: Rect(0, 0, 0, 0))
-
+    func testALayoutEngineRegistersOnTheLayoutAlone() throws {
         let page = try page(
-            PlacedLayout(["a", "b"], id: \.self) { Text($0) }
-                .shade(Rectangle().fill(.black))
-                .placement(run.projectedValue)
-                .frame(room.projectedValue)
+            LayoutEngine(["a", "b"]) { Text($0) } placements: { _, _ in [] }
+                .shade(Rectangle(.black))
                 .node)
-        let layout = try XCTUnwrap(page.at(.auto(3)))
+        let layout = try XCTUnwrap(page.subtree.first { $0.type == .layoutEngine })
+        let ties = layout.driven?.bindings ?? [:]
 
-        XCTAssertEqual(
-            ties(page, .auto(3)),
-            tied(["area"], to: 1, .out, .placement, .number)
-                .merging(tied(["frame"], to: 2, .in, .feed, .number)) { $1 })
-        XCTAssertEqual(layout.arrangement, [.manual("a"), .manual("b")])
-        XCTAssertEqual(layout.children.map(\.type), [.grid, .grid], "the library's wrapper around each face")
-        XCTAssertEqual(layout.children.map(\.children.count), [2, 2], "the face, then its shade")
+        XCTAssertEqual(ties[.area]?.kind, .placement)
+        XCTAssertEqual(ties[.area]?.mode, .out)
+        XCTAssertEqual(ties[.frame]?.kind, .feed)
+        XCTAssertEqual(ties[.frame]?.mode, .in)
+        XCTAssertEqual(layout.children.map(\.type), [.grid, .grid, .rectangle], "each face wrapped, the watcher last")
+        XCTAssertEqual(layout.children.prefix(2).map(\.children.count), [2, 2], "the face, then its shade")
         XCTAssertTrue(
-            layout.children.flatMap(\.subtree).allSatisfy { $0.driven == nil },
+            layout.children.prefix(2).flatMap(\.subtree).allSatisfy { $0.driven == nil },
             "not one property of a placement on any child")
     }
 

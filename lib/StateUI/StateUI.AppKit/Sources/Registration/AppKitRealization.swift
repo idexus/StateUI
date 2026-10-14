@@ -176,12 +176,18 @@ enum AppKitRealization {
         .complete("ZStack", "accessibilityIdentifier"),
         .complete("ZStack", "ignoresInput"),
         .complete("ZStack", "padding"),
+        .complete("LayoutEngine", "background"),
+        .complete("LayoutEngine", "shape"),
+        .complete("LayoutEngine", "lineWidth"),
+        .complete("LayoutEngine", "stroke"),
+        .complete("LayoutEngine", "accessibilityIdentifier"),
+        .complete("LayoutEngine", "ignoresInput"),
         .notPlanned("ActivityIndicator", "tint", reason: accentColoured),
         .notPlanned("ProgressBar", "tint", reason: accentColoured),
         .notPlanned("Switch", "tint", reason: accentColoured),
         .notPlanned("Button", "iconSpacing",
                     reason: "AppKit's button stands its picture at its own gap from the words: it takes no other."),
-    ] + dayPickers
+    ] + dayPickers + HostRecord.layoutEngine
 
     /// Why a progress indicator and a switch take no colour of their own.
     private static let accentColoured = "AppKit draws it in the accent colour the user chooses: it takes none of its own."

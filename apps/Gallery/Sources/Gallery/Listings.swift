@@ -4522,6 +4522,288 @@ enum Listings {
             }
         }
         """#,
+        "LayoutEngineSample": #"""
+        // Sources/Samples/Layout/LayoutEngineSample.swift
+        #if canImport(Darwin)
+        import Darwin
+        #elseif canImport(Android)
+        import Android
+        #elseif canImport(Glibc)
+        import Glibc
+        #elseif canImport(CRT)
+        import CRT
+        #elseif canImport(WASILibc)
+        import WASILibc
+        #endif
+
+        /// The cards: what each picture is called and which file it is.
+        static let cards: [Card] = [
+            Card(name: "Mural", art: "art_mural.png"),
+            Card(name: "Nebula", art: "art_nebula.png"),
+            Card(name: "Ridge", art: "art_ridge.png"),
+            Card(name: "Bloom", art: "art_bloom.png"),
+            Card(name: "Tide", art: "art_tide.png"),
+            Card(name: "Prism", art: "art_prism.png"),
+            Card(name: "Grove", art: "art_grove.png"),
+        ]
+
+        /// One card's face.
+        struct Card {
+            let name: String
+            let art: String
+        }
+
+        /// What the ring places: every card, and a dot for each at the board's
+        /// foot - one arithmetic for both, so the dots move with the cards.
+        enum Piece: Hashable {
+            case card(Int)
+            case dot(Int)
+        }
+
+        static let pieces = cards.indices.map(Piece.card) + cards.indices.map(Piece.dot)
+
+        /// How far the hand travels to turn the ring by one card, in device units.
+        static let reach = 90.0
+
+        /// How big a card is.
+        static let width = 176.0
+        static let height = 248.0
+
+        /// Whether the ring is turned by DRAGGING it rather than by scrolling. Both
+        /// move the same arithmetic; a scroller cannot be laid over a view that is
+        /// to be taken hold of, so the two swap places.
+        @State private var grabbing = false
+
+        /// WHICH CARD IS AT THE FRONT - the phase, two-way: `Back` and `Next`
+        /// write it and the ring travels there; a swipe names the card it passes
+        /// and the one it comes to rest on. It starts on the middle card.
+        @State private var turn = Double(LayoutEngineSample.cards.count / 2)
+
+        /// How far the cards have been DRAGGED, handed on with `$`, so it describes
+        /// nothing when it moves: the arithmetic follows it on the host's frames.
+        @State private var dragged = 0.0
+
+        var body: some View {
+            // A GRID rather than a stack: the board takes whatever room is left
+            // over, which a stack cannot give a child - and a ring wants it all.
+            Grid {
+                Grid {
+                    // THE BOARD, under everything.
+                    Rectangle(Palette.raised)
+
+                    // THE CARDS, and what moves them - the whole of the example.
+                    ring
+                }
+                .gridRow(0)
+                // The cards stay ON the board: one turned far out in a small room
+                // is cut at the board's edge rather than painted over the page.
+                .clipsContent(true)
+
+                HStack {
+                    // INSIDE these braces, because that is where `grabbing` is
+                    // read: the switch below is the only thing here a build
+                    // depends on, and the ring itself turns for no build at all.
+                    DebugInfoLabel()
+
+                    Button("Back")
+                        .isEnabled(!grabbing)
+                        .onClicked { move(-1) }
+
+                    Button("Next")
+                        .isEnabled(!grabbing)
+                        .onClicked { move(1) }
+                }
+                .horizontalAlignment(.center)
+                .gridRow(1)
+
+                SwitchRow(
+                    "Turn by panning",
+                    Binding(
+                        get: { grabbing },
+                        set: { taking in
+                            // ONE NUMBER AT EACH HANDOVER: the drag is folded
+                            // into the phase, so whichever input comes next
+                            // starts from the card the ring stands nearest - the
+                            // scroller, built afresh by the swap, included.
+                            turn = turned(turn).rounded()
+                            dragged = 0
+                            grabbing = taking
+                        }))
+                .horizontalAlignment(.center)
+                .gridRow(2)
+            }
+            .rows(.fill, .auto, .auto)
+        }
+
+        /// The ring of cards and its dots, placed by the arithmetic below - the
+        /// same views whichever way the user turns them.
+        @ViewBuilder
+        private var ring: some View {
+            let layout = LayoutEngine(Self.pieces) { piece in
+                switch piece {
+                case .card(let index):
+                    face(Self.cards[index])
+                case .dot:
+                    Rectangle(Palette.text)
+                }
+            } placements: { room, phase in
+                // THE WHOLE LAYOUT, run on the display's own frames whenever the
+                // room, the phase or the drag has moved, with no view built.
+                let at = turned(phase)
+
+                return Self.cards.indices.map { place($0, at, room) }
+                    + Self.cards.indices.map { dot($0, at, room) }
+            }
+            .phase($turn)
+            // WHERE THE RING MAY COME TO REST: on a card, never between two.
+            .snapTargets(Self.cards.indices.map(Double.init))
+            .following($dragged)
+            // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
+            // over every card, wearing the card's own corners - which is why it is
+            // the application's to give and not the library's to draw.
+            .shade(Rectangle(Color("#000000")).cornerRadius(16))
+            .motion(.eased(.milliseconds(300), .cubicOut))
+
+            if grabbing {
+                // TAKEN HOLD OF: the drag is written into a value, and no scroller
+                // is laid over the cards - a scroller claims a drag before
+                // anything under it hears about one.
+                layout.panX($dragged)
+            } else {
+                // SCROLLED: an empty scroller lies over the cards. A finger drag,
+                // a two-finger trackpad swipe and a mouse wheel are ONE thing to a
+                // scroller and three different things to anything else.
+                layout.input(.scroll(.horizontal, pointsPerUnit: Self.reach))
+            }
+        }
+
+        /// A card either way, from a button: the ring travels there, and the
+        /// arithmetic follows it frame by frame.
+        private func move(_ by: Int) {
+            turn = max(0, min(Double(Self.cards.count - 1), turn + Double(by)))
+        }
+
+        /// How far the ring is turned, in CARDS, from the phase as it stands - a
+        /// whole number at rest and whatever the hand says while it moves.
+        ///
+        /// A READING FROM OUTSIDE IS NOT A NUMBER UNTIL IT IS CHECKED: a platform
+        /// that reports through a transform can answer with no number at all, and
+        /// `Int()` on one of those does not return.
+        private func turned(_ phase: Double) -> Double {
+            // A DRAG COUNTS THE OTHER WAY: the phase grows as the ring moves left,
+            // and a finger going left reports a negative distance.
+            let turned = phase - dragged / Self.reach
+
+            guard turned.isFinite else { return 0 }
+
+            // AND A DRAG HAS NO ENDS: a scroller cannot be pulled past its length,
+            // but a hand can - so the arithmetic is what holds the ring to its
+            // cards.
+            return min(max(turned, 0), Double(Self.cards.count - 1))
+        }
+
+        /// One card's face - a picture and its name, and nothing at all about where
+        /// the card is or which way it faces. That is the placement's, and keeping
+        /// the two apart is what lets one run of cards be turned into any shape.
+        private func face(_ card: Card) -> some View {
+            ZStack {
+                Grid {
+                    Image(ImageSource(card.art))
+                        .contentMode(.fill)
+
+                    VStack {
+                        // ONE LINE, whatever the card's width: a caption that
+                        // wrapped would change the picture's height with it.
+                        Text(card.name)
+                            .fontWeight(.bold)
+                            .lineBreak(.tailTruncation)
+
+                        Text("Placed by arithmetic")
+                            .opacity(0.8)
+                            .lineBreak(.tailTruncation)
+                    }
+                    // A dark strip under the words, so a caption reads over a
+                    // picture of any colour.
+                    .verticalAlignment(.end)
+                }
+                // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL
+                // the card is cut at its own room - the Web's reaches two points
+                // past it - so the grid holding it - a layout, with edges to cut
+                // at - cuts it there.
+                .clipsContent(true)
+            }
+            .style(.card)
+            .lineWidth(0)
+        }
+
+        /// How big the cards are in THIS room, as a multiple of the size above -
+        /// what every distance below scales with.
+        ///
+        /// BOTH AXES: a card takes at most half the room's width and stands within
+        /// its height, and the smaller of the two answers, so a window grown
+        /// taller draws a bigger ring and a phone on its side - plenty of width,
+        /// almost no height - is answered by the height.
+        private func fit(in room: Rect) -> Double {
+            min(
+                1.375,
+                max(room.width, 1) * 0.5 / Self.width,
+                max(room.height, 1) / (Self.height * 1.16))
+        }
+
+        /// A RING, turned to `at` - each card lying along the circle, the one at
+        /// the front largest. The whole of the layout.
+        private func place(_ index: Int, _ at: Double, _ room: Rect) -> Placement {
+            let count = Self.cards.count
+            let fit = fit(in: room)
+            let step = Double(index) - at
+            let angle = step / Double(max(count, 1)) * 2 * .pi
+            let radius = min(room.width, room.height) / 2 - 56 * fit
+            let along = angle * 180 / .pi + 90
+
+            return Placement(
+                card(room, up: -sin(angle) * radius, across: cos(angle) * radius, fit: fit),
+                transform: .rotate(along).scale(0.52 + 0.16 * chosen(step)),
+                // THE FAR CARDS DARKEN. `shade` is the opacity of the view the
+                // layout was given by `.shade(_:)` - nothing at all without one -
+                // and here it is how far round the ring the card has gone. A FADE
+                // would show the card behind it, which on a ring is every other
+                // card.
+                shade: min(abs(step) / 3, 0.55),
+                zIndex: 1000 - Int(min(abs(step), 99) * 100))
+        }
+
+        /// One dot at the board's foot, saying which card is at the front by a
+        /// fade - over every card.
+        private func dot(_ index: Int, _ at: Double, _ room: Rect) -> Placement {
+            let count = Self.cards.count
+
+            return Placement(
+                Rect(
+                    room.width / 2 + (Double(index) - Double(count - 1) / 2) * 13 - 3,
+                    room.height - 16,
+                    6,
+                    6),
+                opacity: 0.25 + 0.75 * chosen(Double(index) - at),
+                zIndex: 2000)
+        }
+
+        /// How much of "the chosen one" a card is: 1 at the front, nothing a card
+        /// away, and part way between while the ring is moving - which is what
+        /// makes the emphasis cross over rather than jump.
+        private func chosen(_ step: Double) -> Double {
+            max(0, 1 - abs(step))
+        }
+
+        /// A card's rectangle: the same size wherever it stands, in the middle of
+        /// the room and then moved onto the circle by the arithmetic above.
+        private func card(_ room: Rect, up: Double, across: Double, fit: Double) -> Rect {
+            Rect(
+                room.width / 2 + across - Self.width * fit / 2,
+                room.height / 2 + up - Self.height * fit / 2,
+                Self.width * fit,
+                Self.height * fit)
+        }
+        """#,
         "LifecycleSample": #"""
         // Sources/Samples/Windows/LifecycleSample.swift
         /// The window's log, kept by its gallery window. It is written by `MainPage`
@@ -6653,317 +6935,6 @@ enum Listings {
                         reports = 0
                     }
             }
-        }
-        """#,
-        "PlacedSample": #"""
-        // Sources/Samples/Layout/PlacedSample.swift
-        #if canImport(Darwin)
-        import Darwin
-        #elseif canImport(Android)
-        import Android
-        #elseif canImport(Glibc)
-        import Glibc
-        #elseif canImport(CRT)
-        import CRT
-        #elseif canImport(WASILibc)
-        import WASILibc
-        #endif
-
-        /// The cards: what each picture is called and which file it is.
-        static let cards: [Card] = [
-            Card(name: "Mural", art: "art_mural.png"),
-            Card(name: "Nebula", art: "art_nebula.png"),
-            Card(name: "Ridge", art: "art_ridge.png"),
-            Card(name: "Bloom", art: "art_bloom.png"),
-            Card(name: "Tide", art: "art_tide.png"),
-            Card(name: "Prism", art: "art_prism.png"),
-            Card(name: "Grove", art: "art_grove.png"),
-        ]
-
-        /// One card's face.
-        struct Card {
-            let name: String
-            let art: String
-        }
-
-        /// How far the hand travels to turn the ring by one card, in device units.
-        static let reach = 90.0
-
-        /// How big a card is.
-        static let width = 176.0
-        static let height = 248.0
-
-        /// Whether the ring is turned by DRAGGING it rather than by scrolling. Both
-        /// move the same arithmetic; a scroller cannot be laid over a view that is
-        /// to be taken hold of, so the two swap places.
-        @State private var grabbing = false
-
-        /// How far the run has been SCROLLED, and how far it has been DRAGGED -
-        /// both handed on, so neither describes anything when it moves. The
-        /// arithmetic below reads both and the host runs it on its own frames.
-        /// The offset is walked: a button's write glides, and `value` is where
-        /// the scroller IS, frame by frame. It starts on the middle card; a
-        /// scroller - the first, or one built afresh - stands where this value
-        /// says once it is laid out.
-        @State private var scrolled = Point(Double(PlacedSample.cards.count / 2) * PlacedSample.reach, 0)
-
-        @State private var dragged = 0.0
-
-        /// WHERE EVERY CARD GOES, and where every dot at the board's foot goes -
-        /// one run of placements each, written by the engines below and worn by
-        /// the host on its own frames. Nothing about a card's place is described.
-        @State private var ring = PlacedRun()
-
-        @State private var dots = PlacedRun()
-
-        /// The room each of the two layouts was given, which is what the
-        /// arithmetic works in. The host writes them; nothing here does.
-        @State private var room = Rect(0, 0, 0, 0)
-
-        @State private var dotRoom = Rect(0, 0, 0, 0)
-
-        /// How far the ring is turned, in CARDS - a whole number at rest and
-        /// whatever the scroller says while it is moving.
-        ///
-        /// A READING FROM OUTSIDE IS NOT A NUMBER UNTIL IT IS CHECKED: a platform
-        /// that reports through a transform can answer with no number at all, and
-        /// `Int()` on one of those does not return.
-        private var at: Double {
-            // A DRAG COUNTS THE OTHER WAY: a scroller's offset grows as the run
-            // moves left, and a finger going left reports a negative distance.
-            let turned = ($scrolled.journey.value.x - dragged) / Self.reach
-
-            guard turned.isFinite else { return 0 }
-
-            // AND A DRAG HAS NO ENDS: a scroller cannot be pulled past its length,
-            // but a hand can - so the arithmetic is what holds the ring to its
-            // cards.
-            return min(max(turned, 0), Double(Self.cards.count - 1))
-        }
-
-        var body: some View {
-            // A GRID rather than a stack: the board takes whatever room is left
-            // over, which a stack cannot give a child - and a ring wants it all.
-            Grid {
-                Grid {
-                    // THE BOARD, under everything.
-                    Rectangle(Palette.raised)
-
-                    // THE CARDS, and what moves them - the whole of the example.
-                    // Nothing here is described again while the ring turns: the
-                    // arithmetic READS two continuous values, the host runs it on
-                    // its own frames, and the numbers land on the cards.
-                    if grabbing {
-                        // TAKEN HOLD OF: the drag is written into a value, and a
-                        // scroller is not laid over the cards at all - a scroller
-                        // claims a drag before anything under it hears about one.
-                        Grid {
-                            cards
-                        }
-                        .panX($dragged)
-                    } else {
-                        // SCROLLED: an empty scroller lies over the cards and its
-                        // offset is the value. A finger drag, a two-finger
-                        // trackpad swipe and a mouse wheel are ONE thing to a
-                        // scroller and three different things to anything else.
-                        ScrollReader(across: Double(Self.cards.count - 1) * Self.reach) {
-                            cards
-                        }
-                        .scrollOffset($scrolled)
-                        // AT REST ON A CARD: the scroller stops where the throw
-                        // leaves it, and a write carries it on to the one it is
-                        // nearest.
-                        .onScrollStopped {
-                            let card = min(max(($scrolled.journey.value.x / Self.reach).rounded(), 0), Double(Self.cards.count - 1))
-                            scrolled = Point(card * Self.reach, 0)
-                        }
-                    }
-
-                    // WHICH CARD IS AT THE FRONT, said by a fade - a second layout
-                    // and a second engine over the SAME two values, over the board's foot
-                    // and taking no touches. Inside the board rather than in a row
-                    // of its own, because a phone on its side has no height to
-                    // spare for one.
-                    PlacedLayout(Self.cards, id: \.name) { _ in
-                        Rectangle(Palette.text)
-                    }
-                    .placement($dots)
-                    .frame($dotRoom)
-                    .ignoresInput(true)
-                    .engine(following: $scrolled, $dragged, $dotRoom) { _ in
-                        dots = PlacedRun(Self.cards.indices.map { dot($0, Self.cards.count) })
-                    }
-                }
-                .gridRow(0)
-                // The cards stay ON the board: one turned far out in a small room
-                // is cut at the board's edge rather than painted over the page.
-                .clipsContent(true)
-
-                HStack {
-                    // INSIDE these braces, because that is where `grabbing` is
-                    // read: the switch below is the only thing here a build
-                    // depends on, and the ring itself turns for no build at all.
-                    DebugInfoLabel()
-
-                    Button("Back")
-                        .isEnabled(!grabbing)
-                        .onClicked { move(-1) }
-
-                    Button("Next")
-                        .isEnabled(!grabbing)
-                        .onClicked { move(1) }
-                }
-                .horizontalAlignment(.center)
-                .gridRow(1)
-
-                SwitchRow(
-                    "Turn by panning",
-                    Binding(
-                        get: { grabbing },
-                        set: { taking in
-                            // ONE NUMBER AT EACH HANDOVER: the two values are
-                            // folded into the scroll alone, so whichever input
-                            // comes next starts from where the ring stands -
-                            // the scroller, built afresh by the swap, included.
-                            let standing = at.rounded() * Self.reach
-
-                            dragged = 0
-                            $scrolled.journey.snap(to: Point(standing, 0))
-                            grabbing = taking
-                        }))
-                .horizontalAlignment(.center)
-                .gridRow(2)
-            }
-            .rows(.fill, .auto, .auto)
-        }
-
-        /// The ring of cards, placed by the arithmetic below - the same views
-        /// whichever way the user turns them.
-        private var cards: some View {
-            PlacedLayout(Self.cards, id: \.name) { card in
-                face(card)
-            }
-            // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn over
-            // every card, wearing the card's own corners - which is why it is the
-            // application's to give and not the library's to draw.
-            .shade(Rectangle(Color("#000000")).cornerRadius(16))
-            .placement($ring)
-            .frame($room)
-            // THE WHOLE LAYOUT, run on the display's own frames whenever one of
-            // the three values it reads has moved. A PLACEMENT WORKED OUT FROM
-            // SOMETHING THE USER IS MOVING DOES NOT TRAVEL - a card a fifth of a
-            // second behind the hand is a card that lags - which is what a
-            // `PlacedRun` written with no law of its own says.
-            .engine(following: $scrolled, $dragged, $room) { _ in
-                ring = PlacedRun(Self.cards.indices.map {
-                    place($0, Self.cards.count, room)
-                })
-            }
-        }
-
-        /// A card either way, from a button: the scroller is what moves, so this
-        /// sends its offset gliding and the arithmetic follows it frame by frame.
-        private func move(_ by: Int) {
-            let slot = max(0, min(Double(Self.cards.count - 1), (at + Double(by)).rounded()))
-
-            $scrolled.journey.move(to: Point(slot * Self.reach, 0), .eased(.milliseconds(300), .cubicOut))
-        }
-
-        /// One card's face - a picture and its name, and nothing at all about where
-        /// the card is or which way it faces. That is the placement's, and keeping
-        /// the two apart is what lets one run of cards be turned into any shape.
-        private func face(_ card: Card) -> some View {
-            ZStack {
-                Grid {
-                    Image(ImageSource(card.art))
-                        .contentMode(.fill)
-
-                    VStack {
-                        // ONE LINE, whatever the card's width: a caption that
-                        // wrapped would change the picture's height with it.
-                        Text(card.name)
-                            .fontWeight(.bold)
-                            .lineBreak(.tailTruncation)
-
-                        Text("Placed by arithmetic")
-                            .opacity(0.8)
-                            .lineBreak(.tailTruncation)
-                    }
-                    // A dark strip under the words, so a caption reads over a
-                    // picture of any colour.
-                    .verticalAlignment(.end)
-                }
-                // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL
-                // the card is cut at its own room - the Web's reaches two points
-                // past it - so the grid holding it - a layout, with edges to cut
-                // at - cuts it there.
-                .clipsContent(true)
-            }
-            .style(.card)
-            .lineWidth(0)
-        }
-
-        /// How big the cards are in THIS room, as a multiple of the size above -
-        /// what every distance below scales with.
-        ///
-        /// BOTH AXES: a card takes at most half the room's width and stands within
-        /// its height, and the smaller of the two answers, so a window grown
-        /// taller draws a bigger ring and a phone on its side - plenty of width,
-        /// almost no height - is answered by the height.
-        private func fit(in room: Rect) -> Double {
-            min(
-                1.375,
-                max(room.width, 1) * 0.5 / Self.width,
-                max(room.height, 1) / (Self.height * 1.16))
-        }
-
-        /// A RING, which the scroller rotates - each card lying along the circle,
-        /// the one at the front largest. The whole of the layout.
-        private func place(_ index: Int, _ count: Int, _ room: Rect) -> Placement {
-            let fit = fit(in: room)
-            let step = Double(index) - at
-            let angle = step / Double(max(count, 1)) * 2 * .pi
-            let radius = min(room.width, room.height) / 2 - 56 * fit
-            let along = angle * 180 / .pi + 90
-
-            return Placement(
-                card(room, up: -sin(angle) * radius, across: cos(angle) * radius, fit: fit),
-                transform: .rotate(along).scale(0.52 + 0.16 * chosen(step)),
-                // THE FAR CARDS DARKEN. `shade` is the opacity of the view the
-                // layout was given by `.shade(_:)` - nothing at all without one -
-                // and here it is how far round the ring the card has gone. A FADE
-                // would show the card behind it, which on a ring is every other
-                // card.
-                shade: min(abs(step) / 3, 0.55),
-                zIndex: 1000 - Int(min(abs(step), 99) * 100))
-        }
-
-        /// One dot at the board's foot, saying which card is at the front by a fade.
-        private func dot(_ index: Int, _ count: Int) -> Placement {
-            Placement(
-                Rect(
-                    dotRoom.width / 2 + (Double(index) - Double(count - 1) / 2) * 13 - 3,
-                    dotRoom.height - 16,
-                    6,
-                    6),
-                opacity: 0.25 + 0.75 * chosen(Double(index) - at))
-        }
-
-        /// How much of "the chosen one" a card is: 1 at the front, nothing a card
-        /// away, and part way between while the ring is moving - which is what
-        /// makes the emphasis cross over rather than jump.
-        private func chosen(_ step: Double) -> Double {
-            max(0, 1 - abs(step))
-        }
-
-        /// A card's rectangle: the same size wherever it stands, in the middle of
-        /// the room and then moved onto the circle by the arithmetic above.
-        private func card(_ room: Rect, up: Double, across: Double, fit: Double) -> Rect {
-            Rect(
-                room.width / 2 + across - Self.width * fit / 2,
-                room.height / 2 + up - Self.height * fit / 2,
-                Self.width * fit,
-                Self.height * fit)
         }
         """#,
         "PlatformSupportSample": #"""

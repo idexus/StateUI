@@ -58,8 +58,8 @@ final class Catalog {
                 title: "Driven values",
                 summary: "The second layer: a value handed on with $ and carried by the "
                     + "host on its own frames - engines follow it and nothing is "
-                    + "described. A layout placed by one is under Layout, as "
-                    + "PlacedLayout.",
+                    + "described. A layout moved by one is under Layout, as "
+                    + "LayoutEngine.",
                 icon: ImageSource(light: "nav_driven.png", dark: "nav_driven_dark.png"),
                 card: ImageSource("cat_driven.png"),
                 samples: [
@@ -163,7 +163,7 @@ final class Catalog {
                     Sample(StackLayoutSample()),
                     Sample(GridSample()),
                     Sample(ZStackSample()),
-                    Sample(PlacedSample()),
+                    Sample(LayoutEngineSample()),
                     Sample(ScrollViewSample()),
                     Sample(SizingSample()),
                     Sample(OutlineSample()),

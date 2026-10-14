@@ -435,16 +435,17 @@ private final class ScrollWheelSpyView: NSScrollView {
 
 
 /// A run the user can scroll 300 points beyond its room, answering a tap on
-/// its first hundred.
+/// its one view, the first hundred.
 private struct TappedRun: View {
-    @State private var across = Point.zero
-
     var body: some View {
-        ScrollReader(across: 300) {
-            Rectangle().fill(Color("#3366FF"))
+        LayoutEngine([0]) { _ in
+            Rectangle(Color("#3366FF"))
+        } placements: { room, _ in
+            [Placement(Rect(0, 0, 100, room.height))]
         }
-        .scrollOffset($across)
-        .onTapped(within: { room in Rect(0, 0, 100, room.height) }) {}
+        .input(.scroll(.horizontal, pointsPerUnit: 300))
+        .snapTargets([0, 1])
+        .onItemTapped { _ in }
     }
 }
 /// A tall strip whose offset a state carries, read back by a label.

@@ -110,6 +110,7 @@ enum WebRealization {
         .partial("HStack", "background", missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
         .partial("VStack", "background", missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
         .partial("ZStack", "background", missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
+        .partial("LayoutEngine", "background", missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
         .partial("Window", "background", missing: "A page draws its window opaque: a blur or glass shows its colour."),
         .notPlanned("Window", "maximumHeight", reason: "A page bounds no browser window: the user sizes it."),
         .notPlanned("Window", "maximumWidth", reason: "A page bounds no browser window: the user sizes it."),
@@ -119,7 +120,7 @@ enum WebRealization {
         .notPlanned("Window", "width", reason: "A page sizes no browser window: the user does, and the page fills it."),
         .notPlanned("Window", "x", reason: "A page places no browser window: the system does."),
         .notPlanned("Window", "y", reason: "A page places no browser window: the system does."),
-    ] + pickerOpening + dayFields
+    ] + pickerOpening + dayFields + HostRecord.layoutEngine
 
     /// A day's and a time's field: left to right, whatever the direction around them.
     private static let dayFields: [HostRecord] = ["DatePicker", "TimePicker"].map { picker in

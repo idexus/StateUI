@@ -1,4 +1,4 @@
-# revision 12.2
+# revision 13.2
 ActivityIndicator.automationExcludedWithChildren: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 Button.frameChanged: ✅
 Button.maximumHeight: ✅
@@ -12,8 +12,7 @@ Capsule.rotation: ✅
 CheckBox.accessibilityHeading: ✅
 CheckBox.translationY: ✅
 DatePicker.layoutDirection: ✅
-Divider.ignoresInput: ✅
-Divider.scale: ✅
+Divider.accessibilityLabel: ✅
 Ellipse.scaleY: ✅
 Ellipse.style: ✅
 Grid.isAccessibilityHidden: ✅
@@ -26,44 +25,47 @@ Image.minimumHeight: ✅
 Image.minimumWidth: ✅
 Image.rotationY: ✓ read rotationY of Image: the host's own tip, checked against the projection it laid on the element
 ItemsView.accessibilityHint: ✅
-Line.translationX: ✅
-Line.zIndex: ✅
-Map.automationExcludedWithChildren: 🧩
-Path.accessibilityHeading: ✅
-Picker.isEnabled: ✅
-Picker.rotation: ✅
-Polygon.accessibilityLabel: ✅
-Polygon.isEnabled: ✅
-Polyline.layoutDirection: ✓ read layoutDirection of Polyline: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-ProgressBar.frame: ✅
-ProgressBar.scaleX: ✅
-RadioButton.accessibilityHeading: ✅
-Rectangle.frameChanged: ✅
-Rectangle.height: ✅
-Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own tip, checked against the projection it laid on the element
-Rectangle.width: ✅
-ScrollView.accessibilityLabel: ✅
-ScrollView.isEnabled: ✅
-SearchField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Slider.frame: ✅
-Slider.scaleX: ✅
-Spacer.isAccessibilityHidden: ✅
-Stepper.frameChanged: ✅
-Stepper.maximumHeight: ✅
-Stepper.maximumWidth: ✅
-Stepper.minimumHeight: ✅
-Stepper.minimumWidth: ✅
-Stepper.rotationY: ✓ read rotationY of Stepper: the host's own tip, checked against the projection it laid on the element
-Switch.tooltip: ✅
+LayoutEngine.translationX: ✅
+LayoutEngine.zIndex: ✅
+Line.accessibilityHeading: ✅
+Map.isEnabled: 🧩
+Map.rotation: 🧩
+Path.isVisible: ✅
+Path.pivotX: ✅
+Picker.scaleY: ✅
+Picker.style: ✅
+Polygon.automationExcludedWithChildren: ✅
+Polyline.frameChanged: ✅
+Polyline.maximumHeight: ✅
+Polyline.maximumWidth: ✅
+Polyline.minimumHeight: ✅
+Polyline.minimumWidth: ✅
+Polyline.rotationY: ✓ read rotationY of Polyline: the host's own tip, checked against the projection it laid on the element
+ProgressBar.accessibilityHint: ✅
+RadioButton.isVisible: ✅
+RadioButton.pivotX: ✅
+Rectangle.translationX: ✅
+Rectangle.zIndex: ✅
+ScrollView.automationExcludedWithChildren: ✅
+SearchField.frameChanged: ✅
+SearchField.height: ✅
+SearchField.rotationX: ✓ read rotationX of SearchField: the host's own tip, checked against the projection it laid on the element
+SearchField.width: ✅
+Slider.accessibilityHint: ✅
+Spacer.opacity: ✅
+Spacer.pivotY: ✅
+Stepper.accessibilityHeading: ✅
+Stepper.translationY: ✅
+Switch.layoutDirection: ✅
 Text.opacity: ✅
 Text.pivotY: ✅
-TextEditor.isEnabled: ✅
-TextEditor.rotation: ✅
-TextField.accessibilityLabel: ✅
-TimePicker.isVisible: ✅
-TimePicker.pivotX: ✅
-VStack.translationX: ✅
-VStack.zIndex: ✅
-WebView.accessibilityHint: ✅
-ZStack.opacity: ✅
-ZStack.pivotY: ✅
+TextEditor.scaleY: ✅
+TextEditor.style: ✅
+TextField.automationExcludedWithChildren: ✅
+TimePicker.ignoresInput: ✅
+TimePicker.scale: ✅
+VStack.accessibilityHeading: ✅
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
+WebView.background: not realized
+ZStack.frame: ✅
+ZStack.scaleX: ✅

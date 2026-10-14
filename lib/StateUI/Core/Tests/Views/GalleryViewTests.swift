@@ -5,9 +5,9 @@
 // how long the run the user swipes is, and what the one number the scroller
 // sends it does.
 //
-// A GalleryView is made of things that already exist - a ScrollReader over a
-// PlacedLayout, with a number between them - so there is nothing in a host to
-// check it against and everything worth pinning is here.
+// A GalleryView is a LayoutEngine with the arithmetic of three shapes
+// written, so there is nothing in a host to check it against and everything
+// worth pinning is here.
 
 import XCTest
 
@@ -144,9 +144,9 @@ final class GalleryViewTests: XCTestCase {
         }
     }
 
-    /// The ZStack the cards are placed in.
+    /// The layout the cards are placed in.
     private func board(_ patch: HostPatch) -> HostPatch {
-        find(.zStack, in: patch) ?? patch
+        find(.layoutEngine, in: patch) ?? patch
     }
 
     /// The run the gallery's engine wrote, driven the way the host drives it:
@@ -415,7 +415,7 @@ final class GalleryViewTests: XCTestCase {
     func testAShadedGalleryDarkensWhereItWouldHaveFaded() {
         let plain = settled { self.gallery(5).node }
 
-        guard let without = placements(plain).last?.opacity else {
+        guard let without = placements(plain).card(4)?.opacity else {
             return XCTFail("a far card said nothing about how opaque it is")
         }
 
@@ -425,7 +425,7 @@ final class GalleryViewTests: XCTestCase {
                 .node
         }
 
-        guard let with = placements(shaded).last?.opacity else {
+        guard let with = placements(shaded).card(4)?.opacity else {
             return XCTFail("a far card of a shaded run said nothing")
         }
 
@@ -444,7 +444,7 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(wrapper.children.count, 2)
         XCTAssertNil(wrapper.children[1].props[.opacity], "the shade's own fade is the number's")
 
-        guard let dark = placements(shaded).last?.shade else {
+        guard let dark = placements(shaded).card(4)?.shade else {
             return XCTFail("the shade said nothing about how dark it is")
         }
 
@@ -497,7 +497,7 @@ final class GalleryViewTests: XCTestCase {
                 self.gallery(5)
                     .shade(Rectangle().fill(Color("#000000")), amount: amount)
                     .node
-            }).last?.shade ?? -1
+            }).card(4)?.shade ?? -1
         }
 
         XCTAssertEqual(shade(of: 4), shade(of: 1), accuracy: 0.001, "above is the whole of it")
@@ -788,7 +788,7 @@ final class GalleryViewTests: XCTestCase {
     /// The box a tap is answered on, if the gallery laid one.
     private func tappable(in patch: HostPatch) -> HostPatch? {
         func walk(_ node: HostPatch) -> HostPatch? {
-            if node.type == .rectangle, node.events?[.tapped] != nil { return node }
+            if node.events?[.tapped] != nil { return node }
 
             for child in node.children {
                 if let found = walk(child) { return found }
@@ -800,31 +800,27 @@ final class GalleryViewTests: XCTestCase {
         return walk(patch)
     }
 
-    /// Where the box that answers a tap stands - which is on the READER's own
+    /// Where the box under the card in front stands - which is on the layout's own
     /// number rather than in the tree: the box follows the offset, and an offset
     /// moves far too often to describe.
     private func tapBox(in patch: HostPatch) -> Rect? {
         func holder(_ node: HostPatch) -> HostPatch? {
-            if node.type == .zStack, tappable(in: node) != nil { return node }
-
             for child in node.children {
                 if let found = holder(child) { return found }
             }
 
-            return nil
+            return node.type == .layoutEngine && node.children.contains { $0.events?[.tapped] != nil } ? node : nil
         }
 
         guard let run = holder(patch)?.driven?[.area]?.state else { return nil }
 
-        let board = Renderer.shared.board(for: .display)
+        // The room fed, as the host does, so the engine has a room to put the boxes in.
+        _ = placements(patch)
 
-        _ = board.cycle(now: turned, reducesMotion: false)
-        turned += 16
-        _ = board.cycle(now: turned, reducesMotion: false)
-        turned += 16
+        // The run's length is the first; the box under the card in front, the first card, the second.
+        let boxes = standing(run, as: PlacedRun.self)?.placements ?? []
 
-        // The run's length is the first of the two; the target is the second.
-        return standing(run, as: PlacedRun.self)?.placements.last?.bounds
+        return boxes.count > 1 ? boxes[1].bounds : nil
     }
 
     /// How big each card's FACE is drawn inside its placement - the press, and
@@ -850,7 +846,7 @@ final class GalleryViewTests: XCTestCase {
         let showing = laid(renders, { self.gallery(3).isSwipeEnabled(false).node }).whole
 
         XCTAssertNil(find(.scrollView, in: showing))
-        XCTAssertNotNil(find(.zStack, in: showing))
+        XCTAssertNotNil(find(.layoutEngine, in: showing))
     }
 
     /// And one with nothing to show shows what it was given instead.
@@ -881,8 +877,8 @@ final class GalleryViewTests: XCTestCase {
 
         let run = placements(showing)
 
-        guard run.count == 3 else {
-            return XCTFail("the engine placed \(run.count) cards of three")
+        guard run.count == 5 else {
+            return XCTFail("the engine placed \(run.count) children of five: three cards, the scroller, the watcher")
         }
 
         XCTAssertEqual(run[0].bounds.x, 88, accuracy: 0.001)
@@ -906,57 +902,29 @@ final class GalleryViewTests: XCTestCase {
             laid(Renders(), { self.gallery(3).shade(Rectangle().fill(.black)).node }).whole)
 
         XCTAssertEqual(shaded.first?.shade, 0, "the card in front wears none of it")
-        XCTAssertTrue((shaded.last?.shade ?? -1) > 0, "and a card behind it wears some")
+        XCTAssertTrue((shaded.card(2)?.shade ?? -1) > 0, "and a card behind it wears some")
     }
 
     /// A CHANGE OF SHAPE REACHES THE CARDS - end to end, through the number: the
-    /// gallery is told another shape, the deferral writes it down, and what
-    /// the engine puts on the number is where the new shape says the cards go.
-    ///
-    /// The last reading is taken after a REVISIT, which is the clean walk a
-    /// state write really causes. That the shape must be read in the BODY for
-    /// any of it to happen is `CycleTests.testAStateOnlyAnEngineReadsArmsNothing`,
-    /// which is where that rule is held.
+    /// shape is read in the gallery's body, so another shape is a change of the
+    /// description, and the engine the render arms again puts the cards where
+    /// the new shape says.
     func testAChangeOfShapeReachesTheCards() {
         let renders = Renders()
 
         _ = laid(renders, { self.gallery(3).node })
 
-        // The shape is worn a render LATE, so the first of these fires the
-        // handler that writes it down and the second is the one that wears it.
-        _ = renders.render(self.gallery(3).arrangement(.row).node)
-
         let lined = placements(renders.render(self.gallery(3).arrangement(.row).node))
-
-        _ = renders.render(self.gallery(3).arrangement(.fan).node)
-
-        let fanned = placements(renders.revisit(changed: Renderer.shared.pendingChanges))
+        let fanned = placements(renders.render(self.gallery(3).arrangement(.fan).node))
 
         // THE CARD BEHIND, never the one in front: the front card stands in
         // the middle of the room whatever shape the run is in, and it is where
         // its NEIGHBOURS go that the three shapes disagree about.
-        guard let row = lined.last?.bounds, let fan = fanned.last?.bounds else {
+        guard let row = lined.card(2)?.bounds, let fan = fanned.card(2)?.bounds else {
             return XCTFail("the gallery placed no cards")
         }
 
-        XCTAssertNotEqual(row, fan, """
-            the cards stand where the shape they were last told puts them, \
-            and a write only the engine would have read moves nothing
-            """)
-
-        // THE DEFERRAL SLEEPS BEFORE IT LETS GO, so it is ended here rather
-        // than left for whichever test runs next: the gallery leaving cancels
-        // its sleep, and the run ends on the turn its cancellation wakes.
-        let before = RunSlot.underWay
-        _ = renders.render(Text("gone").node)
-
-        for _ in 0..<500 where RunSlot.underWay > 0 || UIThreadExecutor.shared.pendingCount > 0 {
-            turnTheUIThread()
-        }
-
-        XCTAssertGreaterThan(before, 0, "the shape's deferral never ran")
-        XCTAssertEqual(RunSlot.underWay, 0, "the shape's deferral was left running")
-        XCTAssertEqual(UIThreadExecutor.shared.pendingCount, 0)
+        XCTAssertNotEqual(row, fan, "the cards stand where the shape they were last told puts them")
     }
 
     /// Whether ANYTHING in this patch answers the event - a gesture lands on
@@ -996,5 +964,13 @@ final class GalleryViewTests: XCTestCase {
                 drags,
                 "a \(formFactor) answers a drag \(drags ? "when it should" : "when it should not")")
         }
+    }
+}
+
+private extension Array where Element == Placement {
+    /// The placement of one card, or nil where the run placed none - the scroller and the watcher stand after the
+    /// cards.
+    func card(_ index: Int) -> Placement? {
+        indices.contains(index) ? self[index] : nil
     }
 }

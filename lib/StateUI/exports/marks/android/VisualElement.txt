@@ -1,4 +1,4 @@
-# revision 12.1
+# revision 13.1
 ActivityIndicator.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
@@ -383,6 +383,38 @@ ItemsView.translationX: ✅
 ItemsView.translationY: ✅
 ItemsView.width: ✅
 ItemsView.zIndex: ✅
+LayoutEngine.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
+LayoutEngine.accessibilityHint: ✅
+LayoutEngine.accessibilityLabel: ✅
+LayoutEngine.automationExcludedWithChildren: ✅
+LayoutEngine.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+LayoutEngine.frame: ✅
+LayoutEngine.frameChanged: ✅
+LayoutEngine.height: ✅
+LayoutEngine.ignoresInput: cannot read what reaches LayoutEngine - Android's driver has no path for it yet
+LayoutEngine.isAccessibilityHidden: ✅
+LayoutEngine.isEnabled: ✅
+LayoutEngine.isVisible: ✅
+LayoutEngine.layoutDirection: ✅
+LayoutEngine.maximumHeight: ✅
+LayoutEngine.maximumWidth: ✅
+LayoutEngine.minimumHeight: ✅
+LayoutEngine.minimumWidth: ✅
+LayoutEngine.opacity: ✅
+LayoutEngine.pivotX: ✅
+LayoutEngine.pivotY: ✅
+LayoutEngine.rotation: ✅
+LayoutEngine.rotationX: ✅
+LayoutEngine.rotationY: ✅
+LayoutEngine.scale: ✅
+LayoutEngine.scaleX: ✅
+LayoutEngine.scaleY: ✅
+LayoutEngine.style: not realized
+LayoutEngine.tooltip: ✅
+LayoutEngine.translationX: ✅
+LayoutEngine.translationY: ✅
+LayoutEngine.width: ✅
+LayoutEngine.zIndex: ✅
 Line.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅

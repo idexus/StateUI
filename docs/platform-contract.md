@@ -106,6 +106,7 @@ of its members each meets, and why a cell is empty.
 | [HStack](controls/HStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Image](controls/Image.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ItemsView](controls/ItemsView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [LayoutEngine](controls/LayoutEngine.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Line](controls/Line.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Map](controls/Map.md) | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 | 🧩 |
 | [Marker](controls/Marker.md) | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 | 🧩 |
@@ -180,10 +181,12 @@ platform's collection shows it. Its host adapters map to `NSCollectionView`,
 `GtkGridView`, and a semantic DOM list/grid; each member's mark is its case's
 verdict on that host, as for every element.
 
-`ForEach`, `GeometryReader`, `ScrollReader`, `PlacedLayout`, and `GalleryView` are
-StateUI compositions or readers rather than additional platform controls. The
-core implements them once; their platform behavior depends only on the
-primitive rows they use.
+`ForEach`, `GeometryReader` and `GalleryView` are StateUI compositions or
+readers rather than additional platform controls. The core implements them
+once; their platform behavior depends only on the rows they use.
+`LayoutEngine` is an element of StateUI's own - its arithmetic, its phase and
+the hand that moves it are the core's - which every host stands on its ZStack,
+and its row below says how far each host carries it.
 
 ## Native control mapping
 
@@ -211,7 +214,7 @@ contract.
 | `Divider` | an `NSBox` separator | a hairline `UIView` in the separator colour | a `View` in the theme's list divider | a line in `DividerStrokeColorDefaultBrush` | a `GtkSeparator` | `<hr>` |
 | `MenuSeparator` | a separator `NSMenuItem` | a group break in a `UIMenu` | a group divider in a menu | `MenuFlyoutSeparator` | a section break in a `GMenu` | `role=separator` in an ARIA `menu` |
 | `ToolbarItemGroup` / `ToolbarItem` | `NSToolbarItem`; `NSMenuToolbarItem` overflow | `UIBarButtonItemGroup` / `UIBarButtonItem` | `Toolbar` `MenuItem` | `CommandBar` `AppBarButton` in the `TitleBar` | `GtkButton` in an `AdwHeaderBar` | `<button>` in an ARIA `toolbar` |
-| `ZStack` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid, one shared cell |
+| `ZStack` / `LayoutEngine` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid, one shared cell |
 | `VStack` / `HStack` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | flexbox |
 | `Grid` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid |
 | `Spacer` | empty `NSView` the stack's arithmetic sizes | empty `UIView` | empty `View` | empty `Grid` | empty `GtkWidget` | empty `<div>` |
@@ -457,6 +460,7 @@ Every control, and every part an application, its windows and its pages are made
 | [HStack](controls/HStack.md) | 76 | 38 ✅ · 1 ☑️ · 35 ✓ | 35 ✅ · 1 ☑️ · 37 ✓ · 1 – | 58 ✅ · 3 ☑️ · 12 ✓ | 61 ✅ · 1 ☑️ · 12 ✓ · 1 – | 50 ✅ · 1 ☑️ · 23 ✓ · 2 – | 54 ✅ · 1 ☑️ · 20 ✓ |
 | [Image](controls/Image.md) | 69 | 31 ✅ · 2 ☑️ · 35 ✓ | 30 ✅ · 2 ☑️ · 35 ✓ · 1 – | 53 ✅ · 3 ☑️ · 10 ✓ | 54 ✅ · 13 ✓ · 1 – | 44 ✅ · 1 ☑️ · 22 ✓ · 1 – | 47 ✅ · 1 ☑️ · 20 ✓ |
 | [ItemsView](controls/ItemsView.md) | 81 | 39 ✅ · 2 ☑️ · 39 ✓ | 33 ✅ · 2 ☑️ · 41 ✓ · 4 – | 63 ✅ · 3 ☑️ · 13 ✓ | 67 ✅ · 1 ☑️ · 12 ✓ | 54 ✅ · 1 ☑️ · 23 ✓ · 1 – | 58 ✅ · 1 ☑️ · 21 ✓ |
+| [LayoutEngine](controls/LayoutEngine.md) | 75 | 32 ✅ · 1 ☑️ · 35 ✓ · 1 – | 31 ✅ · 1 ☑️ · 37 ✓ · 2 – | 52 ✅ · 3 ☑️ · 12 ✓ · 1 – | 58 ✅ · 1 ☑️ · 12 ✓ · 2 – | 43 ✅ · 1 ☑️ · 23 ✓ · 3 – | 51 ✅ · 1 ☑️ · 20 ✓ · 1 – |
 | [Line](controls/Line.md) | 77 | 40 ✅ · 2 ☑️ · 35 ✓ | 39 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 3 ☑️ · 10 ✓ | 63 ✅ · 13 ✓ · 1 – | 53 ✅ · 1 ☑️ · 22 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ |
 | [Map](controls/Map.md) | 74 | 36 ✅ · 2 ☑️ · 36 ✓ | 35 ✅ · 2 ☑️ · 36 ✓ · 1 – | 74 🧩 | 74 🧩 | 74 🧩 | 74 🧩 |
 | [Path](controls/Path.md) | 77 | 40 ✅ · 2 ☑️ · 35 ✓ | 39 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 3 ☑️ · 10 ✓ | 63 ✅ · 13 ✓ · 1 – | 53 ✅ · 1 ☑️ · 22 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ |
@@ -479,10 +483,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 76 | 38 ✅ · 1 ☑️ · 35 ✓ | 36 ✅ · 1 ☑️ · 36 ✓ · 1 – | 59 ✅ · 3 ☑️ · 11 ✓ | 61 ✅ · 1 ☑️ · 12 ✓ · 1 – | 51 ✅ · 1 ☑️ · 22 ✓ · 2 – | 54 ✅ · 1 ☑️ · 20 ✓ |
 | [WebView](controls/WebView.md) | 82 | 44 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 2 ☑️ · 38 ✓ · 1 – | 63 ✅ · 3 ☑️ · 12 ✓ · 3 – | 49 ✅ · 13 ✓ · 19 – | 56 ✅ · 1 ☑️ · 24 ✓ · 1 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [ZStack](controls/ZStack.md) | 75 | 37 ✅ · 1 ☑️ · 35 ✓ | 34 ✅ · 1 ☑️ · 37 ✓ · 1 – | 57 ✅ · 3 ☑️ · 12 ✓ | 60 ✅ · 1 ☑️ · 12 ✓ · 1 – | 49 ✅ · 1 ☑️ · 23 ✓ · 2 – | 53 ✅ · 1 ☑️ · 20 ✓ |
-| ✅ |  | 1345 | 1262 | 2024 | 2101 | 1739 | 1873 |
-| ✓ |  | 1210 | 1245 | 375 | 410 | 770 | 661 |
-| – |  | 25 | 80 | 38 | 38 | 47 | 18 |
-| **Met** | 2672 | **2580** | **2587** | **2437** | **2549** | **2556** | **2552** |
+| ✅ |  | 1377 | 1293 | 2076 | 2159 | 1782 | 1924 |
+| ✓ |  | 1245 | 1282 | 387 | 422 | 793 | 681 |
+| – |  | 26 | 82 | 39 | 40 | 50 | 19 |
+| **Met** | 2747 | **2648** | **2657** | **2502** | **2621** | **2625** | **2624** |
 | 🧩 |  | 0 | 0 | 74 | 74 | 74 | 74 |
 
 ### Application structure
@@ -622,13 +626,13 @@ realizes the element and each of its members.
 
 `ActivityIndicator`, `Application`, `Button`, `ButtonMenu`, `Canvas`, `Capsule`,
 `CheckBox`, `ContextMenu`, `DatePicker`, `Divider`, `Ellipse`, `Grid`, `HStack`,
-`Image`, `ItemsView`, `Line`, `Map`, `Marker`, `Menu`, `MenuBar`, `MenuItem`,
-`MenuSeparator`, `ModalStack`, `NavigationStack`, `Overlay`, `Page`, `Path`,
-`Picker`, `Polygon`, `Polyline`, `ProgressBar`, `RadioButton`, `Rectangle`,
-`Scene`, `ScrollView`, `SearchField`, `Slider`, `Spacer`, `SplitView`,
-`Stepper`, `Switch`, `TabView`, `Text`, `TextEditor`, `TextField`, `TextSpan`,
-`TextSpans`, `TimePicker`, `TitleView`, `ToolbarItem`, `ToolbarItemGroup`,
-`VStack`, `WebView`, `Window`, `ZStack`.
+`Image`, `ItemsView`, `LayoutEngine`, `Line`, `Map`, `Marker`, `Menu`,
+`MenuBar`, `MenuItem`, `MenuSeparator`, `ModalStack`, `NavigationStack`,
+`Overlay`, `Page`, `Path`, `Picker`, `Polygon`, `Polyline`, `ProgressBar`,
+`RadioButton`, `Rectangle`, `Scene`, `ScrollView`, `SearchField`, `Slider`,
+`Spacer`, `SplitView`, `Stepper`, `Switch`, `TabView`, `Text`, `TextEditor`,
+`TextField`, `TextSpan`, `TextSpans`, `TimePicker`, `TitleView`, `ToolbarItem`,
+`ToolbarItemGroup`, `VStack`, `WebView`, `Window`, `ZStack`.
 
 ### Properties
 
