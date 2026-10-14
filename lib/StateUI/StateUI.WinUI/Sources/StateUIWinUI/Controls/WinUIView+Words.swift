@@ -68,11 +68,12 @@ extension WinUIView {
 }
 
 extension TextStyle {
-    /// The style's size on WinUI's type ramp, in DIPs: the Display, Title, Subtitle, BodyStrong, Body and Caption
-    /// text block styles.
+    /// The style's size on WinUI's type ramp, in DIPs: the TitleLarge, Title, Subtitle, BodyStrong, Body and Caption
+    /// text block styles - the largest title WinUI's own pages head with, as the other platforms' largest is; its
+    /// Display is twice that.
     var winUISize: Double {
         switch self {
-        case .display: 68
+        case .display: 40
         case .title: 28
         case .subtitle: 20
         case .headline, .body: 14

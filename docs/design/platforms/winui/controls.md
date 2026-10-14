@@ -458,9 +458,11 @@ goes to one - and every navigation after it.
 ## A text style
 
 Words in a text style stand at the size and weight of WinUI's text block style
-for it: `.display` Display's 68, `.title` Title's 28, `.subtitle` Subtitle's
-20 and `.headline` BodyStrong's 14, each semibold, `.body` Body's 14 and
-`.caption` Caption's 12. The size and weight the tree gives stand over the
+for it: `.display` TitleLarge's 40, `.title` Title's 28, `.subtitle`
+Subtitle's 20 and `.headline` BodyStrong's 14, each semibold, `.body` Body's
+14 and `.caption` Caption's 12. The largest is the largest title WinUI's own
+pages head with, in proportion to the other platforms' largest (26 to 34);
+WinUI's Display, 68, stands twice that. The size and weight the tree gives stand over the
 style's (`TextLook.standing`), and every element showing words - a text
 block, a button, a field - takes them as its `FontSize` and `FontWeight`; a
 weight of none clears the element's own back to the theme's.
