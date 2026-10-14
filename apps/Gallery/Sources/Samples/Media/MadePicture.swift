@@ -1,18 +1,29 @@
 /// A picture the application makes itself: its pixels written as a PNG's bytes.
 enum MadePicture {
-    /// A `side` by `side` picture of rings in `hue` (0 to 1), as a PNG.
+    /// A `side` by `side` picture of rings in `hue` (0 to 1), as a PNG - each pixel the share of it every
+    /// colour covers, so its edges stand smooth.
     static func rings(side: Int, hue: Double) -> [UInt8] {
-        let colour = rgb(hue: hue)
+        let colour = rgb(hue: hue).map(Double.init)
+        let (radius, band, samples) = (Double(side) / 2, Double(side) / 18, 4)
         var pixels: [UInt8] = []
         pixels.reserveCapacity(side * side * 4)
-        let middle = Double(side - 1) / 2
         for y in 0..<side {
             for x in 0..<side {
-                let distance = ((Double(x) - middle) * (Double(x) - middle) + (Double(y) - middle) * (Double(y) - middle))
-                    .squareRoot()
-                let inside = distance <= middle + 0.5
-                let band = Int(distance / 4) % 2 == 0
-                pixels += inside ? (band ? colour : [255, 255, 255]) + [255] : [0, 0, 0, 0]
+                var (sum, covered) = ([0.0, 0.0, 0.0], 0)
+                for row in 0..<samples {
+                    for column in 0..<samples {
+                        let dx = Double(x) + (Double(column) + 0.5) / Double(samples) - radius
+                        let dy = Double(y) + (Double(row) + 0.5) / Double(samples) - radius
+                        let distance = (dx * dx + dy * dy).squareRoot()
+                        guard distance <= radius else { continue }
+                        let ink = Int(distance / band) % 2 == 0 ? colour : [255, 255, 255]
+                        sum = zip(sum, ink).map(+)
+                        covered += 1
+                    }
+                }
+                let alpha = Double(covered) / Double(samples * samples) * 255
+                pixels += covered == 0 ? [0, 0, 0, 0] : sum.map { UInt8(($0 / Double(covered)).rounded()) }
+                    + [UInt8(alpha.rounded())]
             }
         }
         return png(width: side, height: side, rgba: pixels)

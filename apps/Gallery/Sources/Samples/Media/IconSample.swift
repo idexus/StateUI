@@ -51,8 +51,8 @@ struct IconSample: SampleContent, ExampleContent {
             SectionTitle("Made as bytes")
 
             HStack {
-                // Three pixels a point, shown as large as the icons above.
-                Image(ImageSource(bytes: MadePicture.rings(side: 72, hue: hue)))
+                // Four pixels a point, shown as large as the icons above.
+                Image(ImageSource(bytes: MadePicture.rings(side: 96, hue: hue)))
                     .width(24)
                     .height(24)
                     .verticalAlignment(.center)
