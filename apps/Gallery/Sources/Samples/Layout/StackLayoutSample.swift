@@ -81,8 +81,10 @@ struct StackLayoutSample: SampleContent, ExampleContent {
 
             HStack {
                 Text("Bold")
+                    .fontWeight(.bold)
                 Divider()
                 Text("Italic")
+                    .fontAttributes(.italic)
             }
             .spacing(8)
         }

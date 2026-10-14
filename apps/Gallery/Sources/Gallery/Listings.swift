@@ -3685,7 +3685,7 @@ enum Listings {
                         .gridRow(2)
                         .gridColumnSpan(2)
                 }
-                .rows(.fixed(64), .fixed(64), .auto)
+                .rows(.fixed(64, count: 2), .auto)
                 .columns(.fill, .proportional(wideSecondColumn ? 2 : 1))
 
                 // Changing a definition patches the grid in place: the cells keep
@@ -6183,35 +6183,61 @@ enum Listings {
             VStack {
                 VStack {
                     Text("A column")
+                        .fontSize(15)
                     Text("rounded, with a hairline")
+                        .fontSize(13)
+                        .textColor(Palette.subtle)
                 }
+                .spacing(2)
+                .padding(16)
                 .stroke(Palette.outline)
                 .lineWidth(1)
+                .shape(.roundedRectangle(12))
 
                 HStack {
                     Text("A row,")
+                        .fontSize(15)
                     Text("square and thicker")
+                        .fontSize(15)
                 }
+                .spacing(6)
+                .padding(16)
                 .stroke(Palette.accent)
                 .lineWidth(3)
+                .shape(.rectangle)
+
+                // Its ends round whole however wide it stands.
+                HStack {
+                    Text("A capsule, as wide as its row")
+                        .fontSize(15)
+                }
+                .padding(horizontal: 20, vertical: 10)
+                .stroke(Palette.accent)
+                .lineWidth(2)
+                .shape(.capsule)
 
                 ZStack {
                     Text("An ellipse")
+                        .fontSize(15)
                         .horizontalAlignment(.center)
                         .verticalAlignment(.center)
                 }
+                .padding(24)
                 .stroke(Palette.accent)
+                .shape(.ellipse)
 
                 // The box fills the ZStack; its corners are cut only while the
                 // ZStack clips what it holds.
                 ZStack {
                     Rectangle().fill(Palette.accent)
                 }
+                .shape(.roundedRectangle(24))
                 .clipsContent(clips)
                 .height(60)
 
                 SwitchRow("Cut what it holds", $clips)
             }
+            .spacing(12)
         }
         """#,
         "OwnGates": #"""
@@ -8590,6 +8616,7 @@ enum Listings {
 
                 HStack {
                     Text("Bold")
+                        .fontWeight(.bold)
                     Divider()
                     Text("Italic")
                 }
