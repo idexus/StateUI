@@ -68,3 +68,4 @@ winui Layout 2
 gtk Layout 2
 TextField 2
 SearchField 2
+Polyline 2

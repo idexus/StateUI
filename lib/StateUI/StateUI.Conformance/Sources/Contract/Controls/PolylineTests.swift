@@ -18,7 +18,8 @@
                 let moved = State(wrappedValue: false)
                 s.start {
                     VStack {
-                        Polyline(moved.wrappedValue ? [Point(0, 30), Point(40, 30)] : [Point(0, 10), Point(40, 10)])
+                        // Down the two sides, the figure as tall as its room, and across at the height read.
+                        Polyline(moved.wrappedValue ? Self.across(at: 30) : Self.across(at: 10))
                             .stroke(.red).lineWidth(4).contentMode(.center).width(40).height(40).id("shape")
                         Button("Move").onClicked { moved.wrappedValue = true }.id("change")
                     }
@@ -26,10 +27,12 @@
                 }
                 let shape = try s.element("shape")
                 try s.settle { try s.shows(.red, on: shape, at: Point(20, 10)) }
+                s.expect(try s.color(of: shape, at: Point(20, 10)), shows: .red, "through its points")
                 s.expect(try s.color(of: shape, at: Point(20, 30)), nil, "nowhere else")
 
                 try s.perform(.activate, on: s.element("change"))
                 try s.settle { try s.shows(.red, on: shape, at: Point(20, 30)) }
+                s.expect(try s.color(of: shape, at: Point(20, 30)), shows: .red, "through the points the tree moved")
                 s.expect(try s.color(of: shape, at: Point(20, 10)), nil, "the points the tree moved")
             },
             ConformanceCase("aFilledPolylineCrossingItselfIsFilledByItsRule", proves: [
@@ -53,5 +56,11 @@
                 s.expect(try s.color(of: shape, at: Point(20, 20)), shows: .blue, "nonzero: the middle filled")
             },
         ]
+    }
+
+    /// A run down the left side to `y`, across the room at `y`, and down the right side: as tall and wide as the
+    /// room its figure stands in, so the points read are the room's own.
+    static func across(at y: Double) -> [Point] {
+        [Point(0, 0), Point(0, y), Point(40, y), Point(40, 40)]
     }
 }
