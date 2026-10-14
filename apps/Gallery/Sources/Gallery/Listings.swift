@@ -640,6 +640,8 @@ enum Listings {
             #endif
             #if APPKIT || WINUI || GTK
             .padding(horizontal: 16, vertical: 6)
+            #elseif UIKIT
+            .padding(horizontal: 22, vertical: 10)
             #else
             .padding(horizontal: 16, vertical: 11)
             #endif
