@@ -10,8 +10,8 @@ import XCTest
 final class WinUITextStyleTests: XCTestCase {
     /// Each style stands at its step of WinUI's type ramp - the largest at TitleLarge, the largest title WinUI's own
     /// pages head with, in proportion to the other platforms' largest.
-    func testEachStyleStandsAtItsStepOfTheRamp() throws {
-        try onUIThread {
+    func testEachStyleStandsAtItsStepOfTheRamp() {
+        onUIThread {
             let styles: [TextStyle] = [.display, .title, .subtitle, .headline, .body, .caption]
             let host = WinUIRenderer.running {
                 VStack { ForEach(Array(styles.enumerated()), id: \.offset) { Text("Words").textStyle($0.element) } }
