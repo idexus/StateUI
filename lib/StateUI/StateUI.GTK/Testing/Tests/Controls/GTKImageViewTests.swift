@@ -127,6 +127,20 @@ final class GTKImageViewTests: XCTestCase {
         }
     }
 
+    /// Every icon stands in Adwaita, which holds the fewest of the themes: what it has no icon of, the host brings.
+    func testEveryIconStandsInAdwaita() throws {
+        try onUIThread {
+            _ = GTKRenderer.running { VStack { Text("Icons") } }
+            let theme = gtk_icon_theme_new()!
+            defer { g_object_unref(UnsafeMutableRawPointer(theme)) }
+            gtk_icon_theme_set_theme_name(theme, "Adwaita")
+            for icon in Icon.allCases {
+                let name = icon.name(in: theme)
+                XCTAssertNotEqual(gtk_icon_theme_has_icon(theme, name), 0, "no \(name) for \(icon)")
+            }
+        }
+    }
+
     /// Every icon is one the theme holds, by its symbolic name.
     func testEveryIconIsTheThemes() throws {
         try onUIThread {
@@ -134,7 +148,8 @@ final class GTKImageViewTests: XCTestCase {
             let text = try XCTUnwrap(host.views(GTKTextualView.self).first)
             let theme = gtk_icon_theme_get_for_display(gtk_widget_get_display(text.widget))
             for icon in Icon.allCases {
-                XCTAssertNotEqual(gtk_icon_theme_has_icon(theme, icon.themeName), 0, "no \(icon.themeName) for \(icon)")
+                let name = icon.name(in: theme)
+                XCTAssertNotEqual(gtk_icon_theme_has_icon(theme, name), 0, "no \(name) for \(icon)")
             }
         }
     }

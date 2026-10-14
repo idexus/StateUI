@@ -146,7 +146,7 @@ final class GTKImageView: GTKPanelView {
         let scale = max(gtk_widget_get_scale_factor(widget), 1)
         let side = Int32(min(place.width, place.height).rounded(.up))
         guard let paintable = gtk_icon_theme_lookup_icon(
-            theme, icon.themeName, nil, side, scale, GTK_TEXT_DIR_NONE, GtkIconLookupFlags(rawValue: 0))
+            theme, icon.name(in: theme), nil, side, scale, GTK_TEXT_DIR_NONE, GtkIconLookupFlags(rawValue: 0))
         else { return }
         defer { g_object_unref(UnsafeMutableRawPointer(paintable)) }
 

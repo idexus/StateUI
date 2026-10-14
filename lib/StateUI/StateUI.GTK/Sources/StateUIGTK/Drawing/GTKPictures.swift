@@ -30,7 +30,7 @@ enum GTKPictures {
             g_object_unref(UnsafeMutableRawPointer(icon))
             g_object_unref(UnsafeMutableRawPointer(file))
         case .icon(let icon):
-            image = gtk_image_new_from_icon_name(icon.themeName)
+            image = gtk_image_new_from_icon_name(icon.name(in: gtk_icon_theme_get_for_display(gdk_display_get_default())))
         case .bytes(let bytes):
             guard let texture = texture(of: bytes) else { return nil }
             image = gtk_image_new_from_paintable(texture)

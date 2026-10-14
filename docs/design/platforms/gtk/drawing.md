@@ -57,7 +57,12 @@ changes.
 ## Icons
 
 An icon is the theme's symbolic icon, by its freedesktop or Adwaita name
-(`Icon.themeName`). An image stands it at the theme's normal icon size, 16
+(`Icon.themeName`). Where the theme holds none - Adwaita draws no heart since
+`emblem-favorite` left it, though Ubuntu's Yaru still does - the host brings
+its own, as GNOME's applications bring theirs: a symbolic SVG of StateUI's
+own drawing, written once to a folder of the user's runtime directory that
+the theme then searches (`GTKOwnIcons`), so an image and a bar find it by
+name alike (`Icon.name(in:)`). An image stands it at the theme's normal icon size, 16
 logical pixels, where nothing gives it room, and fills the room it is placed
 in by its aspect: the theme gives the icon at that size times the display's
 scale, and the image draws it in the colour of the words around it, so a
