@@ -132,7 +132,10 @@ A Switch is WinUI's `ToggleSwitch`, a CheckBox its `CheckBox` and a
 RadioButton its `RadioButton`, one view kind in the host: whether it is on,
 whether it can be turned, and the turn the user makes, each telling it through
 the same callback. A check box has no caption, so it takes no caption's room:
-the box alone, where WinUI's own style would reserve the width of words.
+the box alone, where WinUI's own style would reserve the width of words. A
+switch has no words of its own either: WinUI's "On" and "Off" beside its
+track are left empty, and the room its style keeps for them with them; the
+words beside a switch are a view of the page's.
 
 Which of a radio button's set loses its check is the host's. A set is named
 across the window, or is the buttons beside one that names none, and only

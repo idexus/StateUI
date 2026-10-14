@@ -27,7 +27,12 @@ namespace {
 
 extern "C" StateUIObjectRef stateui_winui_switch_make(int64_t view) {
     try {
+        // The track and nothing else: a switch has no words of its own, WinUI's "On" and "Off" among them, so it
+        // takes no words' room.
         controls::ToggleSwitch toggle;
+        toggle.OnContent(winrt::box_value(L""));
+        toggle.OffContent(winrt::box_value(L""));
+        toggle.MinWidth(0);
         toggle.Toggled(guarded("handling Toggled", [view](IInspectable const &sender, xaml::RoutedEventArgs const &) {
             callbacks.toggled(view, sender.as<controls::ToggleSwitch>().IsOn());
         }));
