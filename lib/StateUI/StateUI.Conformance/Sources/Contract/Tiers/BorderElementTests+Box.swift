@@ -13,8 +13,8 @@ extension BorderElementTests {
 
     /// Whether `color`, inside `element`'s outline, is none of the outline: nothing at all in a layout, anything but
     /// the outline's red where a button's own face stands.
-    static func bare(_ color: Color?, inside element: String) -> Bool {
-        element == "Button" ? color != .red : color == nil
+    static func bare(_ color: ShownColor?, inside element: String) -> Bool {
+        element == "Button" ? color?.shows(.red) != true : color == nil
     }
 
     /// The box cases of a layout.

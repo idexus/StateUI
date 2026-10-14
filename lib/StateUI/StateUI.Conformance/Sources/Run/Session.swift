@@ -207,14 +207,26 @@
     }
 
     /// The colour `element` shows at `point` of its own, where StateUI draws it; nil where it shows nothing.
-    public func color(of element: MountedElement, at point: Point) throws -> Color? {
-        try driver.color(of: element, at: point)
+    public func color(of element: MountedElement, at point: Point) throws -> ShownColor? {
+        try driver.color(of: element, at: point).map(ShownColor.init)
     }
 
     /// Whether `element` shows `color` at `point` of its own, as a screen shows a colour StateUI draws.
     /// Design: docs/design/host/conformance.md#a-colour-drawn
     public func shows(_ color: Color, on element: MountedElement, at point: Point) throws -> Bool {
         Self.shows(try self.color(of: element, at: point), color)
+    }
+
+    /// The colours `element` shows at each of `points` of its own, read at once; nil where it shows nothing.
+    /// Design: docs/design/host/conformance.md#a-colour-drawn
+    public func colors(of element: MountedElement, at points: [Point]) throws -> [ShownColor?] {
+        try driver.colors(of: element, at: points).map { $0.map(ShownColor.init) }
+    }
+
+    /// Whether `element` shows `color` at each of `points` of its own, read at once.
+    /// Design: docs/design/host/conformance.md#a-colour-drawn
+    public func shows(_ color: Color, on element: MountedElement, at points: [Point]) throws -> [Bool] {
+        try colors(of: element, at: points).map { Self.shows($0, color) }
     }
 
     /// Where `element` stands in its window, as the toolkit placed it.
@@ -298,7 +310,7 @@
 
     /// Expects `actual` to show `expected`, as a screen shows a colour StateUI draws.
     public func expect(
-        _ actual: Color?, shows expected: Color, _ message: String = "", file: StaticString = #filePath,
+        _ actual: ShownColor?, shows expected: Color, _ message: String = "", file: StaticString = #filePath,
         line: UInt = #line
     ) {
         guard !Self.shows(actual, expected) else { return }
@@ -306,15 +318,9 @@
             + (message.isEmpty ? "" : " - \(message)"), file: file, line: line)
     }
 
-    /// Whether `actual` is `expected` but for the last few steps of each channel, which smoothing an edge takes from
-    /// a colour drawn whole.
-    /// Design: docs/design/host/conformance.md#a-colour-drawn
-    static func shows(_ actual: Color?, _ expected: Color) -> Bool {
-        guard case .color(let red, let green, let blue, let alpha)? = actual?.propValue,
-              case .color(let shownRed, let shownGreen, let shownBlue, let shownAlpha) = expected.propValue
-        else { return false }
-        return zip([red, green, blue, alpha], [shownRed, shownGreen, shownBlue, shownAlpha])
-            .allSatisfy { abs(Int($0) - Int($1)) <= 4 }
+    /// Whether `actual` shows `expected`; nothing shown shows no colour.
+    static func shows(_ actual: ShownColor?, _ expected: Color) -> Bool {
+        actual?.shows(expected) ?? false
     }
 
     /// Reports a failure of the case at `file` and `line`.

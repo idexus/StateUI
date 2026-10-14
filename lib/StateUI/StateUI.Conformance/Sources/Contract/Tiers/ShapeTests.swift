@@ -41,8 +41,8 @@
             }
             let shape = try s.specimen(element)
             let edge = Self.onOutline(element)
-            try s.settle { try s.color(of: shape, at: edge) == .red }
-            s.expect(try s.color(of: shape, at: edge), .red, "on its outline")
+            try s.settle { try s.shows(.red, on: shape, at: edge) }
+            s.expect(try s.color(of: shape, at: edge), shows: .red, "on its outline")
         }
     }
 
@@ -70,8 +70,11 @@
             let fills = element == "Rectangle" || element == "Ellipse"
             let inside = stroked || fills ? Point(40, 20) : Point(55, 5)
             try s.settle { try s.shows(.red, on: shape, at: inside) }
-            s.expect(try s.color(of: shape, at: fills ? Point(40, 20) : probe), fills ? .red : nil,
-                     fills ? "filling its room" : "fitted, its proportions kept")
+            if fills {
+                s.expect(try s.color(of: shape, at: Point(40, 20)), shows: .red, "filling its room")
+            } else {
+                s.expect(try s.color(of: shape, at: probe), nil, "fitted, its proportions kept")
+            }
 
             try s.perform(.activate, on: s.element("change"))
             let across = fills ? Point(40, 20) : probe
@@ -100,7 +103,7 @@
             }
             let shape = try s.specimen(element)
             let before = line ? Point(20, 20) : Point(8, 20)
-            try s.settle { try s.color(of: shape, at: before) == .red }
+            try s.settle { try s.shows(.red, on: shape, at: before) }
 
             try s.perform(.activate, on: s.element("change"))
             try s.settle { try s.color(of: shape, at: before) == nil }

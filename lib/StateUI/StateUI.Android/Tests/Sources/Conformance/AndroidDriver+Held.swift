@@ -281,7 +281,7 @@ extension AndroidDriver {
 
     static let testPixels = Java.findClass("stateui/android/test/TestPixels")
     static let background = Java.staticMethod(testPixels, "background", "(Landroid/view/View;)J")
-    static let pixel = Java.staticMethod(testPixels, "color", "(Landroid/view/View;II)I")
+    static let pixels = Java.staticMethod(testPixels, "colors", "(Landroid/view/View;[I)[I")
     static let paintNothing = Java.staticMethod(testPixels, "paintNothing", "(Landroid/app/Activity;)V")
 
     /// What the host keeps under `key` for the next launch, as it reads it back: a value of the application's from

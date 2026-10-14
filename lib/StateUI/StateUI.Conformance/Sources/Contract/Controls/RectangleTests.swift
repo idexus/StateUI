@@ -18,9 +18,9 @@
                 s.start { VStack { Rectangle().fill(.red).width(100).height(60).id("shape") }.horizontalAlignment(.start) }
                 let shape = try s.element("shape")
 
-                try s.settle { try s.color(of: shape, at: Point(50, 30)) == .red }
-                s.expect(try s.color(of: shape, at: Point(1, 1)), .red, "to its corner")
-                s.expect(try s.color(of: shape, at: Point(99, 59)), .red, "to its other corner")
+                try s.settle { try s.shows(.red, on: shape, at: Point(50, 30)) }
+                s.expect(try s.color(of: shape, at: Point(1, 1)), shows: .red, "to its corner")
+                s.expect(try s.color(of: shape, at: Point(99, 59)), shows: .red, "to its other corner")
             },
             ConformanceCase("itsCornersAreRoundedAwayAsTheTreeSays", proves: [
                 Covered(RectangleContract.cornerRadius),
@@ -34,13 +34,13 @@
                     .horizontalAlignment(.start)
                 }
                 let shape = try s.element("shape")
-                try s.settle { try s.color(of: shape, at: Point(50, 30)) == .red }
+                try s.settle { try s.shows(.red, on: shape, at: Point(50, 30)) }
                 s.expect(try s.color(of: shape, at: Point(1, 1)), nil, "the corner rounded away")
-                s.expect(try s.color(of: shape, at: Point(50, 1)), .red, "the edge between the corners")
+                s.expect(try s.color(of: shape, at: Point(50, 1)), shows: .red, "the edge between the corners")
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.color(of: shape, at: Point(1, 1)) == .red }
-                s.expect(try s.color(of: shape, at: Point(1, 1)), .red, "square once the tree says so")
+                try s.settle { try s.shows(.red, on: shape, at: Point(1, 1)) }
+                s.expect(try s.color(of: shape, at: Point(1, 1)), shows: .red, "square once the tree says so")
             },
             ConformanceCase("aFillFromAStateTakesTheColourItTurnsTo", proves: [
                 Covered(FilledShapeContract.fill, on: "Rectangle"),
@@ -54,11 +54,11 @@
                     .horizontalAlignment(.start)
                 }
                 let shape = try s.element("shape")
-                try s.settle { try s.color(of: shape, at: Point(50, 30)) == .red }
+                try s.settle { try s.shows(.red, on: shape, at: Point(50, 30)) }
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.color(of: shape, at: Point(50, 30)) == .blue }
-                s.expect(try s.color(of: shape, at: Point(50, 30)), .blue, "the colour the state turned to")
+                try s.settle { try s.shows(.blue, on: shape, at: Point(50, 30)) }
+                s.expect(try s.color(of: shape, at: Point(50, 30)), shows: .blue, "the colour the state turned to")
             },
         ]
     }

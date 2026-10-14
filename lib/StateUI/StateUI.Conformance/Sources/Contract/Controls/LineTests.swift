@@ -25,9 +25,9 @@
                 }
                 let shape = try s.element("shape")
 
-                try s.settle { try s.color(of: shape, at: Point(50, 20)) == .red }
-                s.expect(try s.color(of: shape, at: Point(12, 20)), .red, "from its start")
-                s.expect(try s.color(of: shape, at: Point(88, 20)), .red, "to its end")
+                try s.settle { try s.shows(.red, on: shape, at: Point(50, 20)) }
+                s.expect(try s.color(of: shape, at: Point(12, 20)), shows: .red, "from its start")
+                s.expect(try s.color(of: shape, at: Point(88, 20)), shows: .red, "to its end")
                 s.expect(try s.color(of: shape, at: Point(5, 20)), nil, "nothing before its start")
                 s.expect(try s.color(of: shape, at: Point(95, 20)), nil, "nothing past its end")
                 s.expect(try s.color(of: shape, at: Point(50, 30)), nil, "nothing beside it")
@@ -45,15 +45,15 @@
                     .horizontalAlignment(.start)
                 }
                 let shape = try s.element("shape")
-                try s.settle { try s.color(of: shape, at: Point(50, 20)) == .red }
+                try s.settle { try s.shows(.red, on: shape, at: Point(50, 20)) }
 
                 try s.perform(.activate, on: s.element("change"))
                 // The ends travel to their new places: the line has arrived once both points it passes are drawn.
                 try s.settle {
-                    try s.color(of: shape, at: Point(30, 11)) == .red && s.color(of: shape, at: Point(70, 29)) == .red
+                    try s.shows(.red, on: shape, at: Point(30, 11)) && s.shows(.red, on: shape, at: Point(70, 29))
                 }
                 s.expect(try s.color(of: shape, at: Point(30, 20)), nil, "the old line gone")
-                s.expect(try s.color(of: shape, at: Point(70, 29)), .red, "the new one drawn")
+                s.expect(try s.color(of: shape, at: Point(70, 29)), shows: .red, "the new one drawn")
             },
         ]
     }

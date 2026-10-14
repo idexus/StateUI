@@ -35,12 +35,12 @@
             }
             let shape = try s.specimen(element)
             let inside = Point(20, 20)
-            try s.settle { try s.color(of: shape, at: inside) == .red }
-            s.expect(try s.color(of: shape, at: inside), .red)
+            try s.settle { try s.shows(.red, on: shape, at: inside) }
+            s.expect(try s.color(of: shape, at: inside), shows: .red)
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.color(of: shape, at: inside) == .blue }
-            s.expect(try s.color(of: shape, at: inside), .blue, "the colour the tree changed it to")
+            try s.settle { try s.shows(.blue, on: shape, at: inside) }
+            s.expect(try s.color(of: shape, at: inside), shows: .blue, "the colour the tree changed it to")
         }
     }
 }

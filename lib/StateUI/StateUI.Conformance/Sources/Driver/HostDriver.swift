@@ -109,6 +109,10 @@
     /// what StateUI draws itself - a canvas, a shape, a box's fill - never of a native control's look.
     func color(of element: MountedElement, at point: Point) throws -> Color?
 
+    /// The colours `element` shows at each of `points`, in its own coordinates, read at once - a host reading its
+    /// window a frame at a time reads them all from one; nil where it shows nothing.
+    func colors(of element: MountedElement, at points: [Point]) throws -> [Color?]
+
     /// Where `element` stands in its window, as the toolkit placed its view - an item in a collection's cell
     /// included.
     func place(of element: MountedElement) throws -> Rect
@@ -198,6 +202,10 @@ extension HostDriver {
 
     public func color(of element: MountedElement, at point: Point) throws -> Color? {
         throw DriverCannot("read the colour of \(element.type.name)")
+    }
+
+    public func colors(of element: MountedElement, at points: [Point]) throws -> [Color?] {
+        try points.map { try color(of: element, at: $0) }
     }
 
     public func place(of element: MountedElement) throws -> Rect {

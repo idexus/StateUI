@@ -25,11 +25,11 @@
                     .horizontalAlignment(.start)
                 }
                 let shape = try s.element("shape")
-                try s.settle { try s.color(of: shape, at: Point(5, 5)) == .red }
+                try s.settle { try s.shows(.red, on: shape, at: Point(5, 5)) }
                 s.expect(try s.color(of: shape, at: Point(35, 35)), nil, "outside the triangle")
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.color(of: shape, at: Point(35, 35)) == .red }
+                try s.settle { try s.shows(.red, on: shape, at: Point(35, 35)) }
                 s.expect(try s.color(of: shape, at: Point(5, 5)), nil, "the new figure's outside")
             },
         ]

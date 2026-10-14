@@ -45,8 +45,8 @@
                 }
                 let image = try s.element("image")
                 let grid = stride(from: 1.0, to: 32, by: 2).flatMap { x in stride(from: 1.0, to: 32, by: 2).map { Point(x, $0) } }
-                try s.settle { try grid.contains { try s.color(of: image, at: $0) != nil } }
-                s.expect(try grid.contains { try s.color(of: image, at: $0) != nil }, true, "the platform's plus drawn")
+                try s.settle { try s.colors(of: image, at: grid).contains { $0 != nil } }
+                s.expect(try s.colors(of: image, at: grid).contains { $0 != nil }, true, "the platform's plus drawn")
             },
             ConformanceCase("aPictureStandsAtItsOwnSize", proves: [
                 Covered(ImageContract.source),

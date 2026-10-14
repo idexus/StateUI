@@ -197,16 +197,29 @@ final class AndroidDriver: HostDriver {
         Java.frame { Java.texts(Java.callStaticObject(Self.files, Self.launchedForTesting)) }
     }
 
-    /// The colour the window shows at `point` of the view, as the user sees it (`TestPixels.color`); nil where the
-    /// view draws nothing there.
+    /// The colour the window shows at `point` of the view, as the user sees it; nil where the view draws nothing there.
     func color(of element: MountedElement, at point: Point) throws -> Color? {
+        try colors(of: element, at: [point])[0]
+    }
+
+    /// The colours the window shows at each of `points` of the view, read from one copy of it
+    /// (`TestPixels.colors`); nil where the view draws nothing.
+    func colors(of element: MountedElement, at points: [Point]) throws -> [Color?] {
         guard let view = (element.native as? AndroidElement)?.view else {
             throw DriverCannot("read the colour of \(element.type.name)")
         }
-        let argb = UInt32(bitPattern: Java.callStaticInt(
-            Self.testPixels, Self.pixel, .object(view.reference), .int(Int32(point.x * 2)), .int(Int32(point.y * 2))))
-        guard argb >> 24 > 0x80 else { return nil }
-        return Self.color(argb | 0xFF00_0000)
+        let argbs: [Int32] = Java.frame {
+            let pixels = points.flatMap { [Int32($0.x * 2), Int32($0.y * 2)] }
+            guard let shown = Java.callStaticObject(
+                Self.testPixels, Self.pixels, .object(view.reference), .object(Java.ints(pixels)))
+            else { return [] }
+            return Java.intsOf(shown)
+        }
+        guard argbs.count == points.count else { throw DriverCannot("read the colours of \(element.type.name)") }
+        return argbs.map { argb in
+            let argb = UInt32(bitPattern: argb)
+            return argb >> 24 > 0x80 ? Self.color(argb | 0xFF00_0000) : nil
+        }
     }
 
     /// A heading is a view TalkBack meets as one (`isAccessibilityHeading`).

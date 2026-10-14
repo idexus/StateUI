@@ -109,7 +109,7 @@ extension ShapeTests {
     /// rectangle's top edge, an ellipse's top, a figure's top side.
     @MainActor
     static func run(along element: String, width: Double, on shape: MountedElement, in s: Session) throws -> [Bool] {
-        try points(along: element, width: width).map { try s.shows(.red, on: shape, at: $0) }
+        try s.shows(.red, on: shape, at: points(along: element, width: width))
     }
 
     /// The points along `element`'s outline the run is read at.
