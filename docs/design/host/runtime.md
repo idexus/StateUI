@@ -120,7 +120,7 @@ The turn always runs in the same order.
   loop's pass ends        from the page ends   one turn to the UI thread
     |                       |                    |
     v                       v                    v
-  pump:  run the jobs  ->  a pending cycle  ->  render  ->  acts
+  pump:  run the jobs  ->  a pending cycle  ->  render  ->  its cycle  ->  acts
                                                   |
                                                   v
                           PatchIntake.take(_:generation:apply:)
@@ -131,6 +131,13 @@ The turn always runs in the same order.
 ```
 
 The acts come last, so an act lands on the interface its handler just changed.
+
+The cycle a render asks for runs in the same turn, once, before anything is
+drawn: a layout engine's run of the views the render put in stands with them.
+Left to the next frame, the toolkit drew the new views by a run worked out for
+the old - each placed by position, so a view put in at the front stood where
+the one now after it was, and the last stood in no place at all, drawn by its
+own values. A cycle it wakes in turn waits for the frame, so a turn ends.
 
 `Pump` is that turn, once for every runtime. A toolkit gives the runtime one
 `HostPresenter`: what a render changed around the tree - the windows, their

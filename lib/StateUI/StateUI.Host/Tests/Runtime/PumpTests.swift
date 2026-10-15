@@ -10,6 +10,7 @@ import XCTest
 final class PumpTests: XCTestCase {
     override func setUp() async throws {
         _ = HostBoundary.takeActCalls()
+        Renderer.shared.clearStates()
     }
 
     /// The first turn renders the application whole and shows its windows.
@@ -144,6 +145,37 @@ final class PumpTests: XCTestCase {
         XCTAssertEqual(runtime.drifts.count, 1, "the next render applies as it is")
         XCTAssertEqual(runtime.shown.last, "count 2")
     }
+
+    /// A view dealt to a layout stands where its run puts it in the turn that renders it: the cycle the render asks
+    /// for runs before the turn ends, so no frame draws the new views by a run worked out for the old - the last of
+    /// them in no place at all. After a silence too, when that cycle is the one that starts the clock again.
+    @MainActor
+    func testARunStandsWithTheViewsTheRenderDealt() throws {
+        let runtime = TurnRuntime(DealingApplication())
+        runtime.pump.turn()
+        let layout = try XCTUnwrap(runtime.tree.root?.first(type: .layoutEngine))
+        _ = runtime.core.report(.lanes([0, 0, 300, 200]), through: try XCTUnwrap(layout.driven[.frame]))
+        runtime.frame()
+        XCTAssertEqual(layout.placement?.placements.count, 2)
+
+        runtime.time += 16
+        runtime.pump.dispatch(runtime.add)
+
+        XCTAssertEqual(layout.children.count, 3)
+        XCTAssertEqual(layout.placement?.placements.count, 3, "a run of the views it places")
+
+        // The layout comes to rest and the clock lets go, then a silence.
+        for _ in 0..<100 where runtime.held {
+            runtime.time += 16
+            runtime.frame()
+        }
+        XCTAssertFalse(runtime.held, "at rest")
+        runtime.time += 500
+        runtime.pump.dispatch(runtime.add)
+
+        XCTAssertEqual(layout.children.count, 4)
+        XCTAssertEqual(layout.placement?.placements.count, 4, "after a silence")
+    }
 }
 
 /// A page whose handlers add one, the second also calling an act.
@@ -168,13 +200,36 @@ private struct CountingApplication: Application {
     var body: some Scene { WindowGroup { CountingPage() } }
 }
 
+/// A page whose handler deals a layout one more view.
+private struct DealingPage: View {
+    @State private var cards = [0, 1]
+
+    var body: some View {
+        let count = cards.count
+
+        return VStack {
+            Button("Deal")
+                .onClicked { cards.append(cards.count) }
+            LayoutEngine(cards) { Text("\($0)") } placements: { _, _ in
+                (0..<count).map { Placement(Rect(Double($0) * 20, 0, 10, 10)) }
+            }
+        }
+    }
+}
+
+private struct DealingApplication: Application {
+    var body: some Scene { WindowGroup { DealingPage() } }
+}
+
 /// A runtime over the real core with no toolkit: the mounted tree, the display cycle and the pump, recording what
 /// each render showed and each act found.
 @MainActor
-private final class TurnRuntime: TurnPresenter, FrameClock {
+private final class TurnRuntime: TurnPresenter, FramePresenter, FrameClock {
     let core = CoreLink()
     let intake = PatchIntake()
-    let now: () -> Double = { 0 }
+    /// The runtime's time, in milliseconds, as a test moves it.
+    var time = 0.0
+    var now: () -> Double { { [unowned self] in self.time } }
     var held = false
     var onFrame: ((Double) -> Void)?
     private(set) var tree: MountedTree!
@@ -196,8 +251,12 @@ private final class TurnRuntime: TurnPresenter, FrameClock {
     /// What the pump logged of each drift.
     private(set) var drifts: [String] = []
 
-    init() {
-        stateUIUseApp(CountingApplication())
+    convenience init() {
+        self.init(CountingApplication())
+    }
+
+    init(_ application: some Application) {
+        stateUIUseApp(application)
         let animator = Animator()
         let stateChannels = StateChannels(animator: animator)
         let describedMotion = DescribedMotion(animator: animator)
@@ -218,11 +277,17 @@ private final class TurnRuntime: TurnPresenter, FrameClock {
                 self.drifts.append(line)
             })
         pump.presenter = self
+        displayCycle.presenter = self
         core.connectWindow()
     }
 
     var words: String {
         tree.root?.first(type: .text)?.value(.text)?.string ?? ""
+    }
+
+    /// One frame of the display.
+    func frame() {
+        displayCycle.frame(now: now())
     }
 
     var add: Int32 { buttons[0] }
@@ -234,6 +299,18 @@ private final class TurnRuntime: TurnPresenter, FrameClock {
 
     func presentRendered() {
         shown.append(words)
+    }
+
+    var wantsFrames: Bool { false }
+
+    func commitUserReports(now: Double) {}
+
+    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
+        _ = tree.present(states: states, properties: properties)
+    }
+
+    func renderIfNeeded() {
+        if core.needsRender { pump.turn() }
     }
 
     func perform(_ call: HostActCall) {

@@ -13,7 +13,7 @@
 }
 
 /// One turn of a runtime, in the order every runtime keeps: the jobs a resumed handler left, a pending cycle, a
-/// render when the core needs one, the handlers it raised, then the acts.
+/// render when the core needs one and the cycle it asks for, the handlers it raised, then the acts.
 /// Design: docs/design/host/runtime.md#one-turn
 @_spi(Host) @MainActor public final class Pump {
     /// What a turn shows and performs through.
@@ -104,6 +104,12 @@
 
         if tree.root == nil || core.needsRender {
             render()
+
+            // The cycle the render asks for runs before the turn ends: a layout's run stands with the views it places.
+            // Design: docs/design/host/runtime.md#one-turn
+            if tree.root != nil, core.cyclesPending {
+                displayCycle.drain(now: now())
+            }
 
             let created = tree.root?.takeCreatedHandlers() ?? []
             for handler in created {
