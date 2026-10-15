@@ -4569,6 +4569,21 @@ enum Listings {
         static let width = 176.0
         static let height = 248.0
 
+        /// How far the eye stands from the ring's front, in radii: the nearer it
+        /// stands, the smaller a card at the back is drawn.
+        static let eye = 1.6
+
+        /// How far below the horizon the front card stands, in card heights: the
+        /// higher the eye above the ring, the more of the far cards it sees.
+        static let above = 1.9
+
+        /// How tall the whole ring stands, in card heights: the back card's top to
+        /// the front card's foot.
+        static var ringHeight: Double { above - back * (above - 1) }
+
+        /// How big the card at the back is drawn, against the one at the front.
+        static var back: Double { eye / (eye + 2) }
+
         /// Whether the ring is turned by DRAGGING it rather than by scrolling. Both
         /// move the same arithmetic; a scroller cannot be laid over a view that is
         /// to be taken hold of, so the two swap places.
@@ -4737,37 +4752,56 @@ enum Listings {
         /// How big the cards are in THIS room, as a multiple of the size above -
         /// what every distance below scales with.
         ///
-        /// BOTH AXES: a card takes at most half the room's width and stands within
-        /// its height, and the smaller of the two answers, so a window grown
-        /// taller draws a bigger ring and a phone on its side - plenty of width,
-        /// almost no height - is answered by the height.
+        /// BOTH AXES: the ring spread to either side takes the room's width, and
+        /// the ring seen from above - the back card's top to the front card's foot
+        /// - its height above the dots; the smaller of the two answers, so a
+        /// window grown taller draws a bigger ring and a phone on its side -
+        /// plenty of width, almost no height - is answered by the height.
         private func fit(in room: Rect) -> Double {
-            min(
-                1.375,
-                max(room.width, 1) * 0.5 / Self.width,
-                max(room.height, 1) / (Self.height * 1.16))
+            max(
+                min(
+                    1.375,
+                    (room.width * 0.4 - 6) / Self.width,
+                    (room.height - 46) / (Self.height * Self.ringHeight)),
+                0.1)
         }
 
-        /// A RING, turned to `at` - each card lying along the circle, the one at
-        /// the front largest. The whole of the layout.
+        /// A RING IN SPACE, turned to `at` - the cards standing upright on a
+        /// circle that lies flat, seen from in front and above, the chosen card
+        /// nearest the eye. The whole of the layout.
         private func place(_ index: Int, _ at: Double, _ room: Rect) -> Placement {
             let count = Self.cards.count
             let fit = fit(in: room)
             let step = Double(index) - at
             let angle = step / Double(max(count, 1)) * 2 * .pi
-            let radius = min(room.width, room.height) / 2 - 56 * fit
-            let along = angle * 180 / .pi + 90
+            let wide = Self.width * fit
+            let tall = Self.height * fit
+
+            // PERSPECTIVE: how big a card is drawn - 1 at the front, under half at
+            // the back - which also says how near the middle it stands and how far
+            // below the horizon its foot is.
+            let drawn = Self.eye / (Self.eye + 1 - cos(angle))
+
+            // The circle as wide as the room lets the cards spread, and the horizon
+            // where the whole ring - the back card's top to the front card's foot -
+            // stands in the middle of the room above the dots.
+            let radius = min(wide * 1.75, (room.width / 2 - 8 - wide * 0.33) / 0.65)
+            let horizon = (room.height - 30 - tall * Self.ringHeight) / 2 - tall * Self.back * (Self.above - 1)
+            let across = room.width / 2 + sin(angle) * radius * drawn
+            let foot = horizon + tall * Self.above * drawn
 
             return Placement(
-                card(room, up: -sin(angle) * radius, across: cos(angle) * radius, fit: fit),
-                transform: .rotate(along).scale(0.52 + 0.16 * chosen(step)),
+                // THE CARD AT ITS OWN SIZE, scaled about its middle to how big it
+                // is drawn - its words scale with it rather than wrapping anew.
+                Rect(across - wide / 2, foot - tall * drawn / 2 - tall / 2, wide, tall),
+                transform: .scale(drawn),
                 // THE FAR CARDS DARKEN. `shade` is the opacity of the view the
                 // layout was given by `.shade(_:)` - nothing at all without one -
-                // and here it is how far round the ring the card has gone. A FADE
-                // would show the card behind it, which on a ring is every other
-                // card.
-                shade: min(abs(step) / 3, 0.55),
-                zIndex: 1000 - Int(min(abs(step), 99) * 100))
+                // and here it is how far back the card stands. A FADE would show
+                // the card behind it, which on a ring is every other card.
+                shade: min((1 - drawn) * 1.1, 0.55),
+                // The nearer card is drawn over the farther one.
+                zIndex: Int(cos(angle) * 1000))
         }
 
         /// One dot at the board's foot, saying which card is at the front by a
@@ -4792,15 +4826,6 @@ enum Listings {
             max(0, 1 - abs(step))
         }
 
-        /// A card's rectangle: the same size wherever it stands, in the middle of
-        /// the room and then moved onto the circle by the arithmetic above.
-        private func card(_ room: Rect, up: Double, across: Double, fit: Double) -> Rect {
-            Rect(
-                room.width / 2 + across - Self.width * fit / 2,
-                room.height / 2 + up - Self.height * fit / 2,
-                Self.width * fit,
-                Self.height * fit)
-        }
         """#,
         "LayoutPhaseSample": #"""
         // Sources/Samples/Layout/LayoutPhaseSample.swift
