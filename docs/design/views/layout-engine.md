@@ -71,12 +71,14 @@ instead, or its writes run nothing.
 ## A change at the current phase
 
 What changes a view's pose otherwise than the phase, the room or a followed
-state - a view joining or leaving, a new order, a value read in the body -
-is a new description of the layout, and it travels: each view goes from
-where it was shown to where the new arithmetic puts it, under the layout's
-motion, while the phase goes on as it goes. Three layers each own one thing:
-the motion times the phase, the arithmetic turns a phase into poses, and a
-shift per identity (`LayoutShift`) turns a pose into what is shown.
+state - a view joining or leaving, a new order, a value read in the body - is
+a new description of the layout, and it travels, as does a new place the
+motion sets out from ([where a motion set out](#where-a-motion-set-out)): each
+view goes from where it was shown to where the new arithmetic puts it, under
+the layout's motion, while the phase goes on as it goes. Three layers each own
+one thing: the motion times the phase, the arithmetic turns a phase into
+poses, and a shift per identity (`LayoutShift`) turns a pose into what is
+shown.
 
 A description is told apart by a number each gets as it is made (an object's
 address would not do: one let go is soon another's). On the first frame of
@@ -114,6 +116,31 @@ The phase lent is a state, `$turn`: a binding worked out from others has no
 image to wear, so its phase would jump where it is sent, and the layout says
 so once. The engine follows the phase itself, so a new one wakes the arithmetic and
 builds nothing; a change of room moves no phase.
+
+## Where a motion set out
+
+Beside the phase, the arithmetic may be handed where the run's motion set
+out (`placements: { room, phase, from in }`): the phase the run stood at
+when the hand took it, a throw or a journey of the phase carried it away. A
+pose drawn from the phase alone cannot tell which card set out - a phase of
+1.3 is the first card going on or the second coming back - and the phase's
+side of `from` is the way the run goes.
+
+It is kept, not worked out from the direction of the last frame: a hand
+going on and turning back past `from` hands the same `from`, and at `from`
+itself every view stands at the whole step it stood at, where a pose for
+leaving and one for staying agree - nothing drawn jumps as the way turns. A
+hand taking the run on its way keeps it too: the card it catches goes on
+with it, either way.
+
+Passing a target on the hand's axis, the motion sets out from the last it
+passed, either way, and at rest from where the run stands. Passing is again a
+whole step, so the cards go out one by one without a jump: one long hand, a
+throw across several targets, two quick swipes a wheel reads as one hand.
+Should an arithmetic draw a whole step otherwise for another `from`, the
+change travels as a change of the description does ([a change at the
+current phase](#a-change-at-the-current-phase)), each view from where it was
+shown. The run measuring the hand's unit is handed the `from` of the moment.
 
 ## A phase of many axes
 
@@ -171,6 +198,29 @@ itself.
 The hand moves one axis of the phase alone; the host leaves to whatever holds
 the layout a hand whose first move is more across the layout's axis than
 along it, a page's scroller.
+
+## A swipe
+
+`.swipe(_:)` is the hand of a deck or of pages: one hand moves the run one
+snap target at most, either way from the target nearest where it took it,
+however far it goes. A trackpad's quick flick is some 1500 points of the
+platform's own speeding up before the fingers lift, and a throw on top - a
+scroll of cards a few hundred points apart is through the deck in one flick;
+a swipe is one card, as a finger's flick on a phone is. Held past its reach,
+the run stands on the target there; let go thrown, it goes on to the next of
+its three targets the throw's way - the one beyond, or back to where it took
+it from beyond that - and let go still, to the nearest of them. A wheel's
+notches swipe alike: a notch moves the run one target from where it rests,
+and the notches that come while it goes wait for it - the rest of a burst, a
+spring passing its target, which would otherwise count as the next card
+reached.
+
+Its unit is measured once, as the hand takes the run, as if the run stood on
+the target it took it at, and kept while the hand holds it: a view that goes
+out quickly and slows - a card swung aside and tucked under the next - would
+otherwise quicken the hand as it slows, and the moment the hand caught it on
+its way would decide how fast it moves. A scroll measures where the run
+stands at each move, a ring of views keeping to the finger all round.
 
 ## A throw
 

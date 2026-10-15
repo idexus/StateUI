@@ -1454,18 +1454,19 @@ enum Listings {
         """#,
         "ChangingDeckSample": #"""
         // Sources/Samples/Layout/ChangingDeckSample.swift
-        /// One card: its name, which is its identity, and its colour.
+        /// One card: its name, which is its identity, its colour and its icon.
         struct Card: Hashable {
             let name: String
             let colour: String
+            let icon: Icon
         }
 
         /// Every card the deck can hold, dealt in this order.
         static let all = [
-            Card(name: "Mural", colour: "#7C3AED"), Card(name: "Nebula", colour: "#2563EB"),
-            Card(name: "Ridge", colour: "#0D9488"), Card(name: "Bloom", colour: "#D97706"),
-            Card(name: "Tide", colour: "#DB2777"), Card(name: "Prism", colour: "#4F46E5"),
-            Card(name: "Grove", colour: "#16A34A"), Card(name: "Ember", colour: "#DC2626"),
+            Card(name: "Mural", colour: "#7C3AED", icon: .star), Card(name: "Nebula", colour: "#2563EB", icon: .heart),
+            Card(name: "Ridge", colour: "#0D9488", icon: .home), Card(name: "Bloom", colour: "#D97706", icon: .calendar),
+            Card(name: "Tide", colour: "#DB2777", icon: .mail), Card(name: "Prism", colour: "#4F46E5", icon: .settings),
+            Card(name: "Grove", colour: "#16A34A", icon: .person), Card(name: "Ember", colour: "#DC2626", icon: .play),
         ]
 
         /// The cards in the deck, in order.
@@ -1475,8 +1476,8 @@ enum Listings {
         @State private var turn = 1.0
 
         /// Whether the cards fan out or stand in a pile: read in the body, so a
-        /// change is a new description of the layout.
-        @State private var spread = true
+        /// change is a new description of the layout, and so is the hand's unit.
+        @State private var spread = false
 
         var body: some View {
             Grid {
@@ -1545,42 +1546,86 @@ enum Listings {
             let count = cards.count
 
             return LayoutEngine(cards, id: \.name) { card in
-                face(card)
-            } placements: { room, turn in
-                (0..<count).map { place($0, turn, room, fanned: fanned) }
+                face(card, large: !fanned)
+            } placements: { room, turn, from in
+                (0..<count).map { fanned ? fan($0, turn, room) : pile($0, turn, from, room) }
             }
             .phase($turn)
-            .input(.scroll(.horizontal, pointsPerUnit: 90))
+            // The pile is swiped a card at a time, the fan scrolled through.
+            .input(fanned ? .scroll(.horizontal) : .swipe(.horizontal))
             .snapTargets(cards.indices.map(Double.init))
             // ONE MOTION for the turn and for every change at the phase.
             .motion(.spring(response: .milliseconds(380), damping: 0.82))
         }
 
-        /// Where one card stands: in a fan, along an arc and turned with it; in a
-        /// pile, a few points behind the one in front - the front card in the
-        /// middle either way.
-        private func place(_ index: Int, _ turn: Double, _ room: Rect, fanned: Bool) -> Placement {
+        /// Where one card stands in the fan: along an arc and turned with it, the
+        /// front card in the middle.
+        private func fan(_ index: Int, _ turn: Double, _ room: Rect) -> Placement {
             let step = Double(index) - turn
             let width = min(room.width * 0.3, room.height * 0.55, 140)
             let height = width * 1.4
-            let across = fanned ? step * width * 0.62 : step * 12
-            let down = fanned ? abs(step) * width * 0.1 : -abs(step) * 6
 
             return Placement(
-                Rect(room.width / 2 - width / 2 + across, room.height / 2 - height / 2 + down, width, height),
-                transform: .rotate(fanned ? step * 8 : 0).scale(1 - min(abs(step), 3) * 0.05),
+                Rect(room.width / 2 - width / 2 + step * width * 0.62,
+                     room.height / 2 - height / 2 + abs(step) * width * 0.1, width, height),
+                transform: .rotate(step * 8).scale(1 - min(abs(step), 3) * 0.05),
                 zIndex: 100 - Int(min(abs(step), 9) * 10))
         }
 
-        /// One card's face: its colour and its name.
-        private func face(_ card: Card) -> some View {
-            ZStack {
+        /// Where one card stands in the pile: the front card large and straight in
+        /// the middle, the others peeking out either side - those passed on the
+        /// left, those to come on the right - tilted and smaller the farther they
+        /// are. The card the run set out from goes out the way it goes, under the
+        /// finger, until it stands beside the pile, then tucks under the new front
+        /// card.
+        private func pile(_ index: Int, _ turn: Double, _ from: Double, _ room: Rect) -> Placement {
+            let step = Double(index) - turn
+            let width = min(room.width * 0.62, room.height * 0.75 / 1.33, 320)
+            let height = width * 1.33
+            let side: Double = step < 0 ? -1 : 1
+            let behind = min(abs(step), 4)
+
+            // Out over most of a card - nought to one - then back under at once.
+            let leaving = Double(index) == from && abs(step) < 1
+            let outward = abs(step) < 0.8
+            let out = leaving ? (outward ? abs(step) / 0.8 : (1 - abs(step)) / 0.2) : 0
+
+            return Placement(
+                Rect(room.width / 2 - width / 2 + side * (behind * 14 + out * width * 1.05),
+                     room.height / 2 - height / 2 + behind * 3, width, height),
+                transform: .rotate(side * (behind * 2.5 + out * 12)).scale(1 - behind * 0.03),
+                opacity: min(max(5 - abs(step), 0), 1),
+                zIndex: leaving && outward ? 200 : Int(100 - behind * 10))
+        }
+
+        /// One card's face: its colour, its icon on a light disc and its name -
+        /// the icon in the platform's own colour, which shows on the disc in a
+        /// light theme and a dark one alike - larger on the pile's larger cards.
+        private func face(_ card: Card, large: Bool) -> some View {
+            let disc = large ? 88.0 : 56.0
+            return ZStack {
                 Rectangle(Color(card.colour))
 
-                Text(card.name)
-                    .fontWeight(.bold)
+                VStack {
+                    ZStack {
+                        Rectangle(.white)
+                            .opacity(0.3)
+
+                        Image(.icon(card.icon))
+                            .width(disc * 0.55)
+                            .height(disc * 0.55)
+                            .horizontalAlignment(.center)
+                            .verticalAlignment(.center)
+                    }
+                    .width(disc)
+                    .height(disc)
                     .horizontalAlignment(.center)
-                    .verticalAlignment(.center)
+
+                    Text(card.name)
+                        .fontWeight(.bold)
+                        .horizontalAlignment(.center)
+                }
+                .verticalAlignment(.center)
             }
         }
         """#,

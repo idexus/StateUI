@@ -178,6 +178,28 @@ final class LayoutChangeTests: XCTestCase {
         XCTAssertEqual(after(1, renders, tree), before)
     }
 
+    /// A NEW SET-OUT TRAVELS AS A CHANGE DOES: what an arithmetic draws from where the motion set out goes from where
+    /// it was shown as the hand passes a target and the motion sets out from there.
+    func testANewSetOutTravels() throws {
+        let phase = State(wrappedValue: 1.0)
+        let renders = Renders()
+        func tree() -> Node {
+            LayoutEngine([0]) { Text("\($0)") } placements: { _, _, from in [Placement(Rect(from * 100, 0, 10, 10))] }
+                .phase(phase.projectedValue)
+                .input(.scroll(.horizontal, pointsPerUnit: 100))
+                .snapTargets([0, 1, 2, 3])
+                .motion(.eased(.milliseconds(160), .linear))
+                .node
+        }
+        _ = bench.laid(renders, tree)
+
+        bench.hand(renders, tree, .began)
+        bench.hand(renders, tree, .changed, moved: Point(-120, 0))
+
+        XCTAssertEqual(after(0, renders, tree)[0].bounds.x, 100, accuracy: 0.001, "where it was shown")
+        XCTAssertEqual(after(10, renders, tree)[0].bounds.x, 200, accuracy: 0.001, "where it sets out from now")
+    }
+
     /// A NEW ROOM TRAVELS NOT: the layout follows the window at once.
     func testANewRoomTravelsNot() throws {
         let renders = Renders()

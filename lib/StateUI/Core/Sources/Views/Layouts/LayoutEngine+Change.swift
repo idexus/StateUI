@@ -5,18 +5,19 @@
 // Design: docs/design/views/layout-engine.md#a-change-at-the-current-phase
 
 extension LayoutEngine.Run {
-    /// What the run last showed, a new description measured against it: worked out where the last frame stood, a
-    /// view whose pose it changes sets out from where that frame showed it, and one joining from nothing; a
-    /// description that changes nothing changes no way.
+    /// What the run last showed, a new description - or a new place its motion set out from - measured against it:
+    /// worked out where the last frame stood, a view whose pose it changes sets out from where that frame showed it,
+    /// and one joining from nothing; a change that changes nothing changes no way.
     /// Design: docs/design/views/layout-engine.md#a-change-at-the-current-phase
-    func changed(at now: Double, reducesMotion: Bool) -> LayoutShown<Phase> {
+    func changed(at now: Double, from: Phase, reducesMotion: Bool) -> LayoutShown<Phase> {
         let motion = law.resolved(against: .standard)
         var memory = states.shown.wrappedValue
-        guard memory.description != description, let last = memory.phase, !reducesMotion, !motion.isNothing else {
-            return memory
-        }
+        guard memory.description != description || memory.from != from, let last = memory.phase, !reducesMotion,
+              !motion.isNothing
+        else { return memory }
 
-        let before = fitted(arithmetic(Rect(0, 0, memory.room.width, memory.room.height), last))
+        let room = Rect(0, 0, memory.room.width, memory.room.height)
+        let before = fitted(arithmetic(room, last, from))
         for (index, slot) in slots.enumerated() where memory.poses[slot.identity] != before[index] {
             let going = memory.travels[slot.identity].map { $0.at(now, under: motion) }
             let shift = memory.shown[slot.identity].map { LayoutShift(from: $0, to: before[index]) }
@@ -31,7 +32,7 @@ extension LayoutEngine.Run {
     /// and keeps what it showed for the next description to be measured against. Whether a change is still on its
     /// way.
     func show(
-        _ poses: [Placement], after memory: LayoutShown<Phase>, at now: Double, phase: Phase, room: Rect,
+        _ poses: [Placement], after memory: LayoutShown<Phase>, at now: Double, phase: Phase, from: Phase, room: Rect,
         reducesMotion: Bool
     ) -> Bool {
         let identities = slots.map(\.identity)
@@ -54,8 +55,8 @@ extension LayoutEngine.Run {
             Dictionary(zip(identities, run), uniquingKeysWith: { first, _ in first })
         }
         states.shown.wrappedValue = LayoutShown(
-            description: description, phase: phase, room: room, poses: byIdentity(poses), shown: byIdentity(shown),
-            travels: travels)
+            description: description, phase: phase, from: from, room: room, poses: byIdentity(poses),
+            shown: byIdentity(shown), travels: travels)
         states.placements.wrappedValue = PlacedRun(shown)
         return !travels.isEmpty
     }

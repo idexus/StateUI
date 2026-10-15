@@ -20,7 +20,7 @@ extension LayoutEngine {
         let items: [Items.Element]
         let slots: [Slot]
         let make: (Items.Element) -> Node
-        let arithmetic: @MainActor (Rect, Phase) -> [Placement]
+        let arithmetic: @MainActor (Rect, Phase, Phase) -> [Placement]
 
         /// Which description of the layout the run is: a render that describes it again makes another.
         let description: Int
@@ -44,10 +44,11 @@ extension LayoutEngine {
         let law: Motion
 
         /// Whether a hand moves the run, which way, how far it travels for one unit of the phase where the input
-        /// says, and how a throw goes on.
+        /// says, whether it moves it one target at most, and how a throw goes on.
         let moves: Bool
         let across: Bool
         let per: Double?
+        let swipes: Bool
         let throwing: Motion
 
         // MARK: - The phase
@@ -177,12 +178,41 @@ extension LayoutEngine {
                 return flying ? .again : .wait
             }
 
-            // A change of the description is measured before the run is worked out where it stands now.
-            let memory = changed(at: now, reducesMotion: reducesMotion)
+            // A change of the description or of where the motion set out is measured before the run is worked
+            // out where it stands now.
             let phase = live()
-            let poses = fitted(arithmetic(Rect(0, 0, room.width, room.height), phase))
-            let changing = show(poses, after: memory, at: now, phase: phase, room: room, reducesMotion: reducesMotion)
+            let from = setOut(at: phase)
+            let memory = changed(at: now, from: from, reducesMotion: reducesMotion)
+            let poses = fitted(arithmetic(Rect(0, 0, room.width, room.height), phase, from))
+            let changing = show(
+                poses, after: memory, at: now, phase: phase, from: from, room: room, reducesMotion: reducesMotion)
             return flying || changing ? .again : .wait
+        }
+
+        /// Where the run's motion set out, the run standing at `phase`: there, where nothing moves it - no hand, no
+        /// throw, the phase where it is going - and kept while something does, until it passes a target on the
+        /// hand's axis: the motion sets out from the last it passed, either way.
+        /// Design: docs/design/views/layout-engine.md#where-a-motion-set-out
+        func setOut(at phase: Phase) -> Phase {
+            let journey = self.phase.journey
+            let resting = states.held.wrappedValue == nil && states.flung.wrappedValue == nil
+                && journey.value == journey.destination
+            var from = states.from.wrappedValue ?? phase
+            if resting {
+                from = phase
+            } else if let passed = passed(from: onAxis(from), to: onAxis(phase)) {
+                from = placing(passed, in: from)
+            }
+
+            if states.from.wrappedValue != from { states.from.wrappedValue = from }
+            return from
+        }
+
+        /// Of the targets on the hand's axis beyond `start` up to `value`, the one nearest `value`: the last the run
+        /// passed going from one to the other; nil where it passed none.
+        func passed(from start: Double, to value: Double) -> Double? {
+            let beyond = around(stops, near: value).filter { value > start ? $0 > start && $0 <= value : $0 < start && $0 >= value }
+            return value > start ? beyond.max() : beyond.min()
         }
 
         /// The throw under way carried on to `now`: the hand's axis held where the input's `throwing` has brought
@@ -257,7 +287,8 @@ extension LayoutEngine {
                 guard let per = unit(at: held) else { return }
 
                 let step = -(across ? moved.x : moved.y) / per
-                let next = period == nil ? runPoint(of: handPoint(of: held) + step) : held + step
+                let free = period == nil ? runPoint(of: handPoint(of: held) + step) : held + step
+                let next = reach.map { min(max(free, $0.lowerBound), $0.upperBound) } ?? free
 
                 states.held.wrappedValue = next
                 name(nearest(next))
@@ -268,9 +299,11 @@ extension LayoutEngine {
                 let measured = unit(at: held)
                 let per = measured ?? 1
                 let thrown = gesture == .ended && measured != nil ? -(across ? speed.x : speed.y) / per : 0
-                let reach = held + Self.carried(thrown, by: throwing)
-                let end = period == nil ? min(max(reach, low), high) : reach
-                let target = resting(near: placing(end, in: journey.destination))
+                let carried = held + Self.carried(thrown, by: throwing)
+                let end = period == nil ? min(max(carried, low), high) : carried
+                let target = swiped(from: held, thrown: abs(thrown) * per >= Self.throwing ? thrown : 0)
+                    .map { placing($0, in: journey.destination) } ?? resting(near: placing(end, in: journey.destination))
+                states.grip.wrappedValue = nil
 
                 let along = onAxis(target)
 
@@ -306,7 +339,15 @@ extension LayoutEngine {
         /// Design: docs/design/views/layout-engine.md#the-hand
         func unit(at value: Double) -> Double? {
             if let per { return per }
+            if swipes, let grip = states.grip.wrappedValue { return grip.unit }
 
+            return measured(at: value, from: states.from.wrappedValue ?? live())
+        }
+
+        /// How far the view drawn in front of those the phase moves goes for one unit of the hand's axis at `value`,
+        /// the motion setting out from `from`; a room's length where nothing moves, none where the room is not
+        /// measured yet.
+        func measured(at value: Double, from: Phase) -> Double? {
             let laid = states.room.wrappedValue
             guard laid.width > 0, laid.height > 0 else { return nil }
 
@@ -317,9 +358,9 @@ extension LayoutEngine {
                 across ? placement.bounds.x + placement.bounds.width / 2 : placement.bounds.y + placement.bounds.height / 2
             }
 
-            let here = arithmetic(room, placing(value, in: shown))
-            let before = arithmetic(room, placing(value - Self.probe, in: shown))
-            let after = arithmetic(room, placing(value + Self.probe, in: shown))
+            let here = arithmetic(room, placing(value, in: shown), from)
+            let before = arithmetic(room, placing(value - Self.probe, in: shown), from)
+            let after = arithmetic(room, placing(value + Self.probe, in: shown), from)
             let moving = here.indices.prefix(min(before.count, after.count)).compactMap { index in
                 let moved = abs(middle(after[index]) - middle(before[index])) / (2 * Self.probe)
                 return moved >= 1 ? (index: index, moved: moved) : nil
@@ -338,8 +379,8 @@ extension LayoutEngine {
         static var probe: Double { 0.01 }
 
         /// A wheel's notches over the element: the run goes on from the target it is going to - a throw's or a
-        /// journey's - to the target as many on as the notches turned, under the layout's motion. A hand holding the
-        /// run keeps it.
+        /// journey's - to the target as many on as the notches turned, under the layout's motion. A swipe's go one
+        /// target from where the run rests, and wait while it goes. A hand holding the run keeps it.
         /// Design: docs/design/views/layout-engine.md#a-wheels-notch
         func step(_ notches: Point) {
             let count = Int((-(across ? notches.x : notches.y)).rounded())
@@ -347,8 +388,12 @@ extension LayoutEngine {
             guard states.held.wrappedValue == nil || states.flung.wrappedValue != nil else { return }
 
             let journey = phase.journey
+            if swipes {
+                guard states.flung.wrappedValue == nil, journey.value == journey.destination else { return }
+            }
             let start = live()
-            let target = resting(near: placing(stepped(onAxis(journey.destination), by: count), in: journey.destination))
+            let along = stepped(onAxis(journey.destination), by: swipes ? count.signum() : count)
+            let target = resting(near: placing(along, in: journey.destination))
 
             states.flung.wrappedValue = nil
             states.held.wrappedValue = nil
@@ -377,13 +422,41 @@ extension LayoutEngine {
             return stops[moved - Int(round) * stops.count] + (nearest.turn + round) * period
         }
 
-        /// The run taken by the hand at `value` on its axis: a journey or a throw under way stops there.
+        /// The run taken by the hand at `value` on its axis: a journey or a throw under way stops there. A swiping
+        /// hand grips it at the target nearest, with the unit the run would have standing there.
         @discardableResult
         func take(at value: Double) -> Double {
             states.flung.wrappedValue = nil
             states.held.wrappedValue = value
+            if swipes {
+                let target = nearest(value)
+                let resting = placing(target, in: phase.journey.value)
+                states.grip.wrappedValue = LayoutGrip(target: target, unit: per ?? measured(at: target, from: resting))
+            }
             name(nearest(value))
             return value
+        }
+
+        /// How far a swiping hand moves the run on its axis: from the target before the one it took it at to the
+        /// one after; nil for a scroll.
+        /// Design: docs/design/views/layout-engine.md#a-swipe
+        var reach: ClosedRange<Double>? {
+            guard swipes, let grip = states.grip.wrappedValue else { return nil }
+
+            return stepped(grip.target, by: -1)...stepped(grip.target, by: 1)
+        }
+
+        /// Where a swipe let go at `held` comes to rest: thrown, the next of its reach's targets that way - where it
+        /// took the run or the one beyond; let go still, the nearest of them. Nil for a scroll.
+        /// Design: docs/design/views/layout-engine.md#a-swipe
+        func swiped(from held: Double, thrown: Double) -> Double? {
+            guard let reach, let grip = states.grip.wrappedValue else { return nil }
+
+            let targets = [reach.lowerBound, grip.target, reach.upperBound]
+            guard thrown != 0 else { return Self.nearest(of: targets, to: held) }
+
+            let ahead = targets.filter { thrown > 0 ? $0 > held : $0 < held }
+            return (thrown > 0 ? ahead.min() : ahead.max()) ?? Self.nearest(of: targets, to: held)
         }
 
         /// How much farther a throw at `speed` units a second carries under `throwing`: eased, the hand's speed for

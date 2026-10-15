@@ -28,6 +28,9 @@ public struct LayoutInput: Equatable, Sendable {
     /// How a throw goes on once the hand lets go: how far it carries, and the curve it slows on.
     public let throwing: Motion
 
+    /// Whether one hand moves the run one snap target at most, either way from where it took it: a swipe's.
+    public let swipes: Bool
+
     /// The hand over the views: a finger or a pointer dragged, a trackpad's two fingers and a wheel move the phase
     /// with them; let go with speed, the run is thrown on to the snap target nearest where the throw would end, as
     /// `throwing` says, and let go still it slides to the nearest under the layout's motion.
@@ -49,7 +52,27 @@ public struct LayoutInput: Equatable, Sendable {
     public static func scroll(
         _ axis: Axis, pointsPerUnit: Double? = nil, throwing: Motion = .eased(.milliseconds(400), .cubicOut)
     ) -> LayoutInput {
-        LayoutInput(axis: axis, pointsPerUnit: pointsPerUnit.map { max($0, 1) }, throwing: throwing)
+        LayoutInput(axis: axis, pointsPerUnit: pointsPerUnit.map { max($0, 1) }, throwing: throwing, swipes: false)
+    }
+
+    /// One snap target a hand: the hand moves the run with it, but one target at most either way from where it took
+    /// it, however far it goes - a trackpad's quick flick included - and let go with speed, the run goes on to the
+    /// next target that way and no farther; a wheel's notch swipes it one target from where it rests. Cards swiped
+    /// one by one; a page at a time.
+    ///
+    ///     .input(.swipe(.horizontal))
+    ///
+    /// - Parameters:
+    ///   - axis: which way it swipes.
+    ///   - pointsPerUnit: how far the hand travels for one unit of the phase, in device units; one at least. Unless
+    ///     said, as far as the view drawn in front moves for one unit as the hand takes the run - measured as if the
+    ///     run stood on the target nearest, and kept while the hand holds it.
+    ///   - throwing: how the run goes on to the next target once thrown; a light friction unless said.
+    /// - Returns: the input.
+    public static func swipe(
+        _ axis: Axis, pointsPerUnit: Double? = nil, throwing: Motion = .eased(.milliseconds(400), .cubicOut)
+    ) -> LayoutInput {
+        LayoutInput(axis: axis, pointsPerUnit: pointsPerUnit.map { max($0, 1) }, throwing: throwing, swipes: true)
     }
 }
 

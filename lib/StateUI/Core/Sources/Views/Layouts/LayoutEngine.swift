@@ -46,11 +46,17 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     /// The hand's throw going on after it let go, on the hand's axis, where one does.
     @State private var flung: LayoutFling?
 
+    /// Where a swiping hand took the run, and the unit it moves it by, while it holds it.
+    @State private var grip: LayoutGrip?
+
     /// Where every child stands, written by the engine on the host's frames.
     @State private var placements = PlacedRun()
 
     /// What the run last showed and the changes on their way to its poses.
     @State private var shown = LayoutShown<Phase>()
+
+    /// The phase the run stood at when its motion set out, kept until it rests again.
+    @State private var from: Phase?
 
     /// The room the layout was given, as the platform reports it.
     @State private var room = Rect.zero
@@ -104,7 +110,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         @ViewBuilder content: @escaping (Items.Element) -> Content,
         placements: @escaping @MainActor (Rect, Phase) -> [Placement]
     ) {
-        source = Source(items: items, path: id, view: { content($0).node }, arithmetic: placements)
+        self.init(items, id: id, content: content, placements: { room, phase, _ in placements(room, phase) })
     }
 
     /// The same, for items that are their own identity.
@@ -119,6 +125,40 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         _ items: Items,
         @ViewBuilder content: @escaping (Items.Element) -> Content,
         placements: @escaping @MainActor (Rect, Phase) -> [Placement]
+    ) where Items.Element: Hashable, ID == Items.Element {
+        self.init(items, id: \.self, content: content, placements: placements)
+    }
+
+    /// A layout whose arithmetic is handed, beside the phase, where the run's motion set out: the phase it stood
+    /// at when the hand, a throw or a journey took it away, then each target the run passes on the hand's axis.
+    ///
+    ///     LayoutEngine(cards, id: \.name) { card in Face(card) } placements: { room, phase, from in
+    ///         // The card that stood in front leaves the way the run goes - phase above `from` or below it.
+    ///     }
+    ///
+    /// The way the run goes is the phase's side of `from`; back past it, the run goes the other way from the same
+    /// place, and at `from` itself every view stands where it stood, so nothing drawn from it jumps.
+    ///
+    /// - Parameters:
+    ///   - items: what to place, one view each.
+    ///   - id: which part of an item is its identity.
+    ///   - content: the view for one item.
+    ///   - placements: where every view goes, given the room, the phase as it stands this frame and the phase the
+    ///     run's motion set out from; one placement per view, in the items' order.
+    public init<Content: View>(
+        _ items: Items,
+        id: KeyPath<Items.Element, ID>,
+        @ViewBuilder content: @escaping (Items.Element) -> Content,
+        placements: @escaping @MainActor (Rect, Phase, Phase) -> [Placement]
+    ) {
+        source = Source(items: items, path: id, view: { content($0).node }, arithmetic: placements)
+    }
+
+    /// The same, for items that are their own identity.
+    public init<Content: View>(
+        _ items: Items,
+        @ViewBuilder content: @escaping (Items.Element) -> Content,
+        placements: @escaping @MainActor (Rect, Phase, Phase) -> [Placement]
     ) where Items.Element: Hashable, ID == Items.Element {
         self.init(items, id: \.self, content: content, placements: placements)
     }
@@ -331,8 +371,8 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         /// The view for one item, as a node.
         let view: (Items.Element) -> Node
 
-        /// Where every view goes, given the room and the phase.
-        let arithmetic: @MainActor (Rect, Phase) -> [Placement]
+        /// Where every view goes, given the room, the phase and where its motion set out.
+        let arithmetic: @MainActor (Rect, Phase, Phase) -> [Placement]
 
         /// Which description this is: the next number at each, never one again - an object's address is, once it
         /// is let go.
@@ -344,7 +384,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
             items: Items,
             path: KeyPath<Items.Element, ID>,
             view: @escaping (Items.Element) -> Node,
-            arithmetic: @escaping @MainActor (Rect, Phase) -> [Placement]
+            arithmetic: @escaping @MainActor (Rect, Phase, Phase) -> [Placement]
         ) {
             self.items = items
             self.path = path
@@ -374,7 +414,9 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
             tapped: tapped,
             named: named,
             phase: pinned ?? $ownPhase,
-            states: States(held: _held, flung: _flung, placements: _placements, room: _room, shown: _shown),
+            states: States(
+                held: _held, flung: _flung, placements: _placements, room: _room, shown: _shown, from: _from,
+                grip: _grip),
             axis: axis,
             stops: stops,
             period: axis.flatMap { periods[$0] },
@@ -384,6 +426,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
             moves: hand != nil && !stops.isEmpty,
             across: hand?.input.axis != .vertical,
             per: hand?.input.pointsPerUnit,
+            swipes: hand?.input.swipes ?? false,
             throwing: hand?.input.throwing ?? LayoutInput.scroll(.horizontal).throwing)
     }
 
@@ -394,6 +437,8 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         let placements: State<PlacedRun>
         let room: State<Rect>
         let shown: State<LayoutShown<Phase>>
+        let from: State<Phase?>
+        let grip: State<LayoutGrip?>
     }
 }
 
@@ -405,7 +450,7 @@ extension LayoutEngine where Phase == Double {
         @ViewBuilder content: @escaping (Items.Element) -> Content,
         placements: @escaping @MainActor (Rect, Double) -> [Placement]
     ) {
-        source = Source(items: items, path: id, view: { content($0).node }, arithmetic: placements)
+        self.init(items, id: id, content: content, placements: { room, phase, _ in placements(room, phase) })
     }
 
     /// The same, for items that are their own identity, with a phase of one axis.
@@ -413,6 +458,25 @@ extension LayoutEngine where Phase == Double {
         _ items: Items,
         @ViewBuilder content: @escaping (Items.Element) -> Content,
         placements: @escaping @MainActor (Rect, Double) -> [Placement]
+    ) where Items.Element: Hashable, ID == Items.Element {
+        self.init(items, id: \.self, content: content, placements: placements)
+    }
+
+    /// The same, with a phase of one axis and where the run's motion set out on it.
+    public init<Content: View>(
+        _ items: Items,
+        id: KeyPath<Items.Element, ID>,
+        @ViewBuilder content: @escaping (Items.Element) -> Content,
+        placements: @escaping @MainActor (Rect, Double, Double) -> [Placement]
+    ) {
+        source = Source(items: items, path: id, view: { content($0).node }, arithmetic: placements)
+    }
+
+    /// The same, for items that are their own identity, with a phase of one axis and where its motion set out.
+    public init<Content: View>(
+        _ items: Items,
+        @ViewBuilder content: @escaping (Items.Element) -> Content,
+        placements: @escaping @MainActor (Rect, Double, Double) -> [Placement]
     ) where Items.Element: Hashable, ID == Items.Element {
         self.init(items, id: \.self, content: content, placements: placements)
     }
@@ -454,12 +518,20 @@ struct LayoutFling: Equatable {
     var began: Double?
 }
 
-/// What a layout last showed - the description it came from, at what phase and in what room, each view's pose and
-/// where it was shown, by identity - and the changes on their way to the poses: what a new description is measured
-/// against.
+/// Where a swiping hand took the run - the target nearest, one either side of which it moves it - and the unit it
+/// moves it by, measured there; nil for none the hand can measure.
+struct LayoutGrip: Equatable {
+    let target: Double
+    let unit: Double?
+}
+
+/// What a layout last showed - the description it came from, at what phase, set out from where and in what room,
+/// each view's pose and where it was shown, by identity - and the changes on their way to the poses: what a new
+/// description is measured against.
 struct LayoutShown<Phase: LayoutPhase>: Equatable {
     var description: Int?
     var phase: Phase?
+    var from: Phase?
     var room = Rect.zero
     var poses: [String: Placement] = [:]
     var shown: [String: Placement] = [:]

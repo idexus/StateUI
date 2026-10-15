@@ -635,8 +635,59 @@ struct Hand: View {
 }
 ```
 
-After a removal, one `$turn.journey.snap(to:)` in the same handler keeps the
-card that was behind at the front, with no journey.
+Removing the card at the front brings the one behind it there, as the
+others close up. Where the front card was the last, the phase itself has to
+go: `$turn.journey.move(to:)` in the same handler sends the run to the card
+before it, under `.motion(_:)`.
+
+The arithmetic can also be handed where the run's motion set out: the phase
+it stood at when the hand, a throw or a journey took it away, then each
+target the run passes. The phase's side of it is the way the run goes, so a pile can
+send the card that stood in front out that way - left as the hand moves the
+run on, right as it takes it back - and under the others, while the next
+comes up from beneath:
+
+```swift
+import Foundation
+
+struct Pile: View {
+    @State private var turn = 0.0
+
+    let names = ["Mural", "Nebula", "Ridge", "Bloom"]
+
+    var body: some View {
+        LayoutEngine(names) { name in
+            Text(name)
+        } placements: { room, phase, from in
+            names.indices.map { index in
+                let step = Double(index) - phase
+                let leaving = Double(index) == from && abs(step) < 1
+                // Out the way the run goes and back, under the others past halfway.
+                let out = leaving ? sin(abs(step) * .pi) * (step < 0 ? -1 : 1) : 0
+                let behind = leaving ? 0 : abs(step)
+
+                return Placement(
+                    Rect(room.width / 2 - 70 + out * 160, 10 + behind * 6, 140, 180),
+                    transform: .rotate(out * 12).scale(1 - min(behind, 3) * 0.04),
+                    zIndex: leaving && abs(step) > 0.5 ? -100 : -Int(behind * 10))
+            }
+        }
+        .phase($turn)
+        .input(.swipe(.horizontal))
+        .snapTargets(names.indices.map(Double.init))
+        .height(220)
+    }
+}
+```
+
+`.swipe(_:)` moves the run one card a hand, however far the hand goes - a
+trackpad's flick speeds up to well past a card - and a throw goes on to the
+next card that way, no farther; its unit is measured as the hand takes the
+run, so the card in front moves under it. At the phase it set out from,
+every view stands where it stood, so a hand taking the run back past it
+changes nothing drawn - the same card goes out
+the other way. A hand catching the card on its way goes on with it; a long
+hand or a throw across several cards sends each out in turn.
 
 A run with no ends comes round: `.wraps(every:)` makes one turn of the phase
 bring the layout back where it was, its targets repeated each turn, so the

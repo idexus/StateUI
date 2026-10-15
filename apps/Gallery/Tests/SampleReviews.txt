@@ -19,7 +19,7 @@ ButtonMenuSample.swift 7af63f7efe0c91b9
 ButtonRoleSample.swift 361912c0899f9d4d
 ButtonSample.swift 4b6ac2242b903c97
 CanvasSample.swift 52db70adead39b9b
-ChangingDeckSample.swift a051fc09a1279284
+ChangingDeckSample.swift 85d56430d0d75b1b
 CheckBoxSample.swift a6e9da46d0ccfb97
 ChoosingItemsSample.swift 0bac861b74933e30
 ComplaintsSample.swift ccb58f7f38490263
