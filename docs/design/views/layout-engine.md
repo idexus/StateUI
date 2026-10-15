@@ -46,10 +46,11 @@ them keeps every host's ZStack to the one rule it already has.
 The arithmetic runs on the host's frames, never in a render: whenever the
 room, the phase - written by the program or walked by the host - where the
 hand holds the run, a throw going on, or a state named in `following(_:)` is
-written, and once after every render that describes the layout. It is handed the room at the layout's own origin and the
-phase as it stands this frame, and answers one placement a view. An answer of
-another length is said once and made to fit, a missing view standing at the
-top left.
+written, and once in the turn of every render that describes the layout,
+before the views it puts in are drawn (host/runtime.md, one turn). It is
+handed the room at the layout's own origin and the phase as it stands this
+frame, and answers one placement a view. An answer of another length is
+said once and made to fit, a missing view standing at the top left.
 
 A run lands as written (placement.md, a run lands as written): what travels
 is the phase it is worked out from. A host walking places from one to the next
@@ -58,13 +59,46 @@ turn - where the arithmetic run on a phase keeps every view on its path.
 
 A room not yet measured places nothing: each child stands in the whole room
 until the platform reports one, never placed by arithmetic over a room of
-nothing. The hand acts all the same, so a move reported before the room is
-still named.
+nothing - and a hand over it moves nothing where the input gives no unit, as
+no view is drawn to carry.
 
 A value read in the body is a change of the description, the layout built
-again and its arithmetic with it; a state the arithmetic reads that moves on
-the host's frames - a finger's - is named in `following(_:)` instead, or its
-writes run nothing.
+again and its arithmetic with it - and the change travels ([a change at the
+current phase](#a-change-at-the-current-phase)); a state the arithmetic reads
+that moves on the host's frames - a finger's - is named in `following(_:)`
+instead, or its writes run nothing.
+
+## A change at the current phase
+
+What changes a view's pose otherwise than the phase, the room or a followed
+state - a view joining or leaving, a new order, a value read in the body -
+is a new description of the layout, and it travels: each view goes from
+where it was shown to where the new arithmetic puts it, under the layout's
+motion, while the phase goes on as it goes. Three layers each own one thing:
+the motion times the phase, the arithmetic turns a phase into poses, and a
+shift per identity (`LayoutShift`) turns a pose into what is shown.
+
+A description is told apart by a number each gets as it is made (an object's
+address would not do: one let go is soon another's). On the first frame of
+a new one, the engine works its arithmetic out where the last frame stood -
+that phase, that room - and compares it identity by identity with the last
+frame's poses: a view whose pose is the same goes on as it was, so a render
+that changes nothing changes no way, and a phase travelling meanwhile is no
+change; a view whose pose differs is shifted from where the last frame
+showed it, a view new to the run from nothing - it fades in. A view leaving
+goes at once, and the others close up. The shift decays to nought under
+the layout's motion (`.standard` where it inherits one), setting out at the
+speed a shift it replaces had, so a change changed again does not jump; the
+engine runs again each frame while one is on its way. Less motion, or a
+motion of none, shows a change at once, and a new room never travels: the
+layout follows the window.
+
+A shift is the bounds' place and size, the opacity and the shade apart, and
+the transform as the correction that takes the pose's to the one shown,
+decomposed into a move, a turn - the short way - a slant and a scale: a
+blend of the matrices would squash a turned view, and a correction at
+nought is the pose's own transform, slant and all. The order is the pose's
+at once; a shade the layout draws none of is not blended.
 
 ## The phase
 

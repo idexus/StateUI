@@ -1716,6 +1716,45 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(number("scale", in: third)), 1.0404, accuracy: 0.0001)
     }
 
+    /// Removing the front card of the changing deck brings the card behind it
+    /// forward ON A JOURNEY, the last card of the deck too: there the phase
+    /// itself moves to the card behind, under the deck's motion - landed at
+    /// once, the card behind jumped to the front.
+    func testRemovingTheLastCardBringsTheOneBehindForwardOnAJourney() throws {
+        let renders = Renders()
+        func tree() -> Node { ChangingDeckSample().node }
+
+        let first = renders.render(tree())
+        let remove = try XCTUnwrap(buttons(in: first).first { $0.props[.text] == .string("Remove") })
+        let phase = try XCTUnwrap(driven(.phase, in: first))
+
+        // From the second of four cards: twice the card at the front leaves
+        // and the one behind stands there, the second of two - the last.
+        for _ in 0..<2 {
+            XCTAssertTrue(renders.fire(try XCTUnwrap(remove.events?[.clicked])))
+            renders.render(tree(), changed: Renderer.shared.pendingChanges)
+        }
+        XCTAssertTrue(renders.fire(try XCTUnwrap(remove.events?[.clicked])))
+
+        // One frame: what the host is given to show.
+        _ = HostBoundary.cycle(.display, now: 16, reducesMotion: false)
+
+        let journey = try XCTUnwrap(HostBoundary.value(for: phase).flatMap(HostBoundary.journey(from:)))
+        XCTAssertEqual(journey.destination, [0], "the card behind, at the front")
+        XCTAssertGreaterThan(journey.value[0], 0.5, "on its way there, from where the deck stood")
+    }
+
+    /// The state a patch drives a property with, wherever in the tree it landed.
+    private func driven(_ prop: Prop, in patch: HostPatch) -> HostStateBinding? {
+        if case .replace(let map)? = patch.driven, let binding = map[prop] { return binding }
+
+        for child in patch.children {
+            if let binding = driven(prop, in: child) { return binding }
+        }
+
+        return nil
+    }
+
     /// The id a patch assigned to an event, wherever in the tree it landed.
     private func eventId(_ event: Event, in patch: HostPatch) -> Int32? {
         if let id = patch.events?[event] { return id }

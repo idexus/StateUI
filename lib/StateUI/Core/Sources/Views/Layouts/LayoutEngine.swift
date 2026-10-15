@@ -49,6 +49,9 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     /// Where every child stands, written by the engine on the host's frames.
     @State private var placements = PlacedRun()
 
+    /// What the run last showed and the changes on their way to its poses.
+    @State private var shown = LayoutShown<Phase>()
+
     /// The room the layout was given, as the platform reports it.
     @State private var room = Rect.zero
 
@@ -313,7 +316,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         .frame($room)
         .engine([$room.followed, run.phase.followed, $held.followed, $flung.followed] + followed,
                 sync: .display, priority: 0) { cycle in
-            run.place(at: cycle.now)
+            run.place(at: cycle.now, reducesMotion: cycle.reducesMotion)
         }
     }
 
@@ -331,7 +334,12 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         /// Where every view goes, given the room and the phase.
         let arithmetic: @MainActor (Rect, Phase) -> [Placement]
 
+        /// Which description this is: the next number at each, never one again - an object's address is, once it
+        /// is let go.
+        let number: Int
+
         /// What the initializer was handed.
+        @MainActor
         init(
             items: Items,
             path: KeyPath<Items.Element, ID>,
@@ -342,6 +350,8 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
             self.path = path
             self.view = view
             self.arithmetic = arithmetic
+            descriptionsMade += 1
+            number = descriptionsMade
         }
     }
 
@@ -359,11 +369,12 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
             },
             make: source.view,
             arithmetic: source.arithmetic,
+            description: source.number,
             mask: mask,
             tapped: tapped,
             named: named,
             phase: pinned ?? $ownPhase,
-            states: States(held: _held, flung: _flung, placements: _placements, room: _room),
+            states: States(held: _held, flung: _flung, placements: _placements, room: _room, shown: _shown),
             axis: axis,
             stops: stops,
             period: axis.flatMap { periods[$0] },
@@ -382,6 +393,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         let flung: State<LayoutFling?>
         let placements: State<PlacedRun>
         let room: State<Rect>
+        let shown: State<LayoutShown<Phase>>
     }
 }
 
@@ -430,6 +442,9 @@ extension LayoutEngine where Phase == Double {
     }
 }
 
+/// How many descriptions of layout engines have been made.
+@MainActor private var descriptionsMade = 0
+
 /// A throw of the hand going on after it let go, on the hand's axis: from where it let go, to the target nearest
 /// where it would end, setting out at the hand's speed, units a second; when it set out, once a frame says.
 struct LayoutFling: Equatable {
@@ -437,4 +452,16 @@ struct LayoutFling: Equatable {
     let to: Double
     let speed: Double
     var began: Double?
+}
+
+/// What a layout last showed - the description it came from, at what phase and in what room, each view's pose and
+/// where it was shown, by identity - and the changes on their way to the poses: what a new description is measured
+/// against.
+struct LayoutShown<Phase: LayoutPhase>: Equatable {
+    var description: Int?
+    var phase: Phase?
+    var room = Rect.zero
+    var poses: [String: Placement] = [:]
+    var shown: [String: Placement] = [:]
+    var travels: [String: LayoutTravel] = [:]
 }

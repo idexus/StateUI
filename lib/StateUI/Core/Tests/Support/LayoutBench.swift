@@ -12,10 +12,16 @@ final class LayoutBench {
     /// Where the display clock stands.
     private var turned = 0.0
 
-    /// One cycle of the display's board.
-    func cycle() {
+    /// One cycle of the display's board - with less motion asked for, where `reducesMotion`.
+    func cycle(reducesMotion: Bool = false) {
         turned += 16
-        _ = Renderer.shared.board(for: .display).cycle(now: turned, reducesMotion: false)
+        _ = Renderer.shared.board(for: .display).cycle(now: turned, reducesMotion: reducesMotion)
+    }
+
+    /// Where the layout of `patch` shows its views, in the items' order, as the host reads the run.
+    func shown(_ patch: HostPatch) -> [Placement] {
+        guard let placed = patch.first(.layoutEngine)?.driven?[.area]?.state else { return [] }
+        return standing(placed, as: PlacedRun.self)?.placements ?? []
     }
 
     /// One frame as the host runs it: the board's cycle, and what it wrote read out, so a report after it lands.

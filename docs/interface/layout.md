@@ -603,6 +603,41 @@ the nearest under `.motion(_:)`. A mouse's wheel turned notch by notch steps
 the run a target a notch, under `.motion(_:)`, however large the targets
 stand.
 
+A change of the layout at the phase it stands at travels too. A view
+joining fades in where the arithmetic puts it; one leaving goes at once and
+the others close up; a new order slides; and a value read in the body - a
+switch between a fan and a pile - takes every view from where it was to its
+new place, under `.motion(_:)`, while the phase goes on as it goes:
+
+```swift
+struct Hand: View {
+    @State private var names = ["Mural", "Nebula", "Ridge"]
+    @State private var fanned = true
+
+    var body: some View {
+        let gap = fanned ? 140.0 : 12.0
+
+        VStack {
+            LayoutEngine(names) { name in
+                Text(name)
+            } placements: { room, _ in
+                names.indices.map { index in
+                    Placement(Rect(room.width / 2 - 60 + Double(index) * gap, 0, 120, room.height))
+                }
+            }
+            .motion(.spring(response: .milliseconds(300)))
+            .height(160)
+
+            Button("Add").onClicked { names.append("Bloom") }
+            Button("Fan").onClicked { fanned.toggle() }
+        }
+    }
+}
+```
+
+After a removal, one `$turn.journey.snap(to:)` in the same handler keeps the
+card that was behind at the front, with no journey.
+
 A run with no ends comes round: `.wraps(every:)` makes one turn of the phase
 bring the layout back where it was, its targets repeated each turn, so the
 hand and the program both move it on forever. The arithmetic folds the phase

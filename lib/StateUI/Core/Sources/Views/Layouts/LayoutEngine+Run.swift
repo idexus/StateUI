@@ -21,6 +21,9 @@ extension LayoutEngine {
         let slots: [Slot]
         let make: (Items.Element) -> Node
         let arithmetic: @MainActor (Rect, Phase) -> [Placement]
+
+        /// Which description of the layout the run is: a render that describes it again makes another.
+        let description: Int
         let mask: Node?
         let tapped: ValueHandler<Items.Element>?
         let named: ((Phase) -> Void)?
@@ -161,22 +164,25 @@ extension LayoutEngine {
 
         // MARK: - On the host's frames
 
-        /// Places every view where the arithmetic says, a throw under way carried on to `now` first; again next
-        /// frame while it goes on.
+        /// Places every view where the arithmetic says - a throw under way carried on to `now` first, a change of
+        /// the description on its way from where each view was shown - again next frame while either goes on.
         /// Design: docs/design/views/layout-engine.md#the-run
-        func place(at now: Double) -> EngineAnswer {
+        func place(at now: Double, reducesMotion: Bool) -> EngineAnswer {
             let flying = fly(at: now)
             let room = states.room.wrappedValue
 
             // A room not yet measured places nothing: every view stands in the whole of it until it is.
-            if room.width > 0, room.height > 0 {
-                states.placements.wrappedValue = PlacedRun(
-                    fitted(arithmetic(Rect(0, 0, room.width, room.height), live())))
-            } else {
+            guard room.width > 0, room.height > 0 else {
                 states.placements.wrappedValue = PlacedRun()
+                return flying ? .again : .wait
             }
 
-            return flying ? .again : .wait
+            // A change of the description is measured before the run is worked out where it stands now.
+            let memory = changed(at: now, reducesMotion: reducesMotion)
+            let phase = live()
+            let poses = fitted(arithmetic(Rect(0, 0, room.width, room.height), phase))
+            let changing = show(poses, after: memory, at: now, phase: phase, room: room, reducesMotion: reducesMotion)
+            return flying || changing ? .again : .wait
         }
 
         /// The throw under way carried on to `now`: the hand's axis held where the input's `throwing` has brought
