@@ -428,20 +428,22 @@ final class CycleTests: XCTestCase {
 
     // MARK: - The cycle
 
-    /// The first cycle of all LATCHES ONLY. There is no elapsed time anybody
-    /// could act on before it, and an engine handed one would be handed the
-    /// age of the process.
-    func testTheFirstCycleLatchesOnly() throws {
+    /// The first cycle of all runs what is armed, TOLD NOUGHT. There is no
+    /// elapsed time anybody could act on before it, and an engine handed one
+    /// would be handed the age of the process; a render that armed it still
+    /// wants its answer before anything is drawn.
+    func testTheFirstCycleRunsWhatIsArmedToldNought() throws {
         let ran = Ran()
         let renders = Renders()
 
         renders.render(Doubler(ran: ran).node)
 
         board.cycle(now: 0, reducesMotion: false)
-        XCTAssertEqual(ran.order, [], "nothing runs on the cycle that starts the clock")
+        XCTAssertEqual(ran.order, ["doubler"], "what is armed runs on the cycle that starts the clock")
+        XCTAssertEqual(ran.elapsed["doubler"], [0], "told nought")
 
         board.cycle(now: 16, reducesMotion: false)
-        XCTAssertEqual(ran.order, ["doubler"], "and everything armed runs on the next")
+        XCTAssertEqual(ran.order, ["doubler"], "and waits on the next")
     }
 
     /// A STATE WAKES NO ENGINE BY BEING READ, whatever it holds: a state is
@@ -468,8 +470,9 @@ final class CycleTests: XCTestCase {
     }
 
     /// So does the first cycle after a SILENCE: an application that was asleep
-    /// has a pile of writes and a gap no arithmetic should be handed.
-    func testACycleAfterASilenceLatchesOnly() {
+    /// has a pile of writes and a gap no arithmetic should be handed - each
+    /// engine with a reason runs over what the cycle latched, told nought.
+    func testACycleAfterASilenceRunsToldNought() {
         let ran = Ran()
         let renders = Renders()
         let view = Doubler(ran: ran)
@@ -479,25 +482,16 @@ final class CycleTests: XCTestCase {
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(ran.order.count, 1)
 
-        // Written while the application was away, which is a reason to run -
-        // and the cycle that comes back still runs nothing.
+        // Written while the application was away, which is a reason to run.
         view.input = 5
-        let latching = board.cycle(now: 5_000, reducesMotion: false)
+        board.cycle(now: 5_000, reducesMotion: false)
 
-        XCTAssertEqual(ran.order.count, 1, "the cycle after the gap latches only")
-        XCTAssertEqual(view.output, 0)
-
-        // AND IT ASKS FOR THE NEXT ONE. Nothing ran, so everything the silence
-        // piled up is still waiting - and with no frame asked for, what was
-        // just latched would sit in the image until something else happened to
-        // wake the display.
-        XCTAssertTrue(latching.awake, "a latching cycle has more to do")
+        XCTAssertEqual(ran.order.count, 2, "the cycle after the gap runs over what it latched")
+        XCTAssertEqual(view.output, 10)
+        XCTAssertEqual(ran.elapsed["doubler"]?.last, 0, "told nought, not the gap")
 
         board.cycle(now: 5_016, reducesMotion: false)
-
-        XCTAssertEqual(ran.order.count, 2, "and the one after it runs over what was latched")
-        XCTAssertEqual(view.output, 10)
-        XCTAssertEqual(ran.elapsed["doubler"]?.last, 16)
+        XCTAssertEqual(ran.order.count, 2, "with nothing more to do")
     }
 
     /// Engines run in ascending PRIORITY, whatever order they were written in
@@ -661,7 +655,6 @@ final class CycleTests: XCTestCase {
 
         renders.render(view.node)
         board.cycle(now: 0, reducesMotion: false)
-        board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(ran.order, ["before", "writer", "after"], "the render armed all three, in priority order")
 
         view.trigger = 3
@@ -701,7 +694,6 @@ final class CycleTests: XCTestCase {
         })
 
         board.cycle(now: 0, reducesMotion: false)
-        board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(seen, [1, 1], "both engines saw the picture the cycle latched")
 
         await settle()
@@ -844,8 +836,8 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(view.worn, 5)
     }
 
-    /// Elapsed is PER ENGINE: one that sat out three frames is told about all
-    /// three, and one that runs every frame is told about one.
+    /// Elapsed is PER ENGINE: one that sat out three frames is told about the
+    /// four since it ran, and one that runs every frame is told about one.
     ///
     /// It has to be, because an engine only runs when something it follows has
     /// moved - so the interval since the LAST CYCLE says nothing about how far
@@ -865,7 +857,7 @@ final class CycleTests: XCTestCase {
         view.input = 3
         board.cycle(now: 64, reducesMotion: false)
 
-        XCTAssertEqual(ran.elapsed["doubler"], [16, 48],
+        XCTAssertEqual(ran.elapsed["doubler"], [0, 64],
                        "the second run is told about every frame since the first")
     }
 
@@ -883,7 +875,7 @@ final class CycleTests: XCTestCase {
         // A run of frames the clock kept, each further apart than the last.
         board.cycle(now: 16 + 90, reducesMotion: false)
 
-        XCTAssertEqual(ran.elapsed["ticking"], [16, 90])
+        XCTAssertEqual(ran.elapsed["ticking"], [0, 16, 90])
 
         for elapsed in ran.elapsed["ticking"] ?? [] {
             XCTAssertLessThanOrEqual(elapsed, EngineCycle.mostElapsed)

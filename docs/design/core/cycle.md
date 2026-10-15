@@ -120,12 +120,13 @@ law (journeys.md).
 ## A start is a gap
 
 The first cycle, and any cycle after a silence longer than
-`EngineCycle.mostElapsed` (100 ms), only latches. An application that was
+`EngineCycle.mostElapsed` (100 ms), is a start. An application that was
 asleep has a pile of reports and no elapsed time anybody can act on, and an
 engine handed a gap of minutes would move whatever it moves through the wall.
-The start moves every engine's clock to now, so the next run is told about one
-frame; it does not note where the values stand, because a write made while
-nothing was cycling is a reason to run.
+The start moves every engine's clock to now, and an engine with a reason to
+run - a write made while nothing was cycling, a render that armed it - runs
+over what the start latched, told nought. Its answer is not left to the
+frame after: a layout's run of the views a render put in is drawn with them.
 
 ## Engines
 
