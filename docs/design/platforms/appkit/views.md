@@ -112,6 +112,19 @@ again only when its words or its width change, drawing only the lines the
 strip shows; its lines stand where the cell's do, 2 points in from each
 side. A truncated label draws as its cell does.
 
+## A view under a transform
+
+AppKit measures what of a view is visible - its `visibleRect`, which bounds
+what a layer-backed view draws - from the frames of the view and its
+ancestors, without their layers' transforms. A view standing past the edge of
+what clips it, turned or scaled back inside it - a card of a fan at the side
+of a deck - would be drawn only where its unturned frame shows, cut along a
+straight line across the card. Every view that draws takes the whole of its
+bounds for visible where it or an ancestor stands under a transform
+(`drawnRect(visible:)`); one standing straight keeps what AppKit measures, so
+a scroller uncovering a long label still draws it strip by strip (A long
+text).
+
 ## A button's icon beside its words
 
 A button keeps its icon beside its words, the two together in the middle

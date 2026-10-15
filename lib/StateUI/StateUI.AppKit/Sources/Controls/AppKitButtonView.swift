@@ -171,6 +171,9 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         if oval { needsDisplay = true }
     }
 
+    /// The whole of the view under a transform, which AppKit leaves out of what it takes for visible.
+    override var visibleRect: NSRect { drawnRect(visible: super.visibleRect) }
+
     override func draw(_ dirtyRect: NSRect) {
         if outlineShape == .ellipse {
             let inset = (outline?.width ?? 0) / 2

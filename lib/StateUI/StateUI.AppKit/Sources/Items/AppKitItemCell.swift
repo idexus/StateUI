@@ -93,6 +93,9 @@ final class AppKitItemCellView: NSView {
         if holding?.taking != true { resized?() }
     }
 
+    /// The whole of the view under a transform, which AppKit leaves out of what it takes for visible.
+    override var visibleRect: NSRect { drawnRect(visible: super.visibleRect) }
+
     override func draw(_ dirtyRect: NSRect) {
         guard let fill else { return }
         fill.setFill()
