@@ -299,9 +299,14 @@ final class AppKitScrollViewTests: XCTestCase {
         }
         defer { renderer.closeForTesting() }
         let layout = try XCTUnwrap(Self.layout(in: renderer))
+        // The cards drawn, as a window has them before a hand reaches them: the run knows its room.
+        layout.window?.contentView?.layoutSubtreeIfNeeded()
+        renderer.displayFrameForTesting()
+        renderer.runtime.pump.turn()
 
-        // A card is 176 wide and a turn is three fifths of one, 105.6; the push
-        // goes 80 - past half a turn, short of a whole one.
+        // The hand carries the card in front: on the wheel 0.52 of a card a turn,
+        // 92 to 128 points as the window draws it. The push goes 80 - past half
+        // a turn, short of a whole one.
         layout.scrollWheel(with: try Self.scroll(phase: .began))
         layout.scrollWheel(with: try Self.scroll(x: -80, phase: .changed))
         // Held still before it lifts: no throw.

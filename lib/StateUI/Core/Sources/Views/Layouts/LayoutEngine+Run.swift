@@ -40,11 +40,11 @@ extension LayoutEngine {
         let axisTargets: [WritableKeyPath<Phase, Double>: [Double]]
         let law: Motion
 
-        /// Whether a hand moves the run, which way, how far it travels for one unit of the phase, and how a throw
-        /// goes on.
+        /// Whether a hand moves the run, which way, how far it travels for one unit of the phase where the input
+        /// says, and how a throw goes on.
         let moves: Bool
         let across: Bool
-        let per: Double
+        let per: Double?
         let throwing: Motion
 
         // MARK: - The phase
@@ -149,7 +149,8 @@ extension LayoutEngine {
             let along = onAxis(target)
             let journey = phase.journey
 
-            guard abs(onAxis(start) - along) * per > Self.settled || target != placing(along, in: journey.destination)
+            guard abs(onAxis(start) - along) * (unit(at: along) ?? 1) > Self.settled
+                || target != placing(along, in: journey.destination)
             else { return name(along) }
 
             named?(target)
@@ -246,9 +247,11 @@ extension LayoutEngine {
             case .changed:
                 // A move with no beginning heard is one: the run is taken where it is shown.
                 let held = states.held.wrappedValue ?? take(at: onAxis(journey.value))
+                // A room not yet measured draws no view, so a hand over it moves none.
+                guard let per = unit(at: held) else { return }
+
                 let step = -(across ? moved.x : moved.y) / per
-                let beyond = period == nil && (held + step < low || held + step > high)
-                let next = held + (beyond ? step / 2 : step)
+                let next = period == nil ? runPoint(of: handPoint(of: held) + step) : held + step
 
                 states.held.wrappedValue = next
                 name(nearest(next))
@@ -256,7 +259,9 @@ extension LayoutEngine {
             case .ended, .cancelled:
                 guard let held = states.held.wrappedValue else { return }
 
-                let thrown = gesture == .ended ? -(across ? speed.x : speed.y) / per : 0
+                let measured = unit(at: held)
+                let per = measured ?? 1
+                let thrown = gesture == .ended && measured != nil ? -(across ? speed.x : speed.y) / per : 0
                 let reach = held + Self.carried(thrown, by: throwing)
                 let end = period == nil ? min(max(reach, low), high) : reach
                 let target = resting(near: placing(end, in: journey.destination))
@@ -276,6 +281,55 @@ extension LayoutEngine {
                 states.flung.wrappedValue = LayoutFling(from: held, to: along, speed: thrown)
             }
         }
+
+        /// Where the hand stands, in units of the axis, for the run standing at `value`: past an end of a run
+        /// that does not come round, twice as far beyond it - the way past an end counts half.
+        func handPoint(of value: Double) -> Double {
+            value > high ? high + (value - high) * 2 : value < low ? low - (low - value) * 2 : value
+        }
+
+        /// Where the run stands for the hand at `point`: `handPoint(of:)`'s inverse.
+        func runPoint(of point: Double) -> Double {
+            point > high ? high + (point - high) / 2 : point < low ? low - (low - point) / 2 : point
+        }
+
+        /// How far the hand travels for one unit of its axis at `value`, in device units: the input's, or as far
+        /// as the view drawn in front of those the phase moves - the highest, then the one nearest the middle -
+        /// goes for one unit there, so the hand carries it with it. A run with nothing moving takes a room's length
+        /// a unit; one whose room is not measured yet, none.
+        /// Design: docs/design/views/layout-engine.md#the-hand
+        func unit(at value: Double) -> Double? {
+            if let per { return per }
+
+            let laid = states.room.wrappedValue
+            guard laid.width > 0, laid.height > 0 else { return nil }
+
+            let room = Rect(0, 0, laid.width, laid.height)
+            let length = across ? room.width : room.height
+            let shown = live()
+            func middle(_ placement: Placement) -> Double {
+                across ? placement.bounds.x + placement.bounds.width / 2 : placement.bounds.y + placement.bounds.height / 2
+            }
+
+            let here = arithmetic(room, placing(value, in: shown))
+            let before = arithmetic(room, placing(value - Self.probe, in: shown))
+            let after = arithmetic(room, placing(value + Self.probe, in: shown))
+            let moving = here.indices.prefix(min(before.count, after.count)).compactMap { index in
+                let moved = abs(middle(after[index]) - middle(before[index])) / (2 * Self.probe)
+                return moved >= 1 ? (index: index, moved: moved) : nil
+            }
+            let front = moving.min { one, other in
+                let (first, second) = (here[one.index], here[other.index])
+                return first.zIndex != second.zIndex
+                    ? first.zIndex > second.zIndex
+                    : abs(middle(first) - length / 2) < abs(middle(second) - length / 2)
+            }
+
+            return front?.moved ?? max(length, 1)
+        }
+
+        /// How far either side of where the run stands the view in front is measured, in units of the phase.
+        static var probe: Double { 0.01 }
 
         /// The run taken by the hand at `value` on its axis: a journey or a throw under way stops there.
         @discardableResult

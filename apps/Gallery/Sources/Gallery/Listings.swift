@@ -4562,9 +4562,6 @@ enum Listings {
 
         static let pieces = cards.indices.map(Piece.card) + cards.indices.map(Piece.dot)
 
-        /// How far the hand travels to turn the ring by one card, in device units.
-        static let reach = 90.0
-
         /// How big a card is.
         static let width = 176.0
         static let height = 248.0
@@ -4673,9 +4670,10 @@ enum Listings {
             }
             .phase($turn)
             // THE HAND OVER THE CARDS: a finger or a pointer dragged, a trackpad's
-            // two fingers and a wheel all turn the ring, and let go with speed it
-            // goes on to the card nearest where the throw would end.
-            .input(.scroll(.horizontal, pointsPerUnit: Self.reach, throwing: throwing.motion))
+            // two fingers and a wheel all turn the ring, carrying the card in
+            // front with them, and let go with speed it goes on to the card
+            // nearest where the throw would end.
+            .input(.scroll(.horizontal, throwing: throwing.motion))
             // WHERE THE RING MAY COME TO REST: on a card, never between two - and
             // round and round, a turn bringing every card back.
             .snapTargets(Self.cards.indices.map(Double.init))

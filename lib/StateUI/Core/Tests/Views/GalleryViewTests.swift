@@ -113,6 +113,15 @@ final class GalleryViewTests: XCTestCase {
             feeder = described?[.frame]?.state ?? feeder
         }
 
+        // The run told its room as well, as the host tells it: the hand is measured against the cards it draws.
+        if let feeder {
+            turned += 16
+            _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
+            moved(feeder, to: [0, 0, width, height])
+            turned += 16
+            _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
+        }
+
         return (patch, renders.renderFromScratch(tree()))
     }
 
@@ -489,8 +498,8 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(shade(of: -2), 0, accuracy: 0.001, "and below is none of it")
     }
 
-    /// How far the hand travels for one card: six tenths of a card's width.
-    private let reach = 176.0 * 0.6
+    /// How far the hand travels for one card: as far as the card in front goes on the wheel, at its stated size.
+    private let reach = 176.0 * 0.52
 
     /// The hand over the gallery `tree` describes, as a host reports it, and a cycle after it.
     private func hand(
@@ -608,11 +617,11 @@ final class GalleryViewTests: XCTestCase {
     }
 
     /// A THROW GOES ON AS `.throwing` SAYS: the same swipe let go with speed,
-    /// carried for three seconds' worth, comes to rest three cards on, where
+    /// carried for three seconds' worth, comes to rest two cards on, where
     /// the light friction of a gallery that says nothing slides it back to the
     /// first.
     func testAThrowGoesOnAsThrowingSays() {
-        for (throwing, card) in [(Motion?.none, 0), (.eased(.seconds(3), .cubicOut), 3)] {
+        for (throwing, card) in [(Motion?.none, 0), (.eased(.seconds(3), .cubicOut), 2)] {
             Renderer.shared.clearStates()
             let renders = Renders()
             let shown = State(0)
@@ -624,7 +633,7 @@ final class GalleryViewTests: XCTestCase {
 
             hand(renders, tree, .began)
             hand(renders, tree, .changed, moved: Point(-0.1 * reach, 0))
-            hand(renders, tree, .ended, speed: Point(-300, 0))
+            hand(renders, tree, .ended, speed: Point(-200, 0))
 
             XCTAssertEqual(shown.wrappedValue, card, "thrown \(throwing.map { "\($0.law)" } ?? "as a gallery is")")
         }

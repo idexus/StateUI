@@ -171,6 +171,60 @@ final class LayoutEngineTests: XCTestCase {
         XCTAssertEqual(phase.wrappedValue, 0, "0.05 is nearest 0")
     }
 
+    /// WITH NO UNIT GIVEN, THE HAND CARRIES THE VIEW IN FRONT: the hand travels as far for a unit of the phase as
+    /// the view drawn on top of those the phase moves goes for it, so that view stays under the finger whatever the
+    /// room makes of it - a view standing still over them, a dot, a caption, carries nothing.
+    func testWithNoUnitTheHandCarriesTheViewInFront() throws {
+        let phase = State(wrappedValue: 0.0)
+        let handed = Handed()
+        let renders = Renders()
+        func tree() -> Node {
+            LayoutEngine([0, 1, 2]) { Text("\($0)") } placements: { room, at in
+                handed.phases.append(at)
+                // The view in front moves half the room's width a unit; the one behind it, a tenth as far.
+                return [
+                    Placement(Rect(-at * room.width / 10, 0, 10, 10)),
+                    Placement(Rect(-at * room.width / 2, 0, 10, 10), zIndex: 1),
+                    Placement(Rect(0, 0, 10, 10), zIndex: 2),
+                ]
+            }
+            .phase(phase.projectedValue)
+            .input(.scroll(.horizontal))
+            .snapTargets([0, 1, 2])
+            .node
+        }
+        _ = bench.laid(renders, tree)
+
+        bench.hand(renders, tree, .began)
+        bench.hand(renders, tree, .changed, moved: Point(-150, 0))
+
+        XCTAssertEqual(handed.phases.last ?? 0, 1, accuracy: 0.001, "half the room's 300 is a unit")
+    }
+
+    /// A ROOM NOT YET MEASURED DRAWS NO VIEW, SO A HAND OVER IT MOVES NONE: with no unit given there is nothing in
+    /// front to carry, and the run stays where it stands - neither moved nor thrown.
+    func testAHandOverARoomNotYetMeasuredMovesNothing() throws {
+        let phase = State(wrappedValue: 0.0)
+        let renders = Renders()
+        func tree() -> Node {
+            LayoutEngine([0, 1, 2]) { Text("\($0)") } placements: { room, at in
+                (0..<3).map { Placement(Rect((Double($0) - at) * room.width / 2, 0, 10, 10)) }
+            }
+            .phase(phase.projectedValue)
+            .input(.scroll(.horizontal))
+            .snapTargets([0, 1, 2])
+            .node
+        }
+        _ = renders.render(tree())
+        bench.cycle()
+
+        bench.hand(renders, tree, .began)
+        bench.hand(renders, tree, .changed, moved: Point(-80, 0))
+        bench.hand(renders, tree, .ended, speed: Point(-2_000, 0))
+
+        XCTAssertEqual(phase.wrappedValue, 0, "no card named, none thrown to")
+    }
+
     /// THE HAND TAKES THE RUN WHERE IT STANDS: from the phase it was started at, a journey under way stopping
     /// where it is shown.
     func testTheHandTakesTheRunWhereItIsShown() throws {
@@ -299,8 +353,15 @@ final class LayoutEngineTests: XCTestCase {
         bench.hand(renders, tree, .changed, moved: Point(100, 0))
         XCTAssertEqual(handed.phases.last ?? 0, -0.5, accuracy: 0.001)
 
+        bench.hand(renders, tree, .changed, moved: Point(-100, 0))
+        XCTAssertEqual(handed.phases.last ?? 0, 0, accuracy: 0.001, "back the way it came, back at the end")
+
+        // From the first target across the last: a whole unit to the end, then half of what is left.
+        bench.hand(renders, tree, .changed, moved: Point(-160, 0))
+        XCTAssertEqual(handed.phases.last ?? 0, 1.3, accuracy: 0.001, "only the way past the end counts half")
+
         bench.hand(renders, tree, .ended)
-        XCTAssertEqual(try XCTUnwrap(standing(worn, as: JourneyLanes<Double>.self)).destination, 0)
+        XCTAssertEqual(try XCTUnwrap(standing(worn, as: JourneyLanes<Double>.self)).destination, 1)
     }
 
     /// A RUN THAT COMES ROUND HAS NO END: past the last target is the first again, a turn on, and a throw there

@@ -24,7 +24,7 @@
 ///         }
 ///     }
 ///     .phase($turn)
-///     .input(.scroll(.horizontal, pointsPerUnit: 90))
+///     .input(.scroll(.horizontal))
 ///     .snapTargets(planets.indices.map(Double.init))
 ///
 /// The arithmetic runs on the host's frames whenever the room, the phase or a state named in `following(_:)` moves,
@@ -371,8 +371,8 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
             law: law,
             moves: hand != nil && !stops.isEmpty,
             across: hand?.input.axis != .vertical,
-            per: hand?.input.pointsPerUnit ?? 1,
-            throwing: hand?.input.throwing ?? LayoutInput.scroll(.horizontal, pointsPerUnit: 1).throwing)
+            per: hand?.input.pointsPerUnit,
+            throwing: hand?.input.throwing ?? LayoutInput.scroll(.horizontal).throwing)
     }
 
     /// The layout's states, handed on whole: what its engine and handlers read and write.
@@ -406,7 +406,7 @@ extension LayoutEngine where Phase == Double {
 
     /// What moves the phase under the user's hand.
     ///
-    ///     .input(.scroll(.horizontal, pointsPerUnit: 90))
+    ///     .input(.scroll(.horizontal))
     ///
     /// The hand moves the phase between the lowest and the highest snap target - round and round where it
     /// `wraps(every:)` - and let go, the run goes on to the target nearest where its throw would end: it needs

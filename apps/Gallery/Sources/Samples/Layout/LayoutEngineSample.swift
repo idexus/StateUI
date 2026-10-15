@@ -48,9 +48,6 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
 
     static let pieces = cards.indices.map(Piece.card) + cards.indices.map(Piece.dot)
 
-    /// How far the hand travels to turn the ring by one card, in device units.
-    static let reach = 90.0
-
     /// How big a card is.
     static let width = 176.0
     static let height = 248.0
@@ -177,9 +174,10 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
         }
         .phase($turn)
         // THE HAND OVER THE CARDS: a finger or a pointer dragged, a trackpad's
-        // two fingers and a wheel all turn the ring, and let go with speed it
-        // goes on to the card nearest where the throw would end.
-        .input(.scroll(.horizontal, pointsPerUnit: Self.reach, throwing: throwing.motion))
+        // two fingers and a wheel all turn the ring, carrying the card in
+        // front with them, and let go with speed it goes on to the card
+        // nearest where the throw would end.
+        .input(.scroll(.horizontal, throwing: throwing.motion))
         // WHERE THE RING MAY COME TO REST: on a card, never between two - and
         // round and round, a turn bringing every card back.
         .snapTargets(Self.cards.indices.map(Double.init))
@@ -334,7 +332,8 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("Swipe, drag or scroll left or right to turn the ring - a finger, the "
-                + "pointer, a trackpad's two fingers and a wheel are one hand to it. Let go "
+                + "pointer, a trackpad's two fingers and a wheel are one hand to it, carrying "
+                + "the card in front with them however big the window makes the ring. Let go "
                 + "still, it rests on the card it is nearest; let go with speed, it goes on to "
                 + "the card nearest where the throw would end, in one movement. It has no "
                 + "end: past the last card is the first again. `Back` and `Next` send it "

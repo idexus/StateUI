@@ -289,7 +289,7 @@ page continues moving under vertical input.
 
 A layout whose views the hand moves without moving its content - a run of
 cards turned by a finger, a wheel or a trackpad, endless if need be - is a
-[layout engine](#a-layout-engine) with `.input(.scroll(_:pointsPerUnit:))`.
+[layout engine](#a-layout-engine) with `.input(.scroll(_:))`.
 
 ## Repeated content and collections
 
@@ -500,7 +500,8 @@ and changing it animates every card to the new shape. `.position($shown)` is
 the card in the middle, counted from 0 and two-way: a swipe writes the card it
 settled on, and a write moves the run. `.onItemTapped` hears a tap on the
 card in front, with its item, and `.onPositionChanged` another card coming to
-the middle; `.throwing(_:)` says how a swipe let go with speed goes on, as a
+the middle; a swipe carries the card in front with it, however big the room
+draws the cards, and `.throwing(_:)` says how one let go with speed goes on, as a
 [layout engine's](#a-layout-engine) input does, and `.itemSize(width:height:)`,
 `.isSwipeEnabled`, `.emptyView`, `.shade` and `.fade` say the rest. Give it a
 bounded size - a `.height`, or a `.fill` row of a `Grid`.
@@ -537,9 +538,10 @@ struct Shelf: View {
 
 The phase is where the run rests or is going. Lend it a state with
 `.phase(_:)` and the program moves the run by writing it; give it
-`.input(.scroll(_:pointsPerUnit:))` and the hand moves it too - a finger or a
-pointer dragged, a trackpad's two fingers, a wheel - on its own, with no
-scroller under it, coming to rest on the nearest of its `.snapTargets(_:)`:
+`.input(.scroll(_:))` and the hand moves it too - a finger or a pointer
+dragged, a trackpad's two fingers, a wheel - on its own, with no scroller
+under it, carrying the view in front with it and coming to rest on the
+nearest of its `.snapTargets(_:)`:
 
 ```swift
 struct Carousel: View {
@@ -562,7 +564,7 @@ struct Carousel: View {
                 }
             }
             .phase($turn)
-            .input(.scroll(.horizontal, pointsPerUnit: 140))
+            .input(.scroll(.horizontal))
             .snapTargets(names.indices.map(Double.init))
             .motion(.spring(response: .milliseconds(240)))
             .height(200)
@@ -583,6 +585,12 @@ the hand it is the target the run passes and the one it comes to rest on, and
 a hand taking the run on its way stops the journey. A tap reaches the view
 drawn on top through `.onItemTapped`, and `.shade(_:)` darkens a far view by
 the `shade` its placement answers.
+
+The hand carries the view in front: it travels as far for one unit of the
+phase as the front view of those the phase moves goes for it, so a carousel
+that grows with its window turns as far under the finger as on a phone.
+`pointsPerUnit:` gives the distance instead, for a run whose front view
+hardly moves - a pile of cards fanned out by another axis.
 
 A hand let go with speed throws the run: it goes on to the target nearest
 where the throw would end, and `turn` names that target at once. How it goes
@@ -617,8 +625,7 @@ struct Ring: View {
             }
         }
         .phase($turn)
-        .input(.scroll(.horizontal, pointsPerUnit: 140,
-                       throwing: .spring(response: .milliseconds(400), damping: 0.8)))
+        .input(.scroll(.horizontal, throwing: .spring(response: .milliseconds(400), damping: 0.8)))
         .snapTargets(names.indices.map(Double.init))
         .wraps(every: Double(names.count))
         .height(200)
@@ -656,7 +663,7 @@ struct Planets: View {
                 }
             }
             .phase($orbit)
-            .input(.scroll(.horizontal, pointsPerUnit: 120), drives: \.turn)
+            .input(.scroll(.horizontal), drives: \.turn)
             .snap(\.turn, to: names.indices.map(Double.init))
             .motion(.spring(response: .milliseconds(240)))
             .height(160)

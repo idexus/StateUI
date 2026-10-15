@@ -575,7 +575,7 @@ extension ControlDictionary {
                 }
             }
             .phase($turn)
-            .input(.scroll(.horizontal, pointsPerUnit: 120))
+            .input(.scroll(.horizontal))
             .snapTargets([0, 1, 2])
             .height(160)
             """#),

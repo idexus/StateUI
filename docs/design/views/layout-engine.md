@@ -113,8 +113,8 @@ still answer a tap.
 
 - The hand takes the run where it is shown: a journey or a throw under way
   stops there. While it moves, the hand's axis moves with it, its move over
-  `pointsPerUnit` - the hand moving left moves the run on - and past an end
-  of a run that does not come round, half as far. What the arithmetic is
+  the unit - the hand moving left moves the run on - and the way past an
+  end of a run that does not come round counts half, back as forth. What the arithmetic is
   handed is where the hand holds the run (`held`); the phase itself is named
   only as the hand passes halfway between two targets, a reading of the hand
   (`journey.snap(_:to:)`) rather than a journey: one render a target, none a
@@ -122,6 +122,17 @@ still answer a tap.
 - Let go still, the run travels to the nearest target as a journey of the
   phase, under the layout's motion.
 - Let go with speed, it is thrown ([a throw](#a-throw)).
+
+The unit is how far the hand travels for one unit of its axis. Unless the
+input gives one (`pointsPerUnit`), it is how far the view drawn in front
+goes for one unit where the run stands - of the views the phase moves, the
+highest, then the one nearest the middle - measured by the arithmetic a
+hundredth of a unit either side. The hand then carries that view with it,
+whatever size the room makes the layout: a ring that grows with its window
+turns as far under the finger as on a phone. A view standing still over the
+run - a dot, a caption - is no front; with nothing moving, a room's length
+is a unit. A run whose front view hardly moves - a pile - gives the unit
+itself.
 
 The hand moves one axis of the phase alone; the host leaves to whatever holds
 the layout a hand whose first move is more across the layout's axis than

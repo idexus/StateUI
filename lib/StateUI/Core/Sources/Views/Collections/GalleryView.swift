@@ -363,10 +363,8 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             }
         }
 
-        if swipes {
-            let scroll = thrown.map { LayoutInput.scroll(.horizontal, pointsPerUnit: reach, throwing: $0) }
-            engine = engine.input(scroll ?? .scroll(.horizontal, pointsPerUnit: reach))
-        }
+        // The hand carries the card in front, however big the room draws it.
+        if swipes { engine = engine.input(thrown.map { .scroll(.horizontal, throwing: $0) } ?? .scroll(.horizontal)) }
 
         // The shade sits beside the press: the card that dips wears none.
         if let mask { engine = engine.shade(mask) }
@@ -424,10 +422,6 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// How far a far card fades unless said: all of it, or a quarter where a
     /// shade does the rest.
     private var fade: Double { fades ?? (mask == nil ? 1 : 0.25) }
-
-    /// How far the hand travels to turn the run by one card - the sensitivity:
-    /// three fifths of a card's width.
-    private var reach: Double { cardWidth * 0.6 }
 
     /// How big the cards are drawn in this room, as a multiple of their stated
     /// size: the smaller of half the room's width and its height, up to
