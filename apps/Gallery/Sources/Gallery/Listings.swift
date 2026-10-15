@@ -3531,8 +3531,9 @@ enum Listings {
         """#,
         "GalleryViewSample": #"""
         // Sources/Samples/Collections/GalleryViewSample.swift
-        /// The cards: what each picture is called and which file it is.
-        static let cards: [Card] = [
+        /// Every card the gallery can hold: what each picture is called and which
+        /// file it is, dealt in this order.
+        static let all: [Card] = [
             Card(name: "Mural", art: "art_mural.png"),
             Card(name: "Nebula", art: "art_nebula.png"),
             Card(name: "Ridge", art: "art_ridge.png"),
@@ -3540,24 +3541,45 @@ enum Listings {
             Card(name: "Tide", art: "art_tide.png"),
             Card(name: "Prism", art: "art_prism.png"),
             Card(name: "Grove", art: "art_grove.png"),
+            Card(name: "Ember", art: "art_ember.png"),
+            Card(name: "Aurora", art: "art_aurora.png"),
+            Card(name: "Coral", art: "art_coral.png"),
+            Card(name: "Dune", art: "art_dune.png"),
+            Card(name: "Lagoon", art: "art_lagoon.png"),
         ]
 
         /// One card's face.
-        struct Card {
+        struct Card: Hashable {
             let name: String
             let art: String
         }
 
-        /// The three shapes, and what to call them on the button that cycles them.
-        static let shapes: [(GalleryArrangement, String)] = [
-            (.default, "Wheel"),
-            (.fan, "Fan"),
-            (.row, "Row"),
-        ]
+        /// The four shapes, as the picker offers them.
+        enum Shape: CaseIterable, Hashable {
+            case wheel, fan, row, deck
 
-        @State private var shape = 0
+            var arrangement: GalleryArrangement {
+                switch self {
+                case .wheel: .default
+                case .fan: .fan
+                case .row: .row
+                case .deck: .deck
+                }
+            }
+
+            var title: String {
+                switch self {
+                case .wheel: "Wheel"
+                case .fan: "Fan"
+                case .row: "Row"
+                case .deck: "Deck"
+                }
+            }
+        }
+
+        @State private var cards = Array(Self.all.prefix(7))
+        @State private var shape = Shape.wheel
         @State private var shown = 0
-        @State private var swipes = true
         @State private var shaded = true
         @State private var opened = "tap one"
         @State private var moves = 0
@@ -3572,9 +3594,8 @@ enum Listings {
                     // THE WHOLE CONTROL: the run made below - one card per item, each
                     // named by its name - and one word for the shape they stand in.
                     gallery
-                        .arrangement(Self.shapes[shape].0)
+                        .arrangement(shape.arrangement)
                         .position($shown)
-                        .isSwipeEnabled(swipes)
                         .onItemTapped { card in opened = "tapped \(card.name)" }
                         // Another card in the middle, swiped or assigned.
                         .onPositionChanged { _ in moves += 1 }
@@ -3596,40 +3617,70 @@ enum Listings {
                     DebugInfoLabel()
 
                     PositionIndicator()
-                        .count(Self.cards.count)
+                        .count(cards.count)
                         .position(shown)
                         .indicatorColor(Palette.outline)
                         .currentIndicatorColor(Palette.accent)
                         .horizontalAlignment(.center)
 
-                    Text("\(Self.cards[min(max(shown, 0), Self.cards.count - 1)].name) · "
-                        + "card \(shown + 1) of \(Self.cards.count) · \(opened) · moved \(moves)")
+                    Text("\(cards[front].name) · card \(shown + 1) of \(cards.count) · \(opened) · moved \(moves)")
                 }
                 .gridRow(1)
 
                 HStack {
-                    // ONE WIDTH FOR EVERY CAPTION: the button keeps its size as
-                    // Wheel, Fan and Row take turns, so the row does not shift.
-                    Button(Self.shapes[shape].1)
-                        .width(88)
-                        .onClicked { shape = (shape + 1) % Self.shapes.count }
+                    // A CARD JOINS AT THE END, or comes in at the front, fading in
+                    // where the shape puts it; the front card leaves at once and
+                    // the others close up.
+                    Button("Add").onClicked {
+                        if let next { cards.append(next) }
+                    }
 
+                    Button("Insert").onClicked {
+                        if let next { cards.insert(next, at: front) }
+                    }
+
+                    Button("Remove").onClicked {
+                        guard cards.count > 1 else { return }
+                        cards.remove(at: front)
+                        // The last card gone, the one before it comes to the front.
+                        shown = min(shown, cards.count - 1)
+                    }
+                }
+                .horizontalAlignment(.center)
+                .gridRow(2)
+
+                HStack {
                     Button("Back")
                         .isEnabled(shown > 0)
                         .onClicked { shown -= 1 }
 
                     Button("Next")
-                        .isEnabled(shown < Self.cards.count - 1)
+                        .isEnabled(shown < cards.count - 1)
                         .onClicked { shown += 1 }
+                }
+                .horizontalAlignment(.center)
+                .gridRow(3)
 
-                    SwitchRow("Swipeable", $swipes)
+                HStack {
+                    // THE SHAPE, one word: the cards travel to the new one.
+                    Picker(Shape.allCases, selection: $shape) { $0.title }
 
                     SwitchRow("Shaded", $shaded)
                 }
                 .horizontalAlignment(.center)
-                .gridRow(2)
+                .gridRow(4)
             }
-            .rows(.fill, .auto, .auto)
+            .rows(.fill, .auto, .auto, .auto, .auto)
+        }
+
+        /// The next card not in the gallery, if any is left.
+        private var next: Card? {
+            Self.all.first { !cards.contains($0) }
+        }
+
+        /// Where the card in front stands among the cards.
+        private var front: Int {
+            min(max(shown, 0), cards.count - 1)
         }
 
         /// The run, either way the switch is set - and the two are worth watching
@@ -3643,7 +3694,7 @@ enum Listings {
         /// application's to give: nothing in the library knows what shape a card
         /// has.
         private var gallery: GalleryView<[Card], String> {
-            let run = GalleryView(Self.cards, id: \.name) { card in
+            let run = GalleryView(cards, id: \.name) { card in
                 // A picture and its name. Where the card stands and which way
                 // it faces is the SHAPE's, and this knows nothing about it.
                 face(card)
@@ -3662,7 +3713,7 @@ enum Listings {
 
         /// One card's face - a picture and its name, and nothing at all about where
         /// the card is or which way it faces. That is the gallery's, and keeping
-        /// the two apart is what lets one run of cards wear three shapes.
+        /// the two apart is what lets one run of cards wear four shapes.
         private func face(_ card: Card) -> some View {
             ZStack {
                 Grid {

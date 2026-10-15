@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Coral - a gallery card: a reef of pink and orange branches in blue water.</title>
+<defs>
+<linearGradient id="cs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#06B6D4"/><stop offset="1" stop-color="#1E3A8A"/></linearGradient>
+<radialGradient id="cl" cx="0.5" cy="0" r="0.7"><stop offset="0" stop-color="#E0FBFF" stop-opacity="0.55"/><stop offset="1" stop-color="#E0FBFF" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="400" height="560" fill="url(#cs)"/>
+<rect width="400" height="560" fill="url(#cl)"/>
+<g fill="none" stroke-linecap="round">
+<path d="M110 540 C110 470 80 430 60 380 M110 470 C130 430 150 410 160 360 M95 430 C70 420 50 400 40 360" stroke="#FF4D8D" stroke-width="18"/>
+<path d="M270 540 C270 460 300 420 320 360 M270 470 C240 430 220 400 215 350 M300 420 C330 410 350 390 362 350" stroke="#FF8A3D" stroke-width="18"/>
+<path d="M190 540 C190 480 200 450 196 410 M196 450 C214 430 226 420 232 396" stroke="#FFD23F" stroke-width="14"/>
+</g>
+<g fill="#E0FBFF"><circle cx="300" cy="200" r="9" opacity="0.6"/><circle cx="320" cy="150" r="6" opacity="0.5"/><circle cx="290" cy="110" r="4" opacity="0.45"/><circle cx="120" cy="240" r="7" opacity="0.5"/><circle cx="138" cy="196" r="4" opacity="0.4"/></g>
+<path d="M0 520 Q100 500 200 520 T400 516 L400 560 L0 560 Z" fill="#3B0F7A" opacity="0.85"/>
+</svg>
