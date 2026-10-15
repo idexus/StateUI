@@ -56,27 +56,26 @@ final class HandReadingTests: XCTestCase {
     }
 
     /// A WHEEL WHOSE STEPS FADE HAS BEEN LET GO: a trackpad that tells no lift goes on with the system's
-    /// momentum, each step smaller than the last. The third such step is the lift, at the speed the moves say; the
-    /// momentum after it is swallowed, and a step that grows again is a new gesture.
+    /// momentum, each step slower than the last. The third such step is the lift, at the speed the moves say; the
+    /// momentum after it is swallowed, and a hand pushing again - the wheel half as fast again as the momentum at
+    /// its slowest - is a new gesture.
     func testAWheelWhoseStepsFadeHasBeenLetGo() {
         var hand = HandReading()
 
-        _ = hand.notched(Point(-30, 0), at: 0)
-        _ = hand.notched(Point(-40, 0), at: 16)
-        XCTAssertEqual(hand.notched(Point(-36, 0), at: 32), [.init(.changed, moved: Point(-36, 0))])
-        XCTAssertEqual(hand.notched(Point(-32, 0), at: 48), [.init(.changed, moved: Point(-32, 0))])
+        momentum(&hand)
+        XCTAssertEqual(hand.notched(Point(-32, 0), at: 80), [.init(.changed, moved: Point(-32, 0))])
 
-        let lift = hand.notched(Point(-28, 0), at: 64)
-        XCTAssertEqual(lift.map(\.phase), [.ended], "the third step smaller than the last")
-        XCTAssertEqual(lift.last?.speed.x ?? 0, -138.0 / 64 * 1_000, accuracy: 0.001, "as fast as the moves went")
+        let lift = hand.notched(Point(-28, 0), at: 96)
+        XCTAssertEqual(lift.map(\.phase), [.ended], "the third step slower than the last")
+        XCTAssertEqual(lift.last?.speed.x ?? 0, -228.0 / 96 * 1_000, accuracy: 0.001, "as fast as the moves went")
         XCTAssertFalse(hand.isWheeling)
 
-        XCTAssertEqual(hand.notched(Point(-24, 0), at: 80), [], "the momentum after the lift, swallowed")
-        XCTAssertEqual(hand.notched(Point(-24, 0), at: 96), [])
-        XCTAssertEqual(hand.wheel(Point(-20, 0), at: 112, along: .horizontal).taken, true,
-                       "swallowed, not handed on")
-        XCTAssertEqual(hand.notched(Point(-40, 0), at: 128).map(\.phase), [.began, .changed],
-                       "a step that grows is a new gesture")
+        XCTAssertEqual(hand.notched(Point(-24, 0), at: 112), [], "the momentum after the lift, swallowed")
+        XCTAssertEqual(hand.notched(Point(-24, 0), at: 128), [])
+        XCTAssertEqual(hand.wheel(Point(-20, 0), at: 144, along: .horizontal).taken, true, "swallowed, not handed on")
+        XCTAssertEqual(hand.notched(Point(-40, 0), at: 160), [], "a step alone pushes nothing")
+        XCTAssertEqual(hand.notched(Point(-60, 0), at: 176), [])
+        XCTAssertEqual(hand.notched(Point(-80, 0), at: 192).map(\.phase), [.began, .changed], "a hand pushing again")
     }
 
     /// A WHEEL'S EVEN NOTCHES NEVER FADE: a wheel turned notch by notch is let go only by a pause.
@@ -88,25 +87,35 @@ final class HandReadingTests: XCTestCase {
         XCTAssertTrue(hand.isWheeling)
     }
 
+    /// THE MOMENTUM ENDS WITH A PAUSE: a step after one is the next gesture, however small.
+    func testTheMomentumEndsWithAPause() {
+        var hand = HandReading()
+
+        letGo(&hand)
+        XCTAssertFalse(hand.isWheeling, "let go")
+
+        XCTAssertEqual(hand.notched(Point(-4, 0), at: 400).map(\.phase), [.began, .changed])
+    }
+
     /// THE MOMENTUM IS UNBROKEN: it steps every frame, a late one now and then, so a step after a gap of more than
     /// six frames is a hand that stopped it and moves again - the next gesture, however small.
     func testAGapInTheMomentumIsTheNextGesture() {
         var hand = HandReading()
 
-        for (step, size) in [40.0, 36, 32, 28].enumerated() { _ = hand.notched(Point(-size, 0), at: Double(step) * 16) }
-        XCTAssertEqual(hand.notched(Point(-24, 0), at: 64), [], "the momentum, swallowed")
-        XCTAssertEqual(hand.notched(Point(-2, 0), at: 130), [], "a frame or three late, still the momentum")
+        letGo(&hand)
+        XCTAssertEqual(hand.notched(Point(-24, 0), at: 112), [], "the momentum, swallowed")
+        XCTAssertEqual(hand.notched(Point(-2, 0), at: 178), [], "a frame or three late, still the momentum")
 
-        XCTAssertEqual(hand.notched(Point(-2, 0), at: 240).map(\.phase), [.began, .changed])
+        XCTAssertEqual(hand.notched(Point(-2, 0), at: 290).map(\.phase), [.began, .changed])
     }
 
     /// A STEP AGAINST THE MOMENTUM is a hand that turned it back: the next gesture, however small.
     func testAStepAgainstTheMomentumIsTheNextGesture() {
         var hand = HandReading()
 
-        for (step, size) in [40.0, 36, 32, 28].enumerated() { _ = hand.notched(Point(-size, 0), at: Double(step) * 16) }
+        letGo(&hand)
 
-        XCTAssertEqual(hand.notched(Point(2, 0), at: 64).map(\.phase), [.began, .changed])
+        XCTAssertEqual(hand.notched(Point(2, 0), at: 112).map(\.phase), [.began, .changed])
     }
 
     /// A TRACKPAD'S SWIPE ON A PAGE IS ONE GESTURE, its momentum swallowed to the last step: a frame drawn late
@@ -119,8 +128,67 @@ final class HandReadingTests: XCTestCase {
 
         XCTAssertEqual(reports.filter { $0.phase == .began }.count, 1, "one gesture")
         XCTAssertEqual(reports.filter { $0.phase == .ended }.count, 1, "let go once")
-        XCTAssertLessThan(reports.firstIndex { $0.phase == .ended } ?? .max, 16, "as the steps begin to fade")
+        XCTAssertLessThan(reports.firstIndex { $0.phase == .ended } ?? .max, 20, "as the steps begin to fade")
     }
+
+    /// A WHEEL THAT COMES UNEVENLY IS READ BY ITS PACE: steps a frame or two apart, one now and then three times
+    /// the one before - one swipe, never a new gesture each time a step stands out. A fast swipe through
+    /// Parallels to a layout in WinUI, as its tracker made it.
+    func testAnUnevenWheelIsOneGesture() {
+        var hand = HandReading()
+
+        let reports = Self.uneven.flatMap { time, step in hand.notched(Point(step, 0), at: time) }
+
+        XCTAssertEqual(reports.filter { $0.phase == .began }.count, 1, "one gesture")
+    }
+
+    /// Four steps of 40 points a frame, then slowing: 36, then the caller's.
+    private func momentum(_ hand: inout HandReading) {
+        for step in 0..<4 { _ = hand.notched(Point(-40, 0), at: Double(step) * 16) }
+        _ = hand.notched(Point(-36, 0), at: 64)
+    }
+
+    /// The momentum slowing three steps in a row, let go at 96 milliseconds.
+    private func letGo(_ hand: inout HandReading) {
+        momentum(&hand)
+        _ = hand.notched(Point(-32, 0), at: 80)
+        _ = hand.notched(Point(-28, 0), at: 96)
+    }
+
+    /// A SLOW HAND MAKES NO MOMENTUM: steps of a point or less slow and quicken by chance, so a step counts toward a
+    /// fade, as toward a push, only where it moves four points at least - a slow hand moves the run all the way,
+    /// and a pause lets it go.
+    func testASlowHandMakesNoMomentum() {
+        var hand = HandReading()
+
+        let reports = Self.drag.flatMap { time, step in hand.notched(Point(step, 0), at: time) }
+
+        XCTAssertEqual(reports.filter { $0.phase == .ended }, [], "never let go while it moves")
+        XCTAssertEqual(reports.filter { $0.phase == .changed }.count, Self.drag.count, "every step moved the run")
+        XCTAssertTrue(hand.isWheeling)
+    }
+
+    /// A slow drag of two fingers over a layout on a Mac's trackpad, reaching Windows as a wheel and a layout in
+    /// WinUI as the steps its tracker made of it (2026-10-15): when, in milliseconds, and how far, in points.
+    private static let drag: [(Double, Double)] = [
+        (0.0, 0.4), (32.3, 0.6), (51.9, 0.4), (67.9, 0.8), (82.6, 0.4), (98.8, 0.4), (115.6, 0.4), (132.5, 0.4),
+        (148.6, 0.4), (165.1, 0.4), (181.9, 0.4), (198.8, 0.4), (215.4, 0.4), (231.5, 0.4), (265.1, 0.4),
+        (281.9, 0.6), (298.4, 0.6), (314.2, 0.6), (330.3, 0.4), (347.7, 0.4), (364.9, 0.4), (381.4, 0.4),
+        (398.0, 0.4), (413.9, 0.4), (430.1, 0.4), (443.9, 0.4), (459.8, 0.4), (493.0, 0.8), (509.7, 0.4),
+        (526.5, 0.4), (543.0, 0.4), (559.9, 0.4), (576.4, 0.4), (593.0, 0.4), (626.9, 0.4), (643.1, 0.8),
+        (676.6, 0.4), (693.3, 0.4), (746.2, 1.4), (759.8, 0.6),
+    ]
+
+    /// A fast swipe of two fingers on a Mac's trackpad, reaching Windows through Parallels as a wheel and a layout
+    /// in WinUI as the steps its tracker made of it, slowing to its tail (2026-10-15): milliseconds, points.
+    private static let uneven: [(Double, Double)] = [
+        (0.0, 8.8), (17.0, 11.6), (50.8, 16.8), (71.0, 40.4), (97.3, 27.8), (117.2, 84.8), (133.4, 28.8),
+        (150.6, 27.6), (181.4, 26.2), (203.7, 48.2), (218.0, 22), (234.6, 21), (251.1, 20), (267.4, 19.2),
+        (301.0, 18.4), (321.5, 17.4), (334.4, 31.8), (350.3, 14.4), (380.8, 13.6), (400.8, 24.6), (431.9, 21.2),
+        (464.7, 18), (483.7, 8.2), (500.3, 7.4), (518.5, 7), (552.0, 6.4), (572.6, 11), (585.0, 4.8), (600.4, 4.4),
+        (618.3, 4), (651.0, 3.8), (670.6, 6.6), (698.3, 2.8), (717.2, 5), (733.9, 2.2), (750.7, 2), (781.3, 1.8),
+        (800.6, 3.2), (817.2, 1.4),
+    ]
 
     /// One fast swipe of two fingers over a page in Safari on a Mac's trackpad, its momentum after it, as the page
     /// heard it (2026-10-15): when, in milliseconds, and how far, `deltaX`.
@@ -136,16 +204,6 @@ final class HandReadingTests: XCTestCase {
         (1099.7, 2), (1117.1, 2), (1133.8, 2), (1150.1, 1), (1166.3, 1), (1183.7, 1), (1199.9, 1), (1216.9, 1),
         (1250.4, 1), (1267.1, 1), (1283.5, 1),
     ]
-
-    /// THE MOMENTUM ENDS WITH A PAUSE: a step after one is the next gesture, however small.
-    func testTheMomentumEndsWithAPause() {
-        var hand = HandReading()
-
-        for (step, size) in [40.0, 36, 32, 28].enumerated() { _ = hand.notched(Point(-size, 0), at: Double(step) * 16) }
-        XCTAssertFalse(hand.isWheeling, "let go")
-
-        XCTAssertEqual(hand.notched(Point(-4, 0), at: 400).map(\.phase), [.began, .changed])
-    }
 
     /// A HAND BEGINNING WHILE A WHEEL IS OPEN ENDS THE WHEEL FIRST: one gesture at a time.
     func testAHandBeginningEndsAnOpenWheel() {

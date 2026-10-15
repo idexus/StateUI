@@ -40,14 +40,19 @@
     /// How many steps of a wheel, each slower than the last, say it was let go: a trackpad's momentum.
     public static let fade = 3
 
+    /// How far back a wheel's pace is read, in milliseconds - four frames: steps come late, glued together or
+    /// uneven, and their sum over a window says how fast the hand goes where one step alone does not.
+    public static let window = 64.0
+
     /// The longest the momentum goes without a step, in milliseconds - six frames: a step after a longer gap is a
     /// hand that stopped it and moves again.
     public static let gap = 100.0
 
-    /// How much faster than the momentum's last step a step must go to be a hand pushing again, and the least it
-    /// must move, in points: the momentum's tail creeps by a point a frame, late or not.
+    /// How much faster than the momentum at its slowest the wheel must go to be a hand pushing again, and the
+    /// least a step moves, in points, to count toward a push or a fade: a slow hand and the momentum's tail creep a
+    /// few points a frame, slowing and quickening by chance, and the system makes a momentum of none of it.
     public static let surge = 1.5
-    public static let least = 4.0
+    public static let least = 8.0
 
     /// Whether a gesture is under way, and whether it is a wheel's.
     private var open = false
@@ -63,11 +68,13 @@
     /// When the hand last moved.
     private var last = 0.0
 
-    /// How fast a wheel's last step went - how far over the time since the one before, a frame at least - which
-    /// way, how many steps in a row were slower than the one before, and whether what still comes is the momentum
-    /// after a lift, swallowed.
+    /// A wheel's steps of the last `window`, how fast they went - their sum over the window - which way, how many
+    /// steps in a row went slower than the one before, and whether what still comes is the momentum after a lift,
+    /// swallowed, with how fast it went at its slowest.
+    private var steps: [(time: Double, size: Double)] = []
     private var pace = 0.0
     private var heading = Point.zero
+    private var trough = 0.0
     private var fading = 0
     private var coasting = false
 
@@ -172,13 +179,15 @@
     /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
     public mutating func notched(_ moved: Point, at time: Double) -> [Report] {
         let size = (moved.x * moved.x + moved.y * moved.y).squareRoot()
+        steps = steps.filter { time - $0.time < Self.window } + [(time, size)]
         let before = pace
-        pace = size / max(time - last, Self.frame)
+        pace = steps.reduce(0) { $0 + $1.size } / Self.window
         let against = moved.x * heading.x + moved.y * heading.y < 0
         if size > 0 { heading = moved }
 
         if coasting {
-            let pushed = pace > before * Self.surge && size >= Self.least
+            trough = min(trough, pace)
+            let pushed = pace > trough * Self.surge && size >= Self.least
             guard time - last > Self.gap || against || pushed else {
                 last = time
                 return []
@@ -192,11 +201,12 @@
             return begun + self.moved(moved, at: time)
         }
 
-        fading = pace < before ? fading + 1 : pace > before ? 0 : fading
+        if size >= Self.least { fading = pace < before ? fading + 1 : pace > before ? 0 : fading }
         guard fading >= Self.fade else { return self.moved(moved, at: time) }
 
         let lift = lifted(at: time, speed: nil)
         coasting = true
+        trough = pace
         last = time
         return lift
     }

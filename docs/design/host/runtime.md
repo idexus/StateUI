@@ -367,15 +367,17 @@ the lift, the moves of its last tenth of a second say it. A wheel tells no
 beginning and no lift: its first notch opens a gesture, and a frame finding
 it still for 150 ms lets it go with no throw (the runtime's frames pace every
 open wheel, and hold the clock while one is open). A trackpad that reaches a
-host as a wheel - a page's, with the system's momentum in it - says its lift
-by its steps, read by their pace - how far over the time since the last, a
-frame at least, so a frame drawn late and its doubled step keep the pace:
-three in a row each slower than the last are the momentum, so the wheel is
-let go there with the speed its moves say. The momentum after it is
-swallowed until a step against it, one pushing again - half as fast again
-as the last and four points at least, as the tail creeps a point a frame -
-or a gap of more than six frames, a hand that stopped it and moves again.
-A mouse's even notches never fade. A layout claims a hand
+host as a wheel - a page's, with the system's momentum in it; Windows'
+through a virtual machine - says its lift by its pace: its steps of the last
+four frames summed over that window, as steps come late, glued together or
+uneven, and one alone says nothing. Three steps in a row each slower than
+the last, each of eight points at least, are the momentum - a slow hand
+makes none, its steps of a few points slowing and quickening by chance, and
+a pause lets it go - so the wheel is let go there with the speed its moves
+say. The momentum after it is swallowed until a step against it, the wheel
+half as fast again as the momentum at its slowest with a step of eight
+points at least - a hand pushing again - or a gap of more than six frames, a
+hand that stopped it and moves again. A mouse's even notches never fade. A layout claims a hand
 whose first move is more along its axis than across it; the rest is left to
 whatever holds the layout, a page's scroller. What the hand does to the run -
 the phase moving with it, a throw to the target nearest its end - is the
