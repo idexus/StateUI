@@ -14,10 +14,13 @@
 #include <unordered_map>
 
 #include <winrt/Windows.UI.h>
+#include <winrt/Microsoft.UI.Composition.h>
+#include <winrt/Microsoft.UI.Composition.Interactions.h>
 #include <winrt/Microsoft.UI.Dispatching.h>
 #include <winrt/Microsoft.UI.Input.h>
 #include <winrt/Microsoft.UI.Xaml.Automation.Peers.h>
 #include <winrt/Microsoft.UI.Xaml.Automation.Provider.h>
+#include <winrt/Microsoft.UI.Xaml.Hosting.h>
 #include <winrt/Microsoft.UI.Xaml.Input.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
 
@@ -26,6 +29,7 @@ using winrt::Windows::Foundation::Point;
 namespace input = winrt::Microsoft::UI::Xaml::Input;
 namespace peers = winrt::Microsoft::UI::Xaml::Automation::Peers;
 namespace provider = winrt::Microsoft::UI::Xaml::Automation::Provider;
+namespace interactions = winrt::Microsoft::UI::Composition::Interactions;
 
 namespace {
     /// One view's listening: what it listens for, the run of taps it heard, the press it holds, whether the host
@@ -41,7 +45,7 @@ namespace {
         bool capturing = false;
 
         winrt::event_token tapped, doubleTapped, entered, exited, movedToken, pressed, released, lost, canceled,
-            started, delta, completed, wheeled;
+            started, delta, completed;
 
         /// The hand over a layout: its pointer, where it went down and last stood on the content, and whether its
         /// first move past the drag distance is yet to come, or the layout took it.
@@ -110,6 +114,85 @@ namespace {
         return static_cast<double>(args.GetCurrentPoint(nullptr).Timestamp()) / 1000.0;
     }
 
+    /// Now, in milliseconds on the pointer's clock - the performance counter's.
+    double now() {
+        LARGE_INTEGER count, frequency;
+        QueryPerformanceCounter(&count);
+        QueryPerformanceFrequency(&frequency);
+        return static_cast<double>(count.QuadPart) * 1000.0 / static_cast<double>(frequency.QuadPart);
+    }
+
+    /// A trackpad's fingers and a wheel over a layout a hand moves, heard as WinUI's own scroller hears them: by an
+    /// InteractionTracker the input is redirected to. Its states say the hand - fingers down, how they move, the
+    /// lift and its speed - and its resting place how far a wheel's step goes. Nothing is bound to its position:
+    /// the layout moves by what the host is told.
+    /// Design: docs/design/platforms/winui/input.md#the-hand-over-a-layout
+    struct HandTracker : winrt::implements<HandTracker, interactions::IInteractionTrackerOwner> {
+        int64_t view;
+        bool interacting = false;
+        winrt::Windows::Foundation::Numerics::float3 last{}, aim{};
+
+        explicit HandTracker(int64_t view) : view(view) {}
+
+        void CustomAnimationStateEntered(
+            interactions::InteractionTracker const &, interactions::InteractionTrackerCustomAnimationStateEnteredArgs const &) {}
+
+        void IdleStateEntered(
+            interactions::InteractionTracker const &tracker, interactions::InteractionTrackerIdleStateEnteredArgs const &) {
+            interacting = false;
+            last = aim = tracker.Position();
+        }
+
+        void InteractingStateEntered(
+            interactions::InteractionTracker const &tracker, interactions::InteractionTrackerInteractingStateEnteredArgs const &) {
+            interacting = true;
+            last = aim = tracker.Position();
+            callbacks.hand(view, 0, 0, 0, now(), NAN, NAN);
+        }
+
+        void InertiaStateEntered(
+            interactions::InteractionTracker const &, interactions::InteractionTrackerInertiaStateEnteredArgs const &args) {
+            auto modified = args.ModifiedRestingPosition();
+            auto resting = modified ? modified.Value() : args.NaturalRestingPosition();
+            if (interacting) {
+                // The fingers lifted: the layout throws the run itself, so the tracker's own inertia moves nothing.
+                interacting = false;
+                auto speed = args.PositionVelocityInPixelsPerSecond();
+                callbacks.hand(view, 2, 0, 0, now(), -speed.x, -speed.y);
+            } else {
+                // A wheel's step: as far as the platform scrolls for it, from where its last step aimed.
+                callbacks.wheel(view, aim.x - resting.x, aim.y - resting.y);
+            }
+            aim = resting;
+        }
+
+        void RequestIgnored(
+            interactions::InteractionTracker const &, interactions::InteractionTrackerRequestIgnoredArgs const &) {}
+
+        void ValuesChanged(
+            interactions::InteractionTracker const &, interactions::InteractionTrackerValuesChangedArgs const &args) {
+            auto position = args.Position();
+            if (interacting) callbacks.hand(view, 1, last.x - position.x, last.y - position.y, now(), NAN, NAN);
+            last = position;
+        }
+    };
+
+    /// The tracker each layout a hand moves hears a trackpad and a wheel by, and the source redirecting them to it.
+    struct HandTracking {
+        interactions::InteractionTracker tracker{nullptr};
+        interactions::VisualInteractionSource source{nullptr};
+    };
+
+    std::unordered_map<int64_t, HandTracking> tracking;
+
+    /// The view's tracker taken off: the input goes to the element again.
+    void untrack(int64_t view) {
+        auto found = tracking.find(view);
+        if (found == tracking.end()) return;
+        found->second.tracker.InteractionSources().RemoveAll();
+        tracking.erase(found);
+    }
+
     /// The hand let go or taken away, `phase` saying which: a hand the layout took is told so.
     void handUp(int64_t view, int32_t phase, double time) {
         auto *entry = listener(view, StateUIHearingHand);
@@ -118,7 +201,7 @@ namespace {
         entry->handPointer = 0;
         entry->handPending = false;
         entry->handTaking = false;
-        if (taking) callbacks.hand(view, phase, 0, 0, time);
+        if (taking) callbacks.hand(view, phase, 0, 0, time, NAN, NAN);
     }
 
     /// Hangs every handler once; each asks what the view listens for as it runs.
@@ -176,10 +259,10 @@ namespace {
                     if (std::abs(point.X - hand->handDown.X) > distance[0]
                         || std::abs(point.Y - hand->handDown.Y) > distance[1]) {
                         hand->handPending = false;
-                        callbacks.hand(view, 0, 0, 0, when(args));
+                        callbacks.hand(view, 0, 0, 0, when(args), NAN, NAN);
                         hand = listener(view, StateUIHearingHand);
                         bool taken = hand && callbacks.hand(
-                            view, 1, point.X - hand->handDown.X, point.Y - hand->handDown.Y, when(args));
+                            view, 1, point.X - hand->handDown.X, point.Y - hand->handDown.Y, when(args), NAN, NAN);
                         hand = listener(view, StateUIHearingHand);
                         if (hand && taken) {
                             hand->handTaking = true;
@@ -193,7 +276,7 @@ namespace {
                 } else if (hand->handTaking) {
                     auto moved = Point(point.X - hand->handLast.X, point.Y - hand->handLast.Y);
                     hand->handLast = point;
-                    callbacks.hand(view, 1, moved.X, moved.Y, when(args));
+                    callbacks.hand(view, 1, moved.X, moved.Y, when(args), NAN, NAN);
                     args.Handled(true);
                 }
             }
@@ -224,16 +307,6 @@ namespace {
             [view](IInspectable const &, input::PointerRoutedEventArgs const &args) {
             handUp(view, 3, when(args));
             letGo(view, 3);
-        }));
-        // A wheel - a mouse's notches, a precision touchpad's small steps - over a layout a hand moves: a step it
-        // does not take goes on to whatever holds it.
-        entry.wheeled = element.PointerWheelChanged(guarded("handling PointerWheelChanged",
-            [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
-            if (!listener(view, StateUIHearingHand)) return;
-            auto properties = args.GetCurrentPoint(sender.as<xaml::UIElement>()).Properties();
-            double step = properties.MouseWheelDelta() / 120.0 * 48.0;
-            bool across = properties.IsHorizontalMouseWheel();
-            if (callbacks.wheel(view, across ? -step : 0, across ? 0 : step)) args.Handled(true);
         }));
         entry.started = element.ManipulationStarted(
             guarded("handling ManipulationStarted",
@@ -268,7 +341,6 @@ namespace {
         element.ManipulationStarted(entry.started);
         element.ManipulationDelta(entry.delta);
         element.ManipulationCompleted(entry.completed);
-        element.PointerWheelChanged(entry.wheeled);
         --hung;
     }
 
@@ -316,6 +388,7 @@ extern "C" void stateui_winui_hear(StateUIObjectRef handle, int64_t view, uint32
         // A web view's page takes the user's hand: WebView2 ends the process (fail-fast) once it is listened to.
         if (element.try_as<controls::WebView2>()) return;
         auto found = listening.find(view);
+        if (!(hearing & StateUIHearingHand)) untrack(view);
         if (!hearing) {
             if (found == listening.end()) return;
             unhookLater(element, found->second);
@@ -334,6 +407,39 @@ extern "C" void stateui_winui_hear(StateUIObjectRef handle, int64_t view, uint32
         holdHitArea(element, view);
     } catch (...) {
         report("listening for the user's input");
+    }
+}
+
+extern "C" void stateui_winui_hear_hand(StateUIObjectRef handle, int64_t view, int32_t axis) {
+    try {
+        if (axis < 0) return untrack(view);
+        auto element = as<xaml::UIElement>(handle);
+        auto found = tracking.find(view);
+        if (found == tracking.end()) {
+            auto visual = xaml::Hosting::ElementCompositionPreview::GetElementVisual(element);
+            auto tracker = interactions::InteractionTracker::CreateWithOwner(visual.Compositor(), winrt::make<HandTracker>(view));
+            auto source = interactions::VisualInteractionSource::Create(visual);
+            source.ManipulationRedirectionMode(interactions::VisualInteractionSourceRedirectionMode::CapableTouchpadAndPointerWheel);
+            source.ScaleSourceMode(interactions::InteractionSourceMode::Disabled);
+            tracker.InteractionSources().Add(source);
+            // Room enough never to reach an end: the run has its own, or none.
+            float room = 1e6f;
+            tracker.MinPosition({-room, -room, 0});
+            tracker.MaxPosition({room, room, 0});
+            found = tracking.emplace(view, HandTracking{tracker, source}).first;
+        }
+        // The layout's axis alone: a hand across it goes on to whatever holds the layout.
+        auto &source = found->second.source;
+        bool across = axis == 0;
+        auto on = interactions::InteractionSourceMode::EnabledWithInertia, off = interactions::InteractionSourceMode::Disabled;
+        source.PositionXSourceMode(across ? on : off);
+        source.PositionYSourceMode(across ? off : on);
+        auto wheelOn = interactions::InteractionSourceRedirectionMode::Enabled;
+        auto wheelOff = interactions::InteractionSourceRedirectionMode::Disabled;
+        source.PointerWheelConfig().PositionXSourceMode(across ? wheelOn : wheelOff);
+        source.PointerWheelConfig().PositionYSourceMode(across ? wheelOff : wheelOn);
+    } catch (...) {
+        report("hearing the hand over a layout");
     }
 }
 

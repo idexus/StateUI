@@ -70,17 +70,26 @@ that asks for more than one pointer is not recognized.
 
 ## The hand over a layout
 
-A layout an engine moves hears the hand by the relay (`Input.cpp`): a press
-of the primary button, a finger or a pen goes down; once it has moved past
-the system's drag distance it is told as begun and its first move, and the
-host layer's answer says whose it is - taken by the layout, which then holds
-the pointer and handles each move told since the last, or left, the pointer
+A layout an engine moves hears the hand two ways (`Input.cpp`). A press of
+the primary button, a finger or a pen goes down; once it has moved past the
+system's drag distance it is told as begun and its first move, and the host
+layer's answer says whose it is - taken by the layout, which then holds the
+pointer and handles each move told since the last, or left, the pointer
 going on to whatever holds the layout. Each report carries the pointer's own
 time (`PointerPoint.Timestamp`), from which the host layer reads the speed at
-the lift; a lost capture or a cancel takes the hand away. A wheel's step -
-a mouse's notch of 120 as forty-eight points, a precision touchpad's smaller
-steps alike - is told as a wheel, handled where the layout took it, and let
-go by the host layer's pause.
+the lift; a lost capture or a cancel takes the hand away.
+
+A trackpad and a wheel are heard as WinUI's own scroller hears them: the
+layout's visual is a `VisualInteractionSource` redirecting both
+(`CapableTouchpadAndPointerWheel`) to an `InteractionTracker`, along the
+layout's axis alone - the other goes on to whatever holds the layout. The
+tracker's states are the hand: fingers down (`InteractingStateEntered`) begin
+it and stop a throw under way, its moves are the fingers' (`ValuesChanged`),
+and the lift (`InertiaStateEntered`) carries the platform's own speed; the
+tracker's inertia after it moves nothing, as the layout throws the run. A
+wheel's step enters inertia with no fingers down, and how far the platform
+would scroll for it - its resting place from where the last step aimed - is
+told as a wheel. Nothing is bound to the tracker's position.
 
 ## A pinch
 

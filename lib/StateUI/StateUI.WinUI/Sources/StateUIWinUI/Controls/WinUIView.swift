@@ -357,8 +357,10 @@ class WinUIView {
         if menuActions.indices.contains(index) { menuActions[index]() }
     }
 
-    /// What of the user's input the view listens for; what hears it.
+    /// What of the user's input the view listens for, the axis a hand moves it along where it hears one; what hears
+    /// it.
     private(set) var hearing: Hearing = []
+    private var handAxis: LayoutInput.Axis?
     private var onHeard: ((HeardInput) -> Bool)?
 
     /// What the view offers and takes of a drag, as last told to the relay; what hears it.
@@ -375,15 +377,20 @@ class WinUIView {
         return .eachAxis(x: distance[0], y: distance[1])
     }()
 
-    /// Listens for what `hearing` names, `heard` hearing it; the relay is told only a change, in its bits, which
-    /// are `Hearing`'s.
+    /// Listens for what `hearing` names - a hand along `axis` - `heard` hearing it; the relay is told only a
+    /// change, in its bits, which are `Hearing`'s.
     /// Design: docs/design/platforms/winui/input.md
-    func hear(_ hearing: Hearing, _ heard: @escaping (HeardInput) -> Bool) {
+    func hear(_ hearing: Hearing, along axis: LayoutInput.Axis? = nil, _ heard: @escaping (HeardInput) -> Bool) {
         onHeard = hearing.isEmpty ? nil : heard
-        guard hearing != self.hearing else { return }
+        if hearing != self.hearing {
+            self.hearing = hearing
+            stateui_winui_hear(handle, number, hearing.rawValue)
+        }
+        let axis = hearing.contains(.hand) ? axis : nil
+        guard axis != handAxis else { return }
 
-        self.hearing = hearing
-        stateui_winui_hear(handle, number, hearing.rawValue)
+        handAxis = axis
+        stateui_winui_hear_hand(handle, number, axis?.rawValue ?? -1)
     }
 
     /// What the relay says the view heard.
@@ -392,8 +399,8 @@ class WinUIView {
     }
 
     /// The hand over a layout the relay tells - begun, moved by what it moved under it, let go, taken away - at
-    /// `time` on the pointer's clock, its speed at the lift read by the host layer from its moves: the host's entry.
-    /// Whether the layout took it.
+    /// `time` on the pointer's clock, its speed at the lift as the platform tells it, or read by the host layer
+    /// from its moves: the host's entry. Whether the layout took it.
     /// Design: docs/design/platforms/winui/input.md#the-hand-over-a-layout
     func heardHand(phase: Int32, moved: Point, at time: Double? = nil, speed: Point? = nil) -> Bool {
         guard let phase = GesturePhase(rawValue: phase) else { return false }

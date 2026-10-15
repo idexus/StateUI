@@ -13,7 +13,7 @@ extension WinUIElement {
             guard let self, let host else { return false }
             return element.hear(heard, in: host.runtime)
         }
-        view.hear(element.hearing, heard)
+        view.hear(element.hearing, along: element.handAxis, heard)
         view.offer(element.dragAndDrop) { _ = heard($0) }
     }
 }

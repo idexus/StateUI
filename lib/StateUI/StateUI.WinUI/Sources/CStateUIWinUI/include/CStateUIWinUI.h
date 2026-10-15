@@ -211,12 +211,13 @@ typedef struct {
     /// VirtualKey and VirtualKeyModifiers: whether a view taking it took it.
     bool (*keyTaken)(int64_t view, int32_t key, int32_t modifiers);
 
-    /// The hand over a layout - a press dragged by any pointer: `phase` 0 begun, 1 moved by (x, y) DIPs since the
-    /// last, 2 let go, 3 taken away, `time` its milliseconds on the pointer's clock: whether the layout took it.
-    bool (*hand)(int64_t view, int32_t phase, double x, double y, double time);
+    /// The hand over a layout - a press dragged by any pointer, a trackpad's fingers: `phase` 0 begun, 1 moved by
+    /// (x, y) DIPs since the last, 2 let go at (speedX, speedY) DIPs a second - NaN where untold - 3 taken away,
+    /// `time` its milliseconds on the pointer's clock: whether the layout took it.
+    bool (*hand)(int64_t view, int32_t phase, double x, double y, double time, double speedX, double speedY);
 
-    /// A wheel's notch over a layout - a mouse's, a precision touchpad's - moving what is under it by (x, y) DIPs:
-    /// whether the layout took it.
+    /// A wheel's step over a layout, as far as the platform scrolls for it, moving what is under it by (x, y)
+    /// DIPs: whether the layout took it.
     bool (*wheel)(int64_t view, double x, double y);
 } StateUIWinUICallbacks;
 
@@ -921,6 +922,10 @@ void stateui_winui_watch_environment(void);
 /// Listens on `element`, which the view `view` shows, for what `hearing` names, each heard through `heard`; 0
 /// stops. A panel that listens is hit where it draws nothing, and one that hears taps assistive technology presses.
 void stateui_winui_hear(StateUIObjectRef element, int64_t view, uint32_t hearing);
+
+/// Hears a trackpad and a wheel over the layout `view` as WinUI's own scroller does, along `axis` - 0 across, 1
+/// down - or no longer, for -1.
+void stateui_winui_hear_hand(StateUIObjectRef element, int64_t view, int32_t axis);
 
 /// The host says the press the view `view` heard is a drag: the view holds the pointer from the move it heard it in.
 void stateui_winui_press_dragged(int64_t view);

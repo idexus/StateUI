@@ -184,9 +184,11 @@ enum WinUICallbacks {
                     (WinUIView.find(view) as? WinUITitleBarView)?.takesKey(key: key, modifiers: modifiers) == true
                 }
             },
-            hand: { view, phase, x, y, time in
+            hand: { view, phase, x, y, time, speedX, speedY in
                 MainActor.assumeIsolated {
-                    WinUIView.find(view)?.heardHand(phase: phase, moved: Point(x: x, y: y), at: time) == true
+                    let speed = speedX.isNaN || speedY.isNaN ? nil : Point(x: speedX, y: speedY)
+                    return WinUIView.find(view)?.heardHand(phase: phase, moved: Point(x: x, y: y), at: time, speed: speed)
+                        == true
                 }
             },
             wheel: { view, x, y in
