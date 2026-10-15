@@ -18,6 +18,14 @@ public enum LayoutEngineContract: ElementContract {
     /// it under the layout's motion and says where it stands every frame.
     public static let phase = ElementProperty<Self, [Double]>("phase", layer: .stateUI)
 
+    /// Which way the hand moves the run, where a hand does: the host hears a finger, a pointer, a trackpad and a
+    /// wheel moving that way over the element, and leaves the other way to whatever holds it.
+    public static let handAxis = ElementProperty<Self, LayoutInput.Axis>("handAxis", layer: .structure, travels: false)
+
+    /// The hand moving over the element: its phase, how far it moved across and down since the last report, and -
+    /// as it lets go - how fast it was going, per second.
+    public static let handMoved = ElementEvent<Self, (GesturePhase, Point, Point)>("handMoved", layer: .native)
+
     /// The element's own members.
-    public static let members: [any ContractMember] = [phase]
+    public static let members: [any ContractMember] = [handAxis, handMoved, phase]
 }

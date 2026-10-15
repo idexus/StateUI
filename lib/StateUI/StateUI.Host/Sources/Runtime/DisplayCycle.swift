@@ -24,6 +24,9 @@
     /// What the frame presents through.
     weak var presenter: (any FramePresenter)?
 
+    /// The runtime an open wheel's let-go is said in.
+    weak var runtime: HostRuntime?
+
     private let core: CoreLink
     private let clock: any FrameClock
     private let animator: Animator
@@ -31,6 +34,7 @@
     private let describedMotion: DescribedMotion
     private let layoutMotion: LayoutMotion
     private let sidebarSlide: SidebarSlide
+    private let handPace: HandPace
     private let reducesMotion: () -> Bool
 
     /// Whether the core's last cycle said it has more to do.
@@ -54,6 +58,7 @@
         describedMotion: DescribedMotion,
         layoutMotion: LayoutMotion,
         sidebarSlide: SidebarSlide,
+        handPace: HandPace = HandPace(),
         reducesMotion: @escaping () -> Bool
     ) {
         self.core = core
@@ -63,6 +68,7 @@
         self.describedMotion = describedMotion
         self.layoutMotion = layoutMotion
         self.sidebarSlide = sidebarSlide
+        self.handPace = handPace
         self.reducesMotion = reducesMotion
     }
 
@@ -70,6 +76,7 @@
     public func frame(now: Double) {
         let now = onward(now)
         presenter?.commitUserReports(now: now)
+        if let runtime { handPace.pace(now: now, in: runtime) }
         drain(now: now)
         presenter?.renderIfNeeded()
     }
@@ -122,6 +129,7 @@
     public func hold() {
         clock.held = continues
             || animator.isMoving
+            || handPace.isOpen
             || core.cyclesPending
             || presenter?.wantsFrames == true
     }

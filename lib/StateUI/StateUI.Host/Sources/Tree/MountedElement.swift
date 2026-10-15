@@ -60,6 +60,9 @@
     /// A drag between views over the element's view, as the element tells it.
     var dropTarget = DropTarget()
 
+    /// The hand over the element, where it is a layout a hand moves.
+    var handReading = HandReading()
+
     /// The toolkit's half of the element.
     public private(set) var native: (any NativeElement)!
 

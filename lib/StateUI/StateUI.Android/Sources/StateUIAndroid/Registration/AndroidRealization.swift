@@ -132,6 +132,8 @@ enum AndroidRealization {
         .notPlanned("Window", "isMaximizable", reason: "Any Android window may fill the screen: an activity keeps none from it."),
         .notPlanned("Window", "isMinimizable", reason: "Any Android window may be put away: an activity keeps none from it."),
         .partial("Window", "background", missing: "An activity is opaque by the theme it starts in: a blur or glass shows its colour."),
+        .complete("LayoutEngine", "handAxis"),
+        .complete("LayoutEngine", "handMoved"),
     ] + windowRoom + HostRecord.layoutEngine
 
     /// What Android leaves out of a blur.

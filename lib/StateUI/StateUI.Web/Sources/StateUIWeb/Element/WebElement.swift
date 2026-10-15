@@ -33,6 +33,14 @@ final class WebElement: NativeElement {
     var press = WebPress()
     var wheelTurns = 0
 
+    /// The hand over a layout: its pointer, where it went down and last stood on the page, and whether its first
+    /// move past the drag distance is yet to come, or the layout took it.
+    var handPointer: Int?
+    var handDown = Point(x: 0, y: 0)
+    var handLast = Point(x: 0, y: 0)
+    var handPending = false
+    var handTaking = false
+
     init(_ element: MountedElement, host: WebRenderer) {
         self.element = element
         self.host = host

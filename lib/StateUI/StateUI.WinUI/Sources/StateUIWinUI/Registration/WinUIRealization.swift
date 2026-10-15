@@ -92,6 +92,8 @@ enum WinUIRealization {
         .partial("DatePicker", "format", missing: "WinUI writes \"D\" and \"d\" in the user's own way, and any other pattern as \"d\"."),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
+        .complete("LayoutEngine", "handAxis"),
+        .complete("LayoutEngine", "handMoved"),
         .complete("Menu", "isEnabled"),
         .complete("Menu", "text"),
         .complete("MenuBar", "order"),

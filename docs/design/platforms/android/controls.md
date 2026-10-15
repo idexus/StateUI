@@ -15,6 +15,18 @@ view's number, which forwards each call to Swift by the number
 ([JNI](jni.md)). A view hands the same listener to every setter it needs, so a
 field's typing and its Return reach the same Swift view.
 
+## The hand over a layout
+
+A layout an engine moves hears the hand through its view's one listener
+(`StateUIGestures`): a finger, followed by a `VelocityTracker`, and a
+wheel's notches (`ACTION_SCROLL`, by the platform's scroll factor). A finger
+down decides nothing and leaves the parent free to intercept; past the slop,
+its first move goes to the Swift host, whose host layer claims it along the
+layout's axis (`handed`) - claimed, the layout takes the rest of the touch and
+forbids its parent to intercept; left, a page's scroller takes it. At the
+lift the tracker's speed goes with it. A wheel's notch is claimed by itself
+(`wheeled`).
+
 ## A disabled view
 
 Every view takes the enablement `presented(_:)` gives it with Android's own

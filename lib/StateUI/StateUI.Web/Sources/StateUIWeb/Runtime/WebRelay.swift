@@ -182,6 +182,12 @@ enum WebRelay {
     /// Whether the click being heard fell on a label beside its control, which the browser clicks next.
     static var eventPassesToControl: Bool { stateui_web_event_number(13) != 0 }
 
+    /// The wheel's turn across and down of the event being heard, in pixels.
+    static var eventScroll: Point { Point(x: stateui_web_event_number(14), y: stateui_web_event_number(15)) }
+
+    /// When the event being heard happened, in the page's milliseconds - the frame clock's own.
+    static var eventTime: Double { stateui_web_event_number(16) }
+
     /// Calls `listener` as `element` comes near the view of the scroller `root`, and as it goes away (`eventNear`).
     static func watchNearness(_ element: Int32, of root: Int32, _ listener: Int32) {
         stateui_web_watch_nearness(element, root, listener)

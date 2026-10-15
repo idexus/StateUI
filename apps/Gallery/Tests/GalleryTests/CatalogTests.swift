@@ -1502,11 +1502,10 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(heights.count, 1,
                        "the run's height is described rather than driven")
 
-        // THREE rooms: the page's own, which that height is arithmetic over,
-        // the gallery's, which its cards are placed in, and where its
-        // scroller's run is laid out, which a change of room waits for.
-        XCTAssertEqual(rooms, ["Grid", "LayoutEngine", "LayoutEngine"],
-                       "the page, its run and the scroller's run are measured onto numbers")
+        // TWO rooms: the page's own, which that height is arithmetic over,
+        // and the gallery's, which its cards are placed in.
+        XCTAssertEqual(rooms, ["Grid", "LayoutEngine"],
+                       "the page and its run are measured onto numbers")
 
         // And the entrance is the third number - so the page waits for its room
         // to settle and then comes in, with nothing built for either.
@@ -1520,9 +1519,8 @@ final class CatalogTests: XCTestCase {
     /// And the home page's groups answer the gallery's, one a card; the banner
     /// over them answers its own, opening StateUI's home.
     ///
-    /// A `GalleryView` is swiped to choose and tapped to open, so its taps land
-    /// on a box under each card inside the scroller lying over them, which is
-    /// the only thing there a finger can reach.
+    /// A `GalleryView` is swiped to choose and tapped to open: the hand and a
+    /// tap both land on the card itself.
     func testTheHomePagesGalleryAnswersATap() throws {
         let (shown, nav) = (catalog(), Place().nav)
         let page = Renders().laid { HomePage(catalog: shown, nav: nav).node }
@@ -1535,8 +1533,8 @@ final class CatalogTests: XCTestCase {
 
         walk(page)
 
-        XCTAssertEqual(carriers, ["ZStack"] + Array(repeating: "Rectangle", count: shown.groups.count),
-                       "the banner opens StateUI's home, a box under each card the gallery's")
+        XCTAssertEqual(carriers, ["ZStack"] + Array(repeating: "Grid", count: shown.groups.count),
+                       "the banner opens StateUI's home, each card its own group")
     }
 
     /// Finds what answers a tap and insists there is one per thing listed, each

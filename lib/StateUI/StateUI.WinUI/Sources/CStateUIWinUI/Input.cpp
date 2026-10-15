@@ -41,7 +41,13 @@ namespace {
         bool capturing = false;
 
         winrt::event_token tapped, doubleTapped, entered, exited, movedToken, pressed, released, lost, canceled,
-            started, delta, completed;
+            started, delta, completed, wheeled;
+
+        /// The hand over a layout: its pointer, where it went down and last stood on the content, and whether its
+        /// first move past the drag distance is yet to come, or the layout took it.
+        uint32_t handPointer = 0;
+        Point handDown{}, handLast{};
+        bool handPending = false, handTaking = false;
     };
 
     std::unordered_map<int64_t, Listening> listening;
@@ -99,6 +105,22 @@ namespace {
             tell(view, what, 0, args.GetCurrentPoint(sender.as<xaml::UIElement>()).Position());
     }
 
+    /// When the pointer event happened, in milliseconds on the pointer's clock.
+    double when(input::PointerRoutedEventArgs const &args) {
+        return static_cast<double>(args.GetCurrentPoint(nullptr).Timestamp()) / 1000.0;
+    }
+
+    /// The hand let go or taken away, `phase` saying which: a hand the layout took is told so.
+    void handUp(int64_t view, int32_t phase, double time) {
+        auto *entry = listener(view, StateUIHearingHand);
+        if (!entry || !entry->handPointer) return;
+        bool taking = entry->handTaking;
+        entry->handPointer = 0;
+        entry->handPending = false;
+        entry->handTaking = false;
+        if (taking) callbacks.hand(view, phase, 0, 0, time);
+    }
+
     /// Hangs every handler once; each asks what the view listens for as it runs.
     void listen(xaml::UIElement const &element, int64_t view, Listening &entry) {
         entry.tapped = element.Tapped(guarded("handling Tapped",
@@ -125,6 +147,17 @@ namespace {
         entry.pressed = element.PointerPressed(guarded("handling PointerPressed",
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerPressed, sender, args);
+            if (auto *hand = listener(view, StateUIHearingHand)) {
+                auto point = args.GetCurrentPoint(sender.as<xaml::UIElement>());
+                bool contact = point.PointerDeviceType() != winrt::Microsoft::UI::Input::PointerDeviceType::Mouse
+                    || point.Properties().IsLeftButtonPressed();
+                if (contact) {
+                    hand->handPointer = args.Pointer().PointerId();
+                    hand->handDown = hand->handLast = onContent(args);
+                    hand->handPending = true;
+                    hand->handTaking = false;
+                }
+            }
             auto *entry = listener(view, StateUIHearingDrags);
             if (!entry || !args.GetCurrentPoint(sender.as<xaml::UIElement>()).Properties().IsLeftButtonPressed()) return;
             entry->pointer = args.Pointer().PointerId();
@@ -135,6 +168,35 @@ namespace {
         entry.movedToken = element.PointerMoved(guarded("handling PointerMoved",
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerMoved, sender, args);
+            if (auto *hand = listener(view, StateUIHearingHand); hand && hand->handPointer == args.Pointer().PointerId()) {
+                auto point = onContent(args);
+                if (hand->handPending) {
+                    double distance[2] = {4, 4};
+                    stateui_winui_drag_distance(distance);
+                    if (std::abs(point.X - hand->handDown.X) > distance[0]
+                        || std::abs(point.Y - hand->handDown.Y) > distance[1]) {
+                        hand->handPending = false;
+                        callbacks.hand(view, 0, 0, 0, when(args));
+                        hand = listener(view, StateUIHearingHand);
+                        bool taken = hand && callbacks.hand(
+                            view, 1, point.X - hand->handDown.X, point.Y - hand->handDown.Y, when(args));
+                        hand = listener(view, StateUIHearingHand);
+                        if (hand && taken) {
+                            hand->handTaking = true;
+                            hand->handLast = point;
+                            sender.as<xaml::UIElement>().CapturePointer(args.Pointer());
+                            args.Handled(true);
+                        } else if (hand) {
+                            hand->handPointer = 0;
+                        }
+                    }
+                } else if (hand->handTaking) {
+                    auto moved = Point(point.X - hand->handLast.X, point.Y - hand->handLast.Y);
+                    hand->handLast = point;
+                    callbacks.hand(view, 1, moved.X, moved.Y, when(args));
+                    args.Handled(true);
+                }
+            }
             auto *entry = listener(view, StateUIHearingDrags);
             if (!entry || entry->pointer != args.Pointer().PointerId()) return;
             tell(view, StateUIHeardPress, 1, onContent(args));
@@ -150,15 +212,28 @@ namespace {
         entry.released = element.PointerReleased(guarded("handling PointerReleased",
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerReleased, sender, args);
+            handUp(view, 2, when(args));
             letGo(view, 2);
         }));
         entry.lost = element.PointerCaptureLost(guarded("handling PointerCaptureLost",
-            [view](IInspectable const &, input::PointerRoutedEventArgs const &) {
+            [view](IInspectable const &, input::PointerRoutedEventArgs const &args) {
+            handUp(view, 3, when(args));
             letGo(view, 3);
         }));
         entry.canceled = element.PointerCanceled(guarded("handling PointerCanceled",
-            [view](IInspectable const &, input::PointerRoutedEventArgs const &) {
+            [view](IInspectable const &, input::PointerRoutedEventArgs const &args) {
+            handUp(view, 3, when(args));
             letGo(view, 3);
+        }));
+        // A wheel - a mouse's notches, a precision touchpad's small steps - over a layout a hand moves: a step it
+        // does not take goes on to whatever holds it.
+        entry.wheeled = element.PointerWheelChanged(guarded("handling PointerWheelChanged",
+            [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
+            if (!listener(view, StateUIHearingHand)) return;
+            auto properties = args.GetCurrentPoint(sender.as<xaml::UIElement>()).Properties();
+            double step = properties.MouseWheelDelta() / 120.0 * 48.0;
+            bool across = properties.IsHorizontalMouseWheel();
+            if (callbacks.wheel(view, across ? -step : 0, across ? 0 : step)) args.Handled(true);
         }));
         entry.started = element.ManipulationStarted(
             guarded("handling ManipulationStarted",
@@ -193,6 +268,7 @@ namespace {
         element.ManipulationStarted(entry.started);
         element.ManipulationDelta(entry.delta);
         element.ManipulationCompleted(entry.completed);
+        element.PointerWheelChanged(entry.wheeled);
         --hung;
     }
 

@@ -22,10 +22,12 @@ extension AppKitElement {
         }
     }
 
-    /// What a recognizer heard, turned into the element's events by the host layer's rule.
-    func hear(_ heard: HeardInput) {
-        guard let host else { return }
-        element.hear(heard, in: host.runtime)
+    /// What a recognizer heard, turned into the element's events by the host layer's rule; whether the element
+    /// took it.
+    @discardableResult
+    func hear(_ heard: HeardInput) -> Bool {
+        guard let host else { return false }
+        return element.hear(heard, in: host.runtime)
     }
 
     /// The user moved the scroller from `old` to `new`, as the display's frame saw it.
@@ -131,6 +133,7 @@ extension AppKitElement {
         pinchRecognizer = installed(pinchRecognizer, hearing.contains(.pinches), on: view) {
             AppKitPinchRecognizer(hearing: heard)
         }
+        configureHand(hearing.contains(.hand), on: view, heard: heard)
 
         let offered = element.dragAndDrop
         dragSource = installed(dragSource, offered.words != nil, on: view) { AppKitDragSource(hearing: heard) }
@@ -144,6 +147,22 @@ extension AppKitElement {
             recognizer.detach()
             pointerRecognizer = nil
         }
+    }
+
+    /// The hand over a layout an engine moves - a pointer dragged, a trackpad, a wheel - where `wanted`.
+    private func configureHand(_ wanted: Bool, on view: NSView, heard: @escaping AppKitHearing) {
+        guard wanted else {
+            if let reader = handReader { view.removeGestureRecognizer(reader.dragging) }
+            (view as? AppKitZStackView)?.hand = nil
+            handReader = nil
+            return
+        }
+        guard handReader == nil else { return }
+
+        let reader = AppKitHandReader { [weak self] input in self?.hear(input) ?? false }
+        view.addGestureRecognizer(reader.dragging)
+        (view as? AppKitZStackView)?.hand = { [weak reader] event in reader?.scrolled(event) ?? false }
+        handReader = reader
     }
 
     /// `standing`, kept where `wanted` - made by `make` where there is none - on `view`; nil, taken off, where not.

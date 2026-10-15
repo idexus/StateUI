@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // What a layout engine's body hands its engine and its handlers: the arithmetic run on the host's frames, and the
-// hand - a scroll and a pointer drag - that moves the phase and brings it to rest on a snap target.
+// hand that moves the phase and throws it on to a snap target.
 // Design: docs/design/views/layout-engine.md#the-hand
 
 extension LayoutEngine {
@@ -29,39 +29,29 @@ extension LayoutEngine {
         let phase: Binding<Phase>
         let states: States
 
-        /// The axis the hand moves, and where on it the hand may come to rest, lowest first.
+        /// The axis the hand moves, where on it the hand may come to rest, lowest first, and how far one turn
+        /// takes it where it comes round.
         let axis: WritableKeyPath<Phase, Double>?
         let stops: [Double]
+        let period: Double?
 
         /// The whole phases the run may rest at, and the axes resting on targets of their own.
         let targets: [Phase]
         let axisTargets: [WritableKeyPath<Phase, Double>: [Double]]
         let law: Motion
 
-        /// Whether a scroll lies over the views, and which way it runs.
-        let scrolls: Bool
+        /// Whether a hand moves the run, which way, how far it travels for one unit of the phase, and how a throw
+        /// goes on.
+        let moves: Bool
         let across: Bool
-
-        /// How far the hand travels for one unit of the phase.
         let per: Double
-
-        /// Whether a pointer drag moves the run.
-        let drags: Bool
+        let throwing: Motion
 
         // MARK: - The phase
 
-        /// The lowest and the highest the hand reaches on its axis.
+        /// The lowest and the highest target on the hand's axis.
         var low: Double { stops.first ?? 0 }
         var high: Double { stops.last ?? 0 }
-
-        /// How far the scroll runs beyond its room.
-        var reach: Double { (high - low) * per }
-
-        /// Whether the hand's axis is on a journey the program or a settle sent it on.
-        var travels: Bool {
-            let journey = phase.journey
-            return onAxis(journey.value) != onAxis(journey.destination)
-        }
 
         /// Where `phase` stands on the hand's axis.
         func onAxis(_ phase: Phase) -> Double {
@@ -77,38 +67,28 @@ extension LayoutEngine {
             return placed
         }
 
-        /// The phase as it stands this frame: where the host walks it, and under a scroll at rest the hand's axis
-        /// where the scroller is - before the scroller's first layout where the run stood, the offset until then
-        /// being nobody's.
+        /// The phase as it stands this frame: where the host walks it, the hand's axis where the hand holds it.
         /// Design: docs/design/views/layout-engine.md#the-phase
         func live() -> Phase {
             let walked = phase.journey.value
 
-            guard scrolls else { return walked }
-            guard states.measured.wrappedValue > 0 else {
-                return placing(held(states.standing.wrappedValue ?? onAxis(walked)), in: walked)
-            }
+            guard let held = states.held.wrappedValue else { return walked }
 
-            return placing(travels ? held(onAxis(walked)) : scrolledTo(), in: walked)
+            return placing(held, in: walked)
         }
 
-        /// Where the scroller stands on the hand's axis.
-        func scrolledTo() -> Double {
-            let turned = low + along(states.scrolled.projectedValue.journey.value) / per
-
-            guard turned.isFinite else { return low }
-
-            return held(turned)
-        }
-
-        /// A place on the hand's axis held between the lowest and the highest the hand reaches.
-        func held(_ value: Double) -> Double {
-            scrolls ? min(max(value, low), high) : value
-        }
-
-        /// The place on the hand's axis nearest `value` the hand may rest at.
+        /// The place on the hand's axis nearest `value` the hand may rest at - a turn on or back where it comes
+        /// round.
         func nearest(_ value: Double) -> Double {
-            Self.nearest(of: stops, to: value)
+            Self.nearest(of: around(stops, near: value), to: value)
+        }
+
+        /// `values` of the hand's axis as they come round near `value`: the turn it stands in and one either side.
+        func around(_ values: [Double], near value: Double) -> [Double] {
+            guard let period else { return values }
+
+            let turn = ((value - low) / period).rounded(.down)
+            return [turn - 1, turn, turn + 1].flatMap { turn in values.map { $0 + turn * period } }
         }
 
         /// Of `values`, the one nearest `value`; the first of two as near.
@@ -118,18 +98,19 @@ extension LayoutEngine {
 
         /// Where the run comes to rest from `phase` once the hand lets go: an axis with targets of its own on the
         /// nearest of them, and only by its own hand; every other axis at the nearest whole target, by the distance
-        /// over them.
+        /// over them - the hand's axis taken the turn nearest where it comes round.
         /// Design: docs/design/views/layout-engine.md#coming-to-rest
         func resting(near phase: Phase) -> Phase {
             guard let axis else { return phase }
 
             var rest = phase
             if let own = axisTargets[axis] {
-                rest[keyPath: axis] = Self.nearest(of: own, to: phase[keyPath: axis])
+                rest[keyPath: axis] = Self.nearest(of: around(own, near: phase[keyPath: axis]), to: phase[keyPath: axis])
                 return rest
             }
 
             let free = Phase.axes.filter { axisTargets[$0] == nil }
+            let turned = targets.map { target in placing(turnNearest(onAxis(target), to: onAxis(phase)), in: target) }
             func apart(_ target: Phase) -> Double {
                 free.reduce(0) { sum, each in
                     let gap = target[keyPath: each] - phase[keyPath: each]
@@ -137,124 +118,105 @@ extension LayoutEngine {
                 }
             }
 
-            guard let whole = targets.min(by: { apart($0) < apart($1) }) else { return rest }
+            guard let whole = turned.min(by: { apart($0) < apart($1) }) else { return rest }
 
             for each in free { rest[keyPath: each] = whole[keyPath: each] }
             return rest
         }
 
-        /// The scroller's offset along its axis, and an offset standing the run at `value` on the hand's axis.
-        func along(_ offset: Point) -> Double { across ? offset.x : offset.y }
+        /// `value` a whole number of turns on or back, nearest `other`, where the hand's axis comes round.
+        func turnNearest(_ value: Double, to other: Double) -> Double {
+            guard let period else { return value }
 
-        func offset(at value: Double) -> Point {
-            let distance = (held(value) - low) * per
-            return across ? Point(distance, 0) : Point(0, distance)
+            return value + ((other - value) / period).rounded() * period
         }
 
         /// A place on the hand's axis the run passes or rests on, written where the hand holds it: a reading, not a
-        /// journey.
+        /// journey, and the axis alone.
         func name(_ target: Double) {
             let journey = phase.journey
-            let named = placing(target, in: journey.destination)
 
-            states.reported.wrappedValue = target
-            self.named?(named)
+            named?(placing(target, in: journey.destination))
 
             guard let axis, onAxis(journey.value) != target || onAxis(journey.destination) != target else { return }
 
             journey.snap(axis, to: target)
         }
 
-        /// A destination the run did not name is the program's: where the run is going, which a change of room keeps.
-        func heard() {
-            let destination = onAxis(phase.journey.destination)
-            guard destination != states.reported.wrappedValue else { return }
-
-            states.reported.wrappedValue = destination
-            states.standing.wrappedValue = held(destination)
-        }
-
-        /// The hand let go where the scroller stands: the run travels on to where it comes to rest.
-        func letGo() {
-            let journey = phase.journey
-            let at = scrolledTo()
-
-            send(to: resting(near: placing(at, in: journey.destination)), from: placing(at, in: journey.value))
-        }
-
-        /// The run travels on from `start` to `target` as a journey of the phase, under the layout's motion.
-        func send(to target: Phase, from start: Phase) {
+        /// The run travels on from `start` to `target` as a journey of the phase, under the layout's motion, the
+        /// hand's axis setting out at `speed` units a second.
+        func send(to target: Phase, from start: Phase, speed: Double) {
             let along = onAxis(target)
             let journey = phase.journey
 
-            states.standing.wrappedValue = along
             guard abs(onAxis(start) - along) * per > Self.settled || target != placing(along, in: journey.destination)
             else { return name(along) }
 
-            states.reported.wrappedValue = along
             named?(target)
             journey.value = start
+            if speed != 0 { journey.velocity = placing(speed, in: journey.velocity) }
             _ = journey.move(to: target)
         }
 
         // MARK: - On the host's frames
 
-        /// Places every child: the views where the arithmetic says, the scroller over them, the watcher nowhere.
+        /// Places every view where the arithmetic says, a throw under way carried on to `now` first; again next
+        /// frame while it goes on.
         /// Design: docs/design/views/layout-engine.md#the-run
-        func place() {
-            heard()
-
+        func place(at now: Double) -> EngineAnswer {
+            let flying = fly(at: now)
             let room = states.room.wrappedValue
-            let own = Rect(0, 0, room.width, room.height)
 
-            // A room not yet measured places nothing: every child stands in the whole of it until it is.
+            // A room not yet measured places nothing: every view stands in the whole of it until it is.
             if room.width > 0, room.height > 0 {
-                let views = fitted(arithmetic(own, live()))
-
-                states.placements.wrappedValue = PlacedRun(views + (scrolls ? [Placement(own, zIndex: Int.max)] : []))
-
-                if scrolls, tapped != nil {
-                    states.boxes.wrappedValue = PlacedRun(boxes(in: own, for: views))
-                }
+                states.placements.wrappedValue = PlacedRun(
+                    fitted(arithmetic(Rect(0, 0, room.width, room.height), live())))
             } else {
                 states.placements.wrappedValue = PlacedRun()
             }
 
-            guard scrolls else { return }
-
-            if states.regaining.wrappedValue {
-                regain()
-            } else {
-                follow()
-            }
+            return flying ? .again : .wait
         }
 
-        /// Under a scroll the scroller follows the phase on its way, snapped where the phase stands each frame, and
-        /// leads where the phase rests: the phase named as the hand passes halfway between two targets - one render a
-        /// target, none a frame. A hand moving the scroller on the phase's way stops the journey there.
-        /// Design: docs/design/views/layout-engine.md#the-hand
-        func follow() {
-            let scroller = states.scrolled.projectedValue.journey
-            let mirrored = states.mirrored.wrappedValue
+        /// The throw under way carried on to `now`: the hand's axis held where the input's `throwing` has brought
+        /// it - setting out at the hand's speed and slowing to a stop on the target - and let go once there.
+        /// A destination written meanwhile is the program's, and ends the throw. Whether it goes on.
+        /// Design: docs/design/views/layout-engine.md#a-throw
+        func fly(at now: Double) -> Bool {
+            guard var fling = states.flung.wrappedValue else { return false }
 
-            guard states.measured.wrappedValue > 0 else { return }
-
-            if travels {
-                if let mirrored, abs(along(scroller.value) - mirrored) > Self.settled {
-                    states.mirrored.wrappedValue = nil
-                    name(nearest(scrolledTo()))
-                } else {
-                    let at = offset(at: onAxis(phase.journey.value))
-                    scroller.snap(to: at)
-                    states.mirrored.wrappedValue = along(at)
-                }
-            } else if mirrored != nil {
-                // Landed: the scroller stands where the phase arrived.
-                states.mirrored.wrappedValue = nil
-                scroller.snap(to: offset(at: onAxis(phase.journey.value)))
-            } else {
-                name(nearest(scrolledTo()))
+            guard onAxis(phase.journey.destination) == fling.to else {
+                states.flung.wrappedValue = nil
+                states.held.wrappedValue = nil
+                return false
             }
+
+            let began = fling.began ?? now
+            if fling.began == nil {
+                fling.began = now
+                states.flung.wrappedValue = fling
+            }
+
+            guard let at = Self.flown(fling, after: now - began, by: throwing) else {
+                states.flung.wrappedValue = nil
+                states.held.wrappedValue = nil
+                return false
+            }
+
+            states.held.wrappedValue = at
+            return true
+        }
+
+        /// One view inside the holder the run places, so the author's own properties on the view are never
+        /// overwritten by a frame of arithmetic; a shade is the holder's second child. Where its view is not, a
+        /// holder lets input through to the layout.
+        func wrapped(_ slot: Slot) -> ModifiedContent {
+            let holder = Grid { BuiltViews(nodes: [make(slot.item)] + (mask.map { [$0] } ?? [])) }
+
+            guard let tapped else { return ModifiedContent(node: holder.letsInputThrough(true).node) }
+
+            let item = slot.item
+            return ModifiedContent(node: holder.onTapped(gate: tapped.gate) { try await tapped.run(item) }.node)
         }
 
         /// One placement a view: a run that answered fewer or more is said once and made to fit.
@@ -268,98 +230,102 @@ extension LayoutEngine {
             return Array(answered.prefix(items.count)) + Array(repeating: Placement(.zero), count: missing)
         }
 
-        /// The scroller's content: its length first, then a box under each view as it is drawn, where a tap
-        /// lands on it - in the content, which slides under the room.
-        func boxes(in room: Rect, for views: [Placement]) -> [Placement] {
-            let moved = along(states.scrolled.projectedValue.journey.value)
-            let length = Placement(Rect(0, 0, room.width + (across ? reach : 0), room.height + (across ? 0 : reach)),
-                                   zIndex: Int.min)
-
-            return [length] + views.map { view in
-                let drawn = view.drawnBounds
-                return Placement(
-                    Rect(drawn.x + (across ? moved : 0), drawn.y + (across ? 0 : moved), drawn.width, drawn.height),
-                    zIndex: view.zIndex)
-            }
-        }
-
         // MARK: - The hand
 
-        /// The scroller came to rest: the run travels on to the nearest snap target.
-        func settle() {
-            guard !states.regaining.wrappedValue, !travels else { return }
+        /// The hand over the element: it takes the run where it is shown, moves the hand's axis with it - half as
+        /// far past an end of a run that does not come round - and names each target it passes; let go, it throws
+        /// the run on to the target nearest where the throw would end.
+        /// Design: docs/design/views/layout-engine.md#the-hand
+        func hand(_ gesture: GesturePhase, moved: Point, speed: Point) {
+            let journey = phase.journey
 
-            letGo()
-        }
-
-        /// A pointer drag: the offset follows the pointer, and the run settles where it lets go.
-        func drag(_ pan: PanUpdate) {
-            let journey = states.scrolled.projectedValue.journey
-
-            switch pan.phase {
+            switch gesture {
             case .began:
-                states.dragged.wrappedValue = along(journey.value)
+                take(at: onAxis(journey.value))
 
             case .changed:
-                let at = states.dragged.wrappedValue - (across ? pan.totalX : pan.totalY)
-                journey.snap(to: across ? Point(at, 0) : Point(0, at))
+                // A move with no beginning heard is one: the run is taken where it is shown.
+                let held = states.held.wrappedValue ?? take(at: onAxis(journey.value))
+                let step = -(across ? moved.x : moved.y) / per
+                let beyond = period == nil && (held + step < low || held + step > high)
+                let next = held + (beyond ? step / 2 : step)
+
+                states.held.wrappedValue = next
+                name(nearest(next))
 
             case .ended, .cancelled:
-                letGo()
+                guard let held = states.held.wrappedValue else { return }
+
+                let thrown = gesture == .ended ? -(across ? speed.x : speed.y) / per : 0
+                let reach = held + Self.carried(thrown, by: throwing)
+                let end = period == nil ? min(max(reach, low), high) : reach
+                let target = resting(near: placing(end, in: journey.destination))
+
+                let along = onAxis(target)
+
+                // Thrown on to a target ahead, the run goes on there as the input throws; let go still, or too
+                // slowly to carry it past the target it stands nearest, the run slides there under the layout's
+                // motion.
+                guard abs(thrown) * per >= Self.throwing, (along - held) * thrown > 0 else {
+                    states.held.wrappedValue = nil
+                    return send(to: target, from: placing(held, in: journey.value), speed: 0)
+                }
+
+                name(along)
+                if target != placing(along, in: journey.destination) { _ = journey.move(to: target) }
+                states.flung.wrappedValue = LayoutFling(from: held, to: along, speed: thrown)
             }
         }
 
-        /// After each layout of the scroller the run is put where the phase says; a change of room keeps where it
-        /// stood, and a scroller too short for it yet is sent there once it is long enough.
-        /// Design: docs/design/views/layout-engine.md#a-change-of-room
-        func framed(_ frame: Rect) {
-            let room = across ? frame.width : frame.height
-            let target = states.standing.wrappedValue ?? held(onAxis(phase.journey.destination))
-            let sendTo = along(offset(at: target))
-            let astray = abs(along(states.scrolled.projectedValue.journey.value) - sendTo) > 1
-            let changed = states.measured.wrappedValue > 0 && room != states.measured.wrappedValue
-
-            guard astray || room != states.measured.wrappedValue else { return }
-
-            states.measured.wrappedValue = room
-            guard !travels else { return }
-
-            name(target)
-            if astray { states.scrolled.projectedValue.journey.snap(to: offset(at: target)) }
-            if changed, laidLength - room < sendTo - 1 { states.regaining.wrappedValue = true }
+        /// The run taken by the hand at `value` on its axis: a journey or a throw under way stops there.
+        @discardableResult
+        func take(at value: Double) -> Double {
+            states.flung.wrappedValue = nil
+            states.held.wrappedValue = value
+            name(nearest(value))
+            return value
         }
 
-        /// The run sent back to where it stood once the scroller holds it.
-        func regain() {
-            let target = states.standing.wrappedValue ?? held(onAxis(phase.journey.destination))
+        /// How much farther a throw at `speed` units a second carries under `throwing`: eased, the hand's speed for
+        /// its length over how steeply its curve sets out; a spring, for a third of its response - as far as a
+        /// `cubicOut` of that length.
+        static func carried(_ speed: Double, by throwing: Motion) -> Double {
+            let length = Double(throwing.isInherited ? 400 : throwing.milliseconds) / 1_000
 
-            guard laidLength - states.measured.wrappedValue >= along(offset(at: target)) - 1 else { return }
-
-            states.regaining.wrappedValue = false
-            states.scrolled.projectedValue.journey.snap(to: offset(at: target))
+            switch throwing.law {
+            case .eased: return speed * length / max(HostMotionLaw.slope(throwing.curve, at: 0), 0.1)
+            case .spring: return speed * length / 3
+            }
         }
 
-        /// How long the scroller's run is laid out along its axis.
-        var laidLength: Double {
-            let laid = states.length.wrappedValue
-            return across ? laid.width : laid.height
+        /// Where `fling` stands `elapsed` milliseconds in, under `throwing`, or nil once it is on its target. Eased,
+        /// it follows the curve over a length that sets it out at the hand's speed - long as the motion's own where
+        /// the target is where the throw would end, shorter where it is nearer; a spring settles from the hand's
+        /// speed.
+        static func flown(_ fling: LayoutFling, after elapsed: Double, by throwing: Motion) -> Double? {
+            let left = fling.to - fling.from
+
+            guard throwing.law == .eased else {
+                let sample = HostMotionLaw.sample(
+                    throwing, elapsed: elapsed, from: [fling.from], destination: [fling.to],
+                    velocity: [fling.speed / 1_000])
+                return sample.rested ? nil : sample.value.first
+            }
+
+            let length = Double(throwing.isInherited ? 400 : throwing.milliseconds)
+            let setsOut = max(HostMotionLaw.slope(throwing.curve, at: 0), 0.1)
+            let flight = min(max(abs(left / fling.speed) * setsOut * 1_000, shortest), max(length * 2, shortest))
+            let progress = max(elapsed, 0) / flight
+
+            return progress >= 1 ? nil : fling.from + left * HostMotionLaw.ease(throwing.curve, at: progress)
         }
+
+        /// How fast a hand must let go to throw, in device units a second, and the shortest a throw slows in, in
+        /// milliseconds.
+        static var throwing: Double { 50 }
+        static var shortest: Double { 80 }
 
         /// How near a target the run has to stand to count as resting on it, in device units.
         static var settled: Double { 0.5 }
-    }
-}
-
-extension Placement {
-    /// Where the view is drawn: its bounds taken through its scale about the middle, and moved.
-    var drawnBounds: Rect {
-        let wide = bounds.width * transform.width
-        let tall = bounds.height * transform.height
-
-        return Rect(
-            bounds.x + (bounds.width - wide) / 2 + transform.x,
-            bounds.y + (bounds.height - tall) / 2 + transform.y,
-            wide,
-            tall)
     }
 }

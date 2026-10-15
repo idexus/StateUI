@@ -16,8 +16,15 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     /// What the view listens for.
     private(set) var hearing: Hearing = []
 
-    /// What hears what the view heard.
-    var onHeard: ((HeardInput) -> Void)?
+    /// What hears what the view heard, answering whether the element took it.
+    var onHeard: ((HeardInput) -> Bool)?
+
+    /// Which way the hand moves the layout the view is, where one does.
+    var handAxis: (() -> LayoutInput.Axis?)?
+
+    /// The hand over a layout, and where it had come to at its last report.
+    private var handPan: UIPanGestureRecognizer?
+    private var handLast = CGPoint.zero
 
     private var recognizers: [Hearing: [UIGestureRecognizer]] = [:]
 
@@ -47,6 +54,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
             } else {
                 for recognizer in recognizers[kind] ?? [] { view.removeGestureRecognizer(recognizer) }
                 recognizers[kind] = nil
+                if kind == .hand { handPan = nil }
             }
         }
         self.hearing = hearing
@@ -65,12 +73,18 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
             let pan = UIPanGestureRecognizer(target: self, action: #selector(dragged(_:)))
             pan.maximumNumberOfTouches = 1
             return [pan]
+        case .hand:
+            // A finger, a trackpad's two fingers and a wheel: one pan.
+            let pan = UIPanGestureRecognizer(target: self, action: #selector(handMoved(_:)))
+            pan.allowedScrollTypesMask = .all
+            handPan = pan
+            return [pan]
         default: return [UIPinchGestureRecognizer(target: self, action: #selector(pinched(_:)))]
         }
     }
 
     private func tell(_ heard: HeardInput) {
-        onHeard?(heard)
+        _ = onHeard?(heard)
     }
 
     // MARK: - Taps
@@ -124,6 +138,47 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
         }
     }
 
+    // MARK: - The hand over a layout
+
+    /// The hand over a layout: what it moved since the last report, from the top left, and as it lifts, its speed.
+    /// Design: docs/design/platforms/uikit/input.md#the-hand-over-a-layout
+    @objc func handMoved(_ recognizer: UIPanGestureRecognizer) {
+        let total = recognizer.translation(in: view)
+        switch recognizer.state {
+        case .began:
+            hand(.began, moved: .zero)
+            hand(.changed, moved: Point(x: total.x, y: total.y))
+            handLast = total
+        case .changed:
+            hand(.changed, moved: Point(x: total.x - handLast.x, y: total.y - handLast.y))
+            handLast = total
+        case .ended:
+            let speed = recognizer.velocity(in: view)
+            hand(.ended, moved: .zero, speed: Point(x: speed.x, y: speed.y))
+        case .cancelled, .failed:
+            hand(.cancelled, moved: .zero)
+        default: break
+        }
+    }
+
+    /// The hand at `phase`, having moved what is under it by `moved`, lifting at `speed`: the host's entry. Whether
+    /// the layout took it.
+    @discardableResult
+    func hand(_ phase: GesturePhase, moved: Point, speed: Point? = nil) -> Bool {
+        onHeard?(.hand(phase, moved: moved, speed: speed)) ?? false
+    }
+
+    /// The hand over a layout begins only moving along the layout's axis - its first move or, from a trackpad or a
+    /// wheel that tells none yet, its speed - by the host layer's rule.
+    func gestureRecognizerShouldBegin(_ recognizer: UIGestureRecognizer) -> Bool {
+        guard recognizer === handPan, let pan = handPan else { return true }
+        guard let axis = handAxis?() else { return false }
+
+        let moved = pan.translation(in: view)
+        let first = moved == .zero ? pan.velocity(in: view) : moved
+        return HandReading.claims(Point(x: first.x, y: first.y), along: axis)
+    }
+
     // MARK: - A pinch
 
     /// A pinch's step: its scale since the last, and where, as shares of the view's size.
@@ -154,13 +209,19 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     func gestureRecognizer(
         _ recognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer
     ) -> Bool {
-        !isSwipeBack(other)
+        // The hand over a layout is the layout's alone: a scroller holding it does not move with it.
+        if recognizer === handPan, other is UIPanGestureRecognizer { return false }
+        return !isSwipeBack(other)
     }
 
+    /// A scroller holding a layout waits for the layout's hand to fail - as it does for a gesture across its axis.
     func gestureRecognizer(
         _ recognizer: UIGestureRecognizer, shouldBeRequiredToFailBy other: UIGestureRecognizer
     ) -> Bool {
-        recognizer is UIPanGestureRecognizer && isSwipeBack(other)
+        if recognizer === handPan, let scroller = other.view as? UIScrollView, other === scroller.panGestureRecognizer {
+            return true
+        }
+        return recognizer is UIPanGestureRecognizer && isSwipeBack(other)
     }
 
     /// Whether `other` is the swipe back from within the page of the stack the view stands in.

@@ -9,11 +9,11 @@
 extension WinUIElement {
     func configureGestures() {
         guard let view else { return }
-        let heard: (HeardInput) -> Void = { [weak self] heard in
-            guard let self, let host else { return }
-            element.hear(heard, in: host.runtime)
+        let heard: (HeardInput) -> Bool = { [weak self] heard in
+            guard let self, let host else { return false }
+            return element.hear(heard, in: host.runtime)
         }
         view.hear(element.hearing, heard)
-        view.offer(element.dragAndDrop, heard)
+        view.offer(element.dragAndDrop) { _ = heard($0) }
     }
 }

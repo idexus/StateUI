@@ -1,4 +1,6 @@
-# revision 4.1
+# revision 5.1
 LayoutEngine: ✅
 LayoutEngine.frameChanged: ✅
+LayoutEngine.handAxis: ✓ sweep on LayoutEngine: the hand handed to the host's entry with its speed, no pointer sent
+LayoutEngine.handMoved: ✓ sweep on LayoutEngine: the hand handed to the host's entry with its speed, no pointer sent
 LayoutEngine.phase: ✅

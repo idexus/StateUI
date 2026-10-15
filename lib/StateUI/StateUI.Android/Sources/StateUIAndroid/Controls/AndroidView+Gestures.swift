@@ -20,7 +20,7 @@ extension AndroidView {
     /// Listens for what `hearing` names, `heard` hearing it - taps counted in runs by the listener where
     /// `countsTaps`, where one tap is no click - taking the view's touches and its hovering pointer the first time
     /// anything is.
-    func hear(_ hearing: Hearing, countsTaps: Bool, _ heard: @escaping (HeardInput) -> Void) {
+    func hear(_ hearing: Hearing, countsTaps: Bool, _ heard: @escaping (HeardInput) -> Bool) {
         onHeard = hearing.isEmpty ? nil : heard
         let told = Listening(hearing: hearing, countsTaps: countsTaps)
         guard told != listening else { return }
@@ -31,7 +31,7 @@ extension AndroidView {
         Java.call(
             listener.reference, JavaAPI.setGestures, .object(reference), .float(Float(density)),
             .bool(countsTaps && hearing.contains(.taps)), .bool(hearing.contains(.drags)),
-            .bool(hearing.contains(.pinches)), .bool(hearing.contains(.pointer)))
+            .bool(hearing.contains(.pinches)), .bool(hearing.contains(.pointer)), .bool(hearing.contains(.hand)))
     }
 
     /// What the listener says the view heard, by the kind `StateUIGestures` numbers: a tap and its place in its run,
@@ -52,7 +52,21 @@ extension AndroidView {
         case 8: .pointer(.pointerReleased, point)
         default: nil
         }
-        if let input { onHeard?(input) }
+        if let input { _ = onHeard?(input) }
+    }
+
+    /// The hand over a layout the listener tells, by the phase StateUI numbers - what it moved under the hand, in
+    /// points, and as it lets go its speed: the host's entry. Whether the layout took it.
+    /// Design: docs/design/platforms/android/controls.md#the-hand-over-a-layout
+    func heardHand(phase: Int32, moved: Point, speed: Point) -> Bool {
+        guard let phase = GesturePhase(rawValue: phase) else { return false }
+
+        return onHeard?(.hand(phase, moved: moved, speed: phase == .ended ? speed : nil)) ?? false
+    }
+
+    /// A wheel's notch over a layout, as what it moved under the hand, in points. Whether the layout took it.
+    func heardWheel(moved: Point) -> Bool {
+        onHeard?(.wheel(moved)) ?? false
     }
 
     /// Tells the view's drag listener what a drag of it carries and whether it takes drops, `heard` hearing them.
@@ -92,8 +106,8 @@ extension AndroidView {
     func heardPress(phase: Int32, at point: Point) -> Bool {
         switch phase {
         case 0: press.pressed(at: point)
-        case 1: press.moved(to: point).forEach { onHeard?($0) }
-        default: if let end = press.ended(letGo: phase == 2) { onHeard?(end) }
+        case 1: press.moved(to: point).forEach { _ = onHeard?($0) }
+        default: if let end = press.ended(letGo: phase == 2) { _ = onHeard?(end) }
         }
         return press.isDragging
     }

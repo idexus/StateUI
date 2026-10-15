@@ -351,6 +351,12 @@ final class UIKitDriver: HostDriver {
             if !action.attributes.contains(.disabled) { UIButton().sendAction(action) }
         case (.tap(let count), _): try touch(element) { listening, view in Self.tap(listening, on: view, count: count) }
         case (.pan(let offset), _): try touch(element) { listening, view in Self.pan(listening, on: view, by: offset) }
+        case (.sweep(let offset, let speed), _):
+            try touch(element) { listening, _ in
+                listening?.hand(.began, moved: .zero)
+                listening?.hand(.changed, moved: offset)
+                listening?.hand(.ended, moved: .zero, speed: speed)
+            }
         case (.pinch(let scale, let share), _):
             try touch(element) { listening, view in Self.pinch(listening, on: view, by: scale, at: share) }
         case (.pressDown(let point), _): try touch(element) { listening, view in pressDown(listening, on: view, at: point) }

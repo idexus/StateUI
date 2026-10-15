@@ -100,6 +100,20 @@ are the host layer's (`MountedElement.hearing`, `hear`), and so is the one
 pointer a drag is heard from: an element asking a pan of more gets no drag
 recognizer.
 
+## The hand over a layout
+
+A layout an engine moves hears the hand on its own view (`AppKitHandReader`):
+a pointer dragged, by a pan recognizer whose moves and lift speed it hands
+on; a trackpad's or a Magic Mouse's fingers, by the view's `scrollWheel`,
+each event with a `phase` a step of the gesture - the system's momentum
+after the lift (`momentumPhase`) swallowed, as the layout throws the run
+itself; and a wheel's notches, events with no phase, a line ten points. The
+first move of a gesture decides whose it is, as for a one-axis scroller
+(scrolling, above): more along the layout's axis than across, the layout's,
+and a scroll it does not take goes on to whatever holds it - a page's
+scroller. AppKit tells no speed at a trackpad's lift, so the host layer reads
+it from the last moves.
+
 ## A drag between views
 
 A view that can be dragged holds a pan recognizer of its own: once the press

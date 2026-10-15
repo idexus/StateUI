@@ -355,6 +355,23 @@ a drag ends with nothing. A platform's distance is taken in DIPs; the toolkit
 holds the pointer once the press is a drag, which the host asks for as the
 rule says so.
 
+## The hand over a layout
+
+A layout engine a hand moves hears the hand itself (`Hearing.hand`, its
+`handAxis`): a press dragged - a finger or a pointer - a trackpad's two
+fingers and a wheel, each as the platform tells it, said as `HeardInput.hand`
+or `.wheel`. `HandReading` makes them one stream of the element's
+`handMoved` - a beginning, each move of what is under the hand, and a lift
+with its speed - alike on every host. Where the platform tells no speed at
+the lift, the moves of its last tenth of a second say it. A wheel tells no
+beginning and no lift: its first notch opens a gesture, and a frame finding
+it still for 150 ms lets it go with no throw (the runtime's frames pace every
+open wheel, and hold the clock while one is open). A layout claims a hand
+whose first move is more along its axis than across it; the rest is left to
+whatever holds the layout, a page's scroller. What the hand does to the run -
+the phase moving with it, a throw to the target nearest its end - is the
+core's (views/layout-engine.md, the hand).
+
 ## A swipe
 
 A host whose toolkit tells it a press and how far it has moved, and no swipe,

@@ -64,6 +64,7 @@ final class WebDriver: HostDriver {
         "answerFiles": "the relay's answer handed the driver's files, no dialog shown",
         "dragAndDrop": "the DOM's drag events dispatched by the driver, no drag the browser began",
         "dropFiles": "the DOM's drag events dispatched by the driver with its files, no drag the browser began",
+        "sweep": "the hand handed to the host's entry with its speed, no pointer sent",
     ]
 
     var renderer: WebRenderer?

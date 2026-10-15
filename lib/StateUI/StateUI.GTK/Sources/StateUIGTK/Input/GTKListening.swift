@@ -33,6 +33,12 @@ final class GTKListening {
     /// The scale the pinch last said, since it began.
     private var pinch = PinchStep()
 
+    /// The hand over a layout: where the drag had come to at its last report, whether its first move past the
+    /// threshold is yet to come, and whether the layout took it.
+    private var handLast = Point(x: 0, y: 0)
+    private var handPending = false
+    private var handTaking = false
+
     init(widget: GTKWidget, number: Int64) {
         self.widget = widget
         self.number = number
@@ -57,8 +63,9 @@ final class GTKListening {
         }
     }
 
-    private func tell(_ heard: HeardInput) {
-        GTKView.find(number)?.heard(heard)
+    @discardableResult
+    private func tell(_ heard: HeardInput) -> Bool {
+        GTKView.find(number)?.heard(heard) ?? false
     }
 
     private func makeControllers(for kind: Hearing) -> [OpaquePointer] {
@@ -66,6 +73,7 @@ final class GTKListening {
         case .taps: [makeTaps()]
         case .pointer: makePointer()
         case .drags: [makeDrag()]
+        case .hand: makeHand()
         default: [makePinch()]
         }
     }
@@ -209,6 +217,119 @@ final class GTKListening {
         if let end = drag.ended(letGo: letGo) { tell(end) }
     }
 
+    // MARK: - The hand over a layout
+
+    /// A press dragged by any pointer, and a scroll - a touchpad's two fingers, a wheel's notches.
+    /// Design: docs/design/platforms/gtk/input.md#the-hand-over-a-layout
+    private func makeHand() -> [OpaquePointer] {
+        let drag = gtk_gesture_drag_new()!
+        connectSignal(UnsafeMutableRawPointer(drag), "drag-begin", number: number) { (gesture, _: Double, _: Double, data) in
+            let number = viewNumber(data)
+            nonisolated(unsafe) let gesture = gesture
+            MainActor.assumeIsolated { GTKListening.find(number)?.handBegan(OpaquePointer(gesture)) }
+        }
+        connectSignal(UnsafeMutableRawPointer(drag), "drag-update", number: number) { gesture, x, y, data in
+            let number = viewNumber(data)
+            nonisolated(unsafe) let gesture = gesture
+            MainActor.assumeIsolated {
+                GTKListening.find(number)?.handUpdated(OpaquePointer(gesture), offset: Point(x: x, y: y))
+            }
+        }
+        connectSignal(UnsafeMutableRawPointer(drag), "drag-end", number: number) { (gesture, _: Double, _: Double, data) in
+            let number = viewNumber(data)
+            nonisolated(unsafe) let gesture = gesture
+            MainActor.assumeIsolated { GTKListening.find(number)?.handEnded(OpaquePointer(gesture)) }
+        }
+
+        let scroll = gtk_event_controller_scroll_new(GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES)!
+        connectSignal(UnsafeMutableRawPointer(scroll), "scroll-begin", number: number) { controller, data in
+            let number = viewNumber(data)
+            nonisolated(unsafe) let controller = controller
+            MainActor.assumeIsolated {
+                GTKListening.find(number)?.hand(.began, moved: .zero, at: GTKListening.time(of: OpaquePointer(controller)))
+            }
+        }
+        connectAnswering(UnsafeMutableRawPointer(scroll), "scroll", number: number) { controller, dx, dy, data in
+            let number = viewNumber(data)
+            nonisolated(unsafe) let controller = controller
+            return MainActor.assumeIsolated {
+                GTKListening.find(number)?.scrolled(OpaquePointer(controller), by: Point(x: dx, y: dy)) == true ? 1 : 0
+            }
+        }
+        connectSignal(UnsafeMutableRawPointer(scroll), "scroll-end", number: number) { controller, data in
+            let number = viewNumber(data)
+            nonisolated(unsafe) let controller = controller
+            MainActor.assumeIsolated {
+                GTKListening.find(number)?.hand(.ended, moved: .zero, at: GTKListening.time(of: OpaquePointer(controller)))
+            }
+        }
+        return [drag, scroll]
+    }
+
+    /// The hand at `phase`, having moved what is under it by `moved`, lifting at `speed` where told, at `time` on the
+    /// events' clock: the host's entry. Whether the layout took it.
+    @discardableResult
+    func hand(_ phase: GesturePhase, moved: Point, speed: Point? = nil, at time: Double? = nil) -> Bool {
+        tell(.hand(phase, moved: moved, speed: speed, at: time))
+    }
+
+    private func handBegan(_ gesture: OpaquePointer?) {
+        handPending = true
+        handTaking = false
+        handLast = Point(x: 0, y: 0)
+        hand(.began, moved: .zero, at: Self.time(of: gesture))
+    }
+
+    /// The drag moved: past the threshold its first move says whose it is - claimed for the layout, so no view
+    /// around it drags or scrolls with it, or denied, for a scroller holding it to take.
+    private func handUpdated(_ gesture: OpaquePointer?, offset: Point) {
+        if handPending {
+            guard dragDistance.isPassed(by: offset) else { return }
+
+            handPending = false
+            handTaking = hand(.changed, moved: offset, at: Self.time(of: gesture))
+            if let gesture { gtk_gesture_set_state(gesture, handTaking ? GTK_EVENT_SEQUENCE_CLAIMED : GTK_EVENT_SEQUENCE_DENIED) }
+            handLast = offset
+        } else if handTaking {
+            hand(.changed, moved: Point(x: offset.x - handLast.x, y: offset.y - handLast.y), at: Self.time(of: gesture))
+            handLast = offset
+        }
+    }
+
+    private func handEnded(_ gesture: OpaquePointer?) {
+        defer {
+            handPending = false
+            handTaking = false
+        }
+        guard handTaking else { return }
+
+        var letGo = true
+        if let gesture, let last = gtk_gesture_get_last_event(gesture, gtk_gesture_single_get_current_sequence(gesture)) {
+            let type = gdk_event_get_event_type(last)
+            letGo = type == GDK_BUTTON_RELEASE || type == GDK_TOUCH_END
+        }
+        hand(letGo ? .ended : .cancelled, moved: .zero, at: Self.time(of: gesture))
+    }
+
+    /// A scroll step: a wheel's notches, or a touchpad's move of what is under the fingers. Whether the layout
+    /// took it; a step it leaves goes on to whatever holds it.
+    private func scrolled(_ controller: OpaquePointer?, by step: Point) -> Bool {
+        let wheel = controller.map { gtk_event_controller_scroll_get_unit($0) == GDK_SCROLL_UNIT_WHEEL } ?? true
+        guard wheel else { return hand(.changed, moved: Point(x: -step.x, y: -step.y), at: Self.time(of: controller)) }
+
+        return tell(.wheel(Point(x: -step.x * Self.line, y: -step.y * Self.line)))
+    }
+
+    /// How far one notch of a wheel moves what is under the hand, in points.
+    private static let line = 40.0
+
+    /// When the event a controller handles happened, in milliseconds on the events' clock.
+    nonisolated private static func time(of controller: OpaquePointer?) -> Double? {
+        guard let controller else { return nil }
+        let time = gtk_event_controller_get_current_event_time(controller)
+        return time == 0 ? nil : Double(time)
+    }
+
     // MARK: - A pinch
 
     private func makePinch() -> OpaquePointer {
@@ -291,6 +412,6 @@ final class GTKListening {
     }
 
     nonisolated private static func tell(_ heard: HeardInput, to number: Int64) {
-        MainActor.assumeIsolated { GTKView.find(number)?.heard(heard) }
+        MainActor.assumeIsolated { _ = GTKView.find(number)?.heard(heard) }
     }
 }

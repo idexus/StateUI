@@ -98,7 +98,7 @@ final class WinUIGesturesTests: XCTestCase {
             let row = try XCTUnwrap(host.views(WinUIStackView.self).dropFirst().first)
             let hung = stateui_winui_hung_handlers()
 
-            row.hear([]) { _ in }
+            row.hear([]) { _ in false }
 
             XCTAssertEqual(stateui_winui_hung_handlers(), hung, "taken off inside the call that stopped the listening")
             host.settle { stateui_winui_hung_handlers() == hung - 1 }

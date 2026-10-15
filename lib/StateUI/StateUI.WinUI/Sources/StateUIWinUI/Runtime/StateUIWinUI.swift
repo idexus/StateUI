@@ -183,6 +183,14 @@ enum WinUICallbacks {
                 MainActor.assumeIsolated {
                     (WinUIView.find(view) as? WinUITitleBarView)?.takesKey(key: key, modifiers: modifiers) == true
                 }
+            },
+            hand: { view, phase, x, y, time in
+                MainActor.assumeIsolated {
+                    WinUIView.find(view)?.heardHand(phase: phase, moved: Point(x: x, y: y), at: time) == true
+                }
+            },
+            wheel: { view, x, y in
+                MainActor.assumeIsolated { WinUIView.find(view)?.heardWheel(moved: Point(x: x, y: y)) == true }
             })
     }
 }

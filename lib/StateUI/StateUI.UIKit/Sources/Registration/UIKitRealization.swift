@@ -59,6 +59,8 @@ enum UIKitRealization {
         .complete("VStack", "background"),
         .complete("ZStack", "background"),
         .complete("LayoutEngine", "background"),
+        .complete("LayoutEngine", "handAxis"),
+        .complete("LayoutEngine", "handMoved"),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
         .partial("Menu", "isEnabled", missing: "UIKit holds no menu out of reach itself: each of its entries is."),

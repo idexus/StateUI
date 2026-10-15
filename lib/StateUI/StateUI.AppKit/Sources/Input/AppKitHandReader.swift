@@ -1,0 +1,107 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+#if os(macOS)
+import AppKit
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
+
+/// The hand over a layout as AppKit tells it: a pointer dragged, a trackpad's or a mouse's fingers as a scroll
+/// gesture - its momentum swallowed where the gesture was the layout's, as the layout throws the run itself - and a
+/// wheel's notches. Whose a gesture is, the host layer decides by its first move.
+/// Design: docs/design/platforms/appkit/input.md#the-hand-over-a-layout
+@MainActor
+final class AppKitHandReader {
+    /// The element hearing what the reader says, answering whether it took it.
+    private let taking: (HeardInput) -> Bool
+
+    /// Whether the last gesture was the layout's: its momentum is too.
+    private var tookLast = false
+
+    /// The pointer drag the reader hears beside the scroll gestures.
+    let dragging: AppKitHandDrag
+
+    init(taking: @escaping (HeardInput) -> Bool) {
+        self.taking = taking
+        dragging = AppKitHandDrag()
+        dragging.reader = self
+    }
+
+    /// The hand at `phase`, having moved what is under it by `moved` since the last, lifting at `speed` where the
+    /// platform tells one, at `time` where it says when: the host's entry, the pointer's and the trackpad's alike.
+    /// Whether the layout took it.
+    @discardableResult
+    func hand(_ phase: GesturePhase, moved: Point, speed: Point? = nil, at time: Double? = nil) -> Bool {
+        let took = taking(.hand(phase, moved: moved, speed: speed, at: time))
+        if phase == .ended || phase == .cancelled { tookLast = took }
+        return took
+    }
+
+    /// A scroll event over the layout: a gesture's step, its momentum, or a wheel's notch. Whether the layout took
+    /// it.
+    func scrolled(_ event: NSEvent) -> Bool {
+        let lines = event.hasPreciseScrollingDeltas ? 1 : Self.line
+        let moved = Point(Double(event.scrollingDeltaX) * lines, Double(event.scrollingDeltaY) * lines)
+        // The event's own time is on the frame clock's: seconds since the system started.
+        let time = event.timestamp * 1_000
+
+        if !event.momentumPhase.isEmpty { return tookLast }
+        guard !event.phase.isEmpty else { return taking(.wheel(moved)) }
+        if event.phase.contains(.mayBegin) { return false }
+
+        if event.phase.contains(.began) { hand(.began, moved: .zero, at: time) }
+        if event.phase.contains(.ended) { return hand(.ended, moved: .zero, at: time) }
+        if event.phase.contains(.cancelled) { return hand(.cancelled, moved: .zero, at: time) }
+
+        return hand(.changed, moved: moved, at: time)
+    }
+
+    /// How far one line of a wheel moves what is under it, in points: a scroller's line.
+    static let line = 10.0
+}
+
+/// The pointer dragged over a layout: AppKit's drag recognizer, its moves since the last and its speed at the lift
+/// handed to the reader, from the top left.
+@MainActor
+final class AppKitHandDrag: NSPanGestureRecognizer {
+    weak var reader: AppKitHandReader?
+
+    /// Where the drag had come to at its last report.
+    private var last = Point.zero
+
+    init() {
+        super.init(target: nil, action: nil)
+        target = self
+        action = #selector(recognized(_:))
+        delaysPrimaryMouseButtonEvents = false
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("AppKitHandDrag is created in code")
+    }
+
+    @objc private func recognized(_ recognizer: NSPanGestureRecognizer) {
+        let flipped = view?.isFlipped == true
+        let moved = translation(in: view)
+        let total = Point(Double(moved.x), Double(flipped ? moved.y : -moved.y))
+
+        switch state {
+        case .began:
+            reader?.hand(.began, moved: .zero)
+            reader?.hand(.changed, moved: total)
+            last = total
+        case .changed:
+            reader?.hand(.changed, moved: Point(total.x - last.x, total.y - last.y))
+            last = total
+        case .ended:
+            let speed = velocity(in: view)
+            reader?.hand(.ended, moved: .zero, speed: Point(Double(speed.x), Double(flipped ? speed.y : -speed.y)))
+        case .cancelled, .failed:
+            reader?.hand(.cancelled, moved: .zero)
+        default:
+            break
+        }
+    }
+}
+#endif

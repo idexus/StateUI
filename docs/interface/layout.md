@@ -272,7 +272,7 @@ ScrollView { cards }
 ```
 
 The write is a destination, so the host carries the viewport there from where
-it stands. `GalleryView` comes to rest on its cards the same way.
+it stands.
 
 A scroller must own a bounded viewport. Putting it in a parent that measures
 it to the full content length leaves nothing to scroll. Avoid nesting two
@@ -287,8 +287,8 @@ page continues moving under vertical input.
 
 `ScrollView` is eager. It is not a virtualized data collection.
 
-A layout whose views a scroll moves without moving its content - a run of
-cards turned by a finger, a wheel or a trackpad - is a
+A layout whose views the hand moves without moving its content - a run of
+cards turned by a finger, a wheel or a trackpad, endless if need be - is a
 [layout engine](#a-layout-engine) with `.input(.scroll(_:pointsPerUnit:))`.
 
 ## Repeated content and collections
@@ -500,9 +500,10 @@ and changing it animates every card to the new shape. `.position($shown)` is
 the card in the middle, counted from 0 and two-way: a swipe writes the card it
 settled on, and a write moves the run. `.onItemTapped` hears a tap on the
 card in front, with its item, and `.onPositionChanged` another card coming to
-the middle; `.itemSize(width:height:)`,
+the middle; `.throwing(_:)` says how a swipe let go with speed goes on, as a
+[layout engine's](#a-layout-engine) input does, and `.itemSize(width:height:)`,
 `.isSwipeEnabled`, `.emptyView`, `.shade` and `.fade` say the rest. Give it a
-bounded size, as a scroller needs - a `.height`, or a `.fill` row of a `Grid`.
+bounded size - a `.height`, or a `.fill` row of a `Grid`.
 No view is built again while the run moves.
 
 ### A layout engine
@@ -536,9 +537,9 @@ struct Shelf: View {
 
 The phase is where the run rests or is going. Lend it a state with
 `.phase(_:)` and the program moves the run by writing it; give it
-`.input(.scroll(_:pointsPerUnit:))` and a finger, a trackpad or a wheel moves
-it too, with the platform's own physics, coming to rest on the nearest of its
-`.snapTargets(_:)`:
+`.input(.scroll(_:pointsPerUnit:))` and the hand moves it too - a finger or a
+pointer dragged, a trackpad's two fingers, a wheel - on its own, with no
+scroller under it, coming to rest on the nearest of its `.snapTargets(_:)`:
 
 ```swift
 struct Carousel: View {
@@ -576,12 +577,54 @@ The arithmetic is handed the phase as it stands each frame, and each
 placement lands as written: what moves smoothly is the phase, so every view
 keeps to the path the arithmetic draws - an arc, a fan opening - rather than
 cutting across it. `turn` is the snap target the run rests on: written by the
-program, the run travels there under `.motion(_:)` - with a scroll or none -
+program, the run travels there under `.motion(_:)` - with a hand or none -
 and `try await $turn.journey.move(to: 2).arrived()` waits until it has; under
 the hand it is the target the run passes and the one it comes to rest on, and
 a hand taking the run on its way stops the journey. A tap reaches the view
 drawn on top through `.onItemTapped`, and `.shade(_:)` darkens a far view by
 the `shade` its placement answers.
+
+A hand let go with speed throws the run: it goes on to the target nearest
+where the throw would end, and `turn` names that target at once. How it goes
+on is the input's `throwing:` motion - eased, its length says how far it
+carries and its curve how it slows, a shorter length stopping it sooner; a
+spring carries it as far as its response and settles as springs do. A throw
+sets out at the hand's speed and never speeds up after the lift. A hand let
+go still, or too slowly to reach the next target, slides the run back to
+the nearest under `.motion(_:)`.
+
+A run with no ends comes round: `.wraps(every:)` makes one turn of the phase
+bring the layout back where it was, its targets repeated each turn, so the
+hand and the program both move it on forever. The arithmetic folds the phase
+itself:
+
+```swift
+struct Ring: View {
+    @State private var turn = 0.0
+
+    let names = ["Mural", "Nebula", "Ridge", "Bloom", "Dune"]
+
+    var body: some View {
+        LayoutEngine(names) { name in
+            Text(name)
+        } placements: { room, phase in
+            names.indices.map { index in
+                let step = (Double(index) - phase).remainder(dividingBy: Double(names.count))
+
+                return Placement(
+                    Rect(room.width / 2 - 60 + step * 140, 0, 120, room.height),
+                    opacity: 1 - min(abs(step) / 3, 1))
+            }
+        }
+        .phase($turn)
+        .input(.scroll(.horizontal, pointsPerUnit: 140,
+                       throwing: .spring(response: .milliseconds(400), damping: 0.8)))
+        .snapTargets(names.indices.map(Double.init))
+        .wraps(every: Double(names.count))
+        .height(200)
+    }
+}
+```
 
 A phase of several axes is a `LayoutPhase` of your own: a struct of numbers
 listing its axes. Each axis moves on its own - one under the hand, another
@@ -639,5 +682,5 @@ settles.
 
 `LayoutEngine` has its own row in the
 [Platform contract](../platform-contract.md); `GalleryView` behaves as far as
-the rows it uses - the layout engine, frame reporting, scrolling - are checked
+the rows it uses - the layout engine and frame reporting - are checked
 there.

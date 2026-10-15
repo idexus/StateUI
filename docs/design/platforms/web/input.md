@@ -59,6 +59,20 @@ points a step of e - or, in Safari, as its gesture, whose scale it carries;
 the page's own zoom is taken from it, and a wheel standing still a fifth of
 a second ends it.
 
+## The hand over a layout
+
+A layout an engine moves hears the hand by the pointer's events and the
+wheel's (`WebElement+Input.swift`). The page keeps a touch across the
+layout's axis for its own scroll (`touch-action: pan-y` for a horizontal
+layout); a pointer pressed on the layout is the layout's once it moves past
+four points along its axis - it is captured then, its moves told since the
+last with the event's time, from which the host layer reads the speed at its
+lift. A first move across the axis leaves the pointer to the page. A wheel's
+turn, in pixels whatever the browser measured it in, is told as a wheel and
+taken from the page where the layout moved; a trackpad reaches a page as a
+wheel, the system's momentum included, so the layout follows the momentum
+and comes to rest on the nearest target once it stops.
+
 ## A drag between views
 
 A view's drag between views is HTML's own drag and drop, set on the element

@@ -186,43 +186,38 @@
                 frames(until: 1_000)
                 s.expect(handed.values.last, Orbit(turn: 4, zoom: 2), "both where they were sent")
             },
-            ConformanceCase("aScrollComesToRestOnTheNearestSnapTarget", proves: [Covered(LayoutEngineContract.self)]) { s in
-                let clock = TestClock()
-                let phase = State(wrappedValue: 0.0)
-                s.start(clock: clock) {
-                    VStack {
-                        LayoutEngine([0, 1, 2]) { _ in Rectangle(.red) } placements: { _, phase in
-                            (0..<3).map { Placement(Rect((Double($0) - phase) * 50 + 40, 0, 20, 20)) }
-                        }
-                        .phase(phase.projectedValue)
-                        .input(.scroll(.horizontal, pointsPerUnit: 100))
-                        .snapTargets([0, 1, 2])
-                        .width(100).height(40)
-                    }
-                    .horizontalAlignment(.start)
-                    .verticalAlignment(.start)
-                }
-                // The scroll stands once its reader knows the room, and is laid out where the phase says before the
-                // hand comes: a scroller's first layout puts it where the tree says.
-                s.settle { (try? s.element(ofType: .scrollView)) != nil }
-                let scroller = try s.element(ofType: .scrollView)
-                var time = 0.0
-                @MainActor func frames(until end: Double) {
-                    while time < end {
-                        time += 16
-                        clock.now = time
-                        s.frame()
-                    }
-                }
-                s.turn()
-                frames(until: 320)
-                s.turn()
+            ConformanceCase("theHandMovesTheRunAndRestsItOnTheNearestTarget", proves: [
+                Covered(LayoutEngineContract.handMoved), Covered(LayoutEngineContract.handAxis),
+            ]) { s in
+                let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
+                let layout = try handLayout(s, clock: clock, phase: phase)
 
-                try s.perform(.scroll(to: Point(140, 0)), on: scroller)
-                s.turn()
-                frames(until: 1_600)
+                // 140 points to the left is 1.4 targets on: let go still, it rests on the nearest.
+                try s.perform(.sweep(by: Point(-140, 0), speed: .zero), on: layout)
+                frames(s, clock, until: 1_600)
 
-                s.expect(phase.wrappedValue, 1, "the nearest target to where the hand left it")
+                s.expect(phase.wrappedValue, 1, "the target nearest where the hand let it go")
+            },
+            ConformanceCase("aThrowGoesOnToTheTargetNearestWhereItWouldEnd", proves: [
+                Covered(LayoutEngineContract.handMoved),
+            ]) { s in
+                let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
+                let layout = try handLayout(s, clock: clock, phase: phase)
+
+                // Let go at 2,250 points a second, 22.5 targets a second, the throw carries it three targets on.
+                try s.perform(.sweep(by: Point(-10, 0), speed: Point(-2_250, 0)), on: layout)
+                frames(s, clock, until: 1_600)
+
+                s.expect(phase.wrappedValue, 3, "not the nearest to where the hand let go, but to where the throw ends")
+            },
+            ConformanceCase("aHandAcrossItsAxisLeavesTheRun", proves: [Covered(LayoutEngineContract.handAxis)]) { s in
+                let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
+                let layout = try handLayout(s, clock: clock, phase: phase)
+
+                try s.perform(.sweep(by: Point(0, -140), speed: Point(0, -600)), on: layout)
+                frames(s, clock, until: 1_600)
+
+                s.expect(phase.wrappedValue, 0, "a hand moving down is not the run's, which moves across")
             },
         ]
     }
@@ -234,4 +229,35 @@ private struct Orbit: LayoutPhase {
     var zoom = 1.0
 
     static var axes: [WritableKeyPath<Orbit, Double>] { [\.turn, \.zoom] }
+}
+
+/// A layout of three views a hand moves across, a hundred points a unit, resting on 0 to 5, its run on `clock`: the
+/// layout's element, once the room is told.
+@MainActor
+private func handLayout(_ s: Session, clock: TestClock, phase: State<Double>) throws -> MountedElement {
+    s.start(clock: clock) {
+        VStack {
+            LayoutEngine([0, 1, 2]) { _ in Rectangle(.red) } placements: { _, at in
+                (0..<3).map { Placement(Rect((Double($0) - at) * 50 + 40, 0, 20, 20)) }
+            }
+            .phase(phase.projectedValue)
+            .input(.scroll(.horizontal, pointsPerUnit: 100))
+            .snapTargets([0, 1, 2, 3, 4, 5])
+            .motion(.eased(.milliseconds(300), .linear))
+            .width(100).height(40)
+        }
+        .horizontalAlignment(.start)
+        .verticalAlignment(.start)
+    }
+    frames(s, clock, until: 64)
+    return try s.element(ofType: .layoutEngine)
+}
+
+/// Display frames until `end`, sixteen milliseconds apart.
+@MainActor
+private func frames(_ s: Session, _ clock: TestClock, until end: Double) {
+    while clock.now < end {
+        clock.now += 16
+        s.frame()
+    }
 }

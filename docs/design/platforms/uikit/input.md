@@ -42,6 +42,16 @@ swipe back from anywhere in its page, and that swipe would take a drag meant
 for the view. A view listening for drags comes first: the stack's swipe waits
 for its drag to fail, and the two never recognize together.
 
+## The hand over a layout
+
+A layout an engine moves hears the hand by one pan (`UIKitListening`,
+`handMoved`): a finger, and with `allowedScrollTypesMask` a trackpad's two
+fingers and a wheel, each step what moved under the hand since the last and,
+at the lift, the speed UIKit reads. It begins only along the layout's axis -
+its first move, or its speed where a trackpad tells no move yet - by the host
+layer's rule, recognizes alone, and a scroller holding the layout waits for it
+to fail, so a page scrolls by a hand across the layout's axis.
+
 ## A drag between views
 
 A view's drag between views is UIKit's own pair of interactions on the view

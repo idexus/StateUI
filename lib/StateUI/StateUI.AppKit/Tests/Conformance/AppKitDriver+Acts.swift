@@ -81,6 +81,10 @@ extension AppKitDriver {
             native?.panRecognizer?.dragged(.began, x: 0, y: 0)
             native?.panRecognizer?.dragged(.changed, x: offset.x, y: offset.y)
             native?.panRecognizer?.dragged(.ended, x: offset.x, y: offset.y)
+        case (.sweep(let offset, let speed), _) where native?.handReader != nil:
+            native?.handReader?.hand(.began, moved: .zero)
+            native?.handReader?.hand(.changed, moved: offset)
+            native?.handReader?.hand(.ended, moved: .zero, speed: speed)
         case (.pinch(let scale, let point), _) where native?.pinchRecognizer != nil:
             native?.pinchRecognizer?.pinched(.began, scale: 1, at: point)
             native?.pinchRecognizer?.pinched(.changed, scale: scale, at: point)

@@ -68,6 +68,20 @@ states move by that from where they stood as it began. Ended, it is a swipe
 by the host layer's rule ([a swipe](../../host/runtime.md#a-swipe)). A pan
 that asks for more than one pointer is not recognized.
 
+## The hand over a layout
+
+A layout an engine moves hears the hand by the relay (`Input.cpp`): a press
+of the primary button, a finger or a pen goes down; once it has moved past
+the system's drag distance it is told as begun and its first move, and the
+host layer's answer says whose it is - taken by the layout, which then holds
+the pointer and handles each move told since the last, or left, the pointer
+going on to whatever holds the layout. Each report carries the pointer's own
+time (`PointerPoint.Timestamp`), from which the host layer reads the speed at
+the lift; a lost capture or a cancel takes the hand away. A wheel's step -
+a mouse's notch of 120 as forty-eight points, a precision touchpad's smaller
+steps alike - is told as a wheel, handled where the layout took it, and let
+go by the host layer's pause.
+
 ## A pinch
 
 A view that listens for a pinch takes WinUI's scale manipulation - two

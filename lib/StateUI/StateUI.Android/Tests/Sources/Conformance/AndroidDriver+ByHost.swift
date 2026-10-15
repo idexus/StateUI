@@ -9,6 +9,8 @@
 extension AndroidDriver {
     func byHost(_ ability: String) -> String? {
         switch Ability(ability).act {
+        case "sweep":
+            return "the listener's report of the hand handed to the host, no touch sent"
         case "switchAway", "switchBack", "bringToFront", "minimize", "restore", "close":
             if Ability(ability).element == "Window" { return "the host told the activity's phase, no activity moved" }
         case "pressKeys":

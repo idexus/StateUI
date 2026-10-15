@@ -39,42 +39,18 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     /// The phase, where no binding was lent.
     @State private var ownPhase = Phase()
 
-    /// The destination the run last knew on the hand's axis - its own naming or the program's - so a new one is
-    /// told from it.
-    @State private var reported: Double?
+    /// Where the hand holds the run on its axis, while it does: what the arithmetic is handed then, the phase
+    /// itself named only as the hand passes a target.
+    @State private var held: Double?
 
-    /// Where the run last stood on the hand's axis - sent there or left there - which a change of room keeps.
-    @State private var standing: Double?
-
-    /// Whether a change of room left the scroller too short for where the run stood.
-    @State private var regaining = false
-
-    /// Where the scroller was last snapped to follow the phase on its way, along its axis.
-    @State private var mirrored: Double?
-
-    /// How long the scroller's room was along its axis when it last reported.
-    @State private var measured = 0.0
-
-    /// Where the scroller's run is laid out, as the platform reports it.
-    @State private var length = Rect.zero
-
-    /// Where the scroller is, carried both ways and never read in a body.
-    @State private var scrolled = Point.zero
-
-    /// Where the run stood along its axis when a pointer drag began.
-    @State private var dragged = 0.0
+    /// The hand's throw going on after it let go, on the hand's axis, where one does.
+    @State private var flung: LayoutFling?
 
     /// Where every child stands, written by the engine on the host's frames.
     @State private var placements = PlacedRun()
 
-    /// Where the scroller's run and each view's tap box stand inside it.
-    @State private var boxes = PlacedRun()
-
     /// The room the layout was given, as the platform reports it.
     @State private var room = Rect.zero
-
-    /// Whether a pointer drag has to move the run: a finger drags a scroller itself, a mouse does not.
-    @Environment(\.device) private var device
 
     /// The items, their views and the arithmetic, behind a class so the state walk stops before them.
     /// Design: docs/design/views/composition.md#items-held-behind-a-class
@@ -92,6 +68,9 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     /// The axes that rest on targets of their own, each on its own.
     private var axisTargets: [WritableKeyPath<Phase, Double>: [Double]] = [:]
 
+    /// The axes that come round again, by how far one turn takes them.
+    private var periods: [WritableKeyPath<Phase, Double>: Double] = [:]
+
     /// States whose writes run the arithmetic again on the host's frames.
     private var followed: [(any FollowedState)?] = []
 
@@ -101,7 +80,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     /// What runs when the user taps a view, through its gate.
     private var tapped: ValueHandler<Items.Element>?
 
-    /// How the run travels to where the program or a settle sends it.
+    /// How the run travels to where the program or the hand's throw sends it.
     private var law = Motion.inherited
 
     /// What a target the run names is told to beside the phase: a composed control's own value worked out from it.
@@ -163,9 +142,10 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     ///
     ///     .input(.scroll(.horizontal, pointsPerUnit: 240), drives: \.turn)
     ///
-    /// A scroll lies over the views, which take no touches of their own, and runs between the lowest and the
-    /// highest snap target on its axis: it needs `snap(_:to:)` for that axis or `snapTargets(_:)`. The hand moves
-    /// its own axis alone; the others go on as the program sends them.
+    /// The hand moves the axis as it moves, between the lowest and the highest snap target on it - or round and
+    /// round where the axis `wraps(_:every:)` - and let go, the run goes on to the target nearest where its throw
+    /// would end: it needs `snap(_:to:)` for that axis or `snapTargets(_:)`. The hand moves its own axis alone;
+    /// the others go on as the program sends them. The views still answer a tap.
     ///
     /// - Parameters:
     ///   - input: the hand's way of moving the axis.
@@ -190,6 +170,25 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     public func snapTargets(_ targets: [Phase]) -> Self {
         var copy = self
         copy.targets = targets.filter { target in Phase.axes.allSatisfy { target[keyPath: $0].isFinite } }
+        return copy
+    }
+
+    /// The same axis, round and round: one turn of `period` brings the layout back to where it was, so the hand
+    /// moves it on for ever and its snap targets come round again every period.
+    ///
+    ///     .snap(\.turn, to: cards.indices.map(Double.init))
+    ///     .wraps(\.turn, every: Double(cards.count))
+    ///
+    /// The axis has no end: past the last card it is the first again, a turn on - `turn` 9 of seven cards is the
+    /// third - so a write of one more always travels one card on.
+    ///
+    /// - Parameters:
+    ///   - axis: the axis.
+    ///   - period: how far one turn takes it; above nought.
+    /// - Returns: the layout, its axis coming round.
+    public func wraps(_ axis: WritableKeyPath<Phase, Double>, every period: Double) -> Self {
+        var copy = self
+        copy.periods[axis] = period.isFinite && period > 0 ? period : nil
         return copy
     }
 
@@ -288,7 +287,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         }
         if hand != nil, run.stops.isEmpty {
             complain("A LayoutEngine was given a scroll but no snap targets on the axis it drives, which say how far "
-                + "it runs. Nothing scrolls.")
+                + "it runs and where it rests. The hand moves nothing.")
         }
         if let pinned, pinned.followed == nil {
             complain("A LayoutEngine's phase is a state lent with `$`: a binding worked out from others cannot be "
@@ -297,16 +296,23 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
 
         return PlacedStack {
             ForEach(run.slots, id: \.identity) { slot in run.wrapped(slot) }
-            if run.scrolls { run.scroller() }
+        }
+        .modified { element in
+            // The hand is heard on the element itself, over every view, which still answers a tap.
+            element.describe(LayoutEngineContract.handAxis, run.moves ? (run.across ? .horizontal : .vertical) : nil)
+            if run.moves {
+                element.addHandler(LayoutEngineContract.handMoved) { phase, moved, speed in
+                    run.hand(phase, moved: moved, speed: speed)
+                }
+            }
         }
         .setValue(ViewContract.area.token, on: $placements, mode: .out, kind: .placement)
         .setValue(LayoutEngineContract.phase.token, on: run.phase, mode: .inOut, kind: .property)
         .motion(law)
         .frame($room)
-        .engine([$room.followed, run.phase.followed, $scrolled.followed, $length.followed] + followed,
-                sync: .display, priority: 0) { _ in
-            run.place()
-            return .wait
+        .engine([$room.followed, run.phase.followed, $held.followed, $flung.followed] + followed,
+                sync: .display, priority: 0) { cycle in
+            run.place(at: cycle.now)
         }
     }
 
@@ -344,7 +350,6 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         let path = source.path
         let axis = hand?.axis
         let stops = axis.map { axis in axisTargets[axis] ?? Set(targets.map { $0[keyPath: axis] }).sorted() } ?? []
-        let scrolls = hand != nil && !stops.isEmpty
 
         return Run(
             items: items,
@@ -357,33 +362,24 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
             tapped: tapped,
             named: named,
             phase: pinned ?? $ownPhase,
-            states: States(
-                reported: _reported, standing: _standing, regaining: _regaining, mirrored: _mirrored,
-                measured: _measured, length: _length, scrolled: _scrolled, dragged: _dragged,
-                placements: _placements, boxes: _boxes, room: _room),
+            states: States(held: _held, flung: _flung, placements: _placements, room: _room),
             axis: axis,
             stops: stops,
+            period: axis.flatMap { periods[$0] },
             targets: targets,
             axisTargets: axisTargets,
             law: law,
-            scrolls: scrolls,
+            moves: hand != nil && !stops.isEmpty,
             across: hand?.input.axis != .vertical,
             per: hand?.input.pointsPerUnit ?? 1,
-            drags: scrolls && device.info.formFactor == .desktop)
+            throwing: hand?.input.throwing ?? LayoutInput.scroll(.horizontal, pointsPerUnit: 1).throwing)
     }
 
     /// The layout's states, handed on whole: what its engine and handlers read and write.
     struct States {
-        let reported: State<Double?>
-        let standing: State<Double?>
-        let regaining: State<Bool>
-        let mirrored: State<Double?>
-        let measured: State<Double>
-        let length: State<Rect>
-        let scrolled: State<Point>
-        let dragged: State<Double>
+        let held: State<Double?>
+        let flung: State<LayoutFling?>
         let placements: State<PlacedRun>
-        let boxes: State<PlacedRun>
         let room: State<Rect>
     }
 }
@@ -412,12 +408,32 @@ extension LayoutEngine where Phase == Double {
     ///
     ///     .input(.scroll(.horizontal, pointsPerUnit: 90))
     ///
-    /// A scroll lies over the views, which take no touches of their own, and runs between the lowest and the
-    /// highest snap target: it needs `snapTargets(_:)`.
+    /// The hand moves the phase between the lowest and the highest snap target - round and round where it
+    /// `wraps(every:)` - and let go, the run goes on to the target nearest where its throw would end: it needs
+    /// `snapTargets(_:)`.
     ///
     /// - Parameter input: the hand's way of moving the phase.
     /// - Returns: the layout, moved by the hand.
     public func input(_ input: LayoutInput) -> Self {
         self.input(input, drives: \.self)
     }
+
+    /// The phase, round and round: one turn of `period` brings the layout back to where it was.
+    ///
+    ///     .wraps(every: Double(cards.count))
+    ///
+    /// - Parameter period: how far one turn takes the phase; above nought.
+    /// - Returns: the layout, coming round.
+    public func wraps(every period: Double) -> Self {
+        wraps(\.self, every: period)
+    }
+}
+
+/// A throw of the hand going on after it let go, on the hand's axis: from where it let go, to the target nearest
+/// where it would end, setting out at the hand's speed, units a second; when it set out, once a frame says.
+struct LayoutFling: Equatable {
+    let from: Double
+    let to: Double
+    let speed: Double
+    var began: Double?
 }

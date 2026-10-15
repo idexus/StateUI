@@ -32,6 +32,13 @@ extension GTKDriver {
             GTKTestHost.emit(drag, "drag-update", [offset.x / 2, offset.y / 2])
             GTKTestHost.emit(drag, "drag-update", [offset.x, offset.y])
             GTKTestHost.emit(drag, "drag-end", [offset.x, offset.y])
+        // A throw's speed is the events' times, which a signal emitted here carries none of: the hand reaches the
+        // host's entry as the drag would hand it, with the speed - ✓.
+        case .sweep(let offset, let speed):
+            guard view.hearing.contains(.hand) else { return false }
+            listening.hand(.began, moved: .zero)
+            listening.hand(.changed, moved: offset)
+            listening.hand(.ended, moved: .zero, speed: speed)
         // GTK takes no touch a driver could put down, so the fingers' place reaches the host's recognizer as GTK's
         // zoom would hand it - ✓.
         case .pinch(let scale, let at):

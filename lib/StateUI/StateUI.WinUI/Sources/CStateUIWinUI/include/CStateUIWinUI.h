@@ -43,6 +43,7 @@ typedef enum {
     StateUIHearingPointer = 2,
     StateUIHearingDrags = 4,
     StateUIHearingPinches = 8,
+    StateUIHearingHand = 16,
 } StateUIHearing;
 
 /// What a view heard: a tap, its place in a quick run of taps from 1, 0 for a press assistive technology made; the
@@ -209,6 +210,14 @@ typedef struct {
     /// A key went down in the window whose chrome is `view`, before the element holding the focus has it - its
     /// VirtualKey and VirtualKeyModifiers: whether a view taking it took it.
     bool (*keyTaken)(int64_t view, int32_t key, int32_t modifiers);
+
+    /// The hand over a layout - a press dragged by any pointer: `phase` 0 begun, 1 moved by (x, y) DIPs since the
+    /// last, 2 let go, 3 taken away, `time` its milliseconds on the pointer's clock: whether the layout took it.
+    bool (*hand)(int64_t view, int32_t phase, double x, double y, double time);
+
+    /// A wheel's notch over a layout - a mouse's, a precision touchpad's - moving what is under it by (x, y) DIPs:
+    /// whether the layout took it.
+    bool (*wheel)(int64_t view, double x, double y);
 } StateUIWinUICallbacks;
 
 /// What the environment is, in groups, each read at once.

@@ -24,27 +24,19 @@ final class LayoutBench {
         _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
     }
 
-    /// Tells every frame reader in `tree` its room and renders again, until none stands untold - the scroller
-    /// stands once its reader knows its room: the whole layout as it stands on screen.
-    func stood(_ renders: Renders, _ tree: () -> Node) -> HostPatch {
-        var told: Set<Int> = []
-        _ = renders.render(tree())
-
-        for _ in 0..<3 {
-            // The whole description: a patch says nothing of a handler that did not change.
-            let untold = renders.renderFromScratch(tree()).subtree
-                .compactMap { $0.events?[.frameChanged] }
-                .filter { !told.contains($0) }
-            guard !untold.isEmpty else { break }
-
-            for id in untold {
-                XCTAssertTrue(renders.fire(id, with: [.numbers([0, 0, 300, 200, 0, 0, 0, 0])]))
-                told.insert(id)
-            }
-            _ = renders.render(tree())
+    /// The hand over the layout `tree` describes, as a host reports it - its phase, how far it moved what is under
+    /// it since the last report, and the speed it lets go at, per second - and a cycle after it.
+    func hand(
+        _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, moved: Point = .zero, speed: Point = .zero,
+        file: StaticString = #filePath, line: UInt = #line
+    ) {
+        // The whole description: a patch says nothing of a handler that did not change.
+        guard let heard = renders.renderFromScratch(tree()).first(.layoutEngine)?.events?[.handMoved] else {
+            return XCTFail("the layout hears no hand", file: file, line: line)
         }
 
-        return renders.renderFromScratch(tree())
+        XCTAssertTrue(renders.fire(heard, with: MemberValues.encode(phase, moved, speed)), file: file, line: line)
+        cycle()
     }
 
     /// Renders `tree`, feeds the layout the room `room` as the host does, and turns the board until the arithmetic

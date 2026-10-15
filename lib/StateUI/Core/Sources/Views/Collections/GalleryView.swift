@@ -18,8 +18,8 @@
 ///
 /// The initializer is the card's face, one card per item; where a card goes
 /// and which way it faces is the arrangement's. Give the gallery a bounded
-/// size, as a scroller needs - a `.height`, or a `.fill` row of a Grid - and the
-/// cards are fitted to it.
+/// size, as it has none of its own - a `.height`, or a `.fill` row of a Grid -
+/// and the cards are fitted to it.
 ///
 /// A swipe settles on a card, and `.position(_:)` says which; assigning it
 /// moves the run. A tap opens the middle card, handed to `.onItemTapped`. No
@@ -32,8 +32,8 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// Which card is in the middle, where no binding was lent.
     @State private var shown = 0
 
-    /// Which card is held down, by its identity: the scroller over the cards
-    /// takes every touch, so the gallery shows the press itself.
+    /// Which card is held down, by its identity: the gallery shows the press on
+    /// the card's face, beneath the placement the run writes every frame.
     @State private var dipping: ID?
 
     /// Where the run stands, a card a unit: the engine's phase, which the host
@@ -66,6 +66,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
     /// Whether the user may swipe at all.
     private var swipes = true
+
+    /// How a throw of the hand goes on, where the author says.
+    private var thrown: Motion?
 
     /// What stands in when there are no items at all.
     private var empty: (any View)?
@@ -210,6 +213,21 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         return copy
     }
 
+    /// How the run goes on when the user lets go of it with speed - how far a
+    /// throw carries, and how it slows - as any motion says it.
+    ///
+    ///     .throwing(.spring(response: .milliseconds(500), damping: 0.8))
+    ///
+    /// - Parameter motion: eased, its length says how far a throw carries and
+    ///   its curve how it slows; a spring settles as springs do. Either sets
+    ///   out at the hand's speed.
+    /// - Returns: the gallery, thrown that way.
+    public func throwing(_ motion: Motion) -> Self {
+        var copy = self
+        copy.thrown = motion
+        return copy
+    }
+
     /// Whether the user may swipe at all. A gallery that says no still moves
     /// when its position is assigned.
     ///
@@ -289,7 +307,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         return held
     }
 
-    /// The cards, the shape they stand in, and the scroller that turns them.
+    /// The cards, the shape they stand in, and the hand that turns them.
     public var body: some View {
         let items = source.items
         let count = items.count
@@ -345,7 +363,10 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             }
         }
 
-        if swipes { engine = engine.input(.scroll(.horizontal, pointsPerUnit: reach)) }
+        if swipes {
+            let scroll = thrown.map { LayoutInput.scroll(.horizontal, pointsPerUnit: reach, throwing: $0) }
+            engine = engine.input(scroll ?? .scroll(.horizontal, pointsPerUnit: reach))
+        }
 
         // The shade sits beside the press: the card that dips wears none.
         if let mask { engine = engine.shade(mask) }

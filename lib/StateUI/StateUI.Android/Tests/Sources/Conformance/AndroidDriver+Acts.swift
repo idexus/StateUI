@@ -77,6 +77,10 @@ extension AndroidDriver {
             guard Self.tap(tab: place, of: tabs) else { throw DriverCannot(act, on: element) }
         case (.tap(let count), let view?): Self.tap(view, count: count)
         case (.pan(let offset), let view?): Self.pan(view, by: offset)
+        case (.sweep(let offset, let speed), let view?):
+            _ = view.heardHand(phase: GesturePhase.began.rawValue, moved: .zero, speed: .zero)
+            _ = view.heardHand(phase: GesturePhase.changed.rawValue, moved: offset, speed: .zero)
+            _ = view.heardHand(phase: GesturePhase.ended.rawValue, moved: .zero, speed: speed)
         case (.pinch(let scale, let point), let view?):
             let (width, height) = (Float(view.frame.width), Float(view.frame.height))
             TestTouches.pinch(view, x: Float(point.x) * width, y: Float(point.y) * height, by: Float(scale))

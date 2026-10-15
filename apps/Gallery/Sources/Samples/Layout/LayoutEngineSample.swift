@@ -70,25 +70,45 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
     /// How big the card at the back is drawn, against the one at the front.
     static var back: Double { eye / (eye + 2) }
 
-    /// Whether the ring is turned by DRAGGING it rather than by scrolling. Both
-    /// move the same arithmetic; a scroller cannot be laid over a view that is
-    /// to be taken hold of, so the two swap places.
-    @State private var grabbing = false
+    /// HOW A THROW GOES ON - any motion: how far a throw carries, and the
+    /// curve it slows on.
+    enum Throwing: CaseIterable, Hashable {
+        case easeOut, glide, spring, bounce, short
+
+        var motion: Motion {
+            switch self {
+            case .easeOut: .eased(.milliseconds(400), .cubicOut)
+            case .glide: .eased(.milliseconds(300), .sineOut)
+            case .spring: .spring(response: .milliseconds(400), damping: 0.8)
+            case .bounce: .eased(.milliseconds(600), .backOut)
+            case .short: .eased(.milliseconds(200), .cubicOut)
+            }
+        }
+
+        var title: String {
+            switch self {
+            case .easeOut: "Ease out"
+            case .glide: "Glide"
+            case .spring: "Spring"
+            case .bounce: "Bounce"
+            case .short: "Short"
+            }
+        }
+    }
+
+    /// Which of them the ring is thrown by.
+    @State private var throwing = Throwing.easeOut
 
     /// WHICH CARD IS AT THE FRONT - the phase, two-way: `Back` and `Next`
-    /// write it and the ring travels there; a swipe names the card it passes
-    /// and the one it comes to rest on. It starts on the middle card.
+    /// write it and the ring travels there; the hand names the card it passes
+    /// and the one it comes to rest on. It starts on the middle card, and it
+    /// has no end: a turn on, it is the same card again.
     @State private var turn = Double(LayoutEngineSample.cards.count / 2)
-
-    /// How far the cards have been DRAGGED, handed on with `$`, so it describes
-    /// nothing when it moves: the arithmetic follows it on the host's frames.
-    @State private var dragged = 0.0
     // listing: end
 
-    // The cards are turned by a scroller of their own, so the example is not
-    // put in a second one: the page's scroller would claim the swipe before it
-    // heard about one. The words and the code scroll instead - see
-    // SampleContent.scrolls.
+    // The cards are turned by the hand over them, so the example is not put in
+    // a scroller: the page's would claim the swipe before the ring heard it.
+    // The words and the code scroll instead - see SampleContent.scrolls.
     static let scrolls = false
 
     // And it takes the whole cell: a ring wants the room, and the cards are
@@ -114,9 +134,7 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
             .clipsContent(true)
 
             HStack {
-                // INSIDE these braces, because that is where `grabbing` is
-                // read: the switch below is the only thing here a build
-                // depends on, and the ring itself turns for no build at all.
+                // The ring turns for no build at all: the label says so.
                 DebugInfoLabel()
                     .margin(horizontal: 4, vertical: 0)
 
@@ -127,36 +145,23 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
                 Button("Next")
                     .margin(horizontal: 4, vertical: 0)
                     .onClicked { move(1) }
+
             }
             .spacing(8)
             .horizontalAlignment(.center)
             .gridRow(1)
 
-            SwitchRow(
-                "Turn by panning",
-                Binding(
-                    get: { grabbing },
-                    set: { taking in
-                        // ONE NUMBER AT EACH HANDOVER: the drag is folded
-                        // into the phase, so whichever input comes next
-                        // starts from the card the ring stands nearest - the
-                        // scroller, built afresh by the swap, included.
-                        turn = turned(turn).rounded()
-                        dragged = 0
-                        grabbing = taking
-                    }))
-            .horizontalAlignment(.center)
-            .gridRow(2)
+            Picker(Throwing.allCases, selection: $throwing) { $0.title }
+                .horizontalAlignment(.center)
+                .gridRow(2)
         }
         .rows(.fill, .auto, .auto)
         .rowSpacing(10)
     }
 
-    /// The ring of cards and its dots, placed by the arithmetic below - the
-    /// same views whichever way the user turns them.
-    @ViewBuilder
+    /// The ring of cards and its dots, placed by the arithmetic below.
     private var ring: some View {
-        let layout = LayoutEngine(Self.pieces) { piece in
+        LayoutEngine(Self.pieces) { piece in
             switch piece {
             case .card(let index):
                 face(Self.cards[index])
@@ -166,58 +171,30 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
             }
         } placements: { room, phase in
             // THE WHOLE LAYOUT, run on the display's own frames whenever the
-            // room, the phase or the drag has moved, with no view built.
-            let at = turned(phase)
-
-            return Self.cards.indices.map { place($0, at, room) }
-                + Self.cards.indices.map { dot($0, at, room) }
+            // room or the phase has moved, with no view built.
+            Self.cards.indices.map { place($0, phase, room) }
+                + Self.cards.indices.map { dot($0, phase, room) }
         }
         .phase($turn)
-        // WHERE THE RING MAY COME TO REST: on a card, never between two.
+        // THE HAND OVER THE CARDS: a finger or a pointer dragged, a trackpad's
+        // two fingers and a wheel all turn the ring, and let go with speed it
+        // goes on to the card nearest where the throw would end.
+        .input(.scroll(.horizontal, pointsPerUnit: Self.reach, throwing: throwing.motion))
+        // WHERE THE RING MAY COME TO REST: on a card, never between two - and
+        // round and round, a turn bringing every card back.
         .snapTargets(Self.cards.indices.map(Double.init))
-        .following($dragged)
+        .wraps(every: Double(Self.cards.count))
         // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
         // over every card, wearing the card's own corners - which is why it is
         // the application's to give and not the library's to draw.
         .shade(Rectangle(Color("#000000")).cornerRadius(16))
         .motion(.eased(.milliseconds(300), .cubicOut))
-
-        if grabbing {
-            // TAKEN HOLD OF: the drag is written into a value, and no scroller
-            // is laid over the cards - a scroller claims a drag before
-            // anything under it hears about one.
-            layout.panX($dragged)
-        } else {
-            // SCROLLED: an empty scroller lies over the cards. A finger drag,
-            // a two-finger trackpad swipe and a mouse wheel are ONE thing to a
-            // scroller and three different things to anything else.
-            layout.input(.scroll(.horizontal, pointsPerUnit: Self.reach))
-        }
     }
 
     /// A card either way, from a button: the ring travels there, and the
-    /// arithmetic follows it frame by frame.
+    /// arithmetic follows it frame by frame - past the last card to the first.
     private func move(_ by: Int) {
-        turn = max(0, min(Double(Self.cards.count - 1), turn + Double(by)))
-    }
-
-    /// How far the ring is turned, in CARDS, from the phase as it stands - a
-    /// whole number at rest and whatever the hand says while it moves.
-    ///
-    /// A READING FROM OUTSIDE IS NOT A NUMBER UNTIL IT IS CHECKED: a platform
-    /// that reports through a transform can answer with no number at all, and
-    /// `Int()` on one of those does not return.
-    private func turned(_ phase: Double) -> Double {
-        // A DRAG COUNTS THE OTHER WAY: the phase grows as the ring moves left,
-        // and a finger going left reports a negative distance.
-        let turned = phase - dragged / Self.reach
-
-        guard turned.isFinite else { return 0 }
-
-        // AND A DRAG HAS NO ENDS: a scroller cannot be pulled past its length,
-        // but a hand can - so the arithmetic is what holds the ring to its
-        // cards.
-        return min(max(turned, 0), Double(Self.cards.count - 1))
+        turn += Double(by)
     }
 
     /// One card's face - a picture and its name, and nothing at all about where
@@ -328,7 +305,9 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
                 room.height - 16,
                 6,
                 6),
-            opacity: 0.25 + 0.75 * chosen(Double(index) - at),
+            // THE RING COMES ROUND: how far a card is from the front is taken
+            // the short way, a turn on or back.
+            opacity: 0.25 + 0.75 * chosen((Double(index) - at).remainder(dividingBy: Double(count))),
             zIndex: 2000)
     }
 
@@ -354,29 +333,24 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Swipe left or right to turn the ring; it comes to rest on the card it is "
-                + "nearest, and `Back` and `Next` send it there without the hand - the phase "
-                + "itself travels, under the layout's `.motion`, a scroller over the cards or "
-                + "none. The phase, "
-                + "`.phase($turn)`, is the card at the front: the buttons write it, and a swipe "
-                + "names the card it passes. `.input(.scroll(…))` lays an empty scroller over "
-                + "the cards, so a finger drag, a two-finger trackpad swipe and a mouse wheel "
-                + "all turn the ring, resting on its `.snapTargets`. With `Turn by panning` on, "
-                + "the cards are taken hold of instead and follow the finger, with no scroller "
-                + "over them.")
+            Text("Swipe, drag or scroll left or right to turn the ring - a finger, the "
+                + "pointer, a trackpad's two fingers and a wheel are one hand to it. Let go "
+                + "still, it rests on the card it is nearest; let go with speed, it goes on to "
+                + "the card nearest where the throw would end, in one movement. It has no "
+                + "end: past the last card is the first again. `Back` and `Next` send it "
+                + "there without the hand - the phase itself travels, under the layout's "
+                + "`.motion`. The phase, `.phase($turn)`, is the card at the front; "
+                + "`.input(.scroll(…))` gives it to the hand, resting on its `.snapTargets`, "
+                + "and `.wraps(every:)` brings it round. The picker changes how a throw goes "
+                + "on - `.scroll(…, throwing:)` takes any motion: eased, its length says how far a "
+                + "throw carries and its curve how it slows; a spring settles as springs do.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Text("Nothing that turns the ring is read in the body. The arithmetic runs on "
-                + "the display's own frames whenever the room, the phase or a state named in "
-                + "`.following(_:)` - the drag - has moved, and the host wears the placements "
-                + "straight onto the cards, so the ring turns with no view built.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Text("The trap is a value read in the body: the layout is built again every "
-                + "time it moves. Handed on with `$` and named in `.following(_:)`, the drag "
-                + "moves the cards with no view rebuilt.")
+                + "the display's own frames whenever the room or the phase has moved, and the "
+                + "host wears the placements straight onto the cards, so the ring turns with "
+                + "no view built.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

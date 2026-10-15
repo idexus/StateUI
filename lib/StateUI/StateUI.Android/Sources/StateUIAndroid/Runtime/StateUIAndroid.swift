@@ -111,6 +111,20 @@ enum JavaNatives {
                 return dragging == true ? 1 : 0
             }
         }
+        let handed: @convention(c) (Environment, jclass?, jlong, jint, jfloat, jfloat, jfloat, jfloat) -> jboolean = {
+            _, _, number, phase, x, y, speedX, speedY in
+            MainActor.assumeIsolated {
+                let taken = AndroidView.find(number)?.heardHand(
+                    phase: phase, moved: Point(x: Double(x), y: Double(y)),
+                    speed: Point(x: Double(speedX), y: Double(speedY)))
+                return taken == true ? 1 : 0
+            }
+        }
+        let wheeled: @convention(c) (Environment, jclass?, jlong, jfloat, jfloat) -> jboolean = { _, _, number, x, y in
+            MainActor.assumeIsolated {
+                AndroidView.find(number)?.heardWheel(moved: Point(x: Double(x), y: Double(y))) == true ? 1 : 0
+            }
+        }
         let focusChanged: @convention(c) (Environment, jclass?, jlong, jboolean) -> Void = { _, _, number, focused in
             MainActor.assumeIsolated {
                 AndroidView.find(number)?.onFocusChanged?(focused != 0)
@@ -343,6 +357,8 @@ enum JavaNatives {
             ("keyTaken", "(ZIII)Z", unsafeBitCast(keyTaken, to: UnsafeMutableRawPointer.self)),
             ("gestured", "(JIIFFF)V", unsafeBitCast(gestured, to: UnsafeMutableRawPointer.self)),
             ("pressed", "(JIFF)Z", unsafeBitCast(pressed, to: UnsafeMutableRawPointer.self)),
+            ("handed", "(JIFFFF)Z", unsafeBitCast(handed, to: UnsafeMutableRawPointer.self)),
+            ("wheeled", "(JFF)Z", unsafeBitCast(wheeled, to: UnsafeMutableRawPointer.self)),
             ("focusChanged", "(JZ)V", unsafeBitCast(focusChanged, to: UnsafeMutableRawPointer.self)),
             ("destroying", "()V", unsafeBitCast(destroying, to: UnsafeMutableRawPointer.self)),
             ("environmentChanged", "()V", unsafeBitCast(environmentChanged, to: UnsafeMutableRawPointer.self)),

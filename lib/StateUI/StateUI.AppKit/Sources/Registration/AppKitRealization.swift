@@ -182,6 +182,8 @@ enum AppKitRealization {
         .complete("LayoutEngine", "stroke"),
         .complete("LayoutEngine", "accessibilityIdentifier"),
         .complete("LayoutEngine", "ignoresInput"),
+        .complete("LayoutEngine", "handAxis"),
+        .complete("LayoutEngine", "handMoved"),
         .notPlanned("ActivityIndicator", "tint", reason: accentColoured),
         .notPlanned("ProgressBar", "tint", reason: accentColoured),
         .notPlanned("Switch", "tint", reason: accentColoured),

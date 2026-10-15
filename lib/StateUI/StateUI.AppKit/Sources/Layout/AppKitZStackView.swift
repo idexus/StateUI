@@ -22,10 +22,20 @@ final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeas
 
     /// Whether the ZStack stands a layout engine, which has no size of its own.
     var engine = false
+
+    /// The hand over the layout engine it stands, where one moves it: whether it took a scroll event.
+    var hand: ((NSEvent) -> Bool)?
     private var items: [AppKitLayoutItem] = []
     private var drawingOrder: [ObjectIdentifier] = []
 
     override var isFlipped: Bool { true }
+
+    /// A scroll the layout's hand does not take goes on to whatever holds the layout.
+    override func scrollWheel(with event: NSEvent) {
+        if hand?(event) == true { return }
+
+        super.scrollWheel(with: event)
+    }
 
     func setItems(_ items: [AppKitLayoutItem]) {
         guard !AppKitLayoutItem.sameArrangement(self.items, items) else { return }

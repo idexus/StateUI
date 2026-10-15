@@ -97,6 +97,14 @@ extension WebDriver {
         case (.hover(let point), _): try mouse("mouseMoved", at: point, on: e)
         case (.leave, _): try leave(e)
         case (.pan(let offset), _): try pan(e, by: offset)
+        // A throw's speed is the events' times, which input the driver sends carries as the browser receives it:
+        // the hand reaches the host's entry as the pointer would hand it, with the speed - ✓.
+        case (.sweep(let offset, let speed), _):
+            guard let web = element.native as? WebElement, web.hand(.began, moved: .zero, at: nil) else {
+                throw DriverCannot(act, on: element)
+            }
+            web.hand(.changed, moved: offset, at: nil)
+            web.hand(.ended, moved: .zero, speed: speed, at: nil)
         case (.pinch(let scale, let share), _): try pinch(e, by: scale, at: share)
         default: throw DriverCannot(act, on: element)
         }

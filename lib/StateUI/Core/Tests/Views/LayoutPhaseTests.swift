@@ -85,83 +85,75 @@ final class LayoutPhaseTests: XCTestCase {
 
     // MARK: - The hand's axis
 
-    /// A SCROLL MOVES ONLY THE AXIS IT DRIVES: the arithmetic is handed the scroller's turn beside the zoom as it
+    /// THE HAND MOVES ONLY THE AXIS IT DRIVES: the arithmetic is handed the hand's turn beside the zoom as it
     /// stands, and the target passed is named on the turn alone.
-    func testAScrollMovesOnlyTheAxisItDrives() throws {
+    func testTheHandMovesOnlyTheAxisItDrives() throws {
         let handed = Handed()
         let orbit = State(wrappedValue: Orbit(turn: 0, zoom: 2))
         let renders = Renders()
-        let (_, offset) = try scrolled(renders, orbit, handed: handed) { $0.snap(\.turn, to: [0, 1, 2]) }
+        let tree = handTree(orbit, handed: handed) { $0.snap(\.turn, to: [0, 1, 2]) }
+        _ = bench.laid(renders, tree)
 
-        slid(offset, to: Point(140, 0))
-        bench.cycle()
+        bench.hand(renders, tree, .began)
+        bench.hand(renders, tree, .changed, moved: Point(-140, 0))
 
         XCTAssertEqual(handed.phases.last, Orbit(turn: 1.4, zoom: 2))
         XCTAssertEqual(orbit.wrappedValue, Orbit(turn: 1, zoom: 2), "the turn passed named, the zoom untouched")
     }
 
-    /// WHILE ANOTHER AXIS TRAVELS THE SCROLLER LEADS ITS OWN: only a journey of the axis it drives is mirrored.
-    func testWhileAnotherAxisTravelsTheScrollerLeadsItsOwn() throws {
+    /// WHILE ANOTHER AXIS TRAVELS THE HAND MOVES ITS OWN: the zoom goes on its way beside it.
+    func testWhileAnotherAxisTravelsTheHandMovesItsOwn() throws {
         let handed = Handed()
         let orbit = State(wrappedValue: Orbit())
         let renders = Renders()
-        let (worn, offset) = try scrolled(renders, orbit, handed: handed) { $0.snap(\.turn, to: [0, 1, 2]) }
+        let tree = handTree(orbit, handed: handed) { $0.snap(\.turn, to: [0, 1, 2]) }
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
 
         orbit.wrappedValue.zoom = 2
         bench.cycle()
         moved(worn, to: [0, 1.5], mask: 0b11)
         bench.cycle()
-        slid(offset, to: Point(140, 0))
-        bench.cycle()
+        bench.hand(renders, tree, .began)
+        bench.hand(renders, tree, .changed, moved: Point(-140, 0))
 
         XCTAssertEqual(handed.phases.last, Orbit(turn: 1.4, zoom: 1.5), "the hand's turn beside the zoom on its way")
-        XCTAssertEqual(try XCTUnwrap(standing(offset, as: JourneyLanes<Point>.self)).value.x, 140, accuracy: 0.001,
-                       "the scroller left where the hand holds it")
     }
 
     /// THE HAND NAMES ITS OWN AXIS ALONE: a zoom on its way stays on it, its lanes untouched.
     func testNamingTheTurnLeavesTheZoomOnItsWay() throws {
         let orbit = State(wrappedValue: Orbit())
         let renders = Renders()
-        let (worn, offset) = try scrolled(renders, orbit) { $0.snap(\.turn, to: [0, 1, 2]) }
+        let tree = handTree(orbit) { $0.snap(\.turn, to: [0, 1, 2]) }
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
 
         orbit.wrappedValue.zoom = 2
         bench.cycle()
         moved(worn, to: [0, 1.5], mask: 0b11)
         bench.cycle()
-        slid(offset, to: Point(140, 0))
-        bench.cycle()
+        bench.hand(renders, tree, .began)
+        bench.hand(renders, tree, .changed, moved: Point(-140, 0))
 
         let journey = try XCTUnwrap(standing(worn, as: JourneyLanes<Orbit>.self))
         XCTAssertEqual(journey.value, Orbit(turn: 1, zoom: 1.5), "the turn named, the zoom where it has got to")
         XCTAssertEqual(journey.destination, Orbit(turn: 1, zoom: 2), "and still going where it was sent")
     }
 
-    /// A PROGRAM'S JOURNEY OF THE DRIVEN AXIS IS MIRRORED: the scroller is snapped where the turn stands each frame.
-    func testUnderAScrollTheScrollerFollowsTheTurnOnItsWay() throws {
-        let orbit = State(wrappedValue: Orbit())
-        let renders = Renders()
-        let (worn, offset) = try scrolled(renders, orbit) { $0.snap(\.turn, to: [0, 1, 2]) }
-
-        orbit.wrappedValue.turn = 1
-        bench.cycle()
-        moved(worn, to: [0.25, 1], mask: 0b11)
-        bench.cycle()
-
-        XCTAssertEqual(try XCTUnwrap(standing(offset, as: JourneyLanes<Point>.self)).value.x, 25, accuracy: 0.001)
-    }
-
-    /// THE SCROLL RUNS BETWEEN ITS AXIS'S LOWEST AND HIGHEST TARGET, and starts where the phase stands on it.
-    func testAScrollRunsOverTheTargetsOfItsAxis() throws {
+    /// PAST ITS AXIS'S LAST TARGET THE HAND MOVES THE RUN HALF AS FAR: the targets of its own axis are its ends.
+    func testTheHandsEndsAreTheTargetsOfItsAxis() throws {
+        let handed = Handed()
         let orbit = State(wrappedValue: Orbit(turn: 3, zoom: 1))
         let renders = Renders()
-        let (_, offset) = try scrolled(renders, orbit) { $0.snap(\.turn, to: [1, 3]) }
+        let tree = handTree(orbit, handed: handed) { $0.snap(\.turn, to: [1, 3]) }
+        _ = bench.laid(renders, tree)
 
-        XCTAssertEqual(try XCTUnwrap(standing(offset, as: JourneyLanes<Point>.self)).destination.x, 200, accuracy: 0.001)
+        bench.hand(renders, tree, .began)
+        bench.hand(renders, tree, .changed, moved: Point(-100, 0))
+
+        XCTAssertEqual(handed.phases.last?.turn ?? 0, 3.5, accuracy: 0.001)
     }
 
-    /// A SCROLL NEEDS TARGETS ON ITS OWN AXIS: one driving an axis no target names lays no scroller and says why.
-    func testAScrollWithNoTargetsOnItsAxisLaysNoScroller() {
+    /// A HAND NEEDS TARGETS ON ITS OWN AXIS: one driving an axis no target names hears no hand and says why.
+    func testAHandWithNoTargetsOnItsAxisMovesNothing() throws {
         let patch = Renders().render(
             LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [] }
                 .phase(State(wrappedValue: Orbit()).projectedValue)
@@ -169,7 +161,7 @@ final class LayoutPhaseTests: XCTestCase {
                 .snap(\.turn, to: [0, 1])
                 .node)
 
-        XCTAssertNil(patch.first(.scrollView))
+        XCTAssertNil(try XCTUnwrap(patch.first(.layoutEngine)).events?[.handMoved])
         XCTAssertTrue(hasComplained("given a scroll but no snap targets on the axis it drives"))
     }
 
@@ -177,14 +169,15 @@ final class LayoutPhaseTests: XCTestCase {
 
     /// AN AXIS WITH TARGETS OF ITS OWN RESTS ON THEM ALONE: the hand lets go of the turn and the turn travels to its
     /// nearest; the zoom, where the program left it between its own targets, stays.
-    func testASettleRestsTheAxisOnItsOwnTargetsAndLeavesTheOthers() throws {
+    func testLetGoTheAxisRestsOnItsOwnTargetsAndLeavesTheOthers() throws {
         let orbit = State(wrappedValue: Orbit(turn: 0, zoom: 1.3))
         let renders = Renders()
-        let (worn, offset) = try scrolled(renders, orbit) { $0.snap(\.turn, to: [0, 1, 2]).snap(\.zoom, to: [1, 2]) }
+        let tree = handTree(orbit) { $0.snap(\.turn, to: [0, 1, 2]).snap(\.zoom, to: [1, 2]) }
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
 
-        slid(offset, to: Point(140, 0))
-        bench.cycle()
-        try stop(renders, orbit) { $0.snap(\.turn, to: [0, 1, 2]).snap(\.zoom, to: [1, 2]) }
+        bench.hand(renders, tree, .began)
+        bench.hand(renders, tree, .changed, moved: Point(-140, 0))
+        bench.hand(renders, tree, .ended)
 
         let journey = try XCTUnwrap(standing(worn, as: JourneyLanes<Orbit>.self))
         XCTAssertEqual(journey.value.turn, 1.4, accuracy: 0.001, "from where the hand left it")
@@ -197,58 +190,35 @@ final class LayoutPhaseTests: XCTestCase {
         let targets = [Orbit(turn: 0, zoom: 1), Orbit(turn: 1, zoom: 2), Orbit(turn: 2, zoom: 2)]
         let orbit = State(wrappedValue: Orbit(turn: 0, zoom: 1))
         let renders = Renders()
-        let (worn, offset) = try scrolled(renders, orbit) { $0.snapTargets(targets) }
+        let tree = handTree(orbit) { $0.snapTargets(targets) }
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
 
-        slid(offset, to: Point(120, 0))
-        bench.cycle()
+        bench.hand(renders, tree, .began)
+        bench.hand(renders, tree, .changed, moved: Point(-120, 0))
         XCTAssertEqual(orbit.wrappedValue, Orbit(turn: 1, zoom: 1), "the turn passed named, nothing else")
 
-        try stop(renders, orbit) { $0.snapTargets(targets) }
-
+        bench.hand(renders, tree, .ended)
         XCTAssertEqual(try XCTUnwrap(standing(worn, as: JourneyLanes<Orbit>.self)).destination, Orbit(turn: 1, zoom: 2),
                        "the nearest whole state, its zoom with it")
     }
 
     // MARK: - The bench
 
-    /// A layout of one view whose scroll drives the turn, a hundred points a unit, its targets given by `targets`.
-    private func scrollingTree(
-        _ orbit: State<Orbit>, handed: Handed?, _ targets: (LayoutEngine<[Int], Int, Orbit>) -> LayoutEngine<[Int], Int, Orbit>
-    ) -> Node {
-        targets(
-            LayoutEngine([1]) { Text("\($0)") } placements: { _, phase in
-                handed?.phases.append(phase)
-                return [Placement(Rect(0, 0, 10, 10))]
-            }
-            .phase(orbit.projectedValue)
-            .input(.scroll(.horizontal, pointsPerUnit: 100), drives: \.turn)
-        )
-        .node
-    }
-
-    /// The scrolled layout laid out and its scroller standing: the numbers of the phase it wears and of the
-    /// scroller's offset.
-    private func scrolled(
-        _ renders: Renders, _ orbit: State<Orbit>, handed: Handed? = nil,
+    /// A layout of one view whose hand drives the turn, a hundred points a unit, its targets given by `targets`.
+    private func handTree(
+        _ orbit: State<Orbit>, handed: Handed? = nil,
         _ targets: @escaping (LayoutEngine<[Int], Int, Orbit>) -> LayoutEngine<[Int], Int, Orbit>
-    ) throws -> (phase: Int32, offset: Int32) {
-        let tree = { self.scrollingTree(orbit, handed: handed, targets) }
-        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
-        let offset = try XCTUnwrap(bench.stood(renders, tree).first(.scrollView)?.driven?[.scrollOffset]?.state)
-        bench.cycle()
-
-        return (worn, offset)
-    }
-
-    /// The scroller comes to rest where the hand left it.
-    private func stop(
-        _ renders: Renders, _ orbit: State<Orbit>,
-        _ targets: @escaping (LayoutEngine<[Int], Int, Orbit>) -> LayoutEngine<[Int], Int, Orbit>
-    ) throws {
-        let stopped = try XCTUnwrap(renders.renderFromScratch(scrollingTree(orbit, handed: nil, targets))
-            .first(.scrollView)?.events?[.scrollStopped])
-
-        XCTAssertTrue(renders.fire(stopped))
-        bench.cycle()
+    ) -> () -> Node {
+        {
+            targets(
+                LayoutEngine([1]) { Text("\($0)") } placements: { _, phase in
+                    handed?.phases.append(phase)
+                    return [Placement(Rect(0, 0, 10, 10))]
+                }
+                .phase(orbit.projectedValue)
+                .input(.scroll(.horizontal, pointsPerUnit: 100), drives: \.turn)
+            )
+            .node
+        }
     }
 }

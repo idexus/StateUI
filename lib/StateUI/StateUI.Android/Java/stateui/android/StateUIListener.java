@@ -21,7 +21,7 @@ final class StateUIListener implements View.OnClickListener, View.OnLongClickLis
         CompoundButton.OnCheckedChangeListener,
         SeekBar.OnSeekBarChangeListener, TextWatcher, TextView.OnEditorActionListener,
         View.OnScrollChangeListener, View.OnTouchListener, View.OnHoverListener, View.OnCreateContextMenuListener,
-        View.OnFocusChangeListener,
+        View.OnFocusChangeListener, View.OnGenericMotionListener,
         ViewTreeObserver.OnGlobalLayoutListener, ViewTreeObserver.OnScrollChangedListener {
     private final long view;
 
@@ -109,10 +109,13 @@ final class StateUIListener implements View.OnClickListener, View.OnLongClickLis
         StateUIHost.scrolled(view);
     }
 
-    /** What `touched`'s element listens for; see `StateUIGestures.configure`. */
-    void setGestures(View touched, float density, boolean countsTaps, boolean drags, boolean pinch, boolean pointer) {
+    /** What `touched`'s element listens for; see `StateUIGestures.configure`. A hand over a layout hears the wheel. */
+    void setGestures(
+            View touched, float density, boolean countsTaps, boolean drags, boolean pinch, boolean pointer,
+            boolean hand) {
         if (gestures == null) gestures = new StateUIGestures(touched, view, density);
-        gestures.configure(countsTaps, drags, pinch, pointer);
+        gestures.configure(countsTaps, drags, pinch, pointer, hand);
+        touched.setOnGenericMotionListener(hand ? this : null);
     }
 
     /** Whether a gesture under way takes the rest of the touch from the view's own handling. */
@@ -145,6 +148,11 @@ final class StateUIListener implements View.OnClickListener, View.OnLongClickLis
     @Override
     public boolean onHover(View hovered, MotionEvent event) {
         return gestures != null && gestures.onHover(event);
+    }
+
+    @Override
+    public boolean onGenericMotion(View moved, MotionEvent event) {
+        return gestures != null && gestures.onGenericMotion(event);
     }
 
     @Override

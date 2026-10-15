@@ -18,6 +18,14 @@
     /// A pinch: its phase, its scale since the last step, and where, as shares of the view's size.
     case pinch(GesturePhase, scale: Double, at: Point)
 
+    /// The hand over a layout - a press dragged or a trackpad's fingers: its phase, how far it moved what is under
+    /// it since the last report, as it lifts its speed, per second, where the platform tells one, and when the
+    /// platform says it happened, in the frame clock's milliseconds, where it says so.
+    case hand(GesturePhase, moved: Point, speed: Point?, at: Double? = nil)
+
+    /// A wheel's notch over a layout: how far it moved what is under the hand.
+    case wheel(Point)
+
     /// A drag of the view between views started.
     case dragStarted
 
@@ -58,8 +66,11 @@
     /// A pinch.
     public static let pinches = Hearing(rawValue: 1 << 3)
 
+    /// The hand over a layout: a press dragged, a trackpad's fingers and a wheel, along the layout's `handAxis`.
+    public static let hand = Hearing(rawValue: 1 << 4)
+
     /// Each kind of input on its own.
-    public static let kinds: [Hearing] = [.taps, .pointer, .drags, .pinches]
+    public static let kinds: [Hearing] = [.taps, .pointer, .drags, .pinches, .hand]
 }
 
 /// A pinch's steps: each step's scale since the last, of a pinch a toolkit tells as its whole scale.

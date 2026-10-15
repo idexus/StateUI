@@ -24,6 +24,10 @@ extension WebElement {
             listening.formUnion([.drags, .pinches])
             listenForPresses(view)
         }
+        if hearing.contains(.hand), !listening.contains(.hand) {
+            listening.insert(.hand)
+            listenForTheHand(view)
+        }
         if hearing.contains(.pointer), !listening.contains(.pointer) {
             listening.insert(.pointer)
             for (event, said) in Self.pointerEvents {
@@ -93,6 +97,71 @@ extension WebElement {
             hearPress(press.trackpadEnded(at: WebRelay.eventPoint, size: WebRelay.eventSize))
         }
     }
+
+    /// The hand over a layout: a pointer dragged - its first move past the drag distance along the layout's axis
+    /// claims it, then held - and a wheel or a trackpad's scroll, a step the layout leaves going on to the page.
+    /// Design: docs/design/platforms/web/input.md#the-hand-over-a-layout
+    private func listenForTheHand(_ view: WebDOMView) {
+        // The page keeps a touch across the layout's axis, its own scroll; along it the touch is the layout's.
+        view.style("touch-action", element.handAxis == .vertical ? "pan-x" : "pan-y")
+        view.style("user-select", "none")
+        view.style("-webkit-user-select", "none")
+        view.listen("pointerdown") { [weak self] in
+            let pointer = WebRelay.eventPointer
+            guard let self, pointer.kind != 0 || pointer.button == 0 else { return }
+            handPointer = pointer.id
+            handDown = pointer.at
+            handLast = pointer.at
+            handPending = true
+            handTaking = false
+            hand(.began, moved: Point(x: 0, y: 0))
+        }
+        view.listen("pointermove") { [weak self, weak view] in
+            let pointer = WebRelay.eventPointer
+            guard let self, let view, pointer.id == handPointer else { return }
+            if handPending {
+                let moved = Point(x: pointer.at.x - handDown.x, y: pointer.at.y - handDown.y)
+                guard abs(moved.x) > Self.dragDistance || abs(moved.y) > Self.dragDistance else { return }
+                handPending = false
+                handTaking = hand(.changed, moved: moved)
+                guard handTaking else {
+                    handPointer = nil
+                    return
+                }
+                WebRelay.capturePointer(view.node)
+            } else if handTaking {
+                hand(.changed, moved: Point(x: pointer.at.x - handLast.x, y: pointer.at.y - handLast.y))
+            }
+            handLast = pointer.at
+            WebRelay.takeEvent()
+        }
+        for (event, letGo) in [("pointerup", true), ("pointercancel", false)] {
+            view.listen(event) { [weak self] in
+                guard let self, WebRelay.eventPointer.id == handPointer else { return }
+                if handTaking { hand(letGo ? .ended : .cancelled, moved: Point(x: 0, y: 0)) }
+                handPointer = nil
+                handPending = false
+                handTaking = false
+            }
+        }
+        view.listen("wheel") { [weak self] in
+            guard let self, !WebRelay.eventWheel.pinches, let host else { return }
+            let step = WebRelay.eventScroll
+            if element.hear(.wheel(Point(x: -step.x, y: -step.y)), in: host.runtime) { WebRelay.takeEvent() }
+        }
+    }
+
+    /// The hand at `phase`, having moved what is under it by `moved` since the last, at `time` - the event's own,
+    /// where one is heard: the host's entry. Whether the layout took it.
+    @discardableResult
+    func hand(_ phase: GesturePhase, moved: Point, speed: Point? = nil, at time: Double? = WebRelay.eventTime) -> Bool {
+        guard let host, element.hearing.contains(.hand) else { return false }
+        let told = time.flatMap { $0 > 0 ? $0 : nil }
+        return element.hear(.hand(phase, moved: moved, speed: speed, at: told), in: host.runtime)
+    }
+
+    /// How far a pointer moves before it is a drag, in CSS pixels.
+    private static let dragDistance = 4.0
 
     /// Where the view's top left corner stands on the page, by the event being heard.
     private var origin: Point {

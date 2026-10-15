@@ -123,6 +123,15 @@ final class StateUIHost {
      */
     static native boolean pressed(long view, int phase, float x, float y);
 
+    /**
+     * The hand over a layout - begun, moved by what it moved under it, let go at its speed, or taken away - in
+     * points; whether the layout took it, by the host layer's rule, which then takes the rest of the touch.
+     */
+    static native boolean handed(long view, int phase, float x, float y, float speedX, float speedY);
+
+    /** A wheel's notch over a layout, as what it moved under the hand, in points; whether the layout took it. */
+    static native boolean wheeled(long view, float x, float y);
+
     /** A view took the keyboard's focus, or lost it. */
     static native void focusChanged(long view, boolean focused);
 

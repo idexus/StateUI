@@ -359,7 +359,7 @@ class WinUIView {
 
     /// What of the user's input the view listens for; what hears it.
     private(set) var hearing: Hearing = []
-    private var onHeard: ((HeardInput) -> Void)?
+    private var onHeard: ((HeardInput) -> Bool)?
 
     /// What the view offers and takes of a drag, as last told to the relay; what hears it.
     private(set) var offered = DragAndDrop.none
@@ -378,7 +378,7 @@ class WinUIView {
     /// Listens for what `hearing` names, `heard` hearing it; the relay is told only a change, in its bits, which
     /// are `Hearing`'s.
     /// Design: docs/design/platforms/winui/input.md
-    func hear(_ hearing: Hearing, _ heard: @escaping (HeardInput) -> Void) {
+    func hear(_ hearing: Hearing, _ heard: @escaping (HeardInput) -> Bool) {
         onHeard = hearing.isEmpty ? nil : heard
         guard hearing != self.hearing else { return }
 
@@ -388,7 +388,22 @@ class WinUIView {
 
     /// What the relay says the view heard.
     func heard(_ heard: HeardInput) {
-        onHeard?(heard)
+        _ = onHeard?(heard)
+    }
+
+    /// The hand over a layout the relay tells - begun, moved by what it moved under it, let go, taken away - at
+    /// `time` on the pointer's clock, its speed at the lift read by the host layer from its moves: the host's entry.
+    /// Whether the layout took it.
+    /// Design: docs/design/platforms/winui/input.md#the-hand-over-a-layout
+    func heardHand(phase: Int32, moved: Point, at time: Double? = nil, speed: Point? = nil) -> Bool {
+        guard let phase = GesturePhase(rawValue: phase) else { return false }
+
+        return onHeard?(.hand(phase, moved: moved, speed: speed, at: time)) ?? false
+    }
+
+    /// A wheel's notch over a layout, as what it moved under the hand. Whether the layout took it.
+    func heardWheel(moved: Point) -> Bool {
+        onHeard?(.wheel(moved)) ?? false
     }
 
     /// Offers and takes what `offered` says of a drag, `heard` hearing it; the relay is told only a change.
@@ -438,7 +453,7 @@ class WinUIView {
     /// The element left the tree: the view lets go of everything that would call back into it. A view that
     /// overrides this lets go of what every view holds first, then of its own.
     func detach() {
-        hear([]) { _ in }
+        hear([]) { _ in false }
         setFocusChanged(nil)
         menuActions = []
         paintsBySize = [:]

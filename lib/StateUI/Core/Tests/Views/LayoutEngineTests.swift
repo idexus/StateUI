@@ -44,9 +44,8 @@ final class LayoutEngineTests: XCTestCase {
         XCTAssertEqual(handed.phases.last, 0)
     }
 
-    /// THE VIEWS FIRST, IN THE ITEMS' ORDER, then the scroller over them across the whole room: one run places every
-    /// child of the element.
-    func testTheRunPlacesTheViewsThenTheScroller() {
+    /// THE VIEWS ALONE, IN THE ITEMS' ORDER: a hand lays nothing over them.
+    func testTheRunPlacesTheViewsAlone() {
         let (_, run) = bench.laid(Renders(), {
             LayoutEngine([1, 2]) { Text("\($0)") } placements: { _, _ in
                 [Placement(Rect(0, 0, 10, 10), zIndex: 5), Placement(Rect(20, 0, 10, 10))]
@@ -56,28 +55,21 @@ final class LayoutEngineTests: XCTestCase {
             .node
         })
 
-        XCTAssertEqual(run.map(\.bounds), [Rect(0, 0, 10, 10), Rect(20, 0, 10, 10), Rect(0, 0, 300, 200)])
-        XCTAssertEqual(run[2].zIndex, 2, "the scroller over every view")
+        XCTAssertEqual(run.map(\.bounds), [Rect(0, 0, 10, 10), Rect(20, 0, 10, 10)])
     }
 
-    /// ON A DESKTOP A DRAG IS HEARD ON THE SCROLLER: it spans the room and stands still while its content slides, so
-    /// the drag lands anywhere and is measured in a frame the run does not move under the hand.
-    func testOnADesktopADragIsHeardOnTheScroller() throws {
-        StandardEnvironment.device.info.formFactor = .desktop
-        defer { StandardEnvironment.device.info.formFactor = .unknown }
-        let renders = Renders()
-        func tree() -> Node {
+    /// THE HAND IS HEARD ON THE ELEMENT ITSELF, over every view, which way it moves the run said to the host.
+    func testTheHandIsHeardOnTheElementItself() throws {
+        let patch = Renders().render(
             LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
-                .input(.scroll(.horizontal, pointsPerUnit: 100))
+                .input(.scroll(.vertical, pointsPerUnit: 100))
                 .snapTargets([0, 1])
-                .node
-        }
+                .node)
+        let layout = try XCTUnwrap(patch.first(.layoutEngine))
 
-        _ = bench.laid(renders, tree)
-        let scroller = try XCTUnwrap(bench.stood(renders, tree).first(.scrollView))
-
-        XCTAssertNotNil(scroller.events?[.panUpdated], "the drag heard on the scroller")
-        XCTAssertNil(scroller.children.first?.events?[.panUpdated], "never on the content sliding under it")
+        XCTAssertNotNil(layout.events?[.handMoved])
+        XCTAssertEqual(layout.props[.handAxis], LayoutInput.Axis.vertical.propValue)
+        XCTAssertNil(patch.first(.scrollView), "nothing scrolls under the hand")
     }
 
     /// AN ANSWER OF THE WRONG LENGTH IS SAID AND MADE TO FIT: one placement a view, the rest at the top left.
@@ -159,158 +151,221 @@ final class LayoutEngineTests: XCTestCase {
         XCTAssertEqual(handed.phases.last, 2, "and where it landed")
     }
 
-    /// A SCROLL PASSING A TARGET NAMES THE NEAREST, uneven ones too, as the hand passes halfway between two.
-    func testAScrollNamesTheNearestOfUnevenTargets() throws {
+    /// THE HAND MOVES THE RUN WITH IT, and names the nearest target, uneven ones too, as it passes halfway between
+    /// two: a reading of the hand, not a journey.
+    func testTheHandNamesTheNearestOfUnevenTargets() throws {
         let phase = State(wrappedValue: 0.0)
-        let renders = Renders()
-        func tree() -> Node {
-            LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
-                .phase(phase.projectedValue)
-                .input(.scroll(.horizontal, pointsPerUnit: 100))
-                .snapTargets([0, 0.2, 0.5, 1])
-                .node
-        }
-
-        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
-        let offset = try XCTUnwrap(bench.stood(renders, tree).first(.scrollView)?.driven?[.scrollOffset]?.state)
-
-        slid(offset, to: Point(40, 0))
-        bench.cycle()
-        XCTAssertEqual(phase.wrappedValue, 0.5, "0.4 is nearer 0.5 than 0.2")
-        let named = try XCTUnwrap(standing(worn, as: JourneyLanes<Double>.self))
-        XCTAssertEqual(named.value, 0.5, "named where it stands: a reading of the hand, not a journey")
-
-        slid(offset, to: Point(10, 0))
-        bench.cycle()
-        XCTAssertEqual(phase.wrappedValue, 0, "0.1 is nearer 0 than 0.2")
-    }
-
-    /// A SCROLL STARTS WHERE THE PHASE SAYS: until the scroller reports its first layout its offset is nobody's, so
-    /// the run is worked out from the phase asked and names nothing, and the scroller is then sent there.
-    func testAScrollStartsWhereThePhaseSays() throws {
-        let phase = State(wrappedValue: 2.0)
         let handed = Handed()
         let renders = Renders()
-        func tree() -> Node {
-            LayoutEngine([0, 1, 2]) { Text("\($0)") } placements: { _, at in
-                handed.phases.append(at)
-                return (0..<3).map { _ in Placement(Rect(0, 0, 10, 10)) }
-            }
-            .phase(phase.projectedValue)
-            .input(.scroll(.horizontal, pointsPerUnit: 100))
-            .snapTargets([0, 1, 2])
-            .node
-        }
+        func tree() -> Node { handTree(phase, handed: handed, targets: [0, 0.2, 0.5, 1]) }
 
-        _ = bench.laid(renders, tree)
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
 
-        XCTAssertEqual(phase.wrappedValue, 2, "named by no scroller laid out yet")
-        XCTAssertEqual(Set(handed.phases), [2], "worked out from the phase asked, never from a scroller at its start")
+        bench.hand(renders, tree, .began)
+        bench.hand(renders, tree, .changed, moved: Point(-40, 0))
+        XCTAssertEqual(handed.phases.last ?? 0, 0.4, accuracy: 0.001, "where the hand holds it: left moves it on")
+        XCTAssertEqual(phase.wrappedValue, 0.5, "0.4 is nearer 0.5 than 0.2")
+        XCTAssertEqual(try XCTUnwrap(standing(worn, as: JourneyLanes<Double>.self)).value, 0.5, "named, not sent")
 
-        let offset = try XCTUnwrap(bench.stood(renders, tree).first(.scrollView)?.driven?[.scrollOffset]?.state)
-        bench.cycle()
-
-        XCTAssertEqual(try XCTUnwrap(standing(offset, as: JourneyLanes<Point>.self)).destination.x, 200, accuracy: 0.001)
-        XCTAssertEqual(phase.wrappedValue, 2, "and the phase it started at kept")
+        bench.hand(renders, tree, .changed, moved: Point(35, 0))
+        XCTAssertEqual(phase.wrappedValue, 0, "0.05 is nearest 0")
     }
 
-    /// UNDER A SCROLL THE SCROLLER FOLLOWS THE PHASE ON ITS WAY: the program's write travels as the phase, and each
-    /// frame the scroller is snapped to where the phase stands, so a scroll and its arithmetic never part.
-    func testUnderAScrollTheScrollerFollowsThePhaseOnItsWay() async throws {
+    /// THE HAND TAKES THE RUN WHERE IT STANDS: from the phase it was started at, a journey under way stopping
+    /// where it is shown.
+    func testTheHandTakesTheRunWhereItIsShown() throws {
         let phase = State(wrappedValue: 0.0)
+        let handed = Handed()
         let renders = Renders()
-        let (worn, offset) = try scrolled(renders, phase)
+        func tree() -> Node { handTree(phase, handed: handed, targets: [0, 0.5, 1]) }
+
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
 
         phase.wrappedValue = 1
         bench.cycle()
-        moved(worn, to: 0.25)
-        bench.cycle()
-
-        let followed = try XCTUnwrap(standing(offset, as: JourneyLanes<Point>.self))
-        XCTAssertEqual(followed.value.x, 25, accuracy: 0.001, "where the phase stands")
-        XCTAssertEqual(followed.destination.x, 25, accuracy: 0.001, "snapped there, travelling nowhere of its own")
-        XCTAssertEqual(phase.wrappedValue, 1, "and the phase still going where the program sent it")
-    }
-
-    /// A HAND TAKING THE RUN ON ITS WAY STOPS THE PHASE'S TRAVEL: the scroller leads again, and the phase is named
-    /// where the hand holds it rather than going on where the program sent it.
-    func testAHandTakingTheRunOnItsWayStopsThePhasesTravel() async throws {
-        let phase = State(wrappedValue: 0.0)
-        let renders = Renders()
-        let (worn, offset) = try scrolled(renders, phase)
-
-        phase.wrappedValue = 1
-        bench.frame()
         moved(worn, to: 0.3)
-        bench.frame()
-        slid(offset, to: Point(60, 0))
-        bench.frame()
+        bench.cycle()
+        bench.hand(renders, tree, .began)
 
+        XCTAssertEqual(handed.phases.last ?? 0, 0.3, accuracy: 0.001, "held where it was shown")
         let journey = try XCTUnwrap(standing(worn, as: JourneyLanes<Double>.self))
-        XCTAssertEqual(journey.destination, 0.5, "the target nearest the hand, no longer the program's")
-        XCTAssertEqual(journey.value, 0.5, "named where the hand holds it")
+        XCTAssertEqual(journey.destination, 0.5, "the program's journey stopped, the nearest target named")
         XCTAssertEqual(phase.wrappedValue, 0.5)
     }
 
-    /// AT REST THE RUN TRAVELS ON FROM WHERE THE HAND LEFT IT: the phase stands where the scroller stopped and goes
-    /// to the nearest target as a journey of its own, which the scroller follows.
-    func testAtRestTheRunTravelsOnFromWhereTheHandLeftIt() async throws {
+    /// LET GO STILL, THE RUN TRAVELS ON from where the hand left it to the nearest target, as a journey of its own.
+    func testLetGoStillTheRunTravelsToTheNearestTarget() throws {
         let phase = State(wrappedValue: 0.0)
         let renders = Renders()
-        let (worn, offset) = try scrolled(renders, phase)
-        let stopped = try XCTUnwrap(renders.renderFromScratch(scrollingTree(phase)).first(.scrollView)?
-            .events?[.scrollStopped])
+        func tree() -> Node { handTree(phase, targets: [0, 0.5, 1]) }
 
-        slid(offset, to: Point(40, 0))
-        bench.cycle()
-        XCTAssertTrue(renders.fire(stopped))
-        bench.cycle()
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+
+        bench.hand(renders, tree, .began)
+        bench.hand(renders, tree, .changed, moved: Point(-40, 0))
+        bench.hand(renders, tree, .ended)
 
         let journey = try XCTUnwrap(standing(worn, as: JourneyLanes<Double>.self))
         XCTAssertEqual(journey.value, 0.4, accuracy: 0.001, "from where the hand left it")
         XCTAssertEqual(journey.destination, 0.5, "to the nearest target")
     }
 
-    /// A layout scrolled over targets 0, 0.5 and 1, a hundred points a unit.
-    private func scrollingTree(_ phase: State<Double>) -> Node {
-        LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
+    /// A THROW GOES ON TO THE TARGET NEAREST WHERE IT WOULD END, by the hand's own deceleration: named at once,
+    /// it sets out at the hand's speed, never faster, and stops on the target - never past the last target of a run
+    /// that does not come round.
+    func testAThrowGoesOnToTheTargetNearestWhereItWouldEnd() throws {
+        let phase = State(wrappedValue: 0.0)
+        let handed = Handed()
+        let renders = Renders()
+        func tree() -> Node { handTree(phase, handed: handed, targets: [0, 1, 2, 3, 4, 5, 6]) }
+
+        _ = bench.laid(renders, tree)
+
+        bench.hand(renders, tree, .began)
+        bench.hand(renders, tree, .changed, moved: Point(-10, 0))
+        // 450 points a second to the left is 4.5 units a second, which the throw carries 0.6 units on.
+        bench.hand(renders, tree, .ended, speed: Point(-450, 0))
+        XCTAssertEqual(phase.wrappedValue, 1, "0.1 and 0.6 on is nearest 1, named at once")
+
+        let start = handed.phases.count
+        bench.cycle()
+        let first = (handed.phases.last ?? 0) - (handed.phases.dropLast().last ?? 0)
+        XCTAssertEqual(first / 0.016, 4.5, accuracy: 0.15, "setting out at the hand's speed")
+
+        for _ in 0..<400 { bench.cycle() }
+        XCTAssertEqual(handed.phases.last ?? 0, 1, accuracy: 0.000_1, "and at rest on the target")
+        let flight = Array(handed.phases[(start - 1)...])
+        XCTAssertTrue(zip(flight.dropLast(), flight.dropFirst()).allSatisfy { $1 - $0 <= first + 0.000_001 },
+                      "never faster than the hand let go")
+
+        bench.hand(renders, tree, .began)
+        bench.hand(renders, tree, .ended, speed: Point(-100_000, 0))
+        XCTAssertEqual(phase.wrappedValue, 6, "the last target, however hard the throw")
+    }
+
+    /// HOW A THROW GOES ON IS THE INPUT'S, a motion as any other: eased, it carries the hand's speed for its
+    /// length over how steeply its curve sets out; a spring, for a third of its response.
+    func testHowAThrowGoesOnIsTheInputs() throws {
+        for throwing in [Motion.eased(.seconds(3), .cubicOut), .spring(response: .seconds(3))] {
+            Renderer.shared.clearStates()
+            let phase = State(wrappedValue: 0.0)
+            let renders = Renders()
+            func tree() -> Node {
+                LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
+                    .phase(phase.projectedValue)
+                    .input(.scroll(.horizontal, pointsPerUnit: 100, throwing: throwing))
+                    .snapTargets([0, 1, 2, 3, 4, 5, 6])
+                    .node
+            }
+
+            _ = bench.laid(renders, tree)
+            bench.hand(renders, tree, .began)
+            bench.hand(renders, tree, .changed, moved: Point(-10, 0))
+            bench.hand(renders, tree, .ended, speed: Point(-300, 0))
+
+            XCTAssertEqual(phase.wrappedValue, 3, "3 units a second for a second: 0.1 and 3 on, \(throwing.law)")
+        }
+    }
+
+    /// A THROW TOO SLOW TO CARRY THE RUN PAST THE TARGET IT STANDS NEAREST SLIDES THERE under the layout's motion,
+    /// as a run let go still does - never thrown back against the hand.
+    func testAThrowTooSlowToPassItsNearestSlidesThere() throws {
+        let phase = State(wrappedValue: 0.0)
+        let renders = Renders()
+        func tree() -> Node { handTree(phase, targets: [0, 1, 2]) }
+
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+
+        bench.hand(renders, tree, .began)
+        bench.hand(renders, tree, .changed, moved: Point(-105, 0))
+        // 120 points a second carries the run 0.16 on: from 1.05 to 1.21, still nearest 1, behind the hand.
+        bench.hand(renders, tree, .ended, speed: Point(-120, 0))
+
+        let journey = try XCTUnwrap(standing(worn, as: JourneyLanes<Double>.self))
+        XCTAssertEqual(journey.value, 1.05, accuracy: 0.001, "from where the hand left it")
+        XCTAssertEqual(journey.destination, 1, "to the nearest, as a journey under the layout's motion")
+    }
+
+    /// PAST AN END THE HAND MOVES THE RUN HALF AS FAR, and let go, the run comes back to the end.
+    func testPastAnEndTheHandMovesTheRunHalfAsFar() throws {
+        let phase = State(wrappedValue: 0.0)
+        let handed = Handed()
+        let renders = Renders()
+        func tree() -> Node { handTree(phase, handed: handed, targets: [0, 1]) }
+
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+
+        bench.hand(renders, tree, .began)
+        bench.hand(renders, tree, .changed, moved: Point(100, 0))
+        XCTAssertEqual(handed.phases.last ?? 0, -0.5, accuracy: 0.001)
+
+        bench.hand(renders, tree, .ended)
+        XCTAssertEqual(try XCTUnwrap(standing(worn, as: JourneyLanes<Double>.self)).destination, 0)
+    }
+
+    /// A RUN THAT COMES ROUND HAS NO END: past the last target is the first again, a turn on, and a throw there
+    /// rests a turn on rather than going back.
+    func testARunThatComesRoundHasNoEnd() throws {
+        let phase = State(wrappedValue: 6.0)
+        let handed = Handed()
+        let renders = Renders()
+        func tree() -> Node {
+            LayoutEngine([1]) { Text("\($0)") } placements: { _, at in
+                handed.phases.append(at)
+                return [Placement(Rect(0, 0, 10, 10))]
+            }
             .phase(phase.projectedValue)
             .input(.scroll(.horizontal, pointsPerUnit: 100))
-            .snapTargets([0, 0.5, 1])
+            .snapTargets([0, 1, 2, 3, 4, 5, 6])
+            .wraps(every: 7)
             .node
+        }
+
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+
+        bench.hand(renders, tree, .began)
+        bench.hand(renders, tree, .changed, moved: Point(-120, 0))
+        XCTAssertEqual(handed.phases.last ?? 0, 7.2, accuracy: 0.001, "on past the last card, at full speed")
+        XCTAssertEqual(phase.wrappedValue, 7, "the first card, a turn on")
+
+        bench.hand(renders, tree, .ended)
+        XCTAssertEqual(try XCTUnwrap(standing(worn, as: JourneyLanes<Double>.self)).destination, 7)
     }
 
-    /// The scrolled layout laid out and its scroller standing: the numbers of the phase it wears and of the
-    /// scroller's offset.
-    private func scrolled(_ renders: Renders, _ phase: State<Double>) throws -> (phase: Int32, offset: Int32) {
-        let (patch, _) = bench.laid(renders, { scrollingTree(phase) })
-        let worn = try XCTUnwrap(patch.first(.layoutEngine)?.driven?[.phase]?.state)
-        let offset = try XCTUnwrap(bench.stood(renders, { scrollingTree(phase) }).first(.scrollView)?
-            .driven?[.scrollOffset]?.state)
-        bench.cycle()
-
-        return (worn, offset)
+    /// A layout of one view a hand moves, a hundred points a unit, over `targets`.
+    private func handTree(_ phase: State<Double>, handed: Handed? = nil, targets: [Double]) -> Node {
+        LayoutEngine([1]) { Text("\($0)") } placements: { _, at in
+            handed?.phases.append(at)
+            return [Placement(Rect(0, 0, 10, 10))]
+        }
+        .phase(phase.projectedValue)
+        .input(.scroll(.horizontal, pointsPerUnit: 100))
+        .snapTargets(targets)
+        .node
     }
 
-    /// A SCROLL NEEDS ITS TARGETS: they say how far it runs, so one given none lays no scroller and says why.
-    func testAScrollWithNoSnapTargetsLaysNoScroller() {
+    /// A HAND NEEDS ITS TARGETS: they say how far it moves the run and where it rests, so one given none hears no
+    /// hand and says why.
+    func testAHandWithNoSnapTargetsMovesNothing() throws {
         let patch = Renders().render(
             LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [] }
                 .input(.scroll(.vertical, pointsPerUnit: 50))
                 .node)
 
-        XCTAssertNil(patch.first(.scrollView))
+        XCTAssertNil(try XCTUnwrap(patch.first(.layoutEngine)).events?[.handMoved])
         XCTAssertTrue(hasComplained("given a scroll but no snap targets on the axis it drives"))
     }
 
     // MARK: - A tap
 
-    /// WITHOUT A HAND A TAP LANDS ON THE VIEW ITSELF, with its item: nothing lies over the views.
-    func testWithoutAScrollATapLandsOnTheViewItself() async throws {
+    /// A TAP LANDS ON THE VIEW ITSELF, with its item, a hand over the layout or none: nothing lies over the views.
+    func testATapLandsOnTheViewItself() async throws {
         var heard: [Int] = []
         let renders = Renders()
         let patch = renders.render(
             LayoutEngine([7, 8]) { Text("\($0)") } placements: { _, _ in [] }
+                .input(.scroll(.horizontal, pointsPerUnit: 100))
+                .snapTargets([0, 1])
                 .onItemTapped { heard.append($0) }
                 .node)
         let layout = try XCTUnwrap(patch.first(.layoutEngine))

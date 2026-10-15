@@ -70,6 +70,7 @@ final class GTKDriver: HostDriver {
     /// What the driver reaches past GTK, through the host's own entry or record - ✓.
     func byHost(_ ability: String) -> String? {
         if Ability(ability).act == "pressKeys" { return "the shortcut controller's action run, no key event" }
+        if Ability(ability).act == "sweep" { return "the hand handed to the host's entry with its speed, no event" }
         if Ability(ability).readsATransform { return "the host's own transform: GTK reads back no part of one" }
         if ability.hasPrefix("read background of "), ["Grid", "HStack", "VStack", "ZStack"].contains(Ability(ability).element) {
             return "the brush the host draws the box with: GTK reads back no drawing"

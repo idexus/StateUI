@@ -89,7 +89,7 @@ class AndroidView {
     var listening = Listening.nothing
 
     /// What hears the user's input the view heard.
-    var onHeard: ((HeardInput) -> Void)?
+    var onHeard: ((HeardInput) -> Bool)?
 
     /// The press the view heard, on its way to a drag by the host layer's rule.
     var press = DragRecognition(distance: .radius(0))

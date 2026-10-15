@@ -201,6 +201,7 @@ struct HomePage: View {
                     GroupFace(title: group.title, summary: group.summary, picture: group.card)
                 }
                 .position($chosen)
+                .throwing(.spring(response: .milliseconds(500), damping: 0.8))
                 .onItemTapped { group in nav.push(.group(group.route)) }
                 // THE FAR CARDS DARKEN RATHER THAN FADE. A faded card here
                 // would show the card BEHIND it - the wheel stands them one

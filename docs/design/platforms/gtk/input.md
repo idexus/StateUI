@@ -105,6 +105,17 @@ GTK gives no keyboard focus - a label, a box, a picture - never takes it,
 whoever asks, so its element hears nothing; the act that puts the keyboard
 on it answers that it did not.
 
+
+## The hand over a layout
+
+A layout an engine moves hears the hand by two controllers (`GTKListening`):
+a drag of any pointer, whose first move past the drag threshold says whose
+it is - claimed for the layout, or denied, so a scrolled window holding it
+takes it - its moves told since the last and its lift with the event's time,
+from which the host layer reads its speed; and a scroll controller, a
+touchpad's two fingers (`scroll-begin`, each step, `scroll-end`) told as the
+hand and a wheel's notches (`GDK_SCROLL_UNIT_WHEEL`, forty points a notch) as
+a wheel, each step answering whether the layout took it.
 ## A drag between views
 
 A view's drags are GTK's own controllers. A view that can be dragged holds a

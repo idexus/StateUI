@@ -17,15 +17,19 @@ extension MountedElement {
             || channel(.panXChannel) != nil || channel(.panYChannel) != nil
         if drags, (number(.panTouchCount) ?? 1) == 1 { hearing.insert(.drags) }
         if handler(.pinchUpdated) != nil { hearing.insert(.pinches) }
+        if handler(.handMoved) != nil { hearing.insert(.hand) }
         return hearing
     }
 
     /// The user's input the view heard, as the element's events: a tap each time a run reaches the count asked
     /// for - at once for a press assistive technology made; the pointer where it is; a press dragged moving the
-    /// states it carries, a swipe as it ends far enough; a pinch's step; a drag between views by `DropTarget`.
-    public func hear(_ input: HeardInput, in runtime: HostRuntime) {
+    /// states it carries, a swipe as it ends far enough; a pinch's step; the hand over a layout; a drag between
+    /// views by `DropTarget`. Whether the element took it: a hand over a layout across its axis it leaves to
+    /// whatever holds it.
+    @discardableResult
+    public func hear(_ input: HeardInput, in runtime: HostRuntime) -> Bool {
         // A disabled branch hears nothing of the hand; a drag it began still ends there.
-        guard isEffectivelyEnabled || input == .dragEnded else { return }
+        guard isEffectivelyEnabled || input == .dragEnded else { return false }
         switch input {
         case .tap(let run):
             let count = max(1, Int(number(.tapCount) ?? 1))
@@ -37,6 +41,18 @@ extension MountedElement {
             dragged(phase, x: x, y: y, in: runtime)
         case .pinch(let phase, let scale, let at):
             send(.pinchUpdated, [.enumeration(phase.rawValue), .number(scale), .numbers([at.x, at.y])], in: runtime)
+        case .hand(let phase, let moved, let speed, let time):
+            // When the platform says the hand moved, where it says: input that waited for a busy thread comes in a
+            // burst its arrival would read as a throw.
+            let heard = handReading.hand(
+                phase, moved: moved, speed: speed, at: time ?? runtime.clock.now(), along: handAxis)
+            said(heard.reports, in: runtime)
+            return heard.taken
+        case .wheel(let moved):
+            let heard = handReading.wheel(moved, at: runtime.clock.now(), along: handAxis)
+            said(heard.reports, in: runtime)
+            if handReading.isWheeling { runtime.handPace.opened(self) }
+            return heard.taken
         case .dragStarted:
             send(.dragStarting, [], in: runtime)
         case .dragEnded:
@@ -52,6 +68,28 @@ extension MountedElement {
             dropTarget.dropped()
             let taken = dragAndDrop.taken(files)
             if !taken.isEmpty { send(.filesDropped, [taken.propValue], in: runtime) }
+        }
+        return true
+    }
+
+    /// Which way the hand moves the layout this element is, where a hand does.
+    public var handAxis: LayoutInput.Axis? {
+        value(.handAxis)?.enumeration.flatMap(LayoutInput.Axis.init(rawValue:))
+    }
+
+    /// A frame at `now` found the element's wheel open: let go where it has stood still long enough.
+    func paced(now: Double, in runtime: HostRuntime) {
+        said(handReading.paced(at: now), in: runtime)
+    }
+
+    /// The hand's reports, as the element's `handMoved`.
+    private func said(_ reports: [HandReading.Report], in runtime: HostRuntime) {
+        for report in reports {
+            send(.handMoved, [
+                .enumeration(report.phase.rawValue),
+                .numbers([report.moved.x, report.moved.y]),
+                .numbers([report.speed.x, report.speed.y]),
+            ], in: runtime)
         }
     }
 

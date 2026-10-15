@@ -176,6 +176,12 @@ final class WinUIDriver: HostDriver {
             view.heardPress(phase: 0, at: Point(x: 100, y: 100))
             view.heardPress(phase: 1, at: Point(x: 100 + offset.x, y: 100 + offset.y))
             view.heardPress(phase: 2, at: Point(x: 100 + offset.x, y: 100 + offset.y))
+        // A throw's speed is the pointer's times, which no input a driver sends carries: the hand reaches the
+        // host's entry as the relay would hand it, with the speed - ✓.
+        case (.sweep(let offset, let speed), let view?) where view.hearing.contains(.hand):
+            _ = view.heardHand(phase: GesturePhase.began.rawValue, moved: Point(x: 0, y: 0))
+            _ = view.heardHand(phase: GesturePhase.changed.rawValue, moved: offset)
+            _ = view.heardHand(phase: GesturePhase.ended.rawValue, moved: Point(x: 0, y: 0), speed: speed)
         case (.pinch(let scale, let point), let view?) where view.hearing.contains(.pinches):
             view.heard(.pinch(.began, scale: 1, at: point))
             view.heard(.pinch(.changed, scale: scale, at: point))

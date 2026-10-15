@@ -8,11 +8,10 @@ arithmetic; `GalleryView` is one with the arithmetic of three shapes written.
 
 ```text
   LayoutEngine - the element, a host's ZStack, wearing the phase   ◀── the host walks it
-   ├── holder ── the author's view [ + the shade, second ]   ◀─┐
-   ├── …                                                       │  one run of placements,
-   └── scroller: an empty ScrollView over the views ───────────┘  written by the engine
-         └── content: its length, and a box under each view       on the host's frames
-         engine(following: room, phase, scrolled, length, followed…)
+   │             and hearing the hand over it (handMoved, handAxis) ◀── a finger, a pointer,
+   ├── holder ── the author's view [ + the shade, second ]   ◀─┐      a trackpad, a wheel
+   └── …                                                       ├─ one run of placements,
+         engine(following: room, phase, held, flung, followed…) ┘  written by the engine
 ```
 
 ## The element
@@ -38,16 +37,15 @@ turn on the view beneath stays the author's and is never overwritten by a
 frame of arithmetic. A shade is the holder's second child; both children are
 the library's, so their order is its guarantee.
 
-The run places every child, the library's own too: the views in the items'
-order, then the scroller over them across the whole room.
-A host lays out by arithmetic only the children a run leaves unplaced, so one
-run for all of them keeps every host's ZStack to the one rule it already has.
+The run places every child: the views, in the items' order. A host lays out
+by arithmetic only the children a run leaves unplaced, so one run for all of
+them keeps every host's ZStack to the one rule it already has.
 
 ## The run
 
 The arithmetic runs on the host's frames, never in a render: whenever the
-room, the phase - written by the program or walked by the host - the
-scroller's offset, its laid-out length or a state named in `following(_:)` is
+room, the phase - written by the program or walked by the host - where the
+hand holds the run, a throw going on, or a state named in `following(_:)` is
 written, and once after every render that describes the layout. It is handed the room at the layout's own origin and the
 phase as it stands this frame, and answers one placement a view. An answer of
 another length is said once and made to fit, a missing view standing at the
@@ -60,7 +58,7 @@ turn - where the arithmetic run on a phase keeps every view on its path.
 
 A room not yet measured places nothing: each child stands in the whole room
 until the platform reports one, never placed by arithmetic over a room of
-nothing. The hand acts all the same, so a scroll reported before the room is
+nothing. The hand acts all the same, so a move reported before the room is
 still named.
 
 A value read in the body is a change of the description, the layout built
@@ -75,17 +73,13 @@ the hand names it. It is the one thing that travels: a write is its
 destination, which the host walks under the layout's motion and reports frame
 by frame, so `$phase.journey.move(to:)` is awaited until the run arrives and
 the arithmetic is handed each frame where the phase stands - never the
-destination at once, which would make a ring jump. With a scroll at rest the
-phase is where the scroller is, held between the lowest and the highest snap
-target. Until the scroller reports its first layout its offset is nobody's:
-the run stands where the phase says and names nothing, so a layout starting
-on its third target starts there rather than naming the first.
+destination at once, which would make a ring jump. Under the hand, the hand's
+axis is where the hand holds it.
 
 The phase lent is a state, `$turn`: a binding worked out from others has no
 image to wear, so its phase would jump where it is sent, and the layout says
 so once. The engine follows the phase itself, so a new one wakes the arithmetic and
-builds nothing: a destination the run did not name is the program's, and
-becomes where the run stands should the room change.
+builds nothing; a change of room moves no phase.
 
 ## A phase of many axes
 
@@ -99,9 +93,8 @@ carried, so one state is one channel however many axes it has.
 
 A hand drives one axis (`.input(_:drives:)`) and moves it alone: the
 arithmetic is handed the phase walked by the host with the hand's axis where
-the scroller stands, a target passed is named on that axis, and the scroller
-mirrors a journey of that axis only - another axis travelling under the
-program leaves the hand leading its own. `.input(_:)` is a `Double`
+the hand holds it, a target passed is named on that axis, and another axis
+travelling under the program goes on beside the hand. `.input(_:)` is a `Double`
 phase's, whose one axis is `\.self`.
 
 The type is inferred from the phase lent, `.phase($orbit)`, which stands in
@@ -110,54 +103,60 @@ started at `init()`. A phase naming no axes is said.
 
 ## The hand
 
-A scroll is an empty native scroller over the views, its offset in points the
-hand's axis times `pointsPerUnit` from the lowest snap target on that axis. It is a scroller
-rather than a drag on purpose: a finger drag, a two-finger trackpad swipe and
-a mouse wheel are one thing to a scroller and three things to everything else,
-so all three move the run with the platform's own physics. A scroll needs
-snap targets on its axis, which say how far it runs; one given none lays no
-scroller and says why.
+The hand is read directly, on the element itself: a finger or a pointer
+dragged, a trackpad's two fingers and a wheel are one hand, each host telling
+it as its toolkit does and the host layer making it one stream of the
+element's `handMoved` (host/runtime.md, the hand over a layout). No scroller
+lies over the views, so nothing bounds how far the hand goes: a run that
+comes round (`wraps(every:)`) turns for ever, and the views under the hand
+still answer a tap.
 
-The views under a scroll take no touches: everything the user does belongs to
-the scroller over them. The scroller's content has nothing to show, only a
-length - the room plus how far the run goes beyond it. Across the axis it is
-one unit, never the room's own size: a size taken from the room the scroller
-is in feeds itself, and a measure that feeds itself need not settle. Where a
-tap is asked for the content is the room instead, because a tap has to land on
-something. The length is the content's own size, which the scroller measures,
-reported back as laid out (`length`): that is when the scroller can hold what
-a new room asks.
+- The hand takes the run where it is shown: a journey or a throw under way
+  stops there. While it moves, the hand's axis moves with it, its move over
+  `pointsPerUnit` - the hand moving left moves the run on - and past an end
+  of a run that does not come round, half as far. What the arithmetic is
+  handed is where the hand holds the run (`held`); the phase itself is named
+  only as the hand passes halfway between two targets, a reading of the hand
+  (`journey.snap(_:to:)`) rather than a journey: one render a target, none a
+  frame.
+- Let go still, the run travels to the nearest target as a journey of the
+  phase, under the layout's motion.
+- Let go with speed, it is thrown ([a throw](#a-throw)).
 
-- While the phase travels the scroller follows it, snapped each frame where
-  the phase stands: it never travels on its own, so the scroll and its
-  arithmetic cannot part, and on the way the program sent the run nothing is
-  named - the phase is where it goes, and naming what it passes would turn it
-  back and forth. A hand moving the scroller on that way takes the run: the
-  journey stops, and the phase is named where the hand holds it.
-- Otherwise the scroller leads, and the phase is named as the run passes
-  halfway between two snap targets, under the hand or in the platform's
-  throw: one render a target, none a frame. A name is a reading of the hand
-  (`journey.snap(to:)`), not a journey.
-- At rest the phase is set where the scroller stopped and travels on to the
-  nearest target, a journey of its own the scroller follows.
-- On a desktop a pointer drag moves the run, because a mouse drag leaves a
-  scroller where it stands; on a phone and a tablet the finger is the
-  scroller's own gesture, and a pan beside it would move the views twice. The
-  form factor decides, not the platform. The drag is heard on the scroller
-  itself, which spans the room and stands still while its content slides: heard
-  on the content, it would be measured in a frame the run moves under the hand,
-  and its report would chase itself - a drag to the left turned the run back.
-  When the hand lets go, the run travels on to the nearest target as at rest.
-- A tap lands on a box under each view as it is drawn - its bounds taken
-  through its scale about the middle, and moved - in the content, which slides
-  under the room, so the box stands at the view's place plus however far the
-  run has scrolled. The boxes are ranked as the views, so the platform's own
-  hit test finds the one drawn on top. With no scroll the view itself answers.
+The hand moves one axis of the phase alone; the host leaves to whatever holds
+the layout a hand whose first move is more across the layout's axis than
+along it, a page's scroller.
+
+## A throw
+
+A throw goes on to the target nearest where it would end: the speed the hand
+let go at, carried by the input's `throwing` - a motion like any other - says
+how much farther it would go (eased, the speed for its length over how
+steeply its curve sets out; a spring, for a third of its response; 400 ms of
+`cubicOut` unless said, about an eighth of a second's worth of the speed), and
+the nearest target to that end - a turn on or back where
+the run comes round, never past the last of one that does not - is where it
+goes. The phase is named that target at once: the state is where the run is
+going.
+
+The way there is carried in the core, on the hand's axis, rather than walked
+by the host under the layout's motion: a motion of fixed length would cover a
+long throw faster than the hand let go of it, and the run would speed up
+after the lift. Eased, the axis follows the curve over a length chosen so it
+sets out at the hand's speed exactly - `D` times the curve's first slope over
+the speed, the motion's own length where the target is where the throw would
+end, shorter where it is nearer - and stops on the target; a spring settles
+there from the hand's speed, as springs do (`HostMotionLaw`). A throw too slow to
+carry the run past the target it stands nearest - that target at or behind
+where the hand let go - slides there under the layout's motion, as a run let
+go still does: a throw never goes back against the hand. The engine runs again each
+frame while the throw goes on (`flung`), and the hand's axis is let go on the
+target. A destination the program writes meanwhile ends the throw.
 
 ## Coming to rest
 
-When the hand lets go the run travels on to where it comes to rest, from
-where the scroller stopped, as one journey of the phase. Two ways say where
+When the hand lets go the run goes on to where it comes to rest, from where
+the hand left it - a journey of the phase, or a throw. Two ways say where
 that is, and both may stand on one layout:
 
 - `.snap(\.axis, to:)` gives an axis targets of its own. It is independent:
@@ -169,16 +168,7 @@ that is, and both may stand on one layout:
   first listed. A `Double` phase's targets are of this kind.
 
 Under the hand only the hand's axis is named - the nearest place on it any
-target names - so an axis the hand does not drive never jumps as the scroll
-passes; the whole combination is reached at rest.
-
-## A change of room
-
-After each layout of the scroller the run is put where the phase says; a
-scroller not laid out yet keeps the offset for its first layout (host/layout.md,
-an offset the tree writes). A change of room keeps where the run stood: a room
-grown wider - a phone turned - stands the scroller in it before the run is as
-long as the room asks, so the toolkit clamps the offset and reports a phase
-short of it. The layout names its phase again and, once the scroller says its
-run is long enough to hold it, sends the run there; until then the hand names
-nothing and a rest is no phase the user chose.
+target names - so an axis the hand does not drive never jumps as the hand
+passes; the whole combination is reached at rest. Where the hand's axis comes
+round, its targets repeat every period and the nearest is taken a turn on or
+back: the axis has no end, so a write of one more always moves the run on.
