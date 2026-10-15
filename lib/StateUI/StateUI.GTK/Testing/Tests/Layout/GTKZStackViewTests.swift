@@ -59,8 +59,8 @@ final class GTKZStackViewTests: XCTestCase {
         }
     }
 
-    /// An engine's run: each view's holder at its rectangle, as opaque as it says, the higher rank drawn over the
-    /// lower.
+    /// An engine's run, its phase landing where it is written: each view's holder at its rectangle, as opaque as
+    /// it says, the higher rank drawn over the lower.
     func testAPlacementRunStandsAndDrawsEachChildAsItSays() throws {
         try onUIThread {
             let clock = TestClock()
@@ -75,6 +75,7 @@ final class GTKZStackViewTests: XCTestCase {
                             : [Placement(Rect(10, 20, 30, 40), zIndex: 1), Placement(Rect(0, 0, 50, 50), opacity: 0.5)]
                     }
                     .phase(placed.projectedValue)
+                    .motion(.none)
                     .height(200)
 
                     Button("Place").onClicked { placed.wrappedValue = 1 }

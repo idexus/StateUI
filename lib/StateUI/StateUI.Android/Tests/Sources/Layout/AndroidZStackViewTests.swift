@@ -59,7 +59,8 @@ final class AndroidZStackViewTests: XCTestCase {
         }
     }
 
-    /// An engine's run: each view's holder at its rectangle, as opaque as it says, the higher rank drawn over the lower.
+    /// An engine's run, its phase landing where it is written: each view's holder at its rectangle, as opaque as
+    /// it says, the higher rank drawn over the lower.
     func testAPlacementRunStandsAndDrawsEachChildAsItSays() throws {
         try onMainActor {
             let clock = TestClock()
@@ -74,6 +75,7 @@ final class AndroidZStackViewTests: XCTestCase {
                             : [Placement(Rect(10, 20, 30, 40), zIndex: 1), Placement(Rect(0, 0, 50, 50), opacity: 0.5)]
                     }
                     .phase(placed.projectedValue)
+                    .motion(.none)
                     .height(200)
 
                     Button("Place").onClicked { placed.wrappedValue = 1 }
@@ -92,7 +94,7 @@ final class AndroidZStackViewTests: XCTestCase {
             XCTAssertTrue(holders[0].frame == (20, 40, 60, 80), "\(holders[0].frame)")
             XCTAssertTrue(holders[1].frame == (0, 0, 100, 100), "\(holders[1].frame)")
             XCTAssertEqual(Java.callFloat(holders[1].reference, JavaAPI.getAlpha), 0.5, accuracy: 0.001)
-            XCTAssertEqual(layout.drawingOrder, [2, 1, 0], "the watcher under them, the higher rank drawn last")
+            XCTAssertEqual(layout.drawingOrder, [1, 0], "the higher rank drawn last")
 
             let boxes = host.views(AndroidShapeView.self)
             XCTAssertTrue(boxes[0].frame == (0, 0, 60, 80), "\(boxes[0].frame)")
