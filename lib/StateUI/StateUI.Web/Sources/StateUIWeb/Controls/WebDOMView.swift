@@ -207,18 +207,21 @@ class WebDOMView {
     /// How the view is drawn over its place, its own say.
     private(set) var ownDrawing = HostDrawingTransform.identity
 
-    /// How the layout placing the view by a run draws it, and the size the run gives it; nil while it stands in its
-    /// own place.
+    /// How the layout placing the view by a run draws it, the size the run gives it and where its place stands
+    /// in the layout; nil while it stands in its own place.
     private(set) var placedDrawing: HostDrawingTransform?
     private(set) var placedSize: LayoutSize?
+    private(set) var placedAt: Point?
 
-    /// Draws the view as the run placing it says, at the size the run gives it - written again whenever either
-    /// changes, as the matrix turns and scales the view about a pivot of that size; nil for neither.
+    /// Draws the view as the run placing it says, at the size the run gives it and moved to where its place stands
+    /// - written again whenever any of them changes, as the matrix turns and scales the view about a pivot of that
+    /// size; nil for none.
     /// Design: docs/design/platforms/web/layout.md#a-placing-run
-    func drawInRun(_ drawing: HostDrawingTransform?, size: LayoutSize?) {
-        guard drawing != placedDrawing || size != placedSize else { return }
+    func drawInRun(_ drawing: HostDrawingTransform?, size: LayoutSize?, at origin: Point? = nil) {
+        guard drawing != placedDrawing || size != placedSize || origin != placedAt else { return }
         placedDrawing = drawing
         placedSize = size
+        placedAt = origin
         writeTransform()
     }
 
@@ -230,10 +233,14 @@ class WebDOMView {
         writeTransform()
     }
 
-    /// The view's drawing: moved where its place travels, then as its transform says, for its size as drawn.
+    /// The view's drawing: moved to where a run places it and where its place travels, then as its transform says,
+    /// for its size as drawn.
     func writeTransform(size drawn: LayoutSize? = nil) {
         let transform = ownDrawing.under(placedDrawing)
-        let moved = travelOffset.map { "translate(\(WebCSS.signedPixels($0.x)), \(WebCSS.signedPixels($0.y)))" }
+        let shifts = [placedAt.map { ($0.x, $0.y) }, travelOffset.map { ($0.x, $0.y) }].compactMap { $0 }
+        let moved = shifts.isEmpty ? nil : shifts.map {
+            "translate(\(WebCSS.signedPixels($0.0)), \(WebCSS.signedPixels($0.1)))"
+        }.joined(separator: " ")
         guard !transform.isIdentity else {
             style("transform", moved)
             return style("transform-origin", nil)

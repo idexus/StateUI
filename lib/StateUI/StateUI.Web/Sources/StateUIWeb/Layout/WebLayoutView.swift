@@ -183,6 +183,7 @@ class WebLayoutView: WebDOMView {
     /// Design: docs/design/platforms/web/layout.md#a-childs-place
     func place(_ view: WebDOMView, _ values: LayoutValues) {
         view.drawInRun(nil, size: nil)
+        view.style("will-change", nil)
         for (side, length) in WebCSS.sides(values.margin, signed: true) { view.style("margin-\(side)", length) }
         view.style("width", WebCSS.pixels(values.width))
         view.style("height", WebCSS.pixels(values.height))
@@ -261,15 +262,19 @@ class WebLayoutView: WebDOMView {
         let place = placement.place
         view.style("position", "absolute")
         view.style("grid-area", nil)
-        view.style("left", WebCSS.signedPixels(place.x))
-        view.style("top", WebCSS.signedPixels(place.y))
+        // The place is a move drawn over the layout's corner, which the browser composes each frame without laying
+        // the page out again, and the view its own layer to move.
+        view.style("left", "0px")
+        view.style("top", "0px")
+        view.style("will-change", "transform")
         view.style("width", WebCSS.pixels(place.width))
         view.style("height", WebCSS.pixels(place.height))
         // The run's size, whatever the room's: a slot's bound would squash a card a short room scales down.
         view.style("max-width", "none")
         view.style("max-height", "none")
         view.style("opacity", placement.drawnOpacity >= 1 ? nil : WebCSS.number(placement.drawnOpacity))
-        view.drawInRun(placement.drawing, size: LayoutSize(width: place.width, height: place.height))
+        view.drawInRun(
+            placement.drawing, size: LayoutSize(width: place.width, height: place.height), at: Point(place.x, place.y))
         (view as? WebLayoutView)?.setShadeOpacity(placement.drawnShade)
     }
 

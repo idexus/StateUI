@@ -32,12 +32,31 @@ final class WebPlacingRunTests: XCTestCase {
 
         // A quarter turn about (50, 100) moves the corner by (150, 50): x = 50 + 100, y = 100 - 50.
         XCTAssertNotEqual(small, large, "the matrix is written again for the new size")
-        let numbers = large.dropFirst("matrix3d(".count).dropLast().split(separator: ",").compactMap {
-            Double($0.trimmingPrefix(" "))
-        }
+        let matrix = large.range(of: "matrix3d(").map { large[$0.upperBound...] } ?? ""
+        let numbers = matrix.dropLast().split(separator: ",").compactMap { Double($0.trimmingPrefix(" ")) }
         XCTAssertEqual(numbers.count, 16)
         XCTAssertEqual(numbers.count == 16 ? numbers[12] : 0, 150, accuracy: 1e-9, "turned about the middle of 100 x 200")
         XCTAssertEqual(numbers.count == 16 ? numbers[13] : 0, 50, accuracy: 1e-9, "turned about the middle of 100 x 200")
+    }
+
+    /// A RUN'S PLACE IS A MOVE, drawn over the layout's corner on a layer of the card's own: what moves every frame
+    /// is composed by the browser, with no layout of the page.
+    func testARunsPlaceIsAMoveOnALayerOfItsOwn() {
+        let layout = WebLayoutView(arrangement: .layers)
+        let card = WebLayoutView(arrangement: .single)
+        defer { for view in [layout, card] { view.detach() } }
+        layout.setItems([(card, LayoutValues())])
+
+        layout.setPlacement(HostPlacementRun(placements: [
+            HostPlacement(
+                bounds: Rect(x: 30, y: 40, width: 100, height: 140), translationX: 0, translationY: 0, rotation: 0,
+                scaleX: 1, scaleY: 1, opacity: 1, zIndex: 0, shade: 0),
+        ]))
+
+        XCTAssertEqual(WebPage.style(of: card.node, "left"), "0px")
+        XCTAssertEqual(WebPage.style(of: card.node, "top"), "0px")
+        XCTAssertEqual(WebPage.style(of: card.node, "transform"), "translate(30px, 40px)")
+        XCTAssertEqual(WebPage.style(of: card.node, "will-change"), "transform")
     }
 
     /// A card the run places wears the run's shade on its second layer - the dark over a far card - and none on its
