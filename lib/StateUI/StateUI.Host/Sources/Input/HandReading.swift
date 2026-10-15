@@ -37,6 +37,13 @@
     /// The shortest time a speed is read over, in milliseconds: a display frame.
     public static let frame = 16.0
 
+    /// How many steps of a wheel, each smaller than the last, say it was let go: a trackpad's momentum.
+    public static let fade = 3
+
+    /// The longest the momentum goes without a step, in milliseconds - three frames: a step after a longer gap is
+    /// a hand that stopped it and moves again.
+    public static let gap = 48.0
+
     /// Whether a gesture is under way, and whether it is a wheel's.
     private var open = false
     public private(set) var isWheeling = false
@@ -50,6 +57,12 @@
 
     /// When the hand last moved.
     private var last = 0.0
+
+    /// How far a wheel's last step went, how many steps in a row were smaller than the one before, and whether
+    /// what still comes is the momentum after a lift, swallowed.
+    private var step = 0.0
+    private var fading = 0
+    private var coasting = false
 
     /// A hand not begun.
     public init() {}
@@ -106,6 +119,7 @@
         let ended = isWheeling ? lifted(at: time, speed: .zero) : []
 
         open = true
+        coasting = false
         moves = []
         last = time
         return ended + [Report(.began)]
@@ -145,12 +159,36 @@
         return [Report(.cancelled)]
     }
 
-    /// A wheel's notch moved what is under the hand by `moved`, at `time`: the first opens a gesture.
+    /// A wheel's notch moved what is under the hand by `moved`, at `time`: the first opens a gesture, and steps
+    /// fading `fade` times in a row let it go - what follows of the momentum is swallowed until a gap in it, or
+    /// a step that grows again.
+    /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
     public mutating func notched(_ moved: Point, at time: Double) -> [Report] {
-        let begun = isWheeling ? [] : began(at: time)
+        let size = (moved.x * moved.x + moved.y * moved.y).squareRoot()
+        let before = step
+        step = size
 
-        isWheeling = true
-        return begun + self.moved(moved, at: time)
+        if coasting {
+            guard time - last > Self.gap || size > before else {
+                last = time
+                return []
+            }
+            coasting = false
+        }
+        guard isWheeling else {
+            let begun = began(at: time)
+            isWheeling = true
+            fading = 0
+            return begun + self.moved(moved, at: time)
+        }
+
+        fading = size < before ? fading + 1 : size > before ? 0 : fading
+        guard fading >= Self.fade else { return self.moved(moved, at: time) }
+
+        let lift = lifted(at: time, speed: nil)
+        coasting = true
+        last = time
+        return lift
     }
 
     /// A frame at `time`: a wheel standing still for `pause` is let go, with no throw.

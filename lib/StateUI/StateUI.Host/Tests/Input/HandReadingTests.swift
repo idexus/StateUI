@@ -55,6 +55,60 @@ final class HandReadingTests: XCTestCase {
         XCTAssertEqual(hand.paced(at: 400), [], "and ended once")
     }
 
+    /// A WHEEL WHOSE STEPS FADE HAS BEEN LET GO: a trackpad that tells no lift goes on with the system's
+    /// momentum, each step smaller than the last. The third such step is the lift, at the speed the moves say; the
+    /// momentum after it is swallowed, and a step that grows again is a new gesture.
+    func testAWheelWhoseStepsFadeHasBeenLetGo() {
+        var hand = HandReading()
+
+        _ = hand.notched(Point(-30, 0), at: 0)
+        _ = hand.notched(Point(-40, 0), at: 16)
+        XCTAssertEqual(hand.notched(Point(-36, 0), at: 32), [.init(.changed, moved: Point(-36, 0))])
+        XCTAssertEqual(hand.notched(Point(-32, 0), at: 48), [.init(.changed, moved: Point(-32, 0))])
+
+        let lift = hand.notched(Point(-28, 0), at: 64)
+        XCTAssertEqual(lift.map(\.phase), [.ended], "the third step smaller than the last")
+        XCTAssertEqual(lift.last?.speed.x ?? 0, -138.0 / 64 * 1_000, accuracy: 0.001, "as fast as the moves went")
+        XCTAssertFalse(hand.isWheeling)
+
+        XCTAssertEqual(hand.notched(Point(-24, 0), at: 80), [], "the momentum after the lift, swallowed")
+        XCTAssertEqual(hand.notched(Point(-24, 0), at: 96), [])
+        XCTAssertEqual(hand.wheel(Point(-20, 0), at: 112, along: .horizontal).taken, true,
+                       "swallowed, not handed on")
+        XCTAssertEqual(hand.notched(Point(-40, 0), at: 128).map(\.phase), [.began, .changed],
+                       "a step that grows is a new gesture")
+    }
+
+    /// A WHEEL'S EVEN NOTCHES NEVER FADE: a wheel turned notch by notch is let go only by a pause.
+    func testAWheelsEvenNotchesNeverFade() {
+        var hand = HandReading()
+
+        for step in 0..<6 { _ = hand.notched(Point(0, -40), at: Double(step) * 50) }
+
+        XCTAssertTrue(hand.isWheeling)
+    }
+
+    /// THE MOMENTUM IS UNBROKEN: it steps every frame, so a step after a gap of more than three frames is a hand
+    /// that stopped it and moves again - the next gesture, however small.
+    func testAGapInTheMomentumIsTheNextGesture() {
+        var hand = HandReading()
+
+        for (step, size) in [40.0, 36, 32, 28].enumerated() { _ = hand.notched(Point(-size, 0), at: Double(step) * 16) }
+        XCTAssertEqual(hand.notched(Point(-24, 0), at: 64), [], "the momentum, swallowed")
+
+        XCTAssertEqual(hand.notched(Point(-2, 0), at: 130).map(\.phase), [.began, .changed])
+    }
+
+    /// THE MOMENTUM ENDS WITH A PAUSE: a step after one is the next gesture, however small.
+    func testTheMomentumEndsWithAPause() {
+        var hand = HandReading()
+
+        for (step, size) in [40.0, 36, 32, 28].enumerated() { _ = hand.notched(Point(-size, 0), at: Double(step) * 16) }
+        XCTAssertFalse(hand.isWheeling, "let go")
+
+        XCTAssertEqual(hand.notched(Point(-4, 0), at: 400).map(\.phase), [.began, .changed])
+    }
+
     /// A HAND BEGINNING WHILE A WHEEL IS OPEN ENDS THE WHEEL FIRST: one gesture at a time.
     func testAHandBeginningEndsAnOpenWheel() {
         var hand = HandReading()

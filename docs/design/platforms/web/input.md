@@ -70,8 +70,10 @@ last with the event's time, from which the host layer reads the speed at its
 lift. A first move across the axis leaves the pointer to the page. A wheel's
 turn, in pixels whatever the browser measured it in, is told as a wheel and
 taken from the page where the layout moved; a trackpad reaches a page as a
-wheel, the system's momentum included, so the layout follows the momentum
-and comes to rest on the nearest target once it stops.
+wheel, the system's momentum included, which the host layer tells by its
+fading steps: the run is thrown from there, and the momentum after it is
+taken from the page and moves nothing
+([the hand over a layout](../../host/runtime.md#the-hand-over-a-layout)).
 
 ## A drag between views
 
