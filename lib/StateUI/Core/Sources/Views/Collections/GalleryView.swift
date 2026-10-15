@@ -46,10 +46,10 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     private var pin: Binding<Int>?
 
     /// What runs when the middle card changes, beside any binding, through its gate.
-    private var moved: (gate: any Gate, handler: ValueEventHandler<Int>)?
+    private var moved: ValueHandler<Int>?
 
     /// What runs when the user taps the run, through its gate.
-    private var tapped: (gate: any Gate, handler: ValueEventHandler<Items.Element>)?
+    private var tapped: ValueHandler<Items.Element>?
 
     /// Which shape the cards stand in.
     private var look = GalleryArrangement.default
@@ -148,14 +148,16 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// - Parameter handler: what to run, given the card's index.
     /// - Returns: the gallery, telling that handler.
     public func onPositionChanged(_ handler: @escaping @MainActor (Int) throws -> Void) -> Self {
-        onPositionChanged(gate: .none) { try handler($0) }
+        var copy = self
+        copy.moved = ValueHandler(step: handler)
+        return copy
     }
 
     /// The same, with a handler that awaits: its `gate` says what another card coming to the middle does while
     /// a run is under way.
     public func onPositionChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<Int>) -> Self {
         var copy = self
-        copy.moved = (gate, handler)
+        copy.moved = ValueHandler(run: handler, gate: gate)
         return copy
     }
 
@@ -171,7 +173,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// - Parameter handler: what to run, given the middle item.
     /// - Returns: the gallery, answering a tap.
     public func onItemTapped(_ handler: @escaping @MainActor (Items.Element) throws -> Void) -> Self {
-        onItemTapped(gate: .none) { try handler($0) }
+        var copy = self
+        copy.tapped = ValueHandler(step: handler)
+        return copy
     }
 
     /// The same, with a handler that awaits - opening a page does: its `gate` says what a tap does while a run
@@ -180,7 +184,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         gate: some Gate, _ handler: @escaping ValueEventHandler<Items.Element>
     ) -> Self {
         var copy = self
-        copy.tapped = (gate, handler)
+        copy.tapped = ValueHandler(run: handler, gate: gate)
         return copy
     }
 
@@ -357,7 +361,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
                 dips.wrappedValue = nil
 
-                try await tapped.handler(item)
+                try await tapped.run(item)
             }
         }
 
@@ -370,7 +374,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
                 guard let moved else { return }
 
                 moved.gate.runs(for: positionRuns).start(
-                    { try await moved.handler(position) }, moved.gate.policy, payload: nil, owner: positionRuns)
+                    { try await moved.run(position) }, moved.gate.policy, payload: nil, owner: positionRuns)
             }
         }
         // What the position asked for ends with the gallery.

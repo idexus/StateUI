@@ -15,7 +15,7 @@ extension KeyboardElement {
     ///     VStack { … }
     ///         .onKeyPressed(.upArrow, .downArrow) { key in move(key == .upArrow ? -1 : 1) }
     public func onKeyPressed(_ keys: Key..., perform handler: @escaping @MainActor (Key) throws -> Void) -> Modified {
-        taking(keys, gate: .none) { key in try handler(key) }
+        taking(keys, ValueHandler(step: handler))
     }
 
     /// The same, with a handler that awaits: its `gate` says what a key does when it comes again while a run is
@@ -24,17 +24,17 @@ extension KeyboardElement {
     ///     VStack { … }.onKeyPressed(.escape, gate: .ignoreWhileRunning) { _ in try await close() }
     public func onKeyPressed(_ keys: Key..., gate: some Gate, perform handler: @escaping ValueEventHandler<Key>)
         -> Modified {
-        taking(keys, gate: gate, handler)
+        taking(keys, ValueHandler(run: handler, gate: gate))
     }
 
     /// The element taking `keys` beside those it takes already, `handler` hearing those alone.
-    private func taking(_ keys: [Key], gate: some Gate, _ handler: @escaping ValueEventHandler<Key>) -> Modified {
+    private func taking(_ keys: [Key], _ handler: ValueHandler<Key>) -> Modified {
         // One `modified`: chaining would return `Modified.Modified`.
         modified {
             let taken = $0.props[KeyboardElementContract.keysTaken.token].flatMap([Key].init(propValue:)) ?? []
             $0.write(KeyboardElementContract.keysTaken, Key.ordered(taken + keys))
-            $0.addHandler(KeyboardElementContract.keyPressed, gate: gate) { key in
-                if keys.contains(key) { try await handler(key) }
+            $0.addHandler(KeyboardElementContract.keyPressed, gate: handler.gate) { key in
+                if keys.contains(key) { try await handler.run(key) }
             }
         }
     }

@@ -31,8 +31,8 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
     private var footerView: (any View)?
     private var empty: (any View)?
     private var choice: Choice?
-    private var activated: (gate: any Gate, handler: ValueEventHandler<ID>)?
-    private var endReached: (within: Int, gate: any Gate, handler: EventHandler)?
+    private var activated: ValueHandler<ID>?
+    private var endReached: (within: Int, handler: Handler)?
     private var aimed: Aim<Self>?
 
     /// A list of `items`, each its own identity, each looking as `content` says.
@@ -103,13 +103,13 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
                     let id = source.id(for: identity)
                 else { return }
 
-                try await activated.handler(id)
+                try await activated.run(id)
             }
         }
 
         if let endReached {
             element.node.write(ItemsViewContract.endReachedWithin, endReached.within)
-            element.node.addHandler(ItemsViewContract.endReached.token, gate: endReached.gate, endReached.handler)
+            element.node.addHandlers(ItemsViewContract.endReached.token, [endReached.handler])
         }
 
         return ModifiedContent(node: element.node)
@@ -159,21 +159,25 @@ extension ItemsView {
     /// Hears the user open an item - a tap on a phone, a double-click or Return
     /// on a desktop - handed its identity.
     public func onItemActivated(_ handler: @escaping @MainActor (ID) throws -> Void) -> Self {
-        onItemActivated(gate: .none) { try handler($0) }
+        var copy = self
+        copy.activated = ValueHandler(step: handler)
+        return copy
     }
 
     /// The same, with a handler that awaits - opening a page does: its `gate`
     /// says what opening another item does while a run is under way.
     public func onItemActivated(gate: some Gate, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.activated = (gate, handler)
+        copy.activated = ValueHandler(run: handler, gate: gate)
         return copy
     }
 
     /// Hears the user scroll within `within` items of the end - where more
     /// items are loaded.
     public func onEndReached(within: Int = 0, _ handler: @escaping @MainActor () throws -> Void) -> Self {
-        onEndReached(within: within, gate: .none) { try handler() }
+        var copy = self
+        copy.endReached = (within: max(within, 0), handler: Handler(step: handler))
+        return copy
     }
 
     /// The same, with a handler that awaits - a load does. The end may be
@@ -186,7 +190,7 @@ extension ItemsView {
         within: Int = 0, gate: some Gate, _ handler: @escaping EventHandler
     ) -> Self {
         var copy = self
-        copy.endReached = (within: max(within, 0), gate: gate, handler: handler)
+        copy.endReached = (within: max(within, 0), handler: Handler(run: handler, gate: gate))
         return copy
     }
 

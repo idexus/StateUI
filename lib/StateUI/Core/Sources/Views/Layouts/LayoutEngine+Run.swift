@@ -22,7 +22,7 @@ extension LayoutEngine {
         let make: (Items.Element) -> Node
         let arithmetic: @MainActor (Rect, Double) -> [Placement]
         let mask: Node?
-        let tapped: (gate: any Gate, handler: ValueEventHandler<Items.Element>)?
+        let tapped: ValueHandler<Items.Element>?
         let pinned: Binding<Double>?
         let states: States
         let targets: [Double]

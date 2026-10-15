@@ -60,7 +60,7 @@ extension VisualElement where Self: StyleTarget {
         _ states: VisualState<Self>...,
         perform handler: @escaping @MainActor (VisualState<Self>) throws -> Void
     ) -> Modified {
-        listening(states, gate: .none) { try handler($0) }
+        listening(states, ValueHandler(step: { try handler(VisualState<Self>($0)) }))
     }
 
     /// The same, with a handler that awaits: its `gate` says what entering a
@@ -75,24 +75,18 @@ extension VisualElement where Self: StyleTarget {
         gate: some Gate,
         perform handler: @escaping ValueEventHandler<VisualState<Self>>
     ) -> Modified {
-        listening(states, gate: gate, handler)
+        listening(states, ValueHandler(run: { try await handler(VisualState<Self>($0)) }, gate: gate))
     }
 
     /// Declares `states` and hears the control entering them.
-    private func listening(
-        _ states: [VisualState<Self>],
-        gate: some Gate,
-        _ handler: @escaping ValueEventHandler<VisualState<Self>>
-    ) -> Modified {
+    private func listening(_ states: [VisualState<Self>], _ handler: ValueHandler<String>) -> Modified {
         modified { node in
             for state in states where !node.visualStates.contains(where: { $0.name == state.name }) {
                 node.visualStates.append(DeclaredState(name: state.name))
             }
 
             node.visualStateListeners.append(VisualStateListener(
-                states: states.isEmpty ? nil : Set(states.map(\.name)),
-                gate: gate,
-                run: { name in try await handler(VisualState<Self>(name)) }))
+                states: states.isEmpty ? nil : Set(states.map(\.name)), handler: handler))
         }
     }
 

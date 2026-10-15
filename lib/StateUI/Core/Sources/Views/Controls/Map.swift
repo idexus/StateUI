@@ -176,7 +176,9 @@ public struct Marker: Element {
     /// Fires when the marker is tapped. Observing only: it cannot keep the
     /// callout shut.
     public func onSelected(_ handler: @escaping @MainActor () throws -> Void) -> Self {
-        onSelected(gate: .none) { try handler() }
+        var copy = self
+        copy.node.addHandler(MarkerContract.selected, handler)
+        return copy
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -190,7 +192,9 @@ public struct Marker: Element {
     /// Fires when the callout above the marker - its details - is tapped: the
     /// place a navigation usually goes.
     public func onDetailsClicked(_ handler: @escaping @MainActor () throws -> Void) -> Self {
-        onDetailsClicked(gate: .none) { try handler() }
+        var copy = self
+        copy.node.addHandler(MarkerContract.detailsClicked, handler)
+        return copy
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes

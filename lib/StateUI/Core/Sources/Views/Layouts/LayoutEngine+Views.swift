@@ -17,7 +17,7 @@ extension LayoutEngine.Run {
         guard let tapped else { return ModifiedContent(node: holder.letsInputThrough(true).node) }
 
         let item = slot.item
-        return ModifiedContent(node: holder.onTapped(gate: tapped.gate) { try await tapped.handler(item) }.node)
+        return ModifiedContent(node: holder.onTapped(gate: tapped.gate) { try await tapped.run(item) }.node)
     }
 
     /// The scroll over the views: an empty scroller whose offset is the phase.
@@ -76,13 +76,12 @@ extension LayoutEngine.Run {
     }
 
     /// One box of the scroller's content: its length first, then one under each view, where a tap on it lands.
-    func box(_ index: Int, tapped: (gate: any Gate, handler: ValueEventHandler<Items.Element>)) -> Rectangle {
-        var tap: (gate: any Gate, handler: EventHandler)?
+    func box(_ index: Int, tapped: ValueHandler<Items.Element>) -> Rectangle {
+        var tap: Handler?
         if index > 0 {
             let item = items[index - 1]
-            let handler = tapped.handler
-            let answer: EventHandler = { try await handler(item) }
-            tap = (tapped.gate, answer)
+            let run = tapped.run
+            tap = Handler(run: { try await run(item) }, gate: tapped.gate)
         }
 
         return Rectangle(.transparent).motion(.none).tapping(tap)
@@ -98,10 +97,10 @@ extension VisualElement where Modified == Self {
 
 extension Rectangle {
     /// The box answering a tap, where one was asked for.
-    func tapping(_ handler: (gate: any Gate, handler: EventHandler)?) -> Rectangle {
+    func tapping(_ handler: Handler?) -> Rectangle {
         guard let handler else { return self }
 
-        return onTapped(gate: handler.gate, handler.handler)
+        return onTapped(gate: handler.gate, handler.run)
     }
 }
 

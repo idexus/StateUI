@@ -94,7 +94,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
     private var mask: Node?
 
     /// What runs when the user taps a view, through its gate.
-    private var tapped: (gate: any Gate, handler: ValueEventHandler<Items.Element>)?
+    private var tapped: ValueHandler<Items.Element>?
 
     /// How the run travels to where the program or a settle sends it.
     private var law = Motion.inherited
@@ -227,13 +227,15 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
     /// - Parameter handler: what to run, given the item.
     /// - Returns: the layout, answering a tap.
     public func onItemTapped(_ handler: @escaping @MainActor (Items.Element) throws -> Void) -> Self {
-        onItemTapped(gate: .none) { try handler($0) }
+        var copy = self
+        copy.tapped = ValueHandler(step: handler)
+        return copy
     }
 
     /// The same, with a handler that awaits: its `gate` says what a tap does while a run is under way.
     public func onItemTapped(gate: some Gate, _ handler: @escaping ValueEventHandler<Items.Element>) -> Self {
         var copy = self
-        copy.tapped = (gate, handler)
+        copy.tapped = ValueHandler(run: handler, gate: gate)
         return copy
     }
 

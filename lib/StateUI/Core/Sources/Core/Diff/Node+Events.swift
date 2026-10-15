@@ -16,7 +16,11 @@ extension Node {
         _ event: ElementEvent<Owner, Void>,
         _ handler: @escaping @MainActor () throws -> Void
     ) {
-        addHandler(event, gate: .none) { try handler() }
+        addHandler(event.token) {
+            guard MemberValues.carried(EventBuffer.current, by: event.name) != nil else { return }
+
+            try handler()
+        }
     }
 
     /// Hears one of this node's events with a handler that awaits; its `gate` says what the event does when it
@@ -50,7 +54,11 @@ extension Node {
         _ event: ElementEvent<Owner, Value>,
         _ handler: @escaping @MainActor (Value) throws -> Void
     ) {
-        addHandler(event, gate: .none) { (value) in try handler(value) }
+        addHandler(event.token) {
+            guard let value = MemberValues.carried(EventBuffer.current, by: event.name, as: Value.self) else { return }
+
+            try handler(value)
+        }
     }
 
     /// Hears one of this node's events with a handler that awaits; its `gate` says what the event does when it
@@ -84,7 +92,13 @@ extension Node {
         _ event: ElementEvent<Owner, (First, Second)>,
         _ handler: @escaping @MainActor (First, Second) throws -> Void
     ) {
-        addHandler(event, gate: .none) { (first, second) in try handler(first, second) }
+        addHandler(event.token) {
+            guard let (first, second) = MemberValues.carried(
+                EventBuffer.current, by: event.name, as: First.self, Second.self)
+            else { return }
+
+            try handler(first, second)
+        }
     }
 
     /// Hears one of this node's events with a handler that awaits; its `gate` says what the event does when it
@@ -122,7 +136,13 @@ extension Node {
         _ event: ElementEvent<Owner, (First, Second, Third)>,
         _ handler: @escaping @MainActor (First, Second, Third) throws -> Void
     ) {
-        addHandler(event, gate: .none) { (first, second, third) in try handler(first, second, third) }
+        addHandler(event.token) {
+            guard let (first, second, third) = MemberValues.carried(
+                EventBuffer.current, by: event.name, as: First.self, Second.self, Third.self)
+            else { return }
+
+            try handler(first, second, third)
+        }
     }
 
     /// Hears one of this node's events with a handler that awaits; its `gate` says what the event does when it

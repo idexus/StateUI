@@ -364,7 +364,8 @@ extension Differ {
         if !replace, let state = visualState {
             for (index, listener) in heard {
                 fired.append(Fired(
-                    run: { try await listener.run(state) }, gate: listener.gate, owner: kept.owner("state \(index)")))
+                    run: { try await listener.handler.run(state) }, gate: listener.handler.gate,
+                    owner: kept.owner("state \(index)")))
             }
         }
 

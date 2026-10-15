@@ -83,7 +83,7 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
     /// Fires as a navigation starts, with where it is going. Observing only: it
     /// cannot cancel the navigation.
     public func onNavigating(_ handler: @escaping @MainActor (WebNavigation) throws -> Void) -> Self {
-        onNavigating(gate: .none) { try handler($0) }
+        onEvent(WebViewContract.navigating) { type, url in try handler(WebNavigation(type: type, url: url)) }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -97,7 +97,9 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
     /// Fires when a navigation finished, with how it ended - the place to
     /// clear a spinner, or to say a page could not be fetched.
     public func onNavigated(_ handler: @escaping @MainActor (WebNavigated) throws -> Void) -> Self {
-        onNavigated(gate: .none) { try handler($0) }
+        onEvent(WebViewContract.navigated) { result, type, url in
+            try handler(WebNavigated(result: result, type: type, url: url))
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes

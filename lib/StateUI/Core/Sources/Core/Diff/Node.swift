@@ -346,9 +346,9 @@ public struct Node {
         events[event, default: []].append(Handler(run: handler, gate: gate))
     }
 
-    /// The same, for a handler that does not await: it passes through no gate.
+    /// The same, for a step - a handler that does not await, which passes no gate.
     mutating func addHandler(_ event: Event, _ handler: @escaping @MainActor () throws -> Void) {
-        events[event, default: []].append(Handler(run: { try handler() }))
+        events[event, default: []].append(Handler(step: handler))
     }
 
     /// Takes `handlers` for `event` after any it already has - what is written on a composed view, moved onto
@@ -364,13 +364,13 @@ public struct Node {
         id: String? = nil,
         props: [Prop: PropValue] = [:],
         children: [Node] = [],
-        events: [Event: EventHandler] = [:]
+        events: [Event: @MainActor () throws -> Void] = [:]
     ) {
         self.type = type
         self.id = id
         self.props = props
         self.children = children
-        self.events = events.mapValues { [Handler(run: $0)] }
+        self.events = events.mapValues { [Handler(step: $0)] }
     }
 
     /// A node of an element's own type: how every element's view begins.

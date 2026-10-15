@@ -43,7 +43,13 @@ extension View {
         in space: CoordinateSpace = .parent,
         _ handler: @escaping @MainActor (Rect) throws -> Void
     ) -> Modified {
-        onFrameChanged(in: space, gate: .none) { try handler($0) }
+        // One report serves every space; each handler stays quiet while its
+        // own answer is unchanged.
+        let last = LastFrame()
+
+        return onEvent(ViewContract.frameChanged) { numbers in
+            if let frame = last.changed(numbers, in: space) { try handler(frame) }
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -53,18 +59,10 @@ extension View {
         gate: some Gate,
         _ handler: @escaping ValueEventHandler<Rect>
     ) -> Modified {
-        // One report serves every space; each handler stays quiet while its
-        // own answer is unchanged.
         let last = LastFrame()
 
         return onEvent(ViewContract.frameChanged, gate: gate) { numbers in
-            guard let report = FrameReport(numbers) else { return }
-
-            let frame = report.frame(in: space)
-            guard frame != last.rect else { return }
-
-            last.rect = frame
-            try await handler(frame)
+            if let frame = last.changed(numbers, in: space) { try await handler(frame) }
         }
     }
 }
@@ -75,6 +73,17 @@ extension View {
 private final class LastFrame {
     /// The rectangle the handler last ran with.
     var rect: Rect?
+
+    /// The frame `numbers` report in `space`, where it is not the last one told.
+    func changed(_ numbers: [Double], in space: CoordinateSpace) -> Rect? {
+        guard let report = FrameReport(numbers) else { return nil }
+
+        let frame = report.frame(in: space)
+        guard frame != rect else { return nil }
+
+        rect = frame
+        return frame
+    }
 }
 
 /// A container whose content is built from the space it was given.

@@ -56,7 +56,7 @@ public final class HostEventSubscription {
 public enum HostEvents {
     /// The subscriptions in the order made, which is the order handlers run in.
     private static var subscriptions:
-        [Event: [(id: Int, gate: any Gate, owner: RunOwner, handler: ValueEventHandler<[PropValue]>)]] = [:]
+        [Event: [(id: Int, owner: RunOwner, handler: ValueHandler<[PropValue]>)]] = [:]
 
     /// The next subscription's number - never reused.
     private static var nextId = 1
@@ -67,8 +67,7 @@ public enum HostEvents {
         _ event: Event,
         owner: String,
         member: String,
-        gate: some Gate,
-        _ handler: @escaping ValueEventHandler<[PropValue]>
+        _ handler: ValueHandler<[PropValue]>
     ) -> HostEventSubscription {
         if let unraised = HostRealizations.unraised(owner: owner, event: member) {
             complain(unraised)
@@ -76,7 +75,7 @@ public enum HostEvents {
 
         let id = nextId
         nextId += 1
-        subscriptions[event, default: []].append((id: id, gate: gate, owner: RunOwner(), handler: handler))
+        subscriptions[event, default: []].append((id: id, owner: RunOwner(), handler: handler))
 
         return HostEventSubscription(event: event, id: id)
     }
@@ -97,7 +96,11 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, Void>,
         _ handler: @escaping @MainActor () throws -> Void
     ) -> HostEventSubscription {
-        on(event, gate: .none) { try handler() }
+        subscribe(event.token, owner: Owner.name, member: event.name, ValueHandler(step: { payload in
+            guard MemberValues.carried(payload, by: event.name) != nil else { return }
+
+            try handler()
+        }))
     }
 
     /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
@@ -106,11 +109,11 @@ public enum HostEvents {
         gate: some Gate,
         _ handler: @escaping EventHandler
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, gate: gate) { payload in
+        subscribe(event.token, owner: Owner.name, member: event.name, ValueHandler(run: { payload in
             guard MemberValues.carried(payload, by: event.name) != nil else { return }
 
             try await handler()
-        }
+        }, gate: gate))
     }
 
     /// Subscribes a handler to an event of the application's that carries one
@@ -129,7 +132,11 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, Value>,
         _ handler: @escaping @MainActor (Value) throws -> Void
     ) -> HostEventSubscription {
-        on(event, gate: .none) { try handler($0) }
+        subscribe(event.token, owner: Owner.name, member: event.name, ValueHandler(step: { payload in
+            guard let value = MemberValues.carried(payload, by: event.name, as: Value.self) else { return }
+
+            try handler(value)
+        }))
     }
 
     /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
@@ -138,11 +145,11 @@ public enum HostEvents {
         gate: some Gate,
         _ handler: @escaping ValueEventHandler<Value>
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, gate: gate) { payload in
+        subscribe(event.token, owner: Owner.name, member: event.name, ValueHandler(run: { payload in
             guard let value = MemberValues.carried(payload, by: event.name, as: Value.self) else { return }
 
             try await handler(value)
-        }
+        }, gate: gate))
     }
 
     /// Subscribes a handler to an event of the application's that carries two
@@ -160,7 +167,13 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, (First, Second)>,
         _ handler: @escaping @MainActor (First, Second) throws -> Void
     ) -> HostEventSubscription {
-        on(event, gate: .none) { a, b in try handler(a, b) }
+        subscribe(event.token, owner: Owner.name, member: event.name, ValueHandler(step: { payload in
+            guard let (first, second) = MemberValues.carried(
+                payload, by: event.name, as: First.self, Second.self)
+            else { return }
+
+            try handler(first, second)
+        }))
     }
 
     /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
@@ -169,13 +182,13 @@ public enum HostEvents {
         gate: some Gate,
         _ handler: @escaping ValueEventHandler<First, Second>
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, gate: gate) { payload in
+        subscribe(event.token, owner: Owner.name, member: event.name, ValueHandler(run: { payload in
             guard let (first, second) = MemberValues.carried(
                 payload, by: event.name, as: First.self, Second.self)
             else { return }
 
             try await handler(first, second)
-        }
+        }, gate: gate))
     }
 
     /// Subscribes a handler to an event of the application's that carries
@@ -192,7 +205,13 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, (First, Second, Third)>,
         _ handler: @escaping @MainActor (First, Second, Third) throws -> Void
     ) -> HostEventSubscription {
-        on(event, gate: .none) { a, b, c in try handler(a, b, c) }
+        subscribe(event.token, owner: Owner.name, member: event.name, ValueHandler(step: { payload in
+            guard let (first, second, third) = MemberValues.carried(
+                payload, by: event.name, as: First.self, Second.self, Third.self)
+            else { return }
+
+            try handler(first, second, third)
+        }))
     }
 
     /// The same, with a handler that awaits: its `gate` says what a raise does while a run is under way.
@@ -203,13 +222,13 @@ public enum HostEvents {
         gate: some Gate,
         _ handler: @escaping ValueEventHandler<First, Second, Third>
     ) -> HostEventSubscription {
-        subscribe(event.token, owner: Owner.name, member: event.name, gate: gate) { payload in
+        subscribe(event.token, owner: Owner.name, member: event.name, ValueHandler(run: { payload in
             guard let (first, second, third) = MemberValues.carried(
                 payload, by: event.name, as: First.self, Second.self, Third.self)
             else { return }
 
             try await handler(first, second, third)
-        }
+        }, gate: gate))
     }
 
     /// Takes one subscription out - `HostEventSubscription.cancel`'s half.
@@ -225,7 +244,9 @@ public enum HostEvents {
         let handlers = subscriptions[Event(name)] ?? []
 
         for entry in handlers {
-            entry.gate.runs(for: entry.owner).start({ try await entry.handler(payload) }, entry.gate.policy, payload: nil, owner: entry.owner)
+            let handler = entry.handler
+            handler.gate.runs(for: entry.owner).start(
+                { try await handler.run(payload) }, handler.gate.policy, payload: nil, owner: entry.owner)
         }
 
         return handlers.count

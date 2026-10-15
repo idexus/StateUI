@@ -47,21 +47,36 @@ enumeration of their own, so `.none` names one thing whether it is given as a
 gate or to `Gatekeeper(_:)`. An element leaving supersedes its owners' runs
 alone, so behind a gatekeeper the others' runs stand.
 
-There is no default. Each event modifier comes three ways: a step, `() throws
--> Void`, which Swift picks for a closure with no `await`; the same with a
-`gate:`, for a handler that awaits; and an awaiting handler with no gate,
-unavailable, whose message says what to write; `.onCreated` and
-`.onDestroying` take no gate, as each comes once, and
-`.draggable(text:canDrag:onDragStarting:)` takes a step alone. The compiler
-asks the question where there is one, and only there. A step runs through a
-`.none` gate of its own and never suspends. It takes no road of its own: an
-event dispatched to a step costs a couple of microseconds, so even a drag's
-120 events a second spend a fraction of a millisecond.
+There is no default. Each event modifier comes two ways: a step, `() throws
+-> Void`, which Swift picks for a closure with no `await`, and the same with
+a `gate:`, for a handler that awaits; an awaiting closure with no gate meets
+only the step, and does not compile. `.onCreated` and `.onDestroying` take no
+gate, as each comes once, and `.draggable(text:canDrag:onDragStarting:)` takes
+a step alone. The compiler asks the question where there is one, and only
+there.
 
 `RunSlot.underWay` counts the runs of every slot from the moment a slot takes
 one - started, or waiting its turn - to its end: what a test waits on for the
 handlers' work to end, rather than a length of time, and the tally's `runs`
 (diagnostics.md).
+
+## A step
+
+A gate is written only where a body awaits, in the library as in an
+application (`GateSourceTests`). A step is written with none and kept with
+none: a modifier's step overload goes down by step roads to the handler's
+storage - `Handler(step:)`, `ValueHandler(step:)`, a watch's own - and never
+through its gated twin with `gate: .none`. The two overloads mirror each
+other, each naming the event it hears, which is where the matrix's pages read
+a modifier's name from; what they would share beyond a line or two stands
+once beside them - `.onKeyPressed`'s keys, `.onVisualStateChanged`'s states, a
+frame's last answer. A composed control keeps the author's handler as a
+`ValueHandler` until an element it makes hears the event.
+
+The step initializers are where a step meets its runtime: it runs through a
+`.none` gate of its own and never suspends. It takes no road of its own at
+run time: an event dispatched to a step costs a couple of microseconds, so
+even a drag's 120 events a second spend a fraction of a millisecond.
 
 ## Work started from code
 

@@ -12,9 +12,10 @@ struct Handler {
         self.gate = gate
     }
 
-    /// A handler that passes no gate: one that does not await.
-    init(run: @escaping EventHandler) {
-        self.init(run: run, gate: GatePolicy.none)
+    /// A step: a handler that does not await, which passes no gate.
+    /// Design: docs/design/core/runs.md#a-step
+    init(step: @escaping @MainActor () throws -> Void) {
+        self.init(run: { try step() }, gate: GatePolicy.none)
     }
 }
 

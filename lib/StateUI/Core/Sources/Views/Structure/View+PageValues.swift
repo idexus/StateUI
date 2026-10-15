@@ -93,7 +93,7 @@ extension View {
 
     /// Runs as the page comes on screen - on every arrival, coming back from a pushed page included.
     public func onAppearing(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onAppearing(gate: .none) { try handler() }
+        pageSays { $0.modified { $0.addHandler(PageContract.appearing, handler) } }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -104,7 +104,7 @@ extension View {
 
     /// Runs as the page leaves the screen - covered, left, or another tab chosen.
     public func onDisappearing(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onDisappearing(gate: .none) { try handler() }
+        pageSays { $0.modified { $0.addHandler(PageContract.disappearing, handler) } }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -115,7 +115,7 @@ extension View {
 
     /// Runs once navigation has arrived at the page. Only navigation says it; `onAppearing` answers any showing.
     public func onNavigatedTo(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onNavigatedTo(gate: .none) { try handler() }
+        pageSays { $0.modified { $0.addHandler(PageContract.navigatedTo, handler) } }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -126,7 +126,7 @@ extension View {
 
     /// Runs as navigation is about to leave the page, while it is still on screen.
     public func onNavigatingFrom(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onNavigatingFrom(gate: .none) { try handler() }
+        pageSays { $0.modified { $0.addHandler(PageContract.navigatingFrom, handler) } }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -137,7 +137,7 @@ extension View {
 
     /// Runs once navigation has left the page, its destination on screen.
     public func onNavigatedFrom(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onNavigatedFrom(gate: .none) { try handler() }
+        pageSays { $0.modified { $0.addHandler(PageContract.navigatedFrom, handler) } }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes

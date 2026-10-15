@@ -53,7 +53,7 @@ extension MenuItemElement where Modified == Self {
     /// What it does - run when the item is chosen, clicked or tapped. A second
     /// `.onClicked` runs beside the first, like every typed event modifier.
     public func onClicked(_ handler: @escaping @MainActor () throws -> Void) -> Self {
-        onClicked(gate: .none) { try handler() }
+        modified { $0.addHandler(MenuItemElementContract.clicked.token, handler) }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes

@@ -5,8 +5,7 @@
 /// Design: docs/design/views/styles.md#hearing-a-state
 struct VisualStateListener {
     let states: Set<String>?
-    let gate: any Gate
-    let run: ValueEventHandler<String>
+    let handler: ValueHandler<String>
 
     func hears(_ name: String) -> Bool {
         states?.contains(name) ?? true

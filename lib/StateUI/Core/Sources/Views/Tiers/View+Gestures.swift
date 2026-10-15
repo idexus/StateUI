@@ -27,13 +27,16 @@ extension View {
     ///
     ///     Text("Reset").onTapped(count: 2) { taps = 0 }
     public func onTapped(count: Int, _ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onTapped(count: count, gate: .none) { try handler() }
+        // One `modified`: chaining would return `Modified.Modified`.
+        modified {
+            $0.write(ViewContract.tapCount, count)
+            $0.addHandler(ViewContract.tapped.token, handler)
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
     public func onTapped(count: Int, gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
-        // One `modified`: chaining would return `Modified.Modified`.
         modified {
             $0.write(ViewContract.tapCount, count)
             $0.addHandler(ViewContract.tapped.token, gate: gate, handler)
@@ -59,7 +62,16 @@ extension View {
         threshold: Double? = nil,
         _ handler: @escaping @MainActor (SwipeDirection) throws -> Void
     ) -> Modified {
-        onSwiped(direction: direction, threshold: threshold, gate: .none) { try handler($0) }
+        modified {
+            $0.write(ViewContract.swipeDirection, direction)
+            $0.describe(ViewContract.swipeThreshold, threshold)
+            $0.addHandler(ViewContract.swiped.token) {
+                // A payload that does not read leaves the handler alone.
+                if let direction = SwipeDirection(EventBuffer.current.value()) {
+                    try handler(direction)
+                }
+            }
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -74,7 +86,6 @@ extension View {
             $0.write(ViewContract.swipeDirection, direction)
             $0.describe(ViewContract.swipeThreshold, threshold)
             $0.addHandler(ViewContract.swiped.token, gate: gate) {
-                // A payload that does not read leaves the handler alone.
                 if let direction = SwipeDirection(EventBuffer.current.value()) {
                     try await handler(direction)
                 }
@@ -132,7 +143,16 @@ extension View {
         touchCount: Int? = nil,
         _ handler: @escaping @MainActor (PanUpdate) throws -> Void
     ) -> Modified {
-        onPanUpdated(touchCount: touchCount, gate: .none) { try handler($0) }
+        modified {
+            $0.describe(ViewContract.panTouchCount, touchCount)
+            $0.addHandler(ViewContract.panUpdated.token) {
+                if let (phase, totalX, totalY) = MemberValues.carried(
+                    EventBuffer.current, by: ViewContract.panUpdated.name,
+                    as: GesturePhase.self, Double.self, Double.self) {
+                    try handler(PanUpdate(phase: phase, totalX: totalX, totalY: totalY))
+                }
+            }
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -161,7 +181,9 @@ extension View {
     /// `scale` is relative - the change since the last report, not since the
     /// pinch began - so a view being pinched multiplies rather than assigns.
     public func onPinchUpdated(_ handler: @escaping @MainActor (PinchUpdate) throws -> Void) -> Modified {
-        onPinchUpdated(gate: .none) { try handler($0) }
+        onEvent(ViewContract.pinchUpdated) { phase, scale, origin in
+            try handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin))
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -203,7 +225,11 @@ extension View {
     /// own coordinates; a move the platform gives no position for does not run
     /// it.
     public func onPointerMoved(_ handler: @escaping @MainActor (Point) throws -> Void) -> Modified {
-        onPointerMoved(gate: .none) { try handler($0) }
+        onEvent(ViewContract.pointerMoved) { point in
+            if let point {
+                try handler(point)
+            }
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -219,7 +245,11 @@ extension View {
     /// Runs when a pointer button goes down over the view, with where it went
     /// down in the view's own coordinates.
     public func onPointerPressed(_ handler: @escaping @MainActor (Point) throws -> Void) -> Modified {
-        onPointerPressed(gate: .none) { try handler($0) }
+        onEvent(ViewContract.pointerPressed) { point in
+            if let point {
+                try handler(point)
+            }
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -234,7 +264,11 @@ extension View {
 
     /// Runs when the pointer button comes back up, with where it came up.
     public func onPointerReleased(_ handler: @escaping @MainActor (Point) throws -> Void) -> Modified {
-        onPointerReleased(gate: .none) { try handler($0) }
+        onEvent(ViewContract.pointerReleased) { point in
+            if let point {
+                try handler(point)
+            }
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -288,7 +322,15 @@ extension View {
     ///     VStack { … }
     ///         .onDrop { text in items.append(text) }
     public func onDrop(_ handler: @escaping @MainActor (String) throws -> Void) -> Modified {
-        onDrop(gate: .none) { try handler($0) }
+        modified {
+            $0.write(ViewContract.allowsDrop, true)
+            $0.addHandler(ViewContract.drop.token) {
+                if let text = MemberValues.carried(
+                    EventBuffer.current, by: ViewContract.drop.name, as: String.self) {
+                    try handler(text)
+                }
+            }
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
@@ -318,7 +360,15 @@ extension View {
     public func onDrop(
         files types: [FileType] = [], _ handler: @escaping @MainActor ([ChosenFile]) throws -> Void
     ) -> Modified {
-        onDrop(files: types, gate: .none) { try handler($0) }
+        modified {
+            $0.write(ViewContract.droppedFileTypes, types)
+            $0.addHandler(ViewContract.filesDropped.token) {
+                if let files = MemberValues.carried(
+                    EventBuffer.current, by: ViewContract.filesDropped.name, as: [ChosenFile].self) {
+                    try handler(files)
+                }
+            }
+        }
     }
 
     /// The same, with a handler that awaits - reading a file does: its `gate` says what a drop does while a
