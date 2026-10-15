@@ -6,7 +6,8 @@
 
 /// `LayoutEngineContract` on a host: each view stands where the arithmetic puts it, the arithmetic is handed the room
 /// the layout was given and handed it again when it changes, the layout takes no size from its views, the phase the
-/// program sends travels there and is awaited, and a scroll comes to rest on a snap target.
+/// program sends travels there and is awaited - each axis of it on its own - and a scroll comes to rest on a snap
+/// target.
 @_spi(Host) public enum LayoutEngineTests: ConformanceFamily {
     public static let name = "LayoutEngine"
 
@@ -134,6 +135,57 @@
                 s.expect(handed.values.last, 4, "where the program sent it")
                 s.expect(arrived.values, [true], "and a move of it awaited until it arrived")
             },
+            ConformanceCase("eachAxisOfThePhaseTravelsOnItsOwn", proves: [
+                Covered(LayoutEngineContract.phase),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let clock = TestClock()
+                let phase = State(wrappedValue: Orbit())
+                let (handed, arrived) = (Received<Orbit>(), Received<Bool>())
+                s.start(clock: clock) {
+                    VStack {
+                        LayoutEngine([0]) { _ in Rectangle(.red) } placements: { _, phase in
+                            handed.values.append(phase)
+                            return [Placement(Rect(phase.turn * 10, 0, 20 * phase.zoom, 20))]
+                        }
+                        .phase(phase.projectedValue)
+                        .motion(.eased(.milliseconds(400), .linear))
+                        .width(100).height(40)
+                        Button("Turn").onClicked(gate: .ignoreWhileRunning) {
+                            arrived.values.append(try await phase.projectedValue.journey.move(to: Orbit(turn: 4)).arrived())
+                        }
+                        .id("turn")
+                        Button("Zoom").onClicked { phase.wrappedValue.zoom = 2 }
+                            .id("zoom")
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+                s.settle { handed.values.last == Orbit() }
+
+                var time = 0.0
+                @MainActor func frames(until end: Double) {
+                    while time < end {
+                        time += 16
+                        clock.now = time
+                        s.frame()
+                    }
+                }
+                try s.perform(.activate, on: s.element("turn"))
+                s.settle { phase.wrappedValue.turn == 4 }
+                frames(until: 200)
+                try s.perform(.activate, on: s.element("zoom"))
+                s.settle { phase.wrappedValue.zoom == 2 }
+
+                // The turn's 400 ms end, the zoom sent halfway through it still on its way.
+                frames(until: 432)
+                s.settle { arrived.values == [true] }
+                s.expect(handed.values.last?.turn, 4, "the turn arrived when it was due, the zoom sent meanwhile")
+                s.expect(handed.values.last.map { $0.zoom > 1 && $0.zoom < 2 }, true, "the zoom on its own way")
+                s.expect(arrived.values, [true], "and the turn's move awaited to its end")
+
+                frames(until: 1_000)
+                s.expect(handed.values.last, Orbit(turn: 4, zoom: 2), "both where they were sent")
+            },
             ConformanceCase("aScrollComesToRestOnTheNearestSnapTarget", proves: [Covered(LayoutEngineContract.self)]) { s in
                 let clock = TestClock()
                 let phase = State(wrappedValue: 0.0)
@@ -174,4 +226,12 @@
             },
         ]
     }
+}
+
+/// A phase of two axes: how far a run is turned, and how large it stands.
+private struct Orbit: LayoutPhase {
+    var turn = 0.0
+    var zoom = 1.0
+
+    static var axes: [WritableKeyPath<Orbit, Double>] { [\.turn, \.zoom] }
 }

@@ -30,18 +30,20 @@
 /// The arithmetic runs on the host's frames whenever the room, the phase or a state named in `following(_:)` moves,
 /// with no view built again. It answers one `Placement` per view, in the items' order - where the view goes from
 /// the layout's top left, how it is turned, how opaque, which is drawn over which - and each lands as written:
-/// what moves smoothly is the phase it is worked out from.
-public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
+/// what moves smoothly is the phase it is worked out from. A phase of several axes is a `LayoutPhase` of your own,
+/// each axis moved by its own hand or by the program.
+public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: LayoutPhase>: View {
     // State first: boxes are adopted by path, and the views stored below may carry boxes of their own.
     // Design: docs/design/views/composition.md#state-declared-first
 
     /// The phase, where no binding was lent.
-    @State private var ownPhase = 0.0
+    @State private var ownPhase = Phase()
 
-    /// The destination the run last knew - its own naming or the program's - so a new one is told from it.
+    /// The destination the run last knew on the hand's axis - its own naming or the program's - so a new one is
+    /// told from it.
     @State private var reported: Double?
 
-    /// Where the run last stood - sent there or left there - which a change of room keeps.
+    /// Where the run last stood on the hand's axis - sent there or left there - which a change of room keeps.
     @State private var standing: Double?
 
     /// Whether a change of room left the scroller too short for where the run stood.
@@ -79,13 +81,16 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
     private let source: Source
 
     /// Where the phase is written and read, when an author lent a binding.
-    private var pinned: Binding<Double>?
+    private var pinned: Binding<Phase>?
 
-    /// What moves the phase under the user's hand, if anything.
-    private var hand: LayoutInput?
+    /// What moves the phase under the user's hand, if anything, and the axis it moves.
+    private var hand: (input: LayoutInput, axis: WritableKeyPath<Phase, Double>)?
 
-    /// Where the phase may come to rest.
-    private var targets: [Double] = []
+    /// The whole phases the run may come to rest at.
+    private var targets: [Phase] = []
+
+    /// The axes that rest on targets of their own, each on its own.
+    private var axisTargets: [WritableKeyPath<Phase, Double>: [Double]] = [:]
 
     /// States whose writes run the arithmetic again on the host's frames.
     private var followed: [(any FollowedState)?] = []
@@ -100,7 +105,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
     private var law = Motion.inherited
 
     /// What a target the run names is told to beside the phase: a composed control's own value worked out from it.
-    private var named: ((Double) -> Void)?
+    private var named: ((Phase) -> Void)?
 
     /// A layout of views, one per item, placed by `placements` on the host's frames.
     ///
@@ -115,7 +120,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
         _ items: Items,
         id: KeyPath<Items.Element, ID>,
         @ViewBuilder content: @escaping (Items.Element) -> Content,
-        placements: @escaping @MainActor (Rect, Double) -> [Placement]
+        placements: @escaping @MainActor (Rect, Phase) -> [Placement]
     ) {
         source = Source(items: items, path: id, view: { content($0).node }, arithmetic: placements)
     }
@@ -131,7 +136,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
     public init<Content: View>(
         _ items: Items,
         @ViewBuilder content: @escaping (Items.Element) -> Content,
-        placements: @escaping @MainActor (Rect, Double) -> [Placement]
+        placements: @escaping @MainActor (Rect, Phase) -> [Placement]
     ) where Items.Element: Hashable, ID == Items.Element {
         self.init(items, id: \.self, content: content, placements: placements)
     }
@@ -148,36 +153,60 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
     ///
     /// - Parameter state: where the phase is written and read.
     /// - Returns: the layout, worked out from that phase.
-    public func phase(_ state: Binding<Double>) -> Self {
+    public func phase(_ state: Binding<Phase>) -> Self {
         var copy = self
         copy.pinned = state
         return copy
     }
 
-    /// What moves the phase under the user's hand.
+    /// What moves one axis of the phase under the user's hand.
     ///
-    ///     .input(.scroll(.horizontal, pointsPerUnit: 90))
+    ///     .input(.scroll(.horizontal, pointsPerUnit: 240), drives: \.turn)
     ///
     /// A scroll lies over the views, which take no touches of their own, and runs between the lowest and the
-    /// highest snap target: it needs `snapTargets(_:)`.
+    /// highest snap target on its axis: it needs `snap(_:to:)` for that axis or `snapTargets(_:)`. The hand moves
+    /// its own axis alone; the others go on as the program sends them.
     ///
-    /// - Parameter input: the hand's way of moving the phase.
+    /// - Parameters:
+    ///   - input: the hand's way of moving the axis.
+    ///   - axis: the axis it moves.
     /// - Returns: the layout, moved by the hand.
-    public func input(_ input: LayoutInput) -> Self {
+    public func input(_ input: LayoutInput, drives axis: WritableKeyPath<Phase, Double>) -> Self {
         var copy = self
-        copy.hand = input
+        copy.hand = (input, axis)
         return copy
     }
 
-    /// Where the phase may come to rest: the hand lets go and the run travels to the nearest.
+    /// The whole phases the run may come to rest at: the hand lets go and the run travels to the nearest.
     ///
     ///     .snapTargets([0, 0.2, 0.5, 1])
+    ///     .snapTargets([Orbit(turn: 0, zoom: 1), Orbit(turn: 1, zoom: 2)])
+    ///
+    /// Of a phase of several axes they are the combinations allowed: the nearest is the one at the least distance
+    /// over the axes given no targets of their own by `snap(_:to:)`, and every one of those axes travels to it.
     ///
     /// - Parameter targets: the phases the run may rest at.
     /// - Returns: the layout, resting on them.
-    public func snapTargets(_ targets: [Double]) -> Self {
+    public func snapTargets(_ targets: [Phase]) -> Self {
         var copy = self
-        copy.targets = targets.filter(\.isFinite).sorted()
+        copy.targets = targets.filter { target in Phase.axes.allSatisfy { target[keyPath: $0].isFinite } }
+        return copy
+    }
+
+    /// Where one axis of the phase may come to rest, whatever the other axes do.
+    ///
+    ///     .snap(\.turn, to: cards.indices.map(Double.init))
+    ///     .snap(\.zoom, to: [1, 2])
+    ///
+    /// The axis rests on its own targets alone, and only its own hand moves it there.
+    ///
+    /// - Parameters:
+    ///   - axis: the axis.
+    ///   - targets: where it may rest.
+    /// - Returns: the layout, resting that axis on them.
+    public func snap(_ axis: WritableKeyPath<Phase, Double>, to targets: [Double]) -> Self {
+        var copy = self
+        copy.axisTargets[axis] = targets.filter(\.isFinite).sorted()
         return copy
     }
 
@@ -244,7 +273,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
 
     /// The same layout telling `handler` each target the run names, as it names it: what a composed control
     /// keeps a value of its own by - `GalleryView`'s position.
-    func onNamed(_ handler: @escaping (Double) -> Void) -> Self {
+    func onNamed(_ handler: @escaping (Phase) -> Void) -> Self {
         var copy = self
         copy.named = handler
         return copy
@@ -254,8 +283,12 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
     public var body: some View {
         let run = self.run
 
-        if hand != nil, targets.isEmpty {
-            complain("A LayoutEngine was given a scroll but no snapTargets, which say how far it runs. Nothing scrolls.")
+        if Phase.axes.isEmpty {
+            complain("A LayoutEngine's phase names no axes: `axes` lists the numbers the hand and the program move.")
+        }
+        if hand != nil, run.stops.isEmpty {
+            complain("A LayoutEngine was given a scroll but no snap targets on the axis it drives, which say how far "
+                + "it runs. Nothing scrolls.")
         }
         if let pinned, pinned.followed == nil {
             complain("A LayoutEngine's phase is a state lent with `$`: a binding worked out from others cannot be "
@@ -289,14 +322,14 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
         let view: (Items.Element) -> Node
 
         /// Where every view goes, given the room and the phase.
-        let arithmetic: @MainActor (Rect, Double) -> [Placement]
+        let arithmetic: @MainActor (Rect, Phase) -> [Placement]
 
         /// What the initializer was handed.
         init(
             items: Items,
             path: KeyPath<Items.Element, ID>,
             view: @escaping (Items.Element) -> Node,
-            arithmetic: @escaping @MainActor (Rect, Double) -> [Placement]
+            arithmetic: @escaping @MainActor (Rect, Phase) -> [Placement]
         ) {
             self.items = items
             self.path = path
@@ -309,6 +342,9 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
     private var run: Run {
         let items = Array(source.items)
         let path = source.path
+        let axis = hand?.axis
+        let stops = axis.map { axis in axisTargets[axis] ?? Set(targets.map { $0[keyPath: axis] }).sorted() } ?? []
+        let scrolls = hand != nil && !stops.isEmpty
 
         return Run(
             items: items,
@@ -325,12 +361,15 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
                 reported: _reported, standing: _standing, regaining: _regaining, mirrored: _mirrored,
                 measured: _measured, length: _length, scrolled: _scrolled, dragged: _dragged,
                 placements: _placements, boxes: _boxes, room: _room),
+            axis: axis,
+            stops: stops,
             targets: targets,
+            axisTargets: axisTargets,
             law: law,
-            scrolls: hand != nil && !targets.isEmpty,
-            across: hand?.axis != .vertical,
-            per: hand?.pointsPerUnit ?? 1,
-            drags: hand != nil && !targets.isEmpty && device.info.formFactor == .desktop)
+            scrolls: scrolls,
+            across: hand?.input.axis != .vertical,
+            per: hand?.input.pointsPerUnit ?? 1,
+            drags: scrolls && device.info.formFactor == .desktop)
     }
 
     /// The layout's states, handed on whole: what its engine and handlers read and write.
@@ -346,5 +385,39 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
         let placements: State<PlacedRun>
         let boxes: State<PlacedRun>
         let room: State<Rect>
+    }
+}
+
+extension LayoutEngine where Phase == Double {
+    /// The same, with a phase of one axis: a `Double`.
+    public init<Content: View>(
+        _ items: Items,
+        id: KeyPath<Items.Element, ID>,
+        @ViewBuilder content: @escaping (Items.Element) -> Content,
+        placements: @escaping @MainActor (Rect, Double) -> [Placement]
+    ) {
+        source = Source(items: items, path: id, view: { content($0).node }, arithmetic: placements)
+    }
+
+    /// The same, for items that are their own identity, with a phase of one axis.
+    public init<Content: View>(
+        _ items: Items,
+        @ViewBuilder content: @escaping (Items.Element) -> Content,
+        placements: @escaping @MainActor (Rect, Double) -> [Placement]
+    ) where Items.Element: Hashable, ID == Items.Element {
+        self.init(items, id: \.self, content: content, placements: placements)
+    }
+
+    /// What moves the phase under the user's hand.
+    ///
+    ///     .input(.scroll(.horizontal, pointsPerUnit: 90))
+    ///
+    /// A scroll lies over the views, which take no touches of their own, and runs between the lowest and the
+    /// highest snap target: it needs `snapTargets(_:)`.
+    ///
+    /// - Parameter input: the hand's way of moving the phase.
+    /// - Returns: the layout, moved by the hand.
+    public func input(_ input: LayoutInput) -> Self {
+        self.input(input, drives: \.self)
     }
 }

@@ -583,6 +583,53 @@ a hand taking the run on its way stops the journey. A tap reaches the view
 drawn on top through `.onItemTapped`, and `.shade(_:)` darkens a far view by
 the `shade` its placement answers.
 
+A phase of several axes is a `LayoutPhase` of your own: a struct of numbers
+listing its axes. Each axis moves on its own - one under the hand, another
+written by the program - and travels under the same `.motion(_:)`:
+
+```swift
+struct Orbit: LayoutPhase {
+    var turn = 0.0
+    var zoom = 1.0
+
+    static var axes: [WritableKeyPath<Orbit, Double>] { [\.turn, \.zoom] }
+}
+
+struct Planets: View {
+    @State private var orbit = Orbit()
+
+    let names = ["Mercury", "Venus", "Earth", "Mars"]
+
+    var body: some View {
+        VStack {
+            LayoutEngine(names) { name in
+                Text(name)
+            } placements: { room, orbit in
+                names.indices.map { index in
+                    let size = 60 * orbit.zoom
+                    let step = Double(index) - orbit.turn
+
+                    return Placement(Rect(room.width / 2 - size / 2 + step * size * 1.5, 0, size, size))
+                }
+            }
+            .phase($orbit)
+            .input(.scroll(.horizontal, pointsPerUnit: 120), drives: \.turn)
+            .snap(\.turn, to: names.indices.map(Double.init))
+            .motion(.spring(response: .milliseconds(240)))
+            .height(160)
+
+            Button("Nearer").onClicked { orbit.zoom = orbit.zoom == 1 ? 2 : 1 }
+        }
+    }
+}
+```
+
+`.input(_:drives:)` says which axis a hand moves, and it moves that one
+alone. `.snap(_:to:)` gives an axis targets of its own, where it rests
+whatever the others do; `.snapTargets(_:)` lists whole phases instead - the
+combinations allowed - and letting go sends every axis without targets of
+its own to the nearest of them. A `Double` is the phase of one axis.
+
 A value read in the body is a change of the description: the layout is built
 again and its arithmetic with it. A state the arithmetic reads that moves on
 the host's frames - a drag of your own - is named in `.following(_:)` instead.

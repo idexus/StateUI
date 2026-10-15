@@ -20,15 +20,22 @@ extension LayoutEngine {
         let items: [Items.Element]
         let slots: [Slot]
         let make: (Items.Element) -> Node
-        let arithmetic: @MainActor (Rect, Double) -> [Placement]
+        let arithmetic: @MainActor (Rect, Phase) -> [Placement]
         let mask: Node?
         let tapped: ValueHandler<Items.Element>?
-        let named: ((Double) -> Void)?
+        let named: ((Phase) -> Void)?
 
         /// The phase the element wears: the author's, or the layout's own.
-        let phase: Binding<Double>
+        let phase: Binding<Phase>
         let states: States
-        let targets: [Double]
+
+        /// The axis the hand moves, and where on it the hand may come to rest, lowest first.
+        let axis: WritableKeyPath<Phase, Double>?
+        let stops: [Double]
+
+        /// The whole phases the run may rest at, and the axes resting on targets of their own.
+        let targets: [Phase]
+        let axisTargets: [WritableKeyPath<Phase, Double>: [Double]]
         let law: Motion
 
         /// Whether a scroll lies over the views, and which way it runs.
@@ -43,33 +50,50 @@ extension LayoutEngine {
 
         // MARK: - The phase
 
-        /// The lowest and the highest phase the hand reaches.
-        var low: Double { targets.first ?? 0 }
-        var high: Double { targets.last ?? 0 }
+        /// The lowest and the highest the hand reaches on its axis.
+        var low: Double { stops.first ?? 0 }
+        var high: Double { stops.last ?? 0 }
 
         /// How far the scroll runs beyond its room.
         var reach: Double { (high - low) * per }
 
-        /// Whether the phase is on a journey the program or a settle sent it on.
+        /// Whether the hand's axis is on a journey the program or a settle sent it on.
         var travels: Bool {
             let journey = phase.journey
-            return journey.value != journey.destination
+            return onAxis(journey.value) != onAxis(journey.destination)
         }
 
-        /// The phase as it stands this frame: where the host walks it, or under a scroll at rest where the scroller
-        /// is - and before the scroller's first layout where the run stood, the offset until then being nobody's.
+        /// Where `phase` stands on the hand's axis.
+        func onAxis(_ phase: Phase) -> Double {
+            axis.map { phase[keyPath: $0] } ?? 0
+        }
+
+        /// `phase` with the hand's axis at `value`, the other axes as they are.
+        func placing(_ value: Double, in phase: Phase) -> Phase {
+            guard let axis else { return phase }
+
+            var placed = phase
+            placed[keyPath: axis] = value
+            return placed
+        }
+
+        /// The phase as it stands this frame: where the host walks it, and under a scroll at rest the hand's axis
+        /// where the scroller is - before the scroller's first layout where the run stood, the offset until then
+        /// being nobody's.
         /// Design: docs/design/views/layout-engine.md#the-phase
-        func live() -> Double {
+        func live() -> Phase {
             let walked = phase.journey.value
 
             guard scrolls else { return walked }
-            guard states.measured.wrappedValue > 0 else { return held(states.standing.wrappedValue ?? walked) }
+            guard states.measured.wrappedValue > 0 else {
+                return placing(held(states.standing.wrappedValue ?? onAxis(walked)), in: walked)
+            }
 
-            return travels ? held(walked) : scrolledPhase()
+            return placing(travels ? held(onAxis(walked)) : scrolledTo(), in: walked)
         }
 
-        /// The phase where the scroller stands.
-        func scrolledPhase() -> Double {
+        /// Where the scroller stands on the hand's axis.
+        func scrolledTo() -> Double {
             let turned = low + along(states.scrolled.projectedValue.journey.value) / per
 
             guard turned.isFinite else { return low }
@@ -77,53 +101,98 @@ extension LayoutEngine {
             return held(turned)
         }
 
-        /// A phase held between the lowest and the highest the hand reaches.
-        func held(_ phase: Double) -> Double {
-            scrolls ? min(max(phase, low), high) : phase
+        /// A place on the hand's axis held between the lowest and the highest the hand reaches.
+        func held(_ value: Double) -> Double {
+            scrolls ? min(max(value, low), high) : value
         }
 
-        /// The snap target nearest `phase`.
-        func nearest(_ phase: Double) -> Double {
-            targets.min { abs($0 - phase) < abs($1 - phase) } ?? phase
+        /// The place on the hand's axis nearest `value` the hand may rest at.
+        func nearest(_ value: Double) -> Double {
+            Self.nearest(of: stops, to: value)
         }
 
-        /// The scroller's offset along its axis, and an offset standing the run at `phase`.
+        /// Of `values`, the one nearest `value`; the first of two as near.
+        static func nearest(of values: [Double], to value: Double) -> Double {
+            values.min { abs($0 - value) < abs($1 - value) } ?? value
+        }
+
+        /// Where the run comes to rest from `phase` once the hand lets go: an axis with targets of its own on the
+        /// nearest of them, and only by its own hand; every other axis at the nearest whole target, by the distance
+        /// over them.
+        /// Design: docs/design/views/layout-engine.md#coming-to-rest
+        func resting(near phase: Phase) -> Phase {
+            guard let axis else { return phase }
+
+            var rest = phase
+            if let own = axisTargets[axis] {
+                rest[keyPath: axis] = Self.nearest(of: own, to: phase[keyPath: axis])
+                return rest
+            }
+
+            let free = Phase.axes.filter { axisTargets[$0] == nil }
+            func apart(_ target: Phase) -> Double {
+                free.reduce(0) { sum, each in
+                    let gap = target[keyPath: each] - phase[keyPath: each]
+                    return sum + gap * gap
+                }
+            }
+
+            guard let whole = targets.min(by: { apart($0) < apart($1) }) else { return rest }
+
+            for each in free { rest[keyPath: each] = whole[keyPath: each] }
+            return rest
+        }
+
+        /// The scroller's offset along its axis, and an offset standing the run at `value` on the hand's axis.
         func along(_ offset: Point) -> Double { across ? offset.x : offset.y }
 
-        func offset(at phase: Double) -> Point {
-            let distance = (held(phase) - low) * per
+        func offset(at value: Double) -> Point {
+            let distance = (held(value) - low) * per
             return across ? Point(distance, 0) : Point(0, distance)
         }
 
-        /// A snap target the run passes or rests on, written where the hand holds it: a reading, not a journey.
+        /// A place on the hand's axis the run passes or rests on, written where the hand holds it: a reading, not a
+        /// journey.
         func name(_ target: Double) {
-            states.reported.wrappedValue = target
-            named?(target)
-
             let journey = phase.journey
-            guard journey.value != target || journey.destination != target else { return }
+            let named = placing(target, in: journey.destination)
 
-            journey.snap(to: target)
+            states.reported.wrappedValue = target
+            self.named?(named)
+
+            guard let axis, onAxis(journey.value) != target || onAxis(journey.destination) != target else { return }
+
+            journey.snap(axis, to: target)
         }
 
         /// A destination the run did not name is the program's: where the run is going, which a change of room keeps.
         func heard() {
-            let destination = phase.journey.destination
+            let destination = onAxis(phase.journey.destination)
             guard destination != states.reported.wrappedValue else { return }
 
             states.reported.wrappedValue = destination
             states.standing.wrappedValue = held(destination)
         }
 
-        /// The run travels on from `start` to `target` as a journey of the phase, under the layout's motion.
-        func send(to target: Double, from start: Double) {
-            states.reported.wrappedValue = target
-            states.standing.wrappedValue = target
-            named?(target)
-
-            guard abs(start - target) * per > Self.settled else { return name(target) }
-
+        /// The hand let go where the scroller stands: the run travels on to where it comes to rest.
+        func letGo() {
             let journey = phase.journey
+            let at = scrolledTo()
+
+            send(to: resting(near: placing(at, in: journey.destination)), from: placing(at, in: journey.value))
+        }
+
+        /// The run travels on from `start` to `target` as a journey of the phase, under the layout's motion.
+        func send(to target: Phase, from start: Phase) {
+            let along = onAxis(target)
+            let journey = phase.journey
+
+            states.standing.wrappedValue = along
+            guard abs(onAxis(start) - along) * per > Self.settled || target != placing(along, in: journey.destination)
+            else { return name(along) }
+
+            states.reported.wrappedValue = along
+            named?(target)
             journey.value = start
             _ = journey.move(to: target)
         }
@@ -173,18 +242,18 @@ extension LayoutEngine {
             if travels {
                 if let mirrored, abs(along(scroller.value) - mirrored) > Self.settled {
                     states.mirrored.wrappedValue = nil
-                    name(nearest(scrolledPhase()))
+                    name(nearest(scrolledTo()))
                 } else {
-                    let at = offset(at: phase.journey.value)
+                    let at = offset(at: onAxis(phase.journey.value))
                     scroller.snap(to: at)
                     states.mirrored.wrappedValue = along(at)
                 }
             } else if mirrored != nil {
                 // Landed: the scroller stands where the phase arrived.
                 states.mirrored.wrappedValue = nil
-                scroller.snap(to: offset(at: phase.journey.value))
+                scroller.snap(to: offset(at: onAxis(phase.journey.value)))
             } else {
-                name(nearest(scrolledPhase()))
+                name(nearest(scrolledTo()))
             }
         }
 
@@ -220,8 +289,7 @@ extension LayoutEngine {
         func settle() {
             guard !states.regaining.wrappedValue, !travels else { return }
 
-            let start = scrolledPhase()
-            send(to: nearest(start), from: start)
+            letGo()
         }
 
         /// A pointer drag: the offset follows the pointer, and the run settles where it lets go.
@@ -237,8 +305,7 @@ extension LayoutEngine {
                 journey.snap(to: across ? Point(at, 0) : Point(0, at))
 
             case .ended, .cancelled:
-                let start = scrolledPhase()
-                send(to: nearest(start), from: start)
+                letGo()
             }
         }
 
@@ -247,7 +314,7 @@ extension LayoutEngine {
         /// Design: docs/design/views/layout-engine.md#a-change-of-room
         func framed(_ frame: Rect) {
             let room = across ? frame.width : frame.height
-            let target = states.standing.wrappedValue ?? held(phase.journey.destination)
+            let target = states.standing.wrappedValue ?? held(onAxis(phase.journey.destination))
             let sendTo = along(offset(at: target))
             let astray = abs(along(states.scrolled.projectedValue.journey.value) - sendTo) > 1
             let changed = states.measured.wrappedValue > 0 && room != states.measured.wrappedValue
@@ -264,7 +331,7 @@ extension LayoutEngine {
 
         /// The run sent back to where it stood once the scroller holds it.
         func regain() {
-            let target = states.standing.wrappedValue ?? held(phase.journey.destination)
+            let target = states.standing.wrappedValue ?? held(onAxis(phase.journey.destination))
 
             guard laidLength - states.measured.wrappedValue >= along(offset(at: target)) - 1 else { return }
 
@@ -296,5 +363,3 @@ extension Placement {
             tall)
     }
 }
-
-

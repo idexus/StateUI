@@ -4802,6 +4802,103 @@ enum Listings {
                 Self.height * fit)
         }
         """#,
+        "LayoutPhaseSample": #"""
+        // Sources/Samples/Layout/LayoutPhaseSample.swift
+        /// THE PHASE: two numbers, each moved on its own - the turn by the hand,
+        /// the spread by the switch.
+        struct Deal: LayoutPhase {
+            /// Which card is at the front.
+            var turn = 2.0
+
+            /// How far the cards are fanned out: 0 a pile, 1 an arc.
+            var spread = 0.0
+
+            static var axes: [WritableKeyPath<Deal, Double>] { [\.turn, \.spread] }
+        }
+
+        /// The cards: a name and a colour each.
+        static let names = ["Mural", "Nebula", "Ridge", "Bloom", "Tide"]
+        static let colours = ["#7C3AED", "#2563EB", "#0D9488", "#D97706", "#DB2777"]
+
+        /// Where the run stands on both axes - handed on with `$`, never read in
+        /// the body.
+        @State private var deal = Deal()
+
+        /// The switch's own value: what the body reads.
+        @State private var fanned = false
+
+        var body: some View {
+            Grid {
+                Grid {
+                    Rectangle(Palette.raised)
+
+                    cards
+                }
+                .gridRow(0)
+                .clipsContent(true)
+
+                SwitchRow(
+                    "Fan out",
+                    Binding(
+                        get: { fanned },
+                        set: { fanning in
+                            fanned = fanning
+                            // ONE AXIS WRITTEN: the spread travels there, and a
+                            // turn under way goes on as it was.
+                            deal.spread = fanning ? 1 : 0
+                        }))
+                .horizontalAlignment(.center)
+                .gridRow(1)
+            }
+            .rows(.fill, .auto)
+        }
+
+        /// The cards, placed from both axes of the phase.
+        private var cards: some View {
+            LayoutEngine(Array(Self.names.indices)) { index in
+                face(index)
+            } placements: { room, deal in
+                Self.names.indices.map { place($0, deal, room) }
+            }
+            .phase($deal)
+            // THE HAND DRIVES THE TURN ALONE, resting on a card; the spread has
+            // no hand, so it needs no targets.
+            .input(.scroll(.horizontal, pointsPerUnit: 90), drives: \.turn)
+            .snap(\.turn, to: Self.names.indices.map(Double.init))
+            .motion(.eased(.milliseconds(600), .cubicOut))
+        }
+
+        /// Where one card stands: between a pile and an arc by the spread, the
+        /// card at the front in the middle either way.
+        private func place(_ index: Int, _ deal: Deal, _ room: Rect) -> Placement {
+            let step = Double(index) - deal.turn
+            let width = min(room.width * 0.36, room.height * 0.5, 150)
+            let height = width * 1.4
+
+            // A PILE leaves each card a few points behind the one in front; an ARC
+            // sets it most of a card along, lower and turned with the curve.
+            let pile = 1 - deal.spread
+            let across = step * (10 * pile + width * 0.75 * deal.spread)
+            let down = abs(step) * (-6 * pile + width * 0.12 * deal.spread)
+
+            return Placement(
+                Rect(room.width / 2 - width / 2 + across, room.height / 2 - height / 2 + down, width, height),
+                transform: .rotate(step * 10 * deal.spread).scale(1 - min(abs(step), 3) * 0.06),
+                zIndex: 100 - Int(min(abs(step), 9) * 10))
+        }
+
+        /// One card's face: its colour and its name.
+        private func face(_ index: Int) -> some View {
+            ZStack {
+                Rectangle(Color(Self.colours[index]))
+
+                Text(Self.names[index])
+                    .fontWeight(.bold)
+                    .horizontalAlignment(.center)
+                    .verticalAlignment(.center)
+            }
+        }
+        """#,
         "LifecycleSample": #"""
         // Sources/Samples/Windows/LifecycleSample.swift
         /// The window's log, kept by its gallery window. It is written by `MainPage`

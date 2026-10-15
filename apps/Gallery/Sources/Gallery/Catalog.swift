@@ -164,6 +164,7 @@ final class Catalog {
                     Sample(GridSample()),
                     Sample(ZStackSample()),
                     Sample(LayoutEngineSample()),
+                    Sample(LayoutPhaseSample()),
                     Sample(ScrollViewSample()),
                     Sample(SizingSample()),
                     Sample(OutlineSample()),

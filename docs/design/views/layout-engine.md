@@ -87,15 +87,36 @@ so once. The engine follows the phase itself, so a new one wakes the arithmetic 
 builds nothing: a destination the run did not name is the program's, and
 becomes where the run stands should the room change.
 
+## A phase of many axes
+
+A phase is a `LayoutPhase`: a struct of numbers, its axes listed as key
+paths, and `Double` the phase of one axis. An axis is a degree of freedom the
+hand or the program moves on its own - how far a ring is turned, how near it
+stands; how many dimensions the layout has is the arithmetic's, which may
+read one axis for several things. The element wears the whole phase, one
+lane an axis in the order `axes` names them: a part of a state is never
+carried, so one state is one channel however many axes it has.
+
+A hand drives one axis (`.input(_:drives:)`) and moves it alone: the
+arithmetic is handed the phase walked by the host with the hand's axis where
+the scroller stands, a target passed is named on that axis, and the scroller
+mirrors a journey of that axis only - another axis travelling under the
+program leaves the hand leading its own. `.input(_:)` is a `Double`
+phase's, whose one axis is `\.self`.
+
+The type is inferred from the phase lent, `.phase($orbit)`, which stands in
+the same expression as the arithmetic; a layout lent none takes its own,
+started at `init()`. A phase naming no axes is said.
+
 ## The hand
 
 A scroll is an empty native scroller over the views, its offset in points the
-phase times `pointsPerUnit` from the lowest snap target. It is a scroller
+hand's axis times `pointsPerUnit` from the lowest snap target on that axis. It is a scroller
 rather than a drag on purpose: a finger drag, a two-finger trackpad swipe and
 a mouse wheel are one thing to a scroller and three things to everything else,
-so all three move the run with the platform's own physics. A scroll needs its
-snap targets, which say how far it runs; one given none lays no scroller and
-says why.
+so all three move the run with the platform's own physics. A scroll needs
+snap targets on its axis, which say how far it runs; one given none lays no
+scroller and says why.
 
 The views under a scroll take no touches: everything the user does belongs to
 the scroller over them. The scroller's content has nothing to show, only a
@@ -132,6 +153,24 @@ a new room asks.
   under the room, so the box stands at the view's place plus however far the
   run has scrolled. The boxes are ranked as the views, so the platform's own
   hit test finds the one drawn on top. With no scroll the view itself answers.
+
+## Coming to rest
+
+When the hand lets go the run travels on to where it comes to rest, from
+where the scroller stopped, as one journey of the phase. Two ways say where
+that is, and both may stand on one layout:
+
+- `.snap(\.axis, to:)` gives an axis targets of its own. It is independent:
+  it rests on the nearest of them, and only its own hand moves it there - a
+  settle of another hand leaves it where the program put it.
+- `.snapTargets([...])` lists whole phases, the combinations allowed. The
+  nearest is the one at the least distance over the axes without targets of
+  their own, every one of those axes travelling to it; of two as near, the
+  first listed. A `Double` phase's targets are of this kind.
+
+Under the hand only the hand's axis is named - the nearest place on it any
+target names - so an axis the hand does not drive never jumps as the scroll
+passes; the whole combination is reached at rest.
 
 ## A change of room
 
