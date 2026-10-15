@@ -33,6 +33,21 @@ is. When the user takes the value on a control that reports it, the
 animation stops where the user holds it and its waiter hears that it was cut
 short.
 
+## A channel lane by lane
+
+A channel travels in runs: the lanes one change sent on together, each run an
+animation of its own in the animator (`AnimationTarget.state(_:run:)`) with
+the waiter that change brought. A change names its lanes by their dirty bits,
+so a write of some lanes - a new destination, a value written, a speed -
+takes those lanes out of the runs they travel in, where they stand, and
+leaves the rest of each run going on its own clock: a phase of two axes
+turned by the hand while the program moves its zoom keeps both journeys
+whole. A run cut short answers its waiter false once and travels on with the
+lanes it keeps, its animation narrowed to them; the laws work lane by lane,
+so narrowing changes no frame. A stop and a user's take end every run. A
+write of every lane is one run, as a whole value always was, and the channel
+says itself once a frame however many runs moved.
+
 ## Described motion
 
 A patch can describe how a property of an element moves to its new value.

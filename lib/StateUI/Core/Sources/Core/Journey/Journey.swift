@@ -196,13 +196,36 @@ public struct Journey<Value: Walked> {
 
         if let motion { travelling.motion = motion }
 
-        // The waiter forces the destination: a fresh journey even to where it is going.
+        // The waiter forces the destination only where no lane of it changes - a fresh journey even to where it is
+        // going; otherwise the lanes it changes are the journey, and the others travel on.
+        // Design: docs/design/core/journeys.md#moving-and-waiting
+        let fresh = lanes.destination == target ? JourneyLanes<Value>.mask(of: .destination) : 0
         storage.lay(
             [.destination, .completion, .motion], of: travelling,
-            forcing: JourneyLanes<Value>.mask(of: .destination) | JourneyLanes<Value>.mask(of: .completion))
+            forcing: fresh | JourneyLanes<Value>.mask(of: .completion))
 
         storage.moved(to: target)
         return arrival
+    }
+
+    /// Puts one part of the value there at once, as `snap(to:)` does the whole: the other lanes go on as they were.
+    /// Design: docs/design/core/journeys.md#one-part-at-once
+    func snap(_ part: WritableKeyPath<Value, Double>, to target: Double) {
+        guard HandlerRun.admits("a snap") else { return }
+        guard let (storage, _, standing) = walking() else {
+            var landed = state.wrappedValue
+            landed[keyPath: part] = target
+            return state.land(landed)
+        }
+
+        var lanes = standing
+
+        lanes.value[keyPath: part] = target
+        lanes.destination[keyPath: part] = target
+        lanes.velocity[keyPath: part] = 0
+        storage.lay([.value, .destination, .velocity], of: lanes)
+        storage.noteDestination(lanes.destination)
+        storage.askForRender()
     }
 
     /// Stops an animation where it stands; whoever waits on it hears it did not run

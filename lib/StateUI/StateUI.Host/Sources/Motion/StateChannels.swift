@@ -103,12 +103,21 @@
             emit: emit)
     }
 
-    /// Takes the values an animator advance gave; a channel no control wears goes once it lands.
+    /// Takes the values an animator advance gave, said once a channel; a channel no control wears goes once it
+    /// lands.
     public func follow(_ steps: [AnimationStep]) {
+        var moved: [Int32: [(run: Int, step: AnimationStep)]] = [:]
+
         for step in steps {
-            guard case .state(let number) = step.target else { continue }
-            channels[number]?.follow(step.value, step.velocity, rested: step.rested, emit: emit)
-            if step.rested, wearers[number] == nil { channels[number] = nil }
+            guard case .state(let number, let run) = step.target else { continue }
+            moved[number, default: []].append((run, step))
+        }
+
+        for number in moved.keys.sorted() {
+            guard let channel = channels[number], let runs = moved[number] else { continue }
+
+            channel.follow(runs, emit: emit)
+            if !channel.isActive, wearers[number] == nil { channels[number] = nil }
         }
     }
 
@@ -154,39 +163,46 @@
         return completions
     }
 
-    private func emit(
-        _ channel: StateChannel,
-        report: HostJourneyUpdate?,
-        completion: JourneyCompletion? = nil
-    ) {
+    private func emit(_ channel: StateChannel, report: HostJourneyUpdate?, answered: [JourneyCompletion]) {
         outputs.append(StateChannelOutput(
             state: channel.binding.state,
             binding: channel.binding,
             journey: channel.presented,
             report: report))
 
-        if let completion {
-            completions.append(completion)
-        }
+        completions.append(contentsOf: answered)
     }
 }
 
-/// One state's channel: its animated value, one animation at a time.
+/// What a channel says after a change: itself, what the core hears, and the waiters answered.
+private typealias StateChannelEmit = (StateChannel, HostJourneyUpdate?, [JourneyCompletion]) -> Void
+
+/// One state's channel: its animated value, travelling in runs - the lanes one write sent on together, each an
+/// animation of its own - so a write of some lanes leaves the other lanes' travel and their waiter as they were.
+/// Design: docs/design/host/motion.md#a-channel-lane-by-lane
 @MainActor
 private final class StateChannel {
     var binding: HostStateBinding
 
     private let animator: Animator
-    private let target: AnimationTarget
     private var value: [Double]
     private var destination: [Double]
     private var velocity: [Double]
     private var motion: Motion
-    private var completion: Int?
     private var stopped: UInt64
 
-    /// Whether the animator runs this channel's animation.
-    var isActive: Bool { animator.animation(for: target) != nil }
+    /// The runs under way by number, and the last number given.
+    private var runs: [Int: Run] = [:]
+    private var numbered = 0
+
+    /// Lanes travelling together, and the waiter their arrival answers.
+    private struct Run {
+        var lanes: [Int]
+        var completion: Int?
+    }
+
+    /// Whether any run of this channel is under way.
+    var isActive: Bool { !runs.isEmpty }
 
     init(
         binding: HostStateBinding,
@@ -194,35 +210,35 @@ private final class StateChannel {
         animator: Animator,
         now: Double,
         reducesMotion: Bool,
-        emit: (StateChannel, HostJourneyUpdate?, JourneyCompletion?) -> Void
+        emit: StateChannelEmit
     ) {
         self.binding = binding
         self.animator = animator
-        target = .state(binding.state)
         value = journey.value
         destination = journey.destination
         velocity = journey.velocity
         motion = journey.motion
-        completion = journey.completion
         stopped = journey.stopped
 
         guard !motion.isCustom else { return }
         aim(
+            Array(value.indices),
             at: journey,
-            usesStatedVelocity: true,
+            stated: Array(value.indices),
             usesCompletion: true,
             now: now,
             reducesMotion: reducesMotion,
             emit: emit)
     }
 
+    /// The journey as it stands; its waiter the newest run's.
     var presented: HostJourney {
         HostJourney(
             value: value,
             destination: destination,
             velocity: velocity,
             motion: motion,
-            completion: completion,
+            completion: runs.keys.max().flatMap { runs[$0]?.completion },
             stopped: stopped)
     }
 
@@ -231,57 +247,57 @@ private final class StateChannel {
         changed: UInt64,
         now: Double,
         reducesMotion: Bool,
-        emit: (StateChannel, HostJourneyUpdate?, JourneyCompletion?) -> Void
+        emit: StateChannelEmit
     ) {
         guard incoming.value.count == value.count else { return }
         let width = value.count
+        let all = Array(value.indices)
 
-        func changedAny(_ range: Range<Int>) -> Bool {
-            range.contains { changed & (UInt64(1) << UInt64(min($0, 63))) != 0 }
-        }
+        func names(_ lane: Int) -> Bool { changed & (UInt64(1) << UInt64(min(lane, 63))) != 0 }
+        func named(from first: Int) -> [Int] { all.filter { names(first + $0) } }
 
-        let changedValue = changedAny(0..<width)
-        let changedDestination = changedAny(width..<(width * 2))
-        let changedVelocity = changedAny((width * 2)..<(width * 3))
-        let changedCompletion = changed
-            & (UInt64(1) << UInt64(min((width * 3) + 3, 63))) != 0
-        let changedStop = changed & (UInt64(1) << UInt64(min((width * 3) + 4, 63))) != 0
+        let values = named(from: 0)
+        let destinations = named(from: width)
+        let velocities = named(from: width * 2)
+        let changedCompletion = names((width * 3) + 3)
+        let changedStop = names((width * 3) + 4)
 
         if changedStop {
             sample(now: now, emit: emit)
-            if isActive { cancelCompletion(emit: emit) }
-            animator.halt(target)
+            halt(all, emit: emit)
             destination = value
             velocity = Array(repeating: 0, count: width)
             motion = incoming.motion
             stopped = incoming.stopped
-            emit(self, .position, nil)
+            emit(self, .position, [])
         }
 
-        if changedValue {
+        if !values.isEmpty {
             sample(now: now, emit: emit)
-            if isActive { cancelCompletion(emit: emit) }
-            animator.halt(target)
-            value = incoming.value
-            destination = incoming.destination
-            velocity = incoming.velocity
+            halt(values, emit: emit)
+            for lane in values {
+                value[lane] = incoming.value[lane]
+                destination[lane] = incoming.destination[lane]
+                velocity[lane] = incoming.velocity[lane]
+            }
             motion = incoming.motion
-            completion = nil
             stopped = incoming.stopped
         }
 
-        if changedDestination {
+        if !destinations.isEmpty {
             aim(
+                destinations,
                 at: incoming,
-                usesStatedVelocity: changedVelocity,
+                stated: velocities,
                 usesCompletion: changedCompletion,
                 now: now,
                 reducesMotion: reducesMotion,
                 emit: emit)
-        } else if changedVelocity {
+        } else if !velocities.isEmpty {
             aim(
+                velocities,
                 at: incoming,
-                usesStatedVelocity: true,
+                stated: velocities,
                 usesCompletion: false,
                 now: now,
                 reducesMotion: reducesMotion,
@@ -289,116 +305,148 @@ private final class StateChannel {
         } else {
             motion = incoming.motion
             stopped = incoming.stopped
-            emit(self, nil, nil)
+            emit(self, nil, [])
         }
     }
 
-    /// Takes where the animator put the animation: a frame on the way, or the landing.
-    func follow(
-        _ lanes: [Double],
-        _ speed: [Double],
-        rested: Bool,
-        emit: (StateChannel, HostJourneyUpdate?, JourneyCompletion?) -> Void
-    ) {
-        guard !rested else {
-            animator.halt(target)
-            value = destination
-            velocity = Array(repeating: 0, count: value.count)
-            let landed = completion.map { JourneyCompletion(id: $0, succeeded: true) }
-            completion = nil
-            emit(self, .position, landed)
-            return
+    /// Takes where the animator put each run - a frame on the way, or the landing - and says it once.
+    func follow(_ steps: [(run: Int, step: AnimationStep)], emit: StateChannelEmit) {
+        var landed = false
+        var answered: [JourneyCompletion] = []
+
+        for (number, step) in steps {
+            guard let run = runs[number] else { continue }
+
+            guard !step.rested else {
+                animator.halt(.state(binding.state, run: number))
+                runs[number] = nil
+                for lane in run.lanes {
+                    value[lane] = destination[lane]
+                    velocity[lane] = 0
+                }
+                landed = true
+                if let completion = run.completion { answered.append(JourneyCompletion(id: completion, succeeded: true)) }
+                continue
+            }
+
+            for (index, lane) in run.lanes.enumerated() {
+                value[lane] = step.value[index]
+                velocity[lane] = step.velocity[index] * 1_000
+            }
         }
 
-        value = lanes
-        velocity = speed.map { $0 * 1_000 }
-        emit(self, .frame, nil)
+        emit(self, landed ? .position : .frame, answered)
     }
 
-    /// Stops the animation where the user holds the value.
+    /// Stops every lane where the user holds the value.
     @discardableResult
-    func take(
-        _ taken: [Double],
-        emit: (StateChannel, HostJourneyUpdate?, JourneyCompletion?) -> Void
-    ) -> Bool {
+    func take(_ taken: [Double], emit: StateChannelEmit) -> Bool {
         guard taken.count == value.count else { return false }
 
-        if isActive { cancelCompletion(emit: emit) }
-        animator.halt(target)
+        halt(Array(value.indices), emit: emit)
         value = taken
         destination = taken
         velocity = Array(repeating: 0, count: taken.count)
-        completion = nil
-        emit(self, .position, nil)
+        emit(self, .position, [])
         return true
     }
 
+    /// Sends `lanes` on to where `incoming` says, under its law, as one run: from where they stand, at the speed
+    /// stated for a lane `stated` names and at their own otherwise; a run they leave travels on without them.
     private func aim(
+        _ lanes: [Int],
         at incoming: HostJourney,
-        usesStatedVelocity: Bool,
+        stated: [Int],
         usesCompletion: Bool,
         now: Double,
         reducesMotion: Bool,
-        emit: (StateChannel, HostJourneyUpdate?, JourneyCompletion?) -> Void
+        emit: StateChannelEmit
     ) {
-        if isActive {
-            sample(now: now, emit: emit)
-            if isActive { cancelCompletion(emit: emit) }
-        }
+        sample(now: now, emit: emit)
+        halt(lanes, emit: emit)
 
         motion = incoming.motion
-        completion = usesCompletion ? incoming.completion : nil
         stopped = incoming.stopped
-        destination = incoming.destination
+        let completion = usesCompletion ? incoming.completion : nil
+        for lane in lanes { destination[lane] = incoming.destination[lane] }
 
         if motion.isCustom {
-            animator.halt(target)
-            value = incoming.value
-            velocity = incoming.velocity
-            emit(self, nil, nil)
+            for lane in lanes {
+                value[lane] = incoming.value[lane]
+                velocity[lane] = incoming.velocity[lane]
+            }
+            emit(self, nil, [])
             return
         }
 
         let animation = Animation(
-            from: value,
-            destination: destination,
-            velocity: (usesStatedVelocity ? incoming.velocity : velocity).map { $0 / 1_000 },
+            from: lanes.map { value[$0] },
+            destination: lanes.map { destination[$0] },
+            velocity: lanes.map { (stated.contains($0) ? incoming.velocity[$0] : velocity[$0]) / 1_000 },
             motion: motion,
             began: now)
-        velocity = animation.velocity.map { $0 * 1_000 }
+        for (index, lane) in lanes.enumerated() { velocity[lane] = animation.velocity[index] * 1_000 }
 
         let instant = motion.law == .eased && motion.milliseconds == 0
 
         if instant || reducesMotion || animation.arrives {
-            animator.halt(target)
-            value = destination
-            velocity = Array(repeating: 0, count: value.count)
-            let landed = completion.map { JourneyCompletion(id: $0, succeeded: true) }
-            completion = nil
-            emit(self, .position, landed)
+            for lane in lanes {
+                value[lane] = destination[lane]
+                velocity[lane] = 0
+            }
+            emit(self, .position, completion.map { [JourneyCompletion(id: $0, succeeded: true)] } ?? [])
             return
         }
 
-        animator.start(animation, for: target)
-        emit(self, .position, nil)
+        numbered += 1
+        runs[numbered] = Run(lanes: lanes, completion: completion)
+        animator.start(animation, for: .state(binding.state, run: numbered))
+        emit(self, .position, [])
     }
 
-    /// Brings the value to where the animation stands at `now`, before a change lands.
-    private func sample(
-        now: Double,
-        emit: (StateChannel, HostJourneyUpdate?, JourneyCompletion?) -> Void
-    ) {
-        guard let animation = animator.animation(for: target) else { return }
+    /// Takes `lanes` out of the runs they travel in, where they stand: a run cut short fails its waiter and travels
+    /// on with the lanes it keeps, its own animation narrowed to them.
+    private func halt(_ lanes: [Int], emit: StateChannelEmit) {
+        for number in runs.keys.sorted() {
+            guard let run = runs[number] else { continue }
 
-        let position = animation.position(at: now)
-        follow(position.value, position.velocity, rested: position.rested, emit: emit)
+            let kept = run.lanes.indices.filter { !lanes.contains(run.lanes[$0]) }
+            guard kept.count < run.lanes.count else { continue }
+
+            if let completion = run.completion { emit(self, nil, [JourneyCompletion(id: completion, succeeded: false)]) }
+
+            let target = AnimationTarget.state(binding.state, run: number)
+            guard !kept.isEmpty, let animation = animator.animation(for: target) else {
+                animator.halt(target)
+                runs[number] = nil
+                continue
+            }
+
+            animator.start(
+                Animation(
+                    from: kept.map { animation.from[$0] },
+                    destination: kept.map { animation.destination[$0] },
+                    velocity: kept.map { animation.velocity[$0] },
+                    motion: animation.motion,
+                    began: animation.began),
+                for: target)
+            runs[number] = Run(lanes: kept.map { run.lanes[$0] }, completion: nil)
+        }
     }
 
-    private func cancelCompletion(
-        emit: (StateChannel, HostJourneyUpdate?, JourneyCompletion?) -> Void
-    ) {
-        guard let completion else { return }
-        self.completion = nil
-        emit(self, nil, JourneyCompletion(id: completion, succeeded: false))
+    /// Brings every run to where it stands at `now`, before a change lands.
+    private func sample(now: Double, emit: StateChannelEmit) {
+        let steps = runs.keys.sorted().compactMap { number -> (run: Int, step: AnimationStep)? in
+            let target = AnimationTarget.state(binding.state, run: number)
+            guard let animation = animator.animation(for: target) else { return nil }
+
+            let position = animation.position(at: now)
+            return (number, AnimationStep(
+                target: target, value: position.value, velocity: position.velocity, rested: position.rested))
+        }
+
+        guard !steps.isEmpty else { return }
+
+        follow(steps, emit: emit)
     }
 }

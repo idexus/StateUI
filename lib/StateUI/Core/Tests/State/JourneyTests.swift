@@ -135,6 +135,23 @@ final class JourneyTests: XCTestCase {
         XCTAssertNotEqual(moved & Lanes.mask(of: .destination), 0, "and lays where it goes")
     }
 
+    /// A MOVE LAYS ONLY THE LANES IT CHANGES, so the host leaves another lane's travel as it was; a move to where
+    /// every lane is going already lays them all, a fresh journey its waiter hears end.
+    func testAMoveLaysOnlyTheLanesItChanges() throws {
+        let offset = State(wrappedValue: Point(0, 0))
+        Renders().render(ScrollView { Text("a") }.scrollOffset(offset.projectedValue).node)
+        let image = try XCTUnwrap(offset.storage.walkedImage())
+        typealias Lanes = JourneyLanes<Point>
+        let y = HostStorage.bit(of: Lanes.range(of: .destination).lowerBound + 1)
+
+        let beforeMove = image.pendingMask
+        offset.projectedValue.journey.move(to: Point(10, 0))
+        XCTAssertEqual(image.pendingMask & ~beforeMove & y, 0, "the lane it does not change, left alone")
+
+        offset.projectedValue.journey.move(to: Point(10, 0))
+        XCTAssertNotEqual(image.pendingMask & y, 0, "every lane laid again where none changes")
+    }
+
     /// THE LAW RIDES THE VALUE, not the view showing it. `.motion(_:)` on an
     /// element says how everything that element does travels; `@State(motion:)`
     /// says how THIS value travels wherever it is shown, and it survives on the

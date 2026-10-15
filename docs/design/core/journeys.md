@@ -88,9 +88,12 @@ and answers true.
 The waiter is booked with the renderer under a negative id from the counter
 every awaited act draws from, and the id is written into the completion lane;
 nothing is queued, and the host answers by that id when the animation finishes
-or is interrupted. The destination and completion lanes are forced dirty, so
-sending a value where it is already going is still a fresh journey with a fresh
-waiter. The write and the booking land before `move` returns, so moves sent one after
+or is interrupted. The completion lane is forced dirty, and the destination
+lanes are forced too where none of them changes, so sending a value where it
+is already going is still a fresh journey with a fresh waiter. Where some
+lanes change, only they are laid: the host sends those lanes on as one run
+under the waiter, and a lane the move leaves alone travels on as it was
+(host/motion.md, a channel lane by lane). The write and the booking land before `move` returns, so moves sent one after
 another and awaited after are in the air together, booked in the order
 written. A given law stays on the value: a plain assignment after
 `move(to: 0, .eased(.milliseconds(2000)))` animates for two seconds too.
@@ -130,6 +133,15 @@ it came from - a colour is eight bits a channel, and the host reports the
 frames between them - so a stop or a move laying the whole journey again would
 say the value and its speed moved, and the host would start over from them
 (`JourneyTests.testAJourneyWriteLaysOnlyItsPart`).
+
+## One part at once
+
+A layout engine names the target its hand passes on one axis of its phase,
+which another hand or the program may be moving: `Journey.snap(_:to:)`, the
+library's own, puts one part of the value - a key path to one of its numbers -
+where it is at once, as `snap(to:)` does the whole. Its lanes of value,
+destination and speed are laid and no other, so the host takes that lane out
+of the run it travelled in and leaves the rest going.
 
 ## Two reader sets
 
