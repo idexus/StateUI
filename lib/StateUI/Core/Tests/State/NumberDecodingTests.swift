@@ -24,6 +24,17 @@ final class NumberDecodingTests: XCTestCase {
         XCTAssertTrue(hasComplained("past 2^53"))
     }
 
+    /// 2^53 IS MEASURED THE SAME WHATEVER AN INT'S WIDTH: on the Web an `Int` has 32 bits, none of them past 2^53,
+    /// where shifting one 53 places measured nought and every whole number but nought was said past it.
+    func testTwoToTheFiftyThirdIsMeasuredWhateverTheWidth() {
+        XCTAssertFalse(Int32(1).isPastExactNumbers)
+        XCTAssertFalse(Int32.max.isPastExactNumbers)
+        XCTAssertFalse(Int32.min.isPastExactNumbers)
+        XCTAssertFalse((Int64(1) << 53).isPastExactNumbers)
+        XCTAssertTrue(((Int64(1) << 53) + 1).isPastExactNumbers)
+        XCTAssertTrue(Int64.min.isPastExactNumbers)
+    }
+
     func testAKeptWholeNumberNoIntHoldsComesBackAsNothing() {
         for number in unheld {
             XCTAssertNil(Int(persisted: .number(number)), "\(number) kept on disk")

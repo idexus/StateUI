@@ -13,10 +13,18 @@ extension Int {
     /// The number a whole number crosses to the host as. A number holds every whole number exactly only up to 2^53;
     /// one past it arrives rounded, said once.
     var crossing: Double {
-        if magnitude > 1 << 53 {
+        if isPastExactNumbers {
             complain("A whole number past 2^53 crossed to the host and arrives rounded: a number holds every whole "
                 + "number exactly only up to 2^53. Keep such a value as words, or split it.")
         }
         return Double(self)
+    }
+}
+
+extension BinaryInteger {
+    /// Whether the whole number is past 2^53, beyond which a number - a `Double` - holds no longer every whole one;
+    /// measured in 64 bits, whatever the width of its own type.
+    var isPastExactNumbers: Bool {
+        UInt64(clamping: magnitude) > (1 as UInt64) << 53
     }
 }
