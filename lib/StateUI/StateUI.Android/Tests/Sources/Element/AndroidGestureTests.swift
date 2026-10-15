@@ -183,6 +183,8 @@ final class AndroidGestureTests: XCTestCase {
             // 150 points to the left, on the first card, in six steps of 50 pixels.
             layout.touch(0, x: 100, y: 100, at: 0)
             for step in 1...6 { layout.touch(2, x: 100 - Float(step) * 50, y: 100, at: Int64(step) * 20) }
+            // The hand's moves reach the run at the next display frame, as one.
+            host.frame()
             host.settle { turn.wrappedValue >= 1 }
 
             XCTAssertGreaterThanOrEqual(turn.wrappedValue, 1, "the run moved with the finger")
