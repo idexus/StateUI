@@ -76,9 +76,28 @@ class StateUIViewGroup extends ViewGroup {
         ignoresInput = ignores;
     }
 
+    /** The layout's gestures seeing the touches its children get, before they get them, where a hand moves it. */
+    private final StateUIWatch watch = new StateUIWatch();
+
+    /**
+     * Lets `listener` see the layout's touches and its hovering pointer: before its children get them where a hand
+     * moves the layout - a finger on a child answering a tap is the hand's once it moves along - else those no
+     * child takes.
+     */
+    void watch(StateUIListener listener, boolean beforeChildren) {
+        watch.watch(beforeChildren ? listener : null);
+        setOnTouchListener(beforeChildren ? null : listener);
+        setOnHoverListener(beforeChildren ? null : listener);
+    }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        return !ignoresInput && super.dispatchTouchEvent(event);
+        return !ignoresInput && watch.touch(this, event, super::dispatchTouchEvent);
+    }
+
+    @Override
+    public boolean dispatchGenericMotionEvent(MotionEvent event) {
+        return watch.hover(this, event, super::dispatchGenericMotionEvent);
     }
 
     /** A layout that does not scroll lets its children show a press at once. */

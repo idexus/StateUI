@@ -25,7 +25,7 @@ extension AndroidView {
         let told = Listening(hearing: hearing, countsTaps: countsTaps)
         guard told != listening else { return }
 
-        if listening == .nothing { watchTouches() }
+        if listening == .nothing || listening.hearing.contains(.hand) != hearing.contains(.hand) { watchTouches(hearing) }
         listening = told
         if hearing.contains(.drags) { press = DragRecognition(distance: .radius(Self.touchSlop(density: density))) }
         Java.call(

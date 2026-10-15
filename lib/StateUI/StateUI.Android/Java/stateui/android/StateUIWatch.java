@@ -20,8 +20,10 @@ final class StateUIWatch {
     /** Whether the gesture under way took the touch from the parts. */
     private boolean took;
 
+    /** Lets `listener` see the touches first; null for none. */
     void watch(StateUIListener listener) {
         this.listener = listener;
+        took = false;
     }
 
     /** Hands `event` to the gestures, then to the parts through `parts` unless a gesture took the touch. */

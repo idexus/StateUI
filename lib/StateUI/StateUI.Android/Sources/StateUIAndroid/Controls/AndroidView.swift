@@ -76,9 +76,9 @@ class AndroidView {
     }
 
     /// Lets the view's listener see its touches and its hovering pointer, for the gestures its element listens
-    /// for. A view made of parts lets it see what its parts get, before they get it.
+    /// for - `hearing`. A view made of parts lets it see what its parts get, before they get it.
     /// Design: docs/design/platforms/android/controls.md#gestures
-    func watchTouches() {
+    func watchTouches(_ hearing: Hearing) {
         listen(JavaAPI.setOnTouchListener, JavaAPI.setOnHoverListener)
     }
 

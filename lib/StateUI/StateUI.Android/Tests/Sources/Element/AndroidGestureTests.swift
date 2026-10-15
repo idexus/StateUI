@@ -16,6 +16,7 @@ final class AndroidGestureTests: XCTestCase {
             ("testAPinchSaysItsScaleAndWhereItIsCentred", testAPinchSaysItsScaleAndWhereItIsCentred),
             ("testThePointerPressesMovesReleasesAndHovers", testThePointerPressesMovesReleasesAndHovers),
             ("testAPressOnAViewInFrontIsNotHeardBehindIt", testAPressOnAViewInFrontIsNotHeardBehindIt),
+            ("testAHandOnACardThatAnswersATapMovesTheRun", testAHandOnACardThatAnswersATapMovesTheRun),
         ]
     }
 
@@ -155,6 +156,39 @@ final class AndroidGestureTests: XCTestCase {
             host.settle { !heard.values.isEmpty }
 
             XCTAssertEqual(heard.values, [], "the box in front took the press")
+        }
+    }
+
+    /// A HAND ON A CARD THAT ANSWERS A TAP MOVES THE RUN: the layout sees the finger before the card does, so a
+    /// finger put down on the card and dragged along the run is the layout's - and no tap of the card.
+    func testAHandOnACardThatAnswersATapMovesTheRun() throws {
+        try onMainActor {
+            let turn = State(wrappedValue: 0.0)
+            let tapped = Received<Int>()
+            let host = AndroidRenderer.running {
+                LayoutEngine([0, 1, 2, 3]) { card in
+                    Rectangle().fill(.red).onTapped { tapped.values.append(card) }
+                } placements: { _, phase in
+                    (0..<4).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, 100)) }
+                }
+                .phase(turn.projectedValue)
+                .input(.scroll(.horizontal, pointsPerUnit: 100))
+                .snapTargets([0, 1, 2, 3])
+                .motion(.none)
+                .height(100)
+            }
+            host.layOut()
+            let layout = try XCTUnwrap(host.views(AndroidZStackView.self).first)
+
+            // 150 points to the left, on the first card, in six steps of 50 pixels.
+            layout.touch(0, x: 100, y: 100, at: 0)
+            for step in 1...6 { layout.touch(2, x: 100 - Float(step) * 50, y: 100, at: Int64(step) * 20) }
+            host.settle { turn.wrappedValue >= 1 }
+
+            XCTAssertGreaterThanOrEqual(turn.wrappedValue, 1, "the run moved with the finger")
+            layout.touch(1, x: -200, y: 100, at: 140)
+            host.runtime.pump.turn()
+            XCTAssertEqual(tapped.values, [], "a hand is no tap")
         }
     }
 

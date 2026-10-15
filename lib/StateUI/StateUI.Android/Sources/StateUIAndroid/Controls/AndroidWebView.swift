@@ -30,7 +30,7 @@ final class AndroidWebView: AndroidView {
     private var history = WebHistory()
 
     /// The page's own touches and hovering are seen by its element's gestures before the page gets them.
-    override func watchTouches() {
+    override func watchTouches(_ hearing: Hearing) {
         Java.call(reference, JavaAPI.watchWeb, .object(listener.reference))
     }
 

@@ -19,7 +19,10 @@ field's typing and its Return reach the same Swift view.
 
 A layout an engine moves hears the hand through its view's one listener
 (`StateUIGestures`): a finger, followed by a `VelocityTracker`, and a
-wheel's notches (`ACTION_SCROLL`, by the platform's scroll factor). A finger
+wheel's notches (`ACTION_SCROLL`, by the platform's scroll factor). The
+listener sees each touch before the layout's children do (`StateUIWatch`,
+as a view made of parts): a card answering a tap takes the finger down, yet
+once the hand claims it the card's press is called off. A finger
 down decides nothing and leaves the parent free to intercept; past the slop,
 its first move goes to the Swift host, whose host layer claims it along the
 layout's axis (`handed`) - claimed, the layout takes the rest of the touch and
