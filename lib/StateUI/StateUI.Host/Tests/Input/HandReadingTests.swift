@@ -88,16 +88,54 @@ final class HandReadingTests: XCTestCase {
         XCTAssertTrue(hand.isWheeling)
     }
 
-    /// THE MOMENTUM IS UNBROKEN: it steps every frame, so a step after a gap of more than three frames is a hand
-    /// that stopped it and moves again - the next gesture, however small.
+    /// THE MOMENTUM IS UNBROKEN: it steps every frame, a late one now and then, so a step after a gap of more than
+    /// six frames is a hand that stopped it and moves again - the next gesture, however small.
     func testAGapInTheMomentumIsTheNextGesture() {
         var hand = HandReading()
 
         for (step, size) in [40.0, 36, 32, 28].enumerated() { _ = hand.notched(Point(-size, 0), at: Double(step) * 16) }
         XCTAssertEqual(hand.notched(Point(-24, 0), at: 64), [], "the momentum, swallowed")
+        XCTAssertEqual(hand.notched(Point(-2, 0), at: 130), [], "a frame or three late, still the momentum")
 
-        XCTAssertEqual(hand.notched(Point(-2, 0), at: 130).map(\.phase), [.began, .changed])
+        XCTAssertEqual(hand.notched(Point(-2, 0), at: 240).map(\.phase), [.began, .changed])
     }
+
+    /// A STEP AGAINST THE MOMENTUM is a hand that turned it back: the next gesture, however small.
+    func testAStepAgainstTheMomentumIsTheNextGesture() {
+        var hand = HandReading()
+
+        for (step, size) in [40.0, 36, 32, 28].enumerated() { _ = hand.notched(Point(-size, 0), at: Double(step) * 16) }
+
+        XCTAssertEqual(hand.notched(Point(2, 0), at: 64).map(\.phase), [.began, .changed])
+    }
+
+    /// A TRACKPAD'S SWIPE ON A PAGE IS ONE GESTURE, its momentum swallowed to the last step: a frame drawn late
+    /// doubles a step at the same pace, a step glued to the one before comes milliseconds after it, and the tail
+    /// creeps a point a frame - none of them a hand. Safari's own events of one fast swipe.
+    func testATrackpadSwipeOnAPageIsOneGesture() {
+        var hand = HandReading()
+
+        let reports = Self.swipe.flatMap { time, delta in hand.notched(Point(-delta, 0), at: time) }
+
+        XCTAssertEqual(reports.filter { $0.phase == .began }.count, 1, "one gesture")
+        XCTAssertEqual(reports.filter { $0.phase == .ended }.count, 1, "let go once")
+        XCTAssertLessThan(reports.firstIndex { $0.phase == .ended } ?? .max, 16, "as the steps begin to fade")
+    }
+
+    /// One fast swipe of two fingers over a page in Safari on a Mac's trackpad, its momentum after it, as the page
+    /// heard it (2026-10-15): when, in milliseconds, and how far, `deltaX`.
+    private static let swipe: [(Double, Double)] = [
+        (0.0, 1), (16.6, 5), (34.0, 10), (50.1, 21), (67.3, 40), (83.8, 66), (100.0, 92), (116.6, 112), (133.8, 144),
+        (150.4, 150), (167.1, 148), (183.7, 141), (200.4, 134), (217.0, 126), (233.7, 117), (250.4, 111),
+        (266.7, 106), (283.7, 103), (300.5, 97), (317.0, 93), (333.7, 89), (349.7, 84), (367.1, 79), (383.8, 74),
+        (400.5, 70), (417.5, 64), (433.9, 60), (450.4, 57), (467.2, 53), (483.8, 49), (500.4, 45), (517.7, 41),
+        (533.9, 39), (550.2, 35), (567.8, 33), (583.8, 30), (599.9, 28), (617.1, 26), (633.8, 22), (650.4, 21),
+        (667.7, 19), (683.8, 17), (700.4, 16), (717.5, 14), (734.6, 13), (750.0, 12), (771.2, 11), (783.9, 10),
+        (800.4, 9), (833.5, 17), (850.4, 7), (867.0, 7), (885.5, 6), (900.4, 6), (916.2, 5), (933.8, 5), (950.1, 5),
+        (966.9, 4), (983.8, 4), (1000.0, 4), (1017.0, 3), (1033.8, 3), (1050.5, 3), (1066.8, 3), (1084.2, 2),
+        (1099.7, 2), (1117.1, 2), (1133.8, 2), (1150.1, 1), (1166.3, 1), (1183.7, 1), (1199.9, 1), (1216.9, 1),
+        (1250.4, 1), (1267.1, 1), (1283.5, 1),
+    ]
 
     /// THE MOMENTUM ENDS WITH A PAUSE: a step after one is the next gesture, however small.
     func testTheMomentumEndsWithAPause() {

@@ -37,12 +37,17 @@
     /// The shortest time a speed is read over, in milliseconds: a display frame.
     public static let frame = 16.0
 
-    /// How many steps of a wheel, each smaller than the last, say it was let go: a trackpad's momentum.
+    /// How many steps of a wheel, each slower than the last, say it was let go: a trackpad's momentum.
     public static let fade = 3
 
-    /// The longest the momentum goes without a step, in milliseconds - three frames: a step after a longer gap is
-    /// a hand that stopped it and moves again.
-    public static let gap = 48.0
+    /// The longest the momentum goes without a step, in milliseconds - six frames: a step after a longer gap is a
+    /// hand that stopped it and moves again.
+    public static let gap = 100.0
+
+    /// How much faster than the momentum's last step a step must go to be a hand pushing again, and the least it
+    /// must move, in points: the momentum's tail creeps by a point a frame, late or not.
+    public static let surge = 1.5
+    public static let least = 4.0
 
     /// Whether a gesture is under way, and whether it is a wheel's.
     private var open = false
@@ -58,9 +63,11 @@
     /// When the hand last moved.
     private var last = 0.0
 
-    /// How far a wheel's last step went, how many steps in a row were smaller than the one before, and whether
-    /// what still comes is the momentum after a lift, swallowed.
-    private var step = 0.0
+    /// How fast a wheel's last step went - how far over the time since the one before, a frame at least - which
+    /// way, how many steps in a row were slower than the one before, and whether what still comes is the momentum
+    /// after a lift, swallowed.
+    private var pace = 0.0
+    private var heading = Point.zero
     private var fading = 0
     private var coasting = false
 
@@ -160,16 +167,19 @@
     }
 
     /// A wheel's notch moved what is under the hand by `moved`, at `time`: the first opens a gesture, and steps
-    /// fading `fade` times in a row let it go - what follows of the momentum is swallowed until a gap in it, or
-    /// a step that grows again.
+    /// slowing `fade` times in a row let it go - what follows of the momentum is swallowed until a gap in it, a
+    /// step against it, or one pushing again.
     /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
     public mutating func notched(_ moved: Point, at time: Double) -> [Report] {
         let size = (moved.x * moved.x + moved.y * moved.y).squareRoot()
-        let before = step
-        step = size
+        let before = pace
+        pace = size / max(time - last, Self.frame)
+        let against = moved.x * heading.x + moved.y * heading.y < 0
+        if size > 0 { heading = moved }
 
         if coasting {
-            guard time - last > Self.gap || size > before else {
+            let pushed = pace > before * Self.surge && size >= Self.least
+            guard time - last > Self.gap || against || pushed else {
                 last = time
                 return []
             }
@@ -182,7 +192,7 @@
             return begun + self.moved(moved, at: time)
         }
 
-        fading = size < before ? fading + 1 : size > before ? 0 : fading
+        fading = pace < before ? fading + 1 : pace > before ? 0 : fading
         guard fading >= Self.fade else { return self.moved(moved, at: time) }
 
         let lift = lifted(at: time, speed: nil)
