@@ -23,8 +23,12 @@
     /// platform says it happened, in the frame clock's milliseconds, where it says so.
     case hand(GesturePhase, moved: Point, speed: Point?, at: Double? = nil)
 
-    /// A wheel's notch over a layout: how far it moved what is under the hand.
+    /// A wheel's step over a layout: how far it moved what is under the hand - a stream of them, a trackpad's.
     case wheel(Point)
+
+    /// A wheel's notches over a layout, as many as it turned, across and down, the way they move what is under the
+    /// hand - where the platform says the wheel turns notch by notch; a part of one where it turns finer.
+    case notch(Point)
 
     /// A drag of the view between views started.
     case dragStarted

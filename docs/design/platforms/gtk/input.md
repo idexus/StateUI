@@ -114,8 +114,9 @@ it is - claimed for the layout, or denied, so a scrolled window holding it
 takes it - its moves told since the last and its lift with the event's time,
 from which the host layer reads its speed; and a scroll controller, a
 touchpad's two fingers (`scroll-begin`, each step, `scroll-end`) told as the
-hand and a wheel's notches (`GDK_SCROLL_UNIT_WHEEL`, forty points a notch) as
-a wheel, each step answering whether the layout took it.
+hand and a wheel's notches (`GDK_SCROLL_UNIT_WHEEL`, parts of one for a fine
+wheel) as notches, each a step of the run to the next target - every step
+answering whether the layout took it.
 ## A drag between views
 
 A view's drags are GTK's own controllers. A view that can be dragged holds a

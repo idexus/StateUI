@@ -48,10 +48,11 @@
     /// hand that stopped it and moves again.
     public static let gap = 100.0
 
-    /// How much faster than the momentum at its slowest the wheel must go to be a hand pushing again, and the
-    /// least a step moves, in points, to count toward a push or a fade: a slow hand and the momentum's tail creep a
-    /// few points a frame, slowing and quickening by chance, and the system makes a momentum of none of it.
+    /// How much faster than the momentum at its slowest the wheel must go to be a hand pushing again.
     public static let surge = 1.5
+
+    /// The least a step moves, in points, to count toward a push or a fade: a slow hand and the momentum's tail
+    /// creep a few points a frame, slowing and quickening by chance, and the system makes a momentum of none of it.
     public static let least = 8.0
 
     /// Whether a gesture is under way, and whether it is a wheel's.
@@ -67,6 +68,9 @@
 
     /// When the hand last moved.
     private var last = 0.0
+
+    /// The part of a notch a fine wheel has turned toward the next, along the layout's axis.
+    private var turned = 0.0
 
     /// A wheel's steps of the last `window`, how fast they went - their sum over the window - which way, how many
     /// steps in a row went slower than the one before, and whether what still comes is the momentum after a lift,
@@ -126,6 +130,21 @@
         guard let axis, Self.claims(moved, along: axis) else { return (false, []) }
 
         return (true, notched(moved, at: time))
+    }
+
+    /// A wheel's notches over a layout moved along `axis`, turned as `notches` says: taken where they turn along the
+    /// axis, the whole notches they come to with what was turned before - a fine wheel's parts adding up - and
+    /// none until they do.
+    /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
+    public mutating func notches(_ notches: Point, along axis: LayoutInput.Axis?) -> (taken: Bool, steps: Point?) {
+        guard let axis, Self.claims(notches, along: axis) else { return (false, nil) }
+
+        turned += axis == .horizontal ? notches.x : notches.y
+        let whole = turned.rounded(.towardZero)
+        turned -= whole
+        guard whole != 0 else { return (true, nil) }
+
+        return (true, axis == .horizontal ? Point(whole, 0) : Point(0, whole))
     }
 
     /// The hand begins, at `time`: a wheel still open is let go first.

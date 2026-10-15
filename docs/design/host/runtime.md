@@ -377,7 +377,10 @@ a pause lets it go - so the wheel is let go there with the speed its moves
 say. The momentum after it is swallowed until a step against it, the wheel
 half as fast again as the momentum at its slowest with a step of eight
 points at least - a hand pushing again - or a gap of more than six frames, a
-hand that stopped it and moves again. A mouse's even notches never fade. A layout claims a hand
+hand that stopped it and moves again. A wheel the platform says turns notch by
+notch is no stream: it is said as notches (`HeardInput.notch`), a fine
+wheel's parts adding up to whole ones (`HandReading.notches`), each a step
+of the run to the next target (`handStepped`). A layout claims a hand
 whose first move is more along its axis than across it; the rest is left to
 whatever holds the layout, a page's scroller. What the hand does to the run -
 the phase moving with it, a throw to the target nearest its end - is the

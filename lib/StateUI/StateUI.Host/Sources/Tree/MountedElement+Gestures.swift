@@ -53,6 +53,10 @@ extension MountedElement {
             said(heard.reports, in: runtime)
             if handReading.isWheeling { runtime.handPace.opened(self) }
             return heard.taken
+        case .notch(let notches):
+            let heard = handReading.notches(notches, along: handAxis)
+            if let steps = heard.steps { send(.handStepped, [.numbers([steps.x, steps.y])], in: runtime) }
+            return heard.taken
         case .dragStarted:
             send(.dragStarting, [], in: runtime)
         case .dragEnded:

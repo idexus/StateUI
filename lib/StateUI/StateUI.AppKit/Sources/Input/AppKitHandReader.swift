@@ -37,16 +37,22 @@ final class AppKitHandReader {
         return took
     }
 
-    /// A scroll event over the layout: a gesture's step, its momentum, or a wheel's notch. Whether the layout took
-    /// it.
+    /// A wheel's notches over the layout, as many as it turned, across and down: the host's entry. Whether the
+    /// layout took them.
+    @discardableResult
+    func notched(_ notches: Point) -> Bool {
+        taking(.notch(notches))
+    }
+
+    /// A scroll event over the layout: a gesture's step, its momentum, or a wheel's notches - a wheel that turns
+    /// notch by notch tells no precise deltas. Whether the layout took it.
     func scrolled(_ event: NSEvent) -> Bool {
-        let lines = event.hasPreciseScrollingDeltas ? 1 : Self.line
-        let moved = Point(Double(event.scrollingDeltaX) * lines, Double(event.scrollingDeltaY) * lines)
+        let moved = Point(Double(event.scrollingDeltaX), Double(event.scrollingDeltaY))
         // The event's own time is on the frame clock's: seconds since the system started.
         let time = event.timestamp * 1_000
 
         if !event.momentumPhase.isEmpty { return tookLast }
-        guard !event.phase.isEmpty else { return taking(.wheel(moved)) }
+        guard !event.phase.isEmpty else { return event.hasPreciseScrollingDeltas ? taking(.wheel(moved)) : notched(moved) }
         if event.phase.contains(.mayBegin) { return false }
 
         if event.phase.contains(.began) { hand(.began, moved: .zero, at: time) }
@@ -55,9 +61,6 @@ final class AppKitHandReader {
 
         return hand(.changed, moved: moved, at: time)
     }
-
-    /// How far one line of a wheel moves what is under it, in points: a scroller's line.
-    static let line = 10.0
 }
 
 /// The pointer dragged over a layout: AppKit's drag recognizer, its moves since the last and its speed at the lift

@@ -205,6 +205,25 @@ final class HandReadingTests: XCTestCase {
         (1250.4, 1), (1267.1, 1), (1283.5, 1),
     ]
 
+    /// A WHEEL TURNED NOTCH BY NOTCH STEPS THE RUN, a step a notch, along the layout's axis alone; a fine wheel's
+    /// parts of a notch add up to whole ones, and a notch across the axis is left to whatever holds the layout.
+    func testAWheelsNotchesAreStepsAlongTheAxis() {
+        var hand = HandReading()
+
+        XCTAssertEqual(hand.notches(Point(-1, 0), along: .horizontal).steps, Point(-1, 0))
+        XCTAssertEqual(hand.notches(Point(-3, 0), along: .horizontal).steps, Point(-3, 0), "as many as it turned")
+
+        XCTAssertEqual(hand.notches(Point(0.5, 0), along: .horizontal).steps, nil, "half a notch: none yet")
+        let whole = hand.notches(Point(0.75, 0), along: .horizontal)
+        XCTAssertEqual(whole.taken, true)
+        XCTAssertEqual(whole.steps, Point(1, 0), "the parts make one, the rest kept")
+        XCTAssertEqual(hand.notches(Point(0.75, 0), along: .horizontal).steps, Point(1, 0))
+
+        let across = hand.notches(Point(0, -1), along: .horizontal)
+        XCTAssertEqual(across.taken, false, "down, over a run moved across")
+        XCTAssertEqual(hand.notches(Point(0, -1), along: .vertical).steps, Point(0, -1))
+    }
+
     /// A HAND BEGINNING WHILE A WHEEL IS OPEN ENDS THE WHEEL FIRST: one gesture at a time.
     func testAHandBeginningEndsAnOpenWheel() {
         var hand = HandReading()

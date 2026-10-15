@@ -105,6 +105,9 @@ extension WebDriver {
             }
             web.hand(.changed, moved: offset, at: nil)
             web.hand(.ended, moved: .zero, speed: speed, at: nil)
+        // A wheel's notches reach the host's entry as a wheel measured in lines would hand them - ✓.
+        case (.notch(let notches), _):
+            guard let web = element.native as? WebElement, web.notched(notches) else { throw DriverCannot(act, on: element) }
         case (.pinch(let scale, let share), _): try pinch(e, by: scale, at: share)
         default: throw DriverCannot(act, on: element)
         }

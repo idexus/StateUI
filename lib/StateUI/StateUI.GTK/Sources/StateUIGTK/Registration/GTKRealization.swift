@@ -85,6 +85,7 @@ enum GTKRealization {
         .complete("LayoutEngine", "background"),
         .complete("LayoutEngine", "handAxis"),
         .complete("LayoutEngine", "handMoved"),
+        .complete("LayoutEngine", "handStepped"),
         .partial("DatePicker", "format", missing: "GTK writes \"D\" and \"d\" in the user's own way, and any other pattern as \"d\"."),
         .partial("DatePicker", "maximumDate",
                  missing: "GtkCalendar offers every day: one the user picks past the range stands at its end."),

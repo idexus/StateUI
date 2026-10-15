@@ -297,6 +297,7 @@ extension NodeType {
     static let dragEnded = ViewContract.dragEnded.token
     static let frameChanged = ViewContract.frameChanged.token
     static let handMoved = LayoutEngineContract.handMoved.token
+    static let handStepped = LayoutEngineContract.handStepped.token
     static let isFocusedChanged = FocusElementContract.isFocusedChanged.token
     static let keyPressed = KeyboardElementContract.keyPressed.token
     static let showsSidebarChanged = SplitViewContract.showsSidebarChanged.token

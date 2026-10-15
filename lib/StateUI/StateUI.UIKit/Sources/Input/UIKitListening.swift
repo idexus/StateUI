@@ -22,9 +22,12 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     /// Which way the hand moves the layout the view is, where one does.
     var handAxis: (() -> LayoutInput.Axis?)?
 
-    /// The hand over a layout, and where it had come to at its last report.
+    /// The hand over a layout, and where it had come to at its last report; a wheel turned notch by notch over it,
+    /// and where it had come to.
     private var handPan: UIPanGestureRecognizer?
     private var handLast = CGPoint.zero
+    private var handWheel: UIPanGestureRecognizer?
+    private var wheelLast = CGPoint.zero
 
     private var recognizers: [Hearing: [UIGestureRecognizer]] = [:]
 
@@ -54,7 +57,10 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
             } else {
                 for recognizer in recognizers[kind] ?? [] { view.removeGestureRecognizer(recognizer) }
                 recognizers[kind] = nil
-                if kind == .hand { handPan = nil }
+                if kind == .hand {
+                    handPan = nil
+                    handWheel = nil
+                }
             }
         }
         self.hearing = hearing
@@ -74,11 +80,16 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
             pan.maximumNumberOfTouches = 1
             return [pan]
         case .hand:
-            // A finger, a trackpad's two fingers and a wheel: one pan.
+            // A finger and a trackpad's two fingers: one pan; a wheel turned notch by notch, which touches nothing:
+            // another, each of its steps a notch.
             let pan = UIPanGestureRecognizer(target: self, action: #selector(handMoved(_:)))
-            pan.allowedScrollTypesMask = .all
+            pan.allowedScrollTypesMask = .continuous
             handPan = pan
-            return [pan]
+            let wheel = UIPanGestureRecognizer(target: self, action: #selector(handNotched(_:)))
+            wheel.allowedScrollTypesMask = .discrete
+            wheel.allowedTouchTypes = []
+            handWheel = wheel
+            return [pan, wheel]
         default: return [UIPinchGestureRecognizer(target: self, action: #selector(pinched(_:)))]
         }
     }
@@ -161,6 +172,25 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
         }
     }
 
+    /// A wheel turned notch by notch over a layout: each step of it a notch, the way it moved what is under it.
+    @objc func handNotched(_ recognizer: UIPanGestureRecognizer) {
+        let total = recognizer.translation(in: view)
+        if recognizer.state == .began { wheelLast = .zero }
+        guard recognizer.state == .began || recognizer.state == .changed else { return }
+
+        let step = CGPoint(x: total.x - wheelLast.x, y: total.y - wheelLast.y)
+        wheelLast = total
+        func notch(_ value: CGFloat) -> Double { value > 0 ? 1 : value < 0 ? -1 : 0 }
+        if step != .zero { notched(Point(x: notch(step.x), y: notch(step.y))) }
+    }
+
+    /// A wheel's notches over a layout, as many as it turned, across and down: the host's entry. Whether the layout
+    /// took them.
+    @discardableResult
+    func notched(_ notches: Point) -> Bool {
+        onHeard?(.notch(notches)) ?? false
+    }
+
     /// The hand at `phase`, having moved what is under it by `moved`, lifting at `speed`: the host's entry. Whether
     /// the layout took it.
     @discardableResult
@@ -171,7 +201,8 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     /// The hand over a layout begins only moving along the layout's axis - its first move or, from a trackpad or a
     /// wheel that tells none yet, its speed - by the host layer's rule.
     func gestureRecognizerShouldBegin(_ recognizer: UIGestureRecognizer) -> Bool {
-        guard recognizer === handPan, let pan = handPan else { return true }
+        guard recognizer === handPan || recognizer === handWheel, let pan = recognizer as? UIPanGestureRecognizer
+        else { return true }
         guard let axis = handAxis?() else { return false }
 
         let moved = pan.translation(in: view)
@@ -210,7 +241,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
         _ recognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer
     ) -> Bool {
         // The hand over a layout is the layout's alone: a scroller holding it does not move with it.
-        if recognizer === handPan, other is UIPanGestureRecognizer { return false }
+        if recognizer === handPan || recognizer === handWheel, other is UIPanGestureRecognizer { return false }
         return !isSwipeBack(other)
     }
 
@@ -218,7 +249,8 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     func gestureRecognizer(
         _ recognizer: UIGestureRecognizer, shouldBeRequiredToFailBy other: UIGestureRecognizer
     ) -> Bool {
-        if recognizer === handPan, let scroller = other.view as? UIScrollView, other === scroller.panGestureRecognizer {
+        if recognizer === handPan || recognizer === handWheel, let scroller = other.view as? UIScrollView,
+           other === scroller.panGestureRecognizer {
             return true
         }
         return recognizer is UIPanGestureRecognizer && isSwipeBack(other)

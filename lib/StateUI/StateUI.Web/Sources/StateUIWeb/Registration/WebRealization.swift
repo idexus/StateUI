@@ -113,6 +113,7 @@ enum WebRealization {
         .partial("LayoutEngine", "background", missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
         .complete("LayoutEngine", "handAxis"),
         .complete("LayoutEngine", "handMoved"),
+        .complete("LayoutEngine", "handStepped"),
         .partial("Window", "background", missing: "A page draws its window opaque: a blur or glass shows its colour."),
         .notPlanned("Window", "maximumHeight", reason: "A page bounds no browser window: the user sizes it."),
         .notPlanned("Window", "maximumWidth", reason: "A page bounds no browser window: the user sizes it."),

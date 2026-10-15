@@ -304,6 +304,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
                 element.addHandler(LayoutEngineContract.handMoved) { phase, moved, speed in
                     run.hand(phase, moved: moved, speed: speed)
                 }
+                element.addHandler(LayoutEngineContract.handStepped) { notches in run.step(notches) }
             }
         }
         .setValue(ViewContract.area.token, on: $placements, mode: .out, kind: .placement)

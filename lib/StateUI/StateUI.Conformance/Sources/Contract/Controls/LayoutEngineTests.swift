@@ -210,6 +210,21 @@
 
                 s.expect(phase.wrappedValue, 3, "not the nearest to where the hand let go, but to where the throw ends")
             },
+            ConformanceCase("aWheelsNotchStepsTheRunToTheNextTarget", proves: [
+                Covered(LayoutEngineContract.handStepped),
+            ]) { s in
+                let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
+                let layout = try handLayout(s, clock: clock, phase: phase)
+
+                // A notch is a step, however far a target stands: one on, then two more.
+                try s.perform(.notch(by: Point(-1, 0)), on: layout)
+                frames(s, clock, until: 800)
+                s.expect(phase.wrappedValue, 1, "the next target")
+
+                try s.perform(.notch(by: Point(-2, 0)), on: layout)
+                frames(s, clock, until: 1_600)
+                s.expect(phase.wrappedValue, 3, "a target a notch")
+            },
             ConformanceCase("aHandAcrossItsAxisLeavesTheRun", proves: [Covered(LayoutEngineContract.handAxis)]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
                 let layout = try handLayout(s, clock: clock, phase: phase)

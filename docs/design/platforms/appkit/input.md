@@ -107,7 +107,8 @@ a pointer dragged, by a pan recognizer whose moves and lift speed it hands
 on; a trackpad's or a Magic Mouse's fingers, by the view's `scrollWheel`,
 each event with a `phase` a step of the gesture - the system's momentum
 after the lift (`momentumPhase`) swallowed, as the layout throws the run
-itself; and a wheel's notches, events with no phase, a line ten points. The
+itself; and a wheel's notches, events with no phase and no precise deltas,
+told as notches - each a step of the run to the next target. The
 first move of a gesture decides whose it is, as for a one-axis scroller
 (scrolling, above): more along the layout's axis than across, the layout's,
 and a scroll it does not take goes on to whatever holds it - a page's

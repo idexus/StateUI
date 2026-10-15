@@ -134,6 +134,7 @@ enum AndroidRealization {
         .partial("Window", "background", missing: "An activity is opaque by the theme it starts in: a blur or glass shows its colour."),
         .complete("LayoutEngine", "handAxis"),
         .complete("LayoutEngine", "handMoved"),
+        .complete("LayoutEngine", "handStepped"),
     ] + windowRoom + HostRecord.layoutEngine
 
     /// What Android leaves out of a blur.

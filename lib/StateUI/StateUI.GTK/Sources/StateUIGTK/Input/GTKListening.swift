@@ -246,7 +246,7 @@ final class GTKListening {
             let number = viewNumber(data)
             nonisolated(unsafe) let controller = controller
             MainActor.assumeIsolated {
-                GTKListening.find(number)?.hand(.began, moved: .zero, at: GTKListening.time(of: OpaquePointer(controller)))
+                _ = GTKListening.find(number)?.hand(.began, moved: .zero, at: GTKListening.time(of: OpaquePointer(controller)))
             }
         }
         connectAnswering(UnsafeMutableRawPointer(scroll), "scroll", number: number) { controller, dx, dy, data in
@@ -260,7 +260,7 @@ final class GTKListening {
             let number = viewNumber(data)
             nonisolated(unsafe) let controller = controller
             MainActor.assumeIsolated {
-                GTKListening.find(number)?.hand(.ended, moved: .zero, at: GTKListening.time(of: OpaquePointer(controller)))
+                _ = GTKListening.find(number)?.hand(.ended, moved: .zero, at: GTKListening.time(of: OpaquePointer(controller)))
             }
         }
         return [drag, scroll]
@@ -311,17 +311,21 @@ final class GTKListening {
         hand(letGo ? .ended : .cancelled, moved: .zero, at: Self.time(of: gesture))
     }
 
-    /// A scroll step: a wheel's notches, or a touchpad's move of what is under the fingers. Whether the layout
-    /// took it; a step it leaves goes on to whatever holds it.
+    /// A scroll step: a wheel's notches - parts of one for a fine wheel - or a touchpad's move of what is under the
+    /// fingers. Whether the layout took it; a step it leaves goes on to whatever holds it.
     private func scrolled(_ controller: OpaquePointer?, by step: Point) -> Bool {
         let wheel = controller.map { gtk_event_controller_scroll_get_unit($0) == GDK_SCROLL_UNIT_WHEEL } ?? true
         guard wheel else { return hand(.changed, moved: Point(x: -step.x, y: -step.y), at: Self.time(of: controller)) }
 
-        return tell(.wheel(Point(x: -step.x * Self.line, y: -step.y * Self.line)))
+        return notched(Point(x: -step.x, y: -step.y))
     }
 
-    /// How far one notch of a wheel moves what is under the hand, in points.
-    private static let line = 40.0
+    /// A wheel's notches over a layout, as many as it turned, across and down: the host's entry. Whether the layout
+    /// took them.
+    @discardableResult
+    func notched(_ notches: Point) -> Bool {
+        tell(.notch(notches))
+    }
 
     /// When the event a controller handles happened, in milliseconds on the events' clock.
     nonisolated private static func time(of controller: OpaquePointer?) -> Double? {

@@ -164,6 +164,21 @@ go still does: a throw never goes back against the hand. The engine runs again e
 frame while the throw goes on (`flung`), and the hand's axis is let go on the
 target. A destination the program writes meanwhile ends the throw.
 
+## A wheel's notch
+
+A wheel turned notch by notch is no hand: a notch moves the run no distance,
+but steps it to the next target the way it turned, from the target the run
+is going to - a journey's or a throw's - so notches turned faster than the
+run travels step on from there rather than from where it is shown. The run
+travels under the layout's motion; a run that comes round is stepped a turn
+on or back past its last target, one that does not is held to its ends. A
+notch is a step whatever a target's size - a run of large cards turns one a
+notch, as of small ones - which a distance cannot be: a mouse's notch is a
+few points, so one turned slowly would never carry the run past half a card,
+and the run would come back to where it stood after each. A hand holding the
+run keeps it. The host tells the notches (`handStepped`); the host layer adds
+a fine wheel's parts of a notch up to whole ones.
+
 ## Coming to rest
 
 When the hand lets go the run goes on to where it comes to rest, from where

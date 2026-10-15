@@ -153,14 +153,16 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
         return dragging || pinching || handTaking;
     }
 
-    /** A wheel's notch over a layout a hand moves, as what it moves under the hand, in points; whether it took it. */
+    /**
+     * A wheel's notches over a layout a hand moves - Android's scroll axes count them, a part of one for a fine wheel
+     * - the way they move what is under the hand; whether it took them.
+     */
     boolean onGenericMotion(MotionEvent event) {
         if (!hand || event.getActionMasked() != MotionEvent.ACTION_SCROLL) return false;
         if (!event.isFromSource(InputDevice.SOURCE_CLASS_POINTER)) return false;
-        ViewConfiguration configuration = ViewConfiguration.get(host.getContext());
-        float across = -event.getAxisValue(MotionEvent.AXIS_HSCROLL) * configuration.getScaledHorizontalScrollFactor();
-        float down = event.getAxisValue(MotionEvent.AXIS_VSCROLL) * configuration.getScaledVerticalScrollFactor();
-        return StateUIHost.wheeled(view, across / density, down / density);
+        float across = -event.getAxisValue(MotionEvent.AXIS_HSCROLL);
+        float down = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
+        return StateUIHost.notched(view, across, down);
     }
 
     /** A finger down on a layout a hand moves: nothing is decided until it moves past the slop. */

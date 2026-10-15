@@ -44,6 +44,22 @@ final class HandHearingTests: XCTestCase {
         XCTAssertEqual(handed.last ?? 0, 1, accuracy: 0.001, "and the run on the nearest card")
     }
 
+    /// A WHEEL'S NOTCH STEPS THE RUN to the next card, whatever the card's size: the layout hears it as a step, not
+    /// as a distance, and the run travels there.
+    func testAWheelsNotchStepsTheRun() throws {
+        let (runtime, clock) = running()
+        let ring = try ring(in: runtime)
+
+        XCTAssertTrue(ring.hear(.notch(Point(-1, 0)), in: runtime))
+        frames(runtime, clock, until: 1_000)
+        XCTAssertEqual(handed.last ?? 0, 1, accuracy: 0.001, "the next card")
+
+        ring.hear(.notch(Point(-1, 0)), in: runtime)
+        ring.hear(.notch(Point(-1, 0)), in: runtime)
+        frames(runtime, clock, until: 2_000)
+        XCTAssertEqual(handed.last ?? 0, 3, accuracy: 0.001, "a card a notch")
+    }
+
     /// Display frames until `end`, sixteen milliseconds apart, the clock standing at each.
     private func frames(_ runtime: HostRuntime, _ clock: HandClock, until end: Double) {
         while clock.time < end {

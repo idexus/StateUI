@@ -89,7 +89,9 @@ and the lift (`InertiaStateEntered`) carries the platform's own speed; the
 tracker's inertia after it moves nothing, as the layout throws the run. A
 wheel's step enters inertia with no fingers down, and how far the platform
 would scroll for it - its resting place from where the last step aimed - is
-told as a wheel. Nothing is bound to the tracker's position.
+told as a wheel; so a mouse's notch goes as far as the platform scrolls for
+it rather than to the next target, the tracker telling no notch
+(`handStepped` stands `–`). Nothing is bound to the tracker's position.
 
 ## A pinch
 

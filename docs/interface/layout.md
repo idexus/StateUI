@@ -599,7 +599,9 @@ carries and its curve how it slows, a shorter length stopping it sooner; a
 spring carries it as far as its response and settles as springs do. A throw
 sets out at the hand's speed and never speeds up after the lift. A hand let
 go still, or too slowly to reach the next target, slides the run back to
-the nearest under `.motion(_:)`.
+the nearest under `.motion(_:)`. A mouse's wheel turned notch by notch steps
+the run a target a notch, under `.motion(_:)`, however large the targets
+stand.
 
 A run with no ends comes round: `.wraps(every:)` makes one turn of the phase
 bring the layout back where it was, its targets repeated each turn, so the

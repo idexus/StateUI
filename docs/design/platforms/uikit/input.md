@@ -45,12 +45,15 @@ for its drag to fail, and the two never recognize together.
 ## The hand over a layout
 
 A layout an engine moves hears the hand by one pan (`UIKitListening`,
-`handMoved`): a finger, and with `allowedScrollTypesMask` a trackpad's two
-fingers and a wheel, each step what moved under the hand since the last and,
-at the lift, the speed UIKit reads. It begins only along the layout's axis -
-its first move, or its speed where a trackpad tells no move yet - by the host
-layer's rule, recognizes alone, and a scroller holding the layout waits for it
-to fail, so a page scrolls by a hand across the layout's axis.
+`handMoved`): a finger, and with `allowedScrollTypesMask` `.continuous` a
+trackpad's two fingers, each step what moved under the hand since the last
+and, at the lift, the speed UIKit reads. A wheel turned notch by notch is a
+second pan, `.discrete` and touching nothing (`handNotched`): each of its
+steps a notch the way it went, a step of the run to the next target. Both
+begin only along the layout's axis - the first move, or the speed where a
+trackpad tells no move yet - by the host layer's rule, recognize alone, and
+a scroller holding the layout waits for them to fail, so a page scrolls by a
+hand across the layout's axis.
 
 ## A drag between views
 

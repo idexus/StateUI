@@ -357,6 +357,8 @@ final class UIKitDriver: HostDriver {
                 listening?.hand(.changed, moved: offset)
                 listening?.hand(.ended, moved: .zero, speed: speed)
             }
+        case (.notch(let notches), _):
+            try touch(element) { listening, _ in listening?.notched(notches) }
         case (.pinch(let scale, let share), _):
             try touch(element) { listening, view in Self.pinch(listening, on: view, by: scale, at: share) }
         case (.pressDown(let point), _): try touch(element) { listening, view in pressDown(listening, on: view, at: point) }

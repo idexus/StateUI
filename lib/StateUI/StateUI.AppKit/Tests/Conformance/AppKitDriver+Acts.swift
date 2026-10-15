@@ -85,6 +85,8 @@ extension AppKitDriver {
             native?.handReader?.hand(.began, moved: .zero)
             native?.handReader?.hand(.changed, moved: offset)
             native?.handReader?.hand(.ended, moved: .zero, speed: speed)
+        case (.notch(let notches), _) where native?.handReader != nil:
+            native?.handReader?.notched(notches)
         case (.pinch(let scale, let point), _) where native?.pinchRecognizer != nil:
             native?.pinchRecognizer?.pinched(.began, scale: 1, at: point)
             native?.pinchRecognizer?.pinched(.changed, scale: scale, at: point)

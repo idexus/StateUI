@@ -27,8 +27,9 @@ down decides nothing and leaves the parent free to intercept; past the slop,
 its first move goes to the Swift host, whose host layer claims it along the
 layout's axis (`handed`) - claimed, the layout takes the rest of the touch and
 forbids its parent to intercept; left, a page's scroller takes it. At the
-lift the tracker's speed goes with it. A wheel's notch is claimed by itself
-(`wheeled`).
+lift the tracker's speed goes with it. A wheel's notches - Android's scroll
+axes count them, a part of one for a fine wheel - are told as notches
+(`notched`), each a step of the run to the next target.
 
 ## A disabled view
 

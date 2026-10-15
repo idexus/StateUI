@@ -81,6 +81,8 @@ extension AndroidDriver {
             _ = view.heardHand(phase: GesturePhase.began.rawValue, moved: .zero, speed: .zero)
             _ = view.heardHand(phase: GesturePhase.changed.rawValue, moved: offset, speed: .zero)
             _ = view.heardHand(phase: GesturePhase.ended.rawValue, moved: .zero, speed: speed)
+        case (.notch(let notches), let view?):
+            _ = view.heardNotches(notches)
         case (.pinch(let scale, let point), let view?):
             let (width, height) = (Float(view.frame.width), Float(view.frame.height))
             TestTouches.pinch(view, x: Float(point.x) * width, y: Float(point.y) * height, by: Float(scale))

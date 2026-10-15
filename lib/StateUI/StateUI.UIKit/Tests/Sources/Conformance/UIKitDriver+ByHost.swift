@@ -11,7 +11,7 @@ extension UIKitDriver {
     func byHost(_ ability: String) -> String? {
         let taken = Ability(ability)
         switch taken.act {
-        case "tap", "pan", "sweep", "pinch", "hover", "leave", "drag", "pressDown", "lift":
+        case "tap", "pan", "sweep", "notch", "pinch", "hover", "leave", "drag", "pressDown", "lift":
             return "the view's listening handed the recognizer's states, no touch sent"
         case "choose" where taken.element == "Picker":
             return "the host's choice called, not the menu's action"

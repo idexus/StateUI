@@ -331,6 +331,46 @@ extension LayoutEngine {
         /// How far either side of where the run stands the view in front is measured, in units of the phase.
         static var probe: Double { 0.01 }
 
+        /// A wheel's notches over the element: the run goes on from the target it is going to - a throw's or a
+        /// journey's - to the target as many on as the notches turned, under the layout's motion. A hand holding the
+        /// run keeps it.
+        /// Design: docs/design/views/layout-engine.md#a-wheels-notch
+        func step(_ notches: Point) {
+            let count = Int((-(across ? notches.x : notches.y)).rounded())
+            guard count != 0, !stops.isEmpty else { return }
+            guard states.held.wrappedValue == nil || states.flung.wrappedValue != nil else { return }
+
+            let journey = phase.journey
+            let start = live()
+            let target = resting(near: placing(stepped(onAxis(journey.destination), by: count), in: journey.destination))
+
+            states.flung.wrappedValue = nil
+            states.held.wrappedValue = nil
+            send(to: target, from: start, speed: 0)
+        }
+
+        /// The target `count` on from the one nearest `value` - back for fewer than nought - held to the ends of a run
+        /// that does not come round, a turn on or back where it does.
+        func stepped(_ value: Double, by count: Int) -> Double {
+            let turns: [Double] = period.map { period in
+                let turn = ((value - low) / period).rounded(.down)
+                return [turn - 1, turn, turn + 1]
+            } ?? [0]
+            var nearest = (turn: 0.0, index: 0, gap: Double.infinity)
+            for turn in turns {
+                for (index, stop) in stops.enumerated() {
+                    let gap = abs(stop + turn * (period ?? 0) - value)
+                    if gap < nearest.gap { nearest = (turn, index, gap) }
+                }
+            }
+
+            let moved = nearest.index + count
+            guard let period else { return stops[min(max(moved, 0), stops.count - 1)] }
+
+            let round = (Double(moved) / Double(stops.count)).rounded(.down)
+            return stops[moved - Int(round) * stops.count] + (nearest.turn + round) * period
+        }
+
         /// The run taken by the hand at `value` on its axis: a journey or a throw under way stops there.
         @discardableResult
         func take(at value: Double) -> Double {

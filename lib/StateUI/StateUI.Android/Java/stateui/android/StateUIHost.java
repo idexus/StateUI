@@ -130,7 +130,7 @@ final class StateUIHost {
     static native boolean handed(long view, int phase, float x, float y, float speedX, float speedY);
 
     /** A wheel's notch over a layout, as what it moved under the hand, in points; whether the layout took it. */
-    static native boolean wheeled(long view, float x, float y);
+    static native boolean notched(long view, float x, float y);
 
     /** A view took the keyboard's focus, or lost it. */
     static native void focusChanged(long view, boolean focused);

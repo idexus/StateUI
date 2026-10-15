@@ -39,6 +39,19 @@ final class LayoutBench {
         cycle()
     }
 
+    /// A wheel's notches over the layout `tree` describes, as a host reports them - across and down, the way they move
+    /// what is under the hand - and a cycle after them.
+    func step(
+        _ renders: Renders, _ tree: () -> Node, _ notches: Point, file: StaticString = #filePath, line: UInt = #line
+    ) {
+        guard let heard = renders.renderFromScratch(tree()).first(.layoutEngine)?.events?[.handStepped] else {
+            return XCTFail("the layout hears no wheel's notch", file: file, line: line)
+        }
+
+        XCTAssertTrue(renders.fire(heard, with: MemberValues.encode(notches)), file: file, line: line)
+        cycle()
+    }
+
     /// Renders `tree`, feeds the layout the room `room` as the host does, and turns the board until the arithmetic
     /// has answered: the run of placements the layout's own area carries.
     func laid(

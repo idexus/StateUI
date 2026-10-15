@@ -405,6 +405,65 @@ final class LayoutEngineTests: XCTestCase {
         .node
     }
 
+    /// A WHEEL'S NOTCH STEPS THE RUN TO THE NEXT TARGET that way, under the layout's motion - however far apart the
+    /// targets stand - and the next notch steps on from where the run is going, not from where it is shown yet.
+    func testANotchStepsTheRunToTheNextTarget() throws {
+        let phase = State(wrappedValue: 0.0)
+        let renders = Renders()
+        func tree() -> Node { handTree(phase, targets: [0, 0.2, 0.5, 1]) }
+
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+
+        bench.step(renders, tree, Point(-1, 0))
+        XCTAssertEqual(phase.wrappedValue, 0.2, "a notch moving what is under the hand to the left steps it on")
+        let sent = try XCTUnwrap(standing(worn, as: JourneyLanes<Double>.self))
+        XCTAssertEqual(sent.destination, 0.2, accuracy: 0.001, "a journey of the phase")
+        XCTAssertEqual(sent.value, 0, accuracy: 0.001, "from where it stood")
+
+        bench.step(renders, tree, Point(-2, 0))
+        XCTAssertEqual(phase.wrappedValue, 1, "two on from where it is going")
+
+        bench.step(renders, tree, Point(-1, 0))
+        XCTAssertEqual(phase.wrappedValue, 1, "held to the last")
+
+        bench.step(renders, tree, Point(1, 0))
+        XCTAssertEqual(phase.wrappedValue, 0.5, "and back")
+    }
+
+    /// A RUN THAT COMES ROUND IS STEPPED ROUND: a notch past the last target is the first again, a turn on.
+    func testANotchStepsARunThatComesRoundATurnOn() throws {
+        let phase = State(wrappedValue: 3.0)
+        let renders = Renders()
+        func tree() -> Node {
+            LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
+                .phase(phase.projectedValue)
+                .input(.scroll(.horizontal, pointsPerUnit: 100))
+                .snapTargets([0, 1, 2, 3])
+                .wraps(every: 4)
+                .node
+        }
+        _ = bench.laid(renders, tree)
+
+        bench.step(renders, tree, Point(-1, 0))
+        XCTAssertEqual(phase.wrappedValue, 4, "a turn on, the first again")
+
+        bench.step(renders, tree, Point(2, 0))
+        XCTAssertEqual(phase.wrappedValue, 2, "back across the turn")
+    }
+
+    /// A HAND HOLDING THE RUN KEEPS IT: a notch meanwhile moves nothing.
+    func testANotchLeavesARunTheHandHolds() throws {
+        let phase = State(wrappedValue: 0.0)
+        let renders = Renders()
+        func tree() -> Node { handTree(phase, targets: [0, 1, 2]) }
+        _ = bench.laid(renders, tree)
+
+        bench.hand(renders, tree, .began)
+        bench.step(renders, tree, Point(-1, 0))
+
+        XCTAssertEqual(phase.wrappedValue, 0)
+    }
+
     /// A HAND NEEDS ITS TARGETS: they say how far it moves the run and where it rests, so one given none hears no
     /// hand and says why.
     func testAHandWithNoSnapTargetsMovesNothing() throws {

@@ -1,6 +1,7 @@
-# revision 5.1
+# revision 6.1
 LayoutEngine: ✅
 LayoutEngine.frameChanged: ✅
 LayoutEngine.handAxis: ✓ sweep on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
 LayoutEngine.handMoved: ✓ sweep on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
+LayoutEngine.handStepped: ✓ notch on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
 LayoutEngine.phase: ✅

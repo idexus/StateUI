@@ -188,6 +188,15 @@ enum WebRelay {
     /// When the event being heard happened, in the page's milliseconds - the frame clock's own.
     static var eventTime: Double { stateui_web_event_number(16) }
 
+    /// The notches of the wheel the event being heard turned, a notch an event across and down, the way they move
+    /// what is under the hand - where the browser measures the wheel in lines or pages; nil where in pixels.
+    static var eventNotches: Point? {
+        guard stateui_web_event_number(17) != 0 else { return nil }
+
+        func notch(_ turn: Double) -> Double { turn > 0 ? -1 : turn < 0 ? 1 : 0 }
+        return Point(x: notch(stateui_web_event_number(18)), y: notch(stateui_web_event_number(8)))
+    }
+
     /// Calls `listener` as `element` comes near the view of the scroller `root`, and as it goes away (`eventNear`).
     static func watchNearness(_ element: Int32, of root: Int32, _ listener: Int32) {
         stateui_web_watch_nearness(element, root, listener)

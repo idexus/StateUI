@@ -94,6 +94,8 @@ enum WinUIRealization {
             + "initializer that sets nothing, which a list of some items has not."),
         .complete("LayoutEngine", "handAxis"),
         .complete("LayoutEngine", "handMoved"),
+        .notPlanned("LayoutEngine", "handStepped", reason: "A wheel reaches the layout as WinUI's own scroller takes it, "
+            + "its tracker's: a notch goes as far as the platform scrolls for it, and the tracker tells no notch."),
         .complete("Menu", "isEnabled"),
         .complete("Menu", "text"),
         .complete("MenuBar", "order"),

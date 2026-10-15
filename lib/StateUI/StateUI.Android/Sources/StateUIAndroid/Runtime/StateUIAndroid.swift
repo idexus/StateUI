@@ -120,9 +120,9 @@ enum JavaNatives {
                 return taken == true ? 1 : 0
             }
         }
-        let wheeled: @convention(c) (Environment, jclass?, jlong, jfloat, jfloat) -> jboolean = { _, _, number, x, y in
+        let notched: @convention(c) (Environment, jclass?, jlong, jfloat, jfloat) -> jboolean = { _, _, number, x, y in
             MainActor.assumeIsolated {
-                AndroidView.find(number)?.heardWheel(moved: Point(x: Double(x), y: Double(y))) == true ? 1 : 0
+                AndroidView.find(number)?.heardNotches(Point(x: Double(x), y: Double(y))) == true ? 1 : 0
             }
         }
         let focusChanged: @convention(c) (Environment, jclass?, jlong, jboolean) -> Void = { _, _, number, focused in
@@ -358,7 +358,7 @@ enum JavaNatives {
             ("gestured", "(JIIFFF)V", unsafeBitCast(gestured, to: UnsafeMutableRawPointer.self)),
             ("pressed", "(JIFF)Z", unsafeBitCast(pressed, to: UnsafeMutableRawPointer.self)),
             ("handed", "(JIFFFF)Z", unsafeBitCast(handed, to: UnsafeMutableRawPointer.self)),
-            ("wheeled", "(JFF)Z", unsafeBitCast(wheeled, to: UnsafeMutableRawPointer.self)),
+            ("notched", "(JFF)Z", unsafeBitCast(notched, to: UnsafeMutableRawPointer.self)),
             ("focusChanged", "(JZ)V", unsafeBitCast(focusChanged, to: UnsafeMutableRawPointer.self)),
             ("destroying", "()V", unsafeBitCast(destroying, to: UnsafeMutableRawPointer.self)),
             ("environmentChanged", "()V", unsafeBitCast(environmentChanged, to: UnsafeMutableRawPointer.self)),

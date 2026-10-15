@@ -64,9 +64,10 @@ extension AndroidView {
         return onHeard?(.hand(phase, moved: moved, speed: phase == .ended ? speed : nil)) ?? false
     }
 
-    /// A wheel's notch over a layout, as what it moved under the hand, in points. Whether the layout took it.
-    func heardWheel(moved: Point) -> Bool {
-        onHeard?(.wheel(moved)) ?? false
+    /// A wheel's notches over a layout, as many as it turned, across and down: the host's entry. Whether the layout
+    /// took them.
+    func heardNotches(_ notches: Point) -> Bool {
+        onHeard?(.notch(notches)) ?? false
     }
 
     /// Tells the view's drag listener what a drag of it carries and whether it takes drops, `heard` hearing them.

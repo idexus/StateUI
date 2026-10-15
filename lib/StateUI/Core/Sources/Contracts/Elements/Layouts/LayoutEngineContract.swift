@@ -26,6 +26,10 @@ public enum LayoutEngineContract: ElementContract {
     /// as it lets go - how fast it was going, per second.
     public static let handMoved = ElementEvent<Self, (GesturePhase, Point, Point)>("handMoved", layer: .native)
 
+    /// A wheel's notches over the element, as many as it turned, across and down, the way they move what is under
+    /// the hand: each a step of the run to the next target that way.
+    public static let handStepped = ElementEvent<Self, Point>("handStepped", layer: .native)
+
     /// The element's own members.
-    public static let members: [any ContractMember] = [handAxis, handMoved, phase]
+    public static let members: [any ContractMember] = [handAxis, handMoved, handStepped, phase]
 }

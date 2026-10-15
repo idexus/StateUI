@@ -39,6 +39,10 @@ extension GTKDriver {
             listening.hand(.began, moved: .zero)
             listening.hand(.changed, moved: offset)
             listening.hand(.ended, moved: .zero, speed: speed)
+        // A wheel's notches reach the host's entry as the scroll controller would hand them - ✓.
+        case .notch(let notches):
+            guard view.hearing.contains(.hand) else { return false }
+            listening.notched(notches)
         // GTK takes no touch a driver could put down, so the fingers' place reaches the host's recognizer as GTK's
         // zoom would hand it - ✓.
         case .pinch(let scale, let at):

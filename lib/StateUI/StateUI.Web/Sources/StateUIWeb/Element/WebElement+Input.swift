@@ -144,11 +144,21 @@ extension WebElement {
                 handTaking = false
             }
         }
+        // A wheel measured in lines or pages turns notch by notch; one in pixels - a trackpad's - is a stream.
         view.listen("wheel") { [weak self] in
             guard let self, !WebRelay.eventWheel.pinches, let host else { return }
             let step = WebRelay.eventScroll
-            if element.hear(.wheel(Point(x: -step.x, y: -step.y)), in: host.runtime) { WebRelay.takeEvent() }
+            let heard = WebRelay.eventNotches.map { HeardInput.notch($0) } ?? .wheel(Point(x: -step.x, y: -step.y))
+            if element.hear(heard, in: host.runtime) { WebRelay.takeEvent() }
         }
+    }
+
+    /// A wheel's notches over a layout, as many as it turned, across and down: the host's entry. Whether the layout
+    /// took them.
+    @discardableResult
+    func notched(_ notches: Point) -> Bool {
+        guard let host, element.hearing.contains(.hand) else { return false }
+        return element.hear(.notch(notches), in: host.runtime)
     }
 
     /// The hand at `phase`, having moved what is under it by `moved` since the last, at `time` - the event's own,

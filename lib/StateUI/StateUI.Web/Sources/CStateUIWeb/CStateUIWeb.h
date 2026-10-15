@@ -75,7 +75,8 @@ STATEUI_WEB(listen) void stateui_web_listen(int32_t element, const char *event, 
 /// listening element's top left corner; 3 the pointer's number, 4 and 5 where it is on the page, 6 its kind - 0 a
 /// mouse, 1 a pen, 2 a touch - 7 its button; 8 a wheel's turn down, 9 whether a key made it a pinch, 10 a gesture's
 /// scale; 11 and 12 the listening element's size; 13 whether a click on a label passes to its control; 14 and 15 a
-/// wheel's turn across and down in pixels; 16 when the event happened, in the page's milliseconds.
+/// wheel's turn across and down in pixels; 16 when the event happened, in the page's milliseconds; 17 what a wheel's
+/// turn is measured in - 0 pixels, 1 lines, 2 pages - and 18 its turn across as measured.
 STATEUI_WEB(event_number) double stateui_web_event_number(int32_t index);
 /// The words the event being heard carries in its `detail`, read by `copy_read`: their length.
 STATEUI_WEB(event_words) int32_t stateui_web_event_words(void);
