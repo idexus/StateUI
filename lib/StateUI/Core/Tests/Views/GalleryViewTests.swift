@@ -328,6 +328,29 @@ final class GalleryViewTests: XCTestCase {
         assertCard(showing, 1, Rect(158.4, 92.12, 176, 248))
     }
 
+    /// A DECK stands the cards one behind another: the card in front whole and
+    /// straight in the middle, the next a few points out to the side and down,
+    /// smaller and turned a little.
+    func testADeckStandsTheCardsOneBehindAnother() {
+        let renders = Renders()
+        let showing = laid(renders, { self.gallery(3).arrangement(.deck).node }).patch
+
+        assertCard(showing, 0, Rect(88, 76, 176, 248))
+        assertCard(showing, 1, Rect(102, 79, 176, 248))
+    }
+
+    /// A DECK IS SWIPED A CARD AT A TIME, however far the hand goes.
+    func testADeckIsSwipedACardAtATime() {
+        let renders = Renders()
+        let shown = State(0)
+        func tree() -> Node { gallery(5).arrangement(.deck).position(shown.projectedValue).node }
+        _ = laid(renders, tree)
+
+        hand(renders, tree, .began)
+        hand(renders, tree, .changed, moved: Point(-20 * reach, 0))
+        XCTAssertEqual(shown.wrappedValue, 1, "one card, not the last")
+    }
+
     /// A SMALL ROOM shows the same gallery smaller rather than a slice of a
     /// large one: the card is at most half the width and within the height.
     ///

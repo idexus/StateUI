@@ -104,7 +104,7 @@ stated size for this reason.
 
 ## Gallery view
 
-`GalleryView` is a `LayoutEngine` with the arithmetic of three shapes written,
+`GalleryView` is a `LayoutEngine` with the arithmetic of four shapes written,
 its phase the card in front and its snap targets one a card. The run follows a
 finger, a trackpad and a wheel with no view built, nothing compared and no
 message sent; the one render is the card crossing, which tells the rest of the
@@ -112,9 +112,13 @@ page which card the user is on. What the hand does - naming a card as the run
 passes it, coming to rest on the nearest, a pointer's drag, a change of room -
 is the layout engine's (layout-engine.md, the hand).
 
-The three shapes are three functions of the same numbers - which card, how
+The four shapes are four functions of the same numbers - which card, how
 many, and the room - each answering where the card goes, how far it is turned,
-how big it looks and how opaque it is. A change of shape is read in the
+how big it looks and how opaque it is. The deck reads one more: where the
+run's motion set out (layout-engine.md, where a motion set out), the card that
+goes out the way the hand goes and tucks under the next, and it is swiped a
+card at a time (layout-engine.md, a swipe); its cards behind are shaded, never
+faded, as a faded one would show the card under it. A change of shape is read in the
 gallery's body, so it is a change of the description: the cards land where the
 new shape says.
 

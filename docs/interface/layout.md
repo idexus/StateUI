@@ -495,8 +495,10 @@ struct AlbumsPage: View {
 
 The initializer builds a card's face, one card per item, identified by `id:`
 or by the item itself where it is `Hashable`. Where a card stands and which
-way it faces is the arrangement's - `.default` (a wheel), `.fan` or `.row` -
-and changing it animates every card to the new shape. `.position($shown)` is
+way it faces is the arrangement's - `.default` (a wheel), `.fan`, `.row` or
+`.deck`, a pile swiped a card at a time, the card in front going out the way
+the hand goes and under the next - and changing it animates every card to the
+new shape. `.position($shown)` is
 the card in the middle, counted from 0 and two-way: a swipe writes the card it
 settled on, and a write moves the run. `.onItemTapped` hears a tap on the
 card in front, with its item, and `.onPositionChanged` another card coming to

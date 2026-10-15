@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // A run of cards the user swipes through, in a shape one word chooses: a layout engine with the arithmetic of a
-// wheel, a fan and a row, its phase the card in front.
+// wheel, a fan, a row and a deck, its phase the card in front.
 // Design: docs/design/views/measured-layouts.md#gallery-view
 
 /// One card at a time, swiped through, in a shape one word chooses.
@@ -347,8 +347,8 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             }
             .width(width)
             .height(height)
-        } placements: { room, phase in
-            (0..<count).map { place(Double($0) - phase, count, room, shape) }
+        } placements: { room, phase, from in
+            (0..<count).map { place(Double($0) - phase, setOut: Double($0) == from, count, room, shape) }
         }
         .phase(turns.projectedValue)
         .snapTargets((0..<count).map(Double.init))
@@ -363,8 +363,12 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             }
         }
 
-        // The hand carries the card in front, however big the room draws it.
-        if swipes { engine = engine.input(thrown.map { .scroll(.horizontal, throwing: $0) } ?? .scroll(.horizontal)) }
+        // The hand carries the card in front, however big the room draws it; a deck is swiped a card at a time.
+        if swipes {
+            let throwing = thrown ?? LayoutInput.scroll(.horizontal).throwing
+            engine = engine.input(
+                shape == .deck ? .swipe(.horizontal, throwing: throwing) : .scroll(.horizontal, throwing: throwing))
+        }
 
         // The shade sits beside the press: the card that dips wears none.
         if let mask { engine = engine.shade(mask) }
@@ -442,15 +446,17 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// again, so one card does not become the page.
     private static var largest: Double { 1.375 }
 
-    /// Where one card goes and how it is turned, `step` cards from the one in front. With no shade view the shade
-    /// is `PackedPlacement.unshaded`, the host seeing none of this side's views.
+    /// Where one card goes and how it is turned, `step` cards from the one in front - the one the run's motion set
+    /// out from where `setOut`. With no shade view the shade is `PackedPlacement.unshaded`, the host seeing none of
+    /// this side's views.
     private func place(
         _ step: Double,
+        setOut: Bool,
         _ count: Int,
         _ room: Rect,
         _ shape: GalleryArrangement
     ) -> Placement {
-        var placement = placed(step, count, room, shape)
+        var placement = placed(step, setOut: setOut, count, room, shape)
 
         placement.shade = mask == nil
             ? PackedPlacement.unshaded
@@ -462,6 +468,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// Where a card goes, however far it stands from the one in front.
     private func placed(
         _ step: Double,
+        setOut: Bool,
         _ count: Int,
         _ room: Rect,
         _ shape: GalleryArrangement
@@ -474,6 +481,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
         case .row:
             return row(step, count, room, fit)
+
+        case .deck:
+            return deck(step, setOut: setOut, room, fit)
 
         case .default:
             return wheel(step, room, fit)
@@ -526,6 +536,26 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             card(room, up: 0, across: step * across),
             transform: .scale((0.58 + 0.16 * max(0, 1 - abs(step))) * fit),
             zIndex: order(step))
+    }
+
+    /// A deck: the card in front whole and straight, the others behind it
+    /// peeking out either side, smaller and turned the farther they are. The
+    /// card the run set out from goes out the way it goes, over the others,
+    /// until it stands beside the deck, then tucks under the next.
+    /// Design: docs/design/views/measured-layouts.md#gallery-view
+    private func deck(_ step: Double, setOut: Bool, _ room: Rect, _ fit: Double) -> Placement {
+        let side: Double = step < 0 ? -1 : 1
+        let behind = min(abs(step), 4)
+        let leaving = setOut && abs(step) < 1
+        let outward = leaving && abs(step) < 0.8
+        let out = leaving ? (outward ? abs(step) / 0.8 : (1 - abs(step)) / 0.2) : 0
+
+        return Placement(
+            card(room, up: behind * 3 * fit, across: side * (behind * 14 + out * cardWidth * 1.05) * fit),
+            transform: .rotate(side * (behind * 2.5 + out * 12)).scale((1 - behind * 0.03) * fit),
+            opacity: min(max(5 - abs(step), 0), 1),
+            shade: min(behind / 4, 0.5) * shades,
+            zIndex: outward ? 2000 : order(step))
     }
 
     /// Which cards are drawn over which: the middle one nearest the user, the
