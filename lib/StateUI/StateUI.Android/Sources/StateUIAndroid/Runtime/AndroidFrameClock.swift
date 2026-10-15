@@ -50,10 +50,12 @@ final class AndroidFrameClock: FrameClock {
         Java.call(Self.choreographer.reference, JavaAPI.postFrameCallback, .object(Self.callback.reference))
     }
 
-    /// The display's frame at `time`: the frame's work, then the next frame while something holds the clock.
+    /// The display's frame at `time`: the frame's work, then the next frame while something holds the clock. A
+    /// hand-wound clock takes none: its frames are the test's own.
+    /// Design: docs/design/platforms/android/runtime.md#one-frame
     func frame(_ time: Double) {
         posted = false
-        guard held else { return }
+        guard ticksWithTheDisplay, held else { return }
 
         onFrame?(time)
         if held { post() }

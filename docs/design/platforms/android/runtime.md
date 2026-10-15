@@ -67,6 +67,12 @@ The frame's time is `CLOCK_MONOTONIC` in milliseconds, the clock the
 choreographer stamps its frames with, so a frame's time and a patch's time
 are on one clock.
 
+The choreographer's one callback reaches the one current clock, whichever
+clock asked for the frame. A test's hand-wound clock takes none of them: a
+frame an earlier clock asked for, stamped on the monotonic clock, would carry
+the runtime's time - which never runs back - far past the test's, and every
+animation after it would stand still at its start.
+
 ## Print reaches logcat
 
 An Android application's standard output goes nowhere. The host points stdout
