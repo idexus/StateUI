@@ -30,6 +30,12 @@ final class LayoutEngineTests: XCTestCase {
         _ = Renderer.shared.board(for: .display).cycle(now: turned, reducesMotion: false)
     }
 
+    /// One frame as the host runs it: the board's cycle, and what it wrote read out, so a report after it lands.
+    private func frame() {
+        turned += 16
+        _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
+    }
+
     /// The first node of a kind, however deep it sits.
     private func find(_ type: NodeType, in patch: HostPatch) -> HostPatch? {
         if patch.type == type { return patch }
@@ -112,9 +118,9 @@ final class LayoutEngineTests: XCTestCase {
         XCTAssertEqual(handed.phases.last, 0)
     }
 
-    /// THE VIEWS FIRST, IN THE ITEMS' ORDER, then the scroller over them across the whole room and the watcher of
-    /// the phase nowhere: one run places every child of the element.
-    func testTheRunPlacesTheViewsThenTheScrollerThenTheWatcher() {
+    /// THE VIEWS FIRST, IN THE ITEMS' ORDER, then the scroller over them across the whole room: one run places every
+    /// child of the element.
+    func testTheRunPlacesTheViewsThenTheScroller() {
         let (_, run) = laid(Renders(), {
             LayoutEngine([1, 2]) { Text("\($0)") } placements: { _, _ in
                 [Placement(Rect(0, 0, 10, 10), zIndex: 5), Placement(Rect(20, 0, 10, 10))]
@@ -124,9 +130,8 @@ final class LayoutEngineTests: XCTestCase {
             .node
         })
 
-        XCTAssertEqual(run.map(\.bounds), [Rect(0, 0, 10, 10), Rect(20, 0, 10, 10), Rect(0, 0, 300, 200), .zero])
-        XCTAssertEqual(run[2].zIndex, 3, "the scroller over every view")
-        XCTAssertEqual(run[3].zIndex, 0, "the watcher under them")
+        XCTAssertEqual(run.map(\.bounds), [Rect(0, 0, 10, 10), Rect(20, 0, 10, 10), Rect(0, 0, 300, 200)])
+        XCTAssertEqual(run[2].zIndex, 2, "the scroller over every view")
     }
 
     /// ON A DESKTOP A DRAG IS HEARD ON THE SCROLLER: it spans the room and stands still while its content slides, so
@@ -161,9 +166,43 @@ final class LayoutEngineTests: XCTestCase {
 
     // MARK: - The phase
 
-    /// WITHOUT A HAND, THE PROGRAM'S PHASE RUNS THE ARITHMETIC AGAIN: the watcher reads the phase in a view of its
-    /// own, and its change wakes the engine with nothing about the views described again.
-    func testAPhaseTheProgramWritesRunsTheArithmeticAgain() async {
+    /// THE LAYOUT'S ELEMENT WEARS ITS PHASE, both ways, so the host walks it under the layout's motion and says where
+    /// it stands every frame: what makes a move of the phase travel, and an awaited one arrive.
+    func testTheLayoutsElementWearsItsPhase() async throws {
+        let phase = State(wrappedValue: 0.0)
+        let renders = Renders()
+        func tree() -> Node {
+            LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
+                .phase(phase.projectedValue)
+                .node
+        }
+
+        let (patch, _) = laid(renders, tree)
+        let worn = try XCTUnwrap(find(.layoutEngine, in: patch)?.driven?[.phase])
+
+        XCTAssertEqual(worn.mode, .inOut)
+        XCTAssertEqual(worn.kind, .property)
+
+        phase.wrappedValue = 2
+        cycle()
+        XCTAssertEqual(try XCTUnwrap(standing(worn.state, as: JourneyLanes<Double>.self)).destination, 2,
+                       "the phase written is where the host walks it")
+    }
+
+    /// A PHASE IS A STATE: a binding worked out from others cannot be worn, so it is said once - its phase would jump.
+    func testAPhaseWorkedOutFromOthersIsSaid() {
+        var stored = 0.0
+        _ = Renders().render(
+            LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [] }
+                .phase(Binding(get: { stored }, set: { stored = $0 }))
+                .node)
+
+        XCTAssertTrue(hasComplained("A LayoutEngine's phase is a state lent with `$`"))
+    }
+
+    /// WITHOUT A HAND THE PHASE TRAVELS AS THE HOST WALKS IT: a write is where the run goes, and the arithmetic is
+    /// handed each frame where the host says the phase stands - never the destination at once.
+    func testWithoutAHandThePhaseTravelsAsTheHostWalksIt() async throws {
         let handed = Handed()
         let phase = State(wrappedValue: 0.0)
         let renders = Renders()
@@ -176,13 +215,22 @@ final class LayoutEngineTests: XCTestCase {
             .node
         }
 
-        _ = laid(renders, tree)
+        let (patch, _) = laid(renders, tree)
+        let worn = try XCTUnwrap(find(.layoutEngine, in: patch)?.driven?[.phase]?.state)
+
         phase.wrappedValue = 2
         _ = renders.revisit(changed: Renderer.shared.pendingChanges)
         _ = await settle()
         cycle()
+        XCTAssertEqual(handed.phases.last, 0, "the write is where it goes; the host has walked nothing yet")
 
-        XCTAssertEqual(handed.phases.last, 2)
+        moved(worn, to: 1)
+        cycle()
+        XCTAssertEqual(handed.phases.last, 1, "a frame on the way")
+
+        moved(worn, to: [2, 2, 0], mask: 0b111)
+        cycle()
+        XCTAssertEqual(handed.phases.last, 2, "and where it landed")
     }
 
     /// A SCROLL PASSING A TARGET NAMES THE NEAREST, uneven ones too, as the hand passes halfway between two.
@@ -197,12 +245,14 @@ final class LayoutEngineTests: XCTestCase {
                 .node
         }
 
-        _ = laid(renders, tree)
+        let worn = try XCTUnwrap(find(.layoutEngine, in: laid(renders, tree).patch)?.driven?[.phase]?.state)
         let offset = try XCTUnwrap(find(.scrollView, in: stood(renders, tree))?.driven?[.scrollOffset]?.state)
 
         slid(offset, to: Point(40, 0))
         cycle()
         XCTAssertEqual(phase.wrappedValue, 0.5, "0.4 is nearer 0.5 than 0.2")
+        let named = try XCTUnwrap(standing(worn, as: JourneyLanes<Double>.self))
+        XCTAssertEqual(named.value, 0.5, "named where it stands: a reading of the hand, not a journey")
 
         slid(offset, to: Point(10, 0))
         cycle()
@@ -238,32 +288,82 @@ final class LayoutEngineTests: XCTestCase {
         XCTAssertEqual(phase.wrappedValue, 2, "and the phase it started at kept")
     }
 
-    /// A PHASE THE PROGRAM WRITES SENDS THE SCROLLER THERE: a destination, so the host walks the run from where it
-    /// stands under the layout's law.
-    func testAPhaseTheProgramWritesSendsTheScrollerThere() async throws {
+    /// UNDER A SCROLL THE SCROLLER FOLLOWS THE PHASE ON ITS WAY: the program's write travels as the phase, and each
+    /// frame the scroller is snapped to where the phase stands, so a scroll and its arithmetic never part.
+    func testUnderAScrollTheScrollerFollowsThePhaseOnItsWay() async throws {
         let phase = State(wrappedValue: 0.0)
         let renders = Renders()
-        func tree() -> Node {
-            LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
-                .phase(phase.projectedValue)
-                .input(.scroll(.horizontal, pointsPerUnit: 100))
-                .snapTargets([0, 0.2, 0.5, 1])
-                .node
-        }
+        let (worn, offset) = try scrolled(renders, phase)
 
-        _ = laid(renders, tree)
-        let offset = try XCTUnwrap(find(.scrollView, in: stood(renders, tree))?.driven?[.scrollOffset]?.state)
+        phase.wrappedValue = 1
+        cycle()
+        moved(worn, to: 0.25)
+        cycle()
 
-        phase.wrappedValue = 0.5
-        _ = renders.render(tree())
-        _ = await settle()
+        let followed = try XCTUnwrap(standing(offset, as: JourneyLanes<Point>.self))
+        XCTAssertEqual(followed.value.x, 25, accuracy: 0.001, "where the phase stands")
+        XCTAssertEqual(followed.destination.x, 25, accuracy: 0.001, "snapped there, travelling nowhere of its own")
+        XCTAssertEqual(phase.wrappedValue, 1, "and the phase still going where the program sent it")
+    }
 
-        // And the host's next frame reads the write out.
-        turned += 16
-        _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
+    /// A HAND TAKING THE RUN ON ITS WAY STOPS THE PHASE'S TRAVEL: the scroller leads again, and the phase is named
+    /// where the hand holds it rather than going on where the program sent it.
+    func testAHandTakingTheRunOnItsWayStopsThePhasesTravel() async throws {
+        let phase = State(wrappedValue: 0.0)
+        let renders = Renders()
+        let (worn, offset) = try scrolled(renders, phase)
 
-        let sent = try XCTUnwrap(standing(offset, as: JourneyLanes<Point>.self))
-        XCTAssertEqual(sent.destination.x, 50, accuracy: 0.001)
+        phase.wrappedValue = 1
+        frame()
+        moved(worn, to: 0.3)
+        frame()
+        slid(offset, to: Point(60, 0))
+        frame()
+
+        let journey = try XCTUnwrap(standing(worn, as: JourneyLanes<Double>.self))
+        XCTAssertEqual(journey.destination, 0.5, "the target nearest the hand, no longer the program's")
+        XCTAssertEqual(journey.value, 0.5, "named where the hand holds it")
+        XCTAssertEqual(phase.wrappedValue, 0.5)
+    }
+
+    /// AT REST THE RUN TRAVELS ON FROM WHERE THE HAND LEFT IT: the phase stands where the scroller stopped and goes
+    /// to the nearest target as a journey of its own, which the scroller follows.
+    func testAtRestTheRunTravelsOnFromWhereTheHandLeftIt() async throws {
+        let phase = State(wrappedValue: 0.0)
+        let renders = Renders()
+        let (worn, offset) = try scrolled(renders, phase)
+        let stopped = try XCTUnwrap(find(.scrollView, in: renders.renderFromScratch(scrollingTree(phase)))?
+            .events?[.scrollStopped])
+
+        slid(offset, to: Point(40, 0))
+        cycle()
+        XCTAssertTrue(renders.fire(stopped))
+        cycle()
+
+        let journey = try XCTUnwrap(standing(worn, as: JourneyLanes<Double>.self))
+        XCTAssertEqual(journey.value, 0.4, accuracy: 0.001, "from where the hand left it")
+        XCTAssertEqual(journey.destination, 0.5, "to the nearest target")
+    }
+
+    /// A layout scrolled over targets 0, 0.5 and 1, a hundred points a unit.
+    private func scrollingTree(_ phase: State<Double>) -> Node {
+        LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
+            .phase(phase.projectedValue)
+            .input(.scroll(.horizontal, pointsPerUnit: 100))
+            .snapTargets([0, 0.5, 1])
+            .node
+    }
+
+    /// The scrolled layout laid out and its scroller standing: the numbers of the phase it wears and of the
+    /// scroller's offset.
+    private func scrolled(_ renders: Renders, _ phase: State<Double>) throws -> (phase: Int32, offset: Int32) {
+        let (patch, _) = laid(renders, { scrollingTree(phase) })
+        let worn = try XCTUnwrap(find(.layoutEngine, in: patch)?.driven?[.phase]?.state)
+        let offset = try XCTUnwrap(find(.scrollView, in: stood(renders, { scrollingTree(phase) }))?
+            .driven?[.scrollOffset]?.state)
+        cycle()
+
+        return (worn, offset)
     }
 
     /// A SCROLL NEEDS ITS TARGETS: they say how far it runs, so one given none lays no scroller and says why.

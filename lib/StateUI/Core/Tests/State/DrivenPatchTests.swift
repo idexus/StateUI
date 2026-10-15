@@ -300,7 +300,9 @@ final class DrivenPatchTests: XCTestCase {
         XCTAssertEqual(ties[.area]?.mode, .out)
         XCTAssertEqual(ties[.frame]?.kind, .feed)
         XCTAssertEqual(ties[.frame]?.mode, .in)
-        XCTAssertEqual(layout.children.map(\.type), [.grid, .grid, .rectangle], "each face wrapped, the watcher last")
+        XCTAssertEqual(ties[.phase]?.kind, .property, "the phase worn, so the host walks it")
+        XCTAssertEqual(ties[.phase]?.mode, .inOut)
+        XCTAssertEqual(layout.children.map(\.type), [.grid, .grid], "each face wrapped")
         XCTAssertEqual(layout.children.prefix(2).map(\.children.count), [2, 2], "the face, then its shade")
         XCTAssertTrue(
             layout.children.prefix(2).flatMap(\.subtree).allSatisfy { $0.driven == nil },

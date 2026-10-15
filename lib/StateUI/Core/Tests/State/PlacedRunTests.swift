@@ -164,7 +164,7 @@ final class PlacedRunTests: XCTestCase {
 
     /// A LAYOUT ENGINE DESCRIBES NO PLACEMENT AT ALL: its own `area` says
     /// which number carries the run, and not one of the twelve properties is
-    /// on any child - every view wrapped, the watcher of its phase last.
+    /// on any child - every view wrapped.
     func testALayoutEngineDescribesNothingAboutWhereItsViewsGo() {
         let renders = Renders()
 
@@ -177,7 +177,7 @@ final class PlacedRunTests: XCTestCase {
 
         XCTAssertEqual(placed.driven?[.area]?.kind, .placement)
         XCTAssertEqual(placed.driven?[.area]?.mode, .out)
-        XCTAssertEqual(placed.children.count, 3, "two views and the watcher")
+        XCTAssertEqual(placed.children.count, 2, "two views")
 
         for wrapper in placed.children.prefix(2) {
             XCTAssertEqual(wrapper.type, .grid, "every face is wrapped, shaded or not")

@@ -98,6 +98,28 @@ final class DisplayCycleTests: XCTestCase {
         XCTAssertEqual(seen, seen.sorted(), "nothing slides back")
     }
 
+    /// A STATE AN ELEMENT WEARS HAS ITS CHANNEL from the moment it is worn, whatever its view reads: the host layer
+    /// walks it and tells the core every frame - a layout engine's phase, which no view draws, included.
+    @MainActor
+    func testAWornStateOpensItsChannelThoughNoViewReadsIt() throws {
+        stateUIUseApp(WornApplication())
+        let runtime = HostRuntime(clock: WoundClock(), reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
+        runtime.connectWindow()
+        runtime.pump.turn()
+
+        var worn: Set<Int32> = []
+        func walk(_ element: MountedElement) {
+            for binding in element.driven.values where binding.kind == .property && binding.mode != .in {
+                worn.insert(binding.state)
+            }
+            element.children.forEach(walk)
+        }
+        try walk(XCTUnwrap(runtime.tree.root))
+
+        XCTAssertFalse(worn.isEmpty, "the layout's element wears its phase")
+        XCTAssertEqual(runtime.stateChannels.count, worn.count, "a channel for every state worn, none read")
+    }
+
     /// A handler's write in the turn a state's travel lands sends the travel on: the frame lands the travel and
     /// reports the destination before the write, which stands and crosses in the same frame.
     @MainActor
@@ -123,6 +145,15 @@ final class DisplayCycleTests: XCTestCase {
         clock.time = 500
         runtime.displayCycle.frame(now: 500)
         XCTAssertEqual(slider.number(.value) ?? .nan, 0.25, accuracy: 1e-9, "where the handler sent it")
+    }
+}
+
+/// A layout engine, whose element wears its phase and whose view draws none of it.
+private struct WornApplication: Application {
+    var body: some Scene {
+        WindowGroup {
+            LayoutEngine([0]) { _ in Rectangle(.red) } placements: { _, _ in [] }
+        }
     }
 }
 

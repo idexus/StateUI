@@ -23,7 +23,10 @@ extension LayoutEngine {
         let arithmetic: @MainActor (Rect, Double) -> [Placement]
         let mask: Node?
         let tapped: ValueHandler<Items.Element>?
-        let pinned: Binding<Double>?
+        let named: ((Double) -> Void)?
+
+        /// The phase the element wears: the author's, or the layout's own.
+        let phase: Binding<Double>
         let states: States
         let targets: [Double]
         let law: Motion
@@ -47,19 +50,26 @@ extension LayoutEngine {
         /// How far the scroll runs beyond its room.
         var reach: Double { (high - low) * per }
 
-        /// The phase as the program last asked for it.
-        var phaseAsked: () -> Double {
-            let pinned = pinned
-            let own = states.ownPhase
-            return { pinned?.wrappedValue ?? own.wrappedValue }
+        /// Whether the phase is on a journey the program or a settle sent it on.
+        var travels: Bool {
+            let journey = phase.journey
+            return journey.value != journey.destination
         }
 
-        /// The phase as it stands this frame: where the scroller is, or where the program asked - also before the
-        /// scroller's first layout, whose offset until then is nobody's.
+        /// The phase as it stands this frame: where the host walks it, or under a scroll at rest where the scroller
+        /// is - and before the scroller's first layout where the run stood, the offset until then being nobody's.
+        /// Design: docs/design/views/layout-engine.md#the-phase
         func live() -> Double {
-            guard scrolls else { return phaseAsked() }
-            guard states.measured.wrappedValue > 0 else { return held(states.standing.wrappedValue ?? phaseAsked()) }
+            let walked = phase.journey.value
 
+            guard scrolls else { return walked }
+            guard states.measured.wrappedValue > 0 else { return held(states.standing.wrappedValue ?? walked) }
+
+            return travels ? held(walked) : scrolledPhase()
+        }
+
+        /// The phase where the scroller stands.
+        func scrolledPhase() -> Double {
             let turned = low + along(states.scrolled.projectedValue.journey.value) / per
 
             guard turned.isFinite else { return low }
@@ -85,31 +95,37 @@ extension LayoutEngine {
             return across ? Point(distance, 0) : Point(0, distance)
         }
 
-        /// A snap target the run passes or rests on, written where it changed.
+        /// A snap target the run passes or rests on, written where the hand holds it: a reading, not a journey.
         func name(_ target: Double) {
-            guard target != states.reported.wrappedValue else { return }
-
             states.reported.wrappedValue = target
+            named?(target)
 
-            if let pinned {
-                if pinned.wrappedValue != target { pinned.wrappedValue = target }
-            } else if states.ownPhase.wrappedValue != target {
-                states.ownPhase.wrappedValue = target
-            }
+            let journey = phase.journey
+            guard journey.value != target || journey.destination != target else { return }
+
+            journey.snap(to: target)
         }
 
-        /// The program asked for `phase`: the run travels there. A name coming back moves nothing.
-        func moved(_ phase: Double) {
-            guard phase != states.reported.wrappedValue else { return }
+        /// A destination the run did not name is the program's: where the run is going, which a change of room keeps.
+        func heard() {
+            let destination = phase.journey.destination
+            guard destination != states.reported.wrappedValue else { return }
 
-            states.reported.wrappedValue = phase
-            states.standing.wrappedValue = held(phase)
+            states.reported.wrappedValue = destination
+            states.standing.wrappedValue = held(destination)
+        }
 
-            if scrolls {
-                states.scrolled.wrappedValue = offset(at: phase)
-            } else {
-                states.asked.wrappedValue = phase
-            }
+        /// The run travels on from `start` to `target` as a journey of the phase, under the layout's motion.
+        func send(to target: Double, from start: Double) {
+            states.reported.wrappedValue = target
+            states.standing.wrappedValue = target
+            named?(target)
+
+            guard abs(start - target) * per > Self.settled else { return name(target) }
+
+            let journey = phase.journey
+            journey.value = start
+            _ = journey.move(to: target)
         }
 
         // MARK: - On the host's frames
@@ -117,6 +133,8 @@ extension LayoutEngine {
         /// Places every child: the views where the arithmetic says, the scroller over them, the watcher nowhere.
         /// Design: docs/design/views/layout-engine.md#the-run
         func place() {
+            heard()
+
             let room = states.room.wrappedValue
             let own = Rect(0, 0, room.width, room.height)
 
@@ -124,8 +142,7 @@ extension LayoutEngine {
             if room.width > 0, room.height > 0 {
                 let views = fitted(arithmetic(own, live()))
 
-                states.placements.wrappedValue = PlacedRun(
-                    views + (scrolls ? [Placement(own, zIndex: Int.max)] : []) + [Placement(.zero, zIndex: Int.min)])
+                states.placements.wrappedValue = PlacedRun(views + (scrolls ? [Placement(own, zIndex: Int.max)] : []))
 
                 if scrolls, tapped != nil {
                     states.boxes.wrappedValue = PlacedRun(boxes(in: own, for: views))
@@ -136,14 +153,38 @@ extension LayoutEngine {
 
             guard scrolls else { return }
 
-            let journey = states.scrolled.projectedValue.journey
-
-            // The phase is named as the hand passes a target: one render a target, none a frame - and none on a way
-            // the program sent the run, nor while a change of room is regained.
             if states.regaining.wrappedValue {
                 regain()
-            } else if journey.value == journey.destination {
-                name(nearest(live()))
+            } else {
+                follow()
+            }
+        }
+
+        /// Under a scroll the scroller follows the phase on its way, snapped where the phase stands each frame, and
+        /// leads where the phase rests: the phase named as the hand passes halfway between two targets - one render a
+        /// target, none a frame. A hand moving the scroller on the phase's way stops the journey there.
+        /// Design: docs/design/views/layout-engine.md#the-hand
+        func follow() {
+            let scroller = states.scrolled.projectedValue.journey
+            let mirrored = states.mirrored.wrappedValue
+
+            guard states.measured.wrappedValue > 0 else { return }
+
+            if travels {
+                if let mirrored, abs(along(scroller.value) - mirrored) > Self.settled {
+                    states.mirrored.wrappedValue = nil
+                    name(nearest(scrolledPhase()))
+                } else {
+                    let at = offset(at: phase.journey.value)
+                    scroller.snap(to: at)
+                    states.mirrored.wrappedValue = along(at)
+                }
+            } else if mirrored != nil {
+                // Landed: the scroller stands where the phase arrived.
+                states.mirrored.wrappedValue = nil
+                scroller.snap(to: offset(at: phase.journey.value))
+            } else {
+                name(nearest(scrolledPhase()))
             }
         }
 
@@ -177,15 +218,10 @@ extension LayoutEngine {
 
         /// The scroller came to rest: the run travels on to the nearest snap target.
         func settle() {
-            guard !states.regaining.wrappedValue else { return }
+            guard !states.regaining.wrappedValue, !travels else { return }
 
-            let target = nearest(live())
-            let rest = offset(at: target)
-
-            if abs(along(states.scrolled.projectedValue.journey.value) - along(rest)) > Self.settled {
-                states.scrolled.wrappedValue = rest
-            }
-            states.standing.wrappedValue = target
+            let start = scrolledPhase()
+            send(to: nearest(start), from: start)
         }
 
         /// A pointer drag: the offset follows the pointer, and the run settles where it lets go.
@@ -201,12 +237,8 @@ extension LayoutEngine {
                 journey.snap(to: across ? Point(at, 0) : Point(0, at))
 
             case .ended, .cancelled:
-                let target = nearest(live())
-
-                // Snap the scroller to where the run is, then send it on.
-                journey.snap(to: journey.value)
-                states.scrolled.wrappedValue = offset(at: target)
-                states.standing.wrappedValue = target
+                let start = scrolledPhase()
+                send(to: nearest(start), from: start)
             }
         }
 
@@ -215,7 +247,7 @@ extension LayoutEngine {
         /// Design: docs/design/views/layout-engine.md#a-change-of-room
         func framed(_ frame: Rect) {
             let room = across ? frame.width : frame.height
-            let target = states.standing.wrappedValue ?? held(phaseAsked())
+            let target = states.standing.wrappedValue ?? held(phase.journey.destination)
             let sendTo = along(offset(at: target))
             let astray = abs(along(states.scrolled.projectedValue.journey.value) - sendTo) > 1
             let changed = states.measured.wrappedValue > 0 && room != states.measured.wrappedValue
@@ -223,6 +255,8 @@ extension LayoutEngine {
             guard astray || room != states.measured.wrappedValue else { return }
 
             states.measured.wrappedValue = room
+            guard !travels else { return }
+
             name(target)
             if astray { states.scrolled.projectedValue.journey.snap(to: offset(at: target)) }
             if changed, laidLength - room < sendTo - 1 { states.regaining.wrappedValue = true }
@@ -230,7 +264,7 @@ extension LayoutEngine {
 
         /// The run sent back to where it stood once the scroller holds it.
         func regain() {
-            let target = states.standing.wrappedValue ?? held(phaseAsked())
+            let target = states.standing.wrappedValue ?? held(phase.journey.destination)
 
             guard laidLength - states.measured.wrappedValue >= along(offset(at: target)) - 1 else { return }
 

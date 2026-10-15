@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// `LayoutEngineContract` on a host: each view stands where the arithmetic puts it, the arithmetic is handed the room
-/// the layout was given and handed it again when it changes, the layout takes no size from its views, and a scroll
-/// comes to rest on a snap target.
+/// the layout was given and handed it again when it changes, the layout takes no size from its views, the phase the
+/// program sends travels there and is awaited, and a scroll comes to rest on a snap target.
 @_spi(Host) public enum LayoutEngineTests: ConformanceFamily {
     public static let name = "LayoutEngine"
 
@@ -88,6 +88,51 @@
                 }
                 s.settle { apart() == 10 }
                 s.expect(apart(), 10, "the view below right under the one above, whatever the layout's view needs")
+            },
+            ConformanceCase("thePhaseTravelsWhereTheProgramSendsIt", proves: [
+                Covered(LayoutEngineContract.phase),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let clock = TestClock()
+                let phase = State(wrappedValue: 0.0)
+                let (handed, arrived) = (Received<Double>(), Received<Bool>())
+                s.start(clock: clock) {
+                    VStack {
+                        LayoutEngine([0]) { _ in Rectangle(.red) } placements: { _, phase in
+                            handed.values.append(phase)
+                            return [Placement(Rect(phase * 10, 0, 20, 20))]
+                        }
+                        .phase(phase.projectedValue)
+                        .motion(.eased(.milliseconds(400), .linear))
+                        .width(100).height(40)
+                        Button("Go").onClicked(gate: .ignoreWhileRunning) {
+                            arrived.values.append(try await phase.projectedValue.journey.move(to: 4).arrived())
+                        }
+                        .id("go")
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+                s.settle { handed.values.last == 0 }
+
+                var time = 0.0
+                @MainActor func frames(until end: Double) {
+                    while time < end {
+                        time += 16
+                        clock.now = time
+                        s.frame()
+                    }
+                }
+                // The handler runs as the host runs a run's first steps; the clock waits for it.
+                try s.perform(.activate, on: s.element("go"))
+                s.settle { phase.wrappedValue == 4 }
+                frames(until: 200)
+                let between = handed.values.last ?? 0
+                s.expect(between > 0 && between < 4, true, "on its way half its time in, never at the destination at once")
+
+                frames(until: 1_000)
+                s.settle { arrived.values == [true] }
+                s.expect(handed.values.last, 4, "where the program sent it")
+                s.expect(arrived.values, [true], "and a move of it awaited until it arrived")
             },
             ConformanceCase("aScrollComesToRestOnTheNearestSnapTarget", proves: [Covered(LayoutEngineContract.self)]) { s in
                 let clock = TestClock()

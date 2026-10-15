@@ -576,8 +576,10 @@ The arithmetic is handed the phase as it stands each frame, and each
 placement lands as written: what moves smoothly is the phase, so every view
 keeps to the path the arithmetic draws - an arc, a fan opening - rather than
 cutting across it. `turn` is the snap target the run rests on: written by the
-program, the run travels there under `.motion(_:)`; under the hand it is the
-target the run passes and the one it comes to rest on. A tap reaches the view
+program, the run travels there under `.motion(_:)` - with a scroll or none -
+and `try await $turn.journey.move(to: 2).arrived()` waits until it has; under
+the hand it is the target the run passes and the one it comes to rest on, and
+a hand taking the run on its way stops the journey. A tap reaches the view
 drawn on top through `.onItemTapped`, and `.shade(_:)` darkens a far view by
 the `shade` its placement answers.
 

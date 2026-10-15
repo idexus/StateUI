@@ -7,13 +7,12 @@ fan, a wheel of cards, a timeline and a gallery are one layout with different
 arithmetic; `GalleryView` is one with the arithmetic of three shapes written.
 
 ```text
-  LayoutEngine - the element, a host's ZStack
+  LayoutEngine - the element, a host's ZStack, wearing the phase   ◀── the host walks it
    ├── holder ── the author's view [ + the shade, second ]   ◀─┐
    ├── …                                                       │  one run of placements,
-   ├── scroller: an empty ScrollView over the views ───────────┤  written by the engine
-   │     └── content: its length, and a box under each view   │  on the host's frames
-   └── watcher: a view of nothing reading the phase asked  ────┘
-         engine(following: room, asked, scrolled, length, followed…)
+   └── scroller: an empty ScrollView over the views ───────────┘  written by the engine
+         └── content: its length, and a box under each view       on the host's frames
+         engine(following: room, phase, scrolled, length, followed…)
 ```
 
 ## The element
@@ -23,7 +22,10 @@ stands on its ZStack: children one over another, each where a run of
 placements on the element's own `area` puts it, or in the whole room until a
 run comes. It is the element an author's modifiers reach - a background, a
 border, a clip - so the node its contract describes is the one the author
-writes on, and its row in the matrix is proven by its own family.
+writes on, and its row in the matrix is proven by its own family. It wears
+the phase both ways (`LayoutEngineContract.phase`), so the host layer's
+channel walks it under the layout's motion and says every frame where it
+stands; no host draws it, and every host records it realized alike.
 
 It has no size of its own: it takes the room its layout gives it, whatever
 its views need (host/layout.md, a layout engine). The views stand where
@@ -37,16 +39,16 @@ frame of arithmetic. A shade is the holder's second child; both children are
 the library's, so their order is its guarantee.
 
 The run places every child, the library's own too: the views in the items'
-order, the scroller over them across the whole room, the watcher at no size.
+order, then the scroller over them across the whole room.
 A host lays out by arithmetic only the children a run leaves unplaced, so one
 run for all of them keeps every host's ZStack to the one rule it already has.
 
 ## The run
 
 The arithmetic runs on the host's frames, never in a render: whenever the
-room, the phase asked, the scroller's offset, its laid-out length or a state
-named in `following(_:)` is written, and once after every render that
-describes the layout. It is handed the room at the layout's own origin and the
+room, the phase - written by the program or walked by the host - the
+scroller's offset, its laid-out length or a state named in `following(_:)` is
+written, and once after every render that describes the layout. It is handed the room at the layout's own origin and the
 phase as it stands this frame, and answers one placement a view. An answer of
 another length is said once and made to fit, a missing view standing at the
 top left.
@@ -69,17 +71,21 @@ writes run nothing.
 ## The phase
 
 The phase is where the run rests or is going, two-way: the program writes it,
-the hand names it. The arithmetic is handed it as it stands each frame - with
-a scroll, where the scroller is, held between the lowest and the highest snap
+the hand names it. It is the one thing that travels: a write is its
+destination, which the host walks under the layout's motion and reports frame
+by frame, so `$phase.journey.move(to:)` is awaited until the run arrives and
+the arithmetic is handed each frame where the phase stands - never the
+destination at once, which would make a ring jump. With a scroll at rest the
+phase is where the scroller is, held between the lowest and the highest snap
 target. Until the scroller reports its first layout its offset is nobody's:
-the run stands at the phase asked and names nothing, so a layout starting on
-its third target starts there rather than naming the first.
+the run stands where the phase says and names nothing, so a layout starting
+on its third target starts there rather than naming the first.
 
-The watcher reads the phase asked in a view of its own, so a new phase
-rebuilds the watcher and nothing about the views. It sends the run there: the
-scroller, to travel under the layout's motion, or, with no hand, the
-arithmetic again. A phase the hand named and the program reads back moves
-nothing.
+The phase lent is a state, `$turn`: a binding worked out from others has no
+image to wear, so its phase would jump where it is sent, and the layout says
+so once. The engine follows the phase itself, so a new one wakes the arithmetic and
+builds nothing: a destination the run did not name is the program's, and
+becomes where the run stands should the room change.
 
 ## The hand
 
@@ -101,11 +107,18 @@ something. The length is the content's own size, which the scroller measures,
 reported back as laid out (`length`): that is when the scroller can hold what
 a new room asks.
 
-- The phase is named as the run passes halfway between two snap targets, under
-  the hand or in the platform's throw: one render a target, none a frame. On a
-  way the program sent the run it names nothing - the phase is where it goes,
-  and naming what it passes would turn the phase back and forth.
-- At rest the run travels on to the nearest target, under the layout's motion.
+- While the phase travels the scroller follows it, snapped each frame where
+  the phase stands: it never travels on its own, so the scroll and its
+  arithmetic cannot part, and on the way the program sent the run nothing is
+  named - the phase is where it goes, and naming what it passes would turn it
+  back and forth. A hand moving the scroller on that way takes the run: the
+  journey stops, and the phase is named where the hand holds it.
+- Otherwise the scroller leads, and the phase is named as the run passes
+  halfway between two snap targets, under the hand or in the platform's
+  throw: one render a target, none a frame. A name is a reading of the hand
+  (`journey.snap(to:)`), not a journey.
+- At rest the phase is set where the scroller stopped and travels on to the
+  nearest target, a journey of its own the scroller follows.
 - On a desktop a pointer drag moves the run, because a mouse drag leaves a
   scroller where it stands; on a phone and a tablet the finger is the
   scroller's own gesture, and a pan beside it would move the views twice. The
@@ -113,8 +126,7 @@ a new room asks.
   itself, which spans the room and stands still while its content slides: heard
   on the content, it would be measured in a frame the run moves under the hand,
   and its report would chase itself - a drag to the left turned the run back.
-  When the hand lets go, the scroller is snapped to where the run is and
-  travels on to the nearest target.
+  When the hand lets go, the run travels on to the nearest target as at rest.
 - A tap lands on a box under each view as it is drawn - its bounds taken
   through its scale about the middle, and moved - in the content, which slides
   under the room, so the box stands at the view's place plus however far the

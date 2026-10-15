@@ -4606,11 +4606,9 @@ enum Listings {
                     DebugInfoLabel()
 
                     Button("Back")
-                        .isEnabled(!grabbing)
                         .onClicked { move(-1) }
 
                     Button("Next")
-                        .isEnabled(!grabbing)
                         .onClicked { move(1) }
                 }
                 .horizontalAlignment(.center)

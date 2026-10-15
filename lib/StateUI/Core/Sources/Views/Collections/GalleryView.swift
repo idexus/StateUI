@@ -36,6 +36,10 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// takes every touch, so the gallery shows the press itself.
     @State private var dipping: ID?
 
+    /// Where the run stands, a card a unit: the engine's phase, which the host
+    /// walks - a position written travels there through it.
+    @State private var turn = 0.0
+
     /// Who starts the runs of what `onPositionChanged` asked for, ended with the gallery.
     @State private var positionRuns = RunOwner()
 
@@ -299,6 +303,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         // Design: docs/design/views/composition.md#handlers-capture-locals
         let showns = _shown
         let dips = _dipping
+        let turns = _turn
         let pin = pin
         let moved = moved
         let positionRuns = positionRuns
@@ -311,18 +316,6 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         // would rebuild the deck.
         // Design: docs/design/views/composition.md#a-watcher-is-a-view-of-its-own
         let asked = { min(max(pin?.wrappedValue ?? showns.wrappedValue, 0), count - 1) }
-
-        // The card in front is the engine's phase, a card a unit.
-        let phase = Binding<Double>(
-            get: { Double(asked()) },
-            set: { turned in
-                let card = min(max(Int(turned.rounded()), 0), count - 1)
-                if let pin {
-                    if pin.wrappedValue != card { pin.wrappedValue = card }
-                } else if showns.wrappedValue != card {
-                    showns.wrappedValue = card
-                }
-            })
 
         var engine = LayoutEngine(items, id: path) { item in
             // The face in a holder of its own, so the press on it is not overwritten by the placement written on
@@ -339,8 +332,18 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         } placements: { room, phase in
             (0..<count).map { place(Double($0) - phase, count, room, shape) }
         }
-        .phase(phase)
+        .phase(turns.projectedValue)
         .snapTargets((0..<count).map(Double.init))
+        // A card the hand names is the position at once, in the frame that names it.
+        .onNamed { turned in
+            let card = min(max(Int(turned.rounded()), 0), count - 1)
+
+            if let pin {
+                if pin.wrappedValue != card { pin.wrappedValue = card }
+            } else if showns.wrappedValue != card {
+                showns.wrappedValue = card
+            }
+        }
 
         if swipes { engine = engine.input(.scroll(.horizontal, pointsPerUnit: reach)) }
 
@@ -369,14 +372,18 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             engine
 
             // The watcher of the position, a view of its own beside the deck, so reading it rebuilds none of the
-            // cards.
-            PositionWatcher(at: asked) { position in
+            // cards: a position written sends the run there.
+            Watcher(at: asked) { position in
+                if turns.wrappedValue != Double(position) { turns.wrappedValue = Double(position) }
+
                 guard let moved else { return }
 
                 moved.gate.runs(for: positionRuns).start(
                     { try await moved.run(position) }, moved.gate.policy, payload: nil, owner: positionRuns)
             }
         }
+        // The run starts where the position stands, with no journey to it.
+        .onCreated { turns.projectedValue.journey.snap(to: Double(asked())) }
         // What the position asked for ends with the gallery.
         .onDestroying { positionRuns.orphan() }
 
@@ -546,22 +553,22 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     }
 }
 
-/// The position's watcher: a view of nothing that reads the card in front, so the read rebuilds it and not the deck.
+/// A watcher: a view of nothing that reads one value, so the read rebuilds it and not the deck.
 /// Design: docs/design/views/composition.md#a-watcher-is-a-view-of-its-own
-private struct PositionWatcher: View {
-    /// The card in front - ASKED here, so the read is this view's.
-    let at: () -> Int
+private struct Watcher<Value: Equatable>: View {
+    /// The value - ASKED here, so the read is this view's.
+    let at: () -> Value
 
-    /// What a new card in front means.
-    let turned: (Int) -> Void
+    /// What a new value means.
+    let turned: (Value) -> Void
 
     var body: some View {
-        let position = at()
+        let value = at()
 
         return Rectangle(.transparent)
             .width(0)
             .height(0)
             .ignoresInput(true)
-            .onChanged(position) { turned(position) }
+            .onChanged(value) { turned(value) }
     }
 }

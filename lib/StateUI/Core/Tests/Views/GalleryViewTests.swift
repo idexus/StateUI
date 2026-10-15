@@ -646,8 +646,9 @@ final class GalleryViewTests: XCTestCase {
         _ = renders.render(tree())
         _ = await settle()
 
-        // The host walks the run from card 1 towards card 3: a frame of the way.
-        moved(offset, to: [1.4 * step, 0], mask: 0b11)
+        // The host walks the phase from card 1 towards card 3: a frame of the way.
+        let phase = try XCTUnwrap(find(.layoutEngine, in: showing.whole)?.driven?[.phase]?.state)
+        moved(phase, to: 1.4)
         turned += 16
         _ = board.cycle(now: turned, reducesMotion: false)
 
@@ -656,15 +657,16 @@ final class GalleryViewTests: XCTestCase {
     }
 
     /// A run that COMES TO REST between two cards travels on to the nearer: its
-    /// scroller's stop is heard, and the offset is SENT to that card - a
-    /// destination, so the host walks the rest of the way from where the run
-    /// stands. A run already on a card is left there.
+    /// scroller's stop is heard, and the phase is SENT to that card from where
+    /// the run stands - a journey the host walks and the scroller follows. A run
+    /// already on a card is left there.
     func testARunAtRestBetweenTwoCardsTravelsOnToTheNearer() throws {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(5).node })
         let scroller = try XCTUnwrap(find(.scrollView, in: showing.whole))
         let offset = try XCTUnwrap(scroller.driven?[.scrollOffset]?.state)
         let stopped = try XCTUnwrap(scroller.events?[.scrollStopped])
+        let phase = try XCTUnwrap(find(.layoutEngine, in: showing.whole)?.driven?[.phase]?.state)
         let step = try XCTUnwrap(travel(showing.patch, cards: 5))
         let board = Renderer.shared.board(for: .display)
 
@@ -673,7 +675,7 @@ final class GalleryViewTests: XCTestCase {
 
         // The user leaves the run there, a cycle takes the report in, and
         // the scroller says it has stopped.
-        func rest(at cards: Double) throws -> JourneyLanes<Point> {
+        func rest(at cards: Double) throws -> JourneyLanes<Double> {
             slid(offset, to: Point(cards * step, 0))
             turned += 16
             _ = board.cycle(now: turned, reducesMotion: false)
@@ -684,17 +686,23 @@ final class GalleryViewTests: XCTestCase {
             turned += 16
             _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
 
-            return try XCTUnwrap(standing(offset, as: JourneyLanes<Point>.self))
+            return try XCTUnwrap(standing(phase, as: JourneyLanes<Double>.self))
         }
 
         let sent = try rest(at: 1.4)
 
-        XCTAssertEqual(sent.destination.x, step, accuracy: 0.001, "the nearer card")
-        XCTAssertEqual(sent.value.x, 1.4 * step, accuracy: 0.001, "from where the run stands")
+        XCTAssertEqual(sent.destination, 1, accuracy: 0.001, "the nearer card")
+        XCTAssertEqual(sent.value, 1.4, accuracy: 0.001, "from where the run stands")
+
+        // The host walks the phase there.
+        moved(phase, to: [1, 1, 0], mask: 0b111)
+        turned += 16
+        _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
 
         let left = try rest(at: 3)
 
-        XCTAssertEqual(left.destination.x, 3 * step, accuracy: 0.001, "a run on a card stays")
+        XCTAssertEqual(left.destination, 3, accuracy: 0.001, "a run on a card stays")
+        XCTAssertEqual(left.value, 3, accuracy: 0.001)
     }
 
     /// A tap is answered inside the scroller, which is what lies over the cards
@@ -877,8 +885,8 @@ final class GalleryViewTests: XCTestCase {
 
         let run = placements(showing)
 
-        guard run.count == 5 else {
-            return XCTFail("the engine placed \(run.count) children of five: three cards, the scroller, the watcher")
+        guard run.count == 4 else {
+            return XCTFail("the engine placed \(run.count) children of four: three cards and the scroller")
         }
 
         XCTAssertEqual(run[0].bounds.x, 88, accuracy: 0.001)
@@ -968,8 +976,7 @@ final class GalleryViewTests: XCTestCase {
 }
 
 private extension Array where Element == Placement {
-    /// The placement of one card, or nil where the run placed none - the scroller and the watcher stand after the
-    /// cards.
+    /// The placement of one card, or nil where the run placed none - the scroller stands after the cards.
     func card(_ index: Int) -> Placement? {
         indices.contains(index) ? self[index] : nil
     }

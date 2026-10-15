@@ -38,10 +38,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
     /// The phase, where no binding was lent.
     @State private var ownPhase = 0.0
 
-    /// The phase as the program last asked for it, which wakes the arithmetic where no hand moves the run.
-    @State private var asked = 0.0
-
-    /// The snap target the run last named, so a name coming back moves nothing.
+    /// The destination the run last knew - its own naming or the program's - so a new one is told from it.
     @State private var reported: Double?
 
     /// Where the run last stood - sent there or left there - which a change of room keeps.
@@ -49,6 +46,9 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
 
     /// Whether a change of room left the scroller too short for where the run stood.
     @State private var regaining = false
+
+    /// Where the scroller was last snapped to follow the phase on its way, along its axis.
+    @State private var mirrored: Double?
 
     /// How long the scroller's room was along its axis when it last reported.
     @State private var measured = 0.0
@@ -98,6 +98,9 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
 
     /// How the run travels to where the program or a settle sends it.
     private var law = Motion.inherited
+
+    /// What a target the run names is told to beside the phase: a composed control's own value worked out from it.
+    private var named: ((Double) -> Void)?
 
     /// A layout of views, one per item, placed by `placements` on the host's frames.
     ///
@@ -239,22 +242,35 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
         return copy
     }
 
-    /// The views, the hand over them and the watcher of the phase, each where the run puts it.
+    /// The same layout telling `handler` each target the run names, as it names it: what a composed control
+    /// keeps a value of its own by - `GalleryView`'s position.
+    func onNamed(_ handler: @escaping (Double) -> Void) -> Self {
+        var copy = self
+        copy.named = handler
+        return copy
+    }
+
+    /// The views and the hand over them, each where the run puts it.
     public var body: some View {
         let run = self.run
 
         if hand != nil, targets.isEmpty {
             complain("A LayoutEngine was given a scroll but no snapTargets, which say how far it runs. Nothing scrolls.")
         }
+        if let pinned, pinned.followed == nil {
+            complain("A LayoutEngine's phase is a state lent with `$`: a binding worked out from others cannot be "
+                + "worn, so the phase would jump where it is sent rather than travel there.")
+        }
 
         return PlacedStack {
             ForEach(run.slots, id: \.identity) { slot in run.wrapped(slot) }
             if run.scrolls { run.scroller() }
-            Watcher(phase: run.phaseAsked, look: run.moved)
         }
         .setValue(ViewContract.area.token, on: $placements, mode: .out, kind: .placement)
+        .setValue(LayoutEngineContract.phase.token, on: run.phase, mode: .inOut, kind: .property)
+        .motion(law)
         .frame($room)
-        .engine([$room.followed, $asked.followed, $scrolled.followed, $length.followed] + followed,
+        .engine([$room.followed, run.phase.followed, $scrolled.followed, $length.followed] + followed,
                 sync: .display, priority: 0) { _ in
             run.place()
             return .wait
@@ -303,9 +319,10 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
             arithmetic: source.arithmetic,
             mask: mask,
             tapped: tapped,
-            pinned: pinned,
+            named: named,
+            phase: pinned ?? $ownPhase,
             states: States(
-                ownPhase: _ownPhase, asked: _asked, reported: _reported, standing: _standing, regaining: _regaining,
+                reported: _reported, standing: _standing, regaining: _regaining, mirrored: _mirrored,
                 measured: _measured, length: _length, scrolled: _scrolled, dragged: _dragged,
                 placements: _placements, boxes: _boxes, room: _room),
             targets: targets,
@@ -318,11 +335,10 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
 
     /// The layout's states, handed on whole: what its engine and handlers read and write.
     struct States {
-        let ownPhase: State<Double>
-        let asked: State<Double>
         let reported: State<Double?>
         let standing: State<Double?>
         let regaining: State<Bool>
+        let mirrored: State<Double?>
         let measured: State<Double>
         let length: State<Rect>
         let scrolled: State<Point>
@@ -330,25 +346,5 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable>: View {
         let placements: State<PlacedRun>
         let boxes: State<PlacedRun>
         let room: State<Rect>
-    }
-}
-
-/// The phase's watcher: a view of nothing that reads the phase asked for, so the read rebuilds it and not the layout.
-/// Design: docs/design/views/composition.md#a-watcher-is-a-view-of-its-own
-private struct Watcher: View {
-    /// The phase asked for - ASKED here, so the read is this view's.
-    let phase: () -> Double
-
-    /// What a new phase means.
-    let look: (Double) -> Void
-
-    var body: some View {
-        let asked = phase()
-
-        return Rectangle(.transparent)
-            .width(0)
-            .height(0)
-            .ignoresInput(true)
-            .onChanged(asked) { look(asked) }
     }
 }

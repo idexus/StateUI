@@ -460,7 +460,7 @@ Every control, and every part an application, its windows and its pages are made
 | [HStack](controls/HStack.md) | 76 | 38 ✅ · 1 ☑️ · 35 ✓ | 35 ✅ · 1 ☑️ · 37 ✓ · 1 – | 58 ✅ · 3 ☑️ · 12 ✓ | 61 ✅ · 1 ☑️ · 12 ✓ · 1 – | 50 ✅ · 1 ☑️ · 23 ✓ · 2 – | 54 ✅ · 1 ☑️ · 20 ✓ |
 | [Image](controls/Image.md) | 69 | 31 ✅ · 2 ☑️ · 35 ✓ | 30 ✅ · 2 ☑️ · 35 ✓ · 1 – | 53 ✅ · 3 ☑️ · 10 ✓ | 54 ✅ · 13 ✓ · 1 – | 44 ✅ · 1 ☑️ · 22 ✓ · 1 – | 47 ✅ · 1 ☑️ · 20 ✓ |
 | [ItemsView](controls/ItemsView.md) | 81 | 39 ✅ · 2 ☑️ · 39 ✓ | 33 ✅ · 2 ☑️ · 41 ✓ · 4 – | 63 ✅ · 3 ☑️ · 13 ✓ | 67 ✅ · 1 ☑️ · 12 ✓ | 54 ✅ · 1 ☑️ · 23 ✓ · 1 – | 58 ✅ · 1 ☑️ · 21 ✓ |
-| [LayoutEngine](controls/LayoutEngine.md) | 75 | 32 ✅ · 1 ☑️ · 35 ✓ · 1 – | 31 ✅ · 1 ☑️ · 37 ✓ · 2 – | 52 ✅ · 3 ☑️ · 12 ✓ · 1 – | 58 ✅ · 1 ☑️ · 12 ✓ · 2 – | 43 ✅ · 1 ☑️ · 23 ✓ · 3 – | 51 ✅ · 1 ☑️ · 20 ✓ · 1 – |
+| [LayoutEngine](controls/LayoutEngine.md) | 76 | 33 ✅ · 1 ☑️ · 35 ✓ · 1 – | 32 ✅ · 1 ☑️ · 37 ✓ · 2 – | 53 ✅ · 3 ☑️ · 12 ✓ · 1 – | 59 ✅ · 1 ☑️ · 12 ✓ · 2 – | 44 ✅ · 1 ☑️ · 23 ✓ · 3 – | 52 ✅ · 1 ☑️ · 20 ✓ · 1 – |
 | [Line](controls/Line.md) | 77 | 40 ✅ · 2 ☑️ · 35 ✓ | 39 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 3 ☑️ · 10 ✓ | 63 ✅ · 13 ✓ · 1 – | 53 ✅ · 1 ☑️ · 22 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ |
 | [Map](controls/Map.md) | 74 | 36 ✅ · 2 ☑️ · 36 ✓ | 35 ✅ · 2 ☑️ · 36 ✓ · 1 – | 74 🧩 | 74 🧩 | 74 🧩 | 74 🧩 |
 | [Path](controls/Path.md) | 77 | 40 ✅ · 2 ☑️ · 35 ✓ | 39 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 3 ☑️ · 10 ✓ | 63 ✅ · 13 ✓ · 1 – | 53 ✅ · 1 ☑️ · 22 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ |
@@ -483,10 +483,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 76 | 38 ✅ · 1 ☑️ · 35 ✓ | 36 ✅ · 1 ☑️ · 36 ✓ · 1 – | 59 ✅ · 3 ☑️ · 11 ✓ | 61 ✅ · 1 ☑️ · 12 ✓ · 1 – | 51 ✅ · 1 ☑️ · 22 ✓ · 2 – | 54 ✅ · 1 ☑️ · 20 ✓ |
 | [WebView](controls/WebView.md) | 82 | 44 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 2 ☑️ · 38 ✓ · 1 – | 63 ✅ · 3 ☑️ · 12 ✓ · 3 – | 49 ✅ · 13 ✓ · 19 – | 56 ✅ · 1 ☑️ · 24 ✓ · 1 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [ZStack](controls/ZStack.md) | 75 | 37 ✅ · 1 ☑️ · 35 ✓ | 34 ✅ · 1 ☑️ · 37 ✓ · 1 – | 57 ✅ · 3 ☑️ · 12 ✓ | 60 ✅ · 1 ☑️ · 12 ✓ · 1 – | 49 ✅ · 1 ☑️ · 23 ✓ · 2 – | 53 ✅ · 1 ☑️ · 20 ✓ |
-| ✅ |  | 1377 | 1293 | 2076 | 2159 | 1782 | 1924 |
+| ✅ |  | 1378 | 1294 | 2077 | 2160 | 1783 | 1925 |
 | ✓ |  | 1245 | 1282 | 387 | 422 | 793 | 681 |
 | – |  | 26 | 82 | 39 | 40 | 50 | 19 |
-| **Met** | 2747 | **2648** | **2657** | **2502** | **2621** | **2625** | **2624** |
+| **Met** | 2748 | **2649** | **2658** | **2503** | **2622** | **2626** | **2625** |
 | 🧩 |  | 0 | 0 | 74 | 74 | 74 | 74 |
 
 ### Application structure
@@ -574,6 +574,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [Image](controls/Image.md) | `isAnimating`, `source` | 2 | 1 ✅ | 1 ✅ |  | 1 ✅ | 1 ✅ | 1 ✅ |
 | [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectedItemsChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ · 4 ✓ | 5 ✅ · 4 ✓ | 8 ✅ · 1 ✓ | 9 ✅ | 9 ✅ | 8 ✅ · 1 ✓ |
+| [LayoutEngine](controls/LayoutEngine.md) | `phase` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [Map](controls/Map.md) | `isScrollEnabled`, `showsTraffic`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 🧩 | 7 🧩 | 7 🧩 | 7 🧩 |
 | [Marker](controls/Marker.md) | `onDetailsClicked` (`detailsClicked`), `label`, `location`, `onSelected` (`selected`), `subtitle`, `type` | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
@@ -659,8 +660,8 @@ realizes the element and each of its members.
 `maximumLines`, `maximumWidth`, `menuKind`, `minimum`, `minimumDate`,
 `minimumHeight`, `minimumWidth`, `miterLimit`, `opacity`, `options`, `order`,
 `orientation`, `padding`, `panTouchCount`, `panXChannel`, `panYChannel`,
-`pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `placement`, `points`,
-`presentation`, `progress`, `region`, `role`, `rotation`, `rotationX`,
+`phase`, `pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `placement`,
+`points`, `presentation`, `progress`, `region`, `role`, `rotation`, `rotationX`,
 `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollOffset`,
 `selectedIndex`, `selectedItems`, `selectedTab`, `selectionLength`,
 `selectionMode`, `shape`, `showsBackButton`, `showsClearButton`,

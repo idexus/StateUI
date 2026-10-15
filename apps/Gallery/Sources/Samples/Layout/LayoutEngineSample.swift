@@ -107,12 +107,10 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
 
                 Button("Back")
                     .margin(horizontal: 4, vertical: 0)
-                    .isEnabled(!grabbing)
                     .onClicked { move(-1) }
 
                 Button("Next")
                     .margin(horizontal: 4, vertical: 0)
-                    .isEnabled(!grabbing)
                     .onClicked { move(1) }
             }
             .spacing(8)
@@ -330,7 +328,9 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("Swipe left or right to turn the ring; it comes to rest on the card it is "
-                + "nearest, and `Back` and `Next` send it there without the hand. The phase, "
+                + "nearest, and `Back` and `Next` send it there without the hand - the phase "
+                + "itself travels, under the layout's `.motion`, a scroller over the cards or "
+                + "none. The phase, "
                 + "`.phase($turn)`, is the card at the front: the buttons write it, and a swipe "
                 + "names the card it passes. `.input(.scroll(…))` lays an empty scroller over "
                 + "the cards, so a finger drag, a two-finger trackpad swipe and a mouse wheel "

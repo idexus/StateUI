@@ -32,7 +32,6 @@ extension LayoutEngine.Run {
                 .verticalScrollIndicator(.never)
                 .scrollOffset(run.states.scrolled.projectedValue)
                 .onScrollStopped { run.settle() }
-                .motion(run.law)
 
             // The drag is heard on the scroller, which stands still while its content slides under the hand.
             if run.drags {
