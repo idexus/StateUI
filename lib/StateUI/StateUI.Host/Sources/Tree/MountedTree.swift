@@ -114,6 +114,21 @@
     private let reducesMotion: () -> Bool
     let makeNative: (MountedElement) -> any NativeElement
     private var nextMount: UInt64 = 0
+
+    /// Every element mounted, by its mount, and the elements presenting each state a frame carries, by its number:
+    /// what a frame presents, with no walk of the tree.
+    /// Design: docs/design/host/runtime.md#one-frame
+    private var byMount: [UInt64: Held] = [:]
+    private var presenters: [Int32: Set<UInt64>] = [:]
+
+    /// How many elements frames have visited, an element a visit: what says a frame costs what it touches, however
+    /// large the tree.
+    var frameVisits = 0
+
+    /// An element held weakly: an index never keeps one the tree let go.
+    private struct Held {
+        weak var element: MountedElement?
+    }
     private var patchTime: Double?
     private(set) var languageDirection: LayoutDirection?
     private var patchReducesMotion: Bool?
@@ -193,7 +208,33 @@
     /// Design: docs/design/host/patches.md#program-write
     @discardableResult
     public func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) -> FrameImpact {
-        ProgramWrite.perform { root?.applyFrame(states: states, properties: properties) ?? .none }
+        ProgramWrite.perform {
+            var touched = Set(properties.keys)
+            for state in states.keys { touched.formUnion(presenters[state] ?? []) }
+            return MountedElement.presentFrame(
+                touched.sorted().compactMap { byMount[$0]?.element }, states: states, properties: properties)
+        }
+    }
+
+    /// `element` is mounted: a frame finds it by its mount.
+    func mounted(_ element: MountedElement) {
+        byMount[element.mount] = Held(element: element)
+    }
+
+    /// `element` presents `states` now rather than `before`, the states its bound properties take a frame's values
+    /// from.
+    func presents(_ element: MountedElement, _ states: [Int32], before: [Int32]) {
+        for state in before {
+            presenters[state]?.remove(element.mount)
+            if presenters[state]?.isEmpty == true { presenters[state] = nil }
+        }
+        for state in states { presenters[state, default: []].insert(element.mount) }
+    }
+
+    /// `element` leaves, with the states it presented: no frame finds it again.
+    func unmounted(_ element: MountedElement, presenting states: [Int32]) {
+        byMount[element.mount] = nil
+        presents(element, [], before: states)
     }
 
     /// Starts, retargets or cuts short the animation of `property` on the element `mount`.

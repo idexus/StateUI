@@ -98,7 +98,7 @@
     private func step() {
         _ = core.runJobs()
 
-        if tree.root != nil, core.cyclesPending {
+        if tree.root != nil, core.cyclesAsked {
             displayCycle.drain(now: now())
         }
 
@@ -107,7 +107,7 @@
 
             // The cycle the render asks for runs before the turn ends: a layout's run stands with the views it places.
             // Design: docs/design/host/runtime.md#one-turn
-            if tree.root != nil, core.cyclesPending {
+            if tree.root != nil, core.cyclesAsked {
                 displayCycle.drain(now: now())
             }
 

@@ -171,7 +171,16 @@ view again arms the engine once with the new closure (`rearm`).
   stirred    any followed stamp differs from what was seen -> run
   armed      a render described the view since the last run -> run
   awake      the last answer was .again -> run
+  asked      armed or stirred, or a write waiting -> a turn runs the cycle at once;
+             awake alone waits for the display's frame
 ```
+
+A turn - a handler run, a page's call answered - runs the cycle only where it
+was asked for: a write or an engine armed or stirred is the user's change, and
+the followers move on the user's frame. An engine going on of its own is
+served by the display's frames alone; a turn running it too would work a frame
+out for every input event - 120 a second on a tablet - beside the screen's
+own.
 
 A state's stamp is its storage's own write count plus its image's, because a
 value has two homes in its life: the storage, and the image once the host

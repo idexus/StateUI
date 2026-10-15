@@ -187,9 +187,19 @@ final class CycleBoard {
 
     /// Whether anything at all is waiting for a cycle.
     var awake: Bool {
-        stirring || storages.contains {
-            $0.storage?.pending != nil || ($0.storage?.dirty ?? 0) != 0
-        }
+        stirring || written
+    }
+
+    /// Whether anything waits that a turn answers at once: a write latched or to be, an engine armed or a state it
+    /// follows written. An engine going on of its own waits for the display's frame.
+    /// Design: docs/design/core/cycle.md#what-wakes-an-engine
+    var asked: Bool {
+        written || engines.contains { $0.asked }
+    }
+
+    /// Whether a write waits: one to latch, or one latched the host has not read.
+    private var written: Bool {
+        storages.contains { $0.storage?.pending != nil || ($0.storage?.dirty ?? 0) != 0 }
     }
 
     /// One cycle: what was written latched, the engines with a reason run, and what

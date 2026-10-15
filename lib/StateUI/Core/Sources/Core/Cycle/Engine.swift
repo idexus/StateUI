@@ -138,7 +138,18 @@ struct EngineEntry {
     /// Whether it has a reason to run: a render armed it, its last answer was
     /// `.again`, or anything it follows has been written since it last ran.
     var due: Bool {
-        armed || awake || follows.contains { seen[ObjectIdentifier($0)] != $0.stamp }
+        armed || awake || stirred
+    }
+
+    /// Whether it was armed or a state it follows was written since it last ran: a reason a turn answers at once,
+    /// where one going on of its own waits for the display's frame.
+    var asked: Bool {
+        armed || stirred
+    }
+
+    /// Whether a state it follows was written since it last ran.
+    private var stirred: Bool {
+        follows.contains { seen[ObjectIdentifier($0)] != $0.stamp }
     }
 
     /// Notes that it ran at `now` and what it answered, and where everything it

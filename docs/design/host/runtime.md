@@ -80,9 +80,9 @@ display cycle, in this order, in every runtime:
                                                    the channels' reports reach the core
     3  CoreLink.cycle(now:reducesMotion:)          engines and conversions run in the core;
                                                    StateChannels take the changes
-    4  one walk of the mounted tree                each element's native setters once,
-                                                   each changed parent arranged once,
-                                                   after its children;
+    4  the elements the batch touches             each element's native setters once,
+                                                   deepest first, each changed parent
+                                                   arranged once, after its children;
                                                    finished animations answer their waiters
     5  the clock stays held while anything moves; it lets go only here
     6  a render, when the core needs one
@@ -90,6 +90,15 @@ display cycle, in this order, in every runtime:
 
 A user's own change drains steps 2 to 5 at once, so the followers and
 the engines move on the user's frame.
+
+Step 4 visits the elements that present a state the cycle moved or hold a
+property an animation moved - found by their state's number and their mount,
+not by a walk - and the parents their moves ask to arrange, up through
+elements with no view of their own; a parent whose child's `zIndex` moved
+draws its children in order again. A frame costs what it touches, however
+large the tree: a walk of every element on every frame, a layered one's
+children compared each time, was most of a frame's work, and a tablet's
+browser could not keep up.
 
 The cycle's time never runs back. The display stamps each frame with the time
 of its last refresh, and a turn between frames - a report, a handler, the
@@ -120,7 +129,7 @@ The turn always runs in the same order.
   loop's pass ends        from the page ends   one turn to the UI thread
     |                       |                    |
     v                       v                    v
-  pump:  run the jobs  ->  a pending cycle  ->  render  ->  its cycle  ->  acts
+  pump:  run the jobs  ->  an asked cycle  ->  render  ->  its cycle  ->  acts
                                                   |
                                                   v
                           PatchIntake.take(_:generation:apply:)
@@ -387,7 +396,11 @@ points at least - a hand pushing again - or a gap of more than six frames, a
 hand that stopped it and moves again. A wheel the platform says turns notch by
 notch is no stream: it is said as notches (`HeardInput.notch`), a fine
 wheel's parts adding up to whole ones (`HandReading.notches`), each a step
-of the run to the next target (`handStepped`). A layout claims a hand
+of the run to the next target (`handStepped`). What the hand says is kept
+for the next frame and said at its start, before the cycle - its moves since
+the last frame as one (`HandPace`): a toolkit telling the hand faster than
+the display draws, 120 times a second or in a burst a busy thread held back,
+moves the run once a frame. A layout claims a hand
 whose first move is more along its axis than across it; the rest is left to
 whatever holds the layout, a page's scroller. What the hand does to the run -
 the phase moving with it, a throw to the target nearest its end - is the

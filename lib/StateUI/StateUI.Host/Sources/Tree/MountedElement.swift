@@ -63,6 +63,9 @@
     /// The hand over the element, where it is a layout a hand moves.
     var handReading = HandReading()
 
+    /// What the hand said since the last frame, the moves between two frames as one, waiting for the next.
+    var handOutbox: [HandReading.Report] = []
+
     /// The toolkit's half of the element.
     public private(set) var native: (any NativeElement)!
 
@@ -74,6 +77,7 @@
 
     private(set) weak var tree: MountedTree?
     private var wornStates: [Int32] = []
+    private var presentedStates: [Int32] = []
     private var drivenValues: [Prop: HostStateValue] = [:]
     private var created = false
     private var described = false
@@ -85,6 +89,7 @@
         self.parent = parent
         mount = tree.allocateMount()
         native = nil
+        tree.mounted(self)
         made = patch
         native = tree.makeNative(self)
         made = nil
@@ -133,6 +138,11 @@
         if case .replace(let driven) = patch.driven {
             self.driven = driven
             drivenValues = drivenValues.filter { driven[$0.key] != nil }
+            let presented = driven.values.filter { $0.mode != .in }.map(\.state).sorted()
+            if presented != presentedStates {
+                tree.presents(self, presented, before: presentedStates)
+                presentedStates = presented
+            }
         }
         wear(driven)
 
@@ -305,8 +315,10 @@
         if let tree {
             for state in wornStates { tree.stateChannels.detach(state) }
             tree.removeMotions(mount: mount)
+            tree.unmounted(self, presenting: presentedStates)
         }
         wornStates = []
+        presentedStates = []
         isLeaving = false
         native.leave()
         for child in held { child.leave() }
@@ -394,34 +406,79 @@
         for child in held { child.forgetForTesting(where: matches) }
     }
 
-    /// Presents one frame in one walk: bound states' values and moved properties, each parent arranged once.
+    /// Presents one frame on the elements it touches - those presenting a state that moved or holding a property
+    /// that moved - and what that asks of the elements around them, deepest first: each parent arranges once,
+    /// after its children; one showing no view of its own passes its children's moves on to its own parent; one
+    /// whose child's order moved draws its children in order again. No other element is visited.
     /// Design: docs/design/host/runtime.md#one-frame
-    @discardableResult
-    public func applyFrame(
+    static func presentFrame(
+        _ touched: [MountedElement],
         states valuesByState: [Int32: HostStateValue],
         properties propertiesByMount: [UInt64: Set<Prop>]
     ) -> FrameImpact {
-        var changed = propertiesByMount[mount] ?? []
-
-        for (property, binding) in driven where binding.mode != .in {
-            guard let value = valuesByState[binding.state] else { continue }
-            drivenValues[property] = value
-            changed.insert(property)
+        struct Waiting {
+            let element: MountedElement
+            var descendants = FrameImpact.none
+            var restacks = false
+        }
+        func depth(of element: MountedElement) -> Int {
+            var depth = 0
+            var above = element.parent
+            while let each = above {
+                depth += 1
+                above = each.parent
+            }
+            return depth
         }
 
-        let own = changed.isEmpty ? FrameImpact.none : presentFrame(changed)
-        var descendants = FrameImpact.none
-
-        for child in held {
-            descendants = descendants.union(child.applyFrame(states: valuesByState, properties: propertiesByMount))
+        var waiting: [UInt64: Waiting] = [:]
+        var byDepth: [Int: [UInt64]] = [:]
+        for element in touched {
+            waiting[element.mount] = Waiting(element: element)
+            byDepth[depth(of: element), default: []].append(element.mount)
         }
+        guard let deepest = byDepth.keys.max() else { return .none }
 
-        // A child's place is its parent's business; an element with no view passes it up.
-        let restacked = restack()
-        if own.content || descendants.arrangement || restacked { native.arrangeChildren() }
-        guard native.presentsView else { return own.union(descendants) }
-        descendants.arrangement = false
-        return own.union(descendants)
+        var impact = FrameImpact.none
+        for level in stride(from: deepest, through: 0, by: -1) {
+            for mount in (byDepth[level] ?? []).sorted() {
+                guard let entry = waiting[mount] else { continue }
+                let element = entry.element
+                element.tree?.frameVisits += 1
+
+                var changed = propertiesByMount[mount] ?? []
+                for (property, binding) in element.driven where binding.mode != .in {
+                    guard let value = valuesByState[binding.state] else { continue }
+                    element.drivenValues[property] = value
+                    changed.insert(property)
+                }
+
+                let own = changed.isEmpty ? FrameImpact.none : element.presentFrame(changed)
+                // A child's place is its parent's business; an element with no view passes it up.
+                let restacked = entry.restacks && element.restack()
+                if own.content || entry.descendants.arrangement || restacked { element.native.arrangeChildren() }
+                var passed = entry.descendants
+                if element.native.presentsView { passed.arrangement = false }
+                let said = own.union(passed)
+                impact.content = impact.content || said.content
+                impact.windowChrome = impact.windowChrome || said.windowChrome
+
+                guard let parent = element.parent else {
+                    impact.arrangement = said.arrangement
+                    continue
+                }
+                let ordered = changed.contains(.zIndex)
+                guard said.arrangement || ordered else { continue }
+
+                if waiting[parent.mount] == nil {
+                    waiting[parent.mount] = Waiting(element: parent)
+                    byDepth[level - 1, default: []].append(parent.mount)
+                }
+                if said.arrangement { waiting[parent.mount]?.descendants.arrangement = true }
+                if ordered { waiting[parent.mount]?.restacks = true }
+            }
+        }
+        return impact
     }
 
     /// Presents `changed` on a frame and says what that asks around the element, the same on every host: its own

@@ -381,13 +381,17 @@
     }
 
     /// Whether a turn has anything to do: jobs on the UI executor, acts or saves not taken, a render, a cycle
-    /// awake.
+    /// asked for - a write, an engine armed or stirred; an engine going on of its own waits for the display's frame.
     /// Design: docs/design/host/runtime.md#the-turn-on-apple
     public static var wantsTurn: Bool {
         let renderer = Renderer.shared
         return UIThreadExecutor.shared.pendingCount > 0 || renderer.actCallsPending > 0 || renderer.needsRender
-            || renderer.cycleAwake() != 0
+            || renderer.cycleAsked()
     }
+
+    /// Whether a cycle waits on something a turn answers at once - a write, an engine armed or woken - rather than
+    /// on an engine going on of its own, which the display's frame serves.
+    public static var cyclesAsked: Bool { Renderer.shared.cycleAsked() }
 
     #if os(WASI)
     /// When the page is to call again, in milliseconds - at once where jobs, acts or a render wait, else when a job

@@ -46,11 +46,11 @@ extension MountedElement {
             // burst its arrival would read as a throw.
             let heard = handReading.hand(
                 phase, moved: moved, speed: speed, at: time ?? runtime.clock.now(), along: handAxis)
-            said(heard.reports, in: runtime)
+            gather(heard.reports, in: runtime)
             return heard.taken
         case .wheel(let moved):
             let heard = handReading.wheel(moved, at: runtime.clock.now(), along: handAxis)
-            said(heard.reports, in: runtime)
+            gather(heard.reports, in: runtime)
             if handReading.isWheeling { runtime.handPace.opened(self) }
             return heard.taken
         case .notch(let notches):
@@ -81,9 +81,30 @@ extension MountedElement {
         value(.handAxis)?.enumeration.flatMap(LayoutInput.Axis.init(rawValue:))
     }
 
-    /// A frame at `now` found the element's wheel open: let go where it has stood still long enough.
+    /// A frame at `now` found the element's wheel open or its hand's reports waiting: the wheel let go where it has
+    /// stood still long enough, then what the hand said since the last frame said at once.
     func paced(now: Double, in runtime: HostRuntime) {
-        said(handReading.paced(at: now), in: runtime)
+        gather(handReading.paced(at: now), in: runtime)
+        let reports = handOutbox
+        handOutbox = []
+        said(reports, in: runtime)
+    }
+
+    /// The hand's reports kept for the next frame, a move after a move made one: a toolkit telling the hand faster
+    /// than the display draws moves the run once a frame.
+    /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
+    private func gather(_ reports: [HandReading.Report], in runtime: HostRuntime) {
+        guard !reports.isEmpty else { return }
+
+        for report in reports {
+            if report.phase == .changed, let last = handOutbox.last, last.phase == .changed {
+                handOutbox[handOutbox.count - 1] = HandReading.Report(
+                    .changed, moved: Point(last.moved.x + report.moved.x, last.moved.y + report.moved.y))
+            } else {
+                handOutbox.append(report)
+            }
+        }
+        runtime.handPace.opened(self)
     }
 
     /// The hand's reports, as the element's `handMoved`.

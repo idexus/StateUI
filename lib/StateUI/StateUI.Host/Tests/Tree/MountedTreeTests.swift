@@ -430,6 +430,27 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertNil(tree.root?.children.last?.layoutValues.area)
     }
 
+    /// A FRAME VISITS WHAT IT TOUCHES, however large the tree: a state bound to one element of a hundred presents
+    /// that one, and the rest are not walked.
+    @MainActor
+    func testAFrameVisitsOnlyWhatItTouches() {
+        let (tree, log) = Self.tree()
+        var card = HostPatch(id: .manual("card"), type: .text)
+        card.driven = .replace([.opacity: HostStateBinding(state: 800, mode: .out, kind: .plain, laneKind: .number)])
+        var others = HostPatch(id: .manual("others"), type: .vStack)
+        others.children = .arranged((0..<100).map { HostPatch(id: .manual("other \($0)"), type: .text) })
+        var page = HostPatch(id: .manual("page"), type: .vStack)
+        page.children = .arranged([card, others])
+        tree.apply(page, complete: true)
+        log.arranged.removeAll()
+        let visits = tree.frameVisits
+
+        tree.present(states: [800: .lanes([0.5])], properties: [:])
+
+        XCTAssertEqual(tree.frameVisits - visits, 1, "the card alone")
+        XCTAssertEqual(log.arranged, ["card"])
+    }
+
     /// A bound `zIndex` restacks its grid in the frame that moved it, and arranges it once; a frame that
     /// moves nothing leaves the order and the grid alone.
     @MainActor

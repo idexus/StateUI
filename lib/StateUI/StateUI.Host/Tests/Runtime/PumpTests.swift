@@ -176,6 +176,28 @@ final class PumpTests: XCTestCase {
         XCTAssertEqual(layout.children.count, 4)
         XCTAssertEqual(layout.placement?.placements.count, 4, "after a silence")
     }
+
+    /// A TURN LEAVES AN ENGINE GOING ON TO THE DISPLAY'S FRAME: while a layout's change travels, a turn taken for
+    /// a call that wrote nothing - a hand's move gathered for the next frame - runs no cycle; the frame does.
+    @MainActor
+    func testATurnLeavesAnEngineGoingOnToTheFrame() throws {
+        let runtime = TurnRuntime(DealingApplication())
+        runtime.pump.turn()
+        let layout = try XCTUnwrap(runtime.tree.root?.first(type: .layoutEngine))
+        _ = runtime.core.report(.lanes([0, 0, 300, 200]), through: try XCTUnwrap(layout.driven[.frame]))
+        runtime.frame()
+        runtime.time += 16
+        runtime.pump.dispatch(runtime.add)
+        XCTAssertTrue(runtime.core.cyclesPending, "the dealt view travels in")
+
+        let before = dealtRuns
+        for _ in 0..<5 { runtime.pump.turnIfWanted() }
+        XCTAssertEqual(dealtRuns, before, "the turns left it to the frame")
+
+        runtime.time += 16
+        runtime.frame()
+        XCTAssertGreaterThan(dealtRuns, before, "and the frame ran it")
+    }
 }
 
 /// A page whose handlers add one, the second also calling an act.
@@ -200,6 +222,9 @@ private struct CountingApplication: Application {
     var body: some Scene { WindowGroup { CountingPage() } }
 }
 
+/// How many times the dealing page's arithmetic ran.
+@MainActor private var dealtRuns = 0
+
 /// A page whose handler deals a layout one more view.
 private struct DealingPage: View {
     @State private var cards = [0, 1]
@@ -211,7 +236,8 @@ private struct DealingPage: View {
             Button("Deal")
                 .onClicked { cards.append(cards.count) }
             LayoutEngine(cards) { Text("\($0)") } placements: { _, _ in
-                (0..<count).map { Placement(Rect(Double($0) * 20, 0, 10, 10)) }
+                dealtRuns += 1
+                return (0..<count).map { Placement(Rect(Double($0) * 20, 0, 10, 10)) }
             }
         }
     }

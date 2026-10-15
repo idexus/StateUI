@@ -47,6 +47,9 @@
     /// Whether any state or engine waits for a display cycle.
     public var cyclesPending: Bool { HostBoundary.cyclesPending }
 
+    /// Whether a cycle waits on something a turn answers at once, an engine going on of its own aside.
+    public var cyclesAsked: Bool { HostBoundary.cyclesAsked }
+
     /// What this process's renders came to - the tally a runtime prints to count leaks.
     public var tally: HostTally { HostBoundary.tally }
 

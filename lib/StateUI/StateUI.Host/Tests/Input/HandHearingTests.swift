@@ -28,6 +28,33 @@ final class HandHearingTests: XCTestCase {
         XCTAssertEqual(handed.last ?? 0, 3, accuracy: 0.001, "the target nearest where the throw would end")
     }
 
+    /// THE HAND'S MOVES BETWEEN TWO FRAMES REACH THE LAYOUT AS ONE: a toolkit telling the hand faster than the
+    /// display draws - 120 times a second, or a burst a busy thread held back - moves the run once a frame by all of
+    /// them, rather than working the layout out for each.
+    func testTheHandsMovesBetweenTwoFramesReachTheLayoutAsOne() throws {
+        let (runtime, clock) = running()
+        let ring = try ring(in: runtime)
+
+        ring.hear(.hand(.began, moved: .zero, speed: nil), in: runtime)
+        frames(runtime, clock, until: 32)
+
+        // One move, then a frame: what a frame works out.
+        var before = handed.count
+        ring.hear(.hand(.changed, moved: Point(-3, 0), speed: nil), in: runtime)
+        frames(runtime, clock, until: 48)
+        let once = handed.count - before
+
+        // Ten moves before the next frame, short of halfway to the next card: none worked out until it, and then
+        // no more than for one.
+        before = handed.count
+        for _ in 0..<10 { ring.hear(.hand(.changed, moved: Point(-3, 0), speed: nil), in: runtime) }
+        XCTAssertEqual(handed.count, before, "worked out for none of them yet")
+
+        frames(runtime, clock, until: 64)
+        XCTAssertEqual(handed.last ?? 0, 0.33, accuracy: 0.001, "by all of them")
+        XCTAssertLessThanOrEqual(handed.count - before, once, "no more than for one")
+    }
+
     /// A WHEEL IS LET GO BY A FRAME THAT FINDS IT STILL: it tells no lift, so the runtime's frames pace it, and the
     /// run travels on to the nearest target.
     func testAWheelIsLetGoByAFrameThatFindsItStill() throws {
