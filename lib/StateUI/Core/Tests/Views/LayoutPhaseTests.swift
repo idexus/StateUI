@@ -167,7 +167,7 @@ final class LayoutPhaseTests: XCTestCase {
 
     // MARK: - Coming to rest
 
-    /// AN AXIS WITH TARGETS OF ITS OWN RESTS ON THEM ALONE: the hand lets go of the turn and the turn travels to its
+    /// AN AXIS WITH TARGETS OF ITS OWN RESTS ON THEM ALONE: the hand lets go of the turn and the turn comes onto its
     /// nearest; the zoom, where the program left it between its own targets, stays.
     func testLetGoTheAxisRestsOnItsOwnTargetsAndLeavesTheOthers() throws {
         let orbit = State(wrappedValue: Orbit(turn: 0, zoom: 1.3))
@@ -180,7 +180,6 @@ final class LayoutPhaseTests: XCTestCase {
         bench.hand(renders, tree, .ended)
 
         let journey = try XCTUnwrap(standing(worn, as: JourneyLanes<Orbit>.self))
-        XCTAssertEqual(journey.value.turn, 1.4, accuracy: 0.001, "from where the hand left it")
         XCTAssertEqual(journey.destination, Orbit(turn: 1, zoom: 1.3))
     }
 

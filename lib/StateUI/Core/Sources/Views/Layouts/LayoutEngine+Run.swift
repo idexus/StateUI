@@ -169,7 +169,7 @@ extension LayoutEngine {
         /// the description on its way from where each view was shown - again next frame while either goes on.
         /// Design: docs/design/views/layout-engine.md#the-run
         func place(at now: Double, reducesMotion: Bool) -> EngineAnswer {
-            let flying = fly(at: now)
+            let flying = fly(at: now, reducesMotion: reducesMotion)
             let room = states.room.wrappedValue
 
             // A room not yet measured places nothing: every view stands in the whole of it until it is.
@@ -215,14 +215,14 @@ extension LayoutEngine {
             return value > start ? beyond.max() : beyond.min()
         }
 
-        /// The throw under way carried on to `now`: the hand's axis held where the input's `throwing` has brought
-        /// it - setting out at the hand's speed and slowing to a stop on the target - and let go once there.
-        /// A destination written meanwhile is the program's, and ends the throw. Whether it goes on.
+        /// The throw or the approach under way carried on to `now`: the hand's axis held where its motion has
+        /// brought it, and let go once on the target - at once for an approach under less motion. A destination
+        /// written meanwhile is the program's, and ends it. Whether it goes on.
         /// Design: docs/design/views/layout-engine.md#a-throw
-        func fly(at now: Double) -> Bool {
+        func fly(at now: Double, reducesMotion: Bool) -> Bool {
             guard var fling = states.flung.wrappedValue else { return false }
 
-            guard onAxis(phase.journey.destination) == fling.to else {
+            guard onAxis(phase.journey.destination) == fling.to, fling.thrown || !reducesMotion else {
                 states.flung.wrappedValue = nil
                 states.held.wrappedValue = nil
                 return false
@@ -234,7 +234,7 @@ extension LayoutEngine {
                 states.flung.wrappedValue = fling
             }
 
-            guard let at = Self.flown(fling, after: now - began, by: throwing) else {
+            guard let at = Self.flown(fling, after: now - began) else {
                 states.flung.wrappedValue = nil
                 states.held.wrappedValue = nil
                 return false
@@ -278,7 +278,7 @@ extension LayoutEngine {
 
             switch gesture {
             case .began:
-                take(at: onAxis(journey.value))
+                take(at: onAxis(live()))
 
             case .changed:
                 // A move with no beginning heard is one: the run is taken where it is shown.
@@ -306,19 +306,35 @@ extension LayoutEngine {
                 states.grip.wrappedValue = nil
 
                 let along = onAxis(target)
+                let left = along - held
+                let motion = law.resolved(against: .standard)
 
-                // Thrown on to a target ahead, the run goes on there as the input throws; let go still, or too
-                // slowly to carry it past the target it stands nearest, the run slides there under the layout's
-                // motion.
-                guard abs(thrown) * per >= Self.throwing, (along - held) * thrown > 0 else {
-                    states.held.wrappedValue = nil
-                    return send(to: target, from: placing(held, in: journey.value), speed: 0)
-                }
+                // Thrown on to a target ahead, the run goes on there as the input throws - onto the next target no
+                // slower than the layout's motion moves a unit; let go still, thrown back or slower than that, it
+                // approaches the target under that motion over as much of its length as the way left is of a unit.
+                // Design: docs/design/views/layout-engine.md#coming-onto-a-target
+                let flight = Self.flight(left, at: thrown, by: throwing)
+                let isThrow = abs(thrown) * per >= Self.throwing && left * thrown > 0
+                    && (!next(from: held, to: along) || flight <= abs(left) * Double(motion.milliseconds))
 
                 name(along)
                 if target != placing(along, in: journey.destination) { _ = journey.move(to: target) }
-                states.flung.wrappedValue = LayoutFling(from: held, to: along, speed: thrown)
+                guard abs(left) * per > Self.settled, !motion.isCustom || isThrow else {
+                    states.held.wrappedValue = nil
+                    return
+                }
+
+                states.flung.wrappedValue = isThrow
+                    ? LayoutFling(from: held, to: along, speed: thrown, motion: throwing, flight: flight, thrown: true)
+                    : LayoutFling(
+                        from: held, to: along, speed: thrown, motion: Self.approach(motion, over: left),
+                        flight: abs(left) * Double(motion.milliseconds), thrown: false)
             }
+        }
+
+        /// Whether `to` is the next target from `from` on the hand's axis: none stands between them.
+        func next(from: Double, to: Double) -> Bool {
+            !around(stops, near: from).contains { min(from, to) < $0 && $0 < max(from, to) }
         }
 
         /// Where the hand stands, in units of the axis, for the run standing at `value`: past an end of a run
@@ -483,22 +499,40 @@ extension LayoutEngine {
         /// it follows the curve over a length that sets it out at the hand's speed - long as the motion's own where
         /// the target is where the throw would end, shorter where it is nearer; a spring settles from the hand's
         /// speed.
-        static func flown(_ fling: LayoutFling, after elapsed: Double, by throwing: Motion) -> Double? {
+        static func flown(_ fling: LayoutFling, after elapsed: Double) -> Double? {
             let left = fling.to - fling.from
 
-            guard throwing.law == .eased else {
+            guard fling.motion.law == .eased else {
                 let sample = HostMotionLaw.sample(
-                    throwing, elapsed: elapsed, from: [fling.from], destination: [fling.to],
+                    fling.motion, elapsed: elapsed, from: [fling.from], destination: [fling.to],
                     velocity: [fling.speed / 1_000])
                 return sample.rested ? nil : sample.value.first
             }
 
-            let length = Double(throwing.isInherited ? 400 : throwing.milliseconds)
-            let setsOut = max(HostMotionLaw.slope(throwing.curve, at: 0), 0.1)
-            let flight = min(max(abs(left / fling.speed) * setsOut * 1_000, shortest), max(length * 2, shortest))
-            let progress = max(elapsed, 0) / flight
+            let progress = fling.flight > 0 ? max(elapsed, 0) / fling.flight : 1
+            return progress >= 1 ? nil : fling.from + left * HostMotionLaw.ease(fling.motion.curve, at: progress)
+        }
 
-            return progress >= 1 ? nil : fling.from + left * HostMotionLaw.ease(throwing.curve, at: progress)
+        /// How long a throw at `speed` units a second takes to go `left` on under `throwing`, in milliseconds: the
+        /// length that sets it out at the hand's speed - a spring's as a `cubicOut` of its response would - never
+        /// shorter than `shortest`, nor longer than twice the motion's length.
+        static func flight(_ left: Double, at speed: Double, by throwing: Motion) -> Double {
+            let length = Double(throwing.isInherited ? 400 : throwing.milliseconds)
+            let setsOut = throwing.law == .eased ? max(HostMotionLaw.slope(throwing.curve, at: 0), 0.1) : 3
+            let setting = speed == 0 ? .infinity : abs(left / speed) * setsOut * 1_000
+
+            return min(max(setting, shortest), max(length * 2, shortest))
+        }
+
+        /// The layout's `motion` for an approach `left` units long, a unit a length: eased, as long as the way left
+        /// takes; a spring, its response cut alike.
+        static func approach(_ motion: Motion, over left: Double) -> Motion {
+            let length = Duration.milliseconds(Int((abs(left) * Double(motion.milliseconds)).rounded()))
+
+            switch motion.law {
+            case .eased: return .eased(length, motion.curve)
+            case .spring: return .spring(response: length, damping: motion.factor)
+            }
         }
 
         /// How fast a hand must let go to throw, in device units a second, and the shortest a throw slows in, in

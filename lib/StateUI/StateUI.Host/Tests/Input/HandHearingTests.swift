@@ -9,6 +9,11 @@ import XCTest
 /// layout's run, a throw goes on to the target nearest its end, and a wheel is let go by a frame that finds it still.
 @MainActor
 final class HandHearingTests: XCTestCase {
+    /// Each test winds a clock from nought: the boards forget the last test's.
+    override func setUp() async throws {
+        Renderer.shared.clearStates()
+    }
+
     /// A LAYOUT A HAND MOVES HEARS THE HAND, and nothing else of it: the run moves with it, and let go with speed it
     /// travels on to the target nearest where the throw would end.
     func testALayoutAHandMovesHearsTheHand() throws {

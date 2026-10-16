@@ -282,7 +282,8 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         return copy
     }
 
-    /// How the run travels where the program or a settle sends it.
+    /// How the run travels where the program or a settle sends it; let go short of the next target, the run comes
+    /// onto it at a unit a length of this motion, so the short way is short.
     ///
     ///     .motion(.spring(response: .milliseconds(240)))
     ///
@@ -515,6 +516,12 @@ struct LayoutFling: Equatable {
     let from: Double
     let to: Double
     let speed: Double
+
+    /// The motion it goes on under, how long it takes where that motion is eased, in milliseconds, and whether it is
+    /// a throw - the hand's own motion going on - or an approach, which less motion lands at once.
+    let motion: Motion
+    let flight: Double
+    let thrown: Bool
     var began: Double?
 }
 

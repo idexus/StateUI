@@ -44,7 +44,7 @@ public struct LayoutInput: Equatable, Sendable {
 
     /// The hand over the views: a finger or a pointer dragged, a trackpad's two fingers and a wheel move the phase
     /// with them; let go with speed, the run is thrown on to the snap target nearest where the throw would end, as
-    /// `throwing` says, and let go still it slides to the nearest under the layout's motion.
+    /// `throwing` says, and let go still it comes onto the nearest under the layout's motion, a unit a length.
     ///
     ///     .input(.scroll(.horizontal))
     ///     .input(.scroll(.horizontal, throwing: .spring(response: .milliseconds(500), damping: 0.7)))

@@ -610,9 +610,8 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(heard, [3], "the author hears the position once")
     }
 
-    /// A run LET GO between two cards travels on to the nearer: the phase is
-    /// SENT to that card from where the hand left it - a journey the host
-    /// walks. A run let go on a card is left there.
+    /// A run LET GO between two cards comes onto the nearer, named at once.
+    /// A run let go on a card is left there.
     func testARunLetGoBetweenTwoCardsTravelsOnToTheNearer() throws {
         let renders = Renders()
         func tree() -> Node { gallery(5).node }
@@ -625,12 +624,12 @@ final class GalleryViewTests: XCTestCase {
 
         let sent = try XCTUnwrap(standing(phase, as: JourneyLanes<Double>.self))
         XCTAssertEqual(sent.destination, 1, accuracy: 0.001, "the nearer card")
-        XCTAssertEqual(sent.value, 1.4, accuracy: 0.001, "from where the hand left it")
 
-        // The host walks the phase there, and the hand lets go of it on the card.
-        moved(phase, to: [1, 1, 0], mask: 0b111)
-        turned += 16
-        _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
+        // The run comes onto it, and the hand lets go of it on the card.
+        for _ in 0..<30 {
+            turned += 16
+            _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
+        }
         hand(renders, tree, .began)
         hand(renders, tree, .ended)
 

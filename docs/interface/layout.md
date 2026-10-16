@@ -599,9 +599,11 @@ where the throw would end, and `turn` names that target at once. How it goes
 on is the input's `throwing:` motion - eased, its length says how far it
 carries and its curve how it slows, a shorter length stopping it sooner; a
 spring carries it as far as its response and settles as springs do. A throw
-sets out at the hand's speed and never speeds up after the lift. A hand let
-go still, or too slowly to reach the next target, slides the run back to
-the nearest under `.motion(_:)`. A mouse's wheel turned notch by notch steps
+sets out at the hand's speed. The landing on the next target is never slower
+than `.motion(_:)` moves a unit: a hand let go still, thrown back, or too slow
+to get there sooner, brings the run onto it under that motion over as much of
+its length as the way left is of a unit - the last tenth of a card takes a
+tenth of the motion. A mouse's wheel turned notch by notch steps
 the run a target a notch, under `.motion(_:)`, however large the targets
 stand.
 

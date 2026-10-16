@@ -247,26 +247,29 @@ final class LayoutEngineTests: XCTestCase {
         XCTAssertEqual(phase.wrappedValue, 0.5)
     }
 
-    /// LET GO STILL, THE RUN TRAVELS ON from where the hand left it to the nearest target, as a journey of its own.
-    func testLetGoStillTheRunTravelsToTheNearestTarget() throws {
+    /// LET GO STILL, THE RUN COMES ONTO THE NEAREST TARGET, named at once, from where the hand left it.
+    func testLetGoStillTheRunComesOntoTheNearestTarget() throws {
         let phase = State(wrappedValue: 0.0)
+        let handed = Handed()
         let renders = Renders()
-        func tree() -> Node { handTree(phase, targets: [0, 0.5, 1]) }
+        func tree() -> Node { handTree(phase, handed: handed, targets: [0, 0.5, 1]) }
 
-        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        _ = bench.laid(renders, tree)
 
         bench.hand(renders, tree, .began)
         bench.hand(renders, tree, .changed, moved: Point(-40, 0))
         bench.hand(renders, tree, .ended)
+        XCTAssertEqual(phase.wrappedValue, 0.5, "the nearest target")
 
-        let journey = try XCTUnwrap(standing(worn, as: JourneyLanes<Double>.self))
-        XCTAssertEqual(journey.value, 0.4, accuracy: 0.001, "from where the hand left it")
-        XCTAssertEqual(journey.destination, 0.5, "to the nearest target")
+        bench.cycle()
+        XCTAssertGreaterThan(handed.phases.last ?? 0, 0.4, "on its way from where the hand left it")
+        for _ in 0..<20 { bench.cycle() }
+        XCTAssertEqual(handed.phases.last ?? 0, 0.5, accuracy: 0.000_1)
     }
 
     /// A THROW GOES ON TO THE TARGET NEAREST WHERE IT WOULD END, by the hand's own deceleration: named at once,
-    /// it sets out at the hand's speed, never faster, and stops on the target - never past the last target of a run
-    /// that does not come round.
+    /// past the next target it sets out at the hand's speed, never faster, and stops on the target - never past the
+    /// last target of a run that does not come round.
     func testAThrowGoesOnToTheTargetNearestWhereItWouldEnd() throws {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
@@ -277,17 +280,17 @@ final class LayoutEngineTests: XCTestCase {
 
         bench.hand(renders, tree, .began)
         bench.hand(renders, tree, .changed, moved: Point(-10, 0))
-        // 450 points a second to the left is 4.5 units a second, which the throw carries 0.6 units on.
-        bench.hand(renders, tree, .ended, speed: Point(-450, 0))
-        XCTAssertEqual(phase.wrappedValue, 1, "0.1 and 0.6 on is nearest 1, named at once")
+        // 1500 points a second to the left is 15 units a second, which the throw carries 2 units on.
+        bench.hand(renders, tree, .ended, speed: Point(-1_500, 0))
+        XCTAssertEqual(phase.wrappedValue, 2, "0.1 and 2 on is nearest 2, named at once")
 
         let start = handed.phases.count
         bench.cycle()
         let first = (handed.phases.last ?? 0) - (handed.phases.dropLast().last ?? 0)
-        XCTAssertEqual(first / 0.016, 4.5, accuracy: 0.15, "setting out at the hand's speed")
+        XCTAssertEqual(first / 0.016, 15, accuracy: 1, "setting out at the hand's speed")
 
         for _ in 0..<400 { bench.cycle() }
-        XCTAssertEqual(handed.phases.last ?? 0, 1, accuracy: 0.000_1, "and at rest on the target")
+        XCTAssertEqual(handed.phases.last ?? 0, 2, accuracy: 0.000_1, "and at rest on the target")
         let flight = Array(handed.phases[(start - 1)...])
         XCTAssertTrue(zip(flight.dropLast(), flight.dropFirst()).allSatisfy { $1 - $0 <= first + 0.000_001 },
                       "never faster than the hand let go")
@@ -321,23 +324,26 @@ final class LayoutEngineTests: XCTestCase {
         }
     }
 
-    /// A THROW TOO SLOW TO CARRY THE RUN PAST THE TARGET IT STANDS NEAREST SLIDES THERE under the layout's motion,
-    /// as a run let go still does - never thrown back against the hand.
-    func testAThrowTooSlowToPassItsNearestSlidesThere() throws {
+    /// A THROW TOO SLOW TO CARRY THE RUN PAST THE TARGET IT STANDS NEAREST COMES BACK ONTO IT, as a run let go
+    /// still does - never thrown on past where the hand left it.
+    func testAThrowTooSlowToPassItsNearestComesBackOntoIt() throws {
         let phase = State(wrappedValue: 0.0)
+        let handed = Handed()
         let renders = Renders()
-        func tree() -> Node { handTree(phase, targets: [0, 1, 2]) }
+        func tree() -> Node { handTree(phase, handed: handed, targets: [0, 1, 2]) }
 
-        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        _ = bench.laid(renders, tree)
 
         bench.hand(renders, tree, .began)
         bench.hand(renders, tree, .changed, moved: Point(-105, 0))
         // 120 points a second carries the run 0.16 on: from 1.05 to 1.21, still nearest 1, behind the hand.
         bench.hand(renders, tree, .ended, speed: Point(-120, 0))
+        XCTAssertEqual(phase.wrappedValue, 1, "the nearest")
 
-        let journey = try XCTUnwrap(standing(worn, as: JourneyLanes<Double>.self))
-        XCTAssertEqual(journey.value, 1.05, accuracy: 0.001, "from where the hand left it")
-        XCTAssertEqual(journey.destination, 1, "to the nearest, as a journey under the layout's motion")
+        let start = handed.phases.count
+        for _ in 0..<20 { bench.cycle() }
+        XCTAssertTrue(handed.phases[start...].allSatisfy { $0 <= 1.05 + 0.000_001 }, "never on past the hand")
+        XCTAssertEqual(handed.phases.last ?? 0, 1, accuracy: 0.000_1)
     }
 
     /// PAST AN END THE HAND MOVES THE RUN HALF AS FAR, and let go, the run comes back to the end.

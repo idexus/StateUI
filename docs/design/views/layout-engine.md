@@ -251,10 +251,32 @@ the speed, the motion's own length where the target is where the throw would
 end, shorter where it is nearer - and stops on the target; a spring settles
 there from the hand's speed, as springs do (`HostMotionLaw`). A throw too slow to
 carry the run past the target it stands nearest - that target at or behind
-where the hand let go - slides there under the layout's motion, as a run let
-go still does: a throw never goes back against the hand. The engine runs again each
-frame while the throw goes on (`flung`), and the hand's axis is let go on the
-target. A destination the program writes meanwhile ends the throw.
+where the hand let go - comes onto it as a run let go still does: a throw
+never goes back against the hand. The engine runs again each frame while the
+throw goes on (`flung`), and the hand's axis is let go on the target. A
+destination the program writes meanwhile ends the throw.
+
+## Coming onto a target
+
+A run let go comes onto the next target - the one it stands nearest, or the
+next a slow throw reaches, none between - no slower than the layout's motion
+moves a unit. Let go still, thrown back, or by a hand whose throw would reach
+that target later than the motion at a unit a length, the run approaches it
+under the layout's motion over as much of the motion's length as the way left
+is of a unit: 0.4 left of 300 ms is 120 ms on the motion's curve; a spring's
+response is cut alike and sets out at the hand's speed. A throw that gets
+there sooner sets out at the hand's speed, as above. The two meet where they
+take the same time, so a quicker hand never lands later.
+
+A whole motion for a short way would crawl - the last tenth of a card over
+300 ms - and a slow throw would drift onto it over twice the throw's length.
+A throw past several targets keeps its own motion: a long glide is what its
+input asked for, and only the landing on the next target is the motion's.
+
+The approach is carried in the core as a throw is (`flung`), the phase named
+the target at once; under less motion it lands at once, as a journey does. A
+hand taking the run on its way - a throw or an approach - takes it where it is
+shown, never where it is going.
 
 ## A wheel's notch
 
