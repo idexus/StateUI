@@ -33,6 +33,16 @@ public struct Journey<Value: Walked> {
     /// The journey of a state, reached as `$fade.journey`.
     init(of state: Binding<Value>) { self.state = state }
 
+    /// Where the host walks the value, whatever a run shows: what the run moving it
+    /// works out its own place from.
+    var walked: Value { lanes()?.value ?? state.wrappedValue }
+
+    /// The run `owner` shows the value at `value` while it moves it; nil once it rests.
+    /// Design: docs/design/core/journeys.md#where-a-run-shows-it
+    func show(_ value: Value?, by owner: ObjectIdentifier) {
+        storage?.show(value, by: owner)
+    }
+
     /// The lanes as they stand, with the read recorded against the image.
     /// Design: docs/design/core/journeys.md#two-reader-sets
     private func lanes() -> JourneyLanes<Value>? {
@@ -60,7 +70,10 @@ public struct Journey<Value: Walked> {
     /// frames with no render. Written, it moves only what is shown and leaves the
     /// destination, so the host goes straight back; `snap(to:)` sets all three.
     public var value: Value {
-        get { lanes()?.value ?? state.wrappedValue }
+        get {
+            let walked = lanes()?.value
+            return storage?.shown?.value ?? walked ?? state.wrappedValue
+        }
 
         nonmutating set {
             guard HandlerRun.admits("a journey's value") else { return }

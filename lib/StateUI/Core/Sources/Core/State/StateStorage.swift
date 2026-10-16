@@ -17,9 +17,30 @@ extension State {
         /// Design: docs/design/core/cycle.md#what-wakes-an-engine
         @usableFromInline var written = 0
 
-        /// How many times the state was written, by this side or the host - what an
-        /// engine following it compares.
-        @usableFromInline var stamp: Int { written &+ (image?.stamp ?? 0) }
+        /// How many times the state was written, by this side or the host, or a run moved
+        /// where it shows it - what an engine following it compares.
+        @usableFromInline var stamp: Int { written &+ shownMoves &+ (image?.stamp ?? 0) }
+
+        /// Where a run the hand or the core moves shows the value while it does, and
+        /// which run: what the journey's value answers then, the state's own still the
+        /// target named. Nothing carries it to the host, which walks the target.
+        /// Design: docs/design/core/journeys.md#where-a-run-shows-it
+        private(set) var shown: (value: Value, by: ObjectIdentifier)?
+        private(set) var shownMoves = 0
+
+        /// The run `owner` shows the value at `value`, or - nil - shows it no longer:
+        /// the journey's readers and the engines following the state hear of it, the
+        /// state's own readers do not.
+        func show(_ value: Value?, by owner: ObjectIdentifier) {
+            if let value {
+                shown = (value, owner)
+            } else {
+                guard shown?.by == owner else { return }
+                shown = nil
+            }
+            shownMoves &+= 1
+            askJourneyReaders()
+        }
 
         /// The value, once anybody has wanted it; one optional deeper than `Value`, so a
         /// nil value is told from no value yet.

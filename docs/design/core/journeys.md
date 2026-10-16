@@ -153,6 +153,19 @@ a body reads the destination alone. `HostStorage.readAtBuild` is the image's
 flag, set by the journey's reads, as `State.Storage.readAtBuild` is the
 state's.
 
+## Where a run shows it
+
+A layout's run moves its phase under the hand, a throw or an approach in the
+core, not as a walk of the host's: the hand names each target it passes, and
+the state's own value stays that target, so a body reading it rebuilds only
+as a target passes. Where the run is shown meanwhile is the journey's value:
+the run tells the storage (`show(_:by:)`) each frame it moves, and once it
+rests lets go of it. That moves the state's stamp and asks the journey's
+readers - an engine following the phase, another layout wearing it, a body
+reading `journey.value` - and not the state's own readers. Nothing of it
+reaches the host, which walks the target; what the run shows is the core's,
+told under the run's own name, so only the run that showed it lets go of it.
+
 ## Readings
 
 A state has no cadence: it is at its value the moment it is written, so there

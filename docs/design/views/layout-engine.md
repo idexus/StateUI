@@ -178,9 +178,11 @@ still answer a tap.
   that does not come round the run gives less and less, back as forth: half
   as far as the hand at first, never three quarters of a unit past the end,
   so no hand carries every view away. What the arithmetic is handed is where the hand
-  holds the run (`held`); the phase itself is named only as the hand passes
-  halfway between two targets, a reading of the hand (`journey.snap(_:to:)`)
-  rather than a journey: one render a target, none a frame.
+  holds the run (`held`), and that is the phase's journey value for anything
+  else following it (core/journeys.md, where a run shows it); the phase
+  itself is named only as the hand passes halfway between two targets, a
+  reading of the hand (`journey.snap(_:to:)`) rather than a journey: one
+  render a target, none a frame.
 - Let go still, the run travels to the nearest target as a journey of the
   phase, under the layout's motion.
 - Let go with speed, it is thrown ([a throw](#a-throw)).

@@ -77,11 +77,9 @@ extension LayoutEngine {
         /// The phase as it stands this frame: where the host walks it, the hand's axis where the hand holds it.
         /// Design: docs/design/views/layout-engine.md#the-phase
         func live() -> Phase {
-            let walked = phase.journey.value
+            guard let held = states.held.wrappedValue else { return phase.journey.value }
 
-            guard let held = states.held.wrappedValue else { return walked }
-
-            return placing(held, in: walked)
+            return placing(held, in: phase.journey.walked)
         }
 
         /// The place on the hand's axis nearest `value` the hand may rest at - a turn on or back where it comes
@@ -174,6 +172,11 @@ extension LayoutEngine {
         func place(at now: Double, reducesMotion: Bool) -> EngineAnswer {
             let flying = fly(at: now, reducesMotion: reducesMotion)
             let room = states.room.wrappedValue
+
+            // Where the hand, a throw or an approach holds the run is the phase's value, for whatever follows it.
+            phase.journey.show(
+                states.held.wrappedValue.map { placing($0, in: phase.journey.walked) },
+                by: ObjectIdentifier(states.held.storage))
 
             // A room not yet measured places nothing: every view stands in the whole of it until it is.
             guard room.width > 0, room.height > 0 else {
