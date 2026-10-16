@@ -272,6 +272,12 @@ final class CycleBoard {
         return report
     }
 
+    /// A clock of its own: the board's time starts over on it, and its next cycle is a start.
+    func restartClock() {
+        last = 0
+        count = 0
+    }
+
     /// Forgets everything - a fresh process's board, for a test.
     func clear() {
         storages = []

@@ -218,6 +218,13 @@ extension Renderer {
         return storage
     }
 
+    /// A runtime brought a clock of its own: every board's time starts over on it.
+    func clockStarted() {
+        for board in boards {
+            board.restartClock()
+        }
+    }
+
     /// Puts the numbering back to a fresh process's, for the tests, whose
     /// assertions name state numbers. Never while an interface runs.
     func clearStates() {

@@ -128,6 +128,13 @@ run - a write made while nothing was cycling, a render that armed it - runs
 over what the start latched, told nought. Its answer is not left to the
 frame after: a layout's run of the views a render put in is drawn with them.
 
+A cycle's time never goes back - a drain told a moment before the last frame
+keeps the frame's - so it is the time of one clock: the runtime's. A runtime
+brings its clock (`HostBoundary.clockStarted`), and the boards' time starts
+over on it, the next cycle a start; a second runtime in one process, as a
+test makes one a case, would otherwise find the boards ahead of its clock and
+every engine standing still until it caught up.
+
 ## Engines
 
 An engine is the application's arithmetic run on the host's frames, written

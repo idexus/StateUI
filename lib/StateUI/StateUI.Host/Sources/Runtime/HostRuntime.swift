@@ -72,6 +72,7 @@
     ) {
         self.clock = clock
         self.reducesMotion = reducesMotion
+        core.clockStarted()
         stateChannels = StateChannels(animator: animator)
         describedMotion = DescribedMotion(animator: animator)
         layoutMotion = LayoutMotion(animator: animator, now: clock.now, reducesMotion: reducesMotion)

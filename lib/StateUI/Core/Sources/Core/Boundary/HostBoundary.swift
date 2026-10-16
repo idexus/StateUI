@@ -393,6 +393,12 @@
     /// on an engine going on of its own, which the display's frame serves.
     public static var cyclesAsked: Bool { Renderer.shared.cycleAsked() }
 
+    /// A runtime brought its frame clock: the cycles take their time from it from its start, the first a start.
+    /// Design: docs/design/core/cycle.md#a-start-is-a-gap
+    public static func clockStarted() {
+        Renderer.shared.clockStarted()
+    }
+
     #if os(WASI)
     /// When the page is to call again, in milliseconds - at once where jobs, acts or a render wait, else when a job
     /// kept for later comes due; nil with nothing to come. A display frame serves a cycle.

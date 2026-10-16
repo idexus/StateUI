@@ -50,6 +50,9 @@
     /// Whether a cycle waits on something a turn answers at once, an engine going on of its own aside.
     public var cyclesAsked: Bool { HostBoundary.cyclesAsked }
 
+    /// A runtime brought its frame clock: the cycles' time starts over on it.
+    public func clockStarted() { HostBoundary.clockStarted() }
+
     /// What this process's renders came to - the tally a runtime prints to count leaks.
     public var tally: HostTally { HostBoundary.tally }
 
