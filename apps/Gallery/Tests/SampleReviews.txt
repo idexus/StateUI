@@ -7,6 +7,7 @@ AnalogClockSample.swift 98461155e70bedab
 AnimatedInputSample.swift 3edb37bd77bcc397
 AnimatedPropertySample.swift fef33f29ae910477
 AnimationSample.swift 81f886d98ac6d03f
+AppSwitcherSample.swift 0423919b1a8bc5af
 AppThemeSample.swift cf321fd19548d57e
 AppearanceSample.swift d807ca92f58b9688
 ApplicationSessionSample.swift f3cdc5e94b7f1122

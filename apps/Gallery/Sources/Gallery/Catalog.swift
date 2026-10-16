@@ -167,6 +167,7 @@ final class Catalog {
                     Sample(LayoutPhaseSample()),
                     Sample(ChangingDeckSample()),
                     Sample(HomeScreenSample()),
+                    Sample(AppSwitcherSample()),
                     Sample(ScrollViewSample()),
                     Sample(SizingSample()),
                     Sample(OutlineSample()),
