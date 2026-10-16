@@ -157,6 +157,8 @@ STATEUI_WEB(apple) int32_t stateui_web_apple(void);
 STATEUI_WEB(observe_size) void stateui_web_observe_size(int32_t element, int32_t listener);
 /// 1 where the browser lays the element out - it stands in the page, in no element shown as nothing - else 0.
 STATEUI_WEB(is_laid_out) int32_t stateui_web_is_laid_out(int32_t element);
+/// 1 where the style sheet stands the element out of its parent's flow, over its siblings - absolutely - else 0.
+STATEUI_WEB(stands_over) int32_t stateui_web_stands_over(int32_t element);
 
 /// Writes the element's box on the page - x, y, width and height from the page's top left - into `into`.
 STATEUI_WEB(read_box) void stateui_web_read_box(int32_t element, double *into);

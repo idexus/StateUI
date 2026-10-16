@@ -352,6 +352,11 @@ enum WebRelay {
         stateui_web_is_laid_out(element) != 0
     }
 
+    /// Whether the style sheet stands `element` over its siblings, out of its parent's flow.
+    static func standsOver(_ element: Int32) -> Bool {
+        stateui_web_stands_over(element) != 0
+    }
+
     /// The element's box on the page, from the page's top left.
     static func box(of element: Int32) -> Rect {
         let read = numbers(4) { stateui_web_read_box(element, $0) }

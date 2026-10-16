@@ -122,6 +122,7 @@ enum AppKitRealization {
         .complete("TextSpan", "textDecorations"),
         .complete("TextSpan", "tracking"),
         .complete("SplitView", "showsSidebarChanged"),
+        .complete("SplitView", "sidebarOverlays"),
         .notPlanned("SplitView", "flyoutBackground",
                     reason: "A Mac sidebar always stands beside the detail: a window too narrow for both hides it."),
         .complete("TabView", "accessibilityIdentifier"),

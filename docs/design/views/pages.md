@@ -302,6 +302,13 @@ out - its sidebar button, an edge swipe, a tap on the dimmed page - report only
 once the gesture has finished, whatever it settled on, and are written only
 when the value moved.
 
+Where the sidebar stands - over the page or beside it - is the platform's
+answer to the room, so it reaches the author as a state the host writes
+(`sidebarOverlays`), never one the author writes to the host: whether a
+choice closes the sidebar is the author's, and the place is what decides it.
+A guess by device - a desktop never closes, a tablet always does - is wrong
+in a narrow window and on a tablet turned across.
+
 ## The modal stack is the state
 
 What is presented over a window is a stack of the author's own values, the

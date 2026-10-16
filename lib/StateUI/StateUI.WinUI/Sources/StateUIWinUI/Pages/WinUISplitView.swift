@@ -26,6 +26,9 @@ final class WinUISplitView: WinUILayoutView {
     /// Whether the sidebar stands beside the detail.
     private var beside = false
 
+    /// Whether the sidebar lies over the detail, as the room was when the split was last laid out.
+    var overlays: Bool { !beside }
+
     /// The sidebar page and the detail page, as the tree gives them, and the row across the detail.
     private var pages: [WinUILayoutItem] = []
     private(set) weak var detailRow: WinUIView?

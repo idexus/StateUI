@@ -137,6 +137,7 @@ enum WinUIRealization {
         .complete("SplitView", "showsSidebarChanged"),
         .partial("SplitView", "sidebarBackground", missing: Self.paneHasNoGlass),
         .partial("SplitView", "flyoutBackground", missing: Self.paneHasNoGlass),
+        .complete("SplitView", "sidebarOverlays"),
         .complete("TabView", "selectedTab"),
         .complete("TabView", "selectedTabChanged"),
         .partial("TextField", "isPassword", missing: "A PasswordBox has no read-only state, alignment, case, caret "

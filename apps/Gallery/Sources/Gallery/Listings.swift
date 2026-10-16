@@ -6011,12 +6011,6 @@ enum Listings {
             window.isMaximizable = true
             window.isMinimizable = true
 
-            // On a desktop the menu stands beside the page, so choosing a
-            // row leaves it open.
-            if device.info.formFactor == .desktop {
-                nav.menuOverlays = false
-            }
-
             log.note("created")
         }
         // The Appearance sample changes the look while the window stands.
@@ -6111,6 +6105,9 @@ enum Listings {
         // in each theme, as the gallery's looks say.
         .sidebarBackground(surface(\.sidebar, .sidebar))
         .flyoutBackground(surface(\.flyout, .flyout))
+        // Where the platform places it for the room: a choice closes it
+        // over the page and leaves it open beside it.
+        .sidebarOverlays(nav.$menuOverlays)
         """#,
         "MainPage.tabs": #"""
         // Sources/Gallery/MainPage.swift
@@ -9216,9 +9213,14 @@ enum Listings {
 
         var body: some View {
             VStack {
-                Text("Open the menu: every row in it is a view.")
+                Text("Open the menu: every row in it is a view. A narrower window lays it over the page.")
 
                 SwitchRow("Menu open", nav.$menuOpen)
+                    .horizontalAlignment(.center)
+
+                // Where the platform places the menu for the room, as the split
+                // view writes it.
+                Text(nav.menuOverlays ? "The menu lies over the page" : "The menu stands beside the page")
                     .horizontalAlignment(.center)
 
                 HStack {

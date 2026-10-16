@@ -279,6 +279,7 @@ final class GTKDriver: HostDriver {
         case (.contentMode, let image as GTKImageView): return image.aspect.propValue
         case (.text, let check as GTKCheckView): return check.text.propValue
         case (.showsSidebar, let split as GTKSplitView): return split.showsSidebar.propValue
+        case (.sidebarOverlays, let split as GTKSplitView): return split.isCollapsed.propValue
         case (.sidebarBackground, let split as GTKSplitView), (.flyoutBackground, let split as GTKSplitView):
             // The sidebar's class in the place it stands; the other place's colour as the split keeps it.
             guard split.isCollapsed == (property == .flyoutBackground) else {

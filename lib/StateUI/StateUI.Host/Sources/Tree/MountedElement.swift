@@ -54,6 +54,9 @@
     /// The frame report this element last said, which a report the same says again to nobody.
     var reportedFrame: [Double] = []
 
+    /// Where a split view last said its sidebar stands, and onto which state; nil before it said.
+    var reportedOverlays: (binding: HostStateBinding, over: Bool)?
+
     /// Where the states a press dragged carries stood as it began.
     var dragStart = Point(x: 0, y: 0)
 

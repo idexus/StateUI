@@ -258,6 +258,7 @@ final class AppKitDriver: HostDriver {
         case (.selectedTab, let tabs as AppKitTabView): return tabs.selectedIndexForTesting.propValue
         case (.showsSidebar, let split as AppKitSplitView): return split.isEffectivelyPresentedForTesting.propValue
         case (.sidebarBackground, let split as AppKitSplitView): return Self.ground(of: split)
+        case (.sidebarOverlays, let split as AppKitSplitView): return split.sidebarOverlaysForTesting.propValue
         // Shown: in a window, and neither it nor any view it stands in hidden.
         case (.isVisible, let view?): return (view.window != nil && !view.isHiddenOrHasHiddenAncestor).propValue
         case (.opacity, let view?): return Double(view.alphaValue).propValue

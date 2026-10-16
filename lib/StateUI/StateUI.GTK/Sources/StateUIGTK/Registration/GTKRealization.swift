@@ -141,6 +141,7 @@ enum GTKRealization {
         .complete("SplitView", "showsSidebarChanged"),
         .partial("SplitView", "sidebarBackground", missing: "GTK blurs nothing inside a window: a blur or glass shows its colour."),
         .partial("SplitView", "flyoutBackground", missing: "GTK blurs nothing inside a window: a blur or glass shows its colour."),
+        .complete("SplitView", "sidebarOverlays"),
         .complete("TabView", "selectedTab"),
         .complete("TabView", "selectedTabChanged"),
         .partial("TextEditor", "layoutDirection",

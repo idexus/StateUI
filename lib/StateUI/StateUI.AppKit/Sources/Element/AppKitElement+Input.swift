@@ -219,6 +219,8 @@ extension AppKitElement: FrameReporter {
     func reportFrame() {
         guard let host, let numbers = frameNumbers() else { return }
         element.reportFrame(numbers, in: host.runtime)
+        // A Mac sidebar stands beside the detail alone.
+        if view is AppKitSplitView { element.reportSidebarOverlays(false, in: host.runtime) }
     }
 }
 

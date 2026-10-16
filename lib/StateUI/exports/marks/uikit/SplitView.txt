@@ -1,7 +1,8 @@
-# revision 4.1
+# revision 5.1
 SplitView: ✅
 SplitView.flyoutBackground: ✅
 SplitView.showsSidebar: ✅
 SplitView.showsSidebarChanged: ✅
 SplitView.sidebarBackground: ✓ read sidebarBackground of SplitView: the split view's material for a sidebar beside the detail, which an iPhone's room never shows
+SplitView.sidebarOverlays: ✅
 Text.frameChanged: ✅

@@ -167,6 +167,7 @@ extension NodeType {
     static let showsSidebar = SplitViewContract.showsSidebar.token
     static let sidebarBackground = SplitViewContract.sidebarBackground.token
     static let flyoutBackground = SplitViewContract.flyoutBackground.token
+    static let sidebarOverlays = SplitViewContract.sidebarOverlays.token
     static let isReadOnly = TextInputContract.isReadOnly.token
     static let isScrollEnabled = MapContract.isScrollEnabled.token
     static let showsUserLocation = MapContract.showsUserLocation.token

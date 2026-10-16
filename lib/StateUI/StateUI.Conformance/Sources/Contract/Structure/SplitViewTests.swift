@@ -88,7 +88,38 @@
             follows(SplitViewContract.flyoutBackground, "theSidebarFollowsAMaterialStateOverTheDetail") {
                 $0.flyoutBackground($1)
             },
+            placeIsHeard(startingOver: true, "theSidebarsPlaceIsHeardOnAStateSayingOver"),
+            placeIsHeard(startingOver: false, "theSidebarsPlaceIsHeardOnAStateSayingBeside"),
         ]
+    }
+
+    /// Where the host stands the sidebar - over the detail or beside it - is heard on the state its place drives,
+    /// whatever the state said first: in a wide window, then in one narrower than every desktop's breakpoint. Of the
+    /// two cases, one starts on the place the host does not stand it in, so every host proves the report.
+    @MainActor
+    private static func placeIsHeard(startingOver first: Bool, _ name: String) -> ConformanceCase {
+        ConformanceCase(name, proves: [Covered(SplitViewContract.sidebarOverlays)], needs: [
+            Covered(ButtonContract.clicked),
+        ]) { s in
+            let over = State(wrappedValue: first)
+            s.start {
+                SplitView(State(wrappedValue: true).projectedValue) {
+                    Text("Sidebar")
+                } detail: {
+                    WideDetail(NarrowingButton())
+                }
+                .sidebarOverlays(over.projectedValue)
+            }
+            let split = try s.element(ofType: SplitViewContract.nodeType)
+            try s.settle { try s.held(SplitViewContract.sidebarOverlays, on: split) == over.wrappedValue }
+            s.expect(over.wrappedValue, try s.held(SplitViewContract.sidebarOverlays, on: split),
+                     "where the sidebar stands in a wide window")
+
+            try s.perform(.activate, on: s.element("narrow"))
+            try s.settle { try s.held(SplitViewContract.sidebarOverlays, on: split) == over.wrappedValue }
+            s.expect(over.wrappedValue, try s.held(SplitViewContract.sidebarOverlays, on: split),
+                     "and in a narrow one")
+        }
     }
 
     /// The sidebar stands on the material `member` says from a state handed on as `$x` - the colour the state holds,
@@ -143,6 +174,17 @@
             try s.settle { try s.held(member, on: split) == changed }
             s.expect(try s.held(member, on: split), changed, "the material the tree changed it to")
         }
+    }
+}
+
+/// A button narrowing the window below every desktop's breakpoint for a sidebar beside the detail; a window the
+/// system sizes stays as it is.
+private struct NarrowingButton: View {
+    @Environment(\.window) private var window
+
+    var body: some View {
+        let window = self.window
+        return VStack { Button("Narrow").onClicked { window.width = 360 }.id("narrow") }
     }
 }
 

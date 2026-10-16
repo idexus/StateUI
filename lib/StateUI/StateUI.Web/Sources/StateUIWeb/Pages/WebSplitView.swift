@@ -25,6 +25,9 @@ final class WebSplitView: WebDOMView {
     /// The width from which the sidebar stands beside the detail rather than over it - the stylesheet's.
     static let breakpoint = 900.0
 
+    /// Whether the sidebar lies over the detail, as the style sheet stands it for the page.
+    var overlays: Bool { WebRelay.standsOver(sidebar.node) }
+
     init() {
         super.init(tag: "div")
         attribute("class", "stateui-split")

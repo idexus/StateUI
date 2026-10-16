@@ -1185,12 +1185,13 @@ final class CatalogTests: XCTestCase {
     }
 
     /// Choosing a section is three writes and no await: the section, its new
-    /// path, and the menu closing behind it. Navigation remains application
-    /// state rather than a host command.
+    /// path, and the menu closing behind it where it lies over the page.
+    /// Navigation remains application state rather than a host command.
     func testChoosingASectionMovesTheApplicationAndClosesTheMenu() throws {
         let place = Place()
         place.path.wrappedValue = [.sample("grid")]
         place.menu.wrappedValue = true
+        place.nav.menuOverlays = true
 
         let menu = MenuPage(catalog: catalog(place.nav), nav: place.nav,
                             log: WindowLog(), listsHiddenRow: false)
@@ -1202,6 +1203,22 @@ final class CatalogTests: XCTestCase {
             place.path.wrappedValue, [.group("layout")],
             "the group replaces whatever was pushed, and is itself pushed onto home")
         XCTAssertFalse(place.menu.wrappedValue, "the menu stayed open over the page it opened")
+    }
+
+    /// A menu beside the page stays open as the user chooses in it, the way a
+    /// sidebar does.
+    func testChoosingASectionLeavesAMenuBesideThePageOpen() throws {
+        let place = Place()
+        place.menu.wrappedValue = true
+        place.nav.menuOverlays = false
+
+        let menu = MenuPage(catalog: catalog(place.nav), nav: place.nav,
+                            log: WindowLog(), listsHiddenRow: false)
+
+        Renderer.shared.start(EventRegistration(try XCTUnwrap(rowHandler("Layout", in: menu.node))))
+
+        XCTAssertEqual(place.path.wrappedValue, [.group("layout")])
+        XCTAssertTrue(place.menu.wrappedValue, "the menu beside the page stayed open")
     }
 
     /// A card on a group's page PUSHES the sample it names, with the id riding

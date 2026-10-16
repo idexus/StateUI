@@ -93,6 +93,9 @@ struct MainPage: View {
             // in each theme, as the gallery's looks say.
             .sidebarBackground(surface(\.sidebar, .sidebar))
             .flyoutBackground(surface(\.flyout, .flyout))
+            // Where the platform places it for the room: a choice closes it
+            // over the page and leaves it open beside it.
+            .sidebarOverlays(nav.$menuOverlays)
             // listing: end
             // listing: MainPage.bar
             // The gallery's own actions, declared once around every page: a page's
@@ -149,12 +152,6 @@ struct MainPage: View {
                 window.minimumHeight = 500
                 window.isMaximizable = true
                 window.isMinimizable = true
-
-                // On a desktop the menu stands beside the page, so choosing a
-                // row leaves it open.
-                if device.info.formFactor == .desktop {
-                    nav.menuOverlays = false
-                }
 
                 log.note("created")
             }

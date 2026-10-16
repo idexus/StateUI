@@ -39,13 +39,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [BarElement](tiers/
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (12)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>9 ✅ · 1 ☑️ · 1 –</td><td><code>NSSplitViewController</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>9 ✅ · 1 ✓ · 2 –</td><td><code>UISplitViewController</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>5 ✅ · 2 ☑️ · 3 ✓ · 2 –</td><td>custom <code>ViewGroup</code>: a drawer where narrow, beside where wide</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>10 ✅ · 2 ☑️</td><td><code>SplitView</code>, the sidebar in its pane: beside the detail from 1008 DIPs, over it where narrower</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>6 ✅ · 2 ✓ · 4 –</td><td><code>AdwOverlaySplitView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>9 ✅ · 2 ☑️ · 1 –</td><td><code>&lt;aside&gt;</code> in a CSS grid: beside the detail from 900px wide, a drawer over it where narrower</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (13)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>10 ✅ · 1 ☑️ · 1 –</td><td><code>NSSplitViewController</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>10 ✅ · 1 ✓ · 2 –</td><td><code>UISplitViewController</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>5 ✅ · 2 ☑️ · 4 ✓ · 2 –</td><td>custom <code>ViewGroup</code>: a drawer where narrow, beside where wide</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>11 ✅ · 2 ☑️</td><td><code>SplitView</code>, the sidebar in its pane: beside the detail from 1008 DIPs, over it where narrower</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>7 ✅ · 2 ✓ · 4 –</td><td><code>AdwOverlaySplitView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>10 ✅ · 2 ☑️ · 1 –</td><td><code>&lt;aside&gt;</code> in a CSS grid: beside the detail from 900px wide, a drawer over it where narrower</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Navigation/SplitViewContract.swift`.
@@ -62,6 +62,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Navigation/SplitViewCon
 <tr><td colspan="9">UIKit: only through the host's own: read sidebarBackground of SplitView: the split view's material for a sidebar beside the detail, which an iPhone's room never shows<br>Android Views: only through the host's own: read sidebarBackground of SplitView: the colour the split keeps for its sidebar beside the detail, which a phone's room never shows<br>WinUI 3: WinUI has no glass: a pane of glass shows the in-app acrylic at its fallback thickness.<br>GTK 4: only through the host's own: read sidebarBackground of SplitView: the class of the host's style sheet the sidebar wears: GTK reads back no background<br>Web: A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>flyoutBackground</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✓</td><td align="center">☑️</td></tr>
 <tr><td colspan="9">AppKit: A Mac sidebar always stands beside the detail: a window too narrow for both hides it.<br>Android Views: Android blurs nothing behind a view: a blur or glass shows its colour.<br>WinUI 3: WinUI has no glass: a pane of glass shows the in-app acrylic at its fallback thickness.<br>GTK 4: only through the host's own: read flyoutBackground of SplitView: the colour the split keeps for its sidebar over the detail, which a wide window never shows<br>Web: A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>sidebarOverlays</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: only through the host's own: read sidebarOverlays of SplitView: the split's own place for the room; the drawer stands by it</td></tr></tbody>
 </table>
 
 ## From [AutomationElement](tiers/AutomationElement.md)

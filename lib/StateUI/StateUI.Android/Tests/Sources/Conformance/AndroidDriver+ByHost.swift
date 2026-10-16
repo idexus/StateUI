@@ -34,6 +34,7 @@ extension AndroidDriver {
         case "read role of Button": return "the host's own record; Android has no role on a button"
         case "read options of Picker", "read title of Picker": return "the rows the relay keeps, not the spinner's"
         case "read showsSidebar of SplitView": return "the split's own flag; the drawer slides on it"
+        case "read sidebarOverlays of SplitView": return "the split's own place for the room; the drawer stands by it"
         case "read sidebarBackground of SplitView":
             return "the colour the split keeps for its sidebar beside the detail, which a phone's room never shows"
         case "read selectionMode of ItemsView": return "the mode the relay keeps, which its cells tell TalkBack"

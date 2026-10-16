@@ -77,6 +77,10 @@ extension WebDriver {
              (.contentMode, is WebButtonView), (.lineBreak, is WebButtonView):
             return try buttonHolds(property, e)
         case (.showsSidebar, is WebSplitView): return try WebBrowser.truth("e.dataset.sidebar === 'shown'", on: e).propValue
+        case (.sidebarOverlays, is WebSplitView):
+            // The sidebar out of the split's columns, over the detail, as the style sheet stands it.
+            let over = "getComputedStyle(e.querySelector(':scope > .stateui-sidebar')).position === 'absolute'"
+            return try WebBrowser.truth(over, on: e).propValue
         case (.sidebarBackground, is WebSplitView), (.flyoutBackground, is WebSplitView):
             // The variable the style sheet reads in that place.
             let place = property == .sidebarBackground ? "sidebar" : "flyout"

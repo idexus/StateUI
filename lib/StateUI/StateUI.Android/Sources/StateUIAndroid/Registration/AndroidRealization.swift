@@ -106,6 +106,7 @@ enum AndroidRealization {
         .complete("SplitView", "showsSidebarChanged"),
         .partial("SplitView", "sidebarBackground", missing: Self.blursNothing),
         .partial("SplitView", "flyoutBackground", missing: Self.blursNothing),
+        .complete("SplitView", "sidebarOverlays"),
         .complete("TabView", "selectedTab"),
         .complete("TabView", "selectedTabChanged"),
         .notPlanned("ToolbarItem", "accessibilityIdentifier",

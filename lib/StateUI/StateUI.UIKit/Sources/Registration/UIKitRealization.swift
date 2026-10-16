@@ -111,6 +111,7 @@ enum UIKitRealization {
         .complete("SplitView", "showsSidebarChanged"),
         .complete("SplitView", "sidebarBackground"),
         .complete("SplitView", "flyoutBackground"),
+        .complete("SplitView", "sidebarOverlays"),
         .complete("TabView", "selectedTab"),
         .complete("TabView", "selectedTabChanged"),
         .complete("ToolbarItem", "isDestructive"),

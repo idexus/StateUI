@@ -92,6 +92,19 @@ background still paints the page on top. A split view saying either material
 gives its sidebar to the application to paint (`paintsSidebar`): a host whose
 platform draws a sidebar's material of its own leaves it out then.
 
+## Where a sidebar stands
+
+The place a host stands a sidebar in for the room - over the detail or
+beside it, by the platform's own breakpoint - is the application's to hear
+(`sidebarOverlays`): a sidebar row closes a sidebar over the page once the
+user has chosen and leaves one beside it open. The place is a layout's
+answer, as a frame is, so a split view driving it is followed as an element
+whose frame is read (`readsOwnFrame`), and the host says its place with the
+frame once laid out (`reportSidebarOverlays(_:in:)`) - on the display's
+frame after a layout, never while a patch applies. The host layer writes
+the state only where the place, or the state it drives, changed. A Mac
+sidebar stands beside the detail alone, so it says beside.
+
 ## The way back
 
 A window's way back (`WindowPresentation.wayBack`) takes the top sheet first:
