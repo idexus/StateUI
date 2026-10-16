@@ -13,7 +13,7 @@ Button.tapped: ✅
 Canvas.panYChannel: ✅
 Capsule.frameChanged: ✅
 Capsule.horizontalAlignment: ✅
-Capsule.pinchUpdated: ✅
+Capsule.pinchUpdated: ✓ pinch on Capsule: the relay's report of the manipulation handed to the host, no touch sent
 Capsule.verticalAlignment: ✅
 CheckBox.canDrag: ✓ dragAndDrop on CheckBox: the relay's drag reports told by the driver, no drag WinUI began
 CheckBox.dragEnded: ✓ dragAndDrop on CheckBox: the relay's drag reports told by the driver, no drag WinUI began
@@ -28,12 +28,12 @@ DatePicker.tapCount: ✅
 DatePicker.tapped: ✅
 Divider.frameChanged: ✅
 Divider.horizontalAlignment: ✅
-Divider.pinchUpdated: ✅
+Divider.pinchUpdated: ✓ pinch on Divider: the relay's report of the manipulation handed to the host, no touch sent
 Divider.verticalAlignment: ✅
 Ellipse.panYChannel: ✅
 Grid.frameChanged: ✅
 Grid.horizontalAlignment: ✅
-Grid.pinchUpdated: ✅
+Grid.pinchUpdated: ✓ pinch on Grid: the relay's report of the manipulation handed to the host, no touch sent
 Grid.verticalAlignment: ✅
 HStack.canDrag: ✓ dragAndDrop on HStack: the relay's drag reports told by the driver, no drag WinUI began
 HStack.dragEnded: ✓ dragAndDrop on HStack: the relay's drag reports told by the driver, no drag WinUI began
@@ -73,7 +73,7 @@ Picker.tapped: ✅
 Polygon.panYChannel: ✅
 Polyline.frameChanged: ✅
 Polyline.horizontalAlignment: ✅
-Polyline.pinchUpdated: ✅
+Polyline.pinchUpdated: ✓ pinch on Polyline: the relay's report of the manipulation handed to the host, no touch sent
 Polyline.verticalAlignment: ✅
 ProgressBar.canDrag: ✓ dragAndDrop on ProgressBar: the relay's drag reports told by the driver, no drag WinUI began
 ProgressBar.dragEnded: ✓ dragAndDrop on ProgressBar: the relay's drag reports told by the driver, no drag WinUI began
@@ -90,7 +90,7 @@ Rectangle.frameChanged: ✅
 Rectangle.panYChannel: ✅
 ScrollView.frameChanged: ✅
 ScrollView.horizontalAlignment: ✅
-ScrollView.pinchUpdated: ✅
+ScrollView.pinchUpdated: ✓ pinch on ScrollView: the relay's report of the manipulation handed to the host, no touch sent
 ScrollView.verticalAlignment: ✅
 SearchField.canDrag: ✓ dragAndDrop on SearchField: the relay's drag reports told by the driver, no drag WinUI began
 SearchField.dragEnded: ✓ dragAndDrop on SearchField: the relay's drag reports told by the driver, no drag WinUI began
@@ -106,7 +106,7 @@ Slider.tapped: ✅
 Spacer.panYChannel: ✅
 Stepper.frameChanged: ✅
 Stepper.horizontalAlignment: ✅
-Stepper.pinchUpdated: ✅
+Stepper.pinchUpdated: ✓ pinch on Stepper: the relay's report of the manipulation handed to the host, no touch sent
 Stepper.verticalAlignment: ✅
 Switch.canDrag: ✓ dragAndDrop on Switch: the relay's drag reports told by the driver, no drag WinUI began
 Switch.dragEnded: ✓ dragAndDrop on Switch: the relay's drag reports told by the driver, no drag WinUI began
@@ -117,7 +117,7 @@ Switch.gridColumn: ✅
 Switch.gridRow: ✅
 Text.frameChanged: ✅
 Text.horizontalAlignment: ✅
-Text.pinchUpdated: ✅
+Text.pinchUpdated: ✓ pinch on Text: the relay's report of the manipulation handed to the host, no touch sent
 Text.verticalAlignment: ✅
 TextEditor.droppedFileTypes: ✓ dropFiles on TextEditor: the relay's drop report told the driver's files, no drag WinUI began
 TextEditor.filesDropped: ✓ dropFiles on TextEditor: the relay's drop report told the driver's files, no drag WinUI began
@@ -126,7 +126,7 @@ TextEditor.tapped: ✅
 TextField.panYChannel: ✅
 TimePicker.frameChanged: ✅
 TimePicker.horizontalAlignment: ✅
-TimePicker.pinchUpdated: ✅
+TimePicker.pinchUpdated: ✓ pinch on TimePicker: the relay's report of the manipulation handed to the host, no touch sent
 TimePicker.verticalAlignment: ✅
 VStack.canDrag: ✓ dragAndDrop on VStack: the relay's drag reports told by the driver, no drag WinUI began
 VStack.dragEnded: ✓ dragAndDrop on VStack: the relay's drag reports told by the driver, no drag WinUI began

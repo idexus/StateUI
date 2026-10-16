@@ -31,7 +31,8 @@ extension AndroidView {
         Java.call(
             listener.reference, JavaAPI.setGestures, .object(reference), .float(Float(density)),
             .bool(countsTaps && hearing.contains(.taps)), .bool(hearing.contains(.drags)),
-            .bool(hearing.contains(.pinches)), .bool(hearing.contains(.pointer)), .bool(hearing.contains(.hand)))
+            .bool(hearing.contains(.pinches)), .bool(hearing.contains(.pointer)), .bool(hearing.contains(.hand)),
+            .bool(hearing.contains(.rotations)))
     }
 
     /// What the listener says the view heard, by the kind `StateUIGestures` numbers: a tap and its place in its run,
@@ -64,6 +65,25 @@ extension AndroidView {
 
         if phase == .began { return onHeard?(.hand(.began, moved: .zero, speed: nil, point: moved)) ?? false }
         return onHeard?(.hand(phase, moved: moved, speed: phase == .ended ? speed : nil)) ?? false
+    }
+
+    /// Two fingers over a layout the listener tells, by the phase StateUI numbers, where each stands in points: the
+    /// turn between them since the last time, by the host layer's reading of two pointers.
+    /// Design: docs/design/host/runtime.md#two-fingers-over-a-layout
+    func heardFingers(phase: Int32, first: Point, second: Point) {
+        guard let phase = GesturePhase(rawValue: phase) else { return }
+
+        switch phase {
+        case .began:
+            fingers.lifted()
+            _ = fingers.moved(first, second)
+            _ = onHeard?(.rotation(.began, degrees: 0))
+        case .changed:
+            if let turned = fingers.moved(first, second) { _ = onHeard?(.rotation(.changed, degrees: turned.degrees)) }
+        case .ended, .cancelled:
+            fingers.lifted()
+            _ = onHeard?(.rotation(phase, degrees: 0))
+        }
     }
 
     /// A wheel's notches over a layout, as many as it turned, across and down: the host's entry. Whether the layout

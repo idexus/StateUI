@@ -6,7 +6,7 @@ ActivityIndicator.tapped: ✅
 Button.panYChannel: ✅
 Canvas.frameChanged: ✅
 Canvas.horizontalAlignment: ✅
-Canvas.pinchUpdated: ✅
+Canvas.pinchUpdated: ✓ pinch on Canvas: the relay's report of the manipulation handed to the host, no touch sent
 Canvas.verticalAlignment: ✅
 Capsule.canDrag: ✓ dragAndDrop on Capsule: the relay's drag reports told by the driver, no drag WinUI began
 Capsule.dragEnded: ✓ dragAndDrop on Capsule: the relay's drag reports told by the driver, no drag WinUI began
@@ -29,7 +29,7 @@ Divider.gridColumn: ✅
 Divider.gridRow: ✅
 Ellipse.frameChanged: ✅
 Ellipse.horizontalAlignment: ✅
-Ellipse.pinchUpdated: ✅
+Ellipse.pinchUpdated: ✓ pinch on Ellipse: the relay's report of the manipulation handed to the host, no touch sent
 Ellipse.verticalAlignment: ✅
 Grid.canDrag: ✓ dragAndDrop on Grid: the relay's drag reports told by the driver, no drag WinUI began
 Grid.dragEnded: ✓ dragAndDrop on Grid: the relay's drag reports told by the driver, no drag WinUI began
@@ -45,7 +45,7 @@ HStack.tapped: ✅
 Image.panYChannel: ✅
 ItemsView.frameChanged: ✅
 ItemsView.horizontalAlignment: ✅
-ItemsView.pinchUpdated: ✅
+ItemsView.pinchUpdated: ✓ pinch on ItemsView: the relay's report of the manipulation handed to the host, no touch sent
 ItemsView.verticalAlignment: ✅
 LayoutEngine.droppedFileTypes: ✓ dropFiles on LayoutEngine: the relay's drop report told the driver's files, no drag WinUI began
 LayoutEngine.filesDropped: ✓ dropFiles on LayoutEngine: the relay's drop report told the driver's files, no drag WinUI began
@@ -63,7 +63,7 @@ Path.tapped: ✅
 Picker.panYChannel: ✅
 Polygon.frameChanged: ✅
 Polygon.horizontalAlignment: ✅
-Polygon.pinchUpdated: ✅
+Polygon.pinchUpdated: ✓ pinch on Polygon: the relay's report of the manipulation handed to the host, no touch sent
 Polygon.verticalAlignment: ✅
 Polyline.canDrag: ✓ dragAndDrop on Polyline: the relay's drag reports told by the driver, no drag WinUI began
 Polyline.dragEnded: ✓ dragAndDrop on Polyline: the relay's drag reports told by the driver, no drag WinUI began
@@ -79,7 +79,7 @@ ProgressBar.tapped: ✅
 RadioButton.panYChannel: ✅
 Rectangle.frameChanged: ✅
 Rectangle.horizontalAlignment: ✅
-Rectangle.pinchUpdated: ✅
+Rectangle.pinchUpdated: ✓ pinch on Rectangle: the relay's report of the manipulation handed to the host, no touch sent
 Rectangle.verticalAlignment: ✅
 ScrollView.canDrag: ✓ dragAndDrop on ScrollView: the relay's drag reports told by the driver, no drag WinUI began
 ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the relay's drag reports told by the driver, no drag WinUI began
@@ -95,7 +95,7 @@ SearchField.tapped: ✅
 Slider.panYChannel: ✅
 Spacer.frameChanged: ✅
 Spacer.horizontalAlignment: ✅
-Spacer.pinchUpdated: ✅
+Spacer.pinchUpdated: ✓ pinch on Spacer: the relay's report of the manipulation handed to the host, no touch sent
 Spacer.verticalAlignment: ✅
 Stepper.canDrag: ✓ dragAndDrop on Stepper: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the relay's drag reports told by the driver, no drag WinUI began
@@ -118,7 +118,7 @@ Text.gridRow: ✅
 TextEditor.panYChannel: ✅
 TextField.frameChanged: ✅
 TextField.horizontalAlignment: ✅
-TextField.pinchUpdated: ✅
+TextField.pinchUpdated: ✓ pinch on TextField: the relay's report of the manipulation handed to the host, no touch sent
 TextField.verticalAlignment: ✅
 TimePicker.canDrag: ✓ dragAndDrop on TimePicker: the relay's drag reports told by the driver, no drag WinUI began
 TimePicker.dragEnded: ✓ dragAndDrop on TimePicker: the relay's drag reports told by the driver, no drag WinUI began
@@ -134,5 +134,5 @@ VStack.tapped: ✅
 WebView.panYChannel: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 ZStack.frameChanged: ✅
 ZStack.horizontalAlignment: ✅
-ZStack.pinchUpdated: ✅
+ZStack.pinchUpdated: ✓ pinch on ZStack: the relay's report of the manipulation handed to the host, no touch sent
 ZStack.verticalAlignment: ✅

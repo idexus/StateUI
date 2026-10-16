@@ -39,6 +39,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     /// The press dragged, by the host layer's rule, on the window; and the pinch's steps.
     private var drag = DragRecognition(distance: .eachAxis(x: 0, y: 0))
     private var pinch = PinchStep()
+    private var rotation = RotationStep()
 
     init(view: UIView) {
         self.view = view
@@ -94,6 +95,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
             wheel.allowedTouchTypes = []
             handWheel = wheel
             return [pan, wheel]
+        case .rotations: return [UIRotationGestureRecognizer(target: self, action: #selector(rotated(_:)))]
         default: return [UIPinchGestureRecognizer(target: self, action: #selector(pinched(_:)))]
         }
     }
@@ -244,6 +246,18 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
         let size = view?.bounds.size ?? .zero
         let at = PinchStep.share(of: location(of: recognizer), width: size.width, height: size.height)
         tell(.pinch(phase, scale: step, at: at))
+    }
+
+    /// A rotation's step: the degrees clockwise since the last.
+    @objc func rotated(_ recognizer: UIRotationGestureRecognizer) {
+        let phase: GesturePhase
+        switch recognizer.state {
+        case .began: phase = .began
+        case .changed: phase = .changed
+        case .ended, .cancelled, .failed: phase = .ended
+        default: return
+        }
+        tell(.rotation(phase, degrees: rotation.step(phase, degrees: Double(recognizer.rotation) * 180 / .pi)))
     }
 
     // MARK: - Recognizers together

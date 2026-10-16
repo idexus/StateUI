@@ -35,7 +35,9 @@
             }
 
             element.paced(now: now, in: runtime)
-            if !element.handReading.wantsFrames, element.handOutbox.isEmpty { open[mount] = nil }
+            if !element.handReading.wantsFrames, element.handOutbox.isEmpty, element.pinchOutbox.isEmpty {
+                open[mount] = nil
+            }
         }
     }
 

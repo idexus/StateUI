@@ -120,6 +120,14 @@ enum JavaNatives {
                 return taken == true ? 1 : 0
             }
         }
+        let fingers: @convention(c) (Environment, jclass?, jlong, jint, jfloat, jfloat, jfloat, jfloat) -> Void = {
+            _, _, number, phase, firstX, firstY, secondX, secondY in
+            MainActor.assumeIsolated {
+                AndroidView.find(number)?.heardFingers(
+                    phase: phase, first: Point(x: Double(firstX), y: Double(firstY)),
+                    second: Point(x: Double(secondX), y: Double(secondY)))
+            }
+        }
         let notched: @convention(c) (Environment, jclass?, jlong, jfloat, jfloat) -> jboolean = { _, _, number, x, y in
             MainActor.assumeIsolated {
                 AndroidView.find(number)?.heardNotches(Point(x: Double(x), y: Double(y))) == true ? 1 : 0
@@ -358,6 +366,7 @@ enum JavaNatives {
             ("gestured", "(JIIFFF)V", unsafeBitCast(gestured, to: UnsafeMutableRawPointer.self)),
             ("pressed", "(JIFF)Z", unsafeBitCast(pressed, to: UnsafeMutableRawPointer.self)),
             ("handed", "(JIFFFF)Z", unsafeBitCast(handed, to: UnsafeMutableRawPointer.self)),
+            ("fingers", "(JIFFFF)V", unsafeBitCast(fingers, to: UnsafeMutableRawPointer.self)),
             ("notched", "(JFF)Z", unsafeBitCast(notched, to: UnsafeMutableRawPointer.self)),
             ("focusChanged", "(JZ)V", unsafeBitCast(focusChanged, to: UnsafeMutableRawPointer.self)),
             ("destroying", "()V", unsafeBitCast(destroying, to: UnsafeMutableRawPointer.self)),

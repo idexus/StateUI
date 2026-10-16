@@ -64,6 +64,9 @@ enum UIKitRealization {
         .complete("LayoutEngine", "handStepped"),
         .complete("LayoutEngine", "itemDrag"),
         .complete("LayoutEngine", "itemMoved"),
+        .complete("LayoutEngine", "magnifies"),
+        .complete("LayoutEngine", "rotates"),
+        .complete("LayoutEngine", "pinchMoved"),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
         .partial("Menu", "isEnabled", missing: "UIKit holds no menu out of reach itself: each of its entries is."),

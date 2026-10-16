@@ -177,12 +177,12 @@ still answer a tap.
   the unit - the hand moving left moves the run on. Past an end of a run
   that does not come round the run gives less and less, back as forth: half
   as far as the hand at first, never three quarters of a unit past the end,
-  so no hand carries every view away. What the arithmetic is handed is where the hand
-  holds the run (`held`), and that is the phase's journey value for anything
-  else following it (core/journeys.md, where a run shows it); the phase
-  itself is named only as the hand passes halfway between two targets, a
-  reading of the hand (`journey.snap(_:to:)`) rather than a journey: one
-  render a target, none a frame.
+  so no hand carries every view away. What the arithmetic is handed is
+  where the hand holds the run (`held`), and that is the phase's journey
+  value for anything else following it (core/journeys.md, where a run shows
+  it); the phase itself is named only as the hand passes halfway between
+  two targets, a reading of the hand (`journey.snap(_:to:)`) rather than a
+  journey: one render a target, none a frame.
 - Let go still, the run travels to the nearest target as a journey of the
   phase, under the layout's motion.
 - Let go with speed, it is thrown ([a throw](#a-throw)).
@@ -202,6 +202,29 @@ itself.
 The hand moves one axis of the phase alone; the host leaves to whatever holds
 the layout a hand whose first move is more across the layout's axis than
 along it, a page's scroller.
+
+## Two fingers
+
+Two fingers spreading and turning are inputs of their own, each driving its
+axis: `.magnification()` and `.rotation(degreesPerUnit:)`. A layout takes
+one input an axis and one of each kind - the hand along it, a magnification,
+a rotation - so `.input` given again on an axis, or of a kind, takes the
+other's place; the two fingers move both of theirs at once, from one stream
+of the element's `pinchMoved` (host/runtime.md, two fingers over a layout),
+and each hand's place is its own (`held`, `flung` by kind): the arithmetic
+is handed every axis where its hand holds it.
+
+A magnification is multiplied by how far the fingers spread: the hand works
+on the axis's logarithm, so a magnification is a scroll of its logarithm -
+the ends give less and less past them, a target is nearest by the
+logarithm, a throw carries the logarithm on - and pinching in acts as
+spreading does. Its targets stand above nought. A rotation moves a unit
+every `degreesPerUnit` the fingers turn, clockwise on. Let go, each axis
+goes on to the target nearest where it would end under its input's
+`throwing`, or comes onto the nearest as a hand let go still does; a unit of
+a magnification's logarithm counts as a hundred device units and a
+rotation's as its degrees, by which either is judged thrown or settled. A
+view held by itself keeps the hand, and the fingers move nothing.
 
 ## A swipe
 

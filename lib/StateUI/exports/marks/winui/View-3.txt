@@ -67,11 +67,11 @@ ItemsView.panUpdated: ✅
 ItemsView.panXChannel: ✅
 LayoutEngine.area: ✅
 LayoutEngine.frameChanged: ✅
-LayoutEngine.pointerEntered: ✅
-LayoutEngine.pointerExited: ✅
-LayoutEngine.pointerMoved: ✅
-LayoutEngine.pointerPressed: ✅
-LayoutEngine.pointerReleased: ✅
+LayoutEngine.pointerEntered: ✓ pressDown on LayoutEngine: the relay's report of the press over the layout handed to the host, no pointer sent
+LayoutEngine.pointerExited: ✓ pressDown on LayoutEngine: the relay's report of the press over the layout handed to the host, no pointer sent
+LayoutEngine.pointerMoved: ✓ pressDown on LayoutEngine: the relay's report of the press over the layout handed to the host, no pointer sent
+LayoutEngine.pointerPressed: ✓ pressDown on LayoutEngine: the relay's report of the press over the layout handed to the host, no pointer sent
+LayoutEngine.pointerReleased: ✓ pressDown on LayoutEngine: the relay's report of the press over the layout handed to the host, no pointer sent
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Line.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Line.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began

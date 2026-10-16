@@ -174,6 +174,9 @@ enum WebRelay {
     /// The scale of the gesture being heard, from 1 as it began.
     static var eventScale: Double { stateui_web_event_number(10) }
 
+    /// How far the gesture being heard has turned since it began, in degrees clockwise.
+    static var eventRotation: Double { stateui_web_event_number(19) }
+
     /// The size of the element hearing the event.
     static var eventSize: LayoutSize {
         LayoutSize(width: stateui_web_event_number(11), height: stateui_web_event_number(12))

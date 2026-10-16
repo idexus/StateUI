@@ -863,6 +863,61 @@ whatever the others do; `.snapTargets(_:)` lists whole phases instead - the
 combinations allowed - and letting go sends every axis without targets of
 its own to the nearest of them. A `Double` is the phase of one axis.
 
+Two fingers are inputs of their own: `.magnification()` multiplies an axis
+by how far they spread - on a touch screen, or a trackpad's pinch - and
+`.rotation(degreesPerUnit:)` moves one a unit every so many degrees they
+turn, clockwise on. Both move their axes at once; let go with speed, each
+goes on to the target nearest where it would end. A layout takes one input
+an axis and one of each kind, so a hand along the layout may move a third
+axis - and as two fingers touch, that hand lets go of the run:
+
+```swift
+import StateUIFoundation
+import StateUI
+
+struct Dial: LayoutPhase {
+    var turn = 0.0
+    var size = 1.0
+
+    static var axes: [WritableKeyPath<Dial, Double>] { [\.turn, \.size] }
+}
+
+struct Compass: View {
+    @State private var dial = Dial()
+
+    let names = ["North", "East", "South", "West"]
+
+    var body: some View {
+        LayoutEngine(names) { name in
+            Text(name)
+        } placements: { room, dial in
+            names.indices.map { index in
+                let angle = (Double(index) + dial.turn) / 4 * 2 * .pi - .pi / 2
+                let radius = 80 * dial.size
+
+                return Placement(Rect(
+                    room.width / 2 + cos(angle) * radius - 30,
+                    room.height / 2 + sin(angle) * radius - 12,
+                    60,
+                    24))
+            }
+        }
+        .phase($dial)
+        .input(.rotation(degreesPerUnit: 90), drives: \.turn)
+        .snap(\.turn, to: [0, 1, 2, 3])
+        .wraps(\.turn, every: 4)
+        .input(.magnification(), drives: \.size)
+        .snap(\.size, to: [0.5, 1, 2])
+        .height(240)
+    }
+}
+```
+
+A magnification's targets stand above nought, and its axis is nearest a
+target by the logarithm - 1.5 is nearer 2 than 1 - so pinching in acts as
+spreading does. Chrome and Firefox tell no trackpad's rotation; there the
+fingers turn a layout on a touch screen.
+
 A value read in the body is a change of the description: the layout is built
 again and its arithmetic with it. A state the arithmetic reads that moves on
 the host's frames - a drag of your own - is named in `.following(_:)` instead.

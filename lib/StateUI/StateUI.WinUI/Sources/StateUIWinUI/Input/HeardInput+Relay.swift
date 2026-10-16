@@ -9,7 +9,7 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/input.md
 extension HeardInput {
     /// What the relay's callback says - `phase` a tap's place in its run or a gesture's phase, a pinch's `scale`
-    /// since its last step - nil for what it does not name.
+    /// since its last step, a rotation's degrees clockwise in its place - nil for what it does not name.
     init?(_ what: StateUIHeard, phase: Int32, x: Double, y: Double, scale: Double) {
         let point = Point(x: x, y: y)
         switch what {
@@ -22,6 +22,9 @@ extension HeardInput {
         case StateUIHeardPinch:
             guard let phase = GesturePhase(rawValue: phase) else { return nil }
             self = .pinch(phase, scale: scale, at: point)
+        case StateUIHeardRotation:
+            guard let phase = GesturePhase(rawValue: phase) else { return nil }
+            self = .rotation(phase, degrees: scale)
         default: return nil
         }
     }

@@ -133,6 +133,9 @@ extension AppKitElement {
         pinchRecognizer = installed(pinchRecognizer, hearing.contains(.pinches), on: view) {
             AppKitPinchRecognizer(hearing: heard)
         }
+        rotationRecognizer = installed(rotationRecognizer, hearing.contains(.rotations), on: view) {
+            AppKitRotationRecognizer(hearing: heard)
+        }
         configureHand(hearing.contains(.hand), on: view, heard: heard)
 
         let offered = element.dragAndDrop

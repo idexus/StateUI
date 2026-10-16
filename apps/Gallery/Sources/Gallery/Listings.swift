@@ -10561,6 +10561,71 @@ enum Listings {
             }
         }
         """#,
+        "TwoFingersSample": #"""
+        // Sources/Samples/Layout/TwoFingersSample.swift
+        import StateUIFoundation
+
+        /// THE PHASE: how far the ring is turned, a card a unit, and how large it
+        /// stands.
+        struct Ring: LayoutPhase {
+            var turn = 0.0
+            var size = 1.0
+
+            static var axes: [WritableKeyPath<Ring, Double>] { [\.turn, \.size] }
+        }
+
+        /// The cards: the gallery's groups' pictures.
+        static let cards = [
+            "cat_fundamentals.png", "cat_driven.png", "cat_state.png", "cat_animation.png",
+            "cat_basicinput.png", "cat_text.png", "cat_layout.png", "cat_styles.png",
+        ]
+
+        /// Where the ring stands on both axes - handed on with `$`, never read in
+        /// the body.
+        @State private var ring = Ring()
+
+        var body: some View {
+            let count = Double(Self.cards.count)
+
+            return Grid {
+                Rectangle(Palette.raised)
+
+                LayoutEngine(Self.cards) { art in
+                    ZStack { Image(ImageSource(art)).contentMode(.fill) }
+                        .clipsContent(true)
+                } placements: { room, ring in
+                    Self.cards.indices.map { place($0, ring, room) }
+                }
+                .phase($ring)
+                // TWO FINGERS TURNING turn the ring a card every eighth of a
+                // turn, round and round; SPREADING, they grow it - both at once.
+                .input(.rotation(degreesPerUnit: 360 / count), drives: \.turn)
+                .snap(\.turn, to: Self.cards.indices.map(Double.init))
+                .wraps(\.turn, every: count)
+                .input(.magnification(), drives: \.size)
+                .snap(\.size, to: [0.6, 1, 1.5])
+                .motion(.spring(response: .milliseconds(420), damping: 0.8))
+            }
+            .clipsContent(true)
+        }
+
+        /// Where the card at `index` stands: round the middle of the room, turned
+        /// to face out, the ring and its cards as large as its size.
+        private func place(_ index: Int, _ ring: Ring, _ room: Rect) -> Placement {
+            let count = Double(Self.cards.count)
+            let angle = (Double(index) + ring.turn) / count * 2 * .pi - .pi / 2
+            let radius = min(room.width, room.height) * 0.3 * ring.size
+            let width = min(room.width, room.height) * 0.16 * ring.size
+            let height = width * 1.4
+            let x = room.width / 2 + cos(angle) * radius
+            let y = room.height / 2 + sin(angle) * radius
+
+            return Placement(
+                Rect(x - width / 2, y - height / 2, width, height),
+                transform: .rotate(angle * 180 / .pi + 90),
+                zIndex: Int(y))
+        }
+        """#,
         "Uploads": #"""
         // Sources/Samples/State/GateSample.swift
         /// Nothing held back, and busy while any upload runs.

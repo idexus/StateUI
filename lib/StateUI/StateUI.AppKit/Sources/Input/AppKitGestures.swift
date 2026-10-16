@@ -119,6 +119,48 @@ final class AppKitPinchRecognizer: NSMagnificationGestureRecognizer {
     }
 }
 
+/// AppKit's trackpad rotation, each step told by the degrees clockwise since the last - the host layer's
+/// `RotationStep`: AppKit measures it counterclockwise, in radians.
+@MainActor
+final class AppKitRotationRecognizer: NSRotationGestureRecognizer {
+    private let hearing: AppKitHearing
+    private let actionTarget: AppKitGestureAction
+    private var steps = RotationStep()
+
+    init(hearing: @escaping AppKitHearing) {
+        self.hearing = hearing
+        actionTarget = AppKitGestureAction { _ in }
+        super.init(target: actionTarget, action: #selector(AppKitGestureAction.invoke(_:)))
+        actionTarget.action = { [weak self] recognizer in
+            guard let self, let recognizer = recognizer as? NSRotationGestureRecognizer else { return }
+            recognized(recognizer)
+        }
+        delaysRotationEvents = false
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("AppKitRotationRecognizer is created in code")
+    }
+
+    /// A rotation at `phase`, turned `degrees` clockwise since it began.
+    func rotated(_ phase: GesturePhase, degrees: Double) {
+        hearing(.rotation(phase, degrees: steps.step(phase, degrees: degrees)))
+    }
+
+    private func recognized(_ recognizer: NSRotationGestureRecognizer) {
+        let phase: GesturePhase? = switch recognizer.state {
+        case .began: .began
+        case .changed: .changed
+        case .ended: .ended
+        case .cancelled, .failed: .cancelled
+        default: nil
+        }
+        guard let phase else { return }
+        rotated(phase, degrees: -Double(recognizer.rotationInDegrees))
+    }
+}
+
 /// Pointer tracking that can sit on any native control without replacing it or intercepting its button action: the
 /// pointer coming, moving, pressing, letting go and leaving, where it is from the view's top left.
 @MainActor

@@ -1,4 +1,4 @@
-# revision 7.1
+# revision 8.1
 LayoutEngine: ✅
 LayoutEngine.frameChanged: ✅
 LayoutEngine.handAxis: ✓ sweep on LayoutEngine: the listener's report of the hand handed to the host, no touch sent
@@ -6,4 +6,7 @@ LayoutEngine.handMoved: ✓ sweep on LayoutEngine: the listener's report of the 
 LayoutEngine.handStepped: ✓ notch on LayoutEngine: the listener's report of a wheel's notches handed to the host, no scroll sent
 LayoutEngine.itemDrag: ✅
 LayoutEngine.itemMoved: ✅
+LayoutEngine.magnifies: ✅
 LayoutEngine.phase: ✅
+LayoutEngine.pinchMoved: ✅
+LayoutEngine.rotates: ✅

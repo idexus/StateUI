@@ -69,6 +69,10 @@
     /// What the hand said since the last frame, the moves between two frames as one, waiting for the next.
     var handOutbox: [HandReading.Report] = []
 
+    /// Two fingers over the element, where it is a layout they move, and what they said since the last frame.
+    var pinchReading = PinchReading()
+    var pinchOutbox: [PinchReading.Report] = []
+
     /// The toolkit's half of the element.
     public private(set) var native: (any NativeElement)!
 

@@ -34,6 +34,7 @@ final class ContractPayloadTests: XCTestCase {
         check(LayoutEngineContract.handMoved, [.enumeration(2), .numbers([-4, 0]), .numbers([-300, 0])])
         check(LayoutEngineContract.handStepped, [.numbers([-1, 0])])
         check(LayoutEngineContract.itemMoved, [.enumeration(1), .numbers([75, 40]), .numbers([0, 0]), .number(500)])
+        check(LayoutEngineContract.pinchMoved, [.enumeration(1), .number(1.5), .number(30), .numbers([0, 0])])
         check(ViewContract.pinchUpdated, [.enumeration(1), .number(1.5), .numbers([10, 20])])
         check(ViewContract.pointerEntered)
         check(ViewContract.pointerExited)

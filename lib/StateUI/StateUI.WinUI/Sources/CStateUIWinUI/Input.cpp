@@ -312,19 +312,26 @@ namespace {
         entry.started = element.ManipulationStarted(
             guarded("handling ManipulationStarted",
                 [view](IInspectable const &sender, input::ManipulationStartedRoutedEventArgs const &args) {
-                if (listener(view, StateUIHearingPinches)) tell(view, StateUIHeardPinch, 0, shares(sender, args.Position()), 1);
+                auto at = shares(sender, args.Position());
+                if (listener(view, StateUIHearingPinches)) tell(view, StateUIHeardPinch, 0, at, 1);
+                if (listener(view, StateUIHearingRotations)) tell(view, StateUIHeardRotation, 0, at, 0);
             }));
         entry.delta = element.ManipulationDelta(
             guarded("handling ManipulationDelta",
                 [view](IInspectable const &sender, input::ManipulationDeltaRoutedEventArgs const &args) {
-                if (!listener(view, StateUIHearingPinches)) return;
+                bool pinches = listener(view, StateUIHearingPinches), rotations = listener(view, StateUIHearingRotations);
+                if (!pinches && !rotations) return;
                 args.Handled(true);
-                tell(view, StateUIHeardPinch, 1, shares(sender, args.Position()), args.Delta().Scale);
+                auto at = shares(sender, args.Position());
+                if (pinches) tell(view, StateUIHeardPinch, 1, at, args.Delta().Scale);
+                if (rotations) tell(view, StateUIHeardRotation, 1, at, args.Delta().Rotation);
             }));
         entry.completed = element.ManipulationCompleted(
             guarded("handling ManipulationCompleted",
                 [view](IInspectable const &sender, input::ManipulationCompletedRoutedEventArgs const &args) {
-                if (listener(view, StateUIHearingPinches)) tell(view, StateUIHeardPinch, 2, shares(sender, args.Position()), 1);
+                auto at = shares(sender, args.Position());
+                if (listener(view, StateUIHearingPinches)) tell(view, StateUIHeardPinch, 2, at, 1);
+                if (listener(view, StateUIHearingRotations)) tell(view, StateUIHeardRotation, 2, at, 0);
             }));
         ++hung;
     }
@@ -403,8 +410,10 @@ extern "C" void stateui_winui_hear(StateUIObjectRef handle, int64_t view, uint32
         }
         auto &entry = found->second;
         entry.hearing = hearing;
-        element.ManipulationMode(
-            hearing & StateUIHearingPinches ? input::ManipulationModes::Scale : input::ManipulationModes::System);
+        auto modes = input::ManipulationModes::None;
+        if (hearing & StateUIHearingPinches) modes |= input::ManipulationModes::Scale;
+        if (hearing & StateUIHearingRotations) modes |= input::ManipulationModes::Rotate;
+        element.ManipulationMode(modes == input::ManipulationModes::None ? input::ManipulationModes::System : modes);
         holdHitArea(element, view);
     } catch (...) {
         report("listening for the user's input");

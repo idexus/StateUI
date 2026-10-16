@@ -115,6 +115,7 @@ final class GTKDriver: HostDriver {
         "read windowType of Window": "the scenes the host keeps for the next start",
         "read windowValue of Window": "the scenes the host keeps for the next start",
         "pinch": "the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down",
+        "rotate": "the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down",
         "pickTime": "the clock set at once through the host's own, its minute's wheel telling it; a user moves each",
         "read minimumDate of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
         "read maximumDate of DatePicker": "the range the host holds the day in: GtkCalendar holds none",

@@ -94,6 +94,7 @@ final class ControlTests: XCTestCase {
         let hasForward = State(false)
         let chosen = State<String?>(wrappedValue: "two")
         let turn = State(wrappedValue: 0.0)
+        let dial = State(wrappedValue: ControlDial())
 
         return [
             ControlCase("Text", source: "Text.swift",
@@ -334,6 +335,18 @@ final class ControlTests: XCTestCase {
                 .itemDrag(begins: .held)
                 .onItemDragged { _ in }
                 .onItemDismissed(.up, beyond: 80) { _ in }
+                .node.built),
+
+            // Two fingers over the layout engine: a rotation and a magnification, each driving its axis.
+            ControlCase("LayoutEngine", sources: ["PlacedStack.swift", "LayoutEngine.swift"],
+                LayoutEngine(["one", "two"]) { Text($0) } placements: { room, dial in
+                    [Placement(Rect(dial.turn, 0, room.width / 2 * dial.size, room.height)), Placement(.zero)]
+                }
+                .phase(dial.projectedValue)
+                .input(.rotation(degreesPerUnit: 90), drives: \.turn)
+                .snap(\.turn, to: [0, 1])
+                .input(.magnification(), drives: \.size)
+                .snap(\.size, to: [1, 2])
                 .node.built),
 
             // Both halves of a map: the control, and the markers on it. A Marker is
@@ -1389,4 +1402,12 @@ final class ControlTests: XCTestCase {
             names.formUnion(propNames(in: child))
         }
     }
+}
+
+/// A phase two fingers move: how far a layout is turned, and how large it stands.
+private struct ControlDial: LayoutPhase {
+    var turn = 0.0
+    var size = 1.0
+
+    static var axes: [WritableKeyPath<ControlDial, Double>] { [\.turn, \.size] }
 }

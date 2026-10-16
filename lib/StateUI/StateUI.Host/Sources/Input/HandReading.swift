@@ -238,6 +238,18 @@
         return (true, axis == .horizontal ? Point(whole, 0) : Point(0, whole))
     }
 
+    /// Two fingers take the hand from the run, at `time`: a gesture under way lets go where it is, still, and what the
+    /// platform tells of it after - a finger going on, its lift - is nobody's until a new press. A view held by itself
+    /// keeps the hand.
+    /// Design: docs/design/host/runtime.md#two-fingers-over-a-layout
+    public mutating func yield(at time: Double) -> [Report] {
+        guard !holdsItem else { return [] }
+
+        press = nil
+        claimed = false
+        return lifted(at: time, speed: .zero)
+    }
+
     /// The hand begins, at `time`: a wheel still open is let go first.
     public mutating func began(at time: Double) -> [Report] {
         let ended = isWheeling ? lifted(at: time, speed: .zero) : []

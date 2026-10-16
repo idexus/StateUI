@@ -45,6 +45,21 @@ final class LayoutBench {
         cycle()
     }
 
+    /// Two fingers over the layout `tree` describes, as the host layer reports them - their phase, the scale and the
+    /// degrees since the last report, and their speed as they lift - and a cycle after it.
+    func pinch(
+        _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, scale: Double = 1, degrees: Double = 0,
+        speed: Point = .zero, file: StaticString = #filePath, line: UInt = #line
+    ) {
+        guard let heard = renders.renderFromScratch(tree()).first(.layoutEngine)?.events?[.pinchMoved] else {
+            return XCTFail("the layout hears no fingers", file: file, line: line)
+        }
+
+        XCTAssertTrue(
+            renders.fire(heard, with: MemberValues.encode(phase, scale, degrees, speed)), file: file, line: line)
+        cycle()
+    }
+
     /// The hand holding one view of the layout `tree` describes, as the host layer reports it - its phase, where it is
     /// in the room, its speed as it lets go, per second, and how long it has stood still - and a cycle after it.
     func item(

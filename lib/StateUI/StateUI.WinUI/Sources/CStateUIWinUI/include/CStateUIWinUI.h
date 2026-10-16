@@ -37,19 +37,21 @@ typedef struct {
 typedef enum { StateUIOutlineRectangle, StateUIOutlineRounded, StateUIOutlineEllipse } StateUIOutline;
 
 /// What of the user's input a view listens for, each a bit: taps; the pointer entering, leaving, moving, and its
-/// button going down and up; a press dragged; two fingers pinching.
+/// button going down and up; a press dragged; two fingers pinching; the hand over a layout; two fingers turning.
 typedef enum {
     StateUIHearingTaps = 1,
     StateUIHearingPointer = 2,
     StateUIHearingDrags = 4,
     StateUIHearingPinches = 8,
     StateUIHearingHand = 16,
+    StateUIHearingRotations = 32,
 } StateUIHearing;
 
 /// What a view heard: a tap, its place in a quick run of taps from 1, 0 for a press assistive technology made; the
 /// pointer at (x, y) DIPs of the view; a pinch's phase, its scale since the last, at (x, y) as shares of the view's
 /// size; a press a drag may become - 0 down, 1 moved, 2 let go, 3 taken away - at (x, y) DIPs of the window's content,
-/// which the host's rule makes a drag.
+/// which the host's rule makes a drag; a rotation's phase and its degrees clockwise since the last, in the scale's
+/// place.
 typedef enum {
     StateUIHeardTap,
     StateUIHeardPointerEntered,
@@ -59,6 +61,7 @@ typedef enum {
     StateUIHeardPointerReleased,
     StateUIHeardPinch,
     StateUIHeardPress,
+    StateUIHeardRotation,
 } StateUIHeard;
 
 /// A question for the user: `kind` 0 an alert, 1 a confirmation, 2 a choice of actions, 3 a prompt; its title

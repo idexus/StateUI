@@ -199,6 +199,10 @@ final class WinUIDriver: HostDriver {
             view.heard(.pinch(.began, scale: 1, at: point))
             view.heard(.pinch(.changed, scale: scale, at: point))
             view.heard(.pinch(.ended, scale: 1, at: point))
+        case (.rotate(let degrees, _), let view?) where view.hearing.contains(.rotations):
+            view.heard(.rotation(.began, degrees: 0))
+            view.heard(.rotation(.changed, degrees: degrees))
+            view.heard(.rotation(.ended, degrees: 0))
         case (.scroll(let offset), let scroll as WinUIScrollView): scroll.scroller.move(to: offset)
         case (.focus, let view?): _ = stateui_winui_focus(view.handle, true)
         case (.goBack, _) where element.type == .navigationStack: try window().titleBar.chose(-1)

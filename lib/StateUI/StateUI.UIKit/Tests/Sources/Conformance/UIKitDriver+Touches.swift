@@ -55,6 +55,17 @@ extension UIKitDriver {
         }
     }
 
+    /// A rotation turning `degrees` clockwise.
+    static func rotate(_ listening: UIKitListening?, on view: UIView, by degrees: Double) {
+        guard let listening, listening.hearing.contains(.rotations) else { return }
+        let rotation = DrivenRotation(on: view)
+        for (state, turned) in [(UIGestureRecognizer.State.began, 0.0), (.changed, degrees), (.ended, degrees)] {
+            rotation.driven = state
+            rotation.drivenRotation = turned * .pi / 180
+            listening.rotated(rotation)
+        }
+    }
+
     func pressDown(_ listening: UIKitListening?, on view: UIView, at point: Point) {
         (view as? UIControl)?.sendActions(for: .touchDown)
         (view as? UIKitCanvasView)?.pressed(at: CGPoint(x: point.x, y: point.y))

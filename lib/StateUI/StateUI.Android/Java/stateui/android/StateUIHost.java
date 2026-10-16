@@ -129,6 +129,12 @@ final class StateUIHost {
      */
     static native boolean handed(long view, int phase, float x, float y, float speedX, float speedY);
 
+    /**
+     * Two fingers over a layout that turns with them - begun, moved, lifted or taken away - where each stands in the
+     * view, in points.
+     */
+    static native void fingers(long view, int phase, float firstX, float firstY, float secondX, float secondY);
+
     /** A wheel's notch over a layout, as what it moved under the hand, in points; whether the layout took it. */
     static native boolean notched(long view, float x, float y);
 

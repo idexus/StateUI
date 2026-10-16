@@ -2,10 +2,23 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // What a layout engine's body hands its engine and its handlers: the arithmetic run on the host's frames, and the
-// hand that moves the phase and throws it on to a snap target.
+// hands that move the phase and throw it on to a snap target.
 // Design: docs/design/views/layout-engine.md#the-hand
 
+import StateUIFoundation
+
 extension LayoutEngine {
+    /// One input of the layout: its kind, the axis it moves, where on it the run may come to rest, lowest first,
+    /// how far one turn takes it where it comes round, the gesture, and how a throw goes on.
+    struct Hand {
+        let kind: LayoutInput.Kind
+        let axis: WritableKeyPath<Phase, Double>
+        let stops: [Double]
+        let period: Double?
+        let gesture: LayoutInput.Gesture
+        let throwing: Motion
+    }
+
     /// One view being placed: its identity, its index and its item.
     struct Slot {
         let identity: String
@@ -35,24 +48,66 @@ extension LayoutEngine {
         let phase: Binding<Phase>
         let states: States
 
-        /// The axis the hand moves, where on it the hand may come to rest, lowest first, and how far one turn
-        /// takes it where it comes round.
-        let axis: WritableKeyPath<Phase, Double>?
-        let stops: [Double]
-        let period: Double?
+        /// Every input of the layout, and the one the run works on: the hand along the layout unless `on(_:)`
+        /// says another.
+        let hands: [Hand]
+        var focus: Hand?
 
         /// The whole phases the run may rest at, and the axes resting on targets of their own.
         let targets: [Phase]
         let axisTargets: [WritableKeyPath<Phase, Double>: [Double]]
         let law: Motion
 
-        /// Whether a hand moves the run, which way, how far it travels for one unit of the phase where the input
-        /// says, whether it moves it one target at most, and how a throw goes on.
-        let moves: Bool
-        let across: Bool
-        let travel: LayoutInput.Travel
-        let swipes: Bool
-        let throwing: Motion
+        /// The run working on the input of `kind`; nil for a layout with none.
+        func on(_ kind: LayoutInput.Kind) -> Run? {
+            guard let hand = hands.first(where: { $0.kind == kind }) else { return nil }
+
+            var run = self
+            run.focus = hand
+            return run
+        }
+
+        /// The axis the input in focus moves, where on it the run may come to rest, lowest first, and how far one
+        /// turn takes it where it comes round.
+        var axis: WritableKeyPath<Phase, Double>? { focus?.axis }
+        var stops: [Double] { focus?.stops ?? [] }
+        var period: Double? { focus?.period }
+
+        /// Whether a hand along the layout moves the run, which way, how far it travels for one unit of the phase
+        /// where the input says, whether it moves it one target at most, and how a throw goes on.
+        var moves: Bool { on(.hand).map { !$0.stops.isEmpty } ?? false }
+        var across: Bool {
+            guard case .hand(let axis, _, _) = on(.hand)?.focus?.gesture else { return true }
+            return axis != .vertical
+        }
+        var travel: LayoutInput.Travel {
+            guard case .hand(_, let travel, _) = focus?.gesture else { return .front }
+            return travel
+        }
+        var swipes: Bool {
+            guard case .hand(_, _, let swipes) = focus?.gesture else { return false }
+            return swipes
+        }
+        var throwing: Motion { focus?.throwing ?? LayoutInput.scroll(.horizontal).throwing }
+
+        /// Where the input in focus holds the run on its axis, while it does.
+        var held: Double? {
+            get { focus.flatMap { states.held.wrappedValue[$0.kind] } }
+            nonmutating set { if let kind = focus?.kind { states.held.wrappedValue[kind] = newValue } }
+        }
+
+        /// The throw or the approach of the input in focus going on, where one does.
+        var flung: LayoutFling? {
+            get { focus.flatMap { states.flung.wrappedValue[$0.kind] } }
+            nonmutating set { if let kind = focus?.kind { states.flung.wrappedValue[kind] = newValue } }
+        }
+
+        /// Whether the input in focus moves its axis by its logarithm: a magnification, multiplied by the fingers.
+        var multiplies: Bool { focus?.kind == .magnification }
+
+        /// `value` of the axis in focus where the hand works on it - its logarithm for a magnification - and back.
+        func toHand(_ value: Double) -> Double { multiplies ? log(max(value, .leastNormalMagnitude)) : value }
+        func fromHand(_ point: Double) -> Double { multiplies ? exp(point) : point }
 
         // MARK: - The phase
 
@@ -74,18 +129,33 @@ extension LayoutEngine {
             return placed
         }
 
-        /// The phase as it stands this frame: where the host walks it, the hand's axis where the hand holds it.
+        /// The phase as it stands this frame: where the host walks it, each hand's axis where that hand holds it.
         /// Design: docs/design/views/layout-engine.md#the-phase
         func live() -> Phase {
-            guard let held = states.held.wrappedValue else { return phase.journey.value }
+            holding(phase.journey.walked) ?? phase.journey.value
+        }
 
-            return placing(held, in: phase.journey.walked)
+        /// `phase` with each hand's axis where that hand holds it; nil where no hand holds the run.
+        func holding(_ phase: Phase) -> Phase? {
+            let held = states.held.wrappedValue
+            guard !held.isEmpty else { return nil }
+
+            var holding = phase
+            for hand in hands { if let value = held[hand.kind] { holding[keyPath: hand.axis] = value } }
+            return holding
         }
 
         /// The place on the hand's axis nearest `value` the hand may rest at - a turn on or back where it comes
-        /// round.
+        /// round, the nearest by its logarithm on a magnification's.
         func nearest(_ value: Double) -> Double {
-            Self.nearest(of: around(stops, near: value), to: value)
+            nearest(of: around(stops, near: value), to: value)
+        }
+
+        /// Of `values` on the axis in focus, the one nearest `value` where the hand works on them; the first of two
+        /// as near.
+        func nearest(of values: [Double], to value: Double) -> Double {
+            let point = toHand(value)
+            return values.min { abs(toHand($0) - point) < abs(toHand($1) - point) } ?? value
         }
 
         /// `values` of the hand's axis as they come round near `value`: the turn it stands in and one either side.
@@ -94,11 +164,6 @@ extension LayoutEngine {
 
             let turn = ((value - low) / period).rounded(.down)
             return [turn - 1, turn, turn + 1].flatMap { turn in values.map { $0 + turn * period } }
-        }
-
-        /// Of `values`, the one nearest `value`; the first of two as near.
-        static func nearest(of values: [Double], to value: Double) -> Double {
-            values.min { abs($0 - value) < abs($1 - value) } ?? value
         }
 
         /// Where the run comes to rest from `phase` once the hand lets go: an axis with targets of its own on the
@@ -110,7 +175,7 @@ extension LayoutEngine {
 
             var rest = phase
             if let own = axisTargets[axis] {
-                rest[keyPath: axis] = Self.nearest(of: around(own, near: phase[keyPath: axis]), to: phase[keyPath: axis])
+                rest[keyPath: axis] = nearest(of: around(own, near: phase[keyPath: axis]), to: phase[keyPath: axis])
                 return rest
             }
 
@@ -170,13 +235,13 @@ extension LayoutEngine {
         /// the description on its way from where each view was shown - again next frame while either goes on.
         /// Design: docs/design/views/layout-engine.md#the-run
         func place(at now: Double, reducesMotion: Bool) -> EngineAnswer {
-            let flying = fly(at: now, reducesMotion: reducesMotion)
+            let flying = hands.reduce(false) { flying, hand in
+                (on(hand.kind)?.fly(at: now, reducesMotion: reducesMotion) ?? false) || flying
+            }
             let room = states.room.wrappedValue
 
-            // Where the hand, a throw or an approach holds the run is the phase's value, for whatever follows it.
-            phase.journey.show(
-                states.held.wrappedValue.map { placing($0, in: phase.journey.walked) },
-                by: ObjectIdentifier(states.held.storage))
+            // Where the hands, a throw or an approach hold the run is the phase's value, for whatever follows it.
+            phase.journey.show(holding(phase.journey.walked), by: ObjectIdentifier(states.held.storage))
 
             // A room not yet measured places nothing: every view stands in the whole of it until it is.
             guard room.width > 0, room.height > 0 else {
@@ -201,13 +266,18 @@ extension LayoutEngine {
         /// Design: docs/design/views/layout-engine.md#where-a-motion-set-out
         func setOut(at phase: Phase) -> Phase {
             let journey = self.phase.journey
-            let resting = states.held.wrappedValue == nil && states.flung.wrappedValue == nil
+            let resting = states.held.wrappedValue.isEmpty && states.flung.wrappedValue.isEmpty
                 && journey.value == journey.destination
             var from = states.from.wrappedValue ?? phase
             if resting {
                 from = phase
-            } else if let passed = passed(from: onAxis(from), to: onAxis(phase)) {
-                from = placing(passed, in: from)
+            } else {
+                for hand in hands {
+                    guard let run = on(hand.kind),
+                          let passed = run.passed(from: run.onAxis(from), to: run.onAxis(phase))
+                    else { continue }
+                    from = run.placing(passed, in: from)
+                }
             }
 
             if states.from.wrappedValue != from { states.from.wrappedValue = from }
@@ -226,28 +296,33 @@ extension LayoutEngine {
         /// written meanwhile is the program's, and ends it. Whether it goes on.
         /// Design: docs/design/views/layout-engine.md#a-throw
         func fly(at now: Double, reducesMotion: Bool) -> Bool {
-            guard var fling = states.flung.wrappedValue else { return false }
+            guard var fling = flung else { return false }
 
-            guard onAxis(phase.journey.destination) == fling.to, fling.thrown || !reducesMotion else {
-                states.flung.wrappedValue = nil
-                states.held.wrappedValue = nil
+            guard Self.same(toHand(onAxis(phase.journey.destination)), fling.to), fling.thrown || !reducesMotion else {
+                flung = nil
+                held = nil
                 return false
             }
 
             let began = fling.began ?? now
             if fling.began == nil {
                 fling.began = now
-                states.flung.wrappedValue = fling
+                flung = fling
             }
 
             guard let at = Self.flown(fling, after: now - began) else {
-                states.flung.wrappedValue = nil
-                states.held.wrappedValue = nil
+                flung = nil
+                held = nil
                 return false
             }
 
-            states.held.wrappedValue = at
+            held = fromHand(at)
             return true
+        }
+
+        /// Whether two places on the hand's axis are one, a logarithm's rounding apart.
+        static func same(_ one: Double, _ other: Double) -> Bool {
+            one == other || abs(one - other) <= 1e-9 * max(abs(one), abs(other), 1)
         }
 
         /// One view inside the holder the run places, so the author's own properties on the view are never
@@ -288,7 +363,7 @@ extension LayoutEngine {
 
             case .changed:
                 // A move with no beginning heard is one: the run is taken where it is shown.
-                let held = states.held.wrappedValue ?? take(at: onAxis(journey.value))
+                let held = self.held ?? take(at: onAxis(journey.value))
                 // A room not yet measured draws no view, so a hand over it moves none.
                 guard let per = unit(at: held) else { return }
 
@@ -296,11 +371,11 @@ extension LayoutEngine {
                 let free = period == nil ? runPoint(of: handPoint(of: held) + step) : held + step
                 let next = reach.map { min(max(free, $0.lowerBound), $0.upperBound) } ?? free
 
-                states.held.wrappedValue = next
+                self.held = next
                 name(nearest(next))
 
             case .ended, .cancelled:
-                guard let held = states.held.wrappedValue else { return }
+                guard let held = self.held else { return }
 
                 let measured = unit(at: held)
                 let per = measured ?? 1
@@ -326,16 +401,106 @@ extension LayoutEngine {
                 name(along)
                 if target != placing(along, in: journey.destination) { _ = journey.move(to: target) }
                 guard abs(left) * per > Self.settled, !motion.isCustom || isThrow else {
-                    states.held.wrappedValue = nil
+                    self.held = nil
                     return
                 }
 
-                states.flung.wrappedValue = isThrow
+                flung = isThrow
                     ? LayoutFling(from: held, to: along, speed: thrown, motion: throwing, flight: flight, thrown: true)
                     : LayoutFling(
                         from: held, to: along, speed: thrown, motion: Self.approach(motion, over: left),
                         flight: abs(left) * Double(motion.milliseconds), thrown: false)
             }
+        }
+
+        /// Two fingers over the element, a pinch and a rotation as one: each moves its own input's axis - a
+        /// magnification by how far they spread, a rotation by how far they turned - and let go, each goes on to the
+        /// target nearest where it would end. A view held by itself keeps the hand.
+        /// Design: docs/design/views/layout-engine.md#two-fingers
+        func pinch(_ gesture: GesturePhase, scale: Double, degrees: Double, speed: Point) {
+            guard states.item.wrappedValue == nil else { return }
+
+            if let magnification = on(.magnification), scale > 0 {
+                magnification.drive(gesture, step: log(scale), speed: speed.x)
+            }
+            if let rotation = on(.rotation), case .rotation(let per) = rotation.focus?.gesture {
+                rotation.drive(gesture, step: degrees / per, speed: speed.y / per)
+            }
+        }
+
+        /// The input in focus moved `step` of its unit where the hand works on its axis - its logarithm for a
+        /// magnification - going `speed` units a second as it lets go: the axis taken where it is shown, moved
+        /// with the hand - less and less past an end - and let go, thrown on or brought onto a target as the hand's
+        /// own run is.
+        func drive(_ gesture: GesturePhase, step: Double, speed: Double) {
+            let journey = phase.journey
+            let points = stops.map(toHand)
+            let (low, high) = (points.first ?? 0, points.last ?? 0)
+
+            switch gesture {
+            case .began:
+                take(at: onAxis(live()))
+
+            case .changed:
+                let held = self.held ?? take(at: onAxis(journey.value))
+                let point = toHand(held)
+                let moved = period != nil ? point + step
+                    : Self.given(Self.pulled(point, low: low, high: high) + step, low: low, high: high)
+
+                self.held = fromHand(moved)
+                name(nearest(fromHand(moved)))
+
+            case .ended, .cancelled:
+                guard let held = self.held else { return }
+
+                let per = perUnit
+                let point = toHand(held)
+                let thrown = gesture == .ended ? speed : 0
+                let carried = point + Self.carried(thrown, by: throwing)
+                let end = period == nil ? min(max(carried, low), high) : carried
+                let target = resting(near: placing(fromHand(end), in: journey.destination))
+                let along = toHand(onAxis(target))
+                let left = along - point
+                let motion = law.resolved(against: .standard)
+                let flight = Self.flight(left, at: thrown, by: throwing)
+                let isThrow = abs(thrown) * per >= Self.throwing && left * thrown > 0
+                    && (!next(from: held, to: onAxis(target)) || flight <= abs(left) * Double(motion.milliseconds))
+
+                name(onAxis(target))
+                if target != placing(onAxis(target), in: journey.destination) { _ = journey.move(to: target) }
+                guard abs(left) * per > Self.settled, !motion.isCustom || isThrow else {
+                    self.held = nil
+                    return
+                }
+
+                flung = isThrow
+                    ? LayoutFling(from: point, to: along, speed: thrown, motion: throwing, flight: flight, thrown: true)
+                    : LayoutFling(
+                        from: point, to: along, speed: thrown, motion: Self.approach(motion, over: left),
+                        flight: abs(left) * Double(motion.milliseconds), thrown: false)
+            }
+        }
+
+        /// How many device units, or degrees, a unit of the input in focus stands for, by which it is judged thrown
+        /// or settled: a magnification's logarithm is a hundred.
+        var perUnit: Double {
+            switch focus?.gesture {
+            case .rotation(let degrees)?: degrees
+            case .magnification?: 100
+            default: unit(at: held ?? 0) ?? 1
+            }
+        }
+
+        /// Where the hand stands for the run at `point`, the ends at `low` and `high`: past one, as far beyond it as
+        /// the hand went for the run to give that much.
+        static func pulled(_ point: Double, low: Double, high: Double) -> Double {
+            point > high ? high + pulled(point - high) : point < low ? low - pulled(low - point) : point
+        }
+
+        /// Where the run stands for the hand at `point`, the ends at `low` and `high`: past one, less and less of the
+        /// way beyond it.
+        static func given(_ point: Double, low: Double, high: Double) -> Double {
+            point > high ? high + given(point - high) : point < low ? low - given(low - point) : point
         }
 
         /// Whether `to` is the next target from `from` on the hand's axis: none stands between them.
@@ -346,14 +511,14 @@ extension LayoutEngine {
         /// Where the hand stands, in units of the axis, for the run standing at `value`: past an end of a run
         /// that does not come round, as far beyond it as the hand went for the run to give that much.
         func handPoint(of value: Double) -> Double {
-            value > high ? high + Self.pulled(value - high) : value < low ? low - Self.pulled(low - value) : value
+            Self.pulled(value, low: low, high: high)
         }
 
         /// Where the run stands for the hand at `point`: past an end of a run that does not come round, less and
         /// less of the way beyond it - `handPoint(of:)`'s inverse.
         /// Design: docs/design/views/layout-engine.md#the-hand
         func runPoint(of point: Double) -> Double {
-            point > high ? high + Self.given(point - high) : point < low ? low - Self.given(low - point) : point
+            Self.given(point, low: low, high: high)
         }
 
         /// How far past an end the run gives for the hand `beyond` it, in units: half as far at first, then less
@@ -431,18 +596,18 @@ extension LayoutEngine {
         func step(_ notches: Point) {
             let count = Int((-(across ? notches.x : notches.y)).rounded())
             guard count != 0, !stops.isEmpty else { return }
-            guard states.held.wrappedValue == nil || states.flung.wrappedValue != nil else { return }
+            guard held == nil || flung != nil else { return }
 
             let journey = phase.journey
             if swipes {
-                guard states.flung.wrappedValue == nil, journey.value == journey.destination else { return }
+                guard flung == nil, journey.value == journey.destination else { return }
             }
             let start = live()
             let along = stepped(onAxis(journey.destination), by: swipes ? count.signum() : count)
             let target = resting(near: placing(along, in: journey.destination))
 
-            states.flung.wrappedValue = nil
-            states.held.wrappedValue = nil
+            flung = nil
+            held = nil
             send(to: target, from: start, speed: 0)
         }
 
@@ -472,8 +637,8 @@ extension LayoutEngine {
         /// hand grips it at the target nearest, with the unit the run would have standing there.
         @discardableResult
         func take(at value: Double) -> Double {
-            states.flung.wrappedValue = nil
-            states.held.wrappedValue = value
+            flung = nil
+            held = value
             if swipes {
                 let target = nearest(value)
                 let resting = placing(target, in: phase.journey.value)
@@ -500,10 +665,10 @@ extension LayoutEngine {
             guard let reach, let grip = states.grip.wrappedValue else { return nil }
 
             let targets = [reach.lowerBound, grip.target, reach.upperBound]
-            guard thrown != 0 else { return Self.nearest(of: targets, to: held) }
+            guard thrown != 0 else { return nearest(of: targets, to: held) }
 
             let ahead = targets.filter { thrown > 0 ? $0 > held : $0 < held }
-            return (thrown > 0 ? ahead.min() : ahead.max()) ?? Self.nearest(of: targets, to: held)
+            return (thrown > 0 ? ahead.min() : ahead.max()) ?? nearest(of: targets, to: held)
         }
 
         /// How much farther a throw at `speed` units a second carries under `throwing`: eased, the hand's speed for

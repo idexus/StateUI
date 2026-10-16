@@ -148,6 +148,8 @@ extension NodeType {
     static let gridRowSpan = ViewContract.gridRowSpan.token
     static let groupName = RadioButtonContract.groupName.token
     static let handAxis = LayoutEngineContract.handAxis.token
+    static let magnifies = LayoutEngineContract.magnifies.token
+    static let rotates = LayoutEngineContract.rotates.token
     static let height = VisualElementContract.height.token
     static let horizontalAlignment = ViewContract.horizontalAlignment.token
     static let horizontalScrollIndicator = ScrollViewContract.horizontalScrollIndicator.token
@@ -302,6 +304,7 @@ extension NodeType {
     static let handStepped = LayoutEngineContract.handStepped.token
     static let isFocusedChanged = FocusElementContract.isFocusedChanged.token
     static let itemMoved = LayoutEngineContract.itemMoved.token
+    static let pinchMoved = LayoutEngineContract.pinchMoved.token
     static let keyPressed = KeyboardElementContract.keyPressed.token
     static let showsSidebarChanged = SplitViewContract.showsSidebarChanged.token
     static let mapClicked = MapContract.mapClicked.token

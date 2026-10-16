@@ -422,6 +422,29 @@ press's point and every move since, its speed at the lift as the run's is
 read, and how long it has stood still - told again each hold it stands, so
 an application can turn a board under an icon held at its edge.
 
+## Two fingers over a layout
+
+A layout engine that `magnifies` or `rotates` hears two fingers itself
+(`Hearing.pinches`, `Hearing.rotations`): a pinch and a rotation, each as
+the platform tells it - its own gesture where the toolkit has one, two
+pointers where it tells only pointers (`TwoFingers`: how far apart they
+stand and which way the line between them turns, clockwise in a view whose
+y grows down, the short way round). `PinchReading` makes the two one stream
+of the element's `pinchMoved`: begun with the first, ended with the last -
+a move with no beginning heard begins it, a cancel of the last cancels it -
+each move a scale and degrees since the last, said at the next frame's
+start as one, and as the fingers lift their speed, read from the last
+tenth of a second: the scale's logarithm across, the degrees down.
+
+The rule for gestures at once is one, every host's: two fingers are the
+two-finger inputs'. As they begin, a hand moving the run lets go where it
+is, still (`HandReading.yield`), and what the platform tells of that hand
+after - a finger going on under the pinch, its lift and its speed - is
+nobody's until a new press. A view held by itself keeps the hand: the
+fingers say nothing while it does. Each toolkit already keeps a pinch and a
+hand apart or together in its own way; the host layer decides, so a hand's
+recognizer may go on hearing beside the fingers'.
+
 ## A swipe
 
 A host whose toolkit tells it a press and how far it has moved, and no swipe,

@@ -20,8 +20,8 @@ extension WebElement {
             }
             view.listen("activate") { [weak self] in self?.heard(.taps, .tap(run: 0)) }
         }
-        if !hearing.isDisjoint(with: [.drags, .pinches]), listening.isDisjoint(with: [.drags, .pinches]) {
-            listening.formUnion([.drags, .pinches])
+        if !hearing.isDisjoint(with: Self.presses), listening.isDisjoint(with: Self.presses) {
+            listening.formUnion(Self.presses)
             listenForPresses(view)
         }
         if hearing.contains(.hand), !listening.contains(.hand) {
@@ -86,9 +86,11 @@ extension WebElement {
         }
         for event in ["gesturestart", "gesturechange"] {
             view.listen(event) { [weak self] in
-                guard let self, element.hearing.contains(.pinches) else { return }
+                guard let self, !element.hearing.isDisjoint(with: [.pinches, .rotations]) else { return }
                 WebRelay.takeEvent()
-                hearPress(press.trackpad(scale: WebRelay.eventScale, at: WebRelay.eventPoint, size: WebRelay.eventSize))
+                hearPress(press.trackpad(
+                    scale: WebRelay.eventScale, degrees: WebRelay.eventRotation, at: WebRelay.eventPoint,
+                    size: WebRelay.eventSize))
             }
         }
         view.listen("gestureend") { [weak self] in
@@ -208,9 +210,16 @@ extension WebElement {
 
     private func hearPress(_ inputs: [HeardInput]) {
         for input in inputs {
-            if case .pinch = input { heard(.pinches, input) } else { heard(.drags, input) }
+            switch input {
+            case .pinch: heard(.pinches, input)
+            case .rotation: heard(.rotations, input)
+            default: heard(.drags, input)
+            }
         }
     }
+
+    /// What the presses on a view are heard for: a drag, two fingers pinching, two fingers turning.
+    private static let presses: Hearing = [.drags, .pinches, .rotations]
 
     private func heard(_ kind: Hearing, _ input: HeardInput) {
         guard let host, element.hearing.contains(kind) else { return }

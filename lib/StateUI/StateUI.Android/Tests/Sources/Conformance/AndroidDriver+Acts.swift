@@ -86,6 +86,9 @@ extension AndroidDriver {
         case (.pinch(let scale, let point), let view?):
             let (width, height) = (Float(view.frame.width), Float(view.frame.height))
             TestTouches.pinch(view, x: Float(point.x) * width, y: Float(point.y) * height, by: Float(scale))
+        case (.rotate(let degrees, let point), let view?):
+            let (width, height) = (Float(view.frame.width), Float(view.frame.height))
+            TestTouches.rotate(view, x: Float(point.x) * width, y: Float(point.y) * height, by: Float(degrees))
         case (.pressDown(let point), let view?): view.touch(Self.down, x: Self.pixels(point.x), y: Self.pixels(point.y))
         case (.drag(let point), let view?): view.touch(Self.move, x: Self.pixels(point.x), y: Self.pixels(point.y))
         case (.lift(let point), let view?): view.touch(Self.up, x: Self.pixels(point.x), y: Self.pixels(point.y))

@@ -6,8 +6,9 @@
 import WASILibc
 
 /// The pointers pressed on one view, as the page tells them: one dragged by the host layer's rule, two pinched -
-/// how far apart they are against how far they began its scale, their middle where - and a trackpad's pinch, which
-/// the page tells as a wheel turned with a key, or as Safari's gesture.
+/// how far apart they are against how far they began its scale, their middle where, and the turn of the line between
+/// them its rotation - and a trackpad's pinch, which the page tells as a wheel turned with a key, or as Safari's
+/// gesture, which turns too.
 /// Design: docs/design/platforms/web/input.md#a-press-dragged-and-a-pinch
 struct WebPress {
     /// Where each pointer pressed on the view stands on the page, by its number.
@@ -22,8 +23,12 @@ struct WebPress {
     private var pinchSpan: Double?
     private var steps = PinchStep()
 
-    /// A trackpad's pinch under way, and its scale from 1.
+    /// The two pointers' turn, by the host layer's reading of two pointers.
+    private var fingers = TwoFingers()
+
+    /// A trackpad's pinch under way, its scale from 1, and its rotation's steps.
     private var turning: Double?
+    private var rotation = RotationStep()
 
     /// Whether the press the user lets go of last was dragged, so its click is no tap.
     private(set) var wasDragged = false
@@ -51,7 +56,11 @@ struct WebPress {
         guard pressed[id] != nil else { return [] }
         pressed[id] = point
         if let pinchSpan, pinchSpan > 0, let span = span {
-            return [.pinch(.changed, scale: steps.step(.changed, scale: span / pinchSpan), at: middle(origin, size))]
+            let turned = two.flatMap { fingers.moved($0.0, $0.1) }?.degrees ?? 0
+            return [
+                .pinch(.changed, scale: steps.step(.changed, scale: span / pinchSpan), at: middle(origin, size)),
+                .rotation(.changed, degrees: turned),
+            ]
         }
         guard id == dragging else { return [] }
         let heard = drag.moved(to: point)
@@ -66,25 +75,31 @@ struct WebPress {
         if pinchSpan != nil {
             let at = middle(origin, size)
             pinchSpan = nil
-            return [.pinch(letGo ? .ended : .cancelled, scale: steps.step(.ended, scale: 1), at: at)]
+            fingers.lifted()
+            let phase: GesturePhase = letGo ? .ended : .cancelled
+            return [.pinch(phase, scale: steps.step(.ended, scale: 1), at: at), .rotation(phase, degrees: 0)]
         }
         guard id == dragging else { return [] }
         dragging = nil
         return drag.ended(letGo: letGo).map { [$0] } ?? []
     }
 
-    /// A trackpad's pinch at `scale` from 1 - a wheel's turn's or Safari's - at `point` in a view `size`: it begins
-    /// with its first step.
-    mutating func trackpad(scale next: Double, at point: Point, size: LayoutSize) -> [HeardInput] {
+    /// A trackpad's pinch at `scale` from 1 - a wheel's turn's or Safari's - turned `degrees` clockwise from where it
+    /// began, at `point` in a view `size`: it begins with its first step.
+    mutating func trackpad(
+        scale next: Double, degrees: Double = 0, at point: Point, size: LayoutSize
+    ) -> [HeardInput] {
         guard pinchSpan == nil else { return [] }
         let at = PinchStep.share(of: point, width: size.width, height: size.height)
         var heard: [HeardInput] = []
         if turning == nil {
             turning = 1
             heard.append(.pinch(.began, scale: steps.step(.began, scale: 1), at: at))
+            heard.append(.rotation(.began, degrees: rotation.step(.began, degrees: 0)))
         }
         turning = next
         heard.append(.pinch(.changed, scale: steps.step(.changed, scale: next), at: at))
+        heard.append(.rotation(.changed, degrees: rotation.step(.changed, degrees: degrees)))
         return heard
     }
 
@@ -98,7 +113,10 @@ struct WebPress {
         guard turning != nil else { return [] }
         turning = nil
         let at = PinchStep.share(of: point, width: size.width, height: size.height)
-        return [.pinch(.ended, scale: steps.step(.ended, scale: 1), at: at)]
+        return [
+            .pinch(.ended, scale: steps.step(.ended, scale: 1), at: at),
+            .rotation(.ended, degrees: rotation.step(.ended, degrees: 0)),
+        ]
     }
 
     private mutating func pinchBegins(at middle: Point) -> [HeardInput] {
@@ -107,8 +125,17 @@ struct WebPress {
         if dragging != nil, let end = drag.ended(letGo: false) { heard.append(end) }
         dragging = nil
         pinchSpan = span
+        fingers.lifted()
+        if let two { _ = fingers.moved(two.0, two.1) }
         heard.append(.pinch(.began, scale: steps.step(.began, scale: 1), at: middle))
+        heard.append(.rotation(.began, degrees: 0))
         return heard
+    }
+
+    /// The first two pointers, the first pressed first.
+    private var two: (Point, Point)? {
+        let two = pressed.sorted { $0.key < $1.key }.prefix(2).map(\.value)
+        return two.count == 2 ? (two[0], two[1]) : nil
     }
 
     /// How far apart the first two pointers stand.

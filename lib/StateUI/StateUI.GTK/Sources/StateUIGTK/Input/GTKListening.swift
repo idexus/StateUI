@@ -32,6 +32,7 @@ final class GTKListening {
 
     /// The scale the pinch last said, since it began.
     private var pinch = PinchStep()
+    private var rotation = RotationStep()
 
     /// The hand over a layout: where the drag had come to at its last report, whether its first move past the
     /// threshold is yet to come, and whether the layout took it.
@@ -74,6 +75,7 @@ final class GTKListening {
         case .pointer: makePointer()
         case .drags: [makeDrag()]
         case .hand: makeHand()
+        case .rotations: [makeRotation()]
         default: [makePinch()]
         }
     }
@@ -374,6 +376,30 @@ final class GTKListening {
         let at = PinchStep.share(
             of: center, width: Double(gtk_widget_get_width(widget)), height: Double(gtk_widget_get_height(widget)))
         tell(.pinch(phase, scale: step, at: at))
+    }
+
+    // MARK: - A rotation
+
+    private func makeRotation() -> OpaquePointer {
+        let rotate = gtk_gesture_rotate_new()!
+        connectSignal(UnsafeMutableRawPointer(rotate), "begin", number: number) { (_, _: UnsafeMutableRawPointer?, data) in
+            let number = viewNumber(data)
+            MainActor.assumeIsolated { GTKListening.find(number)?.rotated(phase: .began, radians: 0) }
+        }
+        connectSignal(UnsafeMutableRawPointer(rotate), "angle-changed", number: number) { (_, _: Double, delta: Double, data) in
+            let number = viewNumber(data)
+            MainActor.assumeIsolated { GTKListening.find(number)?.rotated(phase: .changed, radians: delta) }
+        }
+        connectSignal(UnsafeMutableRawPointer(rotate), "end", number: number) { (_, _: UnsafeMutableRawPointer?, data) in
+            let number = viewNumber(data)
+            MainActor.assumeIsolated { GTKListening.find(number)?.rotated(phase: .ended, radians: 0) }
+        }
+        return rotate
+    }
+
+    /// A rotation's step: the degrees clockwise since the last, from GTK's turn since it began, in radians.
+    func rotated(phase: GesturePhase, radians: Double) {
+        tell(.rotation(phase, degrees: rotation.step(phase, degrees: radians * 180 / .pi)))
     }
 
     // MARK: - Measures

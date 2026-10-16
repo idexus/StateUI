@@ -213,6 +213,7 @@ enum TestTouches {
     private static let hovering = Java.staticMethod(owner, "hover", "(Landroid/view/View;FF)V")
     private static let hoveringOnce = Java.staticMethod(owner, "hover", "(Landroid/view/View;IFF)V")
     private static let pinchingBy = Java.staticMethod(owner, "pinchBy", "(Landroid/view/View;FFF)V")
+    private static let rotating = Java.staticMethod(owner, "rotate", "(Landroid/view/View;FFF)V")
 
     /// Two fingers either side of (`x`, `y`) pixels, `from` pixels apart moving to `to`, then lifted.
     static func pinch(_ view: AndroidView, x: Float, y: Float, from: Float, to: Float) {
@@ -222,6 +223,11 @@ enum TestTouches {
     /// Two fingers about (`x`, `y`) pixels, one step of the pinch scaled by `scale`, then lifted.
     static func pinch(_ view: AndroidView, x: Float, y: Float, by scale: Float) {
         Java.callStatic(owner, pinchingBy, .object(view.reference), .float(x), .float(y), .float(scale))
+    }
+
+    /// Two fingers about (`x`, `y`) pixels, 600 apart, turned clockwise by `degrees`, then lifted.
+    static func rotate(_ view: AndroidView, x: Float, y: Float, by degrees: Float) {
+        Java.callStatic(owner, rotating, .object(view.reference), .float(x), .float(y), .float(degrees))
     }
 
     /// A mouse doing `action` - entering, moving or leaving - at (`x`, `y`) pixels.

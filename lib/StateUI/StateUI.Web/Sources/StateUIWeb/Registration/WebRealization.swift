@@ -117,6 +117,10 @@ enum WebRealization {
         .complete("LayoutEngine", "handStepped"),
         .complete("LayoutEngine", "itemDrag"),
         .complete("LayoutEngine", "itemMoved"),
+        .complete("LayoutEngine", "magnifies"),
+        .partial("LayoutEngine", "rotates", missing: "Chrome and Firefox tell no trackpad's rotation: two fingers turn "
+            + "a layout on a touch screen, and on a trackpad in Safari."),
+        .complete("LayoutEngine", "pinchMoved"),
         .partial("Window", "background", missing: "A page draws its window opaque: a blur or glass shows its colour."),
         .notPlanned("Window", "maximumHeight", reason: "A page bounds no browser window: the user sizes it."),
         .notPlanned("Window", "maximumWidth", reason: "A page bounds no browser window: the user sizes it."),

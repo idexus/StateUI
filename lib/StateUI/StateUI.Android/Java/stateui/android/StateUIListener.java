@@ -112,9 +112,9 @@ final class StateUIListener implements View.OnClickListener, View.OnLongClickLis
     /** What `touched`'s element listens for; see `StateUIGestures.configure`. A hand over a layout hears the wheel. */
     void setGestures(
             View touched, float density, boolean countsTaps, boolean drags, boolean pinch, boolean pointer,
-            boolean hand) {
+            boolean hand, boolean rotation) {
         if (gestures == null) gestures = new StateUIGestures(touched, view, density);
-        gestures.configure(countsTaps, drags, pinch, pointer, hand);
+        gestures.configure(countsTaps, drags, pinch, pointer, hand, rotation);
         touched.setOnGenericMotionListener(hand ? this : null);
     }
 

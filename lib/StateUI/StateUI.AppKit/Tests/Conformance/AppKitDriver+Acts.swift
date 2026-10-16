@@ -94,6 +94,10 @@ extension AppKitDriver {
             native?.pinchRecognizer?.pinched(.began, scale: 1, at: point)
             native?.pinchRecognizer?.pinched(.changed, scale: scale, at: point)
             native?.pinchRecognizer?.pinched(.ended, scale: scale, at: point)
+        case (.rotate(let degrees, _), _) where native?.rotationRecognizer != nil:
+            native?.rotationRecognizer?.rotated(.began, degrees: 0)
+            native?.rotationRecognizer?.rotated(.changed, degrees: degrees)
+            native?.rotationRecognizer?.rotated(.ended, degrees: degrees)
         case (.scroll(let offset), let scroll as AppKitScrollView):
             // A live scroll: its start, the user's move, and its rest.
             scroll.beginMovementForTesting()

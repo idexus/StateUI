@@ -50,6 +50,11 @@ extension GTKDriver {
             view.heard(.pinch(.began, scale: 1, at: at))
             view.heard(.pinch(.changed, scale: scale, at: at))
             view.heard(.pinch(.ended, scale: 1, at: at))
+        case .rotate(let degrees, _):
+            guard view.hearing.contains(.rotations) else { return false }
+            listening.rotated(phase: .began, radians: 0)
+            listening.rotated(phase: .changed, radians: degrees * .pi / 180)
+            listening.rotated(phase: .ended, radians: 0)
         case .hover(let point):
             guard let motion = controllers(.pointer).first else { return false }
             GTKTestHost.emit(motion, "enter", [point.x, point.y])

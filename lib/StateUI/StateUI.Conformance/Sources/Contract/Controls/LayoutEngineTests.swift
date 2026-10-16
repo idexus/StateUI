@@ -268,6 +268,35 @@
                 s.expect(told.values.last, "1 at 42,35", "moved down with the hand")
                 s.expect(phase.wrappedValue, 0, "the run stands")
             },
+            ConformanceCase("twoFingersSpreadTheMagnification", proves: [
+                Covered(LayoutEngineContract.magnifies), Covered(LayoutEngineContract.pinchMoved),
+            ]) { s in
+                let (clock, phase) = (TestClock(), State(wrappedValue: 1.0))
+                let layout = try fingersLayout(s, clock: clock, phase: phase, input: .magnification())
+
+                try s.perform(.pinch(scale: 2, at: Point(0.5, 0.5)), on: layout)
+                frames(s, clock, until: clock.now + 1_000)
+                s.expect(phase.wrappedValue, 2, "spread to twice their distance: twice the size")
+
+                // To the ends, so a lift at the driver's speed rests where a still one does.
+                try s.perform(.pinch(scale: 0.25, at: Point(0.5, 0.5)), on: layout)
+                frames(s, clock, until: clock.now + 1_000)
+                s.expect(phase.wrappedValue, 0.5, "and pinched in to a quarter: the smallest")
+            },
+            ConformanceCase("twoFingersTurnTheRotation", proves: [
+                Covered(LayoutEngineContract.rotates), Covered(LayoutEngineContract.pinchMoved),
+            ]) { s in
+                let (clock, phase) = (TestClock(), State(wrappedValue: 1.0))
+                let layout = try fingersLayout(s, clock: clock, phase: phase, input: .rotation(degreesPerUnit: 90))
+
+                try s.perform(.rotate(degrees: 90, at: Point(0.5, 0.5)), on: layout)
+                frames(s, clock, until: clock.now + 1_000)
+                s.expect(phase.wrappedValue, 2, "a quarter turn clockwise: a unit on")
+
+                try s.perform(.rotate(degrees: -180, at: Point(0.5, 0.5)), on: layout)
+                frames(s, clock, until: clock.now + 1_000)
+                s.expect(phase.wrappedValue, 0.5, "and back the other way, to the lowest")
+            },
             ConformanceCase("aViewLetGoFarEnoughIsDismissed", proves: [Covered(LayoutEngineContract.itemMoved)]) { s in
                 let (clock, phase, told) = (TestClock(), State(wrappedValue: 0.0), Received<String>())
                 let layout = try itemLayout(s, clock: clock, phase: phase, begins: .across, told: told, dismissing: true)
@@ -340,6 +369,30 @@ private func handLayout(_ s: Session, clock: TestClock, phase: State<Double>) th
             .snapTargets([0, 1, 2, 3, 4, 5])
             .motion(.eased(.milliseconds(300), .linear))
             .width(100).height(40)
+        }
+        .horizontalAlignment(.start)
+        .verticalAlignment(.start)
+    }
+    frames(s, clock, until: 64)
+    return try s.element(ofType: .layoutEngine)
+}
+
+/// A layout of three views two fingers move as `input` says, resting on 0.5, 1 and 2 - room for two fingers on
+/// every screen - its run on `clock`: the layout's element, once the room is told.
+@MainActor
+private func fingersLayout(
+    _ s: Session, clock: TestClock, phase: State<Double>, input: LayoutInput
+) throws -> MountedElement {
+    s.start(clock: clock) {
+        VStack {
+            LayoutEngine([0, 1, 2]) { _ in Rectangle(.red) } placements: { _, at in
+                (0..<3).map { Placement(Rect(Double($0) * 80 + 20, 60, 40 * at, 40)) }
+            }
+            .phase(phase.projectedValue)
+            .input(input)
+            .snapTargets([0.5, 1, 2])
+            .motion(.eased(.milliseconds(200), .linear))
+            .width(300).height(240)
         }
         .horizontalAlignment(.start)
         .verticalAlignment(.start)

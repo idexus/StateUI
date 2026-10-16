@@ -7,8 +7,9 @@
 /// on every host.
 /// Design: docs/design/host/runtime.md#what-the-user-does-with-a-finger
 extension MountedElement {
-    /// What the element's handlers and channels ask to hear: taps, the pointer, a press dragged, a pinch. A pan asks
-    /// for a press dragged by one pointer; one asking for more is not recognized.
+    /// What the element's handlers and channels ask to hear: taps, the pointer, a press dragged, a pinch, the hand
+    /// over a layout and the two fingers that spread or turn it. A pan asks for a press dragged by one pointer; one
+    /// asking for more is not recognized.
     public var hearing: Hearing {
         var hearing: Hearing = []
         if handler(.tapped) != nil { hearing.insert(.taps) }
@@ -16,7 +17,8 @@ extension MountedElement {
         let drags = handler(.panUpdated) != nil || handler(.swiped) != nil
             || channel(.panXChannel) != nil || channel(.panYChannel) != nil
         if drags, (number(.panTouchCount) ?? 1) == 1 { hearing.insert(.drags) }
-        if handler(.pinchUpdated) != nil { hearing.insert(.pinches) }
+        if handler(.pinchUpdated) != nil || hearsFingers && value(.magnifies)?.bool == true { hearing.insert(.pinches) }
+        if hearsFingers && value(.rotates)?.bool == true { hearing.insert(.rotations) }
         if handler(.handMoved) != nil || handler(.itemMoved) != nil { hearing.insert(.hand) }
         return hearing
     }
@@ -40,7 +42,17 @@ extension MountedElement {
         case .drag(let phase, let x, let y):
             dragged(phase, x: x, y: y, in: runtime)
         case .pinch(let phase, let scale, let at):
-            send(.pinchUpdated, [.enumeration(phase.rawValue), .number(scale), .numbers([at.x, at.y])], in: runtime)
+            guard hearsFingers else {
+                send(.pinchUpdated, [.enumeration(phase.rawValue), .number(scale), .numbers([at.x, at.y])], in: runtime)
+                return true
+            }
+            let now = runtime.clock.now()
+            return fingers(pinchReading.pinch(phase, scale: scale, at: now), at: now, in: runtime)
+        case .rotation(let phase, let degrees):
+            guard hearsFingers else { return false }
+
+            let now = runtime.clock.now()
+            return fingers(pinchReading.rotation(phase, degrees: degrees, at: now), at: now, in: runtime)
         case .hand(let phase, let moved, let speed, let time, let point):
             // When the platform says the hand moved, where it says: input that waited for a busy thread comes in a
             // burst its arrival would read as a throw.
@@ -79,6 +91,32 @@ extension MountedElement {
         return true
     }
 
+    /// Whether two fingers spreading or turning move the layout this element is.
+    private var hearsFingers: Bool { handler(.pinchMoved) != nil }
+
+    /// What two fingers said, kept for the next frame: as they begin, a hand moving the run lets go of it, still -
+    /// and a view held by itself keeps the hand, the fingers saying nothing.
+    /// Design: docs/design/host/runtime.md#two-fingers-over-a-layout
+    private func fingers(_ reports: [PinchReading.Report], at now: Double, in runtime: HostRuntime) -> Bool {
+        guard !handReading.holdsItem else {
+            pinchReading = PinchReading()
+            return false
+        }
+        guard !reports.isEmpty else { return true }
+
+        if reports.first?.phase == .began { gather(handReading.yield(at: now), in: runtime) }
+        for report in reports {
+            if report.phase == .changed, let last = pinchOutbox.last, last.phase == .changed {
+                pinchOutbox[pinchOutbox.count - 1] = PinchReading.Report(
+                    .changed, scale: last.scale * report.scale, degrees: last.degrees + report.degrees)
+            } else {
+                pinchOutbox.append(report)
+            }
+        }
+        runtime.handPace.opened(self)
+        return true
+    }
+
     /// Which way the hand moves the layout this element is, where a hand does.
     public var handAxis: LayoutInput.Axis? {
         value(.handAxis)?.enumeration.flatMap(LayoutInput.Axis.init(rawValue:))
@@ -99,6 +137,15 @@ extension MountedElement {
         let reports = handOutbox
         handOutbox = []
         said(reports, in: runtime)
+
+        let fingers = pinchOutbox
+        pinchOutbox = []
+        for report in fingers {
+            send(.pinchMoved, [
+                .enumeration(report.phase.rawValue), .number(report.scale), .number(report.degrees),
+                .numbers([report.speed.x, report.speed.y]),
+            ], in: runtime)
+        }
     }
 
     /// The hand's reports kept for the next frame, a move after a move made one: a toolkit telling the hand faster

@@ -18,9 +18,6 @@ public struct LayoutInput: Equatable, Sendable {
         case vertical = 1
     }
 
-    /// Which way the hand moves the phase.
-    public let axis: Axis
-
     /// How far the hand travels for one unit of the phase.
     public enum Travel: Equatable, Sendable {
         /// So many device units, one at least.
@@ -33,14 +30,39 @@ public struct LayoutInput: Equatable, Sendable {
         case room
     }
 
-    /// How far the hand travels for one unit of the phase.
-    public let travel: Travel
+    /// What moves the phase: a hand along an axis, two fingers spreading or two fingers turning.
+    /// Design: docs/design/views/layout-engine.md#two-fingers
+    enum Gesture: Equatable, Sendable {
+        /// A finger or a pointer dragged, a trackpad's two fingers and a wheel along `axis`, so far for a unit,
+        /// one snap target a hand where it `swipes`.
+        case hand(Axis, Travel, swipes: Bool)
+
+        /// Two fingers spreading: the axis multiplied by how far they spread.
+        case magnification
+
+        /// Two fingers turning: a unit every so many degrees.
+        case rotation(degreesPerUnit: Double)
+
+        /// Which of the layout's hands it is: one input a kind.
+        var kind: Kind {
+            switch self {
+            case .hand: .hand
+            case .magnification: .magnification
+            case .rotation: .rotation
+            }
+        }
+    }
+
+    /// The hands a layout may have, one input each: the one along its axis, and the two fingers' two.
+    enum Kind: Hashable, Sendable, CaseIterable {
+        case hand, magnification, rotation
+    }
+
+    /// What moves the phase.
+    let gesture: Gesture
 
     /// How a throw goes on once the hand lets go: how far it carries, and the curve it slows on.
     public let throwing: Motion
-
-    /// Whether one hand moves the run one snap target at most, either way from where it took it: a swipe's.
-    public let swipes: Bool
 
     /// The hand over the views: a finger or a pointer dragged, a trackpad's two fingers and a wheel move the phase
     /// with them; let go with speed, the run is thrown on to the snap target nearest where the throw would end, as
@@ -63,7 +85,7 @@ public struct LayoutInput: Equatable, Sendable {
     public static func scroll(
         _ axis: Axis, pointsPerUnit: Double? = nil, throwing: Motion = .eased(.milliseconds(400), .cubicOut)
     ) -> LayoutInput {
-        LayoutInput(axis: axis, travel: travel(pointsPerUnit), throwing: throwing, swipes: false)
+        LayoutInput(gesture: .hand(axis, travel(pointsPerUnit), swipes: false), throwing: throwing)
     }
 
     /// One snap target a hand: the hand moves the run with it, but one target at most either way from where it took
@@ -83,7 +105,7 @@ public struct LayoutInput: Equatable, Sendable {
     public static func swipe(
         _ axis: Axis, pointsPerUnit: Double? = nil, throwing: Motion = .eased(.milliseconds(400), .cubicOut)
     ) -> LayoutInput {
-        LayoutInput(axis: axis, travel: travel(pointsPerUnit), throwing: throwing, swipes: true)
+        LayoutInput(gesture: .hand(axis, travel(pointsPerUnit), swipes: true), throwing: throwing)
     }
 
     /// A page a hand: a swipe whose hand travels the room's length along `axis` for one unit of the phase, so a
@@ -97,7 +119,43 @@ public struct LayoutInput: Equatable, Sendable {
     ///   - throwing: how the run goes on to the next page once thrown; a light friction unless said.
     /// - Returns: the input.
     public static func pages(_ axis: Axis, throwing: Motion = .eased(.milliseconds(400), .cubicOut)) -> LayoutInput {
-        LayoutInput(axis: axis, travel: .room, throwing: throwing, swipes: true)
+        LayoutInput(gesture: .hand(axis, .room, swipes: true), throwing: throwing)
+    }
+
+    /// Two fingers spreading or pinching - on a touch screen, or a trackpad's pinch: the axis is a magnification,
+    /// multiplied by how far the fingers spread, so their distance doubled doubles it and halved halves it. Let go
+    /// with speed, it goes on to the snap target nearest where it would end, as `throwing` says; let go still, onto
+    /// the nearest. Its targets stand above nought.
+    ///
+    ///     .input(.magnification(), drives: \.zoom)
+    ///     .snap(\.zoom, to: [0.5, 1, 2])
+    ///
+    /// Two fingers turning at once may move another axis by `rotation(degreesPerUnit:)`; as they touch, a hand
+    /// moving the run lets go of it.
+    ///
+    /// - Parameter throwing: how the axis goes on once let go; a light friction unless said.
+    /// - Returns: the input.
+    public static func magnification(throwing: Motion = .eased(.milliseconds(400), .cubicOut)) -> LayoutInput {
+        LayoutInput(gesture: .magnification, throwing: throwing)
+    }
+
+    /// Two fingers turning - on a touch screen, or a trackpad's rotation: the axis moves a unit for every
+    /// `degreesPerUnit` the fingers turn, growing as they turn clockwise. Let go with speed, it goes on to the snap
+    /// target nearest where it would end, as `throwing` says; let go still, onto the nearest.
+    ///
+    ///     .input(.rotation(degreesPerUnit: 360 / Double(cards.count)), drives: \.turn)
+    ///     .snap(\.turn, to: cards.indices.map(Double.init))
+    ///     .wraps(\.turn, every: Double(cards.count))
+    ///
+    /// - Parameters:
+    ///   - degreesPerUnit: how far the fingers turn for one unit of the axis, in degrees; above nought.
+    ///   - throwing: how the axis goes on once let go; a light friction unless said.
+    /// - Returns: the input.
+    public static func rotation(
+        degreesPerUnit: Double, throwing: Motion = .eased(.milliseconds(400), .cubicOut)
+    ) -> LayoutInput {
+        let degrees = degreesPerUnit.isFinite && degreesPerUnit > 0 ? degreesPerUnit : 360
+        return LayoutInput(gesture: .rotation(degreesPerUnit: degrees), throwing: throwing)
     }
 
     /// The travel `pointsPerUnit` says: so many points, one at least, or the view in front's.

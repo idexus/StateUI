@@ -32,11 +32,23 @@ final class WebPressTests: XCTestCase {
         var press = WebPress()
         _ = press.down(1, at: Point(x: 180, y: 200), kind: 2, origin: corner, size: size)
         _ = press.moved(1, to: Point(x: 160, y: 200), origin: corner, size: size)
-        XCTAssertEqual(press.down(2, at: Point(x: 240, y: 200), kind: 2, origin: corner, size: size),
-                       [.drag(.cancelled, x: -20, y: 0), .pinch(.began, scale: 1, at: Point(x: 0.5, y: 0.5))])
+        XCTAssertEqual(press.down(2, at: Point(x: 240, y: 200), kind: 2, origin: corner, size: size), [
+            .drag(.cancelled, x: -20, y: 0), .pinch(.began, scale: 1, at: Point(x: 0.5, y: 0.5)),
+            .rotation(.began, degrees: 0),
+        ])
         XCTAssertEqual(press.moved(2, to: Point(x: 320, y: 200), origin: corner, size: size),
-                       [.pinch(.changed, scale: 2, at: Point(x: 0.7, y: 0.5))])
+                       [.pinch(.changed, scale: 2, at: Point(x: 0.7, y: 0.5)), .rotation(.changed, degrees: 0)])
         XCTAssertEqual(press.up(2, letGo: true, origin: corner, size: size),
-                       [.pinch(.ended, scale: 1, at: Point(x: 0.7, y: 0.5))])
+                       [.pinch(.ended, scale: 1, at: Point(x: 0.7, y: 0.5)), .rotation(.ended, degrees: 0)])
+    }
+
+    /// Two fingers turning the line between them turn the view: a quarter turn clockwise, the fingers as far apart.
+    func testTwoFingersTurning() {
+        var press = WebPress()
+        _ = press.down(1, at: Point(x: 200, y: 200), kind: 2, origin: corner, size: size)
+        _ = press.down(2, at: Point(x: 300, y: 200), kind: 2, origin: corner, size: size)
+
+        XCTAssertEqual(press.moved(2, to: Point(x: 200, y: 300), origin: corner, size: size).last,
+                       .rotation(.changed, degrees: 90))
     }
 }

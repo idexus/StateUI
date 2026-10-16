@@ -41,6 +41,10 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     private boolean pinch;
     private boolean pointer;
 
+    /** Whether the element is a layout two fingers turn, and whether two fingers stand on it now. */
+    private boolean rotation;
+    private boolean turning;
+
     /**
      * Whether the element is a layout a hand moves: a finger dragged over it, whose first move past the slop the
      * Swift host claims or leaves, and a wheel. Its last report's place on the screen, and its speed.
@@ -81,12 +85,14 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     }
 
     /** What the element listens for; none is false everywhere. */
-    void configure(boolean countsTaps, boolean drags, boolean pinch, boolean pointer, boolean hand) {
+    void configure(
+            boolean countsTaps, boolean drags, boolean pinch, boolean pointer, boolean hand, boolean rotation) {
         this.countsTaps = countsTaps;
         this.drags = drags;
         this.pinch = pinch;
         this.pointer = pointer;
         this.hand = hand;
+        this.rotation = rotation;
     }
 
     /**
@@ -96,6 +102,7 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     boolean onTouch(MotionEvent event) {
         if (!wanted()) return false;
         if (pinch) scale.onTouchEvent(event);
+        if (rotation) fingers(event);
 
         float x = event.getRawX() / density;
         float y = event.getRawY() / density;
@@ -145,12 +152,37 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
 
     /** Whether the element listens for any of the user's input. */
     boolean wanted() {
-        return countsTaps || drags || pinch || pointer || hand;
+        return countsTaps || drags || pinch || pointer || hand || rotation;
     }
 
-    /** Whether a drag, a pinch or the hand under way takes the rest of the touch. */
+    /** Whether a drag, a pinch, two fingers or the hand under way takes the rest of the touch. */
     boolean taking() {
-        return dragging || pinching || handTaking;
+        return dragging || pinching || turning || handTaking;
+    }
+
+    /**
+     * Two fingers on a layout they turn: told where each stands as the second goes down, as they move and as one
+     * lifts - the Swift host reads the turn between them.
+     */
+    private void fingers(MotionEvent event) {
+        int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_CANCEL) {
+            if (turning) StateUIHost.fingers(view, CANCELLED, 0, 0, 0, 0);
+            turning = false;
+            return;
+        }
+        if (event.getPointerCount() < 2) return;
+        boolean lifting = action == MotionEvent.ACTION_POINTER_UP && event.getPointerCount() == 2;
+        int phase = !turning ? STARTED : lifting ? COMPLETED : RUNNING;
+        if (!turning && action != MotionEvent.ACTION_POINTER_DOWN && action != MotionEvent.ACTION_MOVE) return;
+        turning = !lifting;
+        if (phase == STARTED) {
+            ViewParent parent = host.getParent();
+            if (parent != null) parent.requestDisallowInterceptTouchEvent(true);
+        }
+        StateUIHost.fingers(
+                view, phase, event.getX(0) / density, event.getY(0) / density, event.getX(1) / density,
+                event.getY(1) / density);
     }
 
     /**

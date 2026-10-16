@@ -1,4 +1,4 @@
-# revision 7.1
+# revision 8.1
 LayoutEngine: ✅
 LayoutEngine.frameChanged: ✅
 LayoutEngine.handAxis: ✓ sweep on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
@@ -6,4 +6,7 @@ LayoutEngine.handMoved: ✓ sweep on LayoutEngine: handed to the host's recogniz
 LayoutEngine.handStepped: ✓ notch on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
 LayoutEngine.itemDrag: ✓ pressDown on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
 LayoutEngine.itemMoved: ✓ pressDown on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
+LayoutEngine.magnifies: ✓ pinch on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
 LayoutEngine.phase: ✅
+LayoutEngine.pinchMoved: ✓ pinch on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
+LayoutEngine.rotates: ✓ rotate on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent

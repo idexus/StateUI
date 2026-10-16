@@ -94,6 +94,9 @@ class AndroidView {
     /// The press the view heard, on its way to a drag by the host layer's rule.
     var press = DragRecognition(distance: .radius(0))
 
+    /// Two fingers over a layout they turn, read as the turn between them.
+    var fingers = TwoFingers()
+
     /// What the view offers and takes of a drag between views, as last told to its drag listener.
     var offered = DragAndDrop.none
 
