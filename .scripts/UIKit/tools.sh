@@ -77,6 +77,7 @@ uikit_bundle () {
   plutil -insert UIDeviceFamily.0 -integer 1 "$plist"
   plutil -insert UIDeviceFamily.1 -integer 2 "$plist"
   plutil -insert UILaunchScreen -dictionary "$plist"
+  plutil -insert CADisableMinimumFrameDurationOnPhone -bool true "$plist"
   plutil -insert UIApplicationSceneManifest -dictionary "$plist"
   plutil -insert UIApplicationSceneManifest.UIApplicationSupportsMultipleScenes -bool true "$plist"
   plutil -insert UISupportedInterfaceOrientations -array "$plist"

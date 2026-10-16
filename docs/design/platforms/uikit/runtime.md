@@ -18,6 +18,17 @@ application's delegate starts the runtime as the application launches, which
 tells what the device and the application are; each scene iOS connects tells
 what the display is.
 
+## The frame clock
+
+The display link asks the display's full rate, up to 120 frames a second
+(`UIKitFrameClock.fullRate`), and only while something holds the clock - a
+motion, a hand, an animation. A ProMotion iPad gives it; an iPhone gives it
+only to an application whose `Info.plist` says
+`CADisableMinimumFrameDurationOnPhone`, and otherwise draws a display link's
+motion at sixty while its own scrolling runs at 120 - a layout moved by the
+hand then moves half as often as the finger. The bundle every UIKit head is built into
+says it (`.scripts/UIKit/tools.sh`), so no application has to.
+
 ## Scenes
 
 Each StateUI window stands in a window scene of UIKit's own: a window of the
