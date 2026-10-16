@@ -34,10 +34,12 @@ let package = Package(
         .macOS(.v26),
     ],
     products: [
+        // StateUIFoundation travels in the same library: the basics StateUI and an
+        // application build on, one copy in a process.
         .library(
             name: "StateUI",
             type: linkage,
-            targets: ["StateUI"]
+            targets: ["StateUI", "StateUIFoundation"]
         ),
     ],
     // NO DEPENDENCIES, and it is worth a sentence: everything here is this
@@ -63,13 +65,27 @@ let package = Package(
         // can reach. It becomes the default in Swift 7.
         .target(
             name: "StateUI",
+            dependencies: ["StateUIFoundation"],
             path: "lib/StateUI/Core/Sources",
+            swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+        ),
+        // The basics beneath StateUI that need no interface: the platform's C
+        // library behind one import, and what is built on it.
+        .target(
+            name: "StateUIFoundation",
+            path: "lib/StateUI/Foundation/Sources",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),
         .testTarget(
             name: "StateUITests",
             dependencies: ["StateUI"],
             path: "lib/StateUI/Core/Tests",
+            swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+        ),
+        .testTarget(
+            name: "StateUIFoundationTests",
+            dependencies: ["StateUIFoundation"],
+            path: "lib/StateUI/Foundation/Tests",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),
     ]

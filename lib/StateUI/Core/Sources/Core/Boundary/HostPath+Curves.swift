@@ -2,17 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The platform's C maths library, for an arc's angles.
-#if canImport(Darwin)
-import Darwin
-#elseif canImport(Android)
-import Android
-#elseif canImport(Glibc)
-import Glibc
-#elseif canImport(CRT)
-import CRT
-#elseif canImport(WASILibc)
-import WASILibc
-#endif
+import StateUIFoundation
 
 /// One command of a path drawn without arcs: what a toolkit with no SVG arc draws.
 @_spi(Host) public enum HostCurveCommand: Equatable, Sendable {

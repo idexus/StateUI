@@ -10,34 +10,13 @@ import Synchronization
 #if !os(WASI)
 import Dispatch
 #endif
-#if canImport(Darwin)
-import Darwin
-#elseif canImport(Android)
-import Android
-#elseif canImport(Glibc)
-import Glibc
-#elseif canImport(WinSDK)
-import WinSDK
-#elseif canImport(WASILibc)
-import WASILibc
-#endif
+import StateUIFoundation
 #if !canImport(Darwin)
 @_spi(ExperimentalCustomExecutors) import _Concurrency
 #endif
 #if os(WASI)
 @_spi(ExperimentalScheduling) import _Concurrency
 #endif
-
-/// Which thread this is, as a number to compare - spelled per platform.
-private func currentThread() -> UInt64 {
-    #if canImport(WinSDK)
-    UInt64(GetCurrentThreadId())
-    #elseif os(WASI)
-    0
-    #else
-    UInt64(UInt(bitPattern: pthread_self().hashValue))
-    #endif
-}
 
 /// The executor whose jobs the host runs on its UI thread, and the doorbell. What
 /// its threads share stands inside its one lock.
@@ -98,7 +77,7 @@ final class UIThreadExecutor: SerialExecutor, Sendable {
         /// The thread the last drain ran on - the UI thread, and this executor's
         /// isolation.
         /// Design: docs/design/core/concurrency.md#isolation-checks
-        var uiThread = currentThread()
+        var uiThread = currentThreadNumber()
     }
 
     private let queue = Mutex(Queue())
@@ -162,7 +141,7 @@ final class UIThreadExecutor: SerialExecutor, Sendable {
     @discardableResult
     func drain() -> Int {
         // Jobs run on this thread, so this is where MainActor stands.
-        let thread = currentThread()
+        let thread = currentThreadNumber()
         let entered: Bool = queue.withLock { queue in
             guard !queue.draining else { return false }
             queue.draining = true
@@ -214,7 +193,7 @@ final class UIThreadExecutor: SerialExecutor, Sendable {
     /// Whether the calling thread is this executor's isolation - the UI thread. The
     /// runtime's default answer would stop the process.
     func isIsolatingCurrentContext() -> Bool? {
-        let thread = currentThread()
+        let thread = currentThreadNumber()
 
         return queue.withLock { thread == $0.uiThread }
     }

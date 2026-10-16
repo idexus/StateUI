@@ -3,17 +3,7 @@
 
 @_spi(Host) import StateUI
 
-#if canImport(Darwin)
-import Darwin
-#elseif canImport(Android)
-import Android
-#elseif canImport(Glibc)
-import Glibc
-#elseif canImport(CRT)
-import CRT
-#elseif canImport(WASILibc)
-import WASILibc
-#endif
+import StateUIFoundation
 
 /// What a host says for whoever reads its log rather than its screen, each line naming the host.
 /// Design: docs/design/host/runtime.md#the-log

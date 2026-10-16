@@ -3,17 +3,7 @@
 
 // The platform's C maths library, for `sin`, `cos` and `atan2`, not Foundation.
 // Design: docs/design/types/transforms.md#the-arithmetic-is-in-the-core
-#if canImport(Darwin)
-import Darwin
-#elseif canImport(Android)
-import Android
-#elseif canImport(Glibc)
-import Glibc
-#elseif canImport(CRT)
-import CRT
-#elseif canImport(WASILibc)
-import WASILibc
-#endif
+import StateUIFoundation
 
 /// How far a view stands from where its arithmetic puts it, channel by channel: what a change of a layout's
 /// description at the current phase leaves, laid over the view's pose and decaying to nothing under the layout's

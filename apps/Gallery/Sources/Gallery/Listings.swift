@@ -4997,17 +4997,7 @@ enum Listings {
         """#,
         "LayoutEngineSample": #"""
         // Sources/Samples/Layout/LayoutEngineSample.swift
-        #if canImport(Darwin)
-        import Darwin
-        #elseif canImport(Android)
-        import Android
-        #elseif canImport(Glibc)
-        import Glibc
-        #elseif canImport(CRT)
-        import CRT
-        #elseif canImport(WASILibc)
-        import WASILibc
-        #endif
+        import StateUIFoundation
 
         /// The cards: what each picture is called and which file it is.
         static let cards: [Card] = [

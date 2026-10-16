@@ -3,17 +3,7 @@
 
 @_spi(Host) import StateUI
 
-#if canImport(Darwin)
-import Darwin
-#elseif canImport(Android)
-import Android
-#elseif canImport(Glibc)
-import Glibc
-#elseif canImport(CRT)
-import CRT
-#elseif canImport(WASILibc)
-import WASILibc
-#endif
+import StateUIFoundation
 
 /// The canvas's arcs as curves, the same on every host drawing in Swift.
 /// Design: docs/design/types/drawing.md#settings-hold-until-changed

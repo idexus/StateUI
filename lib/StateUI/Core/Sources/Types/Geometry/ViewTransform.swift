@@ -3,17 +3,7 @@
 
 // The platform's C maths library, for `sin`, `cos` and `atan2`, not Foundation.
 // Design: docs/design/types/transforms.md#the-arithmetic-is-in-the-core
-#if canImport(Darwin)
-import Darwin
-#elseif canImport(Android)
-import Android
-#elseif canImport(Glibc)
-import Glibc
-#elseif canImport(CRT)
-import CRT
-#elseif canImport(WASILibc)
-import WASILibc
-#endif
+import StateUIFoundation
 
 /// How a view is moved, turned and sized: one transform about the view's
 /// centre, its parts applied in the order written.

@@ -2,17 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The platform's C maths library, for the spring's `exp`, `sin` and `cos`.
-#if canImport(Darwin)
-import Darwin
-#elseif canImport(Android)
-import Android
-#elseif canImport(Glibc)
-import Glibc
-#elseif canImport(CRT)
-import CRT
-#elseif canImport(WASILibc)
-import WASILibc
-#endif
+import StateUIFoundation
 
 // The two motion laws as numbers, in closed form in the time since an animation
 // began. Every runtime animates with these; `MotionLawTests` holds them to

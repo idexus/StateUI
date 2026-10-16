@@ -2,17 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
-#if canImport(Darwin)
-import Darwin
-#elseif canImport(Android)
-import Android
-#elseif canImport(Glibc)
-import Glibc
-#elseif canImport(CRT)
-import CRT
-#elseif canImport(WASILibc)
-import WASILibc
-#endif
+import StateUIFoundation
 
 extension HostDrawingTransform {
     /// This transform drawn under `placed`, the transform of the layout placing the view: its move turned and scaled
