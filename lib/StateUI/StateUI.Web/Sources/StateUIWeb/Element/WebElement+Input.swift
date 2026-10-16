@@ -106,6 +106,7 @@ extension WebElement {
         view.style("touch-action", element.handAxis == .vertical ? "pan-x" : "pan-y")
         view.style("user-select", "none")
         view.style("-webkit-user-select", "none")
+        view.style("-webkit-touch-callout", "none")
         view.listen("pointerdown") { [weak self] in
             let pointer = WebRelay.eventPointer
             guard let self, pointer.kind != 0 || pointer.button == 0 else { return }
@@ -114,7 +115,7 @@ extension WebElement {
             handLast = pointer.at
             handPending = true
             handTaking = false
-            hand(.began, moved: Point(x: 0, y: 0))
+            hand(.began, moved: Point(x: 0, y: 0), point: WebRelay.eventPoint)
         }
         view.listen("pointermove") { [weak self, weak view] in
             let pointer = WebRelay.eventPointer
@@ -140,10 +141,17 @@ extension WebElement {
         view.listen("touchmove") { [weak self] in
             if self?.handTaking == true { WebRelay.takeEvent() }
         }
+        // And from the browser's own drag - of a picture under it, past a few points - which takes the pointer away
+        // and never tells its lift.
+        view.listen("dragstart") { [weak self] in
+            guard let self else { return }
+            if handTaking || element.holdsItem { WebRelay.takeEvent() }
+        }
         for (event, letGo) in [("pointerup", true), ("pointercancel", false)] {
             view.listen(event) { [weak self] in
                 guard let self, WebRelay.eventPointer.id == handPointer else { return }
-                if handTaking { hand(letGo ? .ended : .cancelled, moved: Point(x: 0, y: 0)) }
+                // Told whatever the hand moved: a press that held a view and never moved lets it go.
+                hand(letGo ? .ended : .cancelled, moved: Point(x: 0, y: 0))
                 handPointer = nil
                 handPending = false
                 handTaking = false
@@ -169,10 +177,13 @@ extension WebElement {
     /// The hand at `phase`, having moved what is under it by `moved` since the last, at `time` - the event's own,
     /// where one is heard: the host's entry. Whether the layout took it.
     @discardableResult
-    func hand(_ phase: GesturePhase, moved: Point, speed: Point? = nil, at time: Double? = WebRelay.eventTime) -> Bool {
+    func hand(
+        _ phase: GesturePhase, moved: Point, speed: Point? = nil, at time: Double? = WebRelay.eventTime,
+        point: Point? = nil
+    ) -> Bool {
         guard let host, element.hearing.contains(.hand) else { return false }
         let told = time.flatMap { $0 > 0 ? $0 : nil }
-        return element.hear(.hand(phase, moved: moved, speed: speed, at: told), in: host.runtime)
+        return element.hear(.hand(phase, moved: moved, speed: speed, at: told, point: point), in: host.runtime)
     }
 
     /// How far a pointer moves before it is a drag, in CSS pixels.

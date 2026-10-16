@@ -57,6 +57,17 @@ extension GTKDriver {
         case .leave:
             guard let motion = controllers(.pointer).first else { return false }
             GTKTestHost.emit(motion, "leave")
+        // A press over a layout goes down, moves and lifts through the hand's own drag, as GTK emits it.
+        case .pressDown(let point) where view.hearing.contains(.hand):
+            guard let drag = controllers(.hand).first else { return false }
+            pressed.at = point
+            GTKTestHost.emit(drag, "drag-begin", [point.x, point.y])
+        case .drag(let point) where view.hearing.contains(.hand):
+            guard let drag = controllers(.hand).first else { return false }
+            GTKTestHost.emit(drag, "drag-update", [point.x - pressed.at.x, point.y - pressed.at.y])
+        case .lift(let point) where view.hearing.contains(.hand):
+            guard let drag = controllers(.hand).first else { return false }
+            GTKTestHost.emit(drag, "drag-end", [point.x - pressed.at.x, point.y - pressed.at.y])
         case .pressDown(let point):
             guard let press = controllers(.pointer).last else { return view is GTKButtonView }
             pressed.at = point

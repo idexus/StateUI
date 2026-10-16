@@ -17,7 +17,7 @@ extension MountedElement {
             || channel(.panXChannel) != nil || channel(.panYChannel) != nil
         if drags, (number(.panTouchCount) ?? 1) == 1 { hearing.insert(.drags) }
         if handler(.pinchUpdated) != nil { hearing.insert(.pinches) }
-        if handler(.handMoved) != nil { hearing.insert(.hand) }
+        if handler(.handMoved) != nil || handler(.itemMoved) != nil { hearing.insert(.hand) }
         return hearing
     }
 
@@ -41,12 +41,15 @@ extension MountedElement {
             dragged(phase, x: x, y: y, in: runtime)
         case .pinch(let phase, let scale, let at):
             send(.pinchUpdated, [.enumeration(phase.rawValue), .number(scale), .numbers([at.x, at.y])], in: runtime)
-        case .hand(let phase, let moved, let speed, let time):
+        case .hand(let phase, let moved, let speed, let time, let point):
             // When the platform says the hand moved, where it says: input that waited for a busy thread comes in a
             // burst its arrival would read as a throw.
+            let now = runtime.clock.now()
             let heard = handReading.hand(
-                phase, moved: moved, speed: speed, at: time ?? runtime.clock.now(), along: handAxis)
+                phase, moved: moved, speed: speed, at: time ?? now, along: handAxis, point: point, items: itemDrag,
+                now: now)
             gather(heard.reports, in: runtime)
+            if handReading.wantsFrames { runtime.handPace.opened(self) }
             return heard.taken
         case .wheel(let moved):
             let heard = handReading.wheel(moved, at: runtime.clock.now(), along: handAxis)
@@ -81,6 +84,14 @@ extension MountedElement {
         value(.handAxis)?.enumeration.flatMap(LayoutInput.Axis.init(rawValue:))
     }
 
+    /// Whether the hand over the layout this element is holds one of its views by itself.
+    public var holdsItem: Bool { handReading.holdsItem }
+
+    /// How the hand takes one view of the layout this element is by itself, where it does.
+    public var itemDrag: ItemDragStart? {
+        value(.itemDrag)?.enumeration.flatMap(ItemDragStart.init(rawValue:))
+    }
+
     /// A frame at `now` found the element's wheel open or its hand's reports waiting: the wheel let go where it has
     /// stood still long enough, then what the hand said since the last frame said at once.
     func paced(now: Double, in runtime: HostRuntime) {
@@ -97,9 +108,10 @@ extension MountedElement {
         guard !reports.isEmpty else { return }
 
         for report in reports {
-            if report.phase == .changed, let last = handOutbox.last, last.phase == .changed {
+            if report.phase == .changed, let last = handOutbox.last, last.phase == .changed, last.item == report.item {
                 handOutbox[handOutbox.count - 1] = HandReading.Report(
-                    .changed, moved: Point(last.moved.x + report.moved.x, last.moved.y + report.moved.y))
+                    .changed, moved: Point(last.moved.x + report.moved.x, last.moved.y + report.moved.y),
+                    item: report.item, at: report.at, still: max(last.still, report.still))
             } else {
                 handOutbox.append(report)
             }
@@ -107,9 +119,18 @@ extension MountedElement {
         runtime.handPace.opened(self)
     }
 
-    /// The hand's reports, as the element's `handMoved`.
+    /// The hand's reports, as the element's `handMoved` - or `itemMoved`, the hand holding one view.
     private func said(_ reports: [HandReading.Report], in runtime: HostRuntime) {
         for report in reports {
+            if report.item {
+                send(.itemMoved, [
+                    .enumeration(report.phase.rawValue),
+                    .numbers([report.at.x, report.at.y]),
+                    .numbers([report.speed.x, report.speed.y]),
+                    .number(report.still),
+                ], in: runtime)
+                continue
+            }
             send(.handMoved, [
                 .enumeration(report.phase.rawValue),
                 .numbers([report.moved.x, report.moved.y]),

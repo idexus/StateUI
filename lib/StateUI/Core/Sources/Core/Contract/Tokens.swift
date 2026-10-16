@@ -172,6 +172,7 @@ extension NodeType {
     static let showsUserLocation = MapContract.showsUserLocation.token
     static let isSpellCheckEnabled = TextInputContract.isSpellCheckEnabled.token
     static let isTextPredictionEnabled = TextInputContract.isTextPredictionEnabled.token
+    static let itemDrag = LayoutEngineContract.itemDrag.token
     static let showsTraffic = MapContract.showsTraffic.token
     static let isVisible = VisualElementContract.isVisible.token
     static let isZoomEnabled = MapContract.isZoomEnabled.token
@@ -299,6 +300,7 @@ extension NodeType {
     static let handMoved = LayoutEngineContract.handMoved.token
     static let handStepped = LayoutEngineContract.handStepped.token
     static let isFocusedChanged = FocusElementContract.isFocusedChanged.token
+    static let itemMoved = LayoutEngineContract.itemMoved.token
     static let keyPressed = KeyboardElementContract.keyPressed.token
     static let showsSidebarChanged = SplitViewContract.showsSidebarChanged.token
     static let mapClicked = MapContract.mapClicked.token

@@ -223,10 +223,10 @@ final class GTKListening {
     /// Design: docs/design/platforms/gtk/input.md#the-hand-over-a-layout
     private func makeHand() -> [OpaquePointer] {
         let drag = gtk_gesture_drag_new()!
-        connectSignal(UnsafeMutableRawPointer(drag), "drag-begin", number: number) { (gesture, _: Double, _: Double, data) in
+        connectSignal(UnsafeMutableRawPointer(drag), "drag-begin", number: number) { (gesture, x: Double, y: Double, data) in
             let number = viewNumber(data)
             nonisolated(unsafe) let gesture = gesture
-            MainActor.assumeIsolated { GTKListening.find(number)?.handBegan(OpaquePointer(gesture)) }
+            MainActor.assumeIsolated { GTKListening.find(number)?.handBegan(OpaquePointer(gesture), at: Point(x: x, y: y)) }
         }
         connectSignal(UnsafeMutableRawPointer(drag), "drag-update", number: number) { gesture, x, y, data in
             let number = viewNumber(data)
@@ -267,17 +267,20 @@ final class GTKListening {
     }
 
     /// The hand at `phase`, having moved what is under it by `moved`, lifting at `speed` where told, at `time` on the
-    /// events' clock: the host's entry. Whether the layout took it.
+    /// events' clock, a press going down at `point` of the view: the host's entry. Whether the layout took it.
     @discardableResult
-    func hand(_ phase: GesturePhase, moved: Point, speed: Point? = nil, at time: Double? = nil) -> Bool {
-        tell(.hand(phase, moved: moved, speed: speed, at: time))
+    func hand(
+        _ phase: GesturePhase, moved: Point, speed: Point? = nil, at time: Double? = nil, point: Point? = nil
+    ) -> Bool {
+        tell(.hand(phase, moved: moved, speed: speed, at: time, point: point))
     }
 
-    private func handBegan(_ gesture: OpaquePointer?) {
+    /// A press going down at `point` of the view: told where at once - a press standing still may hold a view.
+    private func handBegan(_ gesture: OpaquePointer?, at point: Point) {
         handPending = true
         handTaking = false
         handLast = Point(x: 0, y: 0)
-        hand(.began, moved: .zero, at: Self.time(of: gesture))
+        hand(.began, moved: .zero, at: Self.time(of: gesture), point: point)
     }
 
     /// The drag moved: past the threshold its first move says whose it is - claimed for the layout, so no view
@@ -296,12 +299,12 @@ final class GTKListening {
         }
     }
 
+    /// The press let go or taken away: told whatever it moved - a press that held a view and never moved lets it go.
     private func handEnded(_ gesture: OpaquePointer?) {
         defer {
             handPending = false
             handTaking = false
         }
-        guard handTaking else { return }
 
         var letGo = true
         if let gesture, let last = gtk_gesture_get_last_event(gesture, gtk_gesture_single_get_current_sequence(gesture)) {

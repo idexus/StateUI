@@ -49,6 +49,9 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     /// Where a swiping hand took the run, and the unit it moves it by, while it holds it.
     @State private var grip: LayoutGrip?
 
+    /// The view the hand holds by itself, while it does, and on its way out once dismissed.
+    @State private var item: LayoutItemHand?
+
     /// Where every child stands, written by the engine on the host's frames.
     @State private var placements = PlacedRun()
 
@@ -88,6 +91,12 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
 
     /// What runs when the user taps a view, through its gate.
     private var tapped: ValueHandler<Items.Element>?
+
+    /// How the hand takes one view by itself, what it is told as it moves it, and which way letting it go far enough
+    /// dismisses it.
+    private var itemStart: ItemDragStart?
+    private var dragged: (@MainActor (ItemDrag<Items.Element>) throws -> Void)?
+    private var dismissal: LayoutDismissal<Items.Element>?
 
     /// How the run travels to where the program or the hand's throw sends it.
     private var law = Motion.inherited
@@ -314,6 +323,53 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         return copy
     }
 
+    /// The hand takes one view by itself, rather than moving the run, when it begins as `start` says: the view drawn
+    /// on top under the press follows the hand over the others, and let go goes back to its place under the layout's
+    /// motion. A hand that begins any other way moves the run.
+    ///
+    ///     .itemDrag(begins: .held)
+    ///
+    /// - Parameter start: a first move across the layout's axis, or a press standing still a long press's time.
+    /// - Returns: the layout, its views taken by the hand.
+    public func itemDrag(begins start: ItemDragStart) -> Self {
+        var copy = self
+        copy.itemStart = start
+        return copy
+    }
+
+    /// Runs as the hand takes a view by itself, each time it moves it, and each time it has stood still a long
+    /// press's time more: the item, where the hand is in the room, and how long it has stood still - an order changed
+    /// as the hand crosses a slot moves the others, the held view staying under the hand.
+    ///
+    ///     .onItemDragged { drag in move(drag.item, to: slot(at: drag.at, in: drag.room)) }
+    ///
+    /// - Parameter handler: what to run, given the drag.
+    /// - Returns: the layout, telling the drag.
+    public func onItemDragged(_ handler: @escaping @MainActor (ItemDrag<Items.Element>) throws -> Void) -> Self {
+        var copy = self
+        copy.dragged = handler
+        return copy
+    }
+
+    /// A view the hand lets go of past `beyond` points `directions` from where it took it - or thrown far enough
+    /// that way - flies on out of the room, and `handler` runs with its item once it has left: the application
+    /// removes the item then. Let go short of it, the view goes back to its place.
+    ///
+    ///     .onItemDismissed(.up, beyond: 120) { card in cards.removeAll { $0 == card } }
+    ///
+    /// - Parameters:
+    ///   - directions: the ways a view is dismissed.
+    ///   - beyond: how far the hand takes it, in device units, before letting go dismisses it.
+    ///   - handler: what to run, given the item, once its view has left the room.
+    /// - Returns: the layout, dismissing a view let go far enough.
+    public func onItemDismissed(
+        _ directions: SwipeDirection, beyond: Double, _ handler: @escaping @MainActor (Items.Element) throws -> Void
+    ) -> Self {
+        var copy = self
+        copy.dismissal = LayoutDismissal(directions: directions, beyond: beyond, handler: handler)
+        return copy
+    }
+
     /// The same layout telling `handler` each target the run names, as it names it: what a composed control
     /// keeps a value of its own by - `GalleryView`'s position.
     func onNamed(_ handler: @escaping (Phase) -> Void) -> Self {
@@ -350,12 +406,18 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
                 }
                 element.addHandler(LayoutEngineContract.handStepped) { notches in run.step(notches) }
             }
+            element.describe(LayoutEngineContract.itemDrag, run.itemStart)
+            if run.itemStart != nil {
+                element.addHandler(LayoutEngineContract.itemMoved) { phase, at, speed, still in
+                    try run.item(phase, at: at, speed: speed, still: still)
+                }
+            }
         }
         .setValue(ViewContract.area.token, on: $placements, mode: .out, kind: .placement)
         .setValue(LayoutEngineContract.phase.token, on: run.phase, mode: .inOut, kind: .property)
         .motion(law)
         .frame($room)
-        .engine([$room.followed, run.phase.followed, $held.followed, $flung.followed] + followed,
+        .engine([$room.followed, run.phase.followed, $held.followed, $flung.followed, $item.followed] + followed,
                 sync: .display, priority: 0) { cycle in
             run.place(at: cycle.now, reducesMotion: cycle.reducesMotion)
         }
@@ -414,10 +476,13 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
             mask: mask,
             tapped: tapped,
             named: named,
+            itemStart: itemStart,
+            dragged: dragged,
+            dismissal: dismissal,
             phase: pinned ?? $ownPhase,
             states: States(
                 held: _held, flung: _flung, placements: _placements, room: _room, shown: _shown, from: _from,
-                grip: _grip),
+                grip: _grip, item: _item),
             axis: axis,
             stops: stops,
             period: axis.flatMap { periods[$0] },
@@ -440,6 +505,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         let shown: State<LayoutShown<Phase>>
         let from: State<Phase?>
         let grip: State<LayoutGrip?>
+        let item: State<LayoutItemHand?>
     }
 }
 

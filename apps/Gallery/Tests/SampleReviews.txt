@@ -19,7 +19,7 @@ ButtonMenuSample.swift 7af63f7efe0c91b9
 ButtonRoleSample.swift 361912c0899f9d4d
 ButtonSample.swift 4b6ac2242b903c97
 CanvasSample.swift 52db70adead39b9b
-ChangingDeckSample.swift 85d56430d0d75b1b
+ChangingDeckSample.swift 7c0ca6e01aaf2e3c
 CheckBoxSample.swift a6e9da46d0ccfb97
 ChoosingItemsSample.swift 0bac861b74933e30
 ComplaintsSample.swift ccb58f7f38490263
@@ -44,7 +44,7 @@ GalleryViewSample.swift 7ed45516ec7bb538
 GateSample.swift 0eb1cb01a376dac3
 GeometryReaderSample.swift 4e6226814b27d935
 GridSample.swift 6122771c218cff01
-HomeScreenSample.swift 9eb06739cf315941
+HomeScreenSample.swift fd3566a1ac25ac89
 HostTimeSample.swift 869b30037733de10
 IconButtonSample.swift 0af5b21d299babec
 IconSample.swift 98f855aecd97b045

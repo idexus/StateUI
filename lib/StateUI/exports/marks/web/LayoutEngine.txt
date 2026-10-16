@@ -1,7 +1,9 @@
-# revision 6.1
+# revision 7.1
 LayoutEngine: ✅
 LayoutEngine.frameChanged: ✅
 LayoutEngine.handAxis: ✓ sweep on LayoutEngine: the hand handed to the host's entry with its speed, no pointer sent
 LayoutEngine.handMoved: ✓ sweep on LayoutEngine: the hand handed to the host's entry with its speed, no pointer sent
 LayoutEngine.handStepped: ✓ notch on LayoutEngine: a wheel's notches handed to the host's entry, no wheel sent
+LayoutEngine.itemDrag: ✅
+LayoutEngine.itemMoved: ✅
 LayoutEngine.phase: ✅

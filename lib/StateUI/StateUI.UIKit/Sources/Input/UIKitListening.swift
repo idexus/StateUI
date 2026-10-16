@@ -19,12 +19,14 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     /// What hears what the view heard, answering whether the element took it.
     var onHeard: ((HeardInput) -> Bool)?
 
-    /// Which way the hand moves the layout the view is, where one does.
+    /// Which way the hand moves the layout the view is, where one does; how the hand takes one of its views by
+    /// itself, and whether it holds one.
     var handAxis: (() -> LayoutInput.Axis?)?
+    var handItems: (() -> (start: ItemDragStart?, holding: Bool))?
 
     /// The hand over a layout, and where it had come to at its last report; a wheel turned notch by notch over it,
     /// and where it had come to.
-    private var handPan: UIPanGestureRecognizer?
+    private var handPan: UIKitHandPan?
     private var handLast = CGPoint.zero
     private var handWheel: UIPanGestureRecognizer?
     private var wheelLast = CGPoint.zero
@@ -82,8 +84,10 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
         case .hand:
             // A finger and a trackpad's two fingers: one pan; a wheel turned notch by notch, which touches nothing:
             // another, each of its steps a notch.
-            let pan = UIPanGestureRecognizer(target: self, action: #selector(handMoved(_:)))
+            let pan = UIKitHandPan(target: self, action: #selector(handMoved(_:)))
             pan.allowedScrollTypesMask = .continuous
+            pan.onPress = { [weak self] at in self?.hand(.began, moved: .zero, point: at) }
+            pan.onLift = { [weak self] cancelled in self?.hand(cancelled ? .cancelled : .ended, moved: .zero) }
             handPan = pan
             let wheel = UIPanGestureRecognizer(target: self, action: #selector(handNotched(_:)))
             wheel.allowedScrollTypesMask = .discrete
@@ -157,7 +161,9 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
         let total = recognizer.translation(in: view)
         switch recognizer.state {
         case .began:
-            hand(.began, moved: .zero)
+            // A finger told its press as it went down; a trackpad's fingers touch nothing, and begin here.
+            if handPan?.pressing != true { hand(.began, moved: .zero) }
+            handPan?.dragging = true
             hand(.changed, moved: Point(x: total.x, y: total.y))
             handLast = total
         case .changed:
@@ -194,20 +200,33 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     /// The hand at `phase`, having moved what is under it by `moved`, lifting at `speed`: the host's entry. Whether
     /// the layout took it.
     @discardableResult
-    func hand(_ phase: GesturePhase, moved: Point, speed: Point? = nil) -> Bool {
-        onHeard?(.hand(phase, moved: moved, speed: speed)) ?? false
+    func hand(_ phase: GesturePhase, moved: Point, speed: Point? = nil, point: Point? = nil) -> Bool {
+        onHeard?(.hand(phase, moved: moved, speed: speed, point: point)) ?? false
     }
 
-    /// The hand over a layout begins only moving along the layout's axis - its first move or, from a trackpad or a
-    /// wheel that tells none yet, its speed - by the host layer's rule.
+    /// The hand over a layout begins only where the host layer's rule takes its first move or, from a trackpad or a
+    /// wheel that tells none yet, its speed: along the layout's axis, across it where its views are taken so, any way
+    /// where it holds one.
     func gestureRecognizerShouldBegin(_ recognizer: UIGestureRecognizer) -> Bool {
         guard recognizer === handPan || recognizer === handWheel, let pan = recognizer as? UIPanGestureRecognizer
         else { return true }
-        guard let axis = handAxis?() else { return false }
 
         let moved = pan.translation(in: view)
         let first = moved == .zero ? pan.velocity(in: view) : moved
-        return HandReading.claims(Point(x: first.x, y: first.y), along: axis)
+        guard recognizer === handPan else {
+            return HandReading.takes(Point(x: first.x, y: first.y), along: handAxis?(), items: nil, holding: false)
+        }
+        return handBegins(first: Point(x: first.x, y: first.y))
+    }
+
+    /// Whether the hand over a layout begins with its first move `first`, by the host layer's rule. A move it
+    /// declines is told all the same: the pan tells nothing of the press after it, which would stand still for the
+    /// host layer and hold a view.
+    func handBegins(first: Point) -> Bool {
+        let items = handItems?()
+        let begins = HandReading.takes(first, along: handAxis?(), items: items?.start, holding: items?.holding ?? false)
+        if !begins { hand(.changed, moved: first) }
+        return begins
     }
 
     // MARK: - A pinch

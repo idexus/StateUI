@@ -30,6 +30,14 @@ public enum LayoutEngineContract: ElementContract {
     /// the hand: each a step of the run to the next target that way.
     public static let handStepped = ElementEvent<Self, Point>("handStepped", layer: .native)
 
+    /// How the hand takes one view by itself rather than moving the run, where it does: the host layer gives the
+    /// hand to the view under the press by it.
+    public static let itemDrag = ElementProperty<Self, ItemDragStart>("itemDrag", layer: .structure, travels: false)
+
+    /// The hand holding one view by itself: its phase, where it is in the element, how fast it was going as it lets
+    /// go, per second, and how long it has stood still, in milliseconds.
+    public static let itemMoved = ElementEvent<Self, (GesturePhase, Point, Point, Double)>("itemMoved", layer: .native)
+
     /// The element's own members.
-    public static let members: [any ContractMember] = [handAxis, handMoved, handStepped, phase]
+    public static let members: [any ContractMember] = [handAxis, handMoved, handStepped, itemDrag, itemMoved, phase]
 }

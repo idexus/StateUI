@@ -34,6 +34,44 @@ final class WebHandTests: XCTestCase {
         XCTAssertFalse(try kept(layout, firstMove: (4, 20), then: (6, 40)), "across: the page's")
     }
 
+    /// A HAND THE LAYOUT TOOK STARTS NO DRAG OF THE BROWSER'S OWN: a picture under it would be dragged away by the
+    /// browser past a few points - the pointer taken away from the layout, its lift never told; a hand not taken
+    /// leaves the browser's drag be.
+    func testAHandTheLayoutTookStartsNoDragOfTheBrowsersOwn() throws {
+        let host = WebRenderer.running {
+            LayoutEngine([0, 1, 2]) { Text("\($0)") } placements: { room, phase in
+                (0..<3).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, room.height)) }
+            }
+            .phase(State(wrappedValue: 0.0).projectedValue)
+            .input(.scroll(.horizontal))
+            .snapTargets([0, 1, 2])
+            .itemDrag(begins: .held)
+            .width(300)
+            .height(200)
+        }
+        let layout = "[...document.querySelectorAll('*')].find(n => n.style.touchAction === 'pan-y')"
+        host.settle { (try? WebBrowser.truth("!!\(layout)", on: 0)) == true }
+
+        func dragStarted(after moves: [(Double, Double)]) throws -> Bool {
+            try WebBrowser.truth("""
+                (() => {
+                  const node = \(layout), box = node.getBoundingClientRect();
+                  const at = (x, y) => ({ pointerId: 7, pointerType: 'mouse', button: 0, isPrimary: true,
+                    clientX: box.left + 150 + x, clientY: box.top + 100 + y, bubbles: true, cancelable: true });
+                  node.dispatchEvent(new PointerEvent('pointerdown', at(0, 0)));
+                  \(moves.map { "node.dispatchEvent(new PointerEvent('pointermove', at(\($0.0), \($0.1))));" }.joined())
+                  const drag = new Event('dragstart', { bubbles: true, cancelable: true });
+                  node.firstElementChild.dispatchEvent(drag);
+                  node.dispatchEvent(new PointerEvent('pointerup', at(0, 0)));
+                  return !drag.defaultPrevented;
+                })()
+                """, on: 0)
+        }
+
+        XCTAssertFalse(try dragStarted(after: [(-20, 2)]), "the run's hand")
+        XCTAssertTrue(try dragStarted(after: []), "no hand of the layout's yet")
+    }
+
     /// Whether the page's pan was kept from a touch pressed on `layout`, moved by `firstMove` and then `then`: the
     /// touch's moves after its first, as the browser would pan them.
     private func kept(_ layout: String, firstMove: (Double, Double), then: (Double, Double)) throws -> Bool {

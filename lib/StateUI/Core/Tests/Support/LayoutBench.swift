@@ -45,6 +45,20 @@ final class LayoutBench {
         cycle()
     }
 
+    /// The hand holding one view of the layout `tree` describes, as the host layer reports it - its phase, where it is
+    /// in the room, its speed as it lets go, per second, and how long it has stood still - and a cycle after it.
+    func item(
+        _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, at: Point, speed: Point = .zero,
+        still: Double = 0, file: StaticString = #filePath, line: UInt = #line
+    ) {
+        guard let heard = renders.renderFromScratch(tree()).first(.layoutEngine)?.events?[.itemMoved] else {
+            return XCTFail("the layout hears no hand on its views", file: file, line: line)
+        }
+
+        XCTAssertTrue(renders.fire(heard, with: MemberValues.encode(phase, at, speed, still)), file: file, line: line)
+        cycle()
+    }
+
     /// A wheel's notches over the layout `tree` describes, as a host reports them - across and down, the way they move
     /// what is under the hand - and a cycle after them.
     func step(

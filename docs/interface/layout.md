@@ -739,6 +739,51 @@ struct Boards: View {
 }
 ```
 
+The hand can also take one view by itself. `.itemDrag(begins: .held)` gives
+it the view under a press that stands still a long press's time - an icon
+lifted off a board - and `.itemDrag(begins: .across)` the view under a press
+whose first move runs across the layout's axis - a card pulled up out of a
+deck that scrolls sideways; a hand that begins any other way moves the run
+as before. The held view follows the hand over the others, and
+`.onItemDragged` is told whether the hand takes it, moves it or lets it go,
+the item, where the hand is in the room and how long it has stood still -
+each time the hand moves it, and again each long press it stands. Lift the
+view as the hand takes it - `.scale(lifted == item ? 1.18 : 1)` with a
+`.motion(_:_:)` of its own on `.transform` - so the hand knows it has it. Changing the order there makes room: the others travel to
+their new places while the held view stays under the hand. Let go, it
+settles into its place under `.motion(_:)`:
+
+```swift
+struct Board: View {
+    @State private var names = ["Mail", "Clock", "Notes", "Music"]
+
+    var body: some View {
+        LayoutEngine(names) { name in
+            Text(name)
+        } placements: { room, _ in
+            names.indices.map { index in
+                Placement(Rect(Double(index) * room.width / 4, 0, room.width / 4, room.height))
+            }
+        }
+        .itemDrag(begins: .held)
+        .onItemDragged { drag in
+            // The slot under the hand: the held name moves there, the others make room.
+            let slot = min(max(Int(drag.at.x / (drag.room.width / 4)), 0), names.count - 1)
+            if let from = names.firstIndex(of: drag.item), from != slot {
+                names.remove(at: from)
+                names.insert(drag.item, at: slot)
+            }
+        }
+        .height(80)
+    }
+}
+```
+
+`.onItemDismissed(.up, beyond: 120) { card in … }` lets a view go for good:
+let go past 120 points up - or thrown far enough that way - it flies on out
+of the room, and the handler runs once it has left, where the application
+removes the item. Short of it, the view goes back.
+
 A run with no ends comes round: `.wraps(every:)` makes one turn of the phase
 bring the layout back where it was, its targets repeated each turn, so the
 hand and the program both move it on forever. The arithmetic folds the phase

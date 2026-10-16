@@ -20,6 +20,7 @@ extension UIKitElement {
             return element.hear(heard, in: host.runtime)
         }
         listening.handAxis = { [weak self] in self?.element.handAxis }
+        listening.handItems = { [weak self] in (self?.element.itemDrag, self?.element.holdsItem ?? false) }
         listening.listen(for: hearing)
         self.listening = hearing.isEmpty ? nil : listening
     }

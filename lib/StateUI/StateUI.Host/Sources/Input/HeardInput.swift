@@ -19,9 +19,10 @@
     case pinch(GesturePhase, scale: Double, at: Point)
 
     /// The hand over a layout - a press dragged or a trackpad's fingers: its phase, how far it moved what is under
-    /// it since the last report, as it lifts its speed, per second, where the platform tells one, and when the
-    /// platform says it happened, in the frame clock's milliseconds, where it says so.
-    case hand(GesturePhase, moved: Point, speed: Point?, at: Double? = nil)
+    /// it since the last report, as it lifts its speed, per second, where the platform tells one, when the platform
+    /// says it happened, in the frame clock's milliseconds, where it says so, and - a press beginning - where it
+    /// went down, in points of the view.
+    case hand(GesturePhase, moved: Point, speed: Point?, at: Double? = nil, point: Point? = nil)
 
     /// A wheel's step over a layout: how far it moved what is under the hand - a stream of them, a trackpad's.
     case wheel(Point)

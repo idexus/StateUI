@@ -28,11 +28,13 @@ final class AppKitHandReader {
     }
 
     /// The hand at `phase`, having moved what is under it by `moved` since the last, lifting at `speed` where the
-    /// platform tells one, at `time` where it says when: the host's entry, the pointer's and the trackpad's alike.
-    /// Whether the layout took it.
+    /// platform tells one, at `time` where it says when, a press going down at `point` of the view: the host's entry,
+    /// the pointer's and the trackpad's alike. Whether the layout took it.
     @discardableResult
-    func hand(_ phase: GesturePhase, moved: Point, speed: Point? = nil, at time: Double? = nil) -> Bool {
-        let took = taking(.hand(phase, moved: moved, speed: speed, at: time))
+    func hand(
+        _ phase: GesturePhase, moved: Point, speed: Point? = nil, at time: Double? = nil, point: Point? = nil
+    ) -> Bool {
+        let took = taking(.hand(phase, moved: moved, speed: speed, at: time, point: point))
         if phase == .ended || phase == .cancelled { tookLast = took }
         return took
     }
@@ -63,14 +65,17 @@ final class AppKitHandReader {
     }
 }
 
-/// The pointer dragged over a layout: AppKit's drag recognizer, its moves since the last and its speed at the lift
-/// handed to the reader, from the top left.
+/// The pointer dragged over a layout: AppKit's drag recognizer, the press where it goes down, its moves since the
+/// last and its speed at the lift handed to the reader, from the top left - the press's end told even where it never
+/// moved, as a press that held a view lets it go.
 @MainActor
 final class AppKitHandDrag: NSPanGestureRecognizer {
     weak var reader: AppKitHandReader?
 
-    /// Where the drag had come to at its last report.
+    /// Where the drag had come to at its last report, where the press went down, and whether it moved as a drag.
     private var last = Point.zero
+    private var down = Point.zero
+    private var dragged = false
 
     init() {
         super.init(target: nil, action: nil)
@@ -84,6 +89,44 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
         fatalError("AppKitHandDrag is created in code")
     }
 
+    override func mouseDown(with event: NSEvent) {
+        super.mouseDown(with: event)
+        pressed(at: point(of: event))
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        super.mouseUp(with: event)
+        if !dragged { released() }
+    }
+
+    /// The pointer pressed at `point` of the view: the hand begins there.
+    func pressed(at point: Point) {
+        down = point
+        last = .zero
+        dragged = false
+        reader?.hand(.began, moved: .zero, point: point)
+    }
+
+    /// The pointer pressed moved to `point` of the view, as the drag tells it.
+    func moved(to point: Point) {
+        let total = Point(point.x - down.x, point.y - down.y)
+        reader?.hand(.changed, moved: Point(total.x - last.x, total.y - last.y))
+        last = total
+        dragged = true
+    }
+
+    /// The pointer pressed let go, at the speed the drag read where it moved.
+    func released(speed: Point? = nil) {
+        reader?.hand(.ended, moved: .zero, speed: speed)
+    }
+
+    /// Where `event` happened in the view, from its top left.
+    private func point(of event: NSEvent) -> Point {
+        guard let view else { return .zero }
+        let at = view.convert(event.locationInWindow, from: nil)
+        return Point(Double(at.x), Double(view.isFlipped ? at.y : view.bounds.height - at.y))
+    }
+
     @objc private func recognized(_ recognizer: NSPanGestureRecognizer) {
         let flipped = view?.isFlipped == true
         let moved = translation(in: view)
@@ -91,15 +134,15 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
 
         switch state {
         case .began:
-            reader?.hand(.began, moved: .zero)
             reader?.hand(.changed, moved: total)
             last = total
+            dragged = true
         case .changed:
             reader?.hand(.changed, moved: Point(total.x - last.x, total.y - last.y))
             last = total
         case .ended:
             let speed = velocity(in: view)
-            reader?.hand(.ended, moved: .zero, speed: Point(Double(speed.x), Double(flipped ? speed.y : -speed.y)))
+            released(speed: Point(Double(speed.x), Double(flipped ? speed.y : -speed.y)))
         case .cancelled, .failed:
             reader?.hand(.cancelled, moved: .zero)
         default:

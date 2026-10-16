@@ -135,6 +135,8 @@ enum AndroidRealization {
         .complete("LayoutEngine", "handAxis"),
         .complete("LayoutEngine", "handMoved"),
         .complete("LayoutEngine", "handStepped"),
+        .complete("LayoutEngine", "itemDrag"),
+        .complete("LayoutEngine", "itemMoved"),
     ] + windowRoom + HostRecord.layoutEngine
 
     /// What Android leaves out of a blur.

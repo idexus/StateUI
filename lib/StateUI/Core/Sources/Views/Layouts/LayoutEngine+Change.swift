@@ -51,6 +51,8 @@ extension LayoutEngine.Run {
             travels[identity] = travel
         }
 
+        let holding = showHeld(&shown, travels: &travels, poses: poses, at: now, room: room)
+
         func byIdentity(_ run: [Placement]) -> [String: Placement] {
             Dictionary(zip(identities, run), uniquingKeysWith: { first, _ in first })
         }
@@ -58,6 +60,6 @@ extension LayoutEngine.Run {
             description: description, phase: phase, from: from, room: room, poses: byIdentity(poses),
             shown: byIdentity(shown), travels: travels)
         states.placements.wrappedValue = PlacedRun(shown)
-        return !travels.isEmpty
+        return !travels.isEmpty || holding
     }
 }

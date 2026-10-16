@@ -62,6 +62,7 @@ extension UIKitDriver {
         pan.start = CGPoint(x: point.x, y: point.y)
         pan.point = pan.start
         press = (pan, false)
+        if let listening, listening.hearing.contains(.hand) { listening.hand(.began, moved: .zero, point: point) }
         guard let listening, listening.hearing.contains(.pointer) else { return }
         let down = DrivenPress(on: view)
         down.point = pan.start
@@ -71,6 +72,9 @@ extension UIKitDriver {
     func drag(_ listening: UIKitListening?, to point: Point) {
         guard let (pan, dragging) = press else { return }
         Self.track(pan.on, to: point)
+        if let listening, listening.hearing.contains(.hand) {
+            listening.hand(.changed, moved: Point(x: point.x - Double(pan.point.x), y: point.y - Double(pan.point.y)))
+        }
         pan.point = CGPoint(x: point.x, y: point.y)
         pan.driven = dragging ? .changed : .began
         press = (pan, true)
@@ -85,6 +89,7 @@ extension UIKitDriver {
         if pan.on is UIKitSliderView { Self.track(pan.on, to: point) }
         (pan.on as? UIControl)?.sendActions(for: .touchUpInside)
         (pan.on as? UIKitCanvasView)?.released(at: CGPoint(x: point.x, y: point.y))
+        if let listening, listening.hearing.contains(.hand) { listening.hand(.ended, moved: .zero) }
         pan.point = CGPoint(x: point.x, y: point.y)
         if dragging, let listening, listening.hearing.contains(.drags) {
             pan.driven = .ended

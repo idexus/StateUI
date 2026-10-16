@@ -41,13 +41,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (79)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>33 ✅ · 1 ☑️ · 38 ✓ · 1 –</td><td>custom <code>NSView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>32 ✅ · 1 ☑️ · 40 ✓ · 2 –</td><td>custom <code>UIView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>53 ✅ · 3 ☑️ · 15 ✓ · 1 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>59 ✅ · 1 ☑️ · 14 ✓ · 3 –</td><td>custom <code>Panel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>44 ✅ · 1 ☑️ · 26 ✓ · 3 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>52 ✅ · 1 ☑️ · 23 ✓ · 1 –</td><td>CSS grid, one shared cell</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (81)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>33 ✅ · 1 ☑️ · 40 ✓ · 1 –</td><td>custom <code>NSView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>32 ✅ · 1 ☑️ · 42 ✓ · 2 –</td><td>custom <code>UIView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>55 ✅ · 3 ☑️ · 15 ✓ · 1 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>59 ✅ · 1 ☑️ · 16 ✓ · 3 –</td><td>custom <code>Panel</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>46 ✅ · 1 ☑️ · 26 ✓ · 3 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>54 ✅ · 1 ☑️ · 23 ✓ · 1 –</td><td>CSS grid, one shared cell</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/LayoutEngineContract.swift`.
@@ -62,6 +62,10 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/LayoutEngineCon
 <tr><td colspan="9">AppKit: only through the host's own: sweep on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: sweep on LayoutEngine: the view's listening handed the recognizer's states, no touch sent<br>Android Views: only through the host's own: sweep on LayoutEngine: the listener's report of the hand handed to the host, no touch sent<br>WinUI 3: only through the host's own: sweep on LayoutEngine: the relay's report of the hand handed to the host with its speed, no pointer sent<br>GTK 4: only through the host's own: sweep on LayoutEngine: the hand handed to the host's entry with its speed, no event<br>Web: only through the host's own: sweep on LayoutEngine: the hand handed to the host's entry with its speed, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>handStepped</code></td><td>event</td><td><code>Point</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">–</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: notch on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: notch on LayoutEngine: the view's listening handed the recognizer's states, no touch sent<br>Android Views: only through the host's own: notch on LayoutEngine: the listener's report of a wheel's notches handed to the host, no scroll sent<br>WinUI 3: A wheel reaches the layout as WinUI's own scroller takes it, its tracker's: a notch goes as far as the platform scrolls for it, and the tracker tells no notch.<br>GTK 4: only through the host's own: notch on LayoutEngine: a wheel's notches handed to the host's entry, no event<br>Web: only through the host's own: notch on LayoutEngine: a wheel's notches handed to the host's entry, no wheel sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>itemDrag</code></td><td>property</td><td><code>ItemDragStart</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: pressDown on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on LayoutEngine: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on LayoutEngine: the relay's report of the press over the layout handed to the host, no pointer sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>itemMoved</code></td><td>event</td><td><code>(GesturePhase, Point, Point, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: pressDown on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on LayoutEngine: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on LayoutEngine: the relay's report of the press over the layout handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>phase</code></td><td>property</td><td><code>[Double]</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 

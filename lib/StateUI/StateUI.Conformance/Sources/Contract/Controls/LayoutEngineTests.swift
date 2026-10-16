@@ -234,8 +234,88 @@
 
                 s.expect(phase.wrappedValue, 0, "a hand moving down is not the run's, which moves across")
             },
+            ConformanceCase("aPressHeldTakesTheViewUnderItToTheHand", proves: [
+                Covered(LayoutEngineContract.itemDrag), Covered(LayoutEngineContract.itemMoved),
+            ]) { s in
+                let (clock, phase, told) = (TestClock(), State(wrappedValue: 0.0), Received<String>())
+                let layout = try itemLayout(s, clock: clock, phase: phase, begins: .held, told: told)
+
+                // The middle view stands from 30 to 50 across: a press on it held past a long press is its.
+                try s.perform(.pressDown(at: Point(40, 20)), on: layout)
+                frames(s, clock, until: clock.now + 600)
+                try s.perform(.drag(to: Point(70, 30)), on: layout)
+                frames(s, clock, until: clock.now + 48)
+                try s.perform(.lift(at: Point(70, 30)), on: layout)
+                frames(s, clock, until: clock.now + 600)
+
+                s.expect(told.values.first, "1 at 40,20", "the view under the press, where it went down")
+                s.expect(told.values.last, "1 at 70,30", "and where the hand took it")
+                s.expect(phase.wrappedValue, 0, "the run stands")
+            },
+            ConformanceCase("aFirstMoveAcrossTakesTheViewUnderThePress", proves: [
+                Covered(LayoutEngineContract.itemDrag), Covered(LayoutEngineContract.itemMoved),
+            ]) { s in
+                let (clock, phase, told) = (TestClock(), State(wrappedValue: 0.0), Received<String>())
+                let layout = try itemLayout(s, clock: clock, phase: phase, begins: .across, told: told)
+
+                try s.perform(.pressDown(at: Point(40, 15)), on: layout)
+                try s.perform(.drag(to: Point(42, 35)), on: layout)
+                frames(s, clock, until: clock.now + 48)
+                try s.perform(.lift(at: Point(42, 35)), on: layout)
+                frames(s, clock, until: clock.now + 600)
+
+                s.expect(told.values.first, "1 at 40,15", "the view under the press")
+                s.expect(told.values.last, "1 at 42,35", "moved down with the hand")
+                s.expect(phase.wrappedValue, 0, "the run stands")
+            },
+            ConformanceCase("aViewLetGoFarEnoughIsDismissed", proves: [Covered(LayoutEngineContract.itemMoved)]) { s in
+                let (clock, phase, told) = (TestClock(), State(wrappedValue: 0.0), Received<String>())
+                let layout = try itemLayout(s, clock: clock, phase: phase, begins: .across, told: told, dismissing: true)
+
+                try s.perform(.pressDown(at: Point(40, 15)), on: layout)
+                try s.perform(.drag(to: Point(40, 38)), on: layout)
+                frames(s, clock, until: clock.now + 48)
+                try s.perform(.lift(at: Point(40, 38)), on: layout)
+                frames(s, clock, until: clock.now + 1_000)
+                s.settle { told.values.last == "1 dismissed" }
+
+                s.expect(told.values.last, "1 dismissed", "flown out of the room, its item told")
+            },
         ]
     }
+}
+
+/// A layout of three views a hand moves across, whose views it takes by themselves as `begins` says - each told to
+/// `told` with where the hand is, and one let go twenty points down dismissed where `dismissing` - its run on
+/// `clock`: the layout's element, once the room is told.
+@MainActor
+private func itemLayout(
+    _ s: Session, clock: TestClock, phase: State<Double>, begins: ItemDragStart, told: Received<String>,
+    dismissing: Bool = false
+) throws -> MountedElement {
+    s.start(clock: clock) {
+        VStack {
+            let layout = LayoutEngine([0, 1, 2]) { _ in Rectangle(.red) } placements: { _, at in
+                (0..<3).map { Placement(Rect((Double($0) - at) * 30, 10, 20, 20)) }
+            }
+            .phase(phase.projectedValue)
+            .input(.scroll(.horizontal, pointsPerUnit: 100))
+            .snapTargets([0, 1, 2])
+            .itemDrag(begins: begins)
+            .onItemDragged { told.values.append("\($0.item) at \(Int($0.at.x)),\(Int($0.at.y))") }
+            .motion(.eased(.milliseconds(200), .linear))
+            if dismissing {
+                layout.onItemDismissed(.down, beyond: 10) { told.values.append("\($0) dismissed") }
+                    .width(100).height(40)
+            } else {
+                layout.width(100).height(40)
+            }
+        }
+        .horizontalAlignment(.start)
+        .verticalAlignment(.start)
+    }
+    frames(s, clock, until: 64)
+    return try s.element(ofType: .layoutEngine)
 }
 
 /// A phase of two axes: how far a run is turned, and how large it stands.

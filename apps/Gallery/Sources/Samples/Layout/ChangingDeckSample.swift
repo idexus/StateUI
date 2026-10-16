@@ -5,7 +5,7 @@ import StateUI
 struct ChangingDeckSample: SampleContent, ExampleContent {
     static let id = "changingDeck"
     static let title = "A deck that changes"
-    static let summary = "Cards join, leave and change places where the deck stands - each travels from where it was."
+    static let summary = "Cards join, leave and change places - each travels from where it was; one pulled up flies out."
 
     // listing: ChangingDeckSample
     /// One card: its name, which is its identity, its colour and its icon.
@@ -68,14 +68,8 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
                 }
 
                 // THE FRONT CARD LEAVES: at once, the others closing up, and
-                // the card behind it comes to the front. Where the front card
-                // was the last, the phase itself travels to the one behind.
-                Button("Remove").onClicked {
-                    guard cards.count > 1 else { return }
-                    let leaving = front
-                    cards.remove(at: leaving)
-                    $turn.journey.move(to: Double(min(leaving, cards.count - 1)))
-                }
+                // the card behind it comes to the front.
+                Button("Remove").onClicked { remove(cards[front]) }
             }
             .spacing(8)
             .horizontalAlignment(.center)
@@ -105,6 +99,20 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         min(max(Int(turn.rounded()), 0), cards.count - 1)
     }
 
+    /// `card` leaves the deck, the others closing up: one before the front
+    /// card keeps that card in front; the front card's place goes to the one
+    /// behind it - where it was the last, the phase travels to the one before.
+    private func remove(_ card: Card) {
+        guard cards.count > 1, let leaving = cards.firstIndex(of: card) else { return }
+        let shown = front
+        cards.remove(at: leaving)
+        if leaving < shown {
+            $turn.journey.snap(to: Double(shown - 1))
+        } else {
+            $turn.journey.move(to: Double(min(shown, cards.count - 1)))
+        }
+    }
+
     /// The cards, placed around the one at the front.
     private var deck: some View {
         // Read here, in the body: a change of it describes the layout anew,
@@ -121,6 +129,10 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         // The pile is swiped a card at a time, the fan scrolled through.
         .input(fanned ? .scroll(.horizontal) : .swipe(.horizontal))
         .snapTargets(cards.indices.map(Double.init))
+        // A CARD PULLED UP is the hand's alone: let go far enough, it flies
+        // out of the deck and leaves it; short of that, it goes back.
+        .itemDrag(begins: .across)
+        .onItemDismissed(.up, beyond: 120) { card in remove(card) }
         // ONE MOTION for the turn and for every change at the phase.
         .motion(.spring(response: .milliseconds(380), damping: 0.82))
     }
@@ -213,7 +225,8 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
 
             Text("In the pile, swipe the front card either way - one card a swipe: it goes out under "
                 + "your finger and under the next. The arithmetic is handed `from`, the card the "
-                + "swipe set out from, and the way it goes is the phase's side of it.")
+                + "swipe set out from, and the way it goes is the phase's side of it. Pull a card up "
+                + "and let go to send it out of the deck.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

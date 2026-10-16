@@ -27,6 +27,9 @@ extension LayoutEngine {
         let mask: Node?
         let tapped: ValueHandler<Items.Element>?
         let named: ((Phase) -> Void)?
+        let itemStart: ItemDragStart?
+        let dragged: (@MainActor (ItemDrag<Items.Element>) throws -> Void)?
+        let dismissal: LayoutDismissal<Items.Element>?
 
         /// The phase the element wears: the author's, or the layout's own.
         let phase: Binding<Phase>

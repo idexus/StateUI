@@ -165,7 +165,10 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
         return StateUIHost.notched(view, across, down);
     }
 
-    /** A finger down on a layout a hand moves: nothing is decided until it moves past the slop. */
+    /**
+     * A finger down on a layout a hand moves, told where in the view - a press standing still may hold a view - and
+     * nothing else decided until it moves past the slop.
+     */
     private void handDown(MotionEvent event) {
         handPending = true;
         handTaking = false;
@@ -174,6 +177,7 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
         if (handSpeed != null) handSpeed.recycle();
         handSpeed = VelocityTracker.obtain();
         handSpeed.addMovement(event);
+        StateUIHost.handed(view, STARTED, event.getX() / density, event.getY() / density, 0, 0);
     }
 
     /**
@@ -187,7 +191,6 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
         if (handPending) {
             if (Math.hypot(event.getRawX() - handX, event.getRawY() - handY) <= slop) return;
             handPending = false;
-            StateUIHost.handed(view, STARTED, 0, 0, 0, 0);
             handTaking = StateUIHost.handed(view, RUNNING, dx, dy, 0, 0);
             if (!handTaking) return;
             ViewParent parent = host.getParent();
@@ -202,15 +205,19 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
         handY = event.getRawY();
     }
 
-    /** The finger let go, or the touch was taken away: a hand claimed is told so, with its speed as it let go. */
+    /**
+     * The finger let go, or the touch was taken away: told so whatever it moved - a press that held a view and never
+     * moved lets it go - with its speed as it let go.
+     */
     private void handUp(MotionEvent event, boolean letGo) {
-        if (handTaking && handSpeed != null) {
+        float vx = 0, vy = 0;
+        if (handSpeed != null) {
             handSpeed.addMovement(event);
             handSpeed.computeCurrentVelocity(1000);
-            float vx = handSpeed.getXVelocity() / density;
-            float vy = handSpeed.getYVelocity() / density;
-            StateUIHost.handed(view, letGo ? COMPLETED : CANCELLED, 0, 0, vx, vy);
+            vx = handSpeed.getXVelocity() / density;
+            vy = handSpeed.getYVelocity() / density;
         }
+        StateUIHost.handed(view, letGo ? COMPLETED : CANCELLED, 0, 0, vx, vy);
         handPending = false;
         handTaking = false;
         if (handSpeed != null) {

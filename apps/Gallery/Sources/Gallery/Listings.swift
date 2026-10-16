@@ -1504,14 +1504,8 @@ enum Listings {
                     }
 
                     // THE FRONT CARD LEAVES: at once, the others closing up, and
-                    // the card behind it comes to the front. Where the front card
-                    // was the last, the phase itself travels to the one behind.
-                    Button("Remove").onClicked {
-                        guard cards.count > 1 else { return }
-                        let leaving = front
-                        cards.remove(at: leaving)
-                        $turn.journey.move(to: Double(min(leaving, cards.count - 1)))
-                    }
+                    // the card behind it comes to the front.
+                    Button("Remove").onClicked { remove(cards[front]) }
                 }
                 .horizontalAlignment(.center)
                 .gridRow(1)
@@ -1538,6 +1532,20 @@ enum Listings {
             min(max(Int(turn.rounded()), 0), cards.count - 1)
         }
 
+        /// `card` leaves the deck, the others closing up: one before the front
+        /// card keeps that card in front; the front card's place goes to the one
+        /// behind it - where it was the last, the phase travels to the one before.
+        private func remove(_ card: Card) {
+            guard cards.count > 1, let leaving = cards.firstIndex(of: card) else { return }
+            let shown = front
+            cards.remove(at: leaving)
+            if leaving < shown {
+                $turn.journey.snap(to: Double(shown - 1))
+            } else {
+                $turn.journey.move(to: Double(min(shown, cards.count - 1)))
+            }
+        }
+
         /// The cards, placed around the one at the front.
         private var deck: some View {
             // Read here, in the body: a change of it describes the layout anew,
@@ -1554,6 +1562,10 @@ enum Listings {
             // The pile is swiped a card at a time, the fan scrolled through.
             .input(fanned ? .scroll(.horizontal) : .swipe(.horizontal))
             .snapTargets(cards.indices.map(Double.init))
+            // A CARD PULLED UP is the hand's alone: let go far enough, it flies
+            // out of the deck and leaves it; short of that, it goes back.
+            .itemDrag(begins: .across)
+            .onItemDismissed(.up, beyond: 120) { card in remove(card) }
             // ONE MOTION for the turn and for every change at the phase.
             .motion(.spring(response: .milliseconds(380), damping: 0.82))
         }
@@ -4003,11 +4015,17 @@ enum Listings {
         static let columns = 4
         static let rows = 5
 
+        /// How the boards turn - and the dots with them: one state, one motion.
+        static let turning = Motion.spring(response: .milliseconds(380), damping: 0.86)
+
         /// The icons, in order.
         @State private var icons = Self.all
 
         /// Which board is in front - handed on with `$`, never read in the body.
         @State private var board = 0.0
+
+        /// The icon the hand holds, lifted: larger, so the hand knows it has it.
+        @State private var lifted: String?
 
         var body: some View {
             let count = icons.count
@@ -4027,23 +4045,65 @@ enum Listings {
                     .phase($board)
                     .input(.pages(.horizontal))
                     .snapTargets((0..<boards).map(Double.init))
-                    .motion(.spring(response: .milliseconds(380), damping: 0.86))
+                    // HELD, AN ICON LEAVES ITS BOARD for the hand: each move
+                    // gives it the slot under the hand, and the others travel to
+                    // make room; held still at an edge, the boards turn under it.
+                    // Taken, it lifts, so the hand knows it has it; let go, it
+                    // settles back.
+                    .itemDrag(begins: .held)
+                    .onItemDragged { drag in
+                        switch drag.phase {
+                        case .began:
+                            lifted = drag.item.name
+                        case .ended, .cancelled:
+                            lifted = nil
+                        default:
+                            move(drag.item, to: slot(at: drag.at, in: drag.room, of: boards))
+                            if drag.still >= .milliseconds(500) { turn(at: drag.at, in: drag.room, of: boards) }
+                        }
+                    }
+                    .motion(Self.turning)
                 }
                 .gridRow(0)
                 .clipsContent(true)
 
-                // THE DOTS wear the same phase: one state, so they go with the
-                // hand and with every throw, no body read of it.
+                // THE DOTS wear the same phase - one state, so one motion: they go
+                // with the hand and with every throw, no body read of it.
                 LayoutEngine(Array(0..<boards)) { _ in
                     Rectangle(Palette.text)
                 } placements: { room, board in
                     (0..<boards).map { dot($0, of: boards, board, room) }
                 }
                 .phase($board)
+                .motion(Self.turning)
                 .height(16)
                 .gridRow(1)
             }
             .rows(.fill, .auto)
+        }
+
+        /// The slot under `point` of the board in front, of `boards`.
+        private func slot(at point: Point, in room: Rect, of boards: Int) -> Int {
+            let page = min(max(Int(board.rounded()), 0), boards - 1)
+            let column = min(max(Int((point.x - 8) / ((room.width - 16) / Double(Self.columns))), 0), Self.columns - 1)
+            let row = min(max(Int((point.y - 8) / ((room.height - 16) / Double(Self.rows))), 0), Self.rows - 1)
+            return min(page * Self.columns * Self.rows + row * Self.columns + column, icons.count - 1)
+        }
+
+        /// `icon` taken out of its place and put at `slot`: a new order, which
+        /// the others travel to.
+        private func move(_ icon: HomeIcon, to slot: Int) {
+            guard let from = icons.firstIndex(of: icon), from != slot else { return }
+            icons.remove(at: from)
+            icons.insert(icon, at: slot)
+        }
+
+        /// The board on the side of the room `point` stands at the edge of, if
+        /// there is one that way.
+        private func turn(at point: Point, in room: Rect, of boards: Int) {
+            let page = Int(board.rounded())
+            if point.x > room.width - 24, page < boards - 1 { $board.journey.move(to: Double(page + 1)) }
+            if point.x < 24, page > 0 { $board.journey.move(to: Double(page - 1)) }
         }
 
         /// Where the icon at `slot` stands: on its board, in its row and column,
@@ -4098,6 +4158,10 @@ enum Listings {
                     .horizontalAlignment(.center)
             }
             .verticalAlignment(.center)
+            // Lifted while the hand holds it, on a spring of its own that goes a
+            // little past and back.
+            .scale(lifted == icon.name ? 1.18 : 1)
+            .motion(.spring(response: .milliseconds(260), damping: 0.55), .transform)
         }
         """#,
         "HostTimeSample": #"""

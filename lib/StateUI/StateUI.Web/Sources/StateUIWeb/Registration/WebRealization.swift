@@ -114,6 +114,8 @@ enum WebRealization {
         .complete("LayoutEngine", "handAxis"),
         .complete("LayoutEngine", "handMoved"),
         .complete("LayoutEngine", "handStepped"),
+        .complete("LayoutEngine", "itemDrag"),
+        .complete("LayoutEngine", "itemMoved"),
         .partial("Window", "background", missing: "A page draws its window opaque: a blur or glass shows its colour."),
         .notPlanned("Window", "maximumHeight", reason: "A page bounds no browser window: the user sizes it."),
         .notPlanned("Window", "maximumWidth", reason: "A page bounds no browser window: the user sizes it."),

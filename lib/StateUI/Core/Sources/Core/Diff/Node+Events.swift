@@ -167,4 +167,51 @@ extension Node {
             try await handler(first, second, third)
         }
     }
+    /// Hears one of this node's events that carries four values, handed over as the types its contract declares in
+    /// its order, beside any handler already there. The handler runs whole inside the event.
+    ///
+    /// A payload that is not what the contract says is reported once and does not reach the handler.
+    ///
+    /// - Parameters:
+    ///   - event: the member, written with its contract.
+    ///   - handler: what runs.
+    public mutating func addHandler<
+        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable,
+        Fourth: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third, Fourth)>,
+        _ handler: @escaping @MainActor (First, Second, Third, Fourth) throws -> Void
+    ) {
+        addHandler(event.token) {
+            guard let (first, second, third, fourth) = MemberValues.carried(
+                EventBuffer.current, by: event.name, as: First.self, Second.self, Third.self, Fourth.self)
+            else { return }
+
+            try handler(first, second, third, fourth)
+        }
+    }
+
+    /// Hears one of this node's events that carries four values with a handler that awaits; its `gate` says what
+    /// the event does when it comes again while a run is under way.
+    ///
+    /// - Parameters:
+    ///   - event: the member, written with its contract.
+    ///   - gate: what the handler passes through: what an event does while a run is under way.
+    ///   - handler: what runs.
+    public mutating func addHandler<
+        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable,
+        Fourth: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third, Fourth)>,
+        gate: some Gate,
+        _ handler: @escaping ValueEventHandler<First, Second, Third, Fourth>
+    ) {
+        addHandler(event.token, gate: gate) {
+            guard let (first, second, third, fourth) = MemberValues.carried(
+                EventBuffer.current, by: event.name, as: First.self, Second.self, Third.self, Fourth.self)
+            else { return }
+
+            try await handler(first, second, third, fourth)
+        }
+    }
 }

@@ -331,6 +331,9 @@ final class ControlTests: XCTestCase {
                 .shade(Rectangle(.black))
                 .motion(.spring(response: .milliseconds(240)))
                 .onItemTapped { _ in }
+                .itemDrag(begins: .held)
+                .onItemDragged { _ in }
+                .onItemDismissed(.up, beyond: 80) { _ in }
                 .node.built),
 
             // Both halves of a map: the control, and the markers on it. A Marker is

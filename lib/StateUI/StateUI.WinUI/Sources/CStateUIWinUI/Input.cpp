@@ -147,7 +147,7 @@ namespace {
             interactions::InteractionTracker const &tracker, interactions::InteractionTrackerInteractingStateEnteredArgs const &) {
             interacting = true;
             last = aim = tracker.Position();
-            callbacks.hand(view, 0, 0, 0, now(), NAN, NAN);
+            callbacks.hand(view, 0, NAN, NAN, now(), NAN, NAN);
         }
 
         void InertiaStateEntered(
@@ -193,15 +193,15 @@ namespace {
         tracking.erase(found);
     }
 
-    /// The hand let go or taken away, `phase` saying which: a hand the layout took is told so.
+    /// The hand let go or taken away, `phase` saying which: told whatever it moved - a press that held a view and
+    /// never moved lets it go.
     void handUp(int64_t view, int32_t phase, double time) {
         auto *entry = listener(view, StateUIHearingHand);
         if (!entry || !entry->handPointer) return;
-        bool taking = entry->handTaking;
         entry->handPointer = 0;
         entry->handPending = false;
         entry->handTaking = false;
-        if (taking) callbacks.hand(view, phase, 0, 0, time, NAN, NAN);
+        callbacks.hand(view, phase, 0, 0, time, NAN, NAN);
     }
 
     /// Hangs every handler once; each asks what the view listens for as it runs.
@@ -239,6 +239,9 @@ namespace {
                     hand->handDown = hand->handLast = onContent(args);
                     hand->handPending = true;
                     hand->handTaking = false;
+                    // Where it went down in the layout, at once: a press standing still may hold the view there.
+                    auto in = point.Position();
+                    callbacks.hand(view, 0, in.X, in.Y, when(args), NAN, NAN);
                 }
             }
             auto *entry = listener(view, StateUIHearingDrags);
@@ -259,9 +262,7 @@ namespace {
                     if (std::abs(point.X - hand->handDown.X) > distance[0]
                         || std::abs(point.Y - hand->handDown.Y) > distance[1]) {
                         hand->handPending = false;
-                        callbacks.hand(view, 0, 0, 0, when(args), NAN, NAN);
-                        hand = listener(view, StateUIHearingHand);
-                        bool taken = hand && callbacks.hand(
+                        bool taken = callbacks.hand(
                             view, 1, point.X - hand->handDown.X, point.Y - hand->handDown.Y, when(args), NAN, NAN);
                         hand = listener(view, StateUIHearingHand);
                         if (hand && taken) {

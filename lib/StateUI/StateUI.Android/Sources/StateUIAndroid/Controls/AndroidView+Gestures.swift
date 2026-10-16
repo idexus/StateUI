@@ -55,12 +55,14 @@ extension AndroidView {
         if let input { _ = onHeard?(input) }
     }
 
-    /// The hand over a layout the listener tells, by the phase StateUI numbers - what it moved under the hand, in
-    /// points, and as it lets go its speed: the host's entry. Whether the layout took it.
+    /// The hand over a layout the listener tells, by the phase StateUI numbers - where a finger went down, or what
+    /// it moved under the hand since, in points, and as it lets go its speed: the host's entry. Whether the layout
+    /// took it.
     /// Design: docs/design/platforms/android/controls.md#the-hand-over-a-layout
     func heardHand(phase: Int32, moved: Point, speed: Point) -> Bool {
         guard let phase = GesturePhase(rawValue: phase) else { return false }
 
+        if phase == .began { return onHeard?(.hand(.began, moved: .zero, speed: nil, point: moved)) ?? false }
         return onHeard?(.hand(phase, moved: moved, speed: phase == .ended ? speed : nil)) ?? false
     }
 

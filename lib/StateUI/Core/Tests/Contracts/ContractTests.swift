@@ -210,6 +210,7 @@ final class ContractTests: XCTestCase {
             SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!, ButtonRole.cancel, [Key.escape, "a"], MapType(rawValue: 1)!,
             WebNavigationType(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.changed,
             LayoutInput.Axis.vertical,
+            ItemDragStart.held,
             ItemsLayout.list(), ItemsLayout.row(spacing: 8), ItemsLayout.grid(minimumItemWidth: 120, spacing: 4),
             SelectionMode.multiple, ScrollAnchor.center,
             ItemsEntries(header: "h", sections: [ItemsEntries.Section(footer: "f", items: ["1", "2"])]),

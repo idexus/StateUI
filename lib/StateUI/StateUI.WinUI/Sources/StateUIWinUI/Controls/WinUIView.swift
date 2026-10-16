@@ -398,13 +398,18 @@ class WinUIView {
         _ = onHeard?(heard)
     }
 
-    /// The hand over a layout the relay tells - begun, moved by what it moved under it, let go, taken away - at
-    /// `time` on the pointer's clock, its speed at the lift as the platform tells it, or read by the host layer
-    /// from its moves: the host's entry. Whether the layout took it.
+    /// The hand over a layout the relay tells - begun where a pointer went down, none for a trackpad's fingers;
+    /// moved by what it moved under it; let go; taken away - at `time` on the pointer's clock, its speed at the lift
+    /// as the platform tells it, or read by the host layer from its moves: the host's entry. Whether the layout took
+    /// it.
     /// Design: docs/design/platforms/winui/input.md#the-hand-over-a-layout
     func heardHand(phase: Int32, moved: Point, at time: Double? = nil, speed: Point? = nil) -> Bool {
         guard let phase = GesturePhase(rawValue: phase) else { return false }
 
+        if phase == .began {
+            let point = moved.x.isNaN || moved.y.isNaN ? nil : moved
+            return onHeard?(.hand(.began, moved: .zero, speed: nil, at: time, point: point)) ?? false
+        }
         return onHeard?(.hand(phase, moved: moved, speed: speed, at: time)) ?? false
     }
 

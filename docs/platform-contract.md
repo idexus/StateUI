@@ -460,7 +460,7 @@ Every control, and every part an application, its windows and its pages are made
 | [HStack](controls/HStack.md) | 76 | 38 ✅ · 1 ☑️ · 35 ✓ | 35 ✅ · 1 ☑️ · 37 ✓ · 1 – | 58 ✅ · 3 ☑️ · 12 ✓ | 61 ✅ · 1 ☑️ · 12 ✓ · 1 – | 50 ✅ · 1 ☑️ · 23 ✓ · 2 – | 54 ✅ · 1 ☑️ · 20 ✓ |
 | [Image](controls/Image.md) | 69 | 31 ✅ · 2 ☑️ · 35 ✓ | 30 ✅ · 2 ☑️ · 35 ✓ · 1 – | 53 ✅ · 3 ☑️ · 10 ✓ | 54 ✅ · 13 ✓ · 1 – | 44 ✅ · 1 ☑️ · 22 ✓ · 1 – | 47 ✅ · 1 ☑️ · 20 ✓ |
 | [ItemsView](controls/ItemsView.md) | 81 | 39 ✅ · 2 ☑️ · 39 ✓ | 33 ✅ · 2 ☑️ · 41 ✓ · 4 – | 63 ✅ · 3 ☑️ · 13 ✓ | 67 ✅ · 1 ☑️ · 12 ✓ | 54 ✅ · 1 ☑️ · 23 ✓ · 1 – | 58 ✅ · 1 ☑️ · 21 ✓ |
-| [LayoutEngine](controls/LayoutEngine.md) | 79 | 33 ✅ · 1 ☑️ · 38 ✓ · 1 – | 32 ✅ · 1 ☑️ · 40 ✓ · 2 – | 53 ✅ · 3 ☑️ · 15 ✓ · 1 – | 59 ✅ · 1 ☑️ · 14 ✓ · 3 – | 44 ✅ · 1 ☑️ · 26 ✓ · 3 – | 52 ✅ · 1 ☑️ · 23 ✓ · 1 – |
+| [LayoutEngine](controls/LayoutEngine.md) | 81 | 33 ✅ · 1 ☑️ · 40 ✓ · 1 – | 32 ✅ · 1 ☑️ · 42 ✓ · 2 – | 55 ✅ · 3 ☑️ · 15 ✓ · 1 – | 59 ✅ · 1 ☑️ · 16 ✓ · 3 – | 46 ✅ · 1 ☑️ · 26 ✓ · 3 – | 54 ✅ · 1 ☑️ · 23 ✓ · 1 – |
 | [Line](controls/Line.md) | 77 | 40 ✅ · 2 ☑️ · 35 ✓ | 39 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 3 ☑️ · 10 ✓ | 63 ✅ · 13 ✓ · 1 – | 53 ✅ · 1 ☑️ · 22 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ |
 | [Map](controls/Map.md) | 74 | 36 ✅ · 2 ☑️ · 36 ✓ | 35 ✅ · 2 ☑️ · 36 ✓ · 1 – | 74 🧩 | 74 🧩 | 74 🧩 | 74 🧩 |
 | [Path](controls/Path.md) | 77 | 40 ✅ · 2 ☑️ · 35 ✓ | 39 ✅ · 2 ☑️ · 35 ✓ · 1 – | 63 ✅ · 3 ☑️ · 10 ✓ | 63 ✅ · 13 ✓ · 1 – | 53 ✅ · 1 ☑️ · 22 ✓ · 1 – | 56 ✅ · 1 ☑️ · 20 ✓ |
@@ -483,10 +483,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 76 | 38 ✅ · 1 ☑️ · 35 ✓ | 36 ✅ · 1 ☑️ · 36 ✓ · 1 – | 59 ✅ · 3 ☑️ · 11 ✓ | 61 ✅ · 1 ☑️ · 12 ✓ · 1 – | 51 ✅ · 1 ☑️ · 22 ✓ · 2 – | 54 ✅ · 1 ☑️ · 20 ✓ |
 | [WebView](controls/WebView.md) | 82 | 44 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 2 ☑️ · 38 ✓ · 1 – | 63 ✅ · 3 ☑️ · 12 ✓ · 3 – | 49 ✅ · 13 ✓ · 19 – | 56 ✅ · 1 ☑️ · 24 ✓ · 1 – | 55 ✅ · 1 ☑️ · 20 ✓ · 3 – |
 | [ZStack](controls/ZStack.md) | 75 | 37 ✅ · 1 ☑️ · 35 ✓ | 34 ✅ · 1 ☑️ · 37 ✓ · 1 – | 57 ✅ · 3 ☑️ · 12 ✓ | 60 ✅ · 1 ☑️ · 12 ✓ · 1 – | 49 ✅ · 1 ☑️ · 23 ✓ · 2 – | 53 ✅ · 1 ☑️ · 20 ✓ |
-| ✅ |  | 1378 | 1294 | 2077 | 2160 | 1783 | 1925 |
-| ✓ |  | 1248 | 1285 | 390 | 424 | 796 | 684 |
+| ✅ |  | 1378 | 1294 | 2079 | 2160 | 1785 | 1927 |
+| ✓ |  | 1250 | 1287 | 390 | 426 | 796 | 684 |
 | – |  | 26 | 82 | 39 | 41 | 50 | 19 |
-| **Met** | 2751 | **2652** | **2661** | **2506** | **2625** | **2629** | **2628** |
+| **Met** | 2753 | **2654** | **2663** | **2508** | **2627** | **2631** | **2630** |
 | 🧩 |  | 0 | 0 | 74 | 74 | 74 | 74 |
 
 ### Application structure
@@ -574,7 +574,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [Image](controls/Image.md) | `isAnimating`, `source` | 2 | 1 ✅ | 1 ✅ |  | 1 ✅ | 1 ✅ | 1 ✅ |
 | [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectedItemsChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ · 4 ✓ | 5 ✅ · 4 ✓ | 8 ✅ · 1 ✓ | 9 ✅ | 9 ✅ | 8 ✅ · 1 ✓ |
-| [LayoutEngine](controls/LayoutEngine.md) | `handAxis`, `handMoved`, `handStepped`, `phase` | 4 | 1 ✅ · 3 ✓ | 1 ✅ · 3 ✓ | 1 ✅ · 3 ✓ | 1 ✅ · 2 ✓ · 1 – | 1 ✅ · 3 ✓ | 1 ✅ · 3 ✓ |
+| [LayoutEngine](controls/LayoutEngine.md) | `handAxis`, `handMoved`, `handStepped`, `itemDrag`, `itemMoved`, `phase` | 6 | 1 ✅ · 5 ✓ | 1 ✅ · 5 ✓ | 3 ✅ · 3 ✓ | 1 ✅ · 4 ✓ · 1 – | 3 ✅ · 3 ✓ | 3 ✅ · 3 ✓ |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [Map](controls/Map.md) | `isScrollEnabled`, `showsTraffic`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 🧩 | 7 🧩 | 7 🧩 | 7 🧩 |
 | [Marker](controls/Marker.md) | `onDetailsClicked` (`detailsClicked`), `label`, `location`, `onSelected` (`selected`), `subtitle`, `type` | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
@@ -653,27 +653,27 @@ realizes the element and each of its members.
 `isDestructive`, `isEnabled`, `isFontAutoScalingEnabled`, `isMaximizable`,
 `isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isReadOnly`,
 `isScrollEnabled`, `isSelectable`, `isSpellCheckEnabled`,
-`isTextPredictionEnabled`, `isVisible`, `isZoomEnabled`, `items`, `itemsLayout`,
-`keyboardShortcut`, `keysTaken`, `label`, `layoutDirection`, `letsInputThrough`,
-`lineBreak`, `lineCap`, `lineHeight`, `lineJoin`, `lineWidth`, `location`,
-`mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`, `maximumLength`,
-`maximumLines`, `maximumWidth`, `menuKind`, `minimum`, `minimumDate`,
-`minimumHeight`, `minimumWidth`, `miterLimit`, `opacity`, `options`, `order`,
-`orientation`, `padding`, `panTouchCount`, `panXChannel`, `panYChannel`,
-`phase`, `pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `placement`,
-`points`, `presentation`, `progress`, `region`, `role`, `rotation`, `rotationX`,
-`rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollOffset`,
-`selectedIndex`, `selectedItems`, `selectedTab`, `selectionLength`,
-`selectionMode`, `shape`, `showsBackButton`, `showsClearButton`,
-`showsMenuArrow`, `showsNavigationBar`, `showsSidebar`, `showsText`,
-`showsTitle`, `showsTraffic`, `showsUserLocation`, `side`, `sidebarBackground`,
-`source`, `spacing`, `step`, `stroke`, `style`, `submitLabel`, `subtitle`,
-`swipeDirection`, `swipeThreshold`, `tapCount`, `text`, `textCase`, `textColor`,
-`textDecorations`, `textStyle`, `time`, `tint`, `title`, `tooltip`, `tracking`,
-`translationX`, `translationY`, `type`, `userAgent`, `value`,
-`verticalAlignment`, `verticalScrollIndicator`, `verticalTextAlignment`,
-`width`, `windowType`, `windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`,
-`zIndex`.
+`isTextPredictionEnabled`, `isVisible`, `isZoomEnabled`, `itemDrag`, `items`,
+`itemsLayout`, `keyboardShortcut`, `keysTaken`, `label`, `layoutDirection`,
+`letsInputThrough`, `lineBreak`, `lineCap`, `lineHeight`, `lineJoin`,
+`lineWidth`, `location`, `mapType`, `margin`, `maximum`, `maximumDate`,
+`maximumHeight`, `maximumLength`, `maximumLines`, `maximumWidth`, `menuKind`,
+`minimum`, `minimumDate`, `minimumHeight`, `minimumWidth`, `miterLimit`,
+`opacity`, `options`, `order`, `orientation`, `padding`, `panTouchCount`,
+`panXChannel`, `panYChannel`, `phase`, `pivotX`, `pivotY`, `placeholder`,
+`placeholderColor`, `placement`, `points`, `presentation`, `progress`, `region`,
+`role`, `rotation`, `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`,
+`scaleX`, `scaleY`, `scrollOffset`, `selectedIndex`, `selectedItems`,
+`selectedTab`, `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
+`showsClearButton`, `showsMenuArrow`, `showsNavigationBar`, `showsSidebar`,
+`showsText`, `showsTitle`, `showsTraffic`, `showsUserLocation`, `side`,
+`sidebarBackground`, `source`, `spacing`, `step`, `stroke`, `style`,
+`submitLabel`, `subtitle`, `swipeDirection`, `swipeThreshold`, `tapCount`,
+`text`, `textCase`, `textColor`, `textDecorations`, `textStyle`, `time`, `tint`,
+`title`, `tooltip`, `tracking`, `translationX`, `translationY`, `type`,
+`userAgent`, `value`, `verticalAlignment`, `verticalScrollIndicator`,
+`verticalTextAlignment`, `width`, `windowType`, `windowValue`, `x`, `x1`, `x2`,
+`y`, `y1`, `y2`, `zIndex`.
 
 ### Events
 
@@ -682,12 +682,12 @@ realizes the element and each of its members.
 `detailsClicked`, `disappearing`, `dragEnded`, `dragged`, `dragLeave`,
 `dragOver`, `dragStarting`, `drop`, `endReached`, `filesDropped`,
 `frameChanged`, `handMoved`, `handStepped`, `isFocusedChanged`, `itemActivated`,
-`keyPressed`, `mapClicked`, `navigated`, `navigatedFrom`, `navigatedTo`,
-`navigating`, `navigatingFrom`, `opened`, `panUpdated`, `pinchUpdated`,
-`pointerEntered`, `pointerExited`, `pointerMoved`, `pointerPressed`,
-`pointerReleased`, `popped`, `pressed`, `processTerminated`, `realizedChanged`,
-`released`, `resumed`, `scrollStopped`, `scrollXChanged`, `scrollYChanged`,
-`selected`, `selectedIndexChanged`, `selectedItemsChanged`,
+`itemMoved`, `keyPressed`, `mapClicked`, `navigated`, `navigatedFrom`,
+`navigatedTo`, `navigating`, `navigatingFrom`, `opened`, `panUpdated`,
+`pinchUpdated`, `pointerEntered`, `pointerExited`, `pointerMoved`,
+`pointerPressed`, `pointerReleased`, `popped`, `pressed`, `processTerminated`,
+`realizedChanged`, `released`, `resumed`, `scrollStopped`, `scrollXChanged`,
+`scrollYChanged`, `selected`, `selectedIndexChanged`, `selectedItemsChanged`,
 `selectedTabChanged`, `showsSidebarChanged`, `stopped`, `submitted`, `swiped`,
 `tapped`, `textChanged`, `timeChanged`, `toggled`, `valueChanged`,
 `windowClosed`.

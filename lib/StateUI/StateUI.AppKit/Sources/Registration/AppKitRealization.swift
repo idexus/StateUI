@@ -185,6 +185,8 @@ enum AppKitRealization {
         .complete("LayoutEngine", "handAxis"),
         .complete("LayoutEngine", "handMoved"),
         .complete("LayoutEngine", "handStepped"),
+        .complete("LayoutEngine", "itemDrag"),
+        .complete("LayoutEngine", "itemMoved"),
         .notPlanned("ActivityIndicator", "tint", reason: accentColoured),
         .notPlanned("ProgressBar", "tint", reason: accentColoured),
         .notPlanned("Switch", "tint", reason: accentColoured),
