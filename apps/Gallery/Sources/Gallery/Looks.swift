@@ -136,16 +136,17 @@ struct ThemeLook: Equatable, RawRepresentable, PersistentValue {
 
     /// The dark theme's look the gallery opens in: on Windows a window of the
     /// desktop blurred in the gallery's violet, its sidebar letting it
-    /// through; on the Mac a thick blur of the desktop in the gallery's own
-    /// colour, made from that window, its sidebar the platform's glass in
-    /// it; on the iPad and the iPhone those colours, the sidebar the same
-    /// glass beside the page and over it; on the Web, GNOME and Android -
-    /// which blur nothing behind a window - those colours, whole.
+    /// through, and over the page the page blurred in the same violet; on
+    /// the Mac a thick blur of the desktop in the gallery's own colour, made
+    /// from that window, its sidebar the platform's glass in it; on the iPad
+    /// and the iPhone those colours, the sidebar the same glass beside the
+    /// page and over it; on the Web, GNOME and Android - which blur nothing
+    /// behind a window - those colours, whole.
     static var dark: ThemeLook {
         #if WINUI
         let violet = SurfaceLook(material: .tintedBlur, colour: .violet, blur: .thick)
         return ThemeLook(
-            bars: .platform, barColour: .violet, window: violet, sidebar: .platform, flyout: .platform)
+            bars: .platform, barColour: .violet, window: violet, sidebar: .platform, flyout: violet)
         #elseif APPKIT
         let glass = SurfaceLook(material: .tintedGlass, colour: .gallery, blur: .thick)
         return ThemeLook(
