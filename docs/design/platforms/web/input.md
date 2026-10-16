@@ -67,7 +67,13 @@ layout's axis for its own scroll (`touch-action: pan-y` for a horizontal
 layout); a pointer pressed on the layout is the layout's once it moves past
 four points along its axis - it is captured then, its moves told since the
 last with the event's time, from which the host layer reads the speed at its
-lift. A first move across the axis leaves the pointer to the page. A wheel
+lift. A first move across the axis leaves the pointer to the page. A touch
+the layout took is kept from the page's pan to its lift: the browser pans by
+a touch's moves, not the pointer's, and with `pan-y` Safari starts a pan -
+and cancels the pointer - once the touch has gone some ten points down,
+however far it went across; so the layout's `touchmove`, which comes after
+its pointer's move, is taken whenever the hand is the layout's, the relay
+listening to it as it does to a wheel, not passively. A wheel
 the browser measures in lines or pages turns notch by notch: each event a
 notch the way it went, a step of the run to the next target. One measured
 in pixels is told as a wheel and

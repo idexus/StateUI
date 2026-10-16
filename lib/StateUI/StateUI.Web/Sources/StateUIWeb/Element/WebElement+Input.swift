@@ -135,6 +135,11 @@ extension WebElement {
             handLast = pointer.at
             WebRelay.takeEvent()
         }
+        // A touch the layout took is kept from the page's pan to its lift: the browser pans by the touch's moves, which
+        // come after the pointer's, and would take a slant along the page's own axis.
+        view.listen("touchmove") { [weak self] in
+            if self?.handTaking == true { WebRelay.takeEvent() }
+        }
         for (event, letGo) in [("pointerup", true), ("pointercancel", false)] {
             view.listen(event) { [weak self] in
                 guard let self, WebRelay.eventPointer.id == handPointer else { return }
