@@ -4,6 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 import CStateUIGTK
+import StateUIFoundation
 
 /// One view's listening: a GTK controller for each kind of input the view listens for, and what each remembers of
 /// the press it follows. The widget owns the controllers; their signals name the view by its number.
@@ -76,7 +77,7 @@ final class GTKListening {
         case .drags: [makeDrag()]
         case .hand: makeHand()
         case .rotations: [makeRotation()]
-        default: [makePinch()]
+        default: [makePinch(), makeWheelPinch()]
         }
     }
 
@@ -361,6 +362,30 @@ final class GTKListening {
             MainActor.assumeIsolated { GTKListening.find(number)?.pinched(OpaquePointer(gesture), phase: .ended, scale: 1) }
         }
         return zoom
+    }
+
+    /// A wheel turned with Control, notch by notch, as a pinch - GNOME's applications zoom so; a touchpad's pinch is
+    /// GTK's own zoom gesture.
+    /// Design: docs/design/host/runtime.md#a-wheel-turned-as-a-pinch
+    private func makeWheelPinch() -> OpaquePointer {
+        let scroll = gtk_event_controller_scroll_new(GTK_EVENT_CONTROLLER_SCROLL_VERTICAL)!
+        connectAnswering(UnsafeMutableRawPointer(scroll), "scroll", number: number) { controller, _, dy, data in
+            let number = viewNumber(data)
+            nonisolated(unsafe) let controller = controller
+            return MainActor.assumeIsolated {
+                GTKListening.find(number)?.wheelPinched(OpaquePointer(controller), notches: -dy) == true ? 1 : 0
+            }
+        }
+        return scroll
+    }
+
+    /// The wheel turned `notches` away from the user: a pinch where Control is held and it turns notch by notch;
+    /// whether it was one.
+    private func wheelPinched(_ controller: OpaquePointer?, notches: Double) -> Bool {
+        guard let controller, gtk_event_controller_scroll_get_unit(controller) == GDK_SCROLL_UNIT_WHEEL,
+              gtk_event_controller_get_current_event_state(controller).rawValue & GDK_CONTROL_MASK.rawValue != 0
+        else { return false }
+        return tell(.wheelPinch(scale: pow(WheelPinch.notch, notches), at: Point(x: 0.5, y: 0.5)))
     }
 
     /// A pinch's step: its scale since the last, and where, as shares of the view's size. Begun, it is claimed,

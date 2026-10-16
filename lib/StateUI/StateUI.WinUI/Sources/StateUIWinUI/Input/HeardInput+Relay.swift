@@ -4,12 +4,14 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
+import StateUIFoundation
 
 /// What a view heard of the user's input, as the relay tells it.
 /// Design: docs/design/platforms/winui/input.md
 extension HeardInput {
     /// What the relay's callback says - `phase` a tap's place in its run or a gesture's phase, a pinch's `scale`
-    /// since its last step, a rotation's degrees clockwise in its place - nil for what it does not name.
+    /// since its last step, a rotation's degrees clockwise in its place, a wheel's notches turned with Control in its
+    /// place - nil for what it does not name.
     init?(_ what: StateUIHeard, phase: Int32, x: Double, y: Double, scale: Double) {
         let point = Point(x: x, y: y)
         switch what {
@@ -25,6 +27,7 @@ extension HeardInput {
         case StateUIHeardRotation:
             guard let phase = GesturePhase(rawValue: phase) else { return nil }
             self = .rotation(phase, degrees: scale)
+        case StateUIHeardWheelPinch: self = .wheelPinch(scale: pow(WheelPinch.notch, scale), at: point)
         default: return nil
         }
     }

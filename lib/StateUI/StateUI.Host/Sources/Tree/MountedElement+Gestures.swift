@@ -48,6 +48,10 @@ extension MountedElement {
             }
             let now = runtime.clock.now()
             return fingers(pinchReading.pinch(phase, scale: scale, at: now), at: now, in: runtime)
+        case .wheelPinch(let scale, let at):
+            // A wheel tells no lift: the frames let its pinch go once it stands still.
+            for each in wheelPinch.turned(scale, at: at, now: runtime.clock.now()) { hear(each, in: runtime) }
+            runtime.handPace.opened(self)
         case .rotation(let phase, let degrees):
             guard hearsFingers else { return false }
 
@@ -133,6 +137,7 @@ extension MountedElement {
     /// A frame at `now` found the element's wheel open or its hand's reports waiting: the wheel let go where it has
     /// stood still long enough, then what the hand said since the last frame said at once.
     func paced(now: Double, in runtime: HostRuntime) {
+        for each in wheelPinch.paced(now: now) { hear(each, in: runtime) }
         gather(handReading.paced(at: now), in: runtime)
         let reports = handOutbox
         handOutbox = []

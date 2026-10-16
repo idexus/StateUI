@@ -13,6 +13,7 @@
 #include <optional>
 #include <unordered_map>
 
+#include <winrt/Windows.System.h>
 #include <winrt/Windows.UI.h>
 #include <winrt/Microsoft.UI.Composition.h>
 #include <winrt/Microsoft.UI.Composition.Interactions.h>
@@ -45,7 +46,7 @@ namespace {
         bool capturing = false;
 
         winrt::event_token tapped, doubleTapped, entered, exited, movedToken, pressed, released, lost, canceled,
-            started, delta, completed;
+            started, delta, completed, wheel;
 
         /// The hand over a layout: its pointer, where it went down and last stood on the content, and whether its
         /// first move past the drag distance is yet to come, or the layout took it.
@@ -326,6 +327,18 @@ namespace {
                 if (pinches) tell(view, StateUIHeardPinch, 1, at, args.Delta().Scale);
                 if (rotations) tell(view, StateUIHeardRotation, 1, at, args.Delta().Rotation);
             }));
+        // A wheel turned with Control is a pinch: Windows tells a trackpad's pinch so to an application that hears no
+        // gesture of it, and Control with a mouse's wheel zooms.
+        entry.wheel = element.PointerWheelChanged(guarded("handling PointerWheelChanged",
+            [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
+            using winrt::Windows::System::VirtualKeyModifiers;
+            if (!listener(view, StateUIHearingPinches)) return;
+            if ((args.KeyModifiers() & VirtualKeyModifiers::Control) != VirtualKeyModifiers::Control) return;
+            auto point = args.GetCurrentPoint(sender.as<xaml::UIElement>());
+            args.Handled(true);
+            tell(view, StateUIHeardWheelPinch, 0, shares(sender, point.Position()),
+                point.Properties().MouseWheelDelta() / 120.0);
+        }));
         entry.completed = element.ManipulationCompleted(
             guarded("handling ManipulationCompleted",
                 [view](IInspectable const &sender, input::ManipulationCompletedRoutedEventArgs const &args) {
@@ -349,6 +362,7 @@ namespace {
         element.ManipulationStarted(entry.started);
         element.ManipulationDelta(entry.delta);
         element.ManipulationCompleted(entry.completed);
+        element.PointerWheelChanged(entry.wheel);
         --hung;
     }
 

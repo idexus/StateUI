@@ -21,6 +21,10 @@
     /// Two fingers turning: its phase, and how far they turned since the last step, in degrees clockwise.
     case rotation(GesturePhase, degrees: Double)
 
+    /// A wheel turned as a pinch - with Control, as a platform tells a trackpad's pinch to an application that hears
+    /// no gesture of it: the scale of this turn, and where, as shares of the view's size (`WheelPinch`).
+    case wheelPinch(scale: Double, at: Point)
+
     /// The hand over a layout - a press dragged or a trackpad's fingers: its phase, how far it moved what is under
     /// it since the last report, as it lifts its speed, per second, where the platform tells one, when the platform
     /// says it happened, in the frame clock's milliseconds, where it says so, and - a press beginning - where it

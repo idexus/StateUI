@@ -73,6 +73,9 @@
     var pinchReading = PinchReading()
     var pinchOutbox: [PinchReading.Report] = []
 
+    /// A wheel turned as a pinch over the element, while one is under way.
+    var wheelPinch = WheelPinch()
+
     /// The toolkit's half of the element.
     public private(set) var native: (any NativeElement)!
 

@@ -51,7 +51,7 @@ typedef enum {
 /// pointer at (x, y) DIPs of the view; a pinch's phase, its scale since the last, at (x, y) as shares of the view's
 /// size; a press a drag may become - 0 down, 1 moved, 2 let go, 3 taken away - at (x, y) DIPs of the window's content,
 /// which the host's rule makes a drag; a rotation's phase and its degrees clockwise since the last, in the scale's
-/// place.
+/// place; a wheel turned with Control, as Windows tells a trackpad's pinch, its notches in the scale's place.
 typedef enum {
     StateUIHeardTap,
     StateUIHeardPointerEntered,
@@ -62,6 +62,7 @@ typedef enum {
     StateUIHeardPinch,
     StateUIHeardPress,
     StateUIHeardRotation,
+    StateUIHeardWheelPinch,
 } StateUIHeard;
 
 /// A question for the user: `kind` 0 an alert, 1 a confirmation, 2 a choice of actions, 3 a prompt; its title

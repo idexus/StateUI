@@ -3,6 +3,7 @@
 
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
+import StateUIFoundation
 import XCTest
 
 /// Two fingers over a layout a hand moves too, as every host hears them: the fingers take the hand from the run, and
@@ -40,6 +41,23 @@ final class FingersHearingTests: XCTestCase {
         dial.hear(.hand(.changed, moved: Point(-80, 0), speed: nil), in: runtime)
         frames(runtime, clock, until: 2_032)
         XCTAssertEqual(handed.last?.turn ?? 0, 0.8, accuracy: 0.001, "a new press moves the run again")
+    }
+
+    /// A WHEEL TURNED AS A PINCH spreads the layout's magnification, and the frames let it go once the wheel stands
+    /// still: the axis comes onto its target with no lift told.
+    func testAWheelTurnedAsAPinchSpreadsTheMagnification() throws {
+        let (runtime, clock) = running()
+        let dial = try XCTUnwrap(runtime.tree.root?.first(type: .layoutEngine))
+
+        for _ in 0..<8 { dial.hear(.wheelPinch(scale: WheelPinch.notch, at: Point(0.5, 0.5)), in: runtime) }
+        frames(runtime, clock, until: 48)
+        let zoom = handed.last?.zoom ?? 0
+        XCTAssertGreaterThan(zoom, 2, "eight notches a tenth each: 2.14, past the largest target")
+        XCTAssertLessThan(zoom, pow(WheelPinch.notch, 8), "giving less and less past it")
+
+        frames(runtime, clock, until: 1_000)
+        XCTAssertFalse(dial.wheelPinch.isOpen, "let go once still")
+        XCTAssertEqual(handed.last?.zoom ?? 0, 2, accuracy: 0.001, "and resting on its target")
     }
 
     /// Display frames until `end`, sixteen milliseconds apart, the clock standing at each.

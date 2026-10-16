@@ -84,8 +84,8 @@ struct WebPress {
         return drag.ended(letGo: letGo).map { [$0] } ?? []
     }
 
-    /// A trackpad's pinch at `scale` from 1 - a wheel's turn's or Safari's - turned `degrees` clockwise from where it
-    /// began, at `point` in a view `size`: it begins with its first step.
+    /// Safari's trackpad pinch at `scale` from 1, turned `degrees` clockwise from where it began, at `point` in a view
+    /// `size`: it begins with its first step.
     mutating func trackpad(
         scale next: Double, degrees: Double = 0, at point: Point, size: LayoutSize
     ) -> [HeardInput] {
@@ -103,12 +103,7 @@ struct WebPress {
         return heard
     }
 
-    /// The scale a wheel's turn `down` brings a trackpad's pinch to.
-    func wheeled(down: Double) -> Double {
-        (turning ?? 1) * exp(-down / 100)
-    }
-
-    /// A trackpad's pinch ended - Safari said so, or the wheel stood still.
+    /// A trackpad's pinch ended: Safari said so.
     mutating func trackpadEnded(at point: Point, size: LayoutSize) -> [HeardInput] {
         guard turning != nil else { return [] }
         turning = nil

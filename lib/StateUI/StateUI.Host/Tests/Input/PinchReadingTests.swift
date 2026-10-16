@@ -71,6 +71,20 @@ final class PinchReadingTests: XCTestCase {
         XCTAssertNil(fingers.moved(Point(0, 0), Point(40, 0)), "afresh after a lift")
     }
 
+    /// A WHEEL TURNED AS A PINCH begins with its first turn, steps with each, and is let go once it has stood still
+    /// as long as a wheel's pause - a wheel tells no lift.
+    func testAWheelTurnedAsAPinchIsLetGoWhenItStandsStill() {
+        var wheel = WheelPinch()
+        let at = Point(0.5, 0.5)
+
+        XCTAssertEqual(wheel.turned(1.1, at: at, now: 0), [.pinch(.began, scale: 1, at: at), .pinch(.changed, scale: 1.1, at: at)])
+        XCTAssertEqual(wheel.turned(1.1, at: at, now: 30), [.pinch(.changed, scale: 1.1, at: at)])
+        XCTAssertEqual(wheel.paced(now: 30 + HandReading.pause - 1), [], "still turning, near enough")
+        XCTAssertEqual(wheel.paced(now: 30 + HandReading.pause), [.pinch(.ended, scale: 1, at: at)])
+        XCTAssertFalse(wheel.isOpen)
+        XCTAssertEqual(wheel.turned(1 / 1.1, at: at, now: 400).first, .pinch(.began, scale: 1, at: at), "afresh")
+    }
+
     /// A ROTATION TOLD FROM WHERE IT BEGAN IS SAID AS ITS STEPS.
     func testARotationFromWhereItBeganIsSaidAsItsSteps() {
         var step = RotationStep()

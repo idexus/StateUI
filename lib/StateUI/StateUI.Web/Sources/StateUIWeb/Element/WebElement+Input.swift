@@ -3,6 +3,7 @@
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+import WASILibc
 
 /// What the user does to the element's view with a finger, a pen or the mouse, heard by the host layer's rule.
 /// Design: docs/design/platforms/web/input.md
@@ -80,9 +81,11 @@ extension WebElement {
             let wheel = WebRelay.eventWheel
             guard let self, wheel.pinches, element.hearing.contains(.pinches) else { return }
             WebRelay.takeEvent()
-            hearPress(press.trackpad(
-                scale: press.wheeled(down: wheel.down), at: WebRelay.eventPoint, size: WebRelay.eventSize))
-            wheelStill()
+            // The browser tells a trackpad's pinch as a wheel turned with Control, its turn a hundredth of the
+            // scale's logarithm, in pixels; the host layer lets it go once the wheel stands still.
+            let size = WebRelay.eventSize
+            let at = PinchStep.share(of: WebRelay.eventPoint, width: size.width, height: size.height)
+            heard(.pinches, .wheelPinch(scale: exp(-wheel.down / 100), at: at))
         }
         for event in ["gesturestart", "gesturechange"] {
             view.listen(event) { [weak self] in
@@ -195,17 +198,6 @@ extension WebElement {
     private var origin: Point {
         let (on, inView) = (WebRelay.eventPointer.at, WebRelay.eventPoint)
         return Point(x: on.x - inView.x, y: on.y - inView.y)
-    }
-
-    /// A wheel's pinch ends once the wheel stands still for a fifth of a second.
-    private func wheelStill() {
-        wheelTurns += 1
-        let turn = wheelTurns
-        Task { [weak self] in
-            try? await Task.sleep(for: .milliseconds(200))
-            guard let self, turn == wheelTurns else { return }
-            hearPress(press.trackpadEnded(at: Point(x: 0, y: 0), size: LayoutSize(width: 0, height: 0)))
-        }
     }
 
     private func hearPress(_ inputs: [HeardInput]) {

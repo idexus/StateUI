@@ -445,6 +445,20 @@ fingers say nothing while it does. Each toolkit already keeps a pinch and a
 hand apart or together in its own way; the host layer decides, so a hand's
 recognizer may go on hearing beside the fingers'.
 
+## A wheel turned as a pinch
+
+A platform that hears no gesture of a trackpad's pinch for an application
+tells it as a wheel turned with Control - Windows does, a browser does, and
+a Mac's trackpad reaches a Parallels guest of Windows so - and a mouse's
+wheel with Control zooms on the Windows and GNOME desktops. Where a view
+hears a pinch, a host tells such a turn as `HeardInput.wheelPinch`, its
+scale in the platform's units - a notch a tenth (`WheelPinch.notch`), a
+browser's pixels as the browser makes them (`exp(-down / 100)`) - and the
+host layer makes it a pinch (`WheelPinch`): begun with its first turn, each
+turn a step, and let go by the frames once the wheel has stood still
+`HandReading.pause`, as a wheel tells no lift. A Mac takes no Control and
+wheel for a pinch: there Control and the wheel zoom the whole screen.
+
 ## A swipe
 
 A host whose toolkit tells it a press and how far it has moved, and no swipe,
