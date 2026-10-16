@@ -346,8 +346,9 @@ final class LayoutEngineTests: XCTestCase {
         XCTAssertEqual(handed.phases.last ?? 0, 1, accuracy: 0.000_1)
     }
 
-    /// PAST AN END THE HAND MOVES THE RUN HALF AS FAR, and let go, the run comes back to the end.
-    func testPastAnEndTheHandMovesTheRunHalfAsFar() throws {
+    /// PAST AN END THE RUN GIVES LESS AND LESS, half as far at first and never three quarters of a unit past the end,
+    /// however far the hand goes - and let go, the run comes back to the end.
+    func testPastAnEndTheRunGivesLessAndLess() throws {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
         let renders = Renders()
@@ -356,15 +357,19 @@ final class LayoutEngineTests: XCTestCase {
         let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
 
         bench.hand(renders, tree, .began)
-        bench.hand(renders, tree, .changed, moved: Point(100, 0))
-        XCTAssertEqual(handed.phases.last ?? 0, -0.5, accuracy: 0.001)
+        bench.hand(renders, tree, .changed, moved: Point(10, 0))
+        XCTAssertEqual(handed.phases.last ?? 0, -0.05, accuracy: 0.005, "half as far at first")
+        bench.hand(renders, tree, .changed, moved: Point(90, 0))
+        XCTAssertEqual(handed.phases.last ?? 0, -0.3, accuracy: 0.001, "a unit of the hand, less than half")
+        bench.hand(renders, tree, .changed, moved: Point(1_000, 0))
+        XCTAssertEqual(handed.phases.last ?? 0, -0.66, accuracy: 0.001, "eleven, short of three quarters")
 
-        bench.hand(renders, tree, .changed, moved: Point(-100, 0))
+        bench.hand(renders, tree, .changed, moved: Point(-1_100, 0))
         XCTAssertEqual(handed.phases.last ?? 0, 0, accuracy: 0.001, "back the way it came, back at the end")
 
-        // From the first target across the last: a whole unit to the end, then half of what is left.
+        // From the first target across the last: a whole unit to the end, then less and less of what is left.
         bench.hand(renders, tree, .changed, moved: Point(-160, 0))
-        XCTAssertEqual(handed.phases.last ?? 0, 1.3, accuracy: 0.001, "only the way past the end counts half")
+        XCTAssertEqual(handed.phases.last ?? 0, 1.2143, accuracy: 0.001, "only the way past the end gives")
 
         bench.hand(renders, tree, .ended)
         XCTAssertEqual(try XCTUnwrap(standing(worn, as: JourneyLanes<Double>.self)).destination, 1)

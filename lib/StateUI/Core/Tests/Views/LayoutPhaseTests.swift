@@ -138,7 +138,8 @@ final class LayoutPhaseTests: XCTestCase {
         XCTAssertEqual(journey.destination, Orbit(turn: 1, zoom: 2), "and still going where it was sent")
     }
 
-    /// PAST ITS AXIS'S LAST TARGET THE HAND MOVES THE RUN HALF AS FAR: the targets of its own axis are its ends.
+    /// PAST ITS AXIS'S LAST TARGET THE HAND MOVES THE RUN LESS AND LESS - a unit past it gives three tenths: the
+    /// targets of its own axis are its ends.
     func testTheHandsEndsAreTheTargetsOfItsAxis() throws {
         let handed = Handed()
         let orbit = State(wrappedValue: Orbit(turn: 3, zoom: 1))
@@ -149,7 +150,7 @@ final class LayoutPhaseTests: XCTestCase {
         bench.hand(renders, tree, .began)
         bench.hand(renders, tree, .changed, moved: Point(-100, 0))
 
-        XCTAssertEqual(handed.phases.last?.turn ?? 0, 3.5, accuracy: 0.001)
+        XCTAssertEqual(handed.phases.last?.turn ?? 0, 3.3, accuracy: 0.001)
     }
 
     /// A HAND NEEDS TARGETS ON ITS OWN AXIS: one driving an axis no target names hears no hand and says why.

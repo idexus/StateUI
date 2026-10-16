@@ -341,15 +341,32 @@ extension LayoutEngine {
         }
 
         /// Where the hand stands, in units of the axis, for the run standing at `value`: past an end of a run
-        /// that does not come round, twice as far beyond it - the way past an end counts half.
+        /// that does not come round, as far beyond it as the hand went for the run to give that much.
         func handPoint(of value: Double) -> Double {
-            value > high ? high + (value - high) * 2 : value < low ? low - (low - value) * 2 : value
+            value > high ? high + Self.pulled(value - high) : value < low ? low - Self.pulled(low - value) : value
         }
 
-        /// Where the run stands for the hand at `point`: `handPoint(of:)`'s inverse.
+        /// Where the run stands for the hand at `point`: past an end of a run that does not come round, less and
+        /// less of the way beyond it - `handPoint(of:)`'s inverse.
+        /// Design: docs/design/views/layout-engine.md#the-hand
         func runPoint(of point: Double) -> Double {
-            point > high ? high + (point - high) / 2 : point < low ? low - (low - point) / 2 : point
+            point > high ? high + Self.given(point - high) : point < low ? low - Self.given(low - point) : point
         }
+
+        /// How far past an end the run gives for the hand `beyond` it, in units: half as far at first, then less
+        /// and less, never `overreach`.
+        static func given(_ beyond: Double) -> Double {
+            overreach * (1 - 1 / (beyond / 2 / overreach + 1))
+        }
+
+        /// How far past an end the hand went for the run to give `given`: `given(_:)`'s inverse.
+        static func pulled(_ given: Double) -> Double {
+            let given = min(given, overreach * 0.999)
+            return given / (1 - given / overreach) * 2
+        }
+
+        /// The most a run gives past an end, in units of the phase.
+        static var overreach: Double { 0.75 }
 
         /// How far the hand travels for one unit of its axis at `value`, in device units: the input's points, the
         /// room's length, or as far as the view drawn in front of those the phase moves - the highest, then the one
