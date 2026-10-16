@@ -4004,6 +4004,11 @@ enum Listings {
                 ("Vault", .lock), ("Tips", .info), ("Alerts", .warning), ("Podcasts", .pause),
                 ("Sync", .refresh), ("Tasks", .checkmark), ("Menu", .menu), ("More", .more),
                 ("Map", .forward), ("News", .add), ("Books", .back), ("Weather", .up),
+                ("Trash", .delete), ("Inbox", .down), ("Focus", .close), ("Budget", .remove),
+                ("Friends", .person), ("Journal", .edit), ("Timer", .clock), ("Favourites", .star),
+                ("Fitness", .heart), ("Videos", .play), ("Wallet", .lock), ("Backup", .upload),
+                ("Reader", .info), ("Garden", .home), ("Chat", .mail), ("Agenda", .calendar),
+                ("Remote", .settings), ("Shortcuts", .link), ("Albums", .copy), ("Compass", .forward),
             ]
             let colours = ["#7C3AED", "#2563EB", "#0D9488", "#D97706", "#DB2777", "#4F46E5", "#16A34A", "#DC2626"]
             return glyphs.enumerated().map { index, glyph in
@@ -4011,9 +4016,35 @@ enum Listings {
             }
         }()
 
-        /// How many icons stand across a board and down it.
-        static let columns = 4
-        static let rows = 5
+        /// How many icons stand across a board and down it: as many as fit the
+        /// room at an icon's own size - 84 by 96 - six at most each way.
+        struct Fit: Equatable {
+            var columns = 4
+            var rows = 5
+
+            var perBoard: Int { columns * rows }
+
+            /// The fit of `room`.
+            static func of(_ room: Rect) -> Fit {
+                guard room.width > 0, room.height > 0 else { return Fit() }
+                return Fit(columns: min(max(Int((room.width - 16) / 84), 1), 6),
+                           rows: min(max(Int((room.height - 16) / 96), 1), 6))
+            }
+
+            /// The board of this grid that shows most of the icons `page` of
+            /// `before` showed - the first of two that show as many - of `count`:
+            /// a turned phone keeps its place among the icons.
+            func board(showing page: Int, of before: Fit, count: Int) -> Int {
+                let shown = page * before.perBoard ..< min((page + 1) * before.perBoard, count)
+                var best = (board: 0, icons: 0)
+                for board in 0..<max((count + perBoard - 1) / perBoard, 1) {
+                    let here = board * perBoard ..< min((board + 1) * perBoard, count)
+                    let icons = shown.clamped(to: here).count
+                    if icons > best.icons { best = (board, icons) }
+                }
+                return best.board
+            }
+        }
 
         /// How the boards turn - and the dots with them: one state, one motion.
         static let turning = Motion.spring(response: .milliseconds(380), damping: 0.86)
@@ -4027,9 +4058,15 @@ enum Listings {
         /// The icon the hand holds, lifted: larger, so the hand knows it has it.
         @State private var lifted: String?
 
+        /// The room the boards stand in, as the host feeds it - no body reads it -
+        /// and the grid it fits, which the body reads: a new grid is a new
+        /// description, and every icon travels to its new place.
+        @State private var room = Rect.zero
+        @State private var fit = Fit()
+
         var body: some View {
-            let count = icons.count
-            let boards = (count + Self.columns * Self.rows - 1) / (Self.columns * Self.rows)
+            let (count, fit) = (icons.count, self.fit)
+            let boards = max((count + fit.perBoard - 1) / fit.perBoard, 1)
 
             return Grid {
                 Grid {
@@ -4040,7 +4077,7 @@ enum Listings {
                     LayoutEngine(icons, id: \.name) { icon in
                         tile(icon)
                     } placements: { room, board in
-                        (0..<count).map { place($0, board, room) }
+                        (0..<count).map { place($0, board, room, fit) }
                     }
                     .phase($board)
                     .input(.pages(.horizontal))
@@ -4058,7 +4095,7 @@ enum Listings {
                         case .ended, .cancelled:
                             lifted = nil
                         default:
-                            move(drag.item, to: slot(at: drag.at, in: drag.room, of: boards))
+                            move(drag.item, to: slot(at: drag.at, in: drag.room, fit: fit, of: boards))
                             if drag.still >= .milliseconds(500) { turn(at: drag.at, in: drag.room, of: boards) }
                         }
                     }
@@ -4066,6 +4103,10 @@ enum Listings {
                 }
                 .gridRow(0)
                 .clipsContent(true)
+                // THE GRID THE ROOM FITS: a turned phone or a window grown or
+                // shrunk moves icons to other boards, or makes them larger.
+                .frame($room)
+                .engine(following: $room) { _ in fitted() }
 
                 // THE DOTS wear the same phase - one state, so one motion: they go
                 // with the hand and with every throw, no body read of it.
@@ -4082,12 +4123,23 @@ enum Listings {
             .rows(.fill, .auto)
         }
 
-        /// The slot under `point` of the board in front, of `boards`.
-        private func slot(at point: Point, in room: Rect, of boards: Int) -> Int {
+        /// The grid the room fits now, written where it changed - the board in
+        /// front the one that shows most of what it showed, at once, as the
+        /// icons travel to their new places.
+        private func fitted() {
+            let now = Fit.of(room)
+            guard now != fit else { return }
+            let showing = now.board(showing: Int(board.rounded()), of: fit, count: icons.count)
+            fit = now
+            if Double(showing) != board { $board.journey.snap(to: Double(showing)) }
+        }
+
+        /// The slot under `point` of the board in front, of `boards` in `fit`.
+        private func slot(at point: Point, in room: Rect, fit: Fit, of boards: Int) -> Int {
             let page = min(max(Int(board.rounded()), 0), boards - 1)
-            let column = min(max(Int((point.x - 8) / ((room.width - 16) / Double(Self.columns))), 0), Self.columns - 1)
-            let row = min(max(Int((point.y - 8) / ((room.height - 16) / Double(Self.rows))), 0), Self.rows - 1)
-            return min(page * Self.columns * Self.rows + row * Self.columns + column, icons.count - 1)
+            let column = min(max(Int((point.x - 8) / ((room.width - 16) / Double(fit.columns))), 0), fit.columns - 1)
+            let row = min(max(Int((point.y - 8) / ((room.height - 16) / Double(fit.rows))), 0), fit.rows - 1)
+            return min(page * fit.perBoard + row * fit.columns + column, icons.count - 1)
         }
 
         /// `icon` taken out of its place and put at `slot`: a new order, which
@@ -4106,17 +4158,18 @@ enum Listings {
             if point.x < 24, page > 0 { $board.journey.move(to: Double(page - 1)) }
         }
 
-        /// Where the icon at `slot` stands: on its board, in its row and column,
-        /// the boards side by side a room's width apart.
-        private func place(_ slot: Int, _ board: Double, _ room: Rect) -> Placement {
-            let (page, cell) = slot.quotientAndRemainder(dividingBy: Self.columns * Self.rows)
-            let width = (room.width - 16) / Double(Self.columns)
-            let height = (room.height - 16) / Double(Self.rows)
+        /// Where the icon at `slot` stands: on its board, in its row and column
+        /// of `fit`, the boards side by side a room's width apart - larger where
+        /// the room gives a cell more than an icon's own size.
+        private func place(_ slot: Int, _ board: Double, _ room: Rect, _ fit: Fit) -> Placement {
+            let (page, cell) = slot.quotientAndRemainder(dividingBy: fit.perBoard)
+            let width = (room.width - 16) / Double(fit.columns)
+            let height = (room.height - 16) / Double(fit.rows)
 
             return Placement(
-                Rect((Double(page) - board) * room.width + 8 + Double(cell % Self.columns) * width,
-                     8 + Double(cell / Self.columns) * height, width, height),
-                transform: .scale(min(width / 84, height / 96, 1)))
+                Rect((Double(page) - board) * room.width + 8 + Double(cell % fit.columns) * width,
+                     8 + Double(cell / fit.columns) * height, width, height),
+                transform: .scale(min(width / 84, height / 96)))
         }
 
         /// Where the dot of `page` stands under the boards: lit as its board comes
