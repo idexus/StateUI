@@ -48,7 +48,7 @@ enum ListingFile {
                 .flatMap { [$0.output[1].substring, $0.output[2].substring, $0.output[3].substring] }
                 .compactMap { $0.map(String.init) }
             return function.contains("Self.") || properties.contains { property in
-                !own.contains(property) && function.contains(try! Regex("\\b\(property)\\b"))
+                !own.contains(property) && function.contains(try! Regex("\\b\(property)\\b").wordBoundaryKind(.simple))
             }
         }
         func calls(_ function: String) -> Regex<AnyRegexOutput> {
