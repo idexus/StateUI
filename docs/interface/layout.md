@@ -691,6 +691,52 @@ changes nothing drawn - the same card goes out
 the other way. A hand catching the card on its way goes on with it; a long
 hand or a throw across several cards sends each out in turn.
 
+`.pages(_:)` is a swipe a room's length a unit: boards side by side a room
+apart are turned a board a hand, and a wider window or a turned phone keeps a
+board a screen. A row of dots can wear the same `$board` under them - one
+state, so they go with the hand and with every throw:
+
+```swift
+struct Boards: View {
+    @State private var board = 0.0
+
+    let names = ["Mail", "Clock", "Notes", "Music", "Maps", "Books"]
+
+    var body: some View {
+        VStack {
+            LayoutEngine(names) { name in
+                Text(name)
+            } placements: { room, phase in
+                names.indices.map { index in
+                    // Three a board, the boards a room's width apart.
+                    let (page, slot) = index.quotientAndRemainder(dividingBy: 3)
+                    let width = room.width / 3
+
+                    return Placement(
+                        Rect((Double(page) - phase) * room.width + Double(slot) * width, 0, width, room.height))
+                }
+            }
+            .phase($board)
+            .input(.pages(.horizontal))
+            .snapTargets([0, 1])
+            .height(80)
+
+            LayoutEngine([0, 1]) { _ in
+                Rectangle(.gray).cornerRadius(4)
+            } placements: { room, phase in
+                [0, 1].map { page in
+                    Placement(
+                        Rect(room.width / 2 - 12 + Double(page) * 16, 4, 8, 8),
+                        opacity: 0.3 + 0.7 * max(1 - abs(phase - Double(page)), 0))
+                }
+            }
+            .phase($board)
+            .height(16)
+        }
+    }
+}
+```
+
 A run with no ends comes round: `.wraps(every:)` makes one turn of the phase
 bring the layout back where it was, its targets repeated each turn, so the
 hand and the program both move it on forever. The arithmetic folds the phase

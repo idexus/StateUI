@@ -47,7 +47,7 @@ extension LayoutEngine {
         /// says, whether it moves it one target at most, and how a throw goes on.
         let moves: Bool
         let across: Bool
-        let per: Double?
+        let travel: LayoutInput.Travel
         let swipes: Bool
         let throwing: Motion
 
@@ -332,16 +332,23 @@ extension LayoutEngine {
             point > high ? high + (point - high) / 2 : point < low ? low - (low - point) / 2 : point
         }
 
-        /// How far the hand travels for one unit of its axis at `value`, in device units: the input's, or as far
-        /// as the view drawn in front of those the phase moves - the highest, then the one nearest the middle -
-        /// goes for one unit there, so the hand carries it with it. A run with nothing moving takes a room's length
-        /// a unit; one whose room is not measured yet, none.
+        /// How far the hand travels for one unit of its axis at `value`, in device units: the input's points, the
+        /// room's length, or as far as the view drawn in front of those the phase moves - the highest, then the one
+        /// nearest the middle - goes for one unit there, so the hand carries it with it. A run with nothing moving
+        /// takes a room's length a unit; one whose room is not measured yet, none.
         /// Design: docs/design/views/layout-engine.md#the-hand
         func unit(at value: Double) -> Double? {
-            if let per { return per }
-            if swipes, let grip = states.grip.wrappedValue { return grip.unit }
-
-            return measured(at: value, from: states.from.wrappedValue ?? live())
+            switch travel {
+            case .points(let points):
+                return points
+            case .room:
+                let room = states.room.wrappedValue
+                guard room.width > 0, room.height > 0 else { return nil }
+                return across ? room.width : room.height
+            case .front:
+                if swipes, let grip = states.grip.wrappedValue { return grip.unit }
+                return measured(at: value, from: states.from.wrappedValue ?? live())
+            }
         }
 
         /// How far the view drawn in front of those the phase moves goes for one unit of the hand's axis at `value`,
@@ -431,7 +438,8 @@ extension LayoutEngine {
             if swipes {
                 let target = nearest(value)
                 let resting = placing(target, in: phase.journey.value)
-                states.grip.wrappedValue = LayoutGrip(target: target, unit: per ?? measured(at: target, from: resting))
+                let unit = travel == .front ? measured(at: target, from: resting) : unit(at: target)
+                states.grip.wrappedValue = LayoutGrip(target: target, unit: unit)
             }
             name(nearest(value))
             return value

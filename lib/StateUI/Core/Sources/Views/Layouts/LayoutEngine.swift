@@ -425,7 +425,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
             law: law,
             moves: hand != nil && !stops.isEmpty,
             across: hand?.input.axis != .vertical,
-            per: hand?.input.pointsPerUnit,
+            travel: hand?.input.travel ?? .front,
             swipes: hand?.input.swipes ?? false,
             throwing: hand?.input.throwing ?? LayoutInput.scroll(.horizontal).throwing)
     }

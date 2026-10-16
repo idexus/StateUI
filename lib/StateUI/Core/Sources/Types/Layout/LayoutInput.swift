@@ -21,9 +21,20 @@ public struct LayoutInput: Equatable, Sendable {
     /// Which way the hand moves the phase.
     public let axis: Axis
 
-    /// How far the hand travels for one unit of the phase, in device units; nil for as far as the view in front
-    /// moves for it.
-    public let pointsPerUnit: Double?
+    /// How far the hand travels for one unit of the phase.
+    public enum Travel: Equatable, Sendable {
+        /// So many device units, one at least.
+        case points(Double)
+
+        /// As far as the view drawn in front moves for one unit.
+        case front
+
+        /// The room's length along the axis: a page.
+        case room
+    }
+
+    /// How far the hand travels for one unit of the phase.
+    public let travel: Travel
 
     /// How a throw goes on once the hand lets go: how far it carries, and the curve it slows on.
     public let throwing: Motion
@@ -52,7 +63,7 @@ public struct LayoutInput: Equatable, Sendable {
     public static func scroll(
         _ axis: Axis, pointsPerUnit: Double? = nil, throwing: Motion = .eased(.milliseconds(400), .cubicOut)
     ) -> LayoutInput {
-        LayoutInput(axis: axis, pointsPerUnit: pointsPerUnit.map { max($0, 1) }, throwing: throwing, swipes: false)
+        LayoutInput(axis: axis, travel: travel(pointsPerUnit), throwing: throwing, swipes: false)
     }
 
     /// One snap target a hand: the hand moves the run with it, but one target at most either way from where it took
@@ -72,7 +83,26 @@ public struct LayoutInput: Equatable, Sendable {
     public static func swipe(
         _ axis: Axis, pointsPerUnit: Double? = nil, throwing: Motion = .eased(.milliseconds(400), .cubicOut)
     ) -> LayoutInput {
-        LayoutInput(axis: axis, pointsPerUnit: pointsPerUnit.map { max($0, 1) }, throwing: throwing, swipes: true)
+        LayoutInput(axis: axis, travel: travel(pointsPerUnit), throwing: throwing, swipes: true)
+    }
+
+    /// A page a hand: a swipe whose hand travels the room's length along `axis` for one unit of the phase, so a
+    /// board is a screen however the room turns - the hand moves the run one snap target at most, and thrown, on to
+    /// the next page and no farther.
+    ///
+    ///     .input(.pages(.horizontal))
+    ///
+    /// - Parameters:
+    ///   - axis: which way the pages turn.
+    ///   - throwing: how the run goes on to the next page once thrown; a light friction unless said.
+    /// - Returns: the input.
+    public static func pages(_ axis: Axis, throwing: Motion = .eased(.milliseconds(400), .cubicOut)) -> LayoutInput {
+        LayoutInput(axis: axis, travel: .room, throwing: throwing, swipes: true)
+    }
+
+    /// The travel `pointsPerUnit` says: so many points, one at least, or the view in front's.
+    private static func travel(_ pointsPerUnit: Double?) -> Travel {
+        pointsPerUnit.map { .points(max($0, 1)) } ?? .front
     }
 }
 

@@ -184,8 +184,9 @@ still answer a tap.
   phase, under the layout's motion.
 - Let go with speed, it is thrown ([a throw](#a-throw)).
 
-The unit is how far the hand travels for one unit of its axis. Unless the
-input gives one (`pointsPerUnit`), it is how far the view drawn in front
+The unit is how far the hand travels for one unit of its axis - the input's
+`travel`: so many points (`pointsPerUnit`), the room's length along the
+axis (`.pages`), or, unless the input says, how far the view drawn in front
 goes for one unit where the run stands - of the views the phase moves, the
 highest, then the one nearest the middle - measured by the arithmetic a
 hundredth of a unit either side. The hand then carries that view with it,
@@ -221,6 +222,13 @@ out quickly and slows - a card swung aside and tucked under the next - would
 otherwise quicken the hand as it slows, and the moment the hand caught it on
 its way would decide how fast it moves. A scroll measures where the run
 stands at each move, a ring of views keeping to the finger all round.
+
+`.pages(_:)` is a swipe whose unit is the room's length along its axis: a
+board of icons is a screen, the boards side by side a room apart, and a hand
+across the room turns one. The room is read at each move, never kept, so a
+window grown or a phone turned under the hand keeps a board a screen; no
+front view is measured, since every icon of a board moves alike and the
+nearest to the middle may stand still between boards.
 
 ## A throw
 

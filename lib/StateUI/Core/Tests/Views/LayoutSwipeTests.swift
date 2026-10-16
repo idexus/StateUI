@@ -113,6 +113,32 @@ final class LayoutSwipeTests: XCTestCase {
         XCTAssertEqual(phase.wrappedValue, 1, "at rest, the next burst swipes on, one target")
     }
 
+    /// A PAGE IS THE ROOM'S LENGTH: pages are swiped a page a hand, the hand travelling the room's width for one -
+    /// a board is a screen however the room turns.
+    func testAPageIsTheRoomsLength() {
+        let phase = State(wrappedValue: 0.0)
+        let handed = Handed()
+        let renders = Renders()
+        func built() -> Node {
+            LayoutEngine([0, 1, 2]) { Text("\($0)") } placements: { _, at in
+                handed.phases.append(at)
+                return (0..<3).map { _ in Placement(Rect(0, 0, 10, 10)) }
+            }
+            .phase(phase.projectedValue)
+            .input(.pages(.horizontal))
+            .snapTargets([0, 1, 2])
+            .node
+        }
+        _ = bench.laid(renders, built)
+
+        bench.hand(renders, built, .began)
+        bench.hand(renders, built, .changed, moved: Point(-150, 0))
+        XCTAssertEqual(handed.phases.last ?? 0, 0.5, accuracy: 0.001, "half the room's 300 points, half a page")
+
+        bench.hand(renders, built, .changed, moved: Point(-2_000, 0))
+        XCTAssertEqual(handed.phases.last ?? 0, 1, accuracy: 0.001, "a page a hand")
+    }
+
     /// WITH NO UNIT GIVEN, A SWIPE MEASURES ONE AS IT TAKES THE RUN, as if the run stood on the target nearest, and
     /// keeps it: the view in front slowing on its way does not quicken the hand.
     func testASwipeMeasuresItsUnitAsItTakesTheRun() {
