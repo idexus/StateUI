@@ -26,6 +26,8 @@ final class WebImageView: WebDOMView {
     init() {
         super.init(tag: "img")
         attribute("alt", "")
+        // Not the browser's to drag: a picture moves with nothing until the application offers a drag.
+        attribute("draggable", "false")
         attribute("class", "stateui-picture")
         listen("error") { [weak self] in self?.tryNext() }
         listen("load") { [weak self] in self?.sizeAsLoaded() }

@@ -33,9 +33,10 @@ final class WebHandTests: XCTestCase {
         XCTAssertFalse(try kept(layout, firstMove: (4, 20), then: (6, 40)), "across: the page's")
     }
 
-    /// A HAND THE LAYOUT TOOK STARTS NO DRAG OF THE BROWSER'S OWN: a picture under it would be dragged away by the
-    /// browser past a few points - the pointer taken away from the layout, its lift never told; a hand not taken
-    /// leaves the browser's drag be.
+    /// A HAND THE LAYOUT TOOK, OR MAY STILL TAKE, STARTS NO DRAG OF THE BROWSER'S OWN: a picture under it would be
+    /// dragged away by the browser past a few points - Chrome's own threshold, under the hand's drag distance - the
+    /// pointer taken away from the layout, its lift never told; a hand the layout let go by leaves the browser's drag
+    /// be.
     func testAHandTheLayoutTookStartsNoDragOfTheBrowsersOwn() throws {
         let host = WebRenderer.running {
             LayoutEngine([0, 1, 2]) { Text("\($0)") } placements: { room, phase in
@@ -67,7 +68,8 @@ final class WebHandTests: XCTestCase {
         }
 
         XCTAssertFalse(try dragStarted(after: [(-20, 2)]), "the run's hand")
-        XCTAssertTrue(try dragStarted(after: []), "no hand of the layout's yet")
+        XCTAssertFalse(try dragStarted(after: [(-3, 0)]), "a hand the layout may still take")
+        XCTAssertTrue(try dragStarted(after: [(2, 20)]), "a hand across the layout, left to the page")
     }
 
     /// Whether the page's pan was kept from a touch pressed on `layout`, moved by `firstMove` and then `then`: the

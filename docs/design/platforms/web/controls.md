@@ -212,7 +212,11 @@ of another site keeps them to itself.
 ## Pictures
 
 An Image is an `<img>` showing one of the application's pictures, which
-`run-app.sh` lays beside the page in `Images/`. A name stands for its files in
+`run-app.sh` lays beside the page in `Images/`. It is not the browser's to
+drag (`draggable="false"`, kept so where a view offers no drag of its own):
+a native picture moves with nothing until the application offers a drag, and
+Chromium's and Firefox's drag a photo off as a ghost from under two fingers or
+a hand, taking the pointer away. A name stands for its files in
 the host layer's order - a PNG, then the SVG of the same name - and the
 element shows the next when one is not found. Its content mode is
 `object-fit`. An SVG keeps its own proportions inside any room it is given,

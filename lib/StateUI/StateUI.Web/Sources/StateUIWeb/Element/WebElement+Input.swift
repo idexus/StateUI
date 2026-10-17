@@ -155,10 +155,11 @@ extension WebElement {
             if self?.handTaking == true { WebRelay.takeEvent() }
         }
         // And from the browser's own drag - of a picture under it, past a few points - which takes the pointer away
-        // and never tells its lift.
+        // and never tells its lift: kept from a hand the layout took, and from one it may still take - Chromium's own
+        // threshold comes before the hand's drag distance, by no rule.
         view.listen("dragstart") { [weak self] in
             guard let self else { return }
-            if handTaking || element.holdsItem { WebRelay.takeEvent() }
+            if handPending || handTaking || element.holdsItem { WebRelay.takeEvent() }
         }
         for (event, letGo) in [("pointerup", true), ("pointercancel", false)] {
             view.listen(event) { [weak self] in

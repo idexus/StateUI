@@ -27,6 +27,16 @@ final class WebImageViewTests: XCTestCase {
         XCTAssertEqual(WebPage.style(of: picture.node, "max-height"), "100%")
     }
 
+    /// A PICTURE IS NOT THE BROWSER'S TO DRAG: a native picture moves with nothing until the application offers a
+    /// drag, and the browser's own - the photo under a hand or two fingers dragged off as a ghost - takes the pointer
+    /// away from what the user moves.
+    func testAPictureIsNotTheBrowsersToDrag() {
+        let picture = WebImageView()
+        defer { picture.detach() }
+
+        XCTAssertEqual(WebPage.attribute(of: picture.node, "draggable"), "false")
+    }
+
     /// A FILLING DRAWING HOLDS NO SIZE OF ITS OWN: WebKit, holding an SVG's size, lays its drawing out at the box's
     /// and fits it whole inside it, so `cover` covers nothing - a portrait drawing in a square room stood narrow, its
     /// room's rounded corners clipping nothing. A fitted drawing, and a filling bitmap, hold their size.

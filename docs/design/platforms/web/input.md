@@ -67,7 +67,13 @@ layout's axis for its own scroll (`touch-action: pan-y` for a horizontal
 layout); a pointer pressed on the layout is the layout's once it moves past
 four points along its axis - it is captured then, its moves told since the
 last with the event's time, from which the host layer reads the speed at its
-lift. A first move across the axis leaves the pointer to the page. A touch
+lift. A first move across the axis leaves the pointer to the page. Until
+the layout takes the press or lets it by, and while it holds it, the
+browser's own drag of a picture under it is taken (`dragstart`): Chromium's
+and Firefox's thresholds come before the four points, the one or the other
+first by no rule, and their drag takes the pointer away, its lift never told
+- the table dragged off as a picture rather than panned; Safari's comes
+after. A press the layout let by leaves the browser its drag. A touch
 the layout took is kept from the page's pan to its lift: the browser pans by
 a touch's moves, not the pointer's, and with `pan-y` Safari starts a pan -
 and cancels the pointer - once the touch has gone some ten points down,
