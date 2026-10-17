@@ -135,8 +135,7 @@ private struct HandPage: View {
             return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
         .phase($turn)
-        .input(.scroll(.horizontal, pointsPerUnit: 100))
-        .snapTargets([0, 1, 2, 3, 4])
+        .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
         .motion(.eased(.milliseconds(200), .linear))
     }
 }

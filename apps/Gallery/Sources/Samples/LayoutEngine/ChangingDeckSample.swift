@@ -45,9 +45,6 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
     var body: some View {
         Grid {
             Grid {
-                Rectangle(Palette.raised)
-                    .cornerRadius(14)
-
                 deck
             }
             .gridRow(0)
@@ -127,8 +124,9 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         }
         .phase($turn)
         // The pile is swiped a card at a time, the fan scrolled through.
-        .input(fanned ? .scroll(.horizontal) : .swipe(.horizontal))
-        .snapTargets(cards.indices.map(Double.init))
+        .axis(
+            \.self, input: fanned ? .scroll(.horizontal) : .swipe(.horizontal),
+            range: 0...Double(max(count - 1, 0)), snaps: .every(1))
         // A CARD PULLED UP is the hand's alone: let go far enough, it flies
         // out of the deck and leaves it; short of that, it goes back.
         .itemDrag(begins: .across)

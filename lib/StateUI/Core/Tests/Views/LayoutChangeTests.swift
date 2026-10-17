@@ -186,8 +186,7 @@ final class LayoutChangeTests: XCTestCase {
         func tree() -> Node {
             LayoutEngine([0]) { Text("\($0)") } placements: { _, _, from in [Placement(Rect(from * 100, 0, 10, 10))] }
                 .phase(phase.projectedValue)
-                .input(.scroll(.horizontal, pointsPerUnit: 100))
-                .snapTargets([0, 1, 2, 3])
+                .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
                 .motion(.eased(.milliseconds(160), .linear))
                 .node
         }

@@ -339,8 +339,7 @@ private func itemLayout(
                 (0..<3).map { Placement(Rect((Double($0) - at) * 30, 10, 20, 20)) }
             }
             .phase(phase.projectedValue)
-            .input(.scroll(.horizontal, pointsPerUnit: 100))
-            .snapTargets([0, 1, 2])
+            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
             .itemDrag(begins: begins)
             .onItemDragged { told.values.append("\($0.item) at \(Int($0.at.x)),\(Int($0.at.y))") }
             .motion(.eased(.milliseconds(200), .linear))
@@ -376,8 +375,7 @@ private func handLayout(_ s: Session, clock: TestClock, phase: State<Double>) th
                 (0..<3).map { Placement(Rect((Double($0) - at) * 50 + 40, 0, 20, 20)) }
             }
             .phase(phase.projectedValue)
-            .input(.scroll(.horizontal, pointsPerUnit: 100))
-            .snapTargets([0, 1, 2, 3, 4, 5])
+            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...5, snaps: .every(1))
             .motion(.eased(.milliseconds(300), .linear))
             .width(100).height(40)
         }
@@ -406,9 +404,8 @@ private func panLayout(_ s: Session, clock: TestClock, square: State<Square>) th
                 (0..<3).map { Placement(Rect((Double($0) - at.x) * 50 + 40, 60 - at.y * 50, 20, 20)) }
             }
             .phase(square.projectedValue)
-            .input(.pan(pointsPerUnit: 100), drives: \.x, \.y)
-            .snap(\.x, to: [0, 1, 2])
-            .snap(\.y, to: [0, 1, 2])
+            .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
+            .axis(\.y, input: .scroll(.vertical, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
             .motion(.eased(.milliseconds(300), .linear))
             .width(200).height(160)
         }
@@ -431,8 +428,7 @@ private func fingersLayout(
                 (0..<3).map { Placement(Rect(Double($0) * 80 + 20, 60, 40 * at, 40)) }
             }
             .phase(phase.projectedValue)
-            .input(input)
-            .snapTargets([0.5, 1, 2])
+            .axis(\.self, input: input, range: 0.5...2, snaps: [1])
             .motion(.eased(.milliseconds(200), .linear))
             .width(300).height(240)
         }

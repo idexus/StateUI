@@ -32,8 +32,7 @@ final class LayoutApproachTests: XCTestCase {
             return [Placement(Rect(0, 0, 10, 10))]
         }
         .phase(phase.projectedValue)
-        .input(.scroll(.horizontal, pointsPerUnit: 100))
-        .snapTargets([0, 1, 2])
+        .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
         .motion(motion)
         .node
     }

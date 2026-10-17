@@ -15,8 +15,7 @@
 ///
 ///     LayoutEngine(planets, id: \.name) { … } placements: { room, orbit in … }
 ///         .phase($orbit)
-///         .input(.scroll(.horizontal, pointsPerUnit: 240), drives: \.turn)
-///         .snap(\.turn, to: planets.indices.map(Double.init))
+///         .axis(\.turn, input: .scroll(.horizontal, pointsPerUnit: 240), range: 0...7, snaps: .every(1))
 ///
 ///     orbit.zoom = 2                    // travels there, the turn going on as it was
 ///

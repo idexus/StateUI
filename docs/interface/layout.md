@@ -289,7 +289,8 @@ page continues moving under vertical input.
 
 A layout whose views the hand moves without moving its content - a run of
 cards turned by a finger, a wheel or a trackpad, endless if need be - is a
-[layout engine](#a-layout-engine) with `.input(.scroll(_:))`.
+[layout engine](#a-layout-engine) whose axis the hand scrolls:
+`.axis(_:input:range:snaps:)` with `.scroll(_:)`.
 
 ## Repeated content and collections
 
@@ -539,11 +540,11 @@ struct Shelf: View {
 ```
 
 The phase is where the run rests or is going. Lend it a state with
-`.phase(_:)` and the program moves the run by writing it; give it
-`.input(.scroll(_:))` and the hand moves it too - a finger or a pointer
-dragged, a trackpad's two fingers, a wheel - on its own, with no scroller
-under it, carrying the view in front with it and coming to rest on the
-nearest of its `.snapTargets(_:)`:
+`.phase(_:)` and the program moves the run by writing it; declare its axis
+with `.axis(_:input:range:snaps:)` and the hand moves it too - a finger or a
+pointer dragged, a trackpad's two fingers, a wheel - on its own, with no
+scroller under it, carrying the view in front with it across its range and
+coming to rest on the nearest of its snaps:
 
 ```swift
 struct Carousel: View {
@@ -566,8 +567,7 @@ struct Carousel: View {
                 }
             }
             .phase($turn)
-            .input(.scroll(.horizontal))
-            .snapTargets(names.indices.map(Double.init))
+            .axis(\.self, input: .scroll(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
             .motion(.spring(response: .milliseconds(240)))
             .height(200)
 
@@ -580,13 +580,39 @@ struct Carousel: View {
 The arithmetic is handed the phase as it stands each frame, and each
 placement lands as written: what moves smoothly is the phase, so every view
 keeps to the path the arithmetic draws - an arc, a fan opening - rather than
-cutting across it. `turn` is the snap target the run rests on: written by the
+cutting across it. `turn` is the snap the run rests on: written by the
 program, the run travels there under `.motion(_:)` - with a hand or none -
 and `try await $turn.journey.move(to: 2).arrived()` waits until it has; under
-the hand it is the target the run passes and the one it comes to rest on, and
+the hand it is the snap the run passes and the one it comes to rest on, and
 a hand taking the run on its way stops the journey. A tap reaches the view
 drawn on top through `.onItemTapped`, and `.shade(_:)` darkens a far view by
 the `shade` its placement answers.
+
+An axis's range is how far the hand moves it: past an end, less and less,
+and let go there, it comes back onto the end. Its snaps are where it may rest
+beside the range's ends, which it always may: `[1, 2]` lists them,
+`.every(1)` puts one every unit from the lower end, `.at(stops)` takes a list
+worked out, and `.limits` leaves the ends alone - a drawer is open or closed,
+nothing between. Given no snaps, the axis rests wherever the hand leaves it
+or its throw ends, inside the range, and is named only once it rests:
+
+```swift
+struct Drawer: View {
+    @State private var open = 0.0
+
+    var body: some View {
+        LayoutEngine(["Notes"]) { name in
+            Text(name)
+        } placements: { room, phase in
+            [Placement(Rect(0, room.height - 60 - phase * 200, room.width, 260))]
+        }
+        .phase($open)
+        // Pulled up, it opens; let go, it is open or closed.
+        .axis(\.self, input: .scroll(.vertical, pointsPerUnit: 200), range: 0...1, snaps: .limits)
+        .height(300)
+    }
+}
+```
 
 The hand carries the view in front: it travels as far for one unit of the
 phase as the front view of those the phase moves goes for it, so a carousel
@@ -594,18 +620,18 @@ that grows with its window turns as far under the finger as on a phone.
 `pointsPerUnit:` gives the distance instead, for a run whose front view
 hardly moves - a pile of cards fanned out by another axis.
 
-A hand let go with speed throws the run: it goes on to the target nearest
-where the throw would end, and `turn` names that target at once. How it goes
+A hand let go with speed throws the run: it goes on to the snap nearest
+where the throw would end, and `turn` names that snap at once. How it goes
 on is the input's `throwing:` motion - eased, its length says how far it
 carries and its curve how it slows, a shorter length stopping it sooner; a
 spring carries it as far as its response and settles as springs do. A throw
-sets out at the hand's speed. The landing on the next target is never slower
+sets out at the hand's speed. The landing on the next snap is never slower
 than `.motion(_:)` moves a unit: a hand let go still, thrown back, or too slow
 to get there sooner, brings the run onto it under that motion over as much of
 its length as the way left is of a unit - the last tenth of a card takes a
 tenth of the motion. A mouse's wheel turned notch by notch steps
-the run a target a notch, under `.motion(_:)`, however large the targets
-stand.
+the run a snap a notch, under `.motion(_:)`, however far apart the snaps
+stand - an axis with none, a hundred points' worth of the hand.
 
 A change of the layout at the phase it stands at travels too. A view
 joining fades in where the arithmetic puts it; one leaving goes at once and
@@ -646,7 +672,7 @@ before it, under `.motion(_:)`.
 
 The arithmetic can also be handed where the run's motion set out: the phase
 it stood at when the hand, a throw or a journey took it away, then each
-target the run passes. The phase's side of it is the way the run goes, so a pile can
+snap the run passes. The phase's side of it is the way the run goes, so a pile can
 send the card that stood in front out that way - left as the hand moves the
 run on, right as it takes it back - and under the others, while the next
 comes up from beneath:
@@ -677,8 +703,7 @@ struct Pile: View {
             }
         }
         .phase($turn)
-        .input(.swipe(.horizontal))
-        .snapTargets(names.indices.map(Double.init))
+        .axis(\.self, input: .swipe(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
         .height(220)
     }
 }
@@ -686,8 +711,8 @@ struct Pile: View {
 
 `.swipe(_:)` moves the run one card a hand, however far the hand goes - a
 trackpad's flick speeds up to well past a card - and a throw goes on to the
-next card that way, no farther; its unit is measured as the hand takes the
-run, so the card in front moves under it. At the phase it set out from,
+next card that way, no farther - so its axis needs snaps; its unit is
+measured as the hand takes the run, so the card in front moves under it. At the phase it set out from,
 every view stands where it stood, so a hand taking the run back past it
 changes nothing drawn - the same card goes out
 the other way. A hand catching the card on its way goes on with it; a long
@@ -719,8 +744,7 @@ struct Boards: View {
                 }
             }
             .phase($board)
-            .input(.pages(.horizontal))
-            .snapTargets([0, 1])
+            .axis(\.self, input: .pages(.horizontal), range: 0...1, snaps: .every(1))
             .height(80)
 
             LayoutEngine([0, 1]) { _ in
@@ -784,10 +808,10 @@ let go past 120 points up - or thrown far enough that way - it flies on out
 of the room, and the handler runs once it has left, where the application
 removes the item. Short of it, the view goes back.
 
-A run with no ends comes round: `.wraps(every:)` makes one turn of the phase
-bring the layout back where it was, its targets repeated each turn, so the
-hand and the program both move it on forever. The arithmetic folds the phase
-itself:
+A run with no ends comes round: `wraps: true` makes one turn of the range
+bring the layout back where it was - its upper end is its lower one a turn
+on, its snaps repeated each turn - so the hand and the program both move it
+on forever. The arithmetic folds the phase itself:
 
 ```swift
 struct Ring: View {
@@ -808,9 +832,9 @@ struct Ring: View {
             }
         }
         .phase($turn)
-        .input(.scroll(.horizontal, throwing: .spring(response: .milliseconds(400), damping: 0.8)))
-        .snapTargets(names.indices.map(Double.init))
-        .wraps(every: Double(names.count))
+        .axis(
+            \.self, input: .scroll(.horizontal, throwing: .spring(response: .milliseconds(400), damping: 0.8)),
+            range: 0...Double(names.count), snaps: .every(1), wraps: true)
         .height(200)
     }
 }
@@ -846,8 +870,7 @@ struct Planets: View {
                 }
             }
             .phase($orbit)
-            .input(.scroll(.horizontal), drives: \.turn)
-            .snap(\.turn, to: names.indices.map(Double.init))
+            .axis(\.turn, input: .scroll(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
             .motion(.spring(response: .milliseconds(240)))
             .height(160)
 
@@ -857,19 +880,21 @@ struct Planets: View {
 }
 ```
 
-`.input(_:drives:)` says which axis a hand moves, and it moves that one
-alone. `.snap(_:to:)` gives an axis targets of its own, where it rests
-whatever the others do; `.snapTargets(_:)` lists whole phases instead - the
-combinations allowed - and letting go sends every axis without targets of
-its own to the nearest of them. A `Double` is the phase of one axis.
+`.axis(_:input:range:snaps:wraps:)` declares one axis whole - what moves it,
+how far it runs, where it rests, whether it comes round - and the hand moves
+that one alone, resting it on its own snaps whatever the others do. One input
+may move several axes, each by its own unit and range, resting its own way:
+a hand that turns the cards and, slower, the sky behind them. Declared again,
+an axis takes the new declaration; an axis declared none goes on as the
+program sends it. A `Double` is the phase of one axis, `\.self`.
 
 Two fingers are inputs of their own: `.magnification` multiplies an axis
 by how far they spread - on a touch screen, or a trackpad's pinch - and
 `.rotation(degreesPerUnit:)` moves one a unit every so many degrees they
 turn, clockwise on. Both move their axes at once; let go with speed, each
-goes on to the target nearest where it would end. A layout takes one input
-an axis and one of each kind, so a hand along the layout may move a third
-axis - and it goes on with the fingers' middle while they spread and turn:
+goes on to where it would end - onto the snap nearest it, where it has
+snaps. A hand along the layout may move a third axis - and it goes on with
+the fingers' middle while they spread and turn:
 
 ```swift
 import StateUIFoundation
@@ -903,26 +928,24 @@ struct Compass: View {
             }
         }
         .phase($dial)
-        .input(.rotation(degreesPerUnit: 90), drives: \.turn)
-        .snap(\.turn, to: [0, 1, 2, 3])
-        .wraps(\.turn, every: 4)
-        .input(.magnification, drives: \.size)
-        .snap(\.size, to: [0.5, 1, 2])
+        .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), wraps: true)
+        .axis(\.size, input: .magnification, range: 0.5...2, snaps: [1])
         .height(240)
     }
 }
 ```
 
-A magnification's targets stand above nought, and its axis is nearest a
-target by the logarithm - 1.5 is nearer 2 than 1 - so pinching in acts as
+A magnification's range stands above nought, and its axis is nearest a
+snap by the logarithm - 1.5 is nearer 2 than 1 - so pinching in acts as
 spreading does. Chrome and Firefox tell no trackpad's rotation; there the
 fingers turn a layout on a touch screen.
 
-A pan moves two axes with the hand whichever way it goes -
-`.input(.pan, drives: \.x, \.y)`, the across axis with the hand across,
-the down axis with it down - and let go, both rest on one target together.
-One finger or two carry it; two fingers carry it by their middle while they
-spread and turn, so a pan, a magnification and a rotation move at once:
+Two axes scrolled, one across and one down, are a pan: the hand moves both
+whichever way it goes, the across axis with the hand across and the down
+axis with it down, and let go, they rest together. One finger or two carry
+it; two fingers carry it by their middle while they spread and turn, so a
+pan, a magnification and a rotation move at once - here the zoom resting
+anywhere between half and whole:
 
 ```swift
 struct Sheet: LayoutPhase {
@@ -954,11 +977,9 @@ struct Contacts: View {
             }
         }
         .phase($sheet)
-        .input(.pan, drives: \.x, \.y)
-        .snap(\.x, to: [0, 1])
-        .snap(\.y, to: [0, 1])
-        .input(.magnification, drives: \.zoom)
-        .snap(\.zoom, to: [0.5, 1])
+        .axis(\.x, input: .scroll(.horizontal), range: 0...1, snaps: .every(1))
+        .axis(\.y, input: .scroll(.vertical), range: 0...1, snaps: .every(1))
+        .axis(\.zoom, input: .magnification, range: 0.5...1)
         .height(300)
     }
 }

@@ -28,8 +28,7 @@ final class LayoutSwipeTests: XCTestCase {
             return (0..<5).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
         }
         .phase(phase.projectedValue)
-        .input(.swipe(.horizontal, pointsPerUnit: 100))
-        .snapTargets([0, 1, 2, 3, 4])
+        .axis(\.self, input: .swipe(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
         .node
     }
 
@@ -125,8 +124,7 @@ final class LayoutSwipeTests: XCTestCase {
                 return (0..<3).map { _ in Placement(Rect(0, 0, 10, 10)) }
             }
             .phase(phase.projectedValue)
-            .input(.pages(.horizontal))
-            .snapTargets([0, 1, 2])
+            .axis(\.self, input: .pages(.horizontal), range: 0...2, snaps: .every(1))
             .node
         }
         _ = bench.laid(renders, built)
@@ -154,8 +152,7 @@ final class LayoutSwipeTests: XCTestCase {
                 return [Placement(Rect(at > 1 ? -x : x, 0, 10, 10))]
             }
             .phase(phase.projectedValue)
-            .input(.swipe(.horizontal))
-            .snapTargets([0, 1, 2, 3])
+            .axis(\.self, input: .swipe(.horizontal), range: 0...3, snaps: .every(1))
             .node
         }
         _ = bench.laid(renders, built)

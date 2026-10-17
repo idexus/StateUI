@@ -351,7 +351,6 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             (0..<count).map { place(Double($0) - phase, setOut: Double($0) == from, count, room, shape) }
         }
         .phase(turns.projectedValue)
-        .snapTargets((0..<count).map(Double.init))
         // A card the hand names is the position at once, in the frame that names it.
         .onNamed { turned in
             let card = min(max(Int(turned.rounded()), 0), count - 1)
@@ -366,8 +365,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         // The hand carries the card in front, however big the room draws it; a deck is swiped a card at a time.
         if swipes {
             let throwing = thrown ?? LayoutInput.scroll(.horizontal).throwing
-            engine = engine.input(
-                shape == .deck ? .swipe(.horizontal, throwing: throwing) : .scroll(.horizontal, throwing: throwing))
+            let input = shape == .deck
+                ? LayoutInput.swipe(.horizontal, throwing: throwing) : .scroll(.horizontal, throwing: throwing)
+            engine = engine.axis(\.self, input: input, range: 0...Double(max(count - 1, 0)), snaps: .every(1))
         }
 
         // The shade sits beside the press: the card that dips wears none.

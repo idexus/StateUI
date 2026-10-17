@@ -2,21 +2,31 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // What a layout engine's body hands its engine and its handlers: the arithmetic run on the host's frames, and the
-// hands that move the phase and throw it on to a snap target.
+// hands that move the phase and throw it on to where it rests.
 // Design: docs/design/views/layout-engine.md#the-hand
 
 import StateUIFoundation
 
 extension LayoutEngine {
-    /// One input of the layout: its kind, the axis it moves, where on it the run may come to rest, lowest first,
-    /// how far one turn takes it where it comes round, the gesture, and how a throw goes on.
+    /// One axis the hand or the fingers move: its place in the phase's `axes`, by which the hand's hold, its throw
+    /// and its grip are kept, the axis, what moves it and how a throw goes on, the ends of its range, where on it the
+    /// run may come to rest, lowest first - none for anywhere in the range - and how far one turn takes it where it
+    /// comes round.
     struct Hand {
-        let kind: LayoutInput.Kind
+        let index: Int
         let axis: WritableKeyPath<Phase, Double>
-        let stops: [Double]
-        let period: Double?
         let gesture: LayoutInput.Gesture
         let throwing: Motion
+        let low: Double
+        let high: Double
+        let stops: [Double]
+        let period: Double?
+
+        /// Which way the hand moves the axis, where the hand does rather than two fingers.
+        var way: LayoutInput.Axis? {
+            guard case .hand(let way, _, _) = gesture else { return nil }
+            return way
+        }
     }
 
     /// One view being placed: its identity, its index and its item.
@@ -48,41 +58,35 @@ extension LayoutEngine {
         let phase: Binding<Phase>
         let states: States
 
-        /// Every input of the layout, and the one the run works on: the hand along the layout unless `on(_:)`
-        /// says another.
+        /// Every axis the hand and the fingers move, and the one the run works on: the first the hand moves unless
+        /// `on(_:)` says another.
         let hands: [Hand]
         var focus: Hand?
-
-        /// The whole phases the run may rest at, and the axes resting on targets of their own.
-        let targets: [Phase]
-        let axisTargets: [WritableKeyPath<Phase, Double>: [Double]]
         let law: Motion
 
-        /// The run working on the input of `kind`; nil for a layout with none.
-        func on(_ kind: LayoutInput.Kind) -> Run? {
-            guard let hand = hands.first(where: { $0.kind == kind }) else { return nil }
-
+        /// The run working on `hand`'s axis.
+        func on(_ hand: Hand) -> Run {
             var run = self
             run.focus = hand
             return run
         }
 
-        /// The axis the input in focus moves, where on it the run may come to rest, lowest first, and how far one
-        /// turn takes it where it comes round.
+        /// The axis in focus, where on it the run may come to rest, lowest first, how far one turn takes it where it
+        /// comes round, and the ends of its range.
         var axis: WritableKeyPath<Phase, Double>? { focus?.axis }
         var stops: [Double] { focus?.stops ?? [] }
         var period: Double? { focus?.period }
+        var low: Double { focus?.low ?? 0 }
+        var high: Double { focus?.high ?? 0 }
 
-        /// Whether a hand along the layout moves the run, which way, how far it travels for one unit of the phase
-        /// where the input says, whether it moves it one target at most, and how a throw goes on.
-        var moves: Bool { on(.hand).map { !$0.stops.isEmpty } ?? false }
-        var across: Bool {
-            guard case .hand(let axis, _, _) = focus?.gesture else { return true }
-            return axis != .vertical
-        }
+        /// The ways the hand moves the run - every way for a pan, axes moved across and down - and whether it does.
+        var ways: Set<LayoutInput.Axis> { Set(hands.compactMap(\.way)) }
+        var moves: Bool { !ways.isEmpty }
+        var pans: Bool { ways.count > 1 }
 
-        /// Whether the hand moves the run every way: a pan, whose down axis is a hand of its own.
-        var pans: Bool { on(.handDown) != nil }
+        /// Which way the hand moves the axis in focus, how far it travels for one unit where the input says, whether
+        /// it moves it one snap at most, and how a throw goes on.
+        var across: Bool { focus?.way != .vertical }
         var travel: LayoutInput.Travel {
             guard case .hand(_, let travel, _) = focus?.gesture else { return .front }
             return travel
@@ -93,30 +97,32 @@ extension LayoutEngine {
         }
         var throwing: Motion { focus?.throwing ?? LayoutInput.scroll(.horizontal).throwing }
 
-        /// Where the input in focus holds the run on its axis, while it does.
+        /// Where the hand holds the axis in focus, while it does.
         var held: Double? {
-            get { focus.flatMap { states.held.wrappedValue[$0.kind] } }
-            nonmutating set { if let kind = focus?.kind { states.held.wrappedValue[kind] = newValue } }
+            get { focus.flatMap { states.held.wrappedValue[$0.index] } }
+            nonmutating set { if let index = focus?.index { states.held.wrappedValue[index] = newValue } }
         }
 
-        /// The throw or the approach of the input in focus going on, where one does.
+        /// The throw or the approach of the axis in focus going on, where one does.
         var flung: LayoutFling? {
-            get { focus.flatMap { states.flung.wrappedValue[$0.kind] } }
-            nonmutating set { if let kind = focus?.kind { states.flung.wrappedValue[kind] = newValue } }
+            get { focus.flatMap { states.flung.wrappedValue[$0.index] } }
+            nonmutating set { if let index = focus?.index { states.flung.wrappedValue[index] = newValue } }
         }
 
-        /// Whether the input in focus moves its axis by its logarithm: a magnification, multiplied by the fingers.
-        var multiplies: Bool { focus?.kind == .magnification }
+        /// Where a swiping hand took the axis in focus, while it holds it.
+        var grip: LayoutGrip? {
+            get { focus.flatMap { states.grip.wrappedValue[$0.index] } }
+            nonmutating set { if let index = focus?.index { states.grip.wrappedValue[index] = newValue } }
+        }
+
+        /// Whether the axis in focus is moved by its logarithm: a magnification, multiplied by the fingers.
+        var multiplies: Bool { focus?.gesture == .magnification }
 
         /// `value` of the axis in focus where the hand works on it - its logarithm for a magnification - and back.
         func toHand(_ value: Double) -> Double { multiplies ? log(max(value, .leastNormalMagnitude)) : value }
         func fromHand(_ point: Double) -> Double { multiplies ? exp(point) : point }
 
         // MARK: - The phase
-
-        /// The lowest and the highest target on the hand's axis.
-        var low: Double { stops.first ?? 0 }
-        var high: Double { stops.last ?? 0 }
 
         /// Where `phase` stands on the hand's axis.
         func onAxis(_ phase: Phase) -> Double {
@@ -144,7 +150,7 @@ extension LayoutEngine {
             guard !held.isEmpty else { return nil }
 
             var holding = phase
-            for hand in hands { if let value = held[hand.kind] { holding[keyPath: hand.axis] = value } }
+            for hand in hands { if let value = held[hand.index] { holding[keyPath: hand.axis] = value } }
             return holding
         }
 
@@ -169,39 +175,13 @@ extension LayoutEngine {
             return [turn - 1, turn, turn + 1].flatMap { turn in values.map { $0 + turn * period } }
         }
 
-        /// Where the run comes to rest from `phase` once the hand lets go: an axis with targets of its own on the
-        /// nearest of them, and only by its own hand; every other axis at the nearest whole target, by the distance
-        /// over them - the hand's axis taken the turn nearest where it comes round.
+        /// Where the axis in focus comes to rest from `value` once let go: the snap nearest - a turn on or back where
+        /// it comes round - or, with none, `value` itself, inside the range of an axis that does not come round.
         /// Design: docs/design/views/layout-engine.md#coming-to-rest
-        func resting(near phase: Phase) -> Phase {
-            guard let axis else { return phase }
+        func resting(at value: Double) -> Double {
+            guard stops.isEmpty else { return nearest(value) }
 
-            var rest = phase
-            if let own = axisTargets[axis] {
-                rest[keyPath: axis] = nearest(of: around(own, near: phase[keyPath: axis]), to: phase[keyPath: axis])
-                return rest
-            }
-
-            let free = Phase.axes.filter { axisTargets[$0] == nil }
-            let turned = targets.map { target in placing(turnNearest(onAxis(target), to: onAxis(phase)), in: target) }
-            func apart(_ target: Phase) -> Double {
-                free.reduce(0) { sum, each in
-                    let gap = target[keyPath: each] - phase[keyPath: each]
-                    return sum + gap * gap
-                }
-            }
-
-            guard let whole = turned.min(by: { apart($0) < apart($1) }) else { return rest }
-
-            for each in free { rest[keyPath: each] = whole[keyPath: each] }
-            return rest
-        }
-
-        /// `value` a whole number of turns on or back, nearest `other`, where the hand's axis comes round.
-        func turnNearest(_ value: Double, to other: Double) -> Double {
-            guard let period else { return value }
-
-            return value + ((other - value) / period).rounded() * period
+            return period == nil ? min(max(value, low), high) : value
         }
 
         /// A place on the hand's axis the run passes or rests on, written where the hand holds it: a reading, not a
@@ -239,7 +219,7 @@ extension LayoutEngine {
         /// Design: docs/design/views/layout-engine.md#the-run
         func place(at now: Double, reducesMotion: Bool) -> EngineAnswer {
             let flying = hands.reduce(false) { flying, hand in
-                (on(hand.kind)?.fly(at: now, reducesMotion: reducesMotion) ?? false) || flying
+                on(hand).fly(at: now, reducesMotion: reducesMotion) || flying
             }
             let room = states.room.wrappedValue
 
@@ -276,9 +256,8 @@ extension LayoutEngine {
                 from = phase
             } else {
                 for hand in hands {
-                    guard let run = on(hand.kind),
-                          let passed = run.passed(from: run.onAxis(from), to: run.onAxis(phase))
-                    else { continue }
+                    let run = on(hand)
+                    guard let passed = run.passed(from: run.onAxis(from), to: run.onAxis(phase)) else { continue }
                     from = run.placing(passed, in: from)
                 }
             }
@@ -353,98 +332,114 @@ extension LayoutEngine {
 
         // MARK: - The hand
 
-        /// The hand over the element, along the layout or - a pan - every way: each of its axes moves with it, and
-        /// let go the run goes on to one target for both, each axis with its part of the speed.
+        /// The hand over the element, along the layout or - a pan - every way: each axis it moves goes with it, and
+        /// let go they go on together, each with its part of the speed.
         /// Design: docs/design/views/layout-engine.md#a-pan
         func handMoved(_ gesture: GesturePhase, moved: Point, speed: Point) {
-            guard let down = on(.handDown), gesture == .ended || gesture == .cancelled,
-                  let across = thrown(gesture, speed: speed), let along = down.thrown(gesture, speed: speed),
-                  let axis, let downAxis = down.axis
-            else {
-                hand(gesture, moved: moved, speed: speed)
-                on(.handDown)?.hand(gesture, moved: moved, speed: speed)
-                return
+            let runs = hands.filter { $0.way != nil }.map(on)
+
+            switch gesture {
+            case .began, .changed:
+                for run in runs { run.hand(gesture, moved: moved) }
+            case .ended, .cancelled:
+                letGo(together: runs.compactMap { run in run.thrown(gesture, speed: speed).map { (run, $0) } })
             }
-
-            var ends = phase.journey.destination
-            ends[keyPath: axis] = across.end
-            ends[keyPath: downAxis] = along.end
-            let target = down.resting(near: resting(near: ends))
-            letGo(across, toward: target)
-            down.letGo(along, toward: target)
         }
 
-        /// A wheel's notches over the element: each axis of the hand stepped as they turn its way.
+        /// A wheel's notches over the element: each axis the hand moves stepped as they turn its way.
         func stepped(_ notches: Point) {
-            step(notches)
-            on(.handDown)?.step(notches)
+            for hand in hands where hand.way != nil { on(hand).step(notches) }
         }
 
-        /// The hand over the element on the axis in focus: it takes the run where it is shown, moves the axis with
-        /// it - less and less past an end of a run that does not come round - and names each target it passes; let
-        /// go, it throws the run on to the target nearest where the throw would end.
+        /// The hand over the element on the axis in focus: it takes the run where it is shown, and moves the axis
+        /// with it.
         /// Design: docs/design/views/layout-engine.md#the-hand
-        func hand(_ gesture: GesturePhase, moved: Point, speed: Point) {
-            let journey = phase.journey
-
+        func hand(_ gesture: GesturePhase, moved: Point) {
             switch gesture {
             case .began:
                 take(at: onAxis(live()))
-
             case .changed:
                 // A move with no beginning heard is one: the run is taken where it is shown.
-                let held = self.held ?? take(at: onAxis(journey.value))
+                let held = self.held ?? take(at: onAxis(phase.journey.value))
                 // A room not yet measured draws no view, so a hand over it moves none.
                 guard let per = unit(at: held) else { return }
 
-                let step = -(across ? moved.x : moved.y) / per
-                let free = period == nil ? runPoint(of: handPoint(of: held) + step) : held + step
-                let next = reach.map { min(max(free, $0.lowerBound), $0.upperBound) } ?? free
-
-                self.held = next
-                name(nearest(next))
-
+                move(by: -(across ? moved.x : moved.y) / per)
             case .ended, .cancelled:
-                guard let letting = thrown(gesture, speed: speed) else { return }
-
-                let thrown = abs(letting.speed) * letting.per >= Self.throwing ? letting.speed : 0
-                let target = swiped(from: letting.point, thrown: thrown).map { placing($0, in: journey.destination) }
-                    ?? resting(near: placing(letting.end, in: journey.destination))
-                states.grip.wrappedValue = nil
-                letGo(letting, toward: target)
+                break
             }
         }
 
-        /// The hand in focus letting go at `speed`, per second: where it held the run, the unit there, how fast it
-        /// went in units a second, and where its throw would end - held to the ends of a run that does not come
-        /// round; nil where it held nothing.
+        /// The axis in focus moved `step` of its unit where the hand works on it - a magnification's logarithm -
+        /// from where the hand holds it: less and less past an end of an axis that does not come round, no farther
+        /// than a swipe reaches, each snap it passes named.
+        func move(by step: Double) {
+            let point = toHand(held ?? take(at: onAxis(phase.journey.value)))
+            let (low, high) = (toHand(self.low), toHand(self.high))
+            let free = fromHand(period != nil ? point + step
+                : Self.given(Self.pulled(point, low: low, high: high) + step, low: low, high: high))
+            let next = reach.map { min(max(free, $0.lowerBound), $0.upperBound) } ?? free
+
+            held = next
+            if !stops.isEmpty { name(nearest(next)) }
+        }
+
+        /// The hand in focus letting go at `speed`, per second: where it held the axis, the unit there, how fast it
+        /// went and where its throw would end; nil where it held nothing.
         func thrown(_ gesture: GesturePhase, speed: Point) -> Letting? {
             guard let held else { return nil }
 
             let measured = unit(at: held)
             let per = measured ?? 1
             let thrown = gesture == .ended && measured != nil ? -(across ? speed.x : speed.y) / per : 0
-            let carried = held + Self.carried(thrown, by: throwing)
-            return Letting(point: held, per: per, speed: thrown, end: period == nil ? min(max(carried, low), high) : carried)
+            return letting(at: held, per: per, speed: thrown)
         }
 
-        /// The input in focus let go as `letting` says, the run resting at `target`: thrown on to a target ahead, it
-        /// goes on there as the input throws - onto the next target no slower than the layout's motion moves a
-        /// unit; let go still, thrown back or slower than that, it approaches the target under that motion over as
-        /// much of its length as the way left is of a unit.
+        /// The axis in focus let go at `value`, going `speed` units a second where the hand works on it, a unit
+        /// standing for `per` device units or degrees: where its throw would end - inside the range of an axis that
+        /// does not come round, and where it was let go for a hand too slow to throw.
+        func letting(at value: Double, per: Double, speed: Double) -> Letting {
+            let point = toHand(value)
+            let carried = abs(speed) * per >= Self.throwing ? point + Self.carried(speed, by: throwing) : point
+            let end = period == nil ? min(max(carried, toHand(low)), toHand(high)) : carried
+            return Letting(point: point, per: per, speed: speed, end: end)
+        }
+
+        /// Where the axis in focus comes to rest let go as `letting` says: a swipe thrown, the next snap of its reach
+        /// that way; otherwise where the throw ends, onto the snap nearest it.
+        func rest(of letting: Letting) -> Double {
+            let thrown = abs(letting.speed) * letting.per >= Self.throwing ? letting.speed : 0
+            return swiped(from: fromHand(letting.point), thrown: thrown) ?? resting(at: fromHand(letting.end))
+        }
+
+        /// The axes `lettings` holds let go at once: each named where it comes to rest, then each going on there
+        /// from where the hand left it. No journey of the phase: one would send the host walking an axis the hand
+        /// held, which nothing named while it held it, from where the host last had it.
         /// Design: docs/design/views/layout-engine.md#coming-onto-a-target
-        func letGo(_ letting: Letting, toward target: Phase) {
-            let journey = phase.journey
-            let value = onAxis(target)
+        func letGo(together lettings: [(run: Run, letting: Letting)]) {
+            let rests = lettings.map { $0.run.rest(of: $0.letting) }
+            for ((run, _), rest) in zip(lettings, rests) {
+                run.grip = nil
+                run.name(rest)
+            }
+            for ((run, letting), rest) in zip(lettings, rests) { run.goOn(letting, to: rest) }
+        }
+
+        /// The axis in focus let go as `letting` says, named already at `value`, where it comes to rest: thrown on to
+        /// a snap ahead, it goes on there as the input throws - onto the next snap no slower than the layout's
+        /// motion moves a unit; with no snaps, on to where its throw ends, always as the input throws; let go still,
+        /// thrown back or slower than that, it approaches the target under that motion over as much of its length
+        /// as the way left is of a unit.
+        /// Design: docs/design/views/layout-engine.md#coming-onto-a-target
+        func goOn(_ letting: Letting, to value: Double) {
             let along = toHand(value)
             let left = along - letting.point
             let motion = law.resolved(against: .standard)
             let flight = Self.flight(left, at: letting.speed, by: throwing)
-            let isThrow = abs(letting.speed) * letting.per >= Self.throwing && left * letting.speed > 0
-                && (!next(from: fromHand(letting.point), to: value) || flight <= abs(left) * Double(motion.milliseconds))
+            let onward = stops.isEmpty || !next(from: fromHand(letting.point), to: value)
+                || flight <= abs(left) * Double(motion.milliseconds)
+            let isThrow = abs(letting.speed) * letting.per >= Self.throwing && left * letting.speed > 0 && onward
 
-            name(value)
-            if target != placing(value, in: journey.destination) { _ = journey.move(to: target) }
             guard abs(left) * letting.per > Self.settled, !motion.isCustom || isThrow else {
                 held = nil
                 return
@@ -457,7 +452,7 @@ extension LayoutEngine {
                     flight: abs(left) * Double(motion.milliseconds), thrown: false)
         }
 
-        /// A hand letting go, where it works on its axis - a magnification's logarithm: where it held the run, how
+        /// An axis letting go, where the hand works on it - a magnification's logarithm: where it held the run, how
         /// many device units or degrees a unit stands for, its speed in units a second, and where its throw ends.
         struct Letting {
             let point: Double
@@ -466,64 +461,35 @@ extension LayoutEngine {
             let end: Double
         }
 
-        /// Two fingers over the element, a pinch and a rotation as one: each moves its own input's axis - a
-        /// magnification by how far they spread, a rotation by how far they turned - and let go, each goes on to the
-        /// target nearest where it would end. A view held by itself keeps the hand.
+        /// Two fingers over the element, a pinch and a rotation as one: each axis they move goes by its own input - a
+        /// magnification by how far they spread, a rotation by how far they turned - and let go, they go on together
+        /// to where each would end. A view held by itself keeps the hand.
         /// Design: docs/design/views/layout-engine.md#two-fingers
         func pinch(_ gesture: GesturePhase, scale: Double, degrees: Double, speed: Point) {
             guard states.item.wrappedValue == nil else { return }
 
-            if let magnification = on(.magnification), scale > 0 {
-                magnification.drive(gesture, step: log(scale), speed: speed.x)
+            var lettings: [(run: Run, letting: Letting)] = []
+            for hand in hands {
+                // How far the fingers moved the axis, how fast in units a second, and how many of theirs a unit is.
+                let (step, rate, per): (Double, Double, Double)
+                switch hand.gesture {
+                case .magnification: (step, rate, per) = (scale > 0 ? log(scale) : 0, speed.x, 100)
+                case .rotation(let unit): (step, rate, per) = (degrees / unit, speed.y / unit, unit)
+                case .hand: continue
+                }
+
+                let run = on(hand)
+                switch gesture {
+                case .began:
+                    run.take(at: run.onAxis(live()))
+                case .changed:
+                    run.move(by: step)
+                case .ended, .cancelled:
+                    guard let held = run.held else { continue }
+                    lettings.append((run, run.letting(at: held, per: per, speed: gesture == .ended ? rate : 0)))
+                }
             }
-            if let rotation = on(.rotation), case .rotation(let per) = rotation.focus?.gesture {
-                rotation.drive(gesture, step: degrees / per, speed: speed.y / per)
-            }
-        }
-
-        /// The input in focus moved `step` of its unit where the hand works on its axis - its logarithm for a
-        /// magnification - going `speed` units a second as it lets go: the axis taken where it is shown, moved
-        /// with the hand - less and less past an end - and let go, thrown on or brought onto a target as the hand's
-        /// own run is.
-        func drive(_ gesture: GesturePhase, step: Double, speed: Double) {
-            let journey = phase.journey
-            let points = stops.map(toHand)
-            let (low, high) = (points.first ?? 0, points.last ?? 0)
-
-            switch gesture {
-            case .began:
-                take(at: onAxis(live()))
-
-            case .changed:
-                let held = self.held ?? take(at: onAxis(journey.value))
-                let point = toHand(held)
-                let moved = period != nil ? point + step
-                    : Self.given(Self.pulled(point, low: low, high: high) + step, low: low, high: high)
-
-                self.held = fromHand(moved)
-                name(nearest(fromHand(moved)))
-
-            case .ended, .cancelled:
-                guard let held = self.held else { return }
-
-                let point = toHand(held)
-                let thrown = gesture == .ended ? speed : 0
-                let carried = point + Self.carried(thrown, by: throwing)
-                let end = period == nil ? min(max(carried, low), high) : carried
-                letGo(
-                    Letting(point: point, per: perUnit, speed: thrown, end: end),
-                    toward: resting(near: placing(fromHand(end), in: journey.destination)))
-            }
-        }
-
-        /// How many device units, or degrees, a unit of the input in focus stands for, by which it is judged thrown
-        /// or settled: a magnification's logarithm is a hundred.
-        var perUnit: Double {
-            switch focus?.gesture {
-            case .rotation(let degrees)?: degrees
-            case .magnification?: 100
-            default: unit(at: held ?? 0) ?? 1
-            }
+            if !lettings.isEmpty { letGo(together: lettings) }
         }
 
         /// Where the hand stands for the run at `point`, the ends at `low` and `high`: past one, as far beyond it as
@@ -541,19 +507,6 @@ extension LayoutEngine {
         /// Whether `to` is the next target from `from` on the hand's axis: none stands between them.
         func next(from: Double, to: Double) -> Bool {
             !around(stops, near: from).contains { min(from, to) < $0 && $0 < max(from, to) }
-        }
-
-        /// Where the hand stands, in units of the axis, for the run standing at `value`: past an end of a run
-        /// that does not come round, as far beyond it as the hand went for the run to give that much.
-        func handPoint(of value: Double) -> Double {
-            Self.pulled(value, low: low, high: high)
-        }
-
-        /// Where the run stands for the hand at `point`: past an end of a run that does not come round, less and
-        /// less of the way beyond it - `handPoint(of:)`'s inverse.
-        /// Design: docs/design/views/layout-engine.md#the-hand
-        func runPoint(of point: Double) -> Double {
-            Self.given(point, low: low, high: high)
         }
 
         /// How far past an end the run gives for the hand `beyond` it, in units: half as far at first, then less
@@ -585,7 +538,7 @@ extension LayoutEngine {
                 guard room.width > 0, room.height > 0 else { return nil }
                 return across ? room.width : room.height
             case .front:
-                if swipes, let grip = states.grip.wrappedValue { return grip.unit }
+                if swipes, let grip { return grip.unit }
                 return measured(at: value, from: states.from.wrappedValue ?? live())
             }
         }
@@ -624,13 +577,14 @@ extension LayoutEngine {
         /// How far either side of where the run stands the view in front is measured, in units of the phase.
         static var probe: Double { 0.01 }
 
-        /// A wheel's notches over the element: the run goes on from the target it is going to - a throw's or a
-        /// journey's - to the target as many on as the notches turned, under the layout's motion. A swipe's go one
-        /// target from where the run rests, and wait while it goes. A hand holding the run keeps it.
+        /// A wheel's notches over the element: the run goes on from where the axis in focus is going - a throw's or a
+        /// journey's end - to the snap as many on as the notches turned, or, with none, as far as a hand going a
+        /// notch's travel for each moves it, under the layout's motion. A swipe's go one snap from where the run
+        /// rests, and wait while it goes. A hand holding the run keeps it.
         /// Design: docs/design/views/layout-engine.md#a-wheels-notch
         func step(_ notches: Point) {
             let count = Int((-(across ? notches.x : notches.y)).rounded())
-            guard count != 0, !stops.isEmpty else { return }
+            guard count != 0 else { return }
             guard held == nil || flung != nil else { return }
 
             let journey = phase.journey
@@ -638,15 +592,15 @@ extension LayoutEngine {
                 guard flung == nil, journey.value == journey.destination else { return }
             }
             let start = live()
-            let along = stepped(onAxis(journey.destination), by: swipes ? count.signum() : count)
-            let target = resting(near: placing(along, in: journey.destination))
+            let from = onAxis(journey.destination)
+            let along = stops.isEmpty ? notched(from, by: count) : stepped(from, by: swipes ? count.signum() : count)
 
             flung = nil
             held = nil
-            send(to: target, from: start, speed: 0)
+            send(to: placing(along, in: journey.destination), from: start, speed: 0)
         }
 
-        /// The target `count` on from the one nearest `value` - back for fewer than nought - held to the ends of a run
+        /// The snap `count` on from the one nearest `value` - back for fewer than nought - held to the ends of a run
         /// that does not come round, a turn on or back where it does.
         func stepped(_ value: Double, by count: Int) -> Double {
             let turns: [Double] = period.map { period in
@@ -668,6 +622,16 @@ extension LayoutEngine {
             return stops[moved - Int(round) * stops.count] + (nearest.turn + round) * period
         }
 
+        /// Where `count` notches take an axis with no snaps from `value`: as far as a hand going `notch` device units
+        /// for each moves it, inside the range of an axis that does not come round.
+        func notched(_ value: Double, by count: Int) -> Double {
+            let moved = value + Double(count) * Self.notch / (unit(at: value) ?? Self.notch)
+            return period == nil ? min(max(moved, low), high) : moved
+        }
+
+        /// How far a wheel's notch moves an axis with no snaps, in device units.
+        static var notch: Double { 100 }
+
         /// The run taken by the hand at `value` on its axis: a journey or a throw under way stops there. A swiping
         /// hand grips it at the target nearest, with the unit the run would have standing there.
         @discardableResult
@@ -678,7 +642,7 @@ extension LayoutEngine {
                 let target = nearest(value)
                 let resting = placing(target, in: phase.journey.value)
                 let unit = travel == .front ? measured(at: target, from: resting) : unit(at: target)
-                states.grip.wrappedValue = LayoutGrip(target: target, unit: unit)
+                grip = LayoutGrip(target: target, unit: unit)
             }
             name(nearest(value))
             return value
@@ -688,7 +652,7 @@ extension LayoutEngine {
         /// one after; nil for a scroll.
         /// Design: docs/design/views/layout-engine.md#a-swipe
         var reach: ClosedRange<Double>? {
-            guard swipes, let grip = states.grip.wrappedValue else { return nil }
+            guard swipes, let grip else { return nil }
 
             return stepped(grip.target, by: -1)...stepped(grip.target, by: 1)
         }
@@ -697,7 +661,7 @@ extension LayoutEngine {
         /// took the run or the one beyond; let go still, the nearest of them. Nil for a scroll.
         /// Design: docs/design/views/layout-engine.md#a-swipe
         func swiped(from held: Double, thrown: Double) -> Double? {
-            guard let reach, let grip = states.grip.wrappedValue else { return nil }
+            guard let reach, let grip else { return nil }
 
             let targets = [reach.lowerBound, grip.target, reach.upperBound]
             guard thrown != 0 else { return nearest(of: targets, to: held) }

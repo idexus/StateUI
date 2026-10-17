@@ -105,7 +105,7 @@ stated size for this reason.
 ## Gallery view
 
 `GalleryView` is a `LayoutEngine` with the arithmetic of four shapes written,
-its phase the card in front and its snap targets one a card. The run follows a
+its phase the card in front and its snaps one a card. The run follows a
 finger, a trackpad and a wheel with no view built, nothing compared and no
 message sent; the one render is the card crossing, which tells the rest of the
 page which card the user is on. What the hand does - naming a card as the run

@@ -172,8 +172,7 @@ final class AndroidGestureTests: XCTestCase {
                     (0..<4).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, 100)) }
                 }
                 .phase(turn.projectedValue)
-                .input(.scroll(.horizontal, pointsPerUnit: 100))
-                .snapTargets([0, 1, 2, 3])
+                .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
                 .motion(.none)
                 .height(100)
             }

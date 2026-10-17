@@ -50,8 +50,7 @@ final class LayoutEngineTests: XCTestCase {
             LayoutEngine([1, 2]) { Text("\($0)") } placements: { _, _ in
                 [Placement(Rect(0, 0, 10, 10), zIndex: 5), Placement(Rect(20, 0, 10, 10))]
             }
-            .input(.scroll(.horizontal, pointsPerUnit: 100))
-            .snapTargets([0, 1])
+            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...1, snaps: .every(1))
             .node
         })
 
@@ -62,8 +61,7 @@ final class LayoutEngineTests: XCTestCase {
     func testTheHandIsHeardOnTheElementItself() throws {
         let patch = Renders().render(
             LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
-                .input(.scroll(.vertical, pointsPerUnit: 100))
-                .snapTargets([0, 1])
+                .axis(\.self, input: .scroll(.vertical, pointsPerUnit: 100), range: 0...1, snaps: .every(1))
                 .node)
         let layout = try XCTUnwrap(patch.first(.layoutEngine))
 
@@ -157,7 +155,7 @@ final class LayoutEngineTests: XCTestCase {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
         let renders = Renders()
-        func tree() -> Node { handTree(phase, handed: handed, targets: [0, 0.2, 0.5, 1]) }
+        func tree() -> Node { handTree(phase, handed: handed, range: 0...1, snaps: [0.2, 0.5]) }
 
         let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
 
@@ -189,8 +187,7 @@ final class LayoutEngineTests: XCTestCase {
                 ]
             }
             .phase(phase.projectedValue)
-            .input(.scroll(.horizontal))
-            .snapTargets([0, 1, 2])
+            .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
             .node
         }
         _ = bench.laid(renders, tree)
@@ -211,8 +208,7 @@ final class LayoutEngineTests: XCTestCase {
                 (0..<3).map { Placement(Rect((Double($0) - at) * room.width / 2, 0, 10, 10)) }
             }
             .phase(phase.projectedValue)
-            .input(.scroll(.horizontal))
-            .snapTargets([0, 1, 2])
+            .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
             .node
         }
         _ = renders.render(tree())
@@ -231,7 +227,7 @@ final class LayoutEngineTests: XCTestCase {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
         let renders = Renders()
-        func tree() -> Node { handTree(phase, handed: handed, targets: [0, 0.5, 1]) }
+        func tree() -> Node { handTree(phase, handed: handed, range: 0...1, snaps: [0.5]) }
 
         let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
 
@@ -252,7 +248,7 @@ final class LayoutEngineTests: XCTestCase {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
         let renders = Renders()
-        func tree() -> Node { handTree(phase, handed: handed, targets: [0, 0.5, 1]) }
+        func tree() -> Node { handTree(phase, handed: handed, range: 0...1, snaps: [0.5]) }
 
         _ = bench.laid(renders, tree)
 
@@ -274,7 +270,7 @@ final class LayoutEngineTests: XCTestCase {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
         let renders = Renders()
-        func tree() -> Node { handTree(phase, handed: handed, targets: [0, 1, 2, 3, 4, 5, 6]) }
+        func tree() -> Node { handTree(phase, handed: handed, range: 0...6) }
 
         _ = bench.laid(renders, tree)
 
@@ -310,8 +306,9 @@ final class LayoutEngineTests: XCTestCase {
             func tree() -> Node {
                 LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
                     .phase(phase.projectedValue)
-                    .input(.scroll(.horizontal, pointsPerUnit: 100, throwing: throwing))
-                    .snapTargets([0, 1, 2, 3, 4, 5, 6])
+                    .axis(
+                        \.self, input: .scroll(.horizontal, pointsPerUnit: 100, throwing: throwing), range: 0...6,
+                        snaps: .every(1))
                     .node
             }
 
@@ -330,7 +327,7 @@ final class LayoutEngineTests: XCTestCase {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
         let renders = Renders()
-        func tree() -> Node { handTree(phase, handed: handed, targets: [0, 1, 2]) }
+        func tree() -> Node { handTree(phase, handed: handed, range: 0...2) }
 
         _ = bench.laid(renders, tree)
 
@@ -352,7 +349,7 @@ final class LayoutEngineTests: XCTestCase {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
         let renders = Renders()
-        func tree() -> Node { handTree(phase, handed: handed, targets: [0, 1]) }
+        func tree() -> Node { handTree(phase, handed: handed, range: 0...1) }
 
         let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
 
@@ -387,9 +384,7 @@ final class LayoutEngineTests: XCTestCase {
                 return [Placement(Rect(0, 0, 10, 10))]
             }
             .phase(phase.projectedValue)
-            .input(.scroll(.horizontal, pointsPerUnit: 100))
-            .snapTargets([0, 1, 2, 3, 4, 5, 6])
-            .wraps(every: 7)
+            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...7, snaps: .every(1), wraps: true)
             .node
         }
 
@@ -404,15 +399,16 @@ final class LayoutEngineTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(standing(worn, as: JourneyLanes<Double>.self)).destination, 7)
     }
 
-    /// A layout of one view a hand moves, a hundred points a unit, over `targets`.
-    private func handTree(_ phase: State<Double>, handed: Handed? = nil, targets: [Double]) -> Node {
+    /// A layout of one view a hand moves, a hundred points a unit, over `range`, resting on `snaps`.
+    private func handTree(
+        _ phase: State<Double>, handed: Handed? = nil, range: ClosedRange<Double>, snaps: LayoutSnaps? = .every(1)
+    ) -> Node {
         LayoutEngine([1]) { Text("\($0)") } placements: { _, at in
             handed?.phases.append(at)
             return [Placement(Rect(0, 0, 10, 10))]
         }
         .phase(phase.projectedValue)
-        .input(.scroll(.horizontal, pointsPerUnit: 100))
-        .snapTargets(targets)
+        .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: range, snaps: snaps)
         .node
     }
 
@@ -421,7 +417,7 @@ final class LayoutEngineTests: XCTestCase {
     func testANotchStepsTheRunToTheNextTarget() throws {
         let phase = State(wrappedValue: 0.0)
         let renders = Renders()
-        func tree() -> Node { handTree(phase, targets: [0, 0.2, 0.5, 1]) }
+        func tree() -> Node { handTree(phase, range: 0...1, snaps: [0.2, 0.5]) }
 
         let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
 
@@ -448,9 +444,8 @@ final class LayoutEngineTests: XCTestCase {
         func tree() -> Node {
             LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
                 .phase(phase.projectedValue)
-                .input(.scroll(.horizontal, pointsPerUnit: 100))
-                .snapTargets([0, 1, 2, 3])
-                .wraps(every: 4)
+                .axis(
+                    \.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1), wraps: true)
                 .node
         }
         _ = bench.laid(renders, tree)
@@ -466,7 +461,7 @@ final class LayoutEngineTests: XCTestCase {
     func testANotchLeavesARunTheHandHolds() throws {
         let phase = State(wrappedValue: 0.0)
         let renders = Renders()
-        func tree() -> Node { handTree(phase, targets: [0, 1, 2]) }
+        func tree() -> Node { handTree(phase, range: 0...2) }
         _ = bench.laid(renders, tree)
 
         bench.hand(renders, tree, .began)
@@ -475,16 +470,19 @@ final class LayoutEngineTests: XCTestCase {
         XCTAssertEqual(phase.wrappedValue, 0)
     }
 
-    /// A HAND NEEDS ITS TARGETS: they say how far it moves the run and where it rests, so one given none hears no
-    /// hand and says why.
-    func testAHandWithNoSnapTargetsMovesNothing() throws {
-        let patch = Renders().render(
-            LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [] }
-                .input(.scroll(.vertical, pointsPerUnit: 50))
-                .node)
+    /// A NOTCH MOVES AN AXIS WITH NO SNAPS as far as a hand going a notch's travel would, and no farther than the
+    /// range's end.
+    func testANotchMovesAnAxisWithNoSnapsANotchsTravel() throws {
+        let phase = State(wrappedValue: 0.0)
+        let renders = Renders()
+        func tree() -> Node { handTree(phase, range: 0...1.5, snaps: nil) }
+        _ = bench.laid(renders, tree)
 
-        XCTAssertNil(try XCTUnwrap(patch.first(.layoutEngine)).events?[.handMoved])
-        XCTAssertTrue(hasComplained("given a scroll but no snap targets on the axis it drives"))
+        bench.step(renders, tree, Point(-1, 0))
+        XCTAssertEqual(phase.wrappedValue, 1, accuracy: 0.001, "a hundred points, a unit")
+
+        bench.step(renders, tree, Point(-1, 0))
+        XCTAssertEqual(phase.wrappedValue, 1.5, accuracy: 0.001, "held to the end")
     }
 
     // MARK: - A tap
@@ -495,8 +493,7 @@ final class LayoutEngineTests: XCTestCase {
         let renders = Renders()
         let patch = renders.render(
             LayoutEngine([7, 8]) { Text("\($0)") } placements: { _, _ in [] }
-                .input(.scroll(.horizontal, pointsPerUnit: 100))
-                .snapTargets([0, 1])
+                .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...1, snaps: .every(1))
                 .onItemTapped { heard.append($0) }
                 .node)
         let layout = try XCTUnwrap(patch.first(.layoutEngine))

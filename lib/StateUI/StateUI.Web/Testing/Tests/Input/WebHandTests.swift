@@ -22,8 +22,7 @@ final class WebHandTests: XCTestCase {
                 (0..<3).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, room.height)) }
             }
             .phase(State(wrappedValue: 0.0).projectedValue)
-            .input(.scroll(.horizontal))
-            .snapTargets([0, 1, 2])
+            .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
             .width(300)
             .height(200)
         }
@@ -43,8 +42,7 @@ final class WebHandTests: XCTestCase {
                 (0..<3).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, room.height)) }
             }
             .phase(State(wrappedValue: 0.0).projectedValue)
-            .input(.scroll(.horizontal))
-            .snapTargets([0, 1, 2])
+            .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
             .itemDrag(begins: .held)
             .width(300)
             .height(200)

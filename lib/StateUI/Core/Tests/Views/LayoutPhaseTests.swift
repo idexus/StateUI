@@ -91,7 +91,7 @@ final class LayoutPhaseTests: XCTestCase {
         let handed = Handed()
         let orbit = State(wrappedValue: Orbit(turn: 0, zoom: 2))
         let renders = Renders()
-        let tree = handTree(orbit, handed: handed) { $0.snap(\.turn, to: [0, 1, 2]) }
+        let tree = handTree(orbit, handed: handed, range: 0...2)
         _ = bench.laid(renders, tree)
 
         bench.hand(renders, tree, .began)
@@ -106,7 +106,7 @@ final class LayoutPhaseTests: XCTestCase {
         let handed = Handed()
         let orbit = State(wrappedValue: Orbit())
         let renders = Renders()
-        let tree = handTree(orbit, handed: handed) { $0.snap(\.turn, to: [0, 1, 2]) }
+        let tree = handTree(orbit, handed: handed, range: 0...2)
         let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
 
         orbit.wrappedValue.zoom = 2
@@ -123,7 +123,7 @@ final class LayoutPhaseTests: XCTestCase {
     func testNamingTheTurnLeavesTheZoomOnItsWay() throws {
         let orbit = State(wrappedValue: Orbit())
         let renders = Renders()
-        let tree = handTree(orbit) { $0.snap(\.turn, to: [0, 1, 2]) }
+        let tree = handTree(orbit, range: 0...2)
         let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
 
         orbit.wrappedValue.zoom = 2
@@ -138,13 +138,12 @@ final class LayoutPhaseTests: XCTestCase {
         XCTAssertEqual(journey.destination, Orbit(turn: 1, zoom: 2), "and still going where it was sent")
     }
 
-    /// PAST ITS AXIS'S LAST TARGET THE HAND MOVES THE RUN LESS AND LESS - a unit past it gives three tenths: the
-    /// targets of its own axis are its ends.
-    func testTheHandsEndsAreTheTargetsOfItsAxis() throws {
+    /// PAST ITS RANGE'S END THE HAND MOVES THE RUN LESS AND LESS - a unit past it gives three tenths.
+    func testPastItsRangesEndTheHandMovesTheRunLessAndLess() throws {
         let handed = Handed()
         let orbit = State(wrappedValue: Orbit(turn: 3, zoom: 1))
         let renders = Renders()
-        let tree = handTree(orbit, handed: handed) { $0.snap(\.turn, to: [1, 3]) }
+        let tree = handTree(orbit, handed: handed, range: 1...3, snaps: .limits)
         _ = bench.laid(renders, tree)
 
         bench.hand(renders, tree, .began)
@@ -153,27 +152,14 @@ final class LayoutPhaseTests: XCTestCase {
         XCTAssertEqual(handed.phases.last?.turn ?? 0, 3.3, accuracy: 0.001)
     }
 
-    /// A HAND NEEDS TARGETS ON ITS OWN AXIS: one driving an axis no target names hears no hand and says why.
-    func testAHandWithNoTargetsOnItsAxisMovesNothing() throws {
-        let patch = Renders().render(
-            LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [] }
-                .phase(State(wrappedValue: Orbit()).projectedValue)
-                .input(.scroll(.vertical, pointsPerUnit: 50), drives: \.zoom)
-                .snap(\.turn, to: [0, 1])
-                .node)
-
-        XCTAssertNil(try XCTUnwrap(patch.first(.layoutEngine)).events?[.handMoved])
-        XCTAssertTrue(hasComplained("given a scroll but no snap targets on the axis it drives"))
-    }
-
     // MARK: - Coming to rest
 
-    /// AN AXIS WITH TARGETS OF ITS OWN RESTS ON THEM ALONE: the hand lets go of the turn and the turn comes onto its
-    /// nearest; the zoom, where the program left it between its own targets, stays.
-    func testLetGoTheAxisRestsOnItsOwnTargetsAndLeavesTheOthers() throws {
+    /// AN AXIS RESTS ON ITS OWN SNAPS ALONE: the hand lets go of the turn and the turn comes onto its nearest; the
+    /// zoom, where the program left it, stays.
+    func testLetGoTheAxisRestsOnItsOwnSnapsAndLeavesTheOthers() throws {
         let orbit = State(wrappedValue: Orbit(turn: 0, zoom: 1.3))
         let renders = Renders()
-        let tree = handTree(orbit) { $0.snap(\.turn, to: [0, 1, 2]).snap(\.zoom, to: [1, 2]) }
+        let tree = handTree(orbit, range: 0...2)
         let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
 
         bench.hand(renders, tree, .began)
@@ -184,40 +170,19 @@ final class LayoutPhaseTests: XCTestCase {
         XCTAssertEqual(journey.destination, Orbit(turn: 1, zoom: 1.3))
     }
 
-    /// WHOLE STATES ARE THE COMBINATIONS THE RUN MAY REST AT: the hand passing names its own axis alone, and letting
-    /// go sends every axis to the nearest whole state.
-    func testWholeStatesAreTheCombinationsTheRunMayRestAt() throws {
-        let targets = [Orbit(turn: 0, zoom: 1), Orbit(turn: 1, zoom: 2), Orbit(turn: 2, zoom: 2)]
-        let orbit = State(wrappedValue: Orbit(turn: 0, zoom: 1))
-        let renders = Renders()
-        let tree = handTree(orbit) { $0.snapTargets(targets) }
-        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
-
-        bench.hand(renders, tree, .began)
-        bench.hand(renders, tree, .changed, moved: Point(-120, 0))
-        XCTAssertEqual(orbit.wrappedValue, Orbit(turn: 1, zoom: 1), "the turn passed named, nothing else")
-
-        bench.hand(renders, tree, .ended)
-        XCTAssertEqual(try XCTUnwrap(standing(worn, as: JourneyLanes<Orbit>.self)).destination, Orbit(turn: 1, zoom: 2),
-                       "the nearest whole state, its zoom with it")
-    }
-
     // MARK: - The bench
 
-    /// A layout of one view whose hand drives the turn, a hundred points a unit, its targets given by `targets`.
+    /// A layout of one view whose hand moves the turn, a hundred points a unit, over `range`, resting on `snaps`.
     private func handTree(
-        _ orbit: State<Orbit>, handed: Handed? = nil,
-        _ targets: @escaping (LayoutEngine<[Int], Int, Orbit>) -> LayoutEngine<[Int], Int, Orbit>
+        _ orbit: State<Orbit>, handed: Handed? = nil, range: ClosedRange<Double>, snaps: LayoutSnaps = .every(1)
     ) -> () -> Node {
         {
-            targets(
-                LayoutEngine([1]) { Text("\($0)") } placements: { _, phase in
-                    handed?.phases.append(phase)
-                    return [Placement(Rect(0, 0, 10, 10))]
-                }
-                .phase(orbit.projectedValue)
-                .input(.scroll(.horizontal, pointsPerUnit: 100), drives: \.turn)
-            )
+            LayoutEngine([1]) { Text("\($0)") } placements: { _, phase in
+                handed?.phases.append(phase)
+                return [Placement(Rect(0, 0, 10, 10))]
+            }
+            .phase(orbit.projectedValue)
+            .axis(\.turn, input: .scroll(.horizontal, pointsPerUnit: 100), range: range, snaps: snaps)
             .node
         }
     }

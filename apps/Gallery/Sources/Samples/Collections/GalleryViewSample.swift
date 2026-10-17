@@ -7,21 +7,21 @@ struct GalleryViewSample: SampleContent, ExampleContent {
     static let summary = "A run of cards the user swipes through - a wheel, a fan, a row or a deck, chosen with .arrangement."
 
     // listing: GalleryViewSample
-    /// Every card the gallery can hold: what each picture is called and which
-    /// file it is, dealt in this order.
+    /// Every card the gallery can hold - the gallery's groups, each its name
+    /// and its picture as the home page shows it - dealt in this order.
     static let all: [Card] = [
-        Card(name: "Mural", art: "art_mural.png"),
-        Card(name: "Nebula", art: "art_nebula.png"),
-        Card(name: "Ridge", art: "art_ridge.png"),
-        Card(name: "Bloom", art: "art_bloom.png"),
-        Card(name: "Tide", art: "art_tide.png"),
-        Card(name: "Prism", art: "art_prism.png"),
-        Card(name: "Grove", art: "art_grove.png"),
-        Card(name: "Ember", art: "art_ember.png"),
-        Card(name: "Aurora", art: "art_aurora.png"),
-        Card(name: "Coral", art: "art_coral.png"),
-        Card(name: "Dune", art: "art_dune.png"),
-        Card(name: "Lagoon", art: "art_lagoon.png"),
+        Card(name: "Fundamentals", art: "cat_fundamentals.png"),
+        Card(name: "Driven values", art: "cat_driven.png"),
+        Card(name: "Using state", art: "cat_state.png"),
+        Card(name: "Animation", art: "cat_animation.png"),
+        Card(name: "Controls", art: "cat_basicinput.png"),
+        Card(name: "Text & typing", art: "cat_text.png"),
+        Card(name: "Layout", art: "cat_layout.png"),
+        Card(name: "Styles", art: "cat_styles.png"),
+        Card(name: "Shapes", art: "cat_shapes.png"),
+        Card(name: "Items and Cards", art: "cat_collections.png"),
+        Card(name: "Gestures", art: "cat_gestures.png"),
+        Card(name: "Media", art: "cat_media.png"),
     ]
 
     /// One card's face.

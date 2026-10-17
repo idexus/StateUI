@@ -106,10 +106,8 @@ private struct FingersPage: View {
             return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
         .phase($dial)
-        .input(.scroll(.horizontal, pointsPerUnit: 100), drives: \.turn)
-        .input(.magnification, drives: \.zoom)
-        .snap(\.turn, to: [0, 1, 2, 3, 4])
-        .snap(\.zoom, to: [1, 2])
+        .axis(\.turn, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
+        .axis(\.zoom, input: .magnification, range: 1...2, snaps: .limits)
         .motion(.eased(.milliseconds(200), .linear))
     }
 }

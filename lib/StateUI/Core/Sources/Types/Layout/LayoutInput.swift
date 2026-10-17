@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What moves a layout engine's phase under the user's hand. This library's own.
+/// What moves an axis of a layout engine's phase under the user's hand. This library's own.
 ///
 ///     LayoutEngine(cards, id: \.name) { … } placements: { room, phase in … }
 ///         .phase($turn)
-///         .input(.scroll(.horizontal))
+///         .axis(\.self, input: .scroll(.horizontal), range: 0...6, snaps: .every(1))
 ///
 /// Design: docs/design/views/layout-engine.md#the-hand
 public struct LayoutInput: Equatable, Sendable {
@@ -30,11 +30,11 @@ public struct LayoutInput: Equatable, Sendable {
         case room
     }
 
-    /// What moves the phase: a hand along an axis, two fingers spreading or two fingers turning.
+    /// What moves the axis: a hand one way, two fingers spreading or two fingers turning.
     /// Design: docs/design/views/layout-engine.md#two-fingers
     enum Gesture: Equatable, Sendable {
         /// A finger or a pointer dragged, a trackpad's two fingers and a wheel along `axis`, so far for a unit,
-        /// one snap target a hand where it `swipes`.
+        /// one snap a hand where it `swipes`.
         case hand(Axis, Travel, swipes: Bool)
 
         /// Two fingers spreading: the axis multiplied by how far they spread.
@@ -42,21 +42,6 @@ public struct LayoutInput: Equatable, Sendable {
 
         /// Two fingers turning: a unit every so many degrees.
         case rotation(degreesPerUnit: Double)
-
-        /// Which of the layout's hands it is: one input a kind.
-        var kind: Kind {
-            switch self {
-            case .hand: .hand
-            case .magnification: .magnification
-            case .rotation: .rotation
-            }
-        }
-    }
-
-    /// The hands a layout may have, one input each: the one along its axis - a pan's across, and its down - and the
-    /// two fingers' two.
-    enum Kind: Hashable, Sendable, CaseIterable {
-        case hand, handDown, magnification, rotation
     }
 
     /// What moves the phase.
@@ -65,13 +50,15 @@ public struct LayoutInput: Equatable, Sendable {
     /// How a throw goes on once the hand lets go: how far it carries, and the curve it slows on.
     public let throwing: Motion
 
-    /// The hand over the views: a finger or a pointer dragged, a trackpad's two fingers and a wheel move the phase
-    /// with them; let go with speed, the run is thrown on to the snap target nearest where the throw would end, as
-    /// `throwing` says, and let go still it comes onto the nearest under the layout's motion, a unit a length.
+    /// The hand over the views: a finger or a pointer dragged, a trackpad's two fingers and a wheel move the axis
+    /// with them; let go with speed, the run is thrown on to where the throw would end - the snap nearest it, where
+    /// the axis has snaps - as `throwing` says, and let go still it comes onto the nearest under the layout's motion,
+    /// a unit a length. Two axes scrolled one across and one down are a pan: the hand moves both, whichever way it
+    /// goes.
     ///
-    ///     .input(.scroll(.horizontal))
-    ///     .input(.scroll(.horizontal, throwing: .spring(response: .milliseconds(500), damping: 0.7)))
-    ///     .input(.scroll(.horizontal, pointsPerUnit: 90, throwing: .eased(.milliseconds(400), .sineOut)))
+    ///     .axis(\.self, input: .scroll(.horizontal), range: 0...6, snaps: .every(1))
+    ///     .axis(\.self, input: .scroll(.horizontal, throwing: .spring(response: .milliseconds(500))), …)
+    ///     .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...3)
     ///
     /// - Parameters:
     ///   - axis: which way it scrolls.
@@ -89,19 +76,19 @@ public struct LayoutInput: Equatable, Sendable {
         LayoutInput(gesture: .hand(axis, travel(pointsPerUnit), swipes: false), throwing: throwing)
     }
 
-    /// One snap target a hand: the hand moves the run with it, but one target at most either way from where it took
-    /// it, however far it goes - a trackpad's quick flick included - and let go with speed, the run goes on to the
-    /// next target that way and no farther; a wheel's notch swipes it one target from where it rests. Cards swiped
-    /// one by one; a page at a time.
+    /// One snap a hand: the hand moves the run with it, but one snap at most either way from where it took it,
+    /// however far it goes - a trackpad's quick flick included - and let go with speed, the run goes on to the next
+    /// snap that way and no farther; a wheel's notch swipes it one snap from where it rests. Cards swiped one by
+    /// one; a page at a time. Its axis needs snaps.
     ///
-    ///     .input(.swipe(.horizontal))
+    ///     .axis(\.self, input: .swipe(.horizontal), range: 0...6, snaps: .every(1))
     ///
     /// - Parameters:
     ///   - axis: which way it swipes.
     ///   - pointsPerUnit: how far the hand travels for one unit of the phase, in device units; one at least. Unless
     ///     said, as far as the view drawn in front moves for one unit as the hand takes the run - measured as if the
-    ///     run stood on the target nearest, and kept while the hand holds it.
-    ///   - throwing: how the run goes on to the next target once thrown; a light friction unless said.
+    ///     run stood on the snap nearest, and kept while the hand holds it.
+    ///   - throwing: how the run goes on to the next snap once thrown; a light friction unless said.
     /// - Returns: the input.
     public static func swipe(
         _ axis: Axis, pointsPerUnit: Double? = nil, throwing: Motion = .eased(.milliseconds(400), .cubicOut)
@@ -110,10 +97,10 @@ public struct LayoutInput: Equatable, Sendable {
     }
 
     /// A page a hand: a swipe whose hand travels the room's length along `axis` for one unit of the phase, so a
-    /// board is a screen however the room turns - the hand moves the run one snap target at most, and thrown, on to
-    /// the next page and no farther.
+    /// board is a screen however the room turns - the hand moves the run one snap at most, and thrown, on to the
+    /// next page and no farther.
     ///
-    ///     .input(.pages(.horizontal))
+    ///     .axis(\.self, input: .pages(.horizontal), range: 0...3, snaps: .every(1))
     ///
     /// - Parameters:
     ///   - axis: which way the pages turn.
@@ -125,11 +112,11 @@ public struct LayoutInput: Equatable, Sendable {
 
     /// Two fingers spreading or pinching - on a touch screen, or a trackpad's pinch: the axis is a magnification,
     /// multiplied by how far the fingers spread, so their distance doubled doubles it and halved halves it. Let go
-    /// with speed, it goes on to the snap target nearest where it would end, with a light friction; let go still,
-    /// onto the nearest. Its targets stand above nought.
+    /// with speed, it goes on to where it would end - the snap nearest it, where the axis has snaps - with a light
+    /// friction; let go still, onto the nearest. Its range stands above nought.
     ///
-    ///     .input(.magnification, drives: \.zoom)
-    ///     .snap(\.zoom, to: [0.5, 1, 2])
+    ///     .axis(\.zoom, input: .magnification, range: 0.5...2)
+    ///     .axis(\.zoom, input: .magnification, range: 0.5...2, snaps: [1])
     ///
     /// Two fingers turning at once may move another axis by `rotation(degreesPerUnit:)`, and the hand - a pan, a
     /// scroll - goes on with their middle.
@@ -139,7 +126,7 @@ public struct LayoutInput: Equatable, Sendable {
 
     /// The same, thrown on as `throwing` says.
     ///
-    ///     .input(.magnification(throwing: .spring(response: .milliseconds(500), damping: 0.8)), drives: \.zoom)
+    ///     .axis(\.zoom, input: .magnification(throwing: .spring(response: .milliseconds(500))), range: 1...4)
     ///
     /// - Parameter throwing: how the axis goes on once let go.
     /// - Returns: the input.
@@ -148,12 +135,12 @@ public struct LayoutInput: Equatable, Sendable {
     }
 
     /// Two fingers turning - on a touch screen, or a trackpad's rotation: the axis moves a unit for every
-    /// `degreesPerUnit` the fingers turn, growing as they turn clockwise. Let go with speed, it goes on to the snap
-    /// target nearest where it would end, as `throwing` says; let go still, onto the nearest.
+    /// `degreesPerUnit` the fingers turn, growing as they turn clockwise. Let go with speed, it goes on to where it
+    /// would end - the snap nearest it, where the axis has snaps - as `throwing` says; let go still, onto the
+    /// nearest.
     ///
-    ///     .input(.rotation(degreesPerUnit: 360 / Double(cards.count)), drives: \.turn)
-    ///     .snap(\.turn, to: cards.indices.map(Double.init))
-    ///     .wraps(\.turn, every: Double(cards.count))
+    ///     .axis(\.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, wraps: true)
+    ///     .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), wraps: true)
     ///
     /// - Parameters:
     ///   - degreesPerUnit: how far the fingers turn for one unit of the axis, in degrees; above nought.

@@ -575,8 +575,7 @@ extension ControlDictionary {
                 }
             }
             .phase($turn)
-            .input(.scroll(.horizontal))
-            .snapTargets([0, 1, 2])
+            .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
             .height(160)
             """#),
 

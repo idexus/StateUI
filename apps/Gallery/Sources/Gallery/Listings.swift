@@ -661,7 +661,7 @@ enum Listings {
             .background(Palette.dangerWash)
         """#,
         "AppSwitcherSample": #"""
-        // Sources/Samples/Layout/AppSwitcherSample.swift
+        // Sources/Samples/LayoutEngine/AppSwitcherSample.swift
         import StateUIFoundation
 
         /// One running app: its name, which is its identity, and its picture -
@@ -697,8 +697,6 @@ enum Listings {
 
             return Grid {
                 Grid {
-                    Rectangle(Palette.raised)
-
                     LayoutEngine(running, id: \.name) { app in
                         AppCard(app: app, index: running.firstIndex(of: app) ?? 0, turn: $turn)
                     } placements: { room, turn in
@@ -707,8 +705,10 @@ enum Listings {
                     .phase($turn)
                     // Thrown as the gallery's home turns its cards: a spring that
                     // carries the hand on and settles.
-                    .input(.scroll(.horizontal, throwing: .spring(response: .milliseconds(500), damping: 0.8)))
-                    .snapTargets(running.indices.map(Double.init))
+                    .axis(
+                        \.self,
+                        input: .scroll(.horizontal, throwing: .spring(response: .milliseconds(500), damping: 0.8)),
+                        range: 0...Double(max(count - 1, 0)), snaps: .every(1))
                     // A FIRST MOVE UP is the card's: it follows the hand; let go
                     // high or fast, it flies off and the app closes - the others
                     // close up, the card in front staying in front.
@@ -1603,7 +1603,7 @@ enum Listings {
         }
         """#,
         "ChangingDeckSample": #"""
-        // Sources/Samples/Layout/ChangingDeckSample.swift
+        // Sources/Samples/LayoutEngine/ChangingDeckSample.swift
         /// One card: its name, which is its identity, its colour and its icon.
         struct Card: Hashable {
             let name: String
@@ -1632,8 +1632,6 @@ enum Listings {
         var body: some View {
             Grid {
                 Grid {
-                    Rectangle(Palette.raised)
-
                     deck
                 }
                 .gridRow(0)
@@ -1710,8 +1708,9 @@ enum Listings {
             }
             .phase($turn)
             // The pile is swiped a card at a time, the fan scrolled through.
-            .input(fanned ? .scroll(.horizontal) : .swipe(.horizontal))
-            .snapTargets(cards.indices.map(Double.init))
+            .axis(
+                \.self, input: fanned ? .scroll(.horizontal) : .swipe(.horizontal),
+                range: 0...Double(max(count - 1, 0)), snaps: .every(1))
             // A CARD PULLED UP is the hand's alone: let go far enough, it flies
             // out of the deck and leaves it; short of that, it goes back.
             .itemDrag(begins: .across)
@@ -3694,21 +3693,21 @@ enum Listings {
         """#,
         "GalleryViewSample": #"""
         // Sources/Samples/Collections/GalleryViewSample.swift
-        /// Every card the gallery can hold: what each picture is called and which
-        /// file it is, dealt in this order.
+        /// Every card the gallery can hold - the gallery's groups, each its name
+        /// and its picture as the home page shows it - dealt in this order.
         static let all: [Card] = [
-            Card(name: "Mural", art: "art_mural.png"),
-            Card(name: "Nebula", art: "art_nebula.png"),
-            Card(name: "Ridge", art: "art_ridge.png"),
-            Card(name: "Bloom", art: "art_bloom.png"),
-            Card(name: "Tide", art: "art_tide.png"),
-            Card(name: "Prism", art: "art_prism.png"),
-            Card(name: "Grove", art: "art_grove.png"),
-            Card(name: "Ember", art: "art_ember.png"),
-            Card(name: "Aurora", art: "art_aurora.png"),
-            Card(name: "Coral", art: "art_coral.png"),
-            Card(name: "Dune", art: "art_dune.png"),
-            Card(name: "Lagoon", art: "art_lagoon.png"),
+            Card(name: "Fundamentals", art: "cat_fundamentals.png"),
+            Card(name: "Driven values", art: "cat_driven.png"),
+            Card(name: "Using state", art: "cat_state.png"),
+            Card(name: "Animation", art: "cat_animation.png"),
+            Card(name: "Controls", art: "cat_basicinput.png"),
+            Card(name: "Text & typing", art: "cat_text.png"),
+            Card(name: "Layout", art: "cat_layout.png"),
+            Card(name: "Styles", art: "cat_styles.png"),
+            Card(name: "Shapes", art: "cat_shapes.png"),
+            Card(name: "Items and Cards", art: "cat_collections.png"),
+            Card(name: "Gestures", art: "cat_gestures.png"),
+            Card(name: "Media", art: "cat_media.png"),
         ]
 
         /// One card's face.
@@ -4136,7 +4135,7 @@ enum Listings {
         }
         """#,
         "HomeScreenSample": #"""
-        // Sources/Samples/Layout/HomeScreenSample.swift
+        // Sources/Samples/LayoutEngine/HomeScreenSample.swift
         /// One icon: its name, which is its identity, its glyph and its colour.
         struct HomeIcon: Hashable {
             let name: String
@@ -4221,8 +4220,6 @@ enum Listings {
 
             return Grid {
                 Grid {
-                    Rectangle(Palette.raised)
-
                     // THE BOARDS: a unit of the phase is the room's width, so a
                     // board is the room however wide it grows.
                     LayoutEngine(icons, id: \.name) { icon in
@@ -4231,8 +4228,7 @@ enum Listings {
                         (0..<count).map { place($0, board, room, fit) }
                     }
                     .phase($board)
-                    .input(.pages(.horizontal))
-                    .snapTargets((0..<boards).map(Double.init))
+                    .axis(\.self, input: .pages(.horizontal), range: 0...Double(boards - 1), snaps: .every(1))
                     // HELD, AN ICON LEAVES ITS BOARD for the hand: each move
                     // gives it the slot under the hand, and the others travel to
                     // make room; held still at an edge, the boards turn under it.
@@ -5117,6 +5113,119 @@ enum Listings {
             }
         }
         """#,
+        "LayoutAxesSample": #"""
+        // Sources/Samples/LayoutEngine/LayoutAxesSample.swift
+        /// THE PHASE: five strips, each an axis of its own - which card stands in
+        /// the middle of the strip.
+        struct Strips: LayoutPhase {
+            var free = 1.5
+            var snapping = 1.0
+            var limits = 0.0
+            var round = 0.0
+            var stepping = 0.0
+
+            static var axes: [WritableKeyPath<Strips, Double>] {
+                [\.free, \.snapping, \.limits, \.round, \.stepping]
+            }
+        }
+
+        /// Each strip's declaration, shown over it.
+        static let declarations = [
+            "range: 0...3",
+            "range: 0...3, snaps: [1, 2]",
+            "range: 0...3, snaps: .limits",
+            "range: 0...4, wraps: true",
+            "range: 0...4, snaps: .every(1), wraps: true",
+        ]
+
+        /// The pictures on the cards: the gallery's groups'.
+        static let pictures = [
+            "cat_fundamentals.png", "cat_animation.png", "cat_layout.png", "cat_shapes.png",
+            "cat_gestures.png", "cat_media.png", "cat_styles.png", "cat_text.png",
+        ]
+
+        /// What the layout places for each strip: its words, the frame in its
+        /// middle a card rests in, and its four cards.
+        enum Part: Hashable {
+            case words(Int), frame(Int), card(Int, Int)
+        }
+
+        static let parts = declarations.indices.flatMap { strip in
+            [Part.words(strip), .frame(strip)] + (0..<4).map { Part.card(strip, $0) }
+        }
+
+        /// Where the strips stand - handed on with `$`, never read in the body.
+        @State private var strips = Strips()
+
+        var body: some View {
+            // ONE INPUT: the hand dragged across, carrying the cards with it...
+            let hand = LayoutInput.scroll(.horizontal)
+
+            return Grid {
+                LayoutEngine(Self.parts) { part in
+                    view(part)
+                } placements: { room, strips in
+                    Self.parts.map { place($0, strips, room) }
+                }
+                .phase($strips)
+                // ...MOVES FIVE STRIPS, each resting its own way: anywhere between
+                // its ends, coming back only from past one...
+                .axis(\.free, input: hand, range: 0...3)
+                // ...on a card - 1 or 2 - or on an end...
+                .axis(\.snapping, input: hand, range: 0...3, snaps: [1, 2])
+                // ...on an end alone: the first card or the last...
+                .axis(\.limits, input: hand, range: 0...3, snaps: .limits)
+                // ...round and round, anywhere - 4 is 0 a turn on...
+                .axis(\.round, input: hand, range: 0...4, wraps: true)
+                // ...and round and round, a card at a time.
+                .axis(\.stepping, input: hand, range: 0...4, snaps: .every(1), wraps: true)
+                .motion(.spring(response: .milliseconds(360), damping: 0.8))
+            }
+            .clipsContent(true)
+        }
+
+        /// The view for one part: words, a frame or a card.
+        @ViewBuilder
+        private func view(_ part: Part) -> some View {
+            switch part {
+            case .words(let strip):
+                Text(Self.declarations[strip])
+            case .frame:
+                Rectangle(Palette.field)
+            case .card(let strip, let index):
+                ZStack { Image(ImageSource(Self.pictures[(strip + index) % Self.pictures.count])).contentMode(.fill) }
+                    .clipsContent(true)
+            }
+        }
+
+        /// Where one part stands: a row a strip down the room, its words over it
+        /// and its frame in its middle; each card as far from the middle as its
+        /// strip's axis says - on a strip that comes round, the turn nearest the
+        /// middle, fading out at the strip's ends.
+        private func place(_ part: Part, _ strips: Strips, _ room: Rect) -> Placement {
+            let row = min(room.height / 5, 104)
+            let height = row - 34
+            let width = height * 0.75
+            let top = (room.height - 5 * row) / 2
+
+            switch part {
+            case .words(let strip):
+                return Placement(Rect(16, top + Double(strip) * row + 4, room.width - 32, 16))
+            case .frame(let strip):
+                return Placement(Rect(
+                    room.width / 2 - width / 2 - 4, top + Double(strip) * row + 20, width + 8, height + 8))
+            case .card(let strip, let index):
+                let along = Double(index) - strips[keyPath: Strips.axes[strip]]
+                let comesRound = strip >= 3
+                let step = comesRound ? along - ((along + 2) / 4).rounded(.down) * 4 : along
+
+                return Placement(
+                    Rect(room.width / 2 + step * (width + 10) - width / 2, top + Double(strip) * row + 24, width, height),
+                    opacity: comesRound ? min(max((2 - abs(step)) * 2, 0), 1) : 1,
+                    zIndex: 1)
+            }
+        }
+        """#,
         "LayoutDirectionSample": #"""
         // Sources/Samples/Layout/LayoutDirectionSample.swift
         var body: some View {
@@ -5147,18 +5256,22 @@ enum Listings {
         }
         """#,
         "LayoutEngineSample": #"""
-        // Sources/Samples/Layout/LayoutEngineSample.swift
+        // Sources/Samples/LayoutEngine/LayoutEngineSample.swift
         import StateUIFoundation
 
-        /// The cards: what each picture is called and which file it is.
+        /// The cards: the gallery's groups, each its name and its picture as the
+        /// home page shows it.
         static let cards: [Card] = [
-            Card(name: "Mural", art: "art_mural.png"),
-            Card(name: "Nebula", art: "art_nebula.png"),
-            Card(name: "Ridge", art: "art_ridge.png"),
-            Card(name: "Bloom", art: "art_bloom.png"),
-            Card(name: "Tide", art: "art_tide.png"),
-            Card(name: "Prism", art: "art_prism.png"),
-            Card(name: "Grove", art: "art_grove.png"),
+            Card(name: "Layout", art: "cat_layout.png"),
+            Card(name: "Layout Engine", art: "cat_layoutengine.png"),
+            Card(name: "Styles", art: "cat_styles.png"),
+            Card(name: "Shapes", art: "cat_shapes.png"),
+            Card(name: "Media", art: "cat_media.png"),
+            Card(name: "Navigation", art: "cat_navigation.png"),
+            Card(name: "Date & time", art: "cat_datetime.png"),
+            Card(name: "Fundamentals", art: "cat_fundamentals.png"),
+            Card(name: "Animation", art: "cat_animation.png"),
+            Card(name: "Gestures", art: "cat_gestures.png"),
         ]
 
         /// One card's face.
@@ -5176,9 +5289,11 @@ enum Listings {
 
         static let pieces = cards.indices.map(Piece.card) + cards.indices.map(Piece.dot)
 
-        /// How big a card is.
+        /// How big the place a card stands in is - what the ring is worked out
+        /// from - and how big the card is drawn in it.
         static let width = 176.0
         static let height = 248.0
+        static let card = 0.8
 
         /// How far the eye stands from the ring's front, in radii: the nearer it
         /// stands, the smaller a card at the back is drawn.
@@ -5230,14 +5345,14 @@ enum Listings {
         /// has no end: a turn on, it is the same card again.
         @State private var turn = Double(LayoutEngineSample.cards.count / 2)
 
+        /// The device - a phone's cards carry their names alone, smaller.
+        @Environment(\.device) private var device
+
         var body: some View {
             // A GRID rather than a stack: the board takes whatever room is left
             // over, which a stack cannot give a child - and a ring wants it all.
             Grid {
                 Grid {
-                    // THE BOARD, under everything.
-                    Rectangle(Palette.raised)
-
                     // THE CARDS, and what moves them - the whole of the example.
                     ring
                 }
@@ -5286,12 +5401,12 @@ enum Listings {
             // THE HAND OVER THE CARDS: a finger or a pointer dragged, a trackpad's
             // two fingers and a wheel all turn the ring, carrying the card in
             // front with them, and let go with speed it goes on to the card
-            // nearest where the throw would end.
-            .input(.scroll(.horizontal, throwing: throwing.motion))
-            // WHERE THE RING MAY COME TO REST: on a card, never between two - and
-            // round and round, a turn bringing every card back.
-            .snapTargets(Self.cards.indices.map(Double.init))
-            .wraps(every: Double(Self.cards.count))
+            // nearest where the throw would end. It rests on a card, never
+            // between two - and comes round, a turn of the range bringing every
+            // card back.
+            .axis(
+                \.self, input: .scroll(.horizontal, throwing: throwing.motion),
+                range: 0...Double(Self.cards.count), snaps: .every(1), wraps: true)
             // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
             // over every card, wearing the card's own corners - which is why it is
             // the application's to give and not the library's to draw.
@@ -5309,7 +5424,9 @@ enum Listings {
         /// the card is or which way it faces. That is the placement's, and keeping
         /// the two apart is what lets one run of cards be turned into any shape.
         private func face(_ card: Card) -> some View {
-            ZStack {
+            let phone = device.info.formFactor == .phone
+
+            return ZStack {
                 Grid {
                     Image(ImageSource(card.art))
                         .contentMode(.fill)
@@ -5321,9 +5438,12 @@ enum Listings {
                             .fontWeight(.bold)
                             .lineBreak(.tailTruncation)
 
-                        Text("Placed by arithmetic")
-                            .opacity(0.8)
-                            .lineBreak(.tailTruncation)
+                        // A phone's small card carries its name alone.
+                        if !phone {
+                            Text("Placed by arithmetic")
+                                .opacity(0.8)
+                                .lineBreak(.tailTruncation)
+                        }
                     }
                     // A dark strip under the words, so a caption reads over a
                     // picture of any colour.
@@ -5380,10 +5500,14 @@ enum Listings {
             let across = room.width / 2 + sin(angle) * radius * drawn
             let foot = horizon + tall * Self.above * drawn
 
+            // THE CARD AT ITS OWN SIZE, a little smaller than its place, standing
+            // on the ring where its place does.
+            let (cardWide, cardTall) = (wide * Self.card, tall * Self.card)
+
             return Placement(
-                // THE CARD AT ITS OWN SIZE, scaled about its middle to how big it
-                // is drawn - its words scale with it rather than wrapping anew.
-                Rect(across - wide / 2, foot - tall * drawn / 2 - tall / 2, wide, tall),
+                // Scaled about its middle to how big it is drawn - its words scale
+                // with it rather than wrapping anew.
+                Rect(across - cardWide / 2, foot - cardTall * drawn / 2 - cardTall / 2, cardWide, cardTall),
                 transform: .scale(drawn),
                 // THE FAR CARDS DARKEN. `shade` is the opacity of the view the
                 // layout was given by `.shade(_:)` - nothing at all without one -
@@ -5420,7 +5544,7 @@ enum Listings {
 
         """#,
         "LayoutPhaseSample": #"""
-        // Sources/Samples/Layout/LayoutPhaseSample.swift
+        // Sources/Samples/LayoutEngine/LayoutPhaseSample.swift
         /// THE PHASE: two numbers, each moved on its own - the turn by the hand,
         /// the spread by the switch.
         struct Deal: LayoutPhase {
@@ -5433,9 +5557,19 @@ enum Listings {
             static var axes: [WritableKeyPath<Deal, Double>] { [\.turn, \.spread] }
         }
 
-        /// The cards: a name and a colour each.
-        static let names = ["Mural", "Nebula", "Ridge", "Bloom", "Tide"]
-        static let colours = ["#7C3AED", "#2563EB", "#0D9488", "#D97706", "#DB2777"]
+        /// One card: its name, its colour and its icon.
+        struct Card {
+            let name: String
+            let colour: String
+            let icon: Icon
+        }
+
+        /// The cards, dealt in this order.
+        static let cards = [
+            Card(name: "Mural", colour: "#7C3AED", icon: .star), Card(name: "Nebula", colour: "#2563EB", icon: .heart),
+            Card(name: "Ridge", colour: "#0D9488", icon: .home), Card(name: "Bloom", colour: "#D97706", icon: .calendar),
+            Card(name: "Tide", colour: "#DB2777", icon: .mail),
+        ]
 
         /// Where the run stands on both axes - handed on with `$`, never read in
         /// the body.
@@ -5447,8 +5581,6 @@ enum Listings {
         var body: some View {
             Grid {
                 Grid {
-                    Rectangle(Palette.raised)
-
                     cards
                 }
                 .gridRow(0)
@@ -5472,16 +5604,17 @@ enum Listings {
 
         /// The cards, placed from both axes of the phase.
         private var cards: some View {
-            LayoutEngine(Array(Self.names.indices)) { index in
+            LayoutEngine(Array(Self.cards.indices)) { index in
                 face(index)
             } placements: { room, deal in
-                Self.names.indices.map { place($0, deal, room) }
+                Self.cards.indices.map { place($0, deal, room) }
             }
             .phase($deal)
-            // THE HAND DRIVES THE TURN ALONE, resting on a card; the spread has
-            // no hand, so it needs no targets.
-            .input(.scroll(.horizontal, pointsPerUnit: 90), drives: \.turn)
-            .snap(\.turn, to: Self.names.indices.map(Double.init))
+            // THE HAND MOVES THE TURN ALONE, resting on a card; the spread has
+            // no hand, so it is declared no axis.
+            .axis(
+                \.turn, input: .scroll(.horizontal, pointsPerUnit: 90),
+                range: 0...Double(Self.cards.count - 1), snaps: .every(1))
             .motion(.eased(.milliseconds(600), .cubicOut))
         }
 
@@ -5504,15 +5637,33 @@ enum Listings {
                 zIndex: 100 - Int(min(abs(step), 9) * 10))
         }
 
-        /// One card's face: its colour and its name.
+        /// One card's face: its colour, its icon on a disc, and its name.
         private func face(_ index: Int) -> some View {
-            ZStack {
-                Rectangle(Color(Self.colours[index]))
+            let card = Self.cards[index]
 
-                Text(Self.names[index])
-                    .fontWeight(.bold)
+            return ZStack {
+                Rectangle(Color(card.colour))
+
+                VStack {
+                    ZStack {
+                        Rectangle(.white)
+                            .opacity(0.3)
+
+                        Image(.icon(card.icon))
+                            .width(31)
+                            .height(31)
+                            .horizontalAlignment(.center)
+                            .verticalAlignment(.center)
+                    }
+                    .width(56)
+                    .height(56)
                     .horizontalAlignment(.center)
-                    .verticalAlignment(.center)
+
+                    Text(card.name)
+                        .fontWeight(.bold)
+                        .horizontalAlignment(.center)
+                }
+                .verticalAlignment(.center)
             }
         }
         """#,
@@ -5619,7 +5770,7 @@ enum Listings {
         }
         """#,
         "LightTableSample": #"""
-        // Sources/Samples/Layout/LightTableSample.swift
+        // Sources/Samples/LayoutEngine/LightTableSample.swift
         /// THE PHASE: which photo the table is centred on, across and down, how
         /// near it stands, and how far the photos are turned - a turn a unit.
         struct Table: LayoutPhase {
@@ -5642,38 +5793,68 @@ enum Listings {
         /// in the body.
         @State private var table = Table()
 
+        /// Whether the table rests on a photo and the photos on a quarter turn:
+        /// read in the body, so the switch declares the axes again.
+        @State private var snaps = true
+
         var body: some View {
             Grid {
-                Rectangle(Palette.raised)
-
-                LayoutEngine(Self.photos) { photo in
-                    ZStack { Image(ImageSource(photo)).contentMode(.fill) }
-                        .clipsContent(true)
-                } placements: { room, table in
-                    Self.photos.indices.map { place($0, table, room) }
+                Grid {
+                    photosOnTheTable
                 }
-                .phase($table)
-                // ONE FINGER OR TWO MOVE THE TABLE every way, a photo a rest...
-                .input(.pan, drives: \.x, \.y)
-                .snap(\.x, to: [0, 1, 2])
-                .snap(\.y, to: [0, 1, 2])
-                // ...while TWO SPREAD it from the whole table to one photo...
-                .input(.magnification, drives: \.zoom)
-                .snap(\.zoom, to: [0.45, 1])
-                // ...and TURN the photos a quarter at a time, round and round.
-                .input(.rotation(degreesPerUnit: 360), drives: \.turn)
-                .snap(\.turn, to: [0, 0.25, 0.5, 0.75])
-                .wraps(\.turn, every: 1)
-                .motion(.spring(response: .milliseconds(420), damping: 0.82))
+                .gridRow(0)
+                .clipsContent(true)
+
+                SwitchRow(
+                    "Snap",
+                    Binding(
+                        get: { snaps },
+                        set: { snapping in
+                            snaps = snapping
+                            // SNAPPING AGAIN, the table travels to the photo and
+                            // the quarter turn nearest where it was left.
+                            if snapping {
+                                table.x = table.x.rounded()
+                                table.y = table.y.rounded()
+                                table.turn = (table.turn * 4).rounded() / 4
+                            }
+                        }))
+                .horizontalAlignment(.center)
+                .gridRow(1)
             }
-            .clipsContent(true)
+            .rows(.fill, .auto)
+        }
+
+        /// The photos, placed from every axis of the table.
+        private var photosOnTheTable: some View {
+            LayoutEngine(Self.photos) { photo in
+                ZStack { Image(ImageSource(photo)).contentMode(.fill) }
+                    .clipsContent(true)
+            } placements: { room, table in
+                Self.photos.indices.map { place($0, table, room) }
+            }
+            .phase($table)
+            // ONE FINGER OR TWO MOVE THE TABLE every way - one axis scrolled
+            // across, one down - resting on a photo, or, not snapping, anywhere...
+            .axis(\.x, input: .scroll(.horizontal), range: 0...2, snaps: snaps ? .every(1) : nil)
+            .axis(\.y, input: .scroll(.vertical), range: 0...2, snaps: snaps ? .every(1) : nil)
+            // ...while TWO SPREAD it anywhere from the whole table to one photo,
+            // coming back only from past either end...
+            .axis(\.zoom, input: .magnification, range: 0.45...1)
+            // ...and TURN the photos a quarter at a time, or freely, round and
+            // round.
+            .axis(
+                \.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: snaps ? .every(0.25) : nil,
+                wraps: true)
+            .motion(.spring(response: .milliseconds(420), damping: 0.82))
         }
 
         /// Where the photo at `index` lies: its square of the table, a photo's
         /// width and a gap apart, the photo the table is centred on in the middle
-        /// of the room - all as near as the table stands - turned in its place.
+        /// of the room - all as near as the table stands, the whole table in the
+        /// room at its farthest - turned in its place.
         private func place(_ index: Int, _ table: Table, _ room: Rect) -> Placement {
-            let side = min(room.width, room.height) * 0.8 * table.zoom
+            let side = min(room.width, room.height) * 0.65 * table.zoom
             let pitch = side * 1.12
             let (row, column) = index.quotientAndRemainder(dividingBy: 3)
             let x = room.width / 2 + (Double(column) - table.x) * pitch
@@ -10628,7 +10809,7 @@ enum Listings {
         }
         """#,
         "TwoFingersSample": #"""
-        // Sources/Samples/Layout/TwoFingersSample.swift
+        // Sources/Samples/LayoutEngine/TwoFingersSample.swift
         import StateUIFoundation
 
         /// THE PHASE: how far the ring is turned, a card a unit, and how large it
@@ -10654,8 +10835,6 @@ enum Listings {
             let count = Double(Self.cards.count)
 
             return Grid {
-                Rectangle(Palette.raised)
-
                 LayoutEngine(Self.cards) { art in
                     ZStack { Image(ImageSource(art)).contentMode(.fill) }
                         .clipsContent(true)
@@ -10664,12 +10843,12 @@ enum Listings {
                 }
                 .phase($ring)
                 // TWO FINGERS TURNING turn the ring a card every eighth of a
-                // turn, round and round; SPREADING, they grow it - both at once.
-                .input(.rotation(degreesPerUnit: 360 / count), drives: \.turn)
-                .snap(\.turn, to: Self.cards.indices.map(Double.init))
-                .wraps(\.turn, every: count)
-                .input(.magnification, drives: \.size)
-                .snap(\.size, to: [0.6, 1, 1.5])
+                // turn, round and round; SPREADING, they grow it from small to
+                // large, resting at either or at its own size - both at once.
+                .axis(
+                    \.turn, input: .rotation(degreesPerUnit: 360 / count), range: 0...count, snaps: .every(1),
+                    wraps: true)
+                .axis(\.size, input: .magnification, range: 0.6...1.5, snaps: [1])
                 .motion(.spring(response: .milliseconds(420), damping: 0.8))
             }
             .clipsContent(true)

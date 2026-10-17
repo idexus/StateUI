@@ -12,15 +12,19 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
     static let summary = "LayoutEngine puts each view where arithmetic of yours says - here, a ring seen from above."
 
     // listing: LayoutEngineSample
-    /// The cards: what each picture is called and which file it is.
+    /// The cards: the gallery's groups, each its name and its picture as the
+    /// home page shows it.
     static let cards: [Card] = [
-        Card(name: "Mural", art: "art_mural.png"),
-        Card(name: "Nebula", art: "art_nebula.png"),
-        Card(name: "Ridge", art: "art_ridge.png"),
-        Card(name: "Bloom", art: "art_bloom.png"),
-        Card(name: "Tide", art: "art_tide.png"),
-        Card(name: "Prism", art: "art_prism.png"),
-        Card(name: "Grove", art: "art_grove.png"),
+        Card(name: "Layout", art: "cat_layout.png"),
+        Card(name: "Layout Engine", art: "cat_layoutengine.png"),
+        Card(name: "Styles", art: "cat_styles.png"),
+        Card(name: "Shapes", art: "cat_shapes.png"),
+        Card(name: "Media", art: "cat_media.png"),
+        Card(name: "Navigation", art: "cat_navigation.png"),
+        Card(name: "Date & time", art: "cat_datetime.png"),
+        Card(name: "Fundamentals", art: "cat_fundamentals.png"),
+        Card(name: "Animation", art: "cat_animation.png"),
+        Card(name: "Gestures", art: "cat_gestures.png"),
     ]
 
     /// One card's face.
@@ -38,9 +42,11 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
 
     static let pieces = cards.indices.map(Piece.card) + cards.indices.map(Piece.dot)
 
-    /// How big a card is.
+    /// How big the place a card stands in is - what the ring is worked out
+    /// from - and how big the card is drawn in it.
     static let width = 176.0
     static let height = 248.0
+    static let card = 0.8
 
     /// How far the eye stands from the ring's front, in radii: the nearer it
     /// stands, the smaller a card at the back is drawn.
@@ -91,6 +97,9 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
     /// and the one it comes to rest on. It starts on the middle card, and it
     /// has no end: a turn on, it is the same card again.
     @State private var turn = Double(LayoutEngineSample.cards.count / 2)
+
+    /// The device - a phone's cards carry their names alone, smaller.
+    @Environment(\.device) private var device
     // listing: end
 
     // The cards are turned by the hand over them, so the example is not put in
@@ -108,10 +117,6 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
         // over, which a stack cannot give a child - and a ring wants it all.
         Grid {
             Grid {
-                // THE BOARD, under everything.
-                Rectangle(Palette.raised)
-                    .cornerRadius(14)
-
                 // THE CARDS, and what moves them - the whole of the example.
                 ring
             }
@@ -166,12 +171,12 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
         // THE HAND OVER THE CARDS: a finger or a pointer dragged, a trackpad's
         // two fingers and a wheel all turn the ring, carrying the card in
         // front with them, and let go with speed it goes on to the card
-        // nearest where the throw would end.
-        .input(.scroll(.horizontal, throwing: throwing.motion))
-        // WHERE THE RING MAY COME TO REST: on a card, never between two - and
-        // round and round, a turn bringing every card back.
-        .snapTargets(Self.cards.indices.map(Double.init))
-        .wraps(every: Double(Self.cards.count))
+        // nearest where the throw would end. It rests on a card, never
+        // between two - and comes round, a turn of the range bringing every
+        // card back.
+        .axis(
+            \.self, input: .scroll(.horizontal, throwing: throwing.motion),
+            range: 0...Double(Self.cards.count), snaps: .every(1), wraps: true)
         // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
         // over every card, wearing the card's own corners - which is why it is
         // the application's to give and not the library's to draw.
@@ -189,7 +194,9 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
     /// the card is or which way it faces. That is the placement's, and keeping
     /// the two apart is what lets one run of cards be turned into any shape.
     private func face(_ card: Card) -> some View {
-        ZStack {
+        let phone = device.info.formFactor == .phone
+
+        return ZStack {
             Grid {
                 Image(ImageSource(card.art))
                     .contentMode(.fill)
@@ -198,18 +205,21 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
                     // ONE LINE, whatever the card's width: a caption that
                     // wrapped would change the picture's height with it.
                     Text(card.name)
-                        .fontSize(18)
+                        .fontSize(phone ? 14 : 18)
                         .fontWeight(.bold)
                         .textColor(Palette.onBrand)
                         .lineBreak(.tailTruncation)
 
-                    Text("Placed by arithmetic")
-                        .fontSize(10)
-                        .textColor(Palette.onBrand)
-                        .opacity(0.8)
-                        .lineBreak(.tailTruncation)
+                    // A phone's small card carries its name alone.
+                    if !phone {
+                        Text("Placed by arithmetic")
+                            .fontSize(10)
+                            .textColor(Palette.onBrand)
+                            .opacity(0.8)
+                            .lineBreak(.tailTruncation)
+                    }
                 }
-                .padding(horizontal: 12, vertical: 10)
+                .padding(horizontal: phone ? 10 : 12, vertical: phone ? 8 : 10)
                 .spacing(1)
                 // A dark strip under the words, so a caption reads over a
                 // picture of any colour.
@@ -268,10 +278,14 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
         let across = room.width / 2 + sin(angle) * radius * drawn
         let foot = horizon + tall * Self.above * drawn
 
+        // THE CARD AT ITS OWN SIZE, a little smaller than its place, standing
+        // on the ring where its place does.
+        let (cardWide, cardTall) = (wide * Self.card, tall * Self.card)
+
         return Placement(
-            // THE CARD AT ITS OWN SIZE, scaled about its middle to how big it
-            // is drawn - its words scale with it rather than wrapping anew.
-            Rect(across - wide / 2, foot - tall * drawn / 2 - tall / 2, wide, tall),
+            // Scaled about its middle to how big it is drawn - its words scale
+            // with it rather than wrapping anew.
+            Rect(across - cardWide / 2, foot - cardTall * drawn / 2 - cardTall / 2, cardWide, cardTall),
             transform: .scale(drawn),
             // THE FAR CARDS DARKEN. `shade` is the opacity of the view the
             // layout was given by `.shade(_:)` - nothing at all without one -
@@ -329,8 +343,8 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
                 + "end: past the last card is the first again. `Back` and `Next` send it "
                 + "there without the hand - the phase itself travels, under the layout's "
                 + "`.motion`. The phase, `.phase($turn)`, is the card at the front; "
-                + "`.input(.scroll(…))` gives it to the hand, resting on its `.snapTargets`, "
-                + "and `.wraps(every:)` brings it round. The picker changes how a throw goes "
+                + "`.axis(\\.self, input: .scroll(…), range:, snaps: .every(1), wraps: true)` gives "
+                + "it to the hand, resting on a card and coming round. The picker changes how a throw goes "
                 + "on - `.scroll(…, throwing:)` takes any motion: eased, its length says how far a "
                 + "throw carries and its curve how it slows; a spring settles as springs do.")
                 .fontSize(12)

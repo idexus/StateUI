@@ -26,8 +26,7 @@ final class UIKitHandTests: XCTestCase {
                 (0..<3).map { Placement(Rect((Double($0) - at) * 100, 0, 80, 80)) }
             }
             .phase(State(wrappedValue: 0.0).projectedValue)
-            .input(.scroll(.horizontal))
-            .snapTargets([0, 1, 2])
+            .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
             .itemDrag(begins: .held)
             .onItemDragged { told.items.append($0.item) }
             .width(300)

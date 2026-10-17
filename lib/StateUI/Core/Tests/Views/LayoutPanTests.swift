@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A layout engine panned: the hand moves two axes whichever way it goes, and let go the run rests on one target for
-// both - beside two fingers spreading another axis at once.
+// A layout engine panned - two axes scrolled, one across and one down: the hand moves both whichever way it goes,
+// and let go they rest together - beside two fingers spreading another axis at once.
 
 import XCTest
 
@@ -39,11 +39,9 @@ final class LayoutPanTests: XCTestCase {
             return [Placement(Rect(-board.x * 100, -board.y * 100, 40, 40)), Placement(.zero)]
         }
         .phase(board.projectedValue)
-        .input(.pan(pointsPerUnit: 100), drives: \.x, \.y)
-        .snap(\.x, to: [0, 1, 2])
-        .snap(\.y, to: [0, 1, 2])
-        .input(.magnification, drives: \.zoom)
-        .snap(\.zoom, to: [1, 2])
+        .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
+        .axis(\.y, input: .scroll(.vertical, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
+        .axis(\.zoom, input: .magnification, range: 1...2, snaps: .limits)
         .motion(.eased(.milliseconds(160), .linear))
         .node
     }
@@ -129,8 +127,8 @@ final class LayoutPanTests: XCTestCase {
         XCTAssertEqual(board.wrappedValue, Board(x: 1, y: 0, zoom: 2))
     }
 
-    /// ONE HAND ALONG THE LAYOUT: a pan takes a scroll's place, and a scroll a pan's - both its axes.
-    func testAPanAndAScrollTakeEachOthersPlace() throws {
+    /// AXES SCROLLED ACROSS AND DOWN ARE A PAN, heard every way; scrolled one way alone, a hand along the layout.
+    func testAxesScrolledAcrossAndDownAreAPan() throws {
         let (board, handed) = (State(wrappedValue: Board()), Handed())
         func layout() -> LayoutEngine<[Int], Int, Board> {
             LayoutEngine([0]) { Text("\($0)") } placements: { _, board in
@@ -138,20 +136,17 @@ final class LayoutPanTests: XCTestCase {
                 return [Placement(Rect(0, 0, 40, 40))]
             }
             .phase(board.projectedValue)
-            .snap(\.x, to: [0, 1])
-            .snap(\.y, to: [0, 1])
+            .axis(\.x, input: .scroll(.horizontal), range: 0...1, snaps: .limits)
         }
 
         let panned = try XCTUnwrap(Renders().settled(
-            layout().input(.scroll(.horizontal), drives: \.x).input(.pan, drives: \.x, \.y).node)
-            .first(.layoutEngine))
+            layout().axis(\.y, input: .scroll(.vertical), range: 0...1, snaps: .limits).node).first(.layoutEngine))
         XCTAssertEqual(panned.properties[.pans], .bool(true))
         XCTAssertNil(panned.properties[.handAxis])
 
         let scrolled = try XCTUnwrap(Renders().settled(
-            layout().input(.pan, drives: \.x, \.y).input(.scroll(.vertical), drives: \.y).node)
-            .first(.layoutEngine))
-        XCTAssertNil(scrolled.properties[.pans], "the pan's place taken, both its axes")
-        XCTAssertEqual(scrolled.properties[.handAxis], .enumeration(LayoutInput.Axis.vertical.rawValue))
+            layout().axis(\.y, input: .scroll(.horizontal), range: 0...1, snaps: .limits).node).first(.layoutEngine))
+        XCTAssertNil(scrolled.properties[.pans], "two axes, one way")
+        XCTAssertEqual(scrolled.properties[.handAxis], .enumeration(LayoutInput.Axis.horizontal.rawValue))
     }
 }

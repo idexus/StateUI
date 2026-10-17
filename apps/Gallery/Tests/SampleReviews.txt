@@ -7,7 +7,7 @@ AnalogClockSample.swift 98461155e70bedab
 AnimatedInputSample.swift 3edb37bd77bcc397
 AnimatedPropertySample.swift fef33f29ae910477
 AnimationSample.swift 81f886d98ac6d03f
-AppSwitcherSample.swift 0423919b1a8bc5af
+AppSwitcherSample.swift 07c52e1b524a8090
 AppThemeSample.swift cf321fd19548d57e
 AppearanceSample.swift 0ba01ce5668cd928
 ApplicationSessionSample.swift f3cdc5e94b7f1122
@@ -20,7 +20,7 @@ ButtonMenuSample.swift 7af63f7efe0c91b9
 ButtonRoleSample.swift 361912c0899f9d4d
 ButtonSample.swift 4b6ac2242b903c97
 CanvasSample.swift 52db70adead39b9b
-ChangingDeckSample.swift 7c0ca6e01aaf2e3c
+ChangingDeckSample.swift 6e5347f98553c4cb
 CheckBoxSample.swift a6e9da46d0ccfb97
 ChoosingItemsSample.swift 0bac861b74933e30
 ComplaintsSample.swift ccb58f7f38490263
@@ -41,11 +41,11 @@ EngineSample.swift d5a3e7207bb60bac
 EnvironmentSample.swift cb3fd389ce8ef814
 FilesSample.swift 7488409a57306202
 FoundationProbeSample.swift 53fe7a3368cb73e8
-GalleryViewSample.swift 7ed45516ec7bb538
+GalleryViewSample.swift c854743232c73abd
 GateSample.swift 0eb1cb01a376dac3
 GeometryReaderSample.swift 4e6226814b27d935
 GridSample.swift 6122771c218cff01
-HomeScreenSample.swift 7fd5af961f5a0190
+HomeScreenSample.swift d5e3673f668323aa
 HostTimeSample.swift 869b30037733de10
 IconButtonSample.swift 0af5b21d299babec
 IconSample.swift 98f855aecd97b045
@@ -57,12 +57,13 @@ InteropEventsSample.swift 2b7359f44b689fdd
 ItemsViewSample.swift ebdc69a7f3f55da1
 KeyPressSample.swift 56c3fa94875fbba4
 KeyboardSample.swift 06a0fae1aeddb219
+LayoutAxesSample.swift 2399b054d15ee4f6
 LayoutDirectionSample.swift 8f77f9e896d50693
-LayoutEngineSample.swift 5e82d6be0279d8c2
-LayoutPhaseSample.swift fa5bd67d354a4b76
+LayoutEngineSample.swift bce3bd72c2ca5cba
+LayoutPhaseSample.swift 0798087c989a4f47
 LifecycleSample.swift 735c566702226a6b
 LifetimeSample.swift 388647e356facd79
-LightTableSample.swift 29f5391519569455
+LightTableSample.swift 63c5008160bda91e
 LivingLayoutSample.swift 68b7f8803fa314b5
 LoadingItemsSample.swift 0475570786822801
 LocaleInfoSample.swift 53a7aa3516ee574a
@@ -126,7 +127,7 @@ ToolbarSample.swift 4b721bfe58cb9816
 TooltipSample.swift f53a9801ed0d9ee5
 TouchThroughSample.swift 02892a40d82eb93d
 TransformSample.swift 86d2809fa199ca45
-TwoFingersSample.swift 2f92ca1d58180bcd
+TwoFingersSample.swift 7b137795bf6ff449
 TwoLayersSample.swift 6561a08e37d670c0
 VisualStateSample.swift fb012ae68805451c
 WebViewSample.swift 984456f0c9c5d673

@@ -53,9 +53,6 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
 
         return Grid {
             Grid {
-                Rectangle(Palette.raised)
-                    .cornerRadius(14)
-
                 LayoutEngine(running, id: \.name) { app in
                     AppCard(app: app, index: running.firstIndex(of: app) ?? 0, turn: $turn)
                 } placements: { room, turn in
@@ -64,8 +61,10 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
                 .phase($turn)
                 // Thrown as the gallery's home turns its cards: a spring that
                 // carries the hand on and settles.
-                .input(.scroll(.horizontal, throwing: .spring(response: .milliseconds(500), damping: 0.8)))
-                .snapTargets(running.indices.map(Double.init))
+                .axis(
+                    \.self,
+                    input: .scroll(.horizontal, throwing: .spring(response: .milliseconds(500), damping: 0.8)),
+                    range: 0...Double(max(count - 1, 0)), snaps: .every(1))
                 // A FIRST MOVE UP is the card's: it follows the hand; let go
                 // high or fast, it flies off and the app closes - the others
                 // close up, the card in front staying in front.

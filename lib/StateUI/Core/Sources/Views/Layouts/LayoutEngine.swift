@@ -24,8 +24,7 @@
 ///         }
 ///     }
 ///     .phase($turn)
-///     .input(.scroll(.horizontal))
-///     .snapTargets(planets.indices.map(Double.init))
+///     .axis(\.self, input: .scroll(.horizontal), range: 0...Double(planets.count - 1), snaps: .every(1))
 ///
 /// The arithmetic runs on the host's frames whenever the room, the phase or a state named in `following(_:)` moves,
 /// with no view built again. It answers one `Placement` per view, in the items' order - where the view goes from
@@ -39,15 +38,15 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     /// The phase, where no binding was lent.
     @State private var ownPhase = Phase()
 
-    /// Where each hand holds the run on its axis, while it does: what the arithmetic is handed then, the phase
-    /// itself named only as the hand passes a target.
-    @State private var held: [LayoutInput.Kind: Double] = [:]
+    /// Where the hand holds each axis it moves, by the axis's place in `axes`, while it does: what the arithmetic is
+    /// handed then, the phase itself named only as the hand passes a snap.
+    @State private var held: [Int: Double] = [:]
 
-    /// Each hand's throw going on after it let go, on its axis, where one does.
-    @State private var flung: [LayoutInput.Kind: LayoutFling] = [:]
+    /// Each axis's throw going on after the hand let go, where one does.
+    @State private var flung: [Int: LayoutFling] = [:]
 
-    /// Where a swiping hand took the run, and the unit it moves it by, while it holds it.
-    @State private var grip: LayoutGrip?
+    /// Where a swiping hand took each axis, and the unit it moves it by, while it holds it.
+    @State private var grip: [Int: LayoutGrip] = [:]
 
     /// The view the hand holds by itself, while it does, and on its way out once dismissed.
     @State private var item: LayoutItemHand?
@@ -71,26 +70,62 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     /// Where the phase is written and read, when an author lent a binding.
     private var pinned: Binding<Phase>?
 
-    /// What moves the phase under the user's hand and fingers, one input a kind - a pan's two axes two - and the
-    /// axis each moves.
-    private var hands: [Given] = []
+    /// The axes the user's hand and fingers move, one declaration an axis.
+    private var axes: [Given] = []
 
-    /// One input as given: its kind, its gesture, how it throws, and its axis.
+    /// One axis as declared: which it is, what moves it, how far it runs, where it rests, and whether it comes round.
     private struct Given {
-        let kind: LayoutInput.Kind
-        let gesture: LayoutInput.Gesture
-        let throwing: Motion
         let axis: WritableKeyPath<Phase, Double>
+        let input: LayoutInput
+        let range: ClosedRange<Double>
+        let snaps: LayoutSnaps?
+        let wraps: Bool
+
+        /// What is wrong with the declaration, if anything, as the author is told it.
+        var complaint: String? {
+            let (low, high) = (range.lowerBound, range.upperBound)
+            if !Phase.axes.contains(axis) {
+                return "A LayoutEngine was given an axis its phase's `axes` does not list. The hand moves nothing."
+            }
+            if !low.isFinite || !high.isFinite {
+                return "A LayoutEngine's axis was given a range with no end. The hand moves nothing."
+            }
+            if input.gesture == .magnification, low <= 0 {
+                return "A LayoutEngine's magnification was given a range reaching nought, which no spreading of the "
+                    + "fingers reaches. The fingers move nothing."
+            }
+            if wraps, input.gesture == .magnification {
+                return "A LayoutEngine's magnification was told to come round, which a size never does: it stops at "
+                    + "the ends of its range."
+            }
+            if wraps, high <= low {
+                return "A LayoutEngine's axis was told to come round over a range of no length: it stays where it is."
+            }
+            if snaps == nil, case .hand(_, _, swipes: true) = input.gesture {
+                return "A LayoutEngine's swipe moves the run one snap a hand, and its axis was given none: it swipes "
+                    + "from end to end of its range."
+            }
+            return nil
+        }
+
+        /// The axis as the run works on it; nil where the hand cannot move it.
+        var hand: Hand? {
+            let (low, high) = (range.lowerBound, range.upperBound)
+            guard let index = Phase.axes.firstIndex(of: axis), low.isFinite, high.isFinite,
+                  input.gesture != .magnification || low > 0
+            else { return nil }
+
+            let period = wraps && high > low && input.gesture != .magnification ? high - low : nil
+            let swipes = if case .hand(_, _, swipes: true) = input.gesture { true } else { false }
+            let snaps = snaps ?? (swipes ? .limits : nil)
+            return Hand(
+                index: index, axis: axis, gesture: input.gesture, throwing: input.throwing, low: low, high: high,
+                stops: snaps?.stops(in: range, wraps: period != nil) ?? [], period: period)
+        }
     }
 
-    /// The whole phases the run may come to rest at.
-    private var targets: [Phase] = []
-
-    /// The axes that rest on targets of their own, each on its own.
-    private var axisTargets: [WritableKeyPath<Phase, Double>: [Double]] = [:]
-
-    /// The axes that come round again, by how far one turn takes them.
-    private var periods: [WritableKeyPath<Phase, Double>: Double] = [:]
+    /// What is wrong with the axes as declared, as the author is told it.
+    private var complaints: [String] { axes.compactMap(\.complaint) }
 
     /// States whose writes run the arithmetic again on the host's frames.
     private var followed: [(any FollowedState)?] = []
@@ -148,7 +183,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     }
 
     /// A layout whose arithmetic is handed, beside the phase, where the run's motion set out: the phase it stood
-    /// at when the hand, a throw or a journey took it away, then each target the run passes on the hand's axis.
+    /// at when the hand, a throw or a journey took it away, then each snap the run passes on an axis the hand moves.
     ///
     ///     LayoutEngine(cards, id: \.name) { card in Face(card) } placements: { room, phase, from in
     ///         // The card that stood in front leaves the way the run goes - phase above `from` or below it.
@@ -188,7 +223,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     ///     LayoutEngine(cards, id: \.name) { … } placements: { … }.phase($turn)
     ///     Button("Next").onClicked { turn += 1 }
     ///
-    /// Written by the program, the run travels there. Under the user's hand it is the snap target the run passes,
+    /// Written by the program, the run travels there. Under the user's hand it is the snap the run passes,
     /// and where it comes to rest; the arithmetic is handed the phase as it stands each frame.
     ///
     /// - Parameter state: where the phase is written and read.
@@ -199,114 +234,42 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         return copy
     }
 
-    /// What moves one axis of the phase under the user's hand or fingers.
+    /// One axis of the phase under the user's hand or fingers: what moves it, how far it runs, where it comes to
+    /// rest and whether it comes round.
     ///
-    ///     .input(.scroll(.horizontal, pointsPerUnit: 240), drives: \.turn)
-    ///     .input(.magnification, drives: \.zoom)
+    ///     .axis(\.self, input: .swipe(.horizontal), range: 0...Double(cards.count - 1), snaps: .every(1))
+    ///     .axis(\.zoom, input: .magnification, range: 0.5...2)
+    ///     .axis(\.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: .every(0.25), wraps: true)
     ///
-    /// The hand moves the axis as it moves, between the lowest and the highest snap target on it - or round and
-    /// round where the axis `wraps(_:every:)` - and let go, the run goes on to the target nearest where its throw
-    /// would end: it needs `snap(_:to:)` for that axis or `snapTargets(_:)`. Each input moves its own axis alone;
-    /// the others go on as the program sends them. The views still answer a tap.
+    /// The hand moves the axis freely inside its range - less and less past an end, which it comes back onto when
+    /// let go - and let go, the run goes on to where its throw would end: the snap nearest it, where the axis has
+    /// snaps. Wrapping, the axis has no end: one turn of the range's length brings the layout back to where it was,
+    /// so the hand moves it on for ever - `turn` 9 of seven cards is the third, a turn on, so a write of one more
+    /// always travels one card on. The program writes the axis anywhere; the range and the snaps are the hand's.
     ///
-    /// A layout takes one input an axis, and one of each kind - a hand along the layout or a pan, a magnification,
-    /// a rotation: an input given again on its axis, or of its kind, takes the other's place. Two fingers spreading
-    /// and turning move their axes at once, and the hand goes on with their middle.
-    ///
-    /// - Parameters:
-    ///   - input: the hand's way of moving the axis.
-    ///   - axis: the axis it moves.
-    /// - Returns: the layout, moved by the hand.
-    public func input(_ input: LayoutInput, drives axis: WritableKeyPath<Phase, Double>) -> Self {
-        let kind = input.gesture.kind
-        return taking([Given(kind: kind, gesture: input.gesture, throwing: input.throwing, axis: axis)])
-    }
-
-    /// What moves two axes of the phase under the user's hand, whichever way it goes: a pan.
-    ///
-    ///     .input(.pan, drives: \.x, \.y)
-    ///     .snap(\.x, to: [0, 1, 2])
-    ///     .snap(\.y, to: [0, 1, 2])
-    ///
-    /// The hand moves the across axis as it moves across and the down axis as it moves down, each between its lowest
-    /// and highest snap target - or round and round where it `wraps(_:every:)` - and let go, the run goes on to the
-    /// target nearest where its throw would end, both axes together. Two fingers carry it by their middle as they
-    /// spread and turn the axes a magnification and a rotation drive. A pan takes the place of a hand along the
-    /// layout, and of another pan.
+    /// Each axis is moved by its own input alone, and one input may move several axes - a hand moving the photos
+    /// and, slower, the sky behind them. Two axes scrolled one across and one down are a pan: the hand moves both,
+    /// whichever way it goes. Two fingers spreading and turning move their axes at once, and the hand goes on with
+    /// their middle. An axis declared again takes the other's place; the axes declared none go on as the program
+    /// sends them. The views still answer a tap.
     ///
     /// - Parameters:
-    ///   - pan: the hand's way of moving the axes.
-    ///   - across: the axis it moves as it goes across - left moving it on.
-    ///   - down: the axis it moves as it goes down - up moving it on.
-    /// - Returns: the layout, panned by the hand.
-    public func input(
-        _ pan: LayoutPan, drives across: WritableKeyPath<Phase, Double>, _ down: WritableKeyPath<Phase, Double>
+    ///   - axis: the axis, one of the phase's `axes`; `\.self` for a `Double` phase.
+    ///   - input: what moves it.
+    ///   - range: how far the hand moves it; above nought for a magnification.
+    ///   - snaps: where it may rest beside the ends of its range; anywhere inside it unless said.
+    ///   - wraps: whether it comes round, its range one turn.
+    /// - Returns: the layout, its axis moved by the hand.
+    public func axis(
+        _ axis: WritableKeyPath<Phase, Double>,
+        input: LayoutInput,
+        range: ClosedRange<Double>,
+        snaps: LayoutSnaps? = nil,
+        wraps: Bool = false
     ) -> Self {
-        taking([
-            Given(kind: .hand, gesture: .hand(.horizontal, pan.travel, swipes: false), throwing: pan.throwing, axis: across),
-            Given(kind: .handDown, gesture: .hand(.vertical, pan.travel, swipes: false), throwing: pan.throwing, axis: down),
-        ])
-    }
-
-    /// The layout with `given` in place of any input on their axes or of their kinds - a hand along the layout and
-    /// a pan one kind.
-    private func taking(_ given: [Given]) -> Self {
         var copy = self
-        let kinds = Set(given.map(\.kind)).union(given.contains { $0.kind == .hand } ? [.handDown] : [])
-        copy.hands.removeAll { each in kinds.contains(each.kind) || given.contains { $0.axis == each.axis } }
-        copy.hands += given
-        return copy
-    }
-
-    /// The whole phases the run may come to rest at: the hand lets go and the run travels to the nearest.
-    ///
-    ///     .snapTargets([0, 0.2, 0.5, 1])
-    ///     .snapTargets([Orbit(turn: 0, zoom: 1), Orbit(turn: 1, zoom: 2)])
-    ///
-    /// Of a phase of several axes they are the combinations allowed: the nearest is the one at the least distance
-    /// over the axes given no targets of their own by `snap(_:to:)`, and every one of those axes travels to it.
-    ///
-    /// - Parameter targets: the phases the run may rest at.
-    /// - Returns: the layout, resting on them.
-    public func snapTargets(_ targets: [Phase]) -> Self {
-        var copy = self
-        copy.targets = targets.filter { target in Phase.axes.allSatisfy { target[keyPath: $0].isFinite } }
-        return copy
-    }
-
-    /// The same axis, round and round: one turn of `period` brings the layout back to where it was, so the hand
-    /// moves it on for ever and its snap targets come round again every period.
-    ///
-    ///     .snap(\.turn, to: cards.indices.map(Double.init))
-    ///     .wraps(\.turn, every: Double(cards.count))
-    ///
-    /// The axis has no end: past the last card it is the first again, a turn on - `turn` 9 of seven cards is the
-    /// third - so a write of one more always travels one card on.
-    ///
-    /// - Parameters:
-    ///   - axis: the axis.
-    ///   - period: how far one turn takes it; above nought.
-    /// - Returns: the layout, its axis coming round.
-    public func wraps(_ axis: WritableKeyPath<Phase, Double>, every period: Double) -> Self {
-        var copy = self
-        copy.periods[axis] = period.isFinite && period > 0 ? period : nil
-        return copy
-    }
-
-    /// Where one axis of the phase may come to rest, whatever the other axes do.
-    ///
-    ///     .snap(\.turn, to: cards.indices.map(Double.init))
-    ///     .snap(\.zoom, to: [1, 2])
-    ///
-    /// The axis rests on its own targets alone, and only its own hand moves it there.
-    ///
-    /// - Parameters:
-    ///   - axis: the axis.
-    ///   - targets: where it may rest.
-    /// - Returns: the layout, resting that axis on them.
-    public func snap(_ axis: WritableKeyPath<Phase, Double>, to targets: [Double]) -> Self {
-        var copy = self
-        copy.axisTargets[axis] = targets.filter(\.isFinite).sorted()
+        copy.axes.removeAll { $0.axis == axis }
+        copy.axes.append(Given(axis: axis, input: input, range: range, snaps: snaps, wraps: wraps))
         return copy
     }
 
@@ -340,7 +303,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         return copy
     }
 
-    /// How the run travels where the program or a settle sends it; let go short of the next target, the run comes
+    /// How the run travels where the program or a settle sends it; let go short of the next snap, the run comes
     /// onto it at a unit a length of this motion, so the short way is short.
     ///
     ///     .motion(.spring(response: .milliseconds(240)))
@@ -434,14 +397,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         if Phase.axes.isEmpty {
             complain("A LayoutEngine's phase names no axes: `axes` lists the numbers the hand and the program move.")
         }
-        if run.hands.contains(where: \.stops.isEmpty) {
-            complain("A LayoutEngine was given a scroll but no snap targets on the axis it drives, which say how far "
-                + "it runs and where it rests. The hand moves nothing.")
-        }
-        if run.hands.contains(where: { $0.kind == .magnification && ($0.stops.first ?? 1) <= 0 }) {
-            complain("A LayoutEngine's magnification rests on a target at or below nought, which no spreading of the "
-                + "fingers reaches. The fingers move nothing.")
-        }
+        for complaint in complaints { complain(complaint) }
         if let pinned, pinned.followed == nil {
             complain("A LayoutEngine's phase is a state lent with `$`: a binding worked out from others cannot be "
                 + "worn, so the phase would jump where it is sent rather than travel there.")
@@ -452,8 +408,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         }
         .modified { element in
             // The hand is heard on the element itself, over every view, which still answers a tap.
-            element.describe(
-                LayoutEngineContract.handAxis, run.moves && !run.pans ? (run.across ? .horizontal : .vertical) : nil)
+            element.describe(LayoutEngineContract.handAxis, run.ways.count == 1 ? run.ways.first : nil)
             if run.moves {
                 element.addHandler(LayoutEngineContract.handMoved) { phase, moved, speed in
                     run.handMoved(phase, moved: moved, speed: speed)
@@ -461,9 +416,10 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
                 element.addHandler(LayoutEngineContract.handStepped) { notches in run.stepped(notches) }
             }
             // A pan is heard every way, a hand along the layout one way.
-            element.describe(LayoutEngineContract.pans, run.moves && run.pans ? true : nil)
-            // Two fingers spreading and turning are heard as one, each moving its own axis.
-            let (magnifies, rotates) = (run.on(.magnification) != nil, run.on(.rotation) != nil)
+            element.describe(LayoutEngineContract.pans, run.pans ? true : nil)
+            // Two fingers spreading and turning are heard as one, each moving its own axes.
+            let magnifies = run.hands.contains { $0.gesture == .magnification }
+            let rotates = run.hands.contains { if case .rotation = $0.gesture { true } else { false } }
             element.describe(LayoutEngineContract.magnifies, magnifies ? true : nil)
             element.describe(LayoutEngineContract.rotates, rotates ? true : nil)
             if magnifies || rotates {
@@ -527,12 +483,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     private var run: Run {
         let items = Array(source.items)
         let path = source.path
-        let hands = hands.map { given in
-            Hand(
-                kind: given.kind, axis: given.axis,
-                stops: axisTargets[given.axis] ?? Set(targets.map { $0[keyPath: given.axis] }).sorted(),
-                period: periods[given.axis], gesture: given.gesture, throwing: given.throwing)
-        }
+        let hands = axes.compactMap(\.hand)
 
         return Run(
             items: items,
@@ -553,21 +504,19 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
                 held: _held, flung: _flung, placements: _placements, room: _room, shown: _shown, from: _from,
                 grip: _grip, item: _item),
             hands: hands,
-            focus: hands.first { $0.kind == .hand },
-            targets: targets,
-            axisTargets: axisTargets,
+            focus: hands.first { $0.way != nil },
             law: law)
     }
 
     /// The layout's states, handed on whole: what its engine and handlers read and write.
     struct States {
-        let held: State<[LayoutInput.Kind: Double]>
-        let flung: State<[LayoutInput.Kind: LayoutFling]>
+        let held: State<[Int: Double]>
+        let flung: State<[Int: LayoutFling]>
         let placements: State<PlacedRun>
         let room: State<Rect>
         let shown: State<LayoutShown<Phase>>
         let from: State<Phase?>
-        let grip: State<LayoutGrip?>
+        let grip: State<[Int: LayoutGrip]>
         let item: State<LayoutItemHand?>
     }
 }
@@ -609,30 +558,6 @@ extension LayoutEngine where Phase == Double {
         placements: @escaping @MainActor (Rect, Double, Double) -> [Placement]
     ) where Items.Element: Hashable, ID == Items.Element {
         self.init(items, id: \.self, content: content, placements: placements)
-    }
-
-    /// What moves the phase under the user's hand.
-    ///
-    ///     .input(.scroll(.horizontal))
-    ///
-    /// The hand moves the phase between the lowest and the highest snap target - round and round where it
-    /// `wraps(every:)` - and let go, the run goes on to the target nearest where its throw would end: it needs
-    /// `snapTargets(_:)`.
-    ///
-    /// - Parameter input: the hand's way of moving the phase.
-    /// - Returns: the layout, moved by the hand.
-    public func input(_ input: LayoutInput) -> Self {
-        self.input(input, drives: \.self)
-    }
-
-    /// The phase, round and round: one turn of `period` brings the layout back to where it was.
-    ///
-    ///     .wraps(every: Double(cards.count))
-    ///
-    /// - Parameter period: how far one turn takes the phase; above nought.
-    /// - Returns: the layout, coming round.
-    public func wraps(every period: Double) -> Self {
-        wraps(\.self, every: period)
     }
 }
 

@@ -58,8 +58,7 @@ final class Catalog {
                 title: "Driven values",
                 summary: "The second layer: a value handed on with $ and carried by the "
                     + "host on its own frames - engines follow it and nothing is "
-                    + "described. A layout moved by one is under Layout, as "
-                    + "LayoutEngine.",
+                    + "described. A layout moved by one is under Layout Engine.",
                 icon: ImageSource(light: "nav_driven.png", dark: "nav_driven_dark.png"),
                 card: ImageSource("cat_driven.png"),
                 samples: [
@@ -156,20 +155,13 @@ final class Catalog {
             SampleGroup(
                 route: "layout",
                 title: "Layout",
-                summary: "Stacks, grids, authored placement, scrolling, sizing and transforms.",
+                summary: "Stacks, grids, layers, scrolling, sizing and transforms.",
                 icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"),
                 card: ImageSource("cat_layout.png"),
                 samples: [
                     Sample(StackLayoutSample()),
                     Sample(GridSample()),
                     Sample(ZStackSample()),
-                    Sample(LayoutEngineSample()),
-                    Sample(LayoutPhaseSample()),
-                    Sample(ChangingDeckSample()),
-                    Sample(HomeScreenSample()),
-                    Sample(AppSwitcherSample()),
-                    Sample(TwoFingersSample()),
-                    Sample(LightTableSample()),
                     Sample(ScrollViewSample()),
                     Sample(SizingSample()),
                     Sample(OutlineSample()),
@@ -178,6 +170,24 @@ final class Catalog {
                     Sample(GeometryReaderSample()),
                     Sample(LivingLayoutSample()),
                     Sample(RemovingRowSample()),
+                ]),
+
+            SampleGroup(
+                route: "layoutEngine",
+                title: "Layout Engine",
+                summary: "Views placed by arithmetic of your own, worked out from a phase the hand or the "
+                    + "program moves: a ring, a deck, pages of icons, a table panned, pinched and turned.",
+                icon: ImageSource(light: "nav_layoutengine.png", dark: "nav_layoutengine_dark.png"),
+                card: ImageSource("cat_layoutengine.png"),
+                samples: [
+                    Sample(LayoutEngineSample()),
+                    Sample(LayoutPhaseSample()),
+                    Sample(LayoutAxesSample()),
+                    Sample(ChangingDeckSample()),
+                    Sample(HomeScreenSample()),
+                    Sample(AppSwitcherSample()),
+                    Sample(TwoFingersSample()),
+                    Sample(LightTableSample()),
                 ]),
 
             SampleGroup(

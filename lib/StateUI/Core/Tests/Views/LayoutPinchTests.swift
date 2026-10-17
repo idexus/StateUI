@@ -38,11 +38,8 @@ final class LayoutPinchTests: XCTestCase {
             return (0..<4).map { _ in Placement(Rect(0, 0, 40, 40)) }
         }
         .phase(dial.projectedValue)
-        .input(.magnification, drives: \.zoom)
-        .input(.rotation(degreesPerUnit: 90), drives: \.turn)
-        .snap(\.zoom, to: [0.5, 1, 2])
-        .snap(\.turn, to: [0, 1, 2, 3])
-        .wraps(\.turn, every: 4)
+        .axis(\.zoom, input: .magnification, range: 0.5...2, snaps: [1])
+        .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), wraps: true)
         .motion(.eased(.milliseconds(160), .linear))
         if itemDrag { layout = layout.itemDrag(begins: .held) }
         return layout.node
@@ -165,28 +162,19 @@ final class LayoutPinchTests: XCTestCase {
         XCTAssertEqual(handed.dials.last?.turn ?? 0, 0, accuracy: 0.000_1)
     }
 
-    /// ONE INPUT A KIND, ONE AN AXIS: an input given again of its kind, or on its axis, takes the other's place.
-    func testAnInputOfItsKindOrOnItsAxisTakesTheOthersPlace() throws {
+    /// AN AXIS DECLARED AGAIN TAKES THE OTHER'S PLACE: its input with it.
+    func testAnAxisDeclaredAgainTakesTheOthersPlace() throws {
         let (dial, handed) = (State(wrappedValue: Dial()), Handed())
-        func layout() -> LayoutEngine<[Int], Int, Dial> {
-            LayoutEngine([0]) { Text("\($0)") } placements: { _, dial in
-                handed.dials.append(dial)
-                return [Placement(Rect(0, 0, 40, 40))]
-            }
-            .phase(dial.projectedValue)
-            .snap(\.zoom, to: [1, 2])
-            .snap(\.turn, to: [0, 1])
+        let layout = LayoutEngine([0]) { Text("\($0)") } placements: { _, dial in
+            handed.dials.append(dial)
+            return [Placement(Rect(0, 0, 40, 40))]
         }
+        .phase(dial.projectedValue)
+        .axis(\.zoom, input: .scroll(.horizontal), range: 1...2)
+        .axis(\.zoom, input: .magnification, range: 1...2)
 
-        let kind = try XCTUnwrap(Renders().settled(
-            layout().input(.magnification, drives: \.turn).input(.magnification, drives: \.zoom).node)
-            .first(.layoutEngine))
-        XCTAssertEqual(kind.properties[.magnifies], .bool(true))
-
-        let axis = try XCTUnwrap(Renders().settled(
-            layout().input(.scroll(.horizontal), drives: \.zoom).input(.magnification, drives: \.zoom).node)
-            .first(.layoutEngine))
-        XCTAssertNil(axis.properties[.handAxis], "the scroll's place taken")
-        XCTAssertEqual(axis.properties[.magnifies], .bool(true))
+        let element = try XCTUnwrap(Renders().settled(layout.node).first(.layoutEngine))
+        XCTAssertNil(element.properties[.handAxis], "the scroll's place taken")
+        XCTAssertEqual(element.properties[.magnifies], .bool(true))
     }
 }

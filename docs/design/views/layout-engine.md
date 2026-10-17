@@ -152,15 +152,48 @@ read one axis for several things. The element wears the whole phase, one
 lane an axis in the order `axes` names them: a part of a state is never
 carried, so one state is one channel however many axes it has.
 
-A hand drives one axis (`.input(_:drives:)`) and moves it alone: the
-arithmetic is handed the phase walked by the host with the hand's axis where
-the hand holds it, a target passed is named on that axis, and another axis
-travelling under the program goes on beside the hand. `.input(_:)` is a `Double`
-phase's, whose one axis is `\.self`.
+An axis the hand moves is declared whole ([an axis](#an-axis)) and moved
+alone: the arithmetic is handed the phase walked by the host with each axis
+the hand holds where it holds it, a snap passed is named on that axis, and
+another axis travelling under the program goes on beside the hand. A
+`Double` phase's one axis is `\.self`.
 
 The type is inferred from the phase lent, `.phase($orbit)`, which stands in
 the same expression as the arithmetic; a layout lent none takes its own,
 started at `init()`. A phase naming no axes is said.
+
+## An axis
+
+`.axis(_:input:range:snaps:wraps:)` is the one declaration of an axis the
+hand moves: what moves it (a `LayoutInput`), how far (`range`), where it may
+rest (`snaps`, a `LayoutSnaps`), and whether it comes round (`wraps`). One
+concept, one place: an input, a rest and a wrap are never declared apart, so
+no axis has an input with no range or a rest with no input.
+
+- THE RANGE is the hand's, not the program's: the hand moves the axis freely
+  inside it and less and less past an end ([the hand](#the-hand)); the
+  program writes the axis anywhere. Wrapping, its length is the period and
+  its upper end the lower one a turn on.
+- THE SNAPS are places beside the range's ends, which always are: listed
+  (`[1, 2]`, `.at(_:)`), a step from the lower end (`.every(_:)`), or none
+  inside (`.limits`) - worked out once into the run's `stops`, lowest first,
+  the upper end left out where the axis wraps. NO SNAPS is an axis of its
+  own kind: it rests wherever the hand or its throw leaves it, inside its
+  range, and is named nothing while the hand holds it - the phase is where
+  the run rests or is going, and a held axis with no snaps is going nowhere
+  yet; one render a rest, none a frame.
+- ONE INPUT AN AXIS, by the type: an axis declared again takes the new
+  declaration. ONE INPUT MAY MOVE SEVERAL AXES: each is a hand of its own in
+  the run - its hold, its throw and a swipe's grip kept by the axis's place
+  in `axes` - so a hand moving two axes moves each by its own unit, and let
+  go, each rests its own way. Two axes the hand moves one across and one down
+  are a pan ([a pan](#a-pan)).
+- THE ELEMENT SAYS what the axes need: `handAxis` where the hand moves them
+  one way, `pans` where both, `magnifies` and `rotates` where two fingers do.
+- WHAT CANNOT MOVE IS SAID (`complain`) and moves nothing: an axis the
+  phase's `axes` does not list, a range with no end, a magnification's range
+  reaching nought. A magnification told to come round stops at its ends; a
+  swipe given no snaps swipes from end to end, its ends its snaps.
 
 ## The hand
 
@@ -169,7 +202,7 @@ dragged, a trackpad's two fingers and a wheel are one hand, each host telling
 it as its toolkit does and the host layer making it one stream of the
 element's `handMoved` (host/runtime.md, the hand over a layout). No scroller
 lies over the views, so nothing bounds how far the hand goes: a run that
-comes round (`wraps(every:)`) turns for ever, and the views under the hand
+comes round (`wraps: true`) turns for ever, and the views under the hand
 still answer a tap.
 
 - The hand takes the run where it is shown: a journey or a throw under way
@@ -181,10 +214,12 @@ still answer a tap.
   where the hand holds the run (`held`), and that is the phase's journey
   value for anything else following it (core/journeys.md, where a run shows
   it); the phase itself is named only as the hand passes halfway between
-  two targets, a reading of the hand (`journey.snap(_:to:)`) rather than a
-  journey: one render a target, none a frame.
-- Let go still, the run travels to the nearest target as a journey of the
-  phase, under the layout's motion.
+  two snaps, a reading of the hand (`journey.snap(_:to:)`) rather than a
+  journey: one render a snap, none a frame. An axis with no snaps is named
+  where it comes to rest.
+- Let go still, the run travels to the nearest snap as a journey of the
+  phase, under the layout's motion - or, with none, stays where the hand
+  left it, back onto the end from past one.
 - Let go with speed, it is thrown ([a throw](#a-throw)).
 
 The unit is how far the hand travels for one unit of its axis - the input's
@@ -199,54 +234,48 @@ run - a dot, a caption - is no front; with nothing moving, a room's length
 is a unit. A run whose front view hardly moves - a pile - gives the unit
 itself.
 
-The hand moves one axis of the phase alone; the host leaves to whatever holds
-the layout a hand whose first move is more across the layout's axis than
-along it, a page's scroller.
+The hand moves the axes declared for it alone; where they all go one way,
+the host leaves to whatever holds the layout a hand whose first move is more
+across that way than along it, a page's scroller.
 
 ## Two fingers
 
-Two fingers spreading and turning are inputs of their own, each driving its
-axis: `.magnification` and `.rotation(degreesPerUnit:)`. A layout takes
-one input an axis and one of each kind - the hand along it, a magnification,
-a rotation - so `.input` given again on an axis, or of a kind, takes the
-other's place; the two fingers move both of theirs at once, beside the hand
-they carry by their middle ([a pan](#a-pan)), from one stream
-of the element's `pinchMoved` (host/runtime.md, two fingers over a layout),
-and each hand's place is its own (`held`, `flung` by kind): the arithmetic
-is handed every axis where its hand holds it.
+Two fingers spreading and turning are inputs of their own:
+`.magnification` and `.rotation(degreesPerUnit:)`. The two fingers move
+every axis either input moves at once, beside the hand they carry by their
+middle ([a pan](#a-pan)), from one stream of the element's `pinchMoved`
+(host/runtime.md, two fingers over a layout), each axis's place its own
+(`held`, `flung` by the axis): the arithmetic is handed every axis where its
+hand holds it.
 
 A magnification is multiplied by how far the fingers spread: the hand works
 on the axis's logarithm, so a magnification is a scroll of its logarithm -
-the ends give less and less past them, a target is nearest by the
+the ends give less and less past them, a snap is nearest by the
 logarithm, a throw carries the logarithm on - and pinching in acts as
-spreading does. Its targets stand above nought. A rotation moves a unit
-every `degreesPerUnit` the fingers turn, clockwise on. Let go, each axis
-goes on to the target nearest where it would end under its input's
-`throwing`, or comes onto the nearest as a hand let go still does; a unit of
+spreading does. Its range stands above nought. A rotation moves a unit
+every `degreesPerUnit` the fingers turn, clockwise on. Let go, the axes go
+on together, each to where it would end under its input's `throwing` - the
+snap nearest that - or onto the nearest as a hand let go still does; a unit of
 a magnification's logarithm counts as a hundred device units and a
 rotation's as its degrees, by which either is judged thrown or settled. A
 view held by itself keeps the hand, and the fingers move nothing.
 
 ## A pan
 
-A pan is the hand every way (`.input(.pan, drives: \.x, \.y)`): two
-hands of one input, the hand along the layout across and a second one down,
-each moving its axis with its part of the hand's move, the unit each's own
-- so many points, else the view in front's along that axis. The element
+A pan is two axes the hand moves, one across (`.scroll(.horizontal)`) and
+one down (`.scroll(.vertical)`): each moves with its part of the hand's move,
+the unit each's own - so many points, else the view in front's along that
+axis. No input of its own: the ways the axes' inputs go make it. The element
 says `pans` and no `handAxis`, so a host hears the hand every way and the
 host layer claims every first move (host/runtime.md, the hand over a
-layout); a wheel's notches step each axis their way. Let go, each axis is
-thrown with its part of the speed, and the run rests on ONE target for both
-- each axis with targets of its own on its own, the others on the whole
-target nearest by their distance - so the two throws end together. A pan
-takes the place of a hand along the layout, and a scroll a pan's, both its
-axes; `LayoutPan` is a type of its own, so a pan given one axis does not
-compile.
+layout); a wheel's notches step each axis their way. Let go, every axis the
+hand moves is thrown with its part of the speed and comes to rest its own
+way, the run travelling to all of their rests as one phase.
 
 ## A swipe
 
 `.swipe(_:)` is the hand of a deck or of pages: one hand moves the run one
-snap target at most, either way from the target nearest where it took it,
+snap at most, either way from the snap nearest where it took it,
 however far it goes. A trackpad's quick flick is some 1500 points of the
 platform's own speeding up before the fingers lift, and a throw on top - a
 scroll of cards a few hundred points apart is through the deck in one flick;
@@ -257,7 +286,7 @@ it from beyond that - and let go still, to the nearest of them. A wheel's
 notches swipe alike: a notch moves the run one target from where it rests,
 and the notches that come while it goes wait for it - the rest of a burst, a
 spring passing its target, which would otherwise count as the next card
-reached.
+reached. Its axis needs snaps; given none, the range's ends are its snaps.
 
 Its unit is measured once, as the hand takes the run, as if the run stood on
 the target it took it at, and kept while the hand holds it: a view that goes
@@ -316,6 +345,14 @@ A whole motion for a short way would crawl - the last tenth of a card over
 A throw past several targets keeps its own motion: a long glide is what its
 input asked for, and only the landing on the next target is the motion's.
 
+AN AXIS WITH NO SNAPS has no target to come onto: where it rests is where
+its throw ends, so let go moving it is always thrown, setting out at the
+hand's speed and slowing onto that end. An approach there would be a short
+way under a motion cut to it - a spring's response a tenth of its own -
+leaping ahead of the hand in the first frame and back at the end, the more
+so the faster the hand. A hand slower than a throw is let go still: nothing
+carries it on, and it rests where it was let go.
+
 The approach is carried in the core as a throw is (`flung`), the phase named
 the target at once; under less motion it lands at once, as a journey does. A
 hand taking the run on its way - a throw or an approach - takes it where it is
@@ -371,25 +408,28 @@ notch is a step whatever a target's size - a run of large cards turns one a
 notch, as of small ones - which a distance cannot be: a mouse's notch is a
 few points, so one turned slowly would never carry the run past half a card,
 and the run would come back to where it stood after each. A hand holding the
-run keeps it. The host tells the notches (`handStepped`); the host layer adds
-a fine wheel's parts of a notch up to whole ones.
+run keeps it. An axis with no snaps has no next place: a notch moves it as a
+hand going a hundred points does, inside its range. The host tells the
+notches (`handStepped`); the host layer adds a fine wheel's parts of a notch
+up to whole ones.
 
 ## Coming to rest
 
 When the hand lets go the run goes on to where it comes to rest, from where
-the hand left it - a journey of the phase, or a throw. Two ways say where
-that is, and both may stand on one layout:
+the hand left it - a journey of the phase, or a throw. Each axis rests on
+its own: on the snap nearest where its throw would end, or, with no snaps,
+there itself inside its range - and only its own hand moves it there, a
+settle of another leaving it where the program put it. The axes the hand or
+the fingers let go at once are each NAMED where they rest before any goes
+on, and the phase is sent on no journey: a journey of the whole phase would
+have the host walk an axis the hand held - which nothing named while it held
+it, an axis with no snaps - from where the host last had it, the value
+snapped meanwhile left to the host's walk, so the axis let go still leapt
+back to where the hand took it and came again (a pan let go across, its
+down axis, every host).
 
-- `.snap(\.axis, to:)` gives an axis targets of its own. It is independent:
-  it rests on the nearest of them, and only its own hand moves it there - a
-  settle of another hand leaves it where the program put it.
-- `.snapTargets([...])` lists whole phases, the combinations allowed. The
-  nearest is the one at the least distance over the axes without targets of
-  their own, every one of those axes travelling to it; of two as near, the
-  first listed. A `Double` phase's targets are of this kind.
-
-Under the hand only the hand's axis is named - the nearest place on it any
-target names - so an axis the hand does not drive never jumps as the hand
-passes; the whole combination is reached at rest. Where the hand's axis comes
-round, its targets repeat every period and the nearest is taken a turn on or
-back: the axis has no end, so a write of one more always moves the run on.
+Under the hand only the hand's axes are named - each on the nearest of its
+snaps - so an axis the hand does not move never jumps as the hand passes.
+Where an axis comes round, its snaps repeat every turn and the nearest is
+taken a turn on or back: the axis has no end, so a write of one more always
+moves the run on.

@@ -100,9 +100,6 @@ struct HomeScreenSample: SampleContent, ExampleContent {
 
         return Grid {
             Grid {
-                Rectangle(Palette.raised)
-                    .cornerRadius(14)
-
                 // THE BOARDS: a unit of the phase is the room's width, so a
                 // board is the room however wide it grows.
                 LayoutEngine(icons, id: \.name) { icon in
@@ -111,8 +108,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                     (0..<count).map { place($0, board, room, fit) }
                 }
                 .phase($board)
-                .input(.pages(.horizontal))
-                .snapTargets((0..<boards).map(Double.init))
+                .axis(\.self, input: .pages(.horizontal), range: 0...Double(boards - 1), snaps: .every(1))
                 // HELD, AN ICON LEAVES ITS BOARD for the hand: each move
                 // gives it the slot under the hand, and the others travel to
                 // make room; held still at an edge, the boards turn under it.

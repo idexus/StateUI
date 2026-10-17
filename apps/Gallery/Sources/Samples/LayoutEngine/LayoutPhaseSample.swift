@@ -20,9 +20,19 @@ struct LayoutPhaseSample: SampleContent, ExampleContent {
         static var axes: [WritableKeyPath<Deal, Double>] { [\.turn, \.spread] }
     }
 
-    /// The cards: a name and a colour each.
-    static let names = ["Mural", "Nebula", "Ridge", "Bloom", "Tide"]
-    static let colours = ["#7C3AED", "#2563EB", "#0D9488", "#D97706", "#DB2777"]
+    /// One card: its name, its colour and its icon.
+    struct Card {
+        let name: String
+        let colour: String
+        let icon: Icon
+    }
+
+    /// The cards, dealt in this order.
+    static let cards = [
+        Card(name: "Mural", colour: "#7C3AED", icon: .star), Card(name: "Nebula", colour: "#2563EB", icon: .heart),
+        Card(name: "Ridge", colour: "#0D9488", icon: .home), Card(name: "Bloom", colour: "#D97706", icon: .calendar),
+        Card(name: "Tide", colour: "#DB2777", icon: .mail),
+    ]
 
     /// Where the run stands on both axes - handed on with `$`, never read in
     /// the body.
@@ -43,9 +53,6 @@ struct LayoutPhaseSample: SampleContent, ExampleContent {
     var body: some View {
         Grid {
             Grid {
-                Rectangle(Palette.raised)
-                    .cornerRadius(14)
-
                 cards
             }
             .gridRow(0)
@@ -70,16 +77,17 @@ struct LayoutPhaseSample: SampleContent, ExampleContent {
 
     /// The cards, placed from both axes of the phase.
     private var cards: some View {
-        LayoutEngine(Array(Self.names.indices)) { index in
+        LayoutEngine(Array(Self.cards.indices)) { index in
             face(index)
         } placements: { room, deal in
-            Self.names.indices.map { place($0, deal, room) }
+            Self.cards.indices.map { place($0, deal, room) }
         }
         .phase($deal)
-        // THE HAND DRIVES THE TURN ALONE, resting on a card; the spread has
-        // no hand, so it needs no targets.
-        .input(.scroll(.horizontal, pointsPerUnit: 90), drives: \.turn)
-        .snap(\.turn, to: Self.names.indices.map(Double.init))
+        // THE HAND MOVES THE TURN ALONE, resting on a card; the spread has
+        // no hand, so it is declared no axis.
+        .axis(
+            \.turn, input: .scroll(.horizontal, pointsPerUnit: 90),
+            range: 0...Double(Self.cards.count - 1), snaps: .every(1))
         .motion(.eased(.milliseconds(600), .cubicOut))
     }
 
@@ -102,18 +110,38 @@ struct LayoutPhaseSample: SampleContent, ExampleContent {
             zIndex: 100 - Int(min(abs(step), 9) * 10))
     }
 
-    /// One card's face: its colour and its name.
+    /// One card's face: its colour, its icon on a disc, and its name.
     private func face(_ index: Int) -> some View {
-        ZStack {
-            Rectangle(Color(Self.colours[index]))
+        let card = Self.cards[index]
+
+        return ZStack {
+            Rectangle(Color(card.colour))
                 .cornerRadius(16)
 
-            Text(Self.names[index])
-                .fontSize(18)
-                .fontWeight(.bold)
-                .textColor(Palette.onBrand)
+            VStack {
+                ZStack {
+                    Rectangle(.white)
+                        .cornerRadius(28)
+                        .opacity(0.3)
+
+                    Image(.icon(card.icon))
+                        .width(31)
+                        .height(31)
+                        .horizontalAlignment(.center)
+                        .verticalAlignment(.center)
+                }
+                .width(56)
+                .height(56)
                 .horizontalAlignment(.center)
-                .verticalAlignment(.center)
+
+                Text(card.name)
+                    .fontSize(18)
+                    .fontWeight(.bold)
+                    .textColor(Palette.onBrand)
+                    .horizontalAlignment(.center)
+            }
+            .spacing(10)
+            .verticalAlignment(.center)
         }
     }
     // listing: end
@@ -127,7 +155,7 @@ struct LayoutPhaseSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`.input(_:drives:)` gives the hand the turn alone, and `.snap(_:to:)` rests it on a "
+            Text("`.axis(\\.turn, input:range:snaps:)` gives the hand the turn alone and rests it on a "
                 + "card whatever the spread does. The switch writes one axis, `deal.spread`; the "
                 + "arithmetic is handed both as they stand each frame.")
                 .fontSize(12)

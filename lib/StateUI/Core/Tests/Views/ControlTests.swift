@@ -326,8 +326,7 @@ final class ControlTests: XCTestCase {
                     [Placement(Rect(phase, 0, room.width / 2, room.height)), Placement(Rect(room.width / 2, 0, 10, 10))]
                 }
                 .phase(turn.projectedValue)
-                .input(.scroll(.horizontal, pointsPerUnit: 90))
-                .snapTargets([0, 1])
+                .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .every(1))
                 .following(chosen.projectedValue)
                 .shade(Rectangle(.black))
                 .motion(.spring(response: .milliseconds(240)))
@@ -343,13 +342,10 @@ final class ControlTests: XCTestCase {
                     [Placement(Rect(dial.turn, 0, room.width / 2 * dial.size, room.height)), Placement(.zero)]
                 }
                 .phase(dial.projectedValue)
-                .input(.rotation(degreesPerUnit: 90), drives: \.turn)
-                .snap(\.turn, to: [0, 1])
-                .input(.magnification, drives: \.size)
-                .snap(\.size, to: [1, 2])
-                .input(.pan(pointsPerUnit: 90), drives: \.x, \.y)
-                .snap(\.x, to: [0, 1])
-                .snap(\.y, to: [0, 1])
+                .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...1, snaps: .limits)
+                .axis(\.size, input: .magnification, range: 1...2, snaps: .limits)
+                .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .limits)
+                .axis(\.y, input: .scroll(.vertical, pointsPerUnit: 90), range: 0...1, snaps: .limits)
                 .node.built),
 
             // Both halves of a map: the control, and the markers on it. A Marker is
