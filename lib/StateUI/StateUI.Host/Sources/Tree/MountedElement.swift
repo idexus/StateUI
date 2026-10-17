@@ -114,15 +114,41 @@
     /// what the element holds reads (`Reports.made`); nil after.
     public private(set) var made: HostPatch?
 
-    /// Applies a patch of this element.
+    /// Applies a patch of this element. The tree is made and applied by recursion - an element, then its children -
+    /// through this frame, kept small: the element's own work is done in steps that return before its children are.
+    /// Design: docs/design/host/runtime.md#the-mounts-stack
     public func apply(_ patch: HostPatch) {
         guard let tree else { return }
 
+        let applying = received(patch, tree: tree)
+        childrenApplied(patch.children, tree: tree)
+        settled(patch, applying, tree: tree)
+    }
+
+    /// What applying a patch carries from before the children to after them: when a scene began, the pages shown,
+    /// the properties that changed and the values they stood at.
+    private final class Applying {
+        let sceneBegan: ContinuousClock.Instant?
+        let previouslyShown: [MountedElement]
+        let changed: Set<Prop>
+        let standing: [Prop: HostValue]
+
+        init(
+            sceneBegan: ContinuousClock.Instant?, previouslyShown: [MountedElement], changed: Set<Prop>,
+            standing: [Prop: HostValue]
+        ) {
+            self.sceneBegan = sceneBegan
+            self.previouslyShown = previouslyShown
+            self.changed = changed
+            self.standing = standing
+        }
+    }
+
+    /// The patch's own values taken: its properties, events, driven states and motion, before its children.
+    @inline(never)
+    private func received(_ patch: HostPatch, tree: MountedTree) -> Applying {
         let sceneBegan: ContinuousClock.Instant? = tree.tally != nil && patch.type == .scene ? .now : nil
         tree.tally?.nodes += 1
-        defer {
-            if let sceneBegan { tree.tally?.scenes[patch.id, default: .zero] += ContinuousClock.now - sceneBegan }
-        }
 
         let previouslyShown = isPagePresented ? shownChildren : []
         var changed = Set(patch.clearedProperties)
@@ -171,7 +197,12 @@
 
         if case .unchanged = patch.children { childrenChanged = false } else { childrenChanged = true }
 
-        switch patch.children {
+        return Applying(sceneBegan: sceneBegan, previouslyShown: previouslyShown, changed: changed, standing: standing)
+    }
+
+    /// The children the patch arranges or changes, made or applied.
+    private func childrenApplied(_ children: HostChildrenUpdate, tree: MountedTree) {
+        switch children {
         case .unchanged:
             break
 
@@ -181,33 +212,44 @@
 
         case .changed(let childPatches):
             for childPatch in childPatches {
-                // A new child arrives only in an arranged list; a sparse list naming a stranger drifted.
-                let isSlot = holdsSlotsApart && NodeType.slotTypes.contains(childPatch.type)
-                guard let index = (isSlot ? slots : children).firstIndex(where: { $0.id == childPatch.id }) else {
-                    tree.intake.drifted("a patch names child '\(childPatch.id)' that '\(id)' does not have")
-                    continue
-                }
-                let child = isSlot ? slots[index] : children[index]
-
-                if child.type == childPatch.type, !childPatch.replace {
-                    child.apply(childPatch)
-                } else if childPatch.replace {
-                    child.leave()
-                    let anew = MountedElement(childPatch, tree: tree, parent: self)
-                    if isSlot { slots[index] = anew } else { children[index] = anew }
-                } else {
-                    tree.intake.drifted(
-                        "a patch describes '\(childPatch.id)' as \(childPatch.type) where '\(id)' holds \(child.type)")
-                }
+                applied(childPatch, tree: tree)
             }
         }
+    }
 
+    /// A child the patch names among those it has, applied - or made again where it is replaced.
+    private func applied(_ childPatch: HostPatch, tree: MountedTree) {
+        // A new child arrives only in an arranged list; a sparse list naming a stranger drifted.
+        let isSlot = holdsSlotsApart && NodeType.slotTypes.contains(childPatch.type)
+        guard let index = (isSlot ? slots : children).firstIndex(where: { $0.id == childPatch.id }) else {
+            tree.intake.drifted("a patch names child '\(childPatch.id)' that '\(id)' does not have")
+            return
+        }
+        let child = isSlot ? slots[index] : children[index]
+
+        if child.type == childPatch.type, !childPatch.replace {
+            child.apply(childPatch)
+        } else if childPatch.replace {
+            child.leave()
+            let anew = MountedElement(childPatch, tree: tree, parent: self)
+            if isSlot { slots[index] = anew } else { children[index] = anew }
+        } else {
+            tree.intake.drifted(
+                "a patch describes '\(childPatch.id)' as \(childPatch.type) where '\(id)' holds \(child.type)")
+        }
+    }
+
+    /// The patch's changes told to the native half, its children in place: each property, the stacking, the
+    /// enablement and the direction, the frames read and the pages presented.
+    @inline(never)
+    private func settled(_ patch: HostPatch, _ applying: Applying, tree: MountedTree) {
+        let changed = applying.changed
         for property in changed.sorted() {
             let hasDrivenPresentation = driven[property].map { $0.mode != .in } ?? false
             tree.receiveProperty(
                 mount: mount,
                 property: property,
-                standing: standing[property],
+                standing: applying.standing[property],
                 target: resolvedValue(property),
                 motion: hasDrivenPresentation || !native.animates(property)
                     ? nil
@@ -227,7 +269,11 @@
         let presenting = !described && parent?.isEffectivelyEnabled == false ? changed.union([.isEnabled]) : changed
         native.applied(changed: presenting, wasDescribed: described)
         described = true
-        reconcilePresentation(from: previouslyShown)
+        reconcilePresentation(from: applying.previouslyShown)
+
+        if let sceneBegan = applying.sceneBegan {
+            tree.tally?.scenes[patch.id, default: .zero] += ContinuousClock.now - sceneBegan
+        }
     }
 
     /// Tells the element's handler of `event` as a phase, rendered in its turn before what comes after it.
@@ -239,21 +285,42 @@
     /// Reconciles a complete child arrangement by key - an arrangement of pages keeping its slots apart.
     private func arrange(_ patches: [HostPatch], tree: MountedTree) {
         let before = held
-        let previous = Dictionary(before.map { ($0.id, $0) }) { first, _ in first }
-        let mounted = { (patch: HostPatch) -> MountedElement in
-            if let child = previous[patch.id], child.type == patch.type, !patch.replace {
-                child.parent = self
-                child.apply(patch)
-                return child
-            }
+        let previous = Self.byId(before)
+        var children: [MountedElement] = []
+        var slots: [MountedElement] = []
 
-            return MountedElement(patch, tree: tree, parent: self)
+        // The children first, then the pages kept apart, each in its order.
+        for patch in patches where !isSlot(patch) {
+            children.append(mounted(patch, continuing: previous[patch.id], tree: tree))
+        }
+        for patch in patches where isSlot(patch) {
+            slots.append(mounted(patch, continuing: previous[patch.id], tree: tree))
+        }
+        self.children = children
+        self.slots = slots
+        leave(before)
+    }
+
+    /// `elements` by their identity, the first of two that share one.
+    @inline(never)
+    private static func byId(_ elements: [MountedElement]) -> [ElementID: MountedElement] {
+        Dictionary(elements.map { ($0.id, $0) }) { first, _ in first }
+    }
+
+    /// Whether `patch` describes a page this arrangement keeps apart.
+    private func isSlot(_ patch: HostPatch) -> Bool {
+        holdsSlotsApart && NodeType.slotTypes.contains(patch.type)
+    }
+
+    /// The child `patch` describes: `standing` applied where it is the same kind of element, made anew otherwise.
+    private func mounted(_ patch: HostPatch, continuing standing: MountedElement?, tree: MountedTree) -> MountedElement {
+        if let child = standing, child.type == patch.type, !patch.replace {
+            child.parent = self
+            child.apply(patch)
+            return child
         }
 
-        let isSlot = { (patch: HostPatch) in self.holdsSlotsApart && NodeType.slotTypes.contains(patch.type) }
-        children = patches.filter { !isSlot($0) }.map(mounted)
-        slots = patches.filter(isSlot).map(mounted)
-        leave(before)
+        return MountedElement(patch, tree: tree, parent: self)
     }
 
     /// Whether this element is an arrangement of pages, whose children are its pages alone.

@@ -97,6 +97,25 @@ first; the composed views it is inside name a bare container's content in
 `debugInfo()`; and the scene it is inside is the one a `@State(sceneKey:)`
 claims from.
 
+## The walk's stack
+
+The differ walks the tree by recursion - an element, its children, each
+child an element - so every level of the tree holds the walk's frames for
+it on the stack until its subtree is done. Those frames are kept SMALL: the
+element's work is done in steps that return before its children are walked
+(`expand` - its composed views unwrapped or carried, `describePage`,
+`prepare` - its description compared and its patch made, `finish`), their
+values handed on behind one reference (`ElementPass`), and the children's
+matching likewise (`identified`, `arranged`, `ChildMatching`); what stays on
+the stack across the recursion is little more than pointers. Every step is
+`@inline(never)`, so an optimizer folding it back cannot grow the frame
+again. The reason is a debug build, where every local of a function keeps a
+slot of its own: one function doing all of an element's work held some
+forty kilobytes a level, and a WebAssembly Gallery overflowed a tablet
+browser's stack - far less than a desktop's - some fifteen levels down,
+before its first frame (`RangeError: Maximum call stack size exceeded`).
+`DifferStackTests` holds a level under eight kilobytes.
+
 ## Ids are never reused
 
 Element ids and handler ids come from counters that are never reset, not even

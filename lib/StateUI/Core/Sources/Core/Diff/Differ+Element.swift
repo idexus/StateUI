@@ -48,7 +48,9 @@ extension Differ {
     /// gets the host there: a composed view carried whole, an element replaced, an
     /// element changed, or one unchanged whose empty patch its parent drops.
     ///
-    /// `sizesArrive` says the layout it stands in is measured.
+    /// `sizesArrive` says the layout it stands in is measured. The walk goes down the tree through this frame,
+    /// kept small: the element's work is done in steps that return before its children are walked.
+    /// Design: docs/design/core/identity-and-diffing.md#the-walks-stack
     func element(
         id: ElementID,
         rendered: RenderedNode?,
@@ -56,77 +58,56 @@ extension Differ {
         forced: Bool = false,
         sizesArrive: Bool = false
     ) -> (node: RenderedNode, patch: HostPatch) {
-        var node = node
-
-        // Whether this is the view a page shows (PageValues.swift).
-        let atPageRoot = describesPageRoot
+        let pass = ElementPass(
+            id: id, rendered: rendered, node: node, forced: forced, sizesArrive: sizesArrive,
+            atPageRoot: describesPageRoot, outerScene: sceneRecord)
         describesPageRoot = false
 
-        // Whether an inspector's frame is open for this element
-        // (Inspection.swift).
-        var inspected = false
-        defer { if inspected { Inspection.leave() } }
+        // What the element entered - the environments provided, the views, its scene, an inspector's frame - is
+        // left once it and its subtree are done.
+        defer {
+            sceneRecord = pass.outerScene
+            bodies.removeLast(pass.entered)
+            scope.removeLast(pass.pushed)
+            if pass.inspected { Inspection.leave() }
+        }
 
-        var views: [(
-            type: String,
-            boxes: [(path: String, box: StateBox)],
-            inputs: [(path: String, input: Input)],
-            branch: String?)] = []
+        if let carried = expand(pass) { return carried }
+        if pass.node.type == .page { describePage(pass) }
+        prepare(pass)
 
-        // How many times this element has been described, this time included.
-        let builds = (rendered?.builds ?? 0) + 1
+        let children: [RenderedNode]
+        if let described = pass.described {
+            children = described.children
+            pass.patch.children = described.patch.children
+        } else {
+            children = reconcileChildren(
+                of: pass.previous, node: pass.node, into: &pass.patch, sizesArrive: pass.node.childSizesArrive)
+        }
+        return finish(pass, children: children)
+    }
 
-        // The builder path belongs to where the element was written, so it is read
-        // before any placeholder is unwrapped.
-        let key = node.key
+    /// The element's composed views unwrapped, outermost first, until a real node comes out - each keeping its state
+    /// and built, or the outermost carried whole - and that node's own content run: the carried element, or nil for
+    /// one the steps go on with.
+    @inline(never)
+    private func expand(_ pass: ElementPass) -> (node: RenderedNode, patch: HostPatch)? {
+        let (id, rendered, forced) = (pass.id, pass.rendered, pass.forced)
+        var node = pass.node
 
         // An aim takes the key this element settled on (Aim.swift).
-        let written = node.aim
-        written?.attach(id, walk: walkStamp)
+        pass.written?.attach(id, walk: walkStamp)
 
         // The readings asked for here, keyed by their target and held by this element
         // (Sampling.swift).
-        var readings: [Sampling] = []
-
         for (image, into, asks, take) in node.samples {
-            readings.append(image.sample(into: into, every: asks.window, take: take))
+            pass.readings.append(image.sample(into: into, every: asks.window, take: take))
         }
 
         // What `.environment()` provided here joins the scope before anything below
         // resolves; the count is kept for the clean walk.
-        var pushed = node.environments.count
+        pass.pushed = node.environments.count
         scope.append(contentsOf: node.environments)
-        defer { scope.removeLast(pushed) }
-
-        // And which views this element enters, for the containers under it.
-        var entered = 0
-        defer { bodies.removeLast(entered) }
-
-        // The environments visible at a composed view, which a carry compares.
-        // Design: docs/design/core/identity-and-diffing.md#what-a-carry-cannot-see
-        var seen: [ObjectIdentifier: ObjectIdentifier] = [:]
-
-        // What the clean walk needs to build this element again without its parent: a
-        // composed view keeps its placeholder, a container its node with the content
-        // still to run; a leaf keeps nothing.
-        // Design: docs/design/core/identity-and-diffing.md#the-clean-walk
-        var placeholder = node.stateful != nil || node.producer != nil ? node : nil
-
-        // The node as written, which a leaf wearing a themed value keeps.
-        let authored = node
-
-        // Everything the builds below read, recorded against this element.
-        var reads: Set<ObjectIdentifier> = []
-
-        // The derived states its builds made or found, which it holds.
-        var derived: [AnyObject] = []
-
-        // The frame the last body build ran under, for the container content below.
-        var frame: BuildScope.Frame?
-
-        // The scene this element is in, held while it and its subtree are built.
-        let outerScene = sceneRecord
-        defer { sceneRecord = outerScene }
 
         // Unwraps nested placeholders, outermost first, until a real node comes out.
         while true {
@@ -134,7 +115,7 @@ extension Differ {
             // adopted before the body reads it.
             // Design: docs/design/core/identity-and-diffing.md#state-survives-a-rebuild
             if let stateful = node.stateful {
-                let step = views.count
+                let step = pass.views.count
 
                 if let record = stateful.scene, sceneRecord == nil {
                     sceneRecord = record
@@ -166,7 +147,7 @@ extension Differ {
                     }
                 }
 
-                views.append((
+                pass.views.append((
                     type: stateful.viewType, boxes: stateful.boxes, inputs: stateful.inputs, branch: nil))
 
                 // Slots resolve against everything provided so far, before the body builds.
@@ -176,18 +157,18 @@ extension Differ {
                 // carried whole; decided on the outermost view alone.
                 // Design: docs/design/core/identity-and-diffing.md#carrying-a-view
                 if step == 0 {
-                    seen = snapshot()
+                    pass.seen = snapshot()
 
                     if let rendered = rendered, !forced, !describeAll, !stylesMoved,
                         let kept = rendered.views.first,
                         kept.type == stateful.viewType,
                         rendered.reads.isDisjoint(with: changed),
-                        rendered.seen == seen,
+                        rendered.seen == pass.seen,
                         let wrote = rendered.placeholder,
                         sameWriting(node, as: wrote),
                         Input.same(stateful.inputs, kept.inputs) {
                         if Inspection.recording {
-                            inspected = Inspection.enter(
+                            pass.inspected = Inspection.enter(
                                 stateful.viewType, .carried, element: id)
                         }
 
@@ -195,33 +176,33 @@ extension Differ {
                     }
 
                     if Inspection.recording {
-                        inspected = Inspection.enter(
+                        pass.inspected = Inspection.enter(
                             stateful.viewType,
-                            .built(reason(stateful, node: node, rendered: rendered, seen: seen)),
+                            .built(reason(stateful, node: node, rendered: rendered, seen: pass.seen)),
                             element: id)
                     }
                 }
 
                 let built = BuildScope.Frame(
                     view: stateful.viewType,
-                    builds: builds,
+                    builds: pass.builds,
                     read: rendered?.reads ?? [],
                     changed: self.changed,
                     written: self.written,
                     everything: describeAll,
                     element: id)
 
-                frame = built
+                pass.frame = built
                 bodies.append(stateful.viewType)
-                entered += 1
+                pass.entered += 1
 
-                node = ReadScope.collect(into: &reads) {
-                    DerivationScope.collect(into: &derived) {
+                node = ReadScope.collect(into: &pass.reads) {
+                    DerivationScope.collect(into: &pass.derived) {
                         BuildScope.within(built) { stateful.expand(over: node) }
                     }
                 }
-                views[step].branch = node.branch
-                pushed += node.environments.count
+                pass.views[step].branch = node.branch
+                pass.pushed += node.environments.count
                 scope.append(contentsOf: node.environments)
                 continue
             }
@@ -232,9 +213,9 @@ extension Differ {
         // What the view says of its page: the page takes it where this is the view it shows, an arrangement standing
         // where a page stands its title and icon; anywhere else it says nothing.
         // Design: docs/design/views/pages.md#what-a-view-says-of-its-page
-        let pageValues = node.pageValues
+        pass.pageValues = node.pageValues
         node.pageValues = nil
-        if let pageValues, !atPageRoot {
+        if let pageValues = pass.pageValues, !pass.atPageRoot {
             node.takeAsArrangement(pageValues)
         }
 
@@ -249,58 +230,73 @@ extension Differ {
         // The container's own content runs here, inside this element's read scope and
         // build frame: the reader of a state is the closure that read it.
         // Design: docs/design/core/identity-and-diffing.md#containers-run-their-own-content
-        let within = frame ?? bareFrame(for: rendered, builds: builds, element: id)
+        let within = pass.frame ?? bareFrame(for: rendered, builds: pass.builds, element: id)
+        pass.within = within
 
         // A container built again for what its own closure read: an inspector names the
         // view and the container.
-        if Inspection.recording, forced, views.isEmpty {
+        if Inspection.recording, forced, pass.views.isEmpty {
             let owner = Inspection.short(within?.view ?? "a view")
 
-            inspected = Inspection.enter(
+            pass.inspected = Inspection.enter(
                 "\(owner) › \(node.type.name)",
                 .built("for " + names(of: (rendered?.reads ?? []).intersection(changed))),
                 element: id)
         }
 
-        node = ReadScope.collect(into: &reads) {
+        let content = node
+        pass.node = ReadScope.collect(into: &pass.reads) {
             let shallow = { () -> Node in
-                var made = node
+                var made = content
                 made.materialize()
                 return made
             }
 
             guard let within else { return shallow() }
 
-            return DerivationScope.collect(into: &derived) { BuildScope.within(within, shallow) }
+            return DerivationScope.collect(into: &pass.derived) { BuildScope.within(within, shallow) }
         }
+        return nil
+    }
 
-        // A page describes the view it shows first, and says what that view says of it; it reads all that view's
-        // own build read, so a write the view's page values follow describes the page again.
-        // Design: docs/design/views/pages.md#what-a-view-says-of-its-page
-        var described: (children: [RenderedNode], patch: HostPatch)?
-        if node.type == .page {
-            let reshaped = rendered.map { $0.type != node.type || Self.kinds($0.views) != Self.kinds(views) } ?? false
-            var holder = HostPatch(id: id, type: node.type)
-            describesPageRoot = true
-            let children = reconcileChildren(
-                of: reshaped ? nil : rendered, node: node, into: &holder, sizesArrive: node.childSizesArrive)
-            describesPageRoot = false
+    /// A page describes the view it shows first, and says what that view says of it; it reads all that view's own
+    /// build read, so a write the view's page values follow describes the page again.
+    /// Design: docs/design/views/pages.md#what-a-view-says-of-its-page
+    @inline(never)
+    private func describePage(_ pass: ElementPass) {
+        let rendered = pass.rendered
+        let reshaped = rendered.map { $0.type != pass.node.type || Self.kinds($0.views) != Self.kinds(pass.views) }
+            ?? false
+        var holder = HostPatch(id: pass.id, type: pass.node.type)
+        describesPageRoot = true
+        let children = reconcileChildren(
+            of: reshaped ? nil : rendered, node: pass.node, into: &holder, sizesArrive: pass.node.childSizesArrive)
+        describesPageRoot = false
 
-            if let root = children.first {
-                reads.formUnion(root.reads)
-                if let said = root.pageValues { node.take(said) }
-            }
-            described = (children, holder)
+        if let root = children.first {
+            pass.reads.formUnion(root.reads)
+            if let said = root.pageValues { pass.node.take(said) }
         }
+        pass.described = (children, holder)
+    }
+
+    /// The element's own description compared with what it last said: its aim and readings, its style, visual states
+    /// and themed values, its engines, whether it is replaced, and the patch of its properties, motion, watches,
+    /// events and driven states - everything but its children.
+    @inline(never)
+    private func prepare(_ pass: ElementPass) {
+        let (id, rendered, sizesArrive) = (pass.id, pass.rendered, pass.sizesArrive)
+        var node = pass.node
+        defer { pass.node = node }
 
         // An aim on the root of a composed view's content is the same element.
-        if let inner = node.aim, inner !== written {
+        if let inner = node.aim, inner !== pass.written {
             inner.attach(id, walk: walkStamp)
         }
 
         // The same for a reading written on that root.
         for (image, into, asks, take) in node.samples {
-            readings.append(image.sample(into: into, every: asks.window, take: take))
+            pass.readings.append(image.sample(into: into, every: asks.window, take: take))
         }
 
         // The style is applied here, so a host receives every value already on the
@@ -310,27 +306,28 @@ extension Differ {
         // And its visual states resolved, the element reading what they follow.
         // Design: docs/design/views/styles.md#which-state-a-control-is-in
         let visualInput = node.visualStates.isEmpty ? nil : (rendered?.visualInput ?? VisualInput())
-        var visualState: String?
         var heard: [(index: Int, listener: VisualStateListener)] = []
+        pass.visualInput = visualInput
 
         if let visualInput {
-            (visualState, heard) = resolveVisualStates(
-                &node, input: visualInput, previous: rendered?.visualState, reads: &reads)
+            (pass.visualState, heard) = resolveVisualStates(
+                &node, input: visualInput, previous: rendered?.visualState, reads: &pass.reads)
 
-            if placeholder == nil {
-                placeholder = authored
+            if pass.placeholder == nil {
+                pass.placeholder = pass.authored
             }
         }
 
         // Themed values are picked here, which makes this element the theme's reader.
         // Design: docs/design/core/identity-and-diffing.md#themes
         if node.props.values.contains(where: \.isThemed) {
-            node.props = ReadScope.collect(into: &reads) {
-                node.props.mapValues { $0.isThemed ? $0.resolvingTheme() : $0 }
+            let props = node.props
+            node.props = ReadScope.collect(into: &pass.reads) {
+                props.mapValues { $0.isThemed ? $0.resolvingTheme() : $0 }
             }
 
-            if placeholder == nil {
-                placeholder = authored
+            if pass.placeholder == nil {
+                pass.placeholder = pass.authored
             }
         }
 
@@ -340,7 +337,7 @@ extension Differ {
         let converting = node.driven.keys.sorted()
             .compactMap { node.driven[$0]!.conversion }
             .flatMap { $0.declarations() }
-        let engines = arm(converting + node.engines, previous: rendered?.engines)
+        pass.engines = arm(converting + node.engines, previous: rendered?.engines)
 
         // Properties described last render and not now are named for the host to clear.
         // Design: docs/design/core/identity-and-diffing.md#properties-no-longer-described
@@ -350,18 +347,20 @@ extension Differ {
         // another kind of control makes (Node+ButtonMenu.swift), and another value a host makes its control by.
         // Design: docs/design/core/identity-and-diffing.md#another-kind-of-view
         let replace = rendered != nil
-            && (rendered!.type != node.type || Self.kinds(rendered!.views) != Self.kinds(views)
+            && (rendered!.type != node.type || Self.kinds(rendered!.views) != Self.kinds(pass.views)
                 || lost.contains { !$0.facts.cleared } || rendered!.buttonMenuOpening != node.buttonMenuOpening
                 || LibraryContracts.remaking.contains { rendered!.props[$0] != node.props[$0] })
 
         // Nothing to build on: the element is new, or cannot become what is described.
         let previous = replace ? nil : rendered
+        pass.previous = previous
 
         // The runs of what this element's walks find, kept while it is the same element.
         let kept = replace ? RunSlots() : rendered?.runs ?? RunSlots()
+        pass.kept = kept
 
         // A state entered is heard after this render; an element made again arrives in its state, unheard.
-        if !replace, let state = visualState {
+        if !replace, let state = pass.visualState {
             for (index, listener) in heard {
                 fired.append(Fired(
                     run: { try await listener.handler.run(state) }, gate: listener.handler.gate,
@@ -502,6 +501,7 @@ extension Differ {
         if eventsChanged {
             patch.events = .replace(events.mapValues { Int32($0) })
         }
+        pass.events = events
 
         // The properties driven to a state, numbered in walk and name order; the set is
         // sent whenever it changed, an emptied one included.
@@ -543,49 +543,48 @@ extension Differ {
         if tiesChanged {
             patch.driven = .replace(driven.mapValues(HostStateBinding.init))
         }
+        pass.driven = driven
+        pass.patch = patch
+    }
 
-        let children: [RenderedNode]
-        if let described {
-            children = described.children
-            patch.children = described.patch.children
-        } else {
-            children = reconcileChildren(of: previous, node: node, into: &patch, sizesArrive: node.childSizesArrive)
-        }
-
+    /// The element as it now stands, its children walked.
+    @inline(never)
+    private func finish(_ pass: ElementPass, children: [RenderedNode]) -> (node: RenderedNode, patch: HostPatch) {
+        let node = pass.node
         let result = RenderedNode(
-            id: id,
+            id: pass.id,
             type: node.type,
             props: node.props,
-            events: events,
-            motion: patch.motion?.motion ?? previous?.motion ?? .inherited,
-            lanes: patch.motion?.lanes ?? previous?.lanes ?? .all,
-            key: key,
-            views: views,
-            placeholder: placeholder,
-            view: within?.view,
-            reads: reads,
-            builds: builds,
-            provided: Array(scope.suffix(pushed)),
-            seen: seen,
+            events: pass.events,
+            motion: pass.patch.motion?.motion ?? pass.previous?.motion ?? .inherited,
+            lanes: pass.patch.motion?.lanes ?? pass.previous?.lanes ?? .all,
+            key: pass.key,
+            views: pass.views,
+            placeholder: pass.placeholder,
+            view: pass.within?.view,
+            reads: pass.reads,
+            builds: pass.builds,
+            provided: Array(scope.suffix(pass.pushed)),
+            seen: pass.seen,
             watched: node.watches.map { $0.value },
-            engines: engines,
-            driven: driven,
-            readings: readings,
-            derived: derived,
+            engines: pass.engines,
+            driven: pass.driven,
+            readings: pass.readings,
+            derived: pass.derived,
             children: children
         )
-        result.sizesArrive = sizesArrive
-        result.visualInput = visualInput
-        result.runs = kept
-        result.visualState = visualState
+        result.sizesArrive = pass.sizesArrive
+        result.visualInput = pass.visualInput
+        result.runs = pass.kept
+        result.visualState = pass.visualState
 
         // What it says of the page it is the view of.
-        result.pageValues = atPageRoot ? pageValues : nil
+        result.pageValues = pass.atPageRoot ? pass.pageValues : nil
 
         // What it runs as it leaves: this build's closures, the newest.
         result.destroying = node.destroying
 
-        return (result, patch)
+        return (result, pass.patch)
     }
 
     /// The frame a bare container's content runs under: the view the walk is in,
@@ -751,5 +750,95 @@ extension Differ {
         }
 
         return seen
+    }
+}
+
+/// One element as the walk reconciles it: what its steps hand on from one to the next, behind a reference, so the
+/// walk's frame for the element holds a pointer rather than everything the steps work with.
+/// Design: docs/design/core/identity-and-diffing.md#the-walks-stack
+@MainActor
+final class ElementPass {
+    let id: ElementID
+    let rendered: RenderedNode?
+    let forced: Bool
+    let sizesArrive: Bool
+
+    /// Whether this is the view a page shows (PageValues.swift), and the scene the walk was in as it came.
+    let atPageRoot: Bool
+    let outerScene: SceneRecord?
+
+    /// How many times this element has been described, this time included; the builder path, read before any
+    /// placeholder is unwrapped; the aim written on it, attached to the key it settled on (Aim.swift).
+    let builds: Int
+    let key: String?
+    let written: AimBox?
+
+    /// The node as written, which a leaf wearing a themed value keeps; and as the steps make it.
+    let authored: Node
+    var node: Node
+
+    /// What the element entered, left once it and its subtree are done: the environments it provided, the views it
+    /// entered, and whether an inspector's frame is open for it (Inspection.swift).
+    var pushed = 0
+    var entered = 0
+    var inspected = false
+
+    /// The composed views unwrapped, outermost first, and the environments visible at the outermost, which a carry
+    /// compares.
+    /// Design: docs/design/core/identity-and-diffing.md#what-a-carry-cannot-see
+    var views: [(
+        type: String,
+        boxes: [(path: String, box: StateBox)],
+        inputs: [(path: String, input: Input)],
+        branch: String?)] = []
+    var seen: [ObjectIdentifier: ObjectIdentifier] = [:]
+
+    /// What the clean walk needs to build this element again without its parent: a composed view keeps its
+    /// placeholder, a container its node with the content still to run; a leaf keeps nothing.
+    /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
+    var placeholder: Node?
+
+    /// The readings asked for here (Sampling.swift), everything the builds read, and the derived states they made
+    /// or found.
+    var readings: [Sampling] = []
+    var reads: Set<ObjectIdentifier> = []
+    var derived: [AnyObject] = []
+
+    /// The frame the last body build ran under, and the one its container's content ran under.
+    var frame: BuildScope.Frame?
+    var within: BuildScope.Frame?
+
+    /// What the view said of its page, and a page's own view described first.
+    var pageValues: PageValues?
+    var described: (children: [RenderedNode], patch: HostPatch)?
+
+    /// What its comparison found: its visual states, its engines, what it continues, its runs, its handlers, its
+    /// driven states and the patch.
+    var visualInput: VisualInput?
+    var visualState: String?
+    var engines: [Int] = []
+    var previous: RenderedNode?
+    var kept = RunSlots()
+    var events: [Event: Int] = [:]
+    var driven: [Prop: StateEntry] = [:]
+    var patch: HostPatch
+
+    init(
+        id: ElementID, rendered: RenderedNode?, node: Node, forced: Bool, sizesArrive: Bool, atPageRoot: Bool,
+        outerScene: SceneRecord?
+    ) {
+        self.id = id
+        self.rendered = rendered
+        self.forced = forced
+        self.sizesArrive = sizesArrive
+        self.atPageRoot = atPageRoot
+        self.outerScene = outerScene
+        builds = (rendered?.builds ?? 0) + 1
+        key = node.key
+        written = node.aim
+        authored = node
+        self.node = node
+        placeholder = node.stateful != nil || node.producer != nil ? node : nil
+        patch = HostPatch(id: id, type: node.type)
     }
 }

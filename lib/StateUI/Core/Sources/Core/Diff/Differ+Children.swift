@@ -8,7 +8,8 @@
 extension Differ {
     /// Matches this render's children against the last one's and patches each. An
     /// unchanged key sequence sends only the children with something to say; a
-    /// changed one sends the complete list in order.
+    /// changed one sends the complete list in order. The walk goes down through this frame too, kept small: the
+    /// matching is done in a step of its own.
     /// Design: docs/design/core/identity-and-diffing.md#keys
     func reconcileChildren(
         of previous: RenderedNode?,
@@ -16,73 +17,14 @@ extension Differ {
         into patch: inout HostPatch,
         sizesArrive: Bool
     ) -> [RenderedNode] {
-        let rendered = previous?.children ?? []
-
-        var byManualId: [String: RenderedNode] = [:]
-        var byKey: [String: RenderedNode] = [:]
-        for child in rendered {
-            if case .manual(let key) = child.id {
-                byManualId[key] = child
-            }
-
-            // First wins, so two elements claiming one path behave like a repeated `.id()`.
-            if let key = child.key, byKey[key] == nil {
-                byKey[key] = child
-            }
-        }
-
-        // Nodes put in by hand are matched by position among themselves.
-        let unkeyed = rendered.filter { $0.key == nil }
-
+        let matching = ChildMatching(previous?.children ?? [])
         var children: [RenderedNode] = []
         var patches: [HostPatch] = []
-        var claimed: Set<ElementID> = []
-        var used: Set<ElementID> = []
-        var unkeyedSoFar = 0
-        var manualSeen: [String: (count: Int, identity: AnyHashable?)] = [:]
 
-        for (index, childNode) in node.children.enumerated() {
-            // A repeated `.id()` takes a stable variant: the id, a NUL, its occurrence.
-            // Design: docs/design/core/identity-and-diffing.md#repeated-ids
-            var childNode = childNode
-            if let rawId = childNode.id {
-                let seen = manualSeen[rawId]
-                let occurrence = seen?.count ?? 0
-                manualSeen[rawId] = (occurrence + 1, seen?.identity ?? childNode.identity)
-
-                if occurrence > 0 {
-                    childNode.id = "\(rawId)\u{0}\(occurrence)"
-                    Self.sayRepeated(rawId, first: seen?.identity, again: childNode.identity)
-                }
-            }
-
-            let match = self.match(
-                childNode,
-                at: childNode.key == nil ? unkeyedSoFar : index,
-                rendered: unkeyed,
-                byManualId: byManualId,
-                byKey: byKey,
-                claimed: claimed)
-
-            if childNode.key == nil {
-                unkeyedSoFar += 1
-            }
-
-            if let match = match {
-                claimed.insert(match.id)
-            }
-
-            var id = match?.id ?? identity(for: childNode)
-
-            // A backstop for a variant that still collided, which it should not.
-            if used.contains(id) {
-                id = .auto(allocateElementId())
-            }
-
-            used.insert(id)
-
+        for index in node.children.indices {
+            let next = identified(node.children[index], at: index, by: matching)
             let (child, childPatch) = element(
-                id: id, rendered: match, node: childNode, sizesArrive: sizesArrive)
+                id: next.id, rendered: next.match, node: next.node, sizesArrive: sizesArrive)
 
             // An arrangement anywhere a page does not stand is left out (Differ+Arrangements.swift).
             guard standsWhereItMay(child, under: node.type) else {
@@ -95,19 +37,73 @@ extension Differ {
             patches.append(childPatch)
         }
 
-        for child in rendered where !claimed.contains(child.id) {
+        arranged(children, patches, after: matching, into: &patch)
+        return children
+    }
+
+    /// The child `written` at `index` as the walk goes on with it: its identity - its own, its builder path's, its
+    /// position's - and the rendered element it continues, matched by `matching`.
+    @inline(never)
+    private func identified(
+        _ written: Node, at index: Int, by matching: ChildMatching
+    ) -> (id: ElementID, match: RenderedNode?, node: Node) {
+        // A repeated `.id()` takes a stable variant: the id, a NUL, its occurrence.
+        // Design: docs/design/core/identity-and-diffing.md#repeated-ids
+        var childNode = written
+        if let rawId = childNode.id {
+            let seen = matching.manualSeen[rawId]
+            let occurrence = seen?.count ?? 0
+            matching.manualSeen[rawId] = (occurrence + 1, seen?.identity ?? childNode.identity)
+
+            if occurrence > 0 {
+                childNode.id = "\(rawId)\u{0}\(occurrence)"
+                Self.sayRepeated(rawId, first: seen?.identity, again: childNode.identity)
+            }
+        }
+
+        let match = self.match(
+            childNode,
+            at: childNode.key == nil ? matching.unkeyedSoFar : index,
+            rendered: matching.unkeyed,
+            byManualId: matching.byManualId,
+            byKey: matching.byKey,
+            claimed: matching.claimed)
+
+        if childNode.key == nil {
+            matching.unkeyedSoFar += 1
+        }
+
+        if let match = match {
+            matching.claimed.insert(match.id)
+        }
+
+        var id = match?.id ?? identity(for: childNode)
+
+        // A backstop for a variant that still collided, which it should not.
+        if matching.used.contains(id) {
+            id = .auto(allocateElementId())
+        }
+
+        matching.used.insert(id)
+        return (id, match, childNode)
+    }
+
+    /// The children walked, said to the host: the last render's that were not continued forgotten, and the
+    /// arrangement sent only when it changed.
+    @inline(never)
+    private func arranged(
+        _ children: [RenderedNode], _ patches: [HostPatch], after matching: ChildMatching, into patch: inout HostPatch
+    ) {
+        for child in matching.rendered where !matching.claimed.contains(child.id) {
             forget(child)
         }
 
-        // The arrangement is sent only when it changed.
-        if describeAll || children.map(\.id) != rendered.map(\.id) {
+        if describeAll || children.map(\.id) != matching.rendered.map(\.id) {
             patch.children = .arranged(patches)
         } else {
             let changed = patches.filter { !$0.isEmpty }
             patch.children = changed.isEmpty ? .unchanged : .changed(changed)
         }
-
-        return children
     }
 
     /// The rendered element a node continues: by the author's `.id()`, then by the
@@ -154,6 +150,39 @@ extension Differ {
         } else {
             complain("two siblings share the identity \"\(id)\": the second is told apart by where it stands, not by "
                 + "what it is; give each its own (`id:`).")
+        }
+    }
+}
+
+/// The last render's children as this render's are matched against them - by the author's `.id()`, by the builder
+/// path, by position - and what the matching has claimed and used so far, behind a reference the walk's frame holds.
+/// Design: docs/design/core/identity-and-diffing.md#the-walks-stack
+@MainActor
+final class ChildMatching {
+    let rendered: [RenderedNode]
+    var byManualId: [String: RenderedNode] = [:]
+    var byKey: [String: RenderedNode] = [:]
+
+    /// Nodes put in by hand, matched by position among themselves.
+    let unkeyed: [RenderedNode]
+
+    var claimed: Set<ElementID> = []
+    var used: Set<ElementID> = []
+    var unkeyedSoFar = 0
+    var manualSeen: [String: (count: Int, identity: AnyHashable?)] = [:]
+
+    init(_ rendered: [RenderedNode]) {
+        self.rendered = rendered
+        unkeyed = rendered.filter { $0.key == nil }
+        for child in rendered {
+            if case .manual(let key) = child.id {
+                byManualId[key] = child
+            }
+
+            // First wins, so two elements claiming one path behave like a repeated `.id()`.
+            if let key = child.key, byKey[key] == nil {
+                byKey[key] = child
+            }
         }
     }
 }

@@ -257,6 +257,21 @@ motion; [patches](patches.md) those of the patch intake and the program write;
 [the mounted tree](tree.md) those of the tree and its native halves;
 [layout](layout.md) those of the layout arithmetic.
 
+## The mount's stack
+
+The host layer makes and applies the tree by recursion - an element's patch
+applied, then its children made or applied, each an element - so, as the
+differ's walk does (core/identity-and-diffing.md, the walk's stack), it goes
+down through small frames: `apply` takes the patch's own values in one step
+(`received`), walks the children (`childrenApplied`, `arrange`, `mounted` -
+loops, no closures held across them), and tells the native half in another
+(`settled`), what crosses the children kept behind one reference
+(`Applying`). A WebAssembly Gallery in a debug build overflowed a tablet
+browser's stack - far less than a desktop's - before its first frame, the
+differ first and the mount next; `MountStackTests` holds a level under eight
+kilobytes. A WebAssembly start that fails takes the loading screen away, so
+its reason stands on the page rather than a load with no end.
+
 ## After a layout pass
 
 What a host must do once the layout pass under way is over - on GTK a field's
