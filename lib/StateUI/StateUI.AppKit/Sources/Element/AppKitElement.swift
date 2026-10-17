@@ -45,6 +45,7 @@ final class AppKitElement: NSObject, NativeElement {
     var handReader: AppKitHandReader?
     var pinchRecognizer: AppKitPinchRecognizer?
     var rotationRecognizer: AppKitRotationRecognizer?
+    var mirroredRecognizer: AppKitMirroredRecognizer?
     var pointerRecognizer: AppKitPointerRecognizer?
     var dragSource: AppKitDragSource?
     var accessibilityDefaults: (
@@ -173,7 +174,7 @@ final class AppKitElement: NSObject, NativeElement {
         }
 
         let recognizers: [NSGestureRecognizer?] = [
-            tapRecognizer, panRecognizer, pinchRecognizer, rotationRecognizer,
+            tapRecognizer, panRecognizer, pinchRecognizer, rotationRecognizer, mirroredRecognizer,
         ]
         for recognizer in recognizers.compactMap({ $0 }) {
             view?.removeGestureRecognizer(recognizer)
@@ -182,6 +183,7 @@ final class AppKitElement: NSObject, NativeElement {
         panRecognizer = nil
         pinchRecognizer = nil
         rotationRecognizer = nil
+        mirroredRecognizer = nil
         pointerRecognizer?.detach()
         pointerRecognizer = nil
 

@@ -193,6 +193,12 @@ enum WinUICallbacks {
             },
             wheel: { view, x, y in
                 MainActor.assumeIsolated { WinUIView.find(view)?.heardWheel(moved: Point(x: x, y: y)) == true }
+            },
+            mirrored: { view, phase, x, y, middleX, middleY in
+                MainActor.assumeIsolated {
+                    guard let phase = GesturePhase(rawValue: phase) else { return }
+                    WinUIView.find(view)?.heard(.mirrored(phase, at: Point(x: x, y: y), middle: Point(x: middleX, y: middleY)))
+                }
             })
     }
 }

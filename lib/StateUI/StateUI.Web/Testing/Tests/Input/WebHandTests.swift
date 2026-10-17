@@ -72,6 +72,37 @@ final class WebHandTests: XCTestCase {
         XCTAssertTrue(try dragStarted(after: [(2, 20)]), "a hand across the layout, left to the page")
     }
 
+    /// ⌥/ALT AND A DRAG ARE TWO FINGERS: a mouse pressed with Alt and dragged twice as far from the layout's middle
+    /// spreads its magnification twice as large - the press and its mirror about the middle.
+    func testAnAltDragIsTwoFingers() throws {
+        let zoom = State(wrappedValue: 1.0)
+        let host = WebRenderer.running {
+            LayoutEngine([0, 1, 2]) { Text("\($0)") } placements: { room, at in
+                (0..<3).map { Placement(Rect(Double($0) * 100, 0, 100 * at, room.height)) }
+            }
+            .phase(zoom.projectedValue)
+            .axis(\.self, input: .magnification, range: 1...3, snaps: [2])
+            .width(300)
+            .height(200)
+        }
+        let layout = "[...document.querySelectorAll('*')].find(n => n.style.touchAction === 'none')"
+        host.settle { (try? WebBrowser.truth("!!\(layout)", on: 0)) == true }
+
+        _ = try WebBrowser.truth("""
+            (() => {
+              const node = \(layout), box = node.getBoundingClientRect();
+              const at = (x) => ({ pointerId: 9, pointerType: 'mouse', button: 0, isPrimary: true, altKey: true,
+                clientX: box.left + 150 + x, clientY: box.top + 100, bubbles: true, cancelable: true });
+              node.dispatchEvent(new PointerEvent('pointerdown', at(50)));
+              node.dispatchEvent(new PointerEvent('pointermove', at(100)));
+              return true;
+            })()
+            """, on: 0)
+        host.settle { zoom.wrappedValue == 2 }
+
+        XCTAssertEqual(zoom.wrappedValue, 2, "twice as far from the middle: twice as large")
+    }
+
     /// Whether the page's pan was kept from a touch pressed on `layout`, moved by `firstMove` and then `then`: the
     /// touch's moves after its first, as the browser would pan them.
     private func kept(_ layout: String, firstMove: (Double, Double), then: (Double, Double)) throws -> Bool {

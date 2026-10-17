@@ -177,6 +177,9 @@ enum WebRelay {
     /// How far the gesture being heard has turned since it began, in degrees clockwise.
     static var eventRotation: Double { stateui_web_event_number(19) }
 
+    /// Whether ⌥/Alt was held as the event being heard happened.
+    static var eventAlt: Bool { stateui_web_event_number(20) != 0 }
+
     /// The size of the element hearing the event.
     static var eventSize: LayoutSize {
         LayoutSize(width: stateui_web_event_number(11), height: stateui_web_event_number(12))

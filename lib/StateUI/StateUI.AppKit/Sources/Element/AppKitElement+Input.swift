@@ -136,6 +136,9 @@ extension AppKitElement {
         rotationRecognizer = installed(rotationRecognizer, hearing.contains(.rotations), on: view) {
             AppKitRotationRecognizer(hearing: heard)
         }
+        mirroredRecognizer = installed(mirroredRecognizer, element.hearsMirroredFingers, on: view) {
+            AppKitMirroredRecognizer(hearing: heard)
+        }
         configureHand(hearing.contains(.hand), on: view, heard: heard)
 
         let offered = element.dragAndDrop

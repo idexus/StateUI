@@ -33,7 +33,41 @@ private struct TapsPage: View {
     }
 }
 
+/// A box that says each step its pinch said.
+private struct PinchPage: View {
+    @State private var said = ""
+
+    var body: some View {
+        VStack {
+            Text("said \(said)")
+            Rectangle().fill(.steelBlue)
+                .width(100)
+                .height(100)
+                .onPinchUpdated { pinch in said += "pinch \(pinch.scale); " }
+        }
+        .horizontalAlignment(.start)
+        .verticalAlignment(.start)
+    }
+}
+
 final class WinUIGesturesTests: XCTestCase {
+    /// ALT AND A DRAG ARE TWO FINGERS: what the relay says of a press with Alt - the press and the view's middle - a
+    /// view hearing a pinch hears as two fingers, the press and its mirror: twice as far from the middle, twice the
+    /// spread.
+    func testAnAltDragIsTwoFingers() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { PinchPage() }
+            let box = try XCTUnwrap(host.views(WinUIView.self).first { $0.hearing.contains(.pinches) })
+
+            box.heard(.mirrored(.began, at: Point(x: 75, y: 50), middle: Point(x: 50, y: 50)))
+            box.heard(.mirrored(.changed, at: Point(x: 100, y: 50), middle: Point(x: 50, y: 50)))
+            let expected = "said pinch 1.0; pinch 2.0; "
+            host.settle { host.texts.first == expected }
+
+            XCTAssertEqual(host.texts.first, expected)
+        }
+    }
+
     /// A row that answers a tap is pressed by assistive technology as a tap; a stack that answers nothing is not.
     func testATappedRowIsPressedByAssistiveTechnology() throws {
         try onUIThread {

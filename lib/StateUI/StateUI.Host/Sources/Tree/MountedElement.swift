@@ -76,6 +76,9 @@
     /// A wheel turned as a pinch over the element, while one is under way.
     var wheelPinch = WheelPinch()
 
+    /// A press dragged with ⌥/Alt over the element, read as two fingers, while one is under way.
+    var mirroredFingers = MirroredFingers()
+
     /// The toolkit's half of the element.
     public private(set) var native: (any NativeElement)!
 

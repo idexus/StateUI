@@ -55,6 +55,10 @@ extension MountedElement {
             guard hearsFingers else { return false }
 
             return fingers(pinchReading.rotation(phase, degrees: degrees, at: runtime.clock.now()), in: runtime)
+        case .mirrored(let phase, let at, let middle):
+            guard hearsMirroredFingers else { return false }
+
+            mirrored(phase, at: at, middle: middle, in: runtime)
         case .hand(let phase, let moved, let speed, let time, let point):
             // When the platform says the hand moved, where it says: input that waited for a busy thread comes in a
             // burst its arrival would read as a throw.
@@ -95,6 +99,32 @@ extension MountedElement {
 
     /// Whether two fingers spreading or turning move the layout this element is.
     private var hearsFingers: Bool { handler(.pinchMoved) != nil }
+
+    /// Whether a press dragged with ⌥/Alt over the element is two fingers: where it hears a pinch or a rotation.
+    public var hearsMirroredFingers: Bool { !hearing.isDisjoint(with: [.pinches, .rotations]) }
+
+    /// A press dragged with ⌥/Alt at `phase`, standing at `at`, the view's middle at `middle`: the pinch and the
+    /// rotation of two fingers, the press and its mirror - each told as the platform tells its own, so they go on as
+    /// one stream; the hand stays, their middle standing still.
+    /// Design: docs/design/host/runtime.md#two-fingers-from-one-pointer
+    private func mirrored(_ phase: GesturePhase, at: Point, middle: Point, in runtime: HostRuntime) {
+        let share = Point(0.5, 0.5)
+        switch phase {
+        case .began:
+            mirroredFingers.lifted()
+            _ = mirroredFingers.moved(at, about: middle)
+            hear(.pinch(.began, scale: 1, at: share), in: runtime)
+            hear(.rotation(.began, degrees: 0), in: runtime)
+        case .changed:
+            guard let step = mirroredFingers.moved(at, about: middle) else { return }
+            hear(.pinch(.changed, scale: step.scale, at: share), in: runtime)
+            hear(.rotation(.changed, degrees: step.degrees), in: runtime)
+        case .ended, .cancelled:
+            mirroredFingers.lifted()
+            hear(.pinch(phase, scale: 1, at: share), in: runtime)
+            hear(.rotation(phase, degrees: 0), in: runtime)
+        }
+    }
 
     /// What two fingers said, kept for the next frame, beside the hand they carry by their middle - and a view held
     /// by itself keeps the hand, the fingers saying nothing.

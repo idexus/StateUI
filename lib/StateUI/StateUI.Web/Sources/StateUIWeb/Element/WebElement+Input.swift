@@ -63,17 +63,31 @@ extension WebElement {
             let pointer = WebRelay.eventPointer
             guard let self, let view, pointer.kind != 0 || pointer.button == 0 else { return }
             WebRelay.capturePointer(view.node)
+            // A press with ⌥/Alt over a view two fingers move is two fingers, mirrored about its middle.
+            if WebRelay.eventAlt, element.hearsMirroredFingers, mirroring == nil {
+                mirroring = pointer.id
+                WebRelay.takeEvent()
+                return hearMirrored(.began)
+            }
             hearPress(press.down(
                 pointer.id, at: pointer.at, kind: pointer.kind, origin: origin, size: WebRelay.eventSize))
         }
         view.listen("pointermove") { [weak self] in
             guard let self else { return }
             let pointer = WebRelay.eventPointer
+            if mirroring == pointer.id {
+                WebRelay.takeEvent()
+                return hearMirrored(.changed)
+            }
             hearPress(press.moved(pointer.id, to: pointer.at, origin: origin, size: WebRelay.eventSize))
         }
         for (event, letGo) in [("pointerup", true), ("pointercancel", false)] {
             view.listen(event) { [weak self] in
                 guard let self else { return }
+                if mirroring == WebRelay.eventPointer.id {
+                    mirroring = nil
+                    return hearMirrored(letGo ? .ended : .cancelled)
+                }
                 hearPress(press.up(WebRelay.eventPointer.id, letGo: letGo, origin: origin, size: WebRelay.eventSize))
             }
         }
@@ -118,6 +132,8 @@ extension WebElement {
         view.listen("pointerdown") { [weak self, weak view] in
             let pointer = WebRelay.eventPointer
             guard let self, let view, pointer.kind != 0 || pointer.button == 0 else { return }
+            // A press with ⌥/Alt over a layout two fingers move is theirs.
+            guard !(WebRelay.eventAlt && element.hearsMirroredFingers) else { return }
             // Another finger on a hand under way joins it, moving its middle nowhere.
             guard handFingers.count == 0 else {
                 handFingers.down(pointer.id, at: pointer.at)
@@ -223,6 +239,16 @@ extension WebElement {
 
     /// What the presses on a view are heard for: a drag, two fingers pinching, two fingers turning.
     private static let presses: Hearing = [.drags, .pinches, .rotations]
+
+    /// The press with ⌥/Alt at `phase`, where the event being heard stands, mirrored about the view's middle.
+    /// Design: docs/design/host/runtime.md#two-fingers-from-one-pointer
+    private func hearMirrored(_ phase: GesturePhase) {
+        guard let host else { return }
+        let size = WebRelay.eventSize
+        element.hear(
+            .mirrored(phase, at: WebRelay.eventPoint, middle: Point(x: size.width / 2, y: size.height / 2)),
+            in: host.runtime)
+    }
 
     private func heard(_ kind: Hearing, _ input: HeardInput) {
         guard let host, element.hearing.contains(kind) else { return }

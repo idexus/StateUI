@@ -58,6 +58,39 @@ final class AppKitGestureTests: XCTestCase {
         XCTAssertEqual(totals.values, [8])
     }
 
+    /// ⌥ AND A DRAG ARE TWO FINGERS: a layout two fingers move wears a recognizer of a press with ⌥ - and a press
+    /// without it, it leaves - whose press and its mirror about the middle spread the magnification as the press goes
+    /// twice as far from it.
+    @MainActor
+    func testAnOptionDragIsTwoFingers() throws {
+        let zoom = State(wrappedValue: 1.0)
+        let renderer = AppKitRenderer.running {
+            LayoutEngine([0, 1]) { Text("\($0)") } placements: { _, at in
+                [Placement(Rect(0, 0, 10 * at, 10)), Placement(Rect(20, 0, 10, 10))]
+            }
+            .phase(zoom.projectedValue)
+            .axis(\.self, input: .magnification, range: 1...3, snaps: [2])
+        }
+        defer { renderer.closeForTesting() }
+        let mirrored = try XCTUnwrap(
+            renderer.nativeViews(AppKitZStackView.self).lazy
+                .compactMap { $0.gestureRecognizers.compactMap { $0 as? AppKitMirroredRecognizer }.first }.first)
+
+        XCTAssertTrue(AppKitMirroredRecognizer.takes([.option]))
+        XCTAssertFalse(AppKitMirroredRecognizer.takes([]), "a press without ⌥ is the hand's")
+
+        let middle = Point(150, 100)
+        mirrored.mirrored(.began, at: Point(200, 100), middle: middle)
+        mirrored.mirrored(.changed, at: Point(250, 100), middle: middle)
+        for _ in 0..<150 where zoom.wrappedValue != 2 {
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
+            renderer.runtime.displayCycle.frame(now: renderer.runtime.clock.now())
+            renderer.runtime.pump.turn()
+        }
+
+        XCTAssertEqual(zoom.wrappedValue, 2, "twice as far from the middle: twice as large")
+    }
+
     /// A view that answers a tap takes the first click into an inactive window,
     /// as a native control does - so a row opens wherever it is clicked, not only
     /// on its text. A view that answers nothing leaves that click to activate

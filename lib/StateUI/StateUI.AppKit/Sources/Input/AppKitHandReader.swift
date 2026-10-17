@@ -72,10 +72,12 @@ final class AppKitHandReader {
 final class AppKitHandDrag: NSPanGestureRecognizer {
     weak var reader: AppKitHandReader?
 
-    /// Where the drag had come to at its last report, where the press went down, and whether it moved as a drag.
+    /// Where the drag had come to at its last report, where the press went down, whether it moved as a drag, and
+    /// whether the press is two fingers' rather than the hand's.
     private var last = Point.zero
     private var down = Point.zero
     private var dragged = false
+    private var mirrors = false
 
     init() {
         super.init(target: nil, action: nil)
@@ -91,12 +93,16 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
 
     override func mouseDown(with event: NSEvent) {
         super.mouseDown(with: event)
+        // A press with ⌥ over a view two fingers move is theirs.
+        mirrors = AppKitMirroredRecognizer.takes(event.modifierFlags)
+            && view?.gestureRecognizers.contains { $0 is AppKitMirroredRecognizer } == true
+        guard !mirrors else { return }
         pressed(at: point(of: event))
     }
 
     override func mouseUp(with event: NSEvent) {
         super.mouseUp(with: event)
-        if !dragged { released() }
+        if !dragged, !mirrors { released() }
     }
 
     /// The pointer pressed at `point` of the view: the hand begins there.

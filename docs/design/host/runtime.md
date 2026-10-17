@@ -460,6 +460,26 @@ turn a step, and let go by the frames once the wheel has stood still
 `HandReading.pause`, as a wheel tells no lift. A Mac takes no Control and
 wheel for a pinch: there Control and the wheel zoom the whole screen.
 
+## Two fingers from one pointer
+
+A mouse turns and spreads what two fingers do: a press dragged with ⌥/Alt
+over a view that hears a pinch or a rotation is TWO FINGERS, the press and its
+mirror about the view's middle, as the iOS Simulator makes them - round the
+middle a turn, toward or away from it a spread, both at once. A host tells
+the press with Alt as `HeardInput.mirrored(phase, at:, middle:)` - where the
+press stands and the view's middle, in its points - and the host layer reads
+the two (`MirroredFingers`, by `TwoFingers`) and tells their steps as a
+pinch's and a rotation's, so they go on as the one stream two fingers are
+(`PinchReading`): thrown on as they lift, the hand standing still, as their
+middle does. The press is the fingers' alone - a layout's hand leaves it, a
+press without Alt goes on as before. Where no trackpad tells a rotation -
+any mouse, and Chrome and Firefox on a Mac, which tell a trackpad's pinch as
+a wheel and its turn as nothing - this is the rotation's road. Each host
+reads Alt as its toolkit holds it: AppKit's event's ⌥ (a recognizer a pan
+waits on), GTK's controller state (`GDK_ALT_MASK`, a drag of its own claimed
+or denied at its start), WinUI's pointer's key modifiers (the relay's
+`mirrored`), the Web's pointer event's `altKey`.
+
 ## A swipe
 
 A host whose toolkit tells it a press and how far it has moved, and no swipe,

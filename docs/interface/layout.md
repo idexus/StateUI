@@ -937,8 +937,11 @@ struct Compass: View {
 
 A magnification's range stands above nought, and its axis is nearest a
 snap by the logarithm - 1.5 is nearer 2 than 1 - so pinching in acts as
-spreading does. Chrome and Firefox tell no trackpad's rotation; there the
-fingers turn a layout on a touch screen.
+spreading does. With a mouse, a press dragged with ⌥/Alt is two fingers -
+the press and its mirror about the layout's middle - which turn round the
+middle and spread toward and away from it; Control and the wheel spread too.
+Chrome and Firefox tell no trackpad's rotation; there ⌥/Alt and a drag turn
+a layout, as fingers do on a touch screen.
 
 Two axes scrolled, one across and one down, are a pan: the hand moves both
 whichever way it goes, the across axis with the hand across and the down

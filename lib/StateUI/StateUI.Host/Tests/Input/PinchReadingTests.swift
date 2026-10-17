@@ -114,4 +114,20 @@ final class PinchReadingTests: XCTestCase {
         XCTAssertEqual(step.step(.ended, degrees: 25), 0)
         XCTAssertEqual(step.step(.changed, degrees: 5), 5, "a new rotation from nought")
     }
+
+    /// THE MIRRORED FINGERS TURN AND SPREAD ABOUT THE MIDDLE: the press and its mirror - a quarter of a turn round the
+    /// middle is 90 degrees clockwise, no spread; twice as far from it, twice the spread.
+    func testMirroredFingersTurnAndSpreadAboutTheMiddle() {
+        var fingers = MirroredFingers()
+        let middle = Point(100, 100)
+
+        XCTAssertNil(fingers.moved(Point(150, 100), about: middle), "as they first stand")
+        let turned = fingers.moved(Point(100, 150), about: middle)
+        XCTAssertEqual(turned?.degrees ?? 0, 90, accuracy: 0.000_1)
+        XCTAssertEqual(turned?.scale ?? 0, 1, accuracy: 0.000_1)
+
+        let spread = fingers.moved(Point(100, 200), about: middle)
+        XCTAssertEqual(spread?.scale ?? 0, 2, accuracy: 0.000_1)
+        XCTAssertEqual(spread?.degrees ?? 1, 0, accuracy: 0.000_1)
+    }
 }

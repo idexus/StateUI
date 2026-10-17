@@ -63,7 +63,7 @@ LayoutEngineSample.swift bce3bd72c2ca5cba
 LayoutPhaseSample.swift 0798087c989a4f47
 LifecycleSample.swift 735c566702226a6b
 LifetimeSample.swift 388647e356facd79
-LightTableSample.swift 63c5008160bda91e
+LightTableSample.swift bf1e522f5a0ecf3e
 LivingLayoutSample.swift 68b7f8803fa314b5
 LoadingItemsSample.swift 0475570786822801
 LocaleInfoSample.swift 53a7aa3516ee574a
@@ -127,7 +127,7 @@ ToolbarSample.swift 4b721bfe58cb9816
 TooltipSample.swift f53a9801ed0d9ee5
 TouchThroughSample.swift 02892a40d82eb93d
 TransformSample.swift 86d2809fa199ca45
-TwoFingersSample.swift 7b137795bf6ff449
+TwoFingersSample.swift 47512444b7046f28
 TwoLayersSample.swift 6561a08e37d670c0
 VisualStateSample.swift fb012ae68805451c
 WebViewSample.swift 984456f0c9c5d673

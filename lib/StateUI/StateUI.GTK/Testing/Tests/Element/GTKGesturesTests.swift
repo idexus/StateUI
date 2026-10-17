@@ -192,6 +192,26 @@ final class GTKGesturesTests: XCTestCase {
         }
     }
 
+    /// ALT AND A DRAG ARE TWO FINGERS: a view that hears a pinch hears a press with Alt - and one without it, it
+    /// leaves - as the press and its mirror about its middle: twice as far from the middle, twice the spread.
+    func testAnAltDragIsTwoFingers() throws {
+        try onUIThread {
+            let host = GTKRenderer.running { DragPage() }
+            let box = try XCTUnwrap(host.views(GTKShapeView.self).first)
+            let listening = try XCTUnwrap(box.listening)
+            XCTAssertNotNil(listening.mirroredDrag, "a drag of its own for the press with Alt")
+            XCTAssertTrue(GTKListening.takesMirrored(GDK_ALT_MASK))
+            XCTAssertFalse(GTKListening.takesMirrored(GdkModifierType(0)), "a press without Alt is the view's own")
+
+            listening.mirrored(.began, at: Point(x: 75, y: 50), middle: Point(x: 50, y: 50))
+            listening.mirrored(.changed, at: Point(x: 100, y: 50), middle: Point(x: 50, y: 50))
+            let expected = "x 10 pinch 1.0 at 0.5; pinch 2.0 at 0.5; "
+            host.settle { host.texts.first == expected }
+
+            XCTAssertEqual(host.texts.first, expected)
+        }
+    }
+
     /// A view listens for what its handlers ask, and its controllers come off once it leaves the tree.
     func testAViewListensForWhatItsHandlersAskAndStopsAsItLeaves() throws {
         try onUIThread {

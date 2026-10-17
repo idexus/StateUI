@@ -117,7 +117,8 @@ struct LightTableSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         Text("Drag to move across the table, a photo at a time. With two fingers - or a trackpad - spread or "
             + "pinch to come as near as you like, from the whole table to one photo, and turn to turn the photos a "
-            + "quarter at a time, while you move the table: all at once. With a mouse, Control and the wheel zoom. "
+            + "quarter at a time, while you move the table: all at once. With a mouse, Control and the wheel zoom, and a "
+            + "drag with Alt (⌥) held turns and zooms round the middle. "
             + "Switch Snap off, and the table and the photos rest wherever you leave them.")
             .fontSize(12)
             .textColor(Palette.subtle)

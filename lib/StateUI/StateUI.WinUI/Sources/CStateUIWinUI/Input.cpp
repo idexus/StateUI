@@ -54,6 +54,9 @@ namespace {
         std::unordered_map<uint32_t, Point> handFingers;
         Point handTravel{};
         bool handPending = false, handTaking = false;
+
+        /// The pointer pressed with Alt over a view two fingers move, read as two fingers while it is down; -1 none.
+        int64_t mirroring = -1;
     };
 
     std::unordered_map<int64_t, Listening> listening;
@@ -227,6 +230,31 @@ namespace {
     }
 
     /// Hangs every handler once; each asks what the view listens for as it runs.
+    /// A press with Alt over a view two fingers move, at `phase` - 0 down, 1 moved, 2 let go, 3 taken away: told as
+    /// the press and the view's middle, held from the view's others - the hand's - while it is down. Whether it was.
+    bool mirrored(int64_t view, IInspectable const &sender, input::PointerRoutedEventArgs const &args, int32_t phase) {
+        using winrt::Windows::System::VirtualKeyModifiers;
+        auto found = listening.find(view);
+        if (found == listening.end() || !(found->second.hearing & (StateUIHearingPinches | StateUIHearingRotations)))
+            return false;
+        auto &entry = found->second;
+        auto id = static_cast<int64_t>(args.Pointer().PointerId());
+        auto element = sender.as<xaml::FrameworkElement>();
+        if (phase == 0) {
+            if ((args.KeyModifiers() & VirtualKeyModifiers::Menu) != VirtualKeyModifiers::Menu) return false;
+            if (!args.GetCurrentPoint(element).Properties().IsLeftButtonPressed()) return false;
+            entry.mirroring = id;
+            element.CapturePointer(args.Pointer());
+        } else if (entry.mirroring != id) {
+            return false;
+        }
+        if (phase >= 2) entry.mirroring = -1;
+        auto at = args.GetCurrentPoint(element).Position();
+        args.Handled(true);
+        callbacks.mirrored(view, phase, at.X, at.Y, element.ActualWidth() / 2, element.ActualHeight() / 2);
+        return true;
+    }
+
     void listen(xaml::UIElement const &element, int64_t view, Listening &entry) {
         entry.tapped = element.Tapped(guarded("handling Tapped",
             [view](IInspectable const &sender, input::TappedRoutedEventArgs const &args) {
@@ -252,6 +280,8 @@ namespace {
         entry.pressed = element.PointerPressed(guarded("handling PointerPressed",
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerPressed, sender, args);
+            // A press with Alt over a view two fingers move is two fingers, mirrored about its middle.
+            if (mirrored(view, sender, args, 0)) return;
             if (auto *hand = listener(view, StateUIHearingHand)) {
                 auto point = args.GetCurrentPoint(sender.as<xaml::UIElement>());
                 bool contact = point.PointerDeviceType() != winrt::Microsoft::UI::Input::PointerDeviceType::Mouse
@@ -280,6 +310,7 @@ namespace {
         entry.movedToken = element.PointerMoved(guarded("handling PointerMoved",
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerMoved, sender, args);
+            if (mirrored(view, sender, args, 1)) return;
             auto *hand = listener(view, StateUIHearingHand);
             auto finger = hand ? hand->handFingers.find(args.Pointer().PointerId()) : std::unordered_map<uint32_t, Point>::iterator{};
             if (hand && finger != hand->handFingers.end()) {
@@ -325,16 +356,19 @@ namespace {
         entry.released = element.PointerReleased(guarded("handling PointerReleased",
             [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerReleased, sender, args);
+            if (mirrored(view, sender, args, 2)) return;
             handUp(view, args.Pointer().PointerId(), 2, when(args));
             letGo(view, 2);
         }));
         entry.lost = element.PointerCaptureLost(guarded("handling PointerCaptureLost",
-            [view](IInspectable const &, input::PointerRoutedEventArgs const &args) {
+            [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
+            if (mirrored(view, sender, args, 3)) return;
             handUp(view, args.Pointer().PointerId(), 3, when(args));
             letGo(view, 3);
         }));
         entry.canceled = element.PointerCanceled(guarded("handling PointerCanceled",
-            [view](IInspectable const &, input::PointerRoutedEventArgs const &args) {
+            [view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
+            if (mirrored(view, sender, args, 3)) return;
             handUp(view, args.Pointer().PointerId(), 3, when(args));
             letGo(view, 3);
         }));

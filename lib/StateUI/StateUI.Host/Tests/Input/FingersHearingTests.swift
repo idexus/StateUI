@@ -54,6 +54,25 @@ final class FingersHearingTests: XCTestCase {
         XCTAssertEqual(handed.last?.zoom ?? 0, 2, accuracy: 0.001, "and resting on its target")
     }
 
+    /// ⌥/ALT AND A DRAG ARE TWO FINGERS: the press and its mirror about the view's middle - going away from the
+    /// middle, they spread the magnification - and the hand stays where it was; let go, the axis rests.
+    func testAnAltDragIsTwoFingersMirroredAboutTheMiddle() throws {
+        let (runtime, clock) = running()
+        let dial = try XCTUnwrap(runtime.tree.root?.first(type: .layoutEngine))
+        XCTAssertTrue(dial.hearsMirroredFingers)
+
+        let middle = Point(150, 100)
+        dial.hear(.mirrored(.began, at: Point(250, 100), middle: middle), in: runtime)
+        dial.hear(.mirrored(.changed, at: Point(300, 100), middle: middle), in: runtime)
+        frames(runtime, clock, until: 48)
+        XCTAssertEqual(handed.last?.zoom ?? 0, 1.5, accuracy: 0.001, "half as far again from the middle")
+        XCTAssertEqual(handed.last?.turn ?? 0, 0, accuracy: 0.001, "the hand stays")
+
+        dial.hear(.mirrored(.ended, at: Point(300, 100), middle: middle), in: runtime)
+        frames(runtime, clock, until: 1_000)
+        XCTAssertEqual(handed.last?.zoom ?? 0, 2, accuracy: 0.001, "onto the end nearer by the logarithm")
+    }
+
     /// Display frames until `end`, sixteen milliseconds apart, the clock standing at each.
     private func frames(_ runtime: HostRuntime, _ clock: FingersClock, until end: Double) {
         while clock.time < end {

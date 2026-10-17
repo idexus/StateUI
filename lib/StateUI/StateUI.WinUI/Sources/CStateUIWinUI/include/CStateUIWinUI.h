@@ -225,6 +225,10 @@ typedef struct {
     /// A wheel's step over a layout, as far as the platform scrolls for it, moving what is under it by (x, y)
     /// DIPs: whether the layout took it.
     bool (*wheel)(int64_t view, double x, double y);
+
+    /// A press dragged with Alt over a view two fingers move - `phase` 0 begun, 1 moved, 2 let go, 3 taken away - at
+    /// (x, y) of the view, its middle at (middleX, middleY), in DIPs: two fingers, the press and its mirror.
+    void (*mirrored)(int64_t view, int32_t phase, double x, double y, double middleX, double middleY);
 } StateUIWinUICallbacks;
 
 /// What the environment is, in groups, each read at once.

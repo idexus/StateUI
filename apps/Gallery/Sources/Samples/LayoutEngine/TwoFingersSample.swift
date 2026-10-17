@@ -83,7 +83,8 @@ struct TwoFingersSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         Text("On a touch screen or a trackpad, turn two fingers to turn the ring a card at a time, and spread or "
-            + "pinch them to grow or shrink it - both at once. Let go with speed, and it goes on.")
+            + "pinch them to grow or shrink it - both at once. Let go with speed, and it goes on. With a mouse, drag "
+            + "with Alt (⌥) held: round the middle turns, toward or away from it grows or shrinks.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

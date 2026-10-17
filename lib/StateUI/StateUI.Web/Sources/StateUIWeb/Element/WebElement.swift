@@ -32,6 +32,9 @@ final class WebElement: NativeElement {
     /// The pointers pressed on the view, for a drag or a pinch it hears.
     var press = WebPress()
 
+    /// The pointer pressed with ⌥/Alt over the element, read as two fingers, while it is down.
+    var mirroring: Int?
+
     /// The hand over a layout: its fingers, read as one at their middle, how far that middle has gone while the hand
     /// is still nobody's, and whether its first move is yet to pass the drag distance, or the layout took it.
     var handFingers = PointerMiddle()

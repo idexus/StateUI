@@ -21,6 +21,10 @@
     /// Two fingers turning: its phase, and how far they turned since the last step, in degrees clockwise.
     case rotation(GesturePhase, degrees: Double)
 
+    /// A press dragged with ⌥/Alt over a view two fingers move: its phase, where it is and where the view's middle
+    /// is, in points of the view - two fingers, the press and its mirror about the middle (`MirroredFingers`).
+    case mirrored(GesturePhase, at: Point, middle: Point)
+
     /// A wheel turned as a pinch - with Control, as a platform tells a trackpad's pinch to an application that hears
     /// no gesture of it: the scale of this turn, and where, as shares of the view's size (`WheelPinch`).
     case wheelPinch(scale: Double, at: Point)
