@@ -7,7 +7,8 @@
 import XCTest
 
 /// A picture filling its room reaches two pixels past each edge, under its parent's clip: WebKit draws a covering
-/// picture rounded inward, and what is laid over it would show at the seam.
+/// picture rounded inward, and what is laid over it would show at the seam. A drawing filling it holds no size of
+/// its own, which WebKit would draw it at.
 @MainActor
 final class WebImageViewTests: XCTestCase {
     func testAFillingPictureReachesPastEachEdge() {
@@ -24,5 +25,22 @@ final class WebImageViewTests: XCTestCase {
         picture.apply(picture: nil, aspect: .fit)
         XCTAssertEqual(WebPage.style(of: picture.node, "margin-block-end"), "", "a fitted picture stands in its room")
         XCTAssertEqual(WebPage.style(of: picture.node, "max-height"), "100%")
+    }
+
+    /// A FILLING DRAWING HOLDS NO SIZE OF ITS OWN: WebKit, holding an SVG's size, lays its drawing out at the box's
+    /// and fits it whole inside it, so `cover` covers nothing - a portrait drawing in a square room stood narrow, its
+    /// room's rounded corners clipping nothing. A fitted drawing, and a filling bitmap, hold their size.
+    func testAFillingDrawingHoldsNoSizeOfItsOwn() {
+        let picture = WebImageView()
+        defer { picture.detach() }
+
+        picture.apply(picture: .file("card.svg"), aspect: .fill)
+        XCTAssertEqual(WebPage.style(of: picture.node, "contain"), "none", "a drawing covering its room")
+
+        picture.apply(picture: .file("card.svg"), aspect: .fit)
+        XCTAssertEqual(WebPage.style(of: picture.node, "contain"), "", "a drawing fitted in it")
+
+        picture.apply(picture: .file("photo.jpg"), aspect: .fill)
+        XCTAssertEqual(WebPage.style(of: picture.node, "contain"), "", "a bitmap covering it")
     }
 }

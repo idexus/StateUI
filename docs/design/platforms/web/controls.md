@@ -223,7 +223,12 @@ proportions binding neither length: the element holds its size alone
 (`contain: size`), the picture's own given as it loads
 (`contain-intrinsic-size`) - a picture across a stack's width stands as tall
 as it is, where the browser's own would stand as tall as its proportions
-make it. A picture filling its room (`object-fit: cover`) reaches two
+make it. A DRAWING FILLING ITS ROOM holds no size of its own (`contain:
+none`): WebKit, holding an SVG's size, lays the drawing out at the box's and
+fits it whole inside by its own `preserveAspectRatio`, so `cover` covers
+nothing - a portrait card in a square room stood narrow, its room's rounded
+corners clipping nothing (Safari; Chrome covers). The room it fills gives it
+its size. A picture filling its room (`object-fit: cover`) reaches two
 pixels past each edge - margins two pixels less, its bounds four more - under
 its parent's clip: WebKit draws a covering picture rounded inward at a
 fractional edge, by more than a pixel on a card turned and drawn small, so a band laid over its bottom - a card's caption in seventy
