@@ -77,9 +77,12 @@ extension LayoutEngine {
         /// where the input says, whether it moves it one target at most, and how a throw goes on.
         var moves: Bool { on(.hand).map { !$0.stops.isEmpty } ?? false }
         var across: Bool {
-            guard case .hand(let axis, _, _) = on(.hand)?.focus?.gesture else { return true }
+            guard case .hand(let axis, _, _) = focus?.gesture else { return true }
             return axis != .vertical
         }
+
+        /// Whether the hand moves the run every way: a pan, whose down axis is a hand of its own.
+        var pans: Bool { on(.handDown) != nil }
         var travel: LayoutInput.Travel {
             guard case .hand(_, let travel, _) = focus?.gesture else { return .front }
             return travel
@@ -350,9 +353,36 @@ extension LayoutEngine {
 
         // MARK: - The hand
 
-        /// The hand over the element: it takes the run where it is shown, moves the hand's axis with it - half as
-        /// far past an end of a run that does not come round - and names each target it passes; let go, it throws
-        /// the run on to the target nearest where the throw would end.
+        /// The hand over the element, along the layout or - a pan - every way: each of its axes moves with it, and
+        /// let go the run goes on to one target for both, each axis with its part of the speed.
+        /// Design: docs/design/views/layout-engine.md#a-pan
+        func handMoved(_ gesture: GesturePhase, moved: Point, speed: Point) {
+            guard let down = on(.handDown), gesture == .ended || gesture == .cancelled,
+                  let across = thrown(gesture, speed: speed), let along = down.thrown(gesture, speed: speed),
+                  let axis, let downAxis = down.axis
+            else {
+                hand(gesture, moved: moved, speed: speed)
+                on(.handDown)?.hand(gesture, moved: moved, speed: speed)
+                return
+            }
+
+            var ends = phase.journey.destination
+            ends[keyPath: axis] = across.end
+            ends[keyPath: downAxis] = along.end
+            let target = down.resting(near: resting(near: ends))
+            letGo(across, toward: target)
+            down.letGo(along, toward: target)
+        }
+
+        /// A wheel's notches over the element: each axis of the hand stepped as they turn its way.
+        func stepped(_ notches: Point) {
+            step(notches)
+            on(.handDown)?.step(notches)
+        }
+
+        /// The hand over the element on the axis in focus: it takes the run where it is shown, moves the axis with
+        /// it - less and less past an end of a run that does not come round - and names each target it passes; let
+        /// go, it throws the run on to the target nearest where the throw would end.
         /// Design: docs/design/views/layout-engine.md#the-hand
         func hand(_ gesture: GesturePhase, moved: Point, speed: Point) {
             let journey = phase.journey
@@ -375,42 +405,65 @@ extension LayoutEngine {
                 name(nearest(next))
 
             case .ended, .cancelled:
-                guard let held = self.held else { return }
+                guard let letting = thrown(gesture, speed: speed) else { return }
 
-                let measured = unit(at: held)
-                let per = measured ?? 1
-                let thrown = gesture == .ended && measured != nil ? -(across ? speed.x : speed.y) / per : 0
-                let carried = held + Self.carried(thrown, by: throwing)
-                let end = period == nil ? min(max(carried, low), high) : carried
-                let target = swiped(from: held, thrown: abs(thrown) * per >= Self.throwing ? thrown : 0)
-                    .map { placing($0, in: journey.destination) } ?? resting(near: placing(end, in: journey.destination))
+                let thrown = abs(letting.speed) * letting.per >= Self.throwing ? letting.speed : 0
+                let target = swiped(from: letting.point, thrown: thrown).map { placing($0, in: journey.destination) }
+                    ?? resting(near: placing(letting.end, in: journey.destination))
                 states.grip.wrappedValue = nil
-
-                let along = onAxis(target)
-                let left = along - held
-                let motion = law.resolved(against: .standard)
-
-                // Thrown on to a target ahead, the run goes on there as the input throws - onto the next target no
-                // slower than the layout's motion moves a unit; let go still, thrown back or slower than that, it
-                // approaches the target under that motion over as much of its length as the way left is of a unit.
-                // Design: docs/design/views/layout-engine.md#coming-onto-a-target
-                let flight = Self.flight(left, at: thrown, by: throwing)
-                let isThrow = abs(thrown) * per >= Self.throwing && left * thrown > 0
-                    && (!next(from: held, to: along) || flight <= abs(left) * Double(motion.milliseconds))
-
-                name(along)
-                if target != placing(along, in: journey.destination) { _ = journey.move(to: target) }
-                guard abs(left) * per > Self.settled, !motion.isCustom || isThrow else {
-                    self.held = nil
-                    return
-                }
-
-                flung = isThrow
-                    ? LayoutFling(from: held, to: along, speed: thrown, motion: throwing, flight: flight, thrown: true)
-                    : LayoutFling(
-                        from: held, to: along, speed: thrown, motion: Self.approach(motion, over: left),
-                        flight: abs(left) * Double(motion.milliseconds), thrown: false)
+                letGo(letting, toward: target)
             }
+        }
+
+        /// The hand in focus letting go at `speed`, per second: where it held the run, the unit there, how fast it
+        /// went in units a second, and where its throw would end - held to the ends of a run that does not come
+        /// round; nil where it held nothing.
+        func thrown(_ gesture: GesturePhase, speed: Point) -> Letting? {
+            guard let held else { return nil }
+
+            let measured = unit(at: held)
+            let per = measured ?? 1
+            let thrown = gesture == .ended && measured != nil ? -(across ? speed.x : speed.y) / per : 0
+            let carried = held + Self.carried(thrown, by: throwing)
+            return Letting(point: held, per: per, speed: thrown, end: period == nil ? min(max(carried, low), high) : carried)
+        }
+
+        /// The input in focus let go as `letting` says, the run resting at `target`: thrown on to a target ahead, it
+        /// goes on there as the input throws - onto the next target no slower than the layout's motion moves a
+        /// unit; let go still, thrown back or slower than that, it approaches the target under that motion over as
+        /// much of its length as the way left is of a unit.
+        /// Design: docs/design/views/layout-engine.md#coming-onto-a-target
+        func letGo(_ letting: Letting, toward target: Phase) {
+            let journey = phase.journey
+            let value = onAxis(target)
+            let along = toHand(value)
+            let left = along - letting.point
+            let motion = law.resolved(against: .standard)
+            let flight = Self.flight(left, at: letting.speed, by: throwing)
+            let isThrow = abs(letting.speed) * letting.per >= Self.throwing && left * letting.speed > 0
+                && (!next(from: fromHand(letting.point), to: value) || flight <= abs(left) * Double(motion.milliseconds))
+
+            name(value)
+            if target != placing(value, in: journey.destination) { _ = journey.move(to: target) }
+            guard abs(left) * letting.per > Self.settled, !motion.isCustom || isThrow else {
+                held = nil
+                return
+            }
+
+            flung = isThrow
+                ? LayoutFling(from: letting.point, to: along, speed: letting.speed, motion: throwing, flight: flight, thrown: true)
+                : LayoutFling(
+                    from: letting.point, to: along, speed: letting.speed, motion: Self.approach(motion, over: left),
+                    flight: abs(left) * Double(motion.milliseconds), thrown: false)
+        }
+
+        /// A hand letting go, where it works on its axis - a magnification's logarithm: where it held the run, how
+        /// many device units or degrees a unit stands for, its speed in units a second, and where its throw ends.
+        struct Letting {
+            let point: Double
+            let per: Double
+            let speed: Double
+            let end: Double
         }
 
         /// Two fingers over the element, a pinch and a rotation as one: each moves its own input's axis - a
@@ -453,31 +506,13 @@ extension LayoutEngine {
             case .ended, .cancelled:
                 guard let held = self.held else { return }
 
-                let per = perUnit
                 let point = toHand(held)
                 let thrown = gesture == .ended ? speed : 0
                 let carried = point + Self.carried(thrown, by: throwing)
                 let end = period == nil ? min(max(carried, low), high) : carried
-                let target = resting(near: placing(fromHand(end), in: journey.destination))
-                let along = toHand(onAxis(target))
-                let left = along - point
-                let motion = law.resolved(against: .standard)
-                let flight = Self.flight(left, at: thrown, by: throwing)
-                let isThrow = abs(thrown) * per >= Self.throwing && left * thrown > 0
-                    && (!next(from: held, to: onAxis(target)) || flight <= abs(left) * Double(motion.milliseconds))
-
-                name(onAxis(target))
-                if target != placing(onAxis(target), in: journey.destination) { _ = journey.move(to: target) }
-                guard abs(left) * per > Self.settled, !motion.isCustom || isThrow else {
-                    self.held = nil
-                    return
-                }
-
-                flung = isThrow
-                    ? LayoutFling(from: point, to: along, speed: thrown, motion: throwing, flight: flight, thrown: true)
-                    : LayoutFling(
-                        from: point, to: along, speed: thrown, motion: Self.approach(motion, over: left),
-                        flight: abs(left) * Double(motion.milliseconds), thrown: false)
+                letGo(
+                    Letting(point: point, per: perUnit, speed: thrown, end: end),
+                    toward: resting(near: placing(fromHand(end), in: journey.destination)))
             }
         }
 

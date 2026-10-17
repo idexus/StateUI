@@ -268,11 +268,22 @@
                 s.expect(told.values.last, "1 at 42,35", "moved down with the hand")
                 s.expect(phase.wrappedValue, 0, "the run stands")
             },
+            ConformanceCase("aPanMovesTheRunEveryWayAndRestsOnTheNearestSquare", proves: [
+                Covered(LayoutEngineContract.pans), Covered(LayoutEngineContract.handMoved),
+            ]) { s in
+                let (clock, square) = (TestClock(), State(wrappedValue: Square()))
+                let layout = try panLayout(s, clock: clock, square: square)
+
+                // 140 points to the left and 60 up are 1.4 squares on across and 0.6 down: let go still, the nearest.
+                try s.perform(.sweep(by: Point(-140, -60), speed: .zero), on: layout)
+                frames(s, clock, until: clock.now + 1_600)
+                s.expect(square.wrappedValue, Square(x: 1, y: 1), "both axes on the square nearest")
+            },
             ConformanceCase("twoFingersSpreadTheMagnification", proves: [
                 Covered(LayoutEngineContract.magnifies), Covered(LayoutEngineContract.pinchMoved),
             ]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 1.0))
-                let layout = try fingersLayout(s, clock: clock, phase: phase, input: .magnification())
+                let layout = try fingersLayout(s, clock: clock, phase: phase, input: .magnification)
 
                 try s.perform(.pinch(scale: 2, at: Point(0.5, 0.5)), on: layout)
                 frames(s, clock, until: clock.now + 1_000)
@@ -369,6 +380,37 @@ private func handLayout(_ s: Session, clock: TestClock, phase: State<Double>) th
             .snapTargets([0, 1, 2, 3, 4, 5])
             .motion(.eased(.milliseconds(300), .linear))
             .width(100).height(40)
+        }
+        .horizontalAlignment(.start)
+        .verticalAlignment(.start)
+    }
+    frames(s, clock, until: 64)
+    return try s.element(ofType: .layoutEngine)
+}
+
+/// A square of a board: across and down.
+private struct Square: LayoutPhase {
+    var x = 0.0
+    var y = 0.0
+
+    static var axes: [WritableKeyPath<Square, Double>] { [\.x, \.y] }
+}
+
+/// A board of three by three squares a hand pans a hundred points a unit either way, its run on `clock`: the layout's
+/// element, once the room is told.
+@MainActor
+private func panLayout(_ s: Session, clock: TestClock, square: State<Square>) throws -> MountedElement {
+    s.start(clock: clock) {
+        VStack {
+            LayoutEngine([0, 1, 2]) { _ in Rectangle(.red) } placements: { _, at in
+                (0..<3).map { Placement(Rect((Double($0) - at.x) * 50 + 40, 60 - at.y * 50, 20, 20)) }
+            }
+            .phase(square.projectedValue)
+            .input(.pan(pointsPerUnit: 100), drives: \.x, \.y)
+            .snap(\.x, to: [0, 1, 2])
+            .snap(\.y, to: [0, 1, 2])
+            .motion(.eased(.milliseconds(300), .linear))
+            .width(200).height(160)
         }
         .horizontalAlignment(.start)
         .verticalAlignment(.start)

@@ -46,14 +46,16 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     private boolean turning;
 
     /**
-     * Whether the element is a layout a hand moves: a finger dragged over it, whose first move past the slop the
-     * Swift host claims or leaves, and a wheel. Its last report's place on the screen, and its speed.
+     * Whether the element is a layout a hand moves: fingers dragged over it, read as one at their middle, whose first
+     * move past the slop the Swift host claims or leaves, and a wheel. Its last report's place on the screen, how
+     * many fingers it had, and its speed.
      */
     private boolean hand;
     private boolean handPending;
     private boolean handTaking;
     private float handX;
     private float handY;
+    private int handFingers;
     private VelocityTracker handSpeed;
 
     /** Where the touch went down, on the screen: a moving view moves where its own touches are. */
@@ -206,6 +208,7 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
         handTaking = false;
         handX = event.getRawX();
         handY = event.getRawY();
+        handFingers = 1;
         if (handSpeed != null) handSpeed.recycle();
         handSpeed = VelocityTracker.obtain();
         handSpeed.addMovement(event);
@@ -218,10 +221,25 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
      */
     private void handMoved(MotionEvent event) {
         if (handSpeed != null) handSpeed.addMovement(event);
-        float dx = (event.getRawX() - handX) / density;
-        float dy = (event.getRawY() - handY) / density;
+        // The fingers' middle on the screen: a finger landing or lifting moves it nowhere - the host layer's rule,
+        // `PointerMiddle` - so the hand follows the fingers as they spread and turn.
+        float offsetX = event.getRawX() - event.getX(), offsetY = event.getRawY() - event.getY();
+        float middleX = 0, middleY = 0;
+        int fingers = event.getPointerCount();
+        for (int finger = 0; finger < fingers; finger++) {
+            middleX += (event.getX(finger) + offsetX) / fingers;
+            middleY += (event.getY(finger) + offsetY) / fingers;
+        }
+        if (fingers != handFingers) {
+            handFingers = fingers;
+            handX = middleX;
+            handY = middleY;
+            return;
+        }
+        float dx = (middleX - handX) / density;
+        float dy = (middleY - handY) / density;
         if (handPending) {
-            if (Math.hypot(event.getRawX() - handX, event.getRawY() - handY) <= slop) return;
+            if (Math.hypot(middleX - handX, middleY - handY) <= slop) return;
             handPending = false;
             handTaking = StateUIHost.handed(view, RUNNING, dx, dy, 0, 0);
             if (!handTaking) return;
@@ -233,8 +251,8 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
         } else {
             return;
         }
-        handX = event.getRawX();
-        handY = event.getRawY();
+        handX = middleX;
+        handY = middleY;
     }
 
     /**

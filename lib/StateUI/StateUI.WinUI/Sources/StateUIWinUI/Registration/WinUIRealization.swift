@@ -99,6 +99,7 @@ enum WinUIRealization {
         .complete("LayoutEngine", "itemDrag"),
         .complete("LayoutEngine", "itemMoved"),
         .complete("LayoutEngine", "magnifies"),
+        .complete("LayoutEngine", "pans"),
         .complete("LayoutEngine", "rotates"),
         .complete("LayoutEngine", "pinchMoved"),
         .complete("Menu", "isEnabled"),

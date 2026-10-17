@@ -41,13 +41,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (84)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>33 ✅ · 1 ☑️ · 43 ✓ · 1 –</td><td>custom <code>NSView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>32 ✅ · 1 ☑️ · 45 ✓ · 2 –</td><td>custom <code>UIView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>58 ✅ · 3 ☑️ · 15 ✓ · 1 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>53 ✅ · 1 ☑️ · 25 ✓ · 3 –</td><td>custom <code>Panel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>46 ✅ · 1 ☑️ · 29 ✓ · 3 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>56 ✅ · 2 ☑️ · 23 ✓ · 1 –</td><td>CSS grid, one shared cell</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (85)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>33 ✅ · 1 ☑️ · 44 ✓ · 1 –</td><td>custom <code>NSView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>32 ✅ · 1 ☑️ · 46 ✓ · 2 –</td><td>custom <code>UIView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>58 ✅ · 3 ☑️ · 16 ✓ · 1 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>53 ✅ · 1 ☑️ · 26 ✓ · 3 –</td><td>custom <code>Panel</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>46 ✅ · 1 ☑️ · 30 ✓ · 3 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>56 ✅ · 2 ☑️ · 24 ✓ · 1 –</td><td>CSS grid, one shared cell</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/LayoutEngineContract.swift`.
@@ -68,6 +68,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/LayoutEngineCon
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on LayoutEngine: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on LayoutEngine: the relay's report of the press over the layout handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>magnifies</code></td><td>property</td><td><code>Bool</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pinch on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pinch on LayoutEngine: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pinch on LayoutEngine: the relay's report of the manipulation handed to the host, no touch sent<br>GTK 4: only through the host's own: pinch on LayoutEngine: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>pans</code></td><td>property</td><td><code>Bool</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: sweep on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: sweep on LayoutEngine: the view's listening handed the recognizer's states, no touch sent<br>Android Views: only through the host's own: sweep on LayoutEngine: the listener's report of the hand handed to the host, no touch sent<br>WinUI 3: only through the host's own: sweep on LayoutEngine: the relay's report of the hand handed to the host with its speed, no pointer sent<br>GTK 4: only through the host's own: sweep on LayoutEngine: the hand handed to the host's entry with its speed, no event<br>Web: only through the host's own: sweep on LayoutEngine: the hand handed to the host's entry with its speed, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>phase</code></td><td>property</td><td><code>[Double]</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>pinchMoved</code></td><td>event</td><td><code>(GesturePhase, Double, Double, Point)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pinch on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pinch on LayoutEngine: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pinch on LayoutEngine: the relay's report of the manipulation handed to the host, no touch sent<br>GTK 4: only through the host's own: pinch on LayoutEngine: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down</td></tr></tbody>

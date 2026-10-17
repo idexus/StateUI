@@ -357,10 +357,9 @@ class WinUIView {
         if menuActions.indices.contains(index) { menuActions[index]() }
     }
 
-    /// What of the user's input the view listens for, the axis a hand moves it along where it hears one; what hears
-    /// it.
+    /// What of the user's input the view listens for, the way a hand moves it where it hears one; what hears it.
     private(set) var hearing: Hearing = []
-    private var handAxis: LayoutInput.Axis?
+    private var hand: (way: HandWay?, pinches: Bool) = (nil, false)
     private var onHeard: ((HeardInput) -> Bool)?
 
     /// What the view offers and takes of a drag, as last told to the relay; what hears it.
@@ -377,20 +376,28 @@ class WinUIView {
         return .eachAxis(x: distance[0], y: distance[1])
     }()
 
-    /// Listens for what `hearing` names - a hand along `axis` - `heard` hearing it; the relay is told only a
-    /// change, in its bits, which are `Hearing`'s.
+    /// Listens for what `hearing` names - a hand `way` - `heard` hearing it; the relay is told only a change, in its
+    /// bits, which are `Hearing`'s, and the hand's way as 0 across, 1 down, 2 every way, with whether the wheel
+    /// turned with Control scales.
     /// Design: docs/design/platforms/winui/input.md
-    func hear(_ hearing: Hearing, along axis: LayoutInput.Axis? = nil, _ heard: @escaping (HeardInput) -> Bool) {
+    func hear(_ hearing: Hearing, way: HandWay? = nil, _ heard: @escaping (HeardInput) -> Bool) {
         onHeard = hearing.isEmpty ? nil : heard
         if hearing != self.hearing {
             self.hearing = hearing
             stateui_winui_hear(handle, number, hearing.rawValue)
         }
-        let axis = hearing.contains(.hand) ? axis : nil
-        guard axis != handAxis else { return }
+        let way = hearing.contains(.hand) ? way : nil
+        let pinches = hearing.contains(.pinches)
+        guard way != hand.way || pinches != hand.pinches else { return }
 
-        handAxis = axis
-        stateui_winui_hear_hand(handle, number, axis?.rawValue ?? -1)
+        hand = (way, pinches)
+        let code: Int32 = switch way {
+        case .horizontal: 0
+        case .vertical: 1
+        case .everyWay: 2
+        case nil: -1
+        }
+        stateui_winui_hear_hand(handle, number, code, pinches ? 1 : 0)
     }
 
     /// What the relay says the view heard.

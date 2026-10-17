@@ -71,8 +71,17 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     /// Where the phase is written and read, when an author lent a binding.
     private var pinned: Binding<Phase>?
 
-    /// What moves the phase under the user's hand and fingers, one input a kind, and the axis each moves.
-    private var hands: [(input: LayoutInput, axis: WritableKeyPath<Phase, Double>)] = []
+    /// What moves the phase under the user's hand and fingers, one input a kind - a pan's two axes two - and the
+    /// axis each moves.
+    private var hands: [Given] = []
+
+    /// One input as given: its kind, its gesture, how it throws, and its axis.
+    private struct Given {
+        let kind: LayoutInput.Kind
+        let gesture: LayoutInput.Gesture
+        let throwing: Motion
+        let axis: WritableKeyPath<Phase, Double>
+    }
 
     /// The whole phases the run may come to rest at.
     private var targets: [Phase] = []
@@ -193,25 +202,59 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     /// What moves one axis of the phase under the user's hand or fingers.
     ///
     ///     .input(.scroll(.horizontal, pointsPerUnit: 240), drives: \.turn)
-    ///     .input(.magnification(), drives: \.zoom)
+    ///     .input(.magnification, drives: \.zoom)
     ///
     /// The hand moves the axis as it moves, between the lowest and the highest snap target on it - or round and
     /// round where the axis `wraps(_:every:)` - and let go, the run goes on to the target nearest where its throw
     /// would end: it needs `snap(_:to:)` for that axis or `snapTargets(_:)`. Each input moves its own axis alone;
     /// the others go on as the program sends them. The views still answer a tap.
     ///
-    /// A layout takes one input an axis, and one of each kind - a hand along the layout, a magnification, a
-    /// rotation: an input given again on its axis, or of its kind, takes the other's place. Two fingers spreading
-    /// and turning move their axes at once; as they touch, a hand moving the run lets go of it.
+    /// A layout takes one input an axis, and one of each kind - a hand along the layout or a pan, a magnification,
+    /// a rotation: an input given again on its axis, or of its kind, takes the other's place. Two fingers spreading
+    /// and turning move their axes at once, and the hand goes on with their middle.
     ///
     /// - Parameters:
     ///   - input: the hand's way of moving the axis.
     ///   - axis: the axis it moves.
     /// - Returns: the layout, moved by the hand.
     public func input(_ input: LayoutInput, drives axis: WritableKeyPath<Phase, Double>) -> Self {
+        let kind = input.gesture.kind
+        return taking([Given(kind: kind, gesture: input.gesture, throwing: input.throwing, axis: axis)])
+    }
+
+    /// What moves two axes of the phase under the user's hand, whichever way it goes: a pan.
+    ///
+    ///     .input(.pan, drives: \.x, \.y)
+    ///     .snap(\.x, to: [0, 1, 2])
+    ///     .snap(\.y, to: [0, 1, 2])
+    ///
+    /// The hand moves the across axis as it moves across and the down axis as it moves down, each between its lowest
+    /// and highest snap target - or round and round where it `wraps(_:every:)` - and let go, the run goes on to the
+    /// target nearest where its throw would end, both axes together. Two fingers carry it by their middle as they
+    /// spread and turn the axes a magnification and a rotation drive. A pan takes the place of a hand along the
+    /// layout, and of another pan.
+    ///
+    /// - Parameters:
+    ///   - pan: the hand's way of moving the axes.
+    ///   - across: the axis it moves as it goes across - left moving it on.
+    ///   - down: the axis it moves as it goes down - up moving it on.
+    /// - Returns: the layout, panned by the hand.
+    public func input(
+        _ pan: LayoutPan, drives across: WritableKeyPath<Phase, Double>, _ down: WritableKeyPath<Phase, Double>
+    ) -> Self {
+        taking([
+            Given(kind: .hand, gesture: .hand(.horizontal, pan.travel, swipes: false), throwing: pan.throwing, axis: across),
+            Given(kind: .handDown, gesture: .hand(.vertical, pan.travel, swipes: false), throwing: pan.throwing, axis: down),
+        ])
+    }
+
+    /// The layout with `given` in place of any input on their axes or of their kinds - a hand along the layout and
+    /// a pan one kind.
+    private func taking(_ given: [Given]) -> Self {
         var copy = self
-        copy.hands.removeAll { $0.axis == axis || $0.input.gesture.kind == input.gesture.kind }
-        copy.hands.append((input, axis))
+        let kinds = Set(given.map(\.kind)).union(given.contains { $0.kind == .hand } ? [.handDown] : [])
+        copy.hands.removeAll { each in kinds.contains(each.kind) || given.contains { $0.axis == each.axis } }
+        copy.hands += given
         return copy
     }
 
@@ -409,13 +452,16 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         }
         .modified { element in
             // The hand is heard on the element itself, over every view, which still answers a tap.
-            element.describe(LayoutEngineContract.handAxis, run.moves ? (run.across ? .horizontal : .vertical) : nil)
+            element.describe(
+                LayoutEngineContract.handAxis, run.moves && !run.pans ? (run.across ? .horizontal : .vertical) : nil)
             if run.moves {
                 element.addHandler(LayoutEngineContract.handMoved) { phase, moved, speed in
-                    run.hand(phase, moved: moved, speed: speed)
+                    run.handMoved(phase, moved: moved, speed: speed)
                 }
-                element.addHandler(LayoutEngineContract.handStepped) { notches in run.step(notches) }
+                element.addHandler(LayoutEngineContract.handStepped) { notches in run.stepped(notches) }
             }
+            // A pan is heard every way, a hand along the layout one way.
+            element.describe(LayoutEngineContract.pans, run.moves && run.pans ? true : nil)
             // Two fingers spreading and turning are heard as one, each moving its own axis.
             let (magnifies, rotates) = (run.on(.magnification) != nil, run.on(.rotation) != nil)
             element.describe(LayoutEngineContract.magnifies, magnifies ? true : nil)
@@ -481,11 +527,11 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     private var run: Run {
         let items = Array(source.items)
         let path = source.path
-        let hands = hands.map { input, axis in
+        let hands = hands.map { given in
             Hand(
-                kind: input.gesture.kind, axis: axis,
-                stops: axisTargets[axis] ?? Set(targets.map { $0[keyPath: axis] }).sorted(),
-                period: periods[axis], gesture: input.gesture, throwing: input.throwing)
+                kind: given.kind, axis: given.axis,
+                stops: axisTargets[given.axis] ?? Set(targets.map { $0[keyPath: given.axis] }).sorted(),
+                period: periods[given.axis], gesture: given.gesture, throwing: given.throwing)
         }
 
         return Run(

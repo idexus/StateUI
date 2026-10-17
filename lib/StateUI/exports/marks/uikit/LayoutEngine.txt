@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 LayoutEngine: ✅
 LayoutEngine.frameChanged: ✅
 LayoutEngine.handAxis: ✓ sweep on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
@@ -7,6 +7,7 @@ LayoutEngine.handStepped: ✓ notch on LayoutEngine: the view's listening handed
 LayoutEngine.itemDrag: ✓ pressDown on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
 LayoutEngine.itemMoved: ✓ pressDown on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
 LayoutEngine.magnifies: ✓ pinch on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
+LayoutEngine.pans: ✓ sweep on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
 LayoutEngine.phase: ✅
 LayoutEngine.pinchMoved: ✓ pinch on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
 LayoutEngine.rotates: ✓ rotate on LayoutEngine: the view's listening handed the recognizer's states, no touch sent

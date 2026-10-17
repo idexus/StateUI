@@ -110,8 +110,8 @@
     /// When the hand last moved.
     private var last = 0.0
 
-    /// The part of a notch a fine wheel has turned toward the next, along the layout's axis.
-    private var turned = 0.0
+    /// The part of a notch a fine wheel has turned toward the next, across and down.
+    private var turned = Point.zero
 
     /// A wheel's steps of the last `window`, how fast they went - their sum over the window - which way, how many
     /// steps in a row went slower than the one before, and whether what still comes is the momentum after a lift,
@@ -126,32 +126,32 @@
     /// A hand not begun.
     public init() {}
 
-    /// Whether a layout moved along `axis` claims the hand whose first move is `moved`: one more along the axis
-    /// than across it. A hand not yet moving is claimed by nobody.
-    public static func claims(_ moved: Point, along axis: LayoutInput.Axis) -> Bool {
-        let along = abs(axis == .horizontal ? moved.x : moved.y)
-        let across = abs(axis == .horizontal ? moved.y : moved.x)
+    /// Whether a layout moved `way` claims the hand whose first move is `moved`: along one axis, one more along
+    /// it than across it; every way, any. A hand not yet moving is claimed by nobody.
+    public static func claims(_ moved: Point, way: HandWay) -> Bool {
+        guard way != .everyWay else { return moved != .zero }
+
+        let along = abs(way == .horizontal ? moved.x : moved.y)
+        let across = abs(way == .horizontal ? moved.y : moved.x)
         return along > 0 && along >= across
     }
 
-    /// Whether a hand whose first move is `moved` is taken over a layout moved along `axis` whose views are taken as
-    /// `items` says - the run's along it, a view's across it with `.across` - and any way where it already holds a
+    /// Whether a hand whose first move is `moved` is taken over a layout moved `way` whose views are taken as
+    /// `items` says - the run's its way, a view's across it with `.across` - and any way where it already holds a
     /// view: what a toolkit asks before its drag begins.
-    public static func takes(
-        _ moved: Point, along axis: LayoutInput.Axis?, items: ItemDragStart?, holding: Bool
-    ) -> Bool {
-        holding || axis.map { claims(moved, along: $0) } == true || (items == .across && moved != .zero)
+    public static func takes(_ moved: Point, way: HandWay?, items: ItemDragStart?, holding: Bool) -> Bool {
+        holding || way.map { claims(moved, way: $0) } == true || (items == .across && moved != .zero)
     }
 
     /// The hand at `phase` - a press dragged or a trackpad's fingers - moving what is under it by `moved` at `time`,
-    /// lifting at `speed` where the platform tells one, a press going down at `point`: a layout moved along `axis`
-    /// takes a gesture whose first move is along it; one whose views are taken as `items` says gives the view under
+    /// lifting at `speed` where the platform tells one, a press going down at `point`: a layout moved `way` takes a
+    /// gesture whose first move goes its way; one whose views are taken as `items` says gives the view under
     /// the press a first move across it (`.across`) or a press standing still `hold` (`.held`, by the frames); the
     /// rest is left to whatever holds the layout. A hold and a held view's standing are measured on the frames'
     /// clock, `now`; the hand's pace on the platform's, `time`. Whether it took this step, and what it says.
     /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
     public mutating func hand(
-        _ phase: GesturePhase, moved: Point, speed: Point?, at time: Double, along axis: LayoutInput.Axis?,
+        _ phase: GesturePhase, moved: Point, speed: Point?, at time: Double, way: HandWay?,
         point: Point? = nil, items: ItemDragStart? = nil, now: Double? = nil
     ) -> (taken: Bool, reports: [Report]) {
         let now = now ?? time
@@ -168,7 +168,7 @@
             if claimed == nil {
                 guard moved != .zero else { return (true, []) }
 
-                claimed = axis.map { Self.claims(moved, along: $0) } ?? false
+                claimed = way.map { Self.claims(moved, way: $0) } ?? false
                 if claimed == true {
                     press = nil
                     return (true, began(at: time) + self.moved(moved, at: time))
@@ -215,39 +215,28 @@
         return self.moved(moved, at: time).map { $0.holding(at: itemAt) }
     }
 
-    /// A wheel's notch moving what is under the hand by `moved` at `time`, over a layout moved along `axis`: taken
-    /// where it moves along the axis. Whether it was, and what it says.
-    public mutating func wheel(_ moved: Point, at time: Double, along axis: LayoutInput.Axis?) -> (taken: Bool, reports: [Report]) {
-        guard let axis, Self.claims(moved, along: axis) else { return (false, []) }
+    /// A wheel's notch moving what is under the hand by `moved` at `time`, over a layout moved `way`: taken where it
+    /// moves its way. Whether it was, and what it says.
+    public mutating func wheel(_ moved: Point, at time: Double, way: HandWay?) -> (taken: Bool, reports: [Report]) {
+        guard let way, Self.claims(moved, way: way) else { return (false, []) }
 
         return (true, notched(moved, at: time))
     }
 
-    /// A wheel's notches over a layout moved along `axis`, turned as `notches` says: taken where they turn along the
-    /// axis, the whole notches they come to with what was turned before - a fine wheel's parts adding up - and
-    /// none until they do.
+    /// A wheel's notches over a layout moved `way`, turned as `notches` says: taken where they turn its way, the
+    /// whole notches they come to with what was turned before - a fine wheel's parts adding up, each way on its own
+    /// - and none until they do.
     /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
-    public mutating func notches(_ notches: Point, along axis: LayoutInput.Axis?) -> (taken: Bool, steps: Point?) {
-        guard let axis, Self.claims(notches, along: axis) else { return (false, nil) }
+    public mutating func notches(_ notches: Point, way: HandWay?) -> (taken: Bool, steps: Point?) {
+        guard let way, Self.claims(notches, way: way) else { return (false, nil) }
 
-        turned += axis == .horizontal ? notches.x : notches.y
-        let whole = turned.rounded(.towardZero)
-        turned -= whole
-        guard whole != 0 else { return (true, nil) }
+        turned = Point(
+            turned.x + (way == .vertical ? 0 : notches.x), turned.y + (way == .horizontal ? 0 : notches.y))
+        let whole = Point(turned.x.rounded(.towardZero), turned.y.rounded(.towardZero))
+        turned = Point(turned.x - whole.x, turned.y - whole.y)
+        guard whole != .zero else { return (true, nil) }
 
-        return (true, axis == .horizontal ? Point(whole, 0) : Point(0, whole))
-    }
-
-    /// Two fingers take the hand from the run, at `time`: a gesture under way lets go where it is, still, and what the
-    /// platform tells of it after - a finger going on, its lift - is nobody's until a new press. A view held by itself
-    /// keeps the hand.
-    /// Design: docs/design/host/runtime.md#two-fingers-over-a-layout
-    public mutating func yield(at time: Double) -> [Report] {
-        guard !holdsItem else { return [] }
-
-        press = nil
-        claimed = false
-        return lifted(at: time, speed: .zero)
+        return (true, whole)
     }
 
     /// The hand begins, at `time`: a wheel still open is let go first.

@@ -103,42 +103,50 @@ extension WebElement {
         }
     }
 
-    /// The hand over a layout: a pointer dragged - its first move past the drag distance along the layout's axis
-    /// claims it, then held - and a wheel or a trackpad's scroll, a step the layout leaves going on to the page.
+    /// The hand over a layout: the pointers down, read as one at their middle - its first move past the drag
+    /// distance the layout's way claims it, then held - and a wheel or a trackpad's scroll, a step the layout leaves
+    /// going on to the page.
     /// Design: docs/design/platforms/web/input.md#the-hand-over-a-layout
     private func listenForTheHand(_ view: WebDOMView) {
-        // The page keeps a touch across the layout's axis, its own scroll; along it the touch is the layout's.
-        view.style("touch-action", element.handAxis == .vertical ? "pan-x" : "pan-y")
+        // The page keeps a touch across the layout's axis, its own scroll; along it the touch is the layout's - and a
+        // pan's every way.
+        let way = element.handWay
+        view.style("touch-action", way == .everyWay ? "none" : way == .vertical ? "pan-x" : "pan-y")
         view.style("user-select", "none")
         view.style("-webkit-user-select", "none")
         view.style("-webkit-touch-callout", "none")
-        view.listen("pointerdown") { [weak self] in
+        view.listen("pointerdown") { [weak self, weak view] in
             let pointer = WebRelay.eventPointer
-            guard let self, pointer.kind != 0 || pointer.button == 0 else { return }
-            handPointer = pointer.id
-            handDown = pointer.at
-            handLast = pointer.at
+            guard let self, let view, pointer.kind != 0 || pointer.button == 0 else { return }
+            // Another finger on a hand under way joins it, moving its middle nowhere.
+            guard handFingers.count == 0 else {
+                handFingers.down(pointer.id, at: pointer.at)
+                if handTaking { WebRelay.capturePointer(view.node) }
+                return
+            }
+            handFingers.down(pointer.id, at: pointer.at)
+            handTravel = Point(x: 0, y: 0)
             handPending = true
             handTaking = false
             hand(.began, moved: Point(x: 0, y: 0), point: WebRelay.eventPoint)
         }
         view.listen("pointermove") { [weak self, weak view] in
             let pointer = WebRelay.eventPointer
-            guard let self, let view, pointer.id == handPointer else { return }
+            guard let self, let view, handPending || handTaking else { return }
+            let step = handFingers.moved(pointer.id, to: pointer.at)
             if handPending {
-                let moved = Point(x: pointer.at.x - handDown.x, y: pointer.at.y - handDown.y)
-                guard abs(moved.x) > Self.dragDistance || abs(moved.y) > Self.dragDistance else { return }
+                handTravel = Point(x: handTravel.x + step.x, y: handTravel.y + step.y)
+                guard abs(handTravel.x) > Self.dragDistance || abs(handTravel.y) > Self.dragDistance else { return }
                 handPending = false
-                handTaking = hand(.changed, moved: moved)
+                handTaking = hand(.changed, moved: handTravel)
                 guard handTaking else {
-                    handPointer = nil
+                    handFingers = PointerMiddle()
                     return
                 }
                 WebRelay.capturePointer(view.node)
-            } else if handTaking {
-                hand(.changed, moved: Point(x: pointer.at.x - handLast.x, y: pointer.at.y - handLast.y))
+            } else if step != Point(x: 0, y: 0) {
+                hand(.changed, moved: step)
             }
-            handLast = pointer.at
             WebRelay.takeEvent()
         }
         // A touch the layout took is kept from the page's pan to its lift: the browser pans by the touch's moves, which
@@ -154,10 +162,12 @@ extension WebElement {
         }
         for (event, letGo) in [("pointerup", true), ("pointercancel", false)] {
             view.listen(event) { [weak self] in
-                guard let self, WebRelay.eventPointer.id == handPointer else { return }
-                // Told whatever the hand moved: a press that held a view and never moved lets it go.
+                guard let self, handFingers.count > 0 else { return }
+                // A finger lifting leaves the hand to the others; the last lifting ends it, told whatever the hand
+                // moved: a press that held a view and never moved lets it go.
+                handFingers.up(WebRelay.eventPointer.id)
+                guard handFingers.count == 0 else { return }
                 hand(letGo ? .ended : .cancelled, moved: Point(x: 0, y: 0))
-                handPointer = nil
                 handPending = false
                 handTaking = false
             }

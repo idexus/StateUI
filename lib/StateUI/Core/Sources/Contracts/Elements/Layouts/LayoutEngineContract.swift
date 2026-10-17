@@ -38,6 +38,10 @@ public enum LayoutEngineContract: ElementContract {
     /// go, per second, and how long it has stood still, in milliseconds.
     public static let itemMoved = ElementEvent<Self, (GesturePhase, Point, Point, Double)>("itemMoved", layer: .native)
 
+    /// Whether the hand moves the run every way, a pan: the host hears it across and down alike, and claims every
+    /// first move.
+    public static let pans = ElementProperty<Self, Bool>("pans", layer: .structure, travels: false)
+
     /// Whether two fingers spreading move the run, where they do: the host hears a pinch over the element - on a
     /// touch screen, or a trackpad's.
     public static let magnifies = ElementProperty<Self, Bool>("magnifies", layer: .structure, travels: false)
@@ -54,6 +58,6 @@ public enum LayoutEngineContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        handAxis, handMoved, handStepped, itemDrag, itemMoved, magnifies, phase, pinchMoved, rotates,
+        handAxis, handMoved, handStepped, itemDrag, itemMoved, magnifies, pans, phase, pinchMoved, rotates,
     ]
 }

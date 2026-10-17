@@ -46,8 +46,7 @@ extension MountedElement {
                 send(.pinchUpdated, [.enumeration(phase.rawValue), .number(scale), .numbers([at.x, at.y])], in: runtime)
                 return true
             }
-            let now = runtime.clock.now()
-            return fingers(pinchReading.pinch(phase, scale: scale, at: now), at: now, in: runtime)
+            return fingers(pinchReading.pinch(phase, scale: scale, at: runtime.clock.now()), in: runtime)
         case .wheelPinch(let scale, let at):
             // A wheel tells no lift: the frames let its pinch go once it stands still.
             for each in wheelPinch.turned(scale, at: at, now: runtime.clock.now()) { hear(each, in: runtime) }
@@ -55,25 +54,24 @@ extension MountedElement {
         case .rotation(let phase, let degrees):
             guard hearsFingers else { return false }
 
-            let now = runtime.clock.now()
-            return fingers(pinchReading.rotation(phase, degrees: degrees, at: now), at: now, in: runtime)
+            return fingers(pinchReading.rotation(phase, degrees: degrees, at: runtime.clock.now()), in: runtime)
         case .hand(let phase, let moved, let speed, let time, let point):
             // When the platform says the hand moved, where it says: input that waited for a busy thread comes in a
             // burst its arrival would read as a throw.
             let now = runtime.clock.now()
             let heard = handReading.hand(
-                phase, moved: moved, speed: speed, at: time ?? now, along: handAxis, point: point, items: itemDrag,
+                phase, moved: moved, speed: speed, at: time ?? now, way: handWay, point: point, items: itemDrag,
                 now: now)
             gather(heard.reports, in: runtime)
             if handReading.wantsFrames { runtime.handPace.opened(self) }
             return heard.taken
         case .wheel(let moved):
-            let heard = handReading.wheel(moved, at: runtime.clock.now(), along: handAxis)
+            let heard = handReading.wheel(moved, at: runtime.clock.now(), way: handWay)
             gather(heard.reports, in: runtime)
             if handReading.isWheeling { runtime.handPace.opened(self) }
             return heard.taken
         case .notch(let notches):
-            let heard = handReading.notches(notches, along: handAxis)
+            let heard = handReading.notches(notches, way: handWay)
             if let steps = heard.steps { send(.handStepped, [.numbers([steps.x, steps.y])], in: runtime) }
             return heard.taken
         case .dragStarted:
@@ -98,17 +96,16 @@ extension MountedElement {
     /// Whether two fingers spreading or turning move the layout this element is.
     private var hearsFingers: Bool { handler(.pinchMoved) != nil }
 
-    /// What two fingers said, kept for the next frame: as they begin, a hand moving the run lets go of it, still -
-    /// and a view held by itself keeps the hand, the fingers saying nothing.
+    /// What two fingers said, kept for the next frame, beside the hand they carry by their middle - and a view held
+    /// by itself keeps the hand, the fingers saying nothing.
     /// Design: docs/design/host/runtime.md#two-fingers-over-a-layout
-    private func fingers(_ reports: [PinchReading.Report], at now: Double, in runtime: HostRuntime) -> Bool {
+    private func fingers(_ reports: [PinchReading.Report], in runtime: HostRuntime) -> Bool {
         guard !handReading.holdsItem else {
             pinchReading = PinchReading()
             return false
         }
         guard !reports.isEmpty else { return true }
 
-        if reports.first?.phase == .began { gather(handReading.yield(at: now), in: runtime) }
         for report in reports {
             if report.phase == .changed, let last = pinchOutbox.last, last.phase == .changed {
                 pinchOutbox[pinchOutbox.count - 1] = PinchReading.Report(
@@ -121,9 +118,10 @@ extension MountedElement {
         return true
     }
 
-    /// Which way the hand moves the layout this element is, where a hand does.
-    public var handAxis: LayoutInput.Axis? {
-        value(.handAxis)?.enumeration.flatMap(LayoutInput.Axis.init(rawValue:))
+    /// Which way the hand moves the layout this element is, where a hand does: along its axis, or every way.
+    public var handWay: HandWay? {
+        if value(.pans)?.bool == true { return .everyWay }
+        return value(.handAxis)?.enumeration.flatMap(LayoutInput.Axis.init(rawValue:)).map(HandWay.init)
     }
 
     /// Whether the hand over the layout this element is holds one of its views by itself.

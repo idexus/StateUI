@@ -32,11 +32,10 @@ final class WebElement: NativeElement {
     /// The pointers pressed on the view, for a drag or a pinch it hears.
     var press = WebPress()
 
-    /// The hand over a layout: its pointer, where it went down and last stood on the page, and whether its first
-    /// move past the drag distance is yet to come, or the layout took it.
-    var handPointer: Int?
-    var handDown = Point(x: 0, y: 0)
-    var handLast = Point(x: 0, y: 0)
+    /// The hand over a layout: its fingers, read as one at their middle, how far that middle has gone while the hand
+    /// is still nobody's, and whether its first move is yet to pass the drag distance, or the layout took it.
+    var handFingers = PointerMiddle()
+    var handTravel = Point(x: 0, y: 0)
     var handPending = false
     var handTaking = false
 

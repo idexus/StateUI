@@ -89,6 +89,7 @@ enum GTKRealization {
         .complete("LayoutEngine", "itemDrag"),
         .complete("LayoutEngine", "itemMoved"),
         .complete("LayoutEngine", "magnifies"),
+        .complete("LayoutEngine", "pans"),
         .complete("LayoutEngine", "rotates"),
         .complete("LayoutEngine", "pinchMoved"),
         .partial("DatePicker", "format", missing: "GTK writes \"D\" and \"d\" in the user's own way, and any other pattern as \"d\"."),

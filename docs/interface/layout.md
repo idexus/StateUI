@@ -863,13 +863,13 @@ whatever the others do; `.snapTargets(_:)` lists whole phases instead - the
 combinations allowed - and letting go sends every axis without targets of
 its own to the nearest of them. A `Double` is the phase of one axis.
 
-Two fingers are inputs of their own: `.magnification()` multiplies an axis
+Two fingers are inputs of their own: `.magnification` multiplies an axis
 by how far they spread - on a touch screen, or a trackpad's pinch - and
 `.rotation(degreesPerUnit:)` moves one a unit every so many degrees they
 turn, clockwise on. Both move their axes at once; let go with speed, each
 goes on to the target nearest where it would end. A layout takes one input
 an axis and one of each kind, so a hand along the layout may move a third
-axis - and as two fingers touch, that hand lets go of the run:
+axis - and it goes on with the fingers' middle while they spread and turn:
 
 ```swift
 import StateUIFoundation
@@ -906,7 +906,7 @@ struct Compass: View {
         .input(.rotation(degreesPerUnit: 90), drives: \.turn)
         .snap(\.turn, to: [0, 1, 2, 3])
         .wraps(\.turn, every: 4)
-        .input(.magnification(), drives: \.size)
+        .input(.magnification, drives: \.size)
         .snap(\.size, to: [0.5, 1, 2])
         .height(240)
     }
@@ -917,6 +917,52 @@ A magnification's targets stand above nought, and its axis is nearest a
 target by the logarithm - 1.5 is nearer 2 than 1 - so pinching in acts as
 spreading does. Chrome and Firefox tell no trackpad's rotation; there the
 fingers turn a layout on a touch screen.
+
+A pan moves two axes with the hand whichever way it goes -
+`.input(.pan, drives: \.x, \.y)`, the across axis with the hand across,
+the down axis with it down - and let go, both rest on one target together.
+One finger or two carry it; two fingers carry it by their middle while they
+spread and turn, so a pan, a magnification and a rotation move at once:
+
+```swift
+struct Sheet: LayoutPhase {
+    var x = 0.0
+    var y = 0.0
+    var zoom = 1.0
+
+    static var axes: [WritableKeyPath<Sheet, Double>] { [\.x, \.y, \.zoom] }
+}
+
+struct Contacts: View {
+    @State private var sheet = Sheet()
+
+    let names = ["Ada", "Ben", "Cy", "Di"]
+
+    var body: some View {
+        LayoutEngine(names) { name in
+            Text(name)
+        } placements: { room, sheet in
+            names.indices.map { index in
+                let (row, column) = index.quotientAndRemainder(dividingBy: 2)
+                let size = 120 * sheet.zoom
+
+                return Placement(Rect(
+                    room.width / 2 + (Double(column) - sheet.x) * size - size / 2,
+                    room.height / 2 + (Double(row) - sheet.y) * size - size / 2,
+                    size,
+                    size))
+            }
+        }
+        .phase($sheet)
+        .input(.pan, drives: \.x, \.y)
+        .snap(\.x, to: [0, 1])
+        .snap(\.y, to: [0, 1])
+        .input(.magnification, drives: \.zoom)
+        .snap(\.zoom, to: [0.5, 1])
+        .height(300)
+    }
+}
+```
 
 A value read in the body is a change of the description: the layout is built
 again and its arithmetic with it. A state the arithmetic reads that moves on

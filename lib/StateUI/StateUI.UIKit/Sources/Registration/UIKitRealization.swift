@@ -65,6 +65,7 @@ enum UIKitRealization {
         .complete("LayoutEngine", "itemDrag"),
         .complete("LayoutEngine", "itemMoved"),
         .complete("LayoutEngine", "magnifies"),
+        .complete("LayoutEngine", "pans"),
         .complete("LayoutEngine", "rotates"),
         .complete("LayoutEngine", "pinchMoved"),
         .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "

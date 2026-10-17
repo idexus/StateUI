@@ -38,7 +38,7 @@ final class LayoutPinchTests: XCTestCase {
             return (0..<4).map { _ in Placement(Rect(0, 0, 40, 40)) }
         }
         .phase(dial.projectedValue)
-        .input(.magnification(), drives: \.zoom)
+        .input(.magnification, drives: \.zoom)
         .input(.rotation(degreesPerUnit: 90), drives: \.turn)
         .snap(\.zoom, to: [0.5, 1, 2])
         .snap(\.turn, to: [0, 1, 2, 3])
@@ -179,12 +179,12 @@ final class LayoutPinchTests: XCTestCase {
         }
 
         let kind = try XCTUnwrap(Renders().settled(
-            layout().input(.magnification(), drives: \.turn).input(.magnification(), drives: \.zoom).node)
+            layout().input(.magnification, drives: \.turn).input(.magnification, drives: \.zoom).node)
             .first(.layoutEngine))
         XCTAssertEqual(kind.properties[.magnifies], .bool(true))
 
         let axis = try XCTUnwrap(Renders().settled(
-            layout().input(.scroll(.horizontal), drives: \.zoom).input(.magnification(), drives: \.zoom).node)
+            layout().input(.scroll(.horizontal), drives: \.zoom).input(.magnification, drives: \.zoom).node)
             .first(.layoutEngine))
         XCTAssertNil(axis.properties[.handAxis], "the scroll's place taken")
         XCTAssertEqual(axis.properties[.magnifies], .bool(true))

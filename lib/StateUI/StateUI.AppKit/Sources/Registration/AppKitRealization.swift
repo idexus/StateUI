@@ -188,6 +188,7 @@ enum AppKitRealization {
         .complete("LayoutEngine", "handStepped"),
         .complete("LayoutEngine", "itemDrag"),
         .complete("LayoutEngine", "magnifies"),
+        .complete("LayoutEngine", "pans"),
         .complete("LayoutEngine", "rotates"),
         .complete("LayoutEngine", "pinchMoved"),
         .complete("LayoutEngine", "itemMoved"),

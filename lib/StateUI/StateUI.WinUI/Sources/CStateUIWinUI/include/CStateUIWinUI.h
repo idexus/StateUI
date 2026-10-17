@@ -51,7 +51,8 @@ typedef enum {
 /// pointer at (x, y) DIPs of the view; a pinch's phase, its scale since the last, at (x, y) as shares of the view's
 /// size; a press a drag may become - 0 down, 1 moved, 2 let go, 3 taken away - at (x, y) DIPs of the window's content,
 /// which the host's rule makes a drag; a rotation's phase and its degrees clockwise since the last, in the scale's
-/// place; a wheel turned with Control, as Windows tells a trackpad's pinch, its notches in the scale's place.
+/// place; a wheel turned with Control, as Windows tells a trackpad's pinch, its notches in the scale's place - or,
+/// over a layout WinUI's own scroller hears, the scale it scales for it.
 typedef enum {
     StateUIHeardTap,
     StateUIHeardPointerEntered,
@@ -63,6 +64,7 @@ typedef enum {
     StateUIHeardPress,
     StateUIHeardRotation,
     StateUIHeardWheelPinch,
+    StateUIHeardWheelScale,
 } StateUIHeard;
 
 /// A question for the user: `kind` 0 an alert, 1 a confirmation, 2 a choice of actions, 3 a prompt; its title
@@ -928,8 +930,8 @@ void stateui_winui_watch_environment(void);
 void stateui_winui_hear(StateUIObjectRef element, int64_t view, uint32_t hearing);
 
 /// Hears a trackpad and a wheel over the layout `view` as WinUI's own scroller does, along `axis` - 0 across, 1
-/// down - or no longer, for -1.
-void stateui_winui_hear_hand(StateUIObjectRef element, int64_t view, int32_t axis);
+/// down, 2 both, a pan's - or no longer, for -1; where `pinches`, the wheel turned with Control scales.
+void stateui_winui_hear_hand(StateUIObjectRef element, int64_t view, int32_t axis, int32_t pinches);
 
 /// The host says the press the view `view` heard is a drag: the view holds the pointer from the move it heard it in.
 void stateui_winui_press_dragged(int64_t view);

@@ -78,7 +78,7 @@
     /// A pinch.
     public static let pinches = Hearing(rawValue: 1 << 3)
 
-    /// The hand over a layout: a press dragged, a trackpad's fingers and a wheel, along the layout's `handAxis`.
+    /// The hand over a layout: a press dragged, a trackpad's fingers and a wheel, the layout's way (`handWay`).
     public static let hand = Hearing(rawValue: 1 << 4)
 
     /// Two fingers turning: over a layout that `rotates`.

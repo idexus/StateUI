@@ -139,6 +139,7 @@ enum AndroidRealization {
         .complete("LayoutEngine", "itemDrag"),
         .complete("LayoutEngine", "itemMoved"),
         .complete("LayoutEngine", "magnifies"),
+        .complete("LayoutEngine", "pans"),
         .complete("LayoutEngine", "rotates"),
         .complete("LayoutEngine", "pinchMoved"),
     ] + windowRoom + HostRecord.layoutEngine

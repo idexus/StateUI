@@ -28,6 +28,7 @@ extension HeardInput {
             guard let phase = GesturePhase(rawValue: phase) else { return nil }
             self = .rotation(phase, degrees: scale)
         case StateUIHeardWheelPinch: self = .wheelPinch(scale: pow(WheelPinch.notch, scale), at: point)
+        case StateUIHeardWheelScale: self = .wheelPinch(scale: scale, at: point)
         default: return nil
         }
     }

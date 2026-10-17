@@ -85,6 +85,25 @@ final class PinchReadingTests: XCTestCase {
         XCTAssertEqual(wheel.turned(1 / 1.1, at: at, now: 400).first, .pinch(.began, scale: 1, at: at), "afresh")
     }
 
+    /// THE FINGERS ARE ONE HAND AT THEIR MIDDLE: each finger's step over how many are down, nothing as one lands or
+    /// lifts - two turning about their middle hold it still, two moving together carry it.
+    func testTheFingersAreOneHandAtTheirMiddle() {
+        var middle = PointerMiddle()
+        middle.down(1, at: Point(0, 0))
+        XCTAssertEqual(middle.moved(1, to: Point(10, 0)), Point(10, 0), "one finger is the hand")
+
+        middle.down(2, at: Point(110, 0))
+        XCTAssertEqual(middle.count, 2, "a finger landing moves nothing")
+        XCTAssertEqual(middle.moved(1, to: Point(10, -20)), Point(0, -10))
+        XCTAssertEqual(middle.moved(2, to: Point(110, 20)), Point(0, 10), "turned about their middle: still")
+        XCTAssertEqual(middle.moved(1, to: Point(30, -20)), Point(10, 0))
+        XCTAssertEqual(middle.moved(2, to: Point(130, 20)), Point(10, 0), "together: carried")
+
+        middle.up(1)
+        XCTAssertEqual(middle.moved(2, to: Point(140, 20)), Point(10, 0), "a finger lifted: the one left is the hand")
+        XCTAssertEqual(middle.moved(1, to: Point(0, 0)), .zero, "a finger not down moves nothing")
+    }
+
     /// A ROTATION TOLD FROM WHERE IT BEGAN IS SAID AS ITS STEPS.
     func testARotationFromWhereItBeganIsSaidAsItsSteps() {
         var step = RotationStep()

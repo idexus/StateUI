@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 LayoutEngine: ✅
 LayoutEngine.frameChanged: ✅
 LayoutEngine.handAxis: ✓ sweep on LayoutEngine: the relay's report of the hand handed to the host with its speed, no pointer sent
@@ -7,6 +7,7 @@ LayoutEngine.handStepped: – A wheel reaches the layout as WinUI's own scroller
 LayoutEngine.itemDrag: ✓ pressDown on LayoutEngine: the relay's report of the press over the layout handed to the host, no pointer sent
 LayoutEngine.itemMoved: ✓ pressDown on LayoutEngine: the relay's report of the press over the layout handed to the host, no pointer sent
 LayoutEngine.magnifies: ✓ pinch on LayoutEngine: the relay's report of the manipulation handed to the host, no touch sent
+LayoutEngine.pans: ✓ sweep on LayoutEngine: the relay's report of the hand handed to the host with its speed, no pointer sent
 LayoutEngine.phase: ✅
 LayoutEngine.pinchMoved: ✓ pinch on LayoutEngine: the relay's report of the manipulation handed to the host, no touch sent
 LayoutEngine.rotates: ✓ rotate on LayoutEngine: the relay's report of the manipulation handed to the host, no touch sent

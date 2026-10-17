@@ -149,6 +149,7 @@ extension NodeType {
     static let groupName = RadioButtonContract.groupName.token
     static let handAxis = LayoutEngineContract.handAxis.token
     static let magnifies = LayoutEngineContract.magnifies.token
+    static let pans = LayoutEngineContract.pans.token
     static let rotates = LayoutEngineContract.rotates.token
     static let height = VisualElementContract.height.token
     static let horizontalAlignment = ViewContract.horizontalAlignment.token

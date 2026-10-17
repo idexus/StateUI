@@ -59,7 +59,7 @@ struct TwoFingersSample: SampleContent, ExampleContent {
             .input(.rotation(degreesPerUnit: 360 / count), drives: \.turn)
             .snap(\.turn, to: Self.cards.indices.map(Double.init))
             .wraps(\.turn, every: count)
-            .input(.magnification(), drives: \.size)
+            .input(.magnification, drives: \.size)
             .snap(\.size, to: [0.6, 1, 1.5])
             .motion(.spring(response: .milliseconds(420), damping: 0.8))
         }

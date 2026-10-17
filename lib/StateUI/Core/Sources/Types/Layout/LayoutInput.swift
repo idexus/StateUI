@@ -53,9 +53,10 @@ public struct LayoutInput: Equatable, Sendable {
         }
     }
 
-    /// The hands a layout may have, one input each: the one along its axis, and the two fingers' two.
+    /// The hands a layout may have, one input each: the one along its axis - a pan's across, and its down - and the
+    /// two fingers' two.
     enum Kind: Hashable, Sendable, CaseIterable {
-        case hand, magnification, rotation
+        case hand, handDown, magnification, rotation
     }
 
     /// What moves the phase.
@@ -124,18 +125,25 @@ public struct LayoutInput: Equatable, Sendable {
 
     /// Two fingers spreading or pinching - on a touch screen, or a trackpad's pinch: the axis is a magnification,
     /// multiplied by how far the fingers spread, so their distance doubled doubles it and halved halves it. Let go
-    /// with speed, it goes on to the snap target nearest where it would end, as `throwing` says; let go still, onto
-    /// the nearest. Its targets stand above nought.
+    /// with speed, it goes on to the snap target nearest where it would end, with a light friction; let go still,
+    /// onto the nearest. Its targets stand above nought.
     ///
-    ///     .input(.magnification(), drives: \.zoom)
+    ///     .input(.magnification, drives: \.zoom)
     ///     .snap(\.zoom, to: [0.5, 1, 2])
     ///
-    /// Two fingers turning at once may move another axis by `rotation(degreesPerUnit:)`; as they touch, a hand
-    /// moving the run lets go of it.
+    /// Two fingers turning at once may move another axis by `rotation(degreesPerUnit:)`, and the hand - a pan, a
+    /// scroll - goes on with their middle.
+    public static var magnification: LayoutInput {
+        magnification(throwing: .eased(.milliseconds(400), .cubicOut))
+    }
+
+    /// The same, thrown on as `throwing` says.
     ///
-    /// - Parameter throwing: how the axis goes on once let go; a light friction unless said.
+    ///     .input(.magnification(throwing: .spring(response: .milliseconds(500), damping: 0.8)), drives: \.zoom)
+    ///
+    /// - Parameter throwing: how the axis goes on once let go.
     /// - Returns: the input.
-    public static func magnification(throwing: Motion = .eased(.milliseconds(400), .cubicOut)) -> LayoutInput {
+    public static func magnification(throwing: Motion) -> LayoutInput {
         LayoutInput(gesture: .magnification, throwing: throwing)
     }
 
@@ -159,7 +167,7 @@ public struct LayoutInput: Equatable, Sendable {
     }
 
     /// The travel `pointsPerUnit` says: so many points, one at least, or the view in front's.
-    private static func travel(_ pointsPerUnit: Double?) -> Travel {
+    static func travel(_ pointsPerUnit: Double?) -> Travel {
         pointsPerUnit.map { .points(max($0, 1)) } ?? .front
     }
 }

@@ -1,4 +1,4 @@
-# revision 8.1
+# revision 9.1
 LayoutEngine: ✅
 LayoutEngine.frameChanged: ✅
 LayoutEngine.handAxis: ✓ sweep on LayoutEngine: the hand handed to the host's entry with its speed, no pointer sent
@@ -7,6 +7,7 @@ LayoutEngine.handStepped: ✓ notch on LayoutEngine: a wheel's notches handed to
 LayoutEngine.itemDrag: ✅
 LayoutEngine.itemMoved: ✅
 LayoutEngine.magnifies: ✅
+LayoutEngine.pans: ✓ sweep on LayoutEngine: the hand handed to the host's entry with its speed, no pointer sent
 LayoutEngine.phase: ✅
 LayoutEngine.pinchMoved: ✅
 LayoutEngine.rotates: ☑️ Chrome and Firefox tell no trackpad's rotation: two fingers turn a layout on a touch screen, and on a trackpad in Safari.

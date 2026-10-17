@@ -206,10 +206,11 @@ along it, a page's scroller.
 ## Two fingers
 
 Two fingers spreading and turning are inputs of their own, each driving its
-axis: `.magnification()` and `.rotation(degreesPerUnit:)`. A layout takes
+axis: `.magnification` and `.rotation(degreesPerUnit:)`. A layout takes
 one input an axis and one of each kind - the hand along it, a magnification,
 a rotation - so `.input` given again on an axis, or of a kind, takes the
-other's place; the two fingers move both of theirs at once, from one stream
+other's place; the two fingers move both of theirs at once, beside the hand
+they carry by their middle ([a pan](#a-pan)), from one stream
 of the element's `pinchMoved` (host/runtime.md, two fingers over a layout),
 and each hand's place is its own (`held`, `flung` by kind): the arithmetic
 is handed every axis where its hand holds it.
@@ -225,6 +226,22 @@ goes on to the target nearest where it would end under its input's
 a magnification's logarithm counts as a hundred device units and a
 rotation's as its degrees, by which either is judged thrown or settled. A
 view held by itself keeps the hand, and the fingers move nothing.
+
+## A pan
+
+A pan is the hand every way (`.input(.pan, drives: \.x, \.y)`): two
+hands of one input, the hand along the layout across and a second one down,
+each moving its axis with its part of the hand's move, the unit each's own
+- so many points, else the view in front's along that axis. The element
+says `pans` and no `handAxis`, so a host hears the hand every way and the
+host layer claims every first move (host/runtime.md, the hand over a
+layout); a wheel's notches step each axis their way. Let go, each axis is
+thrown with its part of the speed, and the run rests on ONE target for both
+- each axis with targets of its own on its own, the others on the whole
+target nearest by their distance - so the two throws end together. A pan
+takes the place of a hand along the layout, and a scroll a pan's, both its
+axes; `LayoutPan` is a type of its own, so a pan given one axis does not
+compile.
 
 ## A swipe
 

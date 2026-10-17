@@ -436,14 +436,15 @@ each move a scale and degrees since the last, said at the next frame's
 start as one, and as the fingers lift their speed, read from the last
 tenth of a second: the scale's logarithm across, the degrees down.
 
-The rule for gestures at once is one, every host's: two fingers are the
-two-finger inputs'. As they begin, a hand moving the run lets go where it
-is, still (`HandReading.yield`), and what the platform tells of that hand
-after - a finger going on under the pinch, its lift and its speed - is
-nobody's until a new press. A view held by itself keeps the hand: the
-fingers say nothing while it does. Each toolkit already keeps a pinch and a
-hand apart or together in its own way; the host layer decides, so a hand's
-recognizer may go on hearing beside the fingers'.
+The rule for gestures at once is one, every host's: the hand and the two
+fingers move together. While two fingers spread and turn, the hand - a pan,
+a scroll - goes on with their middle (`PointerMiddle`): each finger's step
+moves it by that step over how many fingers are down, and a finger landing
+or lifting moves it nowhere, so fingers turning about their middle hold the
+run still and moving together carry it. A toolkit whose pan already follows
+the fingers' middle (UIKit's) is that rule; a host reading pointers one by
+one reads them so. A view held by itself keeps the hand: the fingers say
+nothing while it does.
 
 ## A wheel turned as a pinch
 

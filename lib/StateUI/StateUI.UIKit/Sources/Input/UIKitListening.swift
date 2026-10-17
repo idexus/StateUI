@@ -21,7 +21,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
 
     /// Which way the hand moves the layout the view is, where one does; how the hand takes one of its views by
     /// itself, and whether it holds one.
-    var handAxis: (() -> LayoutInput.Axis?)?
+    var handWay: (() -> HandWay?)?
     var handItems: (() -> (start: ItemDragStart?, holding: Bool))?
 
     /// The hand over a layout, and where it had come to at its last report; a wheel turned notch by notch over it,
@@ -216,7 +216,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
         let moved = pan.translation(in: view)
         let first = moved == .zero ? pan.velocity(in: view) : moved
         guard recognizer === handPan else {
-            return HandReading.takes(Point(x: first.x, y: first.y), along: handAxis?(), items: nil, holding: false)
+            return HandReading.takes(Point(x: first.x, y: first.y), way: handWay?(), items: nil, holding: false)
         }
         return handBegins(first: Point(x: first.x, y: first.y))
     }
@@ -226,7 +226,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     /// host layer and hold a view.
     func handBegins(first: Point) -> Bool {
         let items = handItems?()
-        let begins = HandReading.takes(first, along: handAxis?(), items: items?.start, holding: items?.holding ?? false)
+        let begins = HandReading.takes(first, way: handWay?(), items: items?.start, holding: items?.holding ?? false)
         if !begins { hand(.changed, moved: first) }
         return begins
     }
