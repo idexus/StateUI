@@ -72,11 +72,25 @@ final class WebWindowController {
     func present(_ element: MountedElement, in runtime: HostRuntime) {
         self.element = element
         let changes = presentation.show(element, in: runtime.lifecycle)
-        if let traits = changes.traits { window.frame.setBackground(traits.background.painted) }
+        if let traits = changes.traits {
+            window.frame.setBackground(traits.background.painted)
+            WebRelay.keepPageColour(Self.pageColour(traits.background))
+        }
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.web.view) }
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.web.view)) }
         if let pages = changes.sheets { showSheets(pages) }
         (presentation.arrangement?.web.view as? WebSplitView)?.adapt()
+    }
+
+    /// The colour the page wears under the window, and keeps for its next start: the window's own where it is one
+    /// opaque colour - what Safari takes above the page and around its bars, once, at the first paint - and none
+    /// where it is translucent, a blur or the platform's own.
+    /// Design: docs/design/platforms/web/pages.md#the-colour-under-the-window
+    static func pageColour(_ background: HostMaterial) -> String? {
+        guard background.blur == nil, background.glass == nil, case .solid(let colour) = HostBrush(background.paint),
+              colour.color?.alpha == 255
+        else { return nil }
+        return WebCSS.color(colour)
     }
 
     /// Keeps a sheet for each page presented, in its order, by the host layer's rule (`SheetChange`): a sheet gone

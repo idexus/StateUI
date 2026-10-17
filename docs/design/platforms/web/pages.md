@@ -42,6 +42,23 @@ in words, and the browser's tab shows the site's own icon.
 The page is one window: an application's second window has no place of its
 own in it.
 
+## The colour under the window
+
+The page under the window wears the window's colour, where the window is one
+opaque colour (`WebWindowController.pageColour`): `--stateui-page` on the
+document, which `body` and the loading screen wear before the page's own
+surface. Safari on an iPhone - and a page added to the home screen - takes
+the colour above the page and around its bars ONCE, at the first paint, from
+what stands there then; the window's colour comes with the program after it
+(styles-states-theme notes, `THE COLOUR UNDER SAFARI'S BARS`). So the relay
+keeps the colour in the viewer's browser (`localStorage`, one an appearance:
+`stateui.page-colour.light` and `.dark`, as the system's stood when it was
+written), and `index.html` wears it before anything is drawn: from the second
+start the bars are the window's colour; the very first shows the page's own.
+A translucent window, a blur or the platform's own keeps none - the page
+under it would show through. A per-viewer convenience: nothing depends on it,
+and a browser keeping nothing paints as before.
+
 ## The tab
 
 The tab names the page the user sees beside the site's name the page's head

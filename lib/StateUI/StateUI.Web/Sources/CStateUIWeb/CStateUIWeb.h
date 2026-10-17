@@ -180,6 +180,10 @@ STATEUI_WEB(scroll_to) void stateui_web_scroll_to(int32_t element, double x, dou
 /// The document's title, which the browser shows on the tab.
 STATEUI_WEB(set_title) void stateui_web_set_title(const char *text, int32_t length);
 
+/// The colour the page wears under its window, kept in the browser for the page's next start under the system's
+/// light or dark; empty for none.
+STATEUI_WEB(keep_page_colour) void stateui_web_keep_page_colour(const char *text, int32_t length);
+
 /// The site's name the page's head gives - its `application-name` - read in two steps: its length in bytes, then
 /// `copy_read`; 0 where the head gives none.
 STATEUI_WEB(site_name) int32_t stateui_web_site_name(void);

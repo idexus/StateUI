@@ -34,8 +34,9 @@
 
 /* The words stand at the sizes the page gives them: a phone's browser enlarges none it finds in a wide block. */
 html, body { margin: 0; height: 100%; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+/* The page wears its window's colour under it where the window is one opaque colour (--stateui-page). */
 body {
-  background: var(--stateui-surface);
+  background: var(--stateui-page, var(--stateui-surface));
   color: var(--stateui-text);
   font-size: var(--stateui-words);
   line-height: 1.4;
@@ -56,7 +57,7 @@ body {
   place-content: center;
   justify-items: center;
   gap: 18px;
-  background: var(--stateui-surface);
+  background: var(--stateui-page, var(--stateui-surface));
   transition: opacity 0.3s ease;
 }
 .stateui-loading[data-done] { opacity: 0; pointer-events: none; }

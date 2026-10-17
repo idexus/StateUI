@@ -405,6 +405,12 @@ enum WebRelay {
         }
     }
 
+    /// The page wears `colour` under its window, and keeps it for its next start, under the system's light or dark;
+    /// nil wears and keeps none.
+    static func keepPageColour(_ colour: String?) {
+        utf8(colour ?? "") { stateui_web_keep_page_colour($0, $1) }
+    }
+
     static func setTitle(_ title: String) {
         utf8(title) { stateui_web_set_title($0, $1) }
     }
