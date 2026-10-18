@@ -20,6 +20,9 @@
     /// What the user is asked, one showing at a time; each answers under its ticket.
     private let questions = QuestionQueue<(call: HostActCall, asked: Asked)>()
 
+    /// How many times the question showing under a ticket was shown: an answer counts from its latest showing.
+    private var showings: [Int64: Int] = [:]
+
     /// What the user is asked: a question, or a dialog for files.
     private enum Asked {
         case question(HostQuestion)
@@ -104,15 +107,19 @@
     /// takes its turn.
     /// Design: docs/design/host/runtime.md#questions-for-the-user
     private func show(_ ticket: Int64, call: HostActCall, asked: Asked) {
+        let showing = (showings[ticket] ?? 0) + 1
+        showings[ticket] = showing
         let shown = switch asked {
         case .question(let question):
             toolkit.show(question) { [weak self] accepted, words in
-                self?.answer(ticket, .success(question.answer(accepted: accepted, words: words)))
+                guard let self, showings[ticket] == showing else { return }
+                answer(ticket, .success(question.answer(accepted: accepted, words: words)))
             }
         case .files(let dialog):
             files?.show(dialog) { [weak self] chosen in self?.answer(ticket, chosen.map(dialog.answer)) } ?? false
         }
         guard !shown else { return }
+        showings[ticket] = nil
         fail(call, "there is no window to ask the user in")
         if questions.answered(ticket)?.next != nil { showFirst() }
     }
@@ -123,8 +130,17 @@
         show(ticket, call: first.call, asked: first.asked)
     }
 
+    /// Asks again the question showing, whose dialog went with the window it stood over - an activity made again:
+    /// its answer comes from the dialog shown now. A file dialog stands in the platform's own window, which answers
+    /// the next, and is not asked again.
+    public func askAgain() {
+        guard let (ticket, first) = questions.first, case .question = first.asked else { return }
+        show(ticket, call: first.call, asked: first.asked)
+    }
+
     /// What was asked under `ticket` was answered: its caller hears the answer, and the next shows.
     private func answer(_ ticket: Int64, _ answer: Result<[HostValue], ActFailure>) {
+        showings[ticket] = nil
         guard let (asked, next) = questions.answered(ticket) else { return }
         deliver(asked.call, answer)
         if next != nil { showFirst() }

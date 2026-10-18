@@ -72,6 +72,7 @@ final class AndroidRendererTests: XCTestCase {
             ("testAClickRendersWhatItsHandlerChanged", testAClickRendersWhatItsHandlerChanged),
             ("testAControlNoRegistrationAnswersShowsItsName", testAControlNoRegistrationAnswersShowsItsName),
             ("testAnActivityMadeAgainShowsTheSceneWithItsState", testAnActivityMadeAgainShowsTheSceneWithItsState),
+            ("testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext", testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext),
             ("testTheDeviceIsCalledWhatItsUserNamedIt", testTheDeviceIsCalledWhatItsUserNamedIt),
             ("testAnActivityAfterBackShowsANewScene", testAnActivityAfterBackShowsANewScene),
             ("testASceneComesBackAtTheNextStartWithWhatItKept", testASceneComesBackAtTheNextStartWithWhatItKept),
@@ -128,6 +129,50 @@ final class AndroidRendererTests: XCTestCase {
             XCTAssertEqual(Java.callInt(second.root.reference, TestJava.getChildCount), 1)
         }
     }
+
+    /// A question waiting as Android makes its activity again is asked again in the next - its dialog went with the
+    /// first - and the answer given there reaches the handler that asked: acts are the process's.
+    func testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext() throws {
+        try onMainActor {
+            let answers = Received<Bool>()
+            let first = AndroidRenderer.running {
+                Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                    answers.values.append(try await Dialogs.confirm("Sure?", message: "Both", accept: "Yes", cancel: "No"))
+                }
+            }
+            try XCTUnwrap(first.views(AndroidButtonView.self).first).click()
+            first.settle { Self.asked() != nil }
+            XCTAssertEqual(Self.asked(), "Sure?")
+
+            Java.callStatic(AndroidDriver.dialogs, Self.leaveAll)
+            let second = AndroidRenderer.start(context: TestContext.context, root: TestJava.root(), density: 2)
+            second.settle { Self.asked() != nil }
+            XCTAssertEqual(Self.asked(), "Sure?", "asked again in the next")
+
+            let pressed = Java.frame {
+                Java.callStaticBool(
+                    AndroidDriver.dialogs, AndroidDriver.answer, .object(Java.string("Yes")), .object(nil))
+            }
+            XCTAssertTrue(pressed)
+            // The dialog hands its button's press on in a message of the UI thread's own.
+            second.settle {
+                TestWindow.run(for: 10)
+                return !answers.values.isEmpty
+            }
+            XCTAssertEqual(answers.values, [true])
+        }
+    }
+
+    /// The title of the question the user meets now, where one shows.
+    @MainActor
+    private static func asked() -> String? {
+        Java.frame {
+            guard let asked = Java.callStaticObject(AndroidDriver.dialogs, AndroidDriver.question) else { return nil }
+            return Java.jni.GetObjectArrayElement(Java.env, asked, 0).map { Java.text($0) }
+        }
+    }
+
+    @MainActor private static let leaveAll = Java.staticMethod(AndroidDriver.dialogs, "leaveAll", "()V")
 
     /// The process outlives its activity: Back finishes it, and its window and scene hear they are going. The
     /// launcher's next activity shows a new scene, as the first one did, not an empty window.

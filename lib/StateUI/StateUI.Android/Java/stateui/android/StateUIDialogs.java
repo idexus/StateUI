@@ -111,6 +111,19 @@ final class StateUIDialogs {
         for (int index = all.size() - 1; index >= 0; index--) all.get(index).dialog.dismiss();
     }
 
+    /**
+     * Takes every dialog showing away unanswered: the activity goes, to be made again, and the next one asks each
+     * question again - the process's acts wait for it.
+     */
+    static void leaveAll() {
+        ArrayList<Shown> all = new ArrayList<>(showing);
+        showing.clear();
+        for (int index = all.size() - 1; index >= 0; index--) {
+            all.get(index).answer.given = true;
+            all.get(index).dialog.dismiss();
+        }
+    }
+
     /** Tells the user something, with one button. */
     static void alert(Context context, long ticket, String title, String message, String button) {
         Answer answer = new Answer(ticket);

@@ -207,6 +207,26 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(answers.failures[4], "the disk is full")
     }
 
+    /// A question whose dialog went with its window is asked again in the next: answered there, its caller hears
+    /// it, and the dialog that went answers nothing. A file dialog stands in the platform's own window, which
+    /// answers the next, and is not asked again.
+    func testAQuestionWhoseDialogWentIsAskedAgain() throws {
+        let (toolkit, files, answers) = (Toolkit(), Files(), Answers())
+        let acts = HostActPerformer(toolkit: toolkit, files: files, answers: answers, tree: { nil })
+        acts.perform(HostActCall(act: .confirm, arguments: [.string("Delete?")], completion: 1))
+
+        acts.askAgain()
+        XCTAssertEqual(toolkit.shown.map(\.question.title), ["Delete?", "Delete?"])
+        toolkit.shown[0].answered(true, nil)
+        XCTAssertNil(answers.replies[1], "the dialog that went answers nothing")
+        toolkit.shown[1].answered(false, nil)
+        XCTAssertEqual(answers.replies[1], [.bool(false)])
+
+        acts.perform(HostActCall(act: .openFiles, arguments: [[FileType]().propValue, .bool(true)], completion: 2))
+        acts.askAgain()
+        XCTAssertEqual(files.shown.count, 1, "a file dialog is not asked again")
+    }
+
     /// A file is read and launched, and an address launched, as the toolkit answers.
     func testAFileIsReadAndLaunchedAndAnAddressLaunched() {
         let (files, answers) = (Files(), Answers())

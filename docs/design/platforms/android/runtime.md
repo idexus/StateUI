@@ -129,9 +129,15 @@ bringing up the keyboard. A question for the user - an alert, a confirmation,
 a choice of actions, a prompt - is the platform's own dialog: its call waits
 under a ticket the dialog hands back as the user answers, and a dialog
 dismissed any other way answers that it was not accepted. A script run in a
-web view waits the same way, until the page answers. A ticket is one number
-across the process, so an answer that arrives after its renderer has gone
-answers nothing of another's.
+web view waits the same way, until the page answers. The acts are the
+process's, not an activity's: a question asked, a document chosen or a
+script run outlives the activity it began in, which Android makes again for
+a new configuration, and acts in the one standing now. An activity made again
+takes its dialogs away unanswered, and the next asks the question showing
+again; the document picker stands in an activity of its own, which answers
+the next. An activity finishing answers its questions as dismissed. A ticket
+is one number across the process, and an answer from a dialog that went
+answers nothing.
 
 ## Files
 

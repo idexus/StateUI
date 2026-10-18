@@ -48,4 +48,9 @@
 
     /// The numbers held, in the order they were given.
     public var numbers: [Int64] { held.keys.sorted() }
+
+    /// Lets go of everything held.
+    public func removeAll() {
+        held.removeAll()
+    }
 }

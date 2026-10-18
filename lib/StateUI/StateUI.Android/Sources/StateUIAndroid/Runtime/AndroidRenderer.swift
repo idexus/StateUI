@@ -88,6 +88,11 @@ final class AndroidRenderer {
         renderer.watchLayout()
         if let previous { renderer.scenes = previous.scenes }
         renderer.start(restoringKept: previous == nil, restoringScenes: !sceneStands, turns: AndroidDoorbell.install)
+        if previous != nil {
+            // The activity before left its dialogs unanswered: the question showing is asked again in this one.
+            actToolkit.forgetDialogs()
+            acts.askAgain()
+        }
         return renderer
     }
 
@@ -106,14 +111,17 @@ final class AndroidRenderer {
     /// The pages the window presents over its page.
     private lazy var modals = AndroidModals(root: root, reducesMotion: reducesMotion)
 
-    /// Android's part of the acts every host performs, and the host layer's performer of them.
-    private lazy var actToolkit = AndroidActToolkit(
-        core: runtime.core, context: context, root: root, tree: { [unowned self] in runtime.tree },
-        keepSceneValue: { [unowned self] in keepSceneValue($0) })
-    /// Android's part of the files the user opens and saves, and of what the system launches.
-    private(set) lazy var fileToolkit = AndroidFileToolkit(context: context)
-    private lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree })
+    /// Android's part of the acts every host performs, the files the user opens and saves and what the system
+    /// launches, and the host layer's performer of them - the process's: a question, a document chosen or a script
+    /// outlives the activity it began in, which Android may make again meanwhile, and acts in the one standing now.
+    /// Design: docs/design/platforms/android/runtime.md#acts
+    private static let actToolkit = AndroidActToolkit(core: CoreLink())
+    private static let files = AndroidFileToolkit()
+    private static let acts = HostActPerformer(
+        toolkit: actToolkit, files: files, answers: CoreLink(), tree: { AndroidRenderer.shared?.runtime.tree })
+    private var actToolkit: AndroidActToolkit { Self.actToolkit }
+    var fileToolkit: AndroidFileToolkit { Self.files }
+    private var acts: HostActPerformer { Self.acts }
 
     /// An act waiting under a ticket was answered - a dialog, a script: its caller resumes in a job of its own.
     func answered(ticket: Int64, accepted: Bool, words: String?) {

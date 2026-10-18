@@ -3,6 +3,7 @@
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+import CStateUIAndroid
 
 /// Android's part of the acts every host performs (`HostActPerformer`): the clock and the zones, a question in the
 /// platform's own dialog, a word to TalkBack, the focus and the keyboard, a value kept, and a web view's own acts.
@@ -12,12 +13,11 @@
 @MainActor
 final class AndroidActToolkit: ActToolkit {
     private let core: CoreLink
-    private let context: JavaObject
-    private let root: JavaObject
-    private let tree: () -> MountedTree
 
-    /// Where a scene's value goes to be kept with the scenes.
-    private let keepSceneValue: (HostActCall) -> Void
+    /// The activity standing now, which shows a dialog, and its root and tree: the process's acts outlive each.
+    private var context: jobject { AndroidRenderer.context }
+    private var root: jobject { AndroidRenderer.shared!.root.reference }
+    private func tree() -> MountedTree { AndroidRenderer.shared!.runtime.tree }
 
     /// The dialogs showing, by ticket, each with what hears its answer.
     private let dialogs = Numbered<(Bool, String?) -> Void>()
@@ -28,15 +28,13 @@ final class AndroidActToolkit: ActToolkit {
     /// The tickets of the scripts waiting for their answer, oldest first.
     var waitingScripts: [Int64] { scripts.numbers }
 
-    init(
-        core: CoreLink, context: JavaObject, root: JavaObject, tree: @escaping () -> MountedTree,
-        keepSceneValue: @escaping (HostActCall) -> Void
-    ) {
+    init(core: CoreLink) {
         self.core = core
-        self.context = context
-        self.root = root
-        self.tree = tree
-        self.keepSceneValue = keepSceneValue
+    }
+
+    /// Lets go of the dialogs the activity before left unanswered: their questions are asked again.
+    func forgetDialogs() {
+        dialogs.removeAll()
     }
 
     let host = "Android Views"
@@ -64,7 +62,7 @@ final class AndroidActToolkit: ActToolkit {
     func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
         let ticket = dialogs.hold(answered)
         Java.frame {
-            let context = context.reference
+            let context = context
             switch question.kind {
             case .alert:
                 Java.callStatic(
@@ -120,7 +118,7 @@ final class AndroidActToolkit: ActToolkit {
 
     func announce(_ words: String) {
         Java.frame {
-            Java.call(root.reference, JavaAPI.announceForAccessibility, .object(Java.string(words)))
+            Java.call(root, JavaAPI.announceForAccessibility, .object(Java.string(words)))
         }
     }
 
@@ -130,7 +128,7 @@ final class AndroidActToolkit: ActToolkit {
     }
 
     func hideOnScreenKeyboard() -> Bool {
-        Java.callStaticBool(JavaAPI.environment, JavaAPI.hideKeyboard, .object(root.reference))
+        Java.callStaticBool(JavaAPI.environment, JavaAPI.hideKeyboard, .object(root))
     }
 
     func focus(_ element: MountedElement) -> Bool? {
@@ -146,8 +144,8 @@ final class AndroidActToolkit: ActToolkit {
 
     func keep(_ call: HostActCall) -> Bool {
         switch call.act {
-        case .persistValue: AndroidPersistence.keep(call, core: core, context: context.reference)
-        case .persistSceneValue: keepSceneValue(call)
+        case .persistValue: AndroidPersistence.keep(call, core: core, context: context)
+        case .persistSceneValue: AndroidRenderer.shared?.keepSceneValue(call)
         default: return false
         }
         return true

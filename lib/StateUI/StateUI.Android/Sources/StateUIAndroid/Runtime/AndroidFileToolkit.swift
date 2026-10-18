@@ -3,6 +3,7 @@
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+import CStateUIAndroid
 
 /// Android's part of the files the user opens and saves and of what the system launches (`HostActs.files`): the
 /// system's document picker over the activity, a document read and written beside the UI thread, a view intent.
@@ -10,16 +11,14 @@
 /// Design: docs/design/platforms/android/runtime.md#files
 @MainActor
 final class AndroidFileToolkit: FileToolkit {
-    private let context: JavaObject
+    /// The activity standing now, which a picker is shown over: the process's acts outlive each.
+    private var context: jobject { AndroidRenderer.context }
 
     /// What hears each picker's documents, each document's bytes and each launch's answer, by ticket.
     private let dialogs = Numbered<(Result<[ChosenFile], ActFailure>) -> Void>()
     private let reads = Numbered<(Result<[UInt8], ActFailure>) -> Void>()
     private let launches = Numbered<(Bool) -> Void>()
 
-    init(context: JavaObject) {
-        self.context = context
-    }
 
     func show(_ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void) -> Bool {
         let ticket = dialogs.hold(answered)
@@ -27,12 +26,12 @@ final class AndroidFileToolkit: FileToolkit {
             switch dialog.kind {
             case .open, .openSeveral:
                 Java.callStatic(
-                    JavaAPI.files, JavaAPI.openFiles, .object(context.reference), .long(ticket),
+                    JavaAPI.files, JavaAPI.openFiles, .object(context), .long(ticket),
                     .object(Java.array(of: JavaAPI.string, dialog.extensions.map(Java.string))),
                     .bool(dialog.kind == .openSeveral))
             case .save:
                 Java.callStatic(
-                    JavaAPI.files, JavaAPI.saveFile, .object(context.reference), .long(ticket),
+                    JavaAPI.files, JavaAPI.saveFile, .object(context), .long(ticket),
                     .object(Java.string(dialog.name)), .object(Self.savedExtension(dialog).flatMap(Java.string)),
                     .object(Java.bytes(dialog.contents)))
             }
@@ -58,7 +57,7 @@ final class AndroidFileToolkit: FileToolkit {
         let ticket = reads.hold(answered)
         Java.frame {
             Java.callStatic(
-                JavaAPI.files, JavaAPI.readFile, .object(context.reference), .long(ticket),
+                JavaAPI.files, JavaAPI.readFile, .object(context), .long(ticket),
                 .object(Java.string(file.address)), .long(Int64(maximum ?? -1)))
         }
     }
@@ -80,7 +79,7 @@ final class AndroidFileToolkit: FileToolkit {
         let ticket = launches.hold(answered)
         Java.frame {
             Java.callStatic(
-                JavaAPI.files, JavaAPI.launch, .object(context.reference), .long(ticket),
+                JavaAPI.files, JavaAPI.launch, .object(context), .long(ticket),
                 .object(Java.string(address)), .bool(document))
         }
     }
