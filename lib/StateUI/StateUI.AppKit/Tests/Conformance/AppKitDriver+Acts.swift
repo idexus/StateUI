@@ -307,7 +307,8 @@ extension AppKitDriver {
     /// A shortcut pressed while the element's window is in front: the key-down AppKit makes of it, offered to the
     /// window's key equivalents, then the main menu's, then to the view holding the keyboard, as AppKit offers it.
     private func pressKeys(_ shortcut: KeyboardShortcut, on element: MountedElement, _ view: NSView?) throws {
-        let spelled = AppKitKeys.equivalent(of: shortcut)
+        // What a keyboard sends, not what a key equivalent is spelled with: Delete is DEL there.
+        let spelled = (key: AppKitKeys.typed(of: shortcut), modifiers: AppKitKeys.equivalent(of: shortcut).modifiers)
         let controller = try? controller(of: element)
         guard let window = view?.window ?? controller?.window ?? NSApp.windows.first(where: \.isVisible),
               let event = NSEvent.keyEvent(

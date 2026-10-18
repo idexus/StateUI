@@ -10,6 +10,16 @@ import XCTest
 /// The menu bar an AppKit application stands with.
 @MainActor
 final class AppKitMenuBarTests: XCTestCase {
+    /// The keys a keyboard sends read as the keys they are: Delete sends DEL and the keypad's Enter ETX, not the
+    /// characters a key equivalent names them by.
+    @MainActor
+    func testTheCharactersAKeyboardSendsReadAsTheirKeys() {
+        XCTAssertEqual(AppKitKeys.shortcut(key: "\u{7f}", modifiers: [])?.key, Key(.delete))
+        XCTAssertEqual(AppKitKeys.shortcut(key: "\u{3}", modifiers: [])?.key, Key(.return))
+        XCTAssertEqual(AppKitKeys.shortcut(key: "\u{8}", modifiers: [])?.key, Key(.delete), "and the equivalent's own")
+        XCTAssertEqual(AppKitKeys.typed(of: KeyboardShortcut(.delete, modifiers: [])), "\u{7f}")
+    }
+
     /// Edit holds the text commands a field answers - AppKit routes ⌘C, ⌘V and ⌘Z through the menu bar's key
     /// equivalents, so without them a field copies, pastes and undoes nothing.
     @MainActor
