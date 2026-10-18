@@ -384,6 +384,11 @@ enum SourceTree {
         repository.appendingPathComponent("lib/StateUI/StateUI.Host/Sources")
     }
 
+    /// `lib/StateUI/Foundation/Sources`, the platform's C library behind one import and what is built on it.
+    static var foundationSources: URL {
+        repository.appendingPathComponent("lib/StateUI/Foundation/Sources")
+    }
+
     /// `lib/StateUI/Core/Sources`.
     static var sources: URL {
         URL(fileURLWithPath: #filePath)
@@ -657,8 +662,8 @@ enum SourceTree {
     private static func readAllSources() throws -> [(path: String, text: String)] {
         var found: [(path: String, text: String)] = []
 
-        // The core's sources under their own paths; the host layer's under its module's name, `StateUIHost/`.
-        for (prefix, root) in [("", sources), ("StateUIHost/", hostSources)] {
+        // The core's sources under their own paths; the host layer's and the foundation's under their modules' names.
+        for (prefix, root) in [("", sources), ("StateUIHost/", hostSources), ("StateUIFoundation/", foundationSources)] {
             guard let walk = FileManager.default.enumerator(atPath: root.path) else {
                 throw WalkReadAlmostNothing(root: root.path, read: 0)
             }
@@ -715,6 +720,7 @@ enum SourceTree {
 
         let targets = [
             ("StateUITests", repository.appendingPathComponent("lib/StateUI/Core/Tests")),
+            ("StateUIFoundationTests", repository.appendingPathComponent("lib/StateUI/Foundation/Tests")),
             ("GalleryTests", repository.appendingPathComponent("apps/Gallery/Tests/GalleryTests")),
             ("StateUIAppKitTests", repository.appendingPathComponent("lib/StateUI/StateUI.AppKit/Tests")),
             ("StateUIUIKitTests", repository.appendingPathComponent("lib/StateUI/StateUI.UIKit/Tests/Sources")),
