@@ -14,6 +14,7 @@ final class AndroidWebViewTests: XCTestCase {
             ("testAHistoryFlagIsSaidWhenItChanges", testAHistoryFlagIsSaidWhenItChanges),
             ("testAScriptsValueAnswersAsText", testAScriptsValueAnswersAsText),
             ("testAReloadShowsThePageAgainAfterItsProcessDied", testAReloadShowsThePageAgainAfterItsProcessDied),
+            ("testAScriptWaitingAsThePageGoesFails", testAScriptWaitingAsThePageGoesFails),
         ]
     }
 
@@ -77,6 +78,25 @@ final class AndroidWebViewTests: XCTestCase {
         }
     }
 
+    /// A script waiting as the page's process dies fails - the page went - rather than wait for good: nothing the
+    /// page ran answers any more.
+    func testAScriptWaitingAsThePageGoesFails() throws {
+        try onMainActor {
+            let heard = Received<String>()
+            let host = AndroidRenderer.running { BrowsingPage(heard: heard) }
+            let web = try XCTUnwrap(host.views(AndroidWebView.self).first)
+            try XCTUnwrap(host.views(AndroidButtonView.self).last).click()
+            host.runtime.pump.turn()
+            XCTAssertFalse(host.waitingScripts.isEmpty, "the script waits")
+
+            Java.call(web.reference, TestWeb.processGone)
+            host.settle { heard.values.contains("no title") }
+
+            XCTAssertEqual(heard.values.filter { $0.contains("title") }, ["no title"])
+            XCTAssertTrue(host.waitingScripts.isEmpty, "and waits no more")
+        }
+    }
+
     /// A script's value, which Android hands over as JSON, answers as text (`ScriptAnswer`); the act waits under its
     /// ticket and answers with it.
     func testAScriptsValueAnswersAsText() throws {
@@ -93,7 +113,7 @@ final class AndroidWebViewTests: XCTestCase {
     }
 }
 
-/// A web view, aimed at, with a button that loads it again and one that asks its page's title.
+/// A web view, aimed at, with a button that loads it again and one that asks its page's title - or hears it got none.
 private struct BrowsingPage: View {
     @Aim(WebView.self) private var browser
     @State private var back = false
@@ -114,8 +134,11 @@ private struct BrowsingPage: View {
                 .height(200)
             Button("Reload").onClicked(gate: .ignoreWhileRunning) { try await browser.reload() }
             Button("Title?").onClicked(gate: .ignoreWhileRunning) {
-                let title = try await browser.evaluateJavaScript("document.title")
-                heard.values.append("title \(title)")
+                do {
+                    heard.values.append("title \(try await browser.evaluateJavaScript("document.title"))")
+                } catch {
+                    heard.values.append("no title")
+                }
             }
         }
         .onChanged(back) { heard.values.append("back \(back)") }

@@ -95,9 +95,12 @@ final class AndroidActToolkit: ActToolkit {
     }
 
     /// The act under `ticket` was answered: a dialog accepted or not, with the words chosen or typed; or a script's
-    /// value as JSON, said as text (`ScriptAnswer`).
+    /// value as JSON, said as text (`ScriptAnswer`) - one not accepted fails, its page gone before it answered.
     func answered(ticket: Int64, accepted: Bool, words: String?) {
         if let call = scripts.take(ticket) {
+            guard accepted else {
+                return core.fail(call, "the page went before the script answered", log: { AndroidRenderer.log.error($0) })
+            }
             return core.reply(call, [ScriptAnswer.text(json: words).propValue])
         }
         dialogs.take(ticket)?(accepted, words)

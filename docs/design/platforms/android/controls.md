@@ -312,7 +312,9 @@ is a page behind and ahead is said when it changes. A script runs in the page
 and answers later, by ticket, with the JSON Android hands back read as text
 by the host layer's rule ([a script's answer](../../host/web.md#a-scripts-answer)).
 The web view runs the page's scripts and keeps its storage, and lets go of
-its page and its web process when its element leaves.
+its page and its web process when its element leaves - or its process dies -
+answering every script still waiting that the page went, as Android calls
+nothing back from a web view gone.
 
 ## The keyboard's focus
 
