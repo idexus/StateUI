@@ -101,15 +101,13 @@
 /// its runtime has gone answers nothing of another's - the first asked showing, the next once it is answered.
 @_spi(Host) @MainActor public final class QuestionQueue<Question> {
     private var waiting: [(ticket: Int64, question: Question)] = []
-    private static var nextTicket: Int64 { get { QuestionTickets.next } set { QuestionTickets.next = newValue } }
 
     /// No question waiting.
     public init() {}
 
     /// Asks `question`: its ticket, and whether it shows now - none before it waits.
     public func ask(_ question: Question) -> (ticket: Int64, showsNow: Bool) {
-        let ticket = Self.nextTicket
-        Self.nextTicket += 1
+        let ticket = HostNumbers.next()
         waiting.append((ticket, question))
         return (ticket, waiting.count == 1)
     }
@@ -126,10 +124,4 @@
         let question = waiting.remove(at: index).question
         return (question, index == 0 ? waiting.first?.question : nil)
     }
-}
-
-/// The next ticket of every question in the process.
-@MainActor
-private enum QuestionTickets {
-    static var next: Int64 = 1
 }

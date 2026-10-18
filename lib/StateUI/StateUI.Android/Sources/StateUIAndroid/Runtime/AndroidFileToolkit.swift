@@ -13,25 +13,16 @@ final class AndroidFileToolkit: FileToolkit {
     private let context: JavaObject
 
     /// What hears each picker's documents, each document's bytes and each launch's answer, by ticket.
-    private var dialogs: [Int64: (Result<[ChosenFile], ActFailure>) -> Void] = [:]
-    private var reads: [Int64: (Result<[UInt8], ActFailure>) -> Void] = [:]
-    private var launches: [Int64: (Bool) -> Void] = [:]
-
-    /// One number across the process, so an answer arriving after its renderer has gone answers nothing of another's.
-    private static var nextTicket: Int64 = 1
+    private let dialogs = Numbered<(Result<[ChosenFile], ActFailure>) -> Void>()
+    private let reads = Numbered<(Result<[UInt8], ActFailure>) -> Void>()
+    private let launches = Numbered<(Bool) -> Void>()
 
     init(context: JavaObject) {
         self.context = context
     }
 
-    private static func ticket() -> Int64 {
-        defer { nextTicket += 1 }
-        return nextTicket
-    }
-
     func show(_ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void) -> Bool {
-        let ticket = Self.ticket()
-        dialogs[ticket] = answered
+        let ticket = dialogs.hold(answered)
         Java.frame {
             switch dialog.kind {
             case .open, .openSeveral:
@@ -60,12 +51,11 @@ final class AndroidFileToolkit: FileToolkit {
     /// The picker under `ticket` closed: the documents chosen, by their addresses and names, or why it failed.
     func chose(ticket: Int64, addresses: [String], names: [String], failure: String?) {
         let files = zip(addresses, names).map { ChosenFile(address: $0, name: $1) }
-        dialogs.removeValue(forKey: ticket)?(failure.map { .failure(ActFailure($0)) } ?? .success(files))
+        dialogs.take(ticket)?(failure.map { .failure(ActFailure($0)) } ?? .success(files))
     }
 
     func read(_ file: ChosenFile, atMost maximum: Int?, answered: @escaping (Result<[UInt8], ActFailure>) -> Void) {
-        let ticket = Self.ticket()
-        reads[ticket] = answered
+        let ticket = reads.hold(answered)
         Java.frame {
             Java.callStatic(
                 JavaAPI.files, JavaAPI.readFile, .object(context.reference), .long(ticket),
@@ -75,7 +65,7 @@ final class AndroidFileToolkit: FileToolkit {
 
     /// The document read under `ticket`: its bytes, or why they could not be read.
     func read(ticket: Int64, bytes: [UInt8], failure: String?) {
-        reads.removeValue(forKey: ticket)?(failure.map { .failure(ActFailure($0)) } ?? .success(bytes))
+        reads.take(ticket)?(failure.map { .failure(ActFailure($0)) } ?? .success(bytes))
     }
 
     func launch(_ file: ChosenFile, answered: @escaping (Bool) -> Void) {
@@ -87,8 +77,7 @@ final class AndroidFileToolkit: FileToolkit {
     }
 
     private func launch(_ address: String, document: Bool, answered: @escaping (Bool) -> Void) {
-        let ticket = Self.ticket()
-        launches[ticket] = answered
+        let ticket = launches.hold(answered)
         Java.frame {
             Java.callStatic(
                 JavaAPI.files, JavaAPI.launch, .object(context.reference), .long(ticket),
@@ -98,6 +87,6 @@ final class AndroidFileToolkit: FileToolkit {
 
     /// What was launched under `ticket` was taken by an application, or not.
     func launched(ticket: Int64, taken: Bool) {
-        launches.removeValue(forKey: ticket)?(taken)
+        launches.take(ticket)?(taken)
     }
 }

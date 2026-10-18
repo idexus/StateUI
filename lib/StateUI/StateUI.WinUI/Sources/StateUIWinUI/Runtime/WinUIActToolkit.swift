@@ -14,11 +14,7 @@ final class WinUIActToolkit: ActToolkit {
     private unowned let renderer: WinUIRenderer
 
     /// What hears each dialog's answer, by the ticket the dialog hands back.
-    private var dialogs: [Int64: (Bool, String?) -> Void] = [:]
-
-    /// The next dialog's ticket: one number across the process, so an answer arriving after its renderer has gone
-    /// answers nothing of another's.
-    private static var nextTicket: Int64 = 1
+    private let dialogs = Numbered<(Bool, String?) -> Void>()
 
     init(renderer: WinUIRenderer) {
         self.renderer = renderer
@@ -48,9 +44,7 @@ final class WinUIActToolkit: ActToolkit {
     /// Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
     func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
         guard let content = renderer.userWindow?.content else { return false }
-        let ticket = Self.nextTicket
-        Self.nextTicket += 1
-        dialogs[ticket] = answered
+        let ticket = dialogs.hold(answered)
 
         // The title, the message, the captions that accept, cancel and destroy, the placeholder, the first words.
         let kind: Int32 = switch question.kind {
@@ -80,7 +74,7 @@ final class WinUIActToolkit: ActToolkit {
 
     /// The dialog under `ticket` was answered: accepted or not, and the words chosen or typed.
     func answered(ticket: Int64, accepted: Bool, words: String?) {
-        dialogs.removeValue(forKey: ticket)?(accepted, words)
+        dialogs.take(ticket)?(accepted, words)
     }
 
     /// Shows every window in `theme`: each window's content in WinUI's own theme, the system's for `.system`.

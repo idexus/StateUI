@@ -254,8 +254,12 @@ toolkit's calls:
   elements are the arrangements of pages a window shows, which have no view of
   their own, and which furnish a page's chrome rather than stand in its room.
 - **`LiveViews`** holds a host's views weakly by the number each was made
-  under: a callback crossing C names a view by its number and finds nothing
-  once it has gone. ([Views by number](../design/host/tree.md#views-by-number))
+  under, and **`Numbered`** anything else a host hands across by number - a
+  signal's callback, a dialog's or a script's answer awaited - until it is
+  taken out or let go: a callback crossing C, Java or JavaScript names it by
+  its number and finds nothing once it has gone. Both draw from the process's
+  one count, **`HostNumbers`**, so no number is given twice.
+  ([Held by number](../design/host/tree.md#held-by-number))
 - **`ElementID.hostValue`** is a key as an event carries it: an author's name
   as its text, a counted key as its number.
 

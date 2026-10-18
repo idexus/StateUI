@@ -19,8 +19,7 @@ class AndroidView {
     /// Pixels per point, the display's density.
     var density: Double { AndroidRenderer.density }
 
-    private static var nextNumber: Int64 = 0
-    private static var live: [Int64: Weak] = [:]
+    private static let live = LiveViews<AndroidView>()
 
     /// The background the view was made with, often none, read before the first change.
     private var madeBackground: JavaObject??
@@ -40,19 +39,18 @@ class AndroidView {
 
     /// Takes the next number and holds the view `make` makes, handed that number.
     init(_ make: (_ number: Int64) -> JavaObject) {
-        Self.nextNumber += 1
-        number = Self.nextNumber
+        number = Self.live.reserve()
         object = make(number)
-        Self.live[number] = Weak(self)
+        Self.live.hold(self, as: number)
     }
 
     isolated deinit {
-        Self.live[number] = nil
+        Self.live.release(number)
     }
 
     /// The live view a Java callback names; nil once it has left.
     static func find(_ number: Int64) -> AndroidView? {
-        live[number]?.view
+        live.find(number)
     }
 
     /// How many views Swift holds - what a test counts to see every one let go.
@@ -418,12 +416,6 @@ class AndroidView {
     /// A colour as Android's packed ARGB, the host layer's number as Java's `int`; nil for a value that is no colour.
     static func argb(_ value: HostValue) -> Int32? {
         value.argb.map { Int32(bitPattern: $0) }
-    }
-
-    private struct Weak {
-        weak var view: AndroidView?
-
-        init(_ view: AndroidView) { self.view = view }
     }
 }
 

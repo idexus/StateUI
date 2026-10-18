@@ -20,15 +20,13 @@ final class AndroidActToolkit: ActToolkit {
     private let keepSceneValue: (HostActCall) -> Void
 
     /// The dialogs showing, by ticket, each with what hears its answer.
-    private var dialogs: [Int64: (Bool, String?) -> Void] = [:]
-    private static var nextDialogTicket: Int64 = 1
+    private let dialogs = Numbered<(Bool, String?) -> Void>()
 
     /// The scripts not answered yet, by ticket.
-    private var scripts: [Int64: HostActCall] = [:]
+    private let scripts = Numbered<HostActCall>()
 
-    /// The next script's ticket: one number across every renderer of the process, below zero so it is never a
-    /// dialog's.
-    private(set) static var nextScriptTicket: Int64 = -1
+    /// The tickets of the scripts waiting for their answer, oldest first.
+    var waitingScripts: [Int64] { scripts.numbers }
 
     init(
         core: CoreLink, context: JavaObject, root: JavaObject, tree: @escaping () -> MountedTree,
@@ -64,9 +62,7 @@ final class AndroidActToolkit: ActToolkit {
 
     /// Puts a question to the user in the platform's own dialog; its answer comes back by its ticket.
     func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
-        let ticket = Self.nextDialogTicket
-        Self.nextDialogTicket += 1
-        dialogs[ticket] = answered
+        let ticket = dialogs.hold(answered)
         Java.frame {
             let context = context.reference
             switch question.kind {
@@ -102,10 +98,10 @@ final class AndroidActToolkit: ActToolkit {
     /// The act under `ticket` was answered: a dialog accepted or not, with the words chosen or typed; or a script's
     /// value as JSON, said as text (`ScriptAnswer`).
     func answered(ticket: Int64, accepted: Bool, words: String?) {
-        if let call = scripts.removeValue(forKey: ticket) {
+        if let call = scripts.take(ticket) {
             return core.reply(call, [ScriptAnswer.text(json: words).propValue])
         }
-        dialogs.removeValue(forKey: ticket)?(accepted, words)
+        dialogs.take(ticket)?(accepted, words)
     }
 
     /// Android's input type for what a typed answer is for.
@@ -197,10 +193,7 @@ final class AndroidActToolkit: ActToolkit {
 
     /// Keeps a script's `call` waiting for its answer, under the ticket this answers.
     private func waitForScript(_ call: HostActCall) -> Int64 {
-        let ticket = Self.nextScriptTicket
-        Self.nextScriptTicket -= 1
-        scripts[ticket] = call
-        return ticket
+        scripts.hold(call)
     }
 
     func performRegistered(_ call: HostActCall) -> Bool {

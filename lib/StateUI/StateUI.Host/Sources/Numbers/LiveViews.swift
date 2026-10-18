@@ -1,14 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-@_spi(Host) import StateUI
-
 /// A host's views by number, held weakly: what a toolkit's callback names a view by - a number crossing C where
 /// an object cannot - and what a test counts to see every view let go.
-/// Design: docs/design/host/tree.md#views-by-number
+/// Design: docs/design/host/tree.md#held-by-number
 @_spi(Host) @MainActor public final class LiveViews<View: AnyObject> {
-    private var last: Int64 = 0
-    private var live: [Int64: Held] = [:]
+    private let live = Numbered<Held>()
 
     private struct Held {
         weak var view: View?
@@ -19,23 +16,22 @@
 
     /// The next number, for a view being made.
     public func reserve() -> Int64 {
-        last += 1
-        return last
+        live.reserve()
     }
 
     /// Holds `view` under `number`, weakly.
     public func hold(_ view: View, as number: Int64) {
-        live[number] = Held(view: view)
+        live.hold(Held(view: view), as: number)
     }
 
     /// Lets go of the view under `number`.
     public func release(_ number: Int64) {
-        live[number] = nil
+        live.release(number)
     }
 
     /// The live view under `number`; nil once it has left.
     public func find(_ number: Int64) -> View? {
-        live[number]?.view
+        live.find(number)?.view
     }
 
     /// How many views are held.

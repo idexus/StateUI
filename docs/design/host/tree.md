@@ -142,12 +142,18 @@ host's registry names (`everyElementTakesItsPlace`,
 says so in one line each, and the control dictionary reads the members as
 every host alike.
 
-## Views by number
+## Held by number
 
-GTK's and WinUI's views are numbered as they are made and held weakly by
-their number (`LiveViews`): a toolkit's callback crossing C names a view by
-its number, as it cannot hold an object, and finds nothing once the view is
-gone; a test counts the numbers held to see every view let go.
+What crosses C, Java or JavaScript by number - a view a toolkit's callback
+names, the callback a signal carries, the answer a dialog or a script hands
+back - is held by its number in the host layer: a view weakly (`LiveViews`),
+anything else until it is taken out or let go (`Numbered`). Every number comes
+from the process's one count (`HostNumbers`): none is given twice, a number
+left over from one table finds nothing in another, and a number given later is
+greater, so a view's number is also the order the display's frames serve it
+in. A test counts what a table holds to see everything let go. The Web relay's
+listeners are the one exception: they are the JavaScript relay's own 32-bit
+numbers, as a 64-bit one reaches JavaScript as a `BigInt`.
 
 ## A window shown
 

@@ -19,21 +19,19 @@ final class GTKContextMenu {
     private let widget: GTKWidget
     private let number: Int64
     private var controllers: [OpaquePointer] = []
-    private static var nextNumber: Int64 = 1
-    private static var shown: [Int64: GTKContextMenu] = [:]
+    private static let shown = Numbered<GTKContextMenu>()
 
     /// `menu` on `widget`, which it opens over - held by a mouse too where `heldByMouse`, a held button's menu.
     init(_ menu: GTKMenu, on widget: GTKWidget, heldByMouse: Bool = false) {
         self.menu = menu
         self.widget = widget
-        number = Self.nextNumber
-        Self.nextNumber += 1
+        number = Self.shown.reserve()
         popover = gtk_popover_menu_new_from_model(g_menu_model(menu.model))!
         gtk_widget_set_parent(popover, widget)
         gtk_popover_set_has_arrow(popover.of(GtkPopover.self), 0)
         gtk_widget_set_halign(popover, GTK_ALIGN_START)
         gtk_widget_insert_action_group(widget, GTKMenu.actionGroup, OpaquePointer(menu.actions))
-        Self.shown[number] = self
+        Self.shown.hold(self, as: number)
         listen(heldByMouse: heldByMouse)
     }
 
@@ -58,7 +56,7 @@ final class GTKContextMenu {
         controllers = []
         gtk_widget_insert_action_group(widget, GTKMenu.actionGroup, nil)
         gtk_widget_unparent(popover)
-        Self.shown[number] = nil
+        Self.shown.release(number)
     }
 
     /// The secondary button's click and a held finger - a held mouse too, where `heldByMouse` - open the menu where
@@ -67,13 +65,13 @@ final class GTKContextMenu {
         let click = gtk_gesture_click_new()!
         gtk_gesture_single_set_button(click, guint(GDK_BUTTON_SECONDARY))
         connectSignal(UnsafeMutableRawPointer(click), "pressed", number: number) { _, _, x, y, data in
-            MainActor.assumeIsolated { GTKContextMenu.shown[viewNumber(data)]?.open(atX: x, y: y) }
+            MainActor.assumeIsolated { GTKContextMenu.shown.find(viewNumber(data))?.open(atX: x, y: y) }
         }
         let hold = gtk_gesture_long_press_new()!
         gtk_gesture_single_set_touch_only(hold, heldByMouse ? 0 : 1)
         connectSignal(UnsafeMutableRawPointer(hold), "pressed", number: number) { gesture, x, y, data in
             _ = gtk_gesture_set_state(OpaquePointer(gesture), GTK_EVENT_SEQUENCE_CLAIMED)
-            MainActor.assumeIsolated { GTKContextMenu.shown[viewNumber(data)]?.open(atX: x, y: y) }
+            MainActor.assumeIsolated { GTKContextMenu.shown.find(viewNumber(data))?.open(atX: x, y: y) }
         }
         for controller in [click, hold] {
             gtk_widget_add_controller(widget, controller)

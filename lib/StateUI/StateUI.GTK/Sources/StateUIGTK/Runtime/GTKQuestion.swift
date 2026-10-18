@@ -17,8 +17,7 @@ final class GTKQuestion {
     private let answered: (Bool, String?) -> Void
 
     /// The questions showing, by the number their dialog's answer comes back under.
-    private static var showing: [Int64: GTKQuestion] = [:]
-    private static var nextNumber: Int64 = 1
+    private static let showing = Numbered<GTKQuestion>()
 
     /// A prompt's field, while its dialog shows.
     private var field: GTKWidget?
@@ -33,9 +32,7 @@ final class GTKQuestion {
 
     /// Shows the dialog over `window`.
     func show(over window: GTKWindow) {
-        let number = Self.nextNumber
-        Self.nextNumber += 1
-        Self.showing[number] = self
+        let number = Self.showing.hold(self)
 
         let dialog: UnsafeMutablePointer<AdwDialog>
         switch question.kind {
@@ -65,7 +62,7 @@ final class GTKQuestion {
         connectSignal(UnsafeMutableRawPointer(dialog), "response", number: number) { _, response, data in
             let number = viewNumber(data)
             let id = response.map { String(cString: $0.assumingMemoryBound(to: CChar.self)) } ?? ""
-            MainActor.assumeIsolated { GTKQuestion.showing.removeValue(forKey: number)?.respond(id) }
+            MainActor.assumeIsolated { GTKQuestion.showing.take(number)?.respond(id) }
         }
         adw_dialog_present(dialog, window.widget)
     }

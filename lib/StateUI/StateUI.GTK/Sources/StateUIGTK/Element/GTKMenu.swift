@@ -50,7 +50,7 @@ final class GTKMenu {
     }
 
     isolated deinit {
-        for number in numbers { Self.chosen[number] = nil }
+        for number in numbers { Self.chosen.release(number) }
         g_object_unref(UnsafeMutableRawPointer(model))
         g_object_unref(UnsafeMutableRawPointer(actions))
     }
@@ -104,13 +104,11 @@ final class GTKMenu {
         let element = entry.element
         items[name] = { [weak element] in element }
         runs.append(element.map(ObjectIdentifier.init))
-        let number = Self.nextNumber
-        Self.nextNumber += 1
+        let number = Self.chosen.hold { [weak element] in element }
         numbers.append(number)
-        Self.chosen[number] = { [weak element] in element }
         connectSignal(UnsafeMutableRawPointer(action), "activate", number: number) {
             (_: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?, data: gpointer?) in
-            MainActor.assumeIsolated { GTKMenu.chosen[viewNumber(data)]?()?.gtk.choose() }
+            MainActor.assumeIsolated { GTKMenu.chosen.find(viewNumber(data))?()?.gtk.choose() }
         }
         g_action_map_add_action(OpaquePointer(actions), action)
         g_object_unref(UnsafeMutableRawPointer(action))
@@ -127,8 +125,7 @@ final class GTKMenu {
     }
 
     /// Every item's element, by the number its action's signal carries, one across the process.
-    private static var chosen: [Int64: () -> MountedElement?] = [:]
-    private static var nextNumber: Int64 = 1
+    private static let chosen = Numbered<() -> MountedElement?>()
 }
 
 /// The model of a `GMenu`, as GTK's menus take it.

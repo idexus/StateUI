@@ -15,7 +15,6 @@ class WebDOMView {
     /// When the view was made among every view of the page - the order the display's frames serve them in; the
     /// relay makes a number let go of again, so its number is no order.
     let serial: Int64
-    private static var made: Int64 = 0
 
     /// How many views are alive, for the tally.
     private(set) static var liveCount = 0
@@ -73,24 +72,21 @@ class WebDOMView {
 
     init(tag: String) {
         node = WebRelay.create(tag)
-        Self.made += 1
-        serial = Self.made
+        serial = HostNumbers.next()
         Self.liveCount += 1
     }
 
     /// A view of an element made already - an application's control's - which it lets go of as its own.
     init(adopting node: Int32) {
         self.node = node
-        Self.made += 1
-        serial = Self.made
+        serial = HostNumbers.next()
         Self.liveCount += 1
     }
 
     /// A view of one of SVG's elements.
     init(vector tag: String) {
         node = WebRelay.createVector(tag)
-        Self.made += 1
-        serial = Self.made
+        serial = HostNumbers.next()
         Self.liveCount += 1
     }
 

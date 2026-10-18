@@ -85,7 +85,7 @@ final class AndroidWebViewTests: XCTestCase {
             let host = AndroidRenderer.running { BrowsingPage(heard: heard) }
             try XCTUnwrap(host.views(AndroidButtonView.self).last).click()
             host.runtime.pump.turn()
-            host.answered(ticket: AndroidActToolkit.nextScriptTicket + 1, accepted: true, words: "\"Example Domain\"")
+            host.answered(ticket: try XCTUnwrap(host.waitingScripts.last), accepted: true, words: "\"Example Domain\"")
             host.settle { heard.values.contains { $0.hasPrefix("title") } }
 
             XCTAssertEqual(heard.values, ["title Example Domain"])

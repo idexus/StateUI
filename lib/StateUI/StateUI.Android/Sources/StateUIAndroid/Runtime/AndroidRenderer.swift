@@ -120,6 +120,11 @@ final class AndroidRenderer {
         actToolkit.answered(ticket: ticket, accepted: accepted, words: words)
     }
 
+    /// The tickets of the scripts waiting for their answer, oldest first.
+    var waitingScripts: [Int64] {
+        actToolkit.waitingScripts
+    }
+
     /// The document picker under `ticket` closed: its caller resumes with the documents chosen.
     func filesChosen(ticket: Int64, addresses: [String], names: [String], failure: String?) {
         fileToolkit.chose(ticket: ticket, addresses: addresses, names: names, failure: failure)

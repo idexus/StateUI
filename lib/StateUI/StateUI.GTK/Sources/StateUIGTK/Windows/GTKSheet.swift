@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// A page a window's modal stack presents, shown as libadwaita's `AdwDialog` over the window: a page in a frame of
@@ -23,8 +24,7 @@ final class GTKSheet {
 
     /// The number its dialog's signal carries, one across the process.
     private let number: Int64
-    private static var nextNumber: Int64 = 1
-    private static var shown: [Int64: GTKSheet] = [:]
+    private static let shown = Numbered<GTKSheet>()
 
     /// Whether the dialog has closed, or is closing as the program closes it.
     private var isClosed = false
@@ -37,13 +37,12 @@ final class GTKSheet {
         frame = framed ? GTKPageFrame(page: page) : nil
         dialog = adw_dialog_new()!
         g_object_ref_sink(UnsafeMutableRawPointer(dialog))
-        number = Self.nextNumber
-        Self.nextNumber += 1
+        number = Self.shown.reserve()
         adw_dialog_set_content_width(dialog, Self.size.width)
         adw_dialog_set_content_height(dialog, Self.size.height)
         adw_dialog_set_child(dialog, frame?.widget ?? page.widget)
         connectSignal(UnsafeMutableRawPointer(dialog), "closed", number: number) { _, data in
-            MainActor.assumeIsolated { GTKSheet.shown.removeValue(forKey: viewNumber(data))?.closedByDialog() }
+            MainActor.assumeIsolated { GTKSheet.shown.take(viewNumber(data))?.closedByDialog() }
         }
     }
 
@@ -57,7 +56,7 @@ final class GTKSheet {
 
     /// Shows the sheet over `window`, over the sheets shown there before it.
     func present(over window: GTKWindow) {
-        Self.shown[number] = self
+        Self.shown.hold(self, as: number)
         adw_dialog_present(dialog, window.widget)
     }
 
@@ -70,7 +69,7 @@ final class GTKSheet {
     func close() {
         guard !isClosed else { return }
         isClosed = true
-        Self.shown[number] = nil
+        Self.shown.release(number)
         adw_dialog_force_close(dialog)
     }
 
