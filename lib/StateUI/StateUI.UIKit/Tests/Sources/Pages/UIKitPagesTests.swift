@@ -111,6 +111,24 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(query.wrappedValue, "bet")
     }
 
+    /// The main menu is built again when an entry turns checked or is marked destructive, though its words stay:
+    /// UIKit changes no built menu in place.
+    @MainActor
+    func testTheMenuBarIsBuiltAgainWhenAnEntryTurns() throws {
+        let on = State(wrappedValue: false)
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            Text("Document").menuBar { Menu("View") { MenuItem("Grid").isOn(on.wrappedValue) }.id("view") }
+        }
+        defer { host.finish() }
+        host.settle { !host.menuBar.isEmpty }
+        let builds = host.menuBarBuildsForTesting
+
+        on.wrappedValue = true
+        host.settle { host.menuBarBuildsForTesting > builds }
+
+        XCTAssertEqual(host.menuBarBuildsForTesting, builds + 1, "built again for the check")
+    }
+
     /// The main menu is built again when an entry answers another element though it says the same: the page's Save
     /// standing in the place of the stack's carries the page's element in its identifier.
     @MainActor

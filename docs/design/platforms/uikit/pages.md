@@ -195,7 +195,9 @@ application's main menu - on an iPad its menu bar. One whose identity is a
 standard menu stands as a section at the end of UIKit's own menu of that
 identity (`UIMenu.Identifier.file`), one UIKit keeps none of where UIKit's
 would stand - View after Edit, Help after Window - and any other before
-Window. The main menu is built again whenever they say something else or an
-entry answers another element: every action carries its element's identifier
+Window. UIKit changes no built menu in place, so the main menu is built again
+whenever they show something else - a word, a check, a destructive mark, a
+picture, a shortcut - or an entry answers another element, as the host layer
+says them (`MenuEntry.Said`): every action carries its element's identifier
 (`actionIdentifier`), which UIKit keeps in the copies it makes, so a page's
 Save standing in the window's place with the same words still rebuilds it.

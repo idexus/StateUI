@@ -67,7 +67,7 @@ final class UIKitRenderer {
     var turns: RunLoopTurns?
 
     /// The menu bar as it was last built.
-    private var menuBarSaid = ""
+    private var menuBarSaid: [MenuEntry.Said] = []
 
     init(
         clock: (() -> Double)? = nil, preferences: UserDefaults = .standard,
@@ -308,15 +308,19 @@ final class UIKitRenderer {
         }
     }
 
-    /// Asks UIKit to build its main menu again where the page's menus say something else now or stand for other
-    /// elements: an entry standing in another's place with the same words answers another element.
+    /// Asks UIKit to build its main menu again where the page's menus show something else now - a word, a check, a
+    /// mark, a picture - or stand for other elements (`MenuEntry.Said`): UIKit changes no built menu in place.
     /// Design: docs/design/platforms/uikit/pages.md#menus
     private func rebuildMenuBarWhereItChanged() {
-        let said = UIKitMenus.said(menuBar, identified: true)
+        let said = pageMenus.map(\.said)
         guard said != menuBarSaid else { return }
         menuBarSaid = said
+        menuBarBuildsForTesting += 1
         UIMenuSystem.main.setNeedsRebuild()
     }
+
+    /// How many times UIKit was asked to build its main menu again.
+    private(set) var menuBarBuildsForTesting = 0
 
     /// The window the user is looking at: the key one, else the first.
     var userWindow: UIWindow? {
