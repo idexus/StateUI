@@ -316,7 +316,7 @@
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
     ) {
-        RaisedEvents.shared.raise(event.token, MemberValues.encode(repeat each value))
+        RaisedEvents.shared.raise(EventMember(event), MemberValues.encode(repeat each value))
     }
 
     /// Tells the core what this host realizes - its `Registry.realization` -

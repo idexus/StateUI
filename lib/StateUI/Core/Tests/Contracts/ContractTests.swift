@@ -374,11 +374,27 @@ final class ContractTests: XCTestCase {
         }
         defer { subscription.cancel() }
 
-        XCTAssertEqual(HostEvents.dispatch("Test.BatteryChanged", [.number(0.87), .bool(true)]), 1)
-        XCTAssertEqual(HostEvents.dispatch("Test.BatteryChanged", [.number(0.87)]), 1)
+        XCTAssertEqual(HostEvents.dispatch(EventMember(TestDevice.batteryChanged), [.number(0.87), .bool(true)]), 1)
+        XCTAssertEqual(HostEvents.dispatch(EventMember(TestDevice.batteryChanged), [.number(0.87)]), 1)
         stateUIRunJobs()
 
         XCTAssertEqual(heard.lines, ["battery 0.87 true"])
+    }
+
+    /// Two tiers may each name an event alike: a raise of one reaches its own subscribers, never the other's.
+    func testTwoTiersEventsOfOneNameAreHeardApart() {
+        let heard = Heard()
+        let mine = HostEvents.on(TestDevice.changed) { heard.lines.append("device") }
+        let theirs = HostEvents.on(TestSync.changed) { heard.lines.append("sync") }
+        defer {
+            mine.cancel()
+            theirs.cancel()
+        }
+
+        HostEvents.dispatch(EventMember(TestDevice.changed), [])
+        stateUIRunJobs()
+
+        XCTAssertEqual(heard.lines, ["device"])
     }
 
     // MARK: - Support
@@ -440,8 +456,18 @@ private enum TestDevice: ApplicationTier {
     static let battery = ElementAct<Self, Void, (Double, Bool)>("Test.Battery")
     static let copy = ElementAct<Self, String, Void>("Test.Copy")
     static let batteryChanged = ElementEvent<Self, (Double, Bool)>("Test.BatteryChanged")
+    static let changed = ElementEvent<Self, Void>("changed")
 
-    static let members: [any ContractMember] = [battery, copy, batteryChanged]
+    static let members: [any ContractMember] = [battery, copy, batteryChanged, changed]
+}
+
+/// Another tier of the application's, naming an event as the first one does.
+private enum TestSync: ApplicationTier {
+    static let name = "TestSync"
+
+    static let changed = ElementEvent<Self, Void>("changed")
+
+    static let members: [any ContractMember] = [changed]
 }
 
 /// The lamp's view: its node from its contract.

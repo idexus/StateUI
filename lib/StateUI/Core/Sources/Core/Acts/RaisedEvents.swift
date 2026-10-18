@@ -12,14 +12,14 @@ final class RaisedEvents: Sendable {
     static let shared = RaisedEvents()
 
     private struct Waiting {
-        var events: [(event: Event, values: [PropValue])] = []
+        var events: [(event: EventMember, values: [PropValue])] = []
         var booked = false
     }
 
     private let waiting = Mutex(Waiting())
 
     /// Queues one raise, on whatever thread raises it.
-    func raise(_ event: Event, _ values: [PropValue]) {
+    func raise(_ event: EventMember, _ values: [PropValue]) {
         let book = waiting.withLock { waiting in
             waiting.events.append((event, values))
             defer { waiting.booked = true }
