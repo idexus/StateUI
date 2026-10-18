@@ -54,6 +54,17 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(lamp.node.props["count"], .number(3))
     }
 
+    /// A property is kept only where the contract declares a property of that name: an event of the same name is
+    /// another member, so a property named like a button's event is left out of a button.
+    func testAPropertyNamedLikeAnEventItWearsIsLeftOut() {
+        let button = Button("Save").setValue(EchoContract.clicked, true)
+
+        let patch = Renders().render(button.id("save").node)
+
+        XCTAssertNil(patch.props["clicked"])
+        XCTAssertTrue(hasComplained("Button takes no clicked - its contract does not wear it"))
+    }
+
     /// A library element keeps only what its contract wears: a member another contract declares, written on it by
     /// the generic road, reaches no host - it is left out and said once - and what it wears stays.
     func testALibraryElementLeavesOutWhatItsContractDoesNotWear() {
@@ -459,6 +470,15 @@ private enum TestDevice: ApplicationTier {
     static let changed = ElementEvent<Self, Void>("changed")
 
     static let members: [any ContractMember] = [battery, copy, batteryChanged, changed]
+}
+
+/// A contract declaring a property under the name a button's event has.
+private enum EchoContract: Contract {
+    static let name = "TestEcho"
+
+    static let clicked = ElementProperty<Self, Bool>("clicked")
+
+    static let members: [any ContractMember] = [clicked]
 }
 
 /// Another tier of the application's, naming an event as the first one does.

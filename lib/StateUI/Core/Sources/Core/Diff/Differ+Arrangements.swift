@@ -70,12 +70,21 @@ extension Node {
         }
     }
 
-    /// The keys each element of the library's contract declares, its tiers' included.
+    /// The keys each element of the library's contract declares, its tiers' included - a property as a property
+    /// and an event as an event, so neither keeps the other's name.
     private static let declared: [NodeType: (props: Set<Prop>, events: Set<Event>)] = {
         var declared: [NodeType: (props: Set<Prop>, events: Set<Event>)] = [:]
         for contract in LibraryContracts.elements {
-            let names: [String] = contract.worn.flatMap { tier in tier.members.map { $0.name } }
-            declared[contract.nodeType] = (Set(names.map { Prop($0) }), Set(names.map { Event($0) }))
+            var props: Set<Prop> = []
+            var events: Set<Event> = []
+            for case let member as any DeclaredMember in contract.worn.flatMap({ $0.members }) {
+                switch member.facts.kind {
+                case .property: props.insert(Prop(member.name))
+                case .event: events.insert(Event(member.name))
+                case .act: break
+                }
+            }
+            declared[contract.nodeType] = (props, events)
         }
         return declared
     }()
