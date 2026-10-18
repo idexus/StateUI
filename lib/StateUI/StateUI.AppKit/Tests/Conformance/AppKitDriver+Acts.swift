@@ -282,7 +282,7 @@ extension AppKitDriver {
         let act = UserAct.dragAndDrop(onto: target, across: across)
         let native = element.native as? AppKitElement
         guard let source = native?.dragSource, let root = native?.view?.window?.contentView,
-              let drops = (root as? AppKitWindowContentView)?.drops ?? (root as? AppKitHitTestView)?.drops
+              let drops = (root as? AppKitWindowContentView)?.drops
         else { throw DriverCannot(act, on: element) }
         func middle(_ id: String) throws -> NSPoint {
             guard let view = (renderer?.runtime.tree.root?.first(id: .manual(id))?.native as? AppKitElement)?.view else {
@@ -302,7 +302,7 @@ extension AppKitDriver {
     /// AppKit's dragging destination tells the window's root.
     func dropFiles(_ names: [String], on view: NSView, _ element: MountedElement) throws {
         guard let root = view.window?.contentView,
-              let drops = (root as? AppKitWindowContentView)?.drops ?? (root as? AppKitHitTestView)?.drops
+              let drops = (root as? AppKitWindowContentView)?.drops
         else { throw DriverCannot(.dropFiles(names), on: element) }
         let files = names.map { Self.files.appendingPathComponent($0) }
         for file in files { try Data(file.lastPathComponent.utf8).write(to: file) }

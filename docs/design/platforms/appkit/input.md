@@ -124,8 +124,8 @@ and lets the press go to the session; the session tells the view it started
 and, wherever it ended, that it ended. A view taking drops registers
 nothing itself - a layout replaces its subviews as it arranges them, and a
 control is AppKit's own class. The window's root takes every drag that
-carries words - the window's content view, or a sheet's page - and finds the
-view under it as AppKit finds a destination: its hit test, then that view's
+carries words - the content view a window and a sheet stand on alike - and
+finds the view under it as AppKit finds a destination: its hit test, then that view's
 ancestors, among the views whose elements take drops, read as the drag
 comes. The view under the drag hears it come and go, and the drop with its
 words; the host layer's rule makes over once and no leave after a drop. The

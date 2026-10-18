@@ -18,6 +18,9 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
     /// The sheet's first responder, watched for its owner.
     private var focusWatch: NSKeyValueObservation?
 
+    /// The sheet's root, a window's: the page laid in it, its drags, and the frames its layout reports.
+    private let content = AppKitWindowContentView()
+
     init(node: AppKitElement, owner: AppKitWindowController) {
         element = node.element
         stateUIOwner = owner
@@ -31,6 +34,9 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
         // Tab and Shift-Tab go through the views as they stand on screen: AppKit works the loop out.
         window.autorecalculatesKeyViewLoop = true
         super.init(window: window)
+        window.contentView = content
+        content.drops = AppKitDrops { [weak host = node.host] in host?.dropTakers() ?? [:] }
+        content.reportsLaidOut = { [weak host = node.host] in host?.runtime.frames.reportLaidOut() ?? false }
         window.delegate = self
         window.takesKey = { [weak owner, weak window] key, modifiers in
             owner?.takesKey(key, modifiers, in: window) ?? false
@@ -49,12 +55,7 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
         element = node.element
         guard let window else { return }
 
-        if let content = node.presentablePageView, window.contentView !== content {
-            content.frame = NSRect(origin: .zero, size: window.contentLayoutRect.size)
-            content.autoresizingMask = [.width, .height]
-            window.contentView = content
-            (content as? AppKitHitTestView)?.drops = AppKitDrops { [weak host = node.host] in host?.dropTakers() ?? [:] }
-        }
+        content.set(page: node.presentablePageView, overlays: [])
         window.title = node.element.visiblePage?.value(.title)?.string ?? node.core.applicationName
     }
 
