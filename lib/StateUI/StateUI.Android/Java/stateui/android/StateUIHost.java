@@ -65,6 +65,12 @@ final class StateUIHost {
     /** The user let go of a slider's thumb. */
     static native void dragCompleted(long view);
 
+    /**
+     * What a field bounded to {@code bound} characters holds of {@code text} - the host layer's count of characters,
+     * not of UTF-16 units; null where it holds them as typed, or {@code composing} while an input method composes some.
+     */
+    static native String heldWords(String text, int bound, boolean composing);
+
     /** A field's words changed; {@code text} is all of them, {@code composing} while an input method composes some. */
     static native void textChanged(long view, String text, boolean composing);
 

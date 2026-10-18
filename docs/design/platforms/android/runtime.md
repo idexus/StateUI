@@ -129,7 +129,9 @@ nobody performs. The time of day, the zone and a zone's distance from UTC are
 the platform's, each one call; the screen reader is told through the window's
 root; the focus is put on or taken off the view the act names, a text field
 bringing up the keyboard. A question for the user - an alert, a confirmation,
-a choice of actions, a prompt - is the platform's own dialog: its call waits
+a choice of actions, a prompt - is the platform's own dialog, a prompt's field
+holding its bound in characters by the host layer's rule - asked of it as the
+words change, as every field's - not in UTF-16 units: its call waits
 under a ticket the dialog hands back as the user answers, and a dialog
 dismissed any other way answers that it was not accepted. A script run in a
 web view waits the same way, until the page answers. The acts are the

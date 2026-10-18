@@ -13,6 +13,7 @@ final class AndroidActTests: XCTestCase {
             ("testTheClockAndTheZoneAnswerFromThePlatform", testTheClockAndTheZoneAnswerFromThePlatform),
             ("testFocusPutsTheKeyboardOnTheAimedField", testFocusPutsTheKeyboardOnTheAimedField),
             ("testAPromptsKeyboardIsAFieldsOfItsPurpose", testAPromptsKeyboardIsAFieldsOfItsPurpose),
+            ("testAPromptHoldsItsBoundInCharacters", testAPromptHoldsItsBoundInCharacters),
         ]
     }
 
@@ -60,6 +61,32 @@ final class AndroidActTests: XCTestCase {
                 TestWindow.run(for: 10)
                 return fieldType() == -1
             }
+        }
+    }
+
+    /// A prompt's field holds its bound in characters, as every field does: an emoji with its skin tone is one.
+    func testAPromptHoldsItsBoundInCharacters() throws {
+        try onMainActor {
+            let answers = Received<String>()
+            let host = AndroidRenderer.running {
+                Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                    answers.values.append(
+                        try await Dialogs.prompt("Name", accept: "OK", cancel: "No", maximumLength: 3) ?? "nothing")
+                }
+            }
+            try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
+            host.settle { Java.callStaticInt(AndroidDriver.dialogs, Self.fieldInputType) != -1 }
+
+            XCTAssertTrue(Java.frame {
+                Java.callStaticBool(
+                    AndroidDriver.dialogs, AndroidDriver.answer, .object(Java.string("OK")),
+                    .object(Java.string("a👍🏽bc")))
+            })
+            host.settle {
+                TestWindow.run(for: 10)
+                return !answers.values.isEmpty
+            }
+            XCTAssertEqual(answers.values, ["a👍🏽b"])
         }
     }
 
