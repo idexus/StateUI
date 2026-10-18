@@ -29,6 +29,19 @@ private struct ListPage: View {
     }
 }
 
+/// How many items the shrinking list shows, which a test lowers.
+private enum Shrinking {
+    nonisolated(unsafe) static var count = 10
+}
+
+private struct ShrinkingApplication: Application {
+    var body: some Scene { WindowGroup { ShrinkingPage() } }
+}
+
+private struct ShrinkingPage: View {
+    var body: some View { ItemsView(0..<Shrinking.count) { Text("\($0)") } }
+}
+
 /// A native cell as the host layer holds it.
 @MainActor
 private final class Cell: ItemsHolding {
@@ -139,6 +152,27 @@ final class ItemsCellsTests: XCTestCase {
 
     /// A second cell asked for an entry takes it from the first, which shows nothing; the first ending showing lets
     /// nothing go - only the cell holding the entry does.
+    /// An entry the list no longer has is let go of by the cell holding it: the cells keep nothing of what went.
+    func testACellOfAnEntryThatWentLetsItGo() throws {
+        Shrinking.count = 10
+        stateUIUseApp(ShrinkingApplication())
+        let runtime = HostRuntime.still()
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let cells = ItemsCells(try XCTUnwrap(runtime.tree.root?.first(type: .itemsView)), in: runtime)
+        cells.takeEntries()
+        let cell = Cell()
+        cells.hold("7", in: cell)
+
+        Shrinking.count = 5
+        Renderer.shared.setNeedsRender()
+        runtime.pump.turn()
+        cells.takeEntries()
+
+        XCTAssertNil(cells.holding(of: "7"))
+        XCTAssertNil(cell.identity, "the cell let the entry go")
+    }
+
     func testOnlyTheCellHoldingAnEntryLetsItGo() {
         let (first, second) = (Cell(), Cell())
         cells.hold("5", in: first)

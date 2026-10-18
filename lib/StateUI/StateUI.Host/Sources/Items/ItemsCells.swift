@@ -66,6 +66,11 @@
         }
         held = held.filter { positions[$0] != nil }
         built = built.filter { positions[$0] != nil }
+        // A cell holding an entry that went lets it go: the cells keep nothing of what the list no longer has.
+        for (identity, holding) in holders.sorted(by: { $0.key < $1.key }) where positions[identity] == nil {
+            if holding.identity == identity { holding.letGo() }
+            holders[identity] = nil
+        }
         return ItemsChanges(from: old, to: identities)
     }
 
