@@ -243,7 +243,8 @@
     /// - Parameter type: the parent's node type.
     /// - Returns: the children's node types.
     public func childTypes(of type: NodeType) -> [NodeType] {
-        entries[type]?.children.map(\.type) ?? []
+        // A closure, not a key path: one written in a generic type is made anew at every call.
+        entries[type]?.children.map { $0.type } ?? []
     }
 
     /// Hands the view of an element of `type` every child of each contract its registration draws itself, as

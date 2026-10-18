@@ -89,7 +89,7 @@ extension LayoutEngine {
         var high: Double { focus?.high ?? 0 }
 
         /// The ways the hand moves the run - every way for a pan, axes moved across and down - and whether it does.
-        var ways: Set<LayoutInput.Axis> { Set(hands.compactMap(\.way)) }
+        var ways: Set<LayoutInput.Axis> { Set(hands.compactMap { $0.way }) }
         var moves: Bool { !ways.isEmpty }
         var pans: Bool { ways.count > 1 }
 

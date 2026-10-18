@@ -137,7 +137,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     /// What is wrong with the axes as declared, as the author is told it.
     private var complaints: [String] {
         let blends = curve != nil && !axes.contains { $0.keyframes != nil }
-        return axes.compactMap(\.complaint) + (blends
+        return axes.compactMap { $0.complaint } + (blends
             ? ["A LayoutEngine was given an interpolation and no axis with keyframes: nothing is blended."]
             : [])
     }
@@ -541,7 +541,8 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     private var run: Run {
         let items = Array(source.items)
         let path = source.path
-        let hands = axes.compactMap(\.hand)
+        // Closures, not key paths: one written in a generic type is made anew at every call.
+        let hands = axes.compactMap { $0.hand }
 
         return Run(
             items: items,

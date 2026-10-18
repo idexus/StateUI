@@ -13,10 +13,10 @@ extension LayoutEngine.Run {
         let keyed = hands.filter { ($0.knots?.count ?? 0) > 1 }
         guard !keyed.isEmpty else { return fitted(arithmetic(room, phase, from)) }
 
-        let blended = Set(keyed.map(\.index))
+        let blended = Set(keyed.map { $0.index })
         let lanes = Self.lanes(of: phase)
         kept.stand(on: LayoutPoses.Ground(
-            room: room, from: readsFrom ? Self.lanes(of: from) : [], followed: followed.map(\.stamp),
+            room: room, from: readsFrom ? Self.lanes(of: from) : [], followed: followed.map { $0.stamp },
             live: lanes.indices.filter { !blended.contains($0) }.map { lanes[$0] }))
         return pose(in: room, at: phase, from: from, blending: keyed[...])
     }

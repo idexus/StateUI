@@ -35,7 +35,7 @@ extension LayoutEngine.Run {
         _ poses: [Placement], after memory: LayoutShown<Phase>, at now: Double, phase: Phase, from: Phase, room: Rect,
         reducesMotion: Bool
     ) -> Bool {
-        let identities = slots.map(\.identity)
+        let identities = slots.map { $0.identity }
         let motion = law.resolved(against: .standard)
         let still = reducesMotion || motion.isNothing
 
