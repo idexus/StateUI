@@ -28,4 +28,17 @@ final class UIKitMapViewTests: XCTestCase {
                 "UIKitMapView answers \(question) for MapKit's recognizers")
         }
     }
+
+    /// A tap on the map waits for a double tap to fail: a double tap - MapKit's zoom - is no two taps on the map.
+    @MainActor
+    func testATapOnTheMapWaitsForADoubleTapToFail() throws {
+        let map = UIKitMapView()
+        let tap = try XCTUnwrap(map.gestureRecognizers?.first { $0.delegate !== map && $0 is UITapGestureRecognizer })
+        let double = UITapGestureRecognizer()
+        double.numberOfTapsRequired = 2
+        let single = UITapGestureRecognizer()
+
+        XCTAssertEqual(tap.delegate?.gestureRecognizer?(tap, shouldRequireFailureOf: double), true)
+        XCTAssertNotEqual(tap.delegate?.gestureRecognizer?(tap, shouldRequireFailureOf: single), true)
+    }
 }
