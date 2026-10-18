@@ -222,7 +222,7 @@ extension AppKitElement: PlacedView {
 
 extension AppKitRenderer: HostPresenter {
     func presentRendered(touchedChrome: Bool) {
-        if touchedChrome { synchronizeWindows() } else { runtime.displayCycle.hold() }
+        if touchedChrome { synchronizeWindows() }
     }
 
     func presentFrame(movedChrome: Bool) {

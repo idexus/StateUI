@@ -31,9 +31,16 @@ node's key and type, its properties, bound states and handlers, and its
 children in order. It applies a patch in one fixed order: the standing values
 of what changes are read first; then the properties, events and bindings;
 then the children, by key; then each changed property's animation starts, from
-where it stands; and last its native half presents it all. A child a sparse
-patch names but the element does not hold, or holds as another type, is a
-drift: it is refused, and nothing is mounted from it.
+where it stands; and last its native half presents it all. An element a patch
+changes nothing of - a child a new arrangement names for its order alone, a
+list's rows as the next ones come - asks nothing of its native half: no value,
+handler, child or motion of it changed. An element being made has nothing
+running to cut short: it receives as animations only the values it asks to
+animate and those a state drives, whose channel their first reading opens.
+After a render the frame clock is held once for whatever it set moving
+(`DisplayCycle.presentStateChannels`). A child a sparse patch names but the
+element does not hold, or holds as another type, is a drift: it is refused,
+and nothing is mounted from it.
 
 ## The native half
 
@@ -112,9 +119,13 @@ its measure: the run moves its children without the layout measuring again.
 A frame presents what moved on each element touched, deepest first, and says
 what that asks of the elements around it (`FrameImpact`): the element
 arranges its children again where a value moved that is more than its own
-run of places - a layout engine's run is put by the element's presentation,
-each host setting it on its layers view, so a run moving every frame builds
-no child's layout item again; a child whose place moved arranges its parent,
+run of places and what is drawn over it - a layout engine's run is put by the
+element's presentation, each host setting it on its layers view, so a run
+moving every frame builds no child's layout item again; its opacity, its
+drawing and its transform (`drawnOverProperties`) are read by nothing it
+holds, so a row fading in arranges none of its words, while a text's colour
+reaches its runs, which a host writes as it arranges them; a child whose
+place moved arranges its parent,
 passed up through an element with no view; a window's chrome is composed
 again where it shows what moved (`WindowChrome.follows`).
 
@@ -193,7 +204,8 @@ behind it, its lines, whether it follows the user's text size - in the
 contract's terms (`TextLook`). A run's look stands over its label's: where the
 run says nothing, the label's says it, and a run scales only where neither it
 nor its label says no. A host turns the finished look into its toolkit's
-attributes and nothing more.
+attributes and nothing more. A label shown with no runs and given none
+writes nothing again: its own words stand already.
 
 An element showing words - a label, a button, a radio button - reads the
 text tiers the same way on every host (`TextMembers`): its words in their

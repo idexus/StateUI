@@ -132,16 +132,20 @@
         let sceneBegan: ContinuousClock.Instant?
         let previouslyShown: [MountedElement]
         let changed: Set<Prop>
+        let received: Set<Prop>
         let standing: [Prop: HostValue]
+        let untouched: Bool
 
         init(
             sceneBegan: ContinuousClock.Instant?, previouslyShown: [MountedElement], changed: Set<Prop>,
-            standing: [Prop: HostValue]
+            received: Set<Prop>, standing: [Prop: HostValue], untouched: Bool
         ) {
             self.sceneBegan = sceneBegan
             self.previouslyShown = previouslyShown
             self.changed = changed
+            self.received = received
             self.standing = standing
+            self.untouched = untouched
         }
     }
 
@@ -159,7 +163,12 @@
             changed.formUnion(replacement.keys)
         }
 
-        let standing = Dictionary(uniqueKeysWithValues: changed.compactMap { property in
+        // Nothing of an element being made runs to be cut short: it receives what it animates and what a state drives,
+        // whose channel its first reading opens.
+        var bound: Set<Prop> = []
+        if case .replace(let driven) = patch.driven { bound = Set(driven.keys) }
+        let received = described ? changed : changed.filter { patch.transitions[$0] != nil || bound.contains($0) }
+        let standing = Dictionary(uniqueKeysWithValues: received.compactMap { property in
             standingValue(property, target: patch.properties[property]).map { (property, $0) }
         })
 
@@ -201,7 +210,11 @@
         if case .unchanged = patch.children { childrenChanged = false } else { childrenChanged = true }
         if described, !changed.isEmpty || eventsReplaced { changedByRender(changed) }
 
-        return Applying(sceneBegan: sceneBegan, previouslyShown: previouslyShown, changed: changed, standing: standing)
+        // A child a new arrangement names for its order alone: nothing of it changed.
+        let untouched = described && changed.isEmpty && !eventsReplaced && patch.motion == nil && !childrenChanged
+        return Applying(
+            sceneBegan: sceneBegan, previouslyShown: previouslyShown, changed: changed, received: received,
+            standing: standing, untouched: untouched)
     }
 
     /// The children the patch arranges or changes, made or applied.
@@ -249,7 +262,7 @@
     @inline(never)
     private func settled(_ patch: HostPatch, _ applying: Applying, tree: MountedTree) {
         let changed = applying.changed
-        for property in changed.sorted() {
+        for property in applying.received.sorted() {
             let hasDrivenPresentation = driven[property].map { $0.mode != .in } ?? false
             tree.receiveProperty(
                 mount: mount,
@@ -270,9 +283,9 @@
         }
         framesRead = driven[.frame] != nil || events[.frameChanged] != nil
             || held.contains { $0.framesRead }
-        // Made in a disabled branch, it presents an `isEnabled` it never wrote.
+        // Made in a disabled branch, it presents an `isEnabled` it never wrote; untouched, it presents nothing.
         let presenting = !described && parent?.isEffectivelyEnabled == false ? changed.union([.isEnabled]) : changed
-        native.applied(changed: presenting, wasDescribed: described)
+        if !applying.untouched { native.applied(changed: presenting, wasDescribed: described) }
         described = true
         reconcilePresentation(from: applying.previouslyShown)
 
@@ -576,10 +589,10 @@
     /// Design: docs/design/host/runtime.md#one-frame
     private func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
         native.presentFrame(changed)
+        let moved = changed.subtracting(ownPlacementRun)
         return FrameImpact(
-            arrangesChildren: !changed.subtracting(ownPlacementRun).isEmpty,
-            arrangement: !native.presentsView
-                || !changed.subtracting(ownPlacementRun).isDisjoint(with: Self.arrangedProperties),
+            arrangesChildren: !moved.subtracting(Self.drawnOverProperties).isEmpty,
+            arrangement: !native.presentsView || !moved.isDisjoint(with: Self.arrangedProperties),
             windowChrome: WindowChrome.follows(type, changed: changed))
     }
 

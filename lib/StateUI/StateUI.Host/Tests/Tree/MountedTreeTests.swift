@@ -317,6 +317,55 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(log.arranged, ["layout"], "a padding moved arranges them")
     }
 
+    /// A CHILD A NEW ARRANGEMENT KEEPS AS IT WAS IS NOT PRESENTED AGAIN: a list's next rows name the rows it keeps for
+    /// their order alone; the new one and the list are.
+    @MainActor
+    func testAChildANewArrangementKeepsAsItWasIsNotPresentedAgain() {
+        let (tree, log) = Self.tree(viewless: [])
+        tree.apply(Self.stack("stack", ["a", "b"]), complete: true)
+        log.applied.removeAll()
+        log.arranged.removeAll()
+
+        tree.apply(Self.stack("stack", ["b", "a", "c"]), complete: false)
+
+        XCTAssertEqual(log.applied, ["c", "stack"])
+    }
+
+    /// AN ELEMENT MADE STARTS NO ANIMATION IT DOES NOT ASK FOR: nothing of a new element runs to be cut short, so a
+    /// row of a list mounted holds no frame clock for each of its values.
+    @MainActor
+    func testAnElementMadeStartsNoAnimationItDoesNotAskFor() {
+        let (tree, _) = Self.tree(viewless: [])
+        var asked = 0
+        tree.onAnimation = { asked += 1 }
+        var label = HostPatch(id: .manual("label"), type: .text)
+        label.properties = [.text: .string("7"), .width: .number(90), .opacity: .number(0.5)]
+        var row = HostPatch(id: .manual("row"), type: .hStack)
+        row.properties = [.spacing: .number(12)]
+        row.children = .arranged([label])
+
+        tree.apply(row, complete: true)
+
+        XCTAssertEqual(asked, 0, "no value of a new row is animated")
+    }
+
+    /// WHAT IS DRAWN OVER AN ELEMENT MOVED ARRANGES NOTHING AGAIN: its opacity - a row fading in - its drawing and its
+    /// transform are read by nothing it holds.
+    @MainActor
+    func testWhatIsDrawnOverAnElementMovedArrangesNothingAgain() {
+        let (tree, log) = Self.tree(viewless: [])
+        var row = HostPatch(id: .manual("row"), type: .hStack)
+        row.children = .arranged([HostPatch(id: .manual("a"), type: .text), HostPatch(id: .manual("b"), type: .text)])
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged([row])
+        tree.apply(stack, complete: true)
+        let (rowMount, textMount) = (tree.root!.children[0].mount, tree.root!.children[0].children[0].mount)
+
+        log.arranged.removeAll()
+        tree.present(states: [:], properties: [rowMount: [.opacity, .rotation, .drawing], textMount: [.opacity]])
+        XCTAssertEqual(log.arranged, [], "drawn over them alone")
+    }
+
     /// A row says what it holds in reading order: each element's words apart by commas, a label's runs whole, a label
     /// of its own standing for all it holds, and nothing of what is hidden.
     @MainActor
@@ -469,7 +518,7 @@ final class MountedTreeTests: XCTestCase {
         tree.present(states: [800: .lanes([0.5])], properties: [:])
 
         XCTAssertEqual(tree.frameVisits - visits, 1, "the card alone")
-        XCTAssertEqual(log.arranged, ["card"])
+        XCTAssertEqual(log.arranged, [], "its opacity arranges nothing")
     }
 
     /// A bound `zIndex` restacks its grid in the frame that moved it, and arranges it once; a frame that

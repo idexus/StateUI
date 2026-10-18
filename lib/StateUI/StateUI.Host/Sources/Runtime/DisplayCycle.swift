@@ -113,10 +113,12 @@
         present()
     }
 
-    /// Presents the state channels on their own, after a render attached new ones.
+    /// Presents the state channels on their own, after a render attached new ones, and holds the clock for what the
+    /// render set moving.
     public func presentStateChannels() {
         collectStateChannels()
         present()
+        hold()
     }
 
     /// `now`, or the cycle's latest time where `now` stands before it.

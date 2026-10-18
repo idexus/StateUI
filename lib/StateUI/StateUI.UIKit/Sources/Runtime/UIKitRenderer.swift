@@ -375,10 +375,7 @@ final class UIKitRenderer {
 
 extension UIKitRenderer: HostPresenter {
     func presentRendered(touchedChrome: Bool) {
-        guard touchedChrome else {
-            tellStandingPhases()
-            return runtime.displayCycle.hold()
-        }
+        guard touchedChrome else { return tellStandingPhases() }
         synchronizeWindows()
     }
 
