@@ -94,6 +94,34 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertEqual(scroll.offset, .zero)
     }
 
+    /// A layout moves no scroller standing within what it reaches, nor one the user moves: a label changing under a
+    /// throw leaves the throw running. (AppKit keeps a clip's origin set by a program within reach, so the stretch
+    /// past an edge only the user's scroll makes is walked by hand.)
+    @MainActor
+    func testALayoutLeavesTheUsersScrollingAlone() {
+        let scroll = AppKitScrollView()
+        scroll.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
+        scroll.setItems([AppKitLayoutItem(view: FixedScrollTestView(width: 80, height: 500))])
+        scroll.apply(
+            orientation: ScrollOrientation.vertical.rawValue, padding: NSEdgeInsets(), verticalBarVisibility: 0,
+            horizontalBarVisibility: 0, offset: nil)
+        scroll.layoutSubtreeIfNeeded()
+        let moves = scroll.programmaticMovesForTesting
+
+        scroll.contentView.scroll(to: NSPoint(x: 0, y: 200))
+        scroll.needsLayout = true
+        scroll.layoutSubtreeIfNeeded()
+        XCTAssertEqual(scroll.programmaticMovesForTesting, moves, "a scroller within reach is not scrolled again")
+
+        NotificationCenter.default.post(name: NSScrollView.willStartLiveScrollNotification, object: scroll)
+        scroll.contentView.scroll(to: NSPoint(x: 0, y: 260))
+        scroll.needsLayout = true
+        scroll.layoutSubtreeIfNeeded()
+        XCTAssertEqual(scroll.contentView.bounds.origin.y, 260, "the throw goes on where it stands")
+        XCTAssertEqual(scroll.programmaticMovesForTesting, moves, "nor is one the user moves")
+        NotificationCenter.default.post(name: NSScrollView.didEndLiveScrollNotification, object: scroll)
+    }
+
     @MainActor
     func testOrientationAndBarVisibilityMapToNativeScrolling() {
         let scroll = AppKitScrollView()
