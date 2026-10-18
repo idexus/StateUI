@@ -107,8 +107,9 @@ name is spelled once, where a contract declares its member; the library's
 tokens (`Tokens.swift`, for the hosts, behind `@_spi(Host)`) are
 made from the members, and a guard names any source that spells a name out
 instead. A node type is the one token a contract spells, as a literal. Node
-types, properties and events compare by name, because the differ walks
-properties and numbers handlers in name order.
+types, properties and events are ordered by name, because the differ walks
+properties and numbers handlers in name order, and equal where their names
+are ([a key is a number](#a-key-is-a-number)).
 
 An application's own node type can be one no host knows; the host draws an
 unknown type as a red marker rather than failing, which keeps a lagging host
@@ -116,6 +117,18 @@ visible without hiding the rest of the interface. An application's act shares
 the one vocabulary with the library's, and the library's case is consulted
 first, so a registration can never shadow it; prefixing an application's names
 with its own keeps the two sets apart.
+
+## A key is a number
+
+A token's name stands for a number in the process (`NameNumber`), given the
+first time a key of that name is made: two keys are equal where their numbers
+are, and a key hashes its number. Every element's values, handlers and type
+are looked up by key on every render and every frame, and a name would be
+hashed and compared byte by byte at each; a number is one word. A contract's
+member makes its key once, as it is declared (`token`), so writing and
+reading a member makes no key again. The order stays the name's: the differ
+walks properties and numbers handlers in name order, whatever numbers the
+names stood for in this run.
 
 ## Realizations
 

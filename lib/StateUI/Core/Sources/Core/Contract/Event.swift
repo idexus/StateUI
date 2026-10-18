@@ -11,9 +11,23 @@ public struct Event: Hashable, Comparable, Sendable, ExpressibleByStringLiteral,
     /// The event's stable StateUI name.
     public let name: String
 
+    /// The name's number in this process (`NameNumber`): what the key is hashed and compared by.
+    private let number: Int32
+
+    /// Whether two keys are one name.
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.number == rhs.number
+    }
+
+    /// The name's number, hashed.
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(number)
+    }
+
     /// An event from its name - what a member's token is made from.
     public init(_ name: String) {
         self.name = name
+        number = NameNumber.of(name)
     }
 
     /// The literal form, so a name reads plainly where an event is compared:

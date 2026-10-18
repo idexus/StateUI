@@ -56,8 +56,9 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
         self.cleared = cleared
         self.moves = moves
         self.remakes = remakes
+        token = Prop(name)
     }
 
-    /// The key the property crosses the boundary under.
-    @_spi(Host) public var token: Prop { Prop(name) }
+    /// The key the property crosses the boundary under, made once.
+    @_spi(Host) public let token: Prop
 }

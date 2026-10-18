@@ -19,8 +19,9 @@ public struct ElementAct<Owner: Contract, Arguments, Answer>: ContractMember {
     /// - Parameter name: its name - the name of the static member holding it.
     public init(_ name: String) {
         self.name = name
+        token = Act(name)
     }
 
-    /// The key the act crosses the boundary under.
-    @_spi(Host) public var token: Act { Act(name) }
+    /// The key the act crosses the boundary under, made once.
+    @_spi(Host) public let token: Act
 }
