@@ -143,6 +143,8 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
             // Design: docs/design/views/modifiers.md#slot-children
             $0.children.removeAll { $0.type == .buttonMenu }
             $0.children.append(Node(contract: ButtonMenuContract.self, children: entries().map { $0.node }))
+            // Its kind with it: a menu saying none takes no kind an earlier one said.
+            $0.props[ButtonContract.menuKind.token] = nil
         }
         return kind == .automatic ? menu : menu.setValue(ButtonContract.menuKind, kind)
     }

@@ -66,7 +66,10 @@ them.
 They sit after whatever the view lays out, so the view's own children keep the
 positions the differ gave them, and the host finds each by type and leaves it
 out of the arrangement. The slot a `.contextMenu` appended stays last: a
-modifier that writes other children - markers - puts them in front of it.
+modifier that writes other children - markers - puts them in front of it. A
+view has one context menu and a button one menu: written again, each stands
+in for the last, a button's kind of menu included, and a text's runs written
+after a slot replace only the runs.
 
 ## Motion is per view
 

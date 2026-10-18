@@ -608,6 +608,15 @@ final class ControlTests: XCTestCase {
     /// registrations, transitions and handlers its element's contract - its
     /// own members and its tiers' - declares, and nothing a host would have to
     /// guess at.
+    /// A menu written again stands in for the last, all of it: a button's kind of menu, and a view's context menu.
+    func testAMenuWrittenAgainStandsInForTheLast() {
+        let button = Button("Share").menu(.held) { MenuItem("Mail") }.menu { MenuItem("Message") }.node
+        XCTAssertNil(button.props[ButtonContract.menuKind.token], "the second menu says no kind, so none stands")
+
+        let text = Text("Row").contextMenu { MenuItem("Copy") }.contextMenu { MenuItem("Paste") }.node
+        XCTAssertEqual(text.children.filter { $0.type == ContextMenuContract.nodeType }.count, 1)
+    }
+
     /// A picker opened by a state is closed by the user into that state: `isOpen($x)` goes both ways.
     func testAPickerClosedByTheUserWritesItsState() {
         let showing = State(wrappedValue: true)
