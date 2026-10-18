@@ -36,11 +36,17 @@ enum StateLaw {
     }
 
     /// And back.
+    /// Lanes that say no law - too few, or numbers no whole one is near - read as the plainest, never a trap.
     static func motion(of lanes: [Double]) -> Motion {
+        let length = lanes.count > 1 ? Int(nearest: lanes[1]).map { max($0, 0) } ?? 0 : 0
+        let third = lanes.count > 2 ? lanes[2] : 0
+
         switch lanes.first ?? 0 {
         case 1: return .inherited
-        case 2: return .eased(.milliseconds(Int(max(lanes[1], 0))), Easing(rawValue: Int32(lanes[2])) ?? .cubicOut)
-        case 3: return .spring(response: .milliseconds(Int(max(lanes[1], 0))), damping: lanes[2])
+        case 2 where lanes.count > 2:
+            let curve = Int(nearest: third).flatMap { Int32(exactly: $0) }.flatMap(Easing.init(rawValue:))
+            return .eased(.milliseconds(length), curve ?? .cubicOut)
+        case 3 where lanes.count > 2: return .spring(response: .milliseconds(length), damping: third)
         case 4: return .custom
         default: return Motion.none
         }

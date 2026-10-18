@@ -23,6 +23,15 @@ final class MotionTests: XCTestCase {
 
     // ---- What travels -------------------------------------------------------
 
+    /// A law read back from lanes that are no law - not a number, past any whole number, too few - is the plainest
+    /// law there is, never a trap.
+    func testALawReadFromLanesThatAreNoneStopsNothing() {
+        XCTAssertEqual(StateLaw.motion(of: [2, .nan, .nan]), .eased(.milliseconds(0), .cubicOut))
+        XCTAssertEqual(StateLaw.motion(of: [3, .infinity, 0.5]), .spring(response: .milliseconds(0), damping: 0.5))
+        XCTAssertEqual(StateLaw.motion(of: [2]), Motion.none)
+        XCTAssertEqual(StateLaw.motion(of: [2, 300, 4]), .eased(.milliseconds(300), Easing(rawValue: 4) ?? .cubicOut))
+    }
+
     func testAChangedNumberTravelsAtTheApplicationsMotion() {
         let renders = Renders()
 
