@@ -119,6 +119,7 @@ final class AppKitDriver: HostDriver {
         self.renderer = renderer
         Self.emptyFiles()
         renderer.fileToolkit.holdsLaunchesForTesting = true
+        renderer.actToolkit.announcedForTesting = []
         AppKitRestorationBroker.shared.host = renderer
         for window in restorable { Self.restore(window) }
         renderer.startForTesting()

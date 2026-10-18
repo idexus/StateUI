@@ -20,8 +20,8 @@ final class AppKitActToolkit: ActToolkit {
     /// The question showing now, where one is.
     private(set) var showing: AppKitQuestion?
 
-    /// What the host told the screen reader, in order.
-    private(set) var announcedForTesting: [String] = []
+    /// What the host told the screen reader, in order, where a test asked for it with `[]`; nil keeps nothing.
+    var announcedForTesting: [String]?
 
     init(renderer: AppKitRenderer) {
         self.renderer = renderer
@@ -63,7 +63,7 @@ final class AppKitActToolkit: ActToolkit {
 
     /// Tells the screen reader `words`, now, over whatever it was saying.
     func announce(_ words: String) {
-        announcedForTesting.append(words)
+        announcedForTesting?.append(words)
         NSAccessibility.post(
             element: renderer.userWindow ?? NSApp as Any, notification: .announcementRequested,
             userInfo: [.announcement: words, .priority: NSAccessibilityPriorityLevel.high.rawValue])

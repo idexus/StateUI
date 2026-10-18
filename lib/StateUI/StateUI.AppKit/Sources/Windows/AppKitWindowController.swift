@@ -322,9 +322,6 @@ final class AppKitWindowController: NSWindowController {
 }
 
 extension AppKitWindowController {
-    /// A key equivalent no view took choosing the bar's item stating it (`KeyboardShortcuts`): AppKit holds no
-    /// shortcut on a toolbar's item. A button's and a menu bar entry's are AppKit's own.
-    /// Design: docs/design/types/keyboard.md#on-each-platform
     /// A key a view takes, pressed in this window or a sheet over it, handed to that view (`KeyPresses`): out from the
     /// view holding the keyboard, else from the page in front. Whether one took it.
     func takesKey(_ key: String, _ modifiers: NSEvent.ModifierFlags, in window: NSWindow?) -> Bool {
@@ -338,6 +335,9 @@ extension AppKitWindowController {
             pressed.key, modifiers: pressed.modifiers, focused: holder, front: presentation.frontPage, in: runtime)
     }
 
+    /// A key equivalent no view took choosing the bar's item stating it (`KeyboardShortcuts`): AppKit holds no
+    /// shortcut on a toolbar's item. A button's and a menu bar entry's are AppKit's own.
+    /// Design: docs/design/types/keyboard.md#on-each-platform
     func choosesABarItem(by event: NSEvent) -> Bool {
         guard let element, let runtime = host?.runtime,
               let shortcut = AppKitKeys.shortcut(

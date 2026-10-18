@@ -19,7 +19,7 @@ final class AppKitFileToolkit: FileToolkit {
     /// Whether a launch is only recorded, never handed to macOS: a test's.
     var holdsLaunchesForTesting = false
 
-    /// What the host handed macOS to launch, in order: an address as written, a file by its path.
+    /// What the host held of a test's launches, in order: an address as written, a file by its path.
     private(set) var launchedForTesting: [String] = []
 
     init(renderer: AppKitRenderer) {
@@ -66,8 +66,8 @@ final class AppKitFileToolkit: FileToolkit {
     /// Hands `url` to macOS, which opens it in the application it gives it; `answered` hears whether one took it -
     /// never in the turn that asked.
     private func launch(_ url: URL?, as written: String, answered: @escaping (Bool) -> Void) {
-        if url != nil { launchedForTesting.append(written) }
         let holds = holdsLaunchesForTesting
+        if holds, url != nil { launchedForTesting.append(written) }
         Task { @MainActor in
             guard let url else { return answered(false) }
             if holds { return answered(true) }

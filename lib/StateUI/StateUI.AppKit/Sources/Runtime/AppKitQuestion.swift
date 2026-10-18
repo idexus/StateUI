@@ -35,7 +35,7 @@ final class AppKitQuestion {
             add(question.accept, accepts: true)
         case .confirm, .prompt:
             add(question.accept, accepts: true)
-            add(question.cancel ?? "Cancel", accepts: false)
+            if let cancel = question.cancel { add(cancel, accepts: false) }
         case .chooseAction:
             // A choice answers the caption pressed, its cancel included.
             for choice in question.choices { add(choice, accepts: true) }
