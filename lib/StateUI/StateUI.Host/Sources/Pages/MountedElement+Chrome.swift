@@ -38,6 +38,16 @@ extension MountedElement {
         (barValue(.barBackgroundColor), barValue(.barForegroundColor))
     }
 
+    /// The tabbed views this arrangement of pages shows, itself first where it is one, through its pages and the
+    /// arrangements in them: each wears the colours of the bar on its path, so a window's chrome shown again paints
+    /// them again - a theme or a state moving those colours reaches no tabbed view any other way.
+    /// Design: docs/design/host/pages.md#the-bar-a-path-declares
+    public var tabViewsShown: [MountedElement] {
+        var shown: [MountedElement] = type == .tabView ? [self] : []
+        for child in children where NodeType.pageTypes.contains(child.type) { shown += child.tabViewsShown }
+        return shown
+    }
+
     /// What the application says of itself in this element's bar - its name, the line under it and its mark - each
     /// the nearest declared on its path; nil where none is. An empty line or picture is none.
     public var titleArea: WindowChrome.TitleArea? {

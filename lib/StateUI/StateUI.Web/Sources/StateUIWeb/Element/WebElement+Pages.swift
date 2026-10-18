@@ -37,6 +37,12 @@ extension WebElement {
         return true
     }
 
+    /// Paints a tabbed view's strip in the colours of the bar on its path, as they stand now.
+    /// Design: docs/design/host/pages.md#the-bar-a-path-declares
+    func showBarColors() {
+        (view as? WebTabView)?.showColors(background: element.barColors.background, foreground: element.barColors.foreground)
+    }
+
     /// Keeps a tabbed view and a split view with the tree: the tabs named and the one the tree asks for shown, the
     /// sidebar as the tree says - at once the first time - and what the user chooses heard.
     func followPages(changed: Set<Prop>, wasDescribed: Bool) {
@@ -45,7 +51,6 @@ extension WebElement {
                       icons: element.children.map { HostPicture($0.value(.icon)) },
                       requested: element.value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
-            tabs.showColors(background: element.barColors.background, foreground: element.barColors.foreground)
         }
         guard let split = view as? WebSplitView else { return }
         split.onPresentationChanged = { [weak self] presented in self?.sidebarChanged(to: presented) }

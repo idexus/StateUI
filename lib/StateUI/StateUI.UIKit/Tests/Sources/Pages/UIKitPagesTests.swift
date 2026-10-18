@@ -229,6 +229,33 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(words() ?? -1, 0, accuracy: 0.01, "dark on yellow")
     }
 
+    /// A tab bar wears the words' colour of the bar on its path as it changes - written on the stack it stands in, so
+    /// the tabbed view itself changes nothing.
+    @MainActor
+    func testATabBarFollowsTheBarsWordsOnItsPath() throws {
+        let white = State(wrappedValue: false)
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                TabView([0, 1]) { Text("\($0)").title("Tab \($0)") }
+            } destination: { _ in Text("Pushed") }
+                .barForegroundColor(white.wrappedValue ? .white : .black)
+        }
+        defer { host.finish() }
+        let tabs = { (host.runtime.tree.root.flatMap { Self.first(.tabView, in: $0) }?.native as? UIKitElement)?.controller }
+        let words = { () -> CGFloat? in
+            let bar = (tabs() as? UITabBarController)?.tabBar.standardAppearance
+            let color = bar?.stackedLayoutAppearance.selected.titleTextAttributes[.foregroundColor] as? UIColor
+            var shade: CGFloat = -1
+            return color?.getWhite(&shade, alpha: nil) == true ? shade : nil
+        }
+        host.settle { words() != nil }
+        XCTAssertEqual(words() ?? -1, 0, accuracy: 0.01, "black")
+
+        white.wrappedValue = true
+        host.settle { (words() ?? 0) > 0.99 }
+        XCTAssertEqual(words() ?? -1, 1, accuracy: 0.01, "white, the stack's words changed")
+    }
+
     /// A clear bar is UIKit's transparent bar: nothing under it, and no line between it and the page.
     @MainActor
     func testAClearBarDrawsNoLineUnderIt() throws {

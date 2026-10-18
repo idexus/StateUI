@@ -133,8 +133,8 @@ final class WebWindowController {
         runtime.goBack(.dismissSheet(remaining: presentation.sheets.count - 1), in: element)
     }
 
-    /// Writes the window's chrome on its bar and each sheet's on the sheet's, and names the tab after the page the
-    /// user sees and the site.
+    /// Writes the window's chrome on its bar and each sheet's on the sheet's - their tabbed views' strips in their
+    /// bars' colours - and names the tab after the page the user sees and the site.
     /// Design: docs/design/platforms/web/pages.md#the-windows-bar
     func refreshChrome() {
         guard let element else { return }
@@ -144,7 +144,9 @@ final class WebWindowController {
         window.bar.show(chrome, title: title, sidebar: split?.isPresented, split: split)
         // The page the user sees may stand with no bar over it.
         window.bar.setShown(presentation.arrangement?.visiblePage?.value(.showsNavigationBar)?.bool != false)
+        for tabs in presentation.arrangement?.tabViewsShown ?? [] { tabs.web.showBarColors() }
         for (page, sheet) in sheets {
+            for tabs in page.tabViewsShown { tabs.web.showBarColors() }
             let own = WindowChrome(window: element, arrangement: page)
             let named = own.title.flatMap { $0.isEmpty ? nil : $0 } ?? ""
             sheet.bar.show(own, title: named, sidebar: nil)

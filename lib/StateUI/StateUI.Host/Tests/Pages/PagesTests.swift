@@ -106,6 +106,26 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(bare.tree.root?.first(id: .manual("root"))?.tabsStandInWindow, true, "a modal stack's root")
     }
 
+    /// Every tabbed view an arrangement of pages shows - through its pages and the arrangements in them, a sheet's
+    /// own - is what the chrome paints the bars' colours on again; none in a page's content.
+    func testTheTabbedViewsAnArrangementShowsAreFoundThroughItsPages() throws {
+        let tabs = { (id: String) in self.node(id, .tabView, children: [self.node("\(id).page", .page)]) }
+        let runtime = runtime(node("window", .window, children: [
+            node("modal", .modalStack, children: [
+                node("split", .splitView, children: [
+                    tabs("sidebar"),
+                    node("stack", .navigationStack, children: [node("detail", .tabView, children: [tabs("inner")])]),
+                ]),
+                tabs("sheet"),
+            ]),
+        ])) { _ in }
+        let modal = try XCTUnwrap(runtime.tree.root?.first(id: .manual("modal")))
+
+        XCTAssertEqual(
+            modal.tabViewsShown.map(\.id), [.manual("sidebar"), .manual("detail"), .manual("inner"), .manual("sheet")])
+        XCTAssertEqual(try XCTUnwrap(modal.first(id: .manual("sheet"))).tabViewsShown.map(\.id), [.manual("sheet")])
+    }
+
     /// A page's bar says its title; a sidebar's page that says none - itself, or the root of a stack there - shows the
     /// application's name, as a sidebar stands under it; any other page says none.
     func testAnUntitledSidebarShowsTheApplicationsName() throws {
