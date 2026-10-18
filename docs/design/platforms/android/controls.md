@@ -45,11 +45,22 @@ and a field's listener while the value is being set, so the listener's call
 during that write is the write's echo, and the element reports nothing. A
 control does not keep a flag of its own.
 
+## A long press
+
+A long press is decided in one place, the host's (`AndroidView.longClicked`),
+through the view's one long-press listener: a button's own menu - a split
+button's or a held one's, the road TalkBack offers - else the view's drag,
+else nothing the host takes, and Android goes on to the view's context menu.
+A view hands that listener on while a long press is its to decide and takes
+it back after, still taking a long press where it took one of itself or
+offers a context menu.
+
 ## A drag between views
 
 A view's drag between views is Android's own drag and drop, through one drag
 listener a view (`StateUIDrags`). A view that can be dragged starts a drag
-on a long press - Android's gesture for it - carrying the view's words as
+on a long press - Android's gesture for it, as the host decides one
+([a long press](#a-long-press)) - carrying the view's words as
 plain text, its shadow the view, the view's number its local state; a view
 that takes drops takes a drag of plain text as it starts. The listener tells
 the host the drag over the view at each of Android's entering and moving,

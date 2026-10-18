@@ -103,6 +103,17 @@ extension AndroidView {
                 JavaAPI.drags, JavaAPI.offerDrag, .object(reference), .long(number),
                 .object(offered.words.flatMap(Java.string)), .bool(offered.takesWords), .bool(offered.takesFiles))
         }
+        longPressChanged()
+    }
+
+    /// Starts the view's drag, where it can be dragged: whether it started.
+    func startDrag() -> Bool {
+        guard let words = offered.words else { return false }
+        let started = Java.frame {
+            Java.callStaticBool(JavaAPI.drags, JavaAPI.startDrag, .object(reference), .long(number), .object(Java.string(words)))
+        }
+        if started { heardDrag(kind: 0, words: nil) }
+        return started
     }
 
     /// What the drag listener says the view heard, by the kind `StateUIDrags` numbers.

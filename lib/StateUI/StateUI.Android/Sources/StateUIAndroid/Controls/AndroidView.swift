@@ -293,9 +293,30 @@ class AndroidView {
         onTapped?()
     }
 
-    /// The user held the view down long: whether the view took it - else Android goes on to its context menu.
+    /// The user held the view down long - the one place deciding what that does: the view's own (a button's menu),
+    /// else its drag; whether it took it - else Android goes on to its context menu.
+    /// Design: docs/design/platforms/android/controls.md#a-long-press
     func longClicked() -> Bool {
-        false
+        startDrag()
+    }
+
+    /// Whether a long press is the view's to decide: it can be dragged, or - a button's menu - holds its own.
+    var takesLongPress: Bool {
+        offered.words != nil
+    }
+
+    /// Hands the view's one long-press listener on, or takes it back, as `takesLongPress` now says - a view that took
+    /// a long press of itself, or offers a context menu, still takes one.
+    func longPressChanged() {
+        guard takesLongPress != listensForLongPress else { return }
+        listensForLongPress = takesLongPress
+        if takesLongPress {
+            longClickableOfItself = Java.callBool(reference, JavaAPI.isLongClickable)
+            listen(JavaAPI.setOnLongClickListener)
+        } else {
+            Java.call(reference, JavaAPI.setOnLongClickListener, .object(nil))
+            Java.call(reference, JavaAPI.setLongClickable, .bool(longClickableOfItself || onMenuOpening != nil))
+        }
     }
 
     /// What the view writes into its context menu as the user opens it; nil where it offers none.
@@ -306,6 +327,10 @@ class AndroidView {
 
     /// Whether the view took a long press before it offered a menu, given back when it offers none.
     private var longClickableWithoutMenu = false
+
+    /// Whether the view's one long-press listener is handed on, and whether it took a long press before.
+    private var listensForLongPress = false
+    private var longClickableOfItself = false
 
     /// Makes the view offer a context menu, which `opening` writes as the user asks for it - a long press, a
     /// secondary click - or offer none for nil.
@@ -320,7 +345,7 @@ class AndroidView {
             listen(JavaAPI.setOnCreateContextMenuListener)
         } else {
             Java.call(reference, JavaAPI.setOnCreateContextMenuListener, .object(nil))
-            Java.call(reference, JavaAPI.setLongClickable, .bool(longClickableWithoutMenu))
+            Java.call(reference, JavaAPI.setLongClickable, .bool(longClickableWithoutMenu || listensForLongPress))
             onMenuChose = nil
         }
     }

@@ -80,13 +80,8 @@ final class AndroidButtonView: AndroidTextualView {
         writeMenu = opening == .none ? nil : write
         let showsArrow = opening == .click && showsArrow
         guard opening != self.opening || showsArrow != self.showsArrow else { return }
-        let holds = opening == .arrow || opening == .hold
-        if holds != (self.opening == .arrow || self.opening == .hold) {
-            if holds { listen(JavaAPI.setOnLongClickListener) } else {
-                Java.call(reference, JavaAPI.setOnLongClickListener, .object(nil))
-            }
-        }
         self.opening = opening
+        longPressChanged()
         self.showsArrow = showsArrow
         rightRoom = opening == .arrow ? pixels(Self.arrowWidth)
             : showsArrow ? pixels(Self.arrowSide / 2 + Self.markGap) : 0
@@ -101,11 +96,15 @@ final class AndroidButtonView: AndroidTextualView {
         return x >= Float(width - pixels(Self.arrowWidth))
     }
 
-    /// A long press opens a split button's menu, and a held one's.
+    /// A long press opens a split button's menu, and a held one's - before a drag of it.
     override func longClicked() -> Bool {
-        guard opening == .arrow || opening == .hold else { return false }
+        guard opening == .arrow || opening == .hold else { return super.longClicked() }
         showMenu()
         return true
+    }
+
+    override var takesLongPress: Bool {
+        opening == .arrow || opening == .hold || super.takesLongPress
     }
 
     /// Android's menu popping up at the button, its entries written as it opens.

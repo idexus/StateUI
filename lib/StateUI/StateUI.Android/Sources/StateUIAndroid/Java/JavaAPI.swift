@@ -177,6 +177,7 @@ enum JavaAPI {
 
     static let drags = Java.findClass("stateui/android/StateUIDrags")
     static let offerDrag = Java.staticMethod(drags, "offer", "(Landroid/view/View;JLjava/lang/String;ZZ)V")
+    static let startDrag = Java.staticMethod(drags, "start", "(Landroid/view/View;JLjava/lang/String;)Z")
 
     static let files = Java.findClass("stateui/android/StateUIFiles")
     static let openFiles = Java.staticMethod(files, "open", "(Landroid/content/Context;J[Ljava/lang/String;Z)V")
