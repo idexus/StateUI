@@ -16,6 +16,14 @@ final class WinUIActToolkit: ActToolkit {
     /// What hears each dialog's answer, by the ticket the dialog hands back.
     private let dialogs = Numbered<(Bool, String?) -> Void>()
 
+    /// The dialog showing: its ticket, and the window it stands over.
+    private var showing: Showing?
+
+    private struct Showing {
+        let ticket: Int64
+        weak var window: WinUIWindow?
+    }
+
     init(renderer: WinUIRenderer) {
         self.renderer = renderer
     }
@@ -43,8 +51,9 @@ final class WinUIActToolkit: ActToolkit {
     /// Asks in WinUI's own dialog over the window the user is in; its answer comes back by its ticket.
     /// Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
     func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
-        guard let content = renderer.userWindow?.content else { return false }
+        guard let window = renderer.userWindow, let content = window.content else { return false }
         let ticket = dialogs.hold(answered)
+        showing = Showing(ticket: ticket, window: window)
 
         // The title, the message, the captions that accept, cancel and destroy, the placeholder, the first words.
         let kind: Int32 = switch question.kind {
@@ -74,7 +83,18 @@ final class WinUIActToolkit: ActToolkit {
 
     /// The dialog under `ticket` was answered: accepted or not, and the words chosen or typed.
     func answered(ticket: Int64, accepted: Bool, words: String?) {
+        if showing?.ticket == ticket { showing = nil }
         dialogs.take(ticket)?(accepted, words)
+    }
+
+    /// `window` closed: the question standing over it - shown, or waiting for WinUI to load the window - stands
+    /// again over the window the user is in, and its own dialog's answer counts for nothing.
+    /// Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
+    func windowWent(_ window: WinUIWindow) {
+        guard let went = showing, went.window === window else { return }
+        showing = nil
+        _ = dialogs.take(went.ticket)
+        renderer.acts.askAgain()
     }
 
     /// Shows every window in `theme`: each window's content in WinUI's own theme, the system's for `.system`.

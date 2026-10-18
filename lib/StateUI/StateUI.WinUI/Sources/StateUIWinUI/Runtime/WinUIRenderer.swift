@@ -138,11 +138,15 @@ final class WinUIRenderer {
     }
 
     /// Shows every window element in a WinUI window of its own, in the tree's order - a window the tree no longer
-    /// holds closes - and tells each, once, in its turn, that it was made.
+    /// holds closes, a question over it standing again over the window the user is in - and tells each, once, in its
+    /// turn, that it was made.
     /// Design: docs/design/platforms/winui/runtime.md#the-window
     private func showWindows() {
-        let first = roster.update(
-            root: runtime.tree.root, make: { WinUIWindowController($0) }, close: { $0.window.close() })
+        var gone: [WinUIWindow] = []
+        let first = roster.update(root: runtime.tree.root, make: { WinUIWindowController($0) }) { controller in
+            controller.window.close()
+            gone.append(controller.window)
+        }
         if first, let window {
             // The screen is known once there is a window; what reads it renders in the turn after this one.
             WinUIEnvironment.reportDisplay(to: runtime.core, window: window)
@@ -151,6 +155,7 @@ final class WinUIRenderer {
         for (element, controller) in roster.windows {
             controller.present(element, in: runtime)
         }
+        for window in gone { actToolkit.windowWent(window) }
     }
 
     /// Composes every window's chrome again from what it shows now.
