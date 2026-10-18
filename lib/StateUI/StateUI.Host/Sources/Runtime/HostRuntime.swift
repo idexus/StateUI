@@ -83,6 +83,7 @@
             handPace: handPace, reducesMotion: reducesMotion)
         var diagnostics = DiagnosticText.environment
         diagnostics.views = views
+        HostProbe.start(where: diagnostics)
         tree = MountedTree(
             core: core, intake: intake, stateChannels: stateChannels, describedMotion: describedMotion,
             layoutMotion: layoutMotion, now: clock.now, reducesMotion: reducesMotion, diagnostics: diagnostics,

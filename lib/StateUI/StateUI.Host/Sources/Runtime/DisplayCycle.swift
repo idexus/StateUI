@@ -75,7 +75,7 @@
     /// One frame: the user's reports, the animations, the core's cycle, one walk, the hold, a render.
     public func frame(now: Double) {
         let now = onward(now)
-        presenter?.commitUserReports(now: now)
+        HostProbe.timed(.events) { presenter?.commitUserReports(now: now) }
         if let runtime { handPace.pace(now: now, in: runtime) }
         drain(now: now)
         presenter?.renderIfNeeded()
@@ -89,9 +89,9 @@
 
         let reducesMotion = reducesMotion()
         sidebarSlide.pace(now: now)
-        follow(animator.advance(to: now, reducesMotion: reducesMotion))
+        HostProbe.timed(.animations) { follow(animator.advance(to: now, reducesMotion: reducesMotion)) }
 
-        let cycle = core.cycle(now: now, reducesMotion: reducesMotion)
+        let cycle = HostProbe.timed(.cycle) { core.cycle(now: now, reducesMotion: reducesMotion) }
 
         for change in cycle.changes {
             states[change.state] = change.value
@@ -160,7 +160,7 @@
     /// Presents the batch in one walk, then answers every finished animation's waiter.
     private func present() {
         if !states.isEmpty || !properties.isEmpty {
-            presenter?.present(states: states, properties: properties)
+            HostProbe.timed(.present) { presenter?.present(states: states, properties: properties) }
         }
 
         states.removeAll(keepingCapacity: true)

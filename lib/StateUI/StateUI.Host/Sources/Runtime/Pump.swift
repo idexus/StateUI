@@ -84,7 +84,7 @@
     /// Raises a native event's handler, then a turn; one raised while a patch applies, or inside the user's
     /// transaction, waits for it.
     public func dispatch(_ handler: Int32, payload: [HostValue] = []) {
-        if handlers.raise(handler, payload: payload) { turn() }
+        if HostProbe.timed(.events, { handlers.raise(handler, payload: payload) }) { turn() }
     }
 
     /// Runs `body` as the user's transaction: the handlers it raises run in order once it is over, and one turn
@@ -96,7 +96,7 @@
     }
 
     private func step() {
-        _ = core.runJobs()
+        _ = HostProbe.timed(.jobs) { core.runJobs() }
 
         if tree.root != nil, core.cyclesAsked {
             displayCycle.drain(now: now())
@@ -113,7 +113,7 @@
 
             let created = tree.root?.takeCreatedHandlers() ?? []
             for handler in created {
-                _ = core.dispatch(handler)
+                _ = HostProbe.timed(.events) { core.dispatch(handler) }
             }
             if !created.isEmpty {
                 again = true
@@ -122,7 +122,7 @@
         }
 
         // The acts land on the interface their handler changed: a turn that raised handlers renders again first.
-        if handlers.raiseQueued() {
+        if HostProbe.timed(.events, { handlers.raiseQueued() }) {
             again = true
             return
         }
@@ -134,10 +134,10 @@
 
     /// Applies the core's render; a drifted one is asked for whole, once.
     private func render() {
-        let rendered = core.render(baseline: intake.baseline)
+        let rendered = HostProbe.timed(.render) { core.render(baseline: intake.baseline) }
 
-        if !intake.take(rendered.root, generation: rendered.generation, apply: {
-            tree.apply($0, complete: rendered.complete)
+        if !intake.take(rendered.root, generation: rendered.generation, apply: { patch in
+            HostProbe.timed(.apply) { tree.apply(patch, complete: rendered.complete) }
         }) {
             log("the interface drifted and is asked for whole: \(intake.lastDrift ?? "")")
             let complete = core.render(baseline: 0)
@@ -147,6 +147,6 @@
         }
 
         displayCycle.presentStateChannels()
-        presenter?.presentRendered()
+        HostProbe.timed(.chrome) { presenter?.presentRendered() }
     }
 }

@@ -156,6 +156,19 @@ runs runs when it ends; the handlers a render created run and the turn goes
 round again; the handlers waiting in `HandlerDispatch` run, a phase rendered
 before what comes after it, and the turn goes round again; only then the acts.
 
+## Probes
+
+`STATEUI_PROBE=1` in a process's environment - on the Web, in the page's
+address - times the runtime's stages (`HostProbe`) and writes, once a second
+while it works, one line of each stage that ran: its milliseconds in that
+second, its runs and its longest. The stages lie side by side, none inside
+another: a native event's handlers (`events`), the core's jobs, a `render`,
+its patch applied (`apply`), the windows and pages shown after it
+(`windows`), the `animations`, the core's `cycle` - engines, a layout's run
+- and what moved presented to the natives (`present`). The Web page shows
+the line over itself beside its own counts (platforms/web/runtime.md,
+probes). Unprobed, a stage costs one test of a static.
+
 ## The doorbell
 
 Where the platform's loop is neither Apple's nor the browser's, a host says at

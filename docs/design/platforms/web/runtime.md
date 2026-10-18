@@ -104,6 +104,17 @@ the accent read again with it.
 runs the display cycle at the frame's time, and asks for the next while still
 held. Its time is the page's monotonic clock in milliseconds.
 
+## Probes
+
+`?STATEUI_PROBE=1` in the page's address makes the relay time what the page
+spends, second by second, and write it over the page - bottom left, the
+words passing touches through - and to the console: the frames the browser
+drew and how many came over 25 ms apart; the time in Swift a frame and an
+event, the frame's share spent in the page's own calls and how many; the
+reads of the layout. Time in Swift low while frames come late is the
+browser's own work - styles, layout, painting - not StateUI's. Without the
+parameter nothing is wrapped and nothing is timed.
+
 ## Acts
 
 The acts every host performs are the host layer's (`HostActPerformer`); the
