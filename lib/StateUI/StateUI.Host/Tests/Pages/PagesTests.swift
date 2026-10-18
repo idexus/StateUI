@@ -272,6 +272,21 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(page.chromeActions.primary.map(\.showsActionWords), [true, false, true, true])
     }
 
+    /// Choosing a checked entry turns it and clicks it in one transaction of the user's: one render shows both.
+    func testChoosingACheckedEntryRendersOnce() throws {
+        stateUIUseApp(CheckedApplication())
+        let runtime = HostRuntime.still()
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let entry = try XCTUnwrap(runtime.tree.root?.first(type: .menuItem))
+        let renders = runtime.core.tally.renders
+
+        entry.chosen(in: runtime)
+
+        XCTAssertEqual(runtime.core.tally.renders, renders + 1, "the turn and the click render together")
+        XCTAssertEqual(runtime.tree.root?.first(type: .text)?.value(.text), .string("clicks 1, bold true"))
+    }
+
     /// The back button's words, where the page below says none, are the library's own in the system's language.
     func testTheBackButtonSpeaksTheSystemsLanguage() throws {
         let runtime = runtime(node("window", .window, children: [
@@ -866,4 +881,20 @@ private final class TabsReading: NativeElement {
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
     func leave() {}
+}
+
+/// A page whose text's context menu holds a checked entry that also counts its clicks.
+private struct CheckedApplication: Application {
+    var body: some Scene { WindowGroup { CheckedPage() } }
+}
+
+private struct CheckedPage: View {
+    @State private var bold = false
+    @State private var clicks = 0
+
+    var body: some View {
+        Text("clicks \(clicks), bold \(bold)").contextMenu {
+            MenuItem("Bold").isOn($bold).onClicked { clicks += 1 }
+        }
+    }
 }

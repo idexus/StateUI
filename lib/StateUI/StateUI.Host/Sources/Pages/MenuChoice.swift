@@ -16,9 +16,12 @@
     /// The user chose this entry: one standing checked or not turns the other way first - onto its state, then its
     /// `toggled` - and then it is clicked.
     public func chosen(in runtime: HostRuntime) {
-        if let turned = turnsWhenChosen {
-            reportUserChange(.isOn, .toggled, .bool(turned), in: runtime) { _ in }
+        // One choice of the user's: the turn and the click render together.
+        runtime.performUserTransaction {
+            if let turned = turnsWhenChosen {
+                reportUserChange(.isOn, .toggled, .bool(turned), in: runtime) { _ in }
+            }
+            send(.clicked, [], in: runtime)
         }
-        send(.clicked, [], in: runtime)
     }
 }
