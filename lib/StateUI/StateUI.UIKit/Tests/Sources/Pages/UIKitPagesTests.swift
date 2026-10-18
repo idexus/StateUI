@@ -247,6 +247,28 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(words() ?? -1, 0, accuracy: 0.01, "dark on yellow")
     }
 
+    /// A tab the user chooses from UIKit's More list - a phone offers six and more so - is the tab chosen: the
+    /// selection follows it.
+    @MainActor
+    func testATabChosenFromTheMoreListIsChosen() throws {
+        let tab = State(wrappedValue: 0)
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            TabView(0..<7) { number in Text("Tab \(number)").title("Tab \(number)") }.selection(tab.projectedValue)
+        }
+        defer { host.finish() }
+        let element = host.runtime.tree.root.flatMap { Self.first(.tabView, in: $0) }
+        let tabs = try XCTUnwrap((element?.native as? UIKitElement)?.controller as? UIKitTabBarController)
+        guard tabs.traitCollection.horizontalSizeClass == .compact else { throw XCTSkip("an iPad shows every tab") }
+        let seventh = try XCTUnwrap(tabs.viewControllers?.last)
+
+        // As the More list does when the user picks a tab in it.
+        tabs.selectedViewController = tabs.moreNavigationController
+        tabs.moreNavigationController.pushViewController(seventh, animated: false)
+        host.settle { tab.wrappedValue == 6 }
+
+        XCTAssertEqual(tab.wrappedValue, 6)
+    }
+
     /// A tab bar wears the words' colour of the bar on its path as it changes - written on the stack it stands in, so
     /// the tabbed view itself changes nothing - in every layout it lays its tabs in.
     @MainActor

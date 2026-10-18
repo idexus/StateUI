@@ -10,7 +10,7 @@ import UIKit
 /// shows is the host layer's rule (`TabChoice`); the user's choice is told as the tab before and the tab now.
 /// Design: docs/design/platforms/uikit/pages.md#tabs
 @MainActor
-final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegate {
+final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegate, UINavigationControllerDelegate {
     /// How tall a tab's picture stands - UIKit's icon size for a tab - and on a tab bar made low by a phone on its
     /// side.
     static let glyphHeight = 25.0
@@ -32,6 +32,7 @@ final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegat
     init() {
         super.init(nibName: nil, bundle: nil)
         delegate = self
+        moreNavigationController.delegate = self
     }
 
     @available(*, unavailable)
@@ -105,6 +106,13 @@ final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegat
             }
         }
         (tabBar.standardAppearance, tabBar.scrollEdgeAppearance) = (appearance, appearance)
+    }
+
+    /// A tab the user chose from the More list - a phone offers six and more so - which the list shows on its own
+    /// stack, never through the tab bar's choice.
+    func navigationController(_ navigation: UINavigationController, didShow shown: UIViewController, animated: Bool) {
+        guard navigation === moreNavigationController else { return }
+        tabBarController(self, didSelect: shown)
     }
 
     func tabBarController(_ controller: UITabBarController, didSelect selected: UIViewController) {
