@@ -55,7 +55,7 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
             window.contentView = content
             (content as? AppKitHitTestView)?.drops = AppKitDrops { [weak host = node.host] in host?.dropTakers() ?? [:] }
         }
-        window.title = node.element.visiblePage?.value(.title)?.string ?? "StateUI"
+        window.title = node.element.visiblePage?.value(.title)?.string ?? node.core.applicationName
     }
 
     func present(over parent: NSWindow, actuallyPresent: Bool) {

@@ -221,7 +221,7 @@ final class AppKitSessionTests: XCTestCase {
         ]
         renderer.applyForTesting(tree(scene("1", windows: [cleared])))
 
-        XCTAssertEqual(native.title, "StateUI")
+        XCTAssertEqual(native.title, renderer.runtime.core.applicationName, "named by the application")
         XCTAssertEqual(native.frame, standingFrame)
         XCTAssertEqual(native.contentMinSize, .zero)
         let unbounded = CGFloat(Float.greatestFiniteMagnitude)

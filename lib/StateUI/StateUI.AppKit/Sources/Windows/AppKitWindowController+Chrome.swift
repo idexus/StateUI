@@ -24,7 +24,7 @@ extension AppKitWindowController {
         let titleView = arrangement?.visiblePage?.chromeTitleView?.appKit.view
         let barColor = chrome.background.flatMap(nsColor)
         let foreground = chrome.foreground.flatMap(nsColor)
-        window.title = chrome.title ?? "StateUI"
+        window.title = chrome.title ?? element.appKit.core.applicationName
         window.subtitle = ""
         // A page's title view stands in for its title, over a painted band the
         // title stands in the bar's foreground, and a page may show none:
