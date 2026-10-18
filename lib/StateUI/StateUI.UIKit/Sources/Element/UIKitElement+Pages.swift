@@ -73,9 +73,9 @@ extension UIKitElement {
     func composeChrome() {
         switch type {
         case .page:
-            if let controller { chrome.show(on: controller.navigationItem) }
+            if let controller { chrome.show(on: controller.navigationItem, buttons: &barButtonsSaid) }
         case .tabView:
-            if let controller { chrome.show(on: controller.navigationItem) }
+            if let controller { chrome.show(on: controller.navigationItem, buttons: &barButtonsSaid) }
             let tabs = controller as? UIKitTabBarController
             tabs?.showsTheStacksBar = element.showsTheStacksBar
             // A tab bar wears the colours of the bar on its path, which a theme or a state moves on an element above.

@@ -26,8 +26,14 @@ struct UIKitPageChrome {
     var actions: [[UIKitBarAction]] = []
     var overflow: [UIKitBarAction] = []
 
-    /// Puts it on `item`, the bar a navigation controller shows for the page.
-    func show(on item: UINavigationItem) {
+    /// What the bar's buttons say, the leading groups, the trailing and the overflow.
+    var buttonsSaid: [[UIKitBarAction.Said]] {
+        leadingActions.map { $0.map(\.said) } + [[]] + actions.map { $0.map(\.said) } + [overflow.map(\.said)]
+    }
+
+    /// Puts it on `item`, the bar a navigation controller shows for the page - its buttons made again only where
+    /// they say something else than `standing` says, else recoloured; `standing` then says what they say.
+    func show(on item: UINavigationItem, buttons standing: inout [[UIKitBarAction.Said]]?) {
         item.title = title
         if item.subtitle != subtitle { item.subtitle = subtitle }
         // A layout's size follows what it holds; a control is fitted once and keeps the width the bar gives it:
@@ -51,12 +57,22 @@ struct UIKitPageChrome {
         let painted = barBackground != nil || barForeground != nil
         let words = painted ? BandWords.color(on: barBackground, written: barForeground) : nil
         let foreground = words.flatMap(UIColor.init(stateUI:))
-        item.leadingItemGroups = leadingActions.map { Self.group($0.map { $0.barItem(tint: foreground) }) }
-        let menu = overflow.isEmpty ? [] : [[UIBarButtonItem(
-            image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: overflow.map(\.menuAction)))]]
-        menu.joined().forEach { $0.tintColor = foreground }
-        item.trailingItemGroups = actions.map { Self.group($0.map { $0.barItem(tint: foreground) }) }
-            + menu.map(Self.group)
+        if buttonsSaid != standing {
+            standing = buttonsSaid
+            item.leadingItemGroups = leadingActions.map { Self.group($0.map { $0.barItem(tint: foreground) }) }
+            let menu = overflow.isEmpty ? [] : [[UIBarButtonItem(
+                image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: overflow.map(\.menuAction)))]]
+            menu.joined().forEach { $0.tintColor = foreground }
+            item.trailingItemGroups = actions.map { Self.group($0.map { $0.barItem(tint: foreground) }) }
+                + menu.map(Self.group)
+        } else {
+            for (group, actions) in zip(item.leadingItemGroups + item.trailingItemGroups, leadingActions + actions) {
+                for (button, action) in zip(group.barButtonItems, actions) { button.tintColor = action.tint(foreground) }
+            }
+            item.trailingItemGroups.dropFirst(actions.count).flatMap(\.barButtonItems).forEach {
+                $0.tintColor = foreground
+            }
+        }
 
         guard painted else {
             (item.standardAppearance, item.scrollEdgeAppearance) = (nil, nil)

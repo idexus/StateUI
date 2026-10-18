@@ -244,6 +244,36 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(white, 1, accuracy: 0.01, "the other in the bar's words, light on navy")
     }
 
+    /// A bar whose actions say what they said keeps its buttons as the page's title or the bar's colour moves - a
+    /// letter typed in a field on the bar, a frame of a colour travelling - recoloured, never made again.
+    @MainActor
+    func testABarKeepsItsButtonsWhileItsActionsSayTheSame() throws {
+        let title = State(wrappedValue: "One")
+        let dark = State(wrappedValue: true)
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").title(title.wrappedValue).toolbar {
+                    ToolbarItem("Save").accessibilityIdentifier("save")
+                }
+            } destination: { _ in Text("Pushed") }
+            .barBackgroundColor(dark.wrappedValue ? Color(red: 0, green: 0, blue: 128) : Color(red: 255, green: 230, blue: 0))
+        }
+        defer { host.finish() }
+        let item = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller?.navigationItem }
+        host.settle { item().map { !$0.trailingItemGroups.isEmpty } ?? false }
+        let save = try XCTUnwrap(item()?.trailingItemGroups.first?.barButtonItems.first)
+
+        title.wrappedValue = "Two"
+        host.settle { item()?.title == "Two" }
+        XCTAssertTrue(item()?.trailingItemGroups.first?.barButtonItems.first === save, "kept as the title moved")
+
+        dark.wrappedValue = false
+        var white: CGFloat = 1
+        host.settle { save.tintColor?.getWhite(&white, alpha: nil) == true && white < 0.5 }
+        XCTAssertTrue(item()?.trailingItemGroups.first?.barButtonItems.first === save, "kept as the colour moved")
+        XCTAssertLessThan(white, 0.5, "and recoloured, dark on yellow")
+    }
+
     /// Words on a bar the tree paints stand light on a dark bar and dark on a light one, where the tree writes no
     /// colour for them (`BandWords`).
     @MainActor

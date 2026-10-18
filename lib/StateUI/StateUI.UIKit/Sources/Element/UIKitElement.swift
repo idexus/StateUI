@@ -35,6 +35,9 @@ final class UIKitElement: NativeElement {
     /// Whether VoiceOver meets the view of itself, read before the tree says anything of it.
     var accessibilityStanding: Bool?
 
+    /// What the buttons on a page's bar say, which the bar keeps them for.
+    var barButtonsSaid: [[UIKitBarAction.Said]]?
+
     /// Whether a layout of StateUI's has placed the view.
     var isPlaced = false
 
