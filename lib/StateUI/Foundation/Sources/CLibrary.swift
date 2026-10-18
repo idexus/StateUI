@@ -13,4 +13,6 @@
 @_exported import CRT
 #elseif canImport(WASILibc)
 @_exported import WASILibc
+#else
+#error("StateUIFoundation knows no C library on this platform")
 #endif
