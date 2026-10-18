@@ -608,6 +608,18 @@ final class ControlTests: XCTestCase {
     /// registrations, transitions and handlers its element's contract - its
     /// own members and its tiers' - declares, and nothing a host would have to
     /// guess at.
+    /// A picker opened by a state is closed by the user into that state: `isOpen($x)` goes both ways.
+    func testAPickerClosedByTheUserWritesItsState() {
+        let showing = State(wrappedValue: true)
+        let day = State(wrappedValue: CalendarDate(year: 2026, month: 10, day: 18))
+        let renders = Renders()
+
+        let patch = renders.render(DatePicker(day.projectedValue).isOpen(showing.projectedValue).node)
+        renders.fire(patch.events?["closed"] ?? -1)
+
+        XCTAssertFalse(showing.wrappedValue, "the user's close came back")
+    }
+
     /// Runs written on a text replace the runs it had and nothing else: a menu written on it first stays.
     func testRunsWrittenAfterAMenuLeaveTheMenu() {
         let node = Text().contextMenu { MenuItem("Copy") }.spans { TextSpan("let ") }.node

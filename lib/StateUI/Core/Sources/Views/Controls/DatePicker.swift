@@ -135,9 +135,9 @@ public struct DatePicker: ElementView, TextStyleElement, FontElement, DatePicker
 }
 
 extension DatePicker {
-    /// `isOpen` from a state, `$x`: the host sets each new value as it stands,
-    /// and no view is rebuilt for it.
+    /// `isOpen` from a state, `$x`, both ways: the host opens and closes the calendar as the state stands, and
+    /// the user's opening and closing come back into it; no view is rebuilt for it.
     public func isOpen(_ state: Binding<Bool>) -> Modified {
-        twin(DatePickerContract.isOpen, carrying: state)
+        opening(DatePickerContract.isOpen, by: state, opened: DatePickerContract.opened, closed: DatePickerContract.closed)
     }
 }
