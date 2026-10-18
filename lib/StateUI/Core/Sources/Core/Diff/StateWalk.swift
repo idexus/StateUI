@@ -84,14 +84,14 @@ final class ViewWalk {
     }
 }
 
-/// A type's module-qualified name, worked out once a type.
+/// A type's key: its module-qualified name, made a key once a type.
 @MainActor
-func qualifiedName(of type: Any.Type) -> String {
-    if let name = StateParts.names[ObjectIdentifier(type)] { return name }
+func typeKey(of type: Any.Type) -> KeyName {
+    if let key = StateParts.names[ObjectIdentifier(type)] { return key }
 
-    let name = String(reflecting: type)
-    StateParts.names[ObjectIdentifier(type)] = name
-    return name
+    let key = KeyName(String(reflecting: type))
+    StateParts.names[ObjectIdentifier(type)] = key
+    return key
 }
 
 /// A view the walk reads by the parts it names, with no mirror: a library view standing once an item of a layout,
@@ -125,7 +125,7 @@ private struct StateParts {
 
     /// What every type met is, and the bracketed name it adds to a path where it is a stored view.
     static var kinds: [ObjectIdentifier: (kind: Kind, stored: String)] = [:]
-    static var names: [ObjectIdentifier: String] = [:]
+    static var names: [ObjectIdentifier: KeyName] = [:]
 
     /// Adds what `value`, at `path`, holds.
     mutating func walk(_ value: Any, at path: String) {
@@ -213,7 +213,7 @@ private struct StateParts {
         // optional is what it holds - a cast looks through it - so what it holds is named
         // on its own part, the same whatever value of it came first.
         let held = Mirror(reflecting: value).displayStyle == .optional || Swift.type(of: value) == AnyHashable.self
-        let stored = !held && value is Element ? "(\(qualifiedName(of: Swift.type(of: value))))" : ""
+        let stored = !held && value is Element ? "(\(typeKey(of: Swift.type(of: value)).name))" : ""
         var kind = held ? Kind.each : kind(of: value)
         if case .value = kind, ownsState(value) { kind = .mirrored }
         let learnt = (kind: kind, stored: stored)

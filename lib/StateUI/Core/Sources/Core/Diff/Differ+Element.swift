@@ -174,7 +174,7 @@ extension Differ {
                         Input.same(stateful.inputs, kept.inputs) {
                         if Inspection.recording {
                             pass.inspected = Inspection.enter(
-                                stateful.viewType, .carried, element: id)
+                                stateful.viewType.name, .carried, element: id)
                         }
 
                         return carry(rendered, written: node)
@@ -182,14 +182,14 @@ extension Differ {
 
                     if Inspection.recording {
                         pass.inspected = Inspection.enter(
-                            stateful.viewType,
+                            stateful.viewType.name,
                             .built(reason(stateful, node: node, rendered: rendered, seen: pass.seen)),
                             element: id)
                     }
                 }
 
                 let built = BuildScope.Frame(
-                    view: stateful.viewType,
+                    view: stateful.viewType.name,
                     builds: pass.builds,
                     read: rendered?.reads ?? [],
                     changed: self.changed,
@@ -198,7 +198,7 @@ extension Differ {
                     element: id)
 
                 pass.frame = built
-                bodies.append(stateful.viewType)
+                bodies.append(stateful.viewType.name)
                 pass.entered += 1
 
                 node = ReadScope.collect(into: &pass.reads) {
@@ -270,8 +270,7 @@ extension Differ {
     @inline(never)
     private func describePage(_ pass: ElementPass) {
         let rendered = pass.rendered
-        let reshaped = rendered.map { $0.type != pass.node.type || Self.kinds($0.views) != Self.kinds(pass.views) }
-            ?? false
+        let reshaped = rendered.map { $0.type != pass.node.type || !Self.sameKinds($0.views, pass.views) } ?? false
         var holder = HostPatch(id: pass.id, type: pass.node.type)
         describesPageRoot = true
         let children = reconcileChildren(
@@ -352,7 +351,7 @@ extension Differ {
         // another kind of control makes (Node+ButtonMenu.swift), and another value a host makes its control by.
         // Design: docs/design/core/identity-and-diffing.md#another-kind-of-view
         let replace = rendered != nil
-            && (rendered!.type != node.type || Self.kinds(rendered!.views) != Self.kinds(pass.views)
+            && (rendered!.type != node.type || !Self.sameKinds(rendered!.views, pass.views)
                 || lost.contains { !$0.facts.cleared } || rendered!.buttonMenuOpening != node.buttonMenuOpening
                 || LibraryContracts.remaking.contains { rendered!.props[$0] != node.props[$0] })
 
@@ -607,10 +606,11 @@ extension Differ {
             element: element)
     }
 
-    /// What an element is by its composed views: each one's type and the branch its content root stood in.
+    /// Whether two elements are alike by their composed views: each one's type and the branch its content root
+    /// stood in.
     /// Design: docs/design/core/identity-and-diffing.md#another-kind-of-view
-    private static func kinds(_ views: [BuiltView]) -> [String] {
-        views.map { view in view.branch.map { "\(view.type) \($0)" } ?? view.type }
+    private static func sameKinds(_ one: [BuiltView], _ other: [BuiltView]) -> Bool {
+        one.count == other.count && zip(one, other).allSatisfy { $0.type == $1.type && $0.branch == $1.branch }
     }
 
     /// Why a composed view is built rather than carried, in words - the carry's

@@ -104,6 +104,7 @@ final class KeyGuardTests: XCTestCase {
         "ElementAct.swift": member, "ElementEvent.swift": member, "ElementProperty.swift": member,
         "HostRealization.swift": startUp, "HostRealizations.swift": startUp, "HostDeclaration.swift": startUp,
         "CoreLink.swift": startUp,
+        "StateWalk.swift": "a view type's key, made once a type, as the walk first meets it",
         "LibraryContracts.swift": "the members' facts: a table made once",
         "Differ+Arrangements.swift": "each arrangement's declared members: a table made once",
     ]

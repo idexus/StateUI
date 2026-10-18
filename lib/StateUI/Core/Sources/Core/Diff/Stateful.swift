@@ -130,8 +130,8 @@ extension Node {
     /// A subtree nobody has built yet, and what it takes to build it right.
     @MainActor
     struct Stateful {
-        /// The composed view's module-qualified type, which decides whose state it keeps.
-        let viewType: String
+        /// The key of the composed view's module-qualified type, which decides whose state it keeps.
+        let viewType: KeyName
 
         /// The view's type, where it is a `View`: what tells whether its body builds an arrangement.
         let shown: (any View.Type)?
@@ -169,7 +169,7 @@ extension Node {
         /// Builds the subtree and lands what the author wrote on the view onto its root.
         func expand(over written: Node) -> Node {
             var node = build()
-            node.branch = node.id == nil ? node.key : nil
+            node.branch = node.branch ?? (node.id == nil ? node.key : nil)
             node.props.merge(written.props) { _, wrote in wrote }
 
             // The states driven to it, for the same reason: a registration left on the
@@ -241,7 +241,7 @@ extension Node {
     /// - Parameter scene: the scene this view is, where it is one.
     static func composed(
         _ view: Any,
-        type: String,
+        type: KeyName,
         shown: (any View.Type)? = nil,
         scene: SceneRecord? = nil,
         build: @escaping () -> Node

@@ -18,7 +18,7 @@ struct SceneElement: Element {
         let authored = SceneElement.unwrapped(scene)
 
         var node = Node.composed(
-            self, type: qualifiedName(of: type(of: authored)), scene: record
+            self, type: typeKey(of: type(of: authored)), scene: record
         ) { [record, scene] in
             SceneElement.build(record, scene)
         }
@@ -78,7 +78,7 @@ struct SceneElement: Element {
     /// Design: docs/design/views/inspector.md#where-it-docks
     private static func window(_ declared: DeclaredWindows, opened: OpenedWindow, _ record: SceneRecord) -> Node {
         var node = Node.window(
-            showing: { declared.page(opened, record) }, kind: declared.kind,
+            showing: { declared.page(opened, record) },
             session: record.windowSession(opened.key), inspector: { Inspector.docked(in: record, window: opened.key) })
         node.environments.insert(contentsOf: declared.environments, at: 0)
         return node

@@ -130,7 +130,7 @@ final class Differ {
         // A composed view walked past is written down only as the path to something
         // built below it, and not for a view just carried.
         let walked = walking && Inspection.recording && !rendered.views.isEmpty
-            && Inspection.enter(rendered.views[0].type, .walked, element: rendered.id)
+            && Inspection.enter(rendered.views[0].type.name, .walked, element: rendered.id)
         defer { if walked { Inspection.leave() } }
 
         // And the scene it is in, whose record the kept state below is claimed from.

@@ -10,9 +10,6 @@ struct DeclaredWindows {
     /// The type of value one window stands for; nil for a declaration of windows of no value.
     let valueType: Any.Type?
 
-    /// The type of the view a window shows - what an inspector names it by.
-    let kind: String
-
     /// The page of one window: the one opened, in the scene that has it open.
     let page: (_ opened: OpenedWindow?, _ record: SceneRecord?) -> Node
 

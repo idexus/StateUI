@@ -24,7 +24,7 @@ public struct WindowGroup: Scene {
     /// - Parameter content: the view a window shows.
     public init<Content: View>(@ViewBuilder content: @escaping () -> Content) {
         declared = DeclaredWindows(
-            type: nil, valueType: nil, kind: String(reflecting: Content.self),
+            type: nil, valueType: nil,
             page: { _, _ in Node.page(content()) })
     }
 
@@ -39,7 +39,7 @@ public struct WindowGroup: Scene {
     ///   - content: the view a window shows.
     public init<Content: View>(_ type: WindowType, @ViewBuilder content: @escaping () -> Content) {
         declared = DeclaredWindows(
-            type: type, valueType: nil, kind: String(reflecting: Content.self),
+            type: type, valueType: nil,
             page: { _, _ in Node.page(content()) })
     }
 
@@ -61,7 +61,7 @@ public struct WindowGroup: Scene {
         @ViewBuilder content: @escaping (Binding<Value>) -> Content
     ) {
         declared = DeclaredWindows(
-            type: type, valueType: Value.self, kind: String(reflecting: Content.self),
+            type: type, valueType: Value.self,
             page: { opened, record in
                 // The value the scene was built with; a write retargets this window, and the scene, which reads
                 // what it has open, builds it again.

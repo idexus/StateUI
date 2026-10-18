@@ -32,7 +32,7 @@
 /// A composed view an element was built by: its type, its walk, its state boxes by path, what it was built with,
 /// and the branch its content root stood in.
 typealias BuiltView = (
-    type: String,
+    type: KeyName,
     walk: ViewWalk,
     boxes: [(path: String, box: StateBox)],
     inputs: [(path: String, input: Input)],

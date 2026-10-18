@@ -128,7 +128,9 @@ can differ between two instances within one run.
 
 A view shown as a screen gets a page element around it (`Node.page`). The page
 is kept while the same view stands there - the same kind under the same
-explicit id, from the same branch - and made afresh for another. A page position takes its view through `ViewBuilder`,
+explicit id, from the same branch - and made afresh for another: the page says
+that as its branch, which the differ compares with its type
+([another kind of view](../core/identity-and-diffing.md#another-kind-of-view)). A page position takes its view through `ViewBuilder`,
 so an `if`/`else` or a `switch` there keys each branch (`Either`), and two
 branches of the same view are two pages, as two branches in a container are
 two elements.

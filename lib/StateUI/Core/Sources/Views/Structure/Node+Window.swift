@@ -2,15 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 extension Node {
-    /// A scene's window showing the page `page` builds, a view of `kind`, its scene's inspector docked in it where
+    /// A scene's window showing the page `page` builds, its scene's inspector docked in it where
     /// `inspector` reads a place: a placeholder built again when its session or that place moves, or it starts or
     /// stops docking one, its session offered on it.
     /// Design: docs/design/views/pages.md#a-window-is-a-placeholder
     static func window(
-        showing page: @escaping () -> Node, kind: String, session: WindowSession,
+        showing page: @escaping () -> Node, session: WindowSession,
         inspector: (() -> Inspector.Place?)? = nil
     ) -> Node {
-        var window = composed(Shown(docks: inspector != nil), type: "StateUI.Window(\(kind))") {
+        var window = composed(Shown(docks: inspector != nil), type: windowType) {
             let overlay = Node.overlay(inspector: inspector?(), of: session.record?.id)
 
             // Its page, then the library's overlay: one order.
@@ -35,6 +35,9 @@ extension Node {
 
     /// The scene's inspector docked at `place`, laid over every overlay a page declares; nil where none is.
     /// Design: docs/design/views/pages.md#the-children-of-a-window
+    /// One type for every window's placeholder, each told by its key.
+    private static let windowType = KeyName("StateUI.Window")
+
     static func overlay(inspector place: Inspector.Place?, of scene: String?) -> Node? {
         guard let place, let scene else { return nil }
 

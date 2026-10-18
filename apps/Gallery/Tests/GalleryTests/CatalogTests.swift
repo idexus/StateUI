@@ -392,7 +392,7 @@ private final class Renders {
 
         func walk(_ node: RenderedNode) {
             for view in node.views {
-                let bare = view.type.prefix { $0 != "<" }
+                let bare = view.type.name.prefix { $0 != "<" }
                 let name = String(bare.split(separator: ".").last ?? "")
                 counted[name] = max(counted[name] ?? 0, node.builds)
             }
@@ -410,7 +410,7 @@ private final class Renders {
         var counted: [Int] = []
 
         func walk(_ node: RenderedNode) {
-            for view in node.views where view.type.split(separator: ".").last.map(String.init) == name {
+            for view in node.views where view.type.name.split(separator: ".").last.map(String.init) == name {
                 counted.append(node.builds)
             }
 
@@ -999,7 +999,7 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(SamplePage.shown(held, nav: Place().nav, look: SessionStyle().look(dark: false), system: .blue).node.type, .tabView)
         XCTAssertEqual(
-            SamplePage.shown(scrolling, nav: Place().nav, look: SessionStyle().look(dark: false), system: .blue).node.stateful?.viewType,
+            SamplePage.shown(scrolling, nav: Place().nav, look: SessionStyle().look(dark: false), system: .blue).node.stateful?.viewType.name,
             String(reflecting: SamplePage.self))
         XCTAssertEqual(held.tabs, [.example(0), .code])
         XCTAssertEqual(held.tabs.map(held.caption(of:)), ["Example", "In Code"])
@@ -1018,7 +1018,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
 
         XCTAssertEqual(place.section.wrappedValue, .home)
-        XCTAssertEqual(mainPage(place.nav).root().node.stateful?.viewType, String(reflecting: HomePage.self))
+        XCTAssertEqual(mainPage(place.nav).root().node.stateful?.viewType.name, String(reflecting: HomePage.self))
     }
 
     /// The gallery is a menu over a stack, and both halves are pages.
@@ -1029,7 +1029,7 @@ final class CatalogTests: XCTestCase {
     /// title, and the detail is a stack that opens on its root alone.
     func testTheWindowIsAMenuOverAStack() throws {
         let gallery = try XCTUnwrap(GalleryScene().declaredWindows.opening)
-        let window = Node.window(showing: { gallery.page(nil, nil) }, kind: gallery.kind, session: WindowSession()).built
+        let window = Node.window(showing: { gallery.page(nil, nil) }, session: WindowSession()).built
 
         XCTAssertEqual(window.type, "Window")
 
@@ -1151,7 +1151,7 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(windows.map(\.type), [nil, .fonts, .colours, .debugInspector, .swatch])
         XCTAssertEqual(windows.filter(\.single).compactMap(\.type), [.fonts, .colours, .debugInspector])
         XCTAssertEqual(windows.filter { $0.valueType != nil }.compactMap(\.type), [.swatch])
-        XCTAssertEqual(windows.first?.kind, String(reflecting: GalleryWindow.self))
+        XCTAssertEqual(windows.first?.page(nil, nil).stateful?.viewType.name, String(reflecting: GalleryWindow.self))
     }
 
     /// The application's scenes: the galleries, which launch opens; the

@@ -79,7 +79,7 @@ extension HostEventUpdate {
 extension Node {
     /// A window outside every scene, showing `view`, its session `session`.
     static func window(_ view: some View, session: WindowSession) -> Node {
-        window(showing: { Node.page(view) }, kind: String(reflecting: Swift.type(of: view)), session: session)
+        window(showing: { Node.page(view) }, session: session)
     }
 }
 
@@ -163,7 +163,7 @@ final class Renders {
         var counted: [Int] = []
 
         func walk(_ node: RenderedNode) {
-            for view in node.views where view.type.prefix(while: { $0 != "<" }).split(separator: ".").last == Substring(name) {
+            for view in node.views where view.type.name.prefix(while: { $0 != "<" }).split(separator: ".").last == Substring(name) {
                 counted.append(node.builds)
             }
             node.children.forEach(walk)

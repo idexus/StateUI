@@ -64,7 +64,12 @@ The branch a composed view's content root was written in is part of it too:
 two elements, as in a container, though the placeholder's key covers the
 content root's own path (`Node.branch`, compared with the views' types). The
 composed view itself keeps its state across the swap; an `.id()` on the
-content root outweighs the branch.
+content root outweighs the branch. A view's type is a key (`typeKey`, made once
+a type), and the views are compared key by key and branch by branch, with no
+word spelled at a render. A page says what it shows as its branch - its
+view's kind, explicit id and branch - so every page is one type
+(`StateUI.Page`) and another view there still makes it anew; every window is
+one type too (`StateUI.Window`), told by its key, which carries its kind.
 
 Another value of a member that says it remakes its element
 ([remakes](../contracts/member-facts.md#remakes)) replaces the element too
