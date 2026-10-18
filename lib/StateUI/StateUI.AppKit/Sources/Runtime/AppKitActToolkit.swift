@@ -50,13 +50,13 @@ final class AppKitActToolkit: ActToolkit {
 
     /// Asks in AppKit's alert, a sheet on the window the user is looking at.
     /// Design: docs/design/host/runtime.md#questions-for-the-user
-    func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
+    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
         guard let window = renderer.userWindow else { return false }
         let asked = AppKitQuestion(question, in: window)
         showing = asked
         asked.ask(presenting: renderer.presentsWindows) { [weak self] accepted, words in
             self?.showing = nil
-            answered(accepted, words)
+            answered(.success(HostQuestion.Given(accepted: accepted, words: words)))
         }
         return true
     }

@@ -20,9 +20,9 @@
     /// zone the platform does not know.
     func utcOffset(of zone: String?, on day: CalendarDate?) -> Int?
 
-    /// Shows `question` to the user in the window they are looking at, and calls `answered` - whether they
-    /// accepted, and the words they gave - when they answer; false where there is no window to ask in.
-    func show(_ question: HostQuestion, answered: @escaping (_ accepted: Bool, _ words: String?) -> Void) -> Bool
+    /// Shows `question` to the user in the window they are looking at, and calls `answered` with what they gave
+    /// when they answer, or why the toolkit could not ask; false where there is no window to ask in.
+    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool
 
     /// Tells the screen reader `words`, now.
     func announce(_ words: String)

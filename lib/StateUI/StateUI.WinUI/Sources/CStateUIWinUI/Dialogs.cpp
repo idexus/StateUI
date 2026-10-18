@@ -25,14 +25,33 @@ namespace provider = winrt::Microsoft::UI::Xaml::Automation::Provider;
 
 namespace {
     void answer(int64_t ticket, bool accepted, std::string const &words, bool hasWords) {
-        callbacks.answered(ticket, accepted, hasWords ? words.c_str() : nullptr);
+        callbacks.answered(ticket, accepted, hasWords ? words.c_str() : nullptr, nullptr);
     }
 
-    /// Shows `dialog`, handing its result to `closed` once it closes.
-    void show(controls::ContentDialog const &dialog, std::function<void(controls::ContentDialogResult)> closed) {
+    /// The question under `ticket` could not be asked: the reason, from the error being handled, is its answer.
+    void failed(int64_t ticket, char const *doing) {
+        auto reason = std::string("WinUI could not show the question: ") + doing;
+        try {
+            throw;
+        } catch (winrt::hresult_error const &error) {
+            reason = "WinUI could not show the question: " + winrt::to_string(error.message());
+        } catch (...) {
+        }
+        report(doing);
+        callbacks.answered(ticket, false, nullptr, reason.c_str());
+    }
+
+    /// Shows `dialog`, handing its result to `closed` once it closes; a dialog WinUI failed fails its question.
+    void show(int64_t ticket, controls::ContentDialog const &dialog,
+              std::function<void(controls::ContentDialogResult)> closed) {
         dialog.ShowAsync().Completed(
             guarded("handling Completed",
-                [closed](IAsyncOperation<controls::ContentDialogResult> const &operation, AsyncStatus status) {
+                [ticket, closed](IAsyncOperation<controls::ContentDialogResult> const &operation, AsyncStatus status) {
+                if (status == AsyncStatus::Error) {
+                    auto reason = "WinUI could not show the question: "
+                        + winrt::to_string(winrt::hresult_error(operation.ErrorCode()).message());
+                    return callbacks.answered(ticket, false, nullptr, reason.c_str());
+                }
                 closed(status == AsyncStatus::Completed ? operation.GetResults() : controls::ContentDialogResult::None);
             }));
     }
@@ -45,15 +64,16 @@ namespace {
         return block;
     }
 
-    /// A dialog made for a question, and what hands its answer back once it closes.
+    /// A dialog made for the question under `ticket`, and what hands its answer back once it closes.
     struct Asked {
+        int64_t ticket;
         controls::ContentDialog dialog;
         std::function<void(controls::ContentDialogResult)> closed;
 
         /// Shows the dialog over `root`'s window.
         void show(xaml::XamlRoot const &root) const {
             dialog.XamlRoot(root);
-            ::show(dialog, closed);
+            ::show(ticket, dialog, closed);
         }
     };
 
@@ -135,7 +155,7 @@ namespace {
             };
         }
         }
-        return {dialog, closed};
+        return {ticket, dialog, closed};
     }
 
     /// The dialog showing over `root`'s window; null for none.
@@ -172,11 +192,14 @@ extern "C" void stateui_winui_ask(StateUIObjectRef handle, int64_t ticket, State
             [asked, token](IInspectable const &sender, xaml::RoutedEventArgs const &) {
             auto loaded = sender.as<xaml::FrameworkElement>();
             loaded.Loaded(*token);
-            asked.show(loaded.XamlRoot());
+            try {
+                asked.show(loaded.XamlRoot());
+            } catch (...) {
+                failed(asked.ticket, "asking the user");
+            }
         }));
     } catch (...) {
-        report("asking the user");
-        answer(ticket, false, {}, false);
+        failed(ticket, "asking the user");
     }
 }
 
@@ -194,9 +217,10 @@ extern "C" bool stateui_winui_answer(StateUIObjectRef handle, int32_t button, ch
             auto index = static_cast<uint32_t>(button - 2);
             if (index < choices.Children().Size()) pressed = choices.Children().GetAt(index).try_as<controls::Button>();
         }
-        if (!pressed) return false;
-        peers::FrameworkElementAutomationPeer::CreatePeerForElement(pressed)
-            .GetPattern(peers::PatternInterface::Invoke).as<provider::IInvokeProvider>().Invoke();
+        // A button the dialog does not show has no peer.
+        auto peer = pressed ? peers::FrameworkElementAutomationPeer::CreatePeerForElement(pressed) : nullptr;
+        if (!peer) return false;
+        peer.GetPattern(peers::PatternInterface::Invoke).as<provider::IInvokeProvider>().Invoke();
         return true;
     } catch (...) {
         report("answering a dialog");

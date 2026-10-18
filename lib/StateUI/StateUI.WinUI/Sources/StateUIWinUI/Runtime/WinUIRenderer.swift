@@ -90,9 +90,10 @@ final class WinUIRenderer {
         return renderer
     }
 
-    /// The user answered a question put under `ticket`: its caller hears the answer, and what it changes renders.
-    func answered(ticket: Int64, accepted: Bool, words: String?) {
-        actToolkit.answered(ticket: ticket, accepted: accepted, words: words)
+    /// The user answered a question put under `ticket`, or WinUI could not ask it: its caller hears the answer, and
+    /// what it changes renders.
+    func answered(ticket: Int64, _ answer: Result<HostQuestion.Given, ActFailure>) {
+        actToolkit.answered(ticket: ticket, answer)
     }
 
     /// Windows said the theme, the power, the network or a screen changed: the core hears it, and renders what it

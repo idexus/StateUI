@@ -106,6 +106,46 @@ final class WinUIActsTests: XCTestCase {
         }
     }
 
+    /// A question WinUI could not show - another dialog stands over the window - fails its call with the reason; it
+    /// is no answer of the user's.
+    func testAQuestionWinUICouldNotShowFailsItsCall() throws {
+        try onUIThread {
+            let outcome = State(wrappedValue: "")
+            let host = WinUIRenderer.running {
+                VStack {
+                    Text(outcome.wrappedValue)
+                    Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                        do {
+                            outcome.wrappedValue = "answered \(try await Dialogs.confirm("Delete?", message: "The draft goes", accept: "Delete", cancel: "Keep"))"
+                        } catch {
+                            outcome.wrappedValue = "failed"
+                        }
+                    }
+                }
+            }
+            let window = try XCTUnwrap(host.window)
+            let content = try XCTUnwrap(window.content)
+            host.settle { stateui_winui_is_loaded(content.handle) }
+            "Standing".withCString { title in
+                "OK".withCString { accept in
+                    var other = StateUIQuestion(
+                        kind: 0, title: title, message: nil, accept: accept, cancel: nil, destruction: nil, choices: nil,
+                        choiceCount: 0, placeholder: nil, maximumLength: 0, spellChecked: false, predicted: false, scope: 0,
+                        initial: nil)
+                    stateui_winui_ask(content.handle, -1, &other)
+                }
+            }
+            host.settle { Self.asks(window) }
+
+            try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
+            host.settle { !outcome.wrappedValue.isEmpty }
+            XCTAssertEqual(outcome.wrappedValue, "failed", "no answer of the user's")
+
+            _ = stateui_winui_answer(content.handle, 1, nil)
+            host.settle { !Self.asks(window) }
+        }
+    }
+
     /// Whether a question stands over `window`'s content.
     @MainActor
     private static func asks(_ window: WinUIWindow) -> Bool {

@@ -35,10 +35,10 @@ final class WebActToolkit: ActToolkit {
     private var asking: WebQuestion?
 
     /// Design: docs/design/platforms/web/pages.md#questions-for-the-user
-    func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
+    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
         let shown = WebQuestion(question) { [weak self] accepted, words in
             self?.asking = nil
-            answered(accepted, words)
+            answered(.success(HostQuestion.Given(accepted: accepted, words: words)))
         }
         asking = shown
         shown.show()

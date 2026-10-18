@@ -88,6 +88,21 @@
         words = kind == .prompt ? text(7) ?? "" : ""
     }
 
+    /// What the user gave the question: whether they accepted it, and the words they chose or typed.
+    public struct Given: Equatable, Sendable {
+        /// Whether they accepted it.
+        public let accepted: Bool
+
+        /// The caption they chose, or the words they typed; nil for none.
+        public let words: String?
+
+        /// The user accepted where `accepted`, giving `words`.
+        public init(accepted: Bool, words: String?) {
+            self.accepted = accepted
+            self.words = words
+        }
+    }
+
     /// The act's answer: a confirmation's yes or no; a choice's action or a prompt's words - cut to its bound - where
     /// the user accepted, nothing where not; an alert's nothing.
     public func answer(accepted: Bool, words: String?) -> [HostValue] {

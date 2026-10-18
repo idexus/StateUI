@@ -220,6 +220,11 @@ a page asking as it is made - does not have until WinUI has loaded it. The
 question is made at once and shown on the content's `Loaded`; answering it
 "not chosen" there would lose it without the user ever seeing it.
 
+WinUI shows one `ContentDialog` over a window at a time: a dialog of the
+application's own standing there makes `ShowAsync` throw, and the question
+fails with WinUI's words through `answered`'s failure, as a dialog whose
+showing ends in an error does.
+
 A window can go before the user answered what stands over it - closed by
 the tree in the turn its page asked, before WinUI loaded it, or later by the
 tree or the user. The host remembers the window each dialog stands over; as

@@ -154,8 +154,8 @@ typedef struct {
     void (*heard)(int64_t view, StateUIHeard what, int32_t phase, double x, double y, double scale);
 
     /// The user answered the question asked under `ticket`: whether it was accepted, and the words chosen or
-    /// typed, in UTF-8; null for none.
-    void (*answered)(int64_t ticket, bool accepted, char const *utf8);
+    /// typed, in UTF-8, null for none; or why WinUI could not ask it, in UTF-8, null where it did.
+    void (*answered)(int64_t ticket, bool accepted, char const *utf8, char const *failure);
 
     /// The file dialog shown under `ticket` closed: the `count` files chosen - a save's once its contents stand
     /// written - their paths and names in UTF-8, none for a cancel; or why it failed, in UTF-8, null where it did not.

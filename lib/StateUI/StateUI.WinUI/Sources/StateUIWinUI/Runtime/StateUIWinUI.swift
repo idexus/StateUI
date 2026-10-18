@@ -95,9 +95,11 @@ enum WinUICallbacks {
                 guard let heard = HeardInput(what, phase: phase, x: x, y: y, scale: scale) else { return }
                 MainActor.assumeIsolated { WinUIView.find(view)?.heard(heard) }
             },
-            answered: { ticket, accepted, utf8 in
+            answered: { ticket, accepted, utf8, failure in
                 let words = utf8.map { String(cString: $0) }
-                MainActor.assumeIsolated { WinUIRenderer.shared?.answered(ticket: ticket, accepted: accepted, words: words) }
+                let answer: Result<HostQuestion.Given, ActFailure> = failure.map { .failure(ActFailure(String(cString: $0))) }
+                    ?? .success(HostQuestion.Given(accepted: accepted, words: words))
+                MainActor.assumeIsolated { WinUIRenderer.shared?.answered(ticket: ticket, answer) }
             },
             filesChosen: { ticket, count, paths, names, failure in
                 let files = (0..<Int(count)).compactMap { index -> ChosenFile? in

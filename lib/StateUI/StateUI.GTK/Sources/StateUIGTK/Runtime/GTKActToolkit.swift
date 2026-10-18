@@ -47,9 +47,9 @@ final class GTKActToolkit: ActToolkit {
     }
 
     /// Design: docs/design/platforms/gtk/runtime.md#questions-for-the-user
-    func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
+    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
         guard let window = renderer.userWindow else { return false }
-        GTKQuestion(question, answered: answered).show(over: window)
+        GTKQuestion(question) { answered(.success(HostQuestion.Given(accepted: $0, words: $1))) }.show(over: window)
         return true
     }
 

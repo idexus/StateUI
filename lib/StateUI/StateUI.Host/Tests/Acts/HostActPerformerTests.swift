@@ -11,7 +11,7 @@ private final class Toolkit: ActToolkit {
     let host = "Test"
     var zones: [String: Int] = ["Europe/Warsaw": 120]
     var windowToAsk = true
-    var shown: [(question: HostQuestion, answered: (Bool, String?) -> Void)] = []
+    var shown: [(question: HostQuestion, answered: (Result<HostQuestion.Given, ActFailure>) -> Void)] = []
     var announced: [String] = []
     var themes: [ColorScheme] = []
     var focusable: Set<ElementID> = []
@@ -24,7 +24,7 @@ private final class Toolkit: ActToolkit {
     func localZone() -> String { "Europe/Warsaw" }
     func utcOffset(of zone: String?, on day: CalendarDate?) -> Int? { zones[zone ?? "Europe/Warsaw"] }
 
-    func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
+    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
         guard windowToAsk else { return false }
         shown.append((question, answered))
         return true
@@ -99,14 +99,29 @@ final class HostActPerformerTests: XCTestCase {
         acts.perform(HostActCall(act: .alert, arguments: [.string("Done")], completion: 2))
         XCTAssertEqual(toolkit.shown.map(\.question.title), ["Delete?"], "the second waits")
 
-        toolkit.shown[0].answered(true, nil)
+        toolkit.shown[0].answered(.success(.init(accepted: true, words: nil)))
         XCTAssertEqual(answers.replies[1], [.bool(true)])
         XCTAssertEqual(toolkit.shown.map(\.question.title), ["Delete?", "Done"], "then the next shows")
 
         toolkit.windowToAsk = false
         acts.perform(HostActCall(act: .alert, arguments: [.string("Lost")], completion: 3))
-        toolkit.shown[1].answered(true, nil)
+        toolkit.shown[1].answered(.success(.init(accepted: true, words: nil)))
         XCTAssertEqual(answers.failures[3], "there is no window to ask the user in")
+    }
+
+    /// A question the toolkit could not show fails its call with the toolkit's reason - no answer of the user's - and
+    /// the next shows.
+    func testAQuestionTheToolkitCouldNotShowFailsItsCall() {
+        let (toolkit, answers) = (Toolkit(), Answers())
+        let acts = performer(toolkit, answers)
+
+        acts.perform(HostActCall(act: .confirm, arguments: [.string("Delete?")], completion: 1))
+        acts.perform(HostActCall(act: .alert, arguments: [.string("Done")], completion: 2))
+        toolkit.shown[0].answered(.failure(ActFailure("another dialog stands over the window")))
+
+        XCTAssertNil(answers.replies[1], "no answer of the user's")
+        XCTAssertEqual(answers.failures[1], "another dialog stands over the window")
+        XCTAssertEqual(toolkit.shown.map(\.question.title), ["Delete?", "Done"], "then the next shows")
     }
 
     /// The focus goes to the element the act names: whether it took it is the answer; an element with no view, or
@@ -194,13 +209,13 @@ final class HostActPerformerTests: XCTestCase {
             completion: 4))
         XCTAssertTrue(files.shown.isEmpty, "the dialog waits for the question")
 
-        toolkit.shown[0].answered(true, nil)
+        toolkit.shown[0].answered(.success(.init(accepted: true, words: nil)))
         XCTAssertEqual(files.shown.map(\.dialog.kind), [.openSeveral], "then shows")
         XCTAssertEqual(toolkit.shown.count, 1, "and the question behind it waits for it")
 
         files.shown[0].answered(.success([report]))
         XCTAssertEqual(answers.replies[2], [[report].propValue])
-        toolkit.shown[1].answered(true, nil)
+        toolkit.shown[1].answered(.success(.init(accepted: true, words: nil)))
         XCTAssertEqual(files.shown.map(\.dialog.contents), [[], [7]])
 
         files.shown[1].answered(.failure(ActFailure("the disk is full")))
@@ -217,9 +232,9 @@ final class HostActPerformerTests: XCTestCase {
 
         acts.askAgain()
         XCTAssertEqual(toolkit.shown.map(\.question.title), ["Delete?", "Delete?"])
-        toolkit.shown[0].answered(true, nil)
+        toolkit.shown[0].answered(.success(.init(accepted: true, words: nil)))
         XCTAssertNil(answers.replies[1], "the dialog that went answers nothing")
-        toolkit.shown[1].answered(false, nil)
+        toolkit.shown[1].answered(.success(.init(accepted: false, words: nil)))
         XCTAssertEqual(answers.replies[1], [.bool(false)])
 
         acts.perform(HostActCall(act: .openFiles, arguments: [[FileType]().propValue, .bool(true)], completion: 2))
@@ -236,7 +251,7 @@ final class HostActPerformerTests: XCTestCase {
         acts.perform(HostActCall(act: .openFiles, arguments: [[FileType]().propValue, .bool(true)], completion: 2))
 
         acts.dismissAll()
-        toolkit.shown[0].answered(true, nil)
+        toolkit.shown[0].answered(.success(.init(accepted: true, words: nil)))
 
         XCTAssertEqual(answers.replies[1], [.bool(false)], "not accepted, and the late answer counts for nothing")
         XCTAssertEqual(answers.replies[2], [[ChosenFile]().propValue], "nothing chosen")

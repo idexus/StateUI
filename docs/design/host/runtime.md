@@ -654,7 +654,10 @@ act that came without them - a choice's dangerous action and its others, a promp
 bound, purpose and starting words. It answers as its kind does: a
 confirmation yes or no, a choice or a prompt its words where the user
 accepted - a prompt's cut to its bound, by characters - and nothing where
-not, an alert nothing. Questions show one at a
+not, an alert nothing. A question the toolkit could not show - another
+dialog standing where it would - fails its call with the toolkit's reason:
+the toolkit answers a `Result`, as a file dialog does, and a failure is never
+read as the user saying no. Questions show one at a
 time in the order asked, each under a ticket of its own across the process
 (`QuestionQueue`), so an answer after its runtime has gone answers nothing
 of another's.

@@ -14,7 +14,7 @@ final class WinUIActToolkit: ActToolkit {
     private unowned let renderer: WinUIRenderer
 
     /// What hears each dialog's answer, by the ticket the dialog hands back.
-    private let dialogs = Numbered<(Bool, String?) -> Void>()
+    private let dialogs = Numbered<(Result<HostQuestion.Given, ActFailure>) -> Void>()
 
     /// The dialog showing: its ticket, and the window it stands over.
     private var showing: Showing?
@@ -50,7 +50,7 @@ final class WinUIActToolkit: ActToolkit {
 
     /// Asks in WinUI's own dialog over the window the user is in; its answer comes back by its ticket.
     /// Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
-    func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
+    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
         guard let window = renderer.userWindow, let content = window.content else { return false }
         let ticket = dialogs.hold(answered)
         showing = Showing(ticket: ticket, window: window)
@@ -81,10 +81,10 @@ final class WinUIActToolkit: ActToolkit {
         return true
     }
 
-    /// The dialog under `ticket` was answered: accepted or not, and the words chosen or typed.
-    func answered(ticket: Int64, accepted: Bool, words: String?) {
+    /// The dialog under `ticket` was answered - accepted or not, and the words chosen or typed - or failed.
+    func answered(ticket: Int64, _ answer: Result<HostQuestion.Given, ActFailure>) {
         if showing?.ticket == ticket { showing = nil }
-        dialogs.take(ticket)?(accepted, words)
+        dialogs.take(ticket)?(answer)
     }
 
     /// `window` closed: the question standing over it - shown, or waiting for WinUI to load the window - stands

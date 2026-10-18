@@ -111,9 +111,9 @@
         showings[ticket] = showing
         let shown = switch asked {
         case .question(let question):
-            toolkit.show(question) { [weak self] accepted, words in
+            toolkit.show(question) { [weak self] given in
                 guard let self, showings[ticket] == showing else { return }
-                answer(ticket, .success(question.answer(accepted: accepted, words: words)))
+                answer(ticket, given.map { question.answer(accepted: $0.accepted, words: $0.words) })
             }
         case .files(let dialog):
             files?.show(dialog) { [weak self] chosen in self?.answer(ticket, chosen.map(dialog.answer)) } ?? false

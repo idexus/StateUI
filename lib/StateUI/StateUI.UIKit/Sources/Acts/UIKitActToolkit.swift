@@ -45,13 +45,13 @@ final class UIKitActToolkit: ActToolkit {
     }
 
     /// Asks in UIKit's alert over what the user's window shows - its top sheet, else its pages - once nothing moves.
-    func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
+    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
         guard let root = renderer.userRoot else { return false }
         let asked = UIKitQuestion(question)
         showing = asked
         asked.ask(in: root) { [weak self] accepted, words in
             self?.showing = nil
-            answered(accepted, words)
+            answered(.success(HostQuestion.Given(accepted: accepted, words: words)))
         }
         return true
     }

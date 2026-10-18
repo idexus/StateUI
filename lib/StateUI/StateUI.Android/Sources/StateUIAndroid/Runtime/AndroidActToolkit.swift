@@ -20,7 +20,7 @@ final class AndroidActToolkit: ActToolkit {
     private func tree() -> MountedTree { AndroidRenderer.shared!.runtime.tree }
 
     /// The dialogs showing, by ticket, each with what hears its answer.
-    private let dialogs = Numbered<(Bool, String?) -> Void>()
+    private let dialogs = Numbered<(Result<HostQuestion.Given, ActFailure>) -> Void>()
 
     /// The scripts not answered yet, by ticket.
     private let scripts = Numbered<HostActCall>()
@@ -59,7 +59,7 @@ final class AndroidActToolkit: ActToolkit {
     }
 
     /// Puts a question to the user in the platform's own dialog; its answer comes back by its ticket.
-    func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
+    func show(_ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void) -> Bool {
         let ticket = dialogs.hold(answered)
         Java.frame {
             let context = context
@@ -103,7 +103,7 @@ final class AndroidActToolkit: ActToolkit {
             }
             return core.reply(call, [ScriptAnswer.text(json: words).propValue])
         }
-        dialogs.take(ticket)?(accepted, words)
+        dialogs.take(ticket)?(.success(HostQuestion.Given(accepted: accepted, words: words)))
     }
 
     func announce(_ words: String) {
