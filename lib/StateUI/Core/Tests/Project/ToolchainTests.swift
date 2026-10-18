@@ -95,6 +95,39 @@ final class ToolchainTests: XCTestCase {
         XCTAssertEqual(offending, [], "a key path through a contract's metatype: write a closure")
     }
 
+    /// No source imports the standard library's own interface (`@_spi`) where Xcode's SDKs build it: they ship its
+    /// public interface alone, so the import stands under a condition leaving Apple's systems out -
+    /// `#if !canImport(Darwin)`, `#if os(WASI)`.
+    func testTheStandardLibrarysOwnInterfaceIsImportedOnlyWhereNoAppleSDKBuilds() throws {
+        let swift = Self.texts.filter { $0.path.hasSuffix(".swift") }
+        XCTAssertGreaterThan(swift.count, 300, "the walk read almost nothing")
+        let spi = try NSRegularExpression(pattern: #"^@_spi\(\w+\) import (Swift|_Concurrency|_StringProcessing|Synchronization)$"#)
+        let elsewhere = try NSRegularExpression(pattern: #"!canImport\(Darwin\)|(?<!!)os\((WASI|Linux|Windows|Android)\)"#)
+        let matches = { (expression: NSRegularExpression, text: String) in
+            expression.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) != nil
+        }
+
+        var offending: [String] = []
+        for (path, text) in swift {
+            var conditions: [String] = []
+            for (index, line) in text.split(separator: "\n", omittingEmptySubsequences: false).enumerated() {
+                let words = line.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: " ", with: "")
+                if words.hasPrefix("#if") {
+                    conditions.append(String(words.dropFirst(3)))
+                } else if words.hasPrefix("#elseif"), !conditions.isEmpty {
+                    conditions[conditions.count - 1] = String(words.dropFirst(7))
+                } else if words.hasPrefix("#else"), let condition = conditions.popLast() {
+                    conditions.append(condition.hasPrefix("!") ? String(condition.dropFirst()) : "!" + condition)
+                } else if words.hasPrefix("#endif") {
+                    _ = conditions.popLast()
+                } else if matches(spi, String(line)), !conditions.contains(where: { matches(elsewhere, $0) }) {
+                    offending.append("\(path):\(index + 1)")
+                }
+            }
+        }
+        XCTAssertEqual(offending, [], "an interface Apple's SDKs do not ship, imported where they build")
+    }
+
     /// The toolchains, images, SDKs and prose all name the manifests' release,
     /// and every one of them that names a patch release names the same one.
     func testEveryPlaceThatNamesSwiftNamesOneRelease() throws {

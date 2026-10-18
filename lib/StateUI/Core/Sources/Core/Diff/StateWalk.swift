@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The walk over a composed view's stored properties that finds its state boxes, its `@Environment` slots and its
-// inputs: what each type met is to the walk worked out once, a struct's fields reached by key paths.
+// inputs: what each type met is to the walk worked out once.
 // Design: docs/design/core/identity-and-diffing.md#paths-pair-state
-
-@_spi(Reflection) import Swift
 
 /// Every state box and `@Environment` slot a view owns, with its inputs, in one
 /// walk. Each box comes back under the path the walk reached it by, which pairs
@@ -47,23 +45,10 @@ private struct StateParts {
         case aim, box, slot, borrowed, node
         case value((Any) -> any Equatable)
         case reference
-        case fields(Fields)
         case mirrored
 
         /// Asked of each value: an optional, or an `AnyHashable`, is what it holds to a cast.
         case each
-    }
-
-    /// A struct's stored properties, in their order, each reached by a key path: what a mirror would list, with
-    /// none of the work of making one.
-    final class Fields {
-        let labels: [String]
-        let read: (Any) -> [Any]
-
-        init(labels: [String], read: @escaping (Any) -> [Any]) {
-            self.labels = labels
-            self.read = read
-        }
     }
 
     /// What every type met is, and the bracketed name it adds to a path where it is a stored view.
@@ -73,7 +58,7 @@ private struct StateParts {
     /// Adds what `value`, at `path`, holds.
     mutating func walk(_ value: Any, at path: String) {
         var kind = Self.learnt(value).kind
-        if case .each = kind { kind = Self.kind(of: value, plans: false) }
+        if case .each = kind { kind = Self.kind(of: value) }
 
         switch kind {
         case .aim:
@@ -106,18 +91,13 @@ private struct StateParts {
         case .reference:
             // A reference keeps itself alive; as an input it is the object it is.
             inputs.append((path: path, input: .reference(ObjectIdentifier(value as AnyObject))))
-        case .fields(let fields):
-            inputs.append((path: path, input: .parts(fields.labels.count)))
-            for (label, field) in zip(fields.labels, fields.read(value)) {
-                walk(field, at: "\(path).\(label)\(Self.learnt(field).stored)")
-            }
         case .mirrored, .each:
             mirrored(value, at: path, declaredAim: false)
         }
     }
 
-    /// The parts of a value no key path reaches - an enum, a tuple, a collection, a struct holding a closure or a
-    /// weak reference - read through a mirror, as the walk read every value before it learnt types.
+    /// The parts of a value - a struct's fields, an enum's payload, a tuple's or a collection's elements - read
+    /// through a mirror.
     private mutating func mirrored(_ value: Any, at path: String, declaredAim: Bool) {
         if declaredAim {
             guard let box = value as? StateBox else {
@@ -154,13 +134,13 @@ private struct StateParts {
         // property holding different views gives different paths. Module-qualified.
         let stored = value is Element ? "(\(qualifiedName(of: Swift.type(of: value))))" : ""
         let held = Mirror(reflecting: value).displayStyle == .optional || Swift.type(of: value) == AnyHashable.self
-        let learnt = (kind: held ? Kind.each : kind(of: value, plans: true), stored: stored)
+        let learnt = (kind: held ? Kind.each : kind(of: value), stored: stored)
         kinds[type] = learnt
         return learnt
     }
 
-    /// What `value` is, in the order the walk asks it; a struct planned by its fields where `plans`.
-    private static func kind(of value: Any, plans: Bool) -> Kind {
+    /// What `value` is, in the order the walk asks it.
+    private static func kind(of value: Any) -> Kind {
         if value is Aiming { return .aim }
         if value is StateBox { return .box }
         if value is EnvironmentSlot { return .slot }
@@ -168,36 +148,11 @@ private struct StateParts {
         if value is Node { return .node }
         if let comparable = Swift.type(of: value) as? any Equatable.Type { return .value(opener(comparable)) }
 
-        let mirror = Mirror(reflecting: value)
-        if mirror.displayStyle == .class { return .reference }
-        guard plans, mirror.displayStyle == .struct else { return .mirrored }
-
-        // The type itself, opened: a value a mirror hands back may be an existential holding it.
-        let labels = mirror.children.map { $0.label ?? "" }
-        func opened<Root>(_: Root.Type) -> Fields? { fields(of: Root.self, labels: labels) }
-        return _openExistential(Swift.type(of: value), do: opened).map(Kind.fields) ?? .mirrored
+        return Mirror(reflecting: value).displayStyle == .class ? .reference : .mirrored
     }
 
     /// A value of an equatable type, made the existential it is compared as.
     private static func opener<Value: Equatable>(_: Value.Type) -> (Any) -> any Equatable {
         { $0 as! Value }
-    }
-
-    /// A struct's fields by key path, where a key path reaches every one a mirror lists, by the same labels in the
-    /// same order; nil where one is a closure or a reference held weakly, which only a mirror reads.
-    private static func fields<Root>(of _: Root.Type, labels: [String]) -> Fields? {
-        var keys: [PartialKeyPath<Root>] = []
-        var found: [String] = []
-        let whole = _forEachFieldWithKeyPath(of: Root.self) { name, key in
-            found.append(String(cString: name))
-            keys.append(key)
-            return true
-        }
-        guard whole, found == labels else { return nil }
-
-        return Fields(labels: labels) { value in
-            let root = value as! Root
-            return keys.map { root[keyPath: $0] }
-        }
     }
 }

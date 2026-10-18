@@ -170,18 +170,16 @@ value (compared whole) and at any class (a reference keeps itself alive).
 ### A type learnt once
 
 What a value is to the walk - a box, a slot, a binding, a node, a value
-compared whole, an object, a struct of fields or something only a mirror
-opens - is a matter of its type, so the walk asks it of the first value of
-each type it meets and keeps the answer (`StateParts.kinds`), with the
-bracketed name a stored view adds to its path. A struct's fields are then
-reached by key paths (`_forEachFieldWithKeyPath`), in a mirror's order and
-by its labels, which the walk checks once - so a view of plain fields is
-walked with no mirror made, no type name spelled and no failing casts, on
-every render; a mirror is made per render only for what no key path reaches:
-an enum, a tuple, a collection, a struct holding a closure or a reference
-held weakly. The paths are the mirror's to the letter, so a box pairs as it
-did. A walk of 48 icons a render cost a fifth of a render with no compiler for
-WebAssembly.
+compared whole, an object, or parts a mirror opens - is a matter of its type,
+so the walk asks it of the first value of each type it meets and keeps the
+answer (`StateParts.kinds`), with the bracketed name a stored view adds to its
+path: a value of a type met before is walked with no type name spelled and no
+failing casts. An optional and an `AnyHashable` are asked of each value, as a
+cast looks through them. The parts - a struct's fields, an enum's payload, a
+collection's elements - are read through a mirror, the one reflection every
+toolchain the library is built with offers: the standard library's walk of a
+struct's fields by key paths is an interface Apple's SDKs do not ship, so a
+library calling it builds for no iPhone.
 
 ## Carrying a view
 
