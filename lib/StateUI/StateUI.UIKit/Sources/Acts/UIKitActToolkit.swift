@@ -16,8 +16,8 @@ final class UIKitActToolkit: ActToolkit {
     /// The question showing now, where one is.
     private(set) var showing: UIKitQuestion?
 
-    /// What the host told VoiceOver, in order.
-    private(set) var announcedForTesting: [String] = []
+    /// What the host told VoiceOver, in order, where a test asked for it with `[]`; nil keeps nothing.
+    var announcedForTesting: [String]?
 
     init(renderer: UIKitRenderer) {
         self.renderer = renderer
@@ -57,7 +57,7 @@ final class UIKitActToolkit: ActToolkit {
     }
 
     func announce(_ words: String) {
-        announcedForTesting.append(words)
+        announcedForTesting?.append(words)
         UIAccessibility.post(notification: .announcement, argument: words)
     }
 

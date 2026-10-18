@@ -34,7 +34,7 @@ final class UIKitQuestion: NSObject, UIPopoverPresentationControllerDelegate {
         case .alert:
             add(question.accept, accepts: true, style: .default)
         case .confirm, .prompt:
-            add(question.cancel ?? "Cancel", accepts: false, style: .cancel)
+            if let cancel = question.cancel { add(cancel, accepts: false, style: .cancel) }
             add(question.accept, accepts: true, style: .default)
         case .chooseAction:
             // A choice answers the caption pressed, its cancel included.
@@ -46,7 +46,7 @@ final class UIKitQuestion: NSObject, UIPopoverPresentationControllerDelegate {
             alert.addTextField { field in
                 field.text = question.words
                 field.placeholder = question.placeholder
-                UIKitKeyboard(InputTraits(spellChecked: true, predicted: true, purpose: question.purpose)).apply(to: field)
+                UIKitKeyboard(question.traits).apply(to: field)
             }
         }
     }

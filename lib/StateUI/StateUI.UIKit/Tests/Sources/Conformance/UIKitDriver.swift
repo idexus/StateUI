@@ -190,6 +190,7 @@ final class UIKitDriver: HostDriver {
         try? FileManager.default.removeItem(at: files)
         try? FileManager.default.createDirectory(at: files, withIntermediateDirectories: true)
         renderer.fileToolkit.holdsLaunchesForTesting = true
+        renderer.actToolkit.announcedForTesting = []
     }
 
     /// One pass of the main loop, 20 ms long: a case's 150 steps wait three seconds, which a page WebKit loads in a

@@ -20,7 +20,7 @@ final class UIKitFileToolkit: FileToolkit {
     /// Whether a launch is only recorded, never handed to iOS: a test's.
     var holdsLaunchesForTesting = false
 
-    /// What the host handed iOS to launch, in order: an address as written, a file by its path.
+    /// What the host held of a test's launches, in order: an address as written, a file by its path.
     private(set) var launchedForTesting: [String] = []
 
     init(renderer: UIKitRenderer) {
@@ -58,9 +58,9 @@ final class UIKitFileToolkit: FileToolkit {
 
     /// Shows the file in iOS's preview over what the user's window shows; whether it can be previewed.
     func launch(_ file: ChosenFile, answered: @escaping (Bool) -> Void) {
-        launchedForTesting.append(file.address)
         let url = URL(fileURLWithPath: file.address)
         let holds = holdsLaunchesForTesting
+        if holds { launchedForTesting.append(file.address) }
         Task { @MainActor [weak self] in
             if holds { return answered(true) }
             guard QLPreviewController.canPreview(url as NSURL), let root = self?.renderer.userRoot else {
@@ -73,8 +73,8 @@ final class UIKitFileToolkit: FileToolkit {
 
     func launch(address: String, answered: @escaping (Bool) -> Void) {
         let url = URL(string: address).flatMap { $0.scheme == nil ? nil : $0 }
-        if url != nil { launchedForTesting.append(address) }
         let holds = holdsLaunchesForTesting
+        if holds, url != nil { launchedForTesting.append(address) }
         Task { @MainActor in
             guard let url else { return answered(false) }
             answered(holds ? true : await UIApplication.shared.open(url))
