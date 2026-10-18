@@ -38,6 +38,9 @@ final class AppKitWindowController: NSWindowController {
     /// What AppKit last told of the window: whether it is minimized, and whether it holds the keyboard.
     var isMinimized = false
     var isKey = false
+
+    /// Whether the window is the main one - what the user works in; a sheet over it takes the key, never this.
+    var isMain = false
     var closingFromTree = false
     var modals: [AppKitModalWindowController] = []
 

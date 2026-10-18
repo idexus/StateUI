@@ -112,7 +112,8 @@ extension AppKitRenderer {
     /// Design: docs/design/host/runtime.md#the-applications-phase
     func windowStateChanged(_ controller: AppKitWindowController) {
         guard !controller.closingFromTree, let element = controller.element else { return }
-        runtime.windowStateChanged(element, minimized: controller.isMinimized, activated: controller.isKey)
+        // Main, not key: a sheet, an alert or a file panel over the window takes the key, never the user's window.
+        runtime.windowStateChanged(element, minimized: controller.isMinimized, activated: controller.isMain)
     }
 
     /// A window closes: one the tree closed tells nothing; one the user closed is heard by it and its scene.

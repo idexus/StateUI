@@ -440,6 +440,27 @@ final class AppKitSessionTests: XCTestCase {
         XCTAssertTrue(renderer.frameClockWindowForTesting === second)
     }
 
+    /// A sheet, an alert or a file panel takes the keyboard from its window, not the user: the window stays the
+    /// one the user works in, and the application stays active.
+    @MainActor
+    func testASheetTakingTheKeyboardLeavesItsWindowActive() throws {
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        renderer.applyForTesting(tree(scene("1", windows: [window("main")])))
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let window = controller.window
+
+        controller.windowDidBecomeMain(Notification(name: NSWindow.didBecomeMainNotification, object: window))
+        controller.windowDidBecomeKey(Notification(name: NSWindow.didBecomeKeyNotification, object: window))
+        renderer.runtime.settlePhases()
+        XCTAssertEqual(StandardEnvironment.application.phase, .active)
+
+        controller.windowDidResignKey(Notification(name: NSWindow.didResignKeyNotification, object: window))
+        renderer.runtime.settlePhases()
+
+        XCTAssertEqual(StandardEnvironment.application.phase, .active, "the sheet over it took the key, not the user")
+    }
+
     @MainActor
     private func tree(_ scenes: HostPatch...) -> HostPatch {
         var application = HostPatch(id: .manual("application"), type: .application)

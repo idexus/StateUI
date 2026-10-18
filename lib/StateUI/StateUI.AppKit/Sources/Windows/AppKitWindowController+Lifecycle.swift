@@ -47,6 +47,16 @@ extension AppKitWindowController: NSWindowDelegate {
         host?.windowStateChanged(self)
     }
 
+    func windowDidBecomeMain(_ notification: Notification) {
+        isMain = true
+        host?.windowStateChanged(self)
+    }
+
+    func windowDidResignMain(_ notification: Notification) {
+        isMain = false
+        host?.windowStateChanged(self)
+    }
+
     func windowShouldZoom(_ window: NSWindow, toFrame newFrame: NSRect) -> Bool {
         traits?.isMaximizable ?? nativeAllowsZoom
     }
