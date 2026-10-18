@@ -34,9 +34,10 @@ import Synchronization
         hasher.combine(number)
     }
 
-    /// Name order, so keys sorted read alike in every process.
+    /// The order of the names' bytes, so keys sorted read alike in every process, and two keys are ordered
+    /// exactly where they are not equal - as their numbers are made from those bytes.
     public static func < (lhs: KeyName, rhs: KeyName) -> Bool {
-        lhs.name < rhs.name
+        lhs.name.utf8.lexicographicallyPrecedes(rhs.name.utf8)
     }
 
     /// The name, so an interpolated diagnostic prints it plainly.

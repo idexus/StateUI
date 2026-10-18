@@ -123,8 +123,11 @@ with its own keeps the two sets apart.
 A key is a name and the number its work is done by (`KeyName`): the name's
 64-bit FNV-1a hash, so one name has one number in every process on every
 platform, and no run depends on which key it met first. Two keys are equal
-where their numbers are, a key hashes its number, and keys order by name - the
-differ walks properties and numbers handlers in name order. Every element's
+where their numbers are, a key hashes its number, and keys order by their
+names' bytes - the differ walks properties and numbers handlers in that order;
+bytes, as the number is, so two keys are ordered exactly where they are not
+equal, which a text comparison treating "é" composed and decomposed alike would
+not give. Every element's
 values, handlers and type are looked up by key on every render and every
 frame; a name would be hashed and compared byte by byte at each, a number is
 one word. The number never leaves the process: what crosses to a host or a

@@ -30,6 +30,16 @@ final class KeyNameTests: XCTestCase {
         XCTAssertEqual(names.map(KeyName.init).sorted().map(\.name), names.sorted())
     }
 
+    /// Two names that are the same text to `String` but other bytes - "é" composed and decomposed - are two keys,
+    /// and one of them comes first: the order is the bytes', as the equality is.
+    func testKeysOfTwoSpellingsOfOneTextAreOrdered() {
+        let composed = KeyName("caf\u{E9}")
+        let decomposed = KeyName("cafe\u{301}")
+
+        XCTAssertNotEqual(composed, decomposed)
+        XCTAssertTrue(composed < decomposed || decomposed < composed, "one of them comes first")
+    }
+
     /// A number one name holds is refused to another name; the name itself takes it again.
     func testANumberHeldIsRefusedToAnotherName() {
         var numbers = KeyNumbers()
