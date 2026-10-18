@@ -67,6 +67,25 @@ final class DrivenPatchTests: XCTestCase {
     /// registration says the host also reads that property off a driven state, and
     /// neither is a complaint about the other. A state the control is in crosses
     /// as its value, the tie beside it.
+    /// Two live elements answering `.inherited` differently for one driven value are said; an element that left -
+    /// even in the render its successor came - answers nothing any more.
+    func testOnlyLiveElementsAnswerForADrivenValue() {
+        let said = "opacity is driven by a value two elements answer differently for"
+        XCTAssertFalse(hasComplained(said), "nothing said before")
+
+        let fade = State(wrappedValue: 1.0)
+        let renders = Renders()
+        let springing = Rectangle().opacity(fade.projectedValue).motion(.spring())
+        let easing = Rectangle().opacity(fade.projectedValue).motion(.eased(.milliseconds(300), .linear))
+
+        renders.render(stack([springing.id("a").node], id: "root"))
+        renders.render(stack([easing.id("b").node], id: "root"))
+        XCTAssertFalse(hasComplained(said), "the first left as the second came")
+
+        renders.render(stack([easing.id("b").node, springing.id("a").node], id: "root"))
+        XCTAssertTrue(hasComplained(said), "both stand now")
+    }
+
     func testADrivenPropertyBesideAStatedValueCrossesAsBoth() throws {
         let fade = State(wrappedValue: 1.0)
 

@@ -437,8 +437,11 @@ and which of the view's values it is - the property's group, plus a colour's.
 What `.inherited` means for a driven value can be answered only here: the host
 knows what the application says, while an element's motion plan answers per
 kind of value. The differ resolves it and leaves the answer on the state's
-storage, which applies it at every crossing. Two elements resolving the same
-state differently is a complaint; the one described last wins.
+storage, which applies it at every crossing. Two live elements resolving the
+same state differently is a complaint; the one described last wins. The state
+keeps each live element's answer (`answers`), dropped with its tie or with the
+element, and the walk says a difference once it is done - after it let go of
+what left, so an element replaced in the same render answers nothing.
 
 ## Aims and readings on an element
 

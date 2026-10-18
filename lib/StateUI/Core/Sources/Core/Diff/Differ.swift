@@ -53,6 +53,10 @@ final class Differ {
     /// Design: docs/design/core/render.md#handlers-in-the-message
     var fired: [Fired] = []
 
+    /// The driven values this walk heard an element answer `.inherited` for, with the property, to check once the
+    /// walk let go of what left.
+    var answered: [(state: HostStorage, key: Prop)] = []
+
     /// The `.onDestroying` handlers of what this walk let go, innermost first.
     private var leaving: [EventHandler] = []
 
@@ -98,7 +102,9 @@ final class Differ {
             forget(rendered)
         }
 
-        return element(id: id, rendered: previous, node: tree)
+        let walked = element(id: id, rendered: previous, node: tree)
+        sayAnsweredTwice()
+        return walked
     }
 
     /// The clean walk: no fresh tree, and exactly the elements whose reads intersect
@@ -115,7 +121,35 @@ final class Differ {
         walkStamp += 1
         seedScope()
 
-        return revisit(rendered)
+        let walked = revisit(rendered)
+        sayAnsweredTwice()
+        return walked
+    }
+
+    /// A state this element no longer shows: a tie fewer, and its answer for `.inherited` gone with it.
+    func untie(_ number: Int32, from id: ElementID) {
+        guard let state = Renderer.shared.storage(of: number) else { return }
+
+        state.ties -= 1
+        state.answers[id] = nil
+    }
+
+    /// Says each driven value two live elements answer `.inherited` for differently - after the walk let go of
+    /// what left, so an element replaced in the same render answers nothing.
+    /// Design: docs/design/core/identity-and-diffing.md#driven-properties
+    private func sayAnsweredTwice() {
+        defer { answered = [] }
+
+        for (state, key) in answered {
+            let answers = Array(state.answers.values)
+            guard let first = answers.first, answers.contains(where: { $0 != first }) else { continue }
+
+            complain("""
+                \(key.name) is driven by a value two elements answer \
+                differently for. The one described LAST says how it \
+                travels.
+                """)
+        }
     }
 
     /// One kept element: built again from its placeholder when its reads moved,
@@ -200,7 +234,7 @@ final class Differ {
 
         // Its ties: the states it showed are worn by one element fewer.
         for entry in node.driven.values {
-            Renderer.shared.storage(of: entry.number)?.ties -= 1
+            untie(entry.number, from: node.id)
         }
 
         for child in node.children {

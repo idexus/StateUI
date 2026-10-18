@@ -53,8 +53,8 @@ final class HostStorage: NamedState {
     /// Design: docs/design/core/identity-and-diffing.md#driven-properties
     var inherited: Motion = .inherited
 
-    /// Which element resolved that law, so a second answering differently is heard.
-    var inheritedBy: ElementID?
+    /// What each live element showing it answers `.inherited` with, so two answering differently are heard.
+    var answers: [ElementID: Motion] = [:]
 
     /// What runs after the host wrote this value, handed the lanes it wrote.
     var told: ((UInt64) -> Void)?

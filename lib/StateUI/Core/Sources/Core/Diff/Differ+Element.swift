@@ -524,16 +524,9 @@ extension Differ {
             // stays on the state and is read at the crossing.
             let mine = travel(key.facts.moves.union(registration.values))
 
-            if let already = state.inheritedBy, already != id, state.inherited != mine {
-                complain("""
-                    \(key.name) is driven by a value two elements answer \
-                    differently for. The one described LAST says how it \
-                    travels.
-                    """)
-            }
-
             state.inherited = mine
-            state.inheritedBy = id
+            state.answers[id] = mine
+            answered.append((state, key))
             state.door = registration.kind
             state.laneKind = registration.laneKind
 
@@ -546,9 +539,9 @@ extension Differ {
             if previous?.driven[key]?.number != driven[key]!.number { state.ties += 1 }
         }
 
-        // A tie this element no longer has is a channel fewer for its state.
+        // A tie this element no longer has is a channel fewer for its state, and an answer fewer.
         for (key, old) in previous?.driven ?? [:] where driven[key]?.number != old.number {
-            Renderer.shared.storage(of: old.number)?.ties -= 1
+            untie(old.number, from: id)
         }
 
         let tiesChanged = describeAll || previous == nil
