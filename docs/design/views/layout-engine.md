@@ -68,6 +68,17 @@ current phase](#a-change-at-the-current-phase)); a state the arithmetic reads
 that moves on the host's frames - a finger's - is named in `following(_:)`
 instead, or its writes run nothing.
 
+## A view in its holder
+
+Each item's view stands in a holder the run places, so a frame of the
+arithmetic writes the holder and never the author's own view. With no shade
+and no tap, the holder is a view of its own, `LayoutItemView`, its one input
+the item's view: built again with the same view - its fields the same - it
+is carried whole, so a new order of the items describes no holder and builds
+no view, the differ matching them by identity alone. A shade is a built node
+and a tap a closure the item's value is caught in, which nothing compares, so
+a layout given either builds its holders as part of its own description.
+
 ## A change at the current phase
 
 What changes a view's pose otherwise than the phase, the room or a followed

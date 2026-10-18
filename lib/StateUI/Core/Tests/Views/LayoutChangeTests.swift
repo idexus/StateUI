@@ -107,6 +107,26 @@ final class LayoutChangeTests: XCTestCase {
         XCTAssertEqual(builds.count, 3, "carried, not built again")
     }
 
+    /// A NEW ORDER DESCRIBES NO HOLDER AGAIN: with no shade and no tap, each view's holder is a view of its own,
+    /// carried whole to its new place.
+    func testANewOrderDescribesNoHolderAgain() {
+        let (items, builds, renders) = (State(wrappedValue: [0, 1, 2]), Builds(), Renders())
+        func tree() -> Node {
+            let count = items.wrappedValue.count
+            return LayoutEngine(items.wrappedValue) { Tile(item: $0, builds: builds) } placements: { _, _ in
+                (0..<count).map { Placement(Rect(Double($0) * 100, 0, 10, 10)) }
+            }
+            .node
+        }
+        _ = bench.laid(renders, tree)
+        let holders = renders.builds(of: "LayoutItemView")
+        XCTAssertEqual(holders.count, 3)
+
+        items.wrappedValue = [2, 0, 1]
+        _ = renders.render(tree())
+        XCTAssertEqual(renders.builds(of: "LayoutItemView").reduce(0, +), holders.reduce(0, +), "carried whole")
+    }
+
     /// A NEW ORDER SLIDES: each view from where it stood to its new place.
     func testANewOrderSlides() {
         let items = State(wrappedValue: [0, 1, 2])

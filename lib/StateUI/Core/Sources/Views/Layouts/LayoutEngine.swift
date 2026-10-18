@@ -182,7 +182,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         placements: @escaping @MainActor (Rect, Phase) -> [Placement]
     ) {
         source = Source(
-            items: items, path: id, view: { content($0).node }, arithmetic: { room, phase, _ in placements(room, phase) },
+            items: items, path: id, view: { content($0).node }, holder: { LayoutItemView(content: content($0)).node }, arithmetic: { room, phase, _ in placements(room, phase) },
             readsFrom: false)
     }
 
@@ -224,7 +224,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         @ViewBuilder content: @escaping (Items.Element) -> Content,
         placements: @escaping @MainActor (Rect, Phase, Phase) -> [Placement]
     ) {
-        source = Source(items: items, path: id, view: { content($0).node }, arithmetic: placements, readsFrom: true)
+        source = Source(items: items, path: id, view: { content($0).node }, holder: { LayoutItemView(content: content($0)).node }, arithmetic: placements, readsFrom: true)
     }
 
     /// The same, for items that are their own identity.
@@ -500,8 +500,9 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         /// Which part of an item is its identity.
         let path: KeyPath<Items.Element, ID>
 
-        /// The view for one item, as a node.
+        /// The view for one item, as a node, and in the holder the run places as a view of its own.
         let view: (Items.Element) -> Node
+        let holder: (Items.Element) -> Node
 
         /// Where every view goes, given the room, the phase and where its motion set out.
         let arithmetic: @MainActor (Rect, Phase, Phase) -> [Placement]
@@ -521,12 +522,14 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
             items: Items,
             path: KeyPath<Items.Element, ID>,
             view: @escaping (Items.Element) -> Node,
+            holder: @escaping (Items.Element) -> Node,
             arithmetic: @escaping @MainActor (Rect, Phase, Phase) -> [Placement],
             readsFrom: Bool
         ) {
             self.items = items
             self.path = path
             self.view = view
+            self.holder = holder
             self.arithmetic = arithmetic
             self.readsFrom = readsFrom
             descriptionsMade += 1
@@ -546,6 +549,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
                 Slot(identity: String(describing: item[keyPath: path]), index: offset, item: item)
             },
             make: source.view,
+            holder: source.holder,
             arithmetic: source.arithmetic,
             curve: curve ?? LayoutCurve.linear,
             readsFrom: source.readsFrom,
@@ -589,7 +593,7 @@ extension LayoutEngine where Phase == Double {
         placements: @escaping @MainActor (Rect, Double) -> [Placement]
     ) {
         source = Source(
-            items: items, path: id, view: { content($0).node }, arithmetic: { room, phase, _ in placements(room, phase) },
+            items: items, path: id, view: { content($0).node }, holder: { LayoutItemView(content: content($0)).node }, arithmetic: { room, phase, _ in placements(room, phase) },
             readsFrom: false)
     }
 
@@ -609,7 +613,7 @@ extension LayoutEngine where Phase == Double {
         @ViewBuilder content: @escaping (Items.Element) -> Content,
         placements: @escaping @MainActor (Rect, Double, Double) -> [Placement]
     ) {
-        source = Source(items: items, path: id, view: { content($0).node }, arithmetic: placements, readsFrom: true)
+        source = Source(items: items, path: id, view: { content($0).node }, holder: { LayoutItemView(content: content($0)).node }, arithmetic: placements, readsFrom: true)
     }
 
     /// The same, for items that are their own identity, with a phase of one axis and where its motion set out.

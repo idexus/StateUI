@@ -44,6 +44,7 @@ extension LayoutEngine {
         let items: [Items.Element]
         let slots: [Slot]
         let make: (Items.Element) -> Node
+        let holder: (Items.Element) -> Node
         let arithmetic: @MainActor (Rect, Phase, Phase) -> [Placement]
 
         /// The curve between the poses at keyframes, whether the arithmetic reads where the motion set out, the
@@ -319,6 +320,10 @@ extension LayoutEngine {
         /// overwritten by a frame of arithmetic; a shade is the holder's second child. Where its view is not, a
         /// holder lets input through to the layout.
         func wrapped(_ slot: Slot) -> ModifiedContent {
+            // With no shade and no tap, the holder is a view of its own: a new order carries every one.
+            // Design: docs/design/views/layout-engine.md#a-view-in-its-holder
+            if mask == nil, tapped == nil { return ModifiedContent(node: holder(slot.item)) }
+
             let holder = Grid { BuiltViews(nodes: [make(slot.item)] + (mask.map { [$0] } ?? [])) }
 
             guard let tapped else { return ModifiedContent(node: holder.letsInputThrough(true).node) }

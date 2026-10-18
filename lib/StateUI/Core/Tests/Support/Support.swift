@@ -157,6 +157,22 @@ final class Renders {
         return result.patch
     }
 
+    /// How many times each composed view of the type named `name` - its generic arguments left off - has been
+    /// described, one number a view, in the tree's order.
+    func builds(of name: String) -> [Int] {
+        var counted: [Int] = []
+
+        func walk(_ node: RenderedNode) {
+            for view in node.views where view.type.prefix(while: { $0 != "<" }).split(separator: ".").last == Substring(name) {
+                counted.append(node.builds)
+            }
+            node.children.forEach(walk)
+        }
+
+        rendered.map(walk)
+        return counted
+    }
+
     /// Renders a tree the way the RENDERER sends it: the walk, then the
     /// handlers it found run before the message leaves and what they wrote
     /// walked into it - see `Renderer.renderHost`. What a page or a window
