@@ -51,14 +51,14 @@ public struct CalendarDate: Equatable, Hashable, Comparable, Sendable, HostRepre
     }
 
     /// The day back from the three numbers a picker reports - year, month,
-    /// day, each the whole part of its number. Nil for anything else, so a
+    /// day, each the whole number nearest its number. Nil for anything else, so a
     /// report that does not read leaves the handler alone.
     /// - Parameter propValue: what the host sent.
     public init?(propValue: PropValue) {
         guard let numbers = propValue.numbers, numbers.count == 3,
-              let year = Int(exactly: numbers[0].rounded(.towardZero)),
-              let month = Int(exactly: numbers[1].rounded(.towardZero)),
-              let day = Int(exactly: numbers[2].rounded(.towardZero))
+              let year = Int(nearest: numbers[0]),
+              let month = Int(nearest: numbers[1]),
+              let day = Int(nearest: numbers[2])
         else { return nil }
 
         self.init(year: year, month: month, day: day)

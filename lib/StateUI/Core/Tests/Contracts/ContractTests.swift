@@ -74,7 +74,7 @@ final class ContractTests: XCTestCase {
     /// What comes back from a host is the declared kind or no value at all -
     /// never a guess, and never a trap on a number that is not one.
     func testAValueBackFromTheHostIsTheDeclaredKindOrNone() {
-        XCTAssertEqual(Int(propValue: .number(2.7)), 2)
+        XCTAssertEqual(Int(propValue: .number(2.7)), 3)
         XCTAssertNil(Int(propValue: .number(.nan)))
         XCTAssertNil(Int(propValue: .number(.infinity)))
         XCTAssertNil(Int(propValue: .string("2")))

@@ -130,12 +130,12 @@ public enum PropValue: Equatable, Sendable {
         return nil
     }
 
-    /// The number's whole part, when this value is a finite number - what an
-    /// index or a position payload is read with: 2.7 answers 2; text, infinity
-    /// or a number past `Int` answers nil.
+    /// The whole number nearest the number, when this value is a finite number - what
+    /// an index or a position payload is read with, as a carried lane is: 2.6 answers 3;
+    /// text, infinity or a number past `Int` answers nil.
     public var int: Int? {
-        guard case .number(let value) = self, value.isFinite else { return nil }
-        return Int(exactly: value.rounded(.towardZero))
+        guard case .number(let value) = self else { return nil }
+        return Int(nearest: value)
     }
 
     /// True or false, when this value is one - nil for any other kind.

@@ -85,13 +85,11 @@ extension Int: HostRepresentable {
     /// A whole number, as every number crosses: a Double.
     public var propValue: PropValue { .number(crossing) }
 
-    /// The whole part of a number, or nil for anything else - a number too
+    /// The whole number nearest a number, or nil for anything else - a number too
     /// large for an `Int`, infinity or not a number, included.
     /// - Parameter propValue: what the host sent.
     public init?(propValue: PropValue) {
-        guard case .number(let value) = propValue, value.isFinite,
-              let whole = Int(exactly: value.rounded(.towardZero))
-        else { return nil }
+        guard case .number(let value) = propValue, let whole = Int(nearest: value) else { return nil }
 
         self = whole
     }

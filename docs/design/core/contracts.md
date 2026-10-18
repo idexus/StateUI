@@ -78,7 +78,7 @@ animates, is cleared, and says nothing of motion.
 ## Values that cross
 
 `HostRepresentable` is a member's value and how it crosses and comes back:
-`Bool`, `Int` (a `Double`, read back as its whole part - exact up to 2^53, and
+`Bool`, `Int` (a `Double`, read back as the whole number nearest it - exact up to 2^53, and
 a whole number past it, which arrives rounded, said once; a carried `Int` lane
 alike), `Double`, `String`, `UInt8` (a byte), an
 optional of any of them (nil crosses as `.nothing`), `PropValue` itself, and an

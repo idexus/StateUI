@@ -60,8 +60,9 @@ arguments.
 
 Every value has `init?(propValue:)`, which answers nil for any shape but its
 own: a rectangle needs exactly four numbers, a colour the colour kind, a day
-three whole numbers. A whole number is read as the whole part of a number,
-and a number with none - infinity, not a number - reads as nil.
+three whole numbers. A whole number is read as the whole number nearest a
+number, as a carried lane is, and a number with none - infinity, not a number,
+one past `Int` - reads as nil.
 
 A payload is read as exactly the types its member declares, or refused
 whole. The one leniency is at the end: an optional value there may be left

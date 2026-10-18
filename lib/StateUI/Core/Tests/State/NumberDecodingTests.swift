@@ -79,6 +79,16 @@ final class NumberDecodingTests: XCTestCase {
         XCTAssertEqual(Color("#FF0000").opacity(0.5).light.alpha, 128)
     }
 
+    /// One whole number has one rounding, whichever road it came by: a payload's, a value back from the host and a
+    /// carried state's lane read 2.6 alike.
+    func testAWholeNumberIsRoundedAlikeOnEveryRoad() {
+        for number in [2.4, 2.5, 2.6, -2.6, 0.49] {
+            let lane = Int(carried: .lanes([number]))
+            XCTAssertEqual(Int(propValue: .number(number)), lane, "\(number) back from the host")
+            XCTAssertEqual(PropValue.number(number).int, lane, "\(number) as a payload")
+        }
+    }
+
     func testAPayloadNumberNoIntHoldsIsNoWholeNumber() {
         for number in unheld {
             XCTAssertNil(PropValue.number(number).int, "\(number) as a payload")
