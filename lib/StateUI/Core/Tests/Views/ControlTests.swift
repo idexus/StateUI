@@ -608,6 +608,13 @@ final class ControlTests: XCTestCase {
     /// registrations, transitions and handlers its element's contract - its
     /// own members and its tiers' - declares, and nothing a host would have to
     /// guess at.
+    /// Runs written on a text replace the runs it had and nothing else: a menu written on it first stays.
+    func testRunsWrittenAfterAMenuLeaveTheMenu() {
+        let node = Text().contextMenu { MenuItem("Copy") }.spans { TextSpan("let ") }.node
+
+        XCTAssertEqual(node.children.map(\.type), [TextSpansContract.nodeType, ContextMenuContract.nodeType])
+    }
+
     func testEveryControlCarriesOnlyWhatItsContractDeclares() throws {
         var checked = 0
 
