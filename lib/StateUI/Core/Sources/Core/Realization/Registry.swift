@@ -106,6 +106,12 @@
         register(contract, members: members) { _, _, _ in nil }
     }
 
+    /// Says that a registration was handed a view of another class than it takes: nothing reaches that view.
+    private static func unmade(_ contract: any ElementContract.Type, _ taken: AnyObject.Type, _ view: View) {
+        complain("\(contract.name)'s registration takes a \(taken), and the host made a \(type(of: view)): "
+            + "nothing was applied.")
+    }
+
     /// One contract's registration, entered under its node type: `members` says
     /// what it realizes, and `make` makes its view - answering nil, silently,
     /// where the host makes that view instead.
@@ -126,7 +132,7 @@
         let wholes = registration.wholes
         let children = registration.childAppliers.map { child in
             (type: child.type, apply: { (view: View, kept: [HostChild]) in
-                guard let made = view as? Made else { return }
+                guard let made = view as? Made else { return Self.unmade(Realized.self, Made.self, view) }
 
                 child.apply(made, kept)
             })
@@ -135,7 +141,10 @@
         entries[Realized.nodeType] = Entry(
             make: make,
             apply: { view, changed, read, carried, heading in
-                guard let made = view as? Made else { return [] }
+                guard let made = view as? Made else {
+                    Self.unmade(Realized.self, Made.self, view)
+                    return []
+                }
 
                 var applied: Set<Prop> = []
 

@@ -54,6 +54,19 @@ final class RegistryTests: XCTestCase {
         XCTAssertNil(Self.view(of: TextContract.nodeType, in: registry))
     }
 
+    /// A view of another class than the registration takes gets nothing - and says so, rather than leaving every
+    /// member realized on paper and none on the screen.
+    func testAViewOfAnotherClassIsSaidNotSilentlySkipped() {
+        let registry = Self.lamps()
+        let other = PlatformView()
+
+        let applied = registry.apply(
+            [LampContract.signal.token], to: other, of: LampContract.nodeType, reading: { _ in 2.propValue })
+
+        XCTAssertEqual(applied, [])
+        XCTAssertTrue(hasComplained("takes a LampView"))
+    }
+
     /// A property registered alone reaches the view as the type its contract
     /// declares, and a value no longer described reaches it as nil.
     func testAPropertyReachesTheViewAsItsDeclaredType() throws {

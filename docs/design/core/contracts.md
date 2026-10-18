@@ -172,7 +172,10 @@ registration and at report alike. `apply` puts changed properties registered
 alone in name order, then runs each whole applier whose members changed, every
 value read as the host presents it - a value in motion or carried by a state
 included. An element whose view the host makes itself, because its making needs
-machinery no contract describes, registers its members with `madeByHost`.
+machinery no contract describes, registers its members with `madeByHost`. A
+view of another class than the registration takes gets nothing applied and is
+said once, rather than leaving every member realized in the register and none
+on the screen.
 
 A runtime hands over its registry's realization before its first render,
 through `CoreLink.setRealization`, with the library's elements it shows none
