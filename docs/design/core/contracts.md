@@ -212,7 +212,10 @@ contracts themselves, so an owner is never written by hand.
 Shared members are said apart because they are realized apart: a host applies
 margins, opacity, gestures and focus around every view it makes, so naming them
 under one element would be false and under all of them a list nobody maintains.
-Each reaches every element wearing the tier that declares it. Acts are said
+Each reaches every element wearing the tier that declares it - a tier, never
+the element itself: a menu's own `isEnabled` takes nothing from the shared
+machinery's, and `realization` and `tierMembers` read a shared name by that
+one rule. Acts are said
 whole, because a host performs an act against the key it names, and nothing in
 the call says which element it belongs to; the contracts do. `tierMembers`
 answers shared members from the contracts rather than through the elements, so
