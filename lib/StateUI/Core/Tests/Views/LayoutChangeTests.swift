@@ -5,6 +5,22 @@ import XCTest
 
 @_spi(Host) @testable import StateUI
 
+/// How many times views were built, a class so the views holding it compare it by identity.
+private final class Builds {
+    var count = 0
+}
+
+/// A view of its own for one item, counting its builds.
+private struct Tile: View {
+    let item: Int
+    let builds: Builds
+
+    var body: some View {
+        builds.count += 1
+        return VStack { Text("tile \(item)") }
+    }
+}
+
 /// A change of a layout engine's description at the current phase - a view joining or leaving, a new order, a value
 /// read in the body - travels under the layout's motion from where each view was shown: the phase, the room and a
 /// followed state move the views as they always do.
@@ -70,6 +86,25 @@ final class LayoutChangeTests: XCTestCase {
         XCTAssertEqual(after(5, renders, tree)[2].opacity, 0.5, accuracy: 0.001)
         XCTAssertEqual(after(5, renders, tree)[2].opacity, 1, accuracy: 0.001)
         XCTAssertEqual(first[0].opacity, 1, "the others as they were")
+    }
+
+    /// A NEW ORDER BUILDS NO VIEW AGAIN: each item's view of its own, built with the same inputs under the same
+    /// identity, is carried to its new place.
+    func testANewOrderBuildsNoViewAgain() {
+        let (items, builds, renders) = (State(wrappedValue: [0, 1, 2]), Builds(), Renders())
+        func tree() -> Node {
+            let count = items.wrappedValue.count
+            return LayoutEngine(items.wrappedValue) { Tile(item: $0, builds: builds) } placements: { _, _ in
+                (0..<count).map { Placement(Rect(Double($0) * 100, 0, 10, 10)) }
+            }
+            .node
+        }
+        _ = bench.laid(renders, tree)
+        XCTAssertEqual(builds.count, 3)
+
+        items.wrappedValue = [2, 0, 1]
+        _ = renders.render(tree())
+        XCTAssertEqual(builds.count, 3, "carried, not built again")
     }
 
     /// A NEW ORDER SLIDES: each view from where it stood to its new place.

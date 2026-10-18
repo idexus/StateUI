@@ -404,6 +404,23 @@ private final class Renders {
         return counted
     }
 
+    /// How many times each composed view named `name` has been described, one
+    /// number a view, in the tree's order.
+    func builds(of name: String) -> [Int] {
+        var counted: [Int] = []
+
+        func walk(_ node: RenderedNode) {
+            for view in node.views where view.type.split(separator: ".").last.map(String.init) == name {
+                counted.append(node.builds)
+            }
+
+            node.children.forEach(walk)
+        }
+
+        rendered.map(walk)
+        return counted
+    }
+
     /// The closure an id refers to - the DIFFER's own, whose assigned controls
     /// the render filled. A closure walked off a freshly built tree is a
     /// different one: every build makes new values, and an aim is
@@ -1759,6 +1776,50 @@ final class CatalogTests: XCTestCase {
         let journey = try XCTUnwrap(HostBoundary.value(for: phase).flatMap(HostBoundary.journey(from:)))
         XCTAssertEqual(journey.destination, [0], "the card behind, at the front")
         XCTAssertGreaterThan(journey.value[0], 0.5, "on its way there, from where the deck stood")
+    }
+
+    /// MOVING AN ICON BUILDS NO ICON AGAIN: the home screen's new order is one
+    /// build of its body, and every icon - a view of its own, its inputs the
+    /// same - is carried to its new place.
+    func testMovingAnIconBuildsNoIconAgain() throws {
+        let renders = Renders()
+        func tree() -> Node { HomeScreenSample().node }
+
+        let first = renders.render(tree())
+        func layout(in patch: HostPatch) -> HostPatch? {
+            patch.type == .layoutEngine ? patch : patch.children.lazy.compactMap(layout).first
+        }
+        let engine = try XCTUnwrap(layout(in: first))
+        guard case .replace(let driven)? = engine.driven, let room = driven[.frame] else {
+            return XCTFail("the boards report no room")
+        }
+        let moved = try XCTUnwrap(engine.events?[.itemMoved])
+
+        // The boards placed in a room of 360 by 600: four icons across, five down.
+        var now = 50_000_000.0
+        func frame() {
+            now += 16
+            _ = HostBoundary.cycle(.display, now: now, reducesMotion: false)
+        }
+        frame()
+        XCTAssertTrue(HostBoundary.report(.lanes([0, 0, 360, 600]), through: room))
+        frame()
+        frame()
+
+        // Mail, the first icon, lifted: the one icon built again.
+        XCTAssertTrue(renders.fire(moved, with: MemberValues.encode(GesturePhase.began, Point(51, 66), Point.zero, 0.0)))
+        renders.render(tree(), changed: Renderer.shared.pendingChanges)
+        let (sample, icons) = (renders.builds["HomeScreenSample"] ?? 0, renders.builds(of: "HomeTile"))
+        XCTAssertEqual(icons.count, 48)
+
+        // Moved to the third place: a new order.
+        XCTAssertTrue(
+            renders.fire(moved, with: MemberValues.encode(GesturePhase.changed, Point(223, 66), Point.zero, 0.0)))
+        renders.render(tree(), changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(renders.builds["HomeScreenSample"], sample + 1, "the body built for the new order")
+        XCTAssertEqual(
+            renders.builds(of: "HomeTile").reduce(0, +), icons.reduce(0, +), "no icon built again")
     }
 
     /// The state a patch drives a property with, wherever in the tree it landed.
