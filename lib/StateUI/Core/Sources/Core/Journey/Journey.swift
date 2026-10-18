@@ -197,6 +197,13 @@ public struct Journey<Value: Walked> {
         // state and it arrives at once.
         // Design: docs/design/core/journeys.md#moving-and-waiting
         if image.ties == 0 || lanes.motion.isCustom {
+            // The law given stays on the value here too.
+            if let motion {
+                var lawful = lanes
+                lawful.motion = motion
+                storage.lay([.motion], of: lawful)
+            }
+
             state.wrappedValue = target
             return Arrival(at: true)
         }

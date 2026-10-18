@@ -186,6 +186,17 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(plain.projectedValue.journey.motion, .eased(.milliseconds(90), .linear), "written later, it is the value's too")
     }
 
+    /// A law given to a move stays on the value even where nothing wears the state yet and the move arrives at once.
+    func testALawGivenToAMoveOfAStateNobodyWearsStays() {
+        let fade = State(wrappedValue: 1.0)
+        let law = Motion.eased(.milliseconds(400), .cubicIn)
+
+        let arrival = fade.projectedValue.journey.move(to: 0, law)
+
+        XCTAssertEqual(arrival.ended, true)
+        XCTAssertEqual(fade.projectedValue.journey.motion, law, "the law it was given is the value's now")
+    }
+
     /// THE VALUE'S OWN LAW OVERRIDES THE ELEMENT'S, per property. `.inherited`
     /// is a REQUEST - the crossing answers it with whatever the element
     /// resolved - and anything else is an answer already given, which the
