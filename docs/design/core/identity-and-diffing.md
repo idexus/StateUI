@@ -185,7 +185,12 @@ of a layout and generic over what it holds names its parts itself
 its fields' types out at every reading. A view held in an optional is named
 on the optional's part (`.header.some(StateUI.Text)`), never on the optional
 itself, whose value says what it holds: the paths stand the same whatever
-value of a type the process met first.
+value of a type the process met first. A type that is `Equatable` is compared
+whole unless a value of it holds a state, a binding, an environment value or
+an aim of its own (`ownsState`, learnt with its kind): its author's equality
+cannot pair those with a predecessor's, so such a view is read part by part
+however it compares, and an author's `Equatable` only speeds up a view that
+owns none.
 
 ### A view built as it was
 

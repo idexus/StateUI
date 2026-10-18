@@ -60,6 +60,16 @@ private struct Counter: View {
     var body: some View { Text("\(count)") }
 }
 
+/// A view owning a state, compared by its author's own equality.
+private struct LabelledCounter: View, @MainActor Equatable {
+    @State var count = 0
+    let label: String
+
+    var body: some View { Text("\(label) \(count)") }
+
+    static func == (lhs: Self, rhs: Self) -> Bool { lhs.label == rhs.label }
+}
+
 /// The walk over a view's stored properties: what it finds and under which paths, the same however the type is read.
 @MainActor
 final class StateWalkTests: XCTestCase {
@@ -149,6 +159,16 @@ final class StateWalkTests: XCTestCase {
         let action = {}
         let held = ViewWalk(Holder(model: nil, action: action))
         XCTAssertFalse(ViewWalk(Holder(model: nil, action: action)).takes(held), "a closure")
+    }
+
+    /// AN EQUATABLE VIEW OWNING A STATE IS LOOKED INTO: its author's equality cannot pair its state with its
+    /// predecessor's, so the walk reads it part by part; one holding no state is compared whole.
+    func testAnEquatableViewOwningAStateIsLookedInto() {
+        let parts = stateParts(in: LabelledCounter(label: "Taps"))
+
+        XCTAssertEqual(parts.boxes.count, 1)
+        XCTAssertTrue(parts.boxes.first?.path.hasPrefix("._count") == true, "\(parts.boxes)")
+        XCTAssertEqual(said(Icon(name: "Mail", glyph: 1)), [" value"])
     }
 
     /// A STATE IS FOUND UNDER ITS PROPERTY'S BACKING NAME, a box to pair with its predecessor's.

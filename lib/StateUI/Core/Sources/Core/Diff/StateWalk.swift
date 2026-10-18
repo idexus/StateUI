@@ -214,9 +214,21 @@ private struct StateParts {
         // on its own part, the same whatever value of it came first.
         let held = Mirror(reflecting: value).displayStyle == .optional || Swift.type(of: value) == AnyHashable.self
         let stored = !held && value is Element ? "(\(qualifiedName(of: Swift.type(of: value))))" : ""
-        let learnt = (kind: held ? Kind.each : kind(of: value), stored: stored)
+        var kind = held ? Kind.each : kind(of: value)
+        if case .value = kind, ownsState(value) { kind = .mirrored }
+        let learnt = (kind: kind, stored: stored)
         kinds[type] = learnt
         return learnt
+    }
+
+    /// Whether `value` holds a state, a binding, an environment value or an aim of its own: its author's equality
+    /// cannot pair them with its predecessor's, so a type of it is read part by part, however it compares.
+    /// Design: docs/design/core/identity-and-diffing.md#a-type-learnt-once
+    private static func ownsState(_ value: Any) -> Bool {
+        Mirror(reflecting: value).children.contains { part in
+            part.value is StateBox || part.value is EnvironmentSlot || part.value is BorrowedState
+                || part.value is Aiming
+        }
     }
 
     /// What `value` is, in the order the walk asks it.
