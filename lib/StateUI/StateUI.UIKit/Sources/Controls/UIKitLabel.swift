@@ -88,6 +88,8 @@ extension UIKitLabel {
 
     /// The spans' runs in place of the words; nil for the words again.
     func setRuns(_ runs: [TextRun]?) {
+        // Shown without runs before, the words stand already.
+        guard runs != nil || shown.runs != nil else { return }
         shown.runs = runs
         showWords()
     }
