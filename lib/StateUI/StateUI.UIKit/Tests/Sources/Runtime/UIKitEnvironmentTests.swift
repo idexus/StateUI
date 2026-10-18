@@ -60,6 +60,9 @@ final class UIKitEnvironmentTests: XCTestCase {
         defer { Self.turn(scene, to: .portrait) }
 
         Self.turn(scene, to: .portrait)
+        guard scene.effectiveGeometry.interfaceOrientation == .portrait else {
+            throw XCTSkip("iOS turns this scene with the device alone, as it does an iPad's")
+        }
         environment.reportDisplay(of: scene)
         XCTAssertEqual(display.orientation, .portrait)
         XCTAssertEqual(display.rotation, .rotation0)
