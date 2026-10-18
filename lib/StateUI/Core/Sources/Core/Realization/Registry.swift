@@ -115,6 +115,8 @@
         members(registration)
 
         let appliers = registration.appliers
+        // In name order, once: what changed is asked of them, with no names compared at each element.
+        let ordered = appliers.sorted { $0.key.name < $1.key.name }
         let wholes = registration.wholes
         let children = registration.childAppliers.map { child in
             (type: child.type, apply: { (view: View, kept: [HostChild]) in
@@ -131,11 +133,16 @@
 
                 var applied: Set<Prop> = []
 
-                for key in changed.sorted(by: { $0.name < $1.name }) {
-                    guard let apply = appliers[key] else { continue }
-
-                    apply(made, read(key))
-                    applied.insert(key)
+                if changed.count == 1, let key = changed.first {
+                    if let apply = appliers[key] {
+                        apply(made, read(key))
+                        applied.insert(key)
+                    }
+                } else {
+                    for (key, apply) in ordered where changed.contains(key) {
+                        apply(made, read(key))
+                        applied.insert(key)
+                    }
                 }
 
                 let values = ElementValues<Realized>(
