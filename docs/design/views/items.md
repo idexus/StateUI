@@ -49,7 +49,9 @@ entries already built are carried whole, and only the one asked for is
 built. When the parent builds the list again, every entry held is built again
 too, as `ForEach` builds its rows - a value the item closure captured may have
 changed. The identities are worked out once for the object, not once a
-build.
+build. An entry is one value to compare - its identity and that object
+(`ItemsEntry` is `Equatable`) - since every render of the list compares each
+entry it keeps: it is compared whole, with no walk of its parts.
 
 ## Empty
 

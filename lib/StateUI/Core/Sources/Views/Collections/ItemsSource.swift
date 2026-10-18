@@ -133,10 +133,15 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
 
 /// One entry of an ItemsView, built as a view of its own - with its own reads, so
 /// a state it reads builds it alone - and carried whole while its source is the
-/// same.
-struct ItemsEntry: View {
+/// same: one value to compare, which every render of the list compares for each
+/// entry it keeps.
+struct ItemsEntry: View, @MainActor Equatable {
     let identity: String
     let source: any ItemsViews
+
+    static func == (lhs: ItemsEntry, rhs: ItemsEntry) -> Bool {
+        lhs.identity == rhs.identity && lhs.source === rhs.source
+    }
 
     var body: some View {
         // Chosen by identity, so held as `any View` and handed on as its node.

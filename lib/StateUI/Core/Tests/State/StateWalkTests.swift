@@ -110,6 +110,13 @@ final class StateWalkTests: XCTestCase {
         XCTAssertEqual(said(some), [" parts 1", ".value borrowed"])
     }
 
+    /// AN ITEMSVIEW'S ENTRY IS ONE VALUE to the walk: what it shows and where from, compared whole with no mirror -
+    /// every entry the list keeps is walked at each of its renders.
+    func testAnItemsViewsEntryIsOneValue() {
+        let source = ItemsSource<Int>(groups: [], grouped: false)
+        XCTAssertEqual(said(ItemsEntry(identity: "7", source: source)), [" value"])
+    }
+
     /// A STATE IS FOUND UNDER ITS PROPERTY'S BACKING NAME, a box to pair with its predecessor's.
     func testAStateIsFoundUnderItsBackingName() {
         let parts = stateParts(in: Counter())
