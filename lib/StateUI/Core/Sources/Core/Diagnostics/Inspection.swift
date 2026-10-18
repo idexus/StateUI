@@ -441,7 +441,16 @@ enum Inspection {
             return "\(short(String(type[..<open])))(\(short(String(inner))))"
         }
 
-        let bare = type.split(separator: "<").first.map(String.init) ?? type
+        // Every generic argument left out, nested ones included, so a type nested in a generic one keeps its name.
+        var bare = ""
+        var depth = 0
+        for character in type {
+            switch character {
+            case "<": depth += 1
+            case ">": depth -= 1
+            default: if depth == 0 { bare.append(character) }
+            }
+        }
 
         return bare.split(separator: ".").last.map(String.init) ?? bare
     }

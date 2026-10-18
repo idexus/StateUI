@@ -241,6 +241,8 @@ final class InspectionTests: XCTestCase {
     func testAPlaceholderIsNamedByItsKindAndItsView() {
         XCTAssertEqual(Inspection.short("GalleryUI.MainPage"), "MainPage")
         XCTAssertEqual(Inspection.short("Swift.Array<Swift.Int>"), "Array")
+        XCTAssertEqual(Inspection.short("M.Outer<Swift.Int>.Inner"), "Inner", "a type nested in a generic one")
+        XCTAssertEqual(Inspection.short("M.Outer<M.Pair<Swift.Int, Swift.String>>.Inner"), "Inner")
         XCTAssertEqual(Inspection.short("StateUI.Window(GalleryUI.MainPage)"), "Window(MainPage)")
         XCTAssertEqual(Inspection.short("StateUI.Page(GalleryUI.HomePage#home@if)"), "Page(HomePage#home@if)")
     }
