@@ -312,7 +312,7 @@ extension State.Storage where Value: Walked {
                 Self.lay([.value, .destination, .velocity], of: journey, on: made)
             }
             noted = { destination in known.destination = destination }
-            made.told = { [weak self] mask in
+            made.told = { [weak self, unowned made] mask in
                 let now = Self.journey(on: made)
 
                 if mask & JourneyLanes<Value>.mask(of: .destination) != 0, !known.stands(at: now.destination) {
@@ -479,7 +479,7 @@ extension State.Storage where Value: StateValue {
             }
 
             // A host write ends where this side's do, the storage deciding by its readers.
-            made.told = { [weak self] _ in
+            made.told = { [weak self, unowned made] _ in
                 let value = Self.lifted(from: made)
                 let now = StateImage.bytes(of: value.carried(in: .current))
 

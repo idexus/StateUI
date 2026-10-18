@@ -68,6 +68,13 @@ final class HostStorage: NamedState {
         published = bytes
     }
 
+    /// Its number leaves the renderer's table with it, which nothing else would sweep.
+    isolated deinit {
+        if let number {
+            Renderer.shared.states[number] = nil
+        }
+    }
+
     /// The published bytes as the host must read them: an inherited law resolved, and
     /// a `.custom` value handed over as its own destination.
     /// Design: docs/design/core/journeys.md#the-law-on-the-image

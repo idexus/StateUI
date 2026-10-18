@@ -225,8 +225,10 @@ anything asks - the differ asks as it registers a driven property - and kept on
 the image, so it survives every rebuild. Properties are walked in name order,
 so numbers follow the walk and two runs of one tree number alike, which is what
 lets a test name a state by its number. Numbers start at one. The renderer's
-table of numbers holds each image weakly; a number
-whose state has gone answers nothing.
+table of numbers holds each image weakly, and an image takes its number out
+of the table as it goes. What the board calls on an image after a host write
+(`told`) holds the image unowned: holding it strongly, the image would hold
+itself, and no carried state would ever go.
 
 The tests share one renderer across a whole run, so they put the numbering back
 to a fresh process's before each test that names one; nothing a running interface could

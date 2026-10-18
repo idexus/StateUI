@@ -450,6 +450,23 @@ final class CycleTests: XCTestCase {
 
     // MARK: - The cycle
 
+    /// A state that goes takes the image the host carried it on, and that image its number out of the renderer's
+    /// table: a long list of carried rows coming and going leaves both as it found them.
+    func testAStateThatGoesLeavesNoNumberBehind() {
+        var number: Int32 = 0
+
+        weak var image: HostStorage?
+        do {
+            let value = State(wrappedValue: 0.0)
+            number = value.number
+            image = value.image
+            XCTAssertNotNil(Renderer.shared.states[number])
+        }
+
+        XCTAssertNil(image, "the image the host carried it on goes with it")
+        XCTAssertNil(Renderer.shared.states[number], "nothing rides that number any more")
+    }
+
     /// An element replaced - its body now ends on another kind of control - keeps the engines written on it:
     /// they are armed for the new element, not left disarmed with the old one.
     func testAReplacedElementKeepsItsEngines() {
