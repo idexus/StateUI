@@ -163,7 +163,12 @@ is - its cells' nearness included.
 ## Values in CSS
 
 Lengths are pixels, which CSS measures in the logical units StateUI's points
-are. An inset's sides are CSS's logical sides: its leading side is the inline
+are. A number is written whole where it is whole and to a millionth where it
+is not, its trailing noughts left off (`WebCSS.number`): worked out with whole
+numbers, since a double's shortest spelling - the standard library's - is
+long arithmetic a browser running WebAssembly with no compiler pays for every
+number of every view a run moves each frame; a millionth of a pixel, or of a
+matrix's turn over a thousand pixels, draws nothing apart. An inset's sides are CSS's logical sides: its leading side is the inline
 start, so an element laid out right to left - `dir="rtl"` - turns its margin
 and padding by itself. A colour is `rgb()` in sRGB with its alpha. A box and a
 shape draw a brush's gradient; a view's plain background, a run's and a bar's
