@@ -25,6 +25,12 @@ extension WebElement {
         view != nil && element.fadesIn(presentsOpacity: WebTransitionSurface.presents(.opacity, on: type))
     }
 
+    /// The layouts from the element's own view up through its ancestors' to the page's root, nearest first: whose
+    /// children a change of the element may move.
+    var layoutsUp: [WebLayoutView] {
+        sequence(first: element, next: { $0.parent }).compactMap { ($0.native as? WebElement)?.view as? WebLayoutView }
+    }
+
     /// Fades the element in as it joins a layout already standing, by the host layer's rule.
     func fadeIn(under motion: Motion) {
         guard fadesIn, let view else { return }

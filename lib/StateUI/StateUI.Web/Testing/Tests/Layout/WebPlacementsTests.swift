@@ -43,7 +43,7 @@ final class WebPlacementsTests: XCTestCase {
         defer { for view in [layout, first, second] { view.detach() } }
         XCTAssertEqual(WebPage.style(of: second.node, "transform"), "", "the first arrangement arrives")
 
-        placements.beforeChange()
+        placements.beforeChange(along: [layout])
         layout.places.patchArrived()
         layout.setItems([first, second].map { ($0, LayoutValues()) }, travellers: [(1, nil), (2, nil)])
         WebPage.layOut(second.node, at: Rect(x: 0, y: 100, width: 100, height: 40))
@@ -58,13 +58,28 @@ final class WebPlacementsTests: XCTestCase {
         XCTAssertEqual(WebPage.style(of: second.node, "transform"), "")
     }
 
+    /// A CHANGE READS THE PLACES OF ITS OWN LAYOUTS ALONE: those from the changing view up; a stack elsewhere on
+    /// the page is not read, however many children it holds.
+    func testAChangeReadsThePlacesOfItsOwnLayoutsAlone() {
+        let (layout, first, second) = stack()
+        let (other, third, fourth) = stack()
+        defer { for view in [layout, first, second, other, third, fourth] { view.detach() } }
+
+        WebPage.layOut(first.node, at: Rect(x: 0, y: 3, width: 100, height: 40))
+        WebPage.layOut(third.node, at: Rect(x: 0, y: 7, width: 100, height: 40))
+        placements.beforeChange(along: [layout])
+
+        XCTAssertEqual(first.slot?.y, 3, "its own layout's child, read")
+        XCTAssertEqual(third.slot?.y, 0, "the other stack's, as it was")
+    }
+
     /// A child laid out wider is drawn at the widths it passes through, its end margin keeping its slot's room; at
     /// rest its own CSS stands again.
     func testAChildLaidOutWiderGrowsInsideItsSlot() {
         let (layout, first, second) = stack()
         defer { for view in [layout, first, second] { view.detach() } }
 
-        placements.beforeChange()
+        placements.beforeChange(along: [layout])
         layout.places.patchArrived()
         layout.setItems([first, second].map { ($0, LayoutValues()) }, travellers: [(1, nil), (2, nil)])
         WebPage.layOut(first.node, at: Rect(x: 0, y: 0, width: 200, height: 40))

@@ -65,7 +65,7 @@ final class WebElement: NativeElement {
     }
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
-        host?.placements.beforeChange()
+        host?.placements.beforeChange(along: layoutsUp)
         if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
         applyProperties(changed: changed)
         if let view, let host { element.applyDrawnChildren(to: view, through: WebRegistrations.registry, in: host.runtime) }
@@ -91,7 +91,7 @@ final class WebElement: NativeElement {
     }
 
     func leave() {
-        host?.placements.beforeChange()
+        host?.placements.beforeChange(along: layoutsUp)
         if let view { host?.runtime.frames.follow(self, order: view.serial, reads: false) }
         view?.detach()
     }

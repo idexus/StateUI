@@ -51,6 +51,9 @@ class WebDOMView {
     /// Where the view is drawn while its place travels; nil at its slot.
     var travelling: Rect?
 
+    /// The place a layout's run last stood the view at; nil while no run places it.
+    var placedByRun: HostPlacement?
+
     /// How far the view is drawn from where the browser lays it out while its place travels.
     var travelOffset: (x: Double, y: Double)?
 
@@ -199,7 +202,9 @@ class WebDOMView {
 
     /// Whether the view shows; a hidden one takes no room, so its layout's places are read before it goes or comes.
     func setShown(_ shown: Bool) {
-        if shown != isShown { placingLayout?.placing?.beforeChange() }
+        if shown != isShown, let layout = placingLayout {
+            layout.placing?.beforeChange(along: Array(sequence(first: layout, next: { $0.placingLayout })))
+        }
         isShown = shown
         attribute("hidden", shown ? nil : "")
     }

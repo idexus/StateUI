@@ -45,14 +45,18 @@ A stack's, a grid's and a ZStack's children travel to their places by the
 host layer's layout motion (`TravellingPlaces`, `LayoutMotion`): what the
 layout says - travel, arrive, fade in as it joins - is the host layer's; the
 browser only lays out. So the places are read around each call from the page.
-Before the first change the call makes - a patch reaching an element, an
-element leaving, a view hidden or shown - every child standing in a followed
-layout is read where the browser laid it out (`WebPlacements.beforeChange`);
-once the call's changes are all in, each layout the call arranged is read
-again, and the host layer's motion takes each child from where it stood to
-where it now stands. Both reads are one call to the page each, of the
-children's places in their layout from its own layout - `offsetLeft`,
-`offsetTop` and their size, which no transform moves.
+Before a change - a patch reaching an element, an element leaving, a view
+hidden or shown - the children standing in the followed layouts from that
+view up to the page's root are read where the browser laid them out
+(`WebPlacements.beforeChange(along:)`), each layout once a call: a change
+moves its own layouts' children, and a patch is applied from the children
+up, so a layout is read before any change below it. A layout elsewhere on
+the page is not read - reading every one before each call cost a page of
+icons most of its patch. Once the call's changes are all in, each layout the
+call arranged is read again, and the host layer's motion takes each child
+from where it stood to where it now stands. Each read is one call to the
+page, of the children's places in their layout from its own layout -
+`offsetLeft`, `offsetTop` and their size, which no transform moves.
 
 A child is drawn where its place stands on the way: moved from where the
 browser lays it out by a translation before its own transform, and sized as
@@ -71,7 +75,11 @@ resized - sets out from where it no longer is.
 ## A placing run
 
 A ZStack whose children a placing run stands - an engine's - stands each
-where the run says: absolutely, its corner at the layout's and moved to its
+where the run says - and writes only what moved: each view keeps the place
+the run last stood it at (`placedByRun`), its fixed styles written as the
+run takes it and its size as it changes, since numbers made words for 48
+views every frame cost a browser running WebAssembly with no compiler most
+of the frame. Each stands absolutely, its corner at the layout's and moved to its
 place by a `translate` before its matrix, its own layer (`will-change:
 transform`) - a run moves its views every frame, and a move the browser
 composes is drawn without laying the page out again, where a `left` and a
