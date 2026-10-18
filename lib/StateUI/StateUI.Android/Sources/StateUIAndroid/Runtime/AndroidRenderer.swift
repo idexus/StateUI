@@ -190,8 +190,17 @@ final class AndroidRenderer {
     /// The activity is finishing - Back, or the application finished it: the user closed its window, which hears it
     /// is going, and its scene that the window closed.
     func destroying() {
+        Self.endActs()
         guard let window = runtime.tree.root?.first(type: .window) else { return }
         runtime.userClosed(window)
+    }
+
+    /// Answers every question and picker still waiting as dismissed: the activity they were asked over finished,
+    /// and the next activity of the process asks afresh.
+    static func endActs() {
+        acts.dismissAll()
+        actToolkit.forgetDialogs()
+        files.forgetDialogs()
     }
 
     /// The zone, the clock, the battery or the network changed.

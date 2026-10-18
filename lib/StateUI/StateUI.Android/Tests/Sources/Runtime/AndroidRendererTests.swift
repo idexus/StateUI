@@ -73,6 +73,7 @@ final class AndroidRendererTests: XCTestCase {
             ("testAControlNoRegistrationAnswersShowsItsName", testAControlNoRegistrationAnswersShowsItsName),
             ("testAnActivityMadeAgainShowsTheSceneWithItsState", testAnActivityMadeAgainShowsTheSceneWithItsState),
             ("testANewDensityMakesTheWindowAgainInIt", testANewDensityMakesTheWindowAgainInIt),
+            ("testAQuestionWaitingAsTheActivityFinishesIsDismissed", testAQuestionWaitingAsTheActivityFinishesIsDismissed),
             ("testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext", testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext),
             ("testTheDeviceIsCalledWhatItsUserNamedIt", testTheDeviceIsCalledWhatItsUserNamedIt),
             ("testAnActivityAfterBackShowsANewScene", testAnActivityAfterBackShowsANewScene),
@@ -174,6 +175,27 @@ final class AndroidRendererTests: XCTestCase {
     }
 
     @MainActor private static let leaveAll = Java.staticMethod(AndroidDriver.dialogs, "leaveAll", "()V")
+
+    /// A question waiting as Back finishes the activity is answered as dismissed: the next activity of the process
+    /// finds nothing waiting before what it asks.
+    func testAQuestionWaitingAsTheActivityFinishesIsDismissed() throws {
+        try onMainActor {
+            let answers = Received<Bool>()
+            let host = AndroidRenderer.running {
+                Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                    answers.values.append(try await Dialogs.confirm("Sure?", message: "", accept: "Yes", cancel: "No"))
+                }
+            }
+            try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
+            host.settle { Self.asked() != nil }
+
+            host.destroying()
+            host.settle { !answers.values.isEmpty }
+
+            XCTAssertEqual(answers.values, [false])
+            Java.callStatic(AndroidDriver.dialogs, AndroidDriver.dismissAll)
+        }
+    }
 
     /// Pixels a point changing - the display's size, another screen - make the window again at the new density, as
     /// an activity Android makes again: no view is laid out in one scale and measured in another.

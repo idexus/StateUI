@@ -20,6 +20,11 @@ final class AndroidFileToolkit: FileToolkit {
     private let launches = Numbered<(Bool) -> Void>()
 
 
+    /// Lets go of the pickers still waiting: their questions were answered as dismissed.
+    func forgetDialogs() {
+        dialogs.removeAll()
+    }
+
     func show(_ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void) -> Bool {
         let ticket = dialogs.hold(answered)
         Java.frame {

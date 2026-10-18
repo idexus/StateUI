@@ -132,6 +132,7 @@ final class AndroidDriver: HostDriver {
     /// an activity's end does: each case starts in a window as a new activity's.
     func finish() {
         Java.callStatic(Self.dialogs, Self.dismissAll)
+        AndroidRenderer.endActs()
         if let root = renderer?.root.reference {
             _ = Java.callStaticBool(JavaAPI.environment, JavaAPI.hideKeyboard, .object(root))
             Java.call(root, Self.clearFocus)

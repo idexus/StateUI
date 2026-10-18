@@ -223,6 +223,8 @@ extension AndroidRenderer {
 
     /// A host with no application yet, whose tree takes what a test applies, at two pixels a point.
     static func bare(clock: TestClock? = nil, reducesMotion: Bool = false) -> AndroidRenderer {
+        // Whatever an earlier test left asked is dismissed, as an activity finishing dismisses it.
+        endActs()
         let renderer = AndroidRenderer(
             context: TestContext.context, root: TestJava.root(), density: 2,
             clock: clock.map { clock in { clock.now } }, reducesMotion: { reducesMotion })

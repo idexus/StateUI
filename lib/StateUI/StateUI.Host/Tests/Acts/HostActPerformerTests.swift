@@ -227,6 +227,23 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(files.shown.count, 1, "a file dialog is not asked again")
     }
 
+    /// Every question waiting - the one showing and those behind it - is answered as dismissed once the window it
+    /// was asked in goes for good: a confirmation not accepted, a file dialog with nothing chosen; none waits on.
+    func testEveryQuestionWaitingIsDismissedWhenTheWindowGoes() throws {
+        let (toolkit, files, answers) = (Toolkit(), Files(), Answers())
+        let acts = HostActPerformer(toolkit: toolkit, files: files, answers: answers, tree: { nil })
+        acts.perform(HostActCall(act: .confirm, arguments: [.string("Delete?")], completion: 1))
+        acts.perform(HostActCall(act: .openFiles, arguments: [[FileType]().propValue, .bool(true)], completion: 2))
+
+        acts.dismissAll()
+        toolkit.shown[0].answered(true, nil)
+
+        XCTAssertEqual(answers.replies[1], [.bool(false)], "not accepted, and the late answer counts for nothing")
+        XCTAssertEqual(answers.replies[2], [[ChosenFile]().propValue], "nothing chosen")
+        acts.perform(HostActCall(act: .alert, arguments: [.string("Next")], completion: 3))
+        XCTAssertEqual(toolkit.shown.last?.question.title, "Next", "the next shows at once")
+    }
+
     /// A file is read and launched, and an address launched, as the toolkit answers.
     func testAFileIsReadAndLaunchedAndAnAddressLaunched() {
         let (files, answers) = (Files(), Answers())

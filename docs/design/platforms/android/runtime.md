@@ -140,7 +140,9 @@ script run outlives the activity it began in, which Android makes again for
 a new configuration, and acts in the one standing now. An activity made again
 takes its dialogs away unanswered, and the next asks the question showing
 again; the document picker stands in an activity of its own, which answers
-the next. An activity finishing answers its questions as dismissed. A ticket
+the next. An activity finishing answers every question and picker still
+waiting as dismissed (`HostActPerformer.dismissAll`), so the process's next
+activity finds none before what it asks. A ticket
 is one number across the process, and an answer from a dialog that went
 answers nothing.
 

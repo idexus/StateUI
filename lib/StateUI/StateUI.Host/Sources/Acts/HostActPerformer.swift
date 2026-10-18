@@ -138,6 +138,20 @@
         show(ticket, call: first.call, asked: first.asked)
     }
 
+    /// Answers every question waiting - the one showing and those behind it - as the user dismissing it does: the
+    /// window they were asked in went for good. A file dialog answers that nothing was chosen; an answer its dialog
+    /// gives later counts for nothing.
+    public func dismissAll() {
+        while let (ticket, first) = questions.first {
+            showings[ticket] = nil
+            _ = questions.answered(ticket)
+            switch first.asked {
+            case .question(let question): deliver(first.call, .success(question.answer(accepted: false, words: nil)))
+            case .files(let dialog): deliver(first.call, .success(dialog.answer([])))
+            }
+        }
+    }
+
     /// What was asked under `ticket` was answered: its caller hears the answer, and the next shows.
     private func answer(_ ticket: Int64, _ answer: Result<[HostValue], ActFailure>) {
         showings[ticket] = nil
