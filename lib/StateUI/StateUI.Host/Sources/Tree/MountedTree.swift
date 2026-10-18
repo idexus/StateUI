@@ -5,8 +5,10 @@
 
 /// What presenting an element on a frame asks of the elements around it.
 @_spi(Host) public struct FrameImpact: Equatable, Sendable {
-    /// The element's own presentation changed.
-    public var content: Bool
+    /// The element arranges its children again: a value moved that is more than its own run of places, which its
+    /// presentation puts.
+    /// Design: docs/design/host/tree.md#a-frame-arranges-what-moved
+    public var arrangesChildren: Bool
 
     /// The element's place in its parent changed, so the parent arranges again.
     public var arrangement: Bool
@@ -16,8 +18,8 @@
     public var windowChrome: Bool
 
     /// An impact of the parts named.
-    public init(content: Bool = false, arrangement: Bool = false, windowChrome: Bool = false) {
-        self.content = content
+    public init(arrangesChildren: Bool = false, arrangement: Bool = false, windowChrome: Bool = false) {
+        self.arrangesChildren = arrangesChildren
         self.arrangement = arrangement
         self.windowChrome = windowChrome
     }
@@ -28,7 +30,7 @@
     /// What either impact asks.
     public func union(_ other: FrameImpact) -> FrameImpact {
         FrameImpact(
-            content: content || other.content,
+            arrangesChildren: arrangesChildren || other.arrangesChildren,
             arrangement: arrangement || other.arrangement,
             windowChrome: windowChrome || other.windowChrome)
     }

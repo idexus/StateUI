@@ -536,11 +536,13 @@
                 let own = changed.isEmpty ? FrameImpact.none : element.presentFrame(changed)
                 // A child's place is its parent's business; an element with no view passes it up.
                 let restacked = entry.restacks && element.restack()
-                if own.content || entry.descendants.arrangement || restacked { element.native.arrangeChildren() }
+                if own.arrangesChildren || entry.descendants.arrangement || restacked {
+                    element.native.arrangeChildren()
+                }
                 var passed = entry.descendants
                 if element.native.presentsView { passed.arrangement = false }
                 let said = own.union(passed)
-                impact.content = impact.content || said.content
+                impact.arrangesChildren = impact.arrangesChildren || said.arrangesChildren
                 impact.windowChrome = impact.windowChrome || said.windowChrome
 
                 guard let parent = element.parent else {
@@ -568,7 +570,7 @@
     private func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
         native.presentFrame(changed)
         return FrameImpact(
-            content: true,
+            arrangesChildren: !changed.subtracting(ownPlacementRun).isEmpty,
             arrangement: !native.presentsView
                 || !changed.subtracting(ownPlacementRun).isDisjoint(with: Self.arrangedProperties),
             windowChrome: WindowChrome.follows(type, changed: changed))

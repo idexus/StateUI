@@ -296,6 +296,27 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(log.arranged, ["child", "bare", "stack"], "the bare one has no view; its parent places the child too")
     }
 
+    /// A LAYOUT'S RUN MOVED PLACES ITS CHILDREN, AND ARRANGES NOTHING AGAIN: the run is put by the element's own
+    /// presentation; another of its values moved arranges its children as ever.
+    @MainActor
+    func testALayoutsRunMovedArrangesNothingAgain() {
+        let (tree, log) = Self.tree(viewless: [])
+        var layout = HostPatch(id: .manual("layout"), type: .zStack)
+        layout.driven = .replace([.area: HostStateBinding(state: 900, mode: .out, kind: .placement, laneKind: .number)])
+        layout.children = .arranged([HostPatch(id: .manual("a"), type: .text), HostPatch(id: .manual("b"), type: .text)])
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged([layout])
+        tree.apply(stack, complete: true)
+        let layoutMount = tree.root!.children[0].mount
+
+        log.arranged.removeAll()
+        tree.present(states: [900: .lanes(Array(repeating: 0, count: 24))], properties: [:])
+        XCTAssertEqual(log.arranged, [], "the run placed the children")
+
+        tree.present(states: [:], properties: [layoutMount: [.padding]])
+        XCTAssertEqual(log.arranged, ["layout"], "a padding moved arranges them")
+    }
+
     /// A row says what it holds in reading order: each element's words apart by commas, a label's runs whole, a label
     /// of its own standing for all it holds, and nothing of what is hidden.
     @MainActor

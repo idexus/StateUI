@@ -107,6 +107,17 @@ together once (`MountedElement.drawingTransform`): moved, turned and scaled,
 where the tree names no pivot. A layout a state places - a placing run - keeps
 its measure: the run moves its children without the layout measuring again.
 
+## A frame arranges what moved
+
+A frame presents what moved on each element touched, deepest first, and says
+what that asks of the elements around it (`FrameImpact`): the element
+arranges its children again where a value moved that is more than its own
+run of places - a layout engine's run is put by the element's presentation,
+each host setting it on its layers view, so a run moving every frame builds
+no child's layout item again; a child whose place moved arranges its parent,
+passed up through an element with no view; a window's chrome is composed
+again where it shows what moved (`WindowChrome.follows`).
+
 ## What every element realizes
 
 What the host layer's own rules realize on every element - a view's place in
