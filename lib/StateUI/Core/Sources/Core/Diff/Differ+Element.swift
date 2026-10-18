@@ -727,9 +727,12 @@ extension Differ {
         _ rendered: RenderedNode,
         written node: Node
     ) -> (node: RenderedNode, patch: HostPatch) {
+        // Its body's handlers stand first and stay; only the ones the parent wrote last time are taken fresh.
         for (name, written) in node.events {
             if let id = rendered.events[name] {
-                register(written, under: id)
+                let wrote = rendered.placeholder?.events[name]?.count ?? 0
+                let own = handlers[id].map { Array($0.handlers.dropLast(wrote)) } ?? []
+                register(own + written, under: id)
             }
         }
 

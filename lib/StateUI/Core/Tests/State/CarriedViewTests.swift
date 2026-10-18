@@ -61,6 +61,22 @@ private struct Typed: View {
     }
 }
 
+/// What the handlers of a tap said, in the order they ran.
+private final class Heard {
+    var said: [String] = []
+}
+
+/// A composed view whose own body hears the tap a parent may hear too.
+private struct Listening: View {
+    let heard: Heard
+    let builds: Builds
+
+    var body: some View {
+        builds.count += 1
+        return Text("listening").onTapped { heard.said.append("body") }
+    }
+}
+
 /// One element of a list a view is lent a property of.
 private struct Row: Equatable, Sendable {
     var title: String
@@ -236,6 +252,29 @@ final class CarriedViewTests: XCTestCase {
             heard, [2],
             "the handler the parent wrote LAST is the one that runs - a handler captures "
                 + "what the parent's closure computed, and that closure ran again")
+    }
+
+    func testACarriedViewKeepsTheHandlersItsBodyWrote() throws {
+        let renders = Renders()
+        let builds = Builds()
+        let heard = Heard()
+
+        func tree(_ n: Int) -> Node {
+            VStack {
+                Text("n \(n)")
+                Listening(heard: heard, builds: builds)
+                    .onTapped { heard.said.append("parent \(n)") }
+            }.node
+        }
+
+        let first = renders.render(tree(1))
+        let id = try XCTUnwrap(first.children.last?.events?["tapped"])
+
+        renders.render(tree(2))
+        XCTAssertEqual(builds.count, 1, "the view is carried")
+
+        XCTAssertTrue(renders.fire(id))
+        XCTAssertEqual(heard.said, ["body", "parent 2"], "its body's handler, then the parent's newest")
     }
 
     func testAChangedModifierOnACarriedViewReachesThePatch() {

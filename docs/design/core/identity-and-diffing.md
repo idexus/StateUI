@@ -256,7 +256,10 @@ through a conversion written on the view makes it build as it always did.
 
 A carried view takes the handlers the parent wrote on it afresh, under the ids
 it keeps: the parent's closure ran again, so what those handlers captured is
-what the parent computed this time. The placeholder is kept fresh for the same
+what the parent computed this time. Its body's own handlers of the same event
+stand before them and stay, with their runs: the carry replaces only as many
+as the parent wrote last time, counted on the kept placeholder, because the
+names are compared and the counts are not. The placeholder is kept fresh for the same
 reason, so a later clean walk that builds the view from it runs the newest
 inputs.
 
