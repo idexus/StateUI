@@ -94,9 +94,15 @@ final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegat
             appearance.backgroundColor = color
         }
         // Words on a painted bar: the colour written, else light on a dark bar and dark on a light one.
+        // In every layout: stacked, and inline on an iPad and a phone turned.
         if let color = BandWords.color(on: background, written: foreground).flatMap(UIColor.init(stateUI:)) {
-            appearance.stackedLayoutAppearance.selected.iconColor = color
-            appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: color]
+            for layout in [
+                appearance.stackedLayoutAppearance, appearance.inlineLayoutAppearance,
+                appearance.compactInlineLayoutAppearance,
+            ] {
+                layout.selected.iconColor = color
+                layout.selected.titleTextAttributes = [.foregroundColor: color]
+            }
         }
         (tabBar.standardAppearance, tabBar.scrollEdgeAppearance) = (appearance, appearance)
     }

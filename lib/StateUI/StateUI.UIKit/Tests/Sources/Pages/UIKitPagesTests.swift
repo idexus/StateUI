@@ -248,7 +248,7 @@ final class UIKitPagesTests: XCTestCase {
     }
 
     /// A tab bar wears the words' colour of the bar on its path as it changes - written on the stack it stands in, so
-    /// the tabbed view itself changes nothing.
+    /// the tabbed view itself changes nothing - in every layout it lays its tabs in.
     @MainActor
     func testATabBarFollowsTheBarsWordsOnItsPath() throws {
         let white = State(wrappedValue: false)
@@ -272,6 +272,15 @@ final class UIKitPagesTests: XCTestCase {
         white.wrappedValue = true
         host.settle { (words() ?? 0) > 0.99 }
         XCTAssertEqual(words() ?? -1, 1, accuracy: 0.01, "white, the stack's words changed")
+
+        // The same in every layout of the bar: a phone turned and an iPad lay their tabs inline.
+        let bar = try XCTUnwrap((tabs() as? UITabBarController)?.tabBar.standardAppearance)
+        for layout in [bar.inlineLayoutAppearance, bar.compactInlineLayoutAppearance] {
+            XCTAssertEqual(layout.selected.iconColor, bar.stackedLayoutAppearance.selected.iconColor)
+            XCTAssertEqual(
+                layout.selected.titleTextAttributes[.foregroundColor] as? UIColor,
+                bar.stackedLayoutAppearance.selected.titleTextAttributes[.foregroundColor] as? UIColor)
+        }
     }
 
     /// A clear bar is UIKit's transparent bar: nothing under it, and no line between it and the page.
