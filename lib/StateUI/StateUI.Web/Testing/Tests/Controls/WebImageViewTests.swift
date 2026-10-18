@@ -16,7 +16,7 @@ final class WebImageViewTests: XCTestCase {
         let picture = WebImageView()
         defer { for view in [layout, picture] { view.detach() } }
         picture.apply(picture: nil, aspect: .fill)
-        layout.setItems([(picture, LayoutValues())])
+        layout.setItems([(picture, { LayoutValues() })])
 
         XCTAssertEqual(WebPage.style(of: picture.node, "margin-block-end"), "-2px", "two pixels past its bottom")
         XCTAssertEqual(WebPage.style(of: picture.node, "margin-inline-start"), "-2px", "and past its start")

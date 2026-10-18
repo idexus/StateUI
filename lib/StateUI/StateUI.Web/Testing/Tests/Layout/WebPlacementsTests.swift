@@ -23,7 +23,7 @@ final class WebPlacementsTests: XCTestCase {
         layout.places.layoutMotion = motion
         placements.follow(layout)
         WebPage.layOut(layout.node, at: Rect(x: 0, y: 0, width: 100, height: 100))
-        layout.setItems([first, second].map { ($0, LayoutValues()) }, travellers: [(1, nil), (2, nil)])
+        layout.setItems([first, second].map { ($0, { LayoutValues() }) }, travellers: [(1, nil), (2, nil)])
         WebPage.layOut(first.node, at: Rect(x: 0, y: 0, width: 100, height: 40))
         WebPage.layOut(second.node, at: Rect(x: 0, y: 40, width: 100, height: 40))
         placements.settle()
@@ -45,7 +45,7 @@ final class WebPlacementsTests: XCTestCase {
 
         placements.beforeChange(along: [layout])
         layout.places.patchArrived()
-        layout.setItems([first, second].map { ($0, LayoutValues()) }, travellers: [(1, nil), (2, nil)])
+        layout.setItems([first, second].map { ($0, { LayoutValues() }) }, travellers: [(1, nil), (2, nil)])
         WebPage.layOut(second.node, at: Rect(x: 0, y: 100, width: 100, height: 40))
         placements.settle()
         XCTAssertEqual(WebPage.style(of: second.node, "transform"), "translate(0px, -60px)")
@@ -81,7 +81,7 @@ final class WebPlacementsTests: XCTestCase {
 
         placements.beforeChange(along: [layout])
         layout.places.patchArrived()
-        layout.setItems([first, second].map { ($0, LayoutValues()) }, travellers: [(1, nil), (2, nil)])
+        layout.setItems([first, second].map { ($0, { LayoutValues() }) }, travellers: [(1, nil), (2, nil)])
         WebPage.layOut(first.node, at: Rect(x: 0, y: 0, width: 200, height: 40))
         placements.settle()
         frame(at: 100)

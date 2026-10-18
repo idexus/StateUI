@@ -79,7 +79,11 @@ where the run says - and writes only what moved: each view keeps the place
 the run last stood it at (`placedByRun`), its fixed styles written as the
 run takes it and its size as it changes, since numbers made words for 48
 views every frame cost a browser running WebAssembly with no compiler most
-of the frame. Each stands absolutely, its corner at the layout's and moved to its
+of the frame. What each child states of its own place - its margin, sizes,
+alignment, cell - is read when first wanted and kept until the children are
+set again (`setItems` takes a reader a child), so a child the run places never
+reads it: a new order of 48 icons read 48 children's sixteen values for
+nothing. Each stands absolutely, its corner at the layout's and moved to its
 place by a `translate` before its matrix, its own layer (`will-change:
 transform`) - a run moves its views every frame, and a move the browser
 composes is drawn without laying the page out again, where a `left` and a

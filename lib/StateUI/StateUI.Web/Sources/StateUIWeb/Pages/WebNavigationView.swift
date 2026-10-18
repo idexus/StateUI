@@ -20,7 +20,7 @@ final class WebNavigationView: WebLayoutView {
     /// Stands the pages in the cell, the top one alone shown; one new on top arrives.
     func show(_ pages: [WebDOMView]) {
         let pushed = pages.count > self.pages.count && self.pages.allSatisfy { page in pages.contains { $0 === page } }
-        setItems(pages.map { ($0, LayoutValues()) })
+        setItems(pages.map { ($0, { LayoutValues() }) })
         for (index, page) in pages.enumerated() {
             let top = index == pages.count - 1
             page.attribute("data-covered", top ? nil : "")

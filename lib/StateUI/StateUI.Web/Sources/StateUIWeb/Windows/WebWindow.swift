@@ -32,13 +32,13 @@ final class WebWindow {
 
     /// Shows `view` in the whole room; nil for nothing.
     func show(_ view: WebDOMView?) {
-        room.setItems(view.map { [($0, LayoutValues())] } ?? [])
+        room.setItems(view.map { [($0, { LayoutValues() })] } ?? [])
     }
 
     /// Lays `layers` over the room, the first lowest.
     /// Design: docs/design/platforms/web/pages.md#overlays
     func showOverlays(_ layers: [WebDOMView]) {
-        overlays.setItems(layers.map { ($0, LayoutValues()) })
+        overlays.setItems(layers.map { ($0, { LayoutValues() }) })
     }
 
     func close() {

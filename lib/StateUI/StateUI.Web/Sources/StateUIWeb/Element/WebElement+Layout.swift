@@ -15,7 +15,7 @@ extension WebElement {
         guard let layout = view as? WebLayoutView else { return }
         let items = element.arrangedChildren.compactMap(\.web.placedElement)
         layout.setItems(
-            items.map { ($0.view!, $0.element.layoutValues) },
+            items.map { item in (item.view!, { [weak item] in item?.element.layoutValues ?? LayoutValues() }) },
             travellers: items.map { item in (item.element.mount, { [weak item] motion in item?.fadeIn(under: motion) }) })
     }
 

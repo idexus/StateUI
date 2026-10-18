@@ -27,9 +27,12 @@ class WebLayoutView: WebDOMView {
 
     let arrangement: Arrangement
 
-    /// The children's views and what each one's place reads, in order.
+    /// The children's views and what each one's place reads, in order: read when first wanted and kept until the
+    /// children are set again, so a child a run places never reads it.
+    /// Design: docs/design/platforms/web/layout.md#a-placing-run
     private(set) var children: [WebDOMView] = []
-    private var values: [LayoutValues] = []
+    private var readValues: [() -> LayoutValues] = []
+    private var valuesRead: [LayoutValues?] = []
 
     /// Each child's mounted element, by number, and how it fades in as it joins: what its place travels by.
     private var travellers: [(mount: UInt64, fadeIn: ((Motion) -> Void)?)] = []
@@ -127,7 +130,7 @@ class WebLayoutView: WebDOMView {
     /// child this layout no longer holds leaves the element.
     /// Design: docs/design/platforms/web/layout.md#children-in-order
     func setItems(
-        _ items: [(view: WebDOMView, values: LayoutValues)],
+        _ items: [(view: WebDOMView, values: () -> LayoutValues)],
         travellers: [(mount: UInt64, fadeIn: ((Motion) -> Void)?)] = []
     ) {
         let views = items.map(\.view)
@@ -141,7 +144,8 @@ class WebLayoutView: WebDOMView {
             gone.placingLayout = nil
         }
         children = views
-        values = items.map(\.values)
+        readValues = items.map(\.values)
+        valuesRead = Array(repeating: nil, count: items.count)
         self.travellers = travellers
         for view in views { view.placingLayout = self }
         if arrangement == .grid { writeTracks() }
@@ -160,7 +164,7 @@ class WebLayoutView: WebDOMView {
     /// Stands the child at `index` at `slot`, where the browser laid it out, or on its way there.
     func place(_ child: WebDOMView, at index: Int, slot: Rect) {
         let traveller = index < travellers.count ? travellers[index] : (mount: 0, fadeIn: nil)
-        places.place(child, mount: traveller.mount, at: slot, values: values[index], fadeIn: traveller.fadeIn)
+        places.place(child, mount: traveller.mount, at: slot, values: values(at: index), fadeIn: traveller.fadeIn)
     }
 
     private func placeAll() {
@@ -171,11 +175,19 @@ class WebLayoutView: WebDOMView {
             if index < run.count {
                 placeByRun(view, run[index])
             } else {
-                place(view, values[index])
+                place(view, values(at: index))
             }
             // A ZStack draws every child in its order, the placed and the unplaced alike, back to front.
             if arrangement == .layers { view.style("z-index", String(order.firstIndex(of: index) ?? index)) }
         }
+    }
+
+    /// What the child at `index` states of its own place, read once since the children were set.
+    private func values(at index: Int) -> LayoutValues {
+        if let read = valuesRead[index] { return read }
+        let read = readValues[index]()
+        valuesRead[index] = read
+        return read
     }
 
     /// Writes where `view` stands in this layout: its margin, its stated sizes and their bounds, and its alignment
@@ -295,6 +307,7 @@ class WebLayoutView: WebDOMView {
 
     /// The grid's tracks: those it defines, then one share for each further one its children reach.
     private func writeTracks() {
+        let values = readValues.indices.map(values(at:))
         let rowCount = max(rows.count, values.map { $0.row + max(1, $0.rowSpan) }.max() ?? 0)
         let columnCount = max(columns.count, values.map { $0.column + max(1, $0.columnSpan) }.max() ?? 0)
         style("grid-template-rows", WebCSS.tracks(rows, count: rowCount))

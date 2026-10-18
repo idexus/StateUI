@@ -44,7 +44,7 @@ final class WebTabView: WebDOMView {
 
     /// The tabs' pages, in order.
     func setTabs(_ views: [WebDOMView]) {
-        pages.setItems(views.map { ($0, LayoutValues()) })
+        pages.setItems(views.map { ($0, { LayoutValues() }) })
         tabs = views
         showChosen()
     }

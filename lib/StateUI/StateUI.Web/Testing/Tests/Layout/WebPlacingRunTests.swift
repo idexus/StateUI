@@ -23,7 +23,7 @@ final class WebPlacingRunTests: XCTestCase {
         let layout = WebLayoutView(arrangement: .layers)
         let card = WebLayoutView(arrangement: .single)
         defer { for view in [layout, card] { view.detach() } }
-        layout.setItems([(card, LayoutValues())])
+        layout.setItems([(card, { LayoutValues() })])
 
         layout.setPlacement(run(width: 10, height: 10))
         let small = WebPage.style(of: card.node, "transform")
@@ -45,7 +45,7 @@ final class WebPlacingRunTests: XCTestCase {
         let layout = WebLayoutView(arrangement: .layers)
         let card = WebLayoutView(arrangement: .single)
         defer { for view in [layout, card] { view.detach() } }
-        layout.setItems([(card, LayoutValues())])
+        layout.setItems([(card, { LayoutValues() })])
 
         layout.setPlacement(HostPlacementRun(placements: [
             HostPlacement(
@@ -66,8 +66,8 @@ final class WebPlacingRunTests: XCTestCase {
         let card = WebLayoutView(arrangement: .grid)
         let (face, shade) = (WebLayoutView(arrangement: .single), WebLayoutView(arrangement: .single))
         defer { for view in [layout, card, face, shade] { view.detach() } }
-        card.setItems([(face, LayoutValues()), (shade, LayoutValues())])
-        layout.setItems([(card, LayoutValues())])
+        card.setItems([(face, { LayoutValues() }), (shade, { LayoutValues() })])
+        layout.setItems([(card, { LayoutValues() })])
 
         layout.setPlacement(run(width: 100, height: 140, shade: 0.4))
         XCTAssertEqual(WebPage.style(of: shade.node, "opacity"), "0.4", "the far card's shade")
@@ -83,7 +83,7 @@ final class WebPlacingRunTests: XCTestCase {
         let layout = WebLayoutView(arrangement: .layers)
         let card = WebLayoutView(arrangement: .single)
         defer { for view in [layout, card] { view.detach() } }
-        layout.setItems([(card, LayoutValues())])
+        layout.setItems([(card, { LayoutValues() })])
         XCTAssertEqual(WebPage.style(of: card.node, "max-height"), "100%", "an unplaced child stays in its room")
 
         layout.setPlacement(run(width: 176, height: 248))

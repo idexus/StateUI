@@ -26,7 +26,7 @@ final class WebSheet {
         room.attribute("class", "stateui-sheet-room")
         WebRelay.insert(bar.node, into: dialog.node, at: 0)
         WebRelay.insert(room.node, into: dialog.node, at: 1)
-        room.setItems([(page, LayoutValues())])
+        room.setItems([(page, { LayoutValues() })])
         bar.onClose = { [weak self] in self?.onClosedByUser() }
         dialog.listen("dismiss") { [weak self] in self?.onClosedByUser() }
     }
