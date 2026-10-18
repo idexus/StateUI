@@ -5,6 +5,8 @@
 // inputs: what each type met is to the walk worked out once.
 // Design: docs/design/core/identity-and-diffing.md#paths-pair-state
 
+import StateUIFoundation
+
 /// Every state box and `@Environment` slot a view owns, with its inputs, in one
 /// walk. Each box comes back under the path the walk reached it by, which pairs
 /// it with its predecessor next render.
@@ -22,6 +24,66 @@ func stateParts(
     return (parts.boxes, parts.slots, parts.inputs)
 }
 
+/// A composed view's value and what the walk finds in it, walked at the first asking - or taken from its
+/// predecessor where the value lies in memory byte for byte as the predecessor's did: the same values, the same
+/// objects, the same storage, so the same inputs, with no mirror made.
+/// Design: docs/design/core/identity-and-diffing.md#a-view-built-as-it-was
+@MainActor
+final class ViewWalk {
+    /// The view, kept while its element is: what a successor is laid against.
+    let view: Any
+    private var found: (boxes: [(path: String, box: StateBox)], slots: [EnvironmentSlot],
+                        inputs: [(path: String, input: Input)])?
+
+    init(_ view: Any) {
+        self.view = view
+    }
+
+    /// What the walk found: the state boxes by path, the `@Environment` slots, the inputs.
+    var parts: (boxes: [(path: String, box: StateBox)], slots: [EnvironmentSlot],
+                inputs: [(path: String, input: Input)]) {
+        if let found { return found }
+        let walked = stateParts(in: view)
+        found = walked
+        return walked
+    }
+
+    /// Takes `kept`'s walk, where this view lies in memory as `kept`'s does and `kept` holds nothing that cannot be
+    /// compared - a closure counts as changed whatever its bytes; whether it did.
+    func takes(_ kept: ViewWalk) -> Bool {
+        guard found == nil, !kept.holdsOpaque, Self.identical(view, kept.view) else { return false }
+        found = kept.parts
+        return true
+    }
+
+    /// Whether an input of the view cannot be compared.
+    private var holdsOpaque: Bool {
+        parts.inputs.contains { if case .opaque = $0.input { true } else { false } }
+    }
+
+    /// Whether two values are of one type and alike byte for byte.
+    private static func identical(_ one: Any, _ other: Any) -> Bool {
+        guard Swift.type(of: one) == Swift.type(of: other) else { return false }
+
+        // Laid side by side over zeroes: a copy of a value holding references goes field by field, so the bytes
+        // that pad a field stand zero in both - a pad's leftovers would part two equal values.
+        func open<Value>(_ one: Value) -> Bool {
+            let size = MemoryLayout<Value>.size
+            guard size > 0 else { return true }
+
+            return withUnsafeTemporaryAllocation(of: Value.self, capacity: 2) { pair in
+                UnsafeMutableRawBufferPointer(pair).initializeMemory(as: UInt8.self, repeating: 0)
+                let first = pair.baseAddress!
+                first.initialize(to: one)
+                (first + 1).initialize(to: other as! Value)
+                defer { first.deinitialize(count: 2) }
+                return memcmp(first, first + 1, size) == 0
+            }
+        }
+        return _openExistential(one, do: open)
+    }
+}
+
 /// A type's module-qualified name, worked out once a type.
 @MainActor
 func qualifiedName(of type: Any.Type) -> String {
@@ -30,6 +92,15 @@ func qualifiedName(of type: Any.Type) -> String {
     let name = String(reflecting: type)
     StateParts.names[ObjectIdentifier(type)] = name
     return name
+}
+
+/// A view the walk reads by the parts it names, with no mirror: a library view standing once an item of a layout,
+/// generic over what it holds - a mirror of a generic type works its fields' types out at every reading.
+/// Design: docs/design/core/identity-and-diffing.md#a-type-learnt-once
+@MainActor
+protocol WalkedView {
+    /// Its stored parts, each under the label a mirror would give it.
+    var walkedParts: [(label: String, value: Any)] { get }
 }
 
 /// What one walk has found, and what every walk has learnt of the types it met.
@@ -45,6 +116,7 @@ private struct StateParts {
         case aim, box, slot, borrowed, node
         case value((Any) -> any Equatable)
         case reference
+        case walked((Any) -> [(label: String, value: Any)])
         case mirrored
 
         /// Asked of each value: an optional, or an `AnyHashable`, is what it holds to a cast.
@@ -91,6 +163,12 @@ private struct StateParts {
         case .reference:
             // A reference keeps itself alive; as an input it is the object it is.
             inputs.append((path: path, input: .reference(ObjectIdentifier(value as AnyObject))))
+        case .walked(let parts):
+            let parts = parts(value)
+            inputs.append((path: path, input: .parts(parts.count)))
+            for (label, part) in parts {
+                walk(part, at: "\(path).\(label)\(Self.learnt(part).stored)")
+            }
         case .mirrored, .each:
             mirrored(value, at: path, declaredAim: false)
         }
@@ -131,9 +209,11 @@ private struct StateParts {
         if let known = kinds[type] { return known }
 
         // The type of a stored view, in brackets after the property holding it, so one
-        // property holding different views gives different paths. Module-qualified.
-        let stored = value is Element ? "(\(qualifiedName(of: Swift.type(of: value))))" : ""
+        // property holding different views gives different paths. Module-qualified. An
+        // optional is what it holds - a cast looks through it - so what it holds is named
+        // on its own part, the same whatever value of it came first.
         let held = Mirror(reflecting: value).displayStyle == .optional || Swift.type(of: value) == AnyHashable.self
+        let stored = !held && value is Element ? "(\(qualifiedName(of: Swift.type(of: value))))" : ""
         let learnt = (kind: held ? Kind.each : kind(of: value), stored: stored)
         kinds[type] = learnt
         return learnt
@@ -146,9 +226,15 @@ private struct StateParts {
         if value is EnvironmentSlot { return .slot }
         if value is BorrowedState { return .borrowed }
         if value is Node { return .node }
+        if let walked = Swift.type(of: value) as? any WalkedView.Type { return .walked(reader(walked)) }
         if let comparable = Swift.type(of: value) as? any Equatable.Type { return .value(opener(comparable)) }
 
         return Mirror(reflecting: value).displayStyle == .class ? .reference : .mirrored
+    }
+
+    /// The parts of a value of a walked type.
+    private static func reader<Walked: WalkedView>(_: Walked.Type) -> (Any) -> [(label: String, value: Any)] {
+        { ($0 as! Walked).walkedParts }
     }
 
     /// A value of an equatable type, made the existential it is compared as.

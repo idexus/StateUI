@@ -29,6 +29,15 @@
     }
 }
 
+/// A composed view an element was built by: its type, its walk, its state boxes by path, what it was built with,
+/// and the branch its content root stood in.
+typealias BuiltView = (
+    type: String,
+    walk: ViewWalk,
+    boxes: [(path: String, box: StateBox)],
+    inputs: [(path: String, input: Input)],
+    branch: String?)
+
 /// One element as it stands on the host - a class, so unchanged parts of one
 /// tree are shared into the next.
 @MainActor
@@ -53,11 +62,7 @@ final class RenderedNode {
     /// type, its state boxes by path, what it was built with, and the branch its
     /// content root stood in.
     /// Design: docs/design/core/identity-and-diffing.md#state-survives-a-rebuild
-    var views: [(
-        type: String,
-        boxes: [(path: String, box: StateBox)],
-        inputs: [(path: String, input: Input)],
-        branch: String?)]
+    var views: [BuiltView]
 
     /// What stood in for this element's subtree, kept so the clean walk can build it
     /// again without the parent; nil for a leaf.
@@ -138,11 +143,7 @@ final class RenderedNode {
         motion: Motion? = nil,
         lanes: MotionLanes = .all,
         key: String? = nil,
-        views: [(
-            type: String,
-            boxes: [(path: String, box: StateBox)],
-            inputs: [(path: String, input: Input)],
-            branch: String?)] = [],
+        views: [BuiltView] = [],
         placeholder: Node? = nil,
         view: String? = nil,
         reads: Set<ObjectIdentifier> = [],

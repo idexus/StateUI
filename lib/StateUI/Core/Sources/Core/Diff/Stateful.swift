@@ -136,16 +136,19 @@ extension Node {
         /// The view's type, where it is a `View`: what tells whether its body builds an arrangement.
         let shown: (any View.Type)?
 
+        /// The fresh view and what the walk finds in it.
+        let walk: ViewWalk
+
         /// The state boxes the fresh view owns, under the paths the walk found them at.
-        let boxes: [(path: String, box: StateBox)]
+        var boxes: [(path: String, box: StateBox)] { walk.parts.boxes }
 
         /// The `@Environment` slots, filled before the body builds
         /// (Environment.swift).
-        let slots: [EnvironmentSlot]
+        var slots: [EnvironmentSlot] { walk.parts.slots }
 
         /// What the view was built with, compared against last render's to decide whether
         /// it is built or carried.
-        let inputs: [(path: String, input: Input)]
+        var inputs: [(path: String, input: Input)] { walk.parts.inputs }
 
         /// Builds the subtree - after the boxes have adopted their predecessors' storage.
         let build: () -> Node
@@ -244,15 +247,7 @@ extension Node {
         build: @escaping () -> Node
     ) -> Node {
         var node = Node(type: .composed)
-        let parts = stateParts(in: view)
-        node.stateful = Stateful(
-            viewType: type,
-            shown: shown,
-            boxes: parts.boxes,
-            slots: parts.slots,
-            inputs: parts.inputs,
-            build: build,
-            scene: scene)
+        node.stateful = Stateful(viewType: type, shown: shown, walk: ViewWalk(view), build: build, scene: scene)
         return node
     }
 }

@@ -179,7 +179,27 @@ cast looks through them. The parts - a struct's fields, an enum's payload, a
 collection's elements - are read through a mirror, the one reflection every
 toolchain the library is built with offers: the standard library's walk of a
 struct's fields by key paths is an interface Apple's SDKs do not ship, so a
-library calling it builds for no iPhone.
+library calling it builds for no iPhone. A library view standing once an item
+of a layout and generic over what it holds names its parts itself
+(`WalkedView`: a layout engine's holder): a mirror of a generic type works
+its fields' types out at every reading. A view held in an optional is named
+on the optional's part (`.header.some(StateUI.Text)`), never on the optional
+itself, whose value says what it holds: the paths stand the same whatever
+value of a type the process met first.
+
+### A view built as it was
+
+A composed view keeps its value with its walk (`ViewWalk`), walked at the
+first asking. Before its state is adopted, a view whose value lies in memory
+byte for byte as its predecessor's takes the predecessor's walk: the same
+values, the same objects, the same storage - the predecessor kept, so no
+address it held was reused - hence the same inputs and the same boxes, with
+no mirror made and nothing to adopt. A value that differs by a byte, a view
+owning a state (a fresh box each build) and a predecessor holding anything
+that cannot be compared - a closure counts as changed whatever its bytes -
+are walked as ever, so what is built and what is carried is decided as the
+walk decides it. A layout's icons built again as they were - the same names,
+the same flags - are compared at the cost of their bytes.
 
 ## Carrying a view
 

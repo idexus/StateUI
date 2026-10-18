@@ -37,6 +37,15 @@ private struct Holder: View {
     var body: some View { Text("holder") }
 }
 
+/// A view naming its parts to the walk, one of its two.
+private struct Named: View, WalkedView {
+    let shown: Int
+    let unsaid: Int
+
+    var body: some View { Text("named") }
+    var walkedParts: [(label: String, value: Any)] { [("shown", shown)] }
+}
+
 /// A view lent a binding, or none.
 private struct Lent: View {
     let value: Binding<Double>?
@@ -79,12 +88,14 @@ final class StateWalkTests: XCTestCase {
         }
     }
 
-    /// A VIEW HELD AS AN EXISTENTIAL is walked as its own type, its path naming it.
+    /// A VIEW HELD AS AN EXISTENTIAL is walked as its own type, its path naming it - the same path whatever value of
+    /// its optional the process met first.
     func testAViewHeldAsAnExistentialIsWalkedAsItsOwnType() {
+        _ = said(Header(header: nil))
         let said = said(Header(header: Text("Notes")))
 
         XCTAssertEqual(said.first, " parts 1")
-        XCTAssertTrue(said.contains { $0.hasPrefix(".header(Swift.Optional<StateUI.View>).some(StateUI.Text)") }, "\(said)")
+        XCTAssertTrue(said.contains { $0.hasPrefix(".header.some(StateUI.Text) ") }, "\(said)")
     }
 
     /// A REFERENCE HELD WEAKLY AND A CLOSURE are read as a mirror reads them: the object as itself, the closure as
@@ -115,6 +126,29 @@ final class StateWalkTests: XCTestCase {
     func testAnItemsViewsEntryIsOneValue() {
         let source = ItemsSource<Int>(groups: [], grouped: false)
         XCTAssertEqual(said(ItemsEntry(identity: "7", source: source)), [" value"])
+    }
+
+    /// A VIEW NAMING ITS PARTS IS WALKED BY THEM, with no mirror: a layout's holder, generic over its view, at every
+    /// item of every render.
+    func testAViewNamingItsPartsIsWalkedByThem() {
+        XCTAssertEqual(said(Named(shown: 1, unsaid: 2)), [" parts 1", ".shown value"])
+        XCTAssertEqual(said(LayoutItemView(content: Text("7"))).prefix(2), [" parts 1", ".content(StateUI.Text) parts 1"])
+    }
+
+    /// A VIEW LYING BYTE FOR BYTE AS ITS PREDECESSOR TAKES ITS WALK, with no mirror made: the same values, the same
+    /// storage. Another value, an owned state's fresh box, or a closure - which counts as changed whatever its
+    /// bytes - is walked.
+    func testAViewLyingAsItsPredecessorTakesItsWalk() {
+        let icon = Icon(name: "Mail", glyph: 1)
+        let kept = ViewWalk(Tile(icon: icon, lifted: false))
+        _ = kept.parts
+
+        XCTAssertTrue(ViewWalk(Tile(icon: icon, lifted: false)).takes(kept), "the same icon, not lifted")
+        XCTAssertFalse(ViewWalk(Tile(icon: icon, lifted: true)).takes(kept), "lifted")
+        XCTAssertFalse(ViewWalk(Counter()).takes(ViewWalk(Counter())), "a state's box of its own")
+        let action = {}
+        let held = ViewWalk(Holder(model: nil, action: action))
+        XCTAssertFalse(ViewWalk(Holder(model: nil, action: action)).takes(held), "a closure")
     }
 
     /// A STATE IS FOUND UNDER ITS PROPERTY'S BACKING NAME, a box to pair with its predecessor's.

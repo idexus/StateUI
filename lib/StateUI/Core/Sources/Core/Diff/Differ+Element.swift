@@ -121,9 +121,13 @@ extension Differ {
                     sceneRecord = record
                 }
 
+                // A view lying byte for byte as its predecessor holds what that held: its walk is the
+                // predecessor's, its boxes already the ones kept.
+                // Design: docs/design/core/identity-and-diffing.md#a-view-built-as-it-was
                 if let rendered = rendered,
                     step < rendered.views.count,
-                    rendered.views[step].type == stateful.viewType {
+                    rendered.views[step].type == stateful.viewType,
+                    !stateful.walk.takes(rendered.views[step].walk) {
                     // By path, not by position.
                     // Design: docs/design/core/identity-and-diffing.md#paths-pair-state
                     var kept: [String: StateBox] = [:]
@@ -148,7 +152,8 @@ extension Differ {
                 }
 
                 pass.views.append((
-                    type: stateful.viewType, boxes: stateful.boxes, inputs: stateful.inputs, branch: nil))
+                    type: stateful.viewType, walk: stateful.walk, boxes: stateful.boxes, inputs: stateful.inputs,
+                    branch: nil))
 
                 // Slots resolve against everything provided so far, before the body builds.
                 stateful.resolve(from: scope)
@@ -604,11 +609,7 @@ extension Differ {
 
     /// What an element is by its composed views: each one's type and the branch its content root stood in.
     /// Design: docs/design/core/identity-and-diffing.md#another-kind-of-view
-    private static func kinds(_ views: [(
-        type: String,
-        boxes: [(path: String, box: StateBox)],
-        inputs: [(path: String, input: Input)],
-        branch: String?)]) -> [String] {
+    private static func kinds(_ views: [BuiltView]) -> [String] {
         views.map { view in view.branch.map { "\(view.type) \($0)" } ?? view.type }
     }
 
@@ -786,11 +787,7 @@ final class ElementPass {
     /// The composed views unwrapped, outermost first, and the environments visible at the outermost, which a carry
     /// compares.
     /// Design: docs/design/core/identity-and-diffing.md#what-a-carry-cannot-see
-    var views: [(
-        type: String,
-        boxes: [(path: String, box: StateBox)],
-        inputs: [(path: String, input: Input)],
-        branch: String?)] = []
+    var views: [BuiltView] = []
     var seen: [ObjectIdentifier: ObjectIdentifier] = [:]
 
     /// What the clean walk needs to build this element again without its parent: a composed view keeps its

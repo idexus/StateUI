@@ -3,11 +3,13 @@
 
 /// One view of a layout engine in the holder its run places, carried while its view is built the same.
 /// Design: docs/design/views/layout-engine.md#a-view-in-its-holder
-struct LayoutItemView<Content: View>: View {
+struct LayoutItemView<Content: View>: View, WalkedView {
     let content: Content
 
     var body: some View {
         Grid { content }
             .letsInputThrough(true)
     }
+
+    var walkedParts: [(label: String, value: Any)] { [("content", content)] }
 }
