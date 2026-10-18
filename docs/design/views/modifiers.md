@@ -188,6 +188,14 @@ becoming modifiers of their own: `.onSwiped(direction: .left)` says what it
 listens for in the same breath as what it does, and there is no
 half-configured recognizer to leave lying about.
 
+Two handlers of one gesture on one view are one recognizer hearing what both
+asked, each handler hearing its own: swipe directions add up and each handler
+hears the directions it named; file types add up (none is any file) and each
+handler is handed the files of its own types. What one recognizer cannot hear
+at once - two counts of taps, two touch counts of a pan, two thresholds of a
+swipe - is said, the last asked standing; a pan saying no touch count keeps the
+one said.
+
 A drag carries text, the portable payload. A native drag session needs its
 payload at once, so the handler that runs as the drag starts cannot decide it.
 

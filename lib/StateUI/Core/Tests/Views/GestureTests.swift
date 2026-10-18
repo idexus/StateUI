@@ -128,6 +128,62 @@ final class GestureTests: XCTestCase {
         XCTAssertEqual(swipes, [.up])
     }
 
+    /// Two swipe handlers, each for its own direction, listen together, and each hears its own direction alone.
+    func testTwoSwipeHandlersListenTogetherEachForItsOwn() {
+        let renders = Renders()
+        var heard: [String] = []
+
+        let patch = renders.render(Rectangle()
+            .onSwiped(direction: .left) { _ in heard.append("next") }
+            .onSwiped(direction: .right) { _ in heard.append("previous") }
+            .node)
+        let id = patch.events?["swiped"] ?? -1
+
+        XCTAssertEqual(patch.props["swipeDirection"], .enumeration(SwipeDirection([.left, .right]).rawValue))
+
+        renders.fire(id, with: [.enumeration(SwipeDirection.left.rawValue)])
+        renders.fire(id, with: [.enumeration(SwipeDirection.right.rawValue)])
+
+        XCTAssertEqual(heard, ["next", "previous"])
+    }
+
+    /// Two drop handlers, each for its own kinds of file, take the files of both, and each hears its own kinds.
+    func testTwoDropHandlersTakeEachTheirOwnFiles() {
+        let renders = Renders()
+        var heard: [String] = []
+        let text = FileType("Text", extensions: ["txt"])
+        let picture = FileType("Picture", extensions: ["png"])
+
+        let patch = renders.render(Rectangle()
+            .onDrop(files: [text]) { files in heard += files.map { "text " + $0.name } }
+            .onDrop(files: [picture]) { files in heard += files.map { "picture " + $0.name } }
+            .node)
+
+        XCTAssertEqual(patch.props["droppedFileTypes"], [text, picture].propValue)
+
+        renders.fire(patch.events?["filesDropped"] ?? -1, with: [
+            .values([ChosenFile(address: "a", name: "notes.txt").propValue, ChosenFile(address: "b", name: "cat.png").propValue]),
+        ])
+
+        XCTAssertEqual(heard, ["text notes.txt", "picture cat.png"])
+    }
+
+    /// A view hears one count of taps: a single and a double tap on one view are said, not silently one of them.
+    func testTapsOfTwoCountsOnOneViewAreSaid() {
+        Renders().render(Rectangle().onTapped {}.onTapped(count: 2) {}.node)
+
+        XCTAssertTrue(hasComplained("hears taps of one count"))
+    }
+
+    /// A pan for one touch count beside a pan for another is said; a pan saying no count keeps the one said.
+    func testPansOfTwoTouchCountsOnOneViewAreSaid() {
+        let kept = Renders().render(Rectangle().onPanUpdated(touchCount: 2) { _ in }.onPanUpdated { _ in }.node)
+        XCTAssertEqual(kept.props["panTouchCount"], .number(2), "a pan saying no count erases nothing")
+
+        Renders().render(Rectangle().onPanUpdated(touchCount: 1) { _ in }.onPanUpdated(touchCount: 2) { _ in }.node)
+        XCTAssertTrue(hasComplained("hears pans of one touch count"))
+    }
+
     func testAGestureSaysWhatItListensForBesideWhatItDoes() {
         let renders = Renders()
 

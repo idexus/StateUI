@@ -14,13 +14,19 @@ extension View {
     ///
     /// The whole view answers, not a button inside it.
     public func onTapped(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(ViewContract.tapped, handler)
+        modified {
+            $0.hearsTaps(1)
+            $0.addHandler(ViewContract.tapped.token, handler)
+        }
     }
 
     /// The same, with a handler that awaits: its `gate` says what the event does when it comes
     /// again while a run is under way.
     public func onTapped(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.tapped, gate: gate, handler)
+        modified {
+            $0.hearsTaps(1)
+            $0.addHandler(ViewContract.tapped.token, gate: gate, handler)
+        }
     }
 
     /// The same, for a double tap or more: `count` taps in a row.
@@ -29,7 +35,7 @@ extension View {
     public func onTapped(count: Int, _ handler: @escaping @MainActor () throws -> Void) -> Modified {
         // One `modified`: chaining would return `Modified.Modified`.
         modified {
-            $0.write(ViewContract.tapCount, count)
+            $0.hearsTaps(count)
             $0.addHandler(ViewContract.tapped.token, handler)
         }
     }
@@ -38,7 +44,7 @@ extension View {
     /// again while a run is under way.
     public func onTapped(count: Int, gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         modified {
-            $0.write(ViewContract.tapCount, count)
+            $0.hearsTaps(count)
             $0.addHandler(ViewContract.tapped.token, gate: gate, handler)
         }
     }
@@ -63,12 +69,11 @@ extension View {
         _ handler: @escaping @MainActor (SwipeDirection) throws -> Void
     ) -> Modified {
         modified {
-            $0.write(ViewContract.swipeDirection, direction)
-            $0.describe(ViewContract.swipeThreshold, threshold)
+            $0.hearsSwipes(direction, threshold: threshold)
             $0.addHandler(ViewContract.swiped.token) {
-                // A payload that does not read leaves the handler alone.
-                if let direction = SwipeDirection(EventBuffer.current.value()) {
-                    try handler(direction)
+                // A payload that does not read leaves the handler alone, and so does a direction it did not ask for.
+                if let went = SwipeDirection(EventBuffer.current.value()), direction.contains(went) {
+                    try handler(went)
                 }
             }
         }
@@ -83,11 +88,10 @@ extension View {
         _ handler: @escaping ValueEventHandler<SwipeDirection>
     ) -> Modified {
         modified {
-            $0.write(ViewContract.swipeDirection, direction)
-            $0.describe(ViewContract.swipeThreshold, threshold)
+            $0.hearsSwipes(direction, threshold: threshold)
             $0.addHandler(ViewContract.swiped.token, gate: gate) {
-                if let direction = SwipeDirection(EventBuffer.current.value()) {
-                    try await handler(direction)
+                if let went = SwipeDirection(EventBuffer.current.value()), direction.contains(went) {
+                    try await handler(went)
                 }
             }
         }
@@ -144,7 +148,7 @@ extension View {
         _ handler: @escaping @MainActor (PanUpdate) throws -> Void
     ) -> Modified {
         modified {
-            $0.describe(ViewContract.panTouchCount, touchCount)
+            $0.hearsPans(touchCount)
             $0.addHandler(ViewContract.panUpdated.token) {
                 if let (phase, totalX, totalY) = MemberValues.carried(
                     EventBuffer.current, by: ViewContract.panUpdated.name,
@@ -163,7 +167,7 @@ extension View {
         _ handler: @escaping ValueEventHandler<PanUpdate>
     ) -> Modified {
         modified {
-            $0.describe(ViewContract.panTouchCount, touchCount)
+            $0.hearsPans(touchCount)
             $0.addHandler(ViewContract.panUpdated.token, gate: gate) {
                 if let (phase, totalX, totalY) = MemberValues.carried(
                     EventBuffer.current, by: ViewContract.panUpdated.name,
@@ -361,10 +365,11 @@ extension View {
         files types: [FileType] = [], _ handler: @escaping @MainActor ([ChosenFile]) throws -> Void
     ) -> Modified {
         modified {
-            $0.write(ViewContract.droppedFileTypes, types)
+            $0.takesFiles(types)
             $0.addHandler(ViewContract.filesDropped.token) {
                 if let files = MemberValues.carried(
-                    EventBuffer.current, by: ViewContract.filesDropped.name, as: [ChosenFile].self) {
+                    EventBuffer.current, by: ViewContract.filesDropped.name, as: [ChosenFile].self)?
+                    .filter({ $0.isOne(of: types) }), !files.isEmpty {
                     try handler(files)
                 }
             }
@@ -377,10 +382,11 @@ extension View {
         files types: [FileType] = [], gate: some Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>
     ) -> Modified {
         modified {
-            $0.write(ViewContract.droppedFileTypes, types)
+            $0.takesFiles(types)
             $0.addHandler(ViewContract.filesDropped.token, gate: gate) {
                 if let files = MemberValues.carried(
-                    EventBuffer.current, by: ViewContract.filesDropped.name, as: [ChosenFile].self) {
+                    EventBuffer.current, by: ViewContract.filesDropped.name, as: [ChosenFile].self)?
+                    .filter({ $0.isOne(of: types) }), !files.isEmpty {
                     try await handler(files)
                 }
             }
@@ -408,5 +414,61 @@ extension View {
     /// again while a run is under way.
     public func onDragLeave(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ViewContract.dragLeave, gate: gate, handler)
+    }
+}
+
+// What one view hears of a gesture is the sum of what its handlers asked, each hearing its own.
+// Design: docs/design/views/modifiers.md#gestures
+extension Node {
+    /// Listens for `direction` beside the directions it listens for already; a second threshold is said.
+    fileprivate mutating func hearsSwipes(_ direction: SwipeDirection, threshold: Double?) {
+        let heard = props[ViewContract.swipeDirection.token].flatMap(SwipeDirection.init(propValue:)) ?? []
+        write(ViewContract.swipeDirection, heard.union(direction))
+
+        guard let threshold else { return }
+        if let said = props[ViewContract.swipeThreshold.token].flatMap(Double.init(propValue:)), said != threshold {
+            complain("A view hears swipes of one threshold: \(said) and \(threshold) were asked on it, and the "
+                + "last stands.")
+        }
+        describe(ViewContract.swipeThreshold, threshold)
+    }
+
+    /// Hears taps of `count`; a view asked for two counts is said, as it hears one.
+    fileprivate mutating func hearsTaps(_ count: Int) {
+        let said = props[ViewContract.tapCount.token].flatMap(Int.init(propValue:))
+            ?? (events[ViewContract.tapped.token] != nil ? 1 : nil)
+
+        if let said, said != count {
+            complain("A view hears taps of one count: \(said) and \(count) were asked on it, and the last "
+                + "stands. Put the other on a view of its own.")
+        }
+        if count != 1 || said != nil { write(ViewContract.tapCount, count) }
+    }
+
+    /// Hears pans of `touchCount`, a pan saying none keeping the one said; a view asked for two is said.
+    fileprivate mutating func hearsPans(_ touchCount: Int?) {
+        guard let touchCount else { return }
+        if let said = props[ViewContract.panTouchCount.token].flatMap(Int.init(propValue:)), said != touchCount {
+            complain("A view hears pans of one touch count: \(said) and \(touchCount) were asked on it, and "
+                + "the last stands. Put the other on a view of its own.")
+        }
+        describe(ViewContract.panTouchCount, touchCount)
+    }
+
+    /// Takes files of `types` beside those it takes already; no types is any file.
+    fileprivate mutating func takesFiles(_ types: [FileType]) {
+        guard let taken = props[ViewContract.droppedFileTypes.token].flatMap([FileType].init(propValue:)) else {
+            return write(ViewContract.droppedFileTypes, types)
+        }
+        write(ViewContract.droppedFileTypes, taken.isEmpty || types.isEmpty ? [] : taken + types.filter { !taken.contains($0) })
+    }
+}
+
+extension ChosenFile {
+    /// Whether the file is of one of `types` by its extension; no types is any file.
+    fileprivate func isOne(of types: [FileType]) -> Bool {
+        guard !types.isEmpty else { return true }
+        let ending = name.split(separator: ".").count > 1 ? name.split(separator: ".").last.map { $0.lowercased() } : nil
+        return types.contains { type in ending.map(type.extensions.contains) ?? false }
     }
 }
