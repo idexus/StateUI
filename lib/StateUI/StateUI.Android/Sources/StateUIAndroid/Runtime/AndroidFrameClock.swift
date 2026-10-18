@@ -21,8 +21,9 @@ final class AndroidFrameClock: FrameClock {
         didSet { if held { post() } }
     }
 
-    /// Whether a frame is asked for and has not come.
-    private var posted = false
+    /// Whether the callback waits for a frame - the process's, as the callback is: a clock made while another's frame
+    /// is asked for takes that frame rather than ask again.
+    private static var posted = false
 
     /// The one clock, which the frame callback reaches.
     static var current: AndroidFrameClock?
@@ -44,9 +45,9 @@ final class AndroidFrameClock: FrameClock {
     }
 
     private func post() {
-        guard ticksWithTheDisplay, !posted else { return }
+        guard ticksWithTheDisplay, !Self.posted else { return }
 
-        posted = true
+        Self.posted = true
         Java.call(Self.choreographer.reference, JavaAPI.postFrameCallback, .object(Self.callback.reference))
     }
 
@@ -54,7 +55,7 @@ final class AndroidFrameClock: FrameClock {
     /// hand-wound clock takes none: its frames are the test's own.
     /// Design: docs/design/platforms/android/runtime.md#one-frame
     func frame(_ time: Double) {
-        posted = false
+        Self.posted = false
         guard ticksWithTheDisplay, held else { return }
 
         onFrame?(time)
